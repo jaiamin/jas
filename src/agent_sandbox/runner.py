@@ -13,9 +13,19 @@ logger = logging.getLogger(__name__)
 
 
 class Runner:
-    def __init__(self, store: Store, run_id: str, *, paid: bool = False):
-        self.store, self.id, self.paid = store, run_id, paid
-        self.scenario = validate_scenario(store.run(run_id)["scenario"])
+    def __init__(self, store: Store, run_id: str):
+        self.store, self.id = store, run_id
+        data = store.run(run_id)["scenario"]
+        if any(a.get("policy") == "demo" for a in data["agents"]):
+            raise ValueError(
+                "This historical run is replay-only. Create a new model run to continue."
+            )
+        # Older model runs stored a redundant policy flag; preserve their profiles and limits.
+        data = {
+            **data,
+            "agents": [{k: v for k, v in a.items() if k != "policy"} for a in data["agents"]],
+        }
+        self.scenario = validate_scenario(data)
         self.spec = get_sandbox(self.scenario.sandbox)
         self.environment = self.spec.create()
         frame = store.frame(run_id)
@@ -28,9 +38,9 @@ class Runner:
         self._lock = asyncio.Lock()
 
     @classmethod
-    def create(cls, store: Store, scenario: Scenario, *, paid=False, metadata=None):
+    def create(cls, store: Store, scenario: Scenario, *, metadata=None):
         scenario = validate_scenario(scenario.model_dump(mode="json"))
-        policies.check_paid(scenario, paid)
+        policies.check_models(scenario)
         environment = get_sandbox(scenario.sandbox).create()
         environment.initialize(scenario.parameters, [a.id for a in scenario.agents], scenario.seed)
         checkpoint = {
@@ -39,7 +49,7 @@ class Runner:
             "memory": {agent.id: "" for agent in scenario.agents},
         }
         run_id = store.create(scenario, checkpoint, environment.metrics(), metadata or {})
-        return cls(store, run_id, paid=paid)
+        return cls(store, run_id)
 
     @property
     def finished(self) -> bool:
@@ -63,7 +73,7 @@ class Runner:
             # Prevent stale processes from spending on, or overwriting, a moved run.
             if self.store.frame(self.id)["tick"] != self.tick:
                 raise ValueError("Run changed in another session; reload its checkpoint")
-            policies.check_paid(self.scenario, self.paid)
+            policies.check_models(self.scenario)
             actor = self.environment.next_agent()
             profile = next(a for a in self.scenario.agents if a.id == actor)
             observation = {
@@ -76,7 +86,6 @@ class Runner:
                 decision = await policies.choose(
                     self.scenario,
                     profile,
-                    self.spec,
                     self.environment.action_type,
                     observation,
                     self.store,

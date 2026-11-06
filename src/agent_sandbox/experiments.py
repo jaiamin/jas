@@ -4,7 +4,7 @@ from pathlib import Path
 from statistics import mean
 
 from .config import Experiment, Scenario, load_scenario, read_yaml, validate_scenario
-from .policies import check_paid
+from .policies import check_models
 from .runner import Runner
 from .sandboxes import get_sandbox
 from .store import Store
@@ -29,7 +29,8 @@ def expand(path: str | Path) -> tuple[Experiment, list[tuple[str, int, Scenario]
             if condition.limits:
                 data["limits"] = condition.limits.model_dump()
             for profile in data["agents"]:
-                profile.update(policy=condition.policy, model=condition.model)
+                if condition.model is not None:
+                    profile["model"] = condition.model
                 if profile["id"] in condition.profiles:
                     profile.update(condition.profiles[profile["id"]].model_dump(exclude_none=True))
             scenario = validate_scenario(data)
@@ -43,23 +44,19 @@ def expand(path: str | Path) -> tuple[Experiment, list[tuple[str, int, Scenario]
     return experiment, matrix
 
 
-async def run_experiment(path: str | Path, store: Store, *, paid: bool = False) -> dict:
+async def run_experiment(path: str | Path, store: Store) -> dict:
     experiment, matrix = expand(path)
     for _, _, scenario in matrix:
-        check_paid(scenario, paid)
-        if any(a.policy == "model" for a in scenario.agents) and experiment.max_model_calls < 1:
-            raise ValueError("Paid experiments require a positive experiment max_model_calls")
+        check_models(scenario)
     rows, calls = [], 0
     for condition, repetition, scenario in matrix:
-        if any(a.policy == "model" for a in scenario.agents):
-            remaining = experiment.max_model_calls - calls
-            if remaining < 1:
-                raise ValueError("Experiment call budget exhausted; completed runs are saved")
-            scenario.limits.max_model_calls = min(scenario.limits.max_model_calls, remaining)
+        remaining = experiment.max_model_calls - calls
+        if remaining < 1:
+            raise ValueError("Experiment call budget exhausted; completed runs are saved")
+        scenario.limits.max_model_calls = min(scenario.limits.max_model_calls, remaining)
         runner = Runner.create(
             store,
             scenario,
-            paid=paid,
             metadata={
                 "experiment": experiment.name,
                 "condition": condition,

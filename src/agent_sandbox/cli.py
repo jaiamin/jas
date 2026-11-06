@@ -25,11 +25,9 @@ def parser() -> argparse.ArgumentParser:
     run = commands.add_parser("run", help="Create and execute a run")
     run.add_argument("scenario", nargs="?", default="scenarios/frontier.yaml")
     run.add_argument("--steps", type=positive)
-    run.add_argument("--paid", action="store_true", help="Explicitly allow capped paid calls")
     resume = commands.add_parser("resume", help="Continue the latest saved checkpoint")
     resume.add_argument("run_id")
     resume.add_argument("--steps", type=positive)
-    resume.add_argument("--paid", action="store_true")
     commands.add_parser("runs", help="List saved runs as JSON")
     replay = commands.add_parser("replay", help="Read a saved frame without model calls")
     replay.add_argument("run_id")
@@ -37,7 +35,6 @@ def parser() -> argparse.ArgumentParser:
     replay.add_argument("--verify", action="store_true", help="Verify all recorded actions locally")
     experiment = commands.add_parser("experiment", help="Execute a validated comparison matrix")
     experiment.add_argument("path")
-    experiment.add_argument("--paid", action="store_true")
     view = commands.add_parser("view", help="Start the optional NiceGUI viewer")
     view.add_argument("--host", default="0.0.0.0")
     view.add_argument("--port", type=int, default=8080)
@@ -81,9 +78,9 @@ def main():
                 emit({"valid": True, "name": scenario.name, "metrics": list(environment.metrics())})
         elif args.command in ("run", "resume"):
             runner = (
-                Runner.create(store, load_scenario(args.scenario), paid=args.paid)
+                Runner.create(store, load_scenario(args.scenario))
                 if args.command == "run"
-                else Runner(store, args.run_id, paid=args.paid)
+                else Runner(store, args.run_id)
             )
             print(f"Run {runner.id}", file=sys.stderr)
             try:
@@ -107,7 +104,7 @@ def main():
             else:
                 emit(store.frame(args.run_id, args.tick))
         elif args.command == "experiment":
-            emit(asyncio.run(run_experiment(args.path, store, paid=args.paid)))
+            emit(asyncio.run(run_experiment(args.path, store)))
     except Exception as error:
         # Provider errors may include request details; avoid printing their body.
         message = str(error) if isinstance(error, (ValueError, OSError)) else type(error).__name__

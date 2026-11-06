@@ -1,14 +1,14 @@
 """Optional verification executes recorded actions, never agent policies."""
 
-from .config import validate_scenario
 from .sandbox import Decision
 from .sandboxes import get_sandbox
 from .store import Store, encode
 
 
 def verify(store: Store, run_id: str) -> int:
-    scenario = validate_scenario(store.run(run_id)["scenario"])
-    environment = get_sandbox(scenario.sandbox).create()
+    # Historical config is a record, not a new scenario: retired policies remain viewable.
+    scenario = store.run(run_id)["scenario"]
+    environment = get_sandbox(scenario["sandbox"]).create()
     frames = store.frames(run_id)
     memory = frames[0]["checkpoint"]["memory"].copy()
     environment.restore(frames[0]["checkpoint"]["environment"])

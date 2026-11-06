@@ -1,11 +1,11 @@
-"""One typed call per decision. Offline policies never import an SDK."""
+"""One real, typed model request per decision; no scripted policies or fallbacks."""
 
 import asyncio
 import json
 import os
 
 from .config import AgentProfile, Scenario
-from .sandbox import Decision, SandboxSpec
+from .sandbox import Decision
 from .store import Store
 
 INSTRUCTIONS = (
@@ -16,15 +16,8 @@ INSTRUCTIONS = (
 )
 
 
-def check_paid(scenario: Scenario, paid: bool) -> None:
-    profiles = [a for a in scenario.agents if a.policy == "model"]
-    if not profiles:
-        return
-    if not paid:
-        raise ValueError("Model policies require explicit --paid (viewer: Allow paid calls)")
-    if scenario.limits.max_model_calls < 1 or scenario.limits.max_total_tokens < 1:
-        raise ValueError("Model policies require positive call and token caps in YAML")
-    for profile in profiles:
+def check_models(scenario: Scenario) -> None:
+    for profile in scenario.agents:
         provider = scenario.models[profile.model].split(":", 1)[0]
         variable = f"{provider.upper()}_API_KEY"
         if not os.environ.get(variable):
@@ -62,23 +55,14 @@ def make_model(name: str):
 async def choose(
     scenario: Scenario,
     profile: AgentProfile,
-    spec: SandboxSpec,
     action_type: type,
     observation: dict,
     store: Store,
     run_id: str,
 ) -> Decision:
     output_type = Decision[action_type]
-    if profile.policy == "demo":
-        index = next(i for i, agent in enumerate(scenario.agents) if agent.id == profile.id)
-        action = spec.demo(observation, index)
-        return output_type(
-            action=action,
-            memory=f"Last action: {action.model_dump_json()}",
-            rationale="Offline baseline using visible state.",
-        )
-
     from pydantic_ai import Agent
+    from pydantic_ai.exceptions import ModelAuthenticationError
     from pydantic_ai.usage import UsageLimits
 
     limits = scenario.limits
@@ -114,6 +98,14 @@ async def choose(
         usage = result.usage
         store.settle(run_id, ceiling, usage.input_tokens, usage.output_tokens)
         return result.output
+    except ModelAuthenticationError:
+        provider = scenario.models[profile.model].split(":", 1)[0]
+        label = "OpenAI" if provider == "openai" else "Anthropic"
+        permission = " Responses write permission is required." if provider == "openai" else ""
+        raise ValueError(
+            f"{label} authentication failed. Check {provider.upper()}_API_KEY "
+            f"and its model API permissions.{permission}"
+        ) from None
     finally:
         if hasattr(model, "client"):
             await model.client.close()

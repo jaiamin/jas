@@ -40,7 +40,6 @@ class Decision(ConfigModel, Generic[Action]):
 class SandboxSpec:
     parameters: type[BaseModel]
     create: Callable[[], Sandbox]
-    demo: Callable[[dict, int], BaseModel]
     # Optional NiceGUI renderer. It receives a snapshot and selection callback,
     # returns nothing, and is never imported by the headless runner.
     panel: Callable[[dict, Callable[[str], None]], Any] | None = None

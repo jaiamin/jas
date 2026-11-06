@@ -258,50 +258,10 @@ class Colony:
         self.rng.setstate(_tuples(data["rng"]))
 
 
-def demo(observation: dict, agent_index: int) -> Action:
-    """A deliberately simple baseline, using exactly the model's observation."""
-    state = observation["environment"]
-    me, resources = state["self"], state["resources"]
-    place = me["location"]
-    facility = state["facilities"][place]
-    if me["stamina"] < 18:
-        return Action(kind="rest")
-    if facility["integrity"] < 60 and resources["materials"] >= 3:
-        return Action(kind="repair")
-    destination = ["greenhouse", "greenhouse", "reactor", "quarry", "workshop", "quarry"][
-        agent_index % 6
-    ]
-    if resources["food"] < 15:
-        destination = "greenhouse"
-    elif resources["energy"] < 12:
-        destination = "reactor"
-    if place != destination:
-        # Five nodes: breadth-first search is clearer than a pathfinding dependency.
-        queue = [[place]]
-        seen = {place}
-        while queue:
-            path = queue.pop(0)
-            for a, b in EDGES:
-                neighbor = b if a == path[-1] else a if b == path[-1] else None
-                if neighbor and neighbor not in seen:
-                    if neighbor == destination:
-                        return Action(kind="move", target=(path + [neighbor])[1])
-                    seen.add(neighbor)
-                    queue.append(path + [neighbor])
-    if (
-        place in ("greenhouse", "reactor", "quarry")
-        and facility["level"] < 2
-        and resources["materials"] >= 24
-        and resources["energy"] >= 12
-    ):
-        return Action(kind="build", message=f"Upgrading {place}; keep supplies coming.")
-    return Action(kind="work")
-
-
 def panel(snapshot: dict, select):
     from .colony_panel import render
 
     render(snapshot, select)
 
 
-SPEC = SandboxSpec(parameters=Parameters, create=Colony, demo=demo, panel=panel)
+SPEC = SandboxSpec(parameters=Parameters, create=Colony, panel=panel)

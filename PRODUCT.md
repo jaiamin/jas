@@ -12,7 +12,7 @@ Python, PydanticAI, SQLite, NiceGUI; validated YAML configuration. A headless CL
 An experimenter building and studying agent simulations. The viewer prioritizes watching and inspecting one run, as confirmed by the user.
 
 ## Capabilities and constraints
-A thin extensible sandbox contract. Frontier Colony is the first environment: six settlers, five connected facilities, shared resources, individual memory, radio and Python-enforced actions. Shared policies, capped model calls, controls, logging, checkpoints and exact replay. OpenAI and Anthropic only; credentials come from the existing environment. Offline demo by default. YAML scenarios and experiments configure profiles, parameters, conditions, seeds, repetitions and metrics. Keep the implementation small and dependencies minimal.
+A thin extensible sandbox contract. Frontier Colony is the first environment: six settlers, five connected facilities, shared resources, individual memory, radio and Python-enforced actions. Shared policies, capped model calls, controls, logging, checkpoints and exact replay. OpenAI and Anthropic only; credentials come from the existing environment. Every new decision uses a real model; opening the viewer and saved replay make no calls. YAML scenarios and experiments configure profiles, parameters, conditions, seeds, repetitions and metrics. Keep the implementation small and dependencies minimal.
 
 ## Brand commitments
 A clean dark research workspace. The map and events occupy the center, agent details sit alongside, and run and replay controls remain visible.

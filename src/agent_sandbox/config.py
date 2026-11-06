@@ -15,10 +15,10 @@ ModelName = Annotated[str, Field(pattern=r"^(openai|anthropic):[a-zA-Z0-9._-]+$"
 
 
 class Limits(ConfigModel):
-    max_model_calls: int = Field(default=0, ge=0, le=100_000)
-    max_input_tokens: int = Field(default=8_000, ge=256, le=200_000)
-    max_output_tokens: int = Field(default=400, ge=64, le=16_000)
-    max_total_tokens: int = Field(default=30_000, ge=0)
+    max_model_calls: int = Field(default=120, ge=1, le=100_000)
+    max_input_tokens: int = Field(default=12_000, ge=256, le=200_000)
+    max_output_tokens: int = Field(default=600, ge=64, le=16_000)
+    max_total_tokens: int = Field(default=300_000, ge=1)
     timeout_seconds: float = Field(default=30, gt=0, le=300)
 
 
@@ -26,8 +26,7 @@ class AgentProfile(ConfigModel):
     id: str = Field(pattern=r"^[a-z][a-z0-9_-]{0,31}$")
     name: str = Field(min_length=1, max_length=60)
     goal: str = Field(min_length=1, max_length=1000)
-    policy: Literal["demo", "model"] = "demo"
-    model: str | None = None
+    model: str
 
 
 class Scenario(ConfigModel):
@@ -48,22 +47,18 @@ class Scenario(ConfigModel):
         if len(ids) != len(set(ids)):
             raise ValueError("Agent ids must be unique")
         for agent in self.agents:
-            if agent.model is not None and agent.model not in self.models:
+            if agent.model not in self.models:
                 raise ValueError(f"Agent {agent.id} references an unknown model alias")
-            if agent.policy == "model" and agent.model not in self.models:
-                raise ValueError(f"Agent {agent.id} needs a model alias from 'models'")
         return self
 
 
 class ProfileOverride(ConfigModel):
     goal: str | None = Field(default=None, min_length=1, max_length=1000)
-    policy: Literal["demo", "model"] | None = None
     model: str | None = None
 
 
 class Condition(ConfigModel):
     name: str = Field(min_length=1, max_length=80)
-    policy: Literal["demo", "model"] = "demo"
     model: str | None = None
     parameters: dict = Field(default_factory=dict)
     profiles: dict[str, ProfileOverride] = Field(default_factory=dict)
@@ -80,7 +75,7 @@ class Experiment(ConfigModel):
     repetitions: int = Field(default=1, ge=1, le=100)
     max_steps: int | None = Field(default=None, ge=1, le=100_000)
     metrics: list[str] = Field(min_length=1)
-    max_model_calls: int = Field(default=0, ge=0)
+    max_model_calls: int = Field(ge=1)
 
     @model_validator(mode="after")
     def valid_matrix(self) -> Self:

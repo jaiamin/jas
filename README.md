@@ -12,13 +12,14 @@ Python 3.11+:
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -e '.[viewer,dev]'
-sandbox run                         # offline, seeded, 120 turns
+sandbox run --steps 2               # two real OpenAI decisions
 sandbox view                        # http://localhost:8080
 ```
 
 Run commands from the repository root. Install `pip install -e .` for the headless CLI
 without NiceGUI; `.[viewer]` adds the viewer and `.[dev]` adds pytest and Ruff.
-No frontend build, database server, accounts, telemetry, or model calls are needed for the demo.
+No frontend build or database server is needed. Running agents requires a provider API key.
+Opening the viewer or inspecting replay sends no model requests.
 
 If this runs inside a Docker Sandbox, expose the viewer from your **host** with
 `sbx ports <sandbox-name> --publish 8080:8080` and open `http://localhost:8080` there.
@@ -53,22 +54,29 @@ Model identifiers are explicit and editable in YAML; the supplied names are exam
 not a promise about model availability in your account.
 
 ```bash
-# Explicit paid opt-in; at most 12 model requests for this short run.
-sandbox run scenarios/frontier_models.yaml --paid
-
-# Offline baseline plus two model coordinators, capped at four requests in total.
-sandbox experiment experiments/providers.yaml --paid
+sandbox run scenarios/frontier.yaml --steps 2
+sandbox experiment experiments/providers.yaml  # 24 requests maximum; both keys required
 ```
 
-The viewer defaults to the offline Frontier scenario. To use models, select
-“Frontier Colony · paid models”, check **Allow paid calls**, then **New run**.
-Selecting a paid scenario alone never sends a request. Step or Play executes the calls.
-Resuming a paid run also requires opt-in. Saved replay always works offline, without keys.
+Every agent decision uses a real model. There is no offline policy, fixture mode, opt-in
+checkbox or fallback. Both shipped scenarios assign all six settlers to `openai:gpt-4.1-mini`.
+To use Anthropic, choose `anthropic:claude-haiku-4-5` in the viewer's model selector before
+creating a run, or set profile aliases to `anthropic` in YAML. Scenario assignments preserve
+per-agent models; choosing a model in the viewer applies it to all agents in the new run.
+
+OpenAI keys need Responses API write permission; Anthropic keys need Messages API access.
+A Codex/ChatGPT session credential alone does not grant general model API access.
+Missing keys prevent run creation; rejected requests pause without inventing an action.
+Credentials configured by the sandbox proxy can remain proxy-managed.
+
+In the viewer, new runs start paused. **Step** sends one model request, and **Play** continues up to the
+configured limits. Saved replay works without provider keys. Historical demo runs remain
+accurately labeled, replay-only archives; they cannot be resumed as model runs.
 
 Each decision uses PydanticAI's typed `Decision[SandboxAction]` output. No tools,
 conversation history, SDK retries, output retries, or hidden second requests are enabled.
 The run stores a call reservation **before** sending. Invalid output, timeouts and interrupted
-requests remain charged against the cap; they never silently become demo actions.
+requests remain charged against the cap; there is no substitute action.
 
 `limits` sets the maximum calls, per-call input/output tokens, total tokens and timeout.
 Before each call, a conservative UTF-8 byte estimate of the input, schema and instructions
@@ -83,15 +91,18 @@ at its last checkpoint. Experiment caps apply in addition to per-run caps.
 
 The dark workspace prioritizes inspecting one run:
 
-- Scenario and seed selection; Step, Play and Pause operate one atomic turn at a time.
+- A setup sidebar holds scenarios, models, seeds and saved runs. The toolbar keeps
+  Step, Play/Pause, request status, budgets and replay controls visible.
 - Clickable colony map with keyboard-accessible facility buttons and settler selection.
 - Agent goals, private memory, last action and rationale, radio inbox, and exact decision input.
-- Resource history and a turn-indexed event feed, including rejected actions and storms.
+- Events and Resources tabs below the map show outcomes and resource history.
 - Saved-run selection and a turn slider. Replay reads saved frames, with no model calls.
 - **Resume latest** exits replay and restores the newest checkpoint. It does not branch from
   an earlier frame. Pause lets an in-flight request finish and prevents the next turn.
 
-Each browser tab owns its own live run. Checkpoints remain available after closing the tab.
+Opening a browser tab shows the latest saved replay, or an empty workspace. Creating a new
+run does not make a model request. Each tab owns its live run. Checkpoints remain available
+after closing the tab.
 The viewer is optional and no environment imports NiceGUI during headless execution.
 
 ## Frontier Colony rules
@@ -118,26 +129,26 @@ Settlers see shared resources, public facility conditions, their own state, colo
 settlers and their own radio inbox. They cannot read another settler's memory or inbox.
 The researcher can inspect all agents in the viewer. Memory is an 800-character private note
 replaced after each decision. Radio is limited to 240 characters, with the last 12 received
-messages retained per agent. Observations include the rules, so both demo and model policies
-operate from the same information.
+messages retained per agent. Observations include the rules; Python validates every chosen action.
 
 ## Configuration and experiments
 
 YAML is loaded with `safe_load` and validated by Pydantic with unknown fields rejected.
 Environment parameters are validated against the selected sandbox's parameter model.
-See `scenarios/` for complete offline and paid examples.
+See `scenarios/` for complete model-backed examples.
 
 A scenario defines `sandbox`, `name`, `seed`, `max_steps`, `parameters`, `agents`, `models`
-and `limits`. Profiles define an id, name, goal, `demo`/`model` policy and optional model alias.
+and `limits`. Profiles require an id, name, goal and model alias.
 Model aliases resolve only to `openai:MODEL` or `anthropic:MODEL`.
 
 An experiment defines a scenario path **relative to the experiment YAML**, conditions, seeds,
 repetitions, requested metrics and a total call cap. Optional `max_steps` bounds all its runs.
-Conditions merge environment parameters, select a shared policy/model, optionally override
-individual profiles' goal/policy/model, and can replace per-run limits. All expanded scenarios
-and metric names are checked before the first run or paid call. Each condition runs against
+Conditions merge environment parameters, select a shared model, optionally override
+individual profiles' goal/model, and can replace per-run limits. All expanded scenarios
+and metric names are checked before the first run or model call. Each condition runs against
 the same seed list. Repetitions deliberately reuse the seed: the environment stays controlled
-while model decisions can differ. Offline repetitions are identical by design.
+while model decisions can differ. A seed controls the environment; it does not make fresh
+model decisions deterministic.
 Execution is sequential; output includes every run id, selected final metrics and condition
 means. The experiment label, condition, repetition and metrics are also saved with each run.
 If execution fails, completed runs stay in SQLite; there is no automatic experiment restart.
@@ -173,7 +184,6 @@ Register one `SandboxSpec` in `sandboxes.SANDBOXES`:
 SANDBOXES['your_sandbox'] = SandboxSpec(
     parameters=YourParameters,
     create=YourSandbox,
-    demo=your_demo,  # (observation, agent_index) -> YourAction
     panel=None,     # optional (snapshot, select_agent) -> None
 )
 ```

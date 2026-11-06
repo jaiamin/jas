@@ -5,6 +5,7 @@ from typing import Literal
 
 import pytest
 from pydantic import Field
+from pydantic_ai.models.test import TestModel
 
 from agent_sandbox import policies
 from agent_sandbox.config import AgentProfile, ConfigModel, Scenario
@@ -61,14 +62,25 @@ def test_non_colony_contract_checkpoint_resume_and_replay(store, monkeypatch):
         SandboxSpec(
             parameters=CounterParameters,
             create=Counter,
-            demo=lambda observation, index: CounterAction(kind="increment"),
+        ),
+    )
+    monkeypatch.setattr(
+        policies,
+        "make_model",
+        lambda name: TestModel(
+            custom_output_args={
+                "action": {"kind": "increment"},
+                "memory": "",
+                "rationale": "Count up",
+            }
         ),
     )
     scenario = Scenario(
         sandbox="counter",
         name="Tiny counter",
         parameters={"target": 3},
-        agents=[AgentProfile(id="one", name="One", goal="Reach the target")],
+        models={"openai": "openai:gpt-4.1-mini"},
+        agents=[AgentProfile(id="one", name="One", goal="Reach the target", model="openai")],
     )
     runner = Runner.create(store, scenario)
     asyncio.run(runner.play(1))
@@ -80,7 +92,7 @@ def test_non_colony_contract_checkpoint_resume_and_replay(store, monkeypatch):
     assert store.run(runner.id)["status"] == "complete"
     assert resumed.environment.metrics() == {"count": 3.0}
     assert verify(store, runner.id) == 3
-    assert store.run(runner.id)["calls"] == 0
+    assert store.run(runner.id)["calls"] == 3
 
 
 def test_seeded_runs_and_resumed_runs_are_identical(store, scenario):
@@ -161,3 +173,22 @@ def test_replay_detects_changed_outcomes(store, scenario):
         )
     with pytest.raises(ValueError, match="Replay differs"):
         verify(store, runner.id)
+
+
+def test_retired_demo_runs_replay_but_cannot_resume(store, scenario, monkeypatch):
+    runner = Runner.create(store, scenario)
+    asyncio.run(runner.play(3))
+    data = store.run(runner.id)["scenario"]
+    for agent in data["agents"]:
+        agent.update(policy="demo", model=None)
+    data["limits"].update(max_model_calls=0, max_total_tokens=0)
+    with store.db:
+        store.db.execute("UPDATE runs SET scenario=? WHERE id=?", (json.dumps(data), runner.id))
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Replay must not construct a model")
+
+    monkeypatch.setattr(policies, "make_model", forbidden)
+    assert verify(store, runner.id) == 3
+    with pytest.raises(ValueError, match="replay-only"):
+        Runner(store, runner.id)

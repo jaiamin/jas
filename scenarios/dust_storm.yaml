@@ -11,9 +11,36 @@ parameters:
   initial_integrity: 65
   storm_chance: 0.8
 agents:
-  - {id: mara, name: Mara Voss, goal: Coordinate food and radio supply warnings.}
-  - {id: eli, name: Eli Park, goal: Keep the greenhouse operational.}
-  - {id: noa, name: Noa Reyes, goal: Maintain the reactor and energy reserves.}
-  - {id: ivo, name: Ivo Chen, goal: Extract materials and repair damage.}
-  - {id: tess, name: Tess Okafor, goal: Support the workshop and repairs.}
-  - {id: sol, name: Sol Adler, goal: Expand capacity while preserving supplies.}
+  - id: mara
+    name: Mara Voss
+    goal: Coordinate food and radio supply warnings.
+    model: openai
+  - id: eli
+    name: Eli Park
+    goal: Keep the greenhouse operational.
+    model: openai
+  - id: noa
+    name: Noa Reyes
+    goal: Maintain the reactor and energy reserves.
+    model: openai
+  - id: ivo
+    name: Ivo Chen
+    goal: Extract materials and repair damage.
+    model: openai
+  - id: tess
+    name: Tess Okafor
+    goal: Support the workshop and repairs.
+    model: openai
+  - id: sol
+    name: Sol Adler
+    goal: Expand capacity while preserving supplies.
+    model: openai
+models:
+  openai: openai:gpt-4.1-mini
+  anthropic: anthropic:claude-haiku-4-5
+limits:
+  max_model_calls: 120
+  max_input_tokens: 12000
+  max_output_tokens: 600
+  max_total_tokens: 300000
+  timeout_seconds: 30
