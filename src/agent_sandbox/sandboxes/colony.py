@@ -4,7 +4,7 @@ import copy
 import random
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from ..config import ConfigModel
 from ..sandbox import Event, SandboxSpec
@@ -55,6 +55,12 @@ class Action(ConfigModel):
     target: FacilityId | None = None
     message: str = Field(default="", max_length=240)
     recipient: str = Field(default="all", max_length=32)
+
+    @field_validator("message", mode="before")
+    @classmethod
+    def bound_message(cls, value):
+        # Radio is optional prose; always enforce its transmission limit locally.
+        return value[:240] if isinstance(value, str) else value
 
 
 def _tuples(value):

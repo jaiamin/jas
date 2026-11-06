@@ -78,7 +78,8 @@ In the viewer, new runs start paused. **Step** sends one model request, and **Pl
 configured limits. Saved replay works without provider keys. Historical demo runs remain
 accurately labeled, replay-only archives; they cannot be resumed as model runs.
 
-Each decision uses PydanticAI's typed `Decision[SandboxAction]` output. No tools,
+Each decision uses PydanticAI's typed `Decision[SandboxAction]` output, requesting strict
+schema enforcement from providers that support it. No tools,
 conversation history, SDK retries, output retries, or hidden second requests are enabled.
 The run stores a call reservation **before** sending. Invalid output, timeouts and interrupted
 requests remain charged against the cap; there is no substitute action.
@@ -135,6 +136,10 @@ settlers and their own radio inbox. They cannot read another settler's memory or
 The researcher can inspect all agents in the viewer. Memory is an 800-character private note
 replaced after each decision. Radio is limited to 240 characters, with the last 12 received
 messages retained per agent. Observations include the rules; Python validates every chosen action.
+Rationales are limited to 400 characters. Overlong memory, rationale and radio text is
+shortened to these limits before validation, so verbose prose cannot discard an otherwise
+valid action. Action kinds, targets, recipients and field types are still validated normally;
+there are no extra model requests to shorten text.
 
 ## Configuration and experiments
 
