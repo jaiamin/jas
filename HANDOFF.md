@@ -86,3 +86,33 @@
   estimate, the partial marker and a new run's zero estimate. No live API calls were made.
 - The temporary viewer and browser were closed. The user's viewer was restarted on
   port 8080; refresh the page to see estimates for existing or new runs.
+
+## Evaluation workspace redesign
+
+- Branch `feat/evaluation-workspace`, based on cost-estimate work. Full UI replacement
+  explicitly requested with Impeccable. User chose a mix of browsing/comparing saved runs
+  and live monitoring; environment-panel placement delegated to implementation.
+- Runs-first library, comparison, separate setup, environment catalog, and a shared
+  Overview/Environment/Decisions/Configuration workspace are implemented. Colony-specific
+  UI remains in its registered panel. No runner/policy/budget or journal-schema changes.
+- Lightweight history/read helpers avoid decoding all saved checkpoints for analysis.
+- Plan and acceptance criteria: `UI_REDESIGN.md`. Direction: Research index, code-led
+  Operate. Concept service unavailable; degraded local assignment recorded in plan.
+- 55 tests, Ruff and diff checks pass. Browser flows use a disposable TestModel journal,
+  with no provider requests. Captures span 1440, 1280, 1024 and 390 widths; automated axe
+  reports zero violations in library, overview, decisions, setup and mobile Environment.
+- Independent Impeccable review scored all five listed material fixes resolved and returned
+  `ship` for that list: exact recorded decision input vs post-turn state, separate chart
+  legend/axis, responsive drawer completion, replacement design documentation, and map
+  accessibility. Review/documenter used the installed fallback role definitions; the remote
+  concept service/card was unavailable. Evidence stays in ignored `.impeccable/review/`.
+- DESIGN.md and `.impeccable/design.json` capture the source-backed system. PRODUCT.md and
+  README describe the confirmed mixed evaluation/live workflow and environment extension.
+- All 55 tests, Ruff and diff checks pass. Browser errors were empty. All inspected axe
+  states have zero violations; one incomplete contrast check requires manual judgment.
+- Viewer restarted on port 8080 using `.venv/bin/sandbox view --host 0.0.0.0 --port 8080`.
+  HTTP 200 and read-only inspection of an existing 7-turn saved run passed. It remains running
+  at the user's request. Existing journal, model configuration and credentials preserved.
+- QA services8081/8082, browser and generated QA journal/scripts are closed/removed. No new
+  live-provider run was performed for this UI change. Real provider availability remains
+  governed by existing credentials and limits; fresh model runs still default to GPT-6 Luna.

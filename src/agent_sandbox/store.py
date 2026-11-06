@@ -119,11 +119,19 @@ class Store:
 
     def runs(self) -> list[dict]:
         rows = self.db.execute("""
-            SELECT r.id, r.created, r.status, r.calls, r.error, r.scenario,
-                (SELECT MAX(tick) FROM frames WHERE run_id=r.id) AS tick
+            SELECT r.*,
+                (SELECT MAX(tick) FROM frames WHERE run_id=r.id) AS tick,
+                (SELECT metrics FROM frames WHERE run_id=r.id ORDER BY tick DESC LIMIT 1)
+                    AS metrics
             FROM runs r ORDER BY r.created DESC
         """)
-        return [{**dict(row), "scenario": json.loads(row["scenario"])} for row in rows]
+        return [
+            {
+                **dict(row),
+                **{key: json.loads(row[key]) for key in ("scenario", "metadata", "metrics")},
+            }
+            for row in rows
+        ]
 
     def frame(self, run_id: str, tick: int | None = None) -> dict:
         query = "SELECT * FROM frames WHERE run_id=?"
@@ -153,4 +161,19 @@ class Store:
                 "SELECT * FROM frames WHERE run_id=? AND tick<=? ORDER BY tick",
                 (run_id, through),
             )
+        ]
+
+    def history(self, run_id: str, through: int | None = None) -> list[dict]:
+        """Read analysis data without decoding historical checkpoints or observations."""
+        rows = self.db.execute(
+            """SELECT tick, actor, decision, events, metrics FROM frames
+               WHERE run_id=? AND (? IS NULL OR tick<=?) ORDER BY tick""",
+            (run_id, through, through),
+        )
+        return [
+            {
+                **dict(row),
+                **{key: json.loads(row[key]) for key in ("decision", "events", "metrics")},
+            }
+            for row in rows
         ]

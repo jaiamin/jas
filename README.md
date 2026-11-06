@@ -103,20 +103,32 @@ standard list prices, before credits or cache discounts. Pending or failed reque
 unknown usage are excluded and marked partial. Mixed-model or unpriced runs show no estimate.
 Rates cover GPT-6 Luna, GPT-4.1 Mini and Claude Haiku 4.5; estimates also work for saved runs.
 
-The dark workspace prioritizes inspecting one run:
+The workspace opens on **Runs**, a searchable, sortable library with status and environment
+filters. Select two or more runs from the same environment to compare shared final metrics,
+model assignments, seeds, usage and histories aligned by turn. Comparison reads saved data.
 
-- A setup sidebar holds scenarios, models, seeds and saved runs. The toolbar keeps
-  Step, Play/Pause, request status, budgets and replay controls visible.
-- Clickable colony map with keyboard-accessible facility buttons and settler selection.
-- Agent goals, private memory, last action and rationale, radio inbox, and exact decision input.
-- Events and Resources tabs below the map show outcomes and resource history.
-- Saved-run selection and a turn slider. Replay reads saved frames, with no model calls.
-- **Resume latest** exits replay and restores the newest checkpoint. It does not branch from
-  an earlier frame. Pause lets an in-flight request finish and prevents the next turn.
+**New run** opens a dedicated setup page for scenario, model, seed and maximum turns.
+The request cap matches the chosen turn limit; other limits remain defined in the scenario.
+Creating a run starts paused and makes no model request. **Environments** lists available
+scenarios from the configured scenario directory.
 
-Opening a browser tab shows the latest saved replay, or an empty workspace. Creating a new
-run does not make a model request. Each tab owns its live run. Checkpoints remain available
-after closing the tab.
+Opening a run shows one toolbar and timeline above four views:
+
+- **Overview:** metric history, outcomes and recent activity.
+- **Environment:** the registered environment panel. The colony panel offers a clickable
+  map and a keyboard-accessible facility selector; occupants link to agent evidence.
+- **Decisions:** the recorded log, agent filtering, rationale, goals, memory, radio and
+  observations. Exact saved model input is labeled separately from state after the turn.
+  Select a decision's turn to synchronize the timeline and agent evidence.
+- **Configuration:** resolved scenario, limits, usage, experiment metadata, replay verification
+  and JSON export.
+
+Saved runs open in recorded playback, with no model calls. **Resume run** restores an
+incomplete run's latest checkpoint and enables live Step/Play; it does not branch from an
+earlier frame or make a request itself. Pause and navigation let an in-flight request finish
+and prevent the next turn. Completed runs remain replayable. Each tab owns its live run;
+checkpoints remain available after closing the tab. On narrow screens, navigation collapses
+into a drawer and wide analysis tables scroll within their containers.
 The viewer is optional and no environment imports NiceGUI during headless execution.
 
 ## Frontier Colony rules
