@@ -1,0 +1,42 @@
+version: 1
+sandbox: frontier_colony
+name: Frontier Colony
+description: Six settlers keeping an isolated outpost alive through dust storms.
+seed: 7
+max_steps: 120
+parameters:
+  food: 60
+  energy: 45
+  materials: 30
+  initial_integrity: 90
+  food_per_cycle: 6
+  energy_per_cycle: 4
+  storm_chance: 0.3
+models:
+  openai: openai:gpt-4.1-mini
+  anthropic: anthropic:claude-haiku-4-5
+limits:
+  max_model_calls: 0
+  max_input_tokens: 12000
+  max_output_tokens: 600
+  max_total_tokens: 60000
+  timeout_seconds: 30
+agents:
+  - id: mara
+    name: Mara Voss
+    goal: Coordinate food production and tell the colony when supplies are low.
+  - id: eli
+    name: Eli Park
+    goal: Keep the greenhouse productive; balance upgrades with immediate food needs.
+  - id: noa
+    name: Noa Reyes
+    goal: Maintain the reactor and an energy reserve for the colony.
+  - id: ivo
+    name: Ivo Chen
+    goal: Extract materials, and repair damaged infrastructure when possible.
+  - id: tess
+    name: Tess Okafor
+    goal: Support the workshop and coordinate repairs through radio.
+  - id: sol
+    name: Sol Adler
+    goal: Expand production capacity without exhausting shared resources.

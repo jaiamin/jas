@@ -1,0 +1,14 @@
+version: 1
+name: Storm resilience baseline
+scenario: ../scenarios/frontier.yaml
+seeds: [7, 19, 42]
+repetitions: 1
+metrics: [alive, mean_health, food, energy, materials, mean_integrity, upgrades]
+max_model_calls: 0
+conditions:
+  - name: Mild weather
+    policy: demo
+    parameters: {storm_chance: 0.1}
+  - name: Dust season
+    policy: demo
+    parameters: {storm_chance: 0.8}

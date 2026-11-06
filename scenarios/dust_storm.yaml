@@ -1,0 +1,19 @@
+version: 1
+sandbox: frontier_colony
+name: Dust season
+description: Scarce supplies and frequent storms test the same six settlers.
+seed: 19
+max_steps: 120
+parameters:
+  food: 24
+  energy: 20
+  materials: 18
+  initial_integrity: 65
+  storm_chance: 0.8
+agents:
+  - {id: mara, name: Mara Voss, goal: Coordinate food and radio supply warnings.}
+  - {id: eli, name: Eli Park, goal: Keep the greenhouse operational.}
+  - {id: noa, name: Noa Reyes, goal: Maintain the reactor and energy reserves.}
+  - {id: ivo, name: Ivo Chen, goal: Extract materials and repair damage.}
+  - {id: tess, name: Tess Okafor, goal: Support the workshop and repairs.}
+  - {id: sol, name: Sol Adler, goal: Expand capacity while preserving supplies.}
