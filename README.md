@@ -12,6 +12,7 @@ Python 3.11+:
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -e '.[viewer,dev]'
+cp .env.example .env                 # fill in real provider API keys
 sandbox run --steps 2               # two real OpenAI decisions
 sandbox view                        # http://localhost:8080
 ```
@@ -47,8 +48,12 @@ Use one active writer per run; multiple independent runs can share the database.
 
 ## Models and spending
 
-Only OpenAI and Anthropic are accepted. Their SDKs read `OPENAI_API_KEY` and
-`ANTHROPIC_API_KEY` from the existing environment, including keys passed into the sandbox.
+Only OpenAI and Anthropic are accepted. Put real provider API keys in the repository's
+`.env` as `OPENAI_API_KEY` and/or `ANTHROPIC_API_KEY`; `.env` is ignored by Git.
+Every CLI command, including `sandbox view`, loads `.env` from the current working directory
+at startup. Its values override inherited environment variables, including sandbox OAuth
+credentials. Empty values also override: leave an unused provider blank. Restart the viewer
+after editing the file. Without `.env`, the existing environment is used.
 Keys never go in YAML or SQLite. There is no automatic provider fallback.
 Model identifiers are explicit and editable in YAML; the supplied names are examples,
 not a promise about model availability in your account.

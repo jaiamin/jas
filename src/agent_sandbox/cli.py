@@ -5,6 +5,9 @@ import asyncio
 import json
 import logging
 import sys
+from pathlib import Path
+
+from dotenv import load_dotenv
 
 from .config import load_scenario
 from .experiments import expand, run_experiment
@@ -55,6 +58,8 @@ def emit(value):
 
 def main():
     args = parser().parse_args()
+    # Local API keys take precedence over sandbox-injected OAuth credentials.
+    load_dotenv(Path.cwd() / ".env", override=True, interpolate=False)
     logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING)
     if args.command == "view":
         try:
