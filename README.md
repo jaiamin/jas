@@ -64,7 +64,7 @@ sandbox experiment experiments/providers.yaml  # 24 requests maximum; both keys 
 ```
 
 Every agent decision uses a real model. There is no offline policy, fixture mode, opt-in
-checkbox or fallback. Both shipped scenarios assign all six settlers to `openai:gpt-4.1-mini`.
+checkbox or fallback. Both shipped scenarios assign all six settlers to `openai:gpt-6-luna`.
 To use Anthropic, choose `anthropic:claude-haiku-4-5` in the viewer's model selector before
 creating a run, or set profile aliases to `anthropic` in YAML. Scenario assignments preserve
 per-agent models; choosing a model in the viewer applies it to all agents in the new run.

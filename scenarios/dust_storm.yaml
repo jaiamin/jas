@@ -36,7 +36,7 @@ agents:
     goal: Expand capacity while preserving supplies.
     model: openai
 models:
-  openai: openai:gpt-4.1-mini
+  openai: openai:gpt-6-luna
   anthropic: anthropic:claude-haiku-4-5
 limits:
   max_model_calls: 120

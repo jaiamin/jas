@@ -30,16 +30,19 @@
 - Live run `164ff7c6367c` completed all 120 turns without intervention, using exactly
   120 requests and 254,928 tokens under the original 300,000-token cap. All 120 saved
   turns replay-verified exactly. Its database is ignored `.venv/reliability.sqlite3`.
-- Updated viewer is running on port 8080 with process-local Anthropic credentials.
+- Updated viewer is running on port 8080 with the inherited OpenAI credential.
   It remains running at the user's request.
 
 ## Local viewer setup
 
-- The existing viewer uses process-local Anthropic authentication; credentials are never
-  persisted in source, this handoff, or global configuration.
+- Both shipped scenarios now use `openai:gpt-6-luna` for every settler. The viewer uses
+  the shipped `scenarios/` directory and the inherited OpenAI credential.
 - Ignored `.venv/viewer-scenarios/` contains local copies of the shipped scenarios with
-  Anthropic assigned to every settler. Tracked scenario defaults remain unchanged.
-- OpenAI's configured credential is still missing Responses API write permission.
+  Anthropic assigned to every settler; these copies are retained but are not in use.
+- OpenAI authentication now works. A live Luna turn completed with one request and
+  replay-verified exactly using an in-memory journal. All 44 tests and Ruff pass.
+- Model-default work is on `fix/gpt-6-luna-default`. Saved runs retain their original
+  model configuration; create a new run to use Luna.
 - Preserve existing `runs.sqlite3`; diagnostic reproductions use in-memory copies.
 
 ## User testing and verification
@@ -50,4 +53,5 @@
   `.venv/bin/ruff check src tests`.
 - Real provider authentication/rate limits, configured budgets, and genuinely malformed
   actions can still stop a run; no substitute actions or hidden retries were introduced.
-- Live verification used Anthropic; OpenAI still requires Responses API write access.
+- The complete 120-turn verification used Anthropic. Luna has a one-turn live smoke
+  check; a complete Luna run has not been checked.
