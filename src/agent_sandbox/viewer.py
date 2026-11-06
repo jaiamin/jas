@@ -100,10 +100,11 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
             position.set_text(f"{phase} · Turn {view.tick} / {scenario['max_steps']}")
             identity.set_text(f"{view.run_id} · Seed {scenario['seed']}")
             limits = scenario["limits"]
+            token_cap = limits.get("max_total_tokens")
             budget.set_text(
                 f"Requests {record['calls']:,} / {limits['max_model_calls']:,}"
-                f"   ·   Tokens charged {record['charged_tokens']:,}"
-                f" / {limits['max_total_tokens']:,}"
+                f"   ·   Tokens accounted {record['charged_tokens']:,}"
+                + (f" / {token_cap:,}" if token_cap is not None else " · No total token cap")
             )
             if view.replay:
                 request.set_text(
@@ -279,7 +280,7 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                 .props("no-caps unelevated text-color=dark")
                 .classes("w-full")
             )
-            ui.label("Step and Play use real models. YAML sets request and token caps.").classes(
+            ui.label("Step and Play use real models. YAML sets run limits.").classes(
                 "setup-note"
             )
             ui.separator().classes("my-3")

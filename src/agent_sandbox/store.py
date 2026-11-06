@@ -83,15 +83,17 @@ class Store:
         with self.db:
             self.db.execute("UPDATE runs SET status=?, error=? WHERE id=?", (status, error, run_id))
 
-    def reserve(self, run_id: str, call_cap: int, token_cap: int, token_ceiling: int) -> None:
+    def reserve(
+        self, run_id: str, call_cap: int, token_cap: int | None, token_ceiling: int
+    ) -> None:
         # Atomic even when two CLI processes race. Failed/unknown requests stay charged.
         with self.db:
             result = self.db.execute(
                 """
                 UPDATE runs SET calls=calls+1, charged_tokens=charged_tokens+?
-                WHERE id=? AND calls < ? AND charged_tokens+? <= ?
+                WHERE id=? AND calls < ? AND (? IS NULL OR charged_tokens+? <= ?)
             """,
-                (token_ceiling, run_id, call_cap, token_ceiling, token_cap),
+                (token_ceiling, run_id, call_cap, token_cap, token_ceiling, token_cap),
             )
             if result.rowcount != 1:
                 raise ValueError("Model call or token budget exhausted; run remains checkpointed")

@@ -55,3 +55,19 @@
   actions can still stop a run; no substitute actions or hidden retries were introduced.
 - The complete 120-turn verification used Anthropic. Luna has a one-turn live smoke
   check; a complete Luna run has not been checked.
+
+## Optional total-token budget
+
+- Work branch: `feat/optional-token-budget`, following the Luna default change.
+- Total-token budgets now default to `None` (no cap). Both shipped scenarios and the
+  provider comparison omit the cap. Explicit positive `max_total_tokens` values are
+  still enforced, including those in existing saved runs; no saved journal was changed.
+- Token accounting, per-request input/output limits, request caps, timeouts and the
+  120-turn scenario endpoint remain. Create a new run to use the uncapped settings.
+- All 46 tests and Ruff pass. An offline regression accounts for 333,000 tokens across
+  30 turns, pauses/resumes midway, and replay-verifies every turn. Request caps are
+  tested with and without a total-token cap; saved explicit token caps remain enforced.
+- Browser checks against a disposable journal confirmed a new paused Luna run shows
+  `No total token cap`, and a saved capped run displays its numeric limit.
+- The browser and temporary viewer were closed; the user's viewer was restarted on
+  port 8080 with the existing journal. No live API requests were needed for this change.

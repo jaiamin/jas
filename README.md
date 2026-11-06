@@ -84,10 +84,13 @@ conversation history, SDK retries, output retries, or hidden second requests are
 The run stores a call reservation **before** sending. Invalid output, timeouts and interrupted
 requests remain charged against the cap; there is no substitute action.
 
-`limits` sets the maximum calls, per-call input/output tokens, total tokens and timeout.
+`limits` sets the maximum calls, per-call input/output tokens and timeout. There is no
+total-token cap by default. Set `max_total_tokens` to a positive integer to opt into one;
+omit it or use `null` for no total-token cap. Both shipped scenarios run for up to 120 turns.
 Before each call, a conservative UTF-8 byte estimate of the input, schema and instructions
-must fit the input cap. The entire configured input + output allowance is reserved against
-the total token budget; a successful response settles to provider-reported usage.
+must fit the input cap. The entire configured input + output allowance is recorded as a
+reservation and checked against the total token budget when one is configured;
+a successful response settles to provider-reported usage.
 Unknown usage keeps the full reservation. PydanticAI checks reported token usage and the
 provider receives the output limit. These are request/token caps, **not a dollar guarantee**;
 provider tokenization/accounting and pricing remain external. Reaching a cap stops the run

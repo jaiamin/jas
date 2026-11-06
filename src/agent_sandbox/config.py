@@ -18,7 +18,7 @@ class Limits(ConfigModel):
     max_model_calls: int = Field(default=120, ge=1, le=100_000)
     max_input_tokens: int = Field(default=12_000, ge=256, le=200_000)
     max_output_tokens: int = Field(default=600, ge=64, le=16_000)
-    max_total_tokens: int = Field(default=300_000, ge=1)
+    max_total_tokens: int | None = Field(default=None, ge=1)
     timeout_seconds: float = Field(default=30, gt=0, le=300)
 
 

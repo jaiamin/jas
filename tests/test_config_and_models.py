@@ -53,8 +53,12 @@ def test_missing_key_prevents_run_creation(store, scenario, monkeypatch):
     assert store.runs() == []
 
 
-def test_typed_model_call_and_persisted_budget_survive_resume(store, scenario, monkeypatch):
+@pytest.mark.parametrize("token_cap", [None, 60000])
+def test_typed_model_call_and_persisted_budget_survive_resume(
+    store, scenario, monkeypatch, token_cap
+):
     capped_scenario(scenario)
+    scenario.limits.max_total_tokens = token_cap
     monkeypatch.setenv("OPENAI_API_KEY", "test-key-never-sent")
     model = TestModel(
         custom_output_args={
@@ -208,10 +212,42 @@ def test_token_budget_blocks_before_model_request(store, scenario, monkeypatch):
     scenario.limits.max_total_tokens = 1
     monkeypatch.setenv("OPENAI_API_KEY", "test-key-never-sent")
     monkeypatch.setattr(policies, "make_model", lambda name: TestModel())
-    runner = Runner.create(store, scenario)
+    created = Runner.create(store, scenario)
+    runner = Runner(store, created.id)
     with pytest.raises(ValueError, match="budget exhausted"):
         asyncio.run(runner.step())
     assert store.run(runner.id)["calls"] == 0
+
+
+def test_uncapped_token_usage_survives_resume(store, scenario, monkeypatch):
+    assert scenario.limits.max_total_tokens is None
+    scenario.max_steps = 30
+    scenario.limits.max_model_calls = 30
+    model = TestModel(custom_output_args={"action": {"kind": "rest"}})
+    request = model.request
+
+    async def counted_request(*args, **kwargs):
+        response = await request(*args, **kwargs)
+        response.usage.input_tokens = 11000
+        response.usage.output_tokens = 100
+        return response
+
+    monkeypatch.setattr(model, "request", counted_request)
+    monkeypatch.setattr(policies, "make_model", lambda name: model)
+    runner = Runner.create(store, scenario)
+    asyncio.run(runner.play(15))
+    resumed = Runner(store, runner.id)
+    assert resumed.scenario.limits.max_total_tokens is None
+
+    asyncio.run(resumed.play())
+
+    record = store.run(runner.id)
+    assert record["status"] == "complete"
+    assert record["calls"] == 30
+    assert record["input_tokens"] == 330000
+    assert record["output_tokens"] == 3000
+    assert record["charged_tokens"] == 333000  # Exceeds the former default cap.
+    assert verify(store, runner.id) == 30
 
 
 def test_input_cap_blocks_before_client_is_created(store, scenario, monkeypatch):

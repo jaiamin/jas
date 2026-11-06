@@ -19,7 +19,6 @@ limits:
   max_model_calls: 120
   max_input_tokens: 12000
   max_output_tokens: 600
-  max_total_tokens: 300000
   timeout_seconds: 30
 agents:
   - id: mara
