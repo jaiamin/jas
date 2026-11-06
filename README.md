@@ -90,11 +90,15 @@ omit it or use `null` for no total-token cap. Both shipped scenarios run for up 
 Before each call, a conservative UTF-8 byte estimate of the input, schema and instructions
 must fit the input cap. The entire configured input + output allowance is recorded as a
 reservation and checked against the total token budget when one is configured;
-a successful response settles to provider-reported usage.
+a response settles to provider-reported usage, even if its decision is invalid or incomplete.
 Unknown usage keeps the full reservation. PydanticAI checks reported token usage and the
 provider receives the output limit. These are request/token caps, **not a dollar guarantee**;
 provider tokenization/accounting and pricing remain external. Reaching a cap stops the run
 at its last checkpoint. Experiment caps apply in addition to per-run caps.
+
+The default response allowance is 4,096 tokens, including any model thinking tokens.
+A smaller allowance can truncate the decision JSON and stop a run. Existing saved runs
+retain their recorded limits; new defaults apply to new runs.
 
 ## Viewer
 

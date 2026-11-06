@@ -63,8 +63,9 @@ async def choose(
     run_id: str,
 ) -> Decision:
     output_type = Decision[action_type]
-    from pydantic_ai import Agent, ToolOutput
-    from pydantic_ai.exceptions import ModelAuthenticationError
+    from pydantic_ai import Agent, ToolOutput, capture_run_messages
+    from pydantic_ai.exceptions import ModelAuthenticationError, UnexpectedModelBehavior
+    from pydantic_ai.messages import ModelResponse
     from pydantic_ai.usage import UsageLimits
 
     limits = scenario.limits
@@ -85,21 +86,29 @@ async def choose(
         retries=0,
         model_settings={"max_tokens": limits.max_output_tokens, "timeout": limits.timeout_seconds},
     )
+    messages = []
     try:
         store.reserve(run_id, limits.max_model_calls, limits.max_total_tokens, ceiling)
         # No tools, retries, fallback provider, or second request after invalid output.
-        async with asyncio.timeout(limits.timeout_seconds):
-            result = await agent.run(
-                prompt,
-                usage_limits=UsageLimits(
-                    request_limit=1,
-                    input_tokens_limit=limits.max_input_tokens,
-                    output_tokens_limit=limits.max_output_tokens,
-                ),
-            )
-        usage = result.usage
-        store.settle(run_id, ceiling, usage.input_tokens, usage.output_tokens)
+        with capture_run_messages() as messages:
+            async with asyncio.timeout(limits.timeout_seconds):
+                result = await agent.run(
+                    prompt,
+                    usage_limits=UsageLimits(
+                        request_limit=1,
+                        input_tokens_limit=limits.max_input_tokens,
+                        output_tokens_limit=limits.max_output_tokens,
+                    ),
+                )
         return result.output
+    except UnexpectedModelBehavior:
+        if any(isinstance(m, ModelResponse) and m.finish_reason == "length" for m in messages):
+            raise ValueError(
+                f"Model reached {limits.max_output_tokens:,} response tokens (including thinking) "
+                "before completing a decision. Increase max_output_tokens in the scenario "
+                "and create a run with the higher response limit."
+            ) from None
+        raise
     except ModelAuthenticationError:
         provider = scenario.models[profile.model].split(":", 1)[0]
         label = "OpenAI" if provider == "openai" else "Anthropic"
@@ -109,5 +118,17 @@ async def choose(
             f"and its model API permissions.{permission}"
         ) from None
     finally:
-        if hasattr(model, "client"):
-            await model.client.close()
+        try:
+            responses = [m for m in messages if isinstance(m, ModelResponse)]
+            if responses:
+                # Even an incomplete/invalid decision can report exact billed usage.
+                # No response means usage is unknown: retain the reserved ceiling.
+                store.settle(
+                    run_id,
+                    ceiling,
+                    sum(m.usage.input_tokens for m in responses),
+                    sum(m.usage.output_tokens for m in responses),
+                )
+        finally:
+            if hasattr(model, "client"):
+                await model.client.close()

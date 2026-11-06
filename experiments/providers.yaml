@@ -12,12 +12,12 @@ conditions:
     limits:
       max_model_calls: 12
       max_input_tokens: 12000
-      max_output_tokens: 600
+      max_output_tokens: 4096
       timeout_seconds: 30
   - name: Anthropic settlers
     model: anthropic
     limits:
       max_model_calls: 12
       max_input_tokens: 12000
-      max_output_tokens: 600
+      max_output_tokens: 4096
       timeout_seconds: 30

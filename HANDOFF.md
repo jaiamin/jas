@@ -143,3 +143,24 @@
   the forwarded port to see changes. QA ports 8081/8082 and the browser are closed.
 - Ignored evidence stays in `.impeccable/review/saas/`; generated QA scripts, tools and
   databases are disposable and removed after verification. Existing journals untouched.
+
+## Reasoning response truncation recovery
+
+- Branch `fix/luna-decision-errors`, based on `ec4a5c2`. The reported turn-5 failure
+  was reproduced from an isolated copy: HTTP 200 incomplete/max_output_tokens with
+  600 output tokens, including 503 thinking tokens, and truncated decision JSON.
+- New-run and shipped scenario/experiment response allowances are 4096. Thinking
+  remains enabled; explicit limits, request caps, strict output and zero retries remain.
+  Length-finished model failures now explain the limit safely. Provider-reported failed
+  usage settles to actual tokens; unknown usage keeps the conservative reservation.
+- All 58 tests pass, including real SDK mocked-HTTP regressions. Ruff, changed source
+  formatting and diff checks pass. Live isolated continuation made exactly 10 requests,
+  advancing turns 5 to 15; replay verified. Full 120-turn completion was not tested.
+- Actual stopped run `2dd9c2a6c284` now has response allowance 4096, with the old 600
+  value and recovery reason recorded in metadata. Atomic assertions verified every
+  frame and existing usage/call counter unchanged. Still at turn 5; Resume loads it
+  correctly. The historical error remains recorded until a successful new decision.
+- Viewer restarted on port 8080, exec session 40792; HTTP 200. Refresh, open the run,
+  Resume run and Play. No UI changes or browser interaction checks in this task.
+- Detailed evidence and acceptance: `RUN_RESPONSE_RELIABILITY.md`. Diagnostic scripts
+  and captured provider payloads are disposable and removed before the checkpoint commit.

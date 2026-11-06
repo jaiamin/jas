@@ -100,7 +100,8 @@ def test_invalid_model_output_does_not_retry_or_advance(store, scenario, monkeyp
         asyncio.run(runner.step())
     record = store.run(runner.id)
     assert record["calls"] == 1
-    assert record["charged_tokens"] == 12600  # Unknown usage stays conservatively charged.
+    assert record["input_tokens"] > 0 and record["output_tokens"] > 0
+    assert record["charged_tokens"] == record["input_tokens"] + record["output_tokens"]
     assert store.frame(runner.id)["tick"] == 0
 
 
@@ -360,4 +361,8 @@ def test_authentication_failure_is_actionable_and_redacts_provider_details(
     assert "sensitive" not in record["error"]
     assert "Responses write permission" in record["error"]
     assert record["calls"] == 1
+    assert record["input_tokens"] == record["output_tokens"] == 0
+    assert record["charged_tokens"] == (
+        scenario.limits.max_input_tokens + scenario.limits.max_output_tokens
+    )  # No response supplied usage; preserve the conservative reservation.
     assert store.frame(runner.id)["tick"] == 0
