@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-06T22:40:02.146449+00:00",
+  "generatedAt": "2026-11-06T23:03:00.879600+00:00",
   "title": "Design System: Agent sandbox evaluation workspace",
   "extensions": {
     "colorMeta": {
@@ -214,20 +214,6 @@
           "oklch(95% 0.0033 248.58)"
         ]
       },
-      "sidebar-caption": {
-        "role": "neutral",
-        "displayName": "Navigation caption",
-        "tonalRamp": [
-          "oklch(15% 0.0079 248.14)",
-          "oklch(26% 0.0136 248.14)",
-          "oklch(37% 0.0194 248.14)",
-          "oklch(48% 0.0251 248.14)",
-          "oklch(60% 0.0251 248.14)",
-          "oklch(72% 0.0176 248.14)",
-          "oklch(84% 0.0101 248.14)",
-          "oklch(95% 0.0031 248.14)"
-        ]
-      },
       "nav-ink": {
         "role": "neutral",
         "displayName": "Navigation ink",
@@ -420,13 +406,9 @@
         "displayName": "Title compact",
         "purpose": "Page identity at the narrow breakpoint."
       },
-      "headline": {
-        "displayName": "Headline",
-        "purpose": "Section headings and empty-state titles."
-      },
       "heading": {
         "displayName": "Heading",
-        "purpose": "Ordinary h2 headings."
+        "purpose": "Section titles and h2 headings."
       },
       "action": {
         "displayName": "Action",
@@ -519,15 +501,15 @@
       "refersTo": "input",
       "description": "Outlined dense search with labeled input, framework-equivalent hover/focus and disabled state.",
       "html": "<label class=\"ds-search-label\" for=\"ds-search\">Search runs</label><input class=\"ds-search\" id=\"ds-search\" type=\"search\" placeholder=\"Search runs, models, seeds…\"><input class=\"ds-search\" aria-label=\"Unavailable search\" placeholder=\"Search unavailable\" disabled>",
-      "css": ".ds-search-label{display:block;color:var(--muted, #adb5c0);font:12px/1.55 Roboto,sans-serif;margin-bottom:6px;}.ds-search{display:block;background:var(--ground, #101215);color:var(--ink, #e7e9ed);caret-color:var(--accent, #85b8d2);border:1px solid var(--control-border, #4b5866);border-radius:4px;min-height:40px;padding:0 12px;font:14px/1.55 Roboto,sans-serif;max-width:420px;width:100%;margin-bottom:12px;}.ds-search::placeholder{color:var(--muted, #adb5c0);}.ds-search:hover:not(:disabled){border-color:#fff;}.ds-search:focus-visible{outline:2px solid var(--accent, #85b8d2);outline-offset:3px;border:2px solid var(--accent, #85b8d2);}.ds-search:disabled{opacity:.6;}"
+      "css": ".ds-search-label{display:block;color:var(--muted, #adb5c0);font:12px/1.55 Roboto,sans-serif;margin-bottom:6px;}.ds-search{display:block;background:var(--ground, #101215);color:var(--ink, #e7e9ed);caret-color:var(--accent, #85b8d2);border:1px solid var(--control-border, #4b5866);border-radius:4px;min-height:40px;padding:0 12px;font:14px/1.55 Roboto,sans-serif;max-width:320px;width:100%;margin-bottom:12px;}.ds-search::placeholder{color:var(--muted, #adb5c0);}.ds-search:hover:not(:disabled){border-color:#fff;}.ds-search:focus-visible{outline:2px solid var(--accent, #85b8d2);outline-offset:3px;border:2px solid var(--accent, #85b8d2);}.ds-search:disabled{opacity:.6;}"
     },
     {
       "name": "Navigation rail items",
       "kind": "nav",
       "refersTo": "navigation-selected",
-      "description": "Selected and idle destinations; inline SVG replaces the shipped icon-font dependency in this specimen.",
+      "description": "A 208px rail with compact 38px destinations and selected-route feedback; inline SVG replaces the shipped icon font in this specimen.",
       "html": "<nav class=\"ds-nav\" aria-label=\"Workspace\"><button class=\"ds-nav-item ds-nav-selected\" aria-current=\"page\"><svg width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M3 5h4v4H3V5zm6 0h12v4H9V5zm-6 5h4v4H3v-4zm6 0h12v4H9v-4zm-6 5h4v4H3v-4zm6 0h12v4H9v-4z\"/></svg>Runs</button><button class=\"ds-nav-item\">Environments</button></nav>",
-      "css": ".ds-nav{display:grid;gap:5px;background:var(--sidebar, #171e25);padding:16px;max-width:196px;}.ds-nav-item{font:500 13px/1.715 Roboto,sans-serif;letter-spacing:0;border-radius:var(--radius,6px);min-height:36px;padding:4px 16px;cursor:pointer;position:relative;display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;background:transparent;color:var(--nav-ink, #bdc8d4);border:0;text-align:left;}.ds-nav-selected{background:var(--nav-selected, #273948);color:var(--nav-selected-ink, #d1e4ef);}.ds-nav-item::after{content:\"\";position:absolute;inset:0;border-radius:inherit;background:currentColor;opacity:0;pointer-events:none;}.ds-nav-item:hover::after{opacity:.15;}.ds-nav-item:focus-visible{outline:2px solid var(--accent, #85b8d2);outline-offset:3px;}"
+      "css": ".ds-nav{display:grid;gap:4px;background:var(--sidebar, #171e25);padding:17px 12px;width:208px;max-width:100%;box-sizing:border-box;}.ds-nav-item{font:500 13px/1.715 Roboto,sans-serif;letter-spacing:0;border-radius:var(--radius,6px);min-height:36px;padding:4px 16px;cursor:pointer;position:relative;display:flex;align-items:center;gap:10px;min-height:38px;padding:0 12px;background:transparent;color:var(--nav-ink, #bdc8d4);border:0;text-align:left;}.ds-nav-selected{background:var(--nav-selected, #273948);color:var(--nav-selected-ink, #d1e4ef);}.ds-nav-item::after{content:\"\";position:absolute;inset:0;border-radius:inherit;background:currentColor;opacity:0;pointer-events:none;}.ds-nav-item:hover::after{opacity:.15;}.ds-nav-item:focus-visible{outline:2px solid var(--accent, #85b8d2);outline-offset:3px;}"
     },
     {
       "name": "Labeled status",
@@ -541,9 +523,9 @@
       "name": "Run table",
       "kind": "custom",
       "refersTo": "table",
-      "description": "A continuous frame with muted headings, aligned values and an interactive run label; hover and keyboard focus remain visible.",
-      "html": "<div class=\"ds-table-frame\"><table class=\"ds-table\"><thead><tr><th>Run</th><th>Status</th><th>Turns</th></tr></thead><tbody><tr><td><button class=\"ds-run-link\">Colony baseline</button><span class=\"ds-table-note\">GPT-6 Luna · Seed 42</span></td><td>Complete</td><td class=\"ds-table-number\">24 / 24</td></tr></tbody></table></div>",
-      "css": ".ds-table-frame{border:1px solid var(--line, #303740);border-radius:var(--radius,6px);overflow:auto;}.ds-table{border-collapse:collapse;width:100%;color:var(--ink, #e7e9ed);font:13px/1.55 Roboto,sans-serif;}.ds-table th{height:43px;padding:0 16px;text-align:left;background:var(--surface, #171b20);color:var(--muted, #adb5c0);font-size:12px;font-weight:500;white-space:nowrap;}.ds-table td{height:61px;padding:14px 16px;border-top:1px solid var(--line, #303740);}.ds-table tbody tr:hover{background:var(--row-hover, #1b222a);}.ds-run-link{border:0;padding:0;background:none;color:var(--ink, #e7e9ed);font:500 13px/1.55 Roboto,sans-serif;cursor:pointer;text-align:left;}.ds-run-link:hover{color:var(--accent, #85b8d2);text-decoration:underline;text-underline-offset:3px;}.ds-run-link:focus-visible{outline:2px solid var(--accent, #85b8d2);outline-offset:3px;}.ds-table-note{display:block;margin-top:4px;color:var(--muted, #adb5c0);font-size:11px;}.ds-table-number{font-variant-numeric:tabular-nums;white-space:nowrap;}"
+      "description": "The library integrates search, filters and comparison into its continuous table frame, with 40px headings and 56px base rows that grow for content.",
+      "html": "<div class=\"ds-table-frame\"><div class=\"ds-library-toolbar\"><input class=\"ds-library-search\" type=\"search\" aria-label=\"Search runs\" placeholder=\"Search runs, models, seeds…\"><select class=\"ds-library-filter\" aria-label=\"Status\"><option>All statuses</option><option>Complete</option></select><button class=\"ds-library-compare\" disabled>Compare</button></div><table class=\"ds-table\"><thead><tr><th>Run</th><th>Status</th><th>Turns</th></tr></thead><tbody><tr><td><button class=\"ds-run-link\">Colony baseline</button><span class=\"ds-table-note\">GPT-6 Luna · Seed 42</span></td><td>Complete</td><td class=\"ds-table-number\">24 / 24</td></tr></tbody></table></div>",
+      "css": ".ds-table-frame{border:1px solid var(--line, #303740);border-radius:var(--radius,6px);overflow:auto;}.ds-table{border-collapse:collapse;width:100%;color:var(--ink, #e7e9ed);font:13px/1.55 Roboto,sans-serif;}.ds-table th{height:40px;padding:0 16px;text-align:left;background:var(--surface, #171b20);color:var(--muted, #adb5c0);font-size:12px;font-weight:500;white-space:nowrap;}.ds-table td{height:56px;padding:8px 16px;border-top:1px solid var(--line, #303740);}.ds-table tbody tr:hover{background:var(--row-hover, #1b222a);}.ds-run-link{border:0;padding:0;background:none;color:var(--ink, #e7e9ed);font:500 13px/1.55 Roboto,sans-serif;cursor:pointer;text-align:left;}.ds-run-link:hover{color:var(--accent, #85b8d2);text-decoration:underline;text-underline-offset:3px;}.ds-run-link:focus-visible{outline:2px solid var(--accent, #85b8d2);outline-offset:3px;}.ds-table-note{display:block;margin-top:2px;color:var(--muted, #adb5c0);font-size:11px;}.ds-table-number{font-variant-numeric:tabular-nums;white-space:nowrap;}.ds-library-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line, #303740);font:13px/1.55 Roboto,sans-serif;}.ds-library-search,.ds-library-filter{box-sizing:border-box;height:40px;padding:0 12px;border:1px solid var(--control-border, #4b5866);border-radius:4px;background:var(--ground, #101215);color:var(--ink, #e7e9ed);font:inherit;}.ds-library-search{flex:1;min-width:180px;max-width:320px;}.ds-library-search::placeholder{color:var(--muted, #adb5c0);}.ds-library-filter{min-width:140px;}.ds-library-search:hover,.ds-library-filter:hover{border-color:#fff;}.ds-library-search:focus-visible,.ds-library-filter:focus-visible{outline:2px solid var(--accent, #85b8d2);outline-offset:3px;border-color:var(--accent, #85b8d2);}.ds-library-compare{margin-left:auto;min-height:36px;padding:4px 16px;border:1px solid var(--control-border, #4b5866);border-radius:var(--radius,6px);background:transparent;color:var(--accent, #85b8d2);font:500 13px/1.715 Roboto,sans-serif;opacity:.45;}@media(max-width:760px){.ds-library-toolbar{padding:12px;}.ds-library-search{flex-basis:100%;max-width:none;}.ds-library-filter{min-width:130px;flex:1;}.ds-library-compare{margin-left:0;}}"
     },
     {
       "name": "Facility data node",
@@ -558,8 +540,8 @@
       "kind": "custom",
       "refersTo": "evidence",
       "description": "Turn-labeled progressive disclosure keeps exact model input distinct from state after the selected checkpoint. Native details supplies framework-free interaction.",
-      "html": "<section class=\"ds-evidence\"><p class=\"ds-evidence-label\">State after turn 8</p><p class=\"ds-evidence-body\">Location: Habitat · Stamina: 72</p><details class=\"ds-evidence-detail\"><summary>Recorded model input · turn 7</summary><p class=\"ds-evidence-description\">Exact input saved before this decision, including the agent’s then-current memory.</p><pre class=\"ds-evidence-json\">{\n  \"turn\": 7,\n  \"self\": { \"location\": \"reactor\", \"stamina\": 64 }\n}</pre></details></section>",
-      "css": ".ds-evidence{color:var(--ink, #e7e9ed);font:13px/1.7 Roboto,sans-serif;max-width:70ch;}.ds-evidence-label{font-size:12px;color:var(--muted, #adb5c0);margin:0 0 8px;}.ds-evidence-body{margin:0 0 22px;}.ds-evidence-detail{border-top:1px solid var(--line, #303740);}.ds-evidence-detail summary{padding:12px 0;min-height:44px;cursor:pointer;position:relative;}.ds-evidence-detail summary::after{content:\"\";position:absolute;inset:0;background:currentColor;opacity:0;pointer-events:none;}.ds-evidence-detail summary:hover::after{opacity:.15;}.ds-evidence-detail summary:focus-visible{outline:2px solid var(--accent, #85b8d2);outline-offset:3px;}.ds-evidence-description{margin:0 0 16px;color:var(--muted, #adb5c0);font-size:13px;line-height:1.65;}.ds-evidence-json{margin:0 0 16px;padding:14px;background:var(--surface, #171b20);border-radius:var(--radius,6px);font:12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:360px;overflow:auto;}"
+      "html": "<section class=\"ds-evidence\"><p class=\"ds-evidence-label\">State after turn 8</p><div class=\"ds-evidence-state\"><div><span class=\"ds-evidence-label\">Location</span><span>Habitat</span></div><div><span class=\"ds-evidence-label\">Stamina</span><span class=\"ds-evidence-value\">72</span></div></div><details class=\"ds-evidence-detail\"><summary>Recorded model input · turn 7</summary><p class=\"ds-evidence-description\">Exact input saved before this decision, including the agent’s then-current memory.</p><pre class=\"ds-evidence-json\">{\n  \"turn\": 7,\n  \"self\": { \"location\": \"reactor\", \"stamina\": 64 }\n}</pre></details></section>",
+      "css": ".ds-evidence{color:var(--ink, #e7e9ed);font:13px/1.7 Roboto,sans-serif;max-width:70ch;}.ds-evidence-label{font-size:12px;color:var(--muted, #adb5c0);margin:0 0 8px;}.ds-evidence-state{display:flex;flex-wrap:wrap;gap:16px;padding:12px 0;font:12px/1.55 Roboto,sans-serif;}.ds-evidence-state>div{display:flex;flex-direction:column;gap:4px;}.ds-evidence-state .ds-evidence-label{margin:0;}.ds-evidence-value{font-variant-numeric:tabular-nums;}.ds-evidence-detail{border-top:1px solid var(--line, #303740);}.ds-evidence-detail summary{padding:10px 0;min-height:40px;cursor:pointer;position:relative;}.ds-evidence-detail summary::after{content:\"\";position:absolute;inset:0;background:currentColor;opacity:0;pointer-events:none;}.ds-evidence-detail summary:hover::after{opacity:.15;}.ds-evidence-detail summary:focus-visible{outline:2px solid var(--accent, #85b8d2);outline-offset:3px;}.ds-evidence-description{margin:0 0 16px;color:var(--muted, #adb5c0);font-size:13px;line-height:1.65;}.ds-evidence-json{margin:0 0 16px;padding:14px;background:var(--surface, #171b20);border-radius:var(--radius,6px);font:12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:360px;overflow:auto;}"
     }
   ],
   "narrative": {

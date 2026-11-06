@@ -116,3 +116,30 @@
 - QA services8081/8082, browser and generated QA journal/scripts are closed/removed. No new
   live-provider run was performed for this UI change. Real provider availability remains
   governed by existing credentials and limits; fresh model runs still default to GPT-6 Luna.
+
+## SaaS interface refinement
+
+- Branch `feat/saas-ui-refinement`, based on `451fbf3`. The user requested a restrained
+  all-page refinement using Impeccable, keeping the dark identity and table formats.
+- Compact breadcrumb shell, integrated run-table toolbar, denser rows and controls,
+  narrower setup, scenario tables, side-by-side comparison and Configuration sections,
+  tighter analysis/evidence layouts, and reduced instructional/debug copy.
+- Completed live runs now immediately offer recorded Replay. Simulation, provider,
+  budget, accounting and persistence behavior remain unchanged.
+- Plan/evidence: `UI_REFINEMENT.md`. Independent documentation refresh merged current
+  sizing into `DESIGN.md` and all nine sidecar specimens. Independent finish verdict:
+  `ship`, no blocking findings. Optional documentation notes are resolved.
+- All 55 tests, Ruff and changed-file formatting pass. Repository-wide format check
+  finds pre-existing differences in sandbox.py and two test files, outside this task.
+- Browser checks cover 390/768/1280/1440 widths and all pages, filters, comparison,
+  paused creation, completion, recorded replay, decision evidence and responsive nav.
+  Two disposable 3-turn TestModel runs used exactly 3 requests each and replay-verify;
+  playback added no requests. No live provider requests were made.
+- Inspected axe states have zero WCAG A/AA violations. SVG contrast was checked manually
+  (tested text pairs 6.32–10.75:1). Final browser console is clean. One Impeccable scan
+  retained pinned Roboto intentionally; updated sizes are documented.
+- The user's viewer remains running on port 8080, exec session 9751. HTTP 200 and
+  read-only inspection of its existing 8-run journal/7-turn saved run pass. Refresh
+  the forwarded port to see changes. QA ports 8081/8082 and the browser are closed.
+- Ignored evidence stays in `.impeccable/review/saas/`; generated QA scripts, tools and
+  databases are disposable and removed after verification. Existing journals untouched.

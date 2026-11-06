@@ -192,6 +192,7 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                     view.tick = view.runner.tick
                     if view.runner.finished:
                         stop()
+                        view.replay = True
             except Exception as error:
                 stop()
                 detail = str(error) if isinstance(error, ValueError) else type(error).__name__
@@ -218,35 +219,37 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
 
         with (
             ui.left_drawer(top_corner=True)
-            .props("width=196 breakpoint=1100")
+            .props("width=208 breakpoint=1100")
             .classes("sidebar") as drawer
         ):
             with ui.column().classes("sidebar-inner"):
-                with ui.column().classes("gap-0"):
-                    ui.label("Agent sandbox").classes("brand")
-                    ui.label("Evaluation workspace").classes("brand-caption")
+                ui.label("Agent sandbox").classes("brand")
                 with ui.column().classes("nav-items"):
                     runs_nav = ui.button(
-                        "Runs", icon="view_list", on_click=lambda: navigate("runs")
+                        "Runs", icon="view_list", color=None, on_click=lambda: navigate("runs")
                     )
                     env_nav = ui.button(
                         "Environments",
                         icon="account_tree",
+                        color=None,
                         on_click=lambda: navigate("environments"),
                     )
                     for button in (runs_nav, env_nav):
                         button.props("flat no-caps").classes("nav-item")
-                with ui.column().classes("sidebar-footer gap-1"):
-                    ui.label("Local workspace")
-                    ui.label("SQLite checkpoints · v0.1").classes("text-xs")
 
         with ui.header().classes("shell-header"):
             with ui.row():
                 ui.button(icon="menu", on_click=drawer.toggle).props(
                     'flat round dense aria-label="Toggle navigation"'
                 ).classes("menu-toggle")
-                shell_path = ui.label("Workspace / Runs").classes("shell-path")
-                ui.label("Agent evaluation").classes("shell-meta")
+                with ui.element("nav").classes("breadcrumbs").props('aria-label="Breadcrumb"'):
+                    breadcrumb_root = (
+                        ui.button("Runs", color=None, on_click=lambda: navigate("runs"))
+                        .props("flat dense no-caps")
+                        .classes("breadcrumb-root")
+                    )
+                    breadcrumb_separator = ui.icon("chevron_right").classes("breadcrumb-separator")
+                    shell_path = ui.label().classes("shell-path").props('aria-current="page"')
 
         def heading(text, description=None, *, new_button=False):
             with ui.row().classes("page-heading"):
@@ -266,14 +269,11 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                 view.status_filter = "all"
             if view.environment_filter not in {row["environment"] for row in rows}:
                 view.environment_filter = "all"
-            heading(
-                "Runs", "Explore evaluations, compare outcomes, or continue a run.", new_button=True
-            )
+            heading("Runs", new_button=True)
             if not rows:
                 empty_state(
-                    "Your first evaluation starts here",
-                    "Create a run from a scenario. "
-                    "It starts paused, ready for you to step through or play.",
+                    "No runs yet",
+                    "Create a run from a scenario to begin.",
                 )
                 return
 
@@ -295,7 +295,7 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                 table.selected = []
                 table.update_rows(filter_rows())
                 compare_button.set_enabled(False)
-                count.set_text(f"{len(filter_rows())} of {len(rows)} runs")
+                compare_button.set_text("Compare")
 
             def compare_selected():
                 selected = [r for r in records if r["id"] in view.selected_runs]
@@ -307,48 +307,54 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                 view.section = "compare"
                 render.refresh()
 
-            with ui.row().classes("filters"):
-                search = ui.input(placeholder="Search runs, models, seeds…", value=view.search)
-                search.props('outlined dense clearable aria-label="Search runs"').classes(
-                    "search-field"
-                )
-                search.on_value_change(
-                    lambda e: (setattr(view, "search", e.value or ""), apply_filters())
-                )
-                statuses = {"all": "All statuses", **{r["status"]: r["status"] for r in rows}}
-                ui.select(
-                    statuses,
-                    value=view.status_filter,
-                    label="Status",
-                    on_change=lambda e: (setattr(view, "status_filter", e.value), apply_filters()),
-                ).props("outlined dense").classes("filter-field")
-                environments = {
-                    "all": "All environments",
-                    **{r["environment"]: r["environment"] for r in rows},
-                }
-                ui.select(
-                    environments,
-                    value=view.environment_filter,
-                    label="Environment",
-                    on_change=lambda e: (
-                        setattr(view, "environment_filter", e.value),
-                        apply_filters(),
-                    ),
-                ).props("outlined dense").classes("filter-field")
-                compare_button = (
-                    ui.button("Compare runs", icon="compare_arrows", on_click=compare_selected)
-                    .props("outline no-caps")
-                    .classes("selection-action")
-                )
-                compare_button.set_enabled(len(view.selected_runs) >= 2)
-            with ui.row().classes("section-row"):
-                count = ui.label(f"{len(filter_rows())} of {len(rows)} runs").classes(
-                    "muted text-xs"
-                )
-                ui.button("Refresh", icon="refresh", on_click=render.refresh).props(
-                    "flat dense no-caps"
-                )
-            with ui.element("div").classes("table-frame"):
+            with ui.element("div").classes("table-frame library-frame"):
+                with ui.row().classes("filters"):
+                    search = ui.input(placeholder="Search runs, models, seeds…", value=view.search)
+                    search.props('outlined dense clearable aria-label="Search runs"').classes(
+                        "search-field"
+                    )
+                    search.on_value_change(
+                        lambda e: (setattr(view, "search", e.value or ""), apply_filters())
+                    )
+                    statuses = {"all": "All statuses", **{r["status"]: r["status"] for r in rows}}
+                    ui.select(
+                        statuses,
+                        value=view.status_filter,
+                        label="Status",
+                        on_change=lambda e: (
+                            setattr(view, "status_filter", e.value),
+                            apply_filters(),
+                        ),
+                    ).props("outlined dense").classes("filter-field")
+                    environments = {
+                        "all": "All environments",
+                        **{r["environment"]: r["environment"] for r in rows},
+                    }
+                    ui.select(
+                        environments,
+                        value=view.environment_filter,
+                        label="Environment",
+                        on_change=lambda e: (
+                            setattr(view, "environment_filter", e.value),
+                            apply_filters(),
+                        ),
+                    ).props("outlined dense").classes("filter-field")
+                    compare_button = (
+                        ui.button(
+                            f"Compare ({len(view.selected_runs)})"
+                            if view.selected_runs
+                            else "Compare",
+                            icon="compare_arrows",
+                            on_click=compare_selected,
+                        )
+                        .props("outline no-caps")
+                        .classes("selection-action")
+                    )
+                    compare_button.set_enabled(len(view.selected_runs) >= 2)
+                    compare_button.tooltip("Select at least two runs from the same environment")
+                    ui.button(icon="refresh", color=None, on_click=render.refresh).props(
+                        'flat dense aria-label="Refresh runs"'
+                    ).classes("toolbar-refresh").tooltip("Refresh runs")
                 table = (
                     ui.table(
                         columns=columns(
@@ -367,10 +373,13 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                         on_select=lambda e: (
                             setattr(view, "selected_runs", [r["id"] for r in e.selection]),
                             compare_button.set_enabled(len(e.selection) >= 2),
+                            compare_button.set_text(
+                                f"Compare ({len(e.selection)})" if e.selection else "Compare"
+                            ),
                         ),
                     )
                     .props("flat")
-                    .classes("data-table")
+                    .classes("data-table run-table")
                 )
                 table.selected = [row for row in rows if row["id"] in view.selected_runs]
                 table.add_slot(
@@ -412,12 +421,9 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                     <q-td :props="props" class="numeric">{{ props.row.cost_label }}</q-td>""",
                 )
                 table.on("open", lambda e: open_run(e.args))
-            ui.label("Select two or more runs from the same environment to compare.").classes(
-                "description q-mt-md"
-            )
 
         def setup():
-            heading("New run", "Choose the scenario and model. Review the setup before starting.")
+            heading("New run")
             scenario = scenarios[view.scenario]
 
             def scenario_changed(event):
@@ -430,7 +436,7 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                     value=view.scenario,
                     label="Scenario",
                     on_change=scenario_changed,
-                ).props("outlined").classes("form-wide")
+                ).props("outlined dense").classes("form-wide")
                 ui.label(scenario.description).classes("description form-wide")
                 assignments = {a.model for a in scenario.agents}
                 default_model = next(iter(assignments)) if len(assignments) == 1 else "profiles"
@@ -449,23 +455,22 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                         value=default_model,
                         label="Model",
                     )
-                    .props("outlined")
+                    .props("outlined dense")
                     .classes("form-wide")
                 )
                 seed = ui.number(
                     "Seed", value=scenario.seed, min=0, max=2**32 - 1, precision=0
-                ).props("outlined")
+                ).props("outlined dense")
                 turns = ui.number(
                     "Maximum turns", value=scenario.max_steps, min=1, max=100000, precision=0
-                ).props("outlined")
+                ).props("outlined dense")
                 with ui.column().classes("setup-summary form-wide gap-2"):
                     ui.label(f"{title(scenario.sandbox)} · {len(scenario.agents)} agents").classes(
                         "text-sm"
                     )
-                    ui.label(
-                        "One model request per turn. The run ends at the turn limit or when "
-                        "the environment has no agents left to act."
-                    ).classes("description")
+                    ui.label("Ends at the turn limit or when no agents can act.").classes(
+                        "description"
+                    )
                 with ui.expansion("Advanced settings").classes("form-wide"):
                     key_values(
                         [
@@ -506,42 +511,60 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                     "unelevated no-caps"
                 ).classes("primary-action")
                 ui.button("Cancel", on_click=lambda: navigate("runs")).props("flat no-caps")
-                ui.label(
-                    "Starts paused. Model requests begin when you press Step or Play."
-                ).classes("description")
+                ui.label("Starts paused. Step or Play sends model requests.").classes("description")
 
         def environments_page():
-            heading(
-                "Environments", "Scenario definitions available in this workspace.", new_button=True
-            )
+            heading("Environments")
             for sandbox in dict.fromkeys(s.sandbox for s in scenarios.values()):
                 matching = [(path, s) for path, s in scenarios.items() if s.sandbox == sandbox]
-                with ui.column().classes("environment-entry gap-1"):
-                    ui.label(title(sandbox)).classes("section-title").props(
-                        'role="heading" aria-level="2"'
-                    )
-                    ui.label(
-                        f"{len(matching)} scenarios · "
-                        + (
-                            "Interactive environment view"
-                            if get_sandbox(sandbox).panel
-                            else "State inspection"
+                with ui.column().classes("environment-entry gap-0"):
+                    with ui.row().classes("section-row"):
+                        ui.label(title(sandbox)).classes("section-title").props(
+                            'role="heading" aria-level="2"'
                         )
-                    ).classes("description")
-                    for path, scenario in matching:
-                        with ui.element("div").classes("scenario-entry"):
-                            with ui.column():
-                                ui.label(scenario.name).classes("subsection-title").props(
-                                    'role="heading" aria-level="3"'
+                        ui.label(f"{len(matching)} scenarios").classes("muted text-xs")
+                    with ui.element("div").classes("table-frame"):
+                        table = (
+                            ui.table(
+                                columns=columns(
+                                    ("name", "Scenario"),
+                                    ("model", "Model"),
+                                    ("agents", "Agents"),
+                                    ("turns", "Turn limit"),
                                 )
-                                ui.label(scenario.description).classes("description")
-                                ui.label(
-                                    f"{len(scenario.agents)} agents · {scenario.max_steps} turns · "
-                                    f"{run_models(scenario.model_dump())}"
-                                ).classes("description")
-                            ui.button("Use scenario", on_click=lambda p=path: new_setup(p)).props(
-                                "outline no-caps"
+                                + [{"name": "action", "label": "", "field": "path"}],
+                                rows=[
+                                    {
+                                        "path": path,
+                                        "name": scenario.name,
+                                        "description": scenario.description,
+                                        "model": run_models(scenario.model_dump()),
+                                        "agents": len(scenario.agents),
+                                        "turns": scenario.max_steps,
+                                    }
+                                    for path, scenario in matching
+                                ],
+                                row_key="path",
+                                pagination={"rowsPerPage": 0},
                             )
+                            .props("flat hide-bottom")
+                            .classes("data-table scenario-table")
+                        )
+                        table.add_slot(
+                            "body-cell-name",
+                            """
+                            <q-td :props="props">
+                            <span class="scenario-name">{{ props.row.name }}</span>
+                            <span class="table-subtext scenario-description">
+                            {{ props.row.description }}</span></q-td>""",
+                        )
+                        table.add_slot(
+                            "body-cell-action",
+                            """
+                            <q-td :props="props"><q-btn outline no-caps label="Use scenario"
+                            @click="$parent.$emit('use', props.row.path)" /></q-td>""",
+                        )
+                        table.on("use", lambda e: new_setup(e.args))
 
         def compare_page():
             records = [r for r in store.runs() if r["id"] in view.selected_runs]
@@ -563,37 +586,40 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                     for key in metrics
                 ],
             ]
-            with ui.element("div").classes("table-frame comparison-summary"):
-                ui.table(columns=comparison_columns, rows=rows, row_key="metric").props(
-                    "flat"
-                ).classes("data-table")
-            if metrics:
-                if view.comparison_metric not in metrics:
-                    view.comparison_metric = metrics[0]
-                with ui.row().classes("section-row"):
-                    ui.label("Metric history").classes("section-title").props(
-                        'role="heading" aria-level="2"'
-                    )
-                    ui.select(
-                        {key: title(key) for key in metrics},
-                        value=view.comparison_metric,
-                        label="Metric",
-                        on_change=lambda e: (
-                            setattr(view, "comparison_metric", e.value),
-                            render.refresh(),
-                        ),
-                    ).props("outlined dense").classes("metric-picker")
-                histories = [(r["id"], store.history(r["id"])) for r in records]
-                ui.echart(chart_options(histories, view.comparison_metric)).classes(
-                    "analysis-chart"
-                )
-                ui.label(
-                    "Histories align by recorded turn. Shorter runs end at their last checkpoint."
-                ).classes("description")
-            else:
-                empty_state(
-                    "No shared metrics", "These recorded versions have no metric names in common."
-                )
+            with ui.element("div").classes("comparison-layout"):
+                with ui.element("div").classes("table-frame comparison-summary"):
+                    ui.table(
+                        columns=comparison_columns,
+                        rows=rows,
+                        row_key="metric",
+                        pagination={"rowsPerPage": 0},
+                    ).props("flat hide-bottom").classes("data-table comparison-table")
+                with ui.column().classes("comparison-chart full-width gap-0"):
+                    if metrics:
+                        if view.comparison_metric not in metrics:
+                            view.comparison_metric = metrics[0]
+                        with ui.row().classes("section-row"):
+                            ui.label("Metric history").classes("section-title").props(
+                                'role="heading" aria-level="2"'
+                            )
+                            ui.select(
+                                {key: title(key) for key in metrics},
+                                value=view.comparison_metric,
+                                label="Metric",
+                                on_change=lambda e: (
+                                    setattr(view, "comparison_metric", e.value),
+                                    render.refresh(),
+                                ),
+                            ).props("outlined dense").classes("metric-picker")
+                        histories = [(r["id"], store.history(r["id"])) for r in records]
+                        ui.echart(chart_options(histories, view.comparison_metric)).classes(
+                            "analysis-chart"
+                        )
+                    else:
+                        empty_state(
+                            "No shared metrics",
+                            "These recorded versions have no metric names in common.",
+                        )
 
         def inspector(record, frame, history):
             scenario = record["scenario"]
@@ -713,7 +739,6 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                             ui.label("Outcomes").classes("section-title").props(
                                 'role="heading" aria-level="2"'
                             )
-                            ui.label(f"At turn {view.tick}").classes("muted text-xs")
                         metric_table(frame["metrics"], history[0]["metrics"])
                 with ui.row().classes("section-row section-space"):
                     ui.label("Recent activity").classes("section-title").props(
@@ -813,23 +838,24 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                             )
                     inspector(record, frame, all_history)
             else:
-                with ui.column().classes("config-layout gap-0"):
-                    ui.label("Run configuration").classes("section-title").props(
-                        'role="heading" aria-level="2"'
-                    ).classes("q-mb-md")
-                    key_values(
-                        [
-                            ("Environment", title(scenario["sandbox"])),
-                            ("Scenario", scenario["name"]),
-                            ("Model", run_models(scenario)),
-                            ("Seed", scenario["seed"]),
-                            ("Maximum turns", scenario["max_steps"]),
-                            ("Run ID", view.run_id),
-                            ("Created · UTC", record["created"][:19].replace("T", " ")),
-                        ]
-                    )
-                    with ui.column().classes("config-section gap-3"):
-                        ui.label("Limits and usage").classes("section-title").props(
+                with ui.element("div").classes("config-layout"):
+                    with ui.column().classes("config-section gap-0"):
+                        ui.label("Run configuration").classes("section-title section-label").props(
+                            'role="heading" aria-level="2"'
+                        )
+                        key_values(
+                            [
+                                ("Environment", title(scenario["sandbox"])),
+                                ("Scenario", scenario["name"]),
+                                ("Model", run_models(scenario)),
+                                ("Seed", scenario["seed"]),
+                                ("Maximum turns", scenario["max_steps"]),
+                                ("Run ID", view.run_id),
+                                ("Created · UTC", record["created"][:19].replace("T", " ")),
+                            ]
+                        )
+                    with ui.column().classes("config-section gap-0"):
+                        ui.label("Limits and usage").classes("section-title section-label").props(
                             'role="heading" aria-level="2"'
                         )
                         limits = scenario["limits"]
@@ -845,25 +871,25 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                                 ("Timeout", f"{limits['timeout_seconds']:g} seconds"),
                             ]
                         )
-                    with ui.column().classes("config-section gap-3"):
-                        ui.label("Environment parameters").classes("section-title").props(
+                    with ui.column().classes("config-section gap-0"):
+                        ui.label("Environment parameters").classes(
+                            "section-title section-label"
+                        ).props('role="heading" aria-level="2"')
+                        key_values([(title(k), v) for k, v in scenario["parameters"].items()])
+                    with ui.column().classes("config-section gap-0"):
+                        ui.label("Run data").classes("section-title section-label").props(
                             'role="heading" aria-level="2"'
                         )
-                        key_values([(title(k), v) for k, v in scenario["parameters"].items()])
-                    with ui.expansion("Resolved scenario JSON").classes("q-mt-lg"):
-                        ui.label(json.dumps(scenario, indent=2)).classes("json-detail")
-                    if record["metadata"]:
-                        with ui.expansion("Experiment metadata"):
-                            ui.label(json.dumps(record["metadata"], indent=2)).classes(
-                                "json-detail"
-                            )
-                    with ui.row().classes("q-mt-lg gap-3"):
+                        with ui.expansion("Resolved scenario JSON"):
+                            ui.label(json.dumps(scenario, indent=2)).classes("json-detail")
+                        if record["metadata"]:
+                            with ui.expansion("Experiment metadata"):
+                                ui.label(json.dumps(record["metadata"], indent=2)).classes(
+                                    "json-detail"
+                                )
                         ui.button("Verify replay", icon="fact_check", on_click=verify_run).props(
                             "outline no-caps"
-                        )
-                        ui.button("Export JSON", icon="download", on_click=export_run).props(
-                            "outline no-caps"
-                        )
+                        ).classes("q-mt-md")
 
         def run_page():
             record = store.run(view.run_id)
@@ -883,7 +909,6 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                         ui.label(status).classes(f"status status-{status.lower()}")
                         ui.label(run_models(scenario))
                         ui.label(f"Seed {scenario['seed']}")
-                        ui.label(view.run_id).classes("mono")
                 with ui.row().classes("run-actions"):
                     if view.replay and not complete and not legacy:
                         ui.button(
@@ -981,20 +1006,18 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                 remove="active" if view.section != "environments" else "",
             )
             shell_path.set_text(
-                "Workspace / "
-                + {
-                    "runs": "Runs",
-                    "run": "Runs / Inspect",
+                {
+                    "runs": "",
+                    "run": view.run_id,
                     "new": "New run",
                     "environments": "Environments",
                     "compare": "Compare runs",
                 }[view.section]
             )
+            breadcrumb_root.set_visibility(view.section != "environments")
+            breadcrumb_separator.set_visibility(view.section not in ("runs", "environments"))
+            shell_path.set_visibility(view.section != "runs")
             with ui.column().classes("page" + (" setup-page" if view.section == "new" else "")):
-                if view.section in ("run", "compare", "new"):
-                    ui.button("Runs", icon="arrow_back", on_click=lambda: navigate("runs")).props(
-                        "flat dense no-caps"
-                    ).classes("q-mb-lg")
                 if view.section == "runs":
                     library()
                 elif view.section == "new":

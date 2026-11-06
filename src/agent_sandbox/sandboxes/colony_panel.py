@@ -45,7 +45,7 @@ def draw_map(snapshot, selected, positions, size, choose, variant):
                 f'font-size="17" font-family="sans-serif">{name}</text>',
                 f'<text x="{x}" y="{y + 16}" text-anchor="middle" fill="{color}" '
                 f'font-size="13" font-family="sans-serif">{integrity}% '
-                f'· Level {facility["level"]}</text>',
+                f"· Level {facility['level']}</text>",
             ]
         )
         occupants = [a for a, state in snapshot["settlers"].items() if state["location"] == key]
@@ -88,9 +88,6 @@ def render(snapshot: dict, select):
             with ui.column().classes("full-width gap-3"):
                 draw_map(snapshot, selected, positions, (720, 540), choose, "wide")
                 draw_map(snapshot, selected, NARROW_POSITIONS, (340, 430), choose, "narrow")
-                ui.label("Select a facility on the map or use the facility selector.").classes(
-                    "description"
-                )
             with ui.column().classes("facility-inspector"):
                 ui.select(
                     {key: f[0] for key, f in FACILITIES.items()},
@@ -123,13 +120,15 @@ def render(snapshot: dict, select):
                     if not occupants:
                         ui.label("No agents at this facility.").classes("description")
                     for agent, state in occupants:
-                        ui.button(
-                            agent.capitalize(),
-                            icon="person_outline",
-                            on_click=lambda a=agent: select(a),
-                        ).props("outline no-caps")
-                        ui.label(f"Health {state['health']} · Stamina {state['stamina']}").classes(
-                            "description"
-                        )
+                        with ui.column().classes("facility-occupant"):
+                            ui.button(
+                                agent.capitalize(),
+                                color=None,
+                                icon="person_outline",
+                                on_click=lambda a=agent: select(a),
+                            ).props("flat no-caps")
+                            ui.label(
+                                f"Health {state['health']} · Stamina {state['stamina']}"
+                            ).classes("description")
 
     panel()
