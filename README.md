@@ -98,6 +98,11 @@ at its last checkpoint. Experiment caps apply in addition to per-run caps.
 
 ## Viewer
 
+The usage row shows estimated whole-run USD cost from reported input/output tokens at
+standard list prices, before credits or cache discounts. Pending or failed requests with
+unknown usage are excluded and marked partial. Mixed-model or unpriced runs show no estimate.
+Rates cover GPT-6 Luna, GPT-4.1 Mini and Claude Haiku 4.5; estimates also work for saved runs.
+
 The dark workspace prioritizes inspecting one run:
 
 - A setup sidebar holds scenarios, models, seeds and saved runs. The toolbar keeps

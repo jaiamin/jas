@@ -6,6 +6,7 @@ from pathlib import Path
 from nicegui import ui
 
 from .config import load_scenario
+from .costs import estimate_cost
 from .runner import Runner
 from .sandboxes import get_sandbox
 from .store import Store
@@ -101,10 +102,19 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
             identity.set_text(f"{view.run_id} · Seed {scenario['seed']}")
             limits = scenario["limits"]
             token_cap = limits.get("max_total_tokens")
+            estimate = estimate_cost(record)
+            cost_text = (
+                f"Est. cost ${estimate:.4f}" if estimate is not None else "Est. cost unavailable"
+            )
+            if estimate is not None and record["charged_tokens"] > (
+                record["input_tokens"] + record["output_tokens"]
+            ):
+                cost_text += " (partial)"
             budget.set_text(
                 f"Requests {record['calls']:,} / {limits['max_model_calls']:,}"
                 f"   ·   Tokens accounted {record['charged_tokens']:,}"
                 + (f" / {token_cap:,}" if token_cap is not None else " · No total token cap")
+                + f"   ·   {cost_text}"
             )
             if view.replay:
                 request.set_text(
@@ -315,6 +325,11 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
             with ui.row().classes("usage-row"):
                 identity = ui.label().classes("run-identity")
                 budget = ui.label().classes("budget")
+                budget.tooltip(
+                    "Estimated whole-run USD cost at standard list prices, before credits or "
+                    "cache discounts. Pending/failed requests with unknown usage are excluded. "
+                    "Mixed or unpriced models have no estimate."
+                )
             with ui.row().classes("replay-bar"):
                 ui.label("Timeline").classes("muted text-xs")
                 scrub = ui.slider(min=0, max=1, value=0, step=1).props(

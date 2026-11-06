@@ -71,3 +71,18 @@
   `No total token cap`, and a saved capped run displays its numeric limit.
 - The browser and temporary viewer were closed; the user's viewer was restarted on
   port 8080 with the existing journal. No live API requests were needed for this change.
+
+## Viewer cost estimate
+
+- Work branch: `feat/viewer-cost-estimate`. The usage row now shows whole-run estimated
+  USD cost from stored input/output tokens, so saved runs work without migration.
+- Rates cover Luna ($0.10/$0.50 per million input/output tokens), GPT-4.1 Mini
+  ($0.40/$1.60), and Haiku 4.5 ($1/$5). OpenAI rates were verified against official
+  model pages; Anthropic's pricing pages returned HTTP 403, so Haiku rates use the
+  installed genai-prices snapshot. The snapshot's older Luna rate was not used.
+- Estimates exclude credits, cache discounts and unknown pending/failed usage.
+  Unknown usage adds a partial label; mixed or unpriced models show unavailable.
+- All 51 tests and Ruff pass. Disposable browser checks verified a nonzero saved-run
+  estimate, the partial marker and a new run's zero estimate. No live API calls were made.
+- The temporary viewer and browser were closed. The user's viewer was restarted on
+  port 8080; refresh the page to see estimates for existing or new runs.
