@@ -33,6 +33,9 @@ export default function Run() {
   const [params, setParams] = useSearchParams();
   const [selectedMetric, setSelectedMetric] = useState("");
   const [focusRequest, setFocusRequest] = useState(0);
+  const [annotationDrafts, setAnnotationDrafts] = useState<
+    Record<string, string>
+  >({});
   const query = useApi<RunDetail>(`/runs/${id}`, true);
   const client = useQueryClient();
   const tab =
@@ -350,6 +353,8 @@ export default function Run() {
             evidence={evidence}
             focusRequest={focusRequest}
             selectTurn={selectTurn}
+            annotationDrafts={annotationDrafts}
+            setAnnotationDrafts={setAnnotationDrafts}
           />
         </TabsContent>
         <TabsContent value="relationships">

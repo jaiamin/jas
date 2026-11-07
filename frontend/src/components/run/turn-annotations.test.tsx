@@ -1,7 +1,15 @@
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
+import { type ComponentProps, useState } from "react";
 import { expect, test, vi } from "vitest";
 import { deferredResponse, renderWithQueries } from "@/test/queries";
 import { TurnAnnotations } from "./turn-annotations";
+
+function Annotations(
+  props: Omit<ComponentProps<typeof TurnAnnotations>, "drafts" | "setDrafts">,
+) {
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  return <TurnAnnotations {...props} drafts={drafts} setDrafts={setDrafts} />;
+}
 
 test("a pending save keeps its turn and cannot clear edits made after submission", async () => {
   const saved = deferredResponse();
@@ -13,7 +21,7 @@ test("a pending save keeps its turn and cannot clear edits made after submission
   vi.stubGlobal("fetch", fetch);
   const onInteract = vi.fn();
   const view = renderWithQueries(
-    <TurnAnnotations runId="run" turn={1} onInteract={onInteract} />,
+    <Annotations runId="run" turn={1} onInteract={onInteract} />,
   );
   fireEvent.click(
     screen.getByRole("button", { name: "Researcher observations" }),
@@ -34,9 +42,7 @@ test("a pending save keeps its turn and cannot clear edits made after submission
     ),
   );
   fireEvent.change(first, { target: { value: "Newer unsaved edit" } });
-  view.rerender(
-    <TurnAnnotations runId="run" turn={2} onInteract={onInteract} />,
-  );
+  view.rerender(<Annotations runId="run" turn={2} onInteract={onInteract} />);
   fireEvent.change(screen.getByLabelText("Add an observation at turn 2"), {
     target: { value: "Separate second turn" },
   });
@@ -44,9 +50,7 @@ test("a pending save keeps its turn and cannot clear edits made after submission
   expect(screen.getByLabelText("Add an observation at turn 2")).toHaveValue(
     "Separate second turn",
   );
-  view.rerender(
-    <TurnAnnotations runId="run" turn={1} onInteract={onInteract} />,
-  );
+  view.rerender(<Annotations runId="run" turn={1} onInteract={onInteract} />);
   expect(screen.getByLabelText("Add an observation at turn 1")).toHaveValue(
     "Newer unsaved edit",
   );
@@ -67,9 +71,7 @@ test("failed note submission preserves its text for a successful retry", async (
       ),
     ),
   );
-  renderWithQueries(
-    <TurnAnnotations runId="run" turn={3} onInteract={() => {}} />,
-  );
+  renderWithQueries(<Annotations runId="run" turn={3} onInteract={() => {}} />);
   fireEvent.click(
     screen.getByRole("button", { name: "Researcher observations" }),
   );

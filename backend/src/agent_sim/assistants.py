@@ -124,10 +124,6 @@ class Assistants:
         elif study_id:
             cutoffs = {r.id: r.turn for r in self.research.operational_runs(study_id)}
         with self.db.session.begin() as session:
-            if chat_id and session.scalar(
-                select(Analysis.id).where(Analysis.chat_id == chat_id, Analysis.status == "pending")
-            ):
-                raise ValueError("Wait for the current request to finish")
             scope = (
                 Analysis.purpose == purpose,
                 Analysis.run_id == run_id,
@@ -158,6 +154,10 @@ class Assistants:
                         .where(*scope, Analysis.chat_id.is_(None))
                         .values(chat_id=chat_id)
                     )
+            if session.scalar(
+                select(Analysis.id).where(Analysis.chat_id == chat_id, Analysis.status == "pending")
+            ):
+                raise ValueError("Wait for the current request to finish")
             row = Analysis(
                 question=question,
                 purpose=purpose,

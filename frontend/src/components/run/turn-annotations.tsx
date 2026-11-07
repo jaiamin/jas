@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import {
   Disclosure,
   DisclosureContent,
@@ -16,12 +16,15 @@ export function TurnAnnotations({
   runId,
   turn,
   onInteract,
+  drafts,
+  setDrafts,
 }: {
   runId: string;
   turn: number;
   onInteract: () => void;
+  drafts: Record<string, string>;
+  setDrafts: Dispatch<SetStateAction<Record<string, string>>>;
 }) {
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
   const draftKey = `${runId}:${turn}`;
   const annotation = drafts[draftKey] ?? "";
   const notes = useApi<Annotation[]>(`/runs/${runId}/annotations`);
@@ -77,7 +80,8 @@ export function TurnAnnotations({
               value={annotation}
               onChange={(e) => {
                 onInteract();
-                setDrafts({ ...drafts, [draftKey]: e.target.value });
+                const text = e.target.value;
+                setDrafts((current) => ({ ...current, [draftKey]: text }));
               }}
               maxLength={4000}
             />

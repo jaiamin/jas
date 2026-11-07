@@ -1,6 +1,12 @@
 import type { UseQueryResult } from "@tanstack/react-query";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   Disclosure,
@@ -22,6 +28,8 @@ export function DecisionBrowser({
   evidence,
   focusRequest,
   selectTurn,
+  annotationDrafts,
+  setAnnotationDrafts,
 }: {
   run: RunDetail;
   turn: number;
@@ -29,6 +37,8 @@ export function DecisionBrowser({
   evidence: Pick<UseQueryResult<Evidence, Error>, "data" | "error" | "refetch">;
   focusRequest: number;
   selectTurn: (turn: number, decision?: boolean) => void;
+  annotationDrafts: Record<string, string>;
+  setAnnotationDrafts: Dispatch<SetStateAction<Record<string, string>>>;
 }) {
   const [params, setParams] = useSearchParams();
   const actorFilter = params.get("actor") ?? "all";
@@ -265,6 +275,8 @@ export function DecisionBrowser({
         <TurnAnnotations
           runId={run.summary.id}
           turn={turn}
+          drafts={annotationDrafts}
+          setDrafts={setAnnotationDrafts}
           onInteract={() => {
             if (!pinned) selectTurn(turn);
           }}

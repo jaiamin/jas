@@ -351,3 +351,53 @@ def test_analysis_listing_honors_explicit_filters_and_rejects_ambiguous_scope(cl
     assert questions(f"?run_id={rid}&purpose=general") == []
     assert questions(f"?study_id={sid}&purpose=design") == []
     assert client.get(f"/api/analyses?study_id={sid}&run_id={rid}").status_code == 422
+
+
+@pytest.mark.parametrize("scope", ["study_id", "run_id"])
+@pytest.mark.parametrize("unthreaded", [False, True])
+def test_legacy_analysis_rejects_different_questions_until_its_chat_finishes(
+    client, design, monkeypatch, scope, unthreaded
+):
+    import asyncio
+
+    from agent_sim.db import Analysis
+
+    assistant = client.app.state.assistants
+    db = client.app.state.db
+    release = asyncio.Event()
+
+    async def execute(key):
+        await release.wait()
+        with db.session.begin() as session:
+            row = session.get_one(Analysis, key)
+            row.status, row.output = "complete", {"answer": "Recorded answer"}
+
+    monkeypatch.setattr(assistant, "_execute", execute)
+    sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+    selected = {scope: sid if scope == "study_id" else rid}
+    first = client.post("/api/analyses", json={"question": "What happened?", **selected})
+    assert first.status_code == 202
+    first_id = first.json()["id"]
+    if unthreaded:
+        with db.session.begin() as session:
+            session.get_one(Analysis, first_id).chat_id = None
+    second = client.post("/api/analyses", json={"question": "Why did it happen?", **selected})
+    assert second.status_code == 422
+    assert "current request" in second.json()["detail"]
+    assert len(assistant.tasks) == 1
+
+    async def finish():
+        release.set()
+        await assistant.tasks[first_id]
+
+    client.portal.call(finish)
+    followup = client.post("/api/analyses", json={"question": "Why did it happen?", **selected})
+    assert followup.status_code == 202
+    chat_id = assistant.get(first_id)["chat_id"]
+    assert assistant.get(followup.json()["id"])["chat_id"] == chat_id
+    assert [row["question"] for row in assistant.chat(chat_id)] == [
+        "What happened?",
+        "Why did it happen?",
+    ]
+    assert client.get("/api/settings").json()["usage"]["requests"] == 0
