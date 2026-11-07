@@ -23,7 +23,7 @@ def test_cli_loads_local_configuration_and_binds_only_as_requested(
 
     def serve(app, **options):
         started.append(options)
-        with TestClient(app) as client:
+        with TestClient(app, base_url="http://localhost") as client:
             settings = client.get("/api/settings").json()
             assert settings["budget_usd"] == 8
             assert settings["usage"]["requests"] == 0

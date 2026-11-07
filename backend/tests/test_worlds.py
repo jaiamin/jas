@@ -10,6 +10,73 @@ from agent_sim.simulation.environments import (
 from agent_sim.templates import templates
 
 
+@pytest.mark.parametrize("environment", ["commons", "trust_exchange", "coordination"])
+@pytest.mark.parametrize("memory", ["episodic", "history", "notes", "none"])
+def test_public_communication_is_delivered_without_private_truth(environment, memory):
+    import json
+
+    from agent_sim.domain import Decision
+
+    design = Design.model_validate(next(t["design"] for t in templates() if t["id"] == environment))
+    parameters = design.conditions[0].parameters.model_copy(update={"memory": memory})
+    world = create_world(design, parameters, 7)
+    first = actor(world)
+    option = world.observe(first)["legal_actions"][0]
+    chosen = action(option["kind"])
+    chosen.message, chosen.report = "Public delivery check", 0
+    chosen.target = option.get("target", "")
+    world.step(first, Decision(action=chosen, memory="Private note", rationale="", forecast=None))
+    if environment == "commons":
+        while world.state["round"] == 1:
+            world.step(
+                actor(world), Decision(action=action(), memory="", rationale="", forecast=None)
+            )
+    observation = world.observe(actor(world))
+    public = json.dumps(observation["public_history"])
+    assert ("Public delivery check" in public) == (memory != "none")
+    assert ("Reports private signal 0" in public) == (memory != "none")
+    assert "known_truth" not in public and "Private note" not in public
+    if memory != "episodic":
+        assert not observation["your_experiences"]
+
+
+@pytest.mark.parametrize("environment", ["commons", "trust_exchange"])
+@pytest.mark.parametrize("memory", ["episodic", "history", "notes"])
+def test_direct_communication_stays_out_of_public_history(environment, memory):
+    import json
+
+    design = Design.model_validate(next(t["design"] for t in templates() if t["id"] == environment))
+    world = create_world(
+        design, design.conditions[0].parameters.model_copy(update={"memory": memory}), 7
+    )
+    first, recipient, outsider = world.order()[:3]
+    chosen = action("contribute" if environment == "commons" else "send")
+    chosen.target, chosen.message, chosen.report = recipient, "Private delivery check", 0
+    world.apply(first, chosen)
+    if environment == "commons":
+        while world.state["round"] == 1:
+            world.apply(actor(world), action())
+    assert "Private delivery check" not in json.dumps(world.observe(outsider))
+    assert "Reports private signal 0" not in json.dumps(world.observe(outsider))
+    assert "Private delivery check" not in json.dumps(world.observe(recipient)["public_history"])
+
+
+def test_public_history_keeps_a_full_round_of_communication_and_outcomes(design):
+    from agent_sim.domain import Decision
+
+    design.profiles = [
+        design.profiles[0].model_copy(update={"key": f"agent-{index}"}) for index in range(12)
+    ]
+    world = Commons(design, Parameters(memory="history"), 7)
+    for _ in design.profiles:
+        chosen = action()
+        chosen.message, chosen.report, chosen.promise = "Public message", 0, 1
+        world.step(actor(world), Decision(action=chosen, memory="", rationale="", forecast=None))
+    history = world.observe(actor(world))["public_history"]
+    assert sum(event.get("kind") == "message" for event in history) == 12
+    assert any("contributions" in event for event in history)
+
+
 def actor(world: World) -> str:
     key = world.actor()
     assert key is not None

@@ -84,19 +84,15 @@ export const design: Design = {
 };
 
 export const state: State = {
-  rule_version: "1.0.0",
+  rule_version: "3.0.0",
   round: 2,
   position: 0,
   done: false,
   balances: { a: 12, b: 8 },
-  pending: {},
   history: [],
   notes: {},
   experiences: {},
-  promises: {},
   signals: {},
-  relations: {},
-  tasks: [],
 };
 
 export const catalog: Catalog = {
@@ -109,7 +105,7 @@ export const catalog: Catalog = {
       primary_metric: "sanction_rate",
       parameters: [],
       measures: ["sanction_rate"],
-      rule_version: "2.0.0",
+      rule_version: "3.0.0",
     },
   ],
   templates: [{ id: "institution", design }],

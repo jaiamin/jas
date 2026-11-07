@@ -159,12 +159,9 @@ function AgentConversation({
   const location = useLocation();
   const context =
     params.get("context") ??
-    params.get("scope") ??
-    (params.get("mode") === "create"
-      ? "new"
-      : messages.length
-        ? messageContext(messages[messages.length - 1])
-        : "general");
+    (messages.length
+      ? messageContext(messages[messages.length - 1])
+      : "general");
   const draftKey = `jas:agent-draft:${chatId ?? params.get("new") ?? "new"}`;
   const [question, setQuestion] = useState<string>(() => {
     if (typeof location.state?.question === "string")
@@ -224,8 +221,6 @@ function AgentConversation({
   }
   function changeContext(value: string) {
     const next = new URLSearchParams(params);
-    next.delete("mode");
-    next.delete("scope");
     next.set("context", value);
     setParams(next, { replace: true });
     send.reset();

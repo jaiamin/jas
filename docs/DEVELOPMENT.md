@@ -59,15 +59,13 @@ work without keys. Settings reports provider availability, storage, budget and u
 `JAS_PORT` changes the Compose port; `docker compose down` stops the app without deleting
 its data volume.
 
-JAS accepts the previous `ASS_*` configuration names and `ass` command; `JAS_*` values
-take precedence. Existing browser drafts, theme and sidebar preferences remain readable.
-Without an explicit database URL, an existing `data/ass.sqlite3` is reused; fresh workspaces
-use `data/jas.sqlite3`. No database is moved or deleted.
+Configuration uses `JAS_*`; the command is `jas`. The default database is
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v3.
+This WIP uses only the current schema and rules; incompatible workspaces must be reset.
 
-The Compose volume key `ass-data` and export format identifier `ass-study` remain stable
-for compatibility. Keep your existing `.env`. If you rename the checkout directory, retain
-the existing Compose project name with `docker compose -p YOUR_EXISTING_PROJECT up --build`
-so it uses the same volume. Frozen benchmark artifacts retain their original provenance.
+`JAS_ALLOWED_HOSTS` lists accepted hostnames/IPs without ports (comma-separated).
+Defaults: `localhost,127.0.0.1,[::1]`. Add the explicit LAN/proxy host before using a
+non-local URL; keep localhost entries for health checks. Restart after configuration changes.
 
 ## Project map
 

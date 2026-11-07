@@ -8,10 +8,11 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import NoResultFound
 from starlette.middleware.base import RequestResponseEndpoint
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import Response
 
 from .assistants import Assistants
-from .config import default_database_url, setting
+from .config import setting
 from .db import Database
 from .domain import Strict
 from .execution import Engine
@@ -56,7 +57,7 @@ def create_app(
     concurrent_runs: int | None = None,
 ) -> FastAPI:
     db = Database(
-        database_url or setting("DATABASE_URL", default_database_url()),
+        database_url or setting("DATABASE_URL", "sqlite:///data/jas.sqlite3"),
         round(
             (budget_usd if budget_usd is not None else float(setting("BUDGET_USD", "25")))
             * 1_000_000
@@ -94,6 +95,15 @@ def create_app(
 
     app.state.frontend = Path(static_dir or setting("STATIC_DIR", "frontend/dist")).resolve()
     app.middleware("http")(same_origin)
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=[
+            host.strip()
+            for host in setting("ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]").split(",")
+            if host.strip()
+        ],
+        www_redirect=False,
+    )
     app.add_exception_handler(ValueError, invalid)
     app.add_exception_handler(NoResultFound, missing)
     app.add_exception_handler(ProviderFailure, provider_error)

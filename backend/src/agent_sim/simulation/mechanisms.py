@@ -22,8 +22,6 @@ def legal(kind: str, maximum: int = 0, targets: list[str] | None = None) -> Lega
 
 
 class Mechanism[StateT: Checkpoint](World[StateT]):
-    version = "2.0.0"
-
     def validate(self, agent: str, action: Action) -> None:
         if agent != self.actor():
             raise ValueError("Expected the current actor")
@@ -45,7 +43,7 @@ class Mechanism[StateT: Checkpoint](World[StateT]):
         self.state["history"].extend(
             {"round": self.state["round"], **e.model_dump(exclude={"data"})}
             for e in events
-            if e.visibility == "public"
+            if e.visibility == "public" and e.kind not in {"message", "claim"}
         )
         self.remember(events)
         self.state["position"] += 1

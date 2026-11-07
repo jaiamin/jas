@@ -282,6 +282,18 @@ def test_concurrent_runs_cannot_reserve_above_shared_budget(runtime, design, mon
     asyncio.run(exercise())
 
 
+def test_replay_rejects_an_incompatible_checkpoint_without_recorded_turns(runtime, design):
+    db, llm, research, engine = runtime
+    sid = research.save_design(design)
+    rid = research.operational_runs(sid)[0].id
+    with db.session.begin() as session:
+        saved = session.get_one(Run, rid)
+        saved.checkpoint = saved.checkpoint | {"rule_version": "incompatible"}
+    with pytest.raises(ValueError, match="different environment rule version"):
+        engine.replay(rid)
+    assert llm.usage()["requests"] == 0
+
+
 def test_bulk_start_preflights_every_checkpoint_before_queueing(runtime, design):
     db, llm, research, engine = runtime
     design.seeds = [7, 8]

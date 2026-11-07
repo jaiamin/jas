@@ -1,41 +1,50 @@
 # Project handoff
 
-Branch: `t3/improve-codebase-quality`; draft PR: https://github.com/jaiamin/ass/pull/5.
-Latest main `e4092b2` is integrated. Do not merge or push to main.
+Branch: `t3/improve-codebase-quality`; PR: https://github.com/jaiamin/ass/pull/5.
+Main `e4092b2` is integrated. Do not merge or push to main.
 
-## Completed
+## Current task
 
-- Last Desloppify scans: backend **91.8**, frontend **90.0**; both queues clear.
-  These scores precede the follow-up review fixes below.
-- Removed 34 unused UI helpers, redundant directives, unused run-model grouping,
-  historical screenshots and generated design metadata. Installed workflow tools stay local.
-- README is 22 lines. Setup, design, vocabulary and research live under `docs/`.
-- Preserved the redesigned workspace, draft/data recovery, versioned checkpoints
-  and frozen benchmark provenance. No paid application model calls or user-data changes.
-- Follow-up review fixed observation drafts lost on tab/filter changes and overlapping
-  legacy analysis requests, including unthreaded records. Regression tests failed before fixes.
-- CI runs parallel backend, frontend/browser, production-image and workflow checks;
-  `verify` gates all four. Actions are pinned and updated weekly by Dependabot.
-  Caches, timeouts, obsolete-run cancellation and failure artifacts are configured.
+Fix the three audit findings and ship a current-only JAS app. The user explicitly
+allows removal of old formats, compatibility code, archived artifacts and dummy data.
 
-## Verification and limits
+Acceptance criteria:
+- [x] Reject untrusted hosts; document explicit hosts for LAN/proxy access.
+- [x] Deliver public communication in public-history modes without leaking private facts.
+- [x] Fingerprint simulation sources and reject benchmark resumes after source changes.
+- [x] Remove ASS aliases, old migrations, routes, storage fallbacks and stale archives/docs.
+- [x] Verify backend, frontend, browser flows and container.
+- [x] Prepare the verified checkpoint and updated PR #5 description for publication.
 
-217 backend tests, 65 frontend unit tests, all 55 browser cases, Ruff, ty,
-frontend lint/build, Actionlint/ShellCheck and local documentation links pass.
-Production Docker build and smoke pass: health, SPA routes/assets, keyless fresh
-workspace and non-root user. The disposable container, volume and task image are removed.
-The user-requested app remains on port 8080; review/test backends are closed.
-The new hosted CI workflow still needs its first run after publication.
+Use project-local `.venv/bin` tools; sandbox `uv` crashes during allocation.
+No paid provider calls. Keep work in this checkout. The user app uses port 8080;
+test services need distinct ports and disposable data. Link the PR immediately after a push.
 
-Broader coverage and structural backlog remains. The score change from 90.1 reflects
-removed source changing mechanical denominators and an independent logic review at 94.
-Only direct behavior-test fixes are confirmed; indirect/import-only gaps remain open.
-Application license is MIT, selected by the user; root LICENSE names Jai Amin (2026).
-The README links the license. Third-party license notices remain intact.
+## Current implementation and verification
 
-## Continuing work
+JAS-only configuration, CLI, browser storage and exports. All assistant submissions use
+`POST /api/chats`; the editor still reads individual `/api/analyses/{id}` proposals.
+Fresh workspaces use schema 4, environment rules 3.0.0 and `jas-study` export v3.
+Old migrations and snapshot padding are removed; incompatible workspaces fail explicitly.
+Deleted obsolete benchmark archives; no current benchmark score is claimed.
 
-Use installed `.venv/bin` tools: this sandbox's `uv` crashes during allocation.
-Run Desloppify separately from `backend/` and `frontend/`, scanning `.` with
-`--lang python/typescript`; PATH needs `../.tools/desloppify/bin` and `../.venv/bin`.
-Never edit scores. After any PR push, immediately link its full URL through T3.
+Verified: 242 backend tests, 64 frontend tests, Ruff, ty, Biome and production build.
+All 55 browser cases pass after correcting test setup that reset preferences on reload.
+The final production Docker image built and passed health, SPA/assets, fresh keyless
+workspace and non-root smoke checks. Actionlint/ShellCheck, documentation links,
+whitespace and staged Gitleaks checks pass.
+The disposable container, volume and image tags were removed.
+
+Port 8080 runs the current app (PID 208053, exec session 17015). Its authorized dummy
+database was reset; health/catalog/studies return 200, schema 4 and all seven rules 3.0.0.
+Leave this user-requested test service running. README remains 22 lines.
+
+Next: the user can review PR #5, wait for its new hosted checks and test on port 8080.
+Do not merge automatically. No live paid-provider calls or new benchmark runs were made.
+
+## Prior verification
+
+At `55d9336`, all six hosted checks passed. Local checks passed: 217 backend tests,
+65 frontend tests, 55 browser cases, lint/types/build, workflow/shell lint and Docker smoke.
+Last Desloppify strict scores were backend 91.8 and frontend 90.0 before follow-up fixes.
+The app is MIT licensed. README remains 22 lines.

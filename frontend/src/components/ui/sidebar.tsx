@@ -63,10 +63,7 @@ function SidebarProvider({
 
   const [_open, _setOpen] = React.useState(() => {
     try {
-      return (
-        (localStorage.getItem("jas-sidebar") ??
-          localStorage.getItem("ass-sidebar")) !== "collapsed" && defaultOpen
-      );
+      return localStorage.getItem("jas-sidebar") !== "collapsed" && defaultOpen;
     } catch {
       return defaultOpen;
     }

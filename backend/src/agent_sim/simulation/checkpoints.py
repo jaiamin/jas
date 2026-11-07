@@ -1,4 +1,4 @@
-"""In-memory simulation contracts; snapshots retain the versioned JSON envelope."""
+"""In-memory simulation contracts; snapshots contain each world's current state."""
 
 from typing import Any, Literal, NotRequired, TypedDict
 

@@ -33,6 +33,7 @@ test("commons presents the latest settled contributions without exposing sealed 
       }}
       state={{
         ...state,
+        pending: {},
         history: [
           { round: 1, contributions: { a: 1, b: 1 } },
           { round: 2, contributions: { a: 3, b: 5 } },

@@ -15,7 +15,6 @@ import {
   NavLink,
   Outlet,
   useLocation,
-  useNavigate,
   useSearchParams,
 } from "react-router-dom";
 import { Loading } from "@/components/shared";
@@ -72,7 +71,6 @@ class PageBoundary extends Component<
 export default function WorkspaceShell() {
   const { setOpenMobile, state, isMobile, toggleSidebar } = useSidebar();
   const [params] = useSearchParams();
-  const navigate = useNavigate();
   const [dark, setDark] = useState(() =>
     document.documentElement.classList.contains("dark"),
   );
@@ -106,7 +104,6 @@ export default function WorkspaceShell() {
       { prefix: "/environments", label: "Environments" },
       { prefix: "/settings", label: "Settings" },
       { prefix: "/compare", label: "Compare runs" },
-      { prefix: "/design", label: "Agent" },
       { prefix: "/agent", label: "Agent" },
     ].find(({ prefix }) => location.pathname.startsWith(prefix))?.label ??
     "Workspace";
@@ -145,18 +142,6 @@ export default function WorkspaceShell() {
     return [{ label: section }];
   }
   const crumbs = breadcrumbs();
-  useEffect(() => {
-    if (params.has("assistant") || params.get("tab") === "research") {
-      const context = runId
-        ? `run:${runId}`
-        : studyId
-          ? `study:${studyId}`
-          : "general";
-      navigate(`/agent?context=${encodeURIComponent(context)}`, {
-        replace: true,
-      });
-    }
-  }, [params, runId, studyId, navigate]);
   const pageTitle =
     runId || studyId || location.pathname === "/new"
       ? (crumbs.at(-1)?.label ?? section)

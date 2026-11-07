@@ -10,7 +10,7 @@ from agent_sim.api import create_app
 if __name__ == "__main__":
     os.environ["OPENAI_API_KEY"] = ""
     os.environ["ANTHROPIC_API_KEY"] = ""
-    with TemporaryDirectory(prefix="ass-browser-tests-") as directory:
+    with TemporaryDirectory(prefix="jas-browser-tests-") as directory:
         app = create_app(
             database_url=f"sqlite:///{directory}/workspace.sqlite3",
             budget_usd=10,
@@ -20,5 +20,5 @@ if __name__ == "__main__":
         uvicorn.run(
             app,
             host="127.0.0.1",
-            port=int(os.getenv("JAS_TEST_PORT", os.getenv("ASS_TEST_PORT", "8094"))),
+            port=int(os.getenv("JAS_TEST_PORT", "8094")),
         )

@@ -124,36 +124,7 @@ class Assistants:
         elif study_id:
             cutoffs = {r.id: r.turn for r in self.research.operational_runs(study_id)}
         with self.db.session.begin() as session:
-            scope = (
-                Analysis.purpose == purpose,
-                Analysis.run_id == run_id,
-                Analysis.study_id == study_id,
-            )
-            active_query = select(Analysis).where(
-                Analysis.status == "pending",
-                Analysis.question == question,
-                *scope,
-            )
-            if chat_id:
-                active_query = active_query.where(Analysis.chat_id == chat_id)
-            active = session.scalars(active_query).first()
-            if active is not None:
-                raise ValueError("Wait for the current request to finish")
-            if chat_id is None:
-                previous = (
-                    session.scalars(
-                        select(Analysis).where(*scope).order_by(Analysis.created.desc()).limit(1)
-                    ).first()
-                    if purpose != "design"
-                    else None
-                )
-                chat_id = (previous.chat_id if previous else None) or uid()
-                if previous is not None and previous.chat_id is None:
-                    session.execute(
-                        update(Analysis)
-                        .where(*scope, Analysis.chat_id.is_(None))
-                        .values(chat_id=chat_id)
-                    )
+            chat_id = chat_id or uid()
             if session.scalar(
                 select(Analysis.id).where(Analysis.chat_id == chat_id, Analysis.status == "pending")
             ):
@@ -194,29 +165,6 @@ class Assistants:
             row = session.get_one(Analysis, key)
             return self.serialize(row, self.models.usage(analysis_id=key))
 
-    def list(
-        self,
-        study_id: str | None = None,
-        run_id: str | None = None,
-        *,
-        purpose: Literal["design", "general", "analysis"] | None = None,
-    ) -> list[dict]:
-        if study_id and run_id:
-            raise ValueError("Choose a study or a run, not both")
-        if purpose is None and not (study_id or run_id):
-            purpose = "design"
-        with self.db.session() as session:
-            query = select(Analysis).order_by(Analysis.created)
-            if run_id:
-                query = query.where(Analysis.run_id == run_id)
-            elif study_id:
-                query = query.where(Analysis.study_id == study_id, Analysis.run_id.is_(None))
-            if purpose is not None:
-                query = query.where(Analysis.purpose == purpose)
-            rows = session.scalars(query).all()
-            usage = self.models.usage_by_analysis({row.id for row in rows})
-            return [self.serialize(row, usage.get(row.id)) for row in rows]
-
     def chats(self) -> Sequence[dict]:
         with self.db.session() as session:
             rows = session.execute(
@@ -229,9 +177,7 @@ class Assistants:
                     Analysis.study_id,
                     Analysis.run_id,
                     Analysis.status,
-                )
-                .where(Analysis.chat_id.is_not(None))
-                .order_by(Analysis.created, Analysis.id)
+                ).order_by(Analysis.created, Analysis.id)
             )
             chats = {}
             for row in rows:
@@ -318,7 +264,7 @@ class Assistants:
                     else (
                         "Request interrupted."
                         if isinstance(error, asyncio.CancelledError)
-                        else f"Research assistant failed ({type(error).__name__}); no fallback."
+                        else f"Research assistant failed ({type(error).__name__})."
                     )
                 )
             if isinstance(error, asyncio.CancelledError):

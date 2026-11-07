@@ -8,7 +8,7 @@ from ..domain import Action, Decision, Design, Event, Measure, Parameters
 from .checkpoints import Checkpoint, LegalAction, Observation
 from .decisions import ActionOption, DecisionRules, decision_schema
 
-RULE_VERSION = "1.0.0"
+RULE_VERSION = "3.0.0"
 
 
 class World[StateT: Checkpoint](ABC):
@@ -34,6 +34,8 @@ class World[StateT: Checkpoint](ABC):
         self.state: StateT = (
             cast(StateT, copy.deepcopy(state)) if state is not None else self.initial_state()
         )
+        if self.state["rule_version"] != self.version:
+            raise ValueError("This saved run requires a different environment rule version")
         if state is None:
             self.new_round()
 
@@ -99,7 +101,7 @@ class World[StateT: Checkpoint](ABC):
             "your_balance": self.state["balances"][agent],
             "your_private_signal": self.state["signals"][agent],
             "public_signals": self.state["signals"] if not self.parameters.private_signal else {},
-            "public_history": self.state["history"][-12:] if memory != "none" else [],
+            "public_history": self.state["history"][-64:] if memory != "none" else [],
             "your_experiences": self.state["experiences"][agent][-12:]
             if memory == "episodic"
             else [],
@@ -159,18 +161,25 @@ class World[StateT: Checkpoint](ABC):
 
     def remember(self, events: list[Event]) -> None:
         for event in events:
+            safe = {
+                "round": self.state["round"],
+                "kind": event.kind,
+                "actor": event.actor,
+                "target": event.target,
+                "text": event.text,
+            }
+            if event.visibility == "public" and event.kind in {
+                "message",
+                "claim",
+                "commitment",
+                "commitment_resolved",
+            }:
+                self.state["history"].append(safe)
             for key in self.ids:
                 if event.visibility == "researcher":
                     continue
                 if event.visibility == "private" and key not in (event.actor, event.target):
                     continue
-                safe = {
-                    "round": self.state["round"],
-                    "kind": event.kind,
-                    "actor": event.actor,
-                    "target": event.target,
-                    "text": event.text,
-                }
                 # Truth is researcher-only even when the claim itself is public.
                 self.state["experiences"][key].append(safe)
                 self.state["experiences"][key] = self.state["experiences"][key][-64:]
@@ -249,16 +258,4 @@ class World[StateT: Checkpoint](ABC):
         return events, measures
 
     def snapshot(self) -> StateT:
-        # Versions 1 and 2 persisted these inert fields for every environment.
-        # Keep that envelope so existing hashes and recorded replay remain exact.
-        legacy = {
-            "pending": {},
-            "promises": {},
-            "relations": {},
-            "tasks": [],
-            "phase": "send",
-            "escrow": {},
-        }
-        if self.state["position"] or self.state["round"] > 1 or self.state["done"]:
-            legacy["forecasts"] = {}
-        return cast(StateT, copy.deepcopy({**legacy, **self.state}))
+        return copy.deepcopy(self.state)

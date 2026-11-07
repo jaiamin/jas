@@ -1,8 +1,8 @@
 # Research foundations
 
 These sources inform experiment design. They do not establish that model participants
-reproduce human behavior. Historical [benchmark results](../benchmarks/reports/README.md)
-validate their recorded implementation and workflow criteria only.
+reproduce human behavior. [Evaluation tooling](../benchmarks/README.md) checks application
+workflows and mechanics; it does not validate human predictions.
 
 | Primary source | What it supports | Product consequence |
 | --- | --- | --- |

@@ -69,7 +69,7 @@ test("resource refresh covers revision variants while leaving unrelated work unt
     "/studies/a?revision=1",
     "/studies/b",
     "/catalog",
-    "/analyses?study_id=a",
+    "/chats/one",
     "/settings",
   ];
   for (const path of paths) client.setQueryData([path], {});

@@ -15,6 +15,10 @@ export function MechanismView({
   onAgent: (key: string) => void;
 }) {
   const environment = run.design.environment;
+  const sealed =
+    state.pending === undefined ? undefined : Object.keys(state.pending).length;
+  if (environment === "renewable_resource" && sealed === undefined)
+    throw new Error("Resource checkpoint is missing sealed requests");
   const names = new Map(run.design.profiles.map((p) => [p.key, p.name]));
   const titles = {
     institution: "Allocation & authority",
@@ -64,7 +68,7 @@ export function MechanismView({
           <span>
             {state.done && (state.stock ?? 0) <= 1e-9
               ? "Collapsed"
-              : `${Object.keys(state.pending).length} of ${run.design.profiles.length} requests sealed`}
+              : `${sealed} of ${run.design.profiles.length} requests sealed`}
           </span>
         </div>
       )}

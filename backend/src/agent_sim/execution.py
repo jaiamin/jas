@@ -227,6 +227,8 @@ class Engine:
     def replay(self, run_id: str) -> dict:
         run, design, condition = self.research.configuration(run_id)
         world = create_world(design, condition.parameters, run.seed)
+        if run.checkpoint["rule_version"] != world.version:
+            raise ValueError("This saved run requires a different environment rule version")
         with self.db.session() as session:
             turns = session.scalars(
                 select(Turn).where(Turn.run_id == run_id).order_by(Turn.number)

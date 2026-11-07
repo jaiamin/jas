@@ -31,8 +31,8 @@ export const metric = (key: string, value: number | null | undefined) =>
         }).format(value)
       : value.toFixed(1);
 
-export function runModelLabel(run: { model: string; models: string[] }) {
+export function runModelLabel(run: { models: string[] }) {
   return run.models.length > 1
     ? "Mixed models"
-    : modelLabel(run.models[0] ?? run.model);
+    : run.models.map(modelLabel).join(", ");
 }

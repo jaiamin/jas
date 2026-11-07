@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Empty } from "@/components/ui/data";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -15,11 +15,6 @@ const Environments = lazy(() => import("@/pages/environments"));
 const Settings = lazy(() => import("@/pages/settings"));
 const Compare = lazy(() => import("@/pages/compare"));
 
-function LegacyDesignRedirect() {
-  const location = useLocation();
-  return <Navigate to="/agent?context=new" state={location.state} replace />;
-}
-
 export default function App() {
   return (
     <Routes>
@@ -33,7 +28,6 @@ export default function App() {
         <Route index element={<Navigate to="/studies" replace />} />
         <Route path="studies" element={<Experiments />} />
         <Route path="agent" element={<AgentPage />} />
-        <Route path="design" element={<LegacyDesignRedirect />} />
         <Route path="studies/:id" element={<Study />} />
         <Route path="new" element={<Editor />} />
         <Route path="runs" element={<Runs />} />

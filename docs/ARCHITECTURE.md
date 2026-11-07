@@ -6,8 +6,8 @@ remain ordered. Only explicit user actions create paid work. Restart pauses inte
 
 ## Storage
 
-SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. An explicit schema
-migration runs at startup; unsupported future schema versions fail visibly. Local transactions
+SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. Startup creates
+schema v4 for fresh workspaces and rejects incompatible schemas. Local transactions
 commit each turn's input, decision, consequences, metrics and checkpoint together.
 
 | Record | Purpose / invariant |
@@ -47,9 +47,8 @@ revisions and run matrices; saving does not start execution.
 ## Agent workspace
 
 `/agent` is a single conversation surface with an inner history sidebar and a contextual
-composer. Experiment/run Ask Agent links select their record on that page. `/design`
-redirects to Agent with New experiment selected, preserving a retried question. The new
-protocol editor also offers Generate with Agent while keeping unfinished manual drafts.
+composer. Experiment/run Ask Agent links select their record on that page. The protocol
+editor offers Generate with Agent while keeping unfinished manual drafts.
 Proposals stay in chat until Review protocol opens the editor; Back to Agent returns to
 their conversation. No proposal automatically saves or runs.
 
@@ -76,10 +75,9 @@ exact scope and purpose, and citations still require inspected turns within froz
 The model receives up to three completed prior turns; design refinements include previous
 proposals and revalidate all rules. Complete transcripts remain saved and visible.
 
-The existing `/api/plan`, `/api/analyses`, `/api/agent` and Analysis formats remain supported.
-Unscoped `GET /api/analyses` still defaults to design proposals. Legacy unthreaded scoped
-submissions continue the most recent conversation in that scope. Provider availability is
-reported without keys; the composer checks the configured planner provider for creation.
+All assistant submissions use `POST /api/chats`. The protocol editor reads individual
+proposals through `GET /api/analyses/{id}`. Provider availability is reported without keys;
+the composer checks the configured planner provider for creation.
 
 ## Environment seam
 
@@ -90,14 +88,10 @@ persistence or React. A catalog describes supported
 parameters and measurements. `World` owns common turn bookkeeping. Concrete worlds own
 checkpoint initialization, legal-action schema capabilities and derived environment measures;
 `decisions.py` builds schemas from those capabilities without selecting environments.
-`checkpoints.py` declares shared observations/actions and each world's state. Snapshot/restore
-boundaries preserve the versioned JSON envelope, including inert legacy fields required by
-existing state hashes.
-
-`environments.py` implements the original three games and their catalog; `mechanisms.py`
-implements four additional worlds. Their rule versions remain 1.0.0 and 2.0.0 respectively.
-Incompatible versions fail explicitly; saved evidence is never silently migrated. Optional
-parameters use schema defaults when reading older revisions.
+`checkpoints.py` declares shared observations/actions and each world's state. Snapshots
+contain only that world's state. All seven worlds use rule version 3.0.0; incompatible
+checkpoints fail explicitly. `environments.py` contains the catalog and three games;
+`mechanisms.py` implements the other four worlds.
 
 Profiles describe goals; parameterized permissions enforce action affordances. Per-turn
 schemas constrain requests, and world rules validate transitions again before committing.
@@ -121,6 +115,8 @@ them. Researcher analysis can inspect complete recorded state, but its tools are
 scoped to selected run cutoffs. Recorded prose is evidence, never tool instructions. Rationale
 is self-report, not a faithful transcript of internal reasoning. No generated text is evaluated
 as code. The local app is for trusted networks; it is not an authenticated hosted SaaS.
+Host validation defaults to localhost and loopback addresses; additional LAN/proxy hostnames
+must be explicit in `JAS_ALLOWED_HOSTS`. Mutations with a foreign browser origin are rejected.
 
 ## Portability
 
@@ -146,14 +142,16 @@ with automatic retries disabled. Only the two registered providers are implement
 Resource changes are immutable condition data, applied at round boundaries and reconstructed
 from the round on restore. Future changes are hidden from participants. Infeasible promises
 after a shock remain events but are excluded from the fulfillment denominator.
-Communication channels can be ablated independently. Public-history-only memory is the
+Public history includes messages, factual reports and commitments without researcher-only
+truth payloads. Its 64-record window accommodates a full round for all 12 participants.
+Direct communication stays recipient-scoped. Communication channels can be ablated
+independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Schema v3 adds indexed conversation identity without changing recorded evidence or usage.
-It groups legacy scoped answers by purpose and record, and retains each independent
-design proposal as a conversation. The v1 request-tracing migration remains supported. Study export v2 includes every
-revision and its runs, exact turn evidence and provider traces; it batches journal queries.
+Every Analysis has an indexed conversation identity. Study export v3 (`jas-study`)
+includes every revision and its runs, exact turn evidence and provider traces; it batches
+journal queries.
 Full checkpoints favor auditability over storage efficiency. This is appropriate for small
 local studies; large deployments need retention/compaction and paginated evidence APIs.
 

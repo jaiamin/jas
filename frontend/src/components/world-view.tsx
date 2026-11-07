@@ -27,20 +27,22 @@ export function WorldView({
   onAgent: (key: string) => void;
 }) {
   const profiles = run.design.profiles;
-  if (run.design.environment === "coordination")
+  if (run.design.environment === "coordination") {
+    const tasks = state.tasks;
+    if (!tasks) throw new Error("Coordination checkpoint is missing tasks");
     return (
       <section className="task-board">
         <div className="section-heading">
           <div>
             <h2>Shared project</h2>
             <p>
-              {state.tasks.filter((t) => t.completed_by).length} of{" "}
-              {state.tasks.length} work packages complete
+              {tasks.filter((t) => t.completed_by).length} of {tasks.length}{" "}
+              work packages complete
             </p>
           </div>
         </div>
         <div className="task-grid">
-          {state.tasks.map((task) => (
+          {tasks.map((task) => (
             <div
               className="task-node"
               data-complete={!!task.completed_by}
@@ -88,6 +90,7 @@ export function WorldView({
         </div>
       </section>
     );
+  }
   if (run.design.environment === "trust_exchange")
     return (
       <section>
@@ -117,6 +120,8 @@ export function WorldView({
         onAgent={onAgent}
       />
     );
+  if (!state.pending)
+    throw new Error("Commons checkpoint is missing sealed choices");
   const previous = state.history.findLast((item) =>
     isContributions(item.contributions),
   );

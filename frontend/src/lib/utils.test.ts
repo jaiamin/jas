@@ -10,19 +10,14 @@ test("cost estimates retain small charges while unavailable metrics stay absent"
   expect(metric("contribution_rate", 0)).not.toBe("—");
 });
 
-test("run model labels reflect resolved profile models and legacy fallbacks", () => {
+test("run model labels reflect resolved profile models", () => {
   expect(
     runModelLabel({
-      model: "openai:gpt-6-luna",
       models: ["anthropic:claude-haiku-4-5"],
     }),
   ).toBe("claude-haiku-4-5");
-  expect(runModelLabel({ model: "openai:gpt-6-luna", models: [] })).toBe(
-    "GPT-6-luna",
-  );
   expect(
     runModelLabel({
-      model: "openai:gpt-6-luna",
       models: ["openai:gpt-6-luna", "openai:gpt-6.1-sol"],
     }),
   ).toBe("Mixed models");

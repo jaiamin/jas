@@ -8,7 +8,7 @@ def client(tmp_path, monkeypatch, fake_model):
     app = create_app(f"sqlite:///{tmp_path}/api.sqlite3", static_dir=tmp_path / "static")
 
     monkeypatch.setattr(app.state.models, "model", lambda _name: fake_model)
-    with TestClient(app) as value:
+    with TestClient(app, base_url="http://localhost") as value:
         yield value
 
 
@@ -24,7 +24,7 @@ def step_run(client, run_id):
 
 def test_routers_resolve_services_from_the_current_app(client, tmp_path, design):
     other_app = create_app(f"sqlite:///{tmp_path}/other.sqlite3", budget_usd=8)
-    with TestClient(other_app) as other:
+    with TestClient(other_app, base_url="http://localhost") as other:
         created = client.post("/api/studies", json={"design": design.model_dump()})
         study_id = created.json()["id"]
         assert other.get("/api/studies").json() == []
@@ -60,7 +60,8 @@ def test_manual_design_step_evidence_and_export(client, design):
     assert response.headers["content-disposition"] == f'attachment; filename="jas-{sid}.json"'
     assert client.get("/api/openapi.json").json()["info"]["title"] == "JAS"
     export = response.json()
-    assert export["format"] == "ass-study"
+    assert export["format"] == "jas-study"
+    assert export["version"] == 3
     assert export["runs"][0]["evidence"][1] == evidence
     assert client.post(f"/api/runs/{rid}/verify", json={}).json()["verified_turns"] == 1
 
@@ -81,6 +82,52 @@ def test_validation_and_origin_guard_do_not_spend(client, design):
     assert "test-not-a-real-key" not in client.get("/api/settings").text
     assert client.get("/api/not-an-endpoint").status_code == 404
     assert client.get("/api/analyses/missing").status_code == 404
+
+
+def test_untrusted_host_cannot_read_or_write_with_a_matching_origin(client, design):
+    headers = {"Host": "attacker.example:8080", "Origin": "http://attacker.example:8080"}
+    assert client.get("/api/studies", headers=headers).status_code == 400
+    assert (
+        client.post(
+            "/api/studies", json={"design": design.model_dump()}, headers=headers
+        ).status_code
+        == 400
+    )
+    assert client.get("/api/studies").json() == []
+    assert client.get("/api/settings").json()["usage"]["requests"] == 0
+
+
+@pytest.mark.parametrize("host", ["localhost:8080", "127.0.0.1:8080", "[::1]:8080"])
+def test_local_hosts_accept_same_origin_writes(client, design, host):
+    response = client.post(
+        "/api/studies",
+        json={"design": design.model_dump()},
+        headers={"Host": host, "Origin": f"http://{host}"},
+    )
+    assert response.status_code == 201
+
+
+def test_configured_host_keeps_origin_checks(tmp_path, monkeypatch, design):
+    monkeypatch.setenv("JAS_ALLOWED_HOSTS", "localhost, lab.example")
+    app = create_app(f"sqlite:///{tmp_path}/hosts.sqlite3")
+    with TestClient(app, base_url="http://lab.example") as client:
+        assert client.get("/api/health").status_code == 200
+        assert (
+            client.post(
+                "/api/studies",
+                json={"design": design.model_dump()},
+                headers={"Origin": "http://untrusted.example"},
+            ).status_code
+            == 403
+        )
+        assert (
+            client.post(
+                "/api/studies",
+                json={"design": design.model_dump()},
+                headers={"Origin": "http://lab.example"},
+            ).status_code
+            == 201
+        )
 
 
 def test_invalid_json_design_does_not_create_study(client):
@@ -122,24 +169,6 @@ def test_openapi_describes_application_and_validation_errors(client):
         }
     detail = schema["components"]["schemas"]["ErrorResponse"]["properties"]["detail"]
     assert {variant["type"] for variant in detail["anyOf"]} == {"string", "array"}
-
-
-def test_general_agent_submission_preserves_scoped_analysis_contract(client, monkeypatch):
-    submitted = []
-    monkeypatch.setattr(
-        client.app.state.assistants,
-        "start",
-        lambda question, **kwargs: submitted.append((question, kwargs)) or "general-request",
-    )
-    response = client.post("/api/agent", json={"question": "What is a matched seed?"})
-    assert response.status_code == 202 and response.json() == {"id": "general-request"}
-    assert submitted == [("What is a matched seed?", {"purpose": "general"})]
-    assert (
-        client.post("/api/agent", json={"question": "Inspect it", "run_id": "a"}).status_code == 422
-    )
-    assert client.post("/api/analyses", json={"question": "Inspect it"}).status_code == 422
-    assert client.get("/api/analyses?purpose=general").json() == []
-    assert len(submitted) == 1
 
 
 def test_export_includes_previous_revisions_and_their_recorded_turns(client, design):
@@ -204,9 +233,9 @@ def test_verification_rejects_corrupt_evidence(client, design):
 @pytest.mark.parametrize(
     "path,payload",
     [
-        ("/api/plan", {"question": "test", "run_id": "run"}),
-        ("/api/analyses", {"question": "test"}),
-        ("/api/analyses", {"question": "test", "study_id": "one", "run_id": "two"}),
+        ("/api/chats", {"question": "test", "run_id": "run"}),
+        ("/api/chats", {"question": "test", "context": "invalid"}),
+        ("/api/chats", {"question": "test", "study_id": "one", "run_id": "two"}),
         ("/api/studies/unknown/control", {"action": "step"}),
     ],
 )
@@ -309,93 +338,38 @@ def test_chat_events_deliver_partial_and_final_records_without_resubmission(clie
     assert client.get("/api/chats/missing/events").status_code == 404
 
 
-def test_analysis_listing_honors_explicit_filters_and_rejects_ambiguous_scope(client, design):
-    from agent_sim.db import Analysis
-
-    research = client.app.state.research
-    sid = research.save_design(design)
-    rid = research.operational_runs(sid)[0].id
-    with research.db.session.begin() as session:
-        session.add_all(
-            [
-                Analysis(question="Design", purpose="design", status="complete", cutoffs={}),
-                Analysis(question="General", purpose="general", status="complete", cutoffs={}),
-                Analysis(
-                    question="Study",
-                    purpose="analysis",
-                    study_id=sid,
-                    status="complete",
-                    cutoffs={},
-                ),
-                Analysis(
-                    question="Run",
-                    purpose="analysis",
-                    study_id=sid,
-                    run_id=rid,
-                    status="complete",
-                    cutoffs={},
-                ),
-            ]
-        )
-
-    def questions(query):
-        response = client.get(f"/api/analyses{query}")
-        assert response.status_code == 200
-        return [row["question"] for row in response.json()]
-
-    assert questions("") == ["Design"]
-    assert questions("?purpose=general") == ["General"]
-    assert questions(f"?study_id={sid}") == ["Study"]
-    assert questions(f"?run_id={rid}") == ["Run"]
-    assert questions(f"?run_id={rid}&purpose=analysis") == ["Run"]
-    assert questions(f"?run_id={rid}&purpose=general") == []
-    assert questions(f"?study_id={sid}&purpose=design") == []
-    assert client.get(f"/api/analyses?study_id={sid}&run_id={rid}").status_code == 422
-
-
-@pytest.mark.parametrize("scope", ["study_id", "run_id"])
-@pytest.mark.parametrize("unthreaded", [False, True])
-def test_legacy_analysis_rejects_different_questions_until_its_chat_finishes(
-    client, design, monkeypatch, scope, unthreaded
-):
+@pytest.mark.parametrize("scope", ["study", "run"])
+def test_scoped_chat_serializes_followups(client, design, monkeypatch, scope):
     import asyncio
 
     from agent_sim.db import Analysis
 
     assistant = client.app.state.assistants
-    db = client.app.state.db
     release = asyncio.Event()
 
     async def execute(key):
         await release.wait()
-        with db.session.begin() as session:
+        with assistant.db.session.begin() as session:
             row = session.get_one(Analysis, key)
             row.status, row.output = "complete", {"answer": "Recorded answer"}
 
     monkeypatch.setattr(assistant, "_execute", execute)
     sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
     rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
-    selected = {scope: sid if scope == "study_id" else rid}
-    first = client.post("/api/analyses", json={"question": "What happened?", **selected})
+    context = f"{scope}:{sid if scope == 'study' else rid}"
+    first = client.post("/api/chats", json={"question": "What happened?", "context": context})
     assert first.status_code == 202
-    first_id = first.json()["id"]
-    if unthreaded:
-        with db.session.begin() as session:
-            session.get_one(Analysis, first_id).chat_id = None
-    second = client.post("/api/analyses", json={"question": "Why did it happen?", **selected})
-    assert second.status_code == 422
-    assert "current request" in second.json()["detail"]
+    key, chat_id = first.json()["id"], first.json()["chat_id"]
+    followup = {"question": "Why did it happen?", "context": context, "chat_id": chat_id}
+    assert client.post("/api/chats", json=followup).status_code == 422
     assert len(assistant.tasks) == 1
 
     async def finish():
         release.set()
-        await assistant.tasks[first_id]
+        await assistant.tasks[key]
 
     client.portal.call(finish)
-    followup = client.post("/api/analyses", json={"question": "Why did it happen?", **selected})
-    assert followup.status_code == 202
-    chat_id = assistant.get(first_id)["chat_id"]
-    assert assistant.get(followup.json()["id"])["chat_id"] == chat_id
+    assert client.post("/api/chats", json=followup).status_code == 202
     assert [row["question"] for row in assistant.chat(chat_id)] == [
         "What happened?",
         "Why did it happen?",

@@ -8,7 +8,7 @@ test("a corrupt draft leaves valid drafts available with targeted recovery", asy
   const catalog = await (await request.get("/api/catalog")).json();
   await page.addInitScript((design) => {
     localStorage.setItem(
-      "ass:draft:/new?template=commons",
+      "jas:draft:/new?template=commons",
       JSON.stringify({
         path: "/new?template=commons",
         title: "Preserved draft",
@@ -18,7 +18,7 @@ test("a corrupt draft leaves valid drafts available with targeted recovery", asy
         json: "",
       }),
     );
-    localStorage.setItem("ass:draft:/new?template=broken", "{unfinished");
+    localStorage.setItem("jas:draft:/new?template=broken", "{unfinished");
   }, templateDesign(catalog));
   await page.goto("/");
   await expect(page.getByRole("alert")).toContainText(
@@ -48,7 +48,7 @@ for (const unreadable of [true, false]) {
     page.on("pageerror", (error) => errors.push(error.message));
     await page.addInitScript((unreadable) => {
       localStorage.setItem(
-        "ass:draft:/new",
+        "jas:draft:/new",
         unreadable
           ? "{unfinished"
           : JSON.stringify({
@@ -259,7 +259,7 @@ test("transient draft validation failures retry without classifying the draft as
   await page.addInitScript(
     (design) =>
       localStorage.setItem(
-        "ass:draft:/new",
+        "jas:draft:/new",
         JSON.stringify({
           path: "/new",
           title: "Valid saved draft",

@@ -220,9 +220,6 @@ test("failed AI designs remain reachable and restore the original question", asy
     error: "Provider request timed out",
     output: null,
   };
-  await page.route("**/api/analyses", (route) =>
-    route.fulfill({ json: [failed] }),
-  );
   await page.route("**/api/analyses/qa-failed", (route) =>
     route.fulfill({ json: failed }),
   );

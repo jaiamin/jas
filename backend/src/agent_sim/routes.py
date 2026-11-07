@@ -2,11 +2,11 @@ import asyncio
 import json
 import os
 from pathlib import Path
-from typing import Annotated, Any, Literal, Self
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
-from pydantic import Field, model_validator
+from pydantic import Field
 from sqlalchemy import select, text
 
 from .assistants import Assistants
@@ -71,22 +71,8 @@ class SaveStudy(Strict):
     plan_id: str | None = None
 
 
-class DesignRequest(Strict):
+class ChatMessage(Strict):
     question: str = Field(min_length=1, max_length=4000)
-
-
-class AnalysisRequest(DesignRequest):
-    study_id: str | None = None
-    run_id: str | None = None
-
-    @model_validator(mode="after")
-    def exactly_one_scope(self) -> Self:
-        if bool(self.study_id) == bool(self.run_id):
-            raise ValueError("Choose exactly one run or study for analysis")
-        return self
-
-
-class ChatMessage(DesignRequest):
     context: str = "general"
     chat_id: str | None = None
 
@@ -270,39 +256,9 @@ async def add_note(
         return {"id": note.id}
 
 
-@router.post("/api/plan", status_code=202)
-async def plan(body: DesignRequest, *, assistants: AssistantsDep) -> dict[str, Any]:
-    return {"id": assistants.start(body.question, purpose="design")}
-
-
-@router.post("/api/analyses", status_code=202)
-async def ask(body: AnalysisRequest, *, assistants: AssistantsDep) -> dict[str, Any]:
-    return {
-        "id": assistants.start(
-            body.question, purpose="analysis", study_id=body.study_id, run_id=body.run_id
-        )
-    }
-
-
-@router.get("/api/analyses")
-async def analyses(
-    study_id: str | None = None,
-    run_id: str | None = None,
-    purpose: Literal["design", "general", "analysis"] | None = None,
-    *,
-    assistants: AssistantsDep,
-) -> list[dict[str, Any]]:
-    return assistants.list(study_id, run_id, purpose=purpose)
-
-
 @router.get("/api/analyses/{analysis_id}")
 async def get_analysis(analysis_id: str, *, assistants: AssistantsDep) -> dict[str, Any]:
     return assistants.get(analysis_id)
-
-
-@router.post("/api/agent", status_code=202)
-async def general_question(body: DesignRequest, *, assistants: AssistantsDep) -> dict:
-    return {"id": assistants.start(body.question, purpose="general")}
 
 
 @router.get("/api/chats")

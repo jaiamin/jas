@@ -2,20 +2,20 @@ services:
   app:
     build: .
     ports:
-      - "${JAS_PORT:-${ASS_PORT:-8080}}:8080"
+      - "${JAS_PORT:-8080}:8080"
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
       ANTHROPIC_BASE_URL: ${ANTHROPIC_BASE_URL:-https://api.anthropic.com}
-      JAS_DATABASE_URL: ${JAS_DATABASE_URL:-${ASS_DATABASE_URL:-}}
-      JAS_CONCURRENT_RUNS: ${JAS_CONCURRENT_RUNS:-${ASS_CONCURRENT_RUNS:-3}}
-      JAS_PLANNER_MODEL: ${JAS_PLANNER_MODEL:-${ASS_PLANNER_MODEL:-openai:gpt-6.1-sol}}
-      JAS_BUDGET_USD: ${JAS_BUDGET_USD:-${ASS_BUDGET_USD:-25}}
+      JAS_ALLOWED_HOSTS: ${JAS_ALLOWED_HOSTS:-localhost,127.0.0.1,[::1]}
+      JAS_DATABASE_URL: ${JAS_DATABASE_URL:-}
+      JAS_CONCURRENT_RUNS: ${JAS_CONCURRENT_RUNS:-3}
+      JAS_PLANNER_MODEL: ${JAS_PLANNER_MODEL:-openai:gpt-6.1-sol}
+      JAS_BUDGET_USD: ${JAS_BUDGET_USD:-25}
     volumes:
-      - ass-data:/app/data
+      - jas-data:/app/data
     init: true
     stop_grace_period: 2m
 volumes:
-  # Keep the volume identity so existing installations retain their experiments.
-  ass-data:
+  jas-data:

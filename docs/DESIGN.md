@@ -59,7 +59,7 @@ Experiment/run headers link Ask Agent to the selected record. The editor's Gener
 Agent carries the question and preserves the draft; reviewed proposals link Back to Agent.
 Context belongs to each submitted message. Retry keeps that message's original context,
 and changing context never relabels prior evidence. General answers exclude unselected run
-records. `/design` and legacy assistant links redirect into this same conversation flow.
+records. All assistant entry points use `/agent`.
 
 Streaming prose is pending content until schema, citation and protocol checks complete.
 Activity reflects server stages; never fabricate progress or expose private model reasoning.

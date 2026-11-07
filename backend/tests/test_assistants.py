@@ -23,6 +23,7 @@ def test_general_agent_keeps_history_separate_and_rejects_unselected_evidence(
                 [
                     Analysis(
                         purpose="general",
+                        chat_id="general-chat",
                         question="What is a matched seed?",
                         status="complete",
                         output={"answer": "A shared initial random seed."},
@@ -66,7 +67,9 @@ def test_general_agent_keeps_history_separate_and_rejects_unselected_evidence(
             )
 
         monkeypatch.setattr(llm, "generate", generate)
-        key = assistant.start("How do they help comparisons?", purpose="general")
+        key = assistant.start(
+            "How do they help comparisons?", purpose="general", chat_id="general-chat"
+        )
         await assistant.tasks[key]
         row = assistant.get(key)
         assert row["cutoffs"] == {} and row["study_id"] is None and row["run_id"] is None
@@ -74,8 +77,6 @@ def test_general_agent_keeps_history_separate_and_rejects_unselected_evidence(
             assert row["status"] == "failed" and "unselected" in row["error"]
         else:
             assert row["status"] == "complete" and row["output"]["citations"] == []
-        assert {item["purpose"] for item in assistant.list(purpose="general")} == {"general"}
-        assert {item["purpose"] for item in assistant.list()} == {"design"}
         assert research.study(sid)["design"] == design.model_dump()
         await assistant.close()
 
@@ -103,6 +104,7 @@ def test_assistant_scopes_history_to_frozen_cutoff_and_rejects_unread_citations(
                         purpose="analysis",
                         study_id=sid,
                         run_id=rid,
+                        chat_id="scoped-chat",
                         question="What changed?",
                         status="complete",
                         output={"answer": "The contribution changed."},
@@ -154,6 +156,7 @@ def test_assistant_scopes_history_to_frozen_cutoff_and_rejects_unread_citations(
                 purpose="analysis",
                 study_id=sid,
                 run_id=rid,
+                chat_id="scoped-chat",
                 question="What happened?",
                 cutoffs={rid: 1},
             )
@@ -200,11 +203,11 @@ def test_independent_questions_can_plan_concurrently_but_duplicates_are_blocked(
             await release.wait()
 
         monkeypatch.setattr(assistant, "_execute", execute)
-        first = assistant.start("Question one", purpose="design")
+        first = assistant.start("Question one", purpose="design", chat_id="first-chat")
         second = assistant.start("Question two", purpose="design")
         assert first != second
         with pytest.raises(ValueError, match="current request"):
-            assistant.start("Question one", purpose="design")
+            assistant.start("Question one", purpose="design", chat_id="first-chat")
         release.set()
         await assistant.close()
 
@@ -323,7 +326,7 @@ def test_initial_worker_read_failure_is_persisted_and_logged(runtime, caplog):
     with db.session() as session:
         request = session.get_one(Analysis, key)
         assert request.status == "failed"
-        assert request.error == "Research assistant failed (RuntimeError); no fallback."
+        assert request.error == "Research assistant failed (RuntimeError)."
     assert f"Analysis {key} failed" in caplog.text
     assert llm.usage()["requests"] == 0
 
@@ -369,7 +372,6 @@ def test_analysis_usage_is_consistent_before_any_provider_call(runtime, status):
         session.flush()
         key = request.id
     detail = assistant.get(key)
-    assert assistant.list(purpose="general") == [detail]
     assert assistant.chat("usage-chat") == [detail]
     assert detail["usage"] == {
         "requests": 0,

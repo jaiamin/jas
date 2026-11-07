@@ -8,49 +8,26 @@ uv run python benchmarks/run.py --live --split generalization longitudinal --out
 uv run inspect view --log-dir data/evaluations/test/inspect
 ```
 
-Published [Luna results](reports/README.md): 230 frozen final cases, all recorded attempts,
-failures, provenance and cost. The current suite is v5; its post-audit rubric corrections
-are separate from the primary v4 result.
-These historical results validate the recorded revision, not later code changes or human
-predictions. For current verification, use the [development checks](../docs/DEVELOPMENT.md).
+The 230-case v5 suite covers seven environments: 140 development cases, 56 reserved
+context combinations, 14 longer protocols and 20 capability-limit questions. Cases specify
+mechanics, treatment isolation, counts and measurements. Raw-action questions require
+complete exported decision/observation evidence. Outcomes are not scored for a desired
+behavior, psychological motive or human predictive validity.
 
-Versioned `cases.jsonl` stores typed records with stable IDs, explicit splits and criteria.
-The 230-case suite has 140 development protocols, 56 reserved context-combination protocols,
-14 longer protocols and 20 capability-limit questions. Seven distinct rule systems span
-public goods, reciprocity, task dependencies, institutional authority, bargaining, noisy
-information and persistent resources. Development cases specify the intervention;
-generalization cases omit adapter and parameter hints. Scoring checks the reserved
-operationalization and isolation of unrelated factors. Role-only and goal-only
-interventions deliberately change prose while keeping permissions and payoffs fixed.
-An explicit metric criterion checks a registered measure; null uses exported raw decisions
-and requires complete decision/observation evidence. Neither path scores the direction of
-behavior or treats an unchosen action as a failed simulation.
+Both planner and participants use `openai:gpt-6-luna`, without web research. Inspect's
+mock model schedules the real application through its chat/API routes. Every supported
+case saves and executes both conditions, exports evidence and checks exact replay.
+Short single-seed pilots verify mechanics; they do not establish reliable treatment effects.
 
-Every supported case uses the actual planner and API to persist and execute both conditions,
-calculate outcomes, export evidence and verify exact replay. Short three-to-five-round, single-seed
-pilots test mechanics and workflow; they do not estimate intervention effects reliably.
-Longitudinal cases use 12 rounds. Both planner and participants use `openai:gpt-6-luna`.
-No external web research is requested in this controlled suite; production Sol planning
-can research independently. Capability cases must decline unavailable mechanics and human
-validity claims honestly. `history/holdout.json` contains older, separately reserved questions.
+`--live` explicitly enables paid calls. The default $18 ceiling includes all usage in
+`data/evaluation.sqlite3`, including explicit retests and unknown requests. Do not reset
+accounting or run multiple processes against that database. `--database`, `--budget-usd`
+and `--concurrency` (1–16) configure an authorized evaluation.
 
-Inspect supplies scheduling, per-sample scores and logs. Its mock model makes no provider
-calls: the solver invokes our application, whose atomic ledger meters actual requests.
-Default ceiling is $18 across the persistent `data/evaluation.sqlite3` database, including
-all explicit retests. Do not delete that database to reset accounting or run two benchmark
-processes against it. `--database` and `--budget-usd` permit separate authorized evaluations.
-`--concurrency` bounds samples, provider requests and independent live runs (1–16).
-The normal app defaults to three independent runs; set `JAS_CONCURRENT_RUNS` to change it.
-Decisions within a run retain their causal ordering.
+Outputs stay in ignored `data/`: attempts, manifests, summaries and Inspect logs. A fixed
+case digest and recursive source fingerprint identify the tested implementation. Reusing
+an output directory skips attempted cases and rejects changed source. Use `--ids` with a
+new output directory for an explicit retest. Provider failures receive no automatic retry
+or substitute model. No benchmark score is claimed for the current code without a fresh run.
 
-Outputs contain a fixed dataset hash, source hash, commit, settings, attempt records and
-ledger. Reusing an output directory skips every previously attempted case, including errors.
-Use `--ids` and a new output directory for explicit retests. No automatic model retries or
-substitution. Failed and unknown requests remain charged/reserved. Raw artifacts stay in
-ignored data/; compact published evidence belongs in reports/. Historical results and their
-changing rubrics remain in history/ and are not controlled improvement evidence.
-
-Deterministic checks assess capability honesty, schema validity, intervention isolation,
-requested counts, completion, export and replay. They do not establish human realism,
-psychological motives, optimal strategy, or absence of deception. Inspect's stderr over
-heterogeneous cases is descriptive, not a confidence interval for real-world validity.
+For keyless verification, use the [development checks](../docs/DEVELOPMENT.md).

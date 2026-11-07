@@ -12,7 +12,7 @@ beforeEach(() => localStorage.clear());
 
 test("drafts preserve incomplete edits and invalid JSON without affecting other storage", () => {
   const design = { title: "", profiles: [] } as unknown as Design;
-  localStorage.setItem("ass-theme", "dark");
+  localStorage.setItem("jas-theme", "dark");
   writeDraft("/new?template=commons", design, '{"unfinished":', "json");
   expect(readDraft("/new?template=commons")).toMatchObject({
     design,
@@ -22,7 +22,7 @@ test("drafts preserve incomplete edits and invalid JSON without affecting other 
   expect(listDrafts().items).toHaveLength(1);
   removeDraft("/new?template=commons");
   expect(listDrafts()).toEqual({ items: [], unreadable: [] });
-  expect(localStorage.getItem("ass-theme")).toBe("dark");
+  expect(localStorage.getItem("jas-theme")).toBe("dark");
 });
 
 test("listing isolates corrupt drafts and preserves their contents for recovery", () => {
@@ -74,32 +74,6 @@ test("editor identity follows source parameters and ignores presentation and ord
   expect(editorDraftPath(new URLSearchParams("template=trust"))).not.toBe(
     editorDraftPath(new URLSearchParams("template=commons")),
   );
-});
-
-test("legacy drafts survive the JAS rename, deduplicate, and can be saved or discarded", () => {
-  const path = "/new?template=commons";
-  const design = {
-    title: "Existing experiment",
-    profiles: [],
-  } as unknown as Design;
-  const legacy = JSON.stringify({
-    path,
-    title: design.title,
-    design,
-    json: "{}",
-    mode: "visual",
-    updated: "2026-01-01",
-  });
-  localStorage.setItem(`ass:draft:${path}`, legacy);
-  expect(readDraft(path)?.title).toBe(design.title);
-  expect(listDrafts().items).toHaveLength(1);
-  writeDraft(path, { ...design, title: "Updated experiment" }, "{}", "visual");
-  expect(localStorage.getItem(`ass:draft:${path}`)).toBeNull();
-  expect(readDraft(path)?.title).toBe("Updated experiment");
-  localStorage.setItem(`ass:draft:${path}`, legacy);
-  expect(listDrafts().items).toHaveLength(1);
-  removeDraft(path);
-  expect(listDrafts()).toEqual({ items: [], unreadable: [] });
 });
 
 test("empty stored drafts remain visible as corruption and preserve recovery data", () => {

@@ -51,8 +51,8 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
             }
         )
     return {
-        "format": "ass-study",
-        "version": 2,
+        "format": "jas-study",
+        "version": 3,
         "rule_version": CATALOG[detail["design"]["environment"]].world.version,
         "study": detail,
         "annotations": [
