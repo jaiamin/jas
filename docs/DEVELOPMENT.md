@@ -74,7 +74,7 @@ non-local URL; keep localhost entries for health checks. Restart after configura
   `components/run` own their workflows; `components/ui` contains shared controls.
 - `frontend/src/index.css`: theme tokens; `styles/`: scoped layouts.
 - `backend/tests`, `frontend/src/**/*.test.*`, `frontend/e2e`: regression tests.
-- `benchmarks/`: evaluation tooling and frozen evidence, omitted from production images.
+- `benchmarks/`: evaluation cases, rubric and runner, omitted from production images.
 
 [Architecture](ARCHITECTURE.md) · [Design](DESIGN.md) · [Vocabulary](GLOSSARY.md)
 
