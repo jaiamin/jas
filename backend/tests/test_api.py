@@ -22,6 +22,18 @@ def step_run(client, run_id):
     client.portal.call(finished)
 
 
+def test_routers_resolve_services_from_the_current_app(client, tmp_path, design):
+    other_app = create_app(f"sqlite:///{tmp_path}/other.sqlite3", budget_usd=8)
+    with TestClient(other_app) as other:
+        created = client.post("/api/studies", json={"design": design.model_dump()})
+        study_id = created.json()["id"]
+        assert other.get("/api/studies").json() == []
+        assert other.get(f"/api/studies/{study_id}").status_code == 404
+        assert client.get(f"/api/studies/{study_id}").status_code == 200
+        assert other.get("/api/settings").json()["budget_usd"] == 8
+        assert client.get("/api/settings").json()["budget_usd"] == 25
+
+
 def test_manual_design_step_evidence_and_export(client, design):
     result = client.post("/api/studies", json={"design": design.model_dump()})
     assert result.status_code == 201

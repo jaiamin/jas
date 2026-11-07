@@ -1,5 +1,7 @@
 import json
 import os
+from collections.abc import Mapping
+from typing import Any
 
 from pydantic import Field, ValidationError
 
@@ -108,12 +110,33 @@ class Planner:
     def __init__(self, db: Database, research: Research, models: LanguageModels):
         self.db, self.research, self.models = db, research, models
 
-    def progress(self, key: str, stage: str, **details) -> None:
+    def progress(self, key: str, stage: str, **details: object) -> None:
         with self.db.session.begin() as session:
             session.get_one(Analysis, key).output = {"stage": stage, **details}
 
-    async def run(self, row: dict) -> dict:
-        key = row["id"]
+    async def _call[T](
+        self,
+        key: str,
+        output: type[T],
+        instruction: str,
+        data: dict[str, object],
+        *,
+        max_tokens: int,
+        web_search: bool = False,
+    ) -> T:
+        return await self.models.generate(
+            output,
+            model=os.getenv("ASS_PLANNER_MODEL", "openai:gpt-6.1-sol"),
+            instructions=instruction,
+            prompt=json.dumps(data),
+            purpose="design",
+            analysis_id=key,
+            openai_reasoning_effort="medium",
+            max_tokens=max_tokens,
+            web_search=web_search,
+        )
+
+    def _context(self, question: str) -> dict[str, object]:
         capabilities = []
         for adapter in CATALOG.values():
             example = Design.model_validate(
@@ -135,8 +158,8 @@ class Planner:
                     "Use the design schema descriptions to identify changeable parameters.",
                 }
             )
-        context = {
-            "question": row["question"],
+        return {
+            "question": question,
             "research_available": os.getenv("ASS_PLANNER_MODEL", "openai:gpt-6.1-sol")
             == "openai:gpt-6.1-sol",
             "capabilities": capabilities,
@@ -156,20 +179,41 @@ class Planner:
             },
         }
 
-        async def call(output, instruction: str, data: dict, **options):
-            return await self.models.generate(
-                output,
-                model=os.getenv("ASS_PLANNER_MODEL", "openai:gpt-6.1-sol"),
-                instructions=instruction,
-                prompt=json.dumps(data),
-                purpose="design",
-                analysis_id=key,
-                openai_reasoning_effort="medium",
-                **options,
+    def _validate_candidate(self, candidate: Candidate, brief: StudyBrief) -> Design | None:
+        design = Design.model_validate(candidate.design.model_dump()) if candidate.design else None
+        if design:
+            self.research.validate_design(design)
+            actual = (
+                len(design.profiles),
+                len(design.conditions),
+                len(design.seeds),
+                design.repetitions,
+                design.rounds,
             )
+            expected = (
+                brief.agents,
+                brief.conditions,
+                brief.seeds,
+                brief.repetitions,
+                brief.rounds,
+            )
+            if actual != expected:
+                raise ValueError(f"Protocol must retain planned counts {expected}; got {actual}")
+            if design.response_tokens < 2048:
+                raise ValueError(
+                    "AI protocols need at least 2048 response tokens to avoid truncation"
+                )
+            if design.budget_usd > 10:
+                raise ValueError("AI-proposed studies must have a spending ceiling at or below $10")
+        return design
+
+    async def run(self, row: Mapping[str, Any]) -> dict[str, Any]:
+        key = row["id"]
+        context = self._context(row["question"])
 
         self.progress(key, "scoping")
-        brief = await call(
+        brief = await self._call(
+            key,
             StudyBrief,
             PLANNING + "\nFirst operationalize the question and choose the design size. "
             "Honor explicit counts within supported limits. Explain agents, conditions, seeds, "
@@ -196,7 +240,8 @@ class Planner:
         context["brief"] = brief.model_dump()
         if brief.research_query:
             self.progress(key, "researching", planning=planning)
-            notes = await call(
+            notes = await self._call(
+                key,
                 str,
                 "Search the web for primary research or official methods relevant to this "
                 "experiment. Use the search tool, then summarize methodological choices, "
@@ -218,7 +263,8 @@ class Planner:
         feedback = []
         for attempt in range(3):
             self.progress(key, "drafting" if attempt == 0 else "revising", planning=planning)
-            candidate = await call(
+            candidate = await self._call(
+                key,
                 Candidate,
                 PLANNING + "\nProduce the complete protocol from the brief. "
                 "Resolve the supplied validation/review issues; do not repeat a rejected draft. "
@@ -228,45 +274,14 @@ class Planner:
             )
             context["candidate"] = candidate.model_dump()
             try:
-                design = (
-                    Design.model_validate(candidate.design.model_dump())
-                    if candidate.design
-                    else None
-                )
-                if design:
-                    self.research.validate_design(design)
-                    actual = (
-                        len(design.profiles),
-                        len(design.conditions),
-                        len(design.seeds),
-                        design.repetitions,
-                        design.rounds,
-                    )
-                    expected = (
-                        brief.agents,
-                        brief.conditions,
-                        brief.seeds,
-                        brief.repetitions,
-                        brief.rounds,
-                    )
-                    if actual != expected:
-                        raise ValueError(
-                            f"Protocol must retain planned counts {expected}; got {actual}"
-                        )
-                    if design.response_tokens < 2048:
-                        raise ValueError(
-                            "AI protocols need at least 2048 response tokens to avoid truncation"
-                        )
-                    if design.budget_usd > 10:
-                        raise ValueError(
-                            "AI-proposed studies must have a spending ceiling at or below $10"
-                        )
+                design = self._validate_candidate(candidate, brief)
             except (ValidationError, ValueError) as error:
                 feedback = [str(error)]
                 planning["reviews"].append({"kind": "validation", "issues": feedback})
                 continue
             self.progress(key, "reviewing", planning=planning)
-            review = await call(
+            review = await self._call(
+                key,
                 DesignReview,
                 PLANNING + "\nCritique this protocol against the original question. "
                 "Return material issues only; an empty list approves it. "
