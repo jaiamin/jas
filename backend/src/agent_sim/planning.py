@@ -1,11 +1,9 @@
 import json
 import os
-from urllib.parse import urlparse
 
 from pydantic import Field, ValidationError
-from sqlalchemy import select
 
-from .db import Analysis, Database, ProviderCall
+from .db import Analysis, Database
 from .domain import Design, DesignSpec, PlannedStudy, Strict
 from .environments import CATALOG, MEASURE_DESCRIPTIONS, create_world
 from .llm import LanguageModels
@@ -114,34 +112,6 @@ class Planner:
         with self.db.session.begin() as session:
             session.get_one(Analysis, key).output = {"stage": stage, **details}
 
-    def sources(self, key: str) -> list[dict]:
-        found = {}
-        with self.db.session() as session:
-            calls = session.scalars(select(ProviderCall).where(ProviderCall.analysis_id == key))
-            for call in calls:
-                for message in call.response_payload or []:
-                    for part in message.get("parts", []):
-                        content = part.get("content")
-                        if part.get("tool_name") != "web_search" or not isinstance(content, dict):
-                            continue
-                        for source in content.get("sources", []):
-                            if not isinstance(source, dict) or not isinstance(
-                                source.get("url"), str
-                            ):
-                                continue
-                            url = source.get("url", "")
-                            parsed = urlparse(url)
-                            if (
-                                parsed.scheme in {"http", "https"}
-                                and parsed.hostname
-                                and not parsed.username
-                            ):
-                                found[url] = {
-                                    "url": url,
-                                    "title": source.get("title") or parsed.hostname,
-                                }
-        return list(found.values())
-
     async def run(self, row: dict) -> dict:
         key = row["id"]
         capabilities = []
@@ -151,7 +121,8 @@ class Planner:
             )
             world = create_world(example, example.conditions[0].parameters, 0)
             actor = world.actor()
-            assert actor is not None
+            if actor is None:
+                raise ValueError(f"Template {adapter.key} has no initial actor")
             capabilities.append(
                 {
                     "key": adapter.key,
@@ -236,7 +207,7 @@ class Planner:
                 max_tokens=4096,
                 web_search=True,
             )
-            planning["sources"] = self.sources(key)
+            planning["sources"] = self.models.sources(key)
             if not planning["sources"]:
                 raise ValueError(
                     "Web research returned no verifiable sources. "

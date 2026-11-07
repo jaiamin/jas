@@ -24,7 +24,7 @@ class Mechanism(World):
             raise ValueError("Action does not match the current legal opportunities")
         if action.promise is not None:
             raise ValueError("This environment has no promise mechanism")
-        self.communication(agent, action)
+        self.communication_events(agent, action)
 
     def finish(
         self, events: list[Event], measures: list[Measure]
@@ -40,9 +40,9 @@ class Mechanism(World):
             self.next_round()
         return events, measures
 
-    def communicate(self, agent: str, action: Action) -> list[Event]:
+    def public_communication_events(self, agent: str, action: Action) -> list[Event]:
         # Action targets may be tasks or choices, never communication recipients here.
-        return self.communication(agent, action.model_copy(update={"target": ""}))
+        return self.communication_events(agent, action.model_copy(update={"target": ""}))
 
 
 class Institution(Mechanism):
@@ -98,7 +98,7 @@ class Institution(Mechanism):
         self.validate(agent, action)
         rules = self.parameters.institution
         balances = self.state["balances"]
-        events, measures = self.communicate(agent, action), []
+        events, measures = self.public_communication_events(agent, action), []
         if action.kind == "allocate":
             balances[action.target] += action.amount
             balances[agent] += self.parameters.endowment - action.amount
@@ -259,7 +259,7 @@ class Bargaining(Mechanism):
 
     def apply(self, agent: str, action: Action) -> tuple[list[Event], list[Measure]]:
         self.validate(agent, action)
-        events, measures = self.communicate(agent, action), []
+        events, measures = self.public_communication_events(agent, action), []
         pie = self.observe(agent)["pie"]
         if action.kind == "offer":
             self.state["offer"] = {"actor": agent, "amount": action.amount, "pie": pie}
@@ -343,8 +343,8 @@ class Information(Mechanism):
         observation["choices"] = self.state["pending"].copy()
         return observation
 
-    def communication(self, agent: str, action: Action) -> list[Event]:
-        events = super().communication(agent, action)
+    def communication_events(self, agent: str, action: Action) -> list[Event]:
+        events = super().communication_events(agent, action)
         for event in events:
             if event.kind == "claim":
                 truth = self.evidence(agent)[1]
@@ -357,7 +357,7 @@ class Information(Mechanism):
             raise ValueError("Binary signal reports must be 0 or 1")
         truth, signal = self.evidence(agent)
         self.state["pending"][agent] = action.amount
-        events = self.communicate(agent, action) + [
+        events = self.public_communication_events(agent, action) + [
             Event(
                 kind="choice",
                 actor=agent,
@@ -447,7 +447,7 @@ class RenewableResource(Mechanism):
             chosen = Action.model_validate(payload)
             amount = chosen.amount * ratio
             self.state["balances"][key] += amount
-            events += self.communicate(key, chosen)
+            events += self.public_communication_events(key, chosen)
             events.append(
                 Event(
                     kind="extraction",

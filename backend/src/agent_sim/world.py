@@ -105,7 +105,7 @@ class World(ABC):
             "legal_actions": actions,
         }
 
-    def communication(self, agent: str, action: Action) -> list[Event]:
+    def communication_events(self, agent: str, action: Action) -> list[Event]:
         if action.target and action.target not in self.ids:
             raise ValueError("Message recipient must be a participant key or empty for everyone")
         if not self.parameters.communication and (

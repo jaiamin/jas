@@ -14,7 +14,7 @@ from sqlalchemy.exc import NoResultFound
 from .assistants import Assistants
 from .db import Annotation, Database, ProviderCall, Workspace
 from .domain import Design, Strict
-from .environments import CATALOG, MEASURE_DESCRIPTIONS, RULE_VERSION
+from .environments import CATALOG, MEASURE_DESCRIPTIONS
 from .execution import Engine
 from .llm import LanguageModels, ProviderFailure
 from .research import Research
@@ -157,7 +157,6 @@ def create_app(
                 "budget_usd": workspace.ceiling / 1_000_000,
                 "charged_usd": workspace.charged / 1_000_000,
                 "usage": models.usage(),
-                "rule_version": RULE_VERSION,
                 "storage": "SQLite" if db.engine.dialect.name == "sqlite" else "PostgreSQL",
                 "concurrent_runs": engine.concurrency,
                 "mode": "local",

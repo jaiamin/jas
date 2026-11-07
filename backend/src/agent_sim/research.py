@@ -23,17 +23,30 @@ from .db import (
 )
 from .domain import Design, Treatment
 from .environments import CATALOG, create_world
-from .llm import PRICES, LanguageModels
+from .llm import PRICES, LanguageModels, Usage
 from .metrics import aggregate_metrics
 
 
 @lru_cache(maxsize=512)
-def interval(values: tuple[float, ...]) -> list[float] | None:
+def bootstrap_mean_interval(values: tuple[float, ...]) -> list[float] | None:
     if len(values) < 3:
         return None
     rng = random.Random(71)
     samples = sorted(statistics.mean(rng.choices(values, k=len(values))) for _ in range(1000))
     return [samples[24], samples[974]]
+
+
+def study_status(statuses: Sequence[str]) -> str:
+    counts = Counter(statuses)
+    if any(counts[status] for status in ("running", "queued", "pausing")):
+        return "running"
+    if counts["complete"] == len(statuses):
+        return "complete"
+    if counts["failed"]:
+        return "failed"
+    if counts["ready"] == len(statuses):
+        return "ready"
+    return "paused"
 
 
 def event_dict(event: RecordedEvent) -> dict:
@@ -155,7 +168,7 @@ class Research:
         design: Design,
         condition: Treatment,
         revision: int,
-        usage: dict | None = None,
+        usage: Usage | None = None,
     ) -> dict:
         return {
             "id": run.id,
@@ -195,7 +208,7 @@ class Research:
                 query = query.where(Run.id.in_(run_ids))
             rows = session.execute(query).all()
             usage = self.models.usage_by_run({run.id for run, _, _ in rows})
-            empty = {
+            empty: Usage = {
                 "requests": 0,
                 "input_tokens": 0,
                 "output_tokens": 0,
@@ -240,17 +253,7 @@ class Research:
                 design = Design.model_validate(latest[study.id].design)
                 statuses = by_study[study.id]
                 counts = Counter(statuses)
-                status = (
-                    "running"
-                    if counts["running"] or counts["queued"] or counts["pausing"]
-                    else "complete"
-                    if counts["complete"] == len(statuses)
-                    else "failed"
-                    if counts["failed"]
-                    else "ready"
-                    if counts["ready"] == len(statuses)
-                    else "paused"
-                )
+                status = study_status(statuses)
                 result.append(
                     {
                         "id": study.id,
@@ -479,7 +482,7 @@ class Research:
                         "metric": metric,
                         "mean": statistics.mean(values) if values else None,
                         "runs": len(values),
-                        "interval": interval(tuple(values)),
+                        "interval": bootstrap_mean_interval(tuple(values)),
                         "method": "run-level percentile bootstrap, 1000 resamples"
                         if len(values) >= 3
                         else "Too few independent runs for an interval",
@@ -515,7 +518,7 @@ class Research:
                         "mean": statistics.mean(values),
                         "seeds": len(values),
                         "pairs": sum(map(len, seeds.values())),
-                        "interval": interval(values),
+                        "interval": bootstrap_mean_interval(values),
                         "method": "Matched differences; repetitions averaged within seed; "
                         "95% seed-level percentile bootstrap, 1000 resamples",
                     }

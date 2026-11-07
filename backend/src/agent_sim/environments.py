@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 from .domain import Action, Decision, Design, Event, Measure, Parameters
 from .mechanisms import Bargaining, Information, Institution, RenewableResource
-from .world import RULE_VERSION as RULE_VERSION
 from .world import World
 
 
@@ -53,7 +52,7 @@ class Commons(World):
             raise ValueError("Contribution exceeds the round endowment")
         if action.promise is not None and action.promise > self.parameters.endowment:
             raise ValueError("Promise exceeds the round endowment")
-        self.communication(agent, action)
+        self.communication_events(agent, action)
         self.state["pending"][agent] = action.model_dump()
         self.state["position"] += 1
         if self.state["position"] < len(self.ids):
@@ -106,7 +105,7 @@ class Commons(World):
                         },
                     )
                 )
-            events += self.communication(key, chosen)
+            events += self.communication_events(key, chosen)
             if chosen.promise is not None and self.state["round"] < self.design.rounds:
                 promise = {"amount": chosen.promise, "due_round": self.state["round"] + 1}
                 self.state["promises"][key] = promise
@@ -200,7 +199,7 @@ class TrustExchange(World):
         )
         if action.kind != ("return" if receiving else "send") or action.amount > available:
             raise ValueError("Transfer must match the current role and available credits")
-        events = self.communication(agent, action)
+        events = self.communication_events(agent, action)
         target = sender if receiving else receiver
         previous = self.state["promises"].pop(agent, None)
         if previous is not None:
@@ -343,7 +342,7 @@ class Coordination(World):
         if action.kind == "wait" and action.target:
             raise ValueError("Wait requires an empty target")
         communication_action = action.model_copy(update={"target": ""})
-        events = self.communication(agent, communication_action)
+        events = self.communication_events(agent, communication_action)
         if task is not None:
             completed = {t["key"] for t in self.state["tasks"] if t["completed_by"]}
             if task["completed_by"]:

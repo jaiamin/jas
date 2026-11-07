@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from sqlalchemy import select, update
 
 from .db import Database, Measurement, RecordedEvent, Run, Turn, digest, now
+from .diagnostics import log_failure
 from .domain import Decision
 from .environments import CATALOG, create_world
 from .llm import LanguageModels, ProviderFailure
@@ -187,6 +188,7 @@ class Engine:
         except (ValueError, ProviderFailure) as error:
             self._status(run_id, "failed", str(error))
         except Exception as error:
+            log_failure(f"Run {run_id} failed", error)
             self._status(
                 run_id, "failed", f"Execution failed ({type(error).__name__}); checkpoint retained."
             )

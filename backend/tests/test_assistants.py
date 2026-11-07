@@ -354,3 +354,38 @@ def test_investigator_uses_shared_metric_rules_at_its_frozen_cutoff(runtime, mon
     assert indexed["through_turn"] == 2
     assert indexed["metrics"] == {"stock_fraction": 0.2, "collapse_rate": 1}
     assert research.metrics(rid) == {"stock_fraction": 0.9, "collapse_rate": 1}
+
+
+def test_final_investigation_call_cannot_fetch_evidence_without_a_consumer(
+    runtime, design, monkeypatch
+):
+    from agent_sim.assistants import TurnRequest
+
+    db, llm, research, _ = runtime
+    sid = research.save_design(design)
+    rid = research.study(sid)["runs"][0]["id"]
+    prompts, reads = [], []
+    evidence = research.evidence
+
+    def record_evidence(*args):
+        reads.append(args)
+        return evidence(*args)
+
+    async def request_more(*args, **kwargs):
+        prompts.append(kwargs["prompt"])
+        return Investigation(requests=[TurnRequest(kind="turn", run_id=rid, turn=0)], answer=None)
+
+    monkeypatch.setattr(llm, "generate", request_more)
+    monkeypatch.setattr(research, "evidence", record_evidence)
+
+    async def exercise():
+        assistant = Assistants(db, research, llm)
+        key = assistant.start("Inspect everything", purpose="analysis", run_id=rid)
+        await assistant.tasks[key]
+        assert assistant.get(key)["status"] == "failed"
+        assert "request limit" in assistant.get(key)["error"]
+        await assistant.close()
+
+    asyncio.run(exercise())
+    assert len(prompts) == 4
+    assert len(reads) == 4  # Initial cutoff plus three evidence-gathering rounds.

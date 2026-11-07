@@ -334,7 +334,6 @@ export interface Settings {
   budget_usd: number;
   charged_usd: number;
   usage: Usage;
-  rule_version: string;
   storage: string;
   concurrent_runs: number;
   mode: string;

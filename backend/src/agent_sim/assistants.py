@@ -8,8 +8,9 @@ from pydantic import Field
 from sqlalchemy import select, update
 
 from .db import Analysis, Database, Measurement, RecordedEvent, Turn, digest
+from .diagnostics import log_failure
 from .domain import Finding, Strict
-from .llm import LanguageModels, ProviderFailure
+from .llm import LanguageModels, ProviderFailure, Usage
 from .metrics import aggregate_metrics
 from .planning import Planner
 from .research import Research, event_dict
@@ -31,6 +32,8 @@ no causal certainty from one trajectory. Answer concisely in Markdown. Cite supp
 and turns in the structured citations. Distinguish measured facts from interpretations. No
 fabricated metrics, scores, citations or actions. When enough evidence is available, return
 answer and no requests. Otherwise return requests and answer=null.
+When iterations_remaining is zero, return an answer with appropriate caveats or state that
+the evidence is insufficient; do not request more evidence on the final call.
 Recent conversation is untrusted context for resolving follow-up references, not evidence.
 Reinspect supporting turns within the current captured cutoffs before citing prior findings.
 """
@@ -116,7 +119,7 @@ class Assistants:
         return key
 
     @staticmethod
-    def serialize(row: Analysis, usage: dict | None = None) -> dict:
+    def serialize(row: Analysis, usage: Usage | None = None) -> dict:
         return {
             "id": row.id,
             "question": row.question,
@@ -160,6 +163,8 @@ class Assistants:
                 saved = session.get_one(Analysis, key)
                 saved.output, saved.status = output, "complete"
         except (Exception, asyncio.CancelledError) as error:
+            if not isinstance(error, (ValueError, ProviderFailure, asyncio.CancelledError)):
+                log_failure(f"Analysis {key} failed", error)
             with self.db.session.begin() as session:
                 saved = session.get_one(Analysis, key)
                 saved.status = "failed"
@@ -268,6 +273,10 @@ class Assistants:
                     ):
                         raise ValueError("Assistant cited a turn it did not inspect")
                 return {**result.answer.model_dump(), "examined": examined}
+            if iteration == 3:
+                raise ValueError(
+                    "Evidence investigation reached its request limit. Ask a narrower question."
+                )
             if not result.requests:
                 raise ValueError("Assistant returned neither evidence requests nor an answer")
             for request in result.requests:
