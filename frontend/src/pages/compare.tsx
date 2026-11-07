@@ -1,5 +1,4 @@
 import { useQueries } from "@tanstack/react-query";
-import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { MetricChart } from "@/components/charts";
@@ -39,12 +38,6 @@ export default function Compare() {
     : (keys[0] ?? "contribution_rate");
   return (
     <>
-      <div className="back-link">
-        <Link to="/runs">
-          <ArrowLeft />
-          Run library
-        </Link>
-      </div>
       <PageHeading
         title="Compare runs"
         description="Recorded outcomes side by side. Different designs may not support a causal comparison."

@@ -1,0 +1,619 @@
+{
+  "kind": "multi-stage planner live smoke test",
+  "records": [
+    {
+      "id": "6de4489a1d00446e",
+      "question": "When do agents contribute less under resource scarcity? Design a compact controlled pilot, choosing and justifying the group size, duration and replication.",
+      "purpose": "design",
+      "status": "failed",
+      "output": {
+        "stage": "drafting",
+        "planning": {
+          "brief": {
+            "supported": true,
+            "explanation": "Use a commons pilot to test whether an unannounced, temporary endowment reduction lowers the fraction agents contribute, rather than merely lowering their available resources. This studies observable model-agent behavior, not human prediction. Scarcity is operationalized only as reduced endowment; it does not simulate physical deprivation. A two-condition comparison identifies responses during scarcity and after restoration, but does not establish a scarcity threshold or statistical power. Use openai:gpt-6-luna throughout, with a $3 total budget. No external research is needed.",
+            "operationalization": "Study key: scarcity_pilot. Use three agents, agent_a, agent_b and agent_c, with identical profiles across conditions: role 'commons participant'; goal 'Earn personal payoff while maintaining worthwhile shared returns over the session.' Do not instruct selfishness. Both conditions use sealed contributions, multiplier 1.5, communication off, memory on and private_signal off. Condition stable: resource_schedule [{round:1,endowment:10}]. Condition scarcity: resource_schedule [{round:1,endowment:10},{round:5,endowment:2},{round:9,endowment:10}]. Endowments apply per agent; current budgets are visible, but future changes are not announced. No profile_overrides are needed because only resources change. Primary measure: contribution_rate. Secondary measure: group_payoff. Average contribution_rate within each group for baseline rounds 1\u20134, scarcity rounds 5\u20138 and recovery rounds 9\u201312. For each matched seed, subtract the stable condition's baseline-to-scarcity change from the scarcity condition's change; a negative contrast indicates reduced proportional contribution under scarcity. Repeat for recovery to assess persistence. Report all three seed contrasts and their mean, retaining uncertainty; treat group_payoff descriptively, since endowments directly affect it.",
+            "size_rationale": "Three agents provide a genuine shared pool with two peers per participant while avoiding an unnecessary fourth agent. With multiplier 1.5, contributions yield shared gains but each contributor receives only half their own contribution back directly, creating a personal-versus-group payoff tension without prescribing behavior. Two conditions are the minimum matched intervention/control design; restoration within the intervention tests recovery without adding another condition. Three independent environment seeds, each matched across conditions, provide minimal exploratory replication. One fresh-model repetition per seed-condition keeps this pilot compact; it does not separately estimate within-seed model variability. Twelve rounds give four baseline, four scarcity and four recovery opportunities, allowing repeated responses rather than a single reaction. Commons has no completion milestone requiring extra rounds. Total: six group runs and 216 agent-rounds. Budget allocation is $3 total at listed model prices; actual token usage must remain within that allocation. These choices are exploratory, not a power calculation.",
+            "agents": 3,
+            "conditions": 2,
+            "seeds": 3,
+            "repetitions": 1,
+            "rounds": 12,
+            "research_query": null
+          },
+          "sources": [],
+          "reviews": []
+        }
+      },
+      "error": "openai:gpt-6.1-sol request failed (ModelTimeoutError). No retry or substitute model was used.",
+      "cutoffs": {},
+      "created": "2026-11-07T03:34:57.811513+00:00",
+      "study_id": null,
+      "run_id": null,
+      "usage": {
+        "requests": 2,
+        "input_tokens": 1235,
+        "output_tokens": 992,
+        "cost_usd": 0.219348,
+        "partial": true
+      }
+    },
+    {
+      "id": "0a989e8b2b374dab",
+      "question": "Design a pilot with exactly two agents to study reciprocity in repeated trust exchange. Research primary experimental methods on trust games first, and use those methods only where the installed mechanics support them.",
+      "purpose": "design",
+      "status": "complete",
+      "output": {
+        "supported": false,
+        "explanation": "The installed trust_exchange mechanics support two-agent repeated transfers and opportunities to reciprocate. However, your requirement to research primary experimental methods first cannot be completed: no literature-search or source-retrieval tool is available. I cannot claim to have reviewed primary studies or validated their compatibility. The public query below could support that prerequisite; no executable study design is supplied.",
+        "design": null,
+        "planning": {
+          "brief": {
+            "supported": false,
+            "explanation": "The installed trust_exchange mechanics support two-agent repeated transfers and opportunities to reciprocate. However, your requirement to research primary experimental methods first cannot be completed: no literature-search or source-retrieval tool is available. I cannot claim to have reviewed primary studies or validated their compatibility. The public query below could support that prerequisite; no executable study design is supplied.",
+            "operationalization": "Design withheld pending primary-source review. A subsequent study could operationalize observable reciprocity using the supported return_rate measure, with trust_rate as a complementary measure. Interpretation would concern model-controlled agents, not validated human behavior. Source review must establish which methodological features map to the installed mechanics without assuming unsupported transfer rules, role switching, or partner policies.",
+            "size_rationale": "The required numeric fields are provisional sizing only, not a completed design: exactly two agents form one exchange pair; one condition suffices for a descriptive pilot rather than an intervention claim; three independent seeds provide initial variability checks; one repetition avoids unnecessary duplicate runs. Eight rounds would provide an opening exchange followed by seven repeated opportunities, subject to confirming exchange timing and early-completion behavior. These choices do not establish statistical power. Any eventual study would use openai:gpt-6-luna and a $3 budget cap.",
+            "agents": 2,
+            "conditions": 1,
+            "seeds": 3,
+            "repetitions": 1,
+            "rounds": 8,
+            "research_query": "Find primary experimental studies of two-person repeated trust/investment games, including Berg, Dickhaut, and McCabe (1995) as foundational context. Extract transfer and return rules, matching, role assignment, repetition, information, communication, and reciprocity measures; distinguish original experimental procedures from later interpretations."
+          },
+          "sources": [],
+          "reviews": []
+        }
+      },
+      "error": null,
+      "cutoffs": {},
+      "created": "2026-11-07T03:36:49.201353+00:00",
+      "study_id": null,
+      "run_id": null,
+      "usage": {
+        "requests": 1,
+        "input_tokens": 1245,
+        "output_tokens": 849,
+        "cost_usd": 0.01098,
+        "partial": false
+      }
+    },
+    {
+      "id": "36d2f86afa1e40ce",
+      "question": "Can this platform predict the actual winner of the next US presidential election with calibrated human voter agents?",
+      "purpose": "design",
+      "status": "complete",
+      "output": {
+        "supported": false,
+        "explanation": "No. The platform supports experiments on model-controlled agents, not validated predictions of actual election outcomes. Its listed mechanics provide neither calibrated human voter agents nor a validated election forecasting model. Agent profiles are hypotheses, not representative or calibrated humans; simulated outcomes would not establish who will win the next US presidential election.",
+        "design": null,
+        "planning": {
+          "brief": {
+            "supported": false,
+            "explanation": "No. The platform supports experiments on model-controlled agents, not validated predictions of actual election outcomes. Its listed mechanics provide neither calibrated human voter agents nor a validated election forecasting model. Agent profiles are hypotheses, not representative or calibrated humans; simulated outcomes would not establish who will win the next US presidential election.",
+            "operationalization": "design=null. The requested outcome is the actual election winner, with human-voter calibration essential to the claim. None of the available environments implements voting, electoral aggregation, representative voter sampling or validation against real voting behavior. Commons, trust and coordination measures\u2014including forecast_error\u2014cannot establish electoral predictive validity. No proxy experiment is proposed.",
+            "size_rationale": "No study is warranted because the essential mechanics and validation capabilities are unavailable. The numeric fields are required schema placeholders, not a proposed or executable design; no agents, conditions, seeds, repetitions or rounds should be run.",
+            "agents": 2,
+            "conditions": 1,
+            "seeds": 3,
+            "repetitions": 1,
+            "rounds": 1,
+            "research_query": null
+          },
+          "sources": [],
+          "reviews": []
+        }
+      },
+      "error": null,
+      "cutoffs": {},
+      "created": "2026-11-07T03:37:07.887179+00:00",
+      "study_id": null,
+      "run_id": null,
+      "usage": {
+        "requests": 1,
+        "input_tokens": 1227,
+        "output_tokens": 285,
+        "cost_usd": 0.005304,
+        "partial": false
+      }
+    },
+    {
+      "id": "3fab5d9dbc364305",
+      "question": "When do agents contribute less under resource scarcity? Design a compact controlled pilot, choosing and justifying the group size, duration and replication.",
+      "purpose": "design",
+      "status": "complete",
+      "output": {
+        "supported": true,
+        "explanation": "Supported as a controlled commons pilot of model-agent behavior, not human prediction. Retain the brief's compact design: four agents, two conditions, three matched seeds, one repetition and nine rounds (six group runs; 216 agent-round decisions). Four agents create a personal-versus-collective payoff tradeoff with multiplier 2. A matched stable control separates scarcity from repeated-play trends; three rounds per phase distinguish immediate from sustained responses. Three seeds provide exploratory replication, not established power. No additional severity arm is necessary.",
+        "design": {
+          "title": "Contribution fractions during scarcity and resource restoration",
+          "question": "Does an unannounced reduction in available credits reduce model agents' contribution fraction, beyond changes under stable resources, and does any reduction persist after resources return?",
+          "hypothesis": "Relative to a stable-resource control, reducing endowment from 20 to 10 credits may lower contribution_rate during scarcity. A remaining negative control-adjusted change after restoration would indicate persistence within this sequence. These are testable hypotheses, not assumed agent traits; null or positive effects are possible.",
+          "environment": "commons",
+          "context": "Each round, four agents receive the current endowment and make sealed contributions. Contributions are multiplied by 2 and shared equally; agents retain unspent credits. Each contributed credit therefore returns 0.5 credits to its contributor and 2 credits to the group. Current budgets are visible, while future resource changes are unannounced. No communication or private signals are enabled; episodic memory is held fixed. Stable resources remain at 20 credits. The scarcity condition uses 20 credits in rounds 1\u20133, 10 in rounds 4\u20136 and 20 in rounds 7\u20139. All profiles and all other mechanics remain identical. Pair conditions by environment seed and start each run with fresh model state. Analyze the group run as the replication unit, not individual agents or rounds. For each seed, compute the scarcity-minus-stable difference in the change of mean contribution_rate from rounds 1\u20133 to rounds 4\u20136. Compute the analogous contrast from rounds 1\u20133 to rounds 7\u20139 for persistence. Negative contrasts indicate reduced contribution fraction, not merely fewer available credits. Show round-level contribution_rate trajectories to distinguish onset from sustained effects. Report all three seed-level contrasts, their mean and range; avoid confirmatory significance or human-prediction claims. Use group_payoff only descriptively because resource availability changes payoffs mechanically. Nine rounds provide three opportunities per phase; commons has no task-completion stopping rule. Complete scheduled runs unless the $3 cap intervenes; report incomplete runs and do not substitute a model. With communication and signals disabled, seed randomization may be weak; matched seeds do not guarantee distinct trajectories.",
+          "profiles": [
+            {
+              "key": "agent_a",
+              "name": "Agent A",
+              "goal": "Allocate credits while considering both your retained payoff and the group's payoff.",
+              "role": "Commons participant",
+              "model": null
+            },
+            {
+              "key": "agent_b",
+              "name": "Agent B",
+              "goal": "Allocate credits while considering both your retained payoff and the group's payoff.",
+              "role": "Commons participant",
+              "model": null
+            },
+            {
+              "key": "agent_c",
+              "name": "Agent C",
+              "goal": "Allocate credits while considering both your retained payoff and the group's payoff.",
+              "role": "Commons participant",
+              "model": null
+            },
+            {
+              "key": "agent_d",
+              "name": "Agent D",
+              "goal": "Allocate credits while considering both your retained payoff and the group's payoff.",
+              "role": "Commons participant",
+              "model": null
+            }
+          ],
+          "tasks": [],
+          "conditions": [
+            {
+              "key": "stable",
+              "name": "Stable resources",
+              "description": "Matched control: 20 credits throughout all nine rounds. Controls for ordinary repeated-play trends without changing profiles or other rules.",
+              "model": "openai:gpt-6-luna",
+              "parameters": {
+                "endowment": 20,
+                "multiplier": 2.0,
+                "communication": false,
+                "memory": "episodic",
+                "private_signal": false,
+                "task_count": 8,
+                "resource_schedule": []
+              },
+              "profile_overrides": []
+            },
+            {
+              "key": "scarcity_recovery",
+              "name": "Scarcity followed by restoration",
+              "description": "Start at 20 credits; reduce to 10 at round 4 and restore to 20 at round 7. Changes persist until the next scheduled change. Future changes are unannounced; current budgets are visible. Only the resource schedule differs from control.",
+              "model": "openai:gpt-6-luna",
+              "parameters": {
+                "endowment": 20,
+                "multiplier": 2.0,
+                "communication": false,
+                "memory": "episodic",
+                "private_signal": false,
+                "task_count": 8,
+                "resource_schedule": [
+                  {
+                    "round": 4,
+                    "endowment": 10
+                  },
+                  {
+                    "round": 7,
+                    "endowment": 20
+                  }
+                ]
+              },
+              "profile_overrides": []
+            }
+          ],
+          "seeds": [
+            17,
+            43,
+            89
+          ],
+          "repetitions": 1,
+          "rounds": 9,
+          "budget_usd": 3.0,
+          "openai_reasoning_effort": "low",
+          "response_tokens": 512,
+          "limitations": [
+            "Three seeds provide limited uncertainty resolution; this is exploratory, not a powered confirmatory study.",
+            "With communication and signals disabled, environmental seed variation may be weak; seeds need not yield distinct trajectories.",
+            "One repetition per seed does not separately estimate within-seed model-output variability.",
+            "Endowment changes also change feasible contribution-fraction granularity.",
+            "Restoration follows scarcity, so recovery is history-dependent rather than an independent treatment.",
+            "Lower group payoff under scarcity is not itself evidence of lower willingness to contribute.",
+            "Results concern these model agents and settings, not validated human behavior.",
+            "A binding budget cap may leave incomplete runs; disclose missing phases and avoid claiming a complete matched contrast."
+          ],
+          "measures": [
+            "contribution_rate",
+            "group_payoff"
+          ]
+        },
+        "planning": {
+          "brief": {
+            "supported": true,
+            "explanation": "Supported as a controlled commons pilot of model-agent behavior, not human prediction. Ask whether an unannounced reduction in available credits lowers the fraction contributed, and whether that reduction persists after resources return. Lower credit contributions alone would be a mechanical consequence of scarcity, not evidence of reduced willingness to contribute. Three seeds provide exploratory contrasts, not established statistical power.",
+            "operationalization": "Use openai:gpt-6-luna in commons. Keep agent keys agent_a, agent_b, agent_c, agent_d and identical profiles across conditions; goal: 'Allocate credits while considering both your retained payoff and the group's payoff.' Conditions: stable has endowment=20 and no resource changes; scarcity_recovery starts at 20, with resource_schedule=[{round:4,endowment:10},{round:7,endowment:20}]. Both use multiplier=2, communication=false, memory=episodic, private_signal=false. Current budgets are visible; future changes are unannounced. Keep all other rules fixed and pair conditions by seed. Primary measure: contribution_rate. For each seed, contrast the change from rounds 1\u20133 to rounds 4\u20136 in scarcity_recovery against that change in stable. A negative contrast indicates a scarcity-associated reduction in contribution fraction. Compare rounds 7\u20139 against baseline using the same control adjustment to assess persistence or recovery; show individual round trajectories to locate onset. Report seed-level contrasts, their mean and range, without treating agent-rounds as independent replicates. Use group_payoff descriptively; scarcity directly changes available resources, so lower payoff alone is not behavioral evidence. Limitations: Endowment changes also change feasible action granularity. Restoration shares the same history as scarcity and is not an independent treatment. No claims about humans.",
+            "size_rationale": "Use 4 agents: with multiplier 2, each contributed credit returns 0.5 to its contributor but 2 to the group, creating a genuine personal-versus-collective tradeoff in a small group. Use 2 conditions: a stable matched control is essential to separate scarcity from ordinary repeated-play changes; no severity arm is needed for this pilot. Use 3 independent environment seeds, matched across conditions, and 1 fresh-model repetition per seed-condition: 6 group runs total. Extra within-seed repetitions are deferred because this pilot prioritizes independent seeded runs over model-resampling precision; three seeds still offer limited uncertainty resolution. Use 9 rounds: 3 baseline, 3 scarcity and 3 restoration opportunities allow initial versus sustained responses and early recovery without a long horizon. Commons has no task-completion stopping criterion. Total: 216 agent-round decisions. Budget cap $3; use concise outputs and bounded memory context, and stop rather than exceed the cap. This is an exploratory design, not a powered confirmatory study.",
+            "agents": 4,
+            "conditions": 2,
+            "seeds": 3,
+            "repetitions": 1,
+            "rounds": 9,
+            "research_query": null
+          },
+          "sources": [],
+          "reviews": [
+            {
+              "kind": "review",
+              "issues": []
+            }
+          ]
+        }
+      },
+      "error": null,
+      "cutoffs": {},
+      "created": "2026-11-07T03:38:37.527519+00:00",
+      "study_id": null,
+      "run_id": null,
+      "usage": {
+        "requests": 3,
+        "input_tokens": 8553,
+        "output_tokens": 2059,
+        "cost_usd": 0.037696,
+        "partial": false
+      }
+    },
+    {
+      "id": "e730429dbc484b00",
+      "question": "Design a pilot with exactly two agents to study reciprocity in repeated trust exchange. Research primary experimental methods on trust games first, and use those methods only where the installed mechanics support them.",
+      "purpose": "design",
+      "status": "complete",
+      "output": {
+        "supported": true,
+        "explanation": "Supported as a descriptive study of model-controlled agents. Using the supplied primary-source research, the protocol adopts realized sequential transfers, tripling, and positive-transfer repayment analysis, but does not claim a replication of human experiments. No external research or execution is required. The brief's size is unchanged: exactly two agents, one baseline condition, three independent seeds, one fresh run per seed, and up to 12 exchanges per run (36 total). One condition suffices because no intervention is proposed; 12 rounds provide repeated repayment opportunities without a long horizon. This is a feasibility pilot, not a powered causal test.",
+        "design": {
+          "title": "Two-agent repeated trust-exchange reciprocity pilot",
+          "question": "In repeated trust_exchange interactions between exactly two model-controlled agents, do positive transfers elicit returns, does the returned fraction vary with the sender's transfer fraction, and are prior returns associated with later transfers by the same sender? These are descriptive indicators of reciprocity-like behavior, not tests of human behavior or reciprocal motives.",
+          "hypothesis": "Exploratorily, positive transfers will sometimes elicit positive returns, and higher prior returned fractions will be associated with higher subsequent transfer fractions when the same sender acts again. The relationship between current transfer fraction and returned fraction is exploratory and need not be positive. Null, heterogeneous, and declining trajectories are plausible.",
+          "environment": "trust_exchange",
+          "context": "Methodological basis: the supplied primary-source research identifies Berg, Dickhaut & McCabe (1995), Trust, Reciprocity, and Social History, Games and Economic Behavior 10:122\u2013142, doi:10.1006/game.1995.1027, as a one-shot sequential investment benchmark. Cochard, Nguyen Van & Willinger (2004), Trusting behavior in a repeated investment game, JEBO 55:31\u201344, doi:10.1016/j.jebo.2003.07.004, provides a repeated fixed-partner precedent. These support endowment 10, multiplier 3, realized rather than hypothetical return decisions, and separating zero transfers from repayment opportunities. Their separate receiver endowments and prescribed role schedules cannot be imported. Engle-Warnick & Slonim (2004), JEBO 55:553\u2013573, doi:10.1016/j.jebo.2003.11.008, uses restricted binary choices and different horizons; those methods are not imposed here. Procedural details unverified in the supplied research remain unverified.\n\nProtocol: run only agent_a and agent_b with identical neutral goals. Each exchange follows the installed sender/receiver schedule. The sender has 10 credits, sends an allowed amount, and the receiver can return from the tripled proceeds. Retain installed rounding and action constraints. With two agents the counterpart is necessarily the other agent; do not prescribe role alternation. Disable communication and private signals; retain episodic memory. Do not add receiver endowments, scripts, contingent-return elicitation, or binding commitments. Context does not alter rules. Do not claim experimental anonymity or human monetary incentives.\n\nRun baseline independently with seeds 17, 43, and 89, fresh agent instances per seed and no memory across runs. Allow up to 12 exchange rounds, respecting installed early termination. This yields three dyad trajectories, not 36 independent observations. Record actual role opportunities and completed exchanges; do not assume either agent has equal sender exposure.\n\nAnalysis uses only trust_rate and return_rate. Confirm their adapter definitions before interpreting fractions: intended trust_rate is sent/endowment and intended return_rate is returned/received. Check how zero transfers are encoded. A zero-transfer round has no discretionary repayment opportunity; exclude it from conditional repayment summaries even if the adapter records return_rate=0. Do not modify the recorded metric or invent an unsupported metric. If zero-transfer opportunities cannot be identified, report that conditional repayment analysis is unavailable.\n\nShow each run's trust_rate and return_rate trajectories, marking zero-transfer opportunities. Among positive-transfer rounds, descriptively compare return_rate across observed trust_rate values; do not force bins if observations are sparse. For each sender, relate return_rate on its previous positive-transfer opportunity to trust_rate on its next sender opportunity, only when roles and chronology are available. Report eligible observation counts, missingness, per-run summaries and between-run ranges. Avoid significance claims or pooled round-level independence. If role exposure, variation, or logging is inadequate, report the relevant comparison as not estimable. History, transfer size, and round position remain confounded; no causal reciprocity or learning claim follows.",
+          "profiles": [
+            {
+              "key": "agent_a",
+              "name": "Agent A",
+              "goal": "Earn credits over repeated exchanges by choosing transfers or returns under the displayed rules.",
+              "role": "Exchange participant; sender or receiver as assigned by installed rules",
+              "model": "openai:gpt-6-luna"
+            },
+            {
+              "key": "agent_b",
+              "name": "Agent B",
+              "goal": "Earn credits over repeated exchanges by choosing transfers or returns under the displayed rules.",
+              "role": "Exchange participant; sender or receiver as assigned by installed rules",
+              "model": "openai:gpt-6-luna"
+            }
+          ],
+          "tasks": [],
+          "conditions": [
+            {
+              "key": "baseline",
+              "name": "Sequential exchange baseline",
+              "description": "Single descriptive condition: endowment 10, tripled transfers, no communication or private signals, and episodic memory. Installed roles and sequential realized returns are retained. No treatment effect is claimed; additional conditions would introduce an unrequested mechanism test.",
+              "model": "openai:gpt-6-luna",
+              "parameters": {
+                "endowment": 10,
+                "multiplier": 3.0,
+                "communication": false,
+                "memory": "episodic",
+                "private_signal": false,
+                "task_count": 8,
+                "resource_schedule": []
+              },
+              "profile_overrides": []
+            }
+          ],
+          "seeds": [
+            17,
+            43,
+            89
+          ],
+          "repetitions": 1,
+          "rounds": 12,
+          "budget_usd": 3.0,
+          "openai_reasoning_effort": "low",
+          "response_tokens": 512,
+          "limitations": [
+            "Model-agent behavior does not validate predictions about humans or establish reciprocal motives.",
+            "Three dyad trajectories are a feasibility sample, not a powered test; rounds are dependent.",
+            "Installed role scheduling may limit sender-specific history comparisons; alternation is not assumed.",
+            "No separate receiver endowment or human experimental anonymity is implemented; this is not an exact replication.",
+            "History, transfer size, and round position are confounded; associations are not causal reciprocity or proof of learning.",
+            "Zero-transfer encoding and role-level logs must be checked; unavailable conditional analyses will be reported as such.",
+            "Seed differences may yield little environment variation with only two agents; fresh runs still differ in model sampling.",
+            "Primary-method details rely on supplied research; unverified procedures are not treated as established."
+          ],
+          "measures": [
+            "trust_rate",
+            "return_rate"
+          ]
+        },
+        "planning": {
+          "brief": {
+            "supported": true,
+            "explanation": "The installed trust_exchange supports a two-agent pilot of observable transfer and return behavior, not predictions about humans. Primary-method research should precede finalization; the query below requests that next-stage research. Use published methods only when compatible with the installed rules. This descriptive pilot can reveal reciprocity-like associations, but cannot establish causal reciprocity, motives, or learning.",
+            "operationalization": "Use trust_exchange with exactly two agents, agent_a and agent_b, both openai:gpt-6-luna. One condition, baseline: endowment=10, multiplier=3, communication=false, memory=episodic, private_signal=false, resource_schedule=[]. Both receive the same neutral goal: 'Earn credits over repeated exchanges by choosing transfers or returns under the displayed rules.' Retain the installed role schedule; do not assume controllable role alternation. Research should check the endowment, multiplier, information and timing against primary trust-game methods before finalization. Do not add receiver endowments, strategy-method elicitation, partner scripts or binding commitments. Measure only trust_rate and return_rate. Describe return_rate across observed trust_rate levels as an indicator of repayment reciprocity; examine whether prior returns are associated with later trust_rate when the same sender acts again. Treat no-transfer rounds as lacking a repayment opportunity, not automatic nonreciprocity; check how the adapter encodes their return_rate. Summarize trajectories separately for each seeded run and report variation, not just pooled averages. Retain uncertainty about history, transfer size and round effects. Set a $3 budget cap.",
+            "size_rationale": "Two agents meet the explicit count and provide one genuine sender\u2013receiver dyad per exchange. One descriptive condition is sufficient because no intervention or causal effect is requested; extra conditions would add an unrequested mechanism test. Use three independent seeds with the same baseline settings and one fresh-model run per seed, yielding three dyad trajectories. No repetitions are added because environment diversity is more useful for this small pilot than repeated sampling under identical seeds. Twelve rounds per run provide repeated transfer\u2013return opportunities and exploratory history comparisons without a long horizon: 36 dyad-rounds total. Follow the installed stopping rules if a run completes early. Role scheduling may limit sender-specific comparisons; report that rather than inventing alternation. This size is a feasibility choice, not a claim of statistical power. If research motivates a later intervention, add a matched control and reuse seeds across conditions.",
+            "agents": 2,
+            "conditions": 1,
+            "seeds": 3,
+            "repetitions": 1,
+            "rounds": 12,
+            "research_query": "Find primary experimental trust-game methods: Berg, Dickhaut and McCabe (1995), and original repeated two-person investment/trust-game experiments on reciprocity. Extract sender/receiver endowments, transfer multiplier, sequential return rules, fixed versus alternating roles, partner matching, information/history, communication, horizon, and handling of zero transfers. Distinguish direct-response from strategy-method elicitation; provide primary-source citations."
+          },
+          "sources": [
+            {
+              "url": "https://www.sciencedirect.com/science/article/pii/S0899825685710275",
+              "title": "www.sciencedirect.com"
+            },
+            {
+              "url": "https://christosaioannou.com/Trust%2C%20Reciprocity%20and%20Social%20History%20GEB%201995.pdf",
+              "title": "christosaioannou.com"
+            },
+            {
+              "url": "https://www.sciencedirect.com/science/article/pii/S0167268104000083",
+              "title": "www.sciencedirect.com"
+            },
+            {
+              "url": "https://www.beta-economics.fr/uploads/2022/09/WP-HS2022_16-19_Dossier2_EcoExpe.pdf",
+              "title": "www.beta-economics.fr"
+            },
+            {
+              "url": "https://www.sciencedirect.com/science/article/pii/S0167268104000721",
+              "title": "www.sciencedirect.com"
+            },
+            {
+              "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=55450",
+              "title": "papers.ssrn.com"
+            },
+            {
+              "url": "https://dlc.dlib.indiana.edu/dlc/items/ad2c1487-e72d-41bb-803f-fb3f4f0abe50",
+              "title": "dlc.dlib.indiana.edu"
+            },
+            {
+              "url": "https://wirkungsoekonomie.de/quellenarchiv/wok-q-1082/",
+              "title": "wirkungsoekonomie.de"
+            },
+            {
+              "url": "https://doi.org/10.1002/0470018860.s00693",
+              "title": "doi.org"
+            },
+            {
+              "url": "https://ethnos.app/works/23312951",
+              "title": "ethnos.app"
+            },
+            {
+              "url": "https://www.sciencedirect.com/science/article/pii/S0167487001000678",
+              "title": "www.sciencedirect.com"
+            },
+            {
+              "url": "https://www.worldeconomicsassociation.org/files/journals/economicthought/Volume1Issue1.pdf",
+              "title": "www.worldeconomicsassociation.org"
+            },
+            {
+              "url": "https://www.mercatus.org/sites/default/files/d7/cultures-of-kindness-a-meta-analysis-of-trust-game-experiments-.pdf",
+              "title": "www.mercatus.org"
+            },
+            {
+              "url": "https://core.ac.uk/download/pdf/9047873.pdf",
+              "title": "core.ac.uk"
+            },
+            {
+              "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2581786/",
+              "title": "pmc.ncbi.nlm.nih.gov"
+            },
+            {
+              "url": "https://refubium.fu-berlin.de/bitstream/handle/fub188/3237/03_Chapter2TrustReciprocity.pdf?isAllowed=y&sequence=4",
+              "title": "refubium.fu-berlin.de"
+            },
+            {
+              "url": "https://econport.org/econport/request?page=man_tfr_experiments_summaries_bdm",
+              "title": "econport.org"
+            },
+            {
+              "url": "https://www.minicod.com/papers/trust-reciprocity-and-social-history-b5158d82",
+              "title": "www.minicod.com"
+            },
+            {
+              "url": "https://en.wikipedia.org/wiki/Trust_%28social_science%29",
+              "title": "en.wikipedia.org"
+            },
+            {
+              "url": "https://ru.wikipedia.org/wiki/%D0%98%D0%B3%D1%80%D0%B0_%D0%B2_%D0%B4%D0%BE%D0%B2%D0%B5%D1%80%D0%B8%D0%B5",
+              "title": "ru.wikipedia.org"
+            },
+            {
+              "url": "https://en.wikipedia.org/wiki/Cultural_economics",
+              "title": "en.wikipedia.org"
+            },
+            {
+              "url": "https://arxiv.org/abs/2305.01413",
+              "title": "arxiv.org"
+            },
+            {
+              "url": "https://arxiv.org/abs/2007.11338",
+              "title": "arxiv.org"
+            },
+            {
+              "url": "https://es.wikipedia.org/wiki/Juego_de_confianza",
+              "title": "es.wikipedia.org"
+            },
+            {
+              "url": "https://arxiv.org/abs/2208.12953",
+              "title": "arxiv.org"
+            },
+            {
+              "url": "https://arxiv.org/abs/1402.5593",
+              "title": "arxiv.org"
+            },
+            {
+              "url": "https://en.wikipedia.org/wiki/Gift-exchange_game",
+              "title": "en.wikipedia.org"
+            },
+            {
+              "url": "https://en.wikipedia.org/wiki/Gary_Charness",
+              "title": "en.wikipedia.org"
+            },
+            {
+              "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7309600/",
+              "title": "pmc.ncbi.nlm.nih.gov"
+            },
+            {
+              "url": "https://www.mcgill.ca/economics/files/economics/cv.jim_engle-warnick_nov13.pdf",
+              "title": "www.mcgill.ca"
+            },
+            {
+              "url": "https://plato.sydney.edu.au/entries/social-norms/",
+              "title": "plato.sydney.edu.au"
+            },
+            {
+              "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=300500",
+              "title": "papers.ssrn.com"
+            },
+            {
+              "url": "https://www.sciencedirect.com/science/article/abs/pii/S0167268104000721",
+              "title": "www.sciencedirect.com"
+            },
+            {
+              "url": "https://www.researchgate.net/publication/321061792_Author%27s_personal_copy_Does_players%27_identification_affect_trust_and_reciprocity_in_the_lab",
+              "title": "www.researchgate.net"
+            },
+            {
+              "url": "https://econpapers.repec.org/article/eeejeborg/v_3a55_3ay_3a2004_3ai_3a4_3ap_3a553-573.htm",
+              "title": "econpapers.repec.org"
+            },
+            {
+              "url": "https://www.researchgate.net/publication/4972333_The_evolution_of_strategies_in_a_repeated_trust_game",
+              "title": "www.researchgate.net"
+            },
+            {
+              "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5889416/",
+              "title": "pmc.ncbi.nlm.nih.gov"
+            },
+            {
+              "url": "https://biztonsagtudomanyi.szemle.uni-obuda.hu/index.php/home/article/download/228/190/",
+              "title": "biztonsagtudomanyi.szemle.uni-obuda.hu"
+            },
+            {
+              "url": "https://citeseerx.ist.psu.edu/document?doi=ce61444f1832febea6b4a5412f032d6432c22480&repid=rep1&type=pdf",
+              "title": "citeseerx.ist.psu.edu"
+            },
+            {
+              "url": "https://bibliothek.wzb.eu/pdf/2013/ii13-311.pdf",
+              "title": "bibliothek.wzb.eu"
+            },
+            {
+              "url": "https://www.researchgate.net/publication/277128759_In_Money_we_Trust_Trust_Repair_and_the_Psychology_of_Financial_Compensations",
+              "title": "www.researchgate.net"
+            },
+            {
+              "url": "https://www.researchgate.net/publication/228781212_Does_players%27_identification_affect_trust_and_reciprocity_an_experimental_investigation",
+              "title": "www.researchgate.net"
+            },
+            {
+              "url": "https://revistas.usp.br/rcf/article/download/186527/172105/493173",
+              "title": "revistas.usp.br"
+            },
+            {
+              "url": "https://pmc.ncbi.nlm.nih.gov/articles/6179269/",
+              "title": "pmc.ncbi.nlm.nih.gov"
+            },
+            {
+              "url": "https://deepblue.lib.umich.edu/bitstream/handle/2027.42/136770/1369_Beer.pdf?isAllowed=y&sequence=1",
+              "title": "deepblue.lib.umich.edu"
+            },
+            {
+              "url": "https://www.sciencedirect.com/science/article/pii/S0899825685710275?utm_source=openai",
+              "title": "www.sciencedirect.com"
+            },
+            {
+              "url": "https://www.sciencedirect.com/science/article/pii/S0167268104000721?utm_source=openai",
+              "title": "www.sciencedirect.com"
+            },
+            {
+              "url": "https://www.sciencedirect.com/science/article/abs/pii/S0167268104000721?utm_source=openai",
+              "title": "www.sciencedirect.com"
+            },
+            {
+              "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7309600/?utm_source=openai",
+              "title": "pmc.ncbi.nlm.nih.gov"
+            }
+          ],
+          "reviews": [
+            {
+              "kind": "review",
+              "issues": []
+            }
+          ],
+          "research": "## Primary-source methods comparison\n\n**Berg\u2013Dickhaut\u2013McCabe (BDM) is a one-shot benchmark, not a repeated-partner experiment.** Repetition, role alternation, and eliciting contingent return schedules should be treated as separate design choices. Below, \u201cnot verified\u201d means the accessible primary-source material did not establish that detail\u2014not that the feature was absent. ([sciencedirect.com](https://www.sciencedirect.com/science/article/pii/S0899825685710275?utm_source=openai))\n\n### 1. Berg, Dickhaut & McCabe (1995)\n*\u201cTrust, Reciprocity, and Social History,\u201d Games and Economic Behavior 10:122\u2013142.* DOI: **10.1006/game.1995.1027**.\n\n- **Endowments:** Both participants receive $10; A can invest from A\u2019s $10. B\u2019s own $10 is distinct from the investment proceeds.\n- **Transfer/return:** A sends an integer \\(s\\in\\{0,\\ldots,10\\}\\); the experimenter triples it. After receiving \\(3s\\), B chooses \\(0\\le r\\le3s\\). B does not return money from B\u2019s separate $10 fee.\n- **Roles/matching/horizon:** One anonymous A\u2013B pairing, one exchange; no role alternation.\n- **Information/communication:** Double-blind procedures; no interpersonal communication. The social-history treatment supplies information about earlier participants\u2019 exchanges, **not a history of interaction with the current partner**.\n- **Elicitation/zero:** Direct response to the realized transfer, not a return schedule for hypothetical transfers. At \\(s=0\\), the feasible return is necessarily zero. ([christosaioannou.com](https://christosaioannou.com/Trust%2C%20Reciprocity%20and%20Social%20History%20GEB%201995.pdf))\n\n### 2. Cochard, Nguyen Van & Willinger (2004)\n*\u201cTrusting behavior in a repeated investment game,\u201d Journal of Economic Behavior & Organization 55:31\u201344.* DOI: **10.1016/j.jebo.2003.07.004**.\n\n- **Endowments:** A and B each receive 10 experimental currency units.\n- **Transfer/return:** Integer \\(s\\in[0,10]\\), multiplier **3**, followed by B\u2019s realized return \\(0\\le r\\le3s\\).\n- **Roles/matching/horizon:** Fixed A/B roles and the same pair over **seven periods**; compared with a one-shot condition.\n- **Information/history:** Repeated interaction permits A to respond to earlier returns and B to respond to investments. The exact history-display interface and communication restrictions were **not verified**.\n- **Elicitation/zero:** Sequential direct response. The paper calculates percentage returned **for positive investments**; \\(r/(3s)\\) is undefined at zero investment, even though the feasible monetary return is zero. ([beta-economics.fr](https://www.beta-economics.fr/uploads/2022/09/WP-HS2022_16-19_Dossier2_EcoExpe.pdf))\n\n### 3. Engle-Warnick & Slonim (2004)\n*\u201cThe evolution of strategies in a repeated trust game,\u201d Journal of Economic Behavior & Organization 55:553\u2013573.* DOI: **10.1016/j.jebo.2003.11.008**.\n\n- **Game:** A binary, restricted trust game\u2014not BDM\u2019s continuous-amount investment game. A chooses whether to send **US$0.40**; sending doubles that amount. B then chooses to return **US$0.60 or nothing**. B\u2019s independent endowment was **not verified**.\n- **Roles/matching:** Roles are randomly assigned and fixed throughout the session. Partners remain together within a repeated game; consecutive repeated games use different partners.\n- **Horizon:** Definite relationships last **five rounds**; indefinite relationships end stochastically after rounds. The continuation probability was **not verified**.\n- **Information/communication:** Anonymous matching; exact history displays and communication rules were **not verified**.\n- **Zero/nontransfer:** Not sending ends that round\u2019s game without a B decision. ([sciencedirect.com](https://www.sciencedirect.com/science/article/pii/S0167268104000721?utm_source=openai))\n\nImportantly, this paper **infers strategies from observed actions**. That is not strategy-method elicitation. ([sciencedirect.com](https://www.sciencedirect.com/science/article/abs/pii/S0167268104000721?utm_source=openai))\n\n### 4. Explicit alternating-role contrast\nThe original experiment *\u201cNeural Signatures of Gender Differences in Interpersonal Trust\u201d* (2020) uses the **same partner with alternating trustor/trustee roles**, across 36 sequential binary trust games plus control games. Trustors choose trust/nontrust; trustees choose reciprocation/betrayal. Payoffs vary across six levels: some triple the initial amount, while others add five monetary units after tripling. Thus it is **not a constant-endowment BDM replication**. Decisions follow the realized action; nontrust terminates the exchange. Exact history displays and communication restrictions were not verified. This is a later design example, not a claim about the earliest alternating-role experiment. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC7309600/?utm_source=openai))\n\n## Methodological implications and limitations\n\n- **Direct response:** B responds to the transfer actually received. **Strategy method:** B supplies contingent returns for possible transfers before learning which applies. Do not label inferred strategies or mathematical strategy functions as strategy-method elicitation.\n- **Zero handling:** Recommended coding separates monetary return \\(r=0\\) from an unobserved discretionary reciprocity decision; leave the return fraction undefined when \\(s=0\\). The original studies\u2019 opportunity structures support this distinction. ([christosaioannou.com](https://christosaioannou.com/Trust%2C%20Reciprocity%20and%20Social%20History%20GEB%201995.pdf))\n- The unverified procedural fields above require full instructions or supplements before claiming exact replication. These papers provide methodological precedents; they do **not** validate a simulation or establish its human behavioral validity."
+        }
+      },
+      "error": null,
+      "cutoffs": {},
+      "created": "2026-11-07T03:39:14.656997+00:00",
+      "study_id": null,
+      "run_id": null,
+      "usage": {
+        "requests": 4,
+        "input_tokens": 37219,
+        "output_tokens": 4318,
+        "cost_usd": 0.147618,
+        "partial": false
+      }
+    }
+  ],
+  "execution": {
+    "summary": {
+      "id": "845759176f7446d8",
+      "study_id": "fd1baf30062c4783",
+      "study_title": "Two-agent repeated trust-exchange reciprocity pilot",
+      "condition": "Sequential exchange baseline",
+      "condition_key": "baseline",
+      "environment": "trust_exchange",
+      "model": "openai:gpt-6-luna",
+      "models": [
+        "openai:gpt-6-luna"
+      ],
+      "status": "complete",
+      "turn": 24,
+      "round": 12,
+      "total_turns": 24,
+      "total_rounds": 12,
+      "seed": 89,
+      "repetition": 1,
+      "created": "2026-11-07T03:43:18.900399+00:00",
+      "error": null,
+      "usage": {
+        "requests": 24,
+        "input_tokens": 47815,
+        "output_tokens": 4297,
+        "cost_usd": 0.006943,
+        "partial": false
+      }
+    },
+    "replay": {
+      "verified_turns": 24,
+      "model_requests": 0,
+      "rule_version": "1.0.0"
+    },
+    "proposal_preserved": true,
+    "exported_requests": 28
+  },
+  "ledger": {
+    "requests": 35,
+    "input_tokens": 97294,
+    "output_tokens": 12800,
+    "cost_usd": 0.427889,
+    "partial": true
+  }
+}

@@ -49,8 +49,8 @@ pnpm --dir frontend test:e2e
 
 Three mechanics: sealed shared contributions, paired trust exchanges and dependency-based
 team tasks. Protocols support 2–12 agents, per-agent models/goals, memory conditions,
-resource shocks, matched seeds and bounded spending. AI proposals require review before
-execution. There are no substitute models or automatic request retries.
+resource shocks, matched seeds and bounded spending. AI scopes, optionally researches, drafts and critiques proposals before your review.
+Unfinished edits stay as browser drafts; saving does not start execution. There are no substitute models or automatic request retries.
 
 Each turn records its observation, decision, consequences and checkpoint. Exports include
 all revisions, evidence and request traces. Replay verifies recorded actions without calling

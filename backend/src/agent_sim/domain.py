@@ -49,7 +49,7 @@ class TaskDefinition(Strict):
     effort: int = Field(default=2, ge=1, le=20)
 
 
-class Design(Strict):
+class DesignSpec(Strict):
     title: str = Field(min_length=1, max_length=100)
     question: str = Field(min_length=1, max_length=4000)
     hypothesis: str = Field(default="", max_length=2000)
@@ -67,6 +67,8 @@ class Design(Strict):
     limitations: list[str] = Field(default_factory=list, max_length=12)
     measures: list[str] = Field(default_factory=list, max_length=12)
 
+
+class Design(DesignSpec):
     @model_validator(mode="after")
     def matrix_is_valid(self) -> Self:
         for values, label in [

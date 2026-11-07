@@ -26,6 +26,15 @@ on these cases and then call them held out. Record model/settings, first-attempt
 all retries and costs, capability honesty, operationalization and independently inspected
 outcomes. Protocol validity and scientific usefulness are separate evaluations.
 
+`planner-smoke.json` records the newer multi-stage planner smoke tests separately from the
+26-case coverage benchmark. It preserves a drafting timeout and an incorrect research
+capability decline, followed by successful scarcity and sourced two-agent trust proposals.
+A third question correctly declines human election prediction. These are development smoke
+tests, not a new coverage score or an independent validation of research quality.
+The sourced two-agent protocol also completed one 24-turn GPT-6 Luna run; all 24 turns
+replayed exactly with no model requests. Proposal provenance survived export. The new
+diagnostic ledger is $0.427889 estimated/reserved, including the timeout reservation.
+
 ## Re-run
 
 With the app on 8081 and a configured OpenAI key:

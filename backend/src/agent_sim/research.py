@@ -65,11 +65,19 @@ class Research:
             raise ValueError("Requested measurements must be supported by the chosen environment")
 
     def save_design(
-        self, design: Design, *, study_id: str | None = None, source: str = "manual"
+        self, design: Design, *, study_id: str | None = None, plan_id: str | None = None
     ) -> str:
         self.validate_design(design)
         payload = design.model_dump()
         with self.db.session.begin() as session:
+            if plan_id:
+                plan = session.get_one(Analysis, plan_id)
+                if (
+                    plan.purpose != "design"
+                    or plan.status != "complete"
+                    or not (plan.output or {}).get("supported")
+                ):
+                    raise ValueError("Choose a completed, supported AI design")
             if study_id:
                 study = session.get_one(Study, study_id)
                 study.revision += 1
@@ -90,7 +98,7 @@ class Research:
                 number=study.revision,
                 design=payload,
                 sha256=digest(payload),
-                source=source,
+                source=f"plan:{plan_id}" if plan_id else "manual",
             )
             session.add(revision)
             session.flush()
@@ -277,6 +285,9 @@ class Research:
             "design": revision.design,
             "revision": revision.number,
             "sha256": revision.sha256,
+            "plan_id": revision.source.removeprefix("plan:")
+            if revision.source.startswith("plan:")
+            else None,
             "created": study.created,
             "revisions": [
                 {"number": r.number, "created": r.created, "sha256": r.sha256} for r in revisions
@@ -513,6 +524,9 @@ class Research:
                 select(Revision).where(Revision.study_id == study_id).order_by(Revision.number)
             ).all()
             runs = session.scalars(select(Run).where(Run.study_id == study_id)).all()
+            plan_ids = [
+                r.source.removeprefix("plan:") for r in revisions if r.source.startswith("plan:")
+            ]
             ids = [r.id for r in runs]
             turns = session.scalars(
                 select(Turn).where(Turn.run_id.in_(ids)).order_by(Turn.number)
@@ -523,12 +537,16 @@ class Research:
                 .order_by(RecordedEvent.id)
             ).all()
             calls = session.scalars(
-                select(ProviderCall).where(ProviderCall.study_id == study_id)
+                select(ProviderCall).where(
+                    (ProviderCall.study_id == study_id) | ProviderCall.analysis_id.in_(plan_ids)
+                )
             ).all()
             annotations = session.scalars(
                 select(Annotation).where(Annotation.run_id.in_(ids))
             ).all()
-            analyses = session.scalars(select(Analysis).where(Analysis.study_id == study_id)).all()
+            analyses = session.scalars(
+                select(Analysis).where((Analysis.study_id == study_id) | Analysis.id.in_(plan_ids))
+            ).all()
         grouped_events: dict[tuple[str, int], list[dict]] = defaultdict(list)
         grouped_turns: dict[str, list[dict]] = defaultdict(list)
         for event in events:

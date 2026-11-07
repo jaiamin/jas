@@ -44,14 +44,36 @@ Reviewed 2026-11-07. These are design inputs, not evidence that this platform re
 4. Add generative memory/reflection as randomized treatments, with cost and hallucination
    checks against the original journal. More complexity must improve predictive validity.
 
-## Sources and access limits
+## Product and interface research
 
-The linked abstracts were fetched; Generative Agents and SOTOPIA full-text sections were
-also inspected. Simile's website and Braintrust's documentation returned HTTP 403 in this
-sandbox. No claims here rely on inaccessible product internals. Crossref search was also
-blocked. Documentation for FastAPI/SQLAlchemy was verified through Context7 and OpenAI
-structured-output/model pages through official documentation. Configured token rates are
-estimates; confirm current pricing with your provider. Cache, regional and provider accounting may differ.
+Official documentation inspected on 2026-11-07:
+
+- [Langfuse evaluation concepts](https://langfuse.com/docs/evaluation/core-concepts.md),
+  [datasets](https://langfuse.com/docs/evaluation/experiments/datasets.md) and
+  [comparison](https://langfuse.com/docs/evaluation/experiments/compare-experiments.md):
+  preserve versions and individual outputs behind aggregate comparisons.
+- [Braintrust workflow](https://docs.braintrust.dev/workflow.md),
+  [experiments](https://docs.braintrust.dev/evaluate/run-evaluations.md),
+  [comparison](https://docs.braintrust.dev/evaluate/compare-experiments.md) and
+  [Loop](https://docs.braintrust.dev/loop/capabilities.md): AI-assisted investigation should
+  operate over inspectable records, with manual control over the experiment.
+- [Inspect log viewer](https://inspect.aisi.org.uk/log-viewer.html): move from comparison
+  into specific samples, messages and failures without discarding provenance.
+- [shadcn sidebar](https://ui.shadcn.com/docs/components/radix/sidebar) and
+  [input group](https://ui.shadcn.com/docs/components/radix/input-group): familiar compact
+  navigation and composition. Footer settings/appearance, semantic neutral themes and a
+  focused mobile drawer suit this local tool; account controls do not serve a current task.
+- [OpenAI web search](https://developers.openai.com/api/docs/guides/tools-web-search):
+  optional planner research records actual tool-returned sources and metered usage. Scoping,
+  drafting and a separate critique precede reviewable protocols; external text is evidence,
+  never executable instructions.
+
+These references informed interaction design, not claims of market demand, scientific
+validity or access to product internals. The scientific abstracts above were fetched;
+Generative Agents, SOTOPIA and Concordia full-text sections were also inspected. Simile's
+site and Anthropic's eval article still return HTTP403. Official framework docs were
+verified through Context7; OpenAI model, tools and pricing docs through official sources.
+Configured rates remain estimates; credits, cache and provider accounting can differ.
 
 ## Realism and product boundaries
 
@@ -68,12 +90,6 @@ durations and deadlines, persistent inventories, information acquisition, enforc
 contracts and interaction networks. Add one mechanism with reference trajectories,
 privacy tests, operational metrics and held-out scenarios before broadening the planner.
 Avoid a free-form model game master until its adjudication can be evaluated independently.
-
-Public Langfuse documentation returned 403. Its official GitHub README, RBAC scope definitions
-and trace-detail table implementation were accessible and inspected. They informed the
-compact table → evidence inspector workflow, usage visibility and the decision to defer
-hosted governance as a coherent feature set. No source code was copied. Source:
-[Langfuse repository](https://github.com/langfuse/langfuse).
 
 Benchmark success is workflow coverage, not realism. Keep failures, avoid selecting only
 successful seeds, hold out combinations and wording, and report the model used. A smaller

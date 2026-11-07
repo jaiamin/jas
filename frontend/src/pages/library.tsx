@@ -1,4 +1,4 @@
-import { ArrowUpRight, Check, Database, KeyRound, Plus } from "lucide-react";
+import { ArrowUpRight, Check, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   ErrorState,
@@ -7,7 +7,7 @@ import {
   RunTable,
 } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { Alert, Badge, Empty, Table } from "@/components/ui/data";
+import { Badge, Empty, Table } from "@/components/ui/data";
 import { useApi } from "@/lib/api";
 import type { Catalog, RunSummary, Settings } from "@/lib/types";
 import { modelLabel, money } from "@/lib/utils";
@@ -25,10 +25,7 @@ function Runs() {
   const runs = useApi<RunSummary[]>("/runs", true);
   return (
     <>
-      <PageHeading
-        title="Runs"
-        description="Watch execution, revisit decisions, and compare recorded outcomes."
-      >
+      <PageHeading title="Runs">
         <Button variant="outline" asChild>
           <Link to="/new">
             <Plus data-icon="inline-start" />
@@ -59,10 +56,7 @@ function Environments() {
   const catalog = useApi<Catalog>("/catalog");
   return (
     <>
-      <PageHeading
-        title="Environments"
-        description="Explicit rules for different kinds of interaction. Context is flexible; mechanics are verifiable."
-      />
+      <PageHeading title="Environments" />
       {catalog.error ? (
         <ErrorState error={catalog.error} />
       ) : !catalog.data ? (
@@ -105,9 +99,6 @@ function Environments() {
                     <Badge key={m}>{m.replaceAll("_", " ")}</Badge>
                   ))}
                 </div>
-                <p className="muted">
-                  Rules v{env.rule_version} · Recorded state · Exact replay
-                </p>
               </div>
               <Button variant="outline" asChild>
                 <Link to={`/new?template=${env.key}`}>
@@ -119,10 +110,13 @@ function Environments() {
           ))}
         </div>
       )}
-      <Alert title="Bring your own mechanics">
-        Add an environment with a Python adapter. AI designs experiments using
-        the environments available here.
-      </Alert>
+      <details className="disclosure">
+        <summary>Add an environment</summary>
+        <p className="muted">
+          Implement a Python environment adapter to add new mechanics. AI uses
+          the environments installed here.
+        </p>
+      </details>
     </>
   );
 }
@@ -133,15 +127,11 @@ function SettingsPage() {
   const s = settings.data;
   return (
     <>
-      <PageHeading
-        title="Workspace settings"
-        description="Local configuration, provider access, and usage."
-      />
+      <PageHeading title="Settings" />
       <div className="settings-layout">
         <section>
           <div className="section-heading">
             <h2>Model providers</h2>
-            <KeyRound />
           </div>
           <div className="provider-list">
             {Object.entries(s.providers).map(([provider, configured]) => (
@@ -159,8 +149,7 @@ function SettingsPage() {
             ))}
           </div>
           <p className="muted">
-            Set keys in <code>.env</code> and restart. Keys stay on the backend.
-            Configuration does not guarantee model access.
+            Set keys in <code>.env</code> and restart.
           </p>
           <div className="section-space">
             <h2>Model pricing</h2>
@@ -185,8 +174,7 @@ function SettingsPage() {
               </Table>
             </div>
             <p className="muted">
-              Estimates use configured token rates, before credits or cache
-              discounts. Confirm rates with your provider.
+              Token estimates before credits, cache discounts or web search.
             </p>
           </div>
         </section>
@@ -194,7 +182,7 @@ function SettingsPage() {
           <h2>Usage & storage</h2>
           <dl className="key-values">
             <div>
-              <dt>Workspace committed cost</dt>
+              <dt>Committed cost</dt>
               <dd>
                 {money(s.charged_usd)} / {money(s.budget_usd)}
               </dd>
@@ -219,23 +207,19 @@ function SettingsPage() {
               <dd>{s.concurrent_runs}</dd>
             </div>
           </dl>
-          <Alert title="Spending is explicit">
-            Each request reserves its upper allowance before sending. Unknown
-            usage retains that reservation. Adjust <code>ASS_BUDGET_USD</code>{" "}
-            in <code>.env</code> for the workspace ceiling; each study has its
-            own ceiling too.
-          </Alert>
-          <div className="local-info">
-            <Database />
-            <div>
-              <h3>Local by design</h3>
-              <p>
-                Your database stays on this machine. Model requests send only
-                the information needed by the selected provider. This app has no
-                public-hosting authentication layer.
-              </p>
-            </div>
-          </div>
+          <details className="disclosure">
+            <summary>Spending & deployment</summary>
+            <p className="muted">
+              Each request reserves its upper allowance before sending. Unknown
+              usage retains that reservation. Adjust <code>ASS_BUDGET_USD</code>{" "}
+              in <code>.env</code> for the workspace ceiling.
+            </p>
+            <p className="muted">
+              Single-user local app. Data stays in the local database; model
+              requests send evidence to the selected provider. Public hosting
+              requires authentication.
+            </p>
+          </details>
         </section>
       </div>
     </>

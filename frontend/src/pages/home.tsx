@@ -2,12 +2,12 @@ import { useMutation } from "@tanstack/react-query";
 import {
   ArrowRight,
   ArrowUpRight,
-  FlaskConical,
   LoaderCircle,
   Plus,
+  Trash2,
 } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   ErrorState,
   Loading,
@@ -16,15 +16,30 @@ import {
 } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/data";
-import { Textarea } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupTextarea,
+} from "@/components/ui/input-group";
 import { api, useApi } from "@/lib/api";
+import { listDrafts, removeDraft } from "@/lib/drafts";
 import type { Analysis, Catalog, StudySummary } from "@/lib/types";
 
 export function Home() {
+  const location = useLocation();
   const studies = useApi<StudySummary[]>("/studies", true);
   const catalog = useApi<Catalog>("/catalog");
   const plans = useApi<Analysis[]>("/analyses", true);
-  const [question, setQuestion] = useState("");
+  const [drafts, setDrafts] = useState(() => {
+    try {
+      return { items: listDrafts(), error: "" };
+    } catch (error) {
+      return { items: [], error: (error as Error).message };
+    }
+  });
+  const [question, setQuestion] = useState(() =>
+    typeof location.state?.question === "string" ? location.state.question : "",
+  );
   const navigate = useNavigate();
   const plan = useMutation({
     mutationFn: () => api<{ id: string }>("/plan", { question }),
@@ -33,13 +48,11 @@ export function Home() {
   return (
     <>
       <section className="home-intro">
-        <div className="home-title">
-          <div className="brand-symbol">
-            <FlaskConical />
-          </div>
-          <h1>Make agent behavior observable.</h1>
-          <p>Ask a question. Design an experiment. Follow the evidence.</p>
-        </div>
+        <PageHeading title="Design an experiment">
+          <Button variant="outline" asChild>
+            <Link to="/new">Configure manually</Link>
+          </Button>
+        </PageHeading>
         <form
           className="question-composer"
           onSubmit={(e) => {
@@ -50,38 +63,36 @@ export function Home() {
           <label htmlFor="research-question" className="sr-only">
             Your research question
           </label>
-          <Textarea
-            id="research-question"
-            placeholder="When do agents choose themselves over the group?"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            maxLength={4000}
-            rows={3}
-          />
-          <div className="composer-footer">
-            <span>AI drafts the study. You review before running.</span>
-            <Button disabled={!question.trim() || plan.isPending} type="submit">
-              {plan.isPending ? (
-                <LoaderCircle className="spin" data-icon="inline-start" />
-              ) : (
-                <ArrowUpRight data-icon="inline-start" />
-              )}
-              Design experiment
-            </Button>
-          </div>
+          <InputGroup>
+            <InputGroupTextarea
+              id="research-question"
+              placeholder="When do agents choose themselves over the group?"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              maxLength={4000}
+              rows={3}
+            />
+            <InputGroupAddon>
+              <span>Review the AI draft before running.</span>
+              <Button
+                disabled={!question.trim() || plan.isPending}
+                type="submit"
+              >
+                {plan.isPending ? (
+                  <LoaderCircle className="spin" data-icon="inline-start" />
+                ) : (
+                  <ArrowUpRight data-icon="inline-start" />
+                )}
+                Design experiment
+              </Button>
+            </InputGroupAddon>
+          </InputGroup>
         </form>
         {plan.error && <Alert variant="error">{plan.error.message}</Alert>}
-        <div className="composer-alternative">
-          <span>Have a protocol in mind?</span>
-          <Link to="/new">
-            Configure it yourself
-            <ArrowRight />
-          </Link>
-        </div>
       </section>
       <section className="home-starters">
         <div className="section-heading">
-          <h2>Start with a question</h2>
+          <h2>Templates</h2>
           <Link to="/environments">
             Explore environments
             <ArrowRight />
@@ -103,9 +114,41 @@ export function Home() {
           ))}
         </div>
       </section>
-      {plans.data?.some(
-        (p) => p.status === "pending" || p.status === "complete",
-      ) && (
+      {drafts.error && (
+        <Alert variant="error">
+          Drafts could not be loaded: {drafts.error}
+        </Alert>
+      )}
+      {drafts.items.length > 0 && (
+        <details className="disclosure home-plans">
+          <summary>Drafts · {drafts.items.length}</summary>
+          <div className="draft-list">
+            {drafts.items.map((draft) => (
+              <div key={draft.path}>
+                <Link to={draft.path}>
+                  {draft.title || "Untitled experiment"}
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Discard ${draft.title || "untitled"} draft`}
+                  onClick={() => {
+                    try {
+                      removeDraft(draft.path);
+                      setDrafts({ items: listDrafts(), error: "" });
+                    } catch (error) {
+                      setDrafts({ ...drafts, error: (error as Error).message });
+                    }
+                  }}
+                >
+                  <Trash2 />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+      {!!plans.data?.length && (
         <details className="disclosure home-plans">
           <summary>Recent AI designs</summary>
           <div className="plan-history">
@@ -147,10 +190,7 @@ export function Studies() {
   const studies = useApi<StudySummary[]>("/studies", true);
   return (
     <>
-      <PageHeading
-        title="Experiments"
-        description="Questions, conditions, and the evidence they produce."
-      >
+      <PageHeading title="Experiments">
         <Button asChild>
           <Link to="/new">
             <Plus data-icon="inline-start" />

@@ -95,7 +95,7 @@ export function MetricChart({
             contentStyle={{
               background: "var(--popover)",
               border: "1px solid var(--border)",
-              borderRadius: 6,
+              borderRadius: "var(--radius)",
               color: "var(--foreground)",
               fontSize: 12,
             }}

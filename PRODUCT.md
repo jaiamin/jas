@@ -28,5 +28,7 @@ are separate hypotheses. This is a useful research instrument, not a validated h
 prediction service, frontier autonomous society or enterprise-ready product.
 
 Design is restrained and practical: compact tables, consistent controls, an evidence
-inspector and a linked turn rail. Public Sans, neutral white and charcoal work surfaces, restrained orange selection
-and equivalent light/dark themes. Data colors identify series and agents, never moral rank.
+inspector and a linked turn rail. Geist, white/black work surfaces, sharp corners, monochrome
+controls and restrained orange selection. Settings and appearance belong in the sidebar
+footer; there is no workspace switcher or account UI in this single-user release. Data
+colors identify series and agents, never moral rank.

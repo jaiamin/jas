@@ -1,17 +1,13 @@
 import {
   Activity,
-  ArrowUpRight,
-  FlaskConical,
   Home as HomeIcon,
   Layers3,
   LayoutGrid,
-  Menu,
   Moon,
   Settings2,
   Sun,
-  X,
 } from "lucide-react";
-import { Component, lazy, Suspense, useState } from "react";
+import { Component, Fragment, lazy, Suspense, useState } from "react";
 import {
   Link,
   NavLink,
@@ -21,10 +17,30 @@ import {
   useLocation,
 } from "react-router-dom";
 import { Loading } from "@/components/shared";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import { Badge, Empty } from "@/components/ui/data";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+  useSidebar,
+} from "@/components/ui/sidebar";
 import { useApi } from "@/lib/api";
 import type { RunSummary } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import { Home, Studies } from "@/pages/home";
 
 const Editor = lazy(() => import("@/pages/editor"));
@@ -43,11 +59,12 @@ class PageBoundary extends Component<
   }
   render() {
     return this.state.error ? (
-      <div className="empty">
-        <h1>This view could not load</h1>
-        <p>Your runs continue on the server. Reload to reconnect.</p>
+      <Empty
+        title="This view could not load"
+        description="Reload to reconnect. Your runs continue on the server."
+      >
         <Button onClick={() => location.reload()}>Reload workspace</Button>
-      </div>
+      </Empty>
     ) : (
       this.props.children
     );
@@ -55,7 +72,7 @@ class PageBoundary extends Component<
 }
 
 function Shell() {
-  const [menu, setMenu] = useState(false);
+  const { setOpen } = useSidebar();
   const [dark, setDark] = useState(() =>
     document.documentElement.classList.contains("dark"),
   );
@@ -94,104 +111,121 @@ function Shell() {
             : location.pathname.startsWith("/compare")
               ? "Compare runs"
               : "Home";
+  const runId = location.pathname.match(/^\/runs\/([^/]+)$/)?.[1];
+  const studyId = location.pathname.match(/^\/studies\/([^/]+)$/)?.[1];
+  const selectedRun = runs.data?.find((r) => r.id === runId);
+  const selectedStudy = runs.data?.find((r) => r.study_id === studyId);
+  const crumbs: { label: string; to?: string }[] = runId
+    ? [
+        { label: "Experiments", to: "/studies" },
+        ...(selectedRun
+          ? [
+              {
+                label: selectedRun.study_title,
+                to: `/studies/${selectedRun.study_id}`,
+              },
+            ]
+          : []),
+        { label: selectedRun?.condition ?? "Run" },
+      ]
+    : studyId
+      ? [
+          { label: "Experiments", to: "/studies" },
+          { label: selectedStudy?.study_title ?? "Experiment" },
+        ]
+      : location.pathname === "/new"
+        ? [
+            { label: "Experiments", to: "/studies" },
+            {
+              label: new URLSearchParams(location.search).has("study")
+                ? "Tune experiment"
+                : "New experiment",
+            },
+          ]
+        : location.pathname === "/compare"
+          ? [{ label: "Runs", to: "/runs" }, { label: "Compare" }]
+          : [{ label: section }];
   return (
     <div className="shell">
       <a href="#main" className="skip-link">
         Skip to content
       </a>
-      {menu && (
-        <button
-          type="button"
-          className="nav-scrim"
-          aria-label="Close navigation"
-          onClick={() => setMenu(false)}
-        />
-      )}
-      <aside className={cn("sidebar", menu && "sidebar-open")}>
-        <Link to="/" className="brand" onClick={() => setMenu(false)}>
-          <div className="brand-mark">
-            <FlaskConical />
-          </div>
-          <span>
-            ASS
-            <span className="brand-subtitle">Agent Simulation Environment</span>
-          </span>
-        </Link>
-        <div className="workspace-switch">
-          <span className="workspace-avatar">L</span>
-          <div>
-            <strong>Local workspace</strong>
-            <span>Your data, on your machine</span>
-          </div>
-        </div>
-        <nav aria-label="Main navigation">
-          {links.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === "/"}
-              onClick={() => setMenu(false)}
-              className={({ isActive }) =>
-                cn("nav-link", isActive && "nav-link-active")
-              }
-            >
-              <item.icon />
-              <span>{item.label}</span>
-              {item.to === "/runs" && active.length > 0 && (
-                <span className="nav-count">{active.length}</span>
-              )}
-            </NavLink>
-          ))}
-        </nav>
-        <div className="sidebar-bottom">
-          {active.length > 0 && (
-            <Link className="active-runs" to="/runs">
-              <span className="live-dot" />
-              {active.length} active run{active.length !== 1 && "s"}
-              <ArrowUpRight />
-            </Link>
-          )}
-          <NavLink
-            to="/settings"
-            className={({ isActive }) =>
-              cn("nav-link", isActive && "nav-link-active")
-            }
-            onClick={() => setMenu(false)}
+      <Sidebar>
+        <SidebarHeader>
+          <Link
+            to="/"
+            className="brand"
+            aria-label="ASS home"
+            onClick={() => setOpen(false)}
           >
-            <Settings2 />
-            <span>Settings</span>
-          </NavLink>
-        </div>
-      </aside>
+            <span className="brand-mark" aria-hidden="true" />
+            ASS
+          </Link>
+        </SidebarHeader>
+        <SidebarContent aria-label="Main navigation">
+          <SidebarMenu>
+            {links.map((item) => (
+              <SidebarMenuItem key={item.to}>
+                <SidebarMenuButton asChild>
+                  <NavLink
+                    to={item.to}
+                    end={item.to === "/"}
+                    onClick={() => setOpen(false)}
+                  >
+                    <item.icon />
+                    <span>{item.label}</span>
+                    {item.to === "/runs" && active.length > 0 && (
+                      <Badge className="nav-count">{active.length}</Badge>
+                    )}
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <NavLink to="/settings" onClick={() => setOpen(false)}>
+                  <Settings2 />
+                  <span>Settings</span>
+                </NavLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+            onClick={changeTheme}
+          >
+            {dark ? <Sun /> : <Moon />}
+          </Button>
+        </SidebarFooter>
+      </Sidebar>
       <div className="shell-body">
         <header className="shell-header">
           <div className="header-path">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="menu-button"
-              aria-label={menu ? "Close menu" : "Open menu"}
-              onClick={() => setMenu(!menu)}
-            >
-              {menu ? <X /> : <Menu />}
-            </Button>
-            <Link to="/">Workspace</Link>
-            <span>/</span>
-            <span>{section}</span>
-          </div>
-          <div className="actions">
-            <span className="local-label">
-              <span className="status-dot" />
-              Local
-            </span>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-              onClick={changeTheme}
-            >
-              {dark ? <Sun /> : <Moon />}
-            </Button>
+            <SidebarTrigger />
+            <Breadcrumb>
+              <BreadcrumbList>
+                {crumbs.map((crumb, i) => (
+                  <Fragment key={crumb.to ?? "current"}>
+                    {i > 0 && <BreadcrumbSeparator />}
+                    <BreadcrumbItem title={crumb.label}>
+                      {crumb.to ? (
+                        <BreadcrumbLink asChild>
+                          <Link to={crumb.to}>{crumb.label}</Link>
+                        </BreadcrumbLink>
+                      ) : (
+                        <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                      )}
+                    </BreadcrumbItem>
+                  </Fragment>
+                ))}
+              </BreadcrumbList>
+            </Breadcrumb>
           </div>
         </header>
         <main id="main" className="page">
@@ -208,7 +242,13 @@ function Shell() {
 export default function App() {
   return (
     <Routes>
-      <Route element={<Shell />}>
+      <Route
+        element={
+          <SidebarProvider>
+            <Shell />
+          </SidebarProvider>
+        }
+      >
         <Route index element={<Home />} />
         <Route path="studies" element={<Studies />} />
         <Route path="studies/:id" element={<Study />} />
@@ -221,10 +261,11 @@ export default function App() {
         <Route
           path="*"
           element={
-            <div className="empty">
-              <h1>Page not found</h1>
-              <Link to="/">Return home</Link>
-            </div>
+            <Empty title="Page not found">
+              <Button variant="outline" asChild>
+                <Link to="/">Return home</Link>
+              </Button>
+            </Empty>
           }
         />
       </Route>

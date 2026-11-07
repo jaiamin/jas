@@ -1,15 +1,20 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-  ArrowLeft,
   ArrowRight,
   Check,
+  ChevronDown,
   Code2,
   LoaderCircle,
   Plus,
   Trash2,
 } from "lucide-react";
-import { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Alert, Empty } from "@/components/ui/data";
@@ -24,6 +29,7 @@ import {
 import { Select } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api, useApi } from "@/lib/api";
+import { type Draft, readDraft, removeDraft, writeDraft } from "@/lib/drafts";
 import type {
   Analysis,
   Catalog,
@@ -39,6 +45,26 @@ import { label, modelLabel, money } from "@/lib/utils";
 
 export default function Editor() {
   const [params] = useSearchParams();
+  const location = useLocation();
+  const draftPath = location.pathname + location.search;
+  const [recoverDraft, setRecoverDraft] = useState(false);
+  const draft = useQuery({
+    queryKey: ["draft", draftPath],
+    queryFn: async () => {
+      const saved = readDraft(draftPath);
+      if (!saved) return null;
+      try {
+        const design = await api<Design>("/design/validate", {
+          design: saved.design,
+        });
+        return { saved, design, error: null };
+      } catch (error) {
+        return { saved, design: null, error: error as Error };
+      }
+    },
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+  });
   const catalog = useApi<Catalog>("/catalog");
   const planId = params.get("plan");
   const studyId = params.get("study");
@@ -57,29 +83,72 @@ export default function Editor() {
       ),
     enabled: !!studyId,
   });
+  if (draft.error)
+    return (
+      <>
+        <ErrorState error={draft.error} />
+        <Button
+          variant="outline"
+          onClick={() => {
+            removeDraft(draftPath);
+            draft.refetch();
+          }}
+        >
+          Discard unreadable draft
+        </Button>
+      </>
+    );
   if (catalog.error || plan.error || previous.error)
     return (
       <ErrorState
         error={(catalog.error || plan.error || previous.error) as Error}
       />
     );
-  if (!catalog.data || (studyId && !previous.data)) return <Loading />;
+  if (!catalog.data || draft.isPending || (studyId && !previous.data))
+    return <Loading />;
+  if (draft.data?.error && !recoverDraft)
+    return (
+      <>
+        <PageHeading title="Recover your draft" />
+        <Alert variant="error">{draft.data.error.message}</Alert>
+        <div className="actions">
+          <Button onClick={() => setRecoverDraft(true)}>
+            Edit specification
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              removeDraft(draftPath);
+              draft.refetch();
+            }}
+          >
+            Discard draft
+          </Button>
+        </div>
+      </>
+    );
   if (planId && (!plan.data || plan.data.status === "pending"))
     return (
       <>
-        <PageHeading
-          title="Designing your experiment"
-          description="Translating your question into explicit mechanics, conditions, and measurements."
-        />
+        <PageHeading title="Designing your experiment" />
         <div className="planning-state">
           <LoaderCircle className="spin" />
-          <h2>Building a testable protocol</h2>
+          <h2>
+            {{
+              scoping: "Scoping the question",
+              researching: "Researching methods",
+              drafting: "Drafting the protocol",
+              reviewing: "Reviewing the design",
+              revising: "Refining the protocol",
+            }[plan.data?.output?.stage ?? "scoping"] ??
+              "Designing the experiment"}
+          </h2>
           <p>{plan.data?.question}</p>
-          <p className="muted">
-            You can leave this page. The design request continues on the server.
-          </p>
+
           <Button variant="outline" asChild>
-            <Link to="/">Back to workspace</Link>
+            <Link to="/" state={{ question: plan.data?.question }}>
+              Back to workspace
+            </Link>
           </Button>
         </div>
       </>
@@ -90,7 +159,9 @@ export default function Editor() {
         <PageHeading title="Design request stopped" />
         <Alert variant="error">{plan.data.error}</Alert>
         <Button variant="outline" asChild>
-          <Link to="/">Return to your question</Link>
+          <Link to="/" state={{ question: plan.data.question }}>
+            Return to your question
+          </Link>
         </Button>
       </>
     );
@@ -115,6 +186,7 @@ export default function Editor() {
       </>
     );
   const initial =
+    draft.data?.design ??
     plan.data?.output?.design ??
     previous.data?.design ??
     catalog.data.templates.find((t) => t.id === params.get("template"))
@@ -123,11 +195,26 @@ export default function Editor() {
   if (!initial) return <Loading />;
   return (
     <DesignEditor
-      key={planId ?? studyId ?? params.get("template") ?? "new"}
+      key={draftPath}
       initial={initial}
       catalog={catalog.data}
       studyId={studyId}
+      planId={planId}
       explanation={plan.data?.output?.explanation}
+      planning={plan.data?.output?.planning}
+      draftPath={draftPath}
+      draft={
+        recoverDraft && draft.data
+          ? {
+              ...draft.data.saved,
+              mode: "json",
+              json:
+                draft.data.saved.mode === "json"
+                  ? draft.data.saved.json
+                  : JSON.stringify(draft.data.saved.design, null, 2),
+            }
+          : draft.data?.saved
+      }
     />
   );
 }
@@ -136,12 +223,20 @@ function DesignEditor({
   initial,
   catalog,
   studyId,
+  planId,
   explanation,
+  planning,
+  draftPath,
+  draft,
 }: {
   initial: Design;
   catalog: Catalog;
   studyId: string | null;
+  planId: string | null;
   explanation?: string;
+  planning?: NonNullable<Analysis["output"]>["planning"];
+  draftPath: string;
+  draft?: Draft;
 }) {
   const [design, setDesign] = useState<Design>(() =>
     structuredClone({
@@ -157,17 +252,38 @@ function DesignEditor({
       })),
     }),
   );
-  const [json, setJson] = useState("");
-  const [mode, setMode] = useState("visual");
+  const [json, setJson] = useState(draft?.json ?? "");
+  const [mode, setMode] = useState<"visual" | "json">(draft?.mode ?? "visual");
+  const [draftStatus, setDraftStatus] = useState(draft ? "Draft saved" : "");
+  const lastSnapshot = useRef(JSON.stringify({ design, json, mode }));
+  useEffect(() => {
+    const snapshot = JSON.stringify({ design, json, mode });
+    if (snapshot === lastSnapshot.current) return;
+    try {
+      writeDraft(draftPath, design, json, mode);
+      lastSnapshot.current = snapshot;
+      setDraftStatus("Draft saved");
+    } catch {
+      setDraftStatus("Draft could not be saved in this browser");
+    }
+  }, [design, json, mode, draftPath]);
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const save = useMutation({
     mutationFn: (specification: Design) =>
       api<{ id: string }>(
         studyId ? `/studies/${studyId}/revisions` : "/studies",
-        { design: specification },
+        { design: specification, plan_id: planId },
       ),
-    onSuccess: (result) => navigate(`/studies/${result.id}`),
+    onSuccess: (result) => {
+      let notice: string | undefined;
+      try {
+        removeDraft(draftPath);
+      } catch {
+        notice = "Experiment saved. The browser draft could not be cleared.";
+      }
+      navigate(`/studies/${result.id}`, { state: { notice } });
+    },
   });
   const environment = catalog.environments.find(
     (e) => e.key === design.environment,
@@ -233,21 +349,58 @@ function DesignEditor({
   }
   return (
     <>
-      <div className="back-link">
-        <Link to={studyId ? `/studies/${studyId}` : "/"}>
-          <ArrowLeft />
-          {studyId ? "Back to experiment" : "Back to workspace"}
-        </Link>
-      </div>
       <PageHeading
         title={studyId ? "Tune experiment" : "New experiment"}
         description={
           studyId
             ? "Save a new revision. Earlier runs keep their original design."
-            : "Make the rules, treatments, and measurements explicit."
+            : undefined
         }
-      />
-      {explanation && <Alert title="AI-proposed protocol">{explanation}</Alert>}
+      >
+        {draftStatus && (
+          <span
+            className="draft-state"
+            role="status"
+            title="Saved in this browser"
+          >
+            {draftStatus}
+          </span>
+        )}
+      </PageHeading>
+      {explanation && (
+        <details className="disclosure design-explanation">
+          <summary>AI design notes</summary>
+          <p>{explanation}</p>
+          {planning && (
+            <>
+              <p>{planning.brief.size_rationale}</p>
+              <ul>
+                {planning.sources.slice(0, 5).map((source) => (
+                  <li key={source.url}>
+                    <a href={source.url} target="_blank" rel="noreferrer">
+                      {source.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              {planning.sources.length > 5 && (
+                <details className="disclosure">
+                  <summary>{planning.sources.length - 5} more sources</summary>
+                  <ul>
+                    {planning.sources.slice(5).map((source) => (
+                      <li key={source.url}>
+                        <a href={source.url} target="_blank" rel="noreferrer">
+                          {source.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+            </>
+          )}
+        </details>
+      )}
       <div className="editor-layout">
         <div className="editor-main">
           <Tabs value={mode} onValueChange={changeMode}>
@@ -303,15 +456,18 @@ function DesignEditor({
                       onChange={(e) => update("question", e.target.value)}
                     />
                   </Field>
-                  <Field>
-                    <FieldLabel htmlFor="hypothesis">Hypothesis</FieldLabel>
-                    <Input
-                      id="hypothesis"
-                      placeholder="An expected pattern to investigate"
-                      value={design.hypothesis}
-                      onChange={(e) => update("hypothesis", e.target.value)}
-                    />
-                  </Field>
+                  <details className="disclosure">
+                    <summary>Hypothesis</summary>
+                    <Field>
+                      <FieldLabel htmlFor="hypothesis">Hypothesis</FieldLabel>
+                      <Input
+                        id="hypothesis"
+                        placeholder="An expected pattern to investigate"
+                        value={design.hypothesis}
+                        onChange={(e) => update("hypothesis", e.target.value)}
+                      />
+                    </Field>
+                  </details>
                   <Field>
                     <FieldLabel>Environment</FieldLabel>
                     <Select
@@ -322,6 +478,12 @@ function DesignEditor({
                           (e) => e.key === value,
                         );
                         if (!env) return;
+                        if (
+                          !window.confirm(
+                            "Change environment? Measurements will reset. Task definitions or resource schedules that do not apply will be removed.",
+                          )
+                        )
+                          return;
                         setDesign({
                           ...design,
                           environment: value as EnvironmentId,
@@ -348,29 +510,31 @@ function DesignEditor({
                       {environment.description}
                     </FieldDescription>
                   </Field>
-                  <Field>
-                    <FieldLabel htmlFor="context">
-                      Scenario context{" "}
-                      <span className="optional">optional</span>
-                    </FieldLabel>
-                    <Textarea
-                      id="context"
-                      rows={2}
-                      placeholder="Put the interaction in a meaningful setting. Rules remain defined by the environment."
-                      value={design.context}
-                      onChange={(e) => update("context", e.target.value)}
-                    />
-                  </Field>
+                  <details className="disclosure">
+                    <summary>Scenario context</summary>
+                    <Field>
+                      <FieldLabel htmlFor="context">
+                        Scenario context{" "}
+                        <span className="optional">optional</span>
+                      </FieldLabel>
+                      <Textarea
+                        id="context"
+                        rows={2}
+                        placeholder="Put the interaction in a meaningful setting. Rules remain defined by the environment."
+                        value={design.context}
+                        onChange={(e) => update("context", e.target.value)}
+                      />
+                    </Field>
+                  </details>
                 </FieldGroup>
               </section>
               <section className="form-section">
                 <div className="section-heading">
                   <div>
-                    <h2>Agents</h2>
-                    <p>
-                      Private goals and declared roles. Behavior comes from the
-                      model.
-                    </p>
+                    <h2>
+                      Agents{" "}
+                      <span className="muted">{design.profiles.length}</span>
+                    </h2>
                   </div>
                   <Button
                     variant="outline"
@@ -400,94 +564,126 @@ function DesignEditor({
                 </div>
                 <div className="profile-list">
                   {design.profiles.map((p, i) => (
-                    <div className="profile-editor" key={p.key}>
-                      <div className="profile-avatar" data-series={i % 6}>
-                        {p.name.slice(0, 1)}
-                      </div>
-                      <FieldGroup className="profile-fields">
-                        <Field>
-                          <FieldLabel htmlFor={`agent-${p.key}-name`}>
-                            Name
-                          </FieldLabel>
-                          <Input
-                            id={`agent-${p.key}-name`}
-                            value={p.name}
-                            onChange={(e) =>
-                              profile(i, { name: e.target.value })
-                            }
-                          />
-                        </Field>
-                        <Field>
-                          <FieldLabel htmlFor={`agent-${p.key}-role`}>
-                            Role
-                          </FieldLabel>
-                          <Input
-                            id={`agent-${p.key}-role`}
-                            value={p.role}
-                            onChange={(e) =>
-                              profile(i, { role: e.target.value })
-                            }
-                          />
-                        </Field>
-                        <Field>
-                          <FieldLabel>Model</FieldLabel>
-                          <Select
-                            label={`Model for ${p.name}`}
-                            value={p.model ?? "inherit"}
-                            onValueChange={(value) =>
-                              profile(i, {
-                                model:
-                                  value === "inherit"
-                                    ? null
-                                    : (value as ModelId),
-                              })
-                            }
-                            options={[
-                              { value: "inherit", label: "Condition default" },
-                              ...catalog.models.map((m) => ({
-                                value: m.id,
-                                label: modelLabel(m.id),
+                    <details className="profile-disclosure" key={p.key}>
+                      <summary className="profile-heading">
+                        <span className="profile-avatar" data-series={i % 6}>
+                          {p.name.slice(0, 1)}
+                        </span>
+                        <span className="profile-summary">
+                          <strong>{p.name || "Unnamed agent"}</strong>
+                          <span>{p.role}</span>
+                        </span>
+                        <span className="profile-model">
+                          {p.model ? modelLabel(p.model) : "Condition model"}
+                        </span>
+                        <ChevronDown />
+                      </summary>
+                      <div className="profile-editor">
+                        <FieldGroup className="profile-fields">
+                          <Field>
+                            <FieldLabel htmlFor={`agent-${p.key}-name`}>
+                              Name
+                            </FieldLabel>
+                            <Input
+                              id={`agent-${p.key}-name`}
+                              value={p.name}
+                              onChange={(e) =>
+                                profile(i, { name: e.target.value })
+                              }
+                            />
+                          </Field>
+                          <Field>
+                            <FieldLabel htmlFor={`agent-${p.key}-role`}>
+                              Role
+                            </FieldLabel>
+                            <Input
+                              id={`agent-${p.key}-role`}
+                              value={p.role}
+                              onChange={(e) =>
+                                profile(i, { role: e.target.value })
+                              }
+                            />
+                          </Field>
+                          <Field>
+                            <FieldLabel>Model</FieldLabel>
+                            <Select
+                              label={`Model for ${p.name}`}
+                              value={p.model ?? "inherit"}
+                              onValueChange={(value) =>
+                                profile(i, {
+                                  model:
+                                    value === "inherit"
+                                      ? null
+                                      : (value as ModelId),
+                                })
+                              }
+                              options={[
+                                {
+                                  value: "inherit",
+                                  label: "Condition default",
+                                },
+                                ...catalog.models.map((m) => ({
+                                  value: m.id,
+                                  label: modelLabel(m.id),
+                                })),
+                              ]}
+                            />
+                          </Field>
+                          <Field className="profile-goal">
+                            <FieldLabel htmlFor={`agent-${p.key}-goal`}>
+                              Private goal
+                            </FieldLabel>
+                            <Textarea
+                              id={`agent-${p.key}-goal`}
+                              rows={2}
+                              value={p.goal}
+                              onChange={(e) =>
+                                profile(i, { goal: e.target.value })
+                              }
+                            />
+                          </Field>
+                        </FieldGroup>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Remove ${p.name}`}
+                          disabled={design.profiles.length <= 2}
+                          onClick={() =>
+                            setDesign({
+                              ...design,
+                              profiles: design.profiles.filter(
+                                (_, index) => index !== i,
+                              ),
+                              conditions: design.conditions.map((c) => ({
+                                ...c,
+                                profile_overrides: c.profile_overrides.filter(
+                                  (value) => value.key !== p.key,
+                                ),
                               })),
-                            ]}
-                          />
-                        </Field>
-                        <Field className="profile-goal">
-                          <FieldLabel htmlFor={`agent-${p.key}-goal`}>
-                            Private goal
-                          </FieldLabel>
-                          <Textarea
-                            id={`agent-${p.key}-goal`}
-                            rows={2}
-                            value={p.goal}
-                            onChange={(e) =>
-                              profile(i, { goal: e.target.value })
-                            }
-                          />
-                        </Field>
-                      </FieldGroup>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label={`Remove ${p.name}`}
-                        disabled={design.profiles.length <= 2}
-                        onClick={() =>
-                          update(
-                            "profiles",
-                            design.profiles.filter((_, index) => index !== i),
-                          )
-                        }
-                      >
-                        <Trash2 />
-                      </Button>
-                    </div>
+                            })
+                          }
+                        >
+                          <Trash2 />
+                        </Button>
+                      </div>
+                    </details>
                   ))}
                 </div>
+                {design.environment === "trust_exchange" &&
+                  design.profiles.length % 2 !== 0 && (
+                    <Alert variant="error">
+                      Trust exchange needs an even number of agents for pairs.
+                      Add or remove one agent before saving.
+                    </Alert>
+                  )}
               </section>
               <section className="form-section">
                 <div className="section-heading">
                   <div>
-                    <h2>Conditions</h2>
-                    <p>Change one factor at a time for a clearer comparison.</p>
+                    <h2>
+                      Conditions{" "}
+                      <span className="muted">{design.conditions.length}</span>
+                    </h2>
                   </div>
                   <Button
                     variant="outline"
@@ -519,351 +715,365 @@ function DesignEditor({
                 </div>
                 <div className="condition-list">
                   {design.conditions.map((c, i) => (
-                    <div className="condition-editor" key={c.key}>
-                      <div className="condition-heading">
+                    <details className="condition-disclosure" key={c.key}>
+                      <summary className="condition-summary">
                         <span className="condition-index" data-series={i % 6}>
                           {String.fromCharCode(65 + i)}
                         </span>
-                        <Input
-                          aria-label={`Condition ${i + 1} name`}
-                          value={c.name}
-                          onChange={(e) =>
-                            condition(i, { name: e.target.value })
-                          }
-                        />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label={`Remove condition ${i + 1}`}
-                          disabled={design.conditions.length <= 1}
-                          onClick={() =>
-                            update(
-                              "conditions",
-                              design.conditions.filter(
-                                (_, index) => index !== i,
-                              ),
-                            )
-                          }
-                        >
-                          <Trash2 />
-                        </Button>
-                      </div>
-                      <FieldGroup className="condition-fields">
-                        <Field>
-                          <FieldLabel>Model</FieldLabel>
-                          <Select
-                            label={`Condition ${i + 1} model`}
-                            value={c.model}
-                            onValueChange={(v) =>
-                              condition(i, { model: v as ModelId })
+                        <strong>{c.name || "Unnamed condition"}</strong>
+                        <span>{modelLabel(c.model)}</span>
+                        <ChevronDown />
+                      </summary>
+                      <div className="condition-editor">
+                        <div className="condition-heading">
+                          <span className="condition-index" data-series={i % 6}>
+                            {String.fromCharCode(65 + i)}
+                          </span>
+                          <Input
+                            aria-label={`Condition ${i + 1} name`}
+                            value={c.name}
+                            onChange={(e) =>
+                              condition(i, { name: e.target.value })
                             }
-                            options={catalog.models.map((m) => ({
-                              value: m.id,
-                              label: modelLabel(m.id),
-                            }))}
                           />
-                        </Field>
-                        {design.environment !== "coordination" ? (
-                          <>
-                            <Field>
-                              <FieldLabel htmlFor={`endowment-${c.key}`}>
-                                Credits per round
-                              </FieldLabel>
-                              <Input
-                                id={`endowment-${c.key}`}
-                                type="number"
-                                min={2}
-                                max={100}
-                                value={c.parameters.endowment}
-                                onChange={(e) =>
-                                  parameter(
-                                    i,
-                                    "endowment",
-                                    Number(e.target.value),
-                                  )
-                                }
-                              />
-                            </Field>
-                            <Field>
-                              <FieldLabel htmlFor={`multiplier-${c.key}`}>
-                                Return multiplier
-                              </FieldLabel>
-                              <Input
-                                id={`multiplier-${c.key}`}
-                                type="number"
-                                min={1}
-                                max={5}
-                                step={0.1}
-                                value={c.parameters.multiplier}
-                                onChange={(e) =>
-                                  parameter(
-                                    i,
-                                    "multiplier",
-                                    Number(e.target.value),
-                                  )
-                                }
-                              />
-                            </Field>
-                          </>
-                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label={`Remove condition ${i + 1}`}
+                            disabled={design.conditions.length <= 1}
+                            onClick={() =>
+                              update(
+                                "conditions",
+                                design.conditions.filter(
+                                  (_, index) => index !== i,
+                                ),
+                              )
+                            }
+                          >
+                            <Trash2 />
+                          </Button>
+                        </div>
+                        <FieldGroup className="condition-fields">
                           <Field>
-                            <FieldLabel htmlFor={`tasks-${c.key}`}>
-                              Task count
-                            </FieldLabel>
-                            <Input
-                              id={`tasks-${c.key}`}
-                              type="number"
-                              min={3}
-                              max={30}
-                              disabled={design.tasks.length > 0}
-                              value={
-                                design.tasks.length || c.parameters.task_count
+                            <FieldLabel>Model</FieldLabel>
+                            <Select
+                              label={`Condition ${i + 1} model`}
+                              value={c.model}
+                              onValueChange={(v) =>
+                                condition(i, { model: v as ModelId })
                               }
-                              onChange={(e) =>
-                                parameter(
-                                  i,
-                                  "task_count",
-                                  Number(e.target.value),
-                                )
-                              }
+                              options={catalog.models.map((m) => ({
+                                value: m.id,
+                                label: modelLabel(m.id),
+                              }))}
                             />
                           </Field>
-                        )}
-                        <Field>
-                          <FieldLabel>Retained memory</FieldLabel>
-                          <Select
-                            label={`Condition ${i + 1} memory`}
-                            value={c.parameters.memory}
-                            onValueChange={(v) =>
-                              parameter(i, "memory", v as Parameters["memory"])
-                            }
-                            options={[
-                              {
-                                value: "episodic",
-                                label: "Experiences + notes",
-                              },
-                              {
-                                value: "notes",
-                                label: "Notes + public history",
-                              },
-                              { value: "none", label: "No retained history" },
-                            ]}
-                          />
-                        </Field>
-                      </FieldGroup>
-                      {design.environment !== "coordination" && (
-                        <details className="disclosure">
-                          <summary>
-                            Resource changes during the run
-                            {c.parameters.resource_schedule.length > 0 &&
-                              ` · ${c.parameters.resource_schedule.length}`}
-                          </summary>
-                          <p className="table-note">
-                            Changes take effect at the start of a round and
-                            persist. Agents see the new budget when it changes;
-                            future changes are hidden.
-                          </p>
-                          {c.parameters.resource_schedule.map((change, j) => (
-                            <FieldGroup
-                              className="condition-fields"
-                              key={
-                                // biome-ignore lint/suspicious/noArrayIndexKey: Controlled fields retain focus while the round is edited; rows are never reordered.
-                                `${c.key}-change-${j}`
-                              }
-                            >
+                          {design.environment !== "coordination" ? (
+                            <>
                               <Field>
-                                <FieldLabel
-                                  htmlFor={`${c.key}-change-round-${j}`}
-                                >
-                                  Starting round
-                                </FieldLabel>
-                                <Input
-                                  id={`${c.key}-change-round-${j}`}
-                                  type="number"
-                                  min={2}
-                                  max={design.rounds}
-                                  value={change.round}
-                                  onChange={(e) =>
-                                    parameter(
-                                      i,
-                                      "resource_schedule",
-                                      c.parameters.resource_schedule.map(
-                                        (v, k) =>
-                                          k === j
-                                            ? {
-                                                ...v,
-                                                round: Number(e.target.value),
-                                              }
-                                            : v,
-                                      ),
-                                    )
-                                  }
-                                />
-                              </Field>
-                              <Field>
-                                <FieldLabel
-                                  htmlFor={`${c.key}-change-credits-${j}`}
-                                >
+                                <FieldLabel htmlFor={`endowment-${c.key}`}>
                                   Credits per round
                                 </FieldLabel>
                                 <Input
-                                  id={`${c.key}-change-credits-${j}`}
+                                  id={`endowment-${c.key}`}
                                   type="number"
                                   min={2}
                                   max={100}
-                                  value={change.endowment}
+                                  value={c.parameters.endowment}
                                   onChange={(e) =>
                                     parameter(
                                       i,
-                                      "resource_schedule",
-                                      c.parameters.resource_schedule.map(
-                                        (v, k) =>
-                                          k === j
-                                            ? {
-                                                ...v,
-                                                endowment: Number(
-                                                  e.target.value,
-                                                ),
-                                              }
-                                            : v,
-                                      ),
+                                      "endowment",
+                                      Number(e.target.value),
                                     )
                                   }
                                 />
                               </Field>
-                              <Button
-                                variant="ghost"
-                                onClick={() =>
-                                  parameter(
-                                    i,
-                                    "resource_schedule",
-                                    c.parameters.resource_schedule.filter(
-                                      (_, k) => k !== j,
-                                    ),
-                                  )
-                                }
-                              >
-                                Remove change
-                              </Button>
-                            </FieldGroup>
-                          ))}
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={
-                              design.rounds < 2 ||
-                              c.parameters.resource_schedule.length >= 12
-                            }
-                            onClick={() =>
-                              parameter(i, "resource_schedule", [
-                                ...c.parameters.resource_schedule,
-                                {
-                                  round: Math.max(
-                                    2,
-                                    Math.ceil(design.rounds / 2),
-                                  ),
-                                  endowment: 3,
-                                },
-                              ])
-                            }
-                          >
-                            Add resource change
-                          </Button>
-                        </details>
-                      )}
-                      <details className="disclosure">
-                        <summary>
-                          Roles & goals for this condition
-                          {c.profile_overrides.length > 0 &&
-                            ` · ${c.profile_overrides.length} modified`}
-                        </summary>
-                        <FieldGroup>
-                          {design.profiles.map((base) => {
-                            const resolved =
-                              c.profile_overrides.find(
-                                (p) => p.key === base.key,
-                              ) ?? base;
-                            function override(changes: Partial<Profile>) {
-                              const edited = { ...resolved, ...changes };
-                              condition(i, {
-                                profile_overrides: [
-                                  ...c.profile_overrides.filter(
-                                    (p) => p.key !== base.key,
-                                  ),
-                                  edited,
-                                ],
-                              });
-                            }
-                            return (
-                              <Field key={base.key}>
-                                <FieldLabel
-                                  htmlFor={`${c.key}-${base.key}-goal`}
-                                >
-                                  {base.name}
+                              <Field>
+                                <FieldLabel htmlFor={`multiplier-${c.key}`}>
+                                  Return multiplier
                                 </FieldLabel>
                                 <Input
-                                  aria-label={`${c.name} role for ${base.name}`}
-                                  value={resolved.role}
+                                  id={`multiplier-${c.key}`}
+                                  type="number"
+                                  min={1}
+                                  max={5}
+                                  step={0.1}
+                                  value={c.parameters.multiplier}
                                   onChange={(e) =>
-                                    override({ role: e.target.value })
+                                    parameter(
+                                      i,
+                                      "multiplier",
+                                      Number(e.target.value),
+                                    )
                                   }
-                                  maxLength={80}
                                 />
-                                <Textarea
-                                  id={`${c.key}-${base.key}-goal`}
-                                  value={resolved.goal}
-                                  onChange={(e) =>
-                                    override({ goal: e.target.value })
-                                  }
-                                  maxLength={2000}
-                                  rows={2}
-                                />
-                                {c.profile_overrides.some(
-                                  (p) => p.key === base.key,
-                                ) && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() =>
-                                      condition(i, {
-                                        profile_overrides:
-                                          c.profile_overrides.filter(
-                                            (p) => p.key !== base.key,
-                                          ),
-                                      })
-                                    }
-                                  >
-                                    Use baseline profile
-                                  </Button>
-                                )}
                               </Field>
-                            );
-                          })}
+                            </>
+                          ) : (
+                            <Field>
+                              <FieldLabel htmlFor={`tasks-${c.key}`}>
+                                Task count
+                              </FieldLabel>
+                              <Input
+                                id={`tasks-${c.key}`}
+                                type="number"
+                                min={3}
+                                max={30}
+                                disabled={design.tasks.length > 0}
+                                value={
+                                  design.tasks.length || c.parameters.task_count
+                                }
+                                onChange={(e) =>
+                                  parameter(
+                                    i,
+                                    "task_count",
+                                    Number(e.target.value),
+                                  )
+                                }
+                              />
+                            </Field>
+                          )}
+                          <Field>
+                            <FieldLabel>Retained memory</FieldLabel>
+                            <Select
+                              label={`Condition ${i + 1} memory`}
+                              value={c.parameters.memory}
+                              onValueChange={(v) =>
+                                parameter(
+                                  i,
+                                  "memory",
+                                  v as Parameters["memory"],
+                                )
+                              }
+                              options={[
+                                {
+                                  value: "episodic",
+                                  label: "Experiences + notes",
+                                },
+                                {
+                                  value: "notes",
+                                  label: "Notes + public history",
+                                },
+                                { value: "none", label: "No retained history" },
+                              ]}
+                            />
+                          </Field>
                         </FieldGroup>
-                      </details>
-                      <div className="condition-switches">
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={c.parameters.communication}
-                            onChange={(e) =>
-                              parameter(i, "communication", e.target.checked)
-                            }
-                          />
-                          Communication
-                        </label>
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={c.parameters.private_signal}
-                            onChange={(e) =>
-                              parameter(i, "private_signal", e.target.checked)
-                            }
-                          />
-                          Private signals
-                        </label>
+                        {design.environment !== "coordination" && (
+                          <details className="disclosure">
+                            <summary>
+                              Resource changes during the run
+                              {c.parameters.resource_schedule.length > 0 &&
+                                ` · ${c.parameters.resource_schedule.length}`}
+                            </summary>
+                            <p className="table-note">
+                              Changes take effect at the start of a round and
+                              persist. Agents see the new budget when it
+                              changes; future changes are hidden.
+                            </p>
+                            {c.parameters.resource_schedule.map((change, j) => (
+                              <FieldGroup
+                                className="condition-fields"
+                                key={
+                                  // biome-ignore lint/suspicious/noArrayIndexKey: Controlled fields retain focus while the round is edited; rows are never reordered.
+                                  `${c.key}-change-${j}`
+                                }
+                              >
+                                <Field>
+                                  <FieldLabel
+                                    htmlFor={`${c.key}-change-round-${j}`}
+                                  >
+                                    Starting round
+                                  </FieldLabel>
+                                  <Input
+                                    id={`${c.key}-change-round-${j}`}
+                                    type="number"
+                                    min={2}
+                                    max={design.rounds}
+                                    value={change.round}
+                                    onChange={(e) =>
+                                      parameter(
+                                        i,
+                                        "resource_schedule",
+                                        c.parameters.resource_schedule.map(
+                                          (v, k) =>
+                                            k === j
+                                              ? {
+                                                  ...v,
+                                                  round: Number(e.target.value),
+                                                }
+                                              : v,
+                                        ),
+                                      )
+                                    }
+                                  />
+                                </Field>
+                                <Field>
+                                  <FieldLabel
+                                    htmlFor={`${c.key}-change-credits-${j}`}
+                                  >
+                                    Credits per round
+                                  </FieldLabel>
+                                  <Input
+                                    id={`${c.key}-change-credits-${j}`}
+                                    type="number"
+                                    min={2}
+                                    max={100}
+                                    value={change.endowment}
+                                    onChange={(e) =>
+                                      parameter(
+                                        i,
+                                        "resource_schedule",
+                                        c.parameters.resource_schedule.map(
+                                          (v, k) =>
+                                            k === j
+                                              ? {
+                                                  ...v,
+                                                  endowment: Number(
+                                                    e.target.value,
+                                                  ),
+                                                }
+                                              : v,
+                                        ),
+                                      )
+                                    }
+                                  />
+                                </Field>
+                                <Button
+                                  variant="ghost"
+                                  onClick={() =>
+                                    parameter(
+                                      i,
+                                      "resource_schedule",
+                                      c.parameters.resource_schedule.filter(
+                                        (_, k) => k !== j,
+                                      ),
+                                    )
+                                  }
+                                >
+                                  Remove change
+                                </Button>
+                              </FieldGroup>
+                            ))}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={
+                                design.rounds < 2 ||
+                                c.parameters.resource_schedule.length >= 12
+                              }
+                              onClick={() =>
+                                parameter(i, "resource_schedule", [
+                                  ...c.parameters.resource_schedule,
+                                  {
+                                    round: Math.max(
+                                      2,
+                                      Math.ceil(design.rounds / 2),
+                                    ),
+                                    endowment: 3,
+                                  },
+                                ])
+                              }
+                            >
+                              Add resource change
+                            </Button>
+                          </details>
+                        )}
+                        <details className="disclosure">
+                          <summary>
+                            Roles & goals for this condition
+                            {c.profile_overrides.length > 0 &&
+                              ` · ${c.profile_overrides.length} modified`}
+                          </summary>
+                          <FieldGroup>
+                            {design.profiles.map((base) => {
+                              const resolved =
+                                c.profile_overrides.find(
+                                  (p) => p.key === base.key,
+                                ) ?? base;
+                              function override(changes: Partial<Profile>) {
+                                const edited = { ...resolved, ...changes };
+                                condition(i, {
+                                  profile_overrides: [
+                                    ...c.profile_overrides.filter(
+                                      (p) => p.key !== base.key,
+                                    ),
+                                    edited,
+                                  ],
+                                });
+                              }
+                              return (
+                                <Field key={base.key}>
+                                  <FieldLabel
+                                    htmlFor={`${c.key}-${base.key}-goal`}
+                                  >
+                                    {base.name}
+                                  </FieldLabel>
+                                  <Input
+                                    aria-label={`${c.name} role for ${base.name}`}
+                                    value={resolved.role}
+                                    onChange={(e) =>
+                                      override({ role: e.target.value })
+                                    }
+                                    maxLength={80}
+                                  />
+                                  <Textarea
+                                    id={`${c.key}-${base.key}-goal`}
+                                    value={resolved.goal}
+                                    onChange={(e) =>
+                                      override({ goal: e.target.value })
+                                    }
+                                    maxLength={2000}
+                                    rows={2}
+                                  />
+                                  {c.profile_overrides.some(
+                                    (p) => p.key === base.key,
+                                  ) && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() =>
+                                        condition(i, {
+                                          profile_overrides:
+                                            c.profile_overrides.filter(
+                                              (p) => p.key !== base.key,
+                                            ),
+                                        })
+                                      }
+                                    >
+                                      Use baseline profile
+                                    </Button>
+                                  )}
+                                </Field>
+                              );
+                            })}
+                          </FieldGroup>
+                        </details>
+                        <div className="condition-switches">
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={c.parameters.communication}
+                              onChange={(e) =>
+                                parameter(i, "communication", e.target.checked)
+                              }
+                            />
+                            Communication
+                          </label>
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={c.parameters.private_signal}
+                              onChange={(e) =>
+                                parameter(i, "private_signal", e.target.checked)
+                              }
+                            />
+                            Private signals
+                          </label>
+                        </div>
                       </div>
-                    </div>
+                    </details>
                   ))}
                 </div>
               </section>
@@ -872,10 +1082,6 @@ function DesignEditor({
                   <div className="section-heading">
                     <div>
                       <h2>Task graph</h2>
-                      <p>
-                        Define work packages, required effort, and prerequisite
-                        task keys.
-                      </p>
                     </div>
                     <Button
                       variant="outline"
@@ -994,7 +1200,7 @@ function DesignEditor({
                 </section>
               )}
               <section className="form-section">
-                <h2>Execution & measurement</h2>
+                <h2>Run plan</h2>
                 <FieldGroup className="matrix-fields">
                   <Field>
                     <FieldLabel htmlFor="rounds">Rounds per run</FieldLabel>
@@ -1010,47 +1216,6 @@ function DesignEditor({
                       A round contains up to {design.profiles.length} agent
                       turns.
                     </FieldDescription>
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="seeds">Matched seeds</FieldLabel>
-                    <Input
-                      id="seeds"
-                      defaultValue={design.seeds.join(", ")}
-                      onBlur={(e) => {
-                        const parts = e.target.value
-                          .split(",")
-                          .map((v) =>
-                            v.trim() === "" ? Number.NaN : Number(v.trim()),
-                          );
-                        if (parts.some((n) => !Number.isInteger(n) || n < 0)) {
-                          update("seeds", []);
-                          setError(
-                            "Seeds must be nonnegative integers, separated by commas.",
-                          );
-                        } else {
-                          update("seeds", parts);
-                          setError("");
-                        }
-                      }}
-                    />
-                    <FieldDescription>
-                      The same seeds are used in every condition.
-                    </FieldDescription>
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="repetitions">
-                      Repetitions per seed
-                    </FieldLabel>
-                    <Input
-                      id="repetitions"
-                      type="number"
-                      min={1}
-                      max={10}
-                      value={design.repetitions}
-                      onChange={(e) =>
-                        update("repetitions", Number(e.target.value))
-                      }
-                    />
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="budget">
@@ -1069,28 +1234,86 @@ function DesignEditor({
                     />
                   </Field>
                 </FieldGroup>
-                <fieldset className="measure-picker">
-                  <legend>Measurements</legend>
-                  {environment?.measures.map((key) => (
-                    <label key={key}>
-                      <input
-                        type="checkbox"
-                        checked={design.measures.includes(key)}
+                <details className="disclosure">
+                  <summary>
+                    Replication · {design.seeds.length} seed
+                    {design.seeds.length !== 1 && "s"} × {design.repetitions}{" "}
+                    repetition{design.repetitions !== 1 && "s"}
+                  </summary>
+                  <FieldGroup className="matrix-fields">
+                    {" "}
+                    <Field>
+                      <FieldLabel htmlFor="seeds">Matched seeds</FieldLabel>
+                      <Input
+                        id="seeds"
+                        defaultValue={design.seeds.join(", ")}
+                        onBlur={(e) => {
+                          const parts = e.target.value
+                            .split(",")
+                            .map((v) =>
+                              v.trim() === "" ? Number.NaN : Number(v.trim()),
+                            );
+                          if (
+                            parts.some((n) => !Number.isInteger(n) || n < 0)
+                          ) {
+                            update("seeds", []);
+                            setError(
+                              "Seeds must be nonnegative integers, separated by commas.",
+                            );
+                          } else {
+                            update("seeds", parts);
+                            setError("");
+                          }
+                        }}
+                      />
+                      <FieldDescription>
+                        The same seeds are used in every condition.
+                      </FieldDescription>
+                    </Field>
+                    <Field>
+                      <FieldLabel htmlFor="repetitions">
+                        Repetitions per seed
+                      </FieldLabel>
+                      <Input
+                        id="repetitions"
+                        type="number"
+                        min={1}
+                        max={10}
+                        value={design.repetitions}
                         onChange={(e) =>
-                          update(
-                            "measures",
-                            e.target.checked
-                              ? [...design.measures, key]
-                              : design.measures.filter((m) => m !== key),
-                          )
+                          update("repetitions", Number(e.target.value))
                         }
                       />
-                      {label(key)}
-                    </label>
-                  ))}
-                </fieldset>
+                    </Field>
+                  </FieldGroup>
+                </details>
                 <details className="disclosure">
-                  <summary>Model response settings & limitations</summary>
+                  <summary>
+                    Measurements · {design.measures.length} selected
+                  </summary>
+                  <fieldset className="measure-picker">
+                    <legend>Measurements</legend>
+                    {environment?.measures.map((key) => (
+                      <label key={key}>
+                        <input
+                          type="checkbox"
+                          checked={design.measures.includes(key)}
+                          onChange={(e) =>
+                            update(
+                              "measures",
+                              e.target.checked
+                                ? [...design.measures, key]
+                                : design.measures.filter((m) => m !== key),
+                            )
+                          }
+                        />
+                        {label(key)}
+                      </label>
+                    ))}
+                  </fieldset>
+                </details>
+                <details className="disclosure">
+                  <summary>Model settings & limitations</summary>
                   <FieldGroup>
                     <Field>
                       <FieldLabel>OpenAI reasoning effort</FieldLabel>
@@ -1167,7 +1390,7 @@ function DesignEditor({
               )}
               {studyId ? "Save new revision" : "Create experiment"}
             </Button>
-            <span>Starts ready. No model decisions until you run it.</span>
+            <span>Saving does not start the runs.</span>
           </div>
         </div>
         <aside className="design-summary">
@@ -1204,18 +1427,14 @@ function DesignEditor({
               <dd>{money(design.budget_usd)}</dd>
             </div>
           </dl>
-          <p>
-            Each run is isolated. Conditions share the seed schedule. Decisions
-            within a run remain sequential.
-          </p>
-          <div className="summary-method">
-            <Check />
-            <span>Typed actions, complete evidence, deterministic replay.</span>
-          </div>
-          <p className="muted">
-            An experiment can reveal agent behavior under these rules. It cannot
-            establish human validity by itself.
-          </p>
+          <details className="disclosure">
+            <summary>What stays fixed</summary>
+            <p>
+              Saving creates runs with this protocol. Tuning creates a new
+              revision; earlier runs and evidence keep their original rules.
+              Environment mechanics are defined by the installed adapter.
+            </p>
+          </details>
         </aside>
       </div>
     </>

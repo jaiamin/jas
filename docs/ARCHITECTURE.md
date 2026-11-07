@@ -30,6 +30,19 @@ objects into an unqueryable single blob or duplicate transient UI state in the d
 Claims, commitments and exchanges are typed events with explicit payloads, not separate
 mutable truth sources. Relationship views and behavioral summaries are derived from them.
 
+## Experiment design
+
+The planner scopes the question and justifies agents, conditions, seeds, repetitions and
+rounds; optionally retrieves public methodological research; drafts a typed protocol; validates
+its invariants; and obtains a separate critique. At most three protocol revisions resolve
+validation/review feedback. Provider failures stop visibly without retries or substitution.
+Proposal stages, research sources, reviews and provider traces remain Analysis data.
+Revisions record the originating proposal; exports retain that proposal and its requests.
+
+Browser drafts preserve unfinished visual edits and raw JSON per editor route. Invalid drafts
+can be recovered in the specification editor. Only backend-validated designs become immutable
+revisions and run matrices; saving does not start execution.
+
 ## Environment seam
 
 An adapter validates parameters, initializes seeded state, selects an actor, constructs that

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-07T02:34:23.905967Z",
+  "generatedAt": "2026-11-07T03:48:40.305569Z",
   "title": "Design System: ASS",
   "extensions": {
     "colorMeta": {
@@ -20,35 +20,35 @@
       },
       "foreground": {
         "role": "neutral",
-        "displayName": "Charcoal ink",
+        "displayName": "Near-black ink",
         "tonalRamp": [
-          "oklch(15% 0.0017 84.6)",
-          "oklch(26% 0.0030 84.6)",
-          "oklch(38% 0.0040 84.6)",
-          "oklch(49% 0.0040 84.6)",
-          "oklch(61% 0.0040 84.6)",
-          "oklch(72% 0.0040 84.6)",
-          "oklch(84% 0.0025 84.6)",
-          "oklch(95% 0.0008 84.6)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "primary": {
         "role": "primary",
-        "displayName": "Burnt orange",
+        "displayName": "Monochrome action",
         "tonalRamp": [
-          "oklch(15% 0.0605 45.9)",
-          "oklch(26% 0.1048 45.9)",
-          "oklch(38% 0.1411 45.9)",
-          "oklch(49% 0.1411 45.9)",
-          "oklch(61% 0.1411 45.9)",
-          "oklch(72% 0.1411 45.9)",
-          "oklch(84% 0.0903 45.9)",
-          "oklch(95% 0.0282 45.9)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "primary-foreground": {
         "role": "primary",
-        "displayName": "Primary action ink",
+        "displayName": "Monochrome action ink",
         "tonalRamp": [
           "oklch(15% 0.0000 0.0)",
           "oklch(26% 0.0000 0.0)",
@@ -64,98 +64,98 @@
         "role": "neutral",
         "displayName": "Muted",
         "tonalRamp": [
-          "oklch(15% 0.0006 106.4)",
-          "oklch(26% 0.0010 106.4)",
-          "oklch(38% 0.0013 106.4)",
-          "oklch(49% 0.0013 106.4)",
-          "oklch(61% 0.0013 106.4)",
-          "oklch(72% 0.0013 106.4)",
-          "oklch(84% 0.0008 106.4)",
-          "oklch(95% 0.0003 106.4)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "muted-foreground": {
         "role": "neutral",
         "displayName": "Muted foreground",
         "tonalRamp": [
-          "oklch(15% 0.0035 88.7)",
-          "oklch(26% 0.0061 88.7)",
-          "oklch(38% 0.0082 88.7)",
-          "oklch(49% 0.0082 88.7)",
-          "oklch(61% 0.0082 88.7)",
-          "oklch(72% 0.0082 88.7)",
-          "oklch(84% 0.0052 88.7)",
-          "oklch(95% 0.0016 88.7)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "border": {
         "role": "neutral",
         "displayName": "Border",
         "tonalRamp": [
-          "oklch(15% 0.0018 91.4)",
-          "oklch(26% 0.0031 91.4)",
-          "oklch(38% 0.0042 91.4)",
-          "oklch(49% 0.0042 91.4)",
-          "oklch(61% 0.0042 91.4)",
-          "oklch(72% 0.0042 91.4)",
-          "oklch(84% 0.0027 91.4)",
-          "oklch(95% 0.0008 91.4)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "input": {
         "role": "neutral",
         "displayName": "Input",
         "tonalRamp": [
-          "oklch(15% 0.0048 81.8)",
-          "oklch(26% 0.0084 81.8)",
-          "oklch(38% 0.0113 81.8)",
-          "oklch(49% 0.0113 81.8)",
-          "oklch(61% 0.0113 81.8)",
-          "oklch(72% 0.0113 81.8)",
-          "oklch(84% 0.0072 81.8)",
-          "oklch(95% 0.0023 81.8)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "ring": {
-        "role": "primary",
-        "displayName": "Orange focus",
+        "role": "neutral",
+        "displayName": "Neutral focus",
         "tonalRamp": [
-          "oklch(15% 0.0605 45.9)",
-          "oklch(26% 0.1048 45.9)",
-          "oklch(38% 0.1411 45.9)",
-          "oklch(49% 0.1411 45.9)",
-          "oklch(61% 0.1411 45.9)",
-          "oklch(72% 0.1411 45.9)",
-          "oklch(84% 0.0903 45.9)",
-          "oklch(95% 0.0282 45.9)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "accent": {
-        "role": "primary",
-        "displayName": "Orange selection",
+        "role": "neutral",
+        "displayName": "Neutral selection",
         "tonalRamp": [
-          "oklch(15% 0.0094 58.8)",
-          "oklch(26% 0.0163 58.8)",
-          "oklch(38% 0.0219 58.8)",
-          "oklch(49% 0.0219 58.8)",
-          "oklch(61% 0.0219 58.8)",
-          "oklch(72% 0.0219 58.8)",
-          "oklch(84% 0.0140 58.8)",
-          "oklch(95% 0.0044 58.8)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "accent-foreground": {
-        "role": "primary",
-        "displayName": "Orange selection ink",
+        "role": "neutral",
+        "displayName": "Neutral selected ink",
         "tonalRamp": [
-          "oklch(15% 0.0606 43.8)",
-          "oklch(26% 0.1050 43.8)",
-          "oklch(38% 0.1413 43.8)",
-          "oklch(49% 0.1413 43.8)",
-          "oklch(61% 0.1413 43.8)",
-          "oklch(72% 0.1413 43.8)",
-          "oklch(84% 0.0905 43.8)",
-          "oklch(95% 0.0283 43.8)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "popover": {
@@ -201,17 +201,17 @@
         ]
       },
       "success": {
-        "role": "secondary",
-        "displayName": "Slate complete",
+        "role": "neutral",
+        "displayName": "Neutral completion",
         "tonalRamp": [
-          "oklch(15% 0.0156 252.9)",
-          "oklch(26% 0.0271 252.9)",
-          "oklch(38% 0.0364 252.9)",
-          "oklch(49% 0.0364 252.9)",
-          "oklch(61% 0.0364 252.9)",
-          "oklch(72% 0.0364 252.9)",
-          "oklch(84% 0.0233 252.9)",
-          "oklch(95% 0.0073 252.9)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "warning": {
@@ -232,42 +232,42 @@
         "role": "neutral",
         "displayName": "Sidebar",
         "tonalRamp": [
-          "oklch(15% 0.0006 106.4)",
-          "oklch(26% 0.0010 106.4)",
-          "oklch(38% 0.0013 106.4)",
-          "oklch(49% 0.0013 106.4)",
-          "oklch(61% 0.0013 106.4)",
-          "oklch(72% 0.0013 106.4)",
-          "oklch(84% 0.0008 106.4)",
-          "oklch(95% 0.0003 106.4)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "sidebar-border": {
         "role": "neutral",
         "displayName": "Sidebar border",
         "tonalRamp": [
-          "oklch(15% 0.0018 91.4)",
-          "oklch(26% 0.0031 91.4)",
-          "oklch(38% 0.0042 91.4)",
-          "oklch(49% 0.0042 91.4)",
-          "oklch(61% 0.0042 91.4)",
-          "oklch(72% 0.0042 91.4)",
-          "oklch(84% 0.0027 91.4)",
-          "oklch(95% 0.0008 91.4)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "chart-1": {
         "role": "secondary",
         "displayName": "Orange series",
         "tonalRamp": [
-          "oklch(15% 0.0605 45.9)",
-          "oklch(26% 0.1048 45.9)",
-          "oklch(38% 0.1411 45.9)",
-          "oklch(49% 0.1411 45.9)",
-          "oklch(61% 0.1411 45.9)",
-          "oklch(72% 0.1411 45.9)",
-          "oklch(84% 0.0903 45.9)",
-          "oklch(95% 0.0282 45.9)"
+          "oklch(15% 0.0729 38.4)",
+          "oklch(26% 0.1263 38.4)",
+          "oklch(38% 0.1700 38.4)",
+          "oklch(49% 0.1700 38.4)",
+          "oklch(61% 0.1700 38.4)",
+          "oklch(72% 0.1700 38.4)",
+          "oklch(84% 0.1088 38.4)",
+          "oklch(95% 0.0340 38.4)"
         ]
       },
       "chart-2": {
@@ -344,14 +344,14 @@
         "role": "secondary",
         "displayName": "Series 0 background",
         "tonalRamp": [
-          "oklch(15% 0.0094 58.8)",
-          "oklch(26% 0.0163 58.8)",
-          "oklch(38% 0.0219 58.8)",
-          "oklch(49% 0.0219 58.8)",
-          "oklch(61% 0.0219 58.8)",
-          "oklch(72% 0.0219 58.8)",
-          "oklch(84% 0.0140 58.8)",
-          "oklch(95% 0.0044 58.8)"
+          "oklch(15% 0.0083 55.2)",
+          "oklch(26% 0.0144 55.2)",
+          "oklch(38% 0.0194 55.2)",
+          "oklch(49% 0.0194 55.2)",
+          "oklch(61% 0.0194 55.2)",
+          "oklch(72% 0.0194 55.2)",
+          "oklch(84% 0.0124 55.2)",
+          "oklch(95% 0.0039 55.2)"
         ]
       },
       "series-1-background": {
@@ -424,9 +424,23 @@
           "oklch(95% 0.0039 305.3)"
         ]
       },
+      "brand": {
+        "role": "primary",
+        "displayName": "Orange marker",
+        "tonalRamp": [
+          "oklch(15% 0.0729 38.4)",
+          "oklch(26% 0.1263 38.4)",
+          "oklch(38% 0.1700 38.4)",
+          "oklch(49% 0.1700 38.4)",
+          "oklch(61% 0.1700 38.4)",
+          "oklch(72% 0.1700 38.4)",
+          "oklch(84% 0.1088 38.4)",
+          "oklch(95% 0.0340 38.4)"
+        ]
+      },
       "dark-background": {
         "role": "neutral",
-        "displayName": "Charcoal workspace",
+        "displayName": "Near-black workspace",
         "tonalRamp": [
           "oklch(15% 0.0000 0.0)",
           "oklch(26% 0.0000 0.0)",
@@ -442,42 +456,42 @@
         "role": "neutral",
         "displayName": "Pale ink",
         "tonalRamp": [
-          "oklch(15% 0.0012 84.6)",
-          "oklch(26% 0.0022 84.6)",
-          "oklch(38% 0.0029 84.6)",
-          "oklch(49% 0.0029 84.6)",
-          "oklch(61% 0.0029 84.6)",
-          "oklch(72% 0.0029 84.6)",
-          "oklch(84% 0.0019 84.6)",
-          "oklch(95% 0.0006 84.6)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "dark-primary": {
         "role": "primary",
-        "displayName": "Soft apricot",
+        "displayName": "Dark Monochrome action",
         "tonalRamp": [
-          "oklch(15% 0.0513 57.5)",
-          "oklch(26% 0.0890 57.5)",
-          "oklch(38% 0.1198 57.5)",
-          "oklch(49% 0.1198 57.5)",
-          "oklch(61% 0.1198 57.5)",
-          "oklch(72% 0.1198 57.5)",
-          "oklch(84% 0.0767 57.5)",
-          "oklch(95% 0.0240 57.5)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "dark-primary-foreground": {
         "role": "primary",
-        "displayName": "Dark Primary action ink",
+        "displayName": "Dark Monochrome action ink",
         "tonalRamp": [
-          "oklch(15% 0.0147 58.9)",
-          "oklch(26% 0.0254 58.9)",
-          "oklch(38% 0.0343 58.9)",
-          "oklch(49% 0.0343 58.9)",
-          "oklch(61% 0.0343 58.9)",
-          "oklch(72% 0.0343 58.9)",
-          "oklch(84% 0.0219 58.9)",
-          "oklch(95% 0.0069 58.9)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "dark-muted": {
@@ -498,84 +512,84 @@
         "role": "neutral",
         "displayName": "Dark Muted foreground",
         "tonalRamp": [
-          "oklch(15% 0.0019 91.5)",
-          "oklch(26% 0.0033 91.5)",
-          "oklch(38% 0.0044 91.5)",
-          "oklch(49% 0.0044 91.5)",
-          "oklch(61% 0.0044 91.5)",
-          "oklch(72% 0.0044 91.5)",
-          "oklch(84% 0.0028 91.5)",
-          "oklch(95% 0.0009 91.5)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "dark-border": {
         "role": "neutral",
         "displayName": "Dark Border",
         "tonalRamp": [
-          "oklch(15% 0.0007 106.5)",
-          "oklch(26% 0.0013 106.5)",
-          "oklch(38% 0.0017 106.5)",
-          "oklch(49% 0.0017 106.5)",
-          "oklch(61% 0.0017 106.5)",
-          "oklch(72% 0.0017 106.5)",
-          "oklch(84% 0.0011 106.5)",
-          "oklch(95% 0.0003 106.5)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "dark-input": {
         "role": "neutral",
         "displayName": "Dark Input",
         "tonalRamp": [
-          "oklch(15% 0.0034 88.7)",
-          "oklch(26% 0.0059 88.7)",
-          "oklch(38% 0.0080 88.7)",
-          "oklch(49% 0.0080 88.7)",
-          "oklch(61% 0.0080 88.7)",
-          "oklch(72% 0.0080 88.7)",
-          "oklch(84% 0.0051 88.7)",
-          "oklch(95% 0.0016 88.7)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "dark-ring": {
-        "role": "primary",
-        "displayName": "Dark Orange focus",
+        "role": "neutral",
+        "displayName": "Dark Neutral focus",
         "tonalRamp": [
-          "oklch(15% 0.0513 57.5)",
-          "oklch(26% 0.0890 57.5)",
-          "oklch(38% 0.1198 57.5)",
-          "oklch(49% 0.1198 57.5)",
-          "oklch(61% 0.1198 57.5)",
-          "oklch(72% 0.1198 57.5)",
-          "oklch(84% 0.0767 57.5)",
-          "oklch(95% 0.0240 57.5)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "dark-accent": {
-        "role": "primary",
-        "displayName": "Dark Orange selection",
+        "role": "neutral",
+        "displayName": "Dark Neutral selection",
         "tonalRamp": [
-          "oklch(15% 0.0141 56.2)",
-          "oklch(26% 0.0245 56.2)",
-          "oklch(38% 0.0329 56.2)",
-          "oklch(49% 0.0329 56.2)",
-          "oklch(61% 0.0329 56.2)",
-          "oklch(72% 0.0329 56.2)",
-          "oklch(84% 0.0211 56.2)",
-          "oklch(95% 0.0066 56.2)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "dark-accent-foreground": {
-        "role": "primary",
-        "displayName": "Dark Orange selection ink",
+        "role": "neutral",
+        "displayName": "Dark Neutral selected ink",
         "tonalRamp": [
-          "oklch(15% 0.0409 59.7)",
-          "oklch(26% 0.0709 59.7)",
-          "oklch(38% 0.0954 59.7)",
-          "oklch(49% 0.0954 59.7)",
-          "oklch(61% 0.0954 59.7)",
-          "oklch(72% 0.0954 59.7)",
-          "oklch(84% 0.0610 59.7)",
-          "oklch(95% 0.0191 59.7)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "dark-popover": {
@@ -621,17 +635,17 @@
         ]
       },
       "dark-success": {
-        "role": "secondary",
-        "displayName": "Dark Slate complete",
+        "role": "neutral",
+        "displayName": "Dark Neutral completion",
         "tonalRamp": [
-          "oklch(15% 0.0141 255.6)",
-          "oklch(26% 0.0245 255.6)",
-          "oklch(38% 0.0329 255.6)",
-          "oklch(49% 0.0329 255.6)",
-          "oklch(61% 0.0329 255.6)",
-          "oklch(72% 0.0329 255.6)",
-          "oklch(84% 0.0211 255.6)",
-          "oklch(95% 0.0066 255.6)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "dark-warning": {
@@ -666,28 +680,28 @@
         "role": "neutral",
         "displayName": "Dark Sidebar border",
         "tonalRamp": [
-          "oklch(15% 0.0007 106.5)",
-          "oklch(26% 0.0013 106.5)",
-          "oklch(38% 0.0017 106.5)",
-          "oklch(49% 0.0017 106.5)",
-          "oklch(61% 0.0017 106.5)",
-          "oklch(72% 0.0017 106.5)",
-          "oklch(84% 0.0011 106.5)",
-          "oklch(95% 0.0003 106.5)"
+          "oklch(15% 0.0000 0.0)",
+          "oklch(26% 0.0000 0.0)",
+          "oklch(38% 0.0000 0.0)",
+          "oklch(49% 0.0000 0.0)",
+          "oklch(61% 0.0000 0.0)",
+          "oklch(72% 0.0000 0.0)",
+          "oklch(84% 0.0000 0.0)",
+          "oklch(95% 0.0000 0.0)"
         ]
       },
       "dark-chart-1": {
         "role": "secondary",
         "displayName": "Dark Orange series",
         "tonalRamp": [
-          "oklch(15% 0.0481 57.8)",
-          "oklch(26% 0.0834 57.8)",
-          "oklch(38% 0.1123 57.8)",
-          "oklch(49% 0.1123 57.8)",
-          "oklch(61% 0.1123 57.8)",
-          "oklch(72% 0.1123 57.8)",
-          "oklch(84% 0.0719 57.8)",
-          "oklch(95% 0.0225 57.8)"
+          "oklch(15% 0.0682 55.9)",
+          "oklch(26% 0.1181 55.9)",
+          "oklch(38% 0.1590 55.9)",
+          "oklch(49% 0.1590 55.9)",
+          "oklch(61% 0.1590 55.9)",
+          "oklch(72% 0.1590 55.9)",
+          "oklch(84% 0.1018 55.9)",
+          "oklch(95% 0.0318 55.9)"
         ]
       },
       "dark-chart-2": {
@@ -843,16 +857,26 @@
           "oklch(84% 0.0255 298.7)",
           "oklch(95% 0.0080 298.7)"
         ]
+      },
+      "dark-brand": {
+        "role": "primary",
+        "displayName": "Dark Orange marker",
+        "tonalRamp": [
+          "oklch(15% 0.0682 55.9)",
+          "oklch(26% 0.1181 55.9)",
+          "oklch(38% 0.1590 55.9)",
+          "oklch(49% 0.1590 55.9)",
+          "oklch(61% 0.1590 55.9)",
+          "oklch(72% 0.1590 55.9)",
+          "oklch(84% 0.1018 55.9)",
+          "oklch(95% 0.0318 55.9)"
+        ]
       }
     },
     "typographyMeta": {
-      "display": {
-        "displayName": "Display",
-        "purpose": "Home headline."
-      },
       "headline": {
         "displayName": "Headline",
-        "purpose": "Page titles."
+        "purpose": "Page and home titles."
       },
       "title": {
         "displayName": "Title",
@@ -860,15 +884,19 @@
       },
       "subheading": {
         "displayName": "Subheading",
-        "purpose": "Nested compact headings."
+        "purpose": "Nested headings."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Primary interface reading."
+        "purpose": "Interface reading and table rows."
+      },
+      "body-mobile": {
+        "displayName": "Body mobile",
+        "purpose": "Body at 600px and below."
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Form labels and navigation."
+        "purpose": "Form labels and selected navigation."
       },
       "detail": {
         "displayName": "Detail",
@@ -876,42 +904,33 @@
       },
       "button": {
         "displayName": "Button",
-        "purpose": "Shared action labels."
-      },
-      "prose": {
-        "displayName": "Prose",
-        "purpose": "Longer assistant responses, maximum 75ch."
-      },
-      "mono": {
-        "displayName": "Mono",
-        "purpose": "Specifications and raw evidence."
-      },
-      "navigation": {
-        "displayName": "Navigation",
-        "purpose": "Inactive rail labels."
+        "purpose": "Shared compact actions."
       },
       "badge": {
         "displayName": "Badge",
-        "purpose": "Compact context tags and base status text weight."
+        "purpose": "Context tags."
+      },
+      "prose": {
+        "displayName": "Prose",
+        "purpose": "Assistant responses, maximum 75ch; mobile size 16px."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Specifications and raw evidence; JSON uses its contextual 12px override."
       }
     },
     "shadows": [
       {
         "name": "select-menu",
         "value": "0 8px 24px #00000012",
-        "purpose": "Floating select menu."
-      },
-      {
-        "name": "question-composer",
-        "value": "0 3px 15px #00000004",
-        "purpose": "Subtle separation for the question composer."
+        "purpose": "Floating select menu only."
       }
     ],
     "motion": [
       {
         "name": "control-feedback",
         "value": "background-color 0.14s, border-color 0.14s",
-        "purpose": "Shared button transition, using the CSS default ease."
+        "purpose": "Shared button feedback, using the CSS default ease."
       },
       {
         "name": "starter-feedback",
@@ -939,7 +958,7 @@
         "value": "1150px"
       },
       {
-        "name": "stacked",
+        "name": "mobile-sheet",
         "value": "900px"
       },
       {
@@ -953,128 +972,121 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Shared sentence-case action with the primary treatment.",
-      "html": "<button type=\"button\" class=\"ds-button\">Create experiment</button>",
-      "css": ".ds-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; height:36px; padding:0 13px; border:1px solid transparent; border-radius:6px; font-family:var(--font-sans); font-size:12px; line-height:1.3; font-weight:550; white-space:nowrap; cursor:pointer; transition:background-color .14s,border-color .14s; } .ds-button:focus-visible { outline:2px solid var(--ring); outline-offset:3px; }.ds-button { background:var(--primary); color:var(--primary-foreground); border-color:var(--primary); } .ds-button:hover { filter:brightness(.95); color:var(--primary-foreground); } .ds-button:disabled { opacity:.48; cursor:not-allowed; filter:none; }"
+      "description": "Shared compact primary action.",
+      "html": "<button class=\"ds-button\" type=\"button\">Create experiment</button>",
+      "css": ".ds-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; height:36px; padding:0 13px; border:1px solid transparent; border-radius:var(--radius); font-family:var(--font-sans); font-size:13px; line-height:1.3; font-weight:500; white-space:nowrap; cursor:pointer; transition:background-color .14s,border-color .14s; } .ds-button:focus-visible { outline:2px solid var(--ring); outline-offset:3px; }.ds-button { background:var(--primary); color:var(--primary-foreground); border-color:var(--primary); } .ds-button:hover { filter:brightness(.95); color:var(--primary-foreground); } .ds-button:disabled { opacity:.48; cursor:not-allowed; filter:none; }"
     },
     {
       "name": "Outline Button",
       "kind": "button",
       "refersTo": "button-outline",
-      "description": "Shared sentence-case action with the outline treatment.",
-      "html": "<button type=\"button\" class=\"ds-button\">Compare runs</button>",
-      "css": ".ds-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; height:36px; padding:0 13px; border:1px solid transparent; border-radius:6px; font-family:var(--font-sans); font-size:12px; line-height:1.3; font-weight:550; white-space:nowrap; cursor:pointer; transition:background-color .14s,border-color .14s; } .ds-button:focus-visible { outline:2px solid var(--ring); outline-offset:3px; }.ds-button { background:var(--background); color:var(--foreground); border-color:var(--input); } .ds-button:hover { background:var(--muted); color:var(--foreground); } .ds-button:disabled { opacity:.48; cursor:not-allowed; filter:none; }"
+      "description": "Shared compact outline action.",
+      "html": "<button class=\"ds-button\" type=\"button\">Configure manually</button>",
+      "css": ".ds-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; height:36px; padding:0 13px; border:1px solid transparent; border-radius:var(--radius); font-family:var(--font-sans); font-size:13px; line-height:1.3; font-weight:500; white-space:nowrap; cursor:pointer; transition:background-color .14s,border-color .14s; } .ds-button:focus-visible { outline:2px solid var(--ring); outline-offset:3px; }.ds-button { background:var(--background); color:var(--foreground); border-color:var(--input); } .ds-button:hover { background:var(--muted); color:var(--foreground); } .ds-button:disabled { opacity:.48; cursor:not-allowed; filter:none; }"
     },
     {
       "name": "Ghost Button",
       "kind": "button",
       "refersTo": "button-ghost",
-      "description": "Shared sentence-case action with the ghost treatment.",
-      "html": "<button type=\"button\" class=\"ds-button\">Cancel</button>",
-      "css": ".ds-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; height:36px; padding:0 13px; border:1px solid transparent; border-radius:6px; font-family:var(--font-sans); font-size:12px; line-height:1.3; font-weight:550; white-space:nowrap; cursor:pointer; transition:background-color .14s,border-color .14s; } .ds-button:focus-visible { outline:2px solid var(--ring); outline-offset:3px; }.ds-button { background:transparent; color:var(--muted-foreground); } .ds-button:hover { background:var(--muted); color:var(--foreground); } .ds-button:disabled { opacity:.48; cursor:not-allowed; filter:none; }"
+      "description": "Shared compact ghost action.",
+      "html": "<button class=\"ds-button\" type=\"button\">Cancel</button>",
+      "css": ".ds-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; height:36px; padding:0 13px; border:1px solid transparent; border-radius:var(--radius); font-family:var(--font-sans); font-size:13px; line-height:1.3; font-weight:500; white-space:nowrap; cursor:pointer; transition:background-color .14s,border-color .14s; } .ds-button:focus-visible { outline:2px solid var(--ring); outline-offset:3px; }.ds-button { background:transparent; color:var(--muted-foreground); } .ds-button:hover { background:var(--muted); color:var(--foreground); } .ds-button:disabled { opacity:.48; cursor:not-allowed; filter:none; }"
     },
     {
       "name": "Destructive Button",
       "kind": "button",
       "refersTo": "button-destructive",
-      "description": "Shared sentence-case action with the destructive treatment.",
-      "html": "<button type=\"button\" class=\"ds-button\">Stop run</button>",
-      "css": ".ds-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; height:36px; padding:0 13px; border:1px solid transparent; border-radius:6px; font-family:var(--font-sans); font-size:12px; line-height:1.3; font-weight:550; white-space:nowrap; cursor:pointer; transition:background-color .14s,border-color .14s; } .ds-button:focus-visible { outline:2px solid var(--ring); outline-offset:3px; }.ds-button { color:var(--destructive); background:var(--danger-background); } .ds-button:disabled { opacity:.48; cursor:not-allowed; filter:none; }"
+      "description": "Shared compact destructive action.",
+      "html": "<button class=\"ds-button\" type=\"button\">Stop run</button>",
+      "css": ".ds-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; height:36px; padding:0 13px; border:1px solid transparent; border-radius:var(--radius); font-family:var(--font-sans); font-size:13px; line-height:1.3; font-weight:500; white-space:nowrap; cursor:pointer; transition:background-color .14s,border-color .14s; } .ds-button:focus-visible { outline:2px solid var(--ring); outline-offset:3px; }.ds-button { color:var(--destructive); background:var(--danger-background); } .ds-button:disabled { opacity:.48; cursor:not-allowed; filter:none; }"
     },
     {
       "name": "Text Field",
       "kind": "input",
       "refersTo": "input",
-      "description": "Outlined field with a quiet label and clear focus.",
+      "description": "A sharp outlined field with a visible label and neutral focus.",
       "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Experiment name</span><input class=\"ds-input\" placeholder=\"Name your experiment\"></label>",
-      "css": ".ds-field { display:flex; flex-direction:column; gap:7px; font-family:var(--font-sans); } .ds-field-label { color:var(--foreground); font-size:12px; line-height:1.6; font-weight:550; } .ds-input { box-sizing:border-box; background:var(--background); color:var(--foreground); border:1px solid var(--input); border-radius:6px; min-height:36px; padding:7px 10px; font-family:var(--font-sans); font-size:13px; line-height:20px; caret-color:var(--primary); } .ds-input::placeholder { color:var(--muted-foreground); opacity:1; } .ds-input:focus,.ds-input:focus-visible { outline:2px solid var(--ring); outline-offset:1px; } .ds-input:disabled { opacity:.5; } @media(max-width:600px) { .ds-input { font-size:16px; } }"
+      "css": ".ds-field { display:flex; flex-direction:column; gap:7px; font-family:var(--font-sans); } .ds-field-label { color:var(--foreground); font-size:13px; line-height:1.6; font-weight:500; } .ds-input { box-sizing:border-box; min-height:36px; padding:7px 10px; background:var(--background); color:var(--foreground); border:1px solid var(--input); border-radius:var(--radius); font-family:var(--font-sans); font-size:13px; line-height:20px; caret-color:var(--primary); } .ds-input::placeholder { color:var(--muted-foreground); opacity:1; } .ds-input:focus,.ds-input:focus-visible { outline:2px solid var(--ring); outline-offset:1px; } .ds-input:disabled { opacity:.5; } @media(max-width:600px) { .ds-input { font-size:16px; } }"
     },
     {
-      "name": "Main Navigation",
+      "name": "Sidebar Navigation",
       "kind": "nav",
       "refersTo": "navigation-selected",
-      "description": "A selected route in the restrained orange navigation rail.",
+      "description": "Neutral route selection with a small orange active icon.",
       "html": "<nav class=\"ds-nav\" aria-label=\"Main navigation\"><a class=\"ds-nav-link\" href=\"#\" aria-current=\"page\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\"/><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/></svg><span>Home</span></a></nav>",
-      "css": ".ds-nav { padding:12px; background:var(--sidebar); border:1px solid var(--sidebar-border); } .ds-nav-link { display:flex; align-items:center; gap:10px; height:37px; padding:0 11px; border-radius:5px; font-family:var(--font-sans); font-size:12px; line-height:1.6; color:var(--muted-foreground); text-decoration:none; } .ds-nav-link svg { width:16px; height:16px; } .ds-nav-link:hover { background:var(--muted); color:var(--foreground); } .ds-nav-link[aria-current=\"page\"],.ds-nav-link[aria-current=\"page\"]:hover { background:var(--accent); color:var(--accent-foreground); font-weight:550; } .ds-nav-link:focus-visible { outline:2px solid var(--ring); outline-offset:3px; }"
+      "css": ".ds-nav { padding:16px 10px; background:var(--sidebar); border-right:1px solid var(--sidebar-border); } .ds-nav-link { display:flex; align-items:center; gap:10px; height:34px; padding:0 10px; border-radius:var(--radius); color:var(--muted-foreground); font-family:var(--font-sans); font-size:13px; line-height:1.6; text-decoration:none; } .ds-nav-link svg { width:16px; height:16px; } .ds-nav-link:hover { background:var(--muted); color:var(--foreground); } .ds-nav-link[aria-current=\"page\"],.ds-nav-link[aria-current=\"page\"]:hover { background:var(--accent); color:var(--accent-foreground); font-weight:500; } .ds-nav-link[aria-current=\"page\"] > svg { color:var(--brand); } .ds-nav-link:focus-visible { outline:2px solid var(--ring); outline-offset:3px; }"
     },
     {
       "name": "Context Badge & Status",
       "kind": "chip",
       "refersTo": "badge",
-      "description": "A quiet context badge beside an explicit labeled status.",
-      "html": "<div class=\"ds-badges\"><span class=\"ds-badge\">Saved input &amp; output</span><span class=\"ds-status\"><span class=\"ds-dot\" aria-hidden=\"true\"></span>Complete</span></div>",
-      "css": ".ds-badges { display:flex; align-items:center; gap:16px; font-family:var(--font-sans); line-height:1.6; } .ds-badge { display:inline-flex; align-items:center; gap:6px; padding:2px 7px; border-radius:4px; background:var(--muted); color:var(--muted-foreground); font-size:11px; font-weight:450; white-space:nowrap; } .ds-status { display:inline-flex; align-items:center; gap:6px; color:var(--success); font-size:12px; } .ds-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--success); }"
+      "description": "A neutral context badge beside an explicit completion label.",
+      "html": "<div class=\"ds-tags\"><span class=\"ds-badge\">Saved input &amp; output</span><span class=\"ds-status\"><span class=\"ds-dot\" aria-hidden=\"true\"></span>Complete</span></div>",
+      "css": ".ds-tags { display:flex; align-items:center; gap:16px; font-family:var(--font-sans); line-height:1.6; } .ds-badge { display:inline-flex; align-items:center; gap:6px; padding:2px 7px; border-radius:var(--radius-sm); background:var(--muted); color:var(--muted-foreground); font-size:12px; font-weight:450; white-space:nowrap; } .ds-status { display:inline-flex; align-items:center; gap:6px; color:var(--success); font-size:13px; font-weight:450; } .ds-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--success); }"
     },
     {
-      "name": "Condition Container",
+      "name": "Execution Summary",
       "kind": "card",
-      "refersTo": "condition-container",
-      "description": "A condition’s bordered name/index and editable parameter pattern.",
-      "html": "<section class=\"ds-condition\"><div class=\"ds-condition-heading\"><span class=\"ds-condition-index\">A</span><input class=\"ds-condition-input\" aria-label=\"Condition 1 name\" value=\"More resources\"></div><label class=\"ds-condition-field\"><span class=\"ds-condition-label\">Credits per round</span><input class=\"ds-condition-input\" type=\"number\" min=\"2\" max=\"100\" value=\"20\"></label></section>",
-      "css": ".ds-condition { border:1px solid var(--border); border-radius:6px; padding:16px; background:var(--background); color:var(--foreground); font-family:var(--font-sans); } .ds-condition-heading { display:flex; align-items:center; gap:9px; margin-bottom:18px; } .ds-condition-index { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; background:var(--series-0-background); color:var(--foreground); border-radius:4px; font-size:12px; line-height:1.6; font-weight:600; } .ds-condition-input { box-sizing:border-box; min-width:0; width:100%; min-height:36px; padding:7px 10px; border:1px solid var(--input); border-radius:6px; color:var(--foreground); background:var(--background); font-family:var(--font-sans); font-size:13px; line-height:20px; caret-color:var(--primary); } .ds-condition-input:focus,.ds-condition-input:focus-visible { outline:2px solid var(--ring); outline-offset:1px; } .ds-condition-input:disabled { opacity:.5; } .ds-condition-field { display:flex; flex-direction:column; gap:7px; } .ds-condition-label { font-size:12px; line-height:1.6; font-weight:550; } @media(max-width:600px) { .ds-condition { padding:13px; } .ds-condition-input { font-size:16px; } }"
+      "refersTo": "execution-summary",
+      "description": "A flat, lightly toned summary beside the progressive editor.",
+      "html": "<aside class=\"ds-summary\"><h2>Execution plan</h2><dl><div><dt>Agents per run</dt><dd>4</dd></div><div><dt>Conditions</dt><dd>2</dd></div><div><dt>Independent runs</dt><dd>6</dd></div></dl></aside>",
+      "css": ".ds-summary { padding:20px; border:1px solid var(--sidebar-border); border-radius:var(--radius); color:var(--foreground); background:var(--sidebar); font-family:var(--font-sans); } .ds-summary h2 { margin:0 0 17px; font-size:15px; line-height:1.5; font-weight:600; letter-spacing:-.15px; } .ds-summary dl { margin:0 0 18px; } .ds-summary dl > div { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:11px; font-size:12px; line-height:1.6; } .ds-summary dt { color:var(--muted-foreground); } .ds-summary dd { margin:0; font-weight:500; text-align:right; font-variant-numeric:tabular-nums; } @media(max-width:600px) { .ds-summary { padding:16px; } }"
     },
     {
       "name": "Record Table",
       "kind": "custom",
       "refersTo": "table",
-      "description": "One flat, scrollable record frame with aligned numbers and a selected row.",
-      "html": "<div class=\"ds-table-frame\"><div class=\"ds-table-scroll\"><table class=\"ds-table\"><thead><tr><th>Turn</th><th>Agent</th><th>Decision</th></tr></thead><tbody><tr data-selected=\"true\"><td><button class=\"ds-record\" type=\"button\">60</button></td><td>Morgan</td><td>Contribute 0</td></tr><tr><td><button class=\"ds-record\" type=\"button\">59</button></td><td>Sam</td><td>Contribute 0</td></tr></tbody></table></div></div>",
-      "css": ".ds-table-frame { border:1px solid var(--border); border-radius:6px; overflow:hidden; background:var(--background); } .ds-table-scroll { overflow-x:auto; } .ds-table { width:100%; border-collapse:collapse; text-align:left; color:var(--foreground); font-family:var(--font-sans); font-size:12px; line-height:1.6; font-variant-numeric:tabular-nums; } .ds-table th { background:var(--muted); color:var(--muted-foreground); font-size:11px; font-weight:500; padding:10px 15px; border-bottom:1px solid var(--border); white-space:nowrap; } .ds-table td { padding:12px 15px; border-bottom:1px solid var(--border); vertical-align:top; } .ds-table tr:last-child td { border-bottom:0; } .ds-table tbody tr:hover,.ds-table tr[data-selected=\"true\"] { background:color-mix(in srgb,var(--accent) 50%,var(--background)); } .ds-record { padding:0; border:0; background:transparent; color:var(--primary); font-family:var(--font-sans); font-size:11px; text-align:left; cursor:pointer; } .ds-record:hover { text-decoration:underline; } .ds-record:focus-visible { outline:2px solid var(--ring); outline-offset:3px; } @media(max-width:600px) { .ds-table th { padding:9px 12px; } .ds-table td { padding:11px 12px; } }"
+      "description": "A flat record frame with compact headers and a neutral selected row.",
+      "html": "<div class=\"ds-table-frame\"><div class=\"ds-table-scroll\"><table class=\"ds-table\"><thead><tr><th>Turn</th><th>Agent</th><th>Decision</th></tr></thead><tbody><tr data-selected=\"true\"><td><button class=\"ds-turn\" type=\"button\">60</button></td><td>Morgan</td><td>Contribute 0</td></tr><tr><td><button class=\"ds-turn\" type=\"button\">59</button></td><td>Sam</td><td>Contribute 0</td></tr></tbody></table></div></div>",
+      "css": ".ds-table-frame { border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; background:var(--background); } .ds-table-scroll { overflow-x:auto; } .ds-table { width:100%; border-collapse:collapse; text-align:left; color:var(--foreground); font-family:var(--font-sans); font-size:13px; line-height:1.6; font-variant-numeric:tabular-nums; } .ds-table th { padding:10px 15px; border-bottom:1px solid var(--border); background:var(--muted); color:var(--muted-foreground); font-size:12px; font-weight:500; white-space:nowrap; } .ds-table td { padding:12px 15px; border-bottom:1px solid var(--border); vertical-align:top; } .ds-table tbody tr:last-child td { border-bottom:0; } .ds-table tbody tr:hover,.ds-table tr[data-selected=\"true\"] { background:color-mix(in srgb,var(--accent) 50%,var(--background)); } .ds-turn { padding:0; border:0; color:var(--primary); background:transparent; font-family:var(--font-sans); font-size:12px; text-align:left; cursor:pointer; } .ds-turn:hover { text-decoration:underline; } .ds-turn:focus-visible { outline:2px solid var(--ring); outline-offset:3px; } @media(max-width:600px) { .ds-table th { padding:9px 12px; } .ds-table td { padding:11px 12px; } }"
     },
     {
-      "name": "Linked Turn Rail",
+      "name": "Question Input Group",
       "kind": "custom",
-      "refersTo": "turn-rail",
-      "description": "A continuous turn selector with step controls and a return to Latest.",
-      "html": "<div class=\"ds-turn-rail\"><span class=\"ds-turn-label\"><span class=\"ds-turn-dot\" aria-hidden=\"true\"></span>Viewing turn 60</span><div class=\"ds-scrubber\"><button class=\"ds-step\" type=\"button\" aria-label=\"Previous turn\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m15 18-6-6 6-6\"/></svg></button><input type=\"range\" min=\"0\" max=\"120\" value=\"60\" aria-label=\"Recorded turn\"><button class=\"ds-step\" type=\"button\" aria-label=\"Next turn\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m9 18 6-6-6-6\"/></svg></button></div><button class=\"ds-latest\" type=\"button\">Latest</button></div>",
-      "css": ".ds-turn-rail { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:24px; padding:12px 0; color:var(--foreground); font-family:var(--font-sans); } .ds-turn-label { display:flex; align-items:center; gap:8px; min-width:120px; font-size:11px; line-height:1.6; font-variant-numeric:tabular-nums; } .ds-turn-dot { width:6px; height:6px; border-radius:50%; background:var(--muted-foreground); } .ds-scrubber { display:flex; align-items:center; gap:8px; min-width:0; } .ds-scrubber input { flex:1; width:100%; min-width:80px; accent-color:var(--primary); cursor:pointer; } .ds-step { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; padding:0; border:1px solid transparent; border-radius:6px; background:transparent; color:var(--muted-foreground); cursor:pointer; } .ds-step svg { width:15px; height:15px; } .ds-step:hover { background:var(--muted); color:var(--foreground); } .ds-latest { height:30px; padding:0 10px; border:1px solid var(--input); border-radius:6px; color:var(--foreground); background:var(--background); font-family:var(--font-sans); font-size:12px; line-height:1.3; font-weight:550; cursor:pointer; transition:background-color .14s,border-color .14s; } .ds-latest:hover { background:var(--muted); } .ds-step:focus-visible,.ds-latest:focus-visible,.ds-scrubber input:focus-visible { outline:2px solid var(--ring); outline-offset:3px; } @media(max-width:600px) { .ds-turn-rail { grid-template-columns:1fr auto; gap:7px; padding:12px 0 7px; } .ds-scrubber { grid-row:2; grid-column:1/-1; gap:5px; } }"
+      "refersTo": "question-composer",
+      "description": "One sharp question field with a supporting footer and monochrome action.",
+      "html": "<div class=\"ds-composer\"><textarea class=\"ds-question\" aria-label=\"Research question\" placeholder=\"When do agents choose themselves over the group?\"></textarea><div class=\"ds-composer-addon\"><span>Review the AI draft before running.</span><button class=\"ds-button\" type=\"button\">Design experiment</button></div></div>",
+      "css": ".ds-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; height:36px; padding:0 13px; border:1px solid transparent; border-radius:var(--radius); font-family:var(--font-sans); font-size:13px; line-height:1.3; font-weight:500; white-space:nowrap; cursor:pointer; transition:background-color .14s,border-color .14s; } .ds-button:focus-visible { outline:2px solid var(--ring); outline-offset:3px; }.ds-button { background:var(--primary); color:var(--primary-foreground); border-color:var(--primary); } .ds-button:hover { filter:brightness(.95); } .ds-button:disabled { opacity:.48; cursor:not-allowed; filter:none; } .ds-composer { min-width:0; border:1px solid var(--input); border-radius:var(--radius); overflow:hidden; font-family:var(--font-sans); background:var(--background); } .ds-composer:focus-within { outline:2px solid var(--ring); outline-offset:2px; } .ds-question { box-sizing:border-box; display:block; width:100%; min-height:112px; padding:18px 18px 8px; border:0; border-radius:0; color:var(--foreground); background:var(--background); font-family:var(--font-sans); font-size:15px; line-height:1.6; caret-color:var(--primary); resize:vertical; } .ds-question::placeholder { color:var(--muted-foreground); opacity:1; } .ds-question:focus { outline:none; box-shadow:none; } .ds-composer-addon { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:10px 12px 12px 18px; } .ds-composer-addon > span { color:var(--muted-foreground); font-size:12px; line-height:1.6; } @media(max-width:600px) { .ds-question { font-size:16px; padding:14px; } .ds-composer-addon { flex-wrap:wrap; padding:8px 12px 12px; gap:12px; } .ds-composer-addon > .ds-button { margin-left:auto; } }"
     }
   ],
   "narrative": {
-    "northStar": "The University Research Service",
-    "overview": "The University Research Service gives experimental work a calm, practical home. Neutral white and charcoal work surfaces, restrained orange selection and fine rules support compact records without making every section a card. Light and dark themes preserve the same hierarchy.\n\nPublic Sans carries the interface. Clear labels, aligned numbers and progressively disclosed evidence keep experiments understandable. Charts and environment diagrams are data views; their colors distinguish series and agents without judging them.",
+    "northStar": "A useful experiment workspace",
+    "overview": "ASS uses a compact, utilitarian shadcn interface: white and black work surfaces, monochrome actions, Geist and sharp corners. Thin rules and aligned records carry the hierarchy; orange appears in small identity, active-state and live-status details.\n\nThe shell stays quiet while the question, protocol and recorded evidence do the work. Progressive disclosure keeps configuration manageable. Light and dark themes preserve the same roles and density.",
     "keyCharacteristics": [
-      "Neutral white and charcoal surfaces with orange action and selection.",
-      "Compact tables and continuous ruled work areas.",
-      "Public Sans with restrained weight and size changes.",
-      "A linked turn rail and recorded-evidence inspector.",
-      "Responsive layouts with direct mobile inspection."
+      "Neutral surfaces and monochrome primary actions.",
+      "Restrained orange markers; no green brand, status or data colors.",
+      "Geist, compact typography and sharp corners.",
+      "Ruled tables, progressive forms and linked evidence.",
+      "Sidebar footer controls and a modal mobile drawer."
     ],
     "rules": [
       {
-        "name": "The Orange Accent Rule",
-        "body": "Orange marks action and selection. Keep work surfaces neutral and keep green out of brand, status and data colors.",
-        "section": "colors"
-      },
-      {
-        "name": "The Role Parity Rule",
-        "body": "Replace theme roles together; preserve the same selection, reading and status hierarchy.",
+        "name": "The Neutral Base Rule",
+        "body": "Keep surfaces, primary actions and focus rings neutral. Use orange for the established small identity and active-state markers.",
         "section": "colors"
       },
       {
         "name": "The Series Identity Rule",
-        "body": "Data colors distinguish agents or histories. They do not imply moral rank, quality or success.",
+        "body": "Series colors distinguish agents and histories; they do not imply moral rank or success. Keep green out of brand, status and data colors.",
         "section": "colors"
       },
       {
-        "name": "The Quiet Structure Rule",
-        "body": "Use spacing, tonal surfaces and thin rules for ordinary structure. Reserve soft shadows for the question composer and select menu.",
+        "name": "The Flat Structure Rule",
+        "body": "Use rules, spacing and tonal contrast for ordinary structure. Only the select menu receives the implemented soft shadow.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "Do use Public Sans, shared theme roles and compact control sizes.",
-      "Do preserve aligned columns, tabular numbers and contained table scrolling.",
-      "Do keep decision turns, typed actions and recorded evidence visibly connected.",
-      "Do preserve visible focus and the direct mobile path between decisions and evidence.",
-      "Do accompany status colors and dots with explicit labels."
+      "Do use shared semantic theme roles, Geist and the sharp radius scale.",
+      "Do preserve compact alignment, tabular numbers and contained table scrolling.",
+      "Do keep settings and appearance in the sidebar footer.",
+      "Do preserve progressive disclosure, readable prose and direct turn-to-evidence navigation."
     ],
     "donts": [
       "Don't introduce green brand, status or data colors.",
-      "Don't turn every section, metric or evidence disclosure into another raised card.",
-      "Don't use series colors as judgments about agents or outcomes.",
-      "Don't replace readable labels with icon-only status or add a competing display face.",
-      "Don't extend charts beyond recorded points or conceal historical failures with decorative success treatments."
+      "Don't turn primary actions orange or replace the neutral focus ring with a brand treatment.",
+      "Don't add workspace/account decoration, nested raised cards or oversized corner rounding.",
+      "Don't constrain structured controls to the paragraph measure or leave expanded AI paragraphs at full editor width."
     ]
   }
 }

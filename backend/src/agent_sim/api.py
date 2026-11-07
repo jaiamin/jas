@@ -22,6 +22,7 @@ from .templates import templates
 
 class SaveStudy(Strict):
     design: Design
+    plan_id: str | None = None
 
 
 class Ask(Strict):
@@ -158,7 +159,7 @@ def create_app(
 
     @app.post("/api/studies", status_code=201)
     async def create_study(body: SaveStudy) -> dict:
-        return {"id": research.save_design(body.design)}
+        return {"id": research.save_design(body.design, plan_id=body.plan_id)}
 
     @app.get("/api/studies/{study_id}")
     async def get_study(study_id: str, revision: int | None = Query(default=None, ge=1)) -> dict:
@@ -166,7 +167,7 @@ def create_app(
 
     @app.post("/api/studies/{study_id}/revisions", status_code=201)
     async def revise_study(study_id: str, body: SaveStudy) -> dict:
-        return {"id": research.save_design(body.design, study_id=study_id)}
+        return {"id": research.save_design(body.design, study_id=study_id, plan_id=body.plan_id)}
 
     @app.post("/api/studies/{study_id}/control")
     async def control_study(study_id: str, body: Control) -> dict:

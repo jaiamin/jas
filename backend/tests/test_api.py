@@ -77,3 +77,31 @@ def test_export_includes_previous_revisions_and_their_recorded_turns(client, des
     assert len(recorded["evidence"]) == 2
     assert exported["requests"][0]["request"]["schema"]
     assert "test-not-a-real-key" not in str(exported)
+
+
+def test_saved_ai_proposal_provenance_survives_revision_and_export(client, design):
+    from agent_sim.db import Analysis
+
+    with client.app.state.db.session.begin() as session:
+        plan = Analysis(purpose="design", question=design.question, cutoffs={})
+        session.add(plan)
+        session.flush()
+        pid = plan.id
+    body = {"design": design.model_dump(), "plan_id": pid}
+    assert client.post("/api/studies", json=body).status_code == 422
+    assert client.get("/api/studies").json() == []
+    with client.app.state.db.session.begin() as session:
+        plan = session.get_one(Analysis, pid)
+        plan.status = "complete"
+        plan.output = {
+            "supported": True,
+            "design": design.model_dump(),
+            "planning": {"sources": []},
+        }
+    sid = client.post("/api/studies", json=body).json()["id"]
+    assert client.get(f"/api/studies/{sid}").json()["plan_id"] == pid
+    client.post(f"/api/studies/{sid}/revisions", json={"design": design.model_dump()})
+    exported = client.get(f"/api/studies/{sid}/export").json()
+    assert exported["study"]["plan_id"] is None
+    assert exported["revisions"][0]["source"] == f"plan:{pid}"
+    assert exported["analyses"][0]["id"] == pid

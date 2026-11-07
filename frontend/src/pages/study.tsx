@@ -1,13 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowUpRight, Download, Pause, Play, Settings2 } from "lucide-react";
 import {
-  ArrowLeft,
-  ArrowUpRight,
-  Download,
-  Pause,
-  Play,
-  Settings2,
-} from "lucide-react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+  Link,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { ResearchAssistant } from "@/components/assistant";
 import {
   ErrorState,
@@ -27,6 +25,7 @@ import { label, metric, money } from "@/lib/utils";
 
 export default function Study() {
   const { id } = useParams();
+  const location = useLocation();
   const [params, setParams] = useSearchParams();
   const path = `/studies/${id}${params.get("revision") ? `?revision=${params.get("revision")}` : ""}`;
   const query = useApi<StudyDetail>(path, true);
@@ -42,19 +41,16 @@ export default function Study() {
     ["running", "queued", "pausing"].includes(r.status),
   );
   const complete = study.runs.every((r) => r.status === "complete");
-  const tab = params.get("tab") ?? "overview";
+  const tab =
+    ["overview", "runs", "design", "research"].find(
+      (value) => value === params.get("tab"),
+    ) ?? "overview";
   const metrics = study.design.measures.length
     ? study.design.measures
     : [...new Set(study.results.map((r) => r.metric))];
   const isOld = study.revision !== study.revisions[0]?.number;
   return (
     <>
-      <div className="back-link">
-        <Link to="/studies">
-          <ArrowLeft />
-          Experiments
-        </Link>
-      </div>
       <PageHeading
         title={study.design.title}
         description={study.design.question}
@@ -124,6 +120,7 @@ export default function Study() {
         />
       </div>
       {control.error && <Alert variant="error">{control.error.message}</Alert>}
+      {location.state?.notice && <Alert>{location.state.notice}</Alert>}
       {isOld && (
         <Alert>
           This is a preserved design revision. Tune it to create a new one; its
@@ -353,6 +350,9 @@ export default function Study() {
             </section>
             <section>
               <h2>Immutable specification</h2>
+              {study.plan_id && (
+                <Link to={`/new?plan=${study.plan_id}`}>View AI proposal</Link>
+              )}
               <p className="muted">
                 Revision {study.revision} · SHA-256{" "}
                 <code>{study.sha256.slice(0, 16)}</code>

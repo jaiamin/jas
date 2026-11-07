@@ -102,6 +102,7 @@ export interface StudyDetail {
   design: Design;
   revision: number;
   sha256: string;
+  plan_id: string | null;
   created: string;
   revisions: { number: number; created: string; sha256: string }[];
   runs: RunSummary[];
@@ -261,6 +262,11 @@ export interface Analysis {
   question: string;
   status: string;
   output: {
+    stage?: string;
+    planning?: {
+      brief: { size_rationale: string; operationalization: string };
+      sources: { url: string; title: string }[];
+    };
     supported?: boolean;
     explanation?: string;
     design?: Design | null;

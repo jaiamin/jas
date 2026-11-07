@@ -153,3 +153,84 @@ def test_structured_actions_encode_cross_field_constraints():
     payload["action"].update(kind="contribute", target="", promise=4)
     with pytest.raises(ValidationError):
         output.model_validate(payload)
+
+
+def test_web_research_is_bounded_traced_and_charged(runtime, monkeypatch):
+    import httpx2 as httpx
+    from openai import AsyncOpenAI
+    from pydantic_ai import models
+    from pydantic_ai.models.openai import OpenAIResponsesModel
+    from pydantic_ai.providers.openai import OpenAIProvider
+
+    db, llm, _, _ = runtime
+    monkeypatch.setattr(models, "ALLOW_MODEL_REQUESTS", True)
+    requests = []
+
+    async def respond(request):
+        requests.append(json.loads(request.content))
+        return httpx.Response(
+            200,
+            json={
+                "id": "resp_research",
+                "object": "response",
+                "created_at": 0,
+                "model": "gpt-6.1-sol",
+                "status": "completed",
+                "output": [
+                    {
+                        "type": "web_search_call",
+                        "id": "search_1",
+                        "status": "completed",
+                        "action": {
+                            "type": "search",
+                            "query": "public goods methods",
+                            "sources": [{"type": "url", "url": "https://example.org/paper"}],
+                        },
+                    },
+                    {
+                        "type": "message",
+                        "id": "msg_1",
+                        "status": "completed",
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "output_text",
+                                "text": "Use a matched control.",
+                                "annotations": [],
+                            }
+                        ],
+                    },
+                ],
+                "usage": {"input_tokens": 120, "output_tokens": 30, "total_tokens": 150},
+            },
+        )
+
+    async def exercise():
+        client = AsyncOpenAI(
+            api_key="test-not-a-real-key",
+            max_retries=0,
+            http_client=httpx.AsyncClient(transport=httpx.MockTransport(respond)),
+        )
+        model = OpenAIResponsesModel("gpt-6.1-sol", provider=OpenAIProvider(openai_client=client))
+        monkeypatch.setattr(llm, "model", lambda _: model)
+        try:
+            return await llm.generate(
+                str,
+                model="openai:gpt-6.1-sol",
+                prompt="Find methods",
+                instructions="Search first",
+                purpose="design",
+                web_search=True,
+            )
+        finally:
+            await client.close()
+
+    assert asyncio.run(exercise()) == "Use a matched control."
+    assert requests[0]["max_tool_calls"] == 2
+    assert requests[0]["tools"][0]["type"] == "web_search"
+    assert "web_search_call.action.sources" in requests[0]["include"]
+    with db.session() as session:
+        call = session.scalar(select(ProviderCall))
+        assert call.status == "complete" and call.reserved > call.charged
+        assert call.charged == 10_540
+        assert "https://example.org/paper" in json.dumps(call.response_payload)

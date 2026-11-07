@@ -4,8 +4,9 @@ import math
 import os
 from typing import Literal, TypeVar
 
-from pydantic import BaseModel
-from pydantic_ai import Agent, ToolOutput, capture_run_messages
+from pydantic import TypeAdapter
+from pydantic_ai import Agent, ToolOutput, WebSearchTool, capture_run_messages
+from pydantic_ai.capabilities import NativeTool
 from pydantic_ai.messages import ModelMessagesTypeAdapter, ModelResponse
 from pydantic_ai.models import Model
 from pydantic_ai.models.openai import OpenAIResponsesModelSettings
@@ -14,7 +15,7 @@ from sqlalchemy import func, select, update
 
 from .db import Database, ProviderCall, Study, Workspace
 
-T = TypeVar("T", bound=BaseModel)
+T = TypeVar("T")
 PRICES: dict[str, tuple[float, float]] = {
     "openai:gpt-6-luna": (0.10, 0.50),
     "openai:gpt-6.1-sol": (2.0, 10.0),
@@ -74,20 +75,30 @@ class LanguageModels:
         max_tokens: int = 4096,
         turn: int | None = None,
         openai_reasoning_effort: Literal["low", "medium", "high"] | None = None,
+        web_search: bool = False,
     ) -> T:
         if model not in PRICES:
             raise ProviderFailure("This model has no reviewed price configuration.")
+        if web_search and (model != "openai:gpt-6.1-sol" or output is not str):
+            raise ValueError("Web research requires GPT-6.1 Sol text output")
+        schema = TypeAdapter(output).json_schema()
         model_object = self.model(model)
-        input_bound = (
-            len((prompt + instructions + json.dumps(output.model_json_schema())).encode()) + 4096
-        )
+        input_bound = len((prompt + instructions + json.dumps(schema)).encode()) + 4096
         if input_bound > 180_000:
             raise ProviderFailure("Evidence exceeds this request's input limit; narrow the scope.")
-        settings: OpenAIResponsesModelSettings = {"max_tokens": max_tokens, "timeout": 90}
+        timeout = 180 if purpose == "design" else 90
+        settings: OpenAIResponsesModelSettings = {"max_tokens": max_tokens, "timeout": timeout}
         if model.startswith("openai:") and openai_reasoning_effort is not None:
             settings["openai_reasoning_effort"] = openai_reasoning_effort
         input_rate, output_rate = PRICES[model]
         reserved = math.ceil(input_bound * input_rate * 1.25 + max_tokens * output_rate)
+        if web_search:
+            settings["openai_include_web_search_sources"] = True
+            settings["extra_body"] = {"max_tool_calls": 2}
+            # Search inputs are unknown until completion; reserve the model's full context.
+            reserved = (
+                math.ceil(1_050_000 * input_rate * 2 + max_tokens * output_rate * 1.5) + 20_000
+            )
         async with self.capacity:
             with self.db.session.begin() as session:
                 if (
@@ -123,7 +134,8 @@ class LanguageModels:
                     request_payload={
                         "instructions": instructions,
                         "prompt": prompt,
-                        "schema": output.model_json_schema(),
+                        "schema": schema,
+                        "web_search": web_search,
                         "settings": settings,
                         "price_per_million": [input_rate, output_rate],
                     },
@@ -137,13 +149,16 @@ class LanguageModels:
             try:
                 agent = Agent(
                     model_object,
-                    output_type=ToolOutput(output, strict=True),
+                    output_type=str if web_search else ToolOutput(output, strict=True),
+                    capabilities=[NativeTool(WebSearchTool(search_context_size="low"))]
+                    if web_search
+                    else [],
                     instructions=instructions,
                     retries=0,
                     model_settings=settings,
                 )
                 with capture_run_messages() as messages:
-                    async with asyncio.timeout(95):
+                    async with asyncio.timeout(timeout + 5):
                         response = await agent.run(
                             prompt, usage_limits=UsageLimits(request_limit=1)
                         )
@@ -163,8 +178,14 @@ class LanguageModels:
                 inputs = sum(m.usage.input_tokens for m in responses)
                 outputs = sum(m.usage.output_tokens for m in responses)
                 reasoning = sum(m.usage.details.get("reasoning_tokens", 0) for m in responses)
+                search_calls = sum(m.usage.details.get("web_search_requests", 0) for m in responses)
+                long_context = web_search and inputs > 272_000
                 charged = (
-                    math.ceil(inputs * input_rate + outputs * output_rate)
+                    math.ceil(
+                        inputs * input_rate * (2 if long_context else 1)
+                        + outputs * output_rate * (1.5 if long_context else 1)
+                    )
+                    + search_calls * 10_000
                     if responses
                     else reserved
                 )

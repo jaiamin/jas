@@ -12,7 +12,7 @@ import {
   SkipForward,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { ResearchAssistant } from "@/components/assistant";
 import { MetricChart } from "@/components/charts";
 import {
@@ -62,7 +62,10 @@ export default function Run() {
   const query = useApi<RunDetail>(`/runs/${id}`, true);
   const notes = useApi<Annotation[]>(`/runs/${id}/annotations`);
   const client = useQueryClient();
-  const tab = params.get("tab") ?? "live";
+  const tab =
+    ["live", "decisions", "relationships", "research", "settings"].find(
+      (value) => value === params.get("tab"),
+    ) ?? "live";
   useEffect(() => {
     if (jumpToEvidence && tab === "decisions") {
       inspectorHeading.current?.focus({ preventScroll: true });
@@ -158,12 +161,6 @@ export default function Run() {
   }
   return (
     <>
-      <div className="back-link">
-        <Link to={`/studies/${summary.study_id}`}>
-          <ArrowLeft />
-          {summary.study_title}
-        </Link>
-      </div>
       <PageHeading
         title={summary.condition}
         description={`${runModelLabel(summary)} · Seed ${summary.seed} · Repetition ${summary.repetition}`}
