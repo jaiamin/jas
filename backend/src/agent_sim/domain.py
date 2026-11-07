@@ -95,10 +95,11 @@ class Parameters(Strict):
         description="Independently enabled channels when communication=true. "
         "Remove only messages to isolate messaging while keeping reports/promises available.",
     )
-    memory: Literal["episodic", "notes", "none"] = Field(
+    memory: Literal["episodic", "notes", "history", "none"] = Field(
         default="episodic",
         description="Episodic: bounded experiences, public history and note; "
-        "notes: public history and note; none: neither. Authoritative current state stays visible.",
+        "notes: public history and note; history: public history only; none: neither. "
+        "Authoritative current state stays visible.",
     )
     private_signal: bool = Field(
         default=True,

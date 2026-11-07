@@ -61,8 +61,11 @@ class Research:
         ):
             raise ValueError("Choose a model in the reviewed provider catalog")
         adapter = CATALOG[design.environment]
-        if any(key not in adapter.measures for key in design.measures):
-            raise ValueError("Requested measurements must be supported by the chosen environment")
+        unsupported = sorted(set(design.measures) - set(adapter.measures))
+        if unsupported:
+            raise ValueError(
+                f"Unsupported measurements {unsupported}; choose from {list(adapter.measures)}"
+            )
 
     def save_design(
         self, design: Design, *, study_id: str | None = None, plan_id: str | None = None

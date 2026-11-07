@@ -48,6 +48,19 @@ def test_common_payoffs_claims_and_commitments_are_rule_verified(design):
     assert next(m.value for m in measures if m.key == "contribution_rate") == 0.5
 
 
+def test_public_history_control_isolates_private_note_retention(design):
+    world = Commons(design, Parameters(memory="notes"), 7)
+    key = actor(world)
+    world.state["history"] = [{"round": 1, "text": "Public fact"}]
+    world.state["notes"][key] = "Private hypothesis"
+    with_note = world.observe(key)
+    control = Commons(design, Parameters(memory="history"), 7, world.snapshot()).observe(key)
+    assert with_note["your_note"] == "Private hypothesis"
+    assert control == {**with_note, "your_note": ""}
+    no_history = Commons(design, Parameters(memory="none"), 7, world.snapshot()).observe(key)
+    assert no_history["public_history"] == [] and not no_history["your_note"]
+
+
 def test_trust_exchange_conserves_declared_payoffs_and_opportunity(design):
     design.environment, design.rounds = "trust_exchange", 1
     world = TrustExchange(design, Parameters(endowment=10, multiplier=3), 7)

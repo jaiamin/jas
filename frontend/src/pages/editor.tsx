@@ -865,6 +865,10 @@ function DesignEditor({
                                   value: "notes",
                                   label: "Notes + public history",
                                 },
+                                {
+                                  value: "history",
+                                  label: "Public history only",
+                                },
                                 { value: "none", label: "No retained history" },
                               ]}
                             />

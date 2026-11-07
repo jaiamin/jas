@@ -22,6 +22,17 @@ def test_suite_is_unique_and_split_before_tuning():
     assert sum(case.split == "generalization" for case in cases) == 56
     assert sum(case.environment is not None for case in cases) == 210
     assert len(suite.fingerprint()) == 64
+    from agent_sim.environments import CATALOG, MEASURE_DESCRIPTIONS
+
+    assert set(MEASURE_DESCRIPTIONS) == {m for a in CATALOG.values() for m in a.measures}
+
+    for case in cases:
+        if case.environment:
+            adapter = CATALOG[case.environment]
+            assert case.measure in adapter.measures
+            assert case.factor in {"roles", "goals"} or (
+                case.factor and case.factor.split(".")[0] in adapter.parameters
+            )
 
 
 def test_assessor_catches_inert_and_confounded_treatments(design):

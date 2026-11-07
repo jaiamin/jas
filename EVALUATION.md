@@ -48,3 +48,12 @@ reserved generalization and longitudinal cases. Record costs from the atomic led
 - Development-v6 runs 160 cases at concurrency 16. Observed one-condition unsupported-design
   output despite a two-condition brief; investigate after the fixed-source batch completes.
 - 141 backend tests, Ruff, ty, frontend lint/test/build and all 17 Docker browser flows pass.
+- Development-v6 finished: 127/160 checks passed, 221 completed runs, 2,247 replayed turns.
+  Development-retest-v7: 25/32 passed, 50 completed runs, 448 replayed turns.
+- Corrected sender-trust metric criteria separately from provider improvements; rescore-v3
+  changes only trust_exchange-04 and -17 from fail to pass in v6. Preserve both scores.
+- Added depleted initial stock and a public-history-only memory control after genuine
+  affordance gaps. Planner drafts can decline for reviewed capability gaps; counts are enforced.
+- Dataset v4 uses explicit typed JSONL records with stable IDs/splits. Two repeated-shock
+  pilots now allow five rounds; those are corrected constraints, not pure model improvements.
+- A final fixed-source full suite will be the primary report; earlier attempts stay historical.

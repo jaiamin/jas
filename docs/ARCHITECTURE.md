@@ -83,6 +83,9 @@ with automatic retries disabled. Only the two registered providers are implement
 Resource changes are immutable condition data, applied at round boundaries and reconstructed
 from the round on restore. Future changes are hidden from participants. Infeasible promises
 after a shock remain events but are excluded from the fulfillment denominator.
+Communication channels can be ablated independently. Public-history-only memory is the
+control for private notes; notes versus episodic retention isolates retrieved experiences.
+Renewable stocks can begin depleted independently of their carrying capacity.
 
 SQLite schema v2 migrates v1 request tracing in place. Study export v2 includes every
 revision and its runs, exact turn evidence and provider traces; it batches journal queries.

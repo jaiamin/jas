@@ -12,7 +12,7 @@ export interface Parameters {
   multiplier: number;
   communication: boolean;
   communication_channels: ("messages" | "reports" | "promises")[];
-  memory: "episodic" | "notes" | "none";
+  memory: "episodic" | "notes" | "history" | "none";
   private_signal: boolean;
   task_count: number;
   institution: {

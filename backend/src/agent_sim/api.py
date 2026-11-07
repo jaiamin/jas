@@ -13,7 +13,7 @@ from sqlalchemy.exc import NoResultFound
 from .assistants import Assistants
 from .db import Annotation, Database, ProviderCall, Workspace
 from .domain import Design, Strict
-from .environments import CATALOG, RULE_VERSION
+from .environments import CATALOG, MEASURE_DESCRIPTIONS, RULE_VERSION
 from .execution import Engine
 from .llm import LanguageModels, ProviderFailure
 from .research import Research
@@ -129,6 +129,7 @@ def create_app(
                     "primary_metric": a.primary_metric,
                     "parameters": list(a.parameters),
                     "measures": list(a.measures),
+                    "measure_definitions": {m: MEASURE_DESCRIPTIONS[m] for m in a.measures},
                     "rule_version": a.world.version,
                 }
                 for a in CATALOG.values()

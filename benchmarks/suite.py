@@ -7,7 +7,7 @@ from agent_sim.domain import EnvironmentId, Strict
 from pydantic import Field
 
 ROOT = Path(__file__).parent
-SUITE_VERSION = 3
+SUITE_VERSION = 4
 METRICS = {
     "commons": ["contribution_rate"],
     "trust_exchange": ["return_rate"],
@@ -54,48 +54,9 @@ class Case(Strict):
 
 
 def cases() -> list[Case]:
-    result = []
-    data = json.loads((ROOT / "cases/scenarios.json").read_text())
-    for env, scenarios in data.items():
-        for i, (question, factor, measure) in enumerate(scenarios):
-            result.append(
-                Case(
-                    id=f"{env}-{i + 1:02}",
-                    split="development" if i < 20 else "generalization",
-                    question=question,
-                    measure=measure,
-                    environment=env,
-                    factor="communication_channels" if factor == "communication" else factor,
-                    agents=2 if env == "bargaining" else 4,
-                )
-            )
-        for i, factor in enumerate([scenarios[0][1], "memory"]):
-            result.append(
-                Case(
-                    id=f"{env}-long-{i + 1}",
-                    split="longitudinal",
-                    environment=env,
-                    factor=factor,
-                    measure=METRICS[env][0],
-                    question=(
-                        f"Over repeated opportunities, {scenarios[0][0]}"
-                        if i == 0
-                        else f"Does episodic versus no memory change repeated behavior in {env}?"
-                    ),
-                    rounds=12,
-                    agents=2 if env == "bargaining" else 6,
-                )
-            )
-    for i, question in enumerate(json.loads((ROOT / "cases/unsupported.json").read_text())):
-        result.append(
-            Case(
-                id=f"unsupported-{i + 1:02}",
-                split="capability",
-                question=question,
-                environment=None,
-            )
-        )
-    return result
+    return [
+        Case.model_validate_json(line) for line in (ROOT / "cases.jsonl").read_text().splitlines()
+    ]
 
 
 def fingerprint() -> str:

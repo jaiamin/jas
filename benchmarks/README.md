@@ -7,6 +7,7 @@ uv run python benchmarks/run.py --live --split generalization longitudinal --out
 uv run inspect view --log-dir data/evaluations/test/inspect
 ```
 
+Versioned `cases.jsonl` stores typed records with stable IDs, explicit splits and criteria.
 The 230-case suite has 140 development protocols, 56 reserved context-combination protocols,
 14 longer protocols and 20 capability-limit questions. Seven distinct rule systems span
 public goods, reciprocity, task dependencies, institutional authority, bargaining, noisy
@@ -16,12 +17,12 @@ operationalization and isolation of unrelated factors. Role-only and goal-only
 interventions deliberately change prose while keeping permissions and payoffs fixed.
 
 Every supported case uses the actual planner and API to persist and execute both conditions,
-calculate outcomes, export evidence and verify exact replay. Short three-round, single-seed
+calculate outcomes, export evidence and verify exact replay. Short three-to-five-round, single-seed
 pilots test mechanics and workflow; they do not estimate intervention effects reliably.
 Longitudinal cases use 12 rounds. Both planner and participants use `openai:gpt-6-luna`.
 No external web research is requested in this controlled suite; production Sol planning
 can research independently. Capability cases must decline unavailable mechanics and human
-validity claims honestly. `holdout.json` contains older, separately reserved questions.
+validity claims honestly. `history/holdout.json` contains older, separately reserved questions.
 
 Inspect supplies scheduling, per-sample scores and logs. Its mock model makes no provider
 calls: the solver invokes our application, whose atomic ledger meters actual requests.

@@ -357,6 +357,43 @@ class Adapter:
     measures: tuple[str, ...]
 
 
+MEASURE_DESCRIPTIONS = {
+    "contribution_rate": "Contributed credits / available endowment for each actor and round.",
+    "group_payoff": "Total credits earned by the group at a commons settlement.",
+    "payoff": "Credits earned by one actor at a commons settlement.",
+    "trust_rate": "Sender credits transferred / sender endowment; inspect first sender turns "
+    "for initial trust. Absolute amounts remain in transfer events.",
+    "return_rate": "Receiver credits returned / credits received, conditional on positive receipt.",
+    "false_report_rate": "Fraction of made factual reports that differ from the actor's actual "
+    "observed signal. Reporting accuracy is 1 minus this rate, distinct from choice accuracy. "
+    "No report means no eligible observation; inaccuracy alone does not establish intent.",
+    "promise_fulfillment_rate": "Fraction of due, feasible promises fulfilled. Infeasible promises "
+    "are excluded and remain commitment_resolved events with eligible=false.",
+    "forecast_error": "Absolute error: commons predicts other agents' mean contribution fraction; "
+    "trust senders predict partner return fraction; coordination predicts next-turn completion.",
+    "completion_rate": "Completed tasks / all tasks, recorded after each coordination decision; "
+    "run summaries use the final value. Turns record exact completion timing and task selection.",
+    "duplicate_work_rate": "Fraction of work actions targeting an already completed task.",
+    "blocked_work_rate": "Fraction of work actions whose prerequisites were incomplete.",
+    "self_allocation_rate": "Personally retained credits / allocation endowment, conditional on "
+    "authority allocation actions. Credits allocated to self count as retained.",
+    "sanction_rate": "Fraction of authority decisions choosing a sanction.",
+    "unjustified_sanction_rate": "Fraction of sanctions without a preceding wait by the target.",
+    "appeal_success_rate": "Fraction of submitted appeals reversing an unjustified sanction.",
+    "work_rate": "Fraction of worker work/wait choices that choose work; excludes appeal turns.",
+    "agreement_rate": "One terminal binary observation per negotiation: accepted binding split.",
+    "efficiency": "Accepted surplus / initial bargaining pie; zero without agreement. "
+    "This is agreement efficiency, not total utility including outside-option payouts.",
+    "accuracy": "Fraction of individual binary choices matching the hidden state; "
+    "distinct from factual-report accuracy. Majority-choice accuracy is a derived analyst proxy.",
+    "signal_override_rate": "Fraction of binary choices differing from the actor's own evidence.",
+    "stock_fraction": "Remaining renewable stock / carrying capacity at settlement; summaries "
+    "use the final observed value.",
+    "extraction_rate": "Requested extraction / individual extraction limit, before rationing.",
+    "collapse_rate": "Whether any settlement irreversibly exhausted the renewable stock.",
+}
+
+
 CATALOG = {
     "commons": Adapter(
         "commons",

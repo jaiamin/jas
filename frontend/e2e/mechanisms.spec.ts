@@ -43,7 +43,11 @@ for (const theme of ["light", "dark"]) {
           study.design.conditions[0].parameters.resource.initial_stock,
         ).toBe(9);
       }
-      await page.goto(`/runs/${study.runs[0].id}`);
+      const run = study.runs.find(
+        (row: { condition_key: string }) =>
+          row.condition_key === study.design.conditions[0].key,
+      );
+      await page.goto(`/runs/${run.id}`);
       await expect(
         page.getByRole("heading", { name: title, exact: true }),
       ).toBeVisible();

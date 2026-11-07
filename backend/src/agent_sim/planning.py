@@ -7,7 +7,7 @@ from sqlalchemy import select
 
 from .db import Analysis, Database, ProviderCall
 from .domain import Design, DesignSpec, PlannedStudy, Strict
-from .environments import CATALOG, create_world
+from .environments import CATALOG, MEASURE_DESCRIPTIONS, create_world
 from .llm import LanguageModels
 from .research import Research
 from .templates import templates
@@ -65,8 +65,14 @@ communication=true and vary communication_channels by removing only "messages", 
 channel enabled so both conditions have eligible opportunities. The same applies to factual reports.
 private_signal=false publishes all signals; true reveals only the actor's own signal.
 Memory modes ablate retained history/notes, not current authoritative tasks or choices.
+Compare notes versus history to isolate private-note retention while keeping public history.
+In commons/trust, available per-action credits (endowment) are an agent's resource capacity;
+a scheduled reduction can make an earlier promise infeasible. This is not physical capacity.
 No new parameter names or invented mechanics. Inactive environment parameters retain defaults.
 All study/profile/condition keys must be lowercase identifiers. Return all schema fields.
+Use registered measure keys only; describe any additional calculation from recorded events
+in the protocol, never invent a measurement key. Template example values are not requirements:
+compare conditions to each other and the actual request, not to template numeric constants.
 The scoped agent/condition/seed/repetition/round counts are a binding plan, not suggestions.
 Do not replace an unsupported request with a placeholder design labeled unavailable.
 Recorded turn-level evidence can answer round-specific questions; summary metrics are not
@@ -152,6 +158,7 @@ class Planner:
                     "description": adapter.description,
                     "parameters": adapter.parameters,
                     "measures": adapter.measures,
+                    "measure_definitions": {m: MEASURE_DESCRIPTIONS[m] for m in adapter.measures},
                     "rules_example": world.observe(actor)["rules"],
                     "example_note": "Example values are template settings, not fixed constants. "
                     "Use the design schema descriptions to identify changeable parameters.",
@@ -186,7 +193,7 @@ class Planner:
                 prompt=json.dumps(data),
                 purpose="design",
                 analysis_id=key,
-                openai_reasoning_effort="low",
+                openai_reasoning_effort="medium",
                 **options,
             )
 

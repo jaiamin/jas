@@ -96,7 +96,7 @@ class World(ABC):
             "your_experiences": self.state["experiences"][agent][-12:]
             if memory == "episodic"
             else [],
-            "your_note": self.state["notes"][agent] if memory != "none" else "",
+            "your_note": self.state["notes"][agent] if memory in {"episodic", "notes"} else "",
             "communication": self.parameters.communication,
             "communication_channels": self.parameters.communication_channels
             if self.parameters.communication
