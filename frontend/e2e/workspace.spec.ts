@@ -99,7 +99,7 @@ test("mobile navigation and theme persist without page overflow", async ({
   ).toBe(true);
   await expect(page.getByRole("dialog")).not.toBeVisible();
   await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("link", { name: "ASS home" }).focus();
+  await page.getByRole("link", { name: "JAS home" }).focus();
   await page.keyboard.press("Shift+Tab");
   await expect(
     page.getByRole("button", { name: "Close", exact: true }),

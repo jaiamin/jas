@@ -1,6 +1,5 @@
 import asyncio
 import json
-import os
 import statistics
 from collections import defaultdict
 from collections.abc import Sequence
@@ -9,6 +8,7 @@ from typing import Literal
 from pydantic import Field
 from sqlalchemy import select, update
 
+from .config import setting
 from .db import Analysis, Database, Measurement, RecordedEvent, Turn, digest
 from .domain import Finding, Strict
 from .llm import LanguageModels, ProviderFailure
@@ -78,7 +78,7 @@ class Assistants:
         if not question or len(question) > 4000:
             raise ValueError("Enter a question between 1 and 4,000 characters")
         self.models.model(
-            os.getenv("ASS_PLANNER_MODEL", "openai:gpt-6.1-sol")
+            setting("PLANNER_MODEL", "openai:gpt-6.1-sol")
             if purpose == "design"
             else "openai:gpt-6.1-sol"
         )

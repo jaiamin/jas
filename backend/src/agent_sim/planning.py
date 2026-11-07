@@ -1,10 +1,10 @@
 import json
-import os
 from urllib.parse import urlparse
 
 from pydantic import Field, ValidationError
 from sqlalchemy import select
 
+from .config import setting
 from .db import Analysis, Database, ProviderCall
 from .domain import Design, DesignSpec, PlannedStudy, Strict
 from .environments import CATALOG, MEASURE_DESCRIPTIONS, create_world
@@ -166,7 +166,7 @@ class Planner:
             )
         context = {
             "question": row["question"],
-            "research_available": os.getenv("ASS_PLANNER_MODEL", "openai:gpt-6.1-sol")
+            "research_available": setting("PLANNER_MODEL", "openai:gpt-6.1-sol")
             == "openai:gpt-6.1-sol",
             "capabilities": capabilities,
             "models": self.models.catalog(),
@@ -188,7 +188,7 @@ class Planner:
         async def call(output, instruction: str, data: dict, **options):
             return await self.models.generate(
                 output,
-                model=os.getenv("ASS_PLANNER_MODEL", "openai:gpt-6.1-sol"),
+                model=setting("PLANNER_MODEL", "openai:gpt-6.1-sol"),
                 instructions=instruction,
                 prompt=json.dumps(data),
                 purpose="design",

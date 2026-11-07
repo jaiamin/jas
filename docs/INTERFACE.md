@@ -1,40 +1,78 @@
-# Interface redesign
+# Interface scope and verification
 
-Replace the inconsistent composition with a compact shadcn application. Preserve all experiment, replay, evidence, export, budget and revision behavior. Neutral light/dark surfaces, restrained orange, sharp corners. No account theatre, decorative metrics or invented agent activity.
+Primary reference: Laminar product screens inspected on 2026-11-07 in its
+[trace documentation](https://laminar.sh/docs/platform/viewing-traces) and
+[table documentation](https://laminar.sh/docs/platform/table-views). Public screenshots
+showed its actual trace tree, adjacent span inspector, compact tables and control bars.
+No authenticated Laminar session was available or required. Its marketing page was not
+used as the application layout. `DESIGN.md` owns the resulting design system.
 
-## Evidence
+## Route and task inventory
 
-Reviewed official documentation and product screenshots on 2026-11-07:
+| Route | Task | Important states |
+| --- | --- | --- |
+| `/` → `/studies` | Open saved work | Empty workspace, redirect |
+| `/studies` | Search/filter experiments, recover drafts | Loading, error/retry, empty, filtered empty, pagination |
+| `/design` | Ask AI for a reviewed protocol; reopen proposals | Empty question, pending, failure/recovery, provider unavailable |
+| `/new` | Edit question, agents, conditions, execution, specification | Template, AI proposal, new revision, invalid JSON, recovered draft, save error, disabled limits |
+| `/studies/:id` | Read results, run matrix, protocol and revisions | Ready, executing, paused, complete, failed, historical revision, no eligible results |
+| `/runs` | Find runs and select 2–4 to compare | Filters, pagination, selection across filters, selection cap |
+| `/runs/:id` | Inspect environment, decisions, interactions, record | Initial checkpoint, running/pause, pinned turn, evidence loading/error, no interactions, annotations, replay, request trace |
+| `/compare?runs=…` | Compare outcomes and history | Fewer than two, 2–4 selections, incompatible worlds, missing measurements, query failure |
+| `/environments` | Choose one of seven supported rule systems | Loading/error, each template and its measurements |
+| `/settings` | Check providers, budgets, usage, storage | Key configured/missing, unknown usage; deployment config is read-only |
+| Any route + `assistant=1` | Design or investigate scoped evidence | Context loading/error, pending/completed/failed analysis, citations, follow-up, mobile modal |
+| Unknown route | Recover navigation | Not-found state and link to experiments |
 
-- [Langfuse trace UI](https://langfuse.com/docs/observability/overview): compact record toolbar, trace list and contextual evidence inspector. The live demo requires an account; public screenshots were used.
-- [Braintrust comparisons](https://docs.braintrust.dev/evaluate/compare-experiments): checkbox selection, aligned metric tables, persistent comparison context.
-- [Linear views](https://linear.app/docs/custom-views): one contextual toolbar, dense records, details revealed alongside work.
-- [Vercel projects](https://vercel.com/docs/projects/managing-projects): concise creation controls and clear separation of work and settings. Public screenshot is an older project layout, not evidence of the current authenticated dashboard.
-- [LangSmith threads](https://docs.langchain.com/langsmith/threads): conversation context with inspectable evidence, separate from execution traces.
-- [shadcn dashboard](https://ui.shadcn.com/view/new-york-v4/dashboard-01), [sidebar](https://ui.shadcn.com/docs/components/radix/sidebar), [chat scrolling](https://ui.shadcn.com/docs/components/radix/message-scroller): standard primitives, collapsible navigation, anchored conversations.
+## Preserved contracts
 
-Baseline audit: Home puts seven templates above saved work; headers repeat context; list rows and toolbar controls have mismatched sizing; long protocol prose crowds comparison tables; the editor is an unbounded form; analysis has document-like Q&A without an anchored composer. Environment illustrations add height without helping selection. Compare gives half the viewport to a horizontally clipped table.
+Saving never starts execution. Old revisions and runs remain immutable. Pause finishes
+an in-flight turn. Replay uses recorded actions without model requests. Export includes
+all revisions and evidence. Conditions, seeds and repetitions identify each run. Model
+self-report remains distinct from recorded observations and enforced consequences.
+There are no account, RBAC or upload APIs: the UI does not invent these permissions.
+Missing provider configuration and browser storage failure are explicit capability states.
 
-## Direction
+## Shared patterns
 
-- Shared compact collapsible navigation, 48px breadcrumb bar, 20–24px content gutters. One page title/action row; no duplicate section introductions.
-- Home: question composer, compact starter choices, recent work in the first viewport. Drafts and AI history stay discoverable.
-- Lists/catalog: common filter toolbar, 44–52px records, aligned numeric values, useful pagination only.
-- Experiment: full-width comparison, concise protocol disclosure and shared tabs. Preserve uncertainty and provenance in contextual detail.
-- Editor: task tabs for question, agents, conditions and execution; sticky execution summary/save. Advanced settings progressively disclosed.
-- Run: compact replay toolbar, consistent tabs; environment and evidence remain the working surfaces. Keep mobile return-to-journal navigation.
-- Agent: a contextual Sheet opened from the header, nonmodal on desktop and full-screen on mobile. Explicit design/experiment/run selection, shadcn Message/Bubble/MessageScroller, anchored composer, real evidence activity, follow-up context and linked turns. Retain Pydantic AI and bounded evidence gathering; attachments wait for a defined ingestion workflow.
-- Avoid new large frameworks. Reuse existing API/query/data flow; no database migration or paid calls for this redesign.
+Application shell and breadcrumbs; page heading/actions; compact filter/table/footer;
+page tabs; structured fields and disclosures; revision/run identity; status with text;
+loading/error/empty feedback; linked turn controls and evidence; anchored AI composer.
 
-## Acceptance / progress
+## Verification record
 
-- [x] Read-only audit of every route and competitor references.
-- [x] Shared components, shell, tables and themes rebuilt.
-- [x] Home, experiments, editor, experiment detail, runs, run detail, compare, environments and settings follow the same grammar.
-- [x] Planner and investigator activity accurately reflects server state; failed requests are retryable; saved evidence remains accessible.
-- [x] Browser flows: create/tune/drafts, filters/comparison, replay/inspection, chat pending/complete/failure, theme/navigation.
-- [x] Desktop 1280/1440, tablet and mobile; long copy, empty/error/loading, keyboard and contrast checks.
-- [x] Lint, types, unit tests, build, backend regressions and browser suite pass.
-- [x] Fresh Impeccable review, synchronized design docs, clean handoff and server on 8080.
+Verified on 2026-11-07 using isolated, keyless SQLite databases. The preview contained
+seven experiments and 18 completed runs generated by deterministic offline models.
+The screenshots illustrate the interface; their outcomes and usage are not live model results.
 
-Final verification: 147 backend tests, five frontend unit tests and 20 keyless browser workflows passed, along with Ruff, ty, Biome and production build. Docker build/health and browser entry smoke passed. The finish reviewer inspected all 19 recaptures and returned `ship` for the four scored fixes: revision identity, mobile menu bounds, concurrent evidence and synchronized design documentation. No paid model calls were made.
+| View / state | Observed verification |
+| --- | --- |
+| Experiments and runs | Desktop tables, search, filtered empty/reset, selection, comparison, pagination; empty workspace on mobile |
+| Experiment details | Results, run matrix, protocol, revision selection and tuning; historical records preserved |
+| Protocol editor | Desktop/mobile layout; question, agents, conditions, execution and JSON; validation, template changes, save and draft recovery |
+| Run evidence | Journal and inspector; earlier turn keeps later decisions visible; keyboard slider, mobile focus/return, desktop assistant with stacked evidence |
+| Observations and record | Saved notes survive API reload/export; drafts remain attached to their original run/turn during polling and turn changes; 24-turn exact replay verified |
+| Environment and interactions | Shared pool/outcome history, initial and completed states, empty interaction network; all seven rule systems exercised by API/browser tests |
+| Comparison | Selected two real fixture runs through the run library; aligned outcomes and history at desktop/tablet widths |
+| AI design and assistant | Missing-provider/disabled state; mocked pending, completed, failed/retry and cited evidence flows; mobile modal and desktop docked panel |
+| Settings and recovery | Missing providers, read-only configuration, budgets/storage; API error/retry, missing records, unknown-route recovery |
+| JAS compatibility | New commands, settings, API title and export filename; legacy configuration precedence, database selection, browser drafts/theme/sidebar regression tests |
+| Shared accessibility | Keyboard entry, sidebar shortcut/persistence, focus and return; sampled rendered text/placeholder contrast in both themes; no page overflow in inspected layouts |
+
+Manual captures cover 390px mobile, 834px tablet and 1440px desktop. Browser tests also
+exercise 1280px desktop navigation. Wide tables and editor tabs scroll within their containers.
+
+Passed: 153 Python tests, Ruff lint/format checks, ty; 7 frontend unit tests, Biome;
+26 Playwright tests; TypeScript and Vite production build; Actionlint and Docker Compose configuration validation. The new note-identity and
+desktop evidence-navigation regressions failed against the prior build and passed after fixing.
+The independent Impeccable reviewer scored both material fixes resolved.
+
+Representative captures:
+
+- [Experiments, dark](screenshots/experiments-dark.png)
+- [Decision journal and evidence, light](screenshots/run-evidence.png)
+- [Comparison, light](screenshots/comparison.png)
+- [Mobile evidence inspector, dark](screenshots/mobile-evidence.png)
+
+Limits: Chromium verification only; no live paid-provider calls, full assistive-technology
+audit, or production deployment. AI success/failure paths use controlled responses.

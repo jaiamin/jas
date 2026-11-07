@@ -1,57 +1,68 @@
-# ASS handoff
+# Developer workspace redesign
 
-Branch `feat/empirical-research-platform`; draft PR https://github.com/jaiamin/ass/pull/3.
-Read README for setup, docs/ARCHITECTURE.md for boundaries, GLOSSARY.md for terminology,
-DESIGN.md for current visual tokens and docs/INTERFACE.md for the redesign evidence.
+Branch: `t3/developer-workspace-redesign`. This checkout is an isolated Linux sandbox.
 
-## Running
+## Objective and acceptance
 
-Main app: http://localhost:8080. Start with
-`.venv/bin/ass --host 0.0.0.0 --port 8080` or `docker compose up --build`.
-The local app uses `data/ass.sqlite3`; five user studies and 32 runs are preserved.
-Never run two engines against one database. Credentials remain in .env/environment.
-Python uses .venv. Native uv crashes on this sandbox kernel;
-`.tools/uv-0.13.7.data/scripts/uv` works. Disposable UI QA services and browser are closed;
-main 8080 remains running. Evaluation workers have finished.
+Replace the previous interface with a cohesive, minimalist developer workspace, using
+Laminar's actual table and trace UI as the primary reference. The user confirmed the main
+workflow: experiment → run → recorded decision → comparison. AI design is supporting.
+Preserve all seven environments, immutable revisions, budgets, execution controls,
+annotations, replay, exports, provider traces, and assistant evidence boundaries.
 
-## Implemented
+- [x] Inventory all routes, user tasks, data contracts, repeated patterns and states.
+- [x] Inspect Laminar's public product screenshots and the running baseline.
+- [x] Define canonical `DESIGN.md`; implement shell and one end-to-end workflow.
+- [x] Visually verify the representative workflow before extending remaining views.
+- [x] Apply shared patterns to every route, responsive layout and important state.
+- [x] Remove only verified obsolete code/docs; update setup and product documentation.
+- [x] Pass frontend/backend checks and meaningful browser regressions.
+- [x] Capture representative screenshots and complete independent design review.
+- [ ] Commit and publish one draft PR.
 
-React/TypeScript/shadcn; Python/FastAPI; SQLite WAL, immutable protocol revisions,
-atomic checkpoints and explicit request reservations. Seven deterministic rule systems:
-commons, trust exchange, coordination, institution, bargaining, information and renewable
-resource. Independent communication channels, private observations and memory treatments.
-Planner scopes, optionally researches, drafts, validates and reviews. Production planner
-and investigator default to Sol; participants default to Luna. No model substitutions.
+## Decisions
 
-Every view now shares source shadcn controls, compact collapsible navigation, neutral
-light/dark themes and restrained orange. Centered Home composer, progressive editor task
-tabs, recoverable drafts, full-width comparison and linked replay/evidence. The contextual
-assistant has explicit experiment/run selection, real evidence activity, bounded follow-up
-context and an anchored composer; desktop content reflows beside it. Run identities include
-immutable revision numbers. Attachments await an ingestion workflow.
+- Default entry is Experiments; AI design gets a dedicated supporting route.
+- Keep `/studies` and existing API contracts. “Experiment” is the UI term for a study.
+- Preserve shadcn/Radix, React Query, Vite and the existing Python execution engine.
+- Laminar's density, neutral surfaces and adjacent evidence panels guide composition.
+  No workspace switcher, accounts, fabricated activity or new backend features.
+- `DESIGN.md` is the single design authority. Route inventory/verification lives in
+  `docs/INTERFACE.md`; this file holds implementation progress, not duplicate tokens.
+
+## Local verification environment
+
+Project-local Python `.venv`; uv at `.tools/bin/uv`; pnpm at
+`/home/agent/.local/bin/pnpm`. Dependency installation and baseline production build pass.
+Keyless QA API: port 8082, `data/redesign-qa.sqlite3`. Preview fixture uses a separate
+`data/redesign-preview.sqlite3` and port 8083. Never share a database between engines.
+Existing `data/ass.sqlite3` and `data/evaluation.sqlite3`, if present, are user data.
+Do not delete or use them for verification. No paid model requests are authorized.
+
+## Completed implementation
+
+- Replaced the chat-first entry with experiment records, a compact shell and linked evidence.
+- Extracted shell, table patterns, AI composer, protocol field groups and execution records;
+  split scoped styles from tokens; removed the old Home view, dead selectors and redundant Slot dependency.
+- Fixed journal truncation, assistant-induced draft resets, run/turn note identity and stacked
+  evidence focus/return, including a docked assistant that remains open during inspection.
+- Renamed product branding to JAS across application, API, CLI, configuration and docs.
+  Legacy configuration, browser storage, database names, volume identity and export format
+  remain compatible. The repository name/remote is unchanged at the user's request.
+- Canonical DESIGN.md and machine metadata synchronized by the documenter. Independent
+  Impeccable review scored both material findings resolved. Detailed checks and representative
+  offline-fixture screenshots are in docs/INTERFACE.md.
 
 ## Verification
 
-Current interface: 147 backend tests, Ruff, ty, frontend Biome/five unit tests/production
-build and 20 keyless browser workflows pass. Nineteen captures cover 1280/1440px desktop,
-tablet and mobile. Final Docker build, health and browser entry smoke pass. No paid model
-calls during this redesign; investigator/planner states use controlled test responses.
-Design documentation and the tracked token sidecar match current source. Impeccable
-returned `ship` for all four scored finish-review fixes; no regressions were observed.
+153 backend tests, 7 frontend unit tests and 26 Playwright tests passed. Ruff lint/format,
+ty, Biome, TypeScript/Vite build, Actionlint, Compose config validation and staged Gitleaks passed.
+Manual browser checks included desktop/mobile/tablet, saved observations, exact replay
+(24 turns), export contents, keyboard focus and sampled text/placeholder contrast.
+No paid model calls; no production deployment or non-Chromium/assistive-technology audit.
+Task browser and disposable services are closed; task-generated databases and scratch scripts
+were removed after verification. User data was not touched.
 
-Earlier frozen application c5db913: 221/230 strict live GPT-6 Luna cases passed;
-206 supported cases completed both conditions, 413 runs and 5,190 exactly replayed turns.
-All 20 capability cases passed. All 464 recorded attempts remain in compressed reports;
-see benchmarks/reports/README.md and EVALUATION.md. Evaluation estimated/reserved usage
-was $3.677626; earlier task about $1.69, total about $5.36. Do not delete/reset ignored
-`data/evaluation.sqlite3` or run overlapping benchmark processes. Suite v5 offline rescore
-224/230 is post-audit evidence, not independent improvement. Nine strict failures remain.
-The current UI and investigator changes postdate that frozen evaluation.
+## Next
 
-## Limits
-
-Trusted single-user deployment; no live Anthropic or large-scale-load validation. Human
-realism, psychological motives and causal validity are unestablished. There were no live
-sanctions, appeals or bargaining exits in the frozen suite. Add independently tested
-mechanics and calibrated reference protocols before broader claims. PRODUCT.md has
-pre-existing schema drift; preserved outside this interface task.
+Publish the verified task branch as one draft PR. Keep user databases untouched.

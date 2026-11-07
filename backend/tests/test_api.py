@@ -34,7 +34,11 @@ def test_manual_design_step_evidence_and_export(client, design):
         == 201
     )
     assert client.get(f"/api/runs/{rid}/annotations").json()[0]["note"] == "Inspect this choice"
-    export = client.get(f"/api/studies/{sid}/export").json()
+    response = client.get(f"/api/studies/{sid}/export")
+    assert response.headers["content-disposition"] == f'attachment; filename="jas-{sid}.json"'
+    assert client.get("/api/openapi.json").json()["info"]["title"] == "JAS"
+    export = response.json()
+    assert export["format"] == "ass-study"
     assert export["runs"][0]["evidence"][1] == evidence
     assert client.post(f"/api/runs/{rid}/verify", json={}).json()["verified_turns"] == 1
 

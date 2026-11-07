@@ -1,4 +1,4 @@
-# ASS — Agent Simulation Environment
+# JAS — Agent Simulation Environment
 
 A local research workspace for experiments with model-controlled agents: ask a question,
 review an explicit protocol, run controlled trials, inspect decisions, compare and tune.
@@ -14,8 +14,9 @@ Docker Compose service keep setup small. Google sign-in would not supply tenant 
 RBAC, audit trails, retention controls or validated research methods; hosted collaboration
 needs those capabilities together and is outside this release.
 
-Supported worlds have explicit mechanics: shared resources, trust exchanges and task
-coordination. Named task graphs, private goals, heterogeneous models, memory conditions,
+Supported worlds have explicit mechanics: shared resources, trust exchanges, task
+coordination, institutional oversight, binding bargaining, private-evidence decisions and
+renewable resources. Named task graphs, private goals, heterogeneous models, memory conditions,
 resource shocks and repeated interactions support variations within those mechanics.
 AI produces validated protocols, not arbitrary executable worlds. New mechanics require
 an environment adapter. Seeds control environment randomization, not model determinism.
@@ -27,8 +28,7 @@ promises and directed exchanges are observations; intent, affection and human va
 are separate hypotheses. This is a useful research instrument, not a validated human
 prediction service, frontier autonomous society or enterprise-ready product.
 
-Design is restrained and practical: compact tables, consistent controls, an evidence
-inspector and a linked turn rail. Geist, white/black work surfaces, sharp corners, monochrome
-controls and restrained orange selection. Settings and appearance belong in the sidebar
-footer; there is no workspace switcher or account UI in this single-user release. Data
-colors identify series and agents, never moral rank.
+The primary workflow is experiment → run → recorded decision → comparison. AI design is a
+supporting entry point. Experiments are the default destination; developer context and
+immutable evidence identity stay visible throughout. There is no workspace switcher or
+account UI in this single-user release. Visual and interaction rules live in DESIGN.md.

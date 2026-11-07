@@ -11,6 +11,7 @@ from sqlalchemy import select, text
 from sqlalchemy.exc import NoResultFound
 
 from .assistants import Assistants
+from .config import default_database_url, setting
 from .db import Annotation, Database, ProviderCall, Workspace
 from .domain import Design, Strict
 from .environments import CATALOG, MEASURE_DESCRIPTIONS, RULE_VERSION
@@ -49,9 +50,9 @@ def create_app(
     concurrent_runs: int | None = None,
 ) -> FastAPI:
     db = Database(
-        database_url or os.getenv("ASS_DATABASE_URL", "sqlite:///data/ass.sqlite3"),
+        database_url or setting("DATABASE_URL", default_database_url()),
         round(
-            (budget_usd if budget_usd is not None else float(os.getenv("ASS_BUDGET_USD", "25")))
+            (budget_usd if budget_usd is not None else float(setting("BUDGET_USD", "25")))
             * 1_000_000
         ),
     )
@@ -61,9 +62,7 @@ def create_app(
         db,
         research,
         models,
-        concurrent_runs
-        if concurrent_runs is not None
-        else int(os.getenv("ASS_CONCURRENT_RUNS", "3")),
+        concurrent_runs if concurrent_runs is not None else int(setting("CONCURRENT_RUNS", "3")),
     )
     assistants = Assistants(db, research, models)
 
@@ -76,7 +75,7 @@ def create_app(
         db.close()
 
     app = FastAPI(
-        title="ASS",
+        title="JAS",
         version="0.2.0",
         lifespan=lifespan,
         docs_url="/api/docs",
@@ -192,7 +191,7 @@ def create_app(
     async def export_study(study_id: str) -> JSONResponse:
         return JSONResponse(
             research.export(study_id),
-            headers={"Content-Disposition": f'attachment; filename="ass-{study_id}.json"'},
+            headers={"Content-Disposition": f'attachment; filename="jas-{study_id}.json"'},
         )
 
     @app.get("/api/runs")
@@ -281,7 +280,7 @@ def create_app(
     async def get_analysis(analysis_id: str) -> dict:
         return assistants.get(analysis_id)
 
-    frontend = Path(static_dir or os.getenv("ASS_STATIC_DIR", "frontend/dist")).resolve()
+    frontend = Path(static_dir or setting("STATIC_DIR", "frontend/dist")).resolve()
 
     @app.get("/{path:path}", include_in_schema=False)
     async def web(path: str):

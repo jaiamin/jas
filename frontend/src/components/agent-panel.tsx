@@ -1,17 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
-import { ArrowUp } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { ResearchAssistant } from "@/components/assistant";
-import { Button } from "@/components/ui/button";
-import { Alert, Empty } from "@/components/ui/data";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupTextarea,
-} from "@/components/ui/input-group";
+import { DesignComposer } from "@/components/design-composer";
+import { ErrorState, Loading } from "@/components/shared";
+import { Empty } from "@/components/ui/data";
 import { Select } from "@/components/ui/select";
-import { api, useApi } from "@/lib/api";
+import { useApi } from "@/lib/api";
 import type { RunSummary, StudySummary } from "@/lib/types";
 
 export default function AgentPanel({
@@ -44,6 +37,9 @@ export default function AgentPanel({
         label: `Rev ${run.revision} · ${run.condition} · seed ${run.seed} · rep ${run.repetition} · ${run.id.slice(0, 6)}`,
       })),
   ];
+  if (studies.error || runs.error)
+    return <ErrorState error={(studies.error || runs.error) as Error} />;
+  if (!studies.data || !runs.data) return <Loading />;
   return (
     <>
       <div className="agent-context">
@@ -55,7 +51,13 @@ export default function AgentPanel({
         />
       </div>
       {kind === "design" ? (
-        <DesignAssistant />
+        <div className="design-assistant">
+          <Empty
+            title="Start with a question"
+            description="Build a protocol, then review it before running."
+          />
+          <DesignComposer suggestions />
+        </div>
       ) : (
         <ResearchAssistant
           key={scope}
@@ -64,72 +66,5 @@ export default function AgentPanel({
         />
       )}
     </>
-  );
-}
-
-function DesignAssistant() {
-  const [question, setQuestion] = useState("");
-  const navigate = useNavigate();
-  const plan = useMutation({
-    mutationFn: () => api<{ id: string }>("/plan", { question }),
-    onSuccess: (result) => navigate(`/new?plan=${result.id}`),
-  });
-  return (
-    <div className="design-assistant">
-      <Empty
-        title="Start with a question"
-        description="Describe what you want to understand about agents."
-      >
-        <div className="agent-suggestions">
-          {[
-            "When does cooperation break down?",
-            "Does communication improve teamwork?",
-            "How does oversight change decisions?",
-          ].map((text) => (
-            <Button
-              key={text}
-              variant="outline"
-              onClick={() => setQuestion(text)}
-            >
-              {text}
-            </Button>
-          ))}
-        </div>
-      </Empty>
-      <form
-        className="assistant-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (question.trim()) plan.mutate();
-        }}
-      >
-        <InputGroup>
-          <InputGroupTextarea
-            aria-label="Your research question"
-            placeholder="What would you like to explore?"
-            rows={3}
-            maxLength={4000}
-            value={question}
-            onChange={(event) => setQuestion(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && (event.metaKey || event.ctrlKey))
-                event.currentTarget.form?.requestSubmit();
-            }}
-          />
-          <InputGroupAddon>
-            <span>Review the protocol before running.</span>
-            <Button
-              type="submit"
-              size="icon"
-              aria-label="Design experiment"
-              disabled={!question.trim() || plan.isPending}
-            >
-              <ArrowUp />
-            </Button>
-          </InputGroupAddon>
-        </InputGroup>
-        {plan.error && <Alert variant="error">{plan.error.message}</Alert>}
-      </form>
-    </div>
   );
 }

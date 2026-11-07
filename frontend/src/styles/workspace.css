@@ -1,0 +1,260 @@
+/* biome-ignore-all lint/style/noDescendingSpecificity: Component scopes and responsive rules intentionally share element names. */
+.shell-body {
+  container: workspace / inline-size;
+  min-width: 0;
+}
+
+[data-slot="sidebar-header"] {
+  height: 64px;
+  padding: 0 16px;
+  justify-content: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 32px;
+  white-space: nowrap;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--brand);
+  letter-spacing: -1px;
+}
+
+.brand-name {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+.brand-name > span {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+.sidebar-create {
+  padding: 4px 12px 20px;
+}
+
+.sidebar-create .button {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+[data-slot="sidebar-content"] {
+  gap: 24px;
+}
+
+[data-slot="sidebar-group"] {
+  padding: 0 10px;
+}
+
+[data-slot="sidebar-menu-button"] {
+  height: 32px;
+  font-size: 13px;
+  gap: 8px;
+}
+
+[data-slot="sidebar-menu-button"] > svg {
+  width: 15px;
+  height: 15px;
+}
+
+[data-slot="sidebar-menu-button"][aria-current="page"] {
+  background: var(--selection-background);
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+[data-slot="sidebar-menu-button"][aria-current="page"] > svg {
+  color: var(--brand);
+}
+
+[data-slot="sidebar-group-label"] {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  padding-left: 8px;
+}
+
+.nav-count {
+  margin-left: auto;
+  font-size: 11px;
+  background: var(--muted);
+  color: var(--brand);
+  padding: 0 5px;
+}
+
+.recent-mark {
+  width: 5px;
+  height: 5px;
+  background: var(--muted-foreground);
+  flex-shrink: 0;
+}
+
+[data-slot="sidebar-footer"] {
+  flex-direction: row;
+  gap: 4px;
+  padding: 10px;
+}
+
+[data-slot="sidebar-footer"] > ul {
+  flex: 1;
+}
+
+[data-collapsible="icon"] .brand-name,
+[data-collapsible="icon"] .recent-navigation,
+[data-collapsible="icon"] .sidebar-create span {
+  display: none;
+}
+
+[data-collapsible="icon"] [data-slot="sidebar-header"] {
+  padding: 0 12px;
+}
+
+[data-collapsible="icon"] .sidebar-create {
+  padding: 8px;
+}
+
+[data-collapsible="icon"] .sidebar-create .button {
+  padding: 0;
+  justify-content: center;
+}
+
+[data-collapsible="icon"] [data-slot="sidebar-footer"] {
+  flex-direction: column;
+  padding: 8px;
+}
+
+[data-collapsible="icon"] [data-slot="sidebar-footer"] > ul {
+  flex: none;
+}
+
+.shell-header {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 24px 0 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+}
+
+.header-path {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.header-path nav {
+  min-width: 0;
+}
+
+.header-path ol {
+  flex-wrap: nowrap;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.header-path [data-slot="breadcrumb-item"] {
+  min-width: 0;
+  max-width: 32ch;
+}
+
+.header-path [data-slot="breadcrumb-item"] > * {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page {
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 28px 28px 48px;
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.page-heading > div:first-child {
+  min-width: 0;
+}
+
+.page-heading p {
+  margin-top: 6px;
+  max-width: 75ch;
+  color: var(--muted-foreground);
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.section-heading p {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  margin-top: 4px;
+}
+
+.section-heading > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.section-heading > a svg {
+  width: 14px;
+  height: 14px;
+}
+
+.section-space {
+  margin-top: 28px;
+}
+
+.page-heading .actions {
+  flex-wrap: wrap;
+}
+
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: -60px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  z-index: 100;
+}
+
+.skip-link:focus {
+  top: 8px;
+}

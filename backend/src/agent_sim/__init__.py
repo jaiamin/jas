@@ -1,1 +1,1 @@
-"""ASS: Agent Simulation Environment."""
+"""JAS: Agent Simulation Environment."""

@@ -44,7 +44,7 @@ export function PlanningProgress({ plan }: { plan?: Analysis }) {
         <Message>
           <MessageContent>
             <MessageHeader>
-              <span className="agent-wordmark">ASS</span>Experiment designer
+              <span className="agent-wordmark">JAS</span>Experiment designer
             </MessageHeader>
             <Trace>
               <TraceLine status="running" role="status">
@@ -108,7 +108,7 @@ export function PlanningProgress({ plan }: { plan?: Analysis }) {
         </Message>
       </div>
       <Button variant="outline" asChild>
-        <Link to="/" state={{ question: plan?.question }}>
+        <Link to="/design" state={{ question: plan?.question }}>
           Back to workspace
         </Link>
       </Button>

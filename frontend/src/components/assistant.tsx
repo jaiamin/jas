@@ -194,7 +194,7 @@ const ResearchAnswer = memo(function ResearchAnswer({
     <Message>
       <MessageContent>
         <MessageHeader>
-          <span className="agent-wordmark">ASS</span>Research assistant
+          <span className="agent-wordmark">JAS</span>Research assistant
         </MessageHeader>
         {row.status === "failed" ? (
           <Alert variant="error" title="Investigation stopped">

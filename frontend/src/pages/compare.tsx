@@ -29,7 +29,14 @@ export default function Compare() {
   if (runs.length < 2)
     return (
       <>
-        <PageHeading title="Compare runs" />
+        <PageHeading
+          title="Compare runs"
+          description="Aligned outcomes from independent trials, with their original protocol identity."
+        >
+          <Button variant="outline" asChild>
+            <Link to="/runs">Choose runs</Link>
+          </Button>
+        </PageHeading>
         <Empty
           title="Choose runs to compare"
           description="Select two to four runs from the run library."
@@ -51,7 +58,14 @@ export default function Compare() {
     : (keys[0] ?? "contribution_rate");
   return (
     <>
-      <PageHeading title="Compare runs" />
+      <PageHeading
+        title="Compare runs"
+        description="Aligned outcomes from independent trials, with their original protocol identity."
+      >
+        <Button variant="outline" asChild>
+          <Link to="/runs">Choose runs</Link>
+        </Button>
+      </PageHeading>
       {!compatible && (
         <Alert>
           These runs use different environments. Shared metric names may have
@@ -70,6 +84,9 @@ export default function Compare() {
                   <th>Measurement</th>
                   {runs.map((r) => (
                     <th key={r.summary.id}>
+                      <span className="table-secondary">
+                        {r.summary.study_title}
+                      </span>
                       <Link to={`/runs/${r.summary.id}`}>
                         {r.summary.condition}
                       </Link>

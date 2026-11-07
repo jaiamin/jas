@@ -5,12 +5,8 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
-import {
-  ErrorState,
-  Loading,
-  PageHeading,
-  RunTable,
-} from "@/components/shared";
+import { RunTable } from "@/components/run-table";
+import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Badge, Empty, Table } from "@/components/ui/data";
 import { useApi } from "@/lib/api";
@@ -30,7 +26,10 @@ function Runs() {
   const runs = useApi<RunSummary[]>("/runs", true);
   return (
     <>
-      <PageHeading title="Runs">
+      <PageHeading
+        title="Runs"
+        description="Inspect individual trials or select two to four to compare."
+      >
         <Button variant="outline" asChild>
           <Link to="/new">
             <Plus data-icon="inline-start" />
@@ -61,7 +60,10 @@ function Environments() {
   const catalog = useApi<Catalog>("/catalog");
   return (
     <>
-      <PageHeading title="Environments" />
+      <PageHeading
+        title="Environments"
+        description="Seven rule systems. Each defines what agents can observe, do and change."
+      />
       {catalog.error ? (
         <ErrorState error={catalog.error} />
       ) : !catalog.data ? (
@@ -87,16 +89,11 @@ function Environments() {
                   </td>
                   <td>
                     <div className="environment-measures">
-                      {env.measures.slice(0, 3).map((measure) => (
+                      {env.measures.map((measure) => (
                         <Badge key={measure} variant="secondary">
                           {measure.replaceAll("_", " ")}
                         </Badge>
                       ))}
-                      {env.measures.length > 3 && (
-                        <span className="muted">
-                          +{env.measures.length - 3}
-                        </span>
-                      )}
                     </div>
                   </td>
                   <td>
@@ -132,7 +129,10 @@ function SettingsPage() {
   const s = settings.data;
   return (
     <>
-      <PageHeading title="Settings" />
+      <PageHeading
+        title="Settings"
+        description="Provider connections, spending and local workspace configuration."
+      />
       <div className="settings-layout">
         <section>
           <div className="section-heading">
@@ -185,6 +185,10 @@ function SettingsPage() {
         </section>
         <section>
           <h2>Usage & storage</h2>
+          <p className="muted">
+            Configuration is read-only here. Change deployment settings in your
+            environment.
+          </p>
           <dl className="key-values">
             <div>
               <dt>Committed cost</dt>
@@ -218,7 +222,7 @@ function SettingsPage() {
               <p className="muted">
                 Each request reserves its upper allowance before sending.
                 Unknown usage retains that reservation. Adjust{" "}
-                <code>ASS_BUDGET_USD</code> in <code>.env</code> for the
+                <code>JAS_BUDGET_USD</code> in <code>.env</code> for the
                 workspace ceiling.
               </p>
               <p className="muted">

@@ -49,7 +49,7 @@ for (const theme of ["light", "dark"]) {
       return route.fulfill({ json: { id: "qa-analysis" } });
     });
     await page.addInitScript(
-      (value) => localStorage.setItem("ass-theme", value),
+      (value) => localStorage.setItem("jas-theme", value),
       theme,
     );
     await page.setViewportSize(
@@ -60,11 +60,15 @@ for (const theme of ["light", "dark"]) {
     await page.goto(`/studies/${id}`);
     await page.getByRole("button", { name: "Ask AI", exact: true }).click();
     if (theme === "light") {
-      const workspace = await page.getByRole("main").boundingBox();
-      const panel = await page.getByRole("dialog").boundingBox();
-      expect((workspace?.x ?? 0) + (workspace?.width ?? 0)).toBeLessThanOrEqual(
-        panel?.x ?? 0,
-      );
+      await expect
+        .poll(async () => {
+          const workspace = await page.getByRole("main").boundingBox();
+          const panel = await page.getByRole("dialog").boundingBox();
+          return workspace && panel
+            ? workspace.x + workspace.width - panel.x
+            : Number.POSITIVE_INFINITY;
+        })
+        .toBeLessThanOrEqual(0);
     }
     const context = page.getByRole("combobox", { name: "Agent context" });
     await expect(context).toContainText(study.design.title);

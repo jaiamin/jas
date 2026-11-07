@@ -38,7 +38,7 @@ Default ceiling is $18 across the persistent `data/evaluation.sqlite3` database,
 all explicit retests. Do not delete that database to reset accounting or run two benchmark
 processes against it. `--database` and `--budget-usd` permit separate authorized evaluations.
 `--concurrency` bounds samples, provider requests and independent live runs (1–16).
-The normal app defaults to three independent runs; set `ASS_CONCURRENT_RUNS` to change it.
+The normal app defaults to three independent runs; set `JAS_CONCURRENT_RUNS` to change it.
 Decisions within a run retain their causal ordering.
 
 Outputs contain a fixed dataset hash, source hash, commit, settings, attempt records and
