@@ -11,12 +11,12 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { RunTable } from "@/components/run-table";
 import {
   ErrorState,
   Json,
   Loading,
   PageHeading,
-  RunTable,
   Status,
 } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -63,7 +63,10 @@ export default function Study() {
   const isOld = study.revision !== study.revisions[0]?.number;
   return (
     <>
-      <PageHeading title={study.design.title}>
+      <PageHeading
+        title={study.design.title}
+        description={study.design.question}
+      >
         <Button variant="outline" size="sm" asChild>
           <Link to={`/new?study=${id}&revision=${study.revision}`}>
             <Settings2 data-icon="inline-start" />
@@ -147,7 +150,7 @@ export default function Study() {
           setParams({ ...Object.fromEntries(params), tab: v })
         }
       >
-        <TabsList>
+        <TabsList variant="line">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="runs">Runs</TabsTrigger>
           <TabsTrigger value="design">Protocol</TabsTrigger>
@@ -162,15 +165,9 @@ export default function Study() {
               </div>
               {!study.results.length ? (
                 <Empty
-                  title={
-                    active
-                      ? "Evidence is on its way"
-                      : "Ready to test your question"
-                  }
+                  title={active ? "Runs in progress" : "No results yet"}
                   description={
-                    active
-                      ? "Open a run to watch decisions and consequences as they happen. Comparison appears when runs complete."
-                      : "The protocol is saved. Run the experiment to start model decisions."
+                    active ? "Results appear as runs finish." : undefined
                   }
                 >
                   {activeRun && (
@@ -184,7 +181,7 @@ export default function Study() {
                 </Empty>
               ) : (
                 <div className="table-frame">
-                  <Table className="table">
+                  <Table className="table results-table">
                     <thead>
                       <tr>
                         <th>Measurement</th>
@@ -252,7 +249,15 @@ export default function Study() {
                   </div>
                   <div>
                     <dt>Rule version</dt>
-                    <dd>1.0.0</dd>
+                    <dd>
+                      {study.runs[0] ? (
+                        <Link to={`/runs/${study.runs[0].id}?tab=settings`}>
+                          View execution record
+                        </Link>
+                      ) : (
+                        "Available in each run’s record"
+                      )}
+                    </dd>
                   </div>
                 </dl>
                 {!!study.design.limitations.length && (
@@ -350,7 +355,9 @@ export default function Study() {
             <section>
               <h2>Immutable specification</h2>
               {study.plan_id && (
-                <Link to={`/new?plan=${study.plan_id}`}>View AI proposal</Link>
+                <Link to={`/new?plan=${study.plan_id}`}>
+                  View protocol proposal
+                </Link>
               )}
               <p className="muted">
                 Revision {study.revision} · SHA-256{" "}

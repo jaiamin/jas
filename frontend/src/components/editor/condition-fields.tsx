@@ -4,6 +4,8 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { ProfileOverridesEditor } from "@/components/editor/profile-overrides-editor";
+import { ResourceScheduleEditor } from "@/components/editor/resource-schedule-editor";
 import { MechanismFields } from "@/components/mechanism-fields";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,70 +14,65 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import type {
   Catalog,
-  Environment,
+  Design,
+  ModelId,
   Parameters,
-  Profile,
   Treatment,
 } from "@/lib/types";
 import { modelLabel } from "@/lib/utils";
-import { ProfileOverridesEditor } from "./profile-overrides-editor";
-import { ResourceScheduleEditor } from "./resource-schedule-editor";
-export function ConditionsEditor({
-  hidden,
-  conditions,
-  profiles,
-  environment,
-  models,
-  rounds,
-  taskCount,
+
+export function ConditionFields({
+  design,
+  catalog,
   onChange,
+  hidden,
 }: {
+  design: Design;
+  catalog: Catalog;
+  onChange: (design: Design) => void;
   hidden: boolean;
-  conditions: Treatment[];
-  profiles: Profile[];
-  environment: Environment;
-  models: Catalog["models"];
-  rounds: number;
-  taskCount: number;
-  onChange: (conditions: Treatment[]) => void;
 }) {
-  function updateCondition(index: number, patch: Partial<Treatment>) {
-    onChange(
-      conditions.map((condition, i) =>
-        i === index ? { ...condition, ...patch } : condition,
-      ),
+  function update<K extends keyof Design>(key: K, value: Design[K]) {
+    onChange({ ...design, [key]: value });
+  }
+  const environment = catalog.environments.find(
+    (e) => e.key === design.environment,
+  );
+  if (!environment) return null;
+  function condition(index: number, value: Partial<Treatment>) {
+    update(
+      "conditions",
+      design.conditions.map((c, i) => (i === index ? { ...c, ...value } : c)),
     );
   }
-  function updateConditionParameter<K extends keyof Parameters>(
+  function parameter<K extends keyof Parameters>(
     index: number,
     key: K,
     value: Parameters[K],
   ) {
-    const condition = conditions[index];
-    if (condition)
-      updateCondition(index, {
-        parameters: { ...condition.parameters, [key]: value },
-      });
+    const c = design.conditions[index];
+    if (c) condition(index, { parameters: { ...c.parameters, [key]: value } });
   }
   return (
     <section className="form-section" hidden={hidden}>
       <div className="section-heading">
         <div>
           <h2>
-            Conditions <span className="muted">{conditions.length}</span>
+            Conditions <span className="muted">{design.conditions.length}</span>
           </h2>
         </div>
         <Button
           variant="outline"
           size="sm"
-          disabled={conditions.length >= 6}
+          disabled={design.conditions.length >= 6}
           onClick={() => {
-            let n = conditions.length + 1;
-            while (conditions.some((c) => c.key === `condition-${n}`)) n++;
-            const base = conditions[0];
+            let n = design.conditions.length + 1;
+            while (design.conditions.some((c) => c.key === `condition-${n}`))
+              n++;
+            const base = design.conditions[0];
             if (!base) return;
-            onChange([
-              ...conditions,
+            update("conditions", [
+              ...design.conditions,
               structuredClone({
                 ...base,
                 key: `condition-${n}`,
@@ -89,7 +86,7 @@ export function ConditionsEditor({
         </Button>
       </div>
       <div className="condition-list">
-        {conditions.map((c, i) => (
+        {design.conditions.map((c, i) => (
           <Disclosure className="condition-disclosure" key={c.key}>
             <DisclosureTrigger indicator={false} className="condition-summary">
               <span className="condition-index" data-series={i % 6}>
@@ -108,17 +105,18 @@ export function ConditionsEditor({
                   <Input
                     aria-label={`Condition ${i + 1} name`}
                     value={c.name}
-                    onChange={(e) =>
-                      updateCondition(i, { name: e.target.value })
-                    }
+                    onChange={(e) => condition(i, { name: e.target.value })}
                   />
                   <Button
                     variant="ghost"
                     size="icon"
                     aria-label={`Remove condition ${i + 1}`}
-                    disabled={conditions.length <= 1}
+                    disabled={design.conditions.length <= 1}
                     onClick={() =>
-                      onChange(conditions.filter((_, index) => index !== i))
+                      update(
+                        "conditions",
+                        design.conditions.filter((_, index) => index !== i),
+                      )
                     }
                   >
                     <Trash2 />
@@ -130,8 +128,10 @@ export function ConditionsEditor({
                     <Select
                       label={`Condition ${i + 1} model`}
                       value={c.model}
-                      onValueChange={(v) => updateCondition(i, { model: v })}
-                      options={models.map((m) => ({
+                      onValueChange={(v) =>
+                        condition(i, { model: v as ModelId })
+                      }
+                      options={catalog.models.map((m) => ({
                         value: m.id,
                         label: modelLabel(m.id),
                       }))}
@@ -150,11 +150,7 @@ export function ConditionsEditor({
                           max={100}
                           value={c.parameters.endowment}
                           onChange={(e) =>
-                            updateConditionParameter(
-                              i,
-                              "endowment",
-                              Number(e.target.value),
-                            )
+                            parameter(i, "endowment", Number(e.target.value))
                           }
                         />
                       </Field>
@@ -171,18 +167,14 @@ export function ConditionsEditor({
                             step={0.1}
                             value={c.parameters.multiplier}
                             onChange={(e) =>
-                              updateConditionParameter(
-                                i,
-                                "multiplier",
-                                Number(e.target.value),
-                              )
+                              parameter(i, "multiplier", Number(e.target.value))
                             }
                           />
                         </Field>
                       )}
                     </>
                   )}
-                  {environment.key === "coordination" && (
+                  {design.environment === "coordination" && (
                     <Field>
                       <FieldLabel htmlFor={`tasks-${c.key}`}>
                         Task count
@@ -192,14 +184,10 @@ export function ConditionsEditor({
                         type="number"
                         min={3}
                         max={30}
-                        disabled={taskCount > 0}
-                        value={taskCount || c.parameters.task_count}
+                        disabled={design.tasks.length > 0}
+                        value={design.tasks.length || c.parameters.task_count}
                         onChange={(e) =>
-                          updateConditionParameter(
-                            i,
-                            "task_count",
-                            Number(e.target.value),
-                          )
+                          parameter(i, "task_count", Number(e.target.value))
                         }
                       />
                     </Field>
@@ -210,7 +198,7 @@ export function ConditionsEditor({
                       label={`Condition ${i + 1} memory`}
                       value={c.parameters.memory}
                       onValueChange={(v) =>
-                        updateConditionParameter(i, "memory", v)
+                        parameter(i, "memory", v as Parameters["memory"])
                       }
                       options={[
                         {
@@ -241,7 +229,7 @@ export function ConditionsEditor({
                         (channel) =>
                           channel !== "promises" ||
                           ["commons", "trust_exchange"].includes(
-                            environment.key,
+                            design.environment,
                           ),
                       )
                       .map((channel) => (
@@ -255,7 +243,7 @@ export function ConditionsEditor({
                               channel,
                             )}
                             onCheckedChange={(checked) =>
-                              updateConditionParameter(
+                              parameter(
                                 i,
                                 "communication_channels",
                                 checked === true
@@ -279,12 +267,12 @@ export function ConditionsEditor({
                   </fieldset>
                 )}
                 <MechanismFields
-                  environment={environment.key}
+                  environment={design.environment}
                   parameters={c.parameters}
-                  profiles={profiles}
+                  profiles={design.profiles}
                   id={c.key}
                   onChange={(patch) =>
-                    updateCondition(i, {
+                    condition(i, {
                       parameters: { ...c.parameters, ...patch },
                     })
                   }
@@ -293,19 +281,19 @@ export function ConditionsEditor({
                   <ResourceScheduleEditor
                     id={c.key}
                     schedule={c.parameters.resource_schedule}
-                    rounds={rounds}
+                    rounds={design.rounds}
                     onChange={(schedule) =>
-                      updateConditionParameter(i, "resource_schedule", schedule)
+                      parameter(i, "resource_schedule", schedule)
                     }
                   />
                 )}
                 <ProfileOverridesEditor
                   id={c.key}
                   name={c.name}
-                  profiles={profiles}
+                  profiles={design.profiles}
                   overrides={c.profile_overrides}
                   onChange={(overrides) =>
-                    updateCondition(i, { profile_overrides: overrides })
+                    condition(i, { profile_overrides: overrides })
                   }
                 />
                 <div className="condition-switches">
@@ -314,11 +302,7 @@ export function ConditionsEditor({
                       id={`communication-${c.key}`}
                       checked={c.parameters.communication}
                       onCheckedChange={(checked) =>
-                        updateConditionParameter(
-                          i,
-                          "communication",
-                          checked === true,
-                        )
+                        parameter(i, "communication", checked === true)
                       }
                     />
                     Communication
@@ -328,11 +312,7 @@ export function ConditionsEditor({
                       id={`private-signal-${c.key}`}
                       checked={c.parameters.private_signal}
                       onCheckedChange={(checked) =>
-                        updateConditionParameter(
-                          i,
-                          "private_signal",
-                          checked === true,
-                        )
+                        parameter(i, "private_signal", checked === true)
                       }
                     />
                     Private signals

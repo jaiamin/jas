@@ -2,7 +2,8 @@
 
 | Term | Meaning |
 | --- | --- |
-| Study | A research question investigated by a specified experimental design. |
+| Experiment (study) | A research question investigated by a specified protocol. “Experiment” is the interface term; “study” is its established synonym. |
+| Protocol | The explicit population, rules, conditions, seeds and measurements defining an experiment. |
 | Design revision | An immutable definition of population, mechanics, conditions, seeds and measurements. |
 | Environment | Rules that determine observations, allowed actions and consequences. |
 | Condition | A named treatment applied to otherwise matched experiments. |

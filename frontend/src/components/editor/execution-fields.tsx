@@ -9,45 +9,34 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
+  FieldLegend,
+  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { Design, Environment } from "@/lib/types";
+import type { Catalog, Design } from "@/lib/types";
 import { label } from "@/lib/utils";
 
-type ExecutionPlan = Pick<
-  Design,
-  | "rounds"
-  | "budget_usd"
-  | "seeds"
-  | "repetitions"
-  | "measures"
-  | "openai_reasoning_effort"
-  | "response_tokens"
-  | "limitations"
->;
-export function ExecutionEditor({
-  hidden,
-  plan,
-  agentCount,
-  environment,
+export function ExecutionFields({
+  design,
+  catalog,
   onChange,
-  onError,
+  hidden,
+  setError,
 }: {
+  design: Design;
+  catalog: Catalog;
+  onChange: (design: Design) => void;
   hidden: boolean;
-  plan: ExecutionPlan;
-  agentCount: number;
-  environment: Environment;
-  onChange: (patch: Partial<ExecutionPlan>) => void;
-  onError: (error: string) => void;
+  setError: (error: string) => void;
 }) {
-  function update<K extends keyof ExecutionPlan>(
-    key: K,
-    value: ExecutionPlan[K],
-  ) {
-    onChange({ [key]: value });
+  function update<K extends keyof Design>(key: K, value: Design[K]) {
+    onChange({ ...design, [key]: value });
   }
+  const environment = catalog.environments.find(
+    (e) => e.key === design.environment,
+  );
   return (
     <section className="form-section" hidden={hidden}>
       <h2>Run plan</h2>
@@ -59,11 +48,11 @@ export function ExecutionEditor({
             type="number"
             min={1}
             max={100}
-            value={plan.rounds}
+            value={design.rounds}
             onChange={(e) => update("rounds", Number(e.target.value))}
           />
           <FieldDescription>
-            A round contains up to {agentCount} agent turns.
+            A round contains up to {design.profiles.length} agent turns.
           </FieldDescription>
         </Field>
         <Field>
@@ -74,16 +63,16 @@ export function ExecutionEditor({
             min={0.05}
             max={25}
             step={0.5}
-            value={plan.budget_usd}
+            value={design.budget_usd}
             onChange={(e) => update("budget_usd", Number(e.target.value))}
           />
         </Field>
       </FieldGroup>
       <Disclosure className="disclosure">
         <DisclosureTrigger>
-          Replication · {plan.seeds.length} seed
-          {plan.seeds.length !== 1 && "s"} × {plan.repetitions} repetition
-          {plan.repetitions !== 1 && "s"}
+          Replication · {design.seeds.length} seed
+          {design.seeds.length !== 1 && "s"} × {design.repetitions} repetition
+          {design.repetitions !== 1 && "s"}
         </DisclosureTrigger>
         <DisclosureContent>
           <FieldGroup className="matrix-fields">
@@ -92,7 +81,7 @@ export function ExecutionEditor({
               <FieldLabel htmlFor="seeds">Matched seeds</FieldLabel>
               <Input
                 id="seeds"
-                defaultValue={plan.seeds.join(", ")}
+                defaultValue={design.seeds.join(", ")}
                 onBlur={(e) => {
                   const parts = e.target.value
                     .split(",")
@@ -101,12 +90,12 @@ export function ExecutionEditor({
                     );
                   if (parts.some((n) => !Number.isInteger(n) || n < 0)) {
                     update("seeds", []);
-                    onError(
+                    setError(
                       "Seeds must be nonnegative integers, separated by commas.",
                     );
                   } else {
                     update("seeds", parts);
-                    onError("");
+                    setError("");
                   }
                 }}
               />
@@ -123,7 +112,7 @@ export function ExecutionEditor({
                 type="number"
                 min={1}
                 max={10}
-                value={plan.repetitions}
+                value={design.repetitions}
                 onChange={(e) => update("repetitions", Number(e.target.value))}
               />
             </Field>
@@ -132,29 +121,29 @@ export function ExecutionEditor({
       </Disclosure>
       <Disclosure className="disclosure">
         <DisclosureTrigger>
-          Measurements · {plan.measures.length} selected
+          Measurements · {design.measures.length} selected
         </DisclosureTrigger>
         <DisclosureContent>
-          <fieldset className="measure-picker">
-            <legend>Measurements</legend>
+          <FieldSet className="measure-picker">
+            <FieldLegend>Measurements</FieldLegend>
             {environment?.measures.map((key) => (
               <FieldLabel key={key} htmlFor={`measure-${key}`}>
                 <Checkbox
                   id={`measure-${key}`}
-                  checked={plan.measures.includes(key)}
+                  checked={design.measures.includes(key)}
                   onCheckedChange={(checked) =>
                     update(
                       "measures",
                       checked === true
-                        ? [...plan.measures, key]
-                        : plan.measures.filter((m) => m !== key),
+                        ? [...design.measures, key]
+                        : design.measures.filter((m) => m !== key),
                     )
                   }
                 />
                 {label(key)}
               </FieldLabel>
             ))}
-          </fieldset>
+          </FieldSet>
         </DisclosureContent>
       </Disclosure>
       <Disclosure className="disclosure">
@@ -165,9 +154,14 @@ export function ExecutionEditor({
               <FieldLabel>OpenAI reasoning effort</FieldLabel>
               <Select
                 label="OpenAI reasoning effort"
-                value={plan.openai_reasoning_effort ?? "default"}
+                value={design.openai_reasoning_effort ?? "default"}
                 onValueChange={(v) =>
-                  update("openai_reasoning_effort", v === "default" ? null : v)
+                  update(
+                    "openai_reasoning_effort",
+                    v === "default"
+                      ? null
+                      : (v as Design["openai_reasoning_effort"]),
+                  )
                 }
                 options={[
                   { value: "default", label: "Provider default" },
@@ -189,7 +183,7 @@ export function ExecutionEditor({
                 type="number"
                 min={512}
                 max={8192}
-                value={plan.response_tokens}
+                value={design.response_tokens}
                 onChange={(e) =>
                   update("response_tokens", Number(e.target.value))
                 }
@@ -205,7 +199,7 @@ export function ExecutionEditor({
               <Textarea
                 id="limitations"
                 rows={3}
-                value={plan.limitations.join("\n")}
+                value={design.limitations.join("\n")}
                 onChange={(e) =>
                   update("limitations", e.target.value.split("\n"))
                 }

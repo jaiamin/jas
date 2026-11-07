@@ -1,11 +1,7 @@
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
-import {
-  ErrorState,
-  Loading,
-  PageHeading,
-  RunTable,
-} from "@/components/shared";
+import { RunTable } from "@/components/run-table";
+import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Empty } from "@/components/ui/data";
 import { useApi } from "@/lib/api";

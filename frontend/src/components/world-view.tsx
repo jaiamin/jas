@@ -261,13 +261,7 @@ export function RelationshipGraph({
     x: 280 + Math.cos((i / profiles.length) * Math.PI * 2 - Math.PI / 2) * 150,
     y: 190 + Math.sin((i / profiles.length) * Math.PI * 2 - Math.PI / 2) * 145,
   }));
-  if (!edges.size)
-    return (
-      <Empty
-        title="No directed interactions recorded"
-        description="Transfers and direct messages will build an observable interaction network."
-      />
-    );
+  if (!edges.size) return <Empty title="No interactions yet" />;
   return (
     <div className="relationship-graph">
       <svg

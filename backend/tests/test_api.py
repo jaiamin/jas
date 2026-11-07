@@ -56,7 +56,11 @@ def test_manual_design_step_evidence_and_export(client, design):
         == 201
     )
     assert client.get(f"/api/runs/{rid}/annotations").json()[0]["note"] == "Inspect this choice"
-    export = client.get(f"/api/studies/{sid}/export").json()
+    response = client.get(f"/api/studies/{sid}/export")
+    assert response.headers["content-disposition"] == f'attachment; filename="jas-{sid}.json"'
+    assert client.get("/api/openapi.json").json()["info"]["title"] == "JAS"
+    export = response.json()
+    assert export["format"] == "ass-study"
     assert export["runs"][0]["evidence"][1] == evidence
     assert client.post(f"/api/runs/{rid}/verify", json={}).json()["verified_turns"] == 1
 
@@ -118,6 +122,24 @@ def test_openapi_describes_application_and_validation_errors(client):
         }
     detail = schema["components"]["schemas"]["ErrorResponse"]["properties"]["detail"]
     assert {variant["type"] for variant in detail["anyOf"]} == {"string", "array"}
+
+
+def test_general_agent_submission_preserves_scoped_analysis_contract(client, monkeypatch):
+    submitted = []
+    monkeypatch.setattr(
+        client.app.state.assistants,
+        "start",
+        lambda question, **kwargs: submitted.append((question, kwargs)) or "general-request",
+    )
+    response = client.post("/api/agent", json={"question": "What is a matched seed?"})
+    assert response.status_code == 202 and response.json() == {"id": "general-request"}
+    assert submitted == [("What is a matched seed?", {"purpose": "general"})]
+    assert (
+        client.post("/api/agent", json={"question": "Inspect it", "run_id": "a"}).status_code == 422
+    )
+    assert client.post("/api/analyses", json={"question": "Inspect it"}).status_code == 422
+    assert client.get("/api/analyses?purpose=general").json() == []
+    assert len(submitted) == 1
 
 
 def test_export_includes_previous_revisions_and_their_recorded_turns(client, design):
@@ -201,3 +223,75 @@ def test_initial_and_recorded_evidence_share_the_same_envelope(client, design):
     step_run(client, rid)
     recorded = client.get(f"/api/runs/{rid}/turns/1").json()
     assert initial.keys() == recorded.keys()
+
+
+def test_chat_api_returns_saved_history_and_validates_requests(client, monkeypatch):
+    from agent_sim.db import Analysis
+
+    agent = client.app.state.assistants
+
+    async def execute(key):
+        with agent.db.session.begin() as session:
+            row = session.get_one(Analysis, key)
+            row.status, row.output = "complete", {"answer": "A recorded answer", "citations": []}
+
+    monkeypatch.setattr(agent, "_execute", execute)
+    first = client.post("/api/chats", json={"question": "Explain matched seeds"})
+    assert first.status_code == 202
+    chat_id = first.json()["chat_id"]
+    second = client.post("/api/chats", json={"question": "Explain repetitions", "chat_id": chat_id})
+    assert second.status_code == 202 and second.json()["chat_id"] == chat_id
+    history = client.get(f"/api/chats/{chat_id}").json()
+    assert [row["question"] for row in history] == ["Explain matched seeds", "Explain repetitions"]
+    assert all(row["purpose"] == "general" and row["cutoffs"] == {} for row in history)
+    assert client.get("/api/chats").json()[0]["title"] == "Explain matched seeds"
+    assert client.get("/api/chats/missing").status_code == 404
+    assert client.post("/api/chats", json={"question": "  "}).status_code == 422
+    assert (
+        client.post("/api/chats", json={"question": "Question", "context": "fake"}).status_code
+        == 422
+    )
+    assert (
+        client.post("/api/chats", json={"question": "Question", "chat_id": "fake"}).status_code
+        == 404
+    )
+    assert len(client.get("/api/chats").json()) == 1
+    assert client.get("/api/settings").json()["usage"]["requests"] == 0
+
+
+def test_chat_events_deliver_partial_and_final_records_without_resubmission(client, monkeypatch):
+    import asyncio
+    import json
+
+    from pydantic_ai.models.function import DeltaToolCall, FunctionModel
+
+    async def stream(messages, info):
+        yield {0: DeltaToolCall(name=info.output_tools[0].name, json_args='{"answer":"Matched')}
+        await asyncio.sleep(0.3)
+        yield {
+            0: DeltaToolCall(json_args=' seeds share randomization.","citations":[],"caveats":[]}')
+        }
+
+    monkeypatch.setattr(
+        client.app.state.models, "model", lambda _: FunctionModel(stream_function=stream)
+    )
+    submitted = client.post(
+        "/api/chats", json={"question": "Explain matched seeds", "context": "general"}
+    ).json()
+    response = client.get(f"/api/chats/{submitted['chat_id']}/events")
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert response.headers["cache-control"] == "no-cache"
+    assert response.headers.get("content-encoding") != "gzip"
+    updates = [
+        json.loads(line[6:]) for line in response.text.splitlines() if line.startswith("data: ")
+    ]
+    assert any(
+        row["status"] == "pending" and row["output"].get("partial") == "Matched" for row in updates
+    )
+    assert updates[-1]["status"] == "complete"
+    saved = client.get(f"/api/chats/{submitted['chat_id']}").json()
+    assert len(saved) == 1 and saved[0]["output"]["answer"] == "Matched seeds share randomization."
+    resumed = client.get(f"/api/chats/{submitted['chat_id']}/events")
+    assert json.loads(resumed.text.split("data: ")[1]) == updates[-1]
+    assert client.get("/api/settings").json()["usage"]["requests"] == 1
+    assert client.get("/api/chats/missing/events").status_code == 404

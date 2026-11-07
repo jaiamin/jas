@@ -1,13 +1,16 @@
+import asyncio
+import json
 import os
 from pathlib import Path
 from typing import Annotated, Any, Literal, Self
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from pydantic import Field, model_validator
 from sqlalchemy import select, text
 
 from .assistants import Assistants
+from .config import setting
 from .db import Annotation, Database, ProviderCall, Workspace
 from .domain import Design, Strict
 from .environments import CATALOG, MEASURE_DESCRIPTIONS
@@ -83,6 +86,11 @@ class AnalysisRequest(DesignRequest):
         return self
 
 
+class ChatMessage(DesignRequest):
+    context: str = "general"
+    chat_id: str | None = None
+
+
 class Note(Strict):
     turn: int = Field(ge=0)
     label: str = Field(min_length=1, max_length=80)
@@ -136,6 +144,7 @@ async def settings(
             "providers": {
                 p: bool(os.environ.get(f"{p.upper()}_API_KEY")) for p in ("openai", "anthropic")
             },
+            "planner_model": setting("PLANNER_MODEL", "openai:gpt-6.1-sol"),
             "models": models.catalog(),
             "budget_usd": workspace.ceiling / 1000000,
             "charged_usd": workspace.charged / 1000000,
@@ -187,7 +196,7 @@ async def control_study(study_id: str, body: StudyControl, *, engine: EngineDep)
 async def download_study(study_id: str, *, research: ResearchDep) -> JSONResponse:
     return JSONResponse(
         export_study(research, study_id),
-        headers={"Content-Disposition": f'attachment; filename="ass-{study_id}.json"'},
+        headers={"Content-Disposition": f'attachment; filename="jas-{study_id}.json"'},
     )
 
 
@@ -277,14 +286,65 @@ async def ask(body: AnalysisRequest, *, assistants: AssistantsDep) -> dict[str, 
 
 @router.get("/api/analyses")
 async def analyses(
-    study_id: str | None = None, run_id: str | None = None, *, assistants: AssistantsDep
+    study_id: str | None = None,
+    run_id: str | None = None,
+    purpose: Literal["design", "general"] = "design",
+    *,
+    assistants: AssistantsDep,
 ) -> list[dict[str, Any]]:
-    return assistants.list(study_id, run_id)
+    return assistants.list(study_id, run_id, purpose=purpose)
 
 
 @router.get("/api/analyses/{analysis_id}")
 async def get_analysis(analysis_id: str, *, assistants: AssistantsDep) -> dict[str, Any]:
     return assistants.get(analysis_id)
+
+
+@router.post("/api/agent", status_code=202)
+async def general_question(body: DesignRequest, *, assistants: AssistantsDep) -> dict:
+    return {"id": assistants.start(body.question, purpose="general")}
+
+
+@router.get("/api/chats")
+async def chats(*, assistants: AssistantsDep) -> list[dict]:
+    return list(assistants.chats())
+
+
+@router.get("/api/chats/{chat_id}")
+async def chat(chat_id: str, *, assistants: AssistantsDep) -> list[dict]:
+    return list(assistants.chat(chat_id))
+
+
+@router.get("/api/chats/{chat_id}/events")
+async def chat_events(chat_id: str, *, assistants: AssistantsDep) -> StreamingResponse:
+    key = assistants.chat(chat_id)[-1]["id"]
+
+    async def events():
+        previous, heartbeat = None, asyncio.get_running_loop().time()
+        while True:
+            row = assistants.get(key)
+            snapshot = json.dumps(row)
+            now = asyncio.get_running_loop().time()
+            if snapshot != previous:
+                yield f"data: {snapshot}\n\n"
+                previous, heartbeat = snapshot, now
+            elif now - heartbeat >= 15:
+                yield ": keep-alive\n\n"
+                heartbeat = now
+            if row["status"] != "pending":
+                return
+            await asyncio.sleep(0.15)
+
+    return StreamingResponse(
+        events(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+@router.post("/api/chats", status_code=202)
+async def send_chat(body: ChatMessage, *, assistants: AssistantsDep) -> dict:
+    return assistants.send(body.question, body.context, body.chat_id)
 
 
 @web_router.get("/{path:path}", include_in_schema=False)

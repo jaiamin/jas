@@ -32,21 +32,21 @@ test("listing isolates corrupt drafts and preserves their contents for recovery"
     "{}",
     "visual",
   );
-  localStorage.setItem("ass:draft:/new?template=broken", "{unfinished");
+  localStorage.setItem("jas:draft:/new?template=broken", "{unfinished");
   expect(listDrafts()).toMatchObject({
     items: [{ title: "Valid" }],
     unreadable: ["/new?template=broken"],
   });
-  expect(localStorage.getItem("ass:draft:/new?template=broken")).toBe(
+  expect(localStorage.getItem("jas:draft:/new?template=broken")).toBe(
     "{unfinished",
   );
 });
 
 test("mode accepts only the declared string literals", () => {
   writeDraft("/new", { title: "Valid" } as Design, "{}", "visual");
-  const stored = JSON.parse(localStorage.getItem("ass:draft:/new") ?? "{}");
+  const stored = JSON.parse(localStorage.getItem("jas:draft:/new") ?? "{}");
   localStorage.setItem(
-    "ass:draft:/new",
+    "jas:draft:/new",
     JSON.stringify({ ...stored, mode: ["visual"] }),
   );
   expect(() => readDraft("/new")).toThrow("could not be read");
@@ -54,11 +54,11 @@ test("mode accepts only the declared string literals", () => {
 
 test("corrupt or misplaced drafts are rejected without deleting data", () => {
   localStorage.setItem(
-    "ass:draft:/new",
+    "jas:draft:/new",
     JSON.stringify({ path: "https://example.com" }),
   );
   expect(() => readDraft("/new")).toThrow("could not be read");
-  expect(localStorage.getItem("ass:draft:/new")).not.toBeNull();
+  expect(localStorage.getItem("jas:draft:/new")).not.toBeNull();
 });
 
 test("editor identity follows source parameters and ignores presentation and ordering", () => {
@@ -71,4 +71,30 @@ test("editor identity follows source parameters and ignores presentation and ord
   expect(editorDraftPath(new URLSearchParams("template=trust"))).not.toBe(
     editorDraftPath(new URLSearchParams("template=commons")),
   );
+});
+
+test("legacy drafts survive the JAS rename, deduplicate, and can be saved or discarded", () => {
+  const path = "/new?template=commons";
+  const design = {
+    title: "Existing experiment",
+    profiles: [],
+  } as unknown as Design;
+  const legacy = JSON.stringify({
+    path,
+    title: design.title,
+    design,
+    json: "{}",
+    mode: "visual",
+    updated: "2026-01-01",
+  });
+  localStorage.setItem(`ass:draft:${path}`, legacy);
+  expect(readDraft(path)?.title).toBe(design.title);
+  expect(listDrafts().items).toHaveLength(1);
+  writeDraft(path, { ...design, title: "Updated experiment" }, "{}", "visual");
+  expect(localStorage.getItem(`ass:draft:${path}`)).toBeNull();
+  expect(readDraft(path)?.title).toBe("Updated experiment");
+  localStorage.setItem(`ass:draft:${path}`, legacy);
+  expect(listDrafts().items).toHaveLength(1);
+  removeDraft(path);
+  expect(listDrafts()).toEqual({ items: [], unreadable: [] });
 });

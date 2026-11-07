@@ -41,7 +41,13 @@ def test_cancellation_retains_one_unknown_reservation_and_no_turn(
             started.set()
             await asyncio.Event().wait()
 
-        monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=blocked))
+        async def blocked_stream(messages, info):
+            await blocked(messages, info)
+            yield "unreachable"
+
+        monkeypatch.setattr(
+            llm, "model", lambda _: FunctionModel(function=blocked, stream_function=blocked_stream)
+        )
         assistant = Assistants(db, research, llm)
         if purpose == "decision":
             engine.start(rid)
@@ -49,7 +55,7 @@ def test_cancellation_retains_one_unknown_reservation_and_no_turn(
         else:
             key = assistant.start("Inspect this run", purpose="analysis", run_id=rid)
             task = assistant.tasks[key]
-        await started.wait()
+        await asyncio.wait_for(started.wait(), timeout=5)
         task.cancel()
         with pytest.raises(asyncio.CancelledError):
             await task

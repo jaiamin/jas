@@ -10,28 +10,28 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { Catalog, EnvironmentId, Profile } from "@/lib/types";
+import { removeProfile } from "@/lib/design";
+import type { Catalog, Design, ModelId, Profile } from "@/lib/types";
 import { modelLabel } from "@/lib/utils";
-export function AgentsEditor({
-  hidden,
-  profiles,
-  environment,
-  models,
+
+export function AgentFields({
+  design,
+  catalog,
   onChange,
-  onRemove,
+  hidden,
 }: {
+  design: Design;
+  catalog: Catalog;
+  onChange: (design: Design) => void;
   hidden: boolean;
-  profiles: Profile[];
-  environment: EnvironmentId;
-  models: Catalog["models"];
-  onChange: (profiles: Profile[]) => void;
-  onRemove: (key: string) => void;
 }) {
-  function updateProfile(index: number, patch: Partial<Profile>) {
-    onChange(
-      profiles.map((profile, i) =>
-        i === index ? { ...profile, ...patch } : profile,
-      ),
+  function update<K extends keyof Design>(key: K, value: Design[K]) {
+    onChange({ ...design, [key]: value });
+  }
+  function profile(index: number, value: Partial<Profile>) {
+    update(
+      "profiles",
+      design.profiles.map((p, i) => (i === index ? { ...p, ...value } : p)),
     );
   }
   return (
@@ -39,18 +39,18 @@ export function AgentsEditor({
       <div className="section-heading">
         <div>
           <h2>
-            Agents <span className="muted">{profiles.length}</span>
+            Agents <span className="muted">{design.profiles.length}</span>
           </h2>
         </div>
         <Button
           variant="outline"
           size="sm"
-          disabled={profiles.length >= 12}
+          disabled={design.profiles.length >= 12}
           onClick={() => {
-            let n = profiles.length + 1;
-            while (profiles.some((p) => p.key === `agent-${n}`)) n++;
-            onChange([
-              ...profiles,
+            let n = design.profiles.length + 1;
+            while (design.profiles.some((p) => p.key === `agent-${n}`)) n++;
+            update("profiles", [
+              ...design.profiles,
               {
                 key: `agent-${n}`,
                 name: `Agent ${n}`,
@@ -66,7 +66,7 @@ export function AgentsEditor({
         </Button>
       </div>
       <div className="profile-list">
-        {profiles.map((p, i) => (
+        {design.profiles.map((p, i) => (
           <Disclosure className="profile-disclosure" key={p.key}>
             <DisclosureTrigger indicator={false} className="profile-heading">
               <span className="profile-avatar" data-series={i % 6}>
@@ -91,9 +91,7 @@ export function AgentsEditor({
                     <Input
                       id={`agent-${p.key}-name`}
                       value={p.name}
-                      onChange={(e) =>
-                        updateProfile(i, { name: e.target.value })
-                      }
+                      onChange={(e) => profile(i, { name: e.target.value })}
                     />
                   </Field>
                   <Field>
@@ -103,9 +101,7 @@ export function AgentsEditor({
                     <Input
                       id={`agent-${p.key}-role`}
                       value={p.role}
-                      onChange={(e) =>
-                        updateProfile(i, { role: e.target.value })
-                      }
+                      onChange={(e) => profile(i, { role: e.target.value })}
                     />
                   </Field>
                   <Field>
@@ -114,8 +110,9 @@ export function AgentsEditor({
                       label={`Model for ${p.name}`}
                       value={p.model ?? "inherit"}
                       onValueChange={(value) =>
-                        updateProfile(i, {
-                          model: value === "inherit" ? null : value,
+                        profile(i, {
+                          model:
+                            value === "inherit" ? null : (value as ModelId),
                         })
                       }
                       options={[
@@ -123,7 +120,7 @@ export function AgentsEditor({
                           value: "inherit",
                           label: "Condition default",
                         },
-                        ...models.map((m) => ({
+                        ...catalog.models.map((m) => ({
                           value: m.id,
                           label: modelLabel(m.id),
                         })),
@@ -138,9 +135,7 @@ export function AgentsEditor({
                       id={`agent-${p.key}-goal`}
                       rows={2}
                       value={p.goal}
-                      onChange={(e) =>
-                        updateProfile(i, { goal: e.target.value })
-                      }
+                      onChange={(e) => profile(i, { goal: e.target.value })}
                     />
                   </Field>
                 </FieldGroup>
@@ -148,8 +143,8 @@ export function AgentsEditor({
                   variant="ghost"
                   size="icon"
                   aria-label={`Remove ${p.name}`}
-                  disabled={profiles.length <= 2}
-                  onClick={() => onRemove(p.key)}
+                  disabled={design.profiles.length <= 2}
+                  onClick={() => onChange(removeProfile(design, p.key))}
                 >
                   <Trash2 />
                 </Button>
@@ -158,12 +153,13 @@ export function AgentsEditor({
           </Disclosure>
         ))}
       </div>
-      {environment === "trust_exchange" && profiles.length % 2 !== 0 && (
-        <Alert variant="error">
-          Trust exchange needs an even number of agents for pairs. Add or remove
-          one agent before saving.
-        </Alert>
-      )}
+      {design.environment === "trust_exchange" &&
+        design.profiles.length % 2 !== 0 && (
+          <Alert variant="error">
+            Trust exchange needs an even number of agents for pairs. Add or
+            remove one agent before saving.
+          </Alert>
+        )}
     </section>
   );
 }

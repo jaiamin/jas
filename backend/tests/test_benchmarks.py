@@ -122,7 +122,7 @@ def test_full_harness_uses_real_api_routes(tmp_path, monkeypatch, fake_model, de
     async def exercise():
         async with app.router.lifespan_context(app):
             async with httpx.AsyncClient(
-                transport=httpx.ASGITransport(app=app), base_url="http://ass.test"
+                transport=httpx.ASGITransport(app=app), base_url="http://jas.test"
             ) as client:
                 return await harness.evaluate(client, case, {})
 

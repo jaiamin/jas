@@ -131,8 +131,11 @@ export default function Editor() {
         <PageHeading title="Design request stopped" />
         <Alert variant="error">{plan.data.error}</Alert>
         <Button variant="outline" asChild>
-          <Link to="/" state={{ question: plan.data.question }}>
-            Return to your question
+          <Link
+            to="/agent?context=new"
+            state={{ question: plan.data.question }}
+          >
+            Back to Agent
           </Link>
         </Button>
       </>
@@ -172,6 +175,7 @@ export default function Editor() {
       catalog={catalog.data}
       studyId={studyId}
       planId={planId}
+      agentChatId={plan.data?.chat_id}
       explanation={plan.data?.output?.explanation}
       planning={plan.data?.output?.planning}
       draftPath={draftPath}

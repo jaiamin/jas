@@ -15,27 +15,44 @@ import type { Annotation } from "@/lib/types";
 export function TurnAnnotations({
   runId,
   turn,
+  onInteract,
 }: {
   runId: string;
   turn: number;
+  onInteract: () => void;
 }) {
-  const [annotation, setAnnotation] = useState("");
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const draftKey = `${runId}:${turn}`;
+  const annotation = drafts[draftKey] ?? "";
   const notes = useApi<Annotation[]>(`/runs/${runId}/annotations`);
   const client = useQueryClient();
   const note = useMutation({
-    mutationFn: () =>
-      api(`/runs/${runId}/annotations`, {
-        turn,
+    mutationFn: (draft: { runId: string; turn: number; note: string }) =>
+      api(`/runs/${draft.runId}/annotations`, {
+        turn: draft.turn,
         label: "Observation",
-        note: annotation,
+        note: draft.note,
       }),
-    onSuccess: () => {
-      setAnnotation("");
-      client.invalidateQueries({ queryKey: [`/runs/${runId}/annotations`] });
+    onSuccess: (_, draft) => {
+      setDrafts((current) => {
+        const key = `${draft.runId}:${draft.turn}`;
+        if (current[key] !== draft.note) return current;
+        const next = { ...current };
+        delete next[key];
+        return next;
+      });
+      client.invalidateQueries({
+        queryKey: [`/runs/${draft.runId}/annotations`],
+      });
     },
   });
   return (
-    <Disclosure className="disclosure">
+    <Disclosure
+      className="disclosure"
+      onOpenChange={(open) => {
+        if (open) onInteract();
+      }}
+    >
       <DisclosureTrigger>Researcher observations</DisclosureTrigger>
       <DisclosureContent>
         {notes.error && (
@@ -58,7 +75,10 @@ export function TurnAnnotations({
               id="annotation"
               rows={3}
               value={annotation}
-              onChange={(e) => setAnnotation(e.target.value)}
+              onChange={(e) => {
+                onInteract();
+                setDrafts({ ...drafts, [draftKey]: e.target.value });
+              }}
               maxLength={4000}
             />
           </Field>
@@ -67,7 +87,7 @@ export function TurnAnnotations({
           variant="outline"
           size="sm"
           disabled={!annotation.trim() || note.isPending}
-          onClick={() => note.mutate()}
+          onClick={() => note.mutate({ runId, turn, note: annotation })}
         >
           Save observation
         </Button>

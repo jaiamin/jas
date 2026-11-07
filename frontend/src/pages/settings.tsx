@@ -34,7 +34,7 @@ export default function SettingsPage() {
                   className={configured ? "status status-complete" : "status"}
                 >
                   {configured && <Check />}
-                  {configured ? "Key configured" : "Not configured"}
+                  {configured ? "Configured" : "Not configured"}
                 </Badge>
               </div>
             ))}
@@ -43,7 +43,9 @@ export default function SettingsPage() {
             Set keys in <code>.env</code> and restart.
           </p>
           <div className="section-space">
-            <h2>Model pricing</h2>
+            <h2 title="Token estimates before credits, cache discounts or web search">
+              Model pricing
+            </h2>
             <div className="table-frame">
               <Table className="table">
                 <thead>
@@ -64,9 +66,6 @@ export default function SettingsPage() {
                 </tbody>
               </Table>
             </div>
-            <p className="muted">
-              Token estimates before credits, cache discounts or web search.
-            </p>
           </div>
         </section>
         <section>
@@ -91,7 +90,7 @@ export default function SettingsPage() {
             </div>
             <div>
               <dt>Storage</dt>
-              <dd>{s.storage} · persistent local data</dd>
+              <dd>{s.storage}</dd>
             </div>
             <div>
               <dt>Concurrent runs</dt>
@@ -104,7 +103,7 @@ export default function SettingsPage() {
               <p className="muted">
                 Each request reserves its upper allowance before sending.
                 Unknown usage retains that reservation. Adjust{" "}
-                <code>ASS_BUDGET_USD</code> in <code>.env</code> for the
+                <code>JAS_BUDGET_USD</code> in <code>.env</code> for the
                 workspace ceiling.
               </p>
               <p className="muted">

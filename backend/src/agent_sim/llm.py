@@ -2,17 +2,24 @@ import asyncio
 import json
 import math
 import os
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from typing import Any, Literal, TypedDict, TypeVar
 from urllib.parse import urlparse
 
 from pydantic import TypeAdapter
 from pydantic_ai import Agent, ToolOutput, WebSearchTool, capture_run_messages
 from pydantic_ai.capabilities import NativeTool
-from pydantic_ai.messages import ModelMessage, ModelMessagesTypeAdapter, ModelResponse
+from pydantic_ai.messages import (
+    ModelMessage,
+    ModelMessagesTypeAdapter,
+    ModelResponse,
+    TextPart,
+    ToolCallPart,
+)
 from pydantic_ai.models import Model
 from pydantic_ai.models.openai import OpenAIResponsesModelSettings
 from pydantic_ai.usage import UsageLimits
+from pydantic_core import from_json
 from sqlalchemy import func, select, update
 
 from .db import Database, ProviderCall, Study, Workspace
@@ -97,6 +104,7 @@ class LanguageModels:
         turn: int | None = None,
         openai_reasoning_effort: Literal["low", "medium", "high"] | None = None,
         web_search: bool = False,
+        on_partial: Callable[[dict], None] | None = None,
     ) -> T:
         if model not in PRICES:
             raise ProviderFailure("This model has no reviewed price configuration.")
@@ -154,10 +162,40 @@ class LanguageModels:
                 )
                 with capture_run_messages() as messages:
                     async with asyncio.timeout(timeout + 5):
-                        response = await agent.run(
+                        if on_partial is None:
+                            response = await agent.run(
+                                prompt, usage_limits=UsageLimits(request_limit=1)
+                            )
+                            return response.output
+                        async with agent.run_stream(
                             prompt, usage_limits=UsageLimits(request_limit=1)
-                        )
-                return response.output
+                        ) as stream:
+                            async for response in stream.stream_response(debounce_by=0.08):
+                                for part in response.parts:
+                                    if isinstance(part, ToolCallPart):
+                                        try:
+                                            partial = (
+                                                from_json(
+                                                    part.args, allow_partial="trailing-strings"
+                                                )
+                                                if isinstance(part.args, str)
+                                                else part.args
+                                            )
+                                        except ValueError:
+                                            continue
+                                        if isinstance(partial, dict):
+                                            on_partial(partial)
+                                if web_search:
+                                    on_partial(
+                                        {
+                                            "text": "".join(
+                                                p.content
+                                                for p in response.parts
+                                                if isinstance(p, TextPart)
+                                            )
+                                        }
+                                    )
+                            return await stream.get_output()
             except (Exception, asyncio.CancelledError) as error:
                 log_failure(f"Provider call {call.id} failed", error)
                 failure = type(error).__name__
@@ -229,6 +267,7 @@ class LanguageModels:
         outputs = sum(m.usage.output_tokens for m in responses)
         reasoning = sum(m.usage.details.get("reasoning_tokens", 0) for m in responses)
         search_calls = sum(m.usage.details.get("web_search_requests", 0) for m in responses)
+        usage_known = bool(responses) and (failure is None or inputs + outputs + search_calls > 0)
         long_context = web_search and inputs > 272_000
         charged = (
             math.ceil(
@@ -236,12 +275,14 @@ class LanguageModels:
                 + outputs * output_rate * (1.5 if long_context else 1)
             )
             + search_calls * 10_000
-            if responses
+            if usage_known
             else call.reserved
         )
         with self.db.session.begin() as session:
             record = session.get_one(ProviderCall, call.id)
-            record.status = "complete" if failure is None else "failed" if responses else "unknown"
+            record.status = (
+                "complete" if failure is None else "failed" if usage_known else "unknown"
+            )
             record.response_payload = ModelMessagesTypeAdapter.dump_python(
                 [*responses], mode="json"
             )

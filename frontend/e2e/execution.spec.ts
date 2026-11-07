@@ -100,7 +100,7 @@ test("study control follows active runs, including pausing, and preserves old re
   ).toHaveCount(0);
 });
 
-test("switching study revisions preserves assistant visibility and the selected tab", async ({
+test("switching study revisions preserves the selected tab and Agent context", async ({
   page,
   request,
 }) => {
@@ -108,15 +108,14 @@ test("switching study revisions preserves assistant visibility and the selected 
   await request.post(`/api/studies/${study.id}/revisions`, {
     data: { design: { ...study.design, title: "Revision two" } },
   });
-  await page.goto(`/studies/${study.id}?assistant=1&tab=runs`);
+  await page.goto(`/studies/${study.id}?tab=runs`);
   await page.getByRole("combobox", { name: "Design revision" }).click();
   await page.getByRole("option", { name: "Revision 1", exact: true }).click();
-  await expect(page).toHaveURL(/assistant=1/);
   await expect(page).toHaveURL(/tab=runs/);
-  await expect(
-    page.getByRole("button", { name: "Ask AI", exact: true }),
-  ).toHaveAttribute("aria-expanded", "true");
   await expect(
     page.getByRole("heading", { name: study.design.title, exact: true }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Ask Agent", exact: true }),
+  ).toHaveAttribute("href", `/agent?context=study%3A${study.id}`);
 });

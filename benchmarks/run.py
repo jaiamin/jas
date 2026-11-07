@@ -176,7 +176,7 @@ async def run(args):
     records = prior.copy()
     async with app.router.lifespan_context(app):
         async with httpx.AsyncClient(
-            transport=httpx.ASGITransport(app=app), base_url="http://ass.test", timeout=60
+            transport=httpx.ASGITransport(app=app), base_url="http://jas.test", timeout=60
         ) as client:
 
             @solver
@@ -215,7 +215,7 @@ async def run(args):
                 return solve
 
             task = Task(
-                name="ass-e2e",
+                name="jas-e2e",
                 version="1",
                 solver=application(),
                 scorer=workflow(),
@@ -278,7 +278,7 @@ def main():
     parser.add_argument("--concurrency", type=int, choices=range(1, 17), default=8)
     args = parser.parse_args()
     load_dotenv(Path.cwd() / ".env", override=True, interpolate=False)
-    os.environ["ASS_PLANNER_MODEL"] = "openai:gpt-6-luna"
+    os.environ["JAS_PLANNER_MODEL"] = "openai:gpt-6-luna"
     os.environ["PYDANTIC_AI_NO_BANNER"] = "1"
     asyncio.run(run(args))
 

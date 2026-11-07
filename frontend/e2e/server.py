@@ -17,4 +17,8 @@ if __name__ == "__main__":
             static_dir=Path(__file__).resolve().parents[1] / "dist",
             concurrent_runs=1,
         )
-        uvicorn.run(app, host="127.0.0.1", port=int(os.getenv("ASS_TEST_PORT", "8094")))
+        uvicorn.run(
+            app,
+            host="127.0.0.1",
+            port=int(os.getenv("JAS_TEST_PORT", os.getenv("ASS_TEST_PORT", "8094"))),
+        )

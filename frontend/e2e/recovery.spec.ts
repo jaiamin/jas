@@ -105,13 +105,13 @@ test("agent context errors retain loaded experiment choices and retry locally", 
         : { json: [] },
     ),
   );
-  await page.goto("/?assistant");
+  await page.goto("/agent");
   await expect(page.getByRole("alert")).toContainText(
     "Run choices unavailable",
   );
-  await page.getByRole("combobox", { name: "Agent context" }).click();
+  await page.getByRole("combobox", { name: "Message context" }).click();
   await expect(
-    page.getByRole("option", { name: "Experiment · Loaded experiment" }),
+    page.getByRole("option", { name: "Loaded experiment" }),
   ).toBeVisible();
   await page.keyboard.press("Escape");
   failed = false;
@@ -119,25 +119,26 @@ test("agent context errors retain loaded experiment choices and retry locally", 
   await expect(page.getByRole("alert")).toHaveCount(0);
 });
 
-test("assistant visibility preserves the current editor and its single draft", async ({
+test("visiting Agent preserves the editor's single recoverable draft", async ({
   page,
 }) => {
   await page.goto("/new?template=commons");
-  const name = page.getByLabel("Experiment name", { exact: true });
-  await name.fill("Preserved while asking AI");
-  await page.getByRole("tab", { name: "Execution", exact: true }).click();
-  await page.getByRole("button", { name: "Ask AI", exact: true }).click();
-  await expect(
-    page.getByRole("tab", { name: "Execution", exact: true }),
-  ).toHaveAttribute("aria-selected", "true");
-  await page.getByRole("button", { name: "Close", exact: true }).click();
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
-  await expect(name).toHaveValue("Preserved while asking AI");
+  await page
+    .getByLabel("Experiment name", { exact: true })
+    .fill("Preserved while asking AI");
+  await page
+    .getByRole("link", { name: "Generate with Agent", exact: true })
+    .click();
+  await expect(page).toHaveURL(/agent\?context=new/);
+  await page.goBack();
+  await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
+    "Preserved while asking AI",
+  );
   expect(
     await page.evaluate(() =>
-      Object.keys(localStorage).filter((key) => key.startsWith("ass:draft:")),
+      Object.keys(localStorage).filter((key) => key.startsWith("jas:draft:")),
     ),
-  ).toEqual(["ass:draft:/new?template=commons"]);
+  ).toEqual(["jas:draft:/new?template=commons"]);
 });
 
 test("pending validation locks the submitted specification until its response", async ({
@@ -171,47 +172,25 @@ test("pending validation locks the submitted specification until its response", 
   );
 });
 
-test("Home exposes independent template and AI-history failures with retry", async ({
-  page,
-}) => {
+test("chat history failures have a local retry", async ({ page }) => {
   let failing = true;
-  await page.route("**/api/catalog", async (route) =>
-    failing
-      ? route.fulfill({
-          status: 503,
-          json: { detail: "Templates temporarily unavailable" },
-        })
-      : route.continue(),
-  );
-  await page.route("**/api/analyses", (route) =>
+  await page.route("**/api/chats", (route) =>
     route.fulfill(
       failing
-        ? {
-            status: 503,
-            json: { detail: "AI history temporarily unavailable" },
-          }
+        ? { status: 503, json: { detail: "History temporarily unavailable" } }
         : { json: [] },
     ),
   );
-  await page.goto("/");
-  const templatesError = page
-    .getByRole("alert")
-    .filter({ hasText: "Templates temporarily unavailable" });
-  const historyError = page
-    .getByRole("alert")
-    .filter({ hasText: "AI history temporarily unavailable" });
-  await expect(templatesError).toBeVisible();
-  await expect(historyError).toBeVisible();
+  await page.goto("/agent");
+  const history = page.getByRole("complementary", { name: "Chat history" });
+  await expect(history.getByRole("alert")).toContainText(
+    "Could not load chats",
+  );
   failing = false;
-  await templatesError
-    .getByRole("button", { name: "Retry", exact: true })
-    .click();
-  await historyError
-    .getByRole("button", { name: "Retry", exact: true })
-    .click();
+  await history.getByRole("button", { name: "Retry", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Retry", exact: true }),
-  ).toHaveCount(0);
+    history.getByText("No chats yet.", { exact: true }),
+  ).toBeVisible();
 });
 
 test("transient draft validation failures retry without classifying the draft as corrupt", async ({

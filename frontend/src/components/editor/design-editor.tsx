@@ -1,16 +1,22 @@
 import { useMutation } from "@tanstack/react-query";
-import { ArrowRight, Check, Code2, LoaderCircle } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Code2,
+  LoaderCircle,
+  MessageSquare,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Disclosure,
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
-import { AgentsEditor } from "@/components/editor/agents-editor";
-import { ConditionsEditor } from "@/components/editor/conditions-editor";
-import { ExecutionEditor } from "@/components/editor/execution-editor";
-import { TasksEditor } from "@/components/editor/tasks-editor";
+import { AgentFields } from "@/components/editor/agent-fields";
+import { ConditionFields } from "@/components/editor/condition-fields";
+import { ExecutionFields } from "@/components/editor/execution-fields";
+import { TaskFields } from "@/components/editor/task-fields";
 import { PageHeading } from "@/components/shared";
 import {
   AlertDialog,
@@ -35,7 +41,7 @@ import { Select } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api";
-import { changeEnvironment, removeProfile } from "@/lib/design";
+import { changeEnvironment } from "@/lib/design";
 import { type Draft, removeDraft, writeDraft } from "@/lib/drafts";
 import type { Analysis, Catalog, Design, EnvironmentId } from "@/lib/types";
 import { money } from "@/lib/utils";
@@ -45,6 +51,7 @@ export function DesignEditor({
   catalog,
   studyId,
   planId,
+  agentChatId,
   explanation,
   planning,
   draftPath,
@@ -54,12 +61,14 @@ export function DesignEditor({
   catalog: Catalog;
   studyId: string | null;
   planId: string | null;
+  agentChatId?: string | null;
   explanation?: string;
   planning?: NonNullable<Analysis["output"]>["planning"];
   draftPath: string;
   draft?: Draft;
 }) {
   const [design, setDesign] = useState<Design>(() => structuredClone(initial));
+  const [agentDraftId] = useState(() => crypto.randomUUID());
   const [json, setJson] = useState(draft?.json ?? "");
   const [mode, setMode] = useState<"visual" | "json">(draft?.mode ?? "visual");
   const [step, setStep] = useState("question");
@@ -143,14 +152,22 @@ export function DesignEditor({
   }
   return (
     <>
-      <PageHeading
-        title={studyId ? "Tune experiment" : "New experiment"}
-        description={
-          studyId
-            ? "Save a new revision. Earlier runs keep their original design."
-            : undefined
-        }
-      >
+      <PageHeading title={studyId ? "Tune experiment" : "New experiment"}>
+        {!studyId && (
+          <Button variant="outline" size="sm" asChild>
+            <Link
+              to={
+                agentChatId
+                  ? `/agent?chat=${agentChatId}`
+                  : `/agent?context=new&new=${agentDraftId}`
+              }
+              state={agentChatId ? null : { question: design.question }}
+            >
+              <MessageSquare data-icon="inline-start" />
+              {agentChatId ? "Back to Agent" : "Generate with Agent"}
+            </Link>
+          </Button>
+        )}
         {draftStatus && (
           <span
             className="draft-state"
@@ -163,7 +180,7 @@ export function DesignEditor({
       </PageHeading>
       {explanation && (
         <Disclosure className="disclosure design-explanation">
-          <DisclosureTrigger>AI design notes</DisclosureTrigger>
+          <DisclosureTrigger>Protocol notes</DisclosureTrigger>
           <DisclosureContent>
             <p>{explanation}</p>
             {planning && (
@@ -217,7 +234,7 @@ export function DesignEditor({
               }
             }}
           >
-            <TabsList>
+            <TabsList variant="line">
               <TabsTrigger disabled={validate.isPending} value="question">
                 Question
               </TabsTrigger>
@@ -332,42 +349,29 @@ export function DesignEditor({
                   </Disclosure>
                 </FieldGroup>
               </section>
-              <AgentsEditor
+              <AgentFields
                 hidden={step !== "agents"}
-                profiles={design.profiles}
-                environment={design.environment}
-                models={catalog.models}
-                onChange={(profiles) => update("profiles", profiles)}
-                onRemove={(key) =>
-                  setDesign((design) => removeProfile(design, key))
-                }
+                design={design}
+                catalog={catalog}
+                onChange={setDesign}
               />
-              <ConditionsEditor
+              <ConditionFields
                 hidden={step !== "conditions"}
-                conditions={design.conditions}
-                profiles={design.profiles}
-                environment={environment}
-                models={catalog.models}
-                rounds={design.rounds}
-                taskCount={design.tasks.length}
-                onChange={(conditions) => update("conditions", conditions)}
+                design={design}
+                catalog={catalog}
+                onChange={setDesign}
               />
-              {design.environment === "coordination" && (
-                <TasksEditor
-                  hidden={step !== "conditions"}
-                  tasks={design.tasks}
-                  onChange={(tasks) => update("tasks", tasks)}
-                />
-              )}
-              <ExecutionEditor
+              <TaskFields
+                hidden={step !== "conditions"}
+                design={design}
+                onChange={setDesign}
+              />
+              <ExecutionFields
                 hidden={step !== "execution"}
-                plan={design}
-                agentCount={design.profiles.length}
-                environment={environment}
-                onChange={(patch) =>
-                  setDesign((design) => ({ ...design, ...patch }))
-                }
-                onError={setError}
+                design={design}
+                catalog={catalog}
+                onChange={setDesign}
+                setError={setError}
               />
             </TabsContent>
           </Tabs>

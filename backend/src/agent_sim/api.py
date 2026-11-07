@@ -1,4 +1,3 @@
-import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
@@ -12,6 +11,7 @@ from starlette.middleware.base import RequestResponseEndpoint
 from starlette.responses import Response
 
 from .assistants import Assistants
+from .config import default_database_url, setting
 from .db import Database
 from .domain import Strict
 from .execution import Engine
@@ -56,9 +56,9 @@ def create_app(
     concurrent_runs: int | None = None,
 ) -> FastAPI:
     db = Database(
-        database_url or os.getenv("ASS_DATABASE_URL", "sqlite:///data/ass.sqlite3"),
+        database_url or setting("DATABASE_URL", default_database_url()),
         round(
-            (budget_usd if budget_usd is not None else float(os.getenv("ASS_BUDGET_USD", "25")))
+            (budget_usd if budget_usd is not None else float(setting("BUDGET_USD", "25")))
             * 1_000_000
         ),
     )
@@ -68,9 +68,7 @@ def create_app(
         db,
         research,
         models,
-        concurrent_runs
-        if concurrent_runs is not None
-        else int(os.getenv("ASS_CONCURRENT_RUNS", "3")),
+        concurrent_runs if concurrent_runs is not None else int(setting("CONCURRENT_RUNS", "3")),
     )
     assistants = Assistants(db, research, models)
 
@@ -83,7 +81,7 @@ def create_app(
         db.close()
 
     app = FastAPI(
-        title="ASS",
+        title="JAS",
         version="0.2.0",
         lifespan=lifespan,
         docs_url="/api/docs",
@@ -94,7 +92,7 @@ def create_app(
     app.state.research, app.state.engine, app.state.assistants = research, engine, assistants
     app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-    app.state.frontend = Path(static_dir or os.getenv("ASS_STATIC_DIR", "frontend/dist")).resolve()
+    app.state.frontend = Path(static_dir or setting("STATIC_DIR", "frontend/dist")).resolve()
     app.middleware("http")(same_origin)
     app.add_exception_handler(ValueError, invalid)
     app.add_exception_handler(NoResultFound, missing)

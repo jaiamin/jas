@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { expect, test } from "vitest";
+import { RunTable } from "@/components/run-table";
 import type { RunSummary } from "@/lib/types";
-import { RunTable } from "./shared";
 
 const runs: RunSummary[] = Array.from({ length: 5 }, (_, i) => ({
   id: `run-${i}`,
@@ -38,14 +38,14 @@ test("run comparison preserves selections through filtering and caps selection a
     </MemoryRouter>,
   );
   expect(screen.getByRole("button", { name: "Compare runs" })).toBeDisabled();
-  fireEvent.click(screen.getByLabelText("Select Condition 0, seed 0"));
+  fireEvent.click(screen.getByLabelText(/^Select Condition 0, seed 0,/));
   fireEvent.change(screen.getByRole("textbox", { name: "Search runs" }), {
     target: { value: "Other" },
   });
   expect(
     screen.queryByRole("link", { name: "Condition 0" }),
   ).not.toBeInTheDocument();
-  fireEvent.click(screen.getByLabelText("Select Condition 4, seed 4"));
+  fireEvent.click(screen.getByLabelText(/^Select Condition 4, seed 4,/));
   expect(screen.getByRole("link", { name: "Compare 2 runs" })).toHaveAttribute(
     "href",
     "/compare?runs=run-0,run-4",
@@ -53,7 +53,7 @@ test("run comparison preserves selections through filtering and caps selection a
   fireEvent.change(screen.getByRole("textbox", { name: "Search runs" }), {
     target: { value: "" },
   });
-  fireEvent.click(screen.getByLabelText("Select Condition 1, seed 1"));
-  fireEvent.click(screen.getByLabelText("Select Condition 2, seed 2"));
-  expect(screen.getByLabelText("Select Condition 3, seed 3")).toBeDisabled();
+  fireEvent.click(screen.getByLabelText(/^Select Condition 1, seed 1,/));
+  fireEvent.click(screen.getByLabelText(/^Select Condition 2, seed 2,/));
+  expect(screen.getByLabelText(/^Select Condition 3, seed 3,/)).toBeDisabled();
 });

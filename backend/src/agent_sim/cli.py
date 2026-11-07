@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="ASS — Agent Simulation Environment")
+    parser = argparse.ArgumentParser(description="JAS — Agent Simulation Environment")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8080)
     args = parser.parse_args()

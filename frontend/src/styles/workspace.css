@@ -1,0 +1,298 @@
+/* biome-ignore-all lint/style/noDescendingSpecificity: Component scopes and responsive rules intentionally share element names. */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/bricolage-grotesque-jas-800.woff2") format("woff2");
+  unicode-range: U+0061, U+006A, U+0073;
+}
+
+.shell-body {
+  container: workspace / inline-size;
+  min-width: 0;
+}
+
+[data-slot="sidebar-header"] {
+  height: var(--header-height);
+  padding: 0 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius);
+  flex-shrink: 0;
+}
+
+.brand[hidden] {
+  display: none;
+}
+
+.brand-home {
+  width: auto;
+  justify-content: flex-start;
+  gap: 8px;
+  padding-inline: 4px;
+}
+
+.brand-wordmark {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.sidebar-toggle {
+  width: 32px;
+  height: 32px;
+}
+
+.brand-toggle-icon {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  opacity: 0;
+}
+
+.brand-toggle:hover .brand-mark,
+.brand-toggle:focus-visible .brand-mark {
+  opacity: 0;
+}
+
+.brand-toggle:hover .brand-toggle-icon,
+.brand-toggle:focus-visible .brand-toggle-icon {
+  opacity: 1;
+}
+
+.brand-mark {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+[data-slot="sidebar-content"] {
+  gap: 0;
+  padding-top: 8px;
+}
+
+[data-slot="sidebar-group"] {
+  padding: 0 8px;
+}
+
+.sidebar-separator {
+  width: auto;
+  margin: 12px;
+}
+
+.recent-navigation {
+  margin-top: 24px;
+}
+
+[data-slot="sidebar-menu-button"] {
+  height: 36px;
+  font-size: 14px;
+  gap: 9px;
+  padding-inline: 10px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+}
+
+[data-slot="sidebar-menu-button"] > svg {
+  width: 18px;
+  height: 18px;
+}
+
+[data-slot="sidebar-menu-button"][aria-current="page"],
+[data-slot="sidebar-menu-button"][data-active="true"] {
+  background: var(--selection-background);
+  color: var(--selection-foreground);
+  font-weight: 500;
+}
+
+[data-slot="sidebar-menu-button"][aria-current="page"] > svg {
+  color: var(--brand);
+}
+
+[data-slot="sidebar-group-label"] {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  padding-left: 8px;
+}
+
+.nav-count {
+  margin-left: auto;
+  font-size: 11px;
+  background: var(--muted);
+  color: var(--brand);
+  padding: 0 5px;
+}
+
+.recent-mark {
+  width: 5px;
+  height: 5px;
+  background: var(--muted-foreground);
+  flex-shrink: 0;
+}
+
+[data-slot="sidebar-footer"] {
+  flex-direction: row;
+  gap: 4px;
+  padding: 10px 8px;
+  border-top: 1px solid var(--sidebar-border);
+  align-items: center;
+}
+
+[data-slot="sidebar-footer"] > ul {
+  flex: 1;
+}
+
+[data-collapsible="icon"] .recent-navigation {
+  display: none;
+}
+
+[data-collapsible="icon"] [data-slot="sidebar-header"] {
+  padding: 0 10px;
+}
+
+[data-collapsible="icon"] [data-slot="sidebar-group"] {
+  padding-inline: 10px;
+}
+
+[data-collapsible="icon"] [data-slot="sidebar-menu-button"] {
+  padding-inline: 7px;
+}
+
+[data-collapsible="icon"] [data-slot="sidebar-footer"] {
+  flex-direction: column;
+  padding: 8px;
+}
+
+[data-collapsible="icon"] [data-slot="sidebar-footer"] > ul {
+  flex: none;
+}
+
+.shell-header {
+  min-height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 32px;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+}
+
+.header-path {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.header-path nav {
+  min-width: 0;
+}
+
+.header-path ol {
+  flex-wrap: nowrap;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.header-path [data-slot="breadcrumb-item"] {
+  min-width: 0;
+  max-width: 32ch;
+}
+
+.header-path [data-slot="breadcrumb-item"] > * {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 32px 32px 48px;
+}
+
+.page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.page-heading > div:first-child {
+  min-width: 0;
+}
+
+.page-heading p {
+  margin-top: 6px;
+  max-width: 75ch;
+  color: var(--muted-foreground);
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.section-heading p {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  margin-top: 4px;
+}
+
+.section-heading > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.section-heading > a svg {
+  width: 14px;
+  height: 14px;
+}
+
+.section-space {
+  margin-top: 28px;
+}
+
+.page-heading .actions {
+  flex-wrap: wrap;
+}
+
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: -60px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  z-index: 100;
+}
+
+.skip-link:focus {
+  top: 8px;
+}

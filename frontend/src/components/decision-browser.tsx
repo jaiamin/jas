@@ -33,11 +33,12 @@ export function DecisionBrowser({
   const [params, setParams] = useSearchParams();
   const actorFilter = params.get("actor") ?? "all";
   const [page, setPage] = useState(0);
+  const evidenceReturn = useRef<HTMLButtonElement>(null);
   const inspectorHeading = useRef<HTMLHeadingElement>(null);
   const inspector = useRef<HTMLElement>(null);
   const journalHeading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
-    if (focusRequest && matchMedia("(max-width: 900px)").matches) {
+    if (focusRequest && evidenceReturn.current?.getClientRects().length) {
       inspectorHeading.current?.focus({ preventScroll: true });
       inspector.current?.scrollIntoView({
         block: "start",
@@ -46,10 +47,7 @@ export function DecisionBrowser({
     }
   }, [focusRequest]);
   const visibleTurns = run.turns
-    .filter(
-      (t) =>
-        t.number <= turn && (actorFilter === "all" || t.actor === actorFilter),
-    )
+    .filter((t) => actorFilter === "all" || t.actor === actorFilter)
     .toReversed();
   const pages = Math.max(1, Math.ceil(visibleTurns.length / 15));
   const current = Math.min(page, pages - 1);
@@ -176,7 +174,8 @@ export function DecisionBrowser({
         <Button
           variant="outline"
           size="sm"
-          className="mobile-evidence-return"
+          ref={evidenceReturn}
+          className="evidence-return"
           onClick={() => {
             journalHeading.current?.focus({ preventScroll: true });
             journalHeading.current?.scrollIntoView({ block: "start" });
@@ -264,9 +263,11 @@ export function DecisionBrowser({
           </>
         )}
         <TurnAnnotations
-          key={`${run.summary.id}:${turn}`}
           runId={run.summary.id}
           turn={turn}
+          onInteract={() => {
+            if (!pinned) selectTurn(turn);
+          }}
         />
       </aside>
     </div>
