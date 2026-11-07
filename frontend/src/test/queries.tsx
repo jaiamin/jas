@@ -15,11 +15,12 @@ export function renderWithQueries(element: ReactElement) {
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
   clients.add(client);
-  return render(element, {
+  const view = render(element, {
     wrapper: ({ children }: { children: ReactNode }) => (
       <QueryClientProvider client={client}>{children}</QueryClientProvider>
     ),
   });
+  return { ...view, client };
 }
 
 export function deferredResponse() {

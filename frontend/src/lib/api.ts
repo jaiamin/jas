@@ -9,6 +9,11 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * GET when body is omitted; otherwise POST JSON. Success responses must contain JSON.
+ * HTTP failures reject with ApiError; transport, serialization and successful-response
+ * parsing failures propagate their original errors.
+ */
 export async function api<T>(path: string, body?: unknown): Promise<T> {
   const response = await fetch(`/api${path}`, {
     headers:

@@ -13,9 +13,9 @@ import {
   AgentContext,
   contextLabel,
   messageContext,
-} from "@/components/agent-context";
-import { AgentHistory } from "@/components/agent-history";
-import { AgentReply } from "@/components/agent-reply";
+} from "@/components/agent/agent-context";
+import { AgentHistory } from "@/components/agent/agent-history";
+import { AgentReply } from "@/components/agent/agent-reply";
 import { ErrorState, Loading } from "@/components/shared";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/message-scroller";
 import { agentSuggestions } from "@/lib/agent-suggestions";
 import { api, useApi } from "@/lib/api";
+import { chatProgress } from "@/lib/chat-progress";
 import type {
   Analysis,
   Design,
@@ -70,16 +71,35 @@ export default function AgentPage() {
     if (!chatId || !pending) return;
     const stream = new EventSource(`/api/chats/${chatId}/events`);
     stream.onmessage = (event) => {
-      const update: Analysis = JSON.parse(event.data);
-      client.setQueryData<Analysis[]>([`/chats/${chatId}`], (messages) =>
-        messages?.map((message) =>
-          message.id === update.id ? update : message,
-        ),
-      );
+      const update = chatProgress(event.data, pending);
+      if (!update) {
+        stream.close();
+        return;
+      }
       if (update.status !== "pending") {
         stream.close();
+        client.invalidateQueries({ queryKey: [`/chats/${chatId}`] });
         client.invalidateQueries({ queryKey: ["/chats"] });
+        return;
       }
+      client.setQueryData<Analysis[]>([`/chats/${chatId}`], (messages) =>
+        messages?.map((message) =>
+          message.id === pending && message.status === "pending"
+            ? {
+                ...message,
+                output: {
+                  ...message.output,
+                  ...(update.partial === undefined
+                    ? {}
+                    : { partial: update.partial }),
+                  ...(update.stage === undefined
+                    ? {}
+                    : { stage: update.stage }),
+                },
+              }
+            : message,
+        ),
+      );
     };
     // Polling keeps an interrupted connection recoverable without resubmitting a request.
     stream.onerror = () => stream.close();

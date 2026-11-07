@@ -1,14 +1,14 @@
 import { ArrowUpRight, BookOpen, Check } from "lucide-react";
 import { memo } from "react";
 import { Link } from "react-router-dom";
-import { AgentActivity } from "@/components/agent-activity";
-import { AgentMarkdown } from "@/components/agent-markdown";
+import { AgentActivity } from "@/components/agent/agent-activity";
+import { AgentMarkdown } from "@/components/agent/agent-markdown";
+import { PlanningActivity } from "@/components/agent/planning-progress";
 import {
   Disclosure,
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
-import { PlanningActivity } from "@/components/planning-progress";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/data";
 import {

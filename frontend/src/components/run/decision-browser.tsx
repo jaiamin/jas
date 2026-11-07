@@ -7,8 +7,8 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { TurnAnnotations } from "@/components/run/turn-annotations";
 import { ErrorState, Json, Loading } from "@/components/shared";
-import { TurnAnnotations } from "@/components/turn-annotations";
 import { Button } from "@/components/ui/button";
 import { Badge, Empty, Table } from "@/components/ui/data";
 import { Select } from "@/components/ui/select";

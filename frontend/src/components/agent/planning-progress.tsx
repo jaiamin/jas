@@ -1,6 +1,6 @@
 import { BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
-import { AgentActivity } from "@/components/agent-activity";
+import { AgentActivity } from "@/components/agent/agent-activity";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
 import {

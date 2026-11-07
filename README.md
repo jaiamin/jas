@@ -110,7 +110,8 @@ user data. CI uses the same owned-backend flow in
 
 - `backend/src/agent_sim/`: API, validated protocols, execution and storage; `simulation/`: world rules and checkpoints.
 - `frontend/src/pages/`: route-level tasks; `components/editor/`: protocol field groups;
-  `components/`: shared records, shell, evidence and Agent; `components/ui/`: shadcn.
+  `components/agent/` and `components/run/`: conversation and evidence workflows;
+  `components/ui/`: shadcn.
 - `frontend/src/index.css`: canonical theme tokens; `styles/`: scoped interface styles.
 - `backend/tests/`, `frontend/src/**/*.test.*`, `frontend/e2e/`: behavior/regression coverage.
 - `benchmarks/`: frozen evaluation evidence and reproducible benchmark tooling.

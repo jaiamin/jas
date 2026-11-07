@@ -25,7 +25,7 @@ export function readDraft(path: string): Draft | null {
   const raw =
     localStorage.getItem(prefix + path) ??
     localStorage.getItem(legacyPrefix + path);
-  if (!raw) return null;
+  if (raw === null) return null;
   const value: unknown = JSON.parse(raw);
   if (
     !value ||

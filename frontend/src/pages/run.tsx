@@ -11,8 +11,8 @@ import {
 import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { MetricChart } from "@/components/charts";
-import { DecisionBrowser } from "@/components/decision-browser";
-import { RunRecord } from "@/components/run-record";
+import { DecisionBrowser } from "@/components/run/decision-browser";
+import { RunRecord } from "@/components/run/run-record";
 import { ErrorState, Loading, PageHeading, Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Alert, Badge, Empty } from "@/components/ui/data";
@@ -379,7 +379,7 @@ export default function Run() {
           </div>
         </TabsContent>
         <TabsContent value="settings">
-          <RunRecord key={id} run={run} />
+          <RunRecord key={run.summary.id} run={run} />
         </TabsContent>
       </Tabs>
     </>

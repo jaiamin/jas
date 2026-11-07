@@ -98,3 +98,11 @@ test("legacy drafts survive the JAS rename, deduplicate, and can be saved or dis
   removeDraft(path);
   expect(listDrafts()).toEqual({ items: [], unreadable: [] });
 });
+
+test("empty stored drafts remain visible as corruption and preserve recovery data", () => {
+  expect(readDraft("/new")).toBeNull();
+  localStorage.setItem("jas:draft:/new", "");
+  expect(() => readDraft("/new")).toThrow();
+  expect(listDrafts()).toEqual({ items: [], unreadable: ["/new"] });
+  expect(localStorage.getItem("jas:draft:/new")).toBe("");
+});

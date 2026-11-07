@@ -5,7 +5,7 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
-import { RequestInspector } from "@/components/request-inspector";
+import { RequestInspector } from "@/components/run/request-inspector";
 import { Json } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/data";

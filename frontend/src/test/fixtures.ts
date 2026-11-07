@@ -1,4 +1,4 @@
-import type { Design, Parameters } from "@/lib/types";
+import type { Design, Parameters, RunDetail, State } from "@/lib/types";
 export const parameters: Parameters = {
   endowment: 10,
   multiplier: 2,
@@ -75,4 +75,60 @@ export const design: Design = {
   response_tokens: 1024,
   limitations: [],
   measures: ["cooperation"],
+};
+
+export const state: State = {
+  rule_version: "1.0.0",
+  round: 2,
+  position: 0,
+  done: false,
+  balances: { a: 12, b: 8 },
+  pending: {},
+  history: [],
+  notes: {},
+  experiences: {},
+  promises: {},
+  signals: {},
+  relations: {},
+  tasks: [],
+};
+
+export const runDetail: RunDetail = {
+  next_actor: "a",
+  requests: [],
+  summary: {
+    id: "run",
+    study_id: "study",
+    study_title: design.title,
+    revision: 1,
+    condition: "Baseline",
+    condition_key: "baseline",
+    environment: design.environment,
+    model: "openai:gpt-6-luna",
+    models: ["openai:gpt-6-luna"],
+    status: "paused",
+    turn: 2,
+    round: 1,
+    total_turns: 6,
+    total_rounds: 3,
+    seed: 7,
+    repetition: 1,
+    created: "2026-11-07",
+    error: null,
+    usage: {
+      requests: 0,
+      input_tokens: 0,
+      output_tokens: 0,
+      cost_usd: 0,
+      partial: false,
+    },
+  },
+  design,
+  parameters,
+  state,
+  turns: [],
+  events: [],
+  measurements: [],
+  metrics: {},
+  relationships: [],
 };
