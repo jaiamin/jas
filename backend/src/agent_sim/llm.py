@@ -2,7 +2,7 @@ import asyncio
 import json
 import math
 import os
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterator, Mapping
 from typing import Any, Literal, TypedDict, TypeVar
 from urllib.parse import urlparse
 
@@ -50,6 +50,25 @@ def usage_record(row: Mapping[str, Any]) -> Usage:
         "cost_usd": float(row["cost_usd"]),
         "partial": bool(row["partial"]),
     }
+
+
+def partial_outputs(response: ModelResponse, *, web_search: bool) -> Iterator[dict]:
+    """Decode provisional payloads; final validation remains the provider run's job."""
+    for part in response.parts:
+        if not isinstance(part, ToolCallPart):
+            continue
+        try:
+            partial = (
+                from_json(part.args, allow_partial="trailing-strings")
+                if isinstance(part.args, str)
+                else part.args
+            )
+        except ValueError:
+            continue
+        if isinstance(partial, dict):
+            yield partial
+    if web_search:
+        yield {"text": "".join(p.content for p in response.parts if isinstance(p, TextPart))}
 
 
 class ProviderFailure(Exception):
@@ -171,30 +190,8 @@ class LanguageModels:
                             prompt, usage_limits=UsageLimits(request_limit=1)
                         ) as stream:
                             async for response in stream.stream_response(debounce_by=0.08):
-                                for part in response.parts:
-                                    if isinstance(part, ToolCallPart):
-                                        try:
-                                            partial = (
-                                                from_json(
-                                                    part.args, allow_partial="trailing-strings"
-                                                )
-                                                if isinstance(part.args, str)
-                                                else part.args
-                                            )
-                                        except ValueError:
-                                            continue
-                                        if isinstance(partial, dict):
-                                            on_partial(partial)
-                                if web_search:
-                                    on_partial(
-                                        {
-                                            "text": "".join(
-                                                p.content
-                                                for p in response.parts
-                                                if isinstance(p, TextPart)
-                                            )
-                                        }
-                                    )
+                                for partial in partial_outputs(response, web_search=web_search):
+                                    on_partial(partial)
                             return await stream.get_output()
             except (Exception, asyncio.CancelledError) as error:
                 log_failure(f"Provider call {call.id} failed", error)

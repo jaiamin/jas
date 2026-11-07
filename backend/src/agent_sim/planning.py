@@ -45,7 +45,7 @@ not rules. Explain that limit. Forecast error is not proof of learning.
 Use condition.profile_overrides to manipulate role or private-goal text, retaining the same
 agent keys across conditions. Never claim those interventions when profiles are unchanged.
 Coordination studies may define named tasks, effort and acyclic dependencies in design.tasks;
-otherwise the adapter supplies generic work packages. Context alone does not change task rules.
+otherwise the environment supplies generic work packages. Context alone does not change task rules.
 Commons and trust conditions can specify resource_schedule with round/endowment entries.
 Each change begins at that round and persists until the next change. Future changes are not
 announced to agents; current rules and budgets are visible. Use matched control conditions
@@ -145,21 +145,23 @@ class Planner:
 
     def _context(self, question: str, conversation: Sequence[dict]) -> dict[str, object]:
         capabilities = []
-        for adapter in CATALOG.values():
+        for environment_definition in CATALOG.values():
             example = Design.model_validate(
-                next(t["design"] for t in templates() if t["id"] == adapter.key)
+                next(t["design"] for t in templates() if t["id"] == environment_definition.key)
             )
             world = create_world(example, example.conditions[0].parameters, 0)
             actor = world.actor()
             if actor is None:
-                raise ValueError(f"Template {adapter.key} has no initial actor")
+                raise ValueError(f"Template {environment_definition.key} has no initial actor")
             capabilities.append(
                 {
-                    "key": adapter.key,
-                    "description": adapter.description,
-                    "parameters": adapter.parameters,
-                    "measures": adapter.measures,
-                    "measure_definitions": {m: MEASURE_DESCRIPTIONS[m] for m in adapter.measures},
+                    "key": environment_definition.key,
+                    "description": environment_definition.description,
+                    "parameters": environment_definition.parameters,
+                    "measures": environment_definition.measures,
+                    "measure_definitions": {
+                        m: MEASURE_DESCRIPTIONS[m] for m in environment_definition.measures
+                    },
                     "rules_example": world.observe(actor)["rules"],
                     "example_note": "Example values are template settings, not fixed constants. "
                     "Use the design schema descriptions to identify changeable parameters.",

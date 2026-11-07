@@ -89,3 +89,24 @@ def test_streaming_budget_rejection_never_contacts_provider(runtime, monkeypatch
             )
         )
     assert not contacted and models.usage()["requests"] == 0
+
+
+def test_partial_outputs_handle_incomplete_and_non_object_fragments():
+    from agent_sim.llm import partial_outputs
+    from pydantic_ai.messages import ModelResponse, TextPart, ToolCallPart
+
+    response = ModelResponse(
+        parts=[
+            ToolCallPart("answer", "}"),
+            ToolCallPart("answer", "[]"),
+            ToolCallPart("answer", '{"answer":"Partial'),
+            ToolCallPart("answer", {"answer": "Complete"}),
+            TextPart("First "),
+            TextPart("second"),
+        ]
+    )
+    assert list(partial_outputs(response, web_search=False)) == [
+        {"answer": "Partial"},
+        {"answer": "Complete"},
+    ]
+    assert list(partial_outputs(response, web_search=True))[-1] == {"text": "First second"}

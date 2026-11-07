@@ -199,15 +199,19 @@ class Assistants:
         study_id: str | None = None,
         run_id: str | None = None,
         *,
-        purpose: Literal["design", "general"] = "design",
+        purpose: Literal["design", "general", "analysis"] | None = None,
     ) -> list[dict]:
+        if study_id and run_id:
+            raise ValueError("Choose a study or a run, not both")
+        if purpose is None and not (study_id or run_id):
+            purpose = "design"
         with self.db.session() as session:
             query = select(Analysis).order_by(Analysis.created)
             if run_id:
                 query = query.where(Analysis.run_id == run_id)
             elif study_id:
                 query = query.where(Analysis.study_id == study_id, Analysis.run_id.is_(None))
-            else:
+            if purpose is not None:
                 query = query.where(Analysis.purpose == purpose)
             rows = session.scalars(query).all()
             usage = self.models.usage_by_analysis({row.id for row in rows})
@@ -302,7 +306,7 @@ class Assistants:
                 saved = session.get_one(Analysis, key)
                 saved.output, saved.status = output, "complete"
         except (Exception, asyncio.CancelledError) as error:
-            if not isinstance(error, (ValueError, ProviderFailure, asyncio.CancelledError)):
+            if not isinstance(error, (ProviderFailure, asyncio.CancelledError)):
                 log_failure(f"Analysis {key} failed", error)
             with self.db.session.begin() as session:
                 saved = session.get_one(Analysis, key)

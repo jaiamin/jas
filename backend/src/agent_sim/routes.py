@@ -288,7 +288,7 @@ async def ask(body: AnalysisRequest, *, assistants: AssistantsDep) -> dict[str, 
 async def analyses(
     study_id: str | None = None,
     run_id: str | None = None,
-    purpose: Literal["design", "general"] = "design",
+    purpose: Literal["design", "general", "analysis"] | None = None,
     *,
     assistants: AssistantsDep,
 ) -> list[dict[str, Any]]:

@@ -265,3 +265,67 @@ def test_concurrent_runs_cannot_reserve_above_shared_budget(runtime, design, mon
         await engine.close()
 
     asyncio.run(exercise())
+
+
+def test_bulk_start_preflights_every_checkpoint_before_queueing(runtime, design):
+    db, llm, research, engine = runtime
+    design.seeds = [7, 8]
+    sid = research.save_design(design)
+    runs = research.operational_runs(sid)
+    with db.session.begin() as session:
+        saved = session.get_one(Run, runs[-1].id)
+        saved.checkpoint = saved.checkpoint | {"rule_version": "incompatible"}
+
+    async def exercise():
+        with pytest.raises(ValueError, match="different environment rule version"):
+            engine.start_study(sid)
+        assert not engine.executions
+        assert all(research.configuration(run.id)[0].status == "ready" for run in runs)
+        assert llm.usage()["requests"] == 0
+
+    asyncio.run(exercise())
+
+
+def test_bulk_start_ignores_completed_runs_with_old_rules(runtime, design):
+    db, _, research, engine = runtime
+    design.seeds = [7, 8]
+    sid = research.save_design(design)
+    runs = research.operational_runs(sid)
+    with db.session.begin() as session:
+        saved = session.get_one(Run, runs[0].id)
+        saved.status = "complete"
+        saved.checkpoint = saved.checkpoint | {"rule_version": "historical"}
+
+    async def exercise():
+        engine.start_study(sid)
+        task = engine.executions[runs[1].id].task
+        engine.start_study(sid)
+        assert engine.executions[runs[1].id].task is task
+        assert runs[0].id not in engine.executions
+        await engine.close()
+        assert research.configuration(runs[0].id)[0].status == "complete"
+
+    asyncio.run(exercise())
+
+
+def test_internal_value_error_retains_worker_diagnostics(runtime, design, monkeypatch, caplog):
+    _, llm, research, engine = runtime
+    rid = research.operational_runs(research.save_design(design))[0].id
+
+    detail = "invalid internal result"
+
+    async def broken_generation(*args, **kwargs):
+        raise ValueError(detail)
+
+    monkeypatch.setattr(llm, "generate", broken_generation)
+
+    async def exercise():
+        engine.start(rid)
+        await engine.executions[rid].task
+        await engine.close()
+
+    asyncio.run(exercise())
+    assert research.configuration(rid)[0].status == "failed"
+    assert f"Run {rid} failed (ValueError)" in caplog.text
+    assert "broken_generation" in caplog.text
+    assert "invalid internal result" not in caplog.text

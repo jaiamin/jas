@@ -57,21 +57,31 @@ class Engine:
         loop = asyncio.get_running_loop()
         if self.closing:
             raise ValueError("Server is stopping")
+        if self._preflight(run_id):
+            self._enqueue(loop, run_id, single=single)
+
+    def _preflight(self, run_id: str) -> bool:
+        """Check eligibility without changing run state or scheduling work."""
         existing = self.executions.get(run_id)
         if existing and existing.task and not existing.task.done():
-            return
+            return False
         run, design, condition = self.research.configuration(run_id)
         if run.status == "complete":
-            return
+            return False
         for model in {p.model or condition.model for p in design.profiles}:
             self.models.model(model)
         if run.checkpoint.get("rule_version") != CATALOG[design.environment].world.version:
             raise ValueError("This saved run requires a different environment rule version")
-        execution = Execution()
-        self.executions[run_id] = execution
+        return True
+
+    def _enqueue(
+        self, loop: asyncio.AbstractEventLoop, run_id: str, *, single: bool = False
+    ) -> None:
         with self.db.session.begin() as session:
             saved = session.get_one(Run, run_id)
             saved.status, saved.error = "queued", None
+        execution = Execution()
+        self.executions[run_id] = execution
         execution.task = loop.create_task(
             self._run(run_id, execution, single), name=f"run-{run_id}"
         )
@@ -186,6 +196,8 @@ class Engine:
             )
             raise
         except (ValueError, ProviderFailure) as error:
+            if isinstance(error, ValueError):
+                log_failure(f"Run {run_id} failed", error)
             self._status(run_id, "failed", str(error))
         except Exception as error:
             log_failure(f"Run {run_id} failed", error)
@@ -199,13 +211,14 @@ class Engine:
             run.status, run.error, run.updated = status, error, now()
 
     def start_study(self, study_id: str) -> None:
-        runs = self.research.operational_runs(study_id)
-        # Validate all model access locally before starting any member of the matrix.
-        for run in runs:
-            for model in run.models:
-                self.models.model(model)
-        for run in runs:
-            self.start(run.id)
+        loop = asyncio.get_running_loop()
+        if self.closing:
+            raise ValueError("Server is stopping")
+        candidates = [
+            run.id for run in self.research.operational_runs(study_id) if self._preflight(run.id)
+        ]
+        for run_id in candidates:
+            self._enqueue(loop, run_id)
 
     def pause_study(self, study_id: str) -> None:
         for run in self.research.operational_runs(study_id):

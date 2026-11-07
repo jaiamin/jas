@@ -295,3 +295,47 @@ def test_chat_events_deliver_partial_and_final_records_without_resubmission(clie
     assert json.loads(resumed.text.split("data: ")[1]) == updates[-1]
     assert client.get("/api/settings").json()["usage"]["requests"] == 1
     assert client.get("/api/chats/missing/events").status_code == 404
+
+
+def test_analysis_listing_honors_explicit_filters_and_rejects_ambiguous_scope(client, design):
+    from agent_sim.db import Analysis
+
+    research = client.app.state.research
+    sid = research.save_design(design)
+    rid = research.operational_runs(sid)[0].id
+    with research.db.session.begin() as session:
+        session.add_all(
+            [
+                Analysis(question="Design", purpose="design", status="complete", cutoffs={}),
+                Analysis(question="General", purpose="general", status="complete", cutoffs={}),
+                Analysis(
+                    question="Study",
+                    purpose="analysis",
+                    study_id=sid,
+                    status="complete",
+                    cutoffs={},
+                ),
+                Analysis(
+                    question="Run",
+                    purpose="analysis",
+                    study_id=sid,
+                    run_id=rid,
+                    status="complete",
+                    cutoffs={},
+                ),
+            ]
+        )
+
+    def questions(query):
+        response = client.get(f"/api/analyses{query}")
+        assert response.status_code == 200
+        return [row["question"] for row in response.json()]
+
+    assert questions("") == ["Design"]
+    assert questions("?purpose=general") == ["General"]
+    assert questions(f"?study_id={sid}") == ["Study"]
+    assert questions(f"?run_id={rid}") == ["Run"]
+    assert questions(f"?run_id={rid}&purpose=analysis") == ["Run"]
+    assert questions(f"?run_id={rid}&purpose=general") == []
+    assert questions(f"?study_id={sid}&purpose=design") == []
+    assert client.get(f"/api/analyses?study_id={sid}&run_id={rid}").status_code == 422

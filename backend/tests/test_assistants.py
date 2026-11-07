@@ -326,3 +326,26 @@ def test_initial_worker_read_failure_is_persisted_and_logged(runtime, caplog):
         assert request.error == "Research assistant failed (RuntimeError); no fallback."
     assert f"Analysis {key} failed" in caplog.text
     assert llm.usage()["requests"] == 0
+
+
+def test_internal_value_error_retains_assistant_diagnostics(runtime, monkeypatch, caplog):
+    db, llm, research, _ = runtime
+    assistant = Assistants(db, research, llm)
+
+    detail = "invalid internal result"
+
+    async def broken_general(request):
+        raise ValueError(detail)
+
+    monkeypatch.setattr(assistant, "_general", broken_general)
+
+    async def exercise():
+        key = assistant.start("Explain matched seeds", purpose="general")
+        await assistant.tasks[key]
+        assert assistant.get(key)["status"] == "failed"
+        assert f"Analysis {key} failed (ValueError)" in caplog.text
+        await assistant.close()
+
+    asyncio.run(exercise())
+    assert "broken_general" in caplog.text
+    assert "invalid internal result" not in caplog.text

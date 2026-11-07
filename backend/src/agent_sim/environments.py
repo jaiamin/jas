@@ -454,7 +454,7 @@ class Coordination(World[CoordinationCheckpoint]):
 
 
 @dataclass(frozen=True)
-class Adapter:
+class EnvironmentDefinition:
     key: str
     name: str
     description: str
@@ -502,7 +502,7 @@ MEASURE_DESCRIPTIONS = {
 
 
 CATALOG = {
-    "commons": Adapter(
+    "commons": EnvironmentDefinition(
         "commons",
         "Shared commons",
         "Sealed contributions, shared returns and public commitments.",
@@ -526,7 +526,7 @@ CATALOG = {
             "forecast_error",
         ),
     ),
-    "trust_exchange": Adapter(
+    "trust_exchange": EnvironmentDefinition(
         "trust_exchange",
         "Trust exchange",
         "Repeated paired transfers with a real opportunity to reciprocate.",
@@ -549,7 +549,7 @@ CATALOG = {
             "forecast_error",
         ),
     ),
-    "coordination": Adapter(
+    "coordination": EnvironmentDefinition(
         "coordination",
         "Team coordination",
         "Shared tasks, prerequisites, communication and observable handoffs.",
@@ -564,7 +564,7 @@ CATALOG = {
             "forecast_error",
         ),
     ),
-    "institution": Adapter(
+    "institution": EnvironmentDefinition(
         "institution",
         "Institutions & oversight",
         "Authority, resource allocation, sanctions, appeals and independent oversight.",
@@ -587,7 +587,7 @@ CATALOG = {
             "false_report_rate",
         ),
     ),
-    "bargaining": Adapter(
+    "bargaining": EnvironmentDefinition(
         "bargaining",
         "Binding bargaining",
         "Alternating offers, binding acceptance, discounting and explicit outside options.",
@@ -596,7 +596,7 @@ CATALOG = {
         ("endowment", "bargaining", "communication", "communication_channels", "memory"),
         ("agreement_rate", "efficiency", "false_report_rate"),
     ),
-    "information": Adapter(
+    "information": EnvironmentDefinition(
         "information",
         "Evidence & social influence",
         "Private noisy evidence, sequential public choices and researcher-known outcomes.",
@@ -605,7 +605,7 @@ CATALOG = {
         ("information", "communication", "communication_channels", "memory", "private_signal"),
         ("accuracy", "signal_override_rate", "false_report_rate"),
     ),
-    "renewable_resource": Adapter(
+    "renewable_resource": EnvironmentDefinition(
         "renewable_resource",
         "Renewable resources",
         "Persistent stock, sealed extraction, proportional rationing and irreversible collapse.",

@@ -69,11 +69,12 @@ class Research:
             for p in design.profiles + [p for c in design.conditions for p in c.profile_overrides]
         ):
             raise ValueError("Choose a model in the reviewed provider catalog")
-        adapter = CATALOG[design.environment]
-        unsupported = sorted(set(design.measures) - set(adapter.measures))
+        environment_definition = CATALOG[design.environment]
+        unsupported = sorted(set(design.measures) - set(environment_definition.measures))
         if unsupported:
             raise ValueError(
-                f"Unsupported measurements {unsupported}; choose from {list(adapter.measures)}"
+                f"Unsupported measurements {unsupported}; "
+                f"choose from {list(environment_definition.measures)}"
             )
 
     def save_design(
