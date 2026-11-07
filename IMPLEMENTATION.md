@@ -16,7 +16,8 @@
       Docker build/health/persistence and actionlint pass locally.
 - [x] Final Impeccable review, two resolved copy fixes, orange design documentation and
       staged secret scan; light/dark text and control contrast verified.
-- [x] Latest frontend and API running together on 8080; task branch checkpoint prepared.
+- [x] Latest frontend and API running together on 8080; task branch committed and draft
+      PR opened: https://github.com/jaiamin/ass/pull/3.
 
 ## Decisions
 

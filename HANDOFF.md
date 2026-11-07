@@ -3,6 +3,7 @@
 Branch: `feat/empirical-research-platform`. Fresh React/TypeScript and Python local platform;
 old NiceGUI source removed, ignored old databases retained. Read README, PRODUCT and
 IMPLEMENTATION first. Architecture/research details live in docs/; ontology in GLOSSARY.
+Draft PR: https://github.com/jaiamin/ass/pull/3. Main implementation checkpoint: `aede6bd`.
 
 Data: `data/ass.sqlite3`, schema v2. Never run two engines against this database. Native uv
 crashes on this sandbox kernel; `.tools/uv-0.13.7.data/scripts/uv` works. Project environment
