@@ -63,13 +63,24 @@ Manual captures cover 390px mobile, 834px tablet and 1440px desktop. Browser tes
 exercise 1280px desktop navigation. Wide tables and editor tabs scroll within their containers.
 
 Passed: 153 Python tests, Ruff lint/format checks, ty; 7 frontend unit tests, Biome;
-26 Playwright tests; TypeScript and Vite production build; Actionlint and Docker Compose configuration validation. The new note-identity and
+28 Playwright tests; TypeScript and Vite production build; Actionlint and Docker Compose configuration validation. The new note-identity and
 desktop evidence-navigation regressions failed against the prior build and passed after fixing.
 The independent Impeccable reviewer scored both material fixes resolved.
 
+The monochrome refinement was checked on the normal application at 390px, 834px and
+1440px in both themes: Experiments, Runs, editor, Environments, AI design, Settings and
+empty comparison. Mobile drawer Escape/focus return and desktop visible focus passed;
+no page overflow or browser exceptions were observed. Four-series comparison tests
+verify distinct line patterns and matching legends in both themes. Status icons preserve
+meaning without color. All 37 sampled token text/surface pairs per theme exceed 4.5:1
+(minimum 4.68 light / 5.45 dark). Logo ink adapts to the app theme independently of the
+OS preference. Only the favicon has extra padding; the sidebar mark remains 24px.
+
 Current application captures (no sample experiment data):
 
-- [Workspace](screenshots/workspace.png)
+- [Workspace · light](screenshots/workspace.png)
+- [Workspace · dark](screenshots/workspace-dark.png)
+- [Execution editor · dark](screenshots/editor-dark.png)
 - [Provider configuration](screenshots/settings.png)
 
 Normal startup on port 8080 passed its health check and reported both OpenAI and Anthropic

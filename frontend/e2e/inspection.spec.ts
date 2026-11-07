@@ -101,6 +101,54 @@ test("observation drafts stay with their recorded turn through polling and navig
   );
 });
 
+for (const theme of ["light", "dark"]) {
+  test(`comparison identifies monochrome lines through the legend · ${theme}`, async ({
+    page,
+    request,
+  }, testInfo) => {
+    await page.addInitScript(
+      (value) => localStorage.setItem("jas-theme", value),
+      theme,
+    );
+    const ids: string[] = [];
+    for (let i = 0; i < 4; i++) {
+      const { id, run } = await recordedRun(page, request);
+      ids.push(id);
+      run.summary.condition = `Condition ${i + 1}`;
+      run.metrics = { contribution_rate: 0.25 + i * 0.15 };
+      run.measurements = [1, 2, 3].map((round) => ({
+        key: "contribution_rate",
+        round,
+        turn: round * 6,
+        value: 0.15 + i * 0.15 + round * 0.05,
+        denominator: 1,
+        agent: null,
+        version: 1,
+      }));
+    }
+    await page.goto(`/compare?runs=${ids.join(",")}`);
+    const lines = page.locator(".recharts-line-curve");
+    await expect(lines).toHaveCount(4);
+    const patterns = await lines.evaluateAll((elements) =>
+      elements.map((el) => el.getAttribute("stroke-dasharray")),
+    );
+    expect(new Set(patterns).size).toBe(4);
+    const legend = page.locator(".recharts-legend-item");
+    await expect(legend).toHaveCount(4);
+    for (let i = 0; i < 4; i++) {
+      await expect(legend.nth(i)).toContainText(`Condition ${i + 1}`);
+      await expect(legend.nth(i).locator("[stroke-dasharray]")).toHaveAttribute(
+        "stroke-dasharray",
+        patterns[i] ?? "",
+      );
+    }
+    await page.screenshot({
+      path: testInfo.outputPath(`comparison-${theme}.png`),
+      animations: "disabled",
+    });
+  });
+}
+
 async function recordedRun(page: Page, request: APIRequestContext) {
   const catalog = await (await request.get("/api/catalog")).json();
   const design = catalog.templates[0].design;

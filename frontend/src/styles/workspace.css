@@ -5,7 +5,7 @@
 }
 
 [data-slot="sidebar-header"] {
-  height: 64px;
+  height: 52px;
   padding: 0 16px;
   justify-content: center;
 }
@@ -19,33 +19,16 @@
 }
 
 .brand-mark {
-  display: grid;
-  place-items: center;
+  display: block;
   width: 24px;
   height: 24px;
   flex-shrink: 0;
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 1;
-  color: var(--brand);
-  letter-spacing: -1px;
 }
 
 .brand-name {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0;
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.3px;
-}
-
-.brand-name > span {
-  font-size: 11px;
-  color: var(--muted-foreground);
-  letter-spacing: 0;
-  font-weight: 400;
 }
 
 .sidebar-create {

@@ -1,4 +1,13 @@
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  CircleCheck,
+  CircleDashed,
+  CirclePause,
+  CircleX,
+  Clock3,
+  LoaderCircle,
+  type LucideIcon,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Alert, Badge, Skeleton } from "@/components/ui/data";
@@ -23,10 +32,23 @@ export function PageHeading({
     </div>
   );
 }
+const statusIcons: Record<string, LucideIcon> = {
+  complete: CircleCheck,
+  running: LoaderCircle,
+  queued: Clock3,
+  paused: CirclePause,
+  pausing: CirclePause,
+  failed: CircleX,
+};
+
 export function Status({ value }: { value: string }) {
+  const Icon = statusIcons[value] ?? CircleDashed;
   return (
     <Badge className={cn("status", `status-${value}`)}>
-      <span className="status-dot" />
+      <Icon
+        aria-hidden="true"
+        className={value === "running" ? "spin" : undefined}
+      />
       {label(value)}
     </Badge>
   );

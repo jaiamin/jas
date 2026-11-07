@@ -1,3 +1,5 @@
+<img src="frontend/public/logo.svg" width="40" height="40" alt="JAS logo" />
+
 # JAS · Agent Simulation Environment
 
 A local developer workspace for experiments with model-controlled agents. Define a protocol,
@@ -16,7 +18,7 @@ docker compose up --build
 ```
 
 Open **http://localhost:8080**. Experiments is the default view. Data persists in the
-the named data volume. Set `JAS_PORT` for another port; stop with `docker compose down`.
+named data volume. Set `JAS_PORT` for another port; stop with `docker compose down`.
 This is a single-user, unauthenticated application for a trusted local network.
 
 ### Existing installations

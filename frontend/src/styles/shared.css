@@ -216,7 +216,6 @@ pre {
   color: var(--muted-foreground);
 }
 
-.status-dot,
 .live-dot,
 .recorded-dot {
   display: inline-block;
@@ -227,12 +226,13 @@ pre {
   flex-shrink: 0;
 }
 
-.status-complete {
-  color: var(--success);
+.status svg {
+  width: 12px;
+  height: 12px;
 }
 
-.status-complete .status-dot {
-  background: var(--success);
+.status-complete {
+  color: var(--success);
 }
 
 .status-running,
@@ -240,8 +240,6 @@ pre {
   color: var(--brand);
 }
 
-.status-running .status-dot,
-.status-queued .status-dot,
 .live-dot {
   background: var(--brand);
 }
@@ -251,17 +249,8 @@ pre {
   color: var(--warning);
 }
 
-.status-paused .status-dot,
-.status-pausing .status-dot {
-  background: var(--warning);
-}
-
 .status-failed {
   color: var(--destructive);
-}
-
-.status-failed .status-dot {
-  background: var(--destructive);
 }
 
 [hidden] {

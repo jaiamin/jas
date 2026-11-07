@@ -1,6 +1,5 @@
 import {
   Activity,
-  FlaskConical,
   Layers3,
   LayoutGrid,
   MessageSquare,
@@ -178,12 +177,14 @@ export default function WorkspaceShell() {
             aria-label="JAS home"
             onClick={() => setOpenMobile(false)}
           >
-            <span className="brand-mark" aria-hidden="true">
-              <FlaskConical />
-            </span>
-            <span className="brand-name">
-              JAS<span>Local workspace</span>
-            </span>
+            <img
+              className="brand-mark"
+              src="/logo.svg"
+              width={24}
+              height={24}
+              alt=""
+            />
+            <span className="brand-name">JAS</span>
           </Link>
         </SidebarHeader>
         <div className="sidebar-create">

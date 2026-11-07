@@ -69,6 +69,21 @@ User data was not touched.
 
 ## Review handoff
 
+### Monochrome brand refinement
+
+The user requested Vercel-like black/white consistency and supplied a new JAS SVG.
+Preserve its geometry and red/blue details as the only color exception. Main logo ink
+adapts to the theme; the master serves navigation and README, with a padded favicon
+derivative. The user clarified that only the favicon should be smaller. Remove the sidebar
+subheading. Keep all workflows and the real port-8080 service intact.
+
+- [x] Apply neutral shared tokens, adaptive logo and sidebar wordmark.
+- [x] Preserve status and comparison readability through icons and line patterns.
+- [x] Verify both themes, responsive layouts, focus, errors and comparison charts.
+- [x] Refresh canonical docs/screenshots; pass 7 unit tests, 28 Playwright tests,
+  Biome and TypeScript/Vite build. Token contrast exceeds 4.5:1 in both themes.
+- [x] Commit and push the refinement to the existing draft PR.
+
 Draft PR: https://github.com/jaiamin/ass/pull/4
 
 Implementation, cleanup and local verification are complete. No requested implementation

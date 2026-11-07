@@ -2,80 +2,80 @@
 name: "JAS developer workspace"
 description: "Experiments, runs and recorded evidence in one calm workspace."
 colors:
-  background: "#fcfcfc"
-  foreground: "#242424"
-  primary: "#242424"
-  primary-foreground: "#fafafa"
-  muted: "#f2f2f1"
-  muted-foreground: "#686865"
-  border: "#e4e4e2"
-  input: "#d6d6d3"
+  background: "#ffffff"
+  foreground: "#171717"
+  primary: "#171717"
+  primary-foreground: "#ffffff"
+  muted: "#f5f5f5"
+  muted-foreground: "#666666"
+  border: "#e5e5e5"
+  input: "#d4d4d4"
   ring: "#737373"
-  accent: "#ededeb"
+  accent: "#f0f0f0"
   accent-foreground: "#171717"
   popover: "#ffffff"
-  destructive: "#a93b3b"
-  danger-background: "#fff1ef"
+  destructive: "#171717"
+  danger-background: "#f5f5f5"
   success: "#525252"
-  warning: "#815c13"
-  warning-background: "#fff6e6"
-  sidebar: "#fcfcfc"
-  sidebar-border: "#e4e4e2"
-  chart-1: "#c2410c"
-  chart-2: "#4c67b1"
-  chart-3: "#836626"
-  chart-4: "#a64e78"
-  chart-5: "#3c7195"
-  chart-6: "#7a5b9c"
-  series-0-background: "#fff1e8"
-  series-1-background: "#eceff9"
-  series-2-background: "#f7f0df"
-  series-3-background: "#faeaf1"
-  series-4-background: "#e7f1f7"
-  series-5-background: "#f1ebf9"
-  brand: "#a94720"
-  selection-background: "#fff0e8"
-  panel: "#ffffff"
-  control-background: "#f7f7f6"
-  text-secondary: "#494947"
-  text-tertiary: "#73736f"
-  dark-background: "#121213"
+  warning: "#525252"
+  warning-background: "#f5f5f5"
+  sidebar: "#ffffff"
+  sidebar-border: "#e5e5e5"
+  chart-1: "#171717"
+  chart-2: "#525252"
+  chart-3: "#6b6b6b"
+  chart-4: "#333333"
+  chart-5: "#5c5c5c"
+  chart-6: "#404040"
+  series-0-background: "#f5f5f5"
+  series-1-background: "#f5f5f5"
+  series-2-background: "#f5f5f5"
+  series-3-background: "#f5f5f5"
+  series-4-background: "#f5f5f5"
+  series-5-background: "#f5f5f5"
+  brand: "#171717"
+  selection-background: "#f0f0f0"
+  panel: "#fafafa"
+  control-background: "#fafafa"
+  text-secondary: "#404040"
+  text-tertiary: "#6b6b6b"
+  dark-background: "#0a0a0a"
   dark-foreground: "#ededed"
   dark-primary: "#ededed"
-  dark-primary-foreground: "#202020"
-  dark-muted: "#1c1c1e"
-  dark-muted-foreground: "#a5a5a2"
-  dark-border: "#2c2c2e"
-  dark-input: "#424245"
+  dark-primary-foreground: "#0a0a0a"
+  dark-muted: "#1a1a1a"
+  dark-muted-foreground: "#a3a3a3"
+  dark-border: "#292929"
+  dark-input: "#404040"
   dark-ring: "#a3a3a3"
-  dark-accent: "#272729"
+  dark-accent: "#242424"
   dark-accent-foreground: "#fafafa"
-  dark-popover: "#171717"
-  dark-destructive: "#efa5a0"
-  dark-danger-background: "#3c2525"
+  dark-popover: "#1a1a1a"
+  dark-destructive: "#ededed"
+  dark-danger-background: "#1a1a1a"
   dark-success: "#d4d4d4"
-  dark-warning: "#e4bf81"
-  dark-warning-background: "#3b3020"
-  dark-sidebar: "#121213"
-  dark-sidebar-border: "#2c2c2e"
-  dark-chart-1: "#fb923c"
-  dark-chart-2: "#abbbef"
-  dark-chart-3: "#d9bc79"
-  dark-chart-4: "#e2aac4"
-  dark-chart-5: "#92c5de"
-  dark-chart-6: "#c1afe8"
-  dark-series-0-background: "#38271b"
-  dark-series-1-background: "#2b3043"
-  dark-series-2-background: "#3b3320"
-  dark-series-3-background: "#402a35"
-  dark-series-4-background: "#24333e"
-  dark-series-5-background: "#332c42"
-  dark-brand: "#eda27f"
-  dark-selection-background: "#30221c"
-  dark-panel: "#171719"
-  dark-control-background: "#171719"
-  dark-text-secondary: "#c1c1be"
-  dark-text-tertiary: "#999995"
+  dark-warning: "#b8b8b8"
+  dark-warning-background: "#1a1a1a"
+  dark-sidebar: "#0a0a0a"
+  dark-sidebar-border: "#292929"
+  dark-chart-1: "#fafafa"
+  dark-chart-2: "#cfcfcf"
+  dark-chart-3: "#a3a3a3"
+  dark-chart-4: "#e5e5e5"
+  dark-chart-5: "#b8b8b8"
+  dark-chart-6: "#dedede"
+  dark-series-0-background: "#1a1a1a"
+  dark-series-1-background: "#1a1a1a"
+  dark-series-2-background: "#1a1a1a"
+  dark-series-3-background: "#1a1a1a"
+  dark-series-4-background: "#1a1a1a"
+  dark-series-5-background: "#1a1a1a"
+  dark-brand: "#ededed"
+  dark-selection-background: "#242424"
+  dark-panel: "#141414"
+  dark-control-background: "#141414"
+  dark-text-secondary: "#c2c2c2"
+  dark-text-tertiary: "#999999"
 typography:
   body:
     fontFamily: '"Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
@@ -194,12 +194,14 @@ Do not create a second token guide. Route scope and verification: [INTERFACE](do
 For a developer investigating model behavior, the job is to follow an experiment to a
 run, a recorded decision and a defensible comparison. The workspace should feel quiet,
 precise and immediately usable. Laminar's actual trace and table screens are the primary
-reference: compact navigation, aligned records, low-contrast chrome and adjacent evidence.
+reference for composition: compact navigation, aligned records, low-contrast chrome and adjacent evidence.
+Vercel's black-and-white restraint guides the palette and contrast.
 Its marketing layout is not a reference. Preserve JAS's experimental units and provenance.
 
 Domain: experiments, protocols, conditions, seeds, turns, checkpoints, observations,
 consequences and replay. The color world is paper-white records, graphite text, charcoal
-work surfaces, soft gray separators, amber selection and muted ink colors for data series.
+work surfaces, soft gray separators and grayscale data series. The supplied JAS mark is
+the only color exception: its original blue and red details remain confined to the logo.
 The signature is linked evidence: immutable revision → run identity → selected turn →
 observation/decision/consequence, with comparison retaining the same identities.
 
@@ -209,7 +211,7 @@ Keep Geist for small, dense interface text. Expression comes from organization a
 
 **Key Characteristics:**
 - Compact records with aligned identity, status and measurements.
-- Neutral surfaces with warm navigation selection and distinct data-series colors.
+- Achromatic surfaces, neutral selection and data series distinguished by tone and line pattern.
 - Linked evidence that preserves revision, run and turn identity.
 
 ## Colors
@@ -220,15 +222,30 @@ steps. Text has primary, supporting, secondary and metadata levels.
 
 ### Primary
 
-Graphite `primary` and its contrasting foreground define the main action. Warm `brand`
+Graphite `primary` and its contrasting foreground define the main action. Neutral `brand`
 marks active execution and the selected navigation icon; `selection-background` marks
-the current navigation destination. Table selection uses `muted`, not the brand wash.
+the current navigation destination. Table selection uses `muted`. Do not introduce a
+colored action accent: contrast, typography and spacing carry hierarchy.
 
 ### Secondary
 
-The six chart inks and their corresponding series backgrounds identify agents and
-conditions. Destructive and warning pairs communicate failures and pauses alongside text;
-success remains neutral. These are data and status roles, not extra action accents.
+The six neutral chart inks identify agents and conditions alongside visible labels.
+Comparison lines use distinct solid/dashed patterns, reflected in their legends, so tone
+is never the only key. Series backgrounds share the muted surface. Statuses use labeled
+icons: check for complete, clock for queued, spinner for running, pause for paused/pausing
+and cross for failed. Errors include an alert icon. Destructive and warning tokens stay
+neutral; explicit copy, icons and existing confirmations communicate their meaning.
+
+### Logo
+
+`frontend/public/logo.svg` is the master asset for the sidebar and README. The favicon
+in `frontend/public/favicon.svg` preserves the same paths with an 8-unit inset on each
+edge (`viewBox="-8 -8 144 144"`), making only the browser-tab mark slightly smaller.
+Preserve the supplied geometry and red/blue details. Its main ink switches from near-black
+to white with the containing surface's color scheme; the favicon follows the browser's
+scheme. The sidebar uses a 24px mark beside “JAS”, with no subheading. The collapsed rail
+retains the mark and accessible home label. Do not substitute a generic experiment icon
+for the product logo.
 
 ### Neutral
 
@@ -238,7 +255,7 @@ records, `control-background` gently insets fields, and `popover` supports float
 tertiary text express hierarchy. The `ring` token identifies keyboard focus.
 
 **The Identity Before Color Rule.** Keep agent, condition and status labels visible;
-color supports identity and never implies moral rank.
+icons, labels and line patterns carry identity without relying on hue or implying moral rank.
 
 Body, metadata and placeholder text must meet 4.5:1; large text 3:1. Disabled controls retain
 their shape and use 50% opacity. Visible focus adds an outline or ring, never color alone.
@@ -332,8 +349,8 @@ padding and small corners; statuses retain text labels. Summary panels use the p
 surface, thin border and 20px padding. Tables use a muted header and subtle hover/selection
 fill, with a two-line identity cell and aligned measurements.
 
-Navigation uses compact icon/text rows, muted hover chrome and a warm selected surface;
-the active icon carries the brand color. Collapsed navigation retains accessible labels
+Navigation uses compact icon/text rows, muted hover chrome and a neutral selected surface;
+the active icon uses the foreground tone. Collapsed navigation retains accessible labels
 and tooltips. Page tabs use the shared line variant; local alternatives use the segmented
 variant. Both retain Radix keyboard and focus behavior.
 
