@@ -36,6 +36,14 @@ class Store:
                 metrics TEXT NOT NULL, checkpoint TEXT NOT NULL,
                 PRIMARY KEY(run_id, tick)
             );
+            CREATE TABLE IF NOT EXISTS analyses (
+                id INTEGER PRIMARY KEY, run_id TEXT NOT NULL REFERENCES runs(id),
+                created TEXT NOT NULL, through_tick INTEGER NOT NULL,
+                question TEXT NOT NULL, answer TEXT, citations TEXT NOT NULL DEFAULT '[]',
+                status TEXT NOT NULL DEFAULT 'pending', error TEXT,
+                model TEXT NOT NULL, requests INTEGER NOT NULL DEFAULT 0,
+                input_tokens INTEGER NOT NULL DEFAULT 0, output_tokens INTEGER NOT NULL DEFAULT 0
+            );
             PRAGMA user_version=1;
         """)
 
@@ -144,6 +152,14 @@ class Store:
             raise ValueError(f"No frame {tick} in run {run_id!r}")
         return self._decode_frame(row)
 
+    def latest_tick(self, run_id: str) -> int:
+        tick = self.db.execute("SELECT MAX(tick) FROM frames WHERE run_id=?", (run_id,)).fetchone()[
+            0
+        ]
+        if tick is None:
+            raise ValueError(f"No saved checkpoint for run {run_id!r}")
+        return tick
+
     @staticmethod
     def _decode_frame(row) -> dict:
         data = dict(row)
@@ -176,4 +192,12 @@ class Store:
                 **{key: json.loads(row[key]) for key in ("decision", "events", "metrics")},
             }
             for row in rows
+        ]
+
+    def analyses(self, run_id: str) -> list[dict]:
+        return [
+            {**dict(row), "citations": json.loads(row["citations"])}
+            for row in self.db.execute(
+                "SELECT * FROM analyses WHERE run_id=? ORDER BY id", (run_id,)
+            )
         ]

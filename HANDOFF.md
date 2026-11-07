@@ -164,3 +164,34 @@
   Resume run and Play. No UI changes or browser interaction checks in this task.
 - Detailed evidence and acceptance: `RUN_RESPONSE_RELIABILITY.md`. Diagnostic scripts
   and captured provider payloads are disposable and removed before the checkpoint commit.
+
+## Background execution and run questions
+
+- Branch `fix/background-run-lifecycle`, based on `ce8970c`. Durable acceptance and
+  evidence are in `RUN_WORKFLOW.md`. UI refinement preserves the existing design system.
+- Root cause: NiceGUI's per-client timer owned the awaited model turn, so client
+  deletion cancelled it; navigation also paused execution. `RunService` now owns tasks
+  independently of pages. Tabs share one writer, Pause finishes the current request,
+  and shutdown saves/pauses rather than automatically resuming after restart.
+- Fixed initial refresh/click race, pagination resets, evidence inspection during live
+  progress, URL restoration, execution/replay ambiguity and historical cancellation copy.
+  New variations allow names, agent goals and request settings to change in a paused copy.
+- Ask AI uses only `openai:gpt-6.1-sol`, with bounded read-only history/turn tools,
+  a fixed evidence cutoff, saved conversation and clickable turn citations. Additive
+  `analyses` storage tracks its tokens separately; simulation counters remain unchanged.
+  Analysis survives browser navigation and fails safely on server interruption.
+- 67 tests pass, including actual NiceGUI client deletion, one-writer multi-tab control,
+  pause/shutdown/restart and analysis tool/usage/isolation regressions. Ruff, formatting
+  and diff checks pass. Desktop/mobile browser flows verified with offline models;
+  no live provider request was used to validate this task. GPT-6.1 Sol access is unverified.
+- Removed the per-turn UI scheduler delay; simulated six-turn timing improved from
+  3.022s to 0.380s at 50ms fake model latency. Real turns remain sequential and mostly
+  model-latency bound. Thinking and simulation model settings were preserved.
+- Real journal at restart: `b3322b6f2a1b`, failed/CancelledError, turn 175, 177 calls.
+  Existing run/frame rows and usage are identical across restart. Play explicitly
+  retries the saved checkpoint; no automatic spending or history changes were made.
+- Viewer is running on port 8080, exec session 41112, HTTP 200. Real Ask AI page renders.
+  Refresh the forwarded port. QA service/browser are closed; ignored visual evidence
+  is in `.impeccable/review/workflow/`. Disposable QA scripts/databases are removed.
+- Impeccable detector retained the pinned Roboto and existing icon-size advisories;
+  design sidecar drift remains unchanged and can be refreshed in a dedicated document pass.

@@ -111,12 +111,13 @@ The workspace opens on **Runs**, a searchable, sortable library with status and 
 filters. Select two or more runs from the same environment to compare shared final metrics,
 model assignments, seeds, usage and histories aligned by turn. Comparison reads saved data.
 
-**New run** opens a dedicated setup page for scenario, model, seed and maximum turns.
+**New run** opens a dedicated setup page for name, scenario, model, seed, maximum turns
+and agent goals. Advanced controls set response allowance and request timeout.
 The request cap matches the chosen turn limit; other limits remain defined in the scenario.
 Creating a run starts paused and makes no model request. **Environments** lists available
 scenarios from the configured scenario directory.
 
-Opening a run shows one toolbar and timeline above four views:
+Opening a run shows execution controls and a separate recorded-turn scrubber above five views:
 
 - **Overview:** metric history, outcomes and recent activity.
 - **Environment:** the registered environment panel. The colony panel offers a clickable
@@ -124,15 +125,28 @@ Opening a run shows one toolbar and timeline above four views:
 - **Decisions:** the recorded log, agent filtering, rationale, goals, memory, radio and
   observations. Exact saved model input is labeled separately from state after the turn.
   Select a decision's turn to synchronize the timeline and agent evidence.
-- **Configuration:** resolved scenario, limits, usage, experiment metadata, replay verification
+- **Ask AI:** ask about cooperation, strategy or outcomes using GPT-6.1 Sol. Answers are
+  saved with evidence-turn links and a fixed cutoff at the latest turn when asked. The
+  assistant can read the entire run's history, observations, memories, messages and
+  checkpoints; it cannot change the simulation. Questions send separate OpenAI requests
+  using the existing `OPENAI_API_KEY`. Analysis tokens are tracked separately and excluded
+  from the simulation cost estimate. No fallback model or automatic retries are used.
+- **Settings:** resolved scenario, limits, usage, experiment metadata, replay verification
   and JSON export.
 
-Saved runs open in recorded playback, with no model calls. **Resume run** restores an
-incomplete run's latest checkpoint and enables live Step/Play; it does not branch from an
-earlier frame or make a request itself. Pause and navigation let an in-flight request finish
-and prevent the next turn. Completed runs remain replayable. Each tab owns its live run;
-checkpoints remain available after closing the tab. On narrow screens, navigation collapses
-into a drawer and wide analysis tables scroll within their containers.
+Opening a run sends no model calls. **Play** continues from its latest checkpoint and
+**Step** requests one decision. **Pause** finishes the current request before stopping.
+Execution belongs to the server: navigation, refresh and closing a tab do not stop it,
+and other tabs share the same controls. The server must stay running. After a server
+restart, interrupted runs remain paused until you explicitly continue.
+
+The scrubber and **Replay** inspect saved evidence without making requests. Inspecting
+history or expanding decision evidence holds your selected turn while execution continues;
+**Live** follows new turns again. **New variation** copies settings and goals into a new
+paused run. Completed runs remain replayable. Ask AI also survives browser navigation;
+server shutdown interrupts an unfinished answer without rerunning it automatically.
+On narrow screens, navigation collapses into a drawer and wide tables scroll within
+their containers.
 The viewer is optional and no environment imports NiceGUI during headless execution.
 
 ## Frontier Colony rules

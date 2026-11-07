@@ -57,7 +57,11 @@ class Runner:
 
     def pause(self):
         self.playing = False
-        if not self.finished and self.store.run(self.id)["status"] != "failed":
+        if (
+            not self.finished
+            and not self._lock.locked()
+            and self.store.run(self.id)["status"] != "failed"
+        ):
             self.store.status(self.id, "paused")
 
     async def wait_idle(self):
@@ -71,7 +75,7 @@ class Runner:
                 self.store.status(self.id, "complete")
                 return False
             # Prevent stale processes from spending on, or overwriting, a moved run.
-            if self.store.frame(self.id)["tick"] != self.tick:
+            if self.store.latest_tick(self.id) != self.tick:
                 raise ValueError("Run changed in another session; reload its checkpoint")
             policies.check_models(self.scenario)
             actor = self.environment.next_agent()
@@ -118,6 +122,16 @@ class Runner:
                 self.memory = memory
                 logger.info("run=%s tick=%d actor=%s", self.id, self.tick, actor)
                 return True
+            except asyncio.CancelledError:
+                self.environment.restore(before)
+                self.playing = False
+                self.store.status(
+                    self.id,
+                    "paused",
+                    "Request interrupted. The last checkpoint is saved; press Play to retry. "
+                    "The interrupted request may still count toward usage.",
+                )
+                raise
             except BaseException as error:
                 self.environment.restore(before)
                 self.playing = False

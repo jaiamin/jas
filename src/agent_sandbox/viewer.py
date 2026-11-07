@@ -3,9 +3,11 @@
 import json
 from pathlib import Path
 
-from nicegui import ui
+from nicegui import app, ui
 
+from .analysis import AnalysisService
 from .config import load_scenario
+from .execution import RunService
 from .presentation import (
     chart_options,
     comparison_metrics,
@@ -72,13 +74,24 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
     if not scenarios:
         raise ValueError(f"No scenario YAML files in {scenario_dir}")
     default = next((p for p in scenarios if Path(p).stem == "frontier"), next(iter(scenarios)))
+    store = Store(db_path)
+    runs = RunService(store)
+    analyst = AnalysisService(store)
+
+    async def shutdown():
+        await runs.close()
+        await analyst.close()
+        store.close()
+
+    app.on_shutdown(shutdown)
 
     @ui.page("/")
-    def page():
+    def page(
+        run: str = "", tab: str = "overview", turn: str = "", section: str = "runs", agent: str = ""
+    ):
         ui.dark_mode().enable()
         ui.colors(primary="#85b8d2", secondary="#bcadcf", positive="#8ebca7", warning="#d6b57b")
         ui.add_css(Path(__file__).with_name("viewer.css").read_text())
-        store = Store(db_path)
         client = ui.context.client
 
         class View:
@@ -101,14 +114,20 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
             environment_filter = "all"
             scenario = default
             actor_filter = "all"
+            draft = None
+            library_update = None
+            signature = None
+            decision_pagination = {"rowsPerPage": 10, "page": 1}
+            library_pagination = {"rowsPerPage": 15, "page": 1}
+            question = ""
+            ask_button = None
+            url_route = None
 
         view = View()
 
         def stop():
+            # Stops recorded playback only. Navigation never controls a live run.
             view.playing = False
-            view.pause_requested = view.busy
-            if view.runner:
-                view.runner.pause()
 
         def navigate(section):
             stop()
@@ -117,39 +136,57 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
             render.refresh()
 
         def open_run(run_id):
-            if view.busy:
-                ui.notify("Pause and wait for the current request before changing runs.")
-                return
             stop()
             record = store.run(run_id)
-            view.run_id, view.runner = run_id, None
-            view.tick = store.frame(run_id)["tick"]
+            legacy = any(a.get("policy") == "demo" for a in record["scenario"]["agents"])
+            view.run_id = run_id
+            view.runner = None if legacy else runs.get(run_id).runner
+            view.tick = store.latest_tick(run_id)
             view.selected = record["scenario"]["agents"][0]["id"]
-            view.section, view.replay, view.tab, view.error = "run", True, "overview", ""
+            view.section, view.tab, view.error = "run", "overview", ""
+            view.replay = legacy or record["status"] == "complete"
             view.metric, view.actor_filter = "", "all"
+            view.decision_pagination = {"rowsPerPage": 10, "page": 1}
+            view.question = ""
+            view.signature = None
             render.refresh()
 
         def new_setup(path=None):
-            if view.busy:
-                ui.notify("Wait for the current request to finish before creating a run.")
-                return
             stop()
+            view.draft = None
             if path:
                 view.scenario = path
             view.section, view.error = "new", ""
             render.refresh()
 
-        def resume():
+        def start_run(single_step=False):
             try:
-                view.runner = Runner(store, view.run_id)
+                runs.start(view.run_id, single_step=single_step)
+                view.runner = runs.get(view.run_id).runner
                 view.tick, view.replay, view.error = view.runner.tick, False, ""
             except ValueError as error:
                 view.error = str(error)
+            refresh_run()
+
+        def pause_run():
+            runs.pause(view.run_id)
+            run_header.refresh()
+
+        def variation():
+            view.draft = runs.get(view.run_id).runner.scenario.model_copy(deep=True)
+            view.scenario = next(
+                (
+                    path
+                    for path, candidate in scenarios.items()
+                    if candidate.name == view.draft.name
+                ),
+                default,
+            )
+            view.section, view.error = "new", ""
+            stop()
             render.refresh()
 
         def select_turn(tick, *, decision=False):
-            if view.busy:
-                return
             stop()
             view.tick, view.replay = int(tick), True
             if decision:
@@ -157,57 +194,115 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                 if frame["actor"]:
                     view.selected = frame["actor"]
                 view.tab = "decisions"
-            render.refresh()
+            refresh_run()
 
         def select_agent(agent):
+            stop()
+            view.replay = True
             view.selected, view.tab = agent, "decisions"
-            render.refresh()
+            refresh_run()
+
+        def freeze_inspection():
+            stop()
+            if not view.replay:
+                view.replay = True
+                run_header.refresh()
+                update_url()
 
         def toggle():
             if view.playing:
                 stop()
             else:
                 view.playing = True
-                if view.runner and not view.replay:
-                    view.runner.playing = True
-                latest = store.frame(view.run_id)["tick"]
+                view.replay = True
+                latest = store.latest_tick(view.run_id)
                 if view.replay and view.tick == latest:
                     view.tick = 0
-            render.refresh()
+            run_header.refresh()
 
-        async def advance():
-            if view.busy or not view.run_id:
+        def latest_turn():
+            stop()
+            view.tick = store.latest_tick(view.run_id)
+            view.replay = view.runner is None or view.runner.finished
+            refresh_run()
+
+        def refresh_run():
+            if view.section != "run":
                 return
-            view.busy, view.error = True, ""
-            view.pause_requested = False
-            render.refresh()
-            try:
-                if view.replay:
-                    latest = store.frame(view.run_id)["tick"]
-                    view.tick = min(view.tick + 1, latest)
-                    if view.tick == latest:
-                        stop()
-                else:
-                    await view.runner.step()
-                    view.tick = view.runner.tick
-                    if view.runner.finished:
-                        stop()
-                        view.replay = True
-            except Exception as error:
-                stop()
-                detail = str(error) if isinstance(error, ValueError) else type(error).__name__
-                view.error = f"Stopped at turn {view.tick}: {detail.rstrip('.')}."
-            finally:
-                view.busy = False
-                render.refresh()
+            record = store.run(view.run_id)
+            frame = store.frame(view.run_id, view.tick)
+            run_header.refresh()
+            run_content.refresh(record, frame, store.history(view.run_id, view.tick))
+            update_url()
 
-        async def timer_tick():
-            if view.playing and not view.busy:
-                await advance()
+        def timer_tick():
+            if view.section == "runs" and view.library_update:
+                view.library_update()
+            if view.section != "run" or not view.run_id:
+                return
+            if view.tab == "ask" and view.ask_button and not view.ask_button.is_deleted:
+                view.ask_button.set_enabled(not analyst.busy(view.run_id))
+            record = store.run(view.run_id)
+            latest = store.latest_tick(view.run_id)
+            refreshed = False
+            if view.playing:
+                view.tick = min(view.tick + 1, latest)
+                if view.tick == latest:
+                    stop()
+                refresh_run()
+                refreshed = True
+            elif not view.replay and view.tick != latest:
+                view.tick = latest
+                if view.tab != "ask":
+                    refresh_run()
+                else:
+                    run_header.refresh()
+                refreshed = True
+            analyses = store.analyses(view.run_id)
+            signature = (
+                latest,
+                record["status"],
+                record["calls"],
+                record["error"],
+                runs.active(view.run_id),
+                tuple((row["id"], row["status"]) for row in analyses),
+            )
+            if signature != view.signature:
+                previous = view.signature
+                view.signature = signature
+                if previous is not None and not refreshed:
+                    run_header.refresh()
+                if view.tab == "ask" and previous and previous[-1] != signature[-1]:
+                    ask_thread.refresh()
+
+        def update_url():
+            from urllib.parse import urlencode
+
+            query = {"section": view.section}
+            if view.section == "run":
+                query = {"run": view.run_id, "tab": view.tab}
+                if view.tab == "decisions":
+                    query["agent"] = view.selected
+                if view.replay:
+                    query["turn"] = view.tick
+            route = (view.section, view.run_id, view.tab if view.section == "run" else "")
+            method = "pushState" if view.url_route and view.url_route != route else "replaceState"
+            view.url_route = route
+            ui.run_javascript(f"history.{method}(null, '', '?' + {json.dumps(urlencode(query))})")
 
         def export_run():
             data = {"run": store.run(view.run_id), "frames": store.frames(view.run_id)}
             ui.download(json.dumps(data, indent=2).encode(), f"run-{view.run_id}.json")
+
+        def decision_pagination_changed(event):
+            defaults = {"page": 1, "rowsPerPage": 10, "sortBy": None, "descending": False}
+            changed = any(
+                view.decision_pagination.get(key, default) != event.value.get(key, default)
+                for key, default in defaults.items()
+            )
+            view.decision_pagination = event.value
+            if changed:
+                freeze_inspection()
 
         def verify_run():
             try:
@@ -265,10 +360,6 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
         def library():
             records = store.runs()
             rows = [run_row(record) for record in records]
-            if view.status_filter not in {row["status"] for row in rows}:
-                view.status_filter = "all"
-            if view.environment_filter not in {row["environment"] for row in rows}:
-                view.environment_filter = "all"
             heading("Runs", new_button=True)
             if not rows:
                 empty_state(
@@ -294,6 +385,8 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                 view.selected_runs = []
                 table.selected = []
                 table.update_rows(filter_rows())
+                table.pagination = {**table.pagination, "page": 1}
+                view.library_pagination = table.pagination
                 compare_button.set_enabled(False)
                 compare_button.set_text("Compare")
 
@@ -316,7 +409,13 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                     search.on_value_change(
                         lambda e: (setattr(view, "search", e.value or ""), apply_filters())
                     )
-                    statuses = {"all": "All statuses", **{r["status"]: r["status"] for r in rows}}
+                    statuses = {
+                        "all": "All statuses",
+                        **{
+                            status: status
+                            for status in ("Running", "Paused", "Complete", "Failed", "Archived")
+                        },
+                    }
                     ui.select(
                         statuses,
                         value=view.status_filter,
@@ -369,7 +468,8 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                         rows=filter_rows(),
                         row_key="id",
                         selection="multiple",
-                        pagination=15,
+                        pagination=view.library_pagination,
+                        on_pagination_change=lambda e: setattr(view, "library_pagination", e.value),
                         on_select=lambda e: (
                             setattr(view, "selected_runs", [r["id"] for r in e.selection]),
                             compare_button.set_enabled(len(e.selection) >= 2),
@@ -422,12 +522,24 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                 )
                 table.on("open", lambda e: open_run(e.args))
 
+            def update_records():
+                nonlocal records, rows
+                records = store.runs()
+                rows = [run_row(record) for record in records]
+                filtered = filter_rows()
+                if table.rows != filtered:
+                    table.rows = filtered
+                    table.update()
+
+            view.library_update = update_records
+
         def setup():
             heading("New run")
-            scenario = scenarios[view.scenario]
+            scenario = view.draft or scenarios[view.scenario]
 
             def scenario_changed(event):
                 view.scenario = event.value
+                view.draft = None
                 render.refresh()
 
             with ui.element("div").classes("setup-form"):
@@ -437,6 +549,11 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                     label="Scenario",
                     on_change=scenario_changed,
                 ).props("outlined dense").classes("form-wide")
+                run_name = (
+                    ui.input("Run name", value=scenario.name)
+                    .props("outlined dense maxlength=100")
+                    .classes("form-wide")
+                )
                 ui.label(scenario.description).classes("description form-wide")
                 assignments = {a.model for a in scenario.agents}
                 default_model = next(iter(assignments)) if len(assignments) == 1 else "profiles"
@@ -472,33 +589,57 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                         "description"
                     )
                 with ui.expansion("Advanced settings").classes("form-wide"):
-                    key_values(
-                        [
-                            ("Input tokens / request", f"{scenario.limits.max_input_tokens:,}"),
-                            ("Output tokens / request", f"{scenario.limits.max_output_tokens:,}"),
-                            ("Total token limit", scenario.limits.max_total_tokens or "No limit"),
-                            ("Request timeout", f"{scenario.limits.timeout_seconds:g} seconds"),
-                        ]
-                    )
+                    with ui.row().classes("advanced-fields"):
+                        output_limit = (
+                            ui.number(
+                                "Response tokens / request",
+                                value=scenario.limits.max_output_tokens,
+                                min=64,
+                                max=16000,
+                                precision=0,
+                            )
+                            .props("outlined dense")
+                            .tooltip("Includes the model's thinking tokens.")
+                        )
+                        timeout = ui.number(
+                            "Request timeout (seconds)",
+                            value=scenario.limits.timeout_seconds,
+                            min=1,
+                            max=300,
+                        ).props("outlined dense")
                     ui.label(
-                        "Additional settings and agent goals are defined in the scenario YAML."
+                        "Additional environment settings are defined in the scenario YAML."
                     ).classes("description q-mt-md")
+                goals = {}
+                with ui.expansion("Agent goals").classes("form-wide"):
+                    for agent in scenario.agents:
+                        goals[agent.id] = (
+                            ui.textarea(agent.name, value=agent.goal)
+                            .props("outlined dense autogrow maxlength=1000")
+                            .classes("full-width q-mb-md")
+                        )
 
             def create():
                 try:
                     resolved = scenario.model_copy(deep=True)
+                    resolved.name = run_name.value
                     resolved.seed, resolved.max_steps = int(seed.value), int(turns.value)
                     resolved.limits.max_model_calls = resolved.max_steps
+                    resolved.limits.max_output_tokens = int(output_limit.value)
+                    resolved.limits.timeout_seconds = float(timeout.value)
+                    for agent in resolved.agents:
+                        agent.goal = goals[agent.id].value
                     if model.value != "profiles":
                         for agent in resolved.agents:
                             agent.model = model.value
                     runner = Runner.create(store, resolved)
-                    view.run_id, view.runner = runner.id, runner
+                    view.run_id = runner.id
+                    view.runner = runs.get(runner.id).runner
                     view.tick, view.replay, view.selected = 0, False, resolved.agents[0].id
                     view.section, view.tab, view.error, view.metric = "run", "overview", "", ""
                     view.actor_filter = "all"
                     render.refresh()
-                except (ValueError, TypeError) as error:
+                except (ValueError, TypeError, OverflowError) as error:
                     setup_error.set_text(
                         str(error)
                         if isinstance(error, ValueError)
@@ -511,7 +652,9 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                     "unelevated no-caps"
                 ).classes("primary-action")
                 ui.button("Cancel", on_click=lambda: navigate("runs")).props("flat no-caps")
-                ui.label("Starts paused. Step or Play sends model requests.").classes("description")
+                ui.label("Starts paused. Play continues on the server when you leave.").classes(
+                    "description"
+                )
 
         def environments_page():
             heading("Environments")
@@ -634,7 +777,7 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                     value=view.selected,
                     label="Agent",
                     on_change=lambda e: select_agent(e.value),
-                ).props("outlined dense").classes("full-width")
+                ).props("outlined dense").classes("full-width").on("popup-show", freeze_inspection)
                 last = next(
                     (
                         f
@@ -671,20 +814,24 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                             with ui.column().classes("gap-1"):
                                 ui.label(title(key)).classes("detail-label")
                                 ui.label(str(value)).classes("numeric")
-                with ui.expansion("Goal and model"):
+                with ui.expansion("Goal and model").on("before-show", freeze_inspection):
                     ui.label(profile["goal"]).classes("detail-body")
                     ui.label(
                         "Historical demo"
                         if profile.get("policy") == "demo"
                         else scenario["models"][profile["model"]]
                     ).classes("description q-mt-md")
-                with ui.expansion(f"Private memory after turn {view.tick}"):
+                with ui.expansion(f"Private memory after turn {view.tick}").on(
+                    "before-show", freeze_inspection
+                ):
                     ui.label(
                         frame["checkpoint"]["memory"].get(view.selected)
                         or "No memory recorded at this turn."
                     ).classes("detail-body")
                 if "inbox" in state:
-                    with ui.expansion(f"Radio inbox ({len(state['inbox'])})"):
+                    with ui.expansion(f"Radio inbox ({len(state['inbox'])})").on(
+                        "before-show", freeze_inspection
+                    ):
                         if not state["inbox"]:
                             ui.label("No received messages.").classes("description")
                         for message in reversed(state["inbox"]):
@@ -692,22 +839,117 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                                 "detail-label"
                             )
                             ui.label(message["text"]).classes("detail-body q-mb-md")
-                with ui.expansion(f"Environment observation after turn {view.tick}"):
+                with ui.expansion(f"Environment observation after turn {view.tick}").on(
+                    "before-show", freeze_inspection
+                ):
                     ui.label(json.dumps(observation, indent=2)).classes("json-detail")
                 if last:
-                    with ui.expansion(f"Recorded model input · turn {last['tick']}"):
+                    with ui.expansion(f"Recorded model input · turn {last['tick']}").on(
+                        "before-show", freeze_inspection
+                    ):
                         ui.label(
                             "Exact input saved before this decision, including the agent's "
                             "then-current memory."
                         ).classes("description q-mb-md")
                         recorded = store.frame(view.run_id, last["tick"])["observation"]
                         ui.label(json.dumps(recorded, indent=2)).classes("json-detail")
-                    with ui.expansion("Raw decision"):
+                    with ui.expansion("Raw decision").on("before-show", freeze_inspection):
                         ui.label(json.dumps(last["decision"], indent=2)).classes("json-detail")
 
+        @ui.refreshable
+        def ask_thread():
+            rows = store.analyses(view.run_id)
+            if not rows:
+                ui.label("Ask about cooperation, choices, or what changed the outcome.").classes(
+                    "description ask-empty"
+                )
+            for row in rows:
+                with ui.column().classes("conversation-entry full-width"):
+                    ui.label(row["question"]).classes("question-text")
+                    ui.label(f"Evidence through turn {row['through_tick']}").classes("detail-label")
+                    if row["status"] == "pending":
+                        with ui.row().classes("items-center gap-3"):
+                            ui.spinner(size="18px")
+                            ui.label("Reading recorded evidence…").classes("description").props(
+                                'role="status"'
+                            )
+                    elif row["status"] == "failed":
+                        ui.label(row["error"]).classes("form-error").props('role="alert"')
+                        ui.button(
+                            "Retry question",
+                            on_click=lambda q=row["question"]: retry_question(q),
+                        ).props("flat dense no-caps").set_enabled(not analyst.busy(view.run_id))
+                    else:
+                        ui.markdown(row["answer"]).classes("answer-text full-width")
+                        if row["citations"]:
+                            with ui.row().classes("citation-links"):
+                                ui.label("Evidence").classes("detail-label")
+                                for tick in row["citations"]:
+                                    ui.button(
+                                        f"Turn {tick}",
+                                        on_click=lambda t=tick: select_turn(t, decision=True),
+                                    ).props("flat dense no-caps").classes("turn-link")
+                    if row["input_tokens"] or row["output_tokens"]:
+                        ui.label(
+                            f"{row['input_tokens'] + row['output_tokens']:,} analysis tokens"
+                        ).classes("detail-label").tooltip(
+                            "Analysis usage is separate from simulation requests and cost."
+                        )
+
+        def retry_question(question):
+            try:
+                analyst.ask(view.run_id, question)
+                ask_thread.refresh()
+            except ValueError as error:
+                ui.notify(str(error), type="warning")
+
+        def ask_page():
+            with ui.column().classes("ask-workspace full-width"):
+                with ui.row().classes("section-row"):
+                    ui.label("Ask about this run").classes("section-title").props(
+                        'role="heading" aria-level="2"'
+                    )
+                    ui.label("GPT-6.1 Sol").classes("description")
+                ask_thread()
+                question = (
+                    ui.textarea(
+                        placeholder="Were any agents selfish? Who had the best strategy?",
+                        value=view.question,
+                        on_change=lambda e: setattr(view, "question", e.value or ""),
+                    )
+                    .props('outlined autogrow maxlength=4000 aria-label="Ask about this run"')
+                    .classes("full-width question-input")
+                )
+
+                def submit():
+                    try:
+                        analyst.ask(view.run_id, question.value or "", selected_turn=view.tick)
+                        question.set_value("")
+                        ask_error.set_text("")
+                        ask_thread.refresh()
+                        ask_button.set_enabled(False)
+                    except ValueError as error:
+                        ask_error.set_text(str(error))
+
+                with ui.row().classes("ask-actions"):
+                    ask_button = (
+                        ui.button("Ask", icon="arrow_upward", color=None, on_click=submit)
+                        .props("unelevated no-caps")
+                        .classes("primary-action")
+                    )
+                    view.ask_button = ask_button
+                    ask_button.set_enabled(not analyst.busy(view.run_id))
+                    ui.label("Uses recorded evidence through the latest saved turn.").classes(
+                        "description"
+                    )
+                ask_error = ui.label().classes("form-error").props('role="alert"')
+
+        @ui.refreshable
         def run_content(record, frame, history):
             scenario = record["scenario"]
-            if view.tab == "overview":
+            if view.tab == "ask":
+                ask_page()
+            elif view.tab == "overview":
                 keys = list(frame["metrics"])
                 if view.metric not in keys:
                     view.metric = keys[0] if keys else ""
@@ -723,9 +965,11 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                                 label="Metric",
                                 on_change=lambda e: (
                                     setattr(view, "metric", e.value),
-                                    render.refresh(),
+                                    refresh_run(),
                                 ),
-                            ).props("outlined dense").classes("metric-picker")
+                            ).props("outlined dense").classes("metric-picker").on(
+                                "popup-show", freeze_inspection
+                            )
                         if len(history) > 1:
                             ui.echart(
                                 chart_options([(scenario["name"], history)], view.metric)
@@ -746,7 +990,7 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                     )
                     ui.button(
                         "All decisions",
-                        on_click=lambda: (setattr(view, "tab", "decisions"), render.refresh()),
+                        on_click=lambda: (setattr(view, "tab", "decisions"), refresh_run()),
                     ).props("flat dense no-caps")
                 events = [(f["tick"], event) for f in history for event in f["events"]]
                 if not events:
@@ -789,9 +1033,14 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                                 label="Filter agent",
                                 on_change=lambda e: (
                                     setattr(view, "actor_filter", e.value),
-                                    render.refresh(),
+                                    setattr(
+                                        view, "decision_pagination", {"rowsPerPage": 10, "page": 1}
+                                    ),
+                                    refresh_run(),
                                 ),
-                            ).props("outlined dense").classes("metric-picker")
+                            ).props("outlined dense").classes("metric-picker").on(
+                                "popup-show", freeze_inspection
+                            )
                         rows = [
                             {
                                 "tick": f["tick"],
@@ -817,7 +1066,8 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                                         ),
                                         rows=rows,
                                         row_key="tick",
-                                        pagination=10,
+                                        pagination=view.decision_pagination,
+                                        on_pagination_change=decision_pagination_changed,
                                     )
                                     .props("flat")
                                     .classes("data-table")
@@ -880,10 +1130,14 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                         ui.label("Run data").classes("section-title section-label").props(
                             'role="heading" aria-level="2"'
                         )
-                        with ui.expansion("Resolved scenario JSON"):
+                        with ui.expansion("Resolved scenario JSON").on(
+                            "before-show", freeze_inspection
+                        ):
                             ui.label(json.dumps(scenario, indent=2)).classes("json-detail")
                         if record["metadata"]:
-                            with ui.expansion("Experiment metadata"):
+                            with ui.expansion("Experiment metadata").on(
+                                "before-show", freeze_inspection
+                            ):
                                 ui.label(json.dumps(record["metadata"], indent=2)).classes(
                                     "json-detail"
                                 )
@@ -891,64 +1145,65 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                             "outline no-caps"
                         ).classes("q-mt-md")
 
-        def run_page():
+        @ui.refreshable
+        def run_header():
             record = store.run(view.run_id)
             scenario = record["scenario"]
-            frame = store.frame(view.run_id, view.tick)
-            history = store.history(view.run_id, view.tick)
-            latest = store.frame(view.run_id)["tick"]
+            latest = store.latest_tick(view.run_id)
             legacy = any(a.get("policy") == "demo" for a in scenario["agents"])
-            complete = record["status"] == "complete"
+            active = runs.active(view.run_id)
+            if not legacy:
+                view.runner = runs.get(view.run_id).runner
+            complete = record["status"] == "complete" or (view.runner and view.runner.finished)
+            pausing = active and not view.runner.playing
             with ui.row().classes("page-heading run-heading"):
                 with ui.column():
                     ui.label(scenario["name"]).classes("page-title").props(
                         'role="heading" aria-level="1"'
                     )
                     with ui.element("div").classes("run-subtitle"):
-                        status = "Playing" if view.playing else title(record["status"])
+                        status = (
+                            "Pausing"
+                            if pausing
+                            else "Running"
+                            if active
+                            else title(record["status"])
+                        )
                         ui.label(status).classes(f"status status-{status.lower()}")
                         ui.label(run_models(scenario))
                         ui.label(f"Seed {scenario['seed']}")
                 with ui.row().classes("run-actions"):
-                    if view.replay and not complete and not legacy:
+                    if active:
                         ui.button(
-                            "Resume run", icon="play_arrow", color=None, on_click=resume
+                            "Finishing turn…" if pausing else "Pause",
+                            icon="pause",
+                            color=None,
+                            on_click=pause_run,
                         ).props("unelevated no-caps").classes("primary-action").set_enabled(
-                            not view.busy
+                            not pausing
                         )
-                    else:
-                        play = (
-                            ui.button(
-                                "Pause" if view.playing else "Replay" if view.replay else "Play",
-                                icon="pause" if view.playing else "play_arrow",
-                                color=None,
-                                on_click=toggle,
-                            )
-                            .props("unelevated no-caps")
-                            .classes("primary-action")
+                    elif not complete and not legacy:
+                        ui.button(
+                            "Play",
+                            icon="play_arrow",
+                            color=None,
+                            on_click=lambda: start_run(),
+                        ).props("unelevated no-caps").classes("primary-action").tooltip(
+                            "Continues on the server when you leave this page."
                         )
-                        play.set_enabled(
-                            view.playing
-                            or (
-                                not view.busy
-                                and (latest > 0 if view.replay else not view.runner.finished)
-                            )
-                        )
-                    step = ui.button("Step", icon="skip_next", on_click=advance).props(
-                        "outline no-caps"
-                    )
-                    step.set_enabled(
-                        not view.busy
-                        and not view.playing
-                        and (view.tick < latest if view.replay else not view.runner.finished)
-                    )
-                    if view.busy:
-                        step.props("loading")
+                        ui.button("Step", icon="skip_next", on_click=lambda: start_run(True)).props(
+                            "outline no-caps"
+                        ).tooltip("Request one new model decision.")
+                    if not legacy:
+                        ui.button("New variation", icon="content_copy", on_click=variation).props(
+                            "outline no-caps"
+                        ).tooltip("Copy these settings into a new paused run.")
                     ui.button(icon="download", on_click=export_run).props(
                         'flat round aria-label="Export run JSON"'
                     ).tooltip("Export run JSON")
             with ui.element("div").classes("run-facts"):
                 for label, value in [
+                    ("Turns", f"{latest} / {scenario['max_steps']}"),
                     ("Requests", f"{record['calls']} / {scenario['limits']['max_model_calls']}"),
                     ("Tokens", f"{record['input_tokens'] + record['output_tokens']:,}"),
                     ("Est. cost", cost_label(record)),
@@ -958,45 +1213,87 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                         ui.label(value).classes("fact-value")
                     if label == "Est. cost":
                         fact.tooltip(COST_NOTE)
-                if view.busy and not view.replay:
+                if active:
                     actor = view.runner.environment.next_agent()
-                    profile = next(a for a in scenario["agents"] if a["id"] == actor)
-                    text = "Pausing after " if view.pause_requested else "Requesting for "
-                    ui.label(text + profile["name"]).classes("request-indicator").props(
-                        'role="status"'
+                    profile = next((a for a in scenario["agents"] if a["id"] == actor), None)
+                    text = ("Finishing " if pausing else "Requesting for ") + (
+                        profile["name"] if profile else "current turn"
                     )
                 else:
-                    ui.label(
-                        "Recorded playback" if view.replay else "Live model decisions"
-                    ).classes("request-indicator")
-            with ui.element("div").classes("timeline"):
-                ui.label(f"Turn {view.tick} / {scenario['max_steps']}").classes("timeline-label")
-                slider = ui.slider(min=0, max=max(1, latest), value=view.tick, step=1).props(
-                    'label aria-label="Replay turn"'
-                )
-                slider.set_enabled(latest > 0 and not view.busy and not view.playing)
-                slider.on("change", lambda e: select_turn(e.args))
-                if view.tick != latest:
-                    ui.button("Latest", on_click=lambda: select_turn(latest)).props(
-                        "flat dense no-caps"
+                    text = (
+                        "Recorded evidence"
+                        if view.replay or complete or legacy
+                        else "Ready for a model decision"
                     )
+                ui.label(text).classes("request-indicator").props('role="status"')
+            with ui.element("div").classes("timeline"):
+                ui.label(f"Viewing turn {view.tick}").classes("timeline-label")
+                with ui.element("div").classes("timeline-scrubber"):
+                    ui.button(
+                        icon="chevron_left",
+                        on_click=lambda: select_turn(max(0, view.tick - 1)),
+                    ).props('flat dense round aria-label="Previous turn"').set_enabled(
+                        view.tick > 0
+                    )
+                    slider = ui.slider(min=0, max=max(1, latest), value=view.tick, step=1).props(
+                        'label aria-label="Recorded turn"'
+                    )
+                    slider.set_enabled(latest > 0 and not view.playing)
+                    slider.on("change", lambda e: select_turn(int(e.args)))
+                    ui.button(
+                        icon="chevron_right",
+                        on_click=lambda: select_turn(min(latest, view.tick + 1)),
+                    ).props('flat dense round aria-label="Next turn"').set_enabled(
+                        view.tick < latest
+                    )
+                with ui.row().classes("timeline-actions"):
+                    ui.button(
+                        "Pause replay" if view.playing else "Replay",
+                        icon="pause" if view.playing else "replay",
+                        on_click=toggle,
+                    ).props("flat dense no-caps").set_enabled(latest > 0)
+                    if view.replay and not legacy and not complete:
+                        ui.button("Live", icon="sensors", on_click=latest_turn).props(
+                            "outline dense no-caps"
+                        ).tooltip("Follow the latest saved turn.")
+                    elif view.tick < latest:
+                        ui.button("Latest", on_click=latest_turn).props("flat dense no-caps")
             if view.error or record["error"]:
                 with ui.column().classes("error-banner gap-1").props('role="alert"'):
-                    ui.label(view.error or f"Stopped at turn {latest}: {record['error']}.")
-                    ui.label(
-                        "The last checkpoint is safe. Check the model or limits in Configuration, "
-                        "then resume to retry."
-                    )
+                    error = view.error or record["error"]
+                    if error == "CancelledError":
+                        error = (
+                            "The previous request was interrupted. "
+                            "Press Play to retry the saved turn."
+                        )
+                    ui.label(error)
+                    if record["status"] == "failed":
+                        ui.label(
+                            f"Checkpoint saved at turn {latest}. "
+                            "Play retries; New variation changes settings."
+                        )
             with ui.tabs(
                 value=view.tab,
-                on_change=lambda e: (setattr(view, "tab", e.value), render.refresh()),
+                on_change=lambda e: (setattr(view, "tab", e.value), refresh_run()),
             ).classes("run-tabs"):
-                for key in ("overview", "environment", "decisions", "configuration"):
-                    ui.tab(key, label=key.capitalize())
-            run_content(record, frame, history)
+                for key in ("overview", "environment", "decisions", "ask", "configuration"):
+                    ui.tab(
+                        key,
+                        label={"ask": "Ask AI", "configuration": "Settings"}.get(
+                            key, key.capitalize()
+                        ),
+                    )
+
+        def run_page():
+            record = store.run(view.run_id)
+            run_header()
+            run_content(
+                record, store.frame(view.run_id, view.tick), store.history(view.run_id, view.tick)
+            )
 
         @ui.refreshable
         def render():
+            view.library_update = None
             runs_nav.classes(
                 add="active" if view.section != "environments" else "",
                 remove="active" if view.section == "environments" else "",
@@ -1028,16 +1325,35 @@ def serve(db_path: str, scenario_dir: str, host: str, port: int):
                     compare_page()
                 else:
                     run_page()
+            update_url()
 
+        if section in ("runs", "environments", "new"):
+            view.section = section
+        if run:
+            try:
+                record = store.run(run)
+                view.run_id, view.section = run, "run"
+                legacy = any(a.get("policy") == "demo" for a in record["scenario"]["agents"])
+                view.runner = None if legacy else runs.get(run).runner
+                latest = store.latest_tick(run)
+                view.tick = max(0, min(latest, int(turn))) if turn else latest
+                view.replay = bool(turn) or legacy or record["status"] == "complete"
+                view.selected = record["scenario"]["agents"][0]["id"]
+                if tab in ("overview", "environment", "decisions", "ask", "configuration"):
+                    view.tab = tab
+                if view.tab == "decisions":
+                    actor = store.frame(run, view.tick)["actor"] if turn else None
+                    ids = {profile["id"] for profile in record["scenario"]["agents"]}
+                    view.selected = agent if agent in ids else actor or view.selected
+            except ValueError:
+                view.section = "runs"
+                ui.notify("That run or turn is unavailable.", type="warning")
         render()
+        ui.run_javascript("window.addEventListener('popstate', () => location.reload())")
         timer = ui.timer(0.5, timer_tick)
 
-        async def cleanup():
-            stop()
+        def cleanup():
             timer.cancel()
-            if view.runner:
-                await view.runner.wait_idle()
-            store.close()
 
         client.on_delete(cleanup)
 
