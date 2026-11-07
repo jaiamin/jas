@@ -5,6 +5,8 @@ fix/resolve/next workflow for the Python backend and TypeScript frontend,
 including substantive refactors and stale-documentation cleanup. No paid model
 calls, credentials, user databases, or benchmark evidence may be modified.
 
+Strict-score target: 90 for each program, evaluated after integrating main.
+
 ## Acceptance and workflow
 
 - [x] Install Desloppify with full extras and its Codex workflow guide.
@@ -13,7 +15,7 @@ calls, credentials, user databases, or benchmark evidence may be modified.
 - [x] Fix all 23 initial backend and 21 initial frontend review findings.
 - [x] Finish useful mechanical work and independent re-reviews; fix follow-ups.
 - [x] Run final checks and record pre-integration scores/limitations.
-- [ ] Integrate current main, preserving its newer interface/chat/config behavior.
+- [x] Integrate current main, preserving its newer interface/chat/config behavior.
 - [ ] Verify combined behavior, rescan, then publish one draft PR.
 
 The scanner lives in `.tools/desloppify`. Run backend commands from the repository
@@ -49,7 +51,8 @@ blind Codex batch runner, at most three concurrent review processes overall.
   cache refreshes target affected resources. Select retains domain union types.
 - Draft listing isolates corruption; editor discard errors stay recoverable;
   research targets are exclusive; progress respects max; pausing links stay valid.
-- PRODUCT.md and docs/INTERFACE.md describe current capabilities/contracts.
+- README.md and docs/INTERFACE.md describe current capabilities/contracts; redundant
+  PRODUCT.md was consolidated. DESIGN.md and EVALUATION.md retain concise references.
 
 ## Verification and current work
 
@@ -79,7 +82,7 @@ override. No agent-browser session is open.
 
 Publication checks found this branch starts at bfdb35c, while origin/main now
 contains merged PR #4's later redesign. Do not publish a PR that reverts it.
-Merge origin/main (e4092b2), preserving unified Agent/chat streaming, the current
+Merged origin/main (e4092b2) at c5832dd, preserving unified Agent/chat streaming, the current
 workspace shell/styles, JAS configuration compatibility and all quality fixes.
 Resolve overlaps by responsibility, remove superseded duplicate UI components,
 and update existing/new browser tests for current navigation. Re-run affected

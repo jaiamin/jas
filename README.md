@@ -20,6 +20,8 @@ docker compose up --build
 Open **http://localhost:8080**. Experiments is the default view. Data persists in the
 named data volume. Set `JAS_PORT` for another port; stop with `docker compose down`.
 This is a single-user, unauthenticated application for a trusted local network.
+Hosted collaboration would require tenant isolation, authorization, audit and retention
+controls; it is outside this release.
 
 ### Existing installations
 
@@ -46,18 +48,16 @@ so it uses the same volume. Frozen benchmark artifacts retain their original pro
 
 Settings shows provider availability, budget reservations, usage and storage. Normal startup
 loads provider keys from the process environment and `.env`; it does not disable keys or
-seed example results. Change provider keys and deployment settings through `.env`, then restart. The sidebar supports
-collapse, light/dark themes and a mobile drawer. **Agent** is the persistent destination
+seed example results. Change keys and deployment settings through `.env`, then restart.
+The sidebar supports collapse, light/dark themes and a mobile drawer. **Agent** is the persistent destination
 for general questions, evidence analysis and reviewed creation. **Ask Agent** appears on
 experiment and run details and opens the same full-page chat with that record selected.
-Past chats live in an inner Agent sidebar; the composer selects General, New experiment,
-an experiment, or a run. Proposals open in the protocol editor for review before saving.
-Replies stream as they arrive, with activity tied to actual reading, research, drafting and
-review stages. Four suggestions offer methods, controlled study templates, or questions
-tailored to the selected protocol and recorded progress. Selecting one fills the draft.
-General questions use the workspace budget; scoped questions use the experiment budget
-and cite inspected evidence. Chat history is stored in the database; unsent messages remain
-browser-session drafts. Enter sends and Shift+Enter adds a line.
+Past chats are stored in the database. The composer selects General, New experiment,
+an experiment, or a run; failed requests retry in their original context. Proposals open
+in the editor for review. Replies stream with actual research and review activity; four
+contextual suggestions fill the unsent draft. General questions use the workspace budget;
+scoped questions use the experiment budget and cite inspected evidence. Unsent messages
+remain browser-session drafts. Enter sends and Shift+Enter adds a line.
 
 ## Development
 
