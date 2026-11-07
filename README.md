@@ -37,8 +37,10 @@ pnpm --dir frontend test
 pnpm --dir frontend build
 ```
 
-Browser tests require a **keyless disposable instance** on 8082; see the
-[CI setup](.github/workflows/checks.yml).
+Browser tests start a keyless backend on port 8094 with a fresh temporary database,
+then stop it and remove its data. Build the frontend first. Set `ASS_TEST_PORT`
+for a different local port, or `ASS_TEST_URL` to use an explicitly supplied
+disposable instance instead.
 
 ```sh
 pnpm --dir frontend exec playwright install chromium

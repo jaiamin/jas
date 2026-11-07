@@ -62,19 +62,9 @@ const AgentPanel = lazy(() => import("@/components/agent-panel"));
 const Editor = lazy(() => import("@/pages/editor"));
 const Study = lazy(() => import("@/pages/study"));
 const Run = lazy(() => import("@/pages/run"));
-const Runs = lazy(() =>
-  import("@/pages/library").then((module) => ({ default: module.Runs })),
-);
-const Environments = lazy(() =>
-  import("@/pages/library").then((module) => ({
-    default: module.Environments,
-  })),
-);
-const SettingsPage = lazy(() =>
-  import("@/pages/library").then((module) => ({
-    default: module.SettingsPage,
-  })),
-);
+const Runs = lazy(() => import("@/pages/runs"));
+const Environments = lazy(() => import("@/pages/environments"));
+const SettingsPage = lazy(() => import("@/pages/settings"));
 const Compare = lazy(() => import("@/pages/compare"));
 
 class PageBoundary extends Component<

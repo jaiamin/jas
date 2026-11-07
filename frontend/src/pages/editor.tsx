@@ -1,20 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { DesignEditor } from "@/components/editor/design-editor";
 import { PlanningProgress } from "@/components/planning-progress";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Alert, Empty } from "@/components/ui/data";
 import { api, useApi } from "@/lib/api";
-import { readDraft, removeDraft } from "@/lib/drafts";
+import { editorDraftPath, readDraft, removeDraft } from "@/lib/drafts";
 import type { Analysis, Catalog, Design, StudyDetail } from "@/lib/types";
 
 export default function Editor() {
   const [params] = useSearchParams();
-  const location = useLocation();
-  const draftPath = location.pathname + location.search;
+  const draftPath = editorDraftPath(params);
   const [discardError, setDiscardError] = useState("");
   const [recoverDraft, setRecoverDraft] = useState(false);
   const draft = useQuery({

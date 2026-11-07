@@ -1,5 +1,11 @@
 import { beforeEach, expect, test } from "vitest";
-import { listDrafts, readDraft, removeDraft, writeDraft } from "@/lib/drafts";
+import {
+  editorDraftPath,
+  listDrafts,
+  readDraft,
+  removeDraft,
+  writeDraft,
+} from "@/lib/drafts";
 import type { Design } from "@/lib/types";
 
 beforeEach(() => localStorage.clear());
@@ -53,4 +59,16 @@ test("corrupt or misplaced drafts are rejected without deleting data", () => {
   );
   expect(() => readDraft("/new")).toThrow("could not be read");
   expect(localStorage.getItem("ass:draft:/new")).not.toBeNull();
+});
+
+test("editor identity follows source parameters and ignores presentation and ordering", () => {
+  expect(
+    editorDraftPath(new URLSearchParams("assistant&template=commons")),
+  ).toBe(editorDraftPath(new URLSearchParams("template=commons")));
+  expect(
+    editorDraftPath(new URLSearchParams("revision=2&study=one&assistant")),
+  ).toBe("/new?study=one&revision=2");
+  expect(editorDraftPath(new URLSearchParams("template=trust"))).not.toBe(
+    editorDraftPath(new URLSearchParams("template=commons")),
+  );
 });

@@ -10,6 +10,16 @@ export interface Draft {
   mode: "visual" | "json";
 }
 
+export function editorDraftPath(params: URLSearchParams): string {
+  const source = new URLSearchParams();
+  for (const key of ["plan", "study", "revision", "template"]) {
+    const value = params.get(key);
+    if (value !== null) source.set(key, value);
+  }
+  return `/new${source.size ? `?${source}` : ""}`;
+}
+
+/** Returns null for a missing record; throws for corrupt records or inaccessible storage. */
 export function readDraft(path: string): Draft | null {
   const raw = localStorage.getItem(prefix + path);
   if (!raw) return null;
@@ -41,6 +51,7 @@ export function readDraft(path: string): Draft | null {
   };
 }
 
+/** Collects unreadable record paths separately; throws if storage cannot be enumerated. */
 export function listDrafts(): { items: Draft[]; unreadable: string[] } {
   const items: Draft[] = [];
   const unreadable: string[] = [];

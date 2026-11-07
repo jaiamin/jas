@@ -104,6 +104,9 @@ export function Home() {
         {plan.error && <Alert variant="error">{plan.error.message}</Alert>}
       </section>
       <div className="home-starters">
+        {catalog.error && (
+          <ErrorState error={catalog.error} onRetry={catalog.refetch} />
+        )}
         {catalog.data?.templates.slice(0, 3).map((template) => (
           <Button key={template.id} variant="outline" size="sm" asChild>
             <Link to={`/new?template=${template.id}`}>
@@ -182,6 +185,9 @@ export function Home() {
             </div>
           </DisclosureContent>
         </Disclosure>
+      )}
+      {plans.error && (
+        <ErrorState error={plans.error} onRetry={plans.refetch} />
       )}
       {!!plans.data?.length && (
         <Disclosure className="disclosure home-plans">

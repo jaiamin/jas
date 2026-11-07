@@ -96,7 +96,7 @@ export function DesignEditor({
     useState<EnvironmentId | null>(null);
   const navigate = useNavigate();
   const save = useMutation({
-    mutationFn: (specification: Design) =>
+    mutationFn: (specification: unknown) =>
       api<{ id: string }>(
         studyId ? `/studies/${studyId}/revisions` : "/studies",
         { design: specification, plan_id: planId },
@@ -130,6 +130,7 @@ export function DesignEditor({
     },
   });
   function changeMode(value: string) {
+    if (validate.isPending) return;
     if (value === "json") {
       setJson(JSON.stringify(design, null, 2));
       setMode(value);
@@ -144,10 +145,12 @@ export function DesignEditor({
     }
   }
   function submit() {
+    if (validate.isPending) return;
     setError("");
     if (mode === "json") {
       try {
-        save.mutate(JSON.parse(json) as Design);
+        const specification: unknown = JSON.parse(json);
+        save.mutate(specification);
       } catch {
         setError("Enter a valid JSON specification.");
       }
@@ -230,17 +233,21 @@ export function DesignEditor({
             }}
           >
             <TabsList>
-              <TabsTrigger value="question">Question</TabsTrigger>
-              <TabsTrigger value="agents">
+              <TabsTrigger disabled={validate.isPending} value="question">
+                Question
+              </TabsTrigger>
+              <TabsTrigger disabled={validate.isPending} value="agents">
                 Agents{" "}
                 <span className="tab-count">{design.profiles.length}</span>
               </TabsTrigger>
-              <TabsTrigger value="conditions">
+              <TabsTrigger disabled={validate.isPending} value="conditions">
                 Conditions{" "}
                 <span className="tab-count">{design.conditions.length}</span>
               </TabsTrigger>
-              <TabsTrigger value="execution">Execution</TabsTrigger>
-              <TabsTrigger value="json">
+              <TabsTrigger disabled={validate.isPending} value="execution">
+                Execution
+              </TabsTrigger>
+              <TabsTrigger disabled={validate.isPending} value="json">
                 <Code2 />
                 Specification
               </TabsTrigger>
@@ -253,6 +260,7 @@ export function DesignEditor({
                   </FieldLabel>
                   <Textarea
                     id="specification"
+                    disabled={validate.isPending}
                     className="specification-editor"
                     spellCheck={false}
                     value={json}
@@ -438,7 +446,10 @@ export function DesignEditor({
             </div>
           </dl>
           <div className="form-submit editor-save">
-            <Button onClick={submit} disabled={save.isPending}>
+            <Button
+              onClick={submit}
+              disabled={save.isPending || validate.isPending}
+            >
               {save.isPending ? (
                 <LoaderCircle className="spin" data-icon="inline-start" />
               ) : (

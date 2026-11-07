@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { templateDesign } from "./helpers.js";
 
 for (const theme of ["light", "dark"]) {
   test(`contextual investigation, evidence and retry · ${theme}`, async ({
@@ -10,7 +11,7 @@ for (const theme of ["light", "dark"]) {
       await request.post("/api/studies", {
         data: {
           design: {
-            ...catalog.templates[0].design,
+            ...templateDesign(catalog),
             title:
               "Cooperation, incentives and communication across changing resource constraints",
           },
@@ -18,7 +19,7 @@ for (const theme of ["light", "dark"]) {
       })
     ).json();
     await request.post(`/api/studies/${id}/revisions`, {
-      data: { design: catalog.templates[0].design },
+      data: { design: templateDesign(catalog) },
     });
     const study = await (await request.get(`/api/studies/${id}`)).json();
     const run = study.runs[0];

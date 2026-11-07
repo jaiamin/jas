@@ -1,21 +1,5 @@
-import { type APIRequestContext, expect, test } from "@playwright/test";
-import type { Catalog, RunDetail, StudyDetail } from "../src/lib/types.js";
-
-async function createStudy(request: APIRequestContext) {
-  const catalog: Catalog = await (await request.get("/api/catalog")).json();
-  const created = await (
-    await request.post("/api/studies", {
-      data: { design: catalog.templates[0]?.design },
-    })
-  ).json();
-  const study: StudyDetail = await (
-    await request.get(`/api/studies/${created.id}`)
-  ).json();
-  const run: RunDetail = await (
-    await request.get(`/api/runs/${study.runs[0]?.id}`)
-  ).json();
-  return { study, run };
-}
+import { expect, test } from "@playwright/test";
+import { createStudy } from "./helpers.js";
 
 test("run controls advance, start, pause and suppress completed actions", async ({
   page,

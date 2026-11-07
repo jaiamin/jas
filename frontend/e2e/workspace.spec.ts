@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { templateDesign } from "./helpers.js";
 
 test("manual creation, revision, comparison and missing-key recovery", async ({
   page,
+  request,
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -59,7 +61,11 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   await expect(page.getByRole("alert")).toContainText(
     "OPENAI_API_KEY is not configured",
   );
-  await expect(page.getByText("0 / 18", { exact: false })).toBeVisible();
+  const id = new URL(page.url()).pathname.split("/").at(-1);
+  const run = await (await request.get(`/api/runs/${id}`)).json();
+  await expect(page.locator(".run-facts")).toContainText(
+    `0 / ${run.summary.total_turns}`,
+  );
   expect(errors).toEqual([]);
 });
 
@@ -114,7 +120,7 @@ test("removing agents removes condition overrides and environment changes need c
   request,
 }) => {
   const catalog = await (await request.get("/api/catalog")).json();
-  const design = catalog.templates[0].design;
+  const design = templateDesign(catalog);
   const removed = design.profiles[0];
   design.conditions[0].profile_overrides = [
     { ...removed, goal: "Compare an alternative incentive" },
@@ -170,7 +176,7 @@ test("AI design progress opens a reviewable protocol with design notes", async (
           ? {
               supported: true,
               explanation: "A matched pilot.",
-              design: catalog.templates[0].design,
+              design: templateDesign(catalog),
               planning: {
                 brief: {
                   size_rationale:
@@ -192,7 +198,7 @@ test("AI design progress opens a reviewable protocol with design notes", async (
   ).toBeVisible();
   complete = true;
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
-    catalog.templates[0].design.title,
+    templateDesign(catalog).title,
   );
   await page.getByText("AI design notes", { exact: true }).click();
   await expect(

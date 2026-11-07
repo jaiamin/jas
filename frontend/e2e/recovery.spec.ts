@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { templateDesign } from "./helpers.js";
 
 test("a corrupt draft leaves valid drafts available with targeted recovery", async ({
   page,
@@ -18,7 +19,7 @@ test("a corrupt draft leaves valid drafts available with targeted recovery", asy
       }),
     );
     localStorage.setItem("ass:draft:/new?template=broken", "{unfinished");
-  }, catalog.templates[0].design);
+  }, templateDesign(catalog));
   await page.goto("/");
   await expect(page.getByRole("alert")).toContainText(
     "Some drafts could not be read",
@@ -116,4 +117,99 @@ test("agent context errors retain loaded experiment choices and retry locally", 
   failed = false;
   await page.getByRole("button", { name: "Retry", exact: true }).click();
   await expect(page.getByRole("alert")).toHaveCount(0);
+});
+
+test("assistant visibility preserves the current editor and its single draft", async ({
+  page,
+}) => {
+  await page.goto("/new?template=commons");
+  const name = page.getByLabel("Experiment name", { exact: true });
+  await name.fill("Preserved while asking AI");
+  await page.getByRole("tab", { name: "Execution", exact: true }).click();
+  await page.getByRole("button", { name: "Ask AI", exact: true }).click();
+  await expect(
+    page.getByRole("tab", { name: "Execution", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await expect(name).toHaveValue("Preserved while asking AI");
+  expect(
+    await page.evaluate(() =>
+      Object.keys(localStorage).filter((key) => key.startsWith("ass:draft:")),
+    ),
+  ).toEqual(["ass:draft:/new?template=commons"]);
+});
+
+test("pending validation locks the submitted specification until its response", async ({
+  page,
+}) => {
+  await page.goto("/new?template=commons");
+  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  const text = page.getByLabel("Complete JSON specification");
+  const design = JSON.parse(await text.inputValue());
+  design.title = "Validated snapshot";
+  await text.fill(JSON.stringify(design));
+  let release: () => void = () => {};
+  const pending = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/api/design/validate", async (route) => {
+    await pending;
+    await route.fulfill({ json: design });
+  });
+  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await expect(text).toBeDisabled();
+  await expect(
+    page.getByRole("tab", { name: "Execution", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Create experiment", exact: true }),
+  ).toBeDisabled();
+  release();
+  await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
+    "Validated snapshot",
+  );
+});
+
+test("Home exposes independent template and AI-history failures with retry", async ({
+  page,
+}) => {
+  let failing = true;
+  await page.route("**/api/catalog", async (route) =>
+    failing
+      ? route.fulfill({
+          status: 503,
+          json: { detail: "Templates temporarily unavailable" },
+        })
+      : route.continue(),
+  );
+  await page.route("**/api/analyses", (route) =>
+    route.fulfill(
+      failing
+        ? {
+            status: 503,
+            json: { detail: "AI history temporarily unavailable" },
+          }
+        : { json: [] },
+    ),
+  );
+  await page.goto("/");
+  const templatesError = page
+    .getByRole("alert")
+    .filter({ hasText: "Templates temporarily unavailable" });
+  const historyError = page
+    .getByRole("alert")
+    .filter({ hasText: "AI history temporarily unavailable" });
+  await expect(templatesError).toBeVisible();
+  await expect(historyError).toBeVisible();
+  failing = false;
+  await templatesError
+    .getByRole("button", { name: "Retry", exact: true })
+    .click();
+  await historyError
+    .getByRole("button", { name: "Retry", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Retry", exact: true }),
+  ).toHaveCount(0);
 });
