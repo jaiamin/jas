@@ -2,13 +2,32 @@ import asyncio
 import json
 
 import pytest
-from agent_sim.db import ProviderCall, Study, Workspace
+from agent_sim.assistants import Assistants
+from agent_sim.db import Analysis, ProviderCall, Study, Workspace
 from agent_sim.decisions import ActionOption, decision_schema
 from pydantic import ValidationError
 from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 from sqlalchemy import select
+
+
+def test_submission_requires_a_running_loop_before_persisting_work(runtime, design):
+    db, llm, research, engine = runtime
+    sid = research.save_design(design)
+    rid = research.study(sid)["runs"][0]["id"]
+    assistants = Assistants(db, research, llm)
+    with pytest.raises(RuntimeError, match="no running event loop"):
+        engine.start(rid)
+    with pytest.raises(RuntimeError, match="no running event loop"):
+        assistants.start("Inspect this run", purpose="analysis", run_id=rid)
+    assert research.configuration(rid)[0].status == "ready"
+    assert not engine.executions
+    assert not assistants.tasks
+    with db.session() as session:
+        assert session.scalar(select(Analysis)) is None
+        assert session.scalar(select(ProviderCall)) is None
+        assert session.get_one(Workspace, 1).charged == 0
 
 
 def test_disabled_communication_schema_prevents_illegal_choices(design):

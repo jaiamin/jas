@@ -24,6 +24,7 @@ from .db import (
 from .domain import Design, Treatment
 from .environments import CATALOG, create_world
 from .llm import PRICES, LanguageModels
+from .metrics import aggregate_metrics
 
 
 @lru_cache(maxsize=512)
@@ -142,9 +143,7 @@ class Research:
 
     def configuration(self, run_id: str) -> tuple[Run, Design, Treatment]:
         with self.db.session() as session:
-            run = session.get(Run, run_id)
-            if run is None:
-                raise ValueError("Run not found")
+            run = session.get_one(Run, run_id)
             condition = session.get_one(Condition, run.condition_id)
             revision = session.get_one(Revision, condition.revision_id)
             treatment = Treatment.model_validate(condition.specification)
@@ -271,9 +270,7 @@ class Research:
 
     def study(self, study_id: str, number: int | None = None) -> dict:
         with self.db.session() as session:
-            study = session.get(Study, study_id)
-            if study is None:
-                raise ValueError("Study not found")
+            study = session.get_one(Study, study_id)
             revision = session.scalars(
                 select(Revision).where(
                     Revision.study_id == study_id, Revision.number == (number or study.revision)
@@ -415,29 +412,18 @@ class Research:
                 "events": [event_dict(e) for e in events],
             }
 
-    def metrics(self, run_id: str) -> dict[str, float | None]:
+    def metrics(self, run_id: str) -> dict[str, float]:
         return self.metrics_many({run_id})[run_id]
 
-    def metrics_many(self, run_ids: set[str]) -> dict[str, dict[str, float | None]]:
+    def metrics_many(self, run_ids: set[str]) -> dict[str, dict[str, float]]:
         with self.db.session() as session:
             measures = session.scalars(
                 select(Measurement).where(Measurement.run_id.in_(run_ids)).order_by(Measurement.id)
             ).all()
-        groups: dict[str, dict[str, list[float]]] = {key: defaultdict(list) for key in run_ids}
+        groups: dict[str, list[tuple[str, float | None]]] = {key: [] for key in run_ids}
         for measure in measures:
-            if measure.value is not None:
-                groups[measure.run_id][measure.key].append(measure.value)
-        return {
-            run_id: {
-                key: values[-1]
-                if key in {"completion_rate", "stock_fraction"}
-                else max(values)
-                if key == "collapse_rate"
-                else statistics.mean(values)
-                for key, values in grouped.items()
-            }
-            for run_id, grouped in groups.items()
-        }
+            groups[measure.run_id].append((measure.key, measure.value))
+        return {run_id: aggregate_metrics(values) for run_id, values in groups.items()}
 
     @staticmethod
     def relationships(events: Sequence[RecordedEvent]) -> list[dict]:

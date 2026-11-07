@@ -1,8 +1,6 @@
 import asyncio
 import json
 import os
-import statistics
-from collections import defaultdict
 from collections.abc import Sequence
 from typing import Literal
 
@@ -12,6 +10,7 @@ from sqlalchemy import select, update
 from .db import Analysis, Database, Measurement, RecordedEvent, Turn, digest
 from .domain import Finding, Strict
 from .llm import LanguageModels, ProviderFailure
+from .metrics import aggregate_metrics
 from .planning import Planner
 from .research import Research, event_dict
 
@@ -72,6 +71,8 @@ class Assistants:
     def start(
         self, question: str, *, purpose: str, study_id: str | None = None, run_id: str | None = None
     ) -> str:
+        """Enqueue a request on the current event loop without awaiting its answer."""
+        loop = asyncio.get_running_loop()
         if self.closing:
             raise ValueError("Server is stopping")
         question = question.strip()
@@ -111,7 +112,7 @@ class Assistants:
             session.add(row)
             session.flush()
             key = row.id
-        self.tasks[key] = asyncio.create_task(self._execute(key), name=f"assistant-{key}")
+        self.tasks[key] = loop.create_task(self._execute(key), name=f"assistant-{key}")
         return key
 
     @staticmethod
@@ -215,14 +216,7 @@ class Assistants:
                     .where(Measurement.run_id == run_id, Measurement.turn <= cutoff)
                     .order_by(Measurement.id)
                 ).all()
-            grouped: dict[str, list[float]] = defaultdict(list)
-            for measure in measures:
-                if measure.value is not None:
-                    grouped[measure.key].append(measure.value)
-            metrics = {
-                key: values[-1] if key == "completion_rate" else statistics.mean(values)
-                for key, values in grouped.items()
-            }
+            metrics = aggregate_metrics((measure.key, measure.value) for measure in measures)
             index.append(
                 {
                     "run_id": run_id,

@@ -52,6 +52,8 @@ class Engine:
         models.recover()
 
     def start(self, run_id: str, *, single: bool = False) -> None:
+        """Enqueue a run on the current event loop without waiting for completion."""
+        loop = asyncio.get_running_loop()
         if self.closing:
             raise ValueError("Server is stopping")
         existing = self.executions.get(run_id)
@@ -69,7 +71,7 @@ class Engine:
         with self.db.session.begin() as session:
             saved = session.get_one(Run, run_id)
             saved.status, saved.error = "queued", None
-        execution.task = asyncio.create_task(
+        execution.task = loop.create_task(
             self._run(run_id, execution, single), name=f"run-{run_id}"
         )
 
@@ -78,9 +80,7 @@ class Engine:
         if execution:
             execution.stop = True
         with self.db.session.begin() as session:
-            run = session.get(Run, run_id)
-            if run is None:
-                raise ValueError("Run not found")
+            run = session.get_one(Run, run_id)
             if run.status != "complete":
                 run.status = "pausing" if run.status == "running" else "paused"
 

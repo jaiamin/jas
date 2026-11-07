@@ -72,6 +72,42 @@ def test_invalid_json_design_does_not_create_study(client):
     assert client.get("/api/studies").json() == []
 
 
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/studies/missing",
+        "/studies/missing/export",
+        "/runs/missing",
+        "/runs/missing/turns/0",
+        "/runs/missing/annotations",
+        "/requests/missing",
+        "/analyses/missing",
+    ],
+)
+def test_missing_records_have_one_not_found_contract(client, path):
+    response = client.get(f"/api{path}")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Record not found"}
+
+
+@pytest.mark.parametrize("action", ["start", "step", "pause"])
+def test_missing_run_controls_are_not_found_without_spending(client, action):
+    response = client.post("/api/runs/missing/control", json={"action": action})
+    assert response.status_code == 404
+    assert client.get("/api/settings").json()["usage"]["requests"] == 0
+
+
+def test_openapi_describes_application_and_validation_errors(client):
+    schema = client.get("/api/openapi.json").json()
+    responses = schema["paths"]["/api/studies"]["post"]["responses"]
+    for status in ("403", "404", "409", "422"):
+        assert responses[status]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/ErrorResponse"
+        }
+    detail = schema["components"]["schemas"]["ErrorResponse"]["properties"]["detail"]
+    assert {variant["type"] for variant in detail["anyOf"]} == {"string", "array"}
+
+
 def test_export_includes_previous_revisions_and_their_recorded_turns(client, design):
     sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
     old = client.get(f"/api/studies/{sid}").json()

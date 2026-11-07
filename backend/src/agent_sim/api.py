@@ -1,6 +1,7 @@
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlparse
 
 from fastapi import FastAPI, HTTPException, Query, Request
@@ -39,6 +40,10 @@ class Note(Strict):
 
 class Control(Strict):
     action: str = Field(pattern="^(start|pause|step)$")
+
+
+class ErrorResponse(Strict):
+    detail: str | list[dict[str, Any]]
 
 
 def create_app(
@@ -81,6 +86,7 @@ def create_app(
         lifespan=lifespan,
         docs_url="/api/docs",
         openapi_url="/api/openapi.json",
+        responses={status: {"model": ErrorResponse} for status in (403, 404, 409, 422)},
     )
     app.state.db, app.state.models = db, models
     app.state.research, app.state.engine, app.state.assistants = research, engine, assistants

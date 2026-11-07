@@ -304,3 +304,53 @@ def test_planner_validates_revised_capability_and_counts(runtime, design, monkey
         with pytest.raises(ValueError, match="planned counts"):
             asyncio.run(planner.run({"id": key, "question": row.question}))
     assert research.studies() == []
+
+
+def test_investigator_uses_shared_metric_rules_at_its_frozen_cutoff(runtime, monkeypatch):
+    import json
+
+    from agent_sim.db import Measurement
+    from agent_sim.domain import Design
+    from agent_sim.templates import templates
+
+    db, llm, research, engine = runtime
+    design = Design.model_validate(
+        next(t["design"] for t in templates() if t["id"] == "renewable_resource")
+    )
+    design.conditions = design.conditions[:1]
+    design.seeds = [7]
+    sid = research.save_design(design)
+    rid = research.study(sid)["runs"][0]["id"]
+    prompts = []
+
+    async def answer(*args, **kwargs):
+        prompts.append(json.loads(kwargs["prompt"]))
+        return Investigation(
+            requests=[], answer=Finding(answer="No claim.", citations=[], caveats=[])
+        )
+
+    async def exercise():
+        for _ in range(2):
+            engine.start(rid, single=True)
+            await engine.executions[rid].task
+        with db.session.begin() as session:
+            for turn, key, value in [
+                (1, "stock_fraction", 0.8),
+                (2, "stock_fraction", 0.2),
+                (3, "stock_fraction", 0.9),
+                (1, "collapse_rate", 1),
+                (2, "collapse_rate", 0),
+            ]:
+                session.add(Measurement(run_id=rid, turn=turn, round=1, key=key, value=value))
+        assistant = Assistants(db, research, llm)
+        monkeypatch.setattr(llm, "generate", answer)
+        key = assistant.start("What is the current stock?", purpose="analysis", run_id=rid)
+        await assistant.tasks[key]
+        assert assistant.get(key)["status"] == "complete"
+        await assistant.close()
+
+    asyncio.run(exercise())
+    indexed = prompts[0]["index"]["runs"][0]
+    assert indexed["through_turn"] == 2
+    assert indexed["metrics"] == {"stock_fraction": 0.2, "collapse_rate": 1}
+    assert research.metrics(rid) == {"stock_fraction": 0.9, "collapse_rate": 1}
