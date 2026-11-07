@@ -12,13 +12,23 @@ def client(tmp_path, monkeypatch, fake_model):
         yield value
 
 
+def step_run(client, run_id):
+    response = client.post(f"/api/runs/{run_id}/control", json={"action": "step"})
+    assert response.status_code == 200
+
+    async def finished():
+        await client.app.state.engine.executions[run_id].task
+
+    client.portal.call(finished)
+
+
 def test_manual_design_step_evidence_and_export(client, design):
     result = client.post("/api/studies", json={"design": design.model_dump()})
     assert result.status_code == 201
     sid = result.json()["id"]
     rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
     assert client.get("/api/settings").json()["usage"]["requests"] == 0
-    assert client.post(f"/api/runs/{rid}/control", json={"action": "step"}).status_code == 200
+    step_run(client, rid)
     run = client.get(f"/api/runs/{rid}").json()
     assert run["summary"]["turn"] == 1
     assert run["summary"]["status"] == "paused"
@@ -66,7 +76,7 @@ def test_export_includes_previous_revisions_and_their_recorded_turns(client, des
     sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
     old = client.get(f"/api/studies/{sid}").json()
     rid = old["runs"][0]["id"]
-    client.post(f"/api/runs/{rid}/control", json={"action": "step"})
+    step_run(client, rid)
     design.title = "Revised study"
     client.post(f"/api/studies/{sid}/revisions", json={"design": design.model_dump()})
     exported = client.get(f"/api/studies/{sid}/export").json()
