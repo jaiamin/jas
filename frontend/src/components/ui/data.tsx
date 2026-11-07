@@ -10,9 +10,6 @@ export function Table({ className, ...props }: React.ComponentProps<"table">) {
     </div>
   );
 }
-export function Separator() {
-  return <hr className="separator" />;
-}
 export function Skeleton({ className }: { className?: string }) {
   return <div aria-hidden="true" className={cn("skeleton", className)} />;
 }

@@ -23,9 +23,13 @@ once with no findings. Fresh review covered all 40 required captures; both copy 
 were scored resolved. DESIGN.md and the token sidecar match the shipped source. Reviewer
 and documenter used the skill's degraded contracts in fresh native agent handoffs.
 
-The new frontend/API is running on8080; the disposable QA instance on8082 is stopped after
-verification. The actual outgoing Git index passed Gitleaks. An ignored old generated
-Impeccable artifact triggered an earlier workspace scan and is excluded from publication.
+The new frontend/API is running on8080; disposable QA instances on8082 are stopped after
+verification. The outgoing Git index passed Gitleaks. Superseded design artifacts, old
+prototype bytecode, temporary install files, duplicate ignore configuration and unused UI
+code/styles were removed. The generated seed behind the earlier workspace-scan finding was
+discarded; the current design seed and final review evidence remain. Cleanup preserves the
+rendered UI exactly at desktop/mobile in both themes. All local checks passed; the preceding
+implementation head also passed GitHub CI.
 No merges/default-branch pushes. Future work should begin with
 reserved holdout scenarios and duration/inventory/contract mechanics supported by explicit
 rules and independent validation, not arbitrary model-authored consequences.

@@ -554,10 +554,6 @@ li + li {
 .empty .button {
   margin-top: 4px;
 }
-.separator {
-  height: 1px;
-  background: var(--border);
-}
 .skeleton {
   border-radius: 5px;
   background: var(--muted);
@@ -1640,19 +1636,6 @@ li + li {
 .metric-chart {
   height: 270px;
   margin: 0 -4px;
-}
-.metric-summary {
-  display: flex;
-  justify-content: space-between;
-  border-top: 1px solid var(--border);
-  padding: 11px 0;
-  color: var(--muted-foreground);
-  font-size: 11px;
-}
-.metric-summary strong {
-  color: var(--foreground);
-  font-size: 13px;
-  font-weight: 550;
 }
 .commons-agents {
   display: flex;
