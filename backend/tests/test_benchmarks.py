@@ -1,6 +1,7 @@
 import importlib.util
 from pathlib import Path
 
+import pytest
 from agent_sim.domain import PlannedStudy
 from agent_sim.planning import Candidate, DesignReview, StudyBrief
 
@@ -29,7 +30,7 @@ def test_suite_is_unique_and_split_before_tuning():
     for case in cases:
         if case.environment:
             adapter = CATALOG[case.environment]
-            assert case.measure in adapter.measures
+            assert case.measure is None or case.measure in adapter.measures
             assert case.factor in {"roles", "goals"} or (
                 case.factor and case.factor.split(".")[0] in adapter.parameters
             )
@@ -54,7 +55,24 @@ def test_assessor_catches_inert_and_confounded_treatments(design):
     assert not suite.assess(case, output)["intervention"]
 
 
-def test_full_harness_uses_real_api_routes(tmp_path, monkeypatch, fake_model, design):
+def test_raw_decision_outcome_does_not_require_an_unrelated_metric():
+    suite = load_suite()
+    case = suite.Case(
+        id="action-count",
+        split="development",
+        question="How often do agents contribute?",
+        environment="commons",
+        factor="memory",
+        measure=None,
+    )
+    output = {"supported": True, "design": {"measures": []}}
+    assert suite.assess(case, output)["measures"]
+    metric_case = case.model_copy(update={"measure": "contribution_rate"})
+    assert not suite.assess(metric_case, output)["measures"]
+
+
+@pytest.mark.parametrize("raw_outcome", [False, True])
+def test_full_harness_uses_real_api_routes(tmp_path, monkeypatch, fake_model, design, raw_outcome):
     import asyncio
     import importlib
 
@@ -65,6 +83,8 @@ def test_full_harness_uses_real_api_routes(tmp_path, monkeypatch, fake_model, de
     monkeypatch.syspath_prepend(bench)
     harness = importlib.import_module("run")
     case = next(c for c in harness.cases() if c.id == "commons-01")
+    if raw_outcome:
+        case = case.model_copy(update={"measure": None})
     design.profiles = design.profiles[:4]
     design.rounds, design.seeds = 3, [17]
     from agent_sim.domain import Parameters, Treatment
@@ -108,5 +128,7 @@ def test_full_harness_uses_real_api_routes(tmp_path, monkeypatch, fake_model, de
 
     record = asyncio.run(exercise())
     assert record["passed"], record
+    if raw_outcome:
+        assert record["checks"]["decision_evidence"]
     assert len(record["runs"]) == 2
     assert sum(r["verified_turns"] for r in record["replay"]) == 24

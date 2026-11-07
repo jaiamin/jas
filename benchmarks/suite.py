@@ -7,16 +7,7 @@ from agent_sim.domain import EnvironmentId, Strict
 from pydantic import Field
 
 ROOT = Path(__file__).parent
-SUITE_VERSION = 4
-METRICS = {
-    "commons": ["contribution_rate"],
-    "trust_exchange": ["return_rate"],
-    "coordination": ["completion_rate"],
-    "institution": ["self_allocation_rate"],
-    "bargaining": ["agreement_rate"],
-    "information": ["accuracy"],
-    "renewable_resource": ["stock_fraction"],
-}
+SUITE_VERSION = 5
 
 
 class Case(Strict):
@@ -25,7 +16,9 @@ class Case(Strict):
     question: str
     environment: EnvironmentId | None
     factor: str | None = None
-    measure: str | None = None
+    measure: str | None = Field(
+        default=None, description="Required registered metric; null uses exported raw decisions."
+    )
     rounds: int = Field(default=3, ge=1, le=100)
     agents: int = Field(default=4, ge=2, le=12)
 
@@ -42,12 +35,18 @@ class Case(Strict):
                 "Use openai:gpt-6-luna for all participants. No external research is needed. "
                 "This pilot does not establish statistical power or human validity."
             )
+        controls = (
+            "keep all other parameters and profiles identical. Use generated tasks, whose "
+            "definitions intentionally change with task_count. "
+            if self.factor == "task_count"
+            else "keep all other parameters, profiles and task definitions identical. "
+        )
         return (
             f"{self.question}\nUse the {self.environment} environment "
             "for a small diagnostic pilot: "
             f"exactly {self.agents} agents, exactly 2 matched conditions, one seed (17), "
             f"one repetition and {self.rounds} rounds. Only manipulate {self.factor}; "
-            "keep all other parameters, profiles and task definitions identical. "
+            f"{controls}"
             "Use openai:gpt-6-luna for every participant. This pilot tests mechanics, not "
             "statistical power or human validity. No external research is needed."
         )
@@ -92,7 +91,7 @@ def assess(case: Case, output: dict) -> dict[str, bool]:
             and design.get("seeds") == [17]
             and design.get("repetitions") == 1
         ),
-        measures={case.measure or METRICS[case.environment][0]} <= set(design.get("measures", [])),
+        measures=case.measure is None or case.measure in design.get("measures", []),
         model=all(c.get("model") == "openai:gpt-6-luna" for c in conditions)
         and all(p.get("model") in (None, "openai:gpt-6-luna") for p in design.get("profiles", [])),
         limitations=bool(design.get("limitations")),

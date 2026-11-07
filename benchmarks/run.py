@@ -99,6 +99,16 @@ async def evaluate(client, case, record):
         response.raise_for_status()
         export = response.json()
         record["checks"]["export"] = bool(export.get("revisions")) and bool(export.get("runs"))
+        if case.measure is None:
+            record["checks"]["decision_evidence"] = all(
+                len(run["evidence"]) == run["record"]["summary"]["turn"] + 1
+                and all(
+                    turn["observation"].get("legal_actions")
+                    and turn["decision"].get("action", {}).get("kind")
+                    for turn in run["evidence"][1:]
+                )
+                for run in export["runs"]
+            )
         record["checks"]["outcomes"] = bool(detail["results"])
         record["usage"] = detail["usage"]
     record["passed"] = all(record["checks"].values())

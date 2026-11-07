@@ -2,10 +2,15 @@
 
 ```sh
 uv sync --group dev
+uv run python benchmarks/run.py --live --output data/evaluations/full
 uv run python benchmarks/run.py --live --split development capability --output data/evaluations/dev
 uv run python benchmarks/run.py --live --split generalization longitudinal --output data/evaluations/test
 uv run inspect view --log-dir data/evaluations/test/inspect
 ```
+
+Published [Luna results](reports/README.md): 230 frozen final cases, all recorded attempts,
+failures, provenance and cost. The current suite is v5; its post-audit rubric corrections
+are separate from the primary v4 result.
 
 Versioned `cases.jsonl` stores typed records with stable IDs, explicit splits and criteria.
 The 230-case suite has 140 development protocols, 56 reserved context-combination protocols,
@@ -15,6 +20,9 @@ information and persistent resources. Development cases specify the intervention
 generalization cases omit adapter and parameter hints. Scoring checks the reserved
 operationalization and isolation of unrelated factors. Role-only and goal-only
 interventions deliberately change prose while keeping permissions and payoffs fixed.
+An explicit metric criterion checks a registered measure; null uses exported raw decisions
+and requires complete decision/observation evidence. Neither path scores the direction of
+behavior or treats an unchosen action as a failed simulation.
 
 Every supported case uses the actual planner and API to persist and execute both conditions,
 calculate outcomes, export evidence and verify exact replay. Short three-to-five-round, single-seed

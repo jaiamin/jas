@@ -60,4 +60,4 @@ These experiments measure **model behavior under stated rules**, not human psych
 validated real-world predictions. Natural-language context does not invent new mechanics.
 
 [Architecture](docs/ARCHITECTURE.md) · [Research](docs/RESEARCH.md) ·
-[Validation](benchmarks/README.md) · [Domain](GLOSSARY.md)
+[Validation](benchmarks/README.md) · [Results](benchmarks/reports/README.md) · [Domain](GLOSSARY.md)

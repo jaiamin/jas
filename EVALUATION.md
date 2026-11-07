@@ -2,58 +2,48 @@
 
 ## Acceptance
 
-- Research primary sources before changing mechanics; distinguish agent behavior from human validity.
-- Run at least 200 distinct live GPT-6 Luna cases across development and frozen generalization splits.
-- Exercise natural-language planning, persisted revisions, legal decisions, settlement, measurements,
-  export and exact replay. Report every attempt and denominator; never hide errors or retries.
-- Test institutional power, information, incentives, bargaining and compositional edge cases with
-  implemented rules, not persona prose. Preserve current studies and replay compatibility.
-- Use a maintained evaluation framework for scheduling, logs and reports; keep deterministic
-  scoring separate from optional model judgment. No universal realism score.
-- Stay below the existing $25 total task API allowance (about $1.69 already used/reserved).
-- Keep the UI minimal, validate flows in a browser, pass lint/types/tests/build and leave 8080 up.
+- [x] Research primary sources; distinguish model behavior from human validity.
+- [x] Run at least 200 distinct live GPT-6 Luna supported cases through both conditions.
+- [x] Exercise planning, immutable revisions, legal actions, settlement, measurements,
+  export and exact replay. Retain failures and explicit retests.
+- [x] Add independently tested institutional, bargaining, information and resource rules;
+  preserve existing studies and replay compatibility.
+- [x] Use maintained Inspect scheduling/logs, with deterministic application checks.
+- [x] Stay within the authorized $25 task allowance without resetting accounting.
+- [x] Verify browser flows, Docker persistence, lint/types/tests/build; leave 8080 running.
 
-## Progress
+## Result
 
-- [x] Inspect current ontology, planner, execution and historical benchmark limits.
-- [x] Research and record architecture decisions and scientific limits.
-- [x] Freeze scenario taxonomy, splits and mechanically checkable criteria.
-- [x] Implement mechanics, planner configuration and maintained harness integration.
-- [ ] Record baseline, failure-driven fixes and separate generalization results.
-- [ ] Verify UI, Docker, persistence, privacy, replay and spending; clean documentation/artifacts.
+The frozen v4 suite at c5db913 passed 221/230. Of 210 supported questions, 207 produced
+persisted experiments and 206 completed both conditions: 413 completed runs, 5,190 exactly
+replayed turns. All 20 capability-limit cases passed. Development and retests add 234
+recorded attempts. Evaluation ledger: $3.677626 estimated/reserved; total task about $5.36.
+
+[Published report](benchmarks/reports/README.md) contains split denominators, all nine
+failures, source/dataset provenance, compressed attempts, cost and coverage limits.
+147 backend tests and 17 keyless Docker browser workflows pass, alongside frontend
+lint/tests/build, Ruff and ty. Existing 19 runs still reproduce 318 turns with no calls.
 
 ## Decisions
 
-- Existing 26 development cases and prior attempts remain historical; the old reserved holdout
-  remains evaluation-only. New splits are fixed before live tuning.
-- GPT-6 Luna is the explicit planner and participant model in this evaluation. Production defaults
-  stay explicit. Provider failures remain evidence; no model substitution or automatic retries.
-- Stanford-prison-style cases study permissions, sanctions and oversight. They cannot validate
-  contested psychological claims or reproduce human abuse through role instructions.
-- Keep deterministic environment adjudication. More detailed narrative is not more capability.
+- Deterministic adapters own adjudication; models choose legal actions. No generated code,
+  free-form model game master, provider retries or substitute models.
+- Separate permissions/payoffs from role/goal prose. Independently control communication
+  channels, public history, private notes, private evidence and resource initial stock.
+- Institutional cases test token permissions, procedural sanctions, oversight and appeals.
+  They do not reproduce prison psychology or target a predetermined abusive outcome.
+- Reserved generalization contexts were evaluated after development changes were frozen.
+  They reuse known mechanics; the older history/holdout.json remains unexecuted.
+- Final failures were not used to tune the application. Benchmark v5 corrects five outcome
+  criteria and a contradictory generated-task prompt; its offline 224/230 rescore is
+  separately labeled, not independent validation or a model improvement.
 
-## Next
+## Limits and next evidence
 
-Complete development-v6, fix demonstrated planning failures, explicitly retest, then run the
-reserved generalization and longitudinal cases. Record costs from the atomic ledger.
-
-## Development observations
-
-- Initial pilots exposed independent-planning throttling, too-small response allowances and
-  incorrect replay routes in the harness. Those attempts remain in data/evaluations/.
-- Bundled communication could not isolate messaging while preserving report/promise
-  opportunities. Added independent channels and a regression test.
-- Rubric v2 expects each question's actual operational measure; the earlier primary-metric
-  requirement mis-scored reporting studies. Original scores are retained separately.
-- Development-v6 runs 160 cases at concurrency 16. Observed one-condition unsupported-design
-  output despite a two-condition brief; investigate after the fixed-source batch completes.
-- 141 backend tests, Ruff, ty, frontend lint/test/build and all 17 Docker browser flows pass.
-- Development-v6 finished: 127/160 checks passed, 221 completed runs, 2,247 replayed turns.
-  Development-retest-v7: 25/32 passed, 50 completed runs, 448 replayed turns.
-- Corrected sender-trust metric criteria separately from provider improvements; rescore-v3
-  changes only trust_exchange-04 and -17 from fail to pass in v6. Preserve both scores.
-- Added depleted initial stock and a public-history-only memory control after genuine
-  affordance gaps. Planner drafts can decline for reviewed capability gaps; counts are enforced.
-- Dataset v4 uses explicit typed JSONL records with stable IDs/splits. Two repeated-shock
-  pilots now allow five rounds; those are corrected constraints, not pure model improvements.
-- A final fixed-source full suite will be the primary report; earlier attempts stay historical.
+No live sanctions, appeals or bargaining exits were chosen. Scripted deterministic tests
+cover settlement, but do not demonstrate live intervention efficacy. Institutional work
+currently dominates waiting in personal payoff; costly effort and authority incentives
+need separately validated protocols before stronger institutional-behavior claims.
+Single-seed short pilots cannot estimate reliable causal effects. Next evidence should
+include repeated seeds, partner/order/wording sensitivity, independent human coding and
+consented reference traces. There is no universal realism score or perfected ontology.
