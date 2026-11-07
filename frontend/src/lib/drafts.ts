@@ -26,7 +26,12 @@ export function readDraft(path: string): Draft | null {
     localStorage.getItem(prefix + path) ??
     localStorage.getItem(legacyPrefix + path);
   if (raw === null) return null;
-  const value: unknown = JSON.parse(raw);
+  let value: unknown;
+  try {
+    value = JSON.parse(raw);
+  } catch (cause) {
+    throw new Error("This draft could not be read.", { cause });
+  }
   if (
     !value ||
     typeof value !== "object" ||

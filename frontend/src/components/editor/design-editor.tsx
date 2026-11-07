@@ -123,8 +123,9 @@ export function DesignEditor({
       setError("");
     },
   });
+  const busy = save.isPending || validate.isPending;
   function changeMode(value: string) {
-    if (validate.isPending) return;
+    if (busy) return;
     if (value === "json") {
       setJson(JSON.stringify(design, null, 2));
       setMode(value);
@@ -139,7 +140,7 @@ export function DesignEditor({
     }
   }
   function submit() {
-    if (validate.isPending) return;
+    if (busy) return;
     setError("");
     if (mode === "json") {
       try {
@@ -223,7 +224,7 @@ export function DesignEditor({
         </Disclosure>
       )}
       <div className="editor-layout">
-        <div className="editor-main">
+        <fieldset className="editor-main" disabled={busy}>
           <Tabs
             value={mode === "json" ? "json" : step}
             onValueChange={(value) => {
@@ -235,21 +236,21 @@ export function DesignEditor({
             }}
           >
             <TabsList variant="line">
-              <TabsTrigger disabled={validate.isPending} value="question">
+              <TabsTrigger disabled={busy} value="question">
                 Question
               </TabsTrigger>
-              <TabsTrigger disabled={validate.isPending} value="agents">
+              <TabsTrigger disabled={busy} value="agents">
                 Agents{" "}
                 <span className="tab-count">{design.profiles.length}</span>
               </TabsTrigger>
-              <TabsTrigger disabled={validate.isPending} value="conditions">
+              <TabsTrigger disabled={busy} value="conditions">
                 Conditions{" "}
                 <span className="tab-count">{design.conditions.length}</span>
               </TabsTrigger>
-              <TabsTrigger disabled={validate.isPending} value="execution">
+              <TabsTrigger disabled={busy} value="execution">
                 Execution
               </TabsTrigger>
-              <TabsTrigger disabled={validate.isPending} value="json">
+              <TabsTrigger disabled={busy} value="json">
                 <Code2 />
                 Specification
               </TabsTrigger>
@@ -262,7 +263,7 @@ export function DesignEditor({
                   </FieldLabel>
                   <Textarea
                     id="specification"
-                    disabled={validate.isPending}
+                    disabled={busy}
                     className="specification-editor"
                     spellCheck={false}
                     value={json}
@@ -319,6 +320,7 @@ export function DesignEditor({
                     <Select
                       label="Environment"
                       value={design.environment}
+                      disabled={busy}
                       onValueChange={(value) => setPendingEnvironment(value)}
                       options={catalog.environments.map((e) => ({
                         value: e.key,
@@ -399,7 +401,7 @@ export function DesignEditor({
               </Button>
             </div>
           )}
-        </div>
+        </fieldset>
         <aside className="design-summary">
           <h2>Execution plan</h2>
           <dl>
@@ -435,10 +437,7 @@ export function DesignEditor({
             </div>
           </dl>
           <div className="form-submit editor-save">
-            <Button
-              onClick={submit}
-              disabled={save.isPending || validate.isPending}
-            >
+            <Button onClick={submit} disabled={busy}>
               {save.isPending ? (
                 <LoaderCircle className="spin" data-icon="inline-start" />
               ) : (
@@ -475,11 +474,12 @@ export function DesignEditor({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
             <AlertDialogAction
+              disabled={busy}
               onClick={() => {
                 const value = pendingEnvironment;
-                if (!value) return;
+                if (busy || !value) return;
                 const env = catalog.environments.find((e) => e.key === value);
                 if (!env) return;
                 setDesign((design) => changeEnvironment(design, env));

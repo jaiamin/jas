@@ -40,6 +40,9 @@ test("listing isolates corrupt drafts and preserves their contents for recovery"
   expect(localStorage.getItem("jas:draft:/new?template=broken")).toBe(
     "{unfinished",
   );
+  expect(() => readDraft("/new?template=broken")).toThrow(
+    "This draft could not be read.",
+  );
 });
 
 test("mode accepts only the declared string literals", () => {

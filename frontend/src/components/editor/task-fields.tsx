@@ -17,6 +17,14 @@ export function TaskFields({
   function update<K extends keyof Design>(key: K, value: Design[K]) {
     onChange({ ...design, [key]: value });
   }
+  function updateTask(index: number, patch: Partial<Design["tasks"][number]>) {
+    update(
+      "tasks",
+      design.tasks.map((task, i) =>
+        i === index ? { ...task, ...patch } : task,
+      ),
+    );
+  }
 
   return (
     <>
@@ -66,12 +74,7 @@ export function TaskFields({
                       value={task.name}
                       maxLength={100}
                       onChange={(e) =>
-                        update(
-                          "tasks",
-                          design.tasks.map((t, j) =>
-                            j === index ? { ...t, name: e.target.value } : t,
-                          ),
-                        )
+                        updateTask(index, { name: e.target.value })
                       }
                     />
                     <Input
@@ -81,14 +84,7 @@ export function TaskFields({
                       max={20}
                       value={task.effort}
                       onChange={(e) =>
-                        update(
-                          "tasks",
-                          design.tasks.map((t, j) =>
-                            j === index
-                              ? { ...t, effort: Number(e.target.value) }
-                              : t,
-                          ),
-                        )
+                        updateTask(index, { effort: Number(e.target.value) })
                       }
                     />
                     <Input
@@ -97,20 +93,12 @@ export function TaskFields({
                       key={task.dependencies.join(",")}
                       defaultValue={task.dependencies.join(", ")}
                       onBlur={(e) =>
-                        update(
-                          "tasks",
-                          design.tasks.map((t, j) =>
-                            j === index
-                              ? {
-                                  ...t,
-                                  dependencies: e.target.value
-                                    .split(",")
-                                    .map((v) => v.trim())
-                                    .filter(Boolean),
-                                }
-                              : t,
-                          ),
-                        )
+                        updateTask(index, {
+                          dependencies: e.target.value
+                            .split(",")
+                            .map((value) => value.trim())
+                            .filter(Boolean),
+                        })
                       }
                     />
                     <Button

@@ -172,6 +172,64 @@ test("pending validation locks the submitted specification until its response", 
   );
 });
 
+test("a delayed save locks editing and a failed save keeps the draft editable", async ({
+  page,
+}) => {
+  await page.goto("/new?template=commons");
+  const name = page.getByLabel("Experiment name", { exact: true });
+  await name.fill("Save recovery snapshot");
+  let release: () => void = () => {};
+  const pending = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/api/studies", async (route) => {
+    if (route.request().method() !== "POST") return route.continue();
+    await pending;
+    await route.fulfill({
+      status: 503,
+      json: { detail: "Save temporarily unavailable" },
+    });
+  });
+  const save = page.getByRole("button", {
+    name: "Create experiment",
+    exact: true,
+  });
+  await save.click();
+  await expect(name).toBeDisabled();
+  await expect(
+    page.getByRole("combobox", { name: "Environment", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("tab", { name: "Specification", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Continue", exact: true }),
+  ).toBeDisabled();
+  release();
+  await expect(page.getByRole("alert")).toContainText(
+    "Save temporarily unavailable",
+  );
+  await expect(name).toBeEnabled();
+  await expect(name).toHaveValue("Save recovery snapshot");
+  await name.fill("Recovered after failed save");
+  await page.reload();
+  await expect(name).toHaveValue("Recovered after failed save");
+  await page.unroute("**/api/studies");
+  await save.click();
+  await expect(page).toHaveURL(/\/studies\//);
+  await expect(
+    page.getByRole("heading", {
+      name: "Recovered after failed save",
+      exact: true,
+    }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() =>
+      localStorage.getItem("jas:draft:/new?template=commons"),
+    ),
+  ).toBeNull();
+});
+
 test("chat history failures have a local retry", async ({ page }) => {
   let failing = true;
   await page.route("**/api/chats", (route) =>
