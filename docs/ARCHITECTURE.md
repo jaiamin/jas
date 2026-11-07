@@ -55,6 +55,15 @@ their conversation. No proposal automatically saves or runs.
 `POST /api/chats` accepts a question, context (`general`, `new`, `study:<id>`, or `run:<id>`),
 and optional existing `chat_id`. The first accepted message creates the conversation.
 `GET /api/chats` lists summaries; `GET /api/chats/{id}` restores ordered Analysis turns.
+`GET /api/chats/{id}/events` streams the latest turn as server-sent snapshots, with a
+heartbeat during quiet stages and completion closing the stream. Only the active turn is
+sent, avoiding repeated transmission of the conversation. Disconnecting never cancels or
+resubmits provider work; polling and reload restore the same persisted record.
+
+Provider streaming uses the existing budget reservation, single-request limit, timeout and
+trace accounting. Partial prose is stored under `Analysis.output.partial`; it is pending
+content, not a validated finding or protocol. Final schema, citation and design checks still
+gate completion; failures remove partial prose. No private model reasoning is exposed.
 Conversation identity is an indexed Analysis field, with no duplicate message store.
 One pending turn per chat prevents overlapping follow-ups; independent chats can run
 concurrently. Failed turns stay inspectable and retry as a new turn in their original context.

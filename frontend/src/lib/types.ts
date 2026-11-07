@@ -310,6 +310,7 @@ export interface Analysis {
   status: string;
   output: {
     stage?: string;
+    partial?: string;
     planning?: {
       brief: { size_rationale: string; operationalization: string };
       sources: { url: string; title: string }[];

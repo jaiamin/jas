@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("logo-only sidebar collapses in place, reveals its control on hover, and restores via keyboard", async ({
+test("sidebar collapses in place, reveals its control on hover, and restores via keyboard", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1280, height: 800 });

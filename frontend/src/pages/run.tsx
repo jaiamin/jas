@@ -352,8 +352,7 @@ export default function Run() {
                   metricKey={chosenMetric}
                 />
                 <p className="table-note">
-                  Recorded outcomes through turn {turn}. Each point summarizes
-                  one round.
+                  Through turn {turn} · one point per round
                 </p>
               </section>
             </div>
@@ -363,10 +362,7 @@ export default function Run() {
               <h2>Recent events</h2>
             </div>
             {!events.length ? (
-              <Empty
-                title="Waiting for the first consequence"
-                description="Start the run or step through one agent decision."
-              />
+              <Empty title="No events yet" />
             ) : (
               <div className="event-feed">
                 {events
@@ -577,8 +573,7 @@ export default function Run() {
                     )}
                   </dl>
                   <p className="evidence-disclaimer">
-                    Rationale and memory are model self-reports. They do not
-                    expose its internal reasoning.
+                    Rationale and memory are model self-reports.
                   </p>
                   <Disclosure
                     className="disclosure"
@@ -689,8 +684,7 @@ export default function Run() {
         <TabsContent value="relationships">
           <div className="section-heading">
             <div>
-              <h2>Interaction patterns</h2>
-              <p>Directed exchanges and direct messages through turn {turn}.</p>
+              <h2>Interactions through turn {turn}</h2>
             </div>
           </div>
           <div className="interactions-layout">
@@ -700,11 +694,7 @@ export default function Run() {
               onAgent={selectAgent}
             />
             <div>
-              <h2>Verifiable behavior</h2>
-              <p className="muted">
-                Ground truth comes from the rules and the information each actor
-                received.
-              </p>
+              <h2>Exchanges</h2>
               <RelationshipTable
                 profiles={run.design.profiles}
                 events={events}

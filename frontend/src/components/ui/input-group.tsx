@@ -11,7 +11,7 @@ function InputGroup({ className, ...props }: React.ComponentProps<"fieldset">) {
       data-slot="input-group"
       className={cn(
         "group/input-group relative flex w-full items-center rounded-md border border-input shadow-none transition-[color,box-shadow] outline-none",
-        "h-8 min-w-0 has-[>textarea]:h-auto",
+        "h-9 min-w-0 has-[>textarea]:h-auto",
 
         "has-[>[data-align=inline-start]]:[&>input]:pl-2",
         "has-[>[data-align=inline-end]]:[&>input]:pr-2",
@@ -71,7 +71,7 @@ const inputGroupButtonVariants = cva(
     variants: {
       size: {
         xs: "h-6 gap-1 rounded-[calc(var(--radius)-5px)] px-2 has-[>svg]:px-2 [&>svg:not([class*='size-'])]:size-3.5",
-        sm: "h-8 gap-1.5 rounded-md px-2.5 has-[>svg]:px-2.5",
+        sm: "h-9 gap-1.5 rounded-md px-2.5 has-[>svg]:px-2.5",
         "icon-xs":
           "size-6 rounded-[calc(var(--radius)-5px)] p-0 has-[>svg]:p-0",
         "icon-sm": "size-8 p-0 has-[>svg]:p-0",

@@ -35,9 +35,9 @@ test("Agent is one full page with an inner history rail and contextual composer"
   await expect(draft).toBeFocused();
   await draft.focus();
   await expect(draft).toHaveCSS("outline-style", "none");
-  await expect(page.locator('fieldset[data-slot="input-group"]')).not.toHaveCSS(
+  await expect(page.locator('fieldset[data-slot="input-group"]')).toHaveCSS(
     "box-shadow",
-    "none",
+    /0px 0px 0px 3px/,
   );
   await expect(page.locator(".composer-note")).toHaveCount(0);
   const catalog = await (await request.get("/api/catalog")).json();

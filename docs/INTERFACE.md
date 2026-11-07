@@ -5,7 +5,10 @@ Primary reference: Laminar product screens inspected on 2026-11-07 in its
 [table documentation](https://laminar.sh/docs/platform/table-views). Public screenshots
 showed its actual trace tree, adjacent span inspector, compact tables and control bars.
 No authenticated Laminar session was available or required. Its marketing page was not
-used as the application layout. `DESIGN.md` owns the resulting design system.
+used as the application layout. The user's supplied Clay application screenshot now guides the visual treatment: white
+sidebar, fine group dividers, pale blue active rows, Inter typography, a neutral canvas
+and a softly framed composer. The approved 22px lowercase Bricolage wordmark remains.
+`DESIGN.md` owns the resulting design system.
 
 ## Route and task inventory
 
@@ -42,76 +45,57 @@ loading/error/empty feedback; linked turn controls and evidence; anchored AI com
 
 ## Verification record
 
-Verified on 2026-11-07. Automated tests use isolated databases and controlled model
-responses. The normal application reads its configured database and provider credentials;
-it has no demo mode or seeded outcomes. Current screenshots show the normal application.
+Verified on 2026-11-07. The normal application on port 8080 loads its configured database
+and available provider credentials. It has no demo mode or seeded results. Visual review
+made no model requests and did not modify user experiments or conversations.
 
-| View / state | Observed verification |
+| Verified view / state | Coverage |
 | --- | --- |
-| Experiments and runs | Desktop tables, search, filtered empty/reset, selection, comparison, pagination; empty workspace on mobile |
-| Experiment details | Results, run matrix, protocol, revision selection and tuning; historical records preserved |
-| Protocol editor | Desktop/mobile layout; question, agents, conditions, execution and JSON; validation, template changes, save, draft recovery, Generate with Agent and proposal return |
-| Run evidence | Journal and inspector; earlier turn keeps later decisions visible; keyboard slider, mobile focus/return, narrow desktop and adjacent wide layouts |
-| Observations and record | Saved notes survive API reload/export; drafts remain attached to their original run/turn during polling and turn changes; 24-turn exact replay verified |
-| Environment and interactions | Shared pool/outcome history, initial and completed states, empty interaction network; all seven rule systems exercised by API/browser tests |
-| Comparison | Selected two recorded test runs through the run library; aligned outcomes and history at desktop/tablet widths |
-| Agent | General conversation, independent chats and reload; inner history rail/mobile picker; selected experiment/run, pending, citations, original-scope retry, protocol handoff, provider disabled, POST error and draft recovery |
-| Settings and recovery | Missing providers, read-only configuration, budgets/storage; API error/retry, missing records, unknown-route recovery |
-| JAS compatibility | New commands, settings, API title and export filename; legacy configuration precedence, database selection, browser drafts/theme/sidebar regression tests |
-| Shared accessibility | Keyboard entry, sidebar shortcut/persistence, focus and return; sampled rendered text/placeholder contrast in both themes; no page overflow in inspected layouts |
+| Experiments and runs | Empty/populated lists, filters/reset, pagination, selection and comparison |
+| Experiment details | Results, run matrix, protocol, revision selection and tuning |
+| Protocol editor | Question, agents, conditions, execution, JSON; validation, templates, save, draft recovery and proposal handoff |
+| Run evidence | Journal remains intact; turn slider, selected inspector, adjacent desktop and stacked mobile layouts; focus and return |
+| Observations and record | Notes remain attached to their turn during polling/navigation; saved notes/export and exact 24-turn replay verified during the redesign |
+| Environment and interactions | Initial state, history, empty interaction network; seven rule systems covered by API/browser tests |
+| Comparison | Two-to-four runs, aligned outcomes, distinct line patterns and matching legends in both themes |
+| Agent | Independent histories/reload, context popup, bottom composer, four middle suggestions, scoped questions, citations, original-context retry and reviewed creation |
+| Agent streaming | Actual provider-stream integration, pending prose, final validation, SSE/reconnect, interrupted-stream usage, budget rejection; Markdown headings, ordered lists, tables and code |
+| Tailored suggestions | Four per context; actual question/treatments/measures, historical run identity, incomplete runs and no submission on selection |
+| Settings and recovery | Configured/missing providers, budgets/storage, failed requests, missing records and unknown-route recovery |
+| Accessibility | Visible focus, keyboard navigation, mobile drawer focus trap/Escape/return, reduced-motion activity and contained horizontal table scrolling |
+| JAS compatibility | Browser titles, CLI/config aliases, database selection, old browser preferences and drafts |
 
-Manual captures cover 390px mobile, 834px tablet and 1440px desktop. Browser tests also
-exercise 1280px desktop navigation. Wide tables and editor tabs scroll within their containers.
+Current normal-app captures cover **42 route/theme/viewport combinations**: Experiments,
+Runs, editor, Environments, Settings, empty comparison and Agent at 390px, 834px and
+1440px in light/dark themes. No page overflow was measured. The font was confirmed as
+Inter. Expanded/collapsed navigation and the context menu were inspected separately.
+Rendered evidence, comparison and streaming replies were inspected using controlled test
+responses in an isolated database; these are explicitly test captures, not live outcomes.
 
-Current checks: 160 Python tests; Ruff lint/format and ty; 7 frontend unit tests;
-Biome; TypeScript and Vite production build. 34 Playwright tests passed, including the Agent
-follow-up and evidence/navigation regressions. The latest editor generation/return changes
-also passed 11 focused Agent/navigation tests. Previous Actionlint and Docker
-Compose validation passed; this follow-up does not change those configurations.
+All 47 sampled text/surface token pairs per theme meet 4.5:1. Focus remains visible around
+the rounded composer group, without a rectangular textarea outline. Coarse-pointer
+controls expand to at least 44px. Suggestions fill a draft without spending; unstarted
+experiments receive setup questions rather than invented results. Activity reflects server
+stages, never a fake progress timer. Completed replies replace pending prose after validation.
 
-The monochrome refinement was checked on the normal application at 390px, 834px and
-1440px in both themes: Experiments, Runs, editor, Environments, Agent, Settings and
-empty comparison. Mobile drawer Escape/focus return and desktop visible focus passed;
-no page overflow or browser exceptions were observed. Four-series comparison tests
-verify distinct line patterns and matching legends in both themes. Status icons preserve
-meaning without color. All 37 sampled token text/surface pairs per theme exceed 4.5:1
-(minimum 4.68 light / 5.45 dark). Logo ink adapts to the app theme independently of the
-OS preference. Only the favicon has extra padding; the sidebar mark remains 24px.
-The browser title follows `View | JAS`, including saved experiment identity. Two focused
-navigation tests passed after this follow-up, covering history, reload and direct entry;
-route changes and browser history were also checked against the live port-8080 app.
+Checks passed: **165 backend tests**, Ruff lint/format and ty; **11 frontend unit tests**,
+Biome, TypeScript and the Vite production build; **37 Playwright tests**, plus focused
+capture checks for evidence and streaming/comparison. Earlier Actionlint and Docker Compose
+validation remains applicable because this refinement does not change those files.
 
-The Agent follow-up checks the inner history rail, responsive chat picker, session draft
-recovery, saved chat resumption, context changes, proposal-to-editor review and return,
-manual-editor generation entry, cited evidence, original-scope retries, missing providers,
-and server errors. The sidebar pairs its mark with a lowercase `jas` wordmark when
-expanded, and keeps the mark alone when collapsed. The sidebar retains
-focus when toggled, aligns its collapsed controls, and reveals expansion on hover/focus.
-The composed textarea has no rectangular outline; its rounded group retains keyboard
-focus. Suggestions have visible boundaries and fill the draft without sending. The context
-menu is viewport-bounded and at least 340px on the 390px test viewport. Generic subtitles
-and routine composer hints were removed; record identity and errors remain.
+Normal application captures:
 
-Current application captures (normal database, no sample experiment data):
+- [Agent · light](screenshots/agent-light.png) · [dark](screenshots/agent-dark.png) · [mobile](screenshots/agent-mobile.png)
+- [Context menu](screenshots/agent-context.png) · [collapsed navigation](screenshots/agent-collapsed.png)
+- [Workspace · light](screenshots/workspace.png) · [dark](screenshots/workspace-dark.png)
+- [Editor · dark](screenshots/editor-dark.png) · [settings](screenshots/settings.png)
 
-The lowercase wordmark refinement uses a locally hosted 22px/800 Bricolage Grotesque
-subset. Its desktop light/dark and 390px mobile layouts were inspected, font loading
-confirmed, and collapsed visibility checked by the navigation regression. Formatting,
-lint, unit tests and the production build passed. Workspace captures below include
-this refinement; other captures document their respective workflows.
+Controlled browser-test captures:
 
-- [Agent · light](screenshots/agent-light.png)
-- [Agent · dark](screenshots/agent-dark.png)
-- [Agent · mobile](screenshots/agent-mobile.png)
-- [Agent context menu](screenshots/agent-context.png)
-- [Collapsed navigation](screenshots/agent-collapsed.png)
-- [Workspace · light](screenshots/workspace.png)
-- [Workspace · dark](screenshots/workspace-dark.png)
-- [Execution editor · dark](screenshots/editor-dark.png)
-- [Provider configuration](screenshots/settings.png)
+- [Streaming reply · light](screenshots/agent-streaming-light.png) · [mobile dark](screenshots/agent-streaming-mobile.png)
+- [Decision evidence](screenshots/evidence-light.png) · [mobile evidence](screenshots/evidence-mobile.png)
+- [Comparison](screenshots/comparison-light.png)
 
-Normal startup on port 8080 passes its health check and reports both OpenAI and Anthropic
-configured. Provider presence is checked without exposing credentials or making paid calls.
-
-Limits: Chromium verification only; no live paid-provider calls, full assistive-technology
-audit, or production deployment. Model success/failure paths use controlled test responses.
+Limits: Chromium only; no paid-provider calls, full screen-reader audit or production
+deployment. Model success/failure paths use controlled responses; this verifies stream
+handling and rendering without claiming a live-provider run.

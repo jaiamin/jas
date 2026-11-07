@@ -29,15 +29,8 @@ export default function Compare() {
   if (runs.length < 2)
     return (
       <>
-        <PageHeading title="Compare runs">
-          <Button variant="outline" asChild>
-            <Link to="/runs">Choose runs</Link>
-          </Button>
-        </PageHeading>
-        <Empty
-          title="Choose runs to compare"
-          description="Select two to four runs from the run library."
-        >
+        <PageHeading title="Compare runs" />
+        <Empty title="Choose runs to compare" description="Select 2–4 runs.">
           <Button asChild>
             <Link to="/runs">Browse runs</Link>
           </Button>

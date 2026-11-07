@@ -1,5 +1,6 @@
-import { BookOpen, Search } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AgentActivity } from "@/components/agent-activity";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,23 +53,10 @@ export function PlanningProgress({ plan }: { plan?: Analysis }) {
 }
 
 export function PlanningActivity({ plan }: { plan?: Analysis }) {
-  const stage =
-    {
-      scoping: "Scoping the question",
-      researching: "Researching methods",
-      drafting: "Drafting the protocol",
-      reviewing: "Reviewing the design",
-      revising: "Refining the protocol",
-    }[plan?.output?.stage ?? "scoping"] ?? "Designing the experiment";
   const sources = plan?.output?.planning?.sources ?? [];
   return (
     <Trace>
-      <TraceLine status="running" role="status">
-        <TraceIcon>
-          <Search />
-        </TraceIcon>
-        <TraceTitle>{stage}</TraceTitle>
-      </TraceLine>
+      <AgentActivity stage={plan?.output?.stage ?? "scoping"} />
       {plan?.output?.planning?.brief && (
         <TraceCollapsible>
           <TraceCollapsibleTrigger>

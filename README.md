@@ -52,6 +52,9 @@ for general questions, evidence analysis and reviewed creation. **Ask Agent** ap
 experiment and run details and opens the same full-page chat with that record selected.
 Past chats live in an inner Agent sidebar; the composer selects General, New experiment,
 an experiment, or a run. Proposals open in the protocol editor for review before saving.
+Replies stream as they arrive, with activity tied to actual reading, research, drafting and
+review stages. Four suggestions offer methods, controlled study templates, or questions
+tailored to the selected protocol and recorded progress. Selecting one fills the draft.
 General questions use the workspace budget; scoped questions use the experiment budget
 and cite inspected evidence. Chat history is stored in the database; unsent messages remain
 browser-session drafts. Enter sends and Shift+Enter adds a line.

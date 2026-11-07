@@ -41,11 +41,7 @@ function Runs() {
       ) : runs.data.length ? (
         <RunTable runs={runs.data} selectable />
       ) : (
-        <Empty title="No runs yet">
-          <Button asChild>
-            <Link to="/new">Create experiment</Link>
-          </Button>
-        </Empty>
+        <Empty title="No runs yet" />
       )}
     </>
   );
@@ -127,7 +123,7 @@ function SettingsPage() {
                   className={configured ? "status status-complete" : "status"}
                 >
                   {configured && <Check />}
-                  {configured ? "Key configured" : "Not configured"}
+                  {configured ? "Configured" : "Not configured"}
                 </Badge>
               </div>
             ))}
@@ -183,7 +179,7 @@ function SettingsPage() {
             </div>
             <div>
               <dt>Storage</dt>
-              <dd>{s.storage} · persistent local data</dd>
+              <dd>{s.storage}</dd>
             </div>
             <div>
               <dt>Concurrent runs</dt>

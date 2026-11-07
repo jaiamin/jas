@@ -1,15 +1,14 @@
-import { ArrowUpRight, BookOpen, Check, Search } from "lucide-react";
+import { ArrowUpRight, BookOpen, Check } from "lucide-react";
 import { memo } from "react";
-import Markdown from "react-markdown";
 import { Link } from "react-router-dom";
-import remarkGfm from "remark-gfm";
+import { AgentActivity } from "@/components/agent-activity";
+import { AgentMarkdown } from "@/components/agent-markdown";
 import {
   Disclosure,
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
 import { PlanningActivity } from "@/components/planning-progress";
-import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/data";
 import {
@@ -73,25 +72,16 @@ export const AgentReply = memo(function AgentReply({
           <>
             <Trace>
               {row.status === "pending" ? (
-                <TraceLine status="running" role="status">
-                  <TraceIcon>
-                    <Search />
-                  </TraceIcon>
-                  <TraceTitle>
-                    {row.purpose === "general"
-                      ? "Thinking through your question"
-                      : row.output?.stage === "indexing"
-                        ? "Indexing the experiment"
-                        : row.output?.stage === "reading"
-                          ? "Reading recorded turns"
-                          : "Investigating the evidence"}
-                  </TraceTitle>
-                  {examined.length > 0 && (
-                    <TraceDescription>
-                      {examined.length} ranges
-                    </TraceDescription>
-                  )}
-                </TraceLine>
+                <AgentActivity
+                  stage={
+                    row.output?.partial
+                      ? "writing"
+                      : (row.output?.stage ??
+                        (row.purpose === "general"
+                          ? "answering"
+                          : "investigating"))
+                  }
+                />
               ) : null}
               {examined.length > 0 && (
                 <TraceCollapsible>
@@ -131,17 +121,12 @@ export const AgentReply = memo(function AgentReply({
                 </TraceCollapsible>
               )}
             </Trace>
+            {row.status === "pending" && row.output?.partial && (
+              <AgentMarkdown text={row.output.partial} streaming />
+            )}
             {row.status === "complete" && (
               <>
-                <Bubble variant="ghost">
-                  <BubbleContent>
-                    <div className="prose">
-                      <Markdown remarkPlugins={[remarkGfm]}>
-                        {row.output?.answer ?? ""}
-                      </Markdown>
-                    </div>
-                  </BubbleContent>
-                </Bubble>
+                <AgentMarkdown text={row.output?.answer ?? ""} />
                 {!!row.output?.citations?.length && (
                   <div className="citation-list">
                     <span>Sources</span>
@@ -197,15 +182,19 @@ export const AgentReply = memo(function AgentReply({
 });
 
 function DesignReply({ row }: { row: Analysis }) {
-  if (row.status === "pending") return <PlanningActivity plan={row} />;
+  if (row.status === "pending")
+    return (
+      <>
+        <PlanningActivity plan={row} />
+        {row.output?.partial && (
+          <AgentMarkdown text={row.output.partial} streaming />
+        )}
+      </>
+    );
   const design = row.output?.design;
   return (
     <>
-      <div className="prose">
-        <Markdown remarkPlugins={[remarkGfm]}>
-          {row.output?.explanation ?? ""}
-        </Markdown>
-      </div>
+      <AgentMarkdown text={row.output?.explanation ?? ""} />
       {design && row.output?.supported ? (
         <div className="agent-proposal">
           <h2>{design.title}</h2>

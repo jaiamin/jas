@@ -114,7 +114,9 @@ class Planner:
 
     def progress(self, key: str, stage: str, **details) -> None:
         with self.db.session.begin() as session:
-            session.get_one(Analysis, key).output = {"stage": stage, **details}
+            row = session.get_one(Analysis, key)
+            partial = (row.output or {}).get("partial") if stage == "reviewing" else None
+            row.output = {"stage": stage, **details, **({"partial": partial} if partial else {})}
 
     def sources(self, key: str) -> list[dict]:
         found = {}
@@ -197,6 +199,9 @@ class Planner:
                 purpose="design",
                 analysis_id=key,
                 openai_reasoning_effort="medium",
+                on_partial=(lambda value: stream_partial(self.db, key, value.get("explanation")))
+                if output is Candidate
+                else None,
                 **options,
             )
 
@@ -331,3 +336,13 @@ class Planner:
             "Design review still has unresolved issues. No experiment was created: "
             + "; ".join(feedback)
         )
+
+
+def stream_partial(db: Database, key: str, text: object) -> None:
+    """Publish draft prose only; protocol and citation validation still gate completion."""
+    if not isinstance(text, str) or not text:
+        return
+    with db.session.begin() as session:
+        row = session.get_one(Analysis, key)
+        if row.status == "pending" and (row.output or {}).get("partial") != text:
+            row.output = {**(row.output or {}), "partial": text}

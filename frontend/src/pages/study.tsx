@@ -152,15 +152,9 @@ export default function Study() {
               </div>
               {!study.results.length ? (
                 <Empty
-                  title={
-                    active
-                      ? "Evidence is on its way"
-                      : "Ready to test your question"
-                  }
+                  title={active ? "Runs in progress" : "No results yet"}
                   description={
-                    active
-                      ? "Open a run to watch decisions and consequences as they happen. Comparison appears when runs complete."
-                      : "The protocol is saved. Run the experiment to start model decisions."
+                    active ? "Results appear as runs finish." : undefined
                   }
                 >
                   {active && (

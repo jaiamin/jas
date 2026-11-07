@@ -11,18 +11,19 @@
 }
 
 .table th {
-  background: var(--muted);
+  background: var(--background);
   color: var(--muted-foreground);
   font-size: 12px;
   font-weight: 500;
-  padding: 8px 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
   white-space: nowrap;
   text-align: left;
 }
 
 .table td {
   border-bottom: 1px solid var(--border);
-  padding: 14px 12px;
+  padding: 16px 12px;
   vertical-align: middle;
 }
 
@@ -93,8 +94,8 @@
 }
 
 .table-frame [data-slot="table-container"] {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-block: 1px solid var(--border);
+  border-radius: 0;
 }
 
 .table .table-heading-numeric {

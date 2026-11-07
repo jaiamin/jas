@@ -161,3 +161,41 @@ def test_chat_api_returns_saved_history_and_validates_requests(client, monkeypat
     )
     assert len(client.get("/api/chats").json()) == 1
     assert client.get("/api/settings").json()["usage"]["requests"] == 0
+
+
+def test_chat_events_deliver_partial_and_final_records_without_resubmission(client, monkeypatch):
+    import asyncio
+    import json
+
+    from pydantic_ai.models.function import DeltaToolCall, FunctionModel
+
+    async def stream(messages, info):
+        yield {0: DeltaToolCall(name=info.output_tools[0].name, json_args='{"answer":"Matched')}
+        await asyncio.sleep(0.3)
+        yield {
+            0: DeltaToolCall(json_args=' seeds share randomization.","citations":[],"caveats":[]}')
+        }
+
+    monkeypatch.setattr(
+        client.app.state.models, "model", lambda _: FunctionModel(stream_function=stream)
+    )
+    submitted = client.post(
+        "/api/chats", json={"question": "Explain matched seeds", "context": "general"}
+    ).json()
+    response = client.get(f"/api/chats/{submitted['chat_id']}/events")
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert response.headers["cache-control"] == "no-cache"
+    assert response.headers.get("content-encoding") != "gzip"
+    updates = [
+        json.loads(line[6:]) for line in response.text.splitlines() if line.startswith("data: ")
+    ]
+    assert any(
+        row["status"] == "pending" and row["output"].get("partial") == "Matched" for row in updates
+    )
+    assert updates[-1]["status"] == "complete"
+    saved = client.get(f"/api/chats/{submitted['chat_id']}").json()
+    assert len(saved) == 1 and saved[0]["output"]["answer"] == "Matched seeds share randomization."
+    resumed = client.get(f"/api/chats/{submitted['chat_id']}/events")
+    assert json.loads(resumed.text.split("data: ")[1]) == updates[-1]
+    assert client.get("/api/settings").json()["usage"]["requests"] == 1
+    assert client.get("/api/chats/missing/events").status_code == 404

@@ -1,11 +1,12 @@
 import {
-  Boxes,
   FlaskConical,
+  Layers2,
+  MessageCircle,
   MessageSquare,
   Moon,
   PanelLeft,
   Play,
-  Settings,
+  SlidersHorizontal,
   Sun,
 } from "lucide-react";
 import { Component, Fragment, Suspense, useEffect, useState } from "react";
@@ -28,6 +29,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Badge, Empty } from "@/components/ui/data";
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -232,7 +234,6 @@ export default function WorkspaceShell() {
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Workspace</SidebarGroupLabel>
             <nav aria-label="Main navigation">
               <SidebarMenu>
                 {links.map((item) => (
@@ -255,15 +256,15 @@ export default function WorkspaceShell() {
               </SidebarMenu>
             </nav>
           </SidebarGroup>
+          <Separator className="sidebar-separator" />
           <SidebarGroup>
-            <SidebarGroupLabel>Tools</SidebarGroupLabel>
             <SidebarMenu>
               {[
-                { to: "/agent", label: "Agent", icon: MessageSquare },
+                { to: "/agent", label: "Agent", icon: MessageCircle },
                 {
                   to: "/environments",
                   label: "Environments",
-                  icon: Boxes,
+                  icon: Layers2,
                 },
               ].map((item) => (
                 <SidebarMenuItem key={item.to}>
@@ -279,7 +280,7 @@ export default function WorkspaceShell() {
           </SidebarGroup>
           {!!studies.data?.length && (
             <SidebarGroup className="recent-navigation">
-              <SidebarGroupLabel>Recent experiments</SidebarGroupLabel>
+              <SidebarGroupLabel>Recent</SidebarGroupLabel>
               <SidebarMenu>
                 {studies.data.slice(0, 5).map((study) => (
                   <SidebarMenuItem key={study.id}>
@@ -304,7 +305,7 @@ export default function WorkspaceShell() {
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Settings">
                 <NavLink to="/settings" onClick={() => setOpenMobile(false)}>
-                  <Settings aria-hidden="true" />
+                  <SlidersHorizontal aria-hidden="true" />
                   <span>Settings</span>
                 </NavLink>
               </SidebarMenuButton>

@@ -60,8 +60,8 @@ function TabsTrigger({
       data-slot="tabs-trigger"
       className={cn(
         "tabs-trigger relative inline-flex h-full shrink-0 items-center justify-center gap-2 rounded-sm px-3 text-[13px] font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-[-2px] disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
-        "data-[state=active]:text-foreground group-data-[variant=default]/tabs-list:data-[state=active]:bg-background",
-        "group-data-[variant=line]/tabs-list:rounded-none group-data-[variant=line]/tabs-list:px-1 group-data-[variant=line]/tabs-list:border-b-2 group-data-[variant=line]/tabs-list:border-transparent group-data-[variant=line]/tabs-list:data-[state=active]:border-foreground",
+        "data-[state=active]:text-primary group-data-[variant=default]/tabs-list:data-[state=active]:bg-background",
+        "group-data-[variant=line]/tabs-list:rounded-none group-data-[variant=line]/tabs-list:px-1 group-data-[variant=line]/tabs-list:border-b-2 group-data-[variant=line]/tabs-list:border-transparent group-data-[variant=line]/tabs-list:data-[state=active]:border-primary",
         className,
       )}
       {...props}

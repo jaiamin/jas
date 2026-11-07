@@ -1,3 +1,5 @@
+import asyncio
+import json
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -6,7 +8,7 @@ from urllib.parse import urlparse
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from pydantic import Field
 from sqlalchemy import select, text
 from sqlalchemy.exc import NoResultFound
@@ -305,6 +307,32 @@ def create_app(
     @app.get("/api/chats/{chat_id}")
     async def chat(chat_id: str) -> list[dict]:
         return list(assistants.chat(chat_id))
+
+    @app.get("/api/chats/{chat_id}/events")
+    async def chat_events(chat_id: str) -> StreamingResponse:
+        key = assistants.chat(chat_id)[-1]["id"]
+
+        async def events():
+            previous, heartbeat = None, asyncio.get_running_loop().time()
+            while True:
+                row = assistants.get(key)
+                snapshot = json.dumps(row)
+                now = asyncio.get_running_loop().time()
+                if snapshot != previous:
+                    yield f"data: {snapshot}\n\n"
+                    previous, heartbeat = snapshot, now
+                elif now - heartbeat >= 15:
+                    yield ": keep-alive\n\n"
+                    heartbeat = now
+                if row["status"] != "pending":
+                    return
+                await asyncio.sleep(0.15)
+
+        return StreamingResponse(
+            events(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        )
 
     @app.post("/api/chats", status_code=202)
     async def send_chat(body: ChatMessage) -> dict:

@@ -1,10 +1,4 @@
-import {
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  FlaskConical,
-  Search,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, FlaskConical, Search } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Status } from "@/components/shared";
@@ -29,17 +23,7 @@ export function StudyTable({ studies }: { studies: StudySummary[] }) {
   );
   const pageCount = Math.max(1, Math.ceil(filtered.length / 10));
   const current = Math.min(page, pageCount - 1);
-  if (!studies.length)
-    return (
-      <Empty title="No experiments yet">
-        <Button asChild>
-          <Link to="/new">
-            Create experiment
-            <ArrowRight data-icon="inline-end" />
-          </Link>
-        </Button>
-      </Empty>
-    );
+  if (!studies.length) return <Empty title="No experiments yet" />;
   return (
     <div className="table-frame">
       <div className="table-toolbar">

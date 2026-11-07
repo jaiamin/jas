@@ -14,7 +14,7 @@ for (const { theme, width } of [
   test(`decision inspection preserves journal and follows the rendered layout · ${theme} · ${width}`, async ({
     page,
     request,
-  }) => {
+  }, testInfo) => {
     const { id } = await recordedRun(page, request);
     await page.addInitScript(
       (value) => localStorage.setItem("jas-theme", value),
@@ -44,10 +44,18 @@ for (const { theme, width } of [
       await expect(
         page.getByRole("button", { name: "Back to decisions" }),
       ).toBeHidden();
+      await page.screenshot({
+        path: testInfo.outputPath(`evidence-${theme}-${width}.png`),
+        animations: "disabled",
+      });
       return;
     }
     await expect(evidence).toBeFocused();
     expect((await evidence.boundingBox())?.y).toBeLessThan(200);
+    await page.screenshot({
+      path: testInfo.outputPath(`evidence-${theme}-${width}.png`),
+      animations: "disabled",
+    });
     await page.getByRole("button", { name: "Back to decisions" }).click();
     const journal = page.getByRole("heading", {
       name: "Decision journal",
@@ -111,7 +119,7 @@ test("observation drafts stay with their recorded turn through polling and navig
 });
 
 for (const theme of ["light", "dark"]) {
-  test(`comparison identifies monochrome lines through the legend · ${theme}`, async ({
+  test(`comparison identifies line patterns through the legend · ${theme}`, async ({
     page,
     request,
   }, testInfo) => {

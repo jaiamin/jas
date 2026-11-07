@@ -35,7 +35,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Alert, Empty } from "@/components/ui/data";
+import { Alert } from "@/components/ui/data";
 import {
   Field,
   FieldDescription,
@@ -164,7 +164,7 @@ export default function Editor() {
             to="/agent?context=new"
             state={{ question: plan.data.question }}
           >
-            Return to your question
+            Back to Agent
           </Link>
         </Button>
       </>
@@ -172,21 +172,16 @@ export default function Editor() {
   if (plan.data?.output?.supported === false)
     return (
       <>
-        <PageHeading title="This question needs different capabilities" />
-        <Alert title="No experiment was invented">
-          {plan.data.output.explanation}
-        </Alert>
-        <Empty
-          title="Keep the question. Change the method."
-          description="Explore the supported mechanics, or start a custom study with an explicit scope."
-        >
+        <PageHeading title="Unsupported experiment" />
+        <Alert>{plan.data.output.explanation}</Alert>
+        <div className="actions">
           <Button variant="outline" asChild>
             <Link to="/environments">
               Explore environments
               <ArrowRight data-icon="inline-end" />
             </Link>
           </Button>
-        </Empty>
+        </div>
       </>
     );
   const initial =
@@ -453,10 +448,6 @@ function DesignEditor({
                     value={json}
                     onChange={(e) => setJson(e.target.value)}
                   />
-                  <FieldDescription>
-                    Validated by the backend. Unsupported fields and mechanics
-                    are rejected.
-                  </FieldDescription>
                 </Field>
               </FieldGroup>
             </TabsContent>

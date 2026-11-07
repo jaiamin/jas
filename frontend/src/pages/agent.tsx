@@ -1,5 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowUp, ArrowUpRight } from "lucide-react";
+import {
+  ArrowUp,
+  ArrowUpRight,
+  BookOpen,
+  FlaskConical,
+  GitCompareArrows,
+  ScanLine,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import {
@@ -31,8 +38,15 @@ import {
   MessageScrollerProvider,
   MessageScrollerViewport,
 } from "@/components/ui/message-scroller";
+import { agentSuggestions } from "@/lib/agent-suggestions";
 import { api, useApi } from "@/lib/api";
-import type { Analysis, RunSummary, Settings, StudySummary } from "@/lib/types";
+import type {
+  Analysis,
+  Design,
+  RunSummary,
+  Settings,
+  StudySummary,
+} from "@/lib/types";
 
 type Submission = { question: string; context: string };
 
@@ -48,6 +62,29 @@ export default function AgentPage() {
   });
   const studies = useApi<StudySummary[]>("/studies");
   const runs = useApi<RunSummary[]>("/runs");
+  const client = useQueryClient();
+  const pending = chat.data?.find(
+    (message) => message.status === "pending",
+  )?.id;
+  useEffect(() => {
+    if (!chatId || !pending) return;
+    const stream = new EventSource(`/api/chats/${chatId}/events`);
+    stream.onmessage = (event) => {
+      const update: Analysis = JSON.parse(event.data);
+      client.setQueryData<Analysis[]>([`/chats/${chatId}`], (messages) =>
+        messages?.map((message) =>
+          message.id === update.id ? update : message,
+        ),
+      );
+      if (update.status !== "pending") {
+        stream.close();
+        client.invalidateQueries({ queryKey: ["/chats"] });
+      }
+    };
+    // Polling keeps an interrupted connection recoverable without resubmitting a request.
+    stream.onerror = () => stream.close();
+    return () => stream.close();
+  }, [chatId, pending, client]);
   return (
     <div className="agent-layout">
       <AgentHistory />
@@ -167,7 +204,11 @@ function AgentConversation({
   const blocked = busy || send.isPending || !settings.data;
   const disabled = blocked || !!unavailable;
   return (
-    <section className="agent-workspace" aria-label="Agent workspace">
+    <section
+      className="agent-workspace"
+      aria-label="Agent workspace"
+      data-empty={!messages.length}
+    >
       {messages.length ? (
         <MessageScrollerProvider
           autoScroll={busy}
@@ -221,45 +262,25 @@ function AgentConversation({
           </MessageScroller>
         </MessageScrollerProvider>
       ) : (
-        <div className="agent-welcome">
-          <div>
+        <div className="agent-empty-content">
+          <div className="agent-welcome">
             <h1>
               {context === "new"
                 ? "What would you like to test?"
                 : context === "general"
-                  ? "What would you like to explore?"
-                  : "What does the evidence tell us?"}
+                  ? "What can we explore?"
+                  : "What does the evidence show?"}
             </h1>
-            <div className="agent-suggestions">
-              {(context === "new"
-                ? [
-                    "Does communication improve cooperation?",
-                    "Compare private notes with shared history",
-                  ]
-                : context === "general"
-                  ? [
-                      "How do matched seeds help comparisons?",
-                      "What makes a useful experiment?",
-                    ]
-                  : [
-                      "Which strategies worked best?",
-                      "What evidence supports the observed differences?",
-                    ]
-              ).map((text) => (
-                <Button
-                  variant="outline"
-                  key={text}
-                  onClick={() => {
-                    setQuestion(text);
-                    composer.current?.focus();
-                  }}
-                >
-                  {text}
-                  <ArrowUpRight aria-hidden="true" />
-                </Button>
-              ))}
-            </div>
           </div>
+          <AgentSuggestions
+            context={context}
+            studies={studies}
+            runs={runs}
+            onChoose={(text) => {
+              setQuestion(text);
+              composer.current?.focus();
+            }}
+          />
         </div>
       )}
       <form
@@ -269,51 +290,51 @@ function AgentConversation({
           submit();
         }}
       >
-        <InputGroup>
-          <InputGroupTextarea
-            ref={composer}
-            aria-label="Message Agent"
-            placeholder={
-              context === "new"
-                ? "Describe the experiment you have in mind…"
-                : "Ask anything…"
-            }
-            value={question}
-            onChange={(event) => setQuestion(event.target.value)}
-            maxLength={4000}
-            rows={3}
-            disabled={send.isPending}
-            onKeyDown={(event) => {
-              if (
-                event.key === "Enter" &&
-                !event.shiftKey &&
-                !event.nativeEvent.isComposing
-              ) {
-                event.preventDefault();
-                submit();
+        <div className="agent-composer-frame">
+          <InputGroup>
+            <InputGroupTextarea
+              ref={composer}
+              aria-label="Message Agent"
+              placeholder={
+                context === "new" ? "Describe an experiment…" : "Ask anything…"
               }
-            }}
-          />
-          <InputGroupAddon align="block-end">
-            <AgentContext
-              value={context}
-              onChange={changeContext}
-              studies={studies}
-              runs={runs}
+              value={question}
+              onChange={(event) => setQuestion(event.target.value)}
+              maxLength={4000}
+              rows={3}
               disabled={send.isPending}
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Enter" &&
+                  !event.shiftKey &&
+                  !event.nativeEvent.isComposing
+                ) {
+                  event.preventDefault();
+                  submit();
+                }
+              }}
             />
-            <Button
-              type="submit"
-              size="icon"
-              className="agent-send"
-              aria-label="Send message"
-              title="Send message (Enter)"
-              disabled={disabled || !question.trim()}
-            >
-              <ArrowUp aria-hidden="true" />
-            </Button>
-          </InputGroupAddon>
-        </InputGroup>
+            <InputGroupAddon align="block-end">
+              <AgentContext
+                value={context}
+                onChange={changeContext}
+                studies={studies}
+                runs={runs}
+                disabled={send.isPending}
+              />
+              <Button
+                type="submit"
+                size="icon"
+                className="agent-send"
+                aria-label="Send message"
+                title="Send message (Enter)"
+                disabled={disabled || !question.trim()}
+              >
+                <ArrowUp aria-hidden="true" />
+              </Button>
+            </InputGroupAddon>
+          </InputGroup>
+        </div>
         {send.error && (
           <Alert variant="error">
             {send.error.message} Your message is kept above.
@@ -354,5 +375,51 @@ function AgentConversation({
         )}
       </form>
     </section>
+  );
+}
+
+function AgentSuggestions({
+  context,
+  studies,
+  runs,
+  onChoose,
+}: {
+  context: string;
+  studies: StudySummary[];
+  runs: RunSummary[];
+  onChoose: (text: string) => void;
+}) {
+  const [kind, id] = context.split(":");
+  const study = studies.find((item) => kind === "study" && item.id === id);
+  const run = runs.find((item) => kind === "run" && item.id === id);
+  const path = kind === "run" ? `/runs/${id}` : `/studies/${id}`;
+  const protocol = useQuery({
+    queryKey: [path],
+    queryFn: () => api<{ design: Design }>(path),
+    enabled: !!(study || run),
+  });
+  const suggestions = agentSuggestions({
+    context,
+    study,
+    run,
+    runs,
+    design: protocol.data?.design,
+  });
+  if (!suggestions.length) return null;
+  return (
+    <div className="agent-suggestions">
+      {suggestions.map(({ title, prompt }, index) => {
+        const Icon = [BookOpen, GitCompareArrows, ScanLine, FlaskConical][
+          index
+        ];
+        return (
+          <Button variant="ghost" key={title} onClick={() => onChoose(prompt)}>
+            <Icon aria-hidden="true" />
+            <span>{title}</span>
+            <ArrowUpRight aria-hidden="true" />
+          </Button>
+        );
+      })}
+    </div>
   );
 }
