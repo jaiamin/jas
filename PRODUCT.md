@@ -14,8 +14,9 @@ Docker Compose service keep setup small. Google sign-in would not supply tenant 
 RBAC, audit trails, retention controls or validated research methods; hosted collaboration
 needs those capabilities together and is outside this release.
 
-Supported worlds have explicit mechanics: shared resources, trust exchanges and task
-coordination. Named task graphs, private goals, heterogeneous models, memory conditions,
+Supported worlds have explicit mechanics: shared resources, trust exchanges, task
+coordination, institutional oversight, binding bargaining, binary-evidence decisions and
+renewable resources. Named task graphs, private goals, heterogeneous models, memory conditions,
 resource shocks and repeated interactions support variations within those mechanics.
 AI produces validated protocols, not arbitrary executable worlds. New mechanics require
 an environment adapter. Seeds control environment randomization, not model determinism.

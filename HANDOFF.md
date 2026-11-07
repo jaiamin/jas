@@ -1,90 +1,112 @@
-# ASS handoff
+# Code quality handoff
 
-## Active code quality work
+Task branch: `t3/improve-codebase-quality`. User requested Desloppify's full
+fix/resolve/next workflow for the Python backend and TypeScript frontend,
+including substantive refactors and stale-documentation cleanup. No paid model
+calls, credentials, user databases, or benchmark evidence may be modified.
 
-Branch: `t3/improve-codebase-quality`. Use the project-local
-`.tools/desloppify/bin/desloppify` (installed with the `full` extra) and the
-installed `.agents/skills/desloppify/SKILL.md` workflow. State in `.desloppify/`
-is local and ignored. System Python is externally managed, so the scanner uses
-an isolated virtual environment; application dependencies stay in `.venv`.
+## Acceptance and workflow
 
-Acceptance criteria:
-- Scan the Python backend and TypeScript frontend separately, without excluding
-  production code, tests, or maintained documentation to improve scores.
-- Follow each scan's `next` queue: investigate, fix, verify, resolve, repeat.
-- Preserve simulation semantics, request accounting, persisted evidence, and UI flows.
-- Pass backend tests/Ruff/ty and frontend lint/tests/build; exercise affected UI
-  flows in a keyless disposable browser-test instance.
-- Rescan and report measured scores, remaining findings, and any concrete blockers.
+- [x] Install Desloppify with full extras and its Codex workflow guide.
+- [x] Ignore `.desloppify/`; exclude only tools, dependencies and generated output.
+- [x] Scan backend and frontend separately and import independent blind reviews.
+- [x] Fix all 23 initial backend and 21 initial frontend review findings.
+- [ ] Finish useful mechanical work and independent re-reviews; fix follow-ups.
+- [ ] Run final checks, record scores/limitations, publish one draft PR.
 
-Progress and next steps:
-1. [x] Inspect repository, Python version, branch, and project boundaries.
-2. [x] Install Desloppify and its Codex guide; ignore local scanner state.
-3. [x] Exclude tool/dependency/cache/build output and scan each project.
-4. [ ] Execute review, planning, and fix queues; record material decisions here.
-5. [ ] Verify, rescan, commit coherent changes, and publish one draft PR.
+The scanner lives in `.tools/desloppify`. Run backend commands from the repository
+root with `PATH="$PWD/.tools/desloppify/bin:$PWD/.venv/bin:$PATH"` and
+`desloppify --lang python scan --path ./backend`. Run frontend commands from
+`frontend/` using `../.tools/desloppify/bin/desloppify --lang typescript` and
+`scan --path .`. Each has separate local state/plan. The initial root TypeScript
+state is obsolete. Do not exclude source or mark real debt fixed for a score.
 
-Initial evidence: backend objective 73.4, frontend objective 75.6; subjective
-dimensions await independent review. Baseline Ruff/ty and frontend lint, five
-unit tests, production build, and 20 keyless browser tests pass. Backend baseline
-had 146 passes and one API test racing asynchronous step completion; the API
-tests now await the actual engine task (all five pass).
+Follow `.agents/skills/desloppify/SKILL.md`: `next`, implement/verify, `plan resolve`,
+then `next` again. Use `plan promote` when the execution queue is empty but useful
+mechanical findings remain. Re-review edited dimensions through the first-class
+blind Codex batch runner, at most three concurrent review processes overall.
 
-Previous implementation context follows; historical test counts and local-service
-state below describe earlier work and must be reverified for this checkout.
+## Changes so far
 
-Branch `feat/empirical-research-platform`; draft PR https://github.com/jaiamin/ass/pull/3.
-Read README for setup, docs/ARCHITECTURE.md for boundaries, GLOSSARY.md for terminology,
-DESIGN.md for current visual tokens and docs/INTERFACE.md for the redesign evidence.
+- Worlds own decision schemas and common decision bookkeeping; engine/replay no
+  longer reconstruct legal action rules or inspect environment internals.
+- Provider accounting has explicit reservation/settlement boundaries, typed usage
+  normalization, chained failures, cancellation/restart coverage, and diagnostics
+  that omit exception messages/locals. Research sources are normalized at the
+  provider boundary.
+- Missing records share a 404 contract; documented errors support both string
+  and validation-array details. Background starts require an active loop before
+  mutations. Assistant metrics use frozen cutoffs and terminal/peak semantics.
+- Research aggregation is pure and shares one metrics read; export packaging is
+  separate. API routes declare per-request service dependencies outside the app
+  factory. Seven templates have named constructors with identical payloads.
+- Editor route/recovery, editable draft lifecycle, agents, conditions, resource
+  schedules, profile overrides, tasks, and execution settings have concrete owners.
+  Named immutable transformations maintain dependent profiles/authorities/tasks.
+- Run annotations and request inspection own their workflows. Retry and control
+  cache refreshes target affected resources. Select retains domain union types.
+- Draft listing isolates corruption; editor discard errors stay recoverable;
+  research targets are exclusive; progress respects max; pausing links stay valid.
+- PRODUCT.md and docs/INTERFACE.md describe current capabilities/contracts.
 
-## Running
+## Verification and current work
 
-Main app: http://localhost:8080. Start with
-`.venv/bin/ass --host 0.0.0.0 --port 8080` or `docker compose up --build`.
-The local app uses `data/ass.sqlite3`; five user studies and 32 runs are preserved.
-Never run two engines against one database. Credentials remain in .env/environment.
-Python uses .venv. Native uv crashes on this sandbox kernel;
-`.tools/uv-0.13.7.data/scripts/uv` works. Disposable UI QA services and browser are closed;
-main 8080 remains running. Evaluation workers have finished.
+Latest observed: 184 backend tests pass, including corrupt replay rejection, concurrency
+and shared-budget contention, provider settlement failure/cancellation, API request scope,
+and trust receiver forecast constraints. Ruff and ty pass. All 14 saved simulation
+trajectories remain exactly equal after typed state and environment ownership refactors.
 
-## Implemented
+Frontend: 23 unit tests, lint and production build pass. All 30 browser workflows
+passed after the first follow-up batch; a larger suite is now running for nested
+design persistence, transient draft-validation recovery and revision navigation.
+Playwright owns its keyless backend on 8094 with fresh temporary storage and graceful
+shutdown. No manually prepared backend is needed; ASS_TEST_URL remains an explicit
+optional disposable-instance override.
 
-React/TypeScript/shadcn; Python/FastAPI; SQLite WAL, immutable protocol revisions,
-atomic checkpoints and explicit request reservations. Seven deterministic rule systems:
-commons, trust exchange, coordination, institution, bargaining, information and renewable
-resource. Independent communication channels, private observations and memory treatments.
-Planner scopes, optionally researches, drafts, validates and reviews. Production planner
-and investigator default to Sol; participants default to Luna. No model substitutions.
+Initial 23 backend / 21 frontend findings were fixed. First re-review follow-ups:
+14 backend and 12 frontend findings fixed. Backend checkpoint d1214f9 introduces typed
+common/environment checkpoints, world-owned schema capabilities and measures, focused
+operational run queries, concrete investigation helpers and regression tests. Existing
+versioned snapshot fields are preserved at serialization boundaries to retain hashes.
+Frontend checkpoint 2b0d116 preserves editor identity/validation transitions, separates
+route and decision-browser ownership and makes browser-test isolation automatic.
 
-Every view now shares source shadcn controls, compact collapsible navigation, neutral
-light/dark themes and restrained orange. Centered Home composer, progressive editor task
-tabs, recoverable drafts, full-width comparison and linked replay/evidence. The contextual
-assistant has explicit experiment/run selection, real evidence activity, bounded follow-up
-context and an anchored composer; desktop content reflows beside it. Run identities include
-immutable revision numbers. Attachments await an ingestion workflow.
+Another six frontend review findings are in progress: distinguish transient validation
+errors from bad draft content, simplify shell breadcrumbs, preserve assistant state on
+revision changes, cover nested edits, narrow history values and remove obsolete required
+field defaults. Task prerequisites now remount their text field after dependency changes
+so removing a prerequisite cannot leave a stale displayed value.
 
-## Verification
+Backend focused blind re-review is running under
+`.desloppify/subagents/runs/20261107_180619/` (seven dimensions, three workers).
+Do not mutate backend source until it finishes. Frontend reviews and evidence are
+retained under `frontend/.desloppify/`. Latest measured strict scores before these final
+follow-ups: backend 85.1, frontend 87.8; final scans/review status still pending.
 
-Current interface: 147 backend tests, Ruff, ty, frontend Biome/five unit tests/production
-build and 20 keyless browser workflows pass. Nineteen captures cover 1280/1440px desktop,
-tablet and mobile. Final Docker build, health and browser entry smoke pass. No paid model
-calls during this redesign; investigator/planner states use controlled test responses.
-Design documentation and the tracked token sidecar match current source. Impeccable
-returned `ship` for all four scored finish-review fixes; no regressions were observed.
+Old task-owned keyless backend on port 8093 (PID 93415) still needs shutdown.
+The test suite closes its own service after each run. No agent-browser session is open.
 
-Earlier frozen application c5db913: 221/230 strict live GPT-6 Luna cases passed;
-206 supported cases completed both conditions, 413 runs and 5,190 exactly replayed turns.
-All 20 capability cases passed. All 464 recorded attempts remain in compressed reports;
-see benchmarks/reports/README.md and EVALUATION.md. Evaluation estimated/reserved usage
-was $3.677626; earlier task about $1.69, total about $5.36. Do not delete/reset ignored
-`data/evaluation.sqlite3` or run overlapping benchmark processes. Suite v5 offline rescore
-224/230 is post-audit evidence, not independent improvement. Nine strict failures remain.
-The current UI and investigator changes postdate that frozen evaluation.
+Useful final commands:
 
-## Limits
+```sh
+.venv/bin/ruff check backend benchmarks
+.venv/bin/ty check
+.venv/bin/pytest -q
+.venv/bin/python .desloppify/check_world_behavior.py
+pnpm --dir frontend lint
+pnpm --dir frontend test
+pnpm --dir frontend build
+ASS_TEST_URL=http://127.0.0.1:8093 pnpm --dir frontend test:e2e
+```
 
-Trusted single-user deployment; no live Anthropic or large-scale-load validation. Human
-realism, psychological motives and causal validity are unestablished. There were no live
-sanctions, appeals or bargaining exits in the frozen suite. Add independently tested
-mechanics and calibrated reference protocols before broader claims. PRODUCT.md has
-pre-existing schema drift; preserved outside this interface task.
+## Evidence and deployment boundaries
+
+Read README.md, GLOSSARY.md, docs/ARCHITECTURE.md and DESIGN.md for maintained
+project contracts. Historical live evaluation belongs to its frozen application
+revision; see EVALUATION.md and benchmarks/reports/README.md. Keep those reports
+and ignored persistent data intact. This quality task has not run live model or
+Anthropic validation and makes no new empirical-validity claims.
+
+Assigned work authorizes coherent commits, a task-branch push and one draft PR.
+Never merge or push to the default branch. Immediately after creating/pushing a
+PR, the next tool call must link its full URL through T3 `link_pull_request`.
