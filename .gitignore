@@ -1,5 +1,6 @@
 .venv/
 .tools/
+.agents/skills/desloppify/
 .desloppify/
 __pycache__/
 *.py[cod]

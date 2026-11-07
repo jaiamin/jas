@@ -1,76 +1,34 @@
-# Code quality handoff
+# Project handoff
 
-Branch: `t3/improve-codebase-quality`. Main `e4092b2` was integrated at `c5832dd`.
-Preserve the redesigned shell and persistent, full-page streaming Agent.
+Branch: `t3/improve-codebase-quality`; draft PR: https://github.com/jaiamin/ass/pull/5.
+Latest main `e4092b2` is integrated. Do not merge or push to main.
 
-## Acceptance and progress
+## Completed
 
-Reach strict Desloppify 90 for each program where achievable, finish its execution
-queue, consolidate obsolete documentation, and publish one draft PR against main.
+- Desloppify strict: backend **91.8**, frontend **90.0** after final scans;
+  both execution queues clear. Independent cleanup review found no new defects.
+- Removed 34 unused UI helpers, redundant directives, unused run-model grouping,
+  historical screenshots and generated design metadata. Installed workflow tools stay local.
+- README is 22 lines. Setup, design, vocabulary and research live under `docs/`.
+- Preserved the redesigned workspace, draft/data recovery, versioned checkpoints
+  and frozen benchmark provenance. No paid application model calls or user-data changes.
 
-- [x] Install full Desloppify and Codex guide; ignore local state.
-- [x] Scan frontend/backend separately; exclude only dependencies/generated output.
-- [x] Integrate current main; complete substantial refactors and regression fixes.
-- [x] Consolidate PRODUCT into README; remove redundant EVALUATION pointer;
-  shorten DESIGN/INTERFACE and consolidate architecture guidance.
-- [x] Backend strict **91.8**, objective **91.8**; execution/review queues clear.
-- [x] Frontend final scan: strict **90.1**; execution/review queues clear.
-- [x] Record source commits and final browser results; both score targets met.
+## Verification and limits
 
-Publication: task-branch push and one draft PR against main are authorized.
-Never merge or push to main. Find the PR by branch `t3/improve-codebase-quality`.
+213 backend tests, 65 frontend unit tests, all 54 browser cases, Ruff, ty,
+frontend lint/build, Actionlint, local documentation links and Gitleaks pass.
+Production Docker build and smoke pass: health, SPA routes/assets, keyless fresh
+workspace and non-root user. Temporary services, container and task image are closed.
+The final browser suite covers the final production code; subsequent changes only add tests/docs.
 
-## Changes retained
+Broader coverage and structural backlog remains. The score change from 90.1 reflects
+removed source changing mechanical denominators and an independent logic review at 94.
+Only direct behavior-test fixes are confirmed; indirect/import-only gaps remain open.
+Application license is undecided; the user has been asked. Choose it before an OSS release.
 
-Backend `simulation/` owns world rules, typed state, schemas and checkpoints.
-Provider reservation/settlement preserves cancellation and primary errors.
-Routes, research aggregation and exports have focused owners. Bulk execution
-preflights every runnable member; usage and analysis filters agree across APIs.
-Fourteen complete deterministic trajectories match baseline evidence exactly.
+## Continuing work
 
-Frontend editor, Agent and run-inspection workflows have focused components.
-Recovery preserves legacy/corrupt drafts. Saving and validation lock the submitted
-snapshot; failed saves restore editing. Notes, request traces and replay results
-retain their original record identity through late responses and navigation.
-Malformed streams close and recover persisted results without resubmission.
-Shell breadcrumbs and experiment-status precedence use explicit local derivations.
-
-## Observed verification
-
-- 213 backend tests; Ruff and ty pass.
-- 64 frontend unit tests; lint and production build pass.
-- Full latest 54-case browser suite passes, including navigation, draft recovery,
-  delayed saves, streaming recovery, experiment controls and mobile layouts.
-- Actionlint, whitespace and commit Gitleaks checks pass.
-- No paid application model requests or persistent user-data changes.
-
-Browser evidence: `.desloppify/final-browser.log`. Playwright closed its temporary
-keyless backend/database on 8094. No task services are running.
-The sandbox's uv executable crashes on allocation; direct `.venv/bin/ruff`,
-`.venv/bin/ty` and `.venv/bin/python -m pytest` passed in the installed environment.
-
-## Scanner and next steps
-
-Guide: `.agents/skills/desloppify/SKILL.md`; CLI: `.tools/desloppify/bin/desloppify`.
-Run in `backend/` or `frontend/`, with `--lang python` or `--lang typescript`,
-scanning `.`. Backend PATH must include `../.venv/bin` for Bandit. Root scanner
-states are obsolete. Never copy or edit scores. Blind reviews use the first-class
-Codex runner with at most three workers; focused imports use `--allow-partial`.
-
-Use `next`, fix/verify, `plan resolve`, then `next`; rescan after the queue clears.
-This scanner counts `auto_resolved` against strict. Sixteen automatically cleared
-coverage findings were explicitly confirmed against real direct behavior tests;
-remaining indirect/import-only gaps stay open. Evidence is in ignored frontend
-`.desloppify/verified-coverage-evidence.json` and its resolution log.
-Seeded RNG is required for reproducibility. Nested Python path-detection issue:
-https://github.com/peteromallet/desloppify/issues/958.
-
-The final frontend scan and both `next` calls confirm the completed execution
-cycle. Broader mechanical coverage/structural debt remains; 90+ is not a claim
-that the backlog is empty. Source fixes are recorded through `fdadb73`.
-Main remained `e4092b2` at the final fetch. Immediately after PR creation or a PR
-push, link its full URL with T3 `link_pull_request`.
-
-Do not inspect credentials, run paid application model calls, change persistent
-user data or delete frozen benchmark evidence. Historical evaluations validate
-the recorded revision; they do not validate subsequent changes or human claims.
+Use installed `.venv/bin` tools: this sandbox's `uv` crashes during allocation.
+Run Desloppify separately from `backend/` and `frontend/`, scanning `.` with
+`--lang python/typescript`; PATH needs `../.tools/desloppify/bin` and `../.venv/bin`.
+Never edit scores. After any PR push, immediately link its full URL through T3.

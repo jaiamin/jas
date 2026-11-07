@@ -78,7 +78,6 @@ class RunSummary(TypedDict):
 class OperationalRun:
     id: str
     turn: int
-    models: tuple[str, ...]
 
 
 class Research:
@@ -291,20 +290,13 @@ class Research:
         with self.db.session() as session:
             study = session.get_one(Study, study_id)
             rows = session.execute(
-                select(Run.id, Run.turn, Agent.model)
+                select(Run.id, Run.turn)
                 .join(Condition, Condition.id == Run.condition_id)
                 .join(Revision, Revision.id == Condition.revision_id)
-                .join(Agent, Agent.run_id == Run.id)
                 .where(Revision.study_id == study_id, Revision.number == (number or study.revision))
                 .order_by(Run.created.desc())
             ).all()
-        grouped: dict[tuple[str, int], set[str]] = defaultdict(set)
-        for run_id, turn, model in rows:
-            grouped[run_id, turn].add(model)
-        return [
-            OperationalRun(key, turn, tuple(sorted(models)))
-            for (key, turn), models in grouped.items()
-        ]
+        return [OperationalRun(run_id, turn) for run_id, turn in rows]
 
     def study(self, study_id: str, number: int | None = None) -> dict:
         with self.db.session() as session:
