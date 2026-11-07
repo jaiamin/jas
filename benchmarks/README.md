@@ -11,6 +11,8 @@ uv run inspect view --log-dir data/evaluations/test/inspect
 Published [Luna results](reports/README.md): 230 frozen final cases, all recorded attempts,
 failures, provenance and cost. The current suite is v5; its post-audit rubric corrections
 are separate from the primary v4 result.
+These historical results validate the recorded revision, not later code changes or human
+predictions. For current verification, use the [development checks](../README.md#development).
 
 Versioned `cases.jsonl` stores typed records with stable IDs, explicit splits and criteria.
 The 230-case suite has 140 development protocols, 56 reserved context-combination protocols,

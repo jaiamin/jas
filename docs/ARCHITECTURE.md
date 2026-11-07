@@ -84,15 +84,24 @@ reported without keys; the composer checks the configured planner provider for c
 ## Environment seam
 
 The `simulation/` package owns world rules, state and action schemas. A world initializes
-seeded state, selects an actor, constructs that
-actor's observation, validates/applies an action, emits events/measurements and snapshots/restores
-state. It knows nothing about providers, persistence or React. A catalog describes supported
+seeded state, selects an actor, constructs its observation, validates/applies actions,
+emits events/measurements and snapshots/restores state. It knows nothing about providers,
+persistence or React. A catalog describes supported
 parameters and measurements. `World` owns common turn bookkeeping. Concrete worlds own
 checkpoint initialization, legal-action schema capabilities and derived environment measures;
 `decisions.py` builds schemas from those capabilities without selecting environments.
 `checkpoints.py` declares shared observations/actions and each world's state. Snapshot/restore
 boundaries preserve the versioned JSON envelope, including inert legacy fields required by
 existing state hashes.
+
+`environments.py` implements the original three games and their catalog; `mechanisms.py`
+implements four additional worlds. Their rule versions remain 1.0.0 and 2.0.0 respectively.
+Incompatible versions fail explicitly; saved evidence is never silently migrated. Optional
+parameters use schema defaults when reading older revisions.
+
+Profiles describe goals; parameterized permissions enforce action affordances. Per-turn
+schemas constrain requests, and world rules validate transitions again before committing.
+Models never settle their own actions.
 
 Adding an environment requires these explicit integration points:
 
@@ -148,20 +157,7 @@ revision and its runs, exact turn evidence and provider traces; it batches journ
 Full checkpoints favor auditability over storage efficiency. This is appropriate for small
 local studies; large deployments need retention/compaction and paginated evidence APIs.
 
-## Environment and evaluation seams
-
-`world.py` owns the checkpoint/observation interface. `environments.py` registers environment definitions
-and contains the original three games; `mechanisms.py` implements four additional state
-machines. The legacy games retain rule version 1.0.0; additional mechanics use 2.0.0.
-Version checks are per world. Old studies keep their original snapshots and remain
-replayable; incompatible rule changes must fail explicitly, never migrate evidence silently.
-New optional parameter groups use schema defaults when reading older design revisions.
-No database table migration is needed: immutable protocols and checkpoints remain JSON.
-
-Profiles describe goals; parameterized permissions control actions. The runtime derives
-per-action schemas from current affordances, then the adapter validates the transition
-again before commit. This allows offer-only amounts, target restrictions and role permissions
-without asking the model to interpret narrative authority. Models never settle their own actions.
+## Evaluation tooling
 
 Inspect is a development-only dependency. Its application solver calls the same FastAPI
 routes as the frontend through an in-process HTTP transport, including the multi-stage
