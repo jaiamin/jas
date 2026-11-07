@@ -8,9 +8,9 @@ from sqlalchemy import select, update
 from .db import Database, Measurement, RecordedEvent, Run, Turn, digest, now
 from .diagnostics import log_failure
 from .domain import Decision
-from .environments import CATALOG, create_world
 from .llm import LanguageModels, ProviderFailure
 from .research import Research
+from .simulation.environments import CATALOG, create_world
 
 INSTRUCTIONS = """You are one participant in a rule-governed simulation.
 Choose a legal action using only your observation and your private goal. Other participants'

@@ -265,9 +265,21 @@ def test_chat_events_deliver_partial_and_final_records_without_resubmission(clie
 
     from pydantic_ai.models.function import DeltaToolCall, FunctionModel
 
+    partial_observed = asyncio.Event()
+    assistants = client.app.state.assistants
+    get = assistants.get
+
+    def observe_snapshot(key):
+        row = get(key)
+        if row["status"] == "pending" and row["output"].get("partial") == "Matched":
+            partial_observed.set()
+        return row
+
+    monkeypatch.setattr(assistants, "get", observe_snapshot)
+
     async def stream(messages, info):
         yield {0: DeltaToolCall(name=info.output_tools[0].name, json_args='{"answer":"Matched')}
-        await asyncio.sleep(0.3)
+        await asyncio.wait_for(partial_observed.wait(), timeout=5)
         yield {
             0: DeltaToolCall(json_args=' seeds share randomization.","citations":[],"caveats":[]}')
         }

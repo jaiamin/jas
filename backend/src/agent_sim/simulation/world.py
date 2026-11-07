@@ -4,9 +4,9 @@ from abc import ABC, abstractmethod
 from collections.abc import Mapping
 from typing import Any, cast
 
+from ..domain import Action, Decision, Design, Event, Measure, Parameters
 from .checkpoints import Checkpoint, LegalAction, Observation
 from .decisions import ActionOption, DecisionRules, decision_schema
-from .domain import Action, Decision, Design, Event, Measure, Parameters
 
 RULE_VERSION = "1.0.0"
 

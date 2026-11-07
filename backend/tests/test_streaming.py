@@ -14,10 +14,11 @@ def test_streamed_prose_precedes_completion_and_preserves_validation_and_cost(
 ):
     db, models, research, _ = runtime
     snapshots = []
+    partial_observed = asyncio.Event()
 
     async def stream(messages, info):
         yield {0: DeltaToolCall(name=info.output_tools[0].name, json_args='{"answer":"Matched')}
-        await asyncio.sleep(0.12)
+        await asyncio.wait_for(partial_observed.wait(), timeout=5)
         if ending == "interrupted":
             raise TimeoutError("Interrupted test stream")
         citations = (
@@ -38,6 +39,7 @@ def test_streamed_prose_precedes_completion_and_preserves_validation_and_cost(
         def observe(key, text):
             publish(key, text)
             snapshots.append(agent.get(key))
+            partial_observed.set()
 
         monkeypatch.setattr(agent, "_partial", observe)
         result = agent.send("Explain matched seeds", "general")

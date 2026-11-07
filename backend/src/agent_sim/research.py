@@ -1,6 +1,7 @@
 from collections import Counter, defaultdict
 from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import TypedDict
 
 from sqlalchemy import select
 
@@ -19,9 +20,9 @@ from .db import (
     digest,
 )
 from .domain import Design, Treatment
-from .environments import CATALOG, create_world
 from .llm import PRICES, LanguageModels, Usage
 from .metrics import RunMetrics, aggregate_metrics, condition_results, matched_effects
+from .simulation.environments import CATALOG, create_world
 
 
 def study_status(statuses: Sequence[str]) -> str:
@@ -49,6 +50,28 @@ def event_dict(event: RecordedEvent) -> dict:
         "text": event.text,
         "data": event.data,
     }
+
+
+class RunSummary(TypedDict):
+    id: str
+    study_id: str
+    study_title: str
+    revision: int
+    condition: str
+    condition_key: str
+    environment: str
+    model: str
+    models: list[str]
+    status: str
+    turn: int
+    round: int
+    total_turns: int
+    total_rounds: int
+    seed: int
+    repetition: int
+    created: str
+    error: str | None
+    usage: Usage
 
 
 @dataclass(frozen=True)
@@ -165,7 +188,7 @@ class Research:
         condition: Treatment,
         revision: int,
         usage: Usage | None = None,
-    ) -> dict:
+    ) -> RunSummary:
         return {
             "id": run.id,
             "study_id": run.study_id,
@@ -190,7 +213,9 @@ class Research:
             "usage": usage if usage is not None else self.models.usage(run_id=run.id),
         }
 
-    def runs(self, study_id: str | None = None, *, run_ids: set[str] | None = None) -> list[dict]:
+    def runs(
+        self, study_id: str | None = None, *, run_ids: set[str] | None = None
+    ) -> list[RunSummary]:
         with self.db.session() as session:
             query = (
                 select(Run, Condition, Revision)

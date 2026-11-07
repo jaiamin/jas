@@ -83,7 +83,8 @@ reported without keys; the composer checks the configured planner provider for c
 
 ## Environment seam
 
-An adapter validates parameters, initializes seeded state, selects an actor, constructs that
+The `simulation/` package owns world rules, state and action schemas. A world initializes
+seeded state, selects an actor, constructs that
 actor's observation, validates/applies an action, emits events/measurements and snapshots/restores
 state. It knows nothing about providers, persistence or React. A catalog describes supported
 parameters and measurements. `World` owns common turn bookkeeping. Concrete worlds own
@@ -149,10 +150,10 @@ local studies; large deployments need retention/compaction and paginated evidenc
 
 ## Environment and evaluation seams
 
-`world.py` owns the checkpoint/observation interface. `environments.py` registers adapters
+`world.py` owns the checkpoint/observation interface. `environments.py` registers environment definitions
 and contains the original three games; `mechanisms.py` implements four additional state
 machines. The legacy games retain rule version 1.0.0; additional mechanics use 2.0.0.
-Version checks are per adapter. Old studies keep their original snapshots and remain
+Version checks are per world. Old studies keep their original snapshots and remain
 replayable; incompatible rule changes must fail explicitly, never migrate evidence silently.
 New optional parameter groups use schema defaults when reading older design revisions.
 No database table migration is needed: immutable protocols and checkpoints remain JSON.

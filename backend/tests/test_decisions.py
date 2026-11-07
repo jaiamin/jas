@@ -1,5 +1,5 @@
 import pytest
-from agent_sim.decisions import ActionOption, DecisionRules, decision_schema
+from agent_sim.simulation.decisions import ActionOption, DecisionRules, decision_schema
 from pydantic import ValidationError
 
 
@@ -70,7 +70,7 @@ def test_structured_actions_encode_cross_field_constraints():
 
 
 def test_trust_receiver_schema_rejects_unused_forecasts(design):
-    from agent_sim.environments import TrustExchange
+    from agent_sim.simulation.environments import TrustExchange
 
     design.profiles = design.profiles[:2]
     world = TrustExchange(design, design.conditions[0].parameters, 7)

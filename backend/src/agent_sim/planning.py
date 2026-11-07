@@ -7,9 +7,9 @@ from pydantic import Field, ValidationError
 from .config import setting
 from .db import Analysis, Database
 from .domain import Design, DesignSpec, PlannedStudy, Strict
-from .environments import CATALOG, MEASURE_DESCRIPTIONS, create_world
 from .llm import LanguageModels
 from .research import Research
+from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, create_world
 from .templates import templates
 
 PLANNING = """Design empirical studies of model-controlled agents, not claims of human prediction.

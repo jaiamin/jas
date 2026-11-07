@@ -108,7 +108,7 @@ user data. CI uses the same owned-backend flow in
 
 ## Repository
 
-- `backend/src/agent_sim/`: API, validated protocols, execution, storage and rule adapters.
+- `backend/src/agent_sim/`: API, validated protocols, execution and storage; `simulation/`: world rules and checkpoints.
 - `frontend/src/pages/`: route-level tasks; `components/editor/`: protocol field groups;
   `components/`: shared records, shell, evidence and Agent; `components/ui/`: shadcn.
 - `frontend/src/index.css`: canonical theme tokens; `styles/`: scoped interface styles.

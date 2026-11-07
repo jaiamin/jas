@@ -1,6 +1,12 @@
 import pytest
 from agent_sim.domain import Action, Design, Parameters
-from agent_sim.environments import Commons, Coordination, TrustExchange, World, create_world
+from agent_sim.simulation.environments import (
+    Commons,
+    Coordination,
+    TrustExchange,
+    World,
+    create_world,
+)
 from agent_sim.templates import templates
 
 

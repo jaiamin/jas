@@ -2,6 +2,7 @@ import copy
 from dataclasses import dataclass
 from typing import cast
 
+from ..domain import Action, Decision, Design, Event, Measure, Parameters
 from .checkpoints import (
     ActionPayload,
     CommonsCheckpoint,
@@ -11,7 +12,6 @@ from .checkpoints import (
     TrustCheckpoint,
 )
 from .decisions import DecisionRules
-from .domain import Action, Decision, Design, Event, Measure, Parameters
 from .mechanisms import Bargaining, Information, Institution, RenewableResource
 from .world import World
 

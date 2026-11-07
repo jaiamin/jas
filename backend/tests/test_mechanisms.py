@@ -2,7 +2,7 @@ import random
 
 import pytest
 from agent_sim.domain import Action, Design
-from agent_sim.environments import create_world
+from agent_sim.simulation.environments import create_world
 from agent_sim.templates import templates
 from pydantic import ValidationError
 

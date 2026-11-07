@@ -6,7 +6,7 @@ from typing import Annotated, Any, Literal
 
 from pydantic import Field, create_model
 
-from .domain import Action, Decision
+from ..domain import Action, Decision
 
 
 @dataclass(frozen=True)

@@ -3,8 +3,8 @@ from collections import defaultdict
 from sqlalchemy import select
 
 from .db import Analysis, Annotation, ProviderCall, RecordedEvent, Revision, Run, Turn
-from .environments import CATALOG
 from .research import Research, event_dict
+from .simulation.environments import CATALOG
 
 
 def export_study(research: Research, study_id: str) -> dict[str, object]:

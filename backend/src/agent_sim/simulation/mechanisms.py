@@ -1,6 +1,7 @@
 import random
 from typing import cast
 
+from ..domain import Action, Event, Measure
 from .checkpoints import (
     ActionPayload,
     BargainingCheckpoint,
@@ -13,7 +14,6 @@ from .checkpoints import (
     Sanction,
 )
 from .decisions import DecisionRules
-from .domain import Action, Event, Measure
 from .world import World
 
 

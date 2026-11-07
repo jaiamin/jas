@@ -13,11 +13,11 @@ from .assistants import Assistants
 from .config import setting
 from .db import Annotation, Database, ProviderCall, Workspace
 from .domain import Design, Strict
-from .environments import CATALOG, MEASURE_DESCRIPTIONS
 from .execution import Engine
 from .exports import export_study
 from .llm import LanguageModels
-from .research import Research
+from .research import Research, RunSummary
+from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS
 from .templates import templates
 
 router = APIRouter()
@@ -201,7 +201,7 @@ async def download_study(study_id: str, *, research: ResearchDep) -> JSONRespons
 
 
 @router.get("/api/runs")
-async def runs(study_id: str | None = None, *, research: ResearchDep) -> list[dict[str, Any]]:
+async def runs(study_id: str | None = None, *, research: ResearchDep) -> list[RunSummary]:
     return research.runs(study_id)
 
 

@@ -23,7 +23,7 @@ def test_suite_is_unique_and_split_before_tuning():
     assert sum(case.split == "generalization" for case in cases) == 56
     assert sum(case.environment is not None for case in cases) == 210
     assert len(suite.fingerprint()) == 64
-    from agent_sim.environments import CATALOG, MEASURE_DESCRIPTIONS
+    from agent_sim.simulation.environments import CATALOG, MEASURE_DESCRIPTIONS
 
     assert set(MEASURE_DESCRIPTIONS) == {m for a in CATALOG.values() for m in a.measures}
 
