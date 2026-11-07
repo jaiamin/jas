@@ -5,7 +5,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
-  Eye,
   Pause,
   Play,
   Radio,
@@ -13,8 +12,12 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { ResearchAssistant } from "@/components/assistant";
 import { MetricChart } from "@/components/charts";
+import {
+  Disclosure,
+  DisclosureContent,
+  DisclosureTrigger,
+} from "@/components/disclosure";
 import {
   ErrorState,
   Json,
@@ -24,9 +27,11 @@ import {
 } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Alert, Badge, Empty, Table } from "@/components/ui/data";
-import { Field, FieldGroup, FieldLabel, Textarea } from "@/components/ui/input";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Select } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import {
   RelationshipGraph,
   RelationshipTable,
@@ -63,7 +68,7 @@ export default function Run() {
   const notes = useApi<Annotation[]>(`/runs/${id}/annotations`);
   const client = useQueryClient();
   const tab =
-    ["live", "decisions", "relationships", "research", "settings"].find(
+    ["live", "decisions", "relationships", "settings"].find(
       (value) => value === params.get("tab"),
     ) ?? "live";
   useEffect(() => {
@@ -163,7 +168,7 @@ export default function Run() {
     <>
       <PageHeading
         title={summary.condition}
-        description={`${runModelLabel(summary)} · Seed ${summary.seed} · Repetition ${summary.repetition}`}
+        description={`${runModelLabel(summary)} · Rev ${summary.revision} · Seed ${summary.seed} · Repetition ${summary.repetition}`}
       >
         <Button
           variant="ghost"
@@ -237,10 +242,6 @@ export default function Run() {
             deciding
           </span>
         )}
-        <span className="researcher-view">
-          <Eye />
-          Researcher view
-        </span>
       </div>
       {(summary.error || control.error) && (
         <Alert variant="error" title="Execution stopped safely">
@@ -270,14 +271,14 @@ export default function Run() {
           >
             <ChevronLeft />
           </Button>
-          <input
-            type="range"
+          <Slider
             aria-label="Recorded turn"
             min={0}
             max={Math.max(maxTurn, 1)}
             disabled={!maxTurn}
-            value={turn}
-            onChange={(e) => selectTurn(Number(e.target.value))}
+            value={[turn]}
+            step={1}
+            onValueChange={([value]) => selectTurn(value)}
           />
           <Button
             variant="ghost"
@@ -313,7 +314,6 @@ export default function Run() {
           <TabsTrigger value="live">Environment</TabsTrigger>
           <TabsTrigger value="decisions">Decisions</TabsTrigger>
           <TabsTrigger value="relationships">Interactions</TabsTrigger>
-          <TabsTrigger value="research">Ask AI</TabsTrigger>
           <TabsTrigger value="settings">Record</TabsTrigger>
         </TabsList>
         <TabsContent value="live">
@@ -366,9 +366,6 @@ export default function Run() {
           <section className="section-space">
             <div className="section-heading">
               <h2>Recent events</h2>
-              <span className="muted">
-                Actions and consequences, not inferred intentions
-              </span>
             </div>
             {!events.length ? (
               <Empty
@@ -382,13 +379,15 @@ export default function Run() {
                   .toReversed()
                   .map((event) => (
                     <div className="event-row" key={event.id}>
-                      <button
+                      <Button
+                        variant="link"
+                        size="sm"
                         type="button"
                         className="turn-link"
                         onClick={() => selectTurn(event.turn, true)}
                       >
                         Turn {event.turn}
-                      </button>
+                      </Button>
                       <span className="event-agent">
                         {run.design.profiles.find((p) => p.key === event.actor)
                           ?.name ?? "Environment"}
@@ -430,7 +429,7 @@ export default function Run() {
                 />
               </div>
               <div className="table-frame">
-                <Table>
+                <Table className="table">
                   <thead>
                     <tr>
                       <th>Turn</th>
@@ -445,13 +444,15 @@ export default function Run() {
                       .map((t) => (
                         <tr key={t.number} data-selected={t.number === turn}>
                           <td>
-                            <button
+                            <Button
+                              variant="link"
+                              size="sm"
                               className="turn-link"
                               type="button"
                               onClick={() => selectTurn(t.number, true)}
                             >
                               {t.number}
-                            </button>
+                            </Button>
                           </td>
                           <td>
                             {run.design.profiles.find((p) => p.key === t.actor)
@@ -583,84 +584,96 @@ export default function Run() {
                     Rationale and memory are model self-reports. They do not
                     expose its internal reasoning.
                   </p>
-                  <details
+                  <Disclosure
                     className="disclosure"
-                    onToggle={(e) => {
-                      if (e.currentTarget.open && !pinned)
-                        selectTurn(turn, true);
+                    onOpenChange={(open) => {
+                      if (open && !pinned) selectTurn(turn, true);
                     }}
                   >
-                    <summary>Exact observation before the decision</summary>
-                    <Json value={evidence.data.observation} />
-                  </details>
-                  <details
+                    <DisclosureTrigger>
+                      Exact observation before the decision
+                    </DisclosureTrigger>
+                    <DisclosureContent>
+                      <Json value={evidence.data.observation} />
+                    </DisclosureContent>
+                  </Disclosure>
+                  <Disclosure
                     className="disclosure"
-                    onToggle={(e) => {
-                      if (e.currentTarget.open && !pinned)
-                        selectTurn(turn, true);
+                    onOpenChange={(open) => {
+                      if (open && !pinned) selectTurn(turn, true);
                     }}
                   >
-                    <summary>Typed decision</summary>
-                    <Json value={evidence.data.decision} />
-                  </details>
-                  <details
+                    <DisclosureTrigger>Typed decision</DisclosureTrigger>
+                    <DisclosureContent>
+                      <Json value={evidence.data.decision} />
+                    </DisclosureContent>
+                  </Disclosure>
+                  <Disclosure
                     className="disclosure"
-                    onToggle={(e) => {
-                      if (e.currentTarget.open && !pinned)
-                        selectTurn(turn, true);
+                    onOpenChange={(open) => {
+                      if (open && !pinned) selectTurn(turn, true);
                     }}
                   >
-                    <summary>Consequences & verified facts</summary>
-                    <Json value={evidence.data.events} />
-                  </details>
-                  <details
+                    <DisclosureTrigger>
+                      Consequences & verified facts
+                    </DisclosureTrigger>
+                    <DisclosureContent>
+                      <Json value={evidence.data.events} />
+                    </DisclosureContent>
+                  </Disclosure>
+                  <Disclosure
                     className="disclosure"
-                    onToggle={(e) => {
-                      if (e.currentTarget.open && !pinned)
-                        selectTurn(turn, true);
+                    onOpenChange={(open) => {
+                      if (open && !pinned) selectTurn(turn, true);
                     }}
                   >
-                    <summary>Complete state after turn {turn}</summary>
-                    <Json value={evidence.data.checkpoint} />
-                  </details>
+                    <DisclosureTrigger>
+                      Complete state after turn {turn}
+                    </DisclosureTrigger>
+                    <DisclosureContent>
+                      <Json value={evidence.data.checkpoint} />
+                    </DisclosureContent>
+                  </Disclosure>
                 </>
               )}
-              <details className="disclosure">
-                <summary>Researcher observations</summary>
-                {notes.data
-                  ?.filter((n) => n.turn === turn)
-                  .map((n) => (
-                    <div className="annotation" key={n.id}>
-                      <Badge>{n.label}</Badge>
-                      <p>{n.note}</p>
-                    </div>
-                  ))}
-                <FieldGroup>
-                  <Field>
-                    <FieldLabel htmlFor="annotation">
-                      Add an observation at turn {turn}
-                    </FieldLabel>
-                    <Textarea
-                      id="annotation"
-                      rows={3}
-                      value={annotation}
-                      onChange={(e) => setAnnotation(e.target.value)}
-                      maxLength={4000}
-                    />
-                  </Field>
-                </FieldGroup>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={!annotation.trim() || note.isPending}
-                  onClick={() => note.mutate()}
-                >
-                  Save observation
-                </Button>
-                {note.error && (
-                  <Alert variant="error">{note.error.message}</Alert>
-                )}
-              </details>
+              <Disclosure className="disclosure">
+                <DisclosureTrigger>Researcher observations</DisclosureTrigger>
+                <DisclosureContent>
+                  {notes.data
+                    ?.filter((n) => n.turn === turn)
+                    .map((n) => (
+                      <div className="annotation" key={n.id}>
+                        <Badge>{n.label}</Badge>
+                        <p>{n.note}</p>
+                      </div>
+                    ))}
+                  <FieldGroup>
+                    <Field>
+                      <FieldLabel htmlFor="annotation">
+                        Add an observation at turn {turn}
+                      </FieldLabel>
+                      <Textarea
+                        id="annotation"
+                        rows={3}
+                        value={annotation}
+                        onChange={(e) => setAnnotation(e.target.value)}
+                        maxLength={4000}
+                      />
+                    </Field>
+                  </FieldGroup>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={!annotation.trim() || note.isPending}
+                    onClick={() => note.mutate()}
+                  >
+                    Save observation
+                  </Button>
+                  {note.error && (
+                    <Alert variant="error">{note.error.message}</Alert>
+                  )}
+                </DisclosureContent>
+              </Disclosure>
             </aside>
           </div>
         </TabsContent>
@@ -689,9 +702,6 @@ export default function Run() {
               />
             </div>
           </div>
-        </TabsContent>
-        <TabsContent value="research">
-          <ResearchAssistant runId={id} />
         </TabsContent>
         <TabsContent value="settings">
           <div className="settings-layout">
@@ -757,10 +767,14 @@ export default function Run() {
             <section>
               <h2>Resolved condition</h2>
               <Json value={run.parameters} />
-              <details className="disclosure">
-                <summary>Full experiment specification</summary>
-                <Json value={run.design} />
-              </details>
+              <Disclosure className="disclosure">
+                <DisclosureTrigger>
+                  Full experiment specification
+                </DisclosureTrigger>
+                <DisclosureContent>
+                  <Json value={run.design} />
+                </DisclosureContent>
+              </Disclosure>
             </section>
           </div>
           <section className="section-space">
@@ -769,7 +783,7 @@ export default function Run() {
               <span className="muted">Includes unsuccessful attempts</span>
             </div>
             <div className="table-frame">
-              <Table>
+              <Table className="table">
                 <thead>
                   <tr>
                     <th>Request</th>
@@ -783,13 +797,15 @@ export default function Run() {
                   {run.requests.map((call) => (
                     <tr key={call.id} data-selected={requestId === call.id}>
                       <td>
-                        <button
+                        <Button
+                          variant="link"
+                          size="sm"
                           type="button"
                           className="turn-link"
                           onClick={() => setRequestId(call.id)}
                         >
                           {call.id.slice(0, 8)}
-                        </button>
+                        </Button>
                       </td>
                       <td>{call.turn ?? "—"}</td>
                       <td>
@@ -826,15 +842,21 @@ export default function Run() {
                         This pilot request predates payload tracing.
                       </p>
                     ) : (
-                      <details className="disclosure">
-                        <summary>Exact request, schema & settings</summary>
-                        <Json value={request.data.request} />
-                      </details>
+                      <Disclosure className="disclosure">
+                        <DisclosureTrigger>
+                          Exact request, schema & settings
+                        </DisclosureTrigger>
+                        <DisclosureContent>
+                          <Json value={request.data.request} />
+                        </DisclosureContent>
+                      </Disclosure>
                     )}
-                    <details className="disclosure" open>
-                      <summary>Provider response</summary>
-                      <Json value={request.data.response} />
-                    </details>
+                    <Disclosure className="disclosure" defaultOpen>
+                      <DisclosureTrigger>Provider response</DisclosureTrigger>
+                      <DisclosureContent>
+                        <Json value={request.data.response} />
+                      </DisclosureContent>
+                    </Disclosure>
                   </>
                 )}
               </div>

@@ -8,6 +8,7 @@ const runs: RunSummary[] = Array.from({ length: 5 }, (_, i) => ({
   id: `run-${i}`,
   study_id: "study",
   study_title: i === 4 ? "Other" : "Scarcity",
+  revision: 1,
   condition: `Condition ${i}`,
   condition_key: `c${i}`,
   environment: "commons",
@@ -36,9 +37,7 @@ test("run comparison preserves selections through filtering and caps selection a
       <RunTable runs={runs} selectable />
     </MemoryRouter>,
   );
-  expect(
-    screen.getByRole("button", { name: "Select runs to compare" }),
-  ).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Compare runs" })).toBeDisabled();
   fireEvent.click(screen.getByLabelText("Select Condition 0, seed 0"));
   fireEvent.change(screen.getByRole("textbox", { name: "Search runs" }), {
     target: { value: "Other" },

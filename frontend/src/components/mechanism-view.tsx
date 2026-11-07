@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Table } from "@/components/ui/data";
+import { Progress } from "@/components/ui/progress";
 import type { Event, RunDetail, State } from "@/lib/types";
 
 export function MechanismView({
@@ -53,10 +54,12 @@ export function MechanismView({
               <small>/ {run.parameters.resource.capacity}</small>
             </strong>
           </div>
-          <progress
+          <Progress
             aria-label="Available resource stock"
-            max={run.parameters.resource.capacity}
-            value={state.stock ?? 0}
+            value={
+              ((state.stock ?? 0) / run.parameters.resource.capacity) * 100
+            }
+            aria-valuetext={`${state.stock ?? 0} of ${run.parameters.resource.capacity}`}
           />
           <span>
             {state.done && (state.stock ?? 0) <= 1e-9
@@ -81,7 +84,7 @@ export function MechanismView({
         </div>
       )}
       <div className="table-frame">
-        <Table>
+        <Table className="table">
           <thead>
             <tr>
               <th>Agent</th>
@@ -136,7 +139,7 @@ export function MechanismView({
       </div>
       {latest.length > 0 && (
         <div className="table-frame">
-          <Table>
+          <Table className="table">
             <thead>
               <tr>
                 <th>Round</th>

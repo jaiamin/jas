@@ -129,9 +129,10 @@ export function WorldView({
       <div className="commons-agents">
         {profiles.map((profile, i) => (
           <div className="commons-agent" key={profile.key}>
-            <button
+            <Button
+              variant="ghost"
               type="button"
-              className="agent-name"
+              className="agent-name h-auto p-0"
               onClick={() => onAgent(profile.key)}
             >
               <span className="profile-avatar" data-series={i % 6}>
@@ -141,7 +142,7 @@ export function WorldView({
                 {profile.name}
                 <small>{profile.role}</small>
               </span>
-            </button>
+            </Button>
             <div className="contribution-track">
               <span
                 data-series={i % 6}
@@ -351,7 +352,7 @@ export function RelationshipTable({
   const commitments = events.filter((e) => e.kind === "commitment_resolved");
   return (
     <div className="table-frame">
-      <Table>
+      <Table className="table">
         <thead>
           <tr>
             <th>Agent</th>

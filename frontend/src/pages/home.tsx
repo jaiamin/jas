@@ -9,6 +9,11 @@ import {
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
+  Disclosure,
+  DisclosureContent,
+  DisclosureTrigger,
+} from "@/components/disclosure";
+import {
   ErrorState,
   Loading,
   PageHeading,
@@ -48,7 +53,7 @@ export function Home() {
   return (
     <>
       <section className="home-intro">
-        <PageHeading title="Design an experiment">
+        <PageHeading title="What would you like to explore?">
           <Button variant="outline" asChild>
             <Link to="/new">Configure manually</Link>
           </Button>
@@ -73,7 +78,7 @@ export function Home() {
               rows={3}
             />
             <InputGroupAddon>
-              <span>Review the AI draft before running.</span>
+              <span>Design with AI, then review before running.</span>
               <Button
                 disabled={!question.trim() || plan.isPending}
                 type="submit"
@@ -90,80 +95,22 @@ export function Home() {
         </form>
         {plan.error && <Alert variant="error">{plan.error.message}</Alert>}
       </section>
-      <section className="home-starters">
-        <div className="section-heading">
-          <h2>Templates</h2>
-          <Link to="/environments">
-            Explore environments
-            <ArrowRight />
-          </Link>
-        </div>
-        <div className="starter-list">
-          {catalog.data?.templates.map((template) => (
-            <Link
-              key={template.id}
-              to={`/new?template=${template.id}`}
-              className="starter-row"
-            >
-              <div>
-                <h3>{template.design.title}</h3>
-                <p>{template.design.question}</p>
-              </div>
-              <ArrowUpRight />
+      <div className="home-starters">
+        {catalog.data?.templates.slice(0, 3).map((template) => (
+          <Button key={template.id} variant="outline" size="sm" asChild>
+            <Link to={`/new?template=${template.id}`}>
+              {template.design.title}
+              <ArrowUpRight data-icon="inline-end" />
             </Link>
-          ))}
-        </div>
-      </section>
-      {drafts.error && (
-        <Alert variant="error">
-          Drafts could not be loaded: {drafts.error}
-        </Alert>
-      )}
-      {drafts.items.length > 0 && (
-        <details className="disclosure home-plans">
-          <summary>Drafts · {drafts.items.length}</summary>
-          <div className="draft-list">
-            {drafts.items.map((draft) => (
-              <div key={draft.path}>
-                <Link to={draft.path}>
-                  {draft.title || "Untitled experiment"}
-                </Link>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label={`Discard ${draft.title || "untitled"} draft`}
-                  onClick={() => {
-                    try {
-                      removeDraft(draft.path);
-                      setDrafts({ items: listDrafts(), error: "" });
-                    } catch (error) {
-                      setDrafts({ ...drafts, error: (error as Error).message });
-                    }
-                  }}
-                >
-                  <Trash2 />
-                </Button>
-              </div>
-            ))}
-          </div>
-        </details>
-      )}
-      {!!plans.data?.length && (
-        <details className="disclosure home-plans">
-          <summary>Recent AI designs</summary>
-          <div className="plan-history">
-            {plans.data
-              .slice(-4)
-              .reverse()
-              .map((p) => (
-                <Link to={`/new?plan=${p.id}`} key={p.id}>
-                  {p.question}
-                  <span>{p.status}</span>
-                </Link>
-              ))}
-          </div>
-        </details>
-      )}
+          </Button>
+        ))}
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/environments">
+            All environments
+            <ArrowRight data-icon="inline-end" />
+          </Link>
+        </Button>
+      </div>
       <section>
         <div className="section-heading">
           <h2>Recent experiments</h2>
@@ -181,7 +128,64 @@ export function Home() {
         ) : (
           <Loading />
         )}
-      </section>
+      </section>{" "}
+      {drafts.error && (
+        <Alert variant="error">
+          Drafts could not be loaded: {drafts.error}
+        </Alert>
+      )}
+      {drafts.items.length > 0 && (
+        <Disclosure className="disclosure home-plans">
+          <DisclosureTrigger>Drafts · {drafts.items.length}</DisclosureTrigger>
+          <DisclosureContent>
+            <div className="draft-list">
+              {drafts.items.map((draft) => (
+                <div key={draft.path}>
+                  <Link to={draft.path}>
+                    {draft.title || "Untitled experiment"}
+                  </Link>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={`Discard ${draft.title || "untitled"} draft`}
+                    onClick={() => {
+                      try {
+                        removeDraft(draft.path);
+                        setDrafts({ items: listDrafts(), error: "" });
+                      } catch (error) {
+                        setDrafts({
+                          ...drafts,
+                          error: (error as Error).message,
+                        });
+                      }
+                    }}
+                  >
+                    <Trash2 />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </DisclosureContent>
+        </Disclosure>
+      )}
+      {!!plans.data?.length && (
+        <Disclosure className="disclosure home-plans">
+          <DisclosureTrigger>Recent AI designs</DisclosureTrigger>
+          <DisclosureContent>
+            <div className="plan-history">
+              {plans.data
+                .slice(-4)
+                .reverse()
+                .map((p) => (
+                  <Link to={`/new?plan=${p.id}`} key={p.id}>
+                    {p.question}
+                    <span>{p.status}</span>
+                  </Link>
+                ))}
+            </div>
+          </DisclosureContent>
+        </Disclosure>
+      )}
     </>
   );
 }

@@ -1,13 +1,47 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowUp, BookOpen, LoaderCircle } from "lucide-react";
-import { useState } from "react";
+import { ArrowUp, BookOpen, Check, Search } from "lucide-react";
+import { memo, useState } from "react";
 import Markdown from "react-markdown";
 import { Link } from "react-router-dom";
 import remarkGfm from "remark-gfm";
+import {
+  Disclosure,
+  DisclosureContent,
+  DisclosureTrigger,
+} from "@/components/disclosure";
 import { ErrorState, Loading } from "@/components/shared";
+import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
 import { Alert, Empty } from "@/components/ui/data";
-import { Field, FieldGroup, FieldLabel, Textarea } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupTextarea,
+} from "@/components/ui/input-group";
+import {
+  Message,
+  MessageContent,
+  MessageFooter,
+  MessageHeader,
+} from "@/components/ui/message";
+import {
+  MessageScroller,
+  MessageScrollerButton,
+  MessageScrollerContent,
+  MessageScrollerItem,
+  MessageScrollerProvider,
+  MessageScrollerViewport,
+} from "@/components/ui/message-scroller";
+import {
+  Trace,
+  TraceCollapsible,
+  TraceCollapsibleContent,
+  TraceCollapsibleTrigger,
+  TraceDescription,
+  TraceIcon,
+  TraceLine,
+  TraceTitle,
+} from "@/components/ui/trace";
 import { api, useApi } from "@/lib/api";
 import type { Analysis } from "@/lib/types";
 import { money } from "@/lib/utils";
@@ -23,7 +57,7 @@ export function ResearchAssistant({
   const analyses = useApi<Analysis[]>(path, true);
   const [question, setQuestion] = useState("");
   const client = useQueryClient();
-  const busy = analyses.data?.some((row) => row.status === "pending");
+  const busy = analyses.data?.some((row) => row.status === "pending") ?? false;
   const ask = useMutation({
     mutationFn: (text: string) =>
       api("/analyses", {
@@ -38,138 +72,260 @@ export function ResearchAssistant({
   });
   return (
     <section className="research-assistant">
-      <div className="section-heading">
-        <div>
-          <h2>Ask the evidence</h2>
-          <p>Read-only investigation with GPT-6.1 Sol.</p>
-        </div>
-        <BookOpen />
-      </div>
       {analyses.error ? (
         <ErrorState error={analyses.error} />
       ) : !analyses.data ? (
         <Loading />
       ) : !analyses.data.length ? (
         <Empty
-          title="A better question, a closer look"
-          description="Ask about a strategy, a surprising decision, an apparent false claim, or how conditions compare."
-        />
+          title="Explore the evidence"
+          description="Ask about decisions, strategies, and differences between runs."
+        >
+          <div className="agent-suggestions">
+            {[
+              "Who contributed most to the group?",
+              "Did any claims contradict the recorded facts?",
+              "Which strategies worked best?",
+            ].map((text) => (
+              <Button
+                key={text}
+                variant="outline"
+                onClick={() => setQuestion(text)}
+              >
+                {text}
+              </Button>
+            ))}
+          </div>
+        </Empty>
       ) : (
-        <div className="research-thread">
-          {analyses.data.map((row) => (
-            <article className="research-entry" key={row.id}>
-              <h3>{row.question}</h3>
-              <p className="evidence-cutoff">
-                Evidence captured{" "}
-                {Object.entries(row.cutoffs).length === 1
-                  ? `through turn ${Object.values(row.cutoffs)[0]}`
-                  : `from ${Object.keys(row.cutoffs).length} runs`}{" "}
-                ·{" "}
-                {new Date(row.created).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-                {row.usage &&
-                  ` · ${money(row.usage.cost_usd)}${row.usage.partial ? "*" : ""}`}
-              </p>
-              {row.status === "pending" ? (
-                <p className="assistant-working" role="status">
-                  <LoaderCircle className="spin" />
-                  Inspecting recorded evidence… You can leave this page.
-                </p>
-              ) : row.status === "failed" ? (
-                <Alert variant="error" title="Investigation stopped">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled={busy || ask.isPending}
-                    onClick={() => ask.mutate(row.question)}
+        <MessageScrollerProvider
+          autoScroll={busy}
+          defaultScrollPosition="last-anchor"
+        >
+          <MessageScroller>
+            <MessageScrollerViewport aria-label="Research conversation">
+              <MessageScrollerContent className="research-thread">
+                {analyses.data.flatMap((row) => [
+                  <MessageScrollerItem
+                    key={`${row.id}-question`}
+                    messageId={`${row.id}-question`}
+                    scrollAnchor
                   >
-                    Ask again
-                  </Button>
-                  <details>
-                    <summary>Error details</summary>
-                    <p>{row.error}</p>
-                  </details>
-                </Alert>
-              ) : (
-                <>
-                  <div className="prose">
-                    <Markdown remarkPlugins={[remarkGfm]}>
-                      {row.output?.answer ?? ""}
-                    </Markdown>
-                  </div>
-                  {!!row.output?.citations?.length && (
-                    <div className="citation-list">
-                      <span>Evidence</span>
-                      {row.output.citations.map((citation) => (
-                        <Button
-                          key={`${citation.run_id}-${citation.turn}`}
-                          variant="outline"
-                          size="sm"
-                          asChild
-                        >
-                          <Link
-                            to={`/runs/${citation.run_id}?turn=${citation.turn}&tab=decisions`}
-                          >
-                            Turn {citation.turn}
-                            {Object.keys(row.cutoffs).length > 1 &&
-                              ` · ${citation.run_id.slice(0, 5)}`}
-                          </Link>
-                        </Button>
-                      ))}
-                    </div>
-                  )}
-                  {!!row.output?.caveats?.length && (
-                    <details className="disclosure">
-                      <summary>Limitations & uncertainty</summary>
-                      <ul>
-                        {row.output.caveats.map((c) => (
-                          <li key={c}>{c}</li>
-                        ))}
-                      </ul>
-                    </details>
-                  )}
-                </>
-              )}
-            </article>
-          ))}
-        </div>
+                    <Message align="end">
+                      <MessageContent>
+                        <MessageHeader>You</MessageHeader>
+                        <Bubble variant="muted" align="end">
+                          <BubbleContent>{row.question}</BubbleContent>
+                        </Bubble>
+                      </MessageContent>
+                    </Message>
+                  </MessageScrollerItem>,
+                  <MessageScrollerItem key={row.id} messageId={row.id}>
+                    <ResearchAnswer
+                      row={row}
+                      disabled={busy || ask.isPending}
+                      onRetry={ask.mutate}
+                    />
+                  </MessageScrollerItem>,
+                ])}
+              </MessageScrollerContent>
+            </MessageScrollerViewport>
+            <MessageScrollerButton />
+          </MessageScroller>
+        </MessageScrollerProvider>
       )}
       <form
         className="assistant-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (question.trim()) ask.mutate(question);
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (question.trim() && !busy && !ask.isPending) ask.mutate(question);
         }}
       >
-        <FieldGroup>
-          <Field>
-            <FieldLabel htmlFor="analysis-question">Your question</FieldLabel>
-            <Textarea
-              id="analysis-question"
-              value={question}
-              maxLength={4000}
-              onChange={(e) => setQuestion(e.target.value)}
-              rows={3}
-              placeholder="Did anyone consistently say one thing and do another?"
-            />
-          </Field>
-        </FieldGroup>
-        <div className="form-submit">
-          <Button
-            type="submit"
-            disabled={!question.trim() || busy || ask.isPending}
-          >
-            <ArrowUp data-icon="inline-start" />
-            {busy || ask.isPending ? "Investigating…" : "Ask researcher"}
-          </Button>
-          <span>
-            Analysis uses separate model requests and shares the study budget.
-          </span>
-        </div>
+        <InputGroup>
+          <InputGroupTextarea
+            aria-label="Your question"
+            value={question}
+            maxLength={4000}
+            onChange={(event) => setQuestion(event.target.value)}
+            rows={2}
+            placeholder="Ask about the recorded evidence…"
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && (event.metaKey || event.ctrlKey))
+                event.currentTarget.form?.requestSubmit();
+            }}
+          />
+          <InputGroupAddon>
+            <span>GPT-6.1 Sol · Experiment budget</span>
+            <Button
+              type="submit"
+              size="icon"
+              title="Send question (⌘/Ctrl Enter)"
+              aria-label="Send question"
+              disabled={!question.trim() || busy || ask.isPending}
+            >
+              <ArrowUp />
+            </Button>
+          </InputGroupAddon>
+        </InputGroup>
         {ask.error && <Alert variant="error">{ask.error.message}</Alert>}
       </form>
     </section>
   );
 }
+
+const ResearchAnswer = memo(function ResearchAnswer({
+  row,
+  disabled,
+  onRetry,
+}: {
+  row: Analysis;
+  disabled: boolean;
+  onRetry: (question: string) => void;
+}) {
+  const examined = [
+    ...new Map(
+      (row.output?.examined ?? []).map((range) => [
+        JSON.stringify(range),
+        range,
+      ]),
+    ).values(),
+  ];
+  return (
+    <Message>
+      <MessageContent>
+        <MessageHeader>
+          <span className="agent-wordmark">ASS</span>Research assistant
+        </MessageHeader>
+        {row.status === "failed" ? (
+          <Alert variant="error" title="Investigation stopped">
+            <p>{row.error}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={disabled}
+              onClick={() => onRetry(row.question)}
+            >
+              Try again
+            </Button>
+          </Alert>
+        ) : (
+          <>
+            <Trace>
+              {row.status === "pending" ? (
+                <TraceLine status="running" role="status">
+                  <TraceIcon>
+                    <Search />
+                  </TraceIcon>
+                  <TraceTitle>
+                    {row.output?.stage === "indexing"
+                      ? "Indexing the experiment"
+                      : row.output?.stage === "reading"
+                        ? "Reading recorded turns"
+                        : "Investigating the evidence"}
+                  </TraceTitle>
+                  {examined.length > 0 && (
+                    <TraceDescription>
+                      {examined.length} ranges
+                    </TraceDescription>
+                  )}
+                </TraceLine>
+              ) : null}
+              {examined.length > 0 && (
+                <TraceCollapsible>
+                  <TraceCollapsibleTrigger>
+                    <TraceLine>
+                      <TraceIcon>
+                        <Check />
+                      </TraceIcon>
+                      <TraceTitle>
+                        Inspected {examined.length} evidence range
+                        {examined.length === 1 ? "" : "s"}
+                      </TraceTitle>
+                    </TraceLine>
+                  </TraceCollapsibleTrigger>
+                  <TraceCollapsibleContent>
+                    <Trace>
+                      {examined.map((range) => (
+                        <Link
+                          key={JSON.stringify(range)}
+                          to={`/runs/${range.run_id}?turn=${range.start}&tab=decisions`}
+                        >
+                          <TraceLine>
+                            <TraceIcon>
+                              <BookOpen />
+                            </TraceIcon>
+                            <TraceTitle>
+                              Turns {range.start}–{range.end}
+                            </TraceTitle>
+                            <TraceDescription>
+                              {range.run_id.slice(0, 6)}
+                            </TraceDescription>
+                          </TraceLine>
+                        </Link>
+                      ))}
+                    </Trace>
+                  </TraceCollapsibleContent>
+                </TraceCollapsible>
+              )}
+            </Trace>
+            {row.status === "complete" && (
+              <>
+                <Bubble variant="ghost">
+                  <BubbleContent>
+                    <div className="prose">
+                      <Markdown remarkPlugins={[remarkGfm]}>
+                        {row.output?.answer ?? ""}
+                      </Markdown>
+                    </div>
+                  </BubbleContent>
+                </Bubble>
+                {!!row.output?.citations?.length && (
+                  <div className="citation-list">
+                    <span>Sources</span>
+                    {row.output.citations.map((citation) => (
+                      <Button
+                        key={`${citation.run_id}-${citation.turn}`}
+                        variant="secondary"
+                        size="sm"
+                        asChild
+                      >
+                        <Link
+                          to={`/runs/${citation.run_id}?turn=${citation.turn}&tab=decisions`}
+                        >
+                          Turn {citation.turn}
+                          {Object.keys(row.cutoffs).length > 1 &&
+                            ` · ${citation.run_id.slice(0, 5)}`}
+                        </Link>
+                      </Button>
+                    ))}
+                  </div>
+                )}
+                {!!row.output?.caveats?.length && (
+                  <Disclosure className="disclosure">
+                    <DisclosureTrigger>
+                      Limitations & uncertainty
+                    </DisclosureTrigger>
+                    <DisclosureContent>
+                      <ul>
+                        {row.output.caveats.map((caveat) => (
+                          <li key={caveat}>{caveat}</li>
+                        ))}
+                      </ul>
+                    </DisclosureContent>
+                  </Disclosure>
+                )}
+              </>
+            )}
+          </>
+        )}
+        <MessageFooter>
+          {Object.keys(row.cutoffs).length === 1
+            ? `Evidence through turn ${Object.values(row.cutoffs)[0]}`
+            : `${Object.keys(row.cutoffs).length} captured runs`}
+          {row.usage &&
+            ` · ${money(row.usage.cost_usd)}${row.usage.partial ? "*" : ""}`}
+        </MessageFooter>
+      </MessageContent>
+    </Message>
+  );
+});

@@ -111,6 +111,8 @@ def test_evidence_and_revisions_are_immutable(runtime, design):
     assert research.study(sid, 1)["sha256"] == old_hash
     assert research.study(sid, 1)["design"] == first["design"]
     assert research.configuration(first["runs"][0]["id"])[1] == design
+    assert {run["revision"] for run in research.runs(sid)} == {1, 2}
+    assert research.run(first["runs"][0]["id"])["summary"]["revision"] == 1
 
 
 def test_composed_protocol_preserves_memory_privacy_and_replays_through_shock(runtime, design):

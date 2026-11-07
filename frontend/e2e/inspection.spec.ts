@@ -62,6 +62,11 @@ for (const theme of ["light", "dark"]) {
     );
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`/runs/${id}?turn=20&tab=decisions`);
+    const scrubber = page.getByRole("slider", { name: "Recorded turn" });
+    await scrubber.focus();
+    await scrubber.press("ArrowLeft");
+    await expect(scrubber).toHaveAttribute("aria-valuenow", "19");
+    await expect(page).toHaveURL(/turn=19/);
     await page.getByRole("button", { name: "19", exact: true }).click();
     const evidence = page.getByRole("heading", {
       name: "Turn 19 evidence",

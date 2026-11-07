@@ -23,6 +23,7 @@ for (const theme of ["light", "dark"]) {
           : { width: 1440, height: 1000 },
       );
       await page.goto(`/new?template=${environment}`);
+      await page.getByRole("tab", { name: /^Conditions/ }).click();
       await page.locator(".condition-summary").first().click();
       await expect(page.getByLabel(control).first()).toBeVisible();
       if (environment === "renewable_resource") {
@@ -53,8 +54,12 @@ for (const theme of ["light", "dark"]) {
       ).toBeVisible();
       if (environment === "renewable_resource") {
         await expect(page.getByRole("progressbar")).toHaveAttribute(
-          "value",
-          "9",
+          "aria-valuetext",
+          "9 of 60",
+        );
+        await expect(page.getByRole("progressbar")).toHaveAttribute(
+          "aria-valuenow",
+          "15",
         );
       }
       expect(

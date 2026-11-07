@@ -1,4 +1,6 @@
-import { Field, FieldGroup, FieldLabel, Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import type { EnvironmentId, Parameters, Profile } from "@/lib/types";
 
 const groups = {
@@ -94,12 +96,11 @@ export function MechanismFields({
         </Field>
       )}
       {config.toggles.map(([key, label]) => (
-        <Field key={key} className="mechanism-toggle">
-          <input
+        <Field key={key} className="mechanism-toggle" orientation="horizontal">
+          <Checkbox
             id={`${id}-${key}`}
-            type="checkbox"
             checked={Boolean(values[key as keyof typeof values])}
-            onChange={(e) => change(key, e.target.checked)}
+            onCheckedChange={(checked) => change(key, checked === true)}
           />
           <FieldLabel htmlFor={`${id}-${key}`}>{label}</FieldLabel>
         </Field>
@@ -108,16 +109,19 @@ export function MechanismFields({
         <fieldset className="agent-permissions">
           <legend>Authorities</legend>
           {profiles.map((profile) => (
-            <label key={profile.key}>
-              <input
-                type="checkbox"
+            <FieldLabel
+              key={profile.key}
+              htmlFor={`${id}-${profile.key}-authority`}
+            >
+              <Checkbox
+                id={`${id}-${profile.key}-authority`}
                 checked={parameters.institution.authorities.includes(
                   profile.key,
                 )}
-                onChange={(e) =>
+                onCheckedChange={(checked) =>
                   change(
                     "authorities",
-                    e.target.checked
+                    checked === true
                       ? [...parameters.institution.authorities, profile.key]
                       : parameters.institution.authorities.filter(
                           (key) => key !== profile.key,
@@ -126,7 +130,7 @@ export function MechanismFields({
                 }
               />
               {profile.name}
-            </label>
+            </FieldLabel>
           ))}
         </fieldset>
       )}

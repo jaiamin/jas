@@ -151,12 +151,18 @@ class Research:
             return run, Design.model_validate(revision.design).resolve(treatment), treatment
 
     def run_summary(
-        self, run: Run, design: Design, condition: Treatment, usage: dict | None = None
+        self,
+        run: Run,
+        design: Design,
+        condition: Treatment,
+        revision: int,
+        usage: dict | None = None,
     ) -> dict:
         return {
             "id": run.id,
             "study_id": run.study_id,
             "study_title": design.title,
+            "revision": revision,
             "condition": condition.name,
             "condition_key": condition.key,
             "environment": design.environment,
@@ -205,6 +211,7 @@ class Research:
                     run,
                     designs[revision.id],
                     Treatment.model_validate(condition.specification),
+                    revision.number,
                     usage.get(run.id, empty),
                 )
                 for run, condition, revision in rows
@@ -304,6 +311,11 @@ class Research:
     def run(self, run_id: str) -> dict:
         run, design, condition = self.configuration(run_id)
         with self.db.session() as session:
+            revision = session.execute(
+                select(Revision.number)
+                .join(Condition, Condition.revision_id == Revision.id)
+                .where(Condition.id == run.condition_id)
+            ).scalar_one()
             calls = session.scalars(
                 select(ProviderCall)
                 .where(ProviderCall.run_id == run_id)
@@ -321,7 +333,7 @@ class Research:
                 select(Measurement).where(Measurement.run_id == run_id).order_by(Measurement.id)
             ).all()
         return {
-            "summary": self.run_summary(run, design, condition),
+            "summary": self.run_summary(run, design, condition, revision),
             "design": design.model_dump(),
             "parameters": condition.parameters.model_dump(),
             "next_actor": create_world(

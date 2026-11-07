@@ -14,6 +14,7 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Browser QA · scarcity");
+  await page.getByRole("tab", { name: "Execution", exact: true }).click();
   await page.getByLabel("Rounds per run").fill("3");
   await page.getByText(/^Replication ·/).click();
   await page.getByLabel("Matched seeds").fill("7");
@@ -67,7 +68,7 @@ test("invalid specifications cannot switch into visual mode or create a study", 
   await page.goto("/new");
   await page.getByRole("tab", { name: "Specification", exact: true }).click();
   await page.getByLabel("Complete JSON specification").fill('{"profiles":4}');
-  await page.getByRole("tab", { name: "Study design", exact: true }).click();
+  await page.getByRole("tab", { name: "Question", exact: true }).click();
   await expect(
     page.getByRole("tab", { name: "Specification" }),
   ).toHaveAttribute("aria-selected", "true");
@@ -101,7 +102,7 @@ test("mobile navigation and theme persist without page overflow", async ({
   await page.getByRole("link", { name: "ASS home" }).focus();
   await page.keyboard.press("Shift+Tab");
   await expect(
-    page.getByRole("button", { name: "Close navigation" }),
+    page.getByRole("button", { name: "Close", exact: true }),
   ).toBeFocused();
   await page.getByRole("button", { name: "Switch to light mode" }).click();
   await expect(page.locator("html")).not.toHaveClass("dark");
@@ -122,7 +123,8 @@ test("removing agents removes condition overrides and environment changes need c
   await page
     .getByLabel("Complete JSON specification")
     .fill(JSON.stringify(design));
-  await page.getByRole("tab", { name: "Study design", exact: true }).click();
+  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await page.getByRole("tab", { name: /^Agents/ }).click();
   await page
     .locator(".profile-heading")
     .filter({ hasText: removed.name })
@@ -136,14 +138,16 @@ test("removing agents removes condition overrides and environment changes need c
   );
   expect(changed.profiles).toHaveLength(design.profiles.length - 1);
   expect(changed.conditions[0].profile_overrides).toEqual([]);
-  await page.getByRole("tab", { name: "Study design", exact: true }).click();
-  page.once("dialog", (dialog) => dialog.dismiss());
+  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await page.getByRole("tab", { name: "Question", exact: true }).click();
   await page
     .getByRole("combobox", { name: "Environment", exact: true })
     .click();
   await page
     .getByRole("option", { name: "Trust exchange", exact: true })
     .click();
+  await expect(page.getByRole("alertdialog")).toBeVisible();
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
   await expect(
     page.getByRole("combobox", { name: "Environment", exact: true }),
   ).toHaveText("Shared commons");
@@ -183,7 +187,7 @@ test("AI design progress opens a reviewable protocol with design notes", async (
   );
   await page.goto("/new?plan=qa-plan");
   await expect(
-    page.getByRole("heading", { name: "Reviewing the design", exact: true }),
+    page.getByText("Reviewing the design", { exact: true }),
   ).toBeVisible();
   complete = true;
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(

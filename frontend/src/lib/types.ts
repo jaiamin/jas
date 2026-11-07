@@ -99,6 +99,7 @@ export interface RunSummary {
   id: string;
   study_id: string;
   study_title: string;
+  revision: number;
   condition: string;
   condition_key: string;
   environment: EnvironmentId;
@@ -310,7 +311,12 @@ export interface Analysis {
     answer?: string;
     citations?: { run_id: string; turn: number }[];
     caveats?: string[];
-    examined?: unknown[];
+    examined?: {
+      run_id: string;
+      start: number;
+      end: number;
+      full_turn: boolean;
+    }[];
   } | null;
   error: string | null;
   cutoffs: Record<string, number>;

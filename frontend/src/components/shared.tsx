@@ -3,6 +3,7 @@ import { ArrowRight, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, Badge, Empty, Skeleton, Table } from "@/components/ui/data";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -132,7 +133,7 @@ export function StudyTable({
           />
         </div>
       )}
-      <Table>
+      <Table className="table">
         <thead>
           <tr>
             <th>Experiment</th>
@@ -150,7 +151,6 @@ export function StudyTable({
                 <Link className="record-link" to={`/studies/${study.id}`}>
                   {study.title}
                 </Link>
-                <span className="table-secondary">{study.question}</span>
               </td>
               <td>
                 <Status value={study.status} />
@@ -168,34 +168,40 @@ export function StudyTable({
       {!filtered.length && (
         <p className="table-no-results">No experiments match these filters.</p>
       )}
-      <div className="table-footer">
-        <span>
-          {filtered.length} experiment{filtered.length !== 1 && "s"}
-        </span>
-        <div className="actions">
+      {!compact && (
+        <div className="table-footer">
           <span>
-            {current + 1} / {pageCount}
+            {filtered.length} experiment{filtered.length !== 1 && "s"}
           </span>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Previous experiment page"
-            disabled={current === 0}
-            onClick={() => setPage(current - 1)}
-          >
-            <ChevronLeft />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Next experiment page"
-            disabled={current + 1 >= pageCount}
-            onClick={() => setPage(current + 1)}
-          >
-            <ChevronRight />
-          </Button>
+          <div className="actions">
+            {pageCount > 1 && (
+              <span>
+                {current + 1} / {pageCount}
+              </span>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Previous experiment page"
+              hidden={pageCount === 1}
+              disabled={current === 0}
+              onClick={() => setPage(current - 1)}
+            >
+              <ChevronLeft />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Next experiment page"
+              hidden={pageCount === 1}
+              disabled={current + 1 >= pageCount}
+              onClick={() => setPage(current + 1)}
+            >
+              <ChevronRight />
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -267,12 +273,12 @@ export function RunTable({
                 Compare {selected.length} runs
               </Link>
             ) : (
-              "Select runs to compare"
+              "Compare runs"
             )}
           </Button>
         )}
       </div>
-      <Table>
+      <Table className="table">
         <thead>
           <tr>
             {selectable && (
@@ -291,19 +297,18 @@ export function RunTable({
         </thead>
         <tbody>
           {filtered.slice(current * 15, (current + 1) * 15).map((run) => (
-            <tr key={run.id}>
+            <tr key={run.id} data-selected={selected.includes(run.id)}>
               {selectable && (
                 <td>
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     aria-label={`Select ${run.condition}, seed ${run.seed}`}
                     checked={selected.includes(run.id)}
                     disabled={
                       !selected.includes(run.id) && selected.length >= 4
                     }
-                    onChange={(e) =>
+                    onCheckedChange={(checked) =>
                       setSelected(
-                        e.target.checked
+                        checked === true
                           ? [...selected, run.id]
                           : selected.filter((id) => id !== run.id),
                       )
@@ -316,7 +321,8 @@ export function RunTable({
                   {run.condition}
                 </Link>
                 <span className="table-secondary">
-                  {run.study_title} · repetition {run.repetition}
+                  {run.study_title} · rev {run.revision} · repetition{" "}
+                  {run.repetition}
                 </span>
               </td>
               <td>

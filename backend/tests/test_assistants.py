@@ -17,6 +17,31 @@ def test_assistant_scopes_history_to_frozen_cutoff_and_rejects_unread_citations(
         engine.start(rid, single=True)
         await engine.executions[rid].task
         assistant = Assistants(db, research, llm)
+        from agent_sim.db import Analysis
+
+        with db.session.begin() as session:
+            session.add_all(
+                [
+                    Analysis(
+                        purpose="analysis",
+                        study_id=sid,
+                        run_id=rid,
+                        question="What changed?",
+                        status="complete",
+                        output={"answer": "The contribution changed."},
+                        cutoffs={rid: 1},
+                    ),
+                    Analysis(
+                        purpose="analysis",
+                        study_id=sid,
+                        run_id=None,
+                        question="A different scope",
+                        status="complete",
+                        output={"answer": "Do not include me."},
+                        cutoffs={rid: 1},
+                    ),
+                ]
+            )
         responses = iter(
             [
                 Investigation(
@@ -35,17 +60,41 @@ def test_assistant_scopes_history_to_frozen_cutoff_and_rejects_unread_citations(
         )
 
         async def generate(*args, **kwargs):
+            import json
+
+            assert json.loads(kwargs["prompt"])["conversation"] == [
+                {
+                    "question": "What changed?",
+                    "answer": "The contribution changed.",
+                    "cutoffs": {rid: 1},
+                }
+            ]
             return next(responses)
 
         monkeypatch.setattr(llm, "generate", generate)
+        with db.session.begin() as session:
+            analysis = Analysis(
+                purpose="analysis",
+                study_id=sid,
+                run_id=rid,
+                question="What happened?",
+                cutoffs={rid: 1},
+            )
+            session.add(analysis)
+            session.flush()
+            key = analysis.id
         row = {
-            "id": "diagnostic",
+            "id": key,
             "study_id": sid,
             "run_id": rid,
             "question": "What happened?",
             "cutoffs": {rid: 1},
         }
-        return await assistant._investigate(row)
+        output = await assistant._investigate(row)
+        progress = assistant.get(key)["output"]
+        assert progress["stage"] == "investigating"
+        assert progress["examined"] == output["examined"]
+        return output
 
     if citation_turn == 2:
         with pytest.raises(ValueError, match="outside the captured"):

@@ -3,7 +3,8 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { MetricChart } from "@/components/charts";
 import { ErrorState, Loading, PageHeading, Status } from "@/components/shared";
-import { Alert, Table } from "@/components/ui/data";
+import { Button } from "@/components/ui/button";
+import { Alert, Empty, Table } from "@/components/ui/data";
 import { Select } from "@/components/ui/select";
 import { api } from "@/lib/api";
 import type { RunDetail } from "@/lib/types";
@@ -26,7 +27,19 @@ export default function Compare() {
   if (queries.some((q) => !q.data)) return <Loading />;
   const runs = queries.flatMap((q) => (q.data ? [q.data] : []));
   if (runs.length < 2)
-    return <Alert>Select two to four runs in the run library.</Alert>;
+    return (
+      <>
+        <PageHeading title="Compare runs" />
+        <Empty
+          title="Choose runs to compare"
+          description="Select two to four runs from the run library."
+        >
+          <Button asChild>
+            <Link to="/runs">Browse runs</Link>
+          </Button>
+        </Empty>
+      </>
+    );
   const compatible = runs.every(
     (r) => r.summary.environment === runs[0]?.summary.environment,
   );
@@ -38,10 +51,7 @@ export default function Compare() {
     : (keys[0] ?? "contribution_rate");
   return (
     <>
-      <PageHeading
-        title="Compare runs"
-        description="Recorded outcomes side by side. Different designs may not support a causal comparison."
-      />
+      <PageHeading title="Compare runs" />
       {!compatible && (
         <Alert>
           These runs use different environments. Shared metric names may have
@@ -54,7 +64,7 @@ export default function Compare() {
             <h2>Recorded outcomes</h2>
           </div>
           <div className="table-frame">
-            <Table>
+            <Table className="table">
               <thead>
                 <tr>
                   <th>Measurement</th>
@@ -64,7 +74,8 @@ export default function Compare() {
                         {r.summary.condition}
                       </Link>
                       <span className="table-secondary">
-                        Seed {r.summary.seed}
+                        Rev {r.summary.revision} · seed {r.summary.seed} · rep{" "}
+                        {r.summary.repetition} · {r.summary.id.slice(0, 6)}
                       </span>
                     </th>
                   ))}
@@ -126,13 +137,16 @@ export default function Compare() {
           <MetricChart
             series={runs.map((r) => ({
               id: r.summary.id,
-              name: `${r.summary.condition} · seed ${r.summary.seed} · repeat ${r.summary.repetition}`,
+              name: `${r.summary.condition} · rev ${r.summary.revision} · seed ${r.summary.seed} · rep ${r.summary.repetition}`,
               measurements: r.measurements,
             }))}
             metricKey={metricKey}
           />
         </section>
       </div>
+      <p className="comparison-note muted">
+        Different protocols may not support a causal comparison.
+      </p>
     </>
   );
 }

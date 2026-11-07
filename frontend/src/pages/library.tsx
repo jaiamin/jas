@@ -1,13 +1,10 @@
-import {
-  ArrowUpRight,
-  Check,
-  Handshake,
-  Plus,
-  Scale,
-  ScanSearch,
-  Sprout,
-} from "lucide-react";
+import { ArrowUpRight, Check, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
+import {
+  Disclosure,
+  DisclosureContent,
+  DisclosureTrigger,
+} from "@/components/disclosure";
 import {
   ErrorState,
   Loading,
@@ -70,73 +67,61 @@ function Environments() {
       ) : !catalog.data ? (
         <Loading />
       ) : (
-        <div className="environment-catalog">
-          {catalog.data.environments.map((env, i) => (
-            <section className="environment-row" key={env.key}>
-              <div className="environment-sample" data-series={i % 6}>
-                {env.key === "commons" ? (
-                  <div className="commons-symbol">
-                    <span />
-                    <span />
-                    <span />
-                    <span />
-                    <span />
-                    <span />
-                    <div />
-                  </div>
-                ) : env.key === "trust_exchange" ? (
-                  <div className="exchange-symbol">
-                    <span>A</span>
-                    <ArrowUpRight />
-                    <span>B</span>
-                  </div>
-                ) : env.key === "coordination" ? (
-                  <div className="task-symbol">
-                    <div />
-                    <div />
-                    <div />
-                    <div />
-                  </div>
-                ) : (
-                  <span className="environment-mechanism-icon">
-                    {env.key === "institution" ? (
-                      <Scale />
-                    ) : env.key === "bargaining" ? (
-                      <Handshake />
-                    ) : env.key === "information" ? (
-                      <ScanSearch />
-                    ) : (
-                      <Sprout />
-                    )}
-                  </span>
-                )}
-              </div>
-              <div className="environment-description">
-                <h2>{env.name}</h2>
-                <p>{env.description}</p>
-                <div className="environment-measures">
-                  {env.measures.slice(0, 4).map((m) => (
-                    <Badge key={m}>{m.replaceAll("_", " ")}</Badge>
-                  ))}
-                </div>
-              </div>
-              <Button variant="outline" asChild>
-                <Link to={`/new?template=${env.key}`}>
-                  Use environment
-                  <ArrowUpRight data-icon="inline-end" />
-                </Link>
-              </Button>
-            </section>
-          ))}
+        <div className="table-frame environment-catalog">
+          <Table className="table">
+            <thead>
+              <tr>
+                <th>Environment</th>
+                <th>Measurements</th>
+                <th>
+                  <span className="sr-only">Create experiment</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {catalog.data.environments.map((env) => (
+                <tr key={env.key}>
+                  <td>
+                    <strong>{env.name}</strong>
+                    <p className="environment-description">{env.description}</p>
+                  </td>
+                  <td>
+                    <div className="environment-measures">
+                      {env.measures.slice(0, 3).map((measure) => (
+                        <Badge key={measure} variant="secondary">
+                          {measure.replaceAll("_", " ")}
+                        </Badge>
+                      ))}
+                      {env.measures.length > 3 && (
+                        <span className="muted">
+                          +{env.measures.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to={`/new?template=${env.key}`}>
+                        Use template
+                        <ArrowUpRight data-icon="inline-end" />
+                      </Link>
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         </div>
       )}
-      <details className="disclosure">
-        <summary>Add an environment</summary>
-        <p className="muted">
-          Implement a Python environment adapter to add new mechanics. AI uses
-          the environments installed here.
-        </p>
-      </details>
+      <Disclosure className="disclosure">
+        <DisclosureTrigger>Add an environment</DisclosureTrigger>
+        <DisclosureContent>
+          <p className="muted">
+            Implement a Python environment adapter to add new mechanics. AI uses
+            the environments installed here.
+          </p>
+        </DisclosureContent>
+      </Disclosure>
     </>
   );
 }
@@ -174,7 +159,7 @@ function SettingsPage() {
           <div className="section-space">
             <h2>Model pricing</h2>
             <div className="table-frame">
-              <Table>
+              <Table className="table">
                 <thead>
                   <tr>
                     <th>Model</th>
@@ -227,19 +212,22 @@ function SettingsPage() {
               <dd>{s.concurrent_runs}</dd>
             </div>
           </dl>
-          <details className="disclosure">
-            <summary>Spending & deployment</summary>
-            <p className="muted">
-              Each request reserves its upper allowance before sending. Unknown
-              usage retains that reservation. Adjust <code>ASS_BUDGET_USD</code>{" "}
-              in <code>.env</code> for the workspace ceiling.
-            </p>
-            <p className="muted">
-              Single-user local app. Data stays in the local database; model
-              requests send evidence to the selected provider. Public hosting
-              requires authentication.
-            </p>
-          </details>
+          <Disclosure className="disclosure">
+            <DisclosureTrigger>Spending & deployment</DisclosureTrigger>
+            <DisclosureContent>
+              <p className="muted">
+                Each request reserves its upper allowance before sending.
+                Unknown usage retains that reservation. Adjust{" "}
+                <code>ASS_BUDGET_USD</code> in <code>.env</code> for the
+                workspace ceiling.
+              </p>
+              <p className="muted">
+                Single-user local app. Data stays in the local database; model
+                requests send evidence to the selected provider. Public hosting
+                requires authentication.
+              </p>
+            </DisclosureContent>
+          </Disclosure>
         </section>
       </div>
     </>

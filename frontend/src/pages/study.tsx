@@ -6,7 +6,11 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
-import { ResearchAssistant } from "@/components/assistant";
+import {
+  Disclosure,
+  DisclosureContent,
+  DisclosureTrigger,
+} from "@/components/disclosure";
 import {
   ErrorState,
   Json,
@@ -42,7 +46,7 @@ export default function Study() {
   );
   const complete = study.runs.every((r) => r.status === "complete");
   const tab =
-    ["overview", "runs", "design", "research"].find(
+    ["overview", "runs", "design"].find(
       (value) => value === params.get("tab"),
     ) ?? "overview";
   const metrics = study.design.measures.length
@@ -51,10 +55,7 @@ export default function Study() {
   const isOld = study.revision !== study.revisions[0]?.number;
   return (
     <>
-      <PageHeading
-        title={study.design.title}
-        description={study.design.question}
-      >
+      <PageHeading title={study.design.title}>
         <Button variant="outline" size="sm" asChild>
           <Link to={`/new?study=${id}&revision=${study.revision}`}>
             <Settings2 data-icon="inline-start" />
@@ -137,7 +138,6 @@ export default function Study() {
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="runs">Runs</TabsTrigger>
           <TabsTrigger value="design">Protocol</TabsTrigger>
-          <TabsTrigger value="research">Ask AI</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
           <div className="study-overview">
@@ -145,9 +145,6 @@ export default function Study() {
               <div className="section-heading">
                 <div>
                   <h2>Condition comparison</h2>
-                  <p>
-                    Completed runs only. Each run is an independent observation.
-                  </p>
                 </div>
               </div>
               {!study.results.length ? (
@@ -176,7 +173,7 @@ export default function Study() {
                 </Empty>
               ) : (
                 <div className="table-frame">
-                  <Table>
+                  <Table className="table">
                     <thead>
                       <tr>
                         <th>Measurement</th>
@@ -217,108 +214,99 @@ export default function Study() {
                 </div>
               )}
             </section>
-            <section className="study-protocol-summary">
-              <h2>What this experiment tests</h2>
-              <dl className="key-values">
-                <div>
-                  <dt>Hypothesis</dt>
-                  <dd>{study.design.hypothesis || "Exploratory study"}</dd>
-                </div>
-                <div>
-                  <dt>Design</dt>
-                  <dd>
-                    {study.design.conditions.length} conditions ·{" "}
-                    {study.design.seeds.length} matched seeds ·{" "}
-                    {study.design.repetitions} repetition
-                    {study.design.repetitions !== 1 && "s"}
-                  </dd>
-                </div>
-                <div>
-                  <dt>Population</dt>
-                  <dd>
-                    {study.design.profiles.length} agents, {study.design.rounds}{" "}
-                    rounds per run
-                  </dd>
-                </div>
-                <div>
-                  <dt>Rule version</dt>
-                  <dd>1.0.0</dd>
-                </div>
-              </dl>
-              {!!study.design.limitations.length && (
-                <div className="limitations">
-                  <h3>Interpret with care</h3>
-                  <ul>
-                    {study.design.limitations.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </section>
+            <Disclosure className="disclosure study-protocol-summary">
+              <DisclosureTrigger>Question & protocol</DisclosureTrigger>
+              <DisclosureContent>
+                <p className="protocol-question">{study.design.question}</p>
+                <dl className="key-values">
+                  <div>
+                    <dt>Hypothesis</dt>
+                    <dd>{study.design.hypothesis || "Exploratory study"}</dd>
+                  </div>
+                  <div>
+                    <dt>Design</dt>
+                    <dd>
+                      {study.design.conditions.length} conditions ·{" "}
+                      {study.design.seeds.length} matched seeds ·{" "}
+                      {study.design.repetitions} repetition
+                      {study.design.repetitions !== 1 && "s"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Population</dt>
+                    <dd>
+                      {study.design.profiles.length} agents,{" "}
+                      {study.design.rounds} rounds per run
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Rule version</dt>
+                    <dd>1.0.0</dd>
+                  </div>
+                </dl>
+                {!!study.design.limitations.length && (
+                  <div className="limitations">
+                    <h3>Interpret with care</h3>
+                    <ul>
+                      {study.design.limitations.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </DisclosureContent>
+            </Disclosure>
           </div>
           {study.effects?.length > 0 && (
-            <details className="disclosure section-space">
-              <summary>Matched-seed effects</summary>
-              <div className="table-frame">
-                <Table>
-                  <thead>
-                    <tr>
-                      <th>Comparison</th>
-                      <th>Measurement</th>
-                      <th>Difference</th>
-                      <th>Independent seeds</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {study.effects.map((effect) => (
-                      <tr key={`${effect.condition}-${effect.metric}`}>
-                        <td>
-                          {effect.condition} − {effect.baseline}
-                        </td>
-                        <td>{label(effect.metric)}</td>
-                        <td className="numeric">
-                          {effect.mean > 0 ? "+" : ""}
-                          {metric(effect.metric, effect.mean)}
-                          <span className="table-secondary">
-                            {effect.interval
-                              ? `${metric(effect.metric, effect.interval[0])}–${metric(effect.metric, effect.interval[1])} · 95% CI`
-                              : "Too few seeds for an interval"}
-                          </span>
-                        </td>
-                        <td className="numeric">
-                          {effect.seeds}
-                          <span className="table-secondary">
-                            {effect.pairs} matched run pairs
-                          </span>
-                        </td>
+            <Disclosure className="disclosure section-space">
+              <DisclosureTrigger>Matched-seed effects</DisclosureTrigger>
+              <DisclosureContent>
+                <div className="table-frame">
+                  <Table className="table">
+                    <thead>
+                      <tr>
+                        <th>Comparison</th>
+                        <th>Measurement</th>
+                        <th>Difference</th>
+                        <th>Independent seeds</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </Table>
-                <div className="table-note">
-                  Treatment minus the first condition. Repetitions are averaged
-                  within each seed; intervals bootstrap independent seeds. A
-                  difference is not proof of human behavior or general causal
-                  validity.
+                    </thead>
+                    <tbody>
+                      {study.effects.map((effect) => (
+                        <tr key={`${effect.condition}-${effect.metric}`}>
+                          <td>
+                            {effect.condition} − {effect.baseline}
+                          </td>
+                          <td>{label(effect.metric)}</td>
+                          <td className="numeric">
+                            {effect.mean > 0 ? "+" : ""}
+                            {metric(effect.metric, effect.mean)}
+                            <span className="table-secondary">
+                              {effect.interval
+                                ? `${metric(effect.metric, effect.interval[0])}–${metric(effect.metric, effect.interval[1])} · 95% CI`
+                                : "Too few seeds for an interval"}
+                            </span>
+                          </td>
+                          <td className="numeric">
+                            {effect.seeds}
+                            <span className="table-secondary">
+                              {effect.pairs} matched run pairs
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                  <div className="table-note">
+                    Treatment minus the first condition. Repetitions are
+                    averaged within each seed; intervals bootstrap independent
+                    seeds. A difference is not proof of human behavior or
+                    general causal validity.
+                  </div>
                 </div>
-              </div>
-            </details>
+              </DisclosureContent>
+            </Disclosure>
           )}
-          <section className="section-space">
-            <div className="section-heading">
-              <h2>Run matrix</h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setParams({ tab: "runs" })}
-              >
-                Inspect runs
-                <ArrowUpRight data-icon="inline-end" />
-              </Button>
-            </div>
-            <RunTable runs={study.runs} />
-          </section>
         </TabsContent>
         <TabsContent value="runs">
           <RunTable runs={study.runs} selectable />
@@ -328,7 +316,7 @@ export default function Study() {
             <section>
               <h2>Population</h2>
               <div className="table-frame">
-                <Table>
+                <Table className="table">
                   <thead>
                     <tr>
                       <th>Agent</th>
@@ -360,9 +348,6 @@ export default function Study() {
               <Json value={study.design} />
             </section>
           </div>
-        </TabsContent>
-        <TabsContent value="research">
-          <ResearchAssistant studyId={id} />
         </TabsContent>
       </Tabs>
     </>

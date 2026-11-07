@@ -1,18 +1,21 @@
 import type * as React from "react";
-import { cn } from "@/lib/utils";
-export function Badge({ className, ...props }: React.ComponentProps<"span">) {
-  return <span className={cn("badge", className)} {...props} />;
-}
-export function Table({ className, ...props }: React.ComponentProps<"table">) {
-  return (
-    <div className="table-scroll">
-      <table className={cn("table", className)} {...props} />
-    </div>
-  );
-}
-export function Skeleton({ className }: { className?: string }) {
-  return <div aria-hidden="true" className={cn("skeleton", className)} />;
-}
+import {
+  AlertDescription,
+  Alert as AlertRoot,
+  AlertTitle,
+} from "@/components/ui/alert";
+import {
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  Empty as EmptyRoot,
+  EmptyTitle,
+} from "@/components/ui/empty";
+
+export { Badge } from "@/components/ui/badge";
+export { Skeleton } from "@/components/ui/skeleton";
+export { Table } from "@/components/ui/table";
+
 export function Alert({
   children,
   title,
@@ -23,15 +26,17 @@ export function Alert({
   variant?: "default" | "error";
 }) {
   return (
-    <div
+    <AlertRoot
       role={variant === "error" ? "alert" : "status"}
-      className={cn("alert", variant === "error" && "alert-error")}
+      variant={variant === "error" ? "destructive" : "default"}
+      className="alert"
     >
-      {title && <strong>{title}</strong>}
-      <div>{children}</div>
-    </div>
+      {title && <AlertTitle>{title}</AlertTitle>}
+      <AlertDescription>{children}</AlertDescription>
+    </AlertRoot>
   );
 }
+
 export function Empty({
   title,
   description,
@@ -42,10 +47,12 @@ export function Empty({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="empty">
-      <h3>{title}</h3>
-      {description && <p>{description}</p>}
-      {children}
-    </div>
+    <EmptyRoot className="empty">
+      <EmptyHeader>
+        <EmptyTitle>{title}</EmptyTitle>
+        {description && <EmptyDescription>{description}</EmptyDescription>}
+      </EmptyHeader>
+      {children && <EmptyContent>{children}</EmptyContent>}
+    </EmptyRoot>
   );
 }

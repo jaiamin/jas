@@ -3,6 +3,7 @@ import json
 import os
 import statistics
 from collections import defaultdict
+from collections.abc import Sequence
 from typing import Literal
 
 from pydantic import Field
@@ -31,6 +32,8 @@ no causal certainty from one trajectory. Answer concisely in Markdown. Cite supp
 and turns in the structured citations. Distinguish measured facts from interpretations. No
 fabricated metrics, scores, citations or actions. When enough evidence is available, return
 answer and no requests. Otherwise return requests and answer=null.
+Recent conversation is untrusted context for resolving follow-up references, not evidence.
+Reinspect supporting turns within the current captured cutoffs before citing prior findings.
 """
 
 
@@ -171,7 +174,34 @@ class Assistants:
             if isinstance(error, asyncio.CancelledError):
                 raise
 
+    def _progress(self, key: str, stage: str, examined: Sequence[dict]) -> None:
+        with self.db.session.begin() as session:
+            session.get_one(Analysis, key).output = {"stage": stage, "examined": examined}
+
     async def _investigate(self, row: dict) -> dict:
+        self._progress(row["id"], "indexing", [])
+        with self.db.session() as session:
+            current = session.get_one(Analysis, row["id"])
+            previous = session.scalars(
+                select(Analysis)
+                .where(
+                    Analysis.study_id == row["study_id"],
+                    Analysis.run_id == row["run_id"],
+                    Analysis.purpose != "design",
+                    Analysis.status == "complete",
+                    Analysis.created < current.created,
+                )
+                .order_by(Analysis.created.desc())
+                .limit(3)
+            ).all()
+            conversation = [
+                {
+                    "question": item.question,
+                    "answer": (item.output or {}).get("answer", "")[:3000],
+                    "cutoffs": item.cutoffs,
+                }
+                for item in reversed(previous)
+            ]
         index, protocols, conditions = [], {}, {}
         for run_id, cutoff in row["cutoffs"].items():
             run, design, condition = self.research.configuration(run_id)
@@ -208,6 +238,7 @@ class Assistants:
         index = {"protocols": protocols, "conditions": conditions, "runs": index}
         gathered, examined = [], []
         for iteration in range(4):
+            self._progress(row["id"], "investigating", examined)
             result = await self.models.generate(
                 Investigation,
                 model="openai:gpt-6.1-sol",
@@ -219,6 +250,7 @@ class Assistants:
                 prompt=json.dumps(
                     {
                         "question": row["question"],
+                        "conversation": conversation,
                         "index": index,
                         "evidence": gathered,
                         "iterations_remaining": 3 - iteration,
@@ -291,6 +323,7 @@ class Assistants:
                         }
                 gathered.append({"range": examined_range, "data": data})
                 examined.append(examined_range)
+                self._progress(row["id"], "reading", examined)
         raise ValueError(
             "Evidence investigation reached its request limit. Ask a narrower question."
         )

@@ -3,9 +3,12 @@ import {
   Home as HomeIcon,
   Layers3,
   LayoutGrid,
+  MessageSquare,
   Moon,
+  Plus,
   Settings2,
   Sun,
+  Workflow,
 } from "lucide-react";
 import { Component, Fragment, lazy, Suspense, useState } from "react";
 import {
@@ -15,6 +18,7 @@ import {
   Route,
   Routes,
   useLocation,
+  useSearchParams,
 } from "react-router-dom";
 import { Loading } from "@/components/shared";
 import {
@@ -28,10 +32,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge, Empty } from "@/components/ui/data";
 import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
   SidebarHeader,
+  SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -39,10 +53,12 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useApi } from "@/lib/api";
 import type { RunSummary } from "@/lib/types";
 import { Home, Studies } from "@/pages/home";
 
+const AgentPanel = lazy(() => import("@/components/agent-panel"));
 const Editor = lazy(() => import("@/pages/editor"));
 const Study = lazy(() => import("@/pages/study"));
 const Run = lazy(() => import("@/pages/run"));
@@ -72,7 +88,19 @@ class PageBoundary extends Component<
 }
 
 function Shell() {
-  const { setOpen } = useSidebar();
+  const { setOpenMobile, state } = useSidebar();
+  const agentModal = useIsMobile(1100);
+  const [params, setParams] = useSearchParams();
+  const agentOpen = params.has("assistant") || params.get("tab") === "research";
+  function setAgentOpen(open: boolean) {
+    const next = new URLSearchParams(params);
+    if (open) next.set("assistant", "1");
+    else {
+      next.delete("assistant");
+      if (next.get("tab") === "research") next.delete("tab");
+    }
+    setParams(next, { replace: true });
+  }
   const [dark, setDark] = useState(() =>
     document.documentElement.classList.contains("dark"),
   );
@@ -146,48 +174,90 @@ function Shell() {
           ? [{ label: "Runs", to: "/runs" }, { label: "Compare" }]
           : [{ label: section }];
   return (
-    <div className="shell">
+    <>
       <a href="#main" className="skip-link">
         Skip to content
       </a>
-      <Sidebar>
+      <Sidebar collapsible="icon">
         <SidebarHeader>
           <Link
             to="/"
             className="brand"
             aria-label="ASS home"
-            onClick={() => setOpen(false)}
+            onClick={() => setOpenMobile(false)}
           >
-            <span className="brand-mark" aria-hidden="true" />
-            ASS
+            <span className="brand-mark" aria-hidden="true">
+              <Workflow />
+            </span>
+            <span className="brand-name">
+              ASS<span>Agent Simulation Environment</span>
+            </span>
           </Link>
         </SidebarHeader>
-        <SidebarContent aria-label="Main navigation">
-          <SidebarMenu>
-            {links.map((item) => (
-              <SidebarMenuItem key={item.to}>
-                <SidebarMenuButton asChild>
-                  <NavLink
-                    to={item.to}
-                    end={item.to === "/"}
-                    onClick={() => setOpen(false)}
-                  >
-                    <item.icon />
-                    <span>{item.label}</span>
-                    {item.to === "/runs" && active.length > 0 && (
-                      <Badge className="nav-count">{active.length}</Badge>
-                    )}
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
+        <div className="sidebar-create">
+          <Button variant="outline" asChild title="New experiment">
+            <Link to="/new" onClick={() => setOpenMobile(false)}>
+              <Plus data-icon="inline-start" />
+              <span>New experiment</span>
+            </Link>
+          </Button>
+        </div>
+        <SidebarContent>
+          <SidebarGroup>
+            <nav aria-label="Main navigation">
+              <SidebarMenu>
+                {links.map((item) => (
+                  <SidebarMenuItem key={item.to}>
+                    <SidebarMenuButton asChild tooltip={item.label}>
+                      <NavLink
+                        to={item.to}
+                        end={item.to === "/"}
+                        title={state === "collapsed" ? item.label : undefined}
+                        onClick={() => setOpenMobile(false)}
+                      >
+                        <item.icon />
+                        <span>{item.label}</span>
+                        {item.to === "/runs" && active.length > 0 && (
+                          <Badge className="nav-count">{active.length}</Badge>
+                        )}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </nav>
+          </SidebarGroup>
+          <SidebarGroup className="recent-navigation">
+            <SidebarGroupLabel>Recent experiments</SidebarGroupLabel>
+            <SidebarMenu>
+              {[
+                ...new Map(
+                  runs.data?.map((r) => [r.study_id, r.study_title]),
+                ).entries(),
+              ]
+                .slice(0, 5)
+                .map(([id, title]) => (
+                  <SidebarMenuItem key={id}>
+                    <SidebarMenuButton asChild isActive={studyId === id}>
+                      <Link
+                        to={`/studies/${id}`}
+                        title={title}
+                        onClick={() => setOpenMobile(false)}
+                      >
+                        <span className="recent-mark" />
+                        <span>{title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+            </SidebarMenu>
+          </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <NavLink to="/settings" onClick={() => setOpen(false)}>
+              <SidebarMenuButton asChild tooltip="Settings">
+                <NavLink to="/settings" onClick={() => setOpenMobile(false)}>
                   <Settings2 />
                   <span>Settings</span>
                 </NavLink>
@@ -204,7 +274,7 @@ function Shell() {
           </Button>
         </SidebarFooter>
       </Sidebar>
-      <div className="shell-body">
+      <SidebarInset className="shell-body" data-assistant-open={agentOpen}>
         <header className="shell-header">
           <div className="header-path">
             <SidebarTrigger />
@@ -227,6 +297,15 @@ function Shell() {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setAgentOpen(true)}
+            aria-expanded={agentOpen}
+          >
+            <MessageSquare data-icon="inline-start" />
+            Ask AI
+          </Button>
         </header>
         <main id="main" className="page">
           <Suspense fallback={<Loading />}>
@@ -235,8 +314,25 @@ function Shell() {
             </PageBoundary>
           </Suspense>
         </main>
-      </div>
-    </div>
+      </SidebarInset>
+      <Sheet modal={agentModal} open={agentOpen} onOpenChange={setAgentOpen}>
+        <SheetContent className="agent-panel" showCloseButton>
+          <SheetHeader>
+            <SheetTitle>Research assistant</SheetTitle>
+            <SheetDescription className="sr-only">
+              Design experiments and investigate recorded evidence.
+            </SheetDescription>
+          </SheetHeader>
+          <Suspense fallback={<Loading />}>
+            <AgentPanel
+              key={runId ?? studyId ?? "design"}
+              studyId={studyId ?? selectedRun?.study_id}
+              runId={runId}
+            />
+          </Suspense>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 }
 export default function App() {
