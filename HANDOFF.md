@@ -11,8 +11,10 @@ calls, credentials, user databases, or benchmark evidence may be modified.
 - [x] Ignore `.desloppify/`; exclude only tools, dependencies and generated output.
 - [x] Scan backend and frontend separately and import independent blind reviews.
 - [x] Fix all 23 initial backend and 21 initial frontend review findings.
-- [ ] Finish useful mechanical work and independent re-reviews; fix follow-ups.
-- [ ] Run final checks, record scores/limitations, publish one draft PR.
+- [x] Finish useful mechanical work and independent re-reviews; fix follow-ups.
+- [x] Run final checks and record pre-integration scores/limitations.
+- [ ] Integrate current main, preserving its newer interface/chat/config behavior.
+- [ ] Verify combined behavior, rescan, then publish one draft PR.
 
 The scanner lives in `.tools/desloppify`. Run backend commands from the repository
 root with `PATH="$PWD/.tools/desloppify/bin:$PWD/.venv/bin:$PATH"` and
@@ -51,52 +53,51 @@ blind Codex batch runner, at most three concurrent review processes overall.
 
 ## Verification and current work
 
-Latest observed: 184 backend tests pass, including corrupt replay rejection, concurrency
-and shared-budget contention, provider settlement failure/cancellation, API request scope,
-and trust receiver forecast constraints. Ruff and ty pass. All 14 saved simulation
-trajectories remain exactly equal after typed state and environment ownership refactors.
+Completed quality-pass checks: 186 backend tests, 23 frontend unit tests and all
+34 browser workflows pass. Ruff, ty, frontend lint, production build, Actionlint
+and diff whitespace checks pass. All 14 saved simulation trajectories match the
+baseline exactly, including observations, events, measurements and checkpoints.
+Seven template payloads also match their originals. No paid model calls were made.
 
-Frontend: 23 unit tests, lint and production build pass. All 30 browser workflows
-passed after the first follow-up batch; a larger suite is now running for nested
-design persistence, transient draft-validation recovery and revision navigation.
-Playwright owns its keyless backend on 8094 with fresh temporary storage and graceful
-shutdown. No manually prepared backend is needed; ASS_TEST_URL remains an explicit
-optional disposable-instance override.
+All initial and follow-up imported blind-review findings are resolved. Latest
+strict scores are backend 87.0 and frontend 87.8. Both `next` execution queues
+report zero items. Static debt remains in complexity, broad annotations and
+coverage heuristics; edited subjective dimensions can still be marked stale.
+Do not interpret an empty execution queue as an empty mechanical backlog.
 
-Initial 23 backend / 21 frontend findings were fixed. First re-review follow-ups:
-14 backend and 12 frontend findings fixed. Backend checkpoint d1214f9 introduces typed
-common/environment checkpoints, world-owned schema capabilities and measures, focused
-operational run queries, concrete investigation helpers and regression tests. Existing
-versioned snapshot fields are preserved at serialization boundaries to retain hashes.
-Frontend checkpoint 2b0d116 preserves editor identity/validation transitions, separates
-route and decision-browser ownership and makes browser-test isolation automatic.
+An upstream coverage-path mapping defect was reproduced and reported at
+https://github.com/peteromallet/desloppify/issues/958 under the invoked workflow
+guide. Seeded RNG warnings concern deterministic simulation/bootstrap, not tokens;
+replacing them with SystemRandom would break replay. Draft parsing deliberately
+throws to its record-isolation/recovery callers.
 
-Another six frontend review findings are in progress: distinguish transient validation
-errors from bad draft content, simplify shell breadcrumbs, preserve assistant state on
-revision changes, cover nested edits, narrow history values and remove obsolete required
-field defaults. Task prerequisites now remount their text field after dependency changes
-so removing a prerequisite cannot leave a stale displayed value.
+The old task-owned backend on 8093 was stopped. Playwright closes its backend,
+uses fresh temporary storage on 8094, and accepts an explicit disposable-instance
+override. No agent-browser session is open.
 
-Backend focused blind re-review is running under
-`.desloppify/subagents/runs/20261107_180619/` (seven dimensions, three workers).
-Do not mutate backend source until it finishes. Frontend reviews and evidence are
-retained under `frontend/.desloppify/`. Latest measured strict scores before these final
-follow-ups: backend 85.1, frontend 87.8; final scans/review status still pending.
+### Integration acceptance criteria and next steps
 
-Old task-owned keyless backend on port 8093 (PID 93415) still needs shutdown.
-The test suite closes its own service after each run. No agent-browser session is open.
+Publication checks found this branch starts at bfdb35c, while origin/main now
+contains merged PR #4's later redesign. Do not publish a PR that reverts it.
+Merge origin/main (e4092b2), preserving unified Agent/chat streaming, the current
+workspace shell/styles, JAS configuration compatibility and all quality fixes.
+Resolve overlaps by responsibility, remove superseded duplicate UI components,
+and update existing/new browser tests for current navigation. Re-run affected
+checks and independent reviews/scans after integration. Never rewrite shared
+history or modify another worktree.
 
-Useful final commands:
+Useful verification commands:
 
 ```sh
-.venv/bin/ruff check backend benchmarks
+.venv/bin/ruff check backend benchmarks frontend/e2e/server.py
 .venv/bin/ty check
 .venv/bin/pytest -q
 .venv/bin/python .desloppify/check_world_behavior.py
+.tools/actionlint/actionlint .github/workflows/checks.yml
 pnpm --dir frontend lint
 pnpm --dir frontend test
 pnpm --dir frontend build
-ASS_TEST_URL=http://127.0.0.1:8093 pnpm --dir frontend test:e2e
+pnpm --dir frontend test:e2e
 ```
 
 ## Evidence and deployment boundaries
