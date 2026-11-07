@@ -1,4 +1,10 @@
-import type { Design, Parameters, RunDetail, State } from "@/lib/types";
+import type {
+  Catalog,
+  Design,
+  Parameters,
+  RunDetail,
+  State,
+} from "@/lib/types";
 export const parameters: Parameters = {
   endowment: 10,
   multiplier: 2,
@@ -91,6 +97,23 @@ export const state: State = {
   signals: {},
   relations: {},
   tasks: [],
+};
+
+export const catalog: Catalog = {
+  models: [],
+  environments: [
+    {
+      key: "institution",
+      name: "Institution",
+      description: "Oversight and sanctions",
+      primary_metric: "sanction_rate",
+      parameters: [],
+      measures: ["sanction_rate"],
+      rule_version: "2.0.0",
+    },
+  ],
+  templates: [{ id: "institution", design }],
+  design_schema: {},
 };
 
 export const runDetail: RunDetail = {

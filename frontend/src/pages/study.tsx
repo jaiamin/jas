@@ -61,6 +61,13 @@ export default function Study() {
     ? study.design.measures
     : [...new Set(study.results.map((r) => r.metric))];
   const isOld = study.revision !== study.revisions[0]?.number;
+  function experimentStatus() {
+    if (active) return "running";
+    if (complete) return "complete";
+    if (study.runs.some((run) => run.status === "failed")) return "failed";
+    if (study.runs.some((run) => run.status === "paused")) return "paused";
+    return "ready";
+  }
   return (
     <>
       <PageHeading
@@ -98,19 +105,7 @@ export default function Study() {
         )}
       </PageHeading>
       <div className="experiment-meta">
-        <Status
-          value={
-            active
-              ? "running"
-              : complete
-                ? "complete"
-                : study.runs.some((r) => r.status === "failed")
-                  ? "failed"
-                  : study.runs.some((r) => r.status === "paused")
-                    ? "paused"
-                    : "ready"
-          }
-        />
+        <Status value={experimentStatus()} />
         <span>{label(study.design.environment)}</span>
         <span>
           {study.runs.filter((r) => r.status === "complete").length} /{" "}

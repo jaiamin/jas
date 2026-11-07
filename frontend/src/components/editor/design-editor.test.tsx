@@ -1,27 +1,9 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, expect, test, vi } from "vitest";
-import type { Catalog } from "@/lib/types";
-import { design } from "@/test/fixtures";
+import { catalog, design } from "@/test/fixtures";
 import { deferredResponse, renderWithQueries } from "@/test/queries";
 import { DesignEditor } from "./design-editor";
-
-const catalog: Catalog = {
-  models: [],
-  environments: [
-    {
-      key: "institution",
-      name: "Institution",
-      description: "Oversight and sanctions",
-      primary_metric: "sanction_rate",
-      parameters: [],
-      measures: ["sanction_rate"],
-      rule_version: "2.0.0",
-    },
-  ],
-  templates: [],
-  design_schema: {},
-};
 
 afterEach(() => localStorage.clear());
 
