@@ -36,7 +36,7 @@ Current interface: 147 backend tests, Ruff, ty, frontend Biome/five unit tests/p
 build and 20 keyless browser workflows pass. Nineteen captures cover 1280/1440px desktop,
 tablet and mobile. Final Docker build, health and browser entry smoke pass. No paid model
 calls during this redesign; investigator/planner states use controlled test responses.
-Design documentation and the ignored token sidecar match current source. Impeccable
+Design documentation and the tracked token sidecar match current source. Impeccable
 returned `ship` for all four scored finish-review fixes; no regressions were observed.
 
 Earlier frozen application c5db913: 221/230 strict live GPT-6 Luna cases passed;
