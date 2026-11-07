@@ -5,21 +5,27 @@ Latest main `e4092b2` is integrated. Do not merge or push to main.
 
 ## Completed
 
-- Desloppify strict: backend **91.8**, frontend **90.0** after final scans;
-  both execution queues clear. Independent cleanup review found no new defects.
+- Last Desloppify scans: backend **91.8**, frontend **90.0**; both queues clear.
+  These scores precede the follow-up review fixes below.
 - Removed 34 unused UI helpers, redundant directives, unused run-model grouping,
   historical screenshots and generated design metadata. Installed workflow tools stay local.
 - README is 22 lines. Setup, design, vocabulary and research live under `docs/`.
 - Preserved the redesigned workspace, draft/data recovery, versioned checkpoints
   and frozen benchmark provenance. No paid application model calls or user-data changes.
+- Follow-up review fixed observation drafts lost on tab/filter changes and overlapping
+  legacy analysis requests, including unthreaded records. Regression tests failed before fixes.
+- CI runs parallel backend, frontend/browser, production-image and workflow checks;
+  `verify` gates all four. Actions are pinned and updated weekly by Dependabot.
+  Caches, timeouts, obsolete-run cancellation and failure artifacts are configured.
 
 ## Verification and limits
 
-213 backend tests, 65 frontend unit tests, all 54 browser cases, Ruff, ty,
-frontend lint/build, Actionlint, local documentation links and Gitleaks pass.
+217 backend tests, 65 frontend unit tests, all 55 browser cases, Ruff, ty,
+frontend lint/build, Actionlint/ShellCheck and local documentation links pass.
 Production Docker build and smoke pass: health, SPA routes/assets, keyless fresh
-workspace and non-root user. Temporary services, container and task image are closed.
-The final browser suite covers the final production code; subsequent changes only add tests/docs.
+workspace and non-root user. The disposable container, volume and task image are removed.
+The user-requested app remains on port 8080; review/test backends are closed.
+The new hosted CI workflow still needs its first run after publication.
 
 Broader coverage and structural backlog remains. The score change from 90.1 reflects
 removed source changing mechanical denominators and an independent logic review at 94.

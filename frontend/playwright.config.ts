@@ -5,6 +5,7 @@ const port = process.env.JAS_TEST_PORT ?? process.env.ASS_TEST_PORT ?? "8094";
 const baseURL = externalURL ?? `http://127.0.0.1:${port}`;
 
 export default defineConfig({
+  forbidOnly: !!process.env.CI,
   webServer: externalURL
     ? undefined
     : {

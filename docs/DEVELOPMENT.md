@@ -45,6 +45,12 @@ explicit disposable server. Browser tests create real records; never point them 
 user data. CI uses the same owned-backend flow in
 [.github/workflows/checks.yml](../.github/workflows/checks.yml).
 
+CI runs backend checks, frontend/browser tests, workflow lint and a production Docker
+smoke test in parallel; `verify` requires all four to pass. Installs use frozen lockfiles
+and caches. Actions are pinned, with weekly Dependabot updates. Failed runs retain test
+reports, browser traces and container logs for seven days. The Docker smoke test uses
+a fresh keyless volume and checks health, SPA routes/assets and non-root execution.
+
 ## Configuration and data
 
 Copy `.env.example` to `.env` and set provider keys for live model requests. The CLI
