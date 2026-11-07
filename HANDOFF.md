@@ -24,7 +24,8 @@ The final browser suite covers the final production code; subsequent changes onl
 Broader coverage and structural backlog remains. The score change from 90.1 reflects
 removed source changing mechanical denominators and an independent logic review at 94.
 Only direct behavior-test fixes are confirmed; indirect/import-only gaps remain open.
-Application license is undecided; the user has been asked. Choose it before an OSS release.
+Application license is MIT, selected by the user; root LICENSE names Jai Amin (2026).
+The README links the license. Third-party license notices remain intact.
 
 ## Continuing work
 

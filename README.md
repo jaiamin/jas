@@ -19,4 +19,4 @@ Work in progress. Single-user local app without authentication. Experiments meas
 model behavior under stated rules, not validated human predictions.
 
 [Development](docs/DEVELOPMENT.md) · [Architecture](docs/ARCHITECTURE.md) ·
-[Research](docs/RESEARCH.md) · [Benchmarks](benchmarks/README.md)
+[Research](docs/RESEARCH.md) · [Benchmarks](benchmarks/README.md) · [MIT License](LICENSE)
