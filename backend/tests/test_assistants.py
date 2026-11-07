@@ -5,6 +5,83 @@ from agent_sim.assistants import Assistants, HistoryRequest, Investigation
 from agent_sim.domain import Citation, Finding
 
 
+@pytest.mark.parametrize("invented_citation", [False, True])
+def test_general_agent_keeps_history_separate_and_rejects_unselected_evidence(
+    runtime, design, monkeypatch, invented_citation
+):
+    import json
+
+    from agent_sim.db import Analysis
+
+    db, llm, research, _ = runtime
+    sid = research.save_design(design)
+
+    async def exercise():
+        assistant = Assistants(db, research, llm)
+        with db.session.begin() as session:
+            session.add_all(
+                [
+                    Analysis(
+                        purpose="general",
+                        question="What is a matched seed?",
+                        status="complete",
+                        output={"answer": "A shared initial random seed."},
+                        cutoffs={},
+                    ),
+                    Analysis(
+                        purpose="design",
+                        question="Design cooperation trials",
+                        status="complete",
+                        output={"answer": "A design proposal."},
+                        cutoffs={},
+                    ),
+                    Analysis(
+                        purpose="analysis",
+                        study_id=sid,
+                        question="Private run evidence",
+                        status="complete",
+                        output={"answer": "Scoped evidence."},
+                        cutoffs={},
+                    ),
+                ]
+            )
+
+        async def generate(output, **kwargs):
+            prompt = json.loads(kwargs["prompt"])
+            assert output is Finding and kwargs["purpose"] == "general"
+            assert kwargs.get("study_id") is None and kwargs.get("run_id") is None
+            assert prompt["conversation"] == [
+                {
+                    "question": "What is a matched seed?",
+                    "answer": "A shared initial random seed.",
+                    "cutoffs": {},
+                }
+            ]
+            assert len(prompt["environments"]) == 7
+            assert "index" not in prompt and "evidence" not in prompt
+            return Finding(
+                answer="Matched seeds support more informative comparisons.",
+                citations=[Citation(run_id="unselected", turn=1)] if invented_citation else [],
+                caveats=[],
+            )
+
+        monkeypatch.setattr(llm, "generate", generate)
+        key = assistant.start("How do they help comparisons?", purpose="general")
+        await assistant.tasks[key]
+        row = assistant.get(key)
+        assert row["cutoffs"] == {} and row["study_id"] is None and row["run_id"] is None
+        if invented_citation:
+            assert row["status"] == "failed" and "unselected" in row["error"]
+        else:
+            assert row["status"] == "complete" and row["output"]["citations"] == []
+        assert {item["purpose"] for item in assistant.list(purpose="general")} == {"general"}
+        assert {item["purpose"] for item in assistant.list()} == {"design"}
+        assert research.study(sid)["design"] == design.model_dump()
+        await assistant.close()
+
+    asyncio.run(exercise())
+
+
 @pytest.mark.parametrize("citation_turn", [1, 2])
 def test_assistant_scopes_history_to_frozen_cutoff_and_rejects_unread_citations(
     runtime, design, monkeypatch, citation_turn

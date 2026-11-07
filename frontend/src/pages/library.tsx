@@ -26,10 +26,7 @@ function Runs() {
   const runs = useApi<RunSummary[]>("/runs", true);
   return (
     <>
-      <PageHeading
-        title="Runs"
-        description="Inspect individual trials or select two to four to compare."
-      >
+      <PageHeading title="Runs">
         <Button variant="outline" asChild>
           <Link to="/new">
             <Plus data-icon="inline-start" />
@@ -44,10 +41,7 @@ function Runs() {
       ) : runs.data.length ? (
         <RunTable runs={runs.data} selectable />
       ) : (
-        <Empty
-          title="No runs yet"
-          description="Create an experiment to define the agents, conditions, and rules."
-        >
+        <Empty title="No runs yet">
           <Button asChild>
             <Link to="/new">Create experiment</Link>
           </Button>
@@ -60,10 +54,7 @@ function Environments() {
   const catalog = useApi<Catalog>("/catalog");
   return (
     <>
-      <PageHeading
-        title="Environments"
-        description="Seven rule systems. Each defines what agents can observe, do and change."
-      />
+      <PageHeading title="Environments" />
       {catalog.error ? (
         <ErrorState error={catalog.error} />
       ) : !catalog.data ? (
@@ -110,15 +101,6 @@ function Environments() {
           </Table>
         </div>
       )}
-      <Disclosure className="disclosure">
-        <DisclosureTrigger>Add an environment</DisclosureTrigger>
-        <DisclosureContent>
-          <p className="muted">
-            Implement a Python environment adapter to add new mechanics. AI uses
-            the environments installed here.
-          </p>
-        </DisclosureContent>
-      </Disclosure>
     </>
   );
 }
@@ -129,10 +111,7 @@ function SettingsPage() {
   const s = settings.data;
   return (
     <>
-      <PageHeading
-        title="Settings"
-        description="Provider connections, spending and local workspace configuration."
-      />
+      <PageHeading title="Settings" />
       <div className="settings-layout">
         <section>
           <div className="section-heading">
@@ -157,7 +136,9 @@ function SettingsPage() {
             Set keys in <code>.env</code> and restart.
           </p>
           <div className="section-space">
-            <h2>Model pricing</h2>
+            <h2 title="Token estimates before credits, cache discounts or web search">
+              Model pricing
+            </h2>
             <div className="table-frame">
               <Table className="table">
                 <thead>
@@ -178,17 +159,10 @@ function SettingsPage() {
                 </tbody>
               </Table>
             </div>
-            <p className="muted">
-              Token estimates before credits, cache discounts or web search.
-            </p>
           </div>
         </section>
         <section>
           <h2>Usage & storage</h2>
-          <p className="muted">
-            Configuration is read-only here. Change deployment settings in your
-            environment.
-          </p>
           <dl className="key-values">
             <div>
               <dt>Committed cost</dt>

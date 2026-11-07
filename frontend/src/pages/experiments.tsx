@@ -1,4 +1,4 @@
-import { Plus, Sparkles, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -25,16 +25,7 @@ export default function Experiments() {
   });
   return (
     <>
-      <PageHeading
-        title="Experiments"
-        description="Design controlled trials. Follow every outcome back to a decision."
-      >
-        <Button variant="outline" asChild>
-          <Link to="/design">
-            <Sparkles data-icon="inline-start" />
-            Design with AI
-          </Link>
-        </Button>
+      <PageHeading title="Experiments">
         <Button asChild>
           <Link to="/new">
             <Plus data-icon="inline-start" />

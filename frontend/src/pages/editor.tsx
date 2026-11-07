@@ -1,5 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ArrowRight, Check, Code2, LoaderCircle } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Code2,
+  LoaderCircle,
+  MessageSquare,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   Link,
@@ -154,7 +160,10 @@ export default function Editor() {
         <PageHeading title="Design request stopped" />
         <Alert variant="error">{plan.data.error}</Alert>
         <Button variant="outline" asChild>
-          <Link to="/design" state={{ question: plan.data.question }}>
+          <Link
+            to="/agent?context=new"
+            state={{ question: plan.data.question }}
+          >
             Return to your question
           </Link>
         </Button>
@@ -195,6 +204,7 @@ export default function Editor() {
       catalog={catalog.data}
       studyId={studyId}
       planId={planId}
+      agentChatId={plan.data?.chat_id}
       explanation={plan.data?.output?.explanation}
       planning={plan.data?.output?.planning}
       draftPath={draftPath}
@@ -219,6 +229,7 @@ function DesignEditor({
   catalog,
   studyId,
   planId,
+  agentChatId,
   explanation,
   planning,
   draftPath,
@@ -228,6 +239,7 @@ function DesignEditor({
   catalog: Catalog;
   studyId: string | null;
   planId: string | null;
+  agentChatId?: string | null;
   explanation?: string;
   planning?: NonNullable<Analysis["output"]>["planning"];
   draftPath: string;
@@ -249,6 +261,7 @@ function DesignEditor({
       })),
     }),
   );
+  const [agentDraftId] = useState(() => crypto.randomUUID());
   const [json, setJson] = useState(draft?.json ?? "");
   const [mode, setMode] = useState<"visual" | "json">(draft?.mode ?? "visual");
   const [step, setStep] = useState("question");
@@ -329,14 +342,22 @@ function DesignEditor({
   }
   return (
     <>
-      <PageHeading
-        title={studyId ? "Tune experiment" : "New experiment"}
-        description={
-          studyId
-            ? "Save a new revision. Earlier runs keep their original design."
-            : undefined
-        }
-      >
+      <PageHeading title={studyId ? "Tune experiment" : "New experiment"}>
+        {!studyId && (
+          <Button variant="outline" size="sm" asChild>
+            <Link
+              to={
+                agentChatId
+                  ? `/agent?chat=${agentChatId}`
+                  : `/agent?context=new&new=${agentDraftId}`
+              }
+              state={agentChatId ? null : { question: design.question }}
+            >
+              <MessageSquare data-icon="inline-start" />
+              {agentChatId ? "Back to Agent" : "Generate with Agent"}
+            </Link>
+          </Button>
+        )}
         {draftStatus && (
           <span
             className="draft-state"
@@ -349,7 +370,7 @@ function DesignEditor({
       </PageHeading>
       {explanation && (
         <Disclosure className="disclosure design-explanation">
-          <DisclosureTrigger>AI design notes</DisclosureTrigger>
+          <DisclosureTrigger>Protocol notes</DisclosureTrigger>
           <DisclosureContent>
             <p>{explanation}</p>
             {planning && (
@@ -612,7 +633,6 @@ function DesignEditor({
               )}
               {studyId ? "Save new revision" : "Create experiment"}
             </Button>
-            <span>Review now. Run when ready.</span>
           </div>
           <Disclosure className="disclosure">
             <DisclosureTrigger>What stays fixed</DisclosureTrigger>

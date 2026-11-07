@@ -35,7 +35,8 @@ so it uses the same volume. Frozen benchmark artifacts retain their original pro
 
 ## Workflow
 
-1. Create an experiment manually, choose an environment template, or use **Design with AI**.
+1. Open **New experiment** to configure a protocol, choose a template, or select
+   **Generate with Agent**. Agent opens with your question and New experiment selected.
 2. Review agents, conditions, execution limits and measurements. Saving does not run models.
 3. Run the experiment, then open an individual trial. **Decisions** links each turn to its
    observation, action, consequences and notes. **Environment** shows the world; **Record**
@@ -46,7 +47,14 @@ so it uses the same volume. Frozen benchmark artifacts retain their original pro
 Settings shows provider availability, budget reservations, usage and storage. Normal startup
 loads provider keys from the process environment and `.env`; it does not disable keys or
 seed example results. Change provider keys and deployment settings through `.env`, then restart. The sidebar supports
-collapse, light/dark themes and a mobile drawer. **Ask AI** opens scoped evidence assistance.
+collapse, light/dark themes and a mobile drawer. **Agent** is the persistent destination
+for general questions, evidence analysis and reviewed creation. **Ask Agent** appears on
+experiment and run details and opens the same full-page chat with that record selected.
+Past chats live in an inner Agent sidebar; the composer selects General, New experiment,
+an experiment, or a run. Proposals open in the protocol editor for review before saving.
+General questions use the workspace budget; scoped questions use the experiment budget
+and cite inspected evidence. Chat history is stored in the database; unsent messages remain
+browser-session drafts. Enter sends and Shift+Enter adds a line.
 
 ## Development
 
@@ -100,7 +108,7 @@ project; see [.github/workflows/checks.yml](.github/workflows/checks.yml).
 
 - `backend/src/agent_sim/`: API, validated protocols, execution, storage and rule adapters.
 - `frontend/src/pages/`: route-level tasks; `components/editor/`: protocol field groups;
-  `components/`: shared records, shell, evidence and assistant; `components/ui/`: shadcn.
+  `components/`: shared records, shell, evidence and Agent; `components/ui/`: shadcn.
 - `frontend/src/index.css`: canonical theme tokens; `styles/`: scoped interface styles.
 - `backend/tests/`, `frontend/src/**/*.test.*`, `frontend/e2e/`: behavior/regression coverage.
 - `benchmarks/`: frozen evaluation evidence and reproducible benchmark tooling.

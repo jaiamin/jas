@@ -5,12 +5,13 @@ import {
   test,
 } from "@playwright/test";
 
-for (const { theme, width, assistant } of [
-  { theme: "light", width: 390, assistant: false },
-  { theme: "dark", width: 390, assistant: false },
-  { theme: "light", width: 1440, assistant: true },
+for (const { theme, width } of [
+  { theme: "light", width: 390 },
+  { theme: "dark", width: 390 },
+  { theme: "light", width: 944 },
+  { theme: "light", width: 1440 },
 ]) {
-  test(`decision inspection focuses evidence and returns to journal · ${theme} · ${width}`, async ({
+  test(`decision inspection preserves journal and follows the rendered layout · ${theme} · ${width}`, async ({
     page,
     request,
   }) => {
@@ -21,8 +22,6 @@ for (const { theme, width, assistant } of [
     );
     await page.setViewportSize({ width, height: 844 });
     await page.goto(`/runs/${id}?turn=20&tab=decisions`);
-    if (assistant)
-      await page.getByRole("button", { name: "Ask AI", exact: true }).click();
     const scrubber = page.getByRole("slider", { name: "Recorded turn" });
     await scrubber.focus();
     await scrubber.press("ArrowLeft");
@@ -37,6 +36,16 @@ for (const { theme, width, assistant } of [
       name: "Turn 19 evidence",
       exact: true,
     });
+    if (width === 1440) {
+      await expect(
+        page.getByRole("button", { name: "19", exact: true }),
+      ).toBeFocused();
+      await expect(evidence).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Back to decisions" }),
+      ).toBeHidden();
+      return;
+    }
     await expect(evidence).toBeFocused();
     expect((await evidence.boundingBox())?.y).toBeLessThan(200);
     await page.getByRole("button", { name: "Back to decisions" }).click();

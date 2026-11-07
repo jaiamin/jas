@@ -14,7 +14,7 @@ test("JAS preserves the previous workspace theme and navigation preference", asy
     page.locator('[data-slot="sidebar"][data-state="collapsed"]'),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: "Toggle sidebar", exact: true })
+    .getByRole("button", { name: "Expand sidebar", exact: true })
     .click();
   await page.getByRole("button", { name: "Switch to light mode" }).click();
   await page.reload();
@@ -41,7 +41,7 @@ test("browser titles follow navigation, history and saved experiment identity", 
   for (const [path, title] of [
     ["/new", "New experiment"],
     ["/runs", "Runs"],
-    ["/design", "Design with AI"],
+    ["/design", "Agent"],
     ["/compare", "Compare runs"],
   ]) {
     await page.goto(path);
@@ -71,15 +71,16 @@ test("experiments are the entry point; AI creation stays available without a key
   await expect(
     page.getByRole("heading", { name: "Experiments", exact: true }),
   ).toBeVisible();
+  await page.getByRole("link", { name: "Agent", exact: true }).click();
+  await page.getByRole("combobox", { name: "Message context" }).click();
   await page
-    .locator("main")
-    .getByRole("link", { name: "Design with AI", exact: true })
+    .getByRole("option", { name: "New experiment", exact: true })
     .click();
   await page
-    .getByLabel("Your research question")
+    .getByLabel("Message Agent")
     .fill("Does communication improve teamwork?");
   await expect(
-    page.getByRole("button", { name: "Design experiment" }),
+    page.getByRole("button", { name: "Send message" }),
   ).toBeDisabled();
   await page
     .getByRole("link", { name: "Configure a provider", exact: true })
@@ -92,7 +93,7 @@ test("experiments are the entry point; AI creation stays available without a key
   );
 });
 
-test("opening the assistant preserves incomplete editor state and one recoverable draft", async ({
+test("Agent navigation preserves incomplete editor state and one recoverable draft", async ({
   page,
 }) => {
   await page.goto("/new?template=commons");
@@ -101,11 +102,20 @@ test("opening the assistant preserves incomplete editor state and one recoverabl
     .fill("Keep this protocol");
   await page.getByRole("tab", { name: "Specification", exact: true }).click();
   await page.getByLabel("Complete JSON specification").fill('{"unfinished":');
-  await page.getByRole("button", { name: "Ask AI", exact: true }).click();
-  await expect(page.getByLabel("Complete JSON specification")).toHaveValue(
-    '{"unfinished":',
-  );
-  await page.keyboard.press("Escape");
+  await expect(
+    page.getByRole("button", { name: "Ask Agent", exact: true }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("link", { name: "Generate with Agent", exact: true })
+    .click();
+  await expect(
+    page.getByRole("combobox", { name: "Message context" }),
+  ).toContainText("New experiment");
+  await expect(
+    page.getByLabel("Message Agent", { exact: true }),
+  ).not.toHaveValue("");
+  await expect(page).toHaveTitle("Agent | JAS");
+  await page.goBack();
   await expect(page.getByLabel("Complete JSON specification")).toHaveValue(
     '{"unfinished":',
   );
@@ -125,11 +135,12 @@ test("experiment loading, error recovery, filters and keyboard access", async ({
   request,
 }) => {
   const catalog = await (await request.get("/api/catalog")).json();
+  const title = `Filter recovery study ${crypto.randomUUID().slice(0, 8)}`;
   await request.post("/api/studies", {
     data: {
       design: {
         ...catalog.templates[0].design,
-        title: "Filter recovery study",
+        title,
       },
     },
   });
@@ -159,9 +170,7 @@ test("experiment loading, error recovery, filters and keyboard access", async ({
   failed = false;
   await page.getByRole("button", { name: "Retry", exact: true }).click();
   await expect(
-    page
-      .locator("main")
-      .getByRole("link", { name: "Filter recovery study", exact: true }),
+    page.locator("main").getByRole("link", { name: title, exact: true }),
   ).toBeVisible();
   await page
     .getByRole("textbox", { name: "Search experiments" })
@@ -174,10 +183,10 @@ test("experiment loading, error recovery, filters and keyboard access", async ({
     .click();
   const record = page
     .locator("main")
-    .getByRole("link", { name: "Filter recovery study", exact: true });
+    .getByRole("link", { name: title, exact: true });
   await record.focus();
   await page.keyboard.press("Enter");
   await expect(
-    page.getByRole("heading", { name: "Filter recovery study", exact: true }),
+    page.getByRole("heading", { name: title, exact: true }),
   ).toBeVisible();
 });

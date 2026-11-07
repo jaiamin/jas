@@ -1,10 +1,4 @@
 /* biome-ignore-all lint/style/noDescendingSpecificity: Component scopes and responsive rules intentionally share element names. */
-@media (min-width: 1100px) {
-  .shell-body[data-assistant-open="true"] {
-    margin-right: 520px;
-  }
-}
-
 @media (max-width: 1100px) {
   .editor-layout {
     grid-template-columns: minmax(0, 1fr) 216px;
@@ -72,7 +66,7 @@
 }
 
 @media (max-width: 600px) {
-  .page {
+  .page:not(.page-agent) {
     padding: 18px 16px 32px;
   }
   .shell-header {
@@ -96,24 +90,6 @@
   }
   .page-heading .actions {
     flex-wrap: wrap;
-  }
-  .design-intro .page-heading {
-    align-items: flex-start;
-  }
-  .design-intro {
-    margin-top: 8px;
-  }
-  .design-intro h1 {
-    font-size: 22px;
-  }
-  .design-starters {
-    margin-bottom: 24px;
-  }
-  .question-composer [data-slot="input-group-addon"] > span {
-    max-width: 18ch;
-  }
-  .question-composer [data-slot="input-group-addon"] .button {
-    font-size: 12px;
   }
   .table-toolbar {
     flex-wrap: wrap;
@@ -277,16 +253,6 @@
   }
   .environment-description {
     min-width: 240px;
-  }
-  .agent-panel {
-    width: 100%;
-  }
-  .agent-context,
-  .assistant-form {
-    padding-inline: 16px;
-  }
-  .research-thread {
-    padding-inline: 16px;
   }
   .prose {
     font-size: 14px;

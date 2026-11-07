@@ -293,7 +293,16 @@ export interface Evidence {
   state_hash: string | null;
   events: Event[];
 }
+export interface ChatSummary {
+  id: string;
+  title: string;
+  created: string;
+  updated: string;
+  context: string;
+  status: string;
+}
 export interface Analysis {
+  chat_id?: string | null;
   usage?: Usage | null;
   id: string;
   purpose: string;
@@ -325,6 +334,7 @@ export interface Analysis {
   run_id: string | null;
 }
 export interface Settings {
+  planner_model?: string;
   providers: Record<string, boolean>;
   models: {
     id: ModelId;

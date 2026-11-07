@@ -1044,7 +1044,7 @@
     "typographyMeta": {
       "headline": {
         "displayName": "Page headline",
-        "purpose": "The page title, reduced on small screens except the AI design introduction."
+        "purpose": "The page title, reduced on small screens; Agent welcomes use 26px/500 and 24px on mobile."
       },
       "title": {
         "displayName": "Section title",
@@ -1144,8 +1144,8 @@
         "value": "900px"
       },
       {
-        "name": "nonmodal-assistant",
-        "value": "1100px"
+        "name": "compact-agent-history",
+        "value": "1000px"
       },
       {
         "name": "workspace-stack-container",
@@ -1214,8 +1214,8 @@
       "name": "Workspace navigation",
       "kind": "nav",
       "refersTo": "navigation-selected",
-      "description": "Compact destinations with a neutral selected surface and labeled icons.",
-      "html": "<nav class=\"ds-nav\" aria-label=\"Workspace\"><a class=\"ds-nav-item\" href=\"#experiments\" aria-current=\"page\"><svg viewBox=\"0 0 24 24\" width=\"15\" height=\"15\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z\"/><path d=\"M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12\"/><path d=\"M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17\"/></svg>Experiments</a><a class=\"ds-nav-item\" href=\"#runs\"><svg viewBox=\"0 0 24 24\" width=\"15\" height=\"15\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2\"/></svg>Runs</a></nav>",
+      "description": "Experiments and Runs lead; Agent and Environments are supporting tools. No sidebar creation button.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Workspace\"><a class=\"ds-nav-item\" href=\"#experiments\" aria-current=\"page\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-flask-conical\" aria-hidden=\"true\"><path d=\"M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2\"></path><path d=\"M6.453 15h11.094\"></path><path d=\"M8.5 2h7\"></path></svg>Experiments</a><a class=\"ds-nav-item\" href=\"#runs\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-play\" aria-hidden=\"true\"><path d=\"M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z\"></path></svg>Runs</a></nav>",
       "css": ".ds-nav{display:flex;flex-direction:column;gap:4px;}.ds-nav-item{display:flex;align-items:center;gap:8px;height:32px;padding:8px;border-radius:var(--radius-md);text-decoration:none;color:var(--foreground);font-family:var(--font-sans);font-size:13px;line-height:1.5;}.ds-nav-item:hover{background:var(--accent);}.ds-nav-item:focus-visible{outline:2px solid var(--ring);outline-offset:3px;}.ds-nav-item[aria-current=page]{background:var(--selection-background);font-weight:500;}.ds-nav-item[aria-current=page] svg{color:var(--brand);}@media(pointer:coarse){.ds-nav-item{min-height:44px;}}"
     },
     {
@@ -1237,7 +1237,7 @@
   ],
   "narrative": {
     "northStar": "Follow the evidence",
-    "overview": "For a developer investigating model behavior, the job is to follow an experiment to a\nrun, a recorded decision and a defensible comparison. The workspace should feel quiet,\nprecise and immediately usable. Laminar's actual trace and table screens are the primary\nreference for composition: compact navigation, aligned records, low-contrast chrome and adjacent evidence.\nVercel's black-and-white restraint guides the palette and contrast.\nIts marketing layout is not a reference. Preserve JAS's experimental units and provenance.\n\nDomain: experiments, protocols, conditions, seeds, turns, checkpoints, observations,\nconsequences and replay. The color world is paper-white records, graphite text, charcoal\nwork surfaces, soft gray separators and grayscale data series. The supplied JAS mark is\nthe only color exception: its original blue and red details remain confined to the logo.\nThe signature is linked evidence: immutable revision \u2192 run identity \u2192 selected turn \u2192\nobservation/decision/consequence, with comparison retaining the same identities.\n\nReject oversized dashboard metrics in favor of actual experiment records; a chat-first\nlanding screen in favor of saved work; nested cards in favor of tables and aligned panels.\nKeep Geist for small, dense interface text. Expression comes from organization and precision.",
+    "overview": "For a developer investigating model behavior, the job is to follow an experiment to a\nrun, a recorded decision and a defensible comparison. The workspace should feel quiet,\nprecise and immediately usable. Laminar's actual trace and table screens are the primary\nreference for composition: compact navigation, aligned records, low-contrast chrome and adjacent evidence.\nVercel's black-and-white restraint guides the palette and contrast.\nIts marketing layout is not a reference. Preserve JAS's experimental units and provenance.\n\nDomain: experiments, protocols, conditions, seeds, turns, checkpoints, observations,\nconsequences and replay. The color world is paper-white records, graphite text, charcoal\nwork surfaces, soft gray separators and grayscale data series. The supplied JAS mark is\nthe only color exception: its original blue and red details remain confined to the logo.\nThe signature is linked evidence: immutable revision → run identity → selected turn →\nobservation/decision/consequence, with comparison retaining the same identities.\n\nReject oversized dashboard metrics in favor of actual experiment records; a chat-first\nlanding screen in favor of saved work; nested cards in favor of tables and aligned panels.\nKeep Geist for small, dense interface text. Expression comes from organization and precision.",
     "keyCharacteristics": [
       "Compact records with aligned identity, status and measurements.",
       "Achromatic surfaces, neutral selection and data series distinguished by tone and line pattern.",
@@ -1272,7 +1272,7 @@
       "**Don't** use nested decorative cards to separate information already aligned in a table or panel.",
       "**Don't** show another turn's evidence during loading, or truncate the journal to the selected turn.",
       "**Don't** move a note to a new turn as live execution advances, or clear newer edits after a save.",
-      "**Don't** dismiss the nonmodal assistant when the workspace receives focus or a click.",
+      "**Don't** mix different chat histories or use unselected run evidence in a general answer.",
       "**Don't** invent account controls or treat model self-report as recorded observation."
     ]
   }

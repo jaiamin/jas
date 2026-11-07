@@ -1,94 +1,74 @@
-# Developer workspace redesign
+# JAS workspace redesign
 
-Branch: `t3/developer-workspace-redesign`. This checkout is an isolated Linux sandbox.
+Branch: `t3/developer-workspace-redesign` in an isolated Linux Docker Sandbox.
+Draft PR: https://github.com/jaiamin/ass/pull/4
 
 ## Objective and acceptance
 
-Replace the previous interface with a cohesive, minimalist developer workspace, using
-Laminar's actual table and trace UI as the primary reference. The user confirmed the main
-workflow: experiment → run → recorded decision → comparison. AI design is supporting.
+Build a calm developer workspace around experiment → run → recorded decision →
+comparison. Laminar's actual product screens informed density and evidence navigation;
+the user's later direction established monochrome surfaces and the supplied JAS mark.
 Preserve all seven environments, immutable revisions, budgets, execution controls,
-annotations, replay, exports, provider traces, and assistant evidence boundaries.
+annotations, replay, exports, provider traces and evidence boundaries.
 
-- [x] Inventory all routes, user tasks, data contracts, repeated patterns and states.
-- [x] Inspect Laminar's public product screenshots and the running baseline.
-- [x] Define canonical `DESIGN.md`; implement shell and one end-to-end workflow.
-- [x] Visually verify the representative workflow before extending remaining views.
-- [x] Apply shared patterns to every route, responsive layout and important state.
-- [x] Remove only verified obsolete code/docs; update setup and product documentation.
-- [x] Pass frontend/backend checks and meaningful browser regressions.
-- [x] Capture representative screenshots and complete independent design review.
-- [x] Commit and publish one draft PR.
+- [x] Inventory routes, user tasks, data contracts, repeated patterns and states.
+- [x] Establish canonical `DESIGN.md`; verify a complete workflow before extending it.
+- [x] Apply shared patterns across all views, responsive layouts and important states.
+- [x] Rename product branding to JAS while preserving supported legacy interfaces.
+- [x] Replace the assistant panel and creation tabs with one Agent conversation surface.
+- [x] Add persistent, independent chats with an inner history rail and context selector.
+- [x] Simplify shell, suggestions, composer focus, context menu and redundant text.
+- [x] Add editor generation entry with manual-draft preservation and proposal return.
+- [x] Remove superseded components and styles; synchronize documentation/screenshots.
+- [x] Pass relevant checks and inspect current application screenshots.
 
-## Decisions
+## Current decisions
 
-- Default entry is Experiments; AI design gets a dedicated supporting route.
-- Keep `/studies` and existing API contracts. “Experiment” is the UI term for a study.
-- Preserve shadcn/Radix, React Query, Vite and the existing Python execution engine.
-- Laminar's density, neutral surfaces and adjacent evidence panels guide composition.
-  No workspace switcher, accounts, fabricated activity or new backend features.
-- `DESIGN.md` is the single design authority. Route inventory/verification lives in
-  `docs/INTERFACE.md`; this file holds implementation progress, not duplicate tokens.
+- Experiments is the default destination. Its single New experiment action opens the
+  manual editor; Generate with Agent there opens a separate creation chat with the
+  current question. Proposals require review before saving, and saving never runs models.
+- Agent handles general questions, scoped investigation and creation in one interface.
+  Past chats live inside Agent, with a compact picker on smaller screens. The composer
+  selects General, New experiment, an experiment or a run; Enter sends, Shift+Enter
+  adds a line. Ask Agent links appear on experiment/run details.
+- Conversation identity lives on Analysis rows. Schema v3 additively migrates existing
+  history without changing evidence or usage. Legacy API and route entry points remain
+  supported. Scoped history stays inside its selected chat, purpose and evidence cutoff.
+- The global sidebar shows only the supplied logo. Its collapse control stays inside;
+  the collapsed logo reveals expansion on hover/focus. Lucide icons remain after the
+  user rejected the retro icon alternative. Only the favicon has additional logo padding.
+- Use shadcn/Radix, React Query, Vite and the existing Python execution engine.
+  `DESIGN.md` owns visual rules, `docs/INTERFACE.md` owns route/state verification, and
+  `docs/ARCHITECTURE.md` owns implementation contracts.
+- JAS branding preserves legacy configuration, installed CLI alias, browser storage,
+  database selection, volume identity and frozen export/benchmark formats. The user
+  will rename the repository; do not change its remote.
 
 ## Running application
 
-The user requested the normal application on port 8080 with all available keys loaded.
-Started with `.venv/bin/jas --host 0.0.0.0 --port 8080`; provider credentials are inherited
-normally from the process environment and loaded from `.env` if present. Both OpenAI and
-Anthropic report configured. The application uses its normal configured database.
-The user-facing browser tab and service are intentionally left running for testing.
-Do not replace this with a keyless or seeded demonstration server.
+The user requested the real application on port 8080 with available credentials loaded.
+Start with `.venv/bin/jas --host 0.0.0.0 --port 8080`; normal startup inherits provider
+keys and loads `.env` if present. Both OpenAI and Anthropic reported configured without
+exposing credentials. The service uses the normal configured database and is intentionally
+left running for the user. Do not replace it with keyless or seeded demonstration data.
 
 Automated tests use separate disposable databases. Never point them at user data or share
-a database between execution engines. Project tooling: `.venv`, `.tools/bin/uv`, pnpm.
+a database between execution engines. Local tools: `.venv`, `.tools/bin/uv`, and pnpm.
 
-## Completed implementation
+## Verification and limits
 
-- Replaced the chat-first entry with experiment records, a compact shell and linked evidence.
-- Extracted shell, table patterns, AI composer, protocol field groups and execution records;
-  split scoped styles from tokens; removed the old Home view, dead selectors and redundant Slot dependency.
-- Fixed journal truncation, assistant-induced draft resets, run/turn note identity and stacked
-  evidence focus/return, including a docked assistant that remains open during inspection.
-- Renamed product branding to JAS across application, API, CLI, configuration and docs.
-  Legacy configuration, browser storage, database names, volume identity and export format
-  remain compatible. The repository name/remote is unchanged at the user's request.
-- Canonical DESIGN.md and machine metadata synchronized by the documenter. Independent
-  Impeccable review scored both material findings resolved. Detailed checks and representative
-  current application screenshots are in docs/INTERFACE.md.
+160 backend tests, 7 frontend unit tests and 34 Playwright tests passed. The latest editor
+generation/return changes also passed 11 focused Agent/navigation tests. Ruff lint/format,
+ty, Biome, TypeScript and the Vite production build passed. Earlier Actionlint and Compose
+configuration checks passed; this follow-up does not change those files.
 
-## Verification
+Current normal-app captures cover 42 route/theme/viewport combinations at 390px, 834px
+and 1440px with no overflow, page exceptions or POST requests. Screenshots include the
+Agent, context popup, mobile chat, collapsed shell, experiment list, editor and settings.
+Meaningful browser regressions cover drafts, retries, citations, provider failures,
+keyboard focus and proposal handoff. Earlier evidence checks verified saved observations,
+exports, historical revisions and exact 24-turn replay using controlled responses.
 
-153 backend tests, 7 frontend unit tests and 26 Playwright tests passed. Ruff lint/format,
-ty, Biome, TypeScript/Vite build, Actionlint, Compose config validation and staged Gitleaks passed.
-Manual browser checks included desktop/mobile/tablet, saved observations, exact replay
-(24 turns), export contents, keyboard focus and sampled text/placeholder contrast.
-No paid model calls; no production deployment or non-Chromium/assistive-technology audit.
-Disposable verification services, scratch scripts, the empty temporary user-preview database,
-and sample-result screenshots were removed. The normal port-8080 app remains running.
-User data was not touched.
-
-## Review handoff
-
-### Monochrome brand refinement
-
-The user requested Vercel-like black/white consistency and supplied a new JAS SVG.
-Preserve its geometry and red/blue details as the only color exception. Main logo ink
-adapts to the theme; the master serves navigation and README, with a padded favicon
-derivative. The user clarified that only the favicon should be smaller. Remove the sidebar
-subheading. Keep all workflows and the real port-8080 service intact.
-
-- [x] Apply neutral shared tokens, adaptive logo and sidebar wordmark.
-- [x] Preserve status and comparison readability through icons and line patterns.
-- [x] Verify both themes, responsive layouts, focus, errors and comparison charts.
-- [x] Refresh canonical docs/screenshots; pass 7 unit tests, 28 Playwright tests,
-  Biome and TypeScript/Vite build. Token contrast exceeds 4.5:1 in both themes.
-- [x] Commit and push the refinement to the existing draft PR.
-- [x] Follow-up: browser title uses the current view name followed by ` | JAS`;
-  route changes, browser history, reload and loaded experiment identity pass two
-  focused browser tests. Live port-8080 title checks, Biome and build also pass.
-
-Draft PR: https://github.com/jaiamin/ass/pull/4
-
-Implementation, cleanup and local verification are complete. No requested implementation
-work remains. The PR is ready for human review; it has not been merged. The repository
-rename is left to the user.
+No paid provider calls, production deployment, non-Chromium audit or full screen-reader
+audit. Normal application data was not modified by visual verification. Publication and
+the final head are recorded in Git and the linked draft PR.

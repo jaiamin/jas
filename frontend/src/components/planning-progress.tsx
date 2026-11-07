@@ -19,15 +19,6 @@ import {
 import type { Analysis } from "@/lib/types";
 
 export function PlanningProgress({ plan }: { plan?: Analysis }) {
-  const stage =
-    {
-      scoping: "Scoping the question",
-      researching: "Researching methods",
-      drafting: "Drafting the protocol",
-      reviewing: "Reviewing the design",
-      revising: "Refining the protocol",
-    }[plan?.output?.stage ?? "scoping"] ?? "Designing the experiment";
-  const sources = plan?.output?.planning?.sources ?? [];
   return (
     <section className="planning-state">
       <div className="research-thread">
@@ -44,74 +35,87 @@ export function PlanningProgress({ plan }: { plan?: Analysis }) {
         <Message>
           <MessageContent>
             <MessageHeader>
-              <span className="agent-wordmark">JAS</span>Experiment designer
+              <img src="/logo.svg" width={18} height={18} alt="" />
+              Agent
             </MessageHeader>
-            <Trace>
-              <TraceLine status="running" role="status">
-                <TraceIcon>
-                  <Search />
-                </TraceIcon>
-                <TraceTitle>{stage}</TraceTitle>
-              </TraceLine>
-              {plan?.output?.planning?.brief && (
-                <TraceCollapsible>
-                  <TraceCollapsibleTrigger>
-                    <TraceLine>
-                      <TraceIcon>
-                        <BookOpen />
-                      </TraceIcon>
-                      <TraceTitle>Study scope</TraceTitle>
-                    </TraceLine>
-                  </TraceCollapsibleTrigger>
-                  <TraceCollapsibleContent>
-                    <p>{plan.output.planning.brief.operationalization}</p>
-                    <p>{plan.output.planning.brief.size_rationale}</p>
-                  </TraceCollapsibleContent>
-                </TraceCollapsible>
-              )}
-              {!!sources.length && (
-                <TraceCollapsible>
-                  <TraceCollapsibleTrigger>
-                    <TraceLine>
-                      <TraceIcon>
-                        <BookOpen />
-                      </TraceIcon>
-                      <TraceTitle>{sources.length} research sources</TraceTitle>
-                    </TraceLine>
-                  </TraceCollapsibleTrigger>
-                  <TraceCollapsibleContent>
-                    <Trace>
-                      {sources.map((source) => (
-                        <a
-                          key={source.url}
-                          href={source.url}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <TraceLine>
-                            <TraceTitle>
-                              {source.title}
-                              <span className="sr-only">
-                                {" "}
-                                (opens in a new tab)
-                              </span>
-                            </TraceTitle>
-                          </TraceLine>
-                        </a>
-                      ))}
-                    </Trace>
-                  </TraceCollapsibleContent>
-                </TraceCollapsible>
-              )}
-            </Trace>
+            <PlanningActivity plan={plan} />
           </MessageContent>
         </Message>
       </div>
       <Button variant="outline" asChild>
-        <Link to="/design" state={{ question: plan?.question }}>
+        <Link to="/agent?context=new" state={{ question: plan?.question }}>
           Back to workspace
         </Link>
       </Button>
     </section>
+  );
+}
+
+export function PlanningActivity({ plan }: { plan?: Analysis }) {
+  const stage =
+    {
+      scoping: "Scoping the question",
+      researching: "Researching methods",
+      drafting: "Drafting the protocol",
+      reviewing: "Reviewing the design",
+      revising: "Refining the protocol",
+    }[plan?.output?.stage ?? "scoping"] ?? "Designing the experiment";
+  const sources = plan?.output?.planning?.sources ?? [];
+  return (
+    <Trace>
+      <TraceLine status="running" role="status">
+        <TraceIcon>
+          <Search />
+        </TraceIcon>
+        <TraceTitle>{stage}</TraceTitle>
+      </TraceLine>
+      {plan?.output?.planning?.brief && (
+        <TraceCollapsible>
+          <TraceCollapsibleTrigger>
+            <TraceLine>
+              <TraceIcon>
+                <BookOpen />
+              </TraceIcon>
+              <TraceTitle>Study scope</TraceTitle>
+            </TraceLine>
+          </TraceCollapsibleTrigger>
+          <TraceCollapsibleContent>
+            <p>{plan.output.planning.brief.operationalization}</p>
+            <p>{plan.output.planning.brief.size_rationale}</p>
+          </TraceCollapsibleContent>
+        </TraceCollapsible>
+      )}
+      {!!sources.length && (
+        <TraceCollapsible>
+          <TraceCollapsibleTrigger>
+            <TraceLine>
+              <TraceIcon>
+                <BookOpen />
+              </TraceIcon>
+              <TraceTitle>{sources.length} research sources</TraceTitle>
+            </TraceLine>
+          </TraceCollapsibleTrigger>
+          <TraceCollapsibleContent>
+            <Trace>
+              {sources.map((source) => (
+                <a
+                  key={source.url}
+                  href={source.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <TraceLine>
+                    <TraceTitle>
+                      {source.title}
+                      <span className="sr-only"> (opens in a new tab)</span>
+                    </TraceTitle>
+                  </TraceLine>
+                </a>
+              ))}
+            </Trace>
+          </TraceCollapsibleContent>
+        </TraceCollapsible>
+      )}
+    </Trace>
   );
 }

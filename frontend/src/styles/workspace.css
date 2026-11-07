@@ -6,16 +6,49 @@
 
 [data-slot="sidebar-header"] {
   height: 52px;
-  padding: 0 16px;
-  justify-content: center;
+  padding: 0 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
 }
 
 .brand {
   display: flex;
+  position: relative;
   align-items: center;
-  gap: 9px;
+  justify-content: center;
+  width: 32px;
   height: 32px;
-  white-space: nowrap;
+  border-radius: var(--radius);
+  flex-shrink: 0;
+}
+
+.brand[hidden] {
+  display: none;
+}
+
+.sidebar-toggle {
+  width: 32px;
+  height: 32px;
+}
+
+.brand-toggle-icon {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  opacity: 0;
+}
+
+.brand-toggle:hover .brand-mark,
+.brand-toggle:focus-visible .brand-mark {
+  opacity: 0;
+}
+
+.brand-toggle:hover .brand-toggle-icon,
+.brand-toggle:focus-visible .brand-toggle-icon {
+  opacity: 1;
 }
 
 .brand-mark {
@@ -25,23 +58,9 @@
   flex-shrink: 0;
 }
 
-.brand-name {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.3px;
-}
-
-.sidebar-create {
-  padding: 4px 12px 20px;
-}
-
-.sidebar-create .button {
-  width: 100%;
-  justify-content: flex-start;
-}
-
 [data-slot="sidebar-content"] {
   gap: 24px;
+  padding-top: 8px;
 }
 
 [data-slot="sidebar-group"] {
@@ -55,8 +74,8 @@
 }
 
 [data-slot="sidebar-menu-button"] > svg {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
 }
 
 [data-slot="sidebar-menu-button"][aria-current="page"] {
@@ -100,23 +119,16 @@
   flex: 1;
 }
 
-[data-collapsible="icon"] .brand-name,
-[data-collapsible="icon"] .recent-navigation,
-[data-collapsible="icon"] .sidebar-create span {
+[data-collapsible="icon"] .recent-navigation {
   display: none;
 }
 
 [data-collapsible="icon"] [data-slot="sidebar-header"] {
-  padding: 0 12px;
+  padding: 0 8px;
 }
 
-[data-collapsible="icon"] .sidebar-create {
-  padding: 8px;
-}
-
-[data-collapsible="icon"] .sidebar-create .button {
-  padding: 0;
-  justify-content: center;
+[data-collapsible="icon"] [data-slot="sidebar-group"] {
+  padding-inline: 8px;
 }
 
 [data-collapsible="icon"] [data-slot="sidebar-footer"] {
@@ -134,7 +146,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 24px 0 16px;
+  padding: 0 28px;
   border-bottom: 1px solid var(--border);
   background: var(--background);
 }

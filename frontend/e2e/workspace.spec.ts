@@ -193,7 +193,7 @@ test("AI design progress opens a reviewable protocol with design notes", async (
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
     catalog.templates[0].design.title,
   );
-  await page.getByText("AI design notes", { exact: true }).click();
+  await page.getByText("Protocol notes", { exact: true }).click();
   await expect(
     page.getByRole("link", { name: "Methods", exact: true }),
   ).toHaveAttribute("href", "https://example.org/methods");
@@ -221,13 +221,10 @@ test("failed AI designs remain reachable and restore the original question", asy
   await page
     .getByRole("link", { name: "Return to your question", exact: true })
     .click();
-  await expect(
-    page.getByLabel("Your research question", { exact: true }),
-  ).toHaveValue(question);
-  await page.getByText("Recent AI designs", { exact: true }).click();
-  await page
-    .getByRole("link", { name: `${question} failed`, exact: true })
-    .click();
+  await expect(page.getByLabel("Message Agent", { exact: true })).toHaveValue(
+    question,
+  );
+  await page.goto("/new?plan=qa-failed");
   await expect(
     page.getByRole("heading", { name: "Design request stopped", exact: true }),
   ).toBeVisible();

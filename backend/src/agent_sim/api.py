@@ -1,6 +1,7 @@
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Literal
 from urllib.parse import urlparse
 
 from fastapi import FastAPI, HTTPException, Query, Request
@@ -30,6 +31,12 @@ class Ask(Strict):
     question: str = Field(min_length=1, max_length=4000)
     study_id: str | None = None
     run_id: str | None = None
+
+
+class ChatMessage(Strict):
+    question: str = Field(min_length=1, max_length=4000)
+    context: str = "general"
+    chat_id: str | None = None
 
 
 class Note(Strict):
@@ -146,6 +153,7 @@ def create_app(
                 "providers": {
                     p: bool(os.environ.get(f"{p.upper()}_API_KEY")) for p in ("openai", "anthropic")
                 },
+                "planner_model": setting("PLANNER_MODEL", "openai:gpt-6.1-sol"),
                 "models": models.catalog(),
                 "budget_usd": workspace.ceiling / 1_000_000,
                 "charged_usd": workspace.charged / 1_000_000,
@@ -272,13 +280,35 @@ def create_app(
             )
         }
 
+    @app.post("/api/agent", status_code=202)
+    async def general_question(body: Ask) -> dict:
+        if body.study_id or body.run_id:
+            raise ValueError("Use scoped analysis for experiment or run questions")
+        return {"id": assistants.start(body.question, purpose="general")}
+
     @app.get("/api/analyses")
-    async def analyses(study_id: str | None = None, run_id: str | None = None) -> list[dict]:
-        return assistants.list(study_id, run_id)
+    async def analyses(
+        study_id: str | None = None,
+        run_id: str | None = None,
+        purpose: Literal["design", "general"] = "design",
+    ) -> list[dict]:
+        return assistants.list(study_id, run_id, purpose=purpose)
 
     @app.get("/api/analyses/{analysis_id}")
     async def get_analysis(analysis_id: str) -> dict:
         return assistants.get(analysis_id)
+
+    @app.get("/api/chats")
+    async def chats() -> list[dict]:
+        return list(assistants.chats())
+
+    @app.get("/api/chats/{chat_id}")
+    async def chat(chat_id: str) -> list[dict]:
+        return list(assistants.chat(chat_id))
+
+    @app.post("/api/chats", status_code=202)
+    async def send_chat(body: ChatMessage) -> dict:
+        return assistants.send(body.question, body.context, body.chat_id)
 
     frontend = Path(static_dir or setting("STATIC_DIR", "frontend/dist")).resolve()
 

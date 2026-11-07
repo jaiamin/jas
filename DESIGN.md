@@ -243,8 +243,9 @@ in `frontend/public/favicon.svg` preserves the same paths with an 8-unit inset o
 edge (`viewBox="-8 -8 144 144"`), making only the browser-tab mark slightly smaller.
 Preserve the supplied geometry and red/blue details. Its main ink switches from near-black
 to white with the containing surface's color scheme; the favicon follows the browser's
-scheme. The sidebar uses a 24px mark beside “JAS”, with no subheading. The collapsed rail
-retains the mark and accessible home label. Do not substitute a generic experiment icon
+scheme. The sidebar uses only the 24px mark, with no wordmark or subheading. Its collapse control
+sits inside the header. In the 48px collapsed rail, hovering or focusing the mark reveals
+the expand icon in the same aligned target; the control retains keyboard focus when toggled. Do not substitute a generic experiment icon
 for the product logo.
 
 ### Neutral
@@ -269,7 +270,7 @@ figures. Prose has a maximum measure of 75ch.
 
 Headlines identify pages, titles identify sections, labels name controls, and metadata
 qualifies a record. Supporting captions and count badges sometimes use 11px. Below 600px,
-page headlines reduce to 19px; the AI design introduction retains the headline size.
+page headlines reduce to 19px. The Agent welcome uses 26px/500 text, reduced to 24px on mobile.
 
 **The Quiet Hierarchy Rule.** Use alignment, weight and spacing to distinguish dense
 records; reserve the headline role for the page title.
@@ -289,17 +290,20 @@ summary narrows to 216px at 1100px. Decision pages place the journal beside its 
 
 Below 768px, navigation becomes a titled modal Sheet. At 900px and below,
 protocol/editor/evidence columns stack. At available workspace widths of 720px and below,
-the same grids also stack through a container query; this includes desktop with the
-assistant open. Evidence navigation follows the actual stacked layout.
+the same grids also stack through a container query. Evidence navigation follows the
+actual stacked layout.
 
 At 600px and below, page gutters reduce to 16px, headings and toolbars wrap, inputs use
 16px text, and the editor save action stays reachable in a fixed bottom bar. Tables scroll
 inside their region. Coarse pointers enlarge shared buttons, select triggers, navigation,
 tabs and inputs to at least 44px; icon buttons also gain a 44px minimum width.
 
-The assistant is modal below 1100px and nonmodal from 1100px. Its desktop width is 520px,
-reserved from the workspace while open; on small screens it fits the viewport. Validate
-the principal routes at 390, 768, 1280 and 1440px, with the assistant both open and closed.
+Agent fills the page below the shell header. A 208px inner history rail sits beside the
+conversation; the main application sidebar remains navigation only. At viewport widths
+of 1000px and below, history becomes a compact chat picker above the conversation.
+The conversation and composer share an 800px measure with 24px internal gutters (12px
+composer gutters on mobile). The composer remains below the independently scrolling
+transcript. Validate at 390px, 834px, 1280px and 1440px in both themes.
 
 ## Elevation & Depth
 
@@ -322,7 +326,7 @@ and quiet. Do not introduce nested decorative card frames around aligned records
 
 | Pattern | Contract |
 | --- | --- |
-| Navigation | Experiments and Runs first; Design with AI and Environments second; Settings/theme in footer |
+| Navigation | Workspace: Experiments and Runs; Tools: Agent and Environments; Settings/theme in footer; creation stays in page actions |
 | Buttons | 32px standard, 28px small, 40px large; 13px/500; coarse-pointer controls at least 44px |
 | Fields | Shared Field/FieldGroup with visible label, inset control, related helper/error; no bespoke inputs |
 | Page tabs | Full-width bottom rule, 40px height, 20px gap, neutral active underline; arrow-key navigation |
@@ -332,7 +336,7 @@ and quiet. Do not introduce nested decorative card frames around aligned records
 | Editor | Question → Agents → Conditions → Execution; JSON remains available; persistent execution summary/save |
 | Experiment | Question stays visible, revision explicit, Overview / Runs / Protocol; historical revisions remain inspectable |
 | Run | Decisions first; environment, interactions and record remain tabs; shared turn rail and adjacent inspector |
-| AI | Dedicated design view plus contextual evidence Sheet; anchored composer; activity reflects server events |
+| Agent | Single full-page conversation; inner chat history; composer context selector and one icon-only Send; reviewed protocol replies; activity reflects server events |
 
 ### Controls and containers
 
@@ -344,7 +348,8 @@ horizontal padding. Focus is a 3px half-opacity ring, with disabled controls at 
 
 Fields use a visible label, control-surface fill, input border and medium corners. Helpers
 sit below the related field; invalid state uses destructive border/ring styling. Placeholder
-text uses muted foreground. Badges default to the secondary neutral treatment, compact
+text uses muted foreground. Composed controls place focus on their rounded InputGroup,
+without a second rectangular outline on the textarea. Badges default to the secondary neutral treatment, compact
 padding and small corners; statuses retain text labels. Summary panels use the panel
 surface, thin border and 20px padding. Tables use a muted header and subtle hover/selection
 fill, with a two-line identity cell and aligned measurements.
@@ -354,11 +359,45 @@ the active icon uses the foreground tone. Collapsed navigation retains accessibl
 and tooltips. Page tabs use the shared line variant; local alternatives use the segmented
 variant. Both retain Radix keyboard and focus behavior.
 
+Use restrained 16px Lucide line icons: flask for Experiments, play for Runs, message
+for Agent, boxes for Environments and gear for Settings. The sidebar has no creation
+button. Keep the logo's pixel geometry confined to the supplied mark.
+
+### Agent entry points
+
+Agent is the persistent destination for general questions, scoped investigation and
+reviewed creation. Use one conversation interface without tabs or an expandable panel.
+Past chats live in its inner sidebar, with a New chat icon; resuming a chat restores its
+server-stored turns. General, New experiment, experiment and run contexts share one
+composer selector. Context belongs to each submitted message; switching it never
+relabels earlier evidence. Failed-turn Retry uses that turn's original context.
+
+Experiments keeps one New experiment action. The editor exposes Generate with Agent
+beside its heading, carries the current question, and preserves the manual draft. A
+reviewed proposal links Back to Agent to resume its originating conversation.
+
+Only experiment/run details show Ask Agent in the header. It navigates into the full
+Agent page with that record selected. Other pages use the main navigation entry.
+`/design` remains a compatible entry with New experiment selected. Protocol proposals
+appear in the conversation with Review protocol, which opens the existing editor.
+Saving and execution remain separate explicit actions.
+
+Suggestions are outlined, padded buttons with a small arrow; choosing one fills the
+composer without spending. The context menu uses a 420px surface bounded by viewport
+width, grouped choices, and a second identity line for runs. The composer has 14px
+corners and one circular Send icon. Enter sends; Shift+Enter adds a line; IME composition
+never submits prematurely. Omit routine text below the composer and generic page
+subtitles. Keep actual research questions, run identity, errors, and material constraints.
+
+Unsent messages are stored per conversation in sessionStorage, including before the
+first send. Errors preserve the draft; new chats start separately. General questions use
+workspace budget; scoped investigations use experiment budget and frozen evidence.
+
 ### Evidence and observations
 
 Desktop evidence is adjacent to the decision list. When the actual layout stacks, selecting
 a decision transfers focus to the evidence heading and scrolls it into view; Back to decisions
-returns focus to the journal. This applies when an open desktop assistant narrows the workspace.
+returns focus to the journal. In adjacent layouts, focus stays on the selected journal row.
 Inspector loading/errors must not show a different turn's evidence. Selecting a turn never
 truncates the journal. Revision, condition, seed and repetition identify a run.
 
@@ -375,9 +414,8 @@ Empty lists offer the next useful action; filtered empty states offer clearing f
 Saving a protocol never starts model calls. Starting execution is explicit. Provider keys
 stay server-side; missing configuration links to Settings. No invented account/RBAC states.
 
-Modal Sheets support Escape and focus return. The nonmodal desktop assistant stays open
-while the user clicks or focuses the workspace; its explicit close control and Escape
-dismiss it. The composer remains anchored and activity follows server events.
+The mobile navigation Sheet supports Escape and focus return. Agent remains a full page;
+its composer stays anchored and activity follows actual server stages.
 
 Protocol browser drafts are recoverable and distinct from immutable saved revisions.
 Links preserve query state where relevant. Browser titles follow the current view as
@@ -405,5 +443,5 @@ extensions live in the sidecar; transition only the properties needed by the int
 - **Don't** use nested decorative cards to separate information already aligned in a table or panel.
 - **Don't** show another turn's evidence during loading, or truncate the journal to the selected turn.
 - **Don't** move a note to a new turn as live execution advances, or clear newer edits after a save.
-- **Don't** dismiss the nonmodal assistant when the workspace receives focus or a click.
+- **Don't** mix different chat histories or use unselected run evidence in a general answer.
 - **Don't** invent account controls or treat model self-report as recorded observation.

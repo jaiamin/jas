@@ -13,15 +13,16 @@ used as the application layout. `DESIGN.md` owns the resulting design system.
 | --- | --- | --- |
 | `/` → `/studies` | Open saved work | Empty workspace, redirect |
 | `/studies` | Search/filter experiments, recover drafts | Loading, error/retry, empty, filtered empty, pagination |
-| `/design` | Ask AI for a reviewed protocol; reopen proposals | Empty question, pending, failure/recovery, provider unavailable |
-| `/new` | Edit question, agents, conditions, execution, specification | Template, AI proposal, new revision, invalid JSON, recovered draft, save error, disabled limits |
+| `/agent` | General questions, selected evidence analysis, reviewed creation and proposals | Inner chat history, per-message context, pending, failure/retry, proposal review, provider unavailable |
+| `/design` | Compatible redirect to Agent creation | Retried question preserved |
+| `/new` | Configure a protocol or generate with Agent | Question, agents, conditions, execution, JSON, template, proposal review/return, new revision, recovered draft, save error, disabled limits |
 | `/studies/:id` | Read results, run matrix, protocol and revisions | Ready, executing, paused, complete, failed, historical revision, no eligible results |
 | `/runs` | Find runs and select 2–4 to compare | Filters, pagination, selection across filters, selection cap |
 | `/runs/:id` | Inspect environment, decisions, interactions, record | Initial checkpoint, running/pause, pinned turn, evidence loading/error, no interactions, annotations, replay, request trace |
 | `/compare?runs=…` | Compare outcomes and history | Fewer than two, 2–4 selections, incompatible worlds, missing measurements, query failure |
 | `/environments` | Choose one of seven supported rule systems | Loading/error, each template and its measurements |
 | `/settings` | Check providers, budgets, usage, storage | Key configured/missing, unknown usage; deployment config is read-only |
-| Any route + `assistant=1` | Design or investigate scoped evidence | Context loading/error, pending/completed/failed analysis, citations, follow-up, mobile modal |
+| Experiment/run + `assistant=1` or `tab=research` | Compatible redirect to full Agent | Selected record preserved; no docked panel |
 | Unknown route | Recover navigation | Not-found state and link to experiments |
 
 ## Preserved contracts
@@ -49,12 +50,12 @@ it has no demo mode or seeded outcomes. Current screenshots show the normal appl
 | --- | --- |
 | Experiments and runs | Desktop tables, search, filtered empty/reset, selection, comparison, pagination; empty workspace on mobile |
 | Experiment details | Results, run matrix, protocol, revision selection and tuning; historical records preserved |
-| Protocol editor | Desktop/mobile layout; question, agents, conditions, execution and JSON; validation, template changes, save and draft recovery |
-| Run evidence | Journal and inspector; earlier turn keeps later decisions visible; keyboard slider, mobile focus/return, desktop assistant with stacked evidence |
+| Protocol editor | Desktop/mobile layout; question, agents, conditions, execution and JSON; validation, template changes, save, draft recovery, Generate with Agent and proposal return |
+| Run evidence | Journal and inspector; earlier turn keeps later decisions visible; keyboard slider, mobile focus/return, narrow desktop and adjacent wide layouts |
 | Observations and record | Saved notes survive API reload/export; drafts remain attached to their original run/turn during polling and turn changes; 24-turn exact replay verified |
 | Environment and interactions | Shared pool/outcome history, initial and completed states, empty interaction network; all seven rule systems exercised by API/browser tests |
 | Comparison | Selected two recorded test runs through the run library; aligned outcomes and history at desktop/tablet widths |
-| AI design and assistant | Missing-provider/disabled state; mocked pending, completed, failed/retry and cited evidence flows; mobile modal and desktop docked panel |
+| Agent | General conversation, independent chats and reload; inner history rail/mobile picker; selected experiment/run, pending, citations, original-scope retry, protocol handoff, provider disabled, POST error and draft recovery |
 | Settings and recovery | Missing providers, read-only configuration, budgets/storage; API error/retry, missing records, unknown-route recovery |
 | JAS compatibility | New commands, settings, API title and export filename; legacy configuration precedence, database selection, browser drafts/theme/sidebar regression tests |
 | Shared accessibility | Keyboard entry, sidebar shortcut/persistence, focus and return; sampled rendered text/placeholder contrast in both themes; no page overflow in inspected layouts |
@@ -62,13 +63,14 @@ it has no demo mode or seeded outcomes. Current screenshots show the normal appl
 Manual captures cover 390px mobile, 834px tablet and 1440px desktop. Browser tests also
 exercise 1280px desktop navigation. Wide tables and editor tabs scroll within their containers.
 
-Passed: 153 Python tests, Ruff lint/format checks, ty; 7 frontend unit tests, Biome;
-28 Playwright tests; TypeScript and Vite production build; Actionlint and Docker Compose configuration validation. The new note-identity and
-desktop evidence-navigation regressions failed against the prior build and passed after fixing.
-The independent Impeccable reviewer scored both material fixes resolved.
+Current checks: 160 Python tests; Ruff lint/format and ty; 7 frontend unit tests;
+Biome; TypeScript and Vite production build. 34 Playwright tests passed, including the Agent
+follow-up and evidence/navigation regressions. The latest editor generation/return changes
+also passed 11 focused Agent/navigation tests. Previous Actionlint and Docker
+Compose validation passed; this follow-up does not change those configurations.
 
 The monochrome refinement was checked on the normal application at 390px, 834px and
-1440px in both themes: Experiments, Runs, editor, Environments, AI design, Settings and
+1440px in both themes: Experiments, Runs, editor, Environments, Agent, Settings and
 empty comparison. Mobile drawer Escape/focus return and desktop visible focus passed;
 no page overflow or browser exceptions were observed. Four-series comparison tests
 verify distinct line patterns and matching legends in both themes. Status icons preserve
@@ -79,15 +81,30 @@ The browser title follows `View | JAS`, including saved experiment identity. Two
 navigation tests passed after this follow-up, covering history, reload and direct entry;
 route changes and browser history were also checked against the live port-8080 app.
 
-Current application captures (no sample experiment data):
+The Agent follow-up checks the inner history rail, responsive chat picker, session draft
+recovery, saved chat resumption, context changes, proposal-to-editor review and return,
+manual-editor generation entry, cited evidence, original-scope retries, missing providers,
+and server errors. The logo-only sidebar retains
+focus when toggled, aligns its collapsed controls, and reveals expansion on hover/focus.
+The composed textarea has no rectangular outline; its rounded group retains keyboard
+focus. Suggestions have visible boundaries and fill the draft without sending. The context
+menu is viewport-bounded and at least 340px on the 390px test viewport. Generic subtitles
+and routine composer hints were removed; record identity and errors remain.
 
+Current application captures (normal database, no sample experiment data):
+
+- [Agent · light](screenshots/agent-light.png)
+- [Agent · dark](screenshots/agent-dark.png)
+- [Agent · mobile](screenshots/agent-mobile.png)
+- [Agent context menu](screenshots/agent-context.png)
+- [Collapsed navigation](screenshots/agent-collapsed.png)
 - [Workspace · light](screenshots/workspace.png)
 - [Workspace · dark](screenshots/workspace-dark.png)
 - [Execution editor · dark](screenshots/editor-dark.png)
 - [Provider configuration](screenshots/settings.png)
 
-Normal startup on port 8080 passed its health check and reported both OpenAI and Anthropic
-configured. Provider presence was checked without exposing credentials or making paid calls.
+Normal startup on port 8080 passes its health check and reports both OpenAI and Anthropic
+configured. Provider presence is checked without exposing credentials or making paid calls.
 
 Limits: Chromium verification only; no live paid-provider calls, full assistive-technology
-audit, or production deployment. AI success/failure paths use controlled responses.
+audit, or production deployment. Model success/failure paths use controlled test responses.

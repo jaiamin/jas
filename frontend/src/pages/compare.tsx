@@ -29,10 +29,7 @@ export default function Compare() {
   if (runs.length < 2)
     return (
       <>
-        <PageHeading
-          title="Compare runs"
-          description="Aligned outcomes from independent trials, with their original protocol identity."
-        >
+        <PageHeading title="Compare runs">
           <Button variant="outline" asChild>
             <Link to="/runs">Choose runs</Link>
           </Button>
@@ -58,10 +55,7 @@ export default function Compare() {
     : (keys[0] ?? "contribution_rate");
   return (
     <>
-      <PageHeading
-        title="Compare runs"
-        description="Aligned outcomes from independent trials, with their original protocol identity."
-      >
+      <PageHeading title="Compare runs">
         <Button variant="outline" asChild>
           <Link to="/runs">Choose runs</Link>
         </Button>

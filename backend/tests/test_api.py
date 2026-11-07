@@ -66,6 +66,24 @@ def test_invalid_json_design_does_not_create_study(client):
     assert client.get("/api/studies").json() == []
 
 
+def test_general_agent_submission_preserves_scoped_analysis_contract(client, monkeypatch):
+    submitted = []
+    monkeypatch.setattr(
+        client.app.state.assistants,
+        "start",
+        lambda question, **kwargs: submitted.append((question, kwargs)) or "general-request",
+    )
+    response = client.post("/api/agent", json={"question": "What is a matched seed?"})
+    assert response.status_code == 202 and response.json() == {"id": "general-request"}
+    assert submitted == [("What is a matched seed?", {"purpose": "general"})]
+    assert (
+        client.post("/api/agent", json={"question": "Inspect it", "run_id": "a"}).status_code == 422
+    )
+    assert client.post("/api/analyses", json={"question": "Inspect it"}).status_code == 422
+    assert client.get("/api/analyses?purpose=general").json() == []
+    assert len(submitted) == 1
+
+
 def test_export_includes_previous_revisions_and_their_recorded_turns(client, design):
     sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
     old = client.get(f"/api/studies/{sid}").json()
@@ -109,3 +127,37 @@ def test_saved_ai_proposal_provenance_survives_revision_and_export(client, desig
     assert exported["study"]["plan_id"] is None
     assert exported["revisions"][0]["source"] == f"plan:{pid}"
     assert exported["analyses"][0]["id"] == pid
+
+
+def test_chat_api_returns_saved_history_and_validates_requests(client, monkeypatch):
+    from agent_sim.db import Analysis
+
+    agent = client.app.state.assistants
+
+    async def execute(key):
+        with agent.db.session.begin() as session:
+            row = session.get_one(Analysis, key)
+            row.status, row.output = "complete", {"answer": "A recorded answer", "citations": []}
+
+    monkeypatch.setattr(agent, "_execute", execute)
+    first = client.post("/api/chats", json={"question": "Explain matched seeds"})
+    assert first.status_code == 202
+    chat_id = first.json()["chat_id"]
+    second = client.post("/api/chats", json={"question": "Explain repetitions", "chat_id": chat_id})
+    assert second.status_code == 202 and second.json()["chat_id"] == chat_id
+    history = client.get(f"/api/chats/{chat_id}").json()
+    assert [row["question"] for row in history] == ["Explain matched seeds", "Explain repetitions"]
+    assert all(row["purpose"] == "general" and row["cutoffs"] == {} for row in history)
+    assert client.get("/api/chats").json()[0]["title"] == "Explain matched seeds"
+    assert client.get("/api/chats/missing").status_code == 404
+    assert client.post("/api/chats", json={"question": "  "}).status_code == 422
+    assert (
+        client.post("/api/chats", json={"question": "Question", "context": "fake"}).status_code
+        == 422
+    )
+    assert (
+        client.post("/api/chats", json={"question": "Question", "chat_id": "fake"}).status_code
+        == 404
+    )
+    assert len(client.get("/api/chats").json()) == 1
+    assert client.get("/api/settings").json()["usage"]["requests"] == 0

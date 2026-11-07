@@ -31,10 +31,7 @@ export function StudyTable({ studies }: { studies: StudySummary[] }) {
   const current = Math.min(page, pageCount - 1);
   if (!studies.length)
     return (
-      <Empty
-        title="Your first experiment starts with a question"
-        description="Design a study with AI, or configure every detail yourself."
-      >
+      <Empty title="No experiments yet">
         <Button asChild>
           <Link to="/new">
             Create experiment
@@ -130,10 +127,7 @@ export function StudyTable({ studies }: { studies: StudySummary[] }) {
         </tbody>
       </Table>
       {!filtered.length && (
-        <Empty
-          title="No matching experiments"
-          description="Try a different name or clear the status filter."
-        >
+        <Empty title="No matching experiments">
           <Button
             variant="outline"
             onClick={() => {

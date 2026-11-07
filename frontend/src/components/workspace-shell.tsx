@@ -1,27 +1,20 @@
 import {
-  Activity,
-  Layers3,
-  LayoutGrid,
+  Boxes,
+  FlaskConical,
   MessageSquare,
   Moon,
-  Plus,
-  Settings2,
-  Sparkles,
+  PanelLeft,
+  Play,
+  Settings,
   Sun,
 } from "lucide-react";
-import {
-  Component,
-  Fragment,
-  lazy,
-  Suspense,
-  useEffect,
-  useState,
-} from "react";
+import { Component, Fragment, Suspense, useEffect, useState } from "react";
 import {
   Link,
   NavLink,
   Outlet,
   useLocation,
+  useNavigate,
   useSearchParams,
 } from "react-router-dom";
 import { Loading } from "@/components/shared";
@@ -36,13 +29,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge, Empty } from "@/components/ui/data";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -56,11 +42,8 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useApi } from "@/lib/api";
 import type { RunSummary, StudySummary } from "@/lib/types";
-
-const AgentPanel = lazy(() => import("@/components/agent-panel"));
 
 class PageBoundary extends Component<
   { children: React.ReactNode },
@@ -85,23 +68,14 @@ class PageBoundary extends Component<
 }
 
 export default function WorkspaceShell() {
-  const { setOpenMobile, state } = useSidebar();
-  const agentModal = useIsMobile(1100);
-  const [params, setParams] = useSearchParams();
-  const agentOpen = params.has("assistant") || params.get("tab") === "research";
-  function setAgentOpen(open: boolean) {
-    const next = new URLSearchParams(params);
-    if (open) next.set("assistant", "1");
-    else {
-      next.delete("assistant");
-      if (next.get("tab") === "research") next.delete("tab");
-    }
-    setParams(next, { replace: true });
-  }
+  const { setOpenMobile, state, isMobile, toggleSidebar } = useSidebar();
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
   const [dark, setDark] = useState(() =>
     document.documentElement.classList.contains("dark"),
   );
   const location = useLocation();
+  const isAgent = location.pathname === "/agent";
   const runs = useApi<RunSummary[]>("/runs", true);
   const active =
     runs.data?.filter((r) =>
@@ -109,8 +83,8 @@ export default function WorkspaceShell() {
     ) ?? [];
   const studies = useApi<StudySummary[]>("/studies", true);
   const links = [
-    { to: "/studies", label: "Experiments", icon: Layers3 },
-    { to: "/runs", label: "Runs", icon: Activity },
+    { to: "/studies", label: "Experiments", icon: FlaskConical },
+    { to: "/runs", label: "Runs", icon: Play },
   ];
   function changeTheme() {
     const next = !dark;
@@ -134,8 +108,9 @@ export default function WorkspaceShell() {
             ? "Settings"
             : location.pathname.startsWith("/compare")
               ? "Compare runs"
-              : location.pathname.startsWith("/design")
-                ? "Design with AI"
+              : location.pathname.startsWith("/design") ||
+                  location.pathname.startsWith("/agent")
+                ? "Agent"
                 : "Workspace";
   const runId = location.pathname.match(/^\/runs\/([^/]+)$/)?.[1];
   const studyId = location.pathname.match(/^\/studies\/([^/]+)$/)?.[1];
@@ -171,6 +146,18 @@ export default function WorkspaceShell() {
         : location.pathname === "/compare"
           ? [{ label: "Runs", to: "/runs" }, { label: "Compare" }]
           : [{ label: section }];
+  useEffect(() => {
+    if (params.has("assistant") || params.get("tab") === "research") {
+      const context = runId
+        ? `run:${runId}`
+        : studyId
+          ? `study:${studyId}`
+          : "general";
+      navigate(`/agent?context=${encodeURIComponent(context)}`, {
+        replace: true,
+      });
+    }
+  }, [params, runId, studyId, navigate]);
   const pageTitle =
     runId || studyId || location.pathname === "/new"
       ? (crumbs.at(-1)?.label ?? section)
@@ -188,6 +175,7 @@ export default function WorkspaceShell() {
           <Link
             to="/studies"
             className="brand"
+            hidden={state === "collapsed" && !isMobile}
             aria-label="JAS home"
             onClick={() => setOpenMobile(false)}
           >
@@ -198,17 +186,49 @@ export default function WorkspaceShell() {
               height={24}
               alt=""
             />
-            <span className="brand-name">JAS</span>
           </Link>
-        </SidebarHeader>
-        <div className="sidebar-create">
-          <Button variant="outline" asChild title="New experiment">
-            <Link to="/new" onClick={() => setOpenMobile(false)}>
-              <Plus data-icon="inline-start" />
-              <span>New experiment</span>
-            </Link>
+          <Button
+            data-sidebar="trigger"
+            variant="ghost"
+            size="icon"
+            className={
+              state === "collapsed" && !isMobile
+                ? "brand brand-toggle"
+                : "sidebar-toggle"
+            }
+            aria-label={
+              isMobile
+                ? "Close menu"
+                : state === "collapsed"
+                  ? "Expand sidebar"
+                  : "Collapse sidebar"
+            }
+            title={
+              isMobile
+                ? "Close menu"
+                : `${state === "collapsed" ? "Expand" : "Collapse"} sidebar (Ctrl/⌘ B)`
+            }
+            onClick={toggleSidebar}
+          >
+            {state === "collapsed" && !isMobile && (
+              <img
+                className="brand-mark"
+                src="/logo.svg"
+                width={24}
+                height={24}
+                alt=""
+              />
+            )}
+            <PanelLeft
+              className={
+                state === "collapsed" && !isMobile
+                  ? "brand-toggle-icon"
+                  : undefined
+              }
+              aria-hidden="true"
+            />
           </Button>
-        </div>
+        </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel>Workspace</SidebarGroupLabel>
@@ -222,7 +242,7 @@ export default function WorkspaceShell() {
                         title={state === "collapsed" ? item.label : undefined}
                         onClick={() => setOpenMobile(false)}
                       >
-                        <item.icon />
+                        <item.icon aria-hidden="true" />
                         <span>{item.label}</span>
                         {item.to === "/runs" && active.length > 0 && (
                           <Badge className="nav-count">{active.length}</Badge>
@@ -235,20 +255,20 @@ export default function WorkspaceShell() {
             </nav>
           </SidebarGroup>
           <SidebarGroup>
-            <SidebarGroupLabel>Build</SidebarGroupLabel>
+            <SidebarGroupLabel>Tools</SidebarGroupLabel>
             <SidebarMenu>
               {[
-                { to: "/design", label: "Design with AI", icon: Sparkles },
+                { to: "/agent", label: "Agent", icon: MessageSquare },
                 {
                   to: "/environments",
                   label: "Environments",
-                  icon: LayoutGrid,
+                  icon: Boxes,
                 },
               ].map((item) => (
                 <SidebarMenuItem key={item.to}>
                   <SidebarMenuButton asChild tooltip={item.label}>
                     <NavLink to={item.to} onClick={() => setOpenMobile(false)}>
-                      <item.icon />
+                      <item.icon aria-hidden="true" />
                       <span>{item.label}</span>
                     </NavLink>
                   </SidebarMenuButton>
@@ -283,7 +303,7 @@ export default function WorkspaceShell() {
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Settings">
                 <NavLink to="/settings" onClick={() => setOpenMobile(false)}>
-                  <Settings2 />
+                  <Settings aria-hidden="true" />
                   <span>Settings</span>
                 </NavLink>
               </SidebarMenuButton>
@@ -295,14 +315,14 @@ export default function WorkspaceShell() {
             aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
             onClick={changeTheme}
           >
-            {dark ? <Sun /> : <Moon />}
+            {dark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
           </Button>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset className="shell-body" data-assistant-open={agentOpen}>
+      <SidebarInset className="shell-body">
         <header className="shell-header">
           <div className="header-path">
-            <SidebarTrigger />
+            {isMobile && <SidebarTrigger />}
             <Breadcrumb>
               <BreadcrumbList>
                 {crumbs.map((crumb, i) => (
@@ -322,17 +342,22 @@ export default function WorkspaceShell() {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setAgentOpen(true)}
-            aria-expanded={agentOpen}
-          >
-            <MessageSquare data-icon="inline-start" />
-            Ask AI
-          </Button>
+          {(runId || studyId) && (
+            <Button variant="outline" size="sm" asChild>
+              <Link
+                to={`/agent?context=${encodeURIComponent(runId ? `run:${runId}` : `study:${studyId}`)}`}
+              >
+                <MessageSquare data-icon="inline-start" />
+                Ask Agent
+              </Link>
+            </Button>
+          )}
         </header>
-        <main id="main" className="page" tabIndex={-1}>
+        <main
+          id="main"
+          className={isAgent ? "page page-agent" : "page"}
+          tabIndex={-1}
+        >
           <Suspense fallback={<Loading />}>
             <PageBoundary key={location.pathname}>
               <Outlet />
@@ -340,29 +365,6 @@ export default function WorkspaceShell() {
           </Suspense>
         </main>
       </SidebarInset>
-      <Sheet modal={agentModal} open={agentOpen} onOpenChange={setAgentOpen}>
-        <SheetContent
-          className="agent-panel"
-          showCloseButton
-          onInteractOutside={(event) => {
-            if (!agentModal) event.preventDefault();
-          }}
-        >
-          <SheetHeader>
-            <SheetTitle>Research assistant</SheetTitle>
-            <SheetDescription className="sr-only">
-              Design experiments and investigate recorded evidence.
-            </SheetDescription>
-          </SheetHeader>
-          <Suspense fallback={<Loading />}>
-            <AgentPanel
-              key={runId ?? studyId ?? "design"}
-              studyId={studyId ?? selectedRun?.study_id}
-              runId={runId}
-            />
-          </Suspense>
-        </SheetContent>
-      </Sheet>
     </>
   );
 }

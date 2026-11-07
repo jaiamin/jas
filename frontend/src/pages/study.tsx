@@ -350,7 +350,9 @@ export default function Study() {
             <section>
               <h2>Immutable specification</h2>
               {study.plan_id && (
-                <Link to={`/new?plan=${study.plan_id}`}>View AI proposal</Link>
+                <Link to={`/new?plan=${study.plan_id}`}>
+                  View protocol proposal
+                </Link>
               )}
               <p className="muted">
                 Revision {study.revision} · SHA-256{" "}
