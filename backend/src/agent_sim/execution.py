@@ -11,7 +11,7 @@ from sqlalchemy import select, update
 
 from .db import Database, Measurement, RecordedEvent, Run, Turn, digest, now
 from .domain import Action, Decision, Event, Measure
-from .environments import RULE_VERSION, World, create_world
+from .environments import CATALOG, World, create_world
 from .llm import LanguageModels, ProviderFailure
 from .research import Research
 
@@ -34,6 +34,7 @@ def decision_schema(
     maximum: int,
     targets: tuple[str, ...],
     kinds: tuple[str, ...],
+    channels: tuple[str, ...] = ("messages", "reports", "promises"),
 ) -> type[Decision]:
     fields: dict[str, Any] = {
         "kind": (StrEnum("AllowedAction", {key: key for key in kinds}), ...),
@@ -51,6 +52,12 @@ def decision_schema(
         fields["promise"] = (type(None), ...)
     elif environment == "commons":
         fields["promise"] = (Annotated[int, Field(ge=0, le=maximum)] | None, ...)
+    if "messages" not in channels:
+        fields["message"] = (Literal[""], ...)
+    if "reports" not in channels:
+        fields["report"] = (type(None), ...)
+    if "promises" not in channels:
+        fields["promise"] = (type(None), ...)
     if environment == "coordination":
         work_fields: dict[str, Any] = {
             **fields,
@@ -169,6 +176,41 @@ def transition(world: World, actor: str, decision: Decision) -> tuple[list[Event
     return events, measures
 
 
+@lru_cache(maxsize=256)
+def mechanism_schema(
+    options: tuple,
+    communication: bool,
+    binary_report: bool,
+    channels: tuple[str, ...] = ("messages", "reports", "promises"),
+) -> type[Decision]:
+    variants = []
+    for index, (kind, minimum, maximum, targets) in enumerate(options):
+        fields: dict[str, Any] = {
+            "kind": (StrEnum("Kind", {kind: kind}), ...),
+            "amount": (Annotated[int, Field(ge=minimum, le=maximum)], ...),
+            "target": (StrEnum("Target", {f"t{i}": t for i, t in enumerate(targets)}), ...),
+            "promise": (type(None), ...),
+        }
+        if not communication:
+            fields.update(message=(Literal[""], ...), report=(type(None), ...))
+        elif binary_report:
+            fields["report"] = (Annotated[int, Field(ge=0, le=1)] | None, ...)
+        if "messages" not in channels:
+            fields["message"] = (Literal[""], ...)
+        if "reports" not in channels:
+            fields["report"] = (type(None), ...)
+        variants.append(create_model(f"Action{index}", __base__=Action, **fields))
+    from functools import reduce
+    from operator import or_
+
+    return create_model(
+        "MechanismDecision",
+        __base__=Decision,
+        action=(reduce(or_, variants), ...),
+        forecast=(type(None), ...),
+    )
+
+
 @dataclass
 class Execution:
     task: asyncio.Task | None = None
@@ -176,10 +218,15 @@ class Execution:
 
 
 class Engine:
-    def __init__(self, db: Database, research: Research, models: LanguageModels):
+    def __init__(
+        self, db: Database, research: Research, models: LanguageModels, concurrency: int = 3
+    ):
         self.db, self.research, self.models = db, research, models
         self.executions: dict[str, Execution] = {}
-        self.capacity = asyncio.Semaphore(3)
+        if not 1 <= concurrency <= 16:
+            raise ValueError("Concurrent runs must be between 1 and 16")
+        self.concurrency = concurrency
+        self.capacity = asyncio.Semaphore(concurrency)
         self.closing = False
         with db.session.begin() as session:
             session.execute(
@@ -203,7 +250,7 @@ class Engine:
             return
         for model in {p.model or condition.model for p in design.profiles}:
             self.models.model(model)
-        if run.checkpoint.get("rule_version") != RULE_VERSION:
+        if run.checkpoint.get("rule_version") != CATALOG[design.environment].world.version:
             raise ValueError("This saved run requires a different environment rule version")
         execution = Execution()
         self.executions[run_id] = execution
@@ -248,7 +295,18 @@ class Engine:
                         if design.environment == "coordination"
                         else tuple([""] + world.ids),
                         tuple(dict.fromkeys(a["kind"] for a in observation["legal_actions"])),
+                        tuple(condition.parameters.communication_channels),
                     )
+                    if design.environment not in {"commons", "trust_exchange", "coordination"}:
+                        output = mechanism_schema(
+                            tuple(
+                                (a["kind"], a["amount_min"], a["amount_max"], tuple(a["targets"]))
+                                for a in observation["legal_actions"]
+                            ),
+                            condition.parameters.communication,
+                            design.environment == "information",
+                            tuple(condition.parameters.communication_channels),
+                        )
                     decision = await self.models.generate(
                         output,
                         model=profile.model or condition.model,
@@ -371,7 +429,7 @@ class Engine:
             transition(world, turn.actor, Decision.model_validate(turn.decision))
             if digest(world.snapshot()) != turn.state_hash:
                 raise ValueError(f"State mismatch at turn {turn.number}")
-        return {"verified_turns": len(turns), "model_requests": 0, "rule_version": RULE_VERSION}
+        return {"verified_turns": len(turns), "model_requests": 0, "rule_version": world.version}
 
     async def close(self) -> None:
         self.closing = True

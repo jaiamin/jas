@@ -22,7 +22,7 @@ from .db import (
     digest,
 )
 from .domain import Design, Treatment
-from .environments import CATALOG, RULE_VERSION, create_world
+from .environments import CATALOG, create_world
 from .llm import PRICES, LanguageModels
 
 
@@ -414,7 +414,11 @@ class Research:
                 groups[measure.run_id][measure.key].append(measure.value)
         return {
             run_id: {
-                key: values[-1] if key == "completion_rate" else statistics.mean(values)
+                key: values[-1]
+                if key in {"completion_rate", "stock_fraction"}
+                else max(values)
+                if key == "collapse_rate"
+                else statistics.mean(values)
                 for key, values in grouped.items()
             }
             for run_id, grouped in groups.items()
@@ -567,7 +571,7 @@ class Research:
         return {
             "format": "ass-study",
             "version": 2,
-            "rule_version": RULE_VERSION,
+            "rule_version": CATALOG[detail["design"]["environment"]].world.version,
             "study": detail,
             "annotations": [
                 {

@@ -1,4 +1,12 @@
-import { ArrowUpRight, Check, Plus } from "lucide-react";
+import {
+  ArrowUpRight,
+  Check,
+  Handshake,
+  Plus,
+  Scale,
+  ScanSearch,
+  Sprout,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   ErrorState,
@@ -65,7 +73,7 @@ function Environments() {
         <div className="environment-catalog">
           {catalog.data.environments.map((env, i) => (
             <section className="environment-row" key={env.key}>
-              <div className="environment-sample" data-series={i}>
+              <div className="environment-sample" data-series={i % 6}>
                 {env.key === "commons" ? (
                   <div className="commons-symbol">
                     <span />
@@ -82,13 +90,25 @@ function Environments() {
                     <ArrowUpRight />
                     <span>B</span>
                   </div>
-                ) : (
+                ) : env.key === "coordination" ? (
                   <div className="task-symbol">
                     <div />
                     <div />
                     <div />
                     <div />
                   </div>
+                ) : (
+                  <span className="environment-mechanism-icon">
+                    {env.key === "institution" ? (
+                      <Scale />
+                    ) : env.key === "bargaining" ? (
+                      <Handshake />
+                    ) : env.key === "information" ? (
+                      <ScanSearch />
+                    ) : (
+                      <Sprout />
+                    )}
+                  </span>
                 )}
               </div>
               <div className="environment-description">

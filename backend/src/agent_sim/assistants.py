@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 import statistics
 from collections import defaultdict
 from typing import Literal
@@ -73,7 +74,11 @@ class Assistants:
         question = question.strip()
         if not question or len(question) > 4000:
             raise ValueError("Enter a question between 1 and 4,000 characters")
-        self.models.model("openai:gpt-6.1-sol")
+        self.models.model(
+            os.getenv("ASS_PLANNER_MODEL", "openai:gpt-6.1-sol")
+            if purpose == "design"
+            else "openai:gpt-6.1-sol"
+        )
         cutoffs = {}
         if run_id:
             run, _, _ = self.research.configuration(run_id)
@@ -86,6 +91,7 @@ class Assistants:
                 select(Analysis).where(
                     Analysis.status == "pending",
                     Analysis.purpose == purpose,
+                    Analysis.question == question,
                     Analysis.run_id == run_id,
                     Analysis.study_id == study_id,
                 )

@@ -15,6 +15,7 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import { MechanismFields } from "@/components/mechanism-fields";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Alert, Empty } from "@/components/ui/data";
@@ -245,6 +246,8 @@ function DesignEditor({
       conditions: initial.conditions.map((c) => ({
         ...c,
         parameters: {
+          ...catalog.templates.find((t) => t.id === initial.environment)?.design
+            .conditions[0]?.parameters,
           ...c.parameters,
           resource_schedule: c.parameters.resource_schedule ?? [],
         },
@@ -493,10 +496,12 @@ function DesignEditor({
                             ...condition,
                             parameters: {
                               ...condition.parameters,
-                              resource_schedule:
-                                value === "coordination"
-                                  ? []
-                                  : condition.parameters.resource_schedule,
+                              resource_schedule: [
+                                "commons",
+                                "trust_exchange",
+                              ].includes(value)
+                                ? condition.parameters.resource_schedule
+                                : [],
                             },
                           })),
                         });
@@ -768,7 +773,7 @@ function DesignEditor({
                               }))}
                             />
                           </Field>
-                          {design.environment !== "coordination" ? (
+                          {environment.parameters.includes("endowment") && (
                             <>
                               <Field>
                                 <FieldLabel htmlFor={`endowment-${c.key}`}>
@@ -789,28 +794,33 @@ function DesignEditor({
                                   }
                                 />
                               </Field>
-                              <Field>
-                                <FieldLabel htmlFor={`multiplier-${c.key}`}>
-                                  Return multiplier
-                                </FieldLabel>
-                                <Input
-                                  id={`multiplier-${c.key}`}
-                                  type="number"
-                                  min={1}
-                                  max={5}
-                                  step={0.1}
-                                  value={c.parameters.multiplier}
-                                  onChange={(e) =>
-                                    parameter(
-                                      i,
-                                      "multiplier",
-                                      Number(e.target.value),
-                                    )
-                                  }
-                                />
-                              </Field>
+                              {environment.parameters.includes(
+                                "multiplier",
+                              ) && (
+                                <Field>
+                                  <FieldLabel htmlFor={`multiplier-${c.key}`}>
+                                    Return multiplier
+                                  </FieldLabel>
+                                  <Input
+                                    id={`multiplier-${c.key}`}
+                                    type="number"
+                                    min={1}
+                                    max={5}
+                                    step={0.1}
+                                    value={c.parameters.multiplier}
+                                    onChange={(e) =>
+                                      parameter(
+                                        i,
+                                        "multiplier",
+                                        Number(e.target.value),
+                                      )
+                                    }
+                                  />
+                                </Field>
+                              )}
                             </>
-                          ) : (
+                          )}
+                          {design.environment === "coordination" && (
                             <Field>
                               <FieldLabel htmlFor={`tasks-${c.key}`}>
                                 Task count
@@ -860,7 +870,63 @@ function DesignEditor({
                             />
                           </Field>
                         </FieldGroup>
-                        {design.environment !== "coordination" && (
+                        {c.parameters.communication && (
+                          <fieldset className="agent-permissions">
+                            <legend>Communication channels</legend>
+                            {(["messages", "reports", "promises"] as const)
+                              .filter(
+                                (channel) =>
+                                  channel !== "promises" ||
+                                  ["commons", "trust_exchange"].includes(
+                                    design.environment,
+                                  ),
+                              )
+                              .map((channel) => (
+                                <label key={channel}>
+                                  <input
+                                    type="checkbox"
+                                    checked={c.parameters.communication_channels.includes(
+                                      channel,
+                                    )}
+                                    onChange={(e) =>
+                                      parameter(
+                                        i,
+                                        "communication_channels",
+                                        e.target.checked
+                                          ? [
+                                              ...c.parameters
+                                                .communication_channels,
+                                              channel,
+                                            ]
+                                          : c.parameters.communication_channels.filter(
+                                              (key) => key !== channel,
+                                            ),
+                                      )
+                                    }
+                                  />
+                                  {channel === "reports"
+                                    ? "Factual reports"
+                                    : channel === "promises"
+                                      ? "Promises"
+                                      : "Messages"}
+                                </label>
+                              ))}
+                          </fieldset>
+                        )}
+                        <MechanismFields
+                          environment={design.environment}
+                          parameters={c.parameters}
+                          profiles={design.profiles}
+                          id={c.key}
+                          onChange={(patch) =>
+                            condition(i, {
+                              parameters: { ...c.parameters, ...patch },
+                            })
+                          }
+                        />
+                        {environment.parameters.includes(
+                          "resource_schedule",
+                        ) && (
                           <details className="disclosure">
                             <summary>
                               Resource changes during the run

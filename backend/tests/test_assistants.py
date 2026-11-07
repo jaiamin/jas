@@ -184,3 +184,27 @@ def test_planner_rejects_unresolved_review(runtime, design, monkeypatch):
     with pytest.raises(ValueError, match="unresolved issues"):
         asyncio.run(Planner(db, research, llm).run({"id": key, "question": "Compare strategies"}))
     assert research.studies() == []
+
+
+def test_independent_questions_can_plan_concurrently_but_duplicates_are_blocked(
+    runtime, monkeypatch
+):
+    db, llm, research, _ = runtime
+
+    async def exercise():
+        assistant = Assistants(db, research, llm)
+        release = asyncio.Event()
+
+        async def execute(key):
+            await release.wait()
+
+        monkeypatch.setattr(assistant, "_execute", execute)
+        first = assistant.start("Question one", purpose="design")
+        second = assistant.start("Question two", purpose="design")
+        assert first != second
+        with pytest.raises(ValueError, match="current request"):
+            assistant.start("Question one", purpose="design")
+        release.set()
+        await assistant.close()
+
+    asyncio.run(exercise())

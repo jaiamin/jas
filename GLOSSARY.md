@@ -22,3 +22,10 @@
 | Finding | An interpretation supported by cited evidence and stated uncertainty. |
 | Adaptation | A change in behavior across experience; does not imply model weight updates. |
 | Replay | Reapplying recorded actions to verify deterministic state transitions without model calls. |
+| Permission | An enforced action affordance, distinct from a profile's role label. |
+| Oversight | A seeded procedural check that can reverse an unjustified sanction. |
+| Appeal | An agent action requesting deterministic review of a recorded sanction. |
+| Outside option | The payoff each negotiator receives on exit or exhausted negotiation. |
+| Private evidence | A signal sampled from a declared likelihood given researcher-known truth. |
+| Resource stock | Persistent shared inventory, distinct from a fresh per-round endowment. |
+| Benchmark case | A versioned question, split, expected mechanics and explicit assessment criteria. |

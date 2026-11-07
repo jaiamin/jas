@@ -1,12 +1,38 @@
 export type ModelId = `openai:${string}` | `anthropic:${string}`;
-export type EnvironmentId = "commons" | "trust_exchange" | "coordination";
+export type EnvironmentId =
+  | "commons"
+  | "trust_exchange"
+  | "coordination"
+  | "institution"
+  | "bargaining"
+  | "information"
+  | "renewable_resource";
 export interface Parameters {
   endowment: number;
   multiplier: number;
   communication: boolean;
+  communication_channels: ("messages" | "reports" | "promises")[];
   memory: "episodic" | "notes" | "none";
   private_signal: boolean;
   task_count: number;
+  institution: {
+    authorities: string[];
+    oversight: number;
+    sanction_cap: number;
+    transparent: boolean;
+    appeal: boolean;
+  };
+  bargaining: { discount: number; outside_option: number };
+  information: {
+    accuracy: number;
+    correct_reward: number;
+    reveal_outcome: boolean;
+  };
+  resource: {
+    capacity: number;
+    regeneration: number;
+    extraction_limit: number;
+  };
   resource_schedule: { round: number; endowment: number }[];
 }
 export interface Profile {
@@ -181,6 +207,16 @@ export interface Task {
   completed_by: string | null;
 }
 export interface State {
+  stock?: number;
+  shared_output?: number;
+  offer?: { actor: string; amount: number; pie: number };
+  sanctions?: {
+    actor: string;
+    target: string;
+    amount: number;
+    resolved: boolean;
+    round: number;
+  }[];
   rule_version: string;
   round: number;
   position: number;

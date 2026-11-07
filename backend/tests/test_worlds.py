@@ -155,3 +155,33 @@ def test_forecast_is_scored_against_settled_resources_before_next_shock(design):
         )
     errors = [m.value for m in measures if m.key == "forecast_error"]
     assert errors == [0] * len(design.profiles)
+
+
+def test_messages_can_be_ablated_without_removing_reporting_or_commitments(design):
+    from agent_sim.domain import Action
+    from agent_sim.execution import decision_schema
+
+    params = design.conditions[0].parameters.model_copy(
+        update={"communication_channels": ["reports", "promises"]}
+    )
+    world = Commons(design, params, 17)
+    actor = world.actor()
+    assert actor is not None
+    legal = Action(
+        kind="contribute",
+        amount=1,
+        target="",
+        message="",
+        report=world.state["signals"][actor],
+        promise=1,
+    )
+    schema = decision_schema(
+        "commons", True, 10, tuple([""] + world.ids), ("contribute",), ("reports", "promises")
+    )
+    schema(action=legal.model_dump(), rationale="", memory="", forecast=None)
+    with pytest.raises(ValueError, match="channel is disabled"):
+        world.apply(actor, legal.model_copy(update={"message": "Hello"}))
+    assert world.state["position"] == 0
+    world.apply(actor, legal)
+    assert world.state["pending"][actor]["report"] is not None
+    assert world.state["pending"][actor]["promise"] == 1

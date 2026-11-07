@@ -49,7 +49,7 @@ An adapter validates parameters, initializes seeded state, selects an actor, con
 actor's observation, validates/applies an action, emits events/measurements and snapshots/restores
 state. It knows nothing about providers, persistence or React. A catalog describes supported
 parameters and measurements. Register a new adapter there and add its typed action contract;
-the React environment view currently provides three explicit renderers.
+the React environment view renders the current state and recorded events of every adapter.
 
 ## Trust and epistemics
 
@@ -68,7 +68,8 @@ to multiple writers requires a worker/lease design, not just extra Uvicorn proce
 
 ## Current execution contract
 
-Run tasks belong to the server, not browser connections. Three runs may execute concurrently;
+Run tasks belong to the server, not browser connections. Independent run concurrency defaults
+to three and is configurable from 1–16;
 a single run has one writer and causally ordered decisions. Pause completes and commits an
 in-flight response; queued pause sends no request. Restart pauses stale work without spending.
 A per-turn legal schema constrains actions, communication, targets and amounts before the
@@ -87,3 +88,25 @@ SQLite schema v2 migrates v1 request tracing in place. Study export v2 includes 
 revision and its runs, exact turn evidence and provider traces; it batches journal queries.
 Full checkpoints favor auditability over storage efficiency. This is appropriate for small
 local studies; large deployments need retention/compaction and paginated evidence APIs.
+
+## Environment and evaluation seams
+
+`world.py` owns the checkpoint/observation interface. `environments.py` registers adapters
+and contains the original three games; `mechanisms.py` implements four additional state
+machines. The legacy games retain rule version 1.0.0; additional mechanics use 2.0.0.
+Version checks are per adapter. Old studies keep their original snapshots and remain
+replayable; incompatible rule changes must fail explicitly, never migrate evidence silently.
+New optional parameter groups use schema defaults when reading older design revisions.
+No database table migration is needed: immutable protocols and checkpoints remain JSON.
+
+Profiles describe goals; parameterized permissions control actions. The runtime derives
+per-action schemas from current affordances, then the adapter validates the transition
+again before commit. This allows offer-only amounts, target restrictions and role permissions
+without asking the model to interpret narrative authority. Models never settle their own actions.
+
+Inspect is a development-only dependency. Its application solver calls the same FastAPI
+routes as the frontend through an in-process HTTP transport, including the multi-stage
+planner, complete run matrix, export and verification. The application still owns provider
+clients, checkpoints and atomic accounting. Production images omit the evaluation framework.
+Each benchmark process owns one database/engine; a source digest and fixed case digest
+identify the tested implementation. Reserved combinations are evaluated only after development.

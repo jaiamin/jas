@@ -14,8 +14,8 @@ Reviewed 2026-11-07. These are design inputs, not evidence that this platform re
 
 ## Included now
 
-- Registered environment protocol; three distinct mechanics: simultaneous public goods,
-  sequential trust exchange, and collaborative dependency tasks.
+- Registered environment protocol with seven distinct rule systems, including simultaneous
+  public goods, sequential trust exchange and collaborative dependency tasks.
 - Private information and bounded communication; complete researcher ground truth.
 - Repeated interaction, agent notes, deterministic episodic retrieval and a memory ablation.
 - Structured factual reports checked against the fact actually shown to the actor.
@@ -96,3 +96,55 @@ successful seeds, hold out combinations and wording, and report the model used. 
 model helps find schema/affordance problems cheaply; it does not stand in for stronger-model
 behavior. Human comparisons require external, consented reference data and separate
 validation. Enterprise interest and product-market fit have not been established.
+
+## Generalization and environmental depth
+
+Additional primary sources and framework documentation inspected for the larger evaluation:
+
+- [Melting Pot, Leibo et al., 2021](https://arxiv.org/abs/2107.06857): evaluate unfamiliar
+  partners and situations, not only performance in the development distribution. Our suite
+  separates development questions, reserved context combinations and longer trajectories.
+  This is a design principle, not reproduction of its MARL benchmark or results.
+- [PettingZoo parallel API](https://pettingzoo.farama.org/api/parallel/): separate per-agent
+  observations and action spaces; joint actions settle together when causality requires it.
+  We retain the existing checkpoint interface and sealed settlement rather than adding
+  a second runtime or pretending serialized model requests imply sequential observations.
+- [Inspect solvers](https://inspect.aisi.org.uk/solvers.html) and
+  [evaluation sets](https://inspect.aisi.org.uk/eval-sets.html): use maintained scheduling,
+  scoring and inspectable logs. A custom application solver exercises our real HTTP API;
+  it does not duplicate provider execution. Provider retries are disabled. Explicit retests
+  write new artifacts and retain the original errors. Inspect's mock transport makes no
+  model calls; actual planner and participant calls use metered GPT-6 Luna clients.
+- [OpenAI evaluations](https://developers.openai.com/api/docs/guides/evals): fix the input
+  schema and explicit criteria, preserve individual outputs and iterate on observed errors.
+  We use local Inspect logs instead of uploading private simulations to a hosted eval store.
+- [Le Texier, 2019, *Debunking the Stanford Prison Experiment*](https://doi.org/10.1037/amp0000401):
+  publication metadata was verified through Crossref and the first four pages were read
+  in the [author PDF mirror](https://gwern.net/doc/psychology/2019-letexier.pdf), including
+  methods and seven archival findings. Publisher/PubMed access was blocked. Its critique is a reason to avoid taking the original
+  study's claimed inevitability of abuse as a ground-truth target. Our institutional token
+  game tests permissions, procedural sanctions, transparency, appeals and oversight; it
+  cannot replicate prison psychology, physical harm or validated human responses.
+
+Four additional rule systems provide genuinely distinct opportunities: binding two-party
+bargaining with discounting and exit, sequential decisions on noisy binary evidence,
+permissions and procedural oversight, and persistent renewable stocks with collapse.
+Each has typed parameters, legal-action constraints, independent rule tests, seeded
+adjudication, observable measurements and replay. A role name grants no permissions;
+only an explicit authority assignment does. Resource stock persists between rounds.
+Accepting an offer actually ends the negotiation and transfers the agreed surplus.
+Private evidence has a known generation process, rather than being invented by the model.
+
+We deliberately avoid a universal personality vector, emotional-state score, arbitrary
+agent-authored rules, or a free-form LLM game master. Concordia's component approach is
+valuable for open-ended worlds, but a model adjudicator adds a second unvalidated source
+of behavior. Inspect supplies the harness; existing deterministic adapters supply the
+rules; Pydantic AI supplies typed model requests. Adding more orchestration frameworks
+would not improve validity. Human-grounded profiles, consented traces, elicited utilities,
+validated judges and out-of-sample human comparisons remain separate future work.
+
+A passing workflow does not show that agents are human-like, that an intervention works,
+or that the schema is perfected. Short pilots test affordances and protocol alignment;
+longitudinal cases test memory/settlement reliability. Behavioral outcomes may disagree
+with hypotheses and still be valid experiments. Report accuracy, payoff, stock, sanctions
+and agreement separately. Seed controls environment randomization, not LLM sampling.

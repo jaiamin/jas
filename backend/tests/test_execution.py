@@ -24,11 +24,12 @@ def test_complete_all_adapters_and_exact_replay(runtime, template):
     asyncio.run(run())
     record = research.run(run_id)
     assert record["summary"]["status"] == "complete", record["summary"]["error"]
-    assert record["summary"]["turn"] == 12
-    assert engine.replay(run_id)["verified_turns"] == 12
-    assert llm.usage(run_id=run_id)["requests"] == 12
+    expected = 2 if design.environment == "bargaining" else design.turn_count
+    assert record["summary"]["turn"] == expected
+    assert engine.replay(run_id)["verified_turns"] == expected
+    assert llm.usage(run_id=run_id)["requests"] == expected
     with db.session() as s:
-        assert s.get_one(Workspace, 1).charged == 12 * 35
+        assert s.get_one(Workspace, 1).charged == expected * 35
 
 
 def test_pause_finishes_current_request_and_double_click_has_one_writer(

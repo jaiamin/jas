@@ -1,4 +1,5 @@
 import { ArrowRight, Check, Circle, Clock3 } from "lucide-react";
+import { MechanismView } from "@/components/mechanism-view";
 import { Button } from "@/components/ui/button";
 import { Empty, Table } from "@/components/ui/data";
 import type { Event, Profile, RunDetail, State } from "@/lib/types";
@@ -95,6 +96,15 @@ export function WorldView({
         />
         <AgentBalances profiles={profiles} state={state} onAgent={onAgent} />
       </section>
+    );
+  if (run.design.environment !== "commons")
+    return (
+      <MechanismView
+        run={run}
+        state={state}
+        events={events}
+        onAgent={onAgent}
+      />
     );
   const previous = state.history.findLast((item) => "contributions" in item);
   const contributions = previous?.contributions as

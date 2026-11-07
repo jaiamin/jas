@@ -3,7 +3,15 @@ from typing import Annotated, Literal, Self
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 ModelId = Annotated[str, Field(pattern=r"^(openai|anthropic):[a-zA-Z0-9._/-]+$")]
-EnvironmentId = Literal["commons", "trust_exchange", "coordination"]
+EnvironmentId = Literal[
+    "commons",
+    "trust_exchange",
+    "coordination",
+    "institution",
+    "bargaining",
+    "information",
+    "renewable_resource",
+]
 
 
 class Strict(BaseModel):
@@ -23,13 +31,58 @@ class ResourceChange(Strict):
     endowment: int = Field(ge=2, le=100)
 
 
+class InstitutionRules(Strict):
+    authorities: list[str] = Field(default_factory=list, max_length=12)
+    oversight: float = Field(default=0.5, ge=0, le=1)
+    sanction_cap: int = Field(default=3, ge=0, le=20)
+    transparent: bool = True
+    appeal: bool = True
+
+
+class BargainingRules(Strict):
+    discount: float = Field(default=0.9, ge=0.1, le=1)
+    outside_option: int = Field(default=1, ge=0, le=50)
+
+
+class InformationRules(Strict):
+    accuracy: float = Field(default=0.75, ge=0.5, le=1)
+    correct_reward: int = Field(default=10, ge=1, le=100)
+    reveal_outcome: bool = True
+
+
+class ResourceRules(Strict):
+    capacity: int = Field(default=60, ge=2, le=500)
+    regeneration: float = Field(default=0.25, ge=0, le=1)
+    extraction_limit: int = Field(default=10, ge=1, le=100)
+
+
 class Parameters(Strict):
     endowment: int = Field(default=10, ge=2, le=100)
     multiplier: float = Field(default=2.0, ge=1, le=5)
-    communication: bool = True
-    memory: Literal["episodic", "notes", "none"] = "episodic"
-    private_signal: bool = True
+    communication: bool = Field(
+        default=True, description="Enables messages, factual reports and supported promises."
+    )
+    communication_channels: list[Literal["messages", "reports", "promises"]] = Field(
+        default=["messages", "reports", "promises"],
+        max_length=3,
+        description="Independently enabled channels when communication=true. "
+        "Remove only messages to isolate messaging while keeping reports/promises available.",
+    )
+    memory: Literal["episodic", "notes", "none"] = Field(
+        default="episodic",
+        description="Episodic: bounded experiences, public history and note; "
+        "notes: public history and note; none: neither. Authoritative current state stays visible.",
+    )
+    private_signal: bool = Field(
+        default=True,
+        description="True: each agent sees only its own signal. "
+        "False: public_signals exposes every participant's signal to everyone.",
+    )
     task_count: int = Field(default=8, ge=3, le=30)
+    institution: InstitutionRules = Field(default_factory=InstitutionRules)
+    bargaining: BargainingRules = Field(default_factory=BargainingRules)
+    information: InformationRules = Field(default_factory=InformationRules)
+    resource: ResourceRules = Field(default_factory=ResourceRules)
     resource_schedule: list[ResourceChange] = Field(default_factory=list, max_length=12)
 
 
@@ -80,10 +133,23 @@ class Design(DesignSpec):
                 raise ValueError(f"{label} identifiers must be unique")
         for condition in self.conditions:
             rounds = [change.round for change in condition.parameters.resource_schedule]
-            if rounds and self.environment == "coordination":
+            if rounds and self.environment not in {"commons", "trust_exchange"}:
                 raise ValueError("Resource changes require commons or trust exchange")
             if len(rounds) != len(set(rounds)) or any(r > self.rounds for r in rounds):
                 raise ValueError("Resource changes need unique rounds within the run")
+            authorities = condition.parameters.institution.authorities
+            if self.environment == "institution" and (
+                not authorities
+                or len(authorities) != len(set(authorities))
+                or not set(authorities) < {p.key for p in self.profiles}
+            ):
+                raise ValueError(
+                    "Institutions require unique existing authorities and participants"
+                )
+            if self.environment == "bargaining" and (
+                condition.parameters.bargaining.outside_option * 2 > condition.parameters.endowment
+            ):
+                raise ValueError("Bargaining outside options cannot exceed the initial pie")
             keys = [p.key for p in condition.profile_overrides]
             if len(set(keys)) != len(keys) or not set(keys) <= {p.key for p in self.profiles}:
                 raise ValueError("Profile overrides must use unique existing agent keys")
@@ -102,6 +168,8 @@ class Design(DesignSpec):
             raise ValueError("A study supports up to 120 independent runs")
         if self.environment == "trust_exchange" and len(self.profiles) % 2:
             raise ValueError("Trust exchange requires an even number of agents")
+        if self.environment == "bargaining" and len(self.profiles) != 2:
+            raise ValueError("Bargaining requires exactly two agents")
         return self
 
     def resolve(self, condition: Treatment) -> Self:
@@ -120,7 +188,22 @@ class Design(DesignSpec):
 
 
 class Action(Strict):
-    kind: Literal["contribute", "send", "return", "work", "wait"]
+    kind: Literal[
+        "contribute",
+        "send",
+        "return",
+        "work",
+        "wait",
+        "allocate",
+        "sanction",
+        "appeal",
+        "offer",
+        "accept",
+        "reject",
+        "exit",
+        "choose",
+        "extract",
+    ]
     amount: int = Field(ge=0, le=500)
     target: str = Field(max_length=80)
     message: str = Field(max_length=1000)

@@ -1,0 +1,996 @@
+{
+  "commons": [
+    [
+      "Does resource scarcity change the fraction contributed to shared welfare?",
+      "endowment",
+      "contribution_rate"
+    ],
+    [
+      "Does a larger public return change free riding?",
+      "multiplier",
+      "contribution_rate"
+    ],
+    [
+      "Do public messages change repeated contributions?",
+      "communication",
+      "contribution_rate"
+    ],
+    [
+      "Does episodic memory sustain cooperation better than no history?",
+      "memory",
+      "contribution_rate"
+    ],
+    [
+      "Does publishing otherwise private signals change reporting accuracy?",
+      "private_signal",
+      "false_report_rate"
+    ],
+    [
+      "Do contributions recover after a temporary endowment shortage?",
+      "resource_schedule",
+      "contribution_rate"
+    ],
+    [
+      "Does a permanent increase in available credits change contribution fractions?",
+      "resource_schedule",
+      "contribution_rate"
+    ],
+    [
+      "Do agents keep feasible promises differently when communication is enabled?",
+      "communication",
+      "promise_fulfillment_rate"
+    ],
+    [
+      "Does a near-break-even public return discourage contributions?",
+      "multiplier",
+      "contribution_rate"
+    ],
+    [
+      "Do private notes differ from full episodic memory in contributions?",
+      "memory",
+      "contribution_rate"
+    ],
+    [
+      "Do equal agents coordinate contributions without messages?",
+      "communication",
+      "contribution_rate"
+    ],
+    [
+      "Does describing equal actors as residents versus investors change contributions?",
+      "roles",
+      "contribution_rate"
+    ],
+    [
+      "Does a personal-payoff versus group-welfare goal change contributions without prescribing choices?",
+      "goals",
+      "contribution_rate"
+    ],
+    [
+      "Does an unexpected credit increase change fulfillment of earlier promises?",
+      "resource_schedule",
+      "promise_fulfillment_rate"
+    ],
+    [
+      "Does shrinking capacity produce infeasible promises rather than eligible breaches?",
+      "resource_schedule",
+      "promise_fulfillment_rate"
+    ],
+    [
+      "Does a stable high endowment change inaccurate factual reports?",
+      "endowment",
+      "false_report_rate"
+    ],
+    [
+      "Does communication improve forecasts of other contributions?",
+      "communication",
+      "forecast_error"
+    ],
+    [
+      "Does memory affect early versus late cooperation?",
+      "memory",
+      "contribution_rate"
+    ],
+    [
+      "Does multiplying the common fund by one instead of three change retention?",
+      "multiplier",
+      "contribution_rate"
+    ],
+    [
+      "Do repeated abundance and scarcity shocks change contribution behavior?",
+      "resource_schedule",
+      "contribution_rate"
+    ],
+    [
+      "For a disaster relief fund, does public communication alter contributions after a supply shock?",
+      "communication",
+      "contribution_rate"
+    ],
+    [
+      "For an orbital habitat's maintenance fund, does memory affect recovery after scarcity?",
+      "memory",
+      "contribution_rate"
+    ],
+    [
+      "In a cooperative art collective, does a higher shared return offset a private-payoff goal?",
+      "multiplier",
+      "contribution_rate"
+    ],
+    [
+      "For a neighborhood tool fund, does naming a chair change contributions without giving powers?",
+      "roles",
+      "contribution_rate"
+    ],
+    [
+      "In a virtual guild treasury, does a shortage make earlier commitments infeasible?",
+      "resource_schedule",
+      "promise_fulfillment_rate"
+    ],
+    [
+      "For a compute-sharing pool, does publicizing factual signals change false reports?",
+      "private_signal",
+      "false_report_rate"
+    ],
+    [
+      "For a mutual-aid fund, do private notes sustain promises after resources recover?",
+      "memory",
+      "promise_fulfillment_rate"
+    ],
+    [
+      "For a research consortium's shared fund, do opposing goals change retained fractions?",
+      "goals",
+      "contribution_rate"
+    ]
+  ],
+  "trust_exchange": [
+    [
+      "Does memory change reciprocity in repeated paired transfers?",
+      "memory",
+      "return_rate"
+    ],
+    [
+      "Does a larger transfer multiplier change trust?",
+      "multiplier",
+      "return_rate"
+    ],
+    [
+      "Does communication change returned fractions?",
+      "communication",
+      "return_rate"
+    ],
+    [
+      "Does sender endowment change the fraction initially entrusted?",
+      "endowment",
+      "return_rate"
+    ],
+    [
+      "Does publishing private factual signals change inaccurate reports in exchanges?",
+      "private_signal",
+      "false_report_rate"
+    ],
+    [
+      "Do notes alone change reciprocity relative to full episodic history?",
+      "memory",
+      "return_rate"
+    ],
+    [
+      "Do temporary sender resource shocks affect future transfer promises?",
+      "resource_schedule",
+      "promise_fulfillment_rate"
+    ],
+    [
+      "Do agents transfer more after a persistent endowment increase?",
+      "resource_schedule",
+      "return_rate"
+    ],
+    [
+      "Does a private-payoff goal change reciprocity without explicitly prescribing selfish actions?",
+      "goals",
+      "return_rate"
+    ],
+    [
+      "Does a mutual-benefit goal change initial trust?",
+      "goals",
+      "return_rate"
+    ],
+    [
+      "Does changing role labels to lender and steward alter transfers without debt mechanics?",
+      "roles",
+      "return_rate"
+    ],
+    [
+      "Does near-unit transfer multiplication discourage sending?",
+      "multiplier",
+      "return_rate"
+    ],
+    [
+      "Do public messages improve forecasts of partner return fractions?",
+      "communication",
+      "forecast_error"
+    ],
+    [
+      "Does forgetting past interactions change fulfillment of feasible transfer commitments?",
+      "memory",
+      "promise_fulfillment_rate"
+    ],
+    [
+      "Does low endowment alter inaccurate signal reporting?",
+      "endowment",
+      "false_report_rate"
+    ],
+    [
+      "Does communication affect reciprocity when partners rotate?",
+      "communication",
+      "return_rate"
+    ],
+    [
+      "Do repeated resource shocks alter entrusted fractions?",
+      "resource_schedule",
+      "return_rate"
+    ],
+    [
+      "Does generous transfer multiplication change returned absolute amounts and fractions?",
+      "multiplier",
+      "return_rate"
+    ],
+    [
+      "Do public factual signals affect trust despite being payoff irrelevant?",
+      "private_signal",
+      "return_rate"
+    ],
+    [
+      "Do personal versus collective goal framings change feasible promise fulfillment?",
+      "goals",
+      "promise_fulfillment_rate"
+    ],
+    [
+      "For inter-lab sample exchanges represented as credits, does memory affect reciprocity after scarcity?",
+      "memory",
+      "return_rate"
+    ],
+    [
+      "For a space-trader credit exchange, does higher multiplication change trust under rotating partners?",
+      "multiplier",
+      "return_rate"
+    ],
+    [
+      "For paired disaster responders exchanging supplies as credits, does communication improve return rates?",
+      "communication",
+      "return_rate"
+    ],
+    [
+      "For a lending-library analogy without binding debt, do steward role labels affect reciprocity?",
+      "roles",
+      "return_rate"
+    ],
+    [
+      "For a game-economy remittance exchange, do endowment shocks make commitments infeasible?",
+      "resource_schedule",
+      "promise_fulfillment_rate"
+    ],
+    [
+      "For a bilateral research-credit exchange, do opposing private goals alter return fractions?",
+      "goals",
+      "return_rate"
+    ],
+    [
+      "For a fictional merchant exchange, do public factual signals reduce false reports?",
+      "private_signal",
+      "false_report_rate"
+    ],
+    [
+      "For a two-team mutual aid analogy, does note-only memory change partner forecasts?",
+      "memory",
+      "forecast_error"
+    ]
+  ],
+  "coordination": [
+    [
+      "Does communication reduce blocked work in a dependency project?",
+      "communication",
+      "blocked_work_rate"
+    ],
+    [
+      "Does episodic memory reduce duplicated work?",
+      "memory",
+      "duplicate_work_rate"
+    ],
+    [
+      "Does increasing the default task count affect completion?",
+      "task_count",
+      "completion_rate"
+    ],
+    [
+      "Does naming one agent coordinator change handoffs without extra permissions?",
+      "roles",
+      "completion_rate"
+    ],
+    [
+      "Do personal productivity goals differ from group completion goals?",
+      "goals",
+      "completion_rate"
+    ],
+    [
+      "Does notes-only memory reduce duplicate work compared with no memory?",
+      "memory",
+      "duplicate_work_rate"
+    ],
+    [
+      "Do messages improve forecasts of next-turn project completion?",
+      "communication",
+      "forecast_error"
+    ],
+    [
+      "Do role labels engineer and reviewer affect work selection without changing legal tasks?",
+      "roles",
+      "completion_rate"
+    ],
+    [
+      "Does communication help with a named release graph: build then review then ship?",
+      "communication",
+      "completion_rate"
+    ],
+    [
+      "Does memory help on parallel research and design tasks feeding one integration task?",
+      "memory",
+      "completion_rate"
+    ],
+    [
+      "Does task load change the share of wasted duplicate work?",
+      "task_count",
+      "duplicate_work_rate"
+    ],
+    [
+      "Do shared project goals reduce waiting compared with personal progress goals?",
+      "goals",
+      "completion_rate"
+    ],
+    [
+      "Does publishing irrelevant factual signals change reporting accuracy during task work?",
+      "private_signal",
+      "false_report_rate"
+    ],
+    [
+      "Does communication help on a diamond-shaped dependency graph?",
+      "communication",
+      "completion_rate"
+    ],
+    [
+      "Does memory help when one named task needs several units of effort?",
+      "memory",
+      "completion_rate"
+    ],
+    [
+      "Does calling every teammate a coordinator create duplicate work?",
+      "roles",
+      "duplicate_work_rate"
+    ],
+    [
+      "Does more default work increase blocked-work rates?",
+      "task_count",
+      "blocked_work_rate"
+    ],
+    [
+      "Does communication help two independent task chains merge?",
+      "communication",
+      "completion_rate"
+    ],
+    [
+      "Do goal framings change how quickly the project terminates?",
+      "goals",
+      "completion_rate"
+    ],
+    [
+      "Does notes-only retention change completion forecasts?",
+      "memory",
+      "forecast_error"
+    ],
+    [
+      "For a fictional vaccine-document review project, do messages help coordinate evidence, review and release tasks?",
+      "communication",
+      "completion_rate"
+    ],
+    [
+      "For a spaceship repair checklist, does memory help with two prerequisites before integration?",
+      "memory",
+      "completion_rate"
+    ],
+    [
+      "For a film production graph, do producer role labels affect handoffs without added authority?",
+      "roles",
+      "completion_rate"
+    ],
+    [
+      "For an open-source release, does a private progress goal conflict with team completion?",
+      "goals",
+      "completion_rate"
+    ],
+    [
+      "For a museum exhibition installation, do messages reduce work on blocked dependencies?",
+      "communication",
+      "blocked_work_rate"
+    ],
+    [
+      "For a community festival plan, does increased default task load delay completion?",
+      "task_count",
+      "completion_rate"
+    ],
+    [
+      "For a forensic case-file workflow, does private-note memory reduce repeated work?",
+      "memory",
+      "duplicate_work_rate"
+    ],
+    [
+      "For a Mars-habitat commissioning graph, do public factual signals alter false reports?",
+      "private_signal",
+      "false_report_rate"
+    ]
+  ],
+  "institution": [
+    [
+      "Does independent oversight reduce procedurally unjustified token sanctions?",
+      "institution.oversight",
+      "unjustified_sanction_rate"
+    ],
+    [
+      "Does sanction transparency change discretionary self-allocation?",
+      "institution.transparent",
+      "self_allocation_rate"
+    ],
+    [
+      "Does enabling worker appeals change sanction behavior?",
+      "institution.appeal",
+      "sanction_rate"
+    ],
+    [
+      "Does a higher sanction cap change unjustified sanction frequency?",
+      "institution.sanction_cap",
+      "unjustified_sanction_rate"
+    ],
+    [
+      "Does communication change authority allocations?",
+      "communication",
+      "self_allocation_rate"
+    ],
+    [
+      "Does memory affect worker appeals and authority behavior?",
+      "memory",
+      "self_allocation_rate"
+    ],
+    [
+      "Does a larger allocation endowment change authority self-retention?",
+      "endowment",
+      "self_allocation_rate"
+    ],
+    [
+      "Does naming the same permitted authority a steward rather than supervisor change allocations?",
+      "roles",
+      "self_allocation_rate"
+    ],
+    [
+      "Does a personal-payoff goal change authority allocations relative to a collective-output goal?",
+      "goals",
+      "self_allocation_rate"
+    ],
+    [
+      "Does full oversight versus no oversight change worker participation?",
+      "institution.oversight",
+      "work_rate"
+    ],
+    [
+      "Do private sanction records differ from public records in worker participation?",
+      "institution.transparent",
+      "work_rate"
+    ],
+    [
+      "Does removing appeals increase procedurally unjustified sanction use?",
+      "institution.appeal",
+      "unjustified_sanction_rate"
+    ],
+    [
+      "Does setting sanction capacity to zero change authority allocation behavior?",
+      "institution.sanction_cap",
+      "self_allocation_rate"
+    ],
+    [
+      "Do public messages change worker work rates under authority?",
+      "communication",
+      "work_rate"
+    ],
+    [
+      "Does private-note memory change authority self-allocation?",
+      "memory",
+      "self_allocation_rate"
+    ],
+    [
+      "Does larger discretionary funding change sanction frequency?",
+      "endowment",
+      "sanction_rate"
+    ],
+    [
+      "Does neutral versus custodial role wording change token sanctions under identical permissions?",
+      "roles",
+      "sanction_rate"
+    ],
+    [
+      "Does worker personal payoff versus group output framing change work rates?",
+      "goals",
+      "work_rate"
+    ],
+    [
+      "Does partial oversight change behavior compared with certain oversight?",
+      "institution.oversight",
+      "self_allocation_rate"
+    ],
+    [
+      "Do appeal rights change authority self-retention?",
+      "institution.appeal",
+      "self_allocation_rate"
+    ],
+    [
+      "Create a Stanford-prison-inspired token institution to compare independent oversight and no oversight; do not presume abuse or claim psychological replication.",
+      "institution.oversight",
+      "self_allocation_rate"
+    ],
+    [
+      "In a fictional detention-administration token game, do transparent sanctions change worker participation without modeling physical punishment?",
+      "institution.transparent",
+      "work_rate"
+    ],
+    [
+      "In an online moderation team, does an appeal channel affect procedurally unjustified token penalties?",
+      "institution.appeal",
+      "unjustified_sanction_rate"
+    ],
+    [
+      "For a research-grant administrator, does personal versus collective payoff framing affect self-allocation?",
+      "goals",
+      "self_allocation_rate"
+    ],
+    [
+      "For a spacecraft quartermaster, does a low sanction ceiling alter discretionary allocation?",
+      "institution.sanction_cap",
+      "self_allocation_rate"
+    ],
+    [
+      "In a student-government token institution, does calling the authority a peer representative alter self-retention?",
+      "roles",
+      "self_allocation_rate"
+    ],
+    [
+      "In a fictional company-town token institution, does memory alter appeals under asymmetric permissions?",
+      "memory",
+      "self_allocation_rate"
+    ],
+    [
+      "For an emergency-shelter token administrator, does communication change authority allocation?",
+      "communication",
+      "self_allocation_rate"
+    ]
+  ],
+  "bargaining": [
+    [
+      "Does time discounting change binding agreement rates?",
+      "bargaining.discount",
+      "agreement_rate"
+    ],
+    [
+      "Does a larger outside option change negotiation efficiency?",
+      "bargaining.outside_option",
+      "efficiency"
+    ],
+    [
+      "Does public communication change agreement?",
+      "communication",
+      "agreement_rate"
+    ],
+    [
+      "Does retained memory change alternating-offer acceptance?",
+      "memory",
+      "agreement_rate"
+    ],
+    [
+      "Does a larger divisible surplus change negotiation efficiency?",
+      "endowment",
+      "efficiency"
+    ],
+    [
+      "Do personal versus joint-payoff goals affect accepted splits?",
+      "goals",
+      "agreement_rate"
+    ],
+    [
+      "Does describing negotiators as buyer and seller change binding agreement rates?",
+      "roles",
+      "agreement_rate"
+    ],
+    [
+      "Does a stable pie versus a rapidly shrinking pie change exit behavior?",
+      "bargaining.discount",
+      "agreement_rate"
+    ],
+    [
+      "Does no outside option versus a positive outside option change agreement?",
+      "bargaining.outside_option",
+      "agreement_rate"
+    ],
+    [
+      "Does removing messages change agreement efficiency?",
+      "communication",
+      "efficiency"
+    ],
+    [
+      "Does private-note retention change repeated offers?",
+      "memory",
+      "agreement_rate"
+    ],
+    [
+      "Does a small pie change binding agreement rates?",
+      "endowment",
+      "agreement_rate"
+    ],
+    [
+      "Does a group-benefit goal change achieved surplus?",
+      "goals",
+      "efficiency"
+    ],
+    [
+      "Does calling an agent mediator grant no extra powers but alter bargaining?",
+      "roles",
+      "agreement_rate"
+    ],
+    [
+      "Does mild rather than severe discounting improve efficiency?",
+      "bargaining.discount",
+      "efficiency"
+    ],
+    [
+      "Does an outside option close to half the pie change acceptance?",
+      "bargaining.outside_option",
+      "agreement_rate"
+    ],
+    [
+      "Do messages affect agreements under a shrinking pie?",
+      "communication",
+      "agreement_rate"
+    ],
+    [
+      "Does episodic retention differ from note-only retention in negotiation?",
+      "memory",
+      "agreement_rate"
+    ],
+    [
+      "Does scaling the surplus change agreement efficiency fractions?",
+      "endowment",
+      "efficiency"
+    ],
+    [
+      "Do opposing personal goals change binding agreement success?",
+      "goals",
+      "agreement_rate"
+    ],
+    [
+      "For two labs splitting grant credits, does time pressure change negotiated surplus?",
+      "bargaining.discount",
+      "efficiency"
+    ],
+    [
+      "For two fictional unions splitting a fixed token fund, does the outside option affect agreement?",
+      "bargaining.outside_option",
+      "agreement_rate"
+    ],
+    [
+      "For a digital art co-ownership token split, do public messages change agreement efficiency?",
+      "communication",
+      "efficiency"
+    ],
+    [
+      "For a space salvage-credit split, does memory change offer acceptance?",
+      "memory",
+      "agreement_rate"
+    ],
+    [
+      "For a bilateral water-credit negotiation, does a larger pie change agreement rates?",
+      "endowment",
+      "agreement_rate"
+    ],
+    [
+      "For two game factions dividing bounty credits, do joint-payoff goals change efficiency?",
+      "goals",
+      "efficiency"
+    ],
+    [
+      "For a fictional buyer-seller surplus split, do role names change outcomes without changing payoffs?",
+      "roles",
+      "efficiency"
+    ],
+    [
+      "For two emergency teams negotiating token surplus, does discounting change exit decisions?",
+      "bargaining.discount",
+      "efficiency"
+    ]
+  ],
+  "information": [
+    [
+      "Does more accurate private evidence improve binary group decisions?",
+      "information.accuracy",
+      "accuracy"
+    ],
+    [
+      "Does publishing private evidence change signal overrides?",
+      "private_signal",
+      "signal_override_rate"
+    ],
+    [
+      "Does public communication change binary decision accuracy?",
+      "communication",
+      "accuracy"
+    ],
+    [
+      "Does memory change signal overriding in repeated binary decisions?",
+      "memory",
+      "signal_override_rate"
+    ],
+    [
+      "Does a higher correct-choice reward change factual reporting?",
+      "information.correct_reward",
+      "false_report_rate"
+    ],
+    [
+      "Does revealing outcomes each round change subsequent decision accuracy?",
+      "information.reveal_outcome",
+      "accuracy"
+    ],
+    [
+      "Do personal payoff versus group accuracy goals change choices?",
+      "goals",
+      "accuracy"
+    ],
+    [
+      "Does labeling one participant expert affect signal overrides without changing evidence quality?",
+      "roles",
+      "signal_override_rate"
+    ],
+    [
+      "Does nearly random evidence produce more signal overriding than reliable evidence?",
+      "information.accuracy",
+      "signal_override_rate"
+    ],
+    [
+      "Does public evidence reduce inaccurate signal claims?",
+      "private_signal",
+      "false_report_rate"
+    ],
+    [
+      "Do messages amplify signal overriding?",
+      "communication",
+      "signal_override_rate"
+    ],
+    [
+      "Does note-only memory change decision accuracy relative to no memory?",
+      "memory",
+      "accuracy"
+    ],
+    [
+      "Does reward scaling change signal override fractions?",
+      "information.correct_reward",
+      "signal_override_rate"
+    ],
+    [
+      "Does delayed outcome feedback change reporting accuracy?",
+      "information.reveal_outcome",
+      "false_report_rate"
+    ],
+    [
+      "Do group-outcome goals improve collective accuracy?",
+      "goals",
+      "accuracy"
+    ],
+    [
+      "Does calling all participants analysts affect factual reports?",
+      "roles",
+      "false_report_rate"
+    ],
+    [
+      "Does perfectly accurate evidence eliminate errors in choices?",
+      "information.accuracy",
+      "accuracy"
+    ],
+    [
+      "Does private rather than public evidence encourage inaccurate claims?",
+      "private_signal",
+      "false_report_rate"
+    ],
+    [
+      "Do messages help when evidence quality is weak?",
+      "communication",
+      "accuracy"
+    ],
+    [
+      "Does memory help interpret sequential choices under noisy evidence?",
+      "memory",
+      "accuracy"
+    ],
+    [
+      "For a fictional jury making binary predictions, does evidence accuracy change signal overriding?",
+      "information.accuracy",
+      "signal_override_rate"
+    ],
+    [
+      "For a diagnostic-panel analogy without medical claims, do public signals improve binary accuracy?",
+      "private_signal",
+      "accuracy"
+    ],
+    [
+      "For a rumor-verification desk with known binary truth, do messages change false reports?",
+      "communication",
+      "false_report_rate"
+    ],
+    [
+      "For an alien-artifact classification game, does memory improve choices across rounds?",
+      "memory",
+      "accuracy"
+    ],
+    [
+      "For a forecasting club, does a larger correct-prediction reward change overriding?",
+      "information.correct_reward",
+      "signal_override_rate"
+    ],
+    [
+      "For a fictional intelligence panel, does delayed feedback change decision accuracy?",
+      "information.reveal_outcome",
+      "accuracy"
+    ],
+    [
+      "For a fact-checking collective, do group accuracy goals alter choices?",
+      "goals",
+      "accuracy"
+    ],
+    [
+      "For an emergency sensor panel, does naming a leader affect overrides without authority?",
+      "roles",
+      "signal_override_rate"
+    ]
+  ],
+  "renewable_resource": [
+    [
+      "Does regeneration speed change collapse of a shared renewable stock?",
+      "resource.regeneration",
+      "collapse_rate"
+    ],
+    [
+      "Does larger resource capacity change extraction fractions?",
+      "resource.capacity",
+      "extraction_rate"
+    ],
+    [
+      "Does a lower extraction ceiling prevent collapse?",
+      "resource.extraction_limit",
+      "collapse_rate"
+    ],
+    [
+      "Does communication change sustainable extraction?",
+      "communication",
+      "stock_fraction"
+    ],
+    [
+      "Does episodic memory change resource depletion?",
+      "memory",
+      "stock_fraction"
+    ],
+    [
+      "Do personal-payoff versus sustainable-group goals change stock survival?",
+      "goals",
+      "stock_fraction"
+    ],
+    [
+      "Does naming one participant steward change extraction without extra permissions?",
+      "roles",
+      "stock_fraction"
+    ],
+    [
+      "Does zero regeneration change extraction relative to high regeneration?",
+      "resource.regeneration",
+      "stock_fraction"
+    ],
+    [
+      "Does a nearly depleted small-capacity stock collapse faster?",
+      "resource.capacity",
+      "collapse_rate"
+    ],
+    [
+      "Does a permissive extraction ceiling change oversubscription?",
+      "resource.extraction_limit",
+      "stock_fraction"
+    ],
+    [
+      "Do public messages preserve stock better than silence?",
+      "communication",
+      "stock_fraction"
+    ],
+    [
+      "Does note-only memory differ from no retention in extraction?",
+      "memory",
+      "stock_fraction"
+    ],
+    [
+      "Do private payoff goals change extraction without commanding selfish behavior?",
+      "goals",
+      "stock_fraction"
+    ],
+    [
+      "Does fisher versus resident role wording change extraction under identical rules?",
+      "roles",
+      "stock_fraction"
+    ],
+    [
+      "Does moderate regeneration change stock retained after settlement?",
+      "resource.regeneration",
+      "stock_fraction"
+    ],
+    [
+      "Does abundant carrying capacity reduce early collapse?",
+      "resource.capacity",
+      "collapse_rate"
+    ],
+    [
+      "Does a one-unit extraction cap change sustained stock levels?",
+      "resource.extraction_limit",
+      "stock_fraction"
+    ],
+    [
+      "Does communication help sustain stock under slow regeneration?",
+      "communication",
+      "stock_fraction"
+    ],
+    [
+      "Does memory affect extraction after observing previous group harvesting?",
+      "memory",
+      "stock_fraction"
+    ],
+    [
+      "Do collective sustainability goals change extraction rates?",
+      "goals",
+      "extraction_rate"
+    ],
+    [
+      "For a fictional fishery, does faster regeneration prevent collapse under sealed harvests?",
+      "resource.regeneration",
+      "collapse_rate"
+    ],
+    [
+      "For an orbital algae farm modeled as renewable credits, does capacity change depletion?",
+      "resource.capacity",
+      "stock_fraction"
+    ],
+    [
+      "For a fantasy mana spring, does a strict extraction cap preserve stock?",
+      "resource.extraction_limit",
+      "stock_fraction"
+    ],
+    [
+      "For a village forest-credit pool, do messages change sustainable extraction?",
+      "communication",
+      "stock_fraction"
+    ],
+    [
+      "For a virtual compute-resource ecology, does memory change collapse frequency?",
+      "memory",
+      "collapse_rate"
+    ],
+    [
+      "For a Mars greenhouse token resource, do opposing goals change extraction?",
+      "goals",
+      "stock_fraction"
+    ],
+    [
+      "For an underwater colony's shared renewable stock, does naming a steward change harvesting?",
+      "roles",
+      "stock_fraction"
+    ],
+    [
+      "For an unconventional self-regenerating data cache modeled as credits, does regeneration change survival?",
+      "resource.regeneration",
+      "stock_fraction"
+    ]
+  ]
+}

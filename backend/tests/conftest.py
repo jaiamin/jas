@@ -29,8 +29,8 @@ def design():
 
 def decision_for(observation: dict) -> dict:
     legal = observation["legal_actions"][0]
-    target = ""
-    if legal["kind"] == "work":
+    target = legal.get("targets", [""])[0]
+    if legal["kind"] == "work" and "tasks" in observation:
         completed = {t["key"] for t in observation["tasks"] if t["completed_by"]}
         task = next(
             (
@@ -43,7 +43,7 @@ def decision_for(observation: dict) -> dict:
         target = task["key"] if task else ""
     return {
         "action": {
-            "kind": "work" if target else legal["kind"],
+            "kind": legal["kind"],
             "amount": legal.get("amount_max", 0) // 2,
             "target": target,
             "message": "",
@@ -52,7 +52,7 @@ def decision_for(observation: dict) -> dict:
         },
         "memory": "Remember the observed outcome.",
         "rationale": "Choose a legal action.",
-        "forecast": 0.5,
+        "forecast": None if "targets" in legal else 0.5,
     }
 
 

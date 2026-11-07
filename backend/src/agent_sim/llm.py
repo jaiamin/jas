@@ -170,8 +170,17 @@ class LanguageModels:
                     failure += f" HTTP {status}"
                 if isinstance(error, asyncio.CancelledError):
                     raise
+                truncated = any(
+                    isinstance(m, ModelResponse) and m.finish_reason == "length" for m in messages
+                )
+                detail = (
+                    f"Output reached the {max_tokens}-token limit; increase response tokens. "
+                    if truncated
+                    else ""
+                )
                 raise ProviderFailure(
-                    f"{model} request failed ({failure}). No retry or substitute model was used."
+                    f"{model} request failed ({failure}). {detail}"
+                    "No retry or substitute model was used."
                 ) from None
             finally:
                 responses = [m for m in messages if isinstance(m, ModelResponse)]

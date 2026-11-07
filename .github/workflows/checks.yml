@@ -19,7 +19,7 @@ jobs:
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
       - run: uv sync --frozen
-      - run: uv run ruff check backend
+      - run: uv run ruff check backend benchmarks
       - run: uv run ty check
       - run: uv run pytest
       - run: pnpm --dir frontend install --frozen-lockfile

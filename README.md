@@ -29,7 +29,7 @@ uv run ass --host 0.0.0.0 --port 8080
 For frontend development, run the API on 8081 and `pnpm --dir frontend dev`.
 
 ```sh
-uv run ruff check backend
+uv run ruff check backend benchmarks
 uv run ty check
 uv run pytest
 pnpm --dir frontend lint
@@ -47,8 +47,8 @@ pnpm --dir frontend test:e2e
 
 ## Scope
 
-Three mechanics: sealed shared contributions, paired trust exchanges and dependency-based
-team tasks. Protocols support 2–12 agents, per-agent models/goals, memory conditions,
+Seven mechanics: public goods, trust exchange, task coordination, institutional oversight,
+binding bargaining, private-evidence decisions and renewable resources. Protocols support 2–12 agents, per-agent models/goals, memory conditions,
 resource shocks, matched seeds and bounded spending. AI scopes, optionally researches, drafts and critiques proposals before your review.
 Unfinished edits stay as browser drafts; saving does not start execution. There are no substitute models or automatic request retries.
 

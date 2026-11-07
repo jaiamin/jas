@@ -46,6 +46,7 @@ def create_app(
     *,
     budget_usd: float | None = None,
     static_dir: str | Path | None = None,
+    concurrent_runs: int | None = None,
 ) -> FastAPI:
     db = Database(
         database_url or os.getenv("ASS_DATABASE_URL", "sqlite:///data/ass.sqlite3"),
@@ -56,7 +57,14 @@ def create_app(
     )
     models = LanguageModels(db)
     research = Research(db, models)
-    engine = Engine(db, research, models)
+    engine = Engine(
+        db,
+        research,
+        models,
+        concurrent_runs
+        if concurrent_runs is not None
+        else int(os.getenv("ASS_CONCURRENT_RUNS", "3")),
+    )
     assistants = Assistants(db, research, models)
 
     @asynccontextmanager
@@ -121,7 +129,7 @@ def create_app(
                     "primary_metric": a.primary_metric,
                     "parameters": list(a.parameters),
                     "measures": list(a.measures),
-                    "rule_version": RULE_VERSION,
+                    "rule_version": a.world.version,
                 }
                 for a in CATALOG.values()
             ],
@@ -144,7 +152,7 @@ def create_app(
                 "usage": models.usage(),
                 "rule_version": RULE_VERSION,
                 "storage": "SQLite" if db.engine.dialect.name == "sqlite" else "PostgreSQL",
-                "concurrent_runs": 3,
+                "concurrent_runs": engine.concurrency,
                 "mode": "local",
             }
 
