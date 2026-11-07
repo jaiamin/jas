@@ -8,7 +8,7 @@ test("JAS preserves the previous workspace theme and navigation preference", asy
     localStorage.setItem("ass-sidebar", "collapsed");
   });
   await page.goto("/");
-  await expect(page).toHaveTitle("JAS — Agent Simulation Environment");
+  await expect(page).toHaveTitle("Experiments | JAS");
   await expect(page.locator("html")).toHaveClass("dark");
   await expect(
     page.locator('[data-slot="sidebar"][data-state="collapsed"]'),
@@ -22,6 +22,40 @@ test("JAS preserves the previous workspace theme and navigation preference", asy
   await expect(
     page.locator('[data-slot="sidebar"][data-state="expanded"]'),
   ).toBeVisible();
+});
+
+test("browser titles follow navigation, history and saved experiment identity", async ({
+  page,
+  request,
+}) => {
+  await page.goto("/");
+  await expect(page).toHaveTitle("Experiments | JAS");
+  await page.getByRole("link", { name: "Settings", exact: true }).click();
+  await expect(page).toHaveTitle("Settings | JAS");
+  await page.getByRole("link", { name: "Environments", exact: true }).click();
+  await expect(page).toHaveTitle("Environments | JAS");
+  await page.goBack();
+  await expect(page).toHaveTitle("Settings | JAS");
+  await page.reload();
+  await expect(page).toHaveTitle("Settings | JAS");
+  for (const [path, title] of [
+    ["/new", "New experiment"],
+    ["/runs", "Runs"],
+    ["/design", "Design with AI"],
+    ["/compare", "Compare runs"],
+  ]) {
+    await page.goto(path);
+    await expect(page).toHaveTitle(`${title} | JAS`);
+  }
+  const catalog = await (await request.get("/api/catalog")).json();
+  const title = "Cooperation & evidence";
+  const study = await (
+    await request.post("/api/studies", {
+      data: { design: { ...catalog.templates[0].design, title } },
+    })
+  ).json();
+  await page.goto(`/studies/${study.id}`);
+  await expect(page).toHaveTitle(`${title} | JAS`);
 });
 
 test("experiments are the entry point; AI creation stays available without a key", async ({

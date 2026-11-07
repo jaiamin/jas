@@ -75,6 +75,9 @@ verify distinct line patterns and matching legends in both themes. Status icons 
 meaning without color. All 37 sampled token text/surface pairs per theme exceed 4.5:1
 (minimum 4.68 light / 5.45 dark). Logo ink adapts to the app theme independently of the
 OS preference. Only the favicon has extra padding; the sidebar mark remains 24px.
+The browser title follows `View | JAS`, including saved experiment identity. Two focused
+navigation tests passed after this follow-up, covering history, reload and direct entry;
+route changes and browser history were also checked against the live port-8080 app.
 
 Current application captures (no sample experiment data):
 

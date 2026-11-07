@@ -380,8 +380,10 @@ while the user clicks or focuses the workspace; its explicit close control and E
 dismiss it. The composer remains anchored and activity follows server events.
 
 Protocol browser drafts are recoverable and distinct from immutable saved revisions.
-Links preserve query state where relevant. Route content is lazily loaded; controls use
-native/Radix semantics. Button feedback is 140ms, disclosure rotation 150ms and sidebar
+Links preserve query state where relevant. Browser titles follow the current view as
+“View | JAS”; saved experiments and runs use their breadcrumb identity once loaded.
+Titles update on navigation and browser history. Route content is lazily loaded;
+controls use native/Radix semantics. Button feedback is 140ms, disclosure rotation 150ms and sidebar
 collapse 200ms. Sheet motion declares 500ms opening and 300ms closing; the message-scroller
 control declares 200ms showing and 400ms hiding. Loading indicators rotate at 1s. Reduced
 motion reduces animation/transition durations and disables smooth scrolling. Exact motion

@@ -9,7 +9,14 @@ import {
   Sparkles,
   Sun,
 } from "lucide-react";
-import { Component, Fragment, lazy, Suspense, useState } from "react";
+import {
+  Component,
+  Fragment,
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+} from "react";
 import {
   Link,
   NavLink,
@@ -164,6 +171,13 @@ export default function WorkspaceShell() {
         : location.pathname === "/compare"
           ? [{ label: "Runs", to: "/runs" }, { label: "Compare" }]
           : [{ label: section }];
+  const pageTitle =
+    runId || studyId || location.pathname === "/new"
+      ? (crumbs.at(-1)?.label ?? section)
+      : section;
+  useEffect(() => {
+    document.title = `${pageTitle} | JAS`;
+  }, [pageTitle]);
   return (
     <>
       <a href="#main" className="skip-link">

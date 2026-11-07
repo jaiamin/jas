@@ -83,6 +83,9 @@ subheading. Keep all workflows and the real port-8080 service intact.
 - [x] Refresh canonical docs/screenshots; pass 7 unit tests, 28 Playwright tests,
   Biome and TypeScript/Vite build. Token contrast exceeds 4.5:1 in both themes.
 - [x] Commit and push the refinement to the existing draft PR.
+- [x] Follow-up: browser title uses the current view name followed by ` | JAS`;
+  route changes, browser history, reload and loaded experiment identity pass two
+  focused browser tests. Live port-8080 title checks, Biome and build also pass.
 
 Draft PR: https://github.com/jaiamin/ass/pull/4
 
