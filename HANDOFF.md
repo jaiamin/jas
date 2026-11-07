@@ -18,12 +18,14 @@ Strict-score target: 90 for each program, evaluated after integrating main.
 - [x] Integrate current main, preserving its newer interface/chat/config behavior.
 - [ ] Verify combined behavior, rescan, then publish one draft PR.
 
-The scanner lives in `.tools/desloppify`. Run backend commands from the repository
-root with `PATH="$PWD/.tools/desloppify/bin:$PWD/.venv/bin:$PATH"` and
-`desloppify --lang python scan --path ./backend`. Run frontend commands from
-`frontend/` using `../.tools/desloppify/bin/desloppify --lang typescript` and
-`scan --path .`. Each has separate local state/plan. The initial root TypeScript
-state is obsolete. Do not exclude source or mark real debt fixed for a score.
+The scanner lives in `.tools/desloppify`. Run commands from each program's own
+working directory: `backend/` and `frontend/`, with `--lang python/typescript scan
+--path .`. Backend PATH includes `../.tools/desloppify/bin` and `../.venv/bin` for
+Bandit. Each program owns its `.desloppify/` state and plan. The old repository-root
+Python and TypeScript states are obsolete. Python's nested `backend/src/` import
+mapping defect disappears when scanning from `backend/`; its objective score is
+90.3 before further fixes. Do not transfer or hand-edit subjective scores. A new
+blind backend review is running against the correct context.
 
 Follow `.agents/skills/desloppify/SKILL.md`: `next`, implement/verify, `plan resolve`,
 then `next` again. Use `plan promote` when the execution queue is empty but useful
@@ -56,38 +58,44 @@ blind Codex batch runner, at most three concurrent review processes overall.
 
 ## Verification and current work
 
-Completed quality-pass checks: 186 backend tests, 23 frontend unit tests and all
-34 browser workflows pass. Ruff, ty, frontend lint, production build, Actionlint
-and diff whitespace checks pass. All 14 saved simulation trajectories match the
-baseline exactly, including observations, events, measurements and checkpoints.
-Seven template payloads also match their originals. No paid model calls were made.
+Current main e4092b2 was merged at c5832dd. Its redesigned shell/styles, full-page
+Agent, persistent chats, streaming and JAS/ASS configuration compatibility remain.
+The quality pass carries over typed world state/decisions, provider accounting,
+service boundaries, draft recovery/validation locks and focused UI modules.
+Integration fixed complete journal visibility, rendered-layout evidence focus,
+turn-bound note drafts and zero-usage interrupted-stream reservation handling.
+Superseded editor/panel implementations were removed rather than duplicated.
 
-All initial and follow-up imported blind-review findings are resolved. Latest
-strict scores are backend 87.0 and frontend 87.8. Both `next` execution queues
-report zero items. Static debt remains in complexity, broad annotations and
-coverage heuristics; edited subjective dimensions can still be marked stale.
-Do not interpret an empty execution queue as an empty mechanical backlog.
+Observed after integration: 204 backend tests and all 51 browser workflows pass;
+Ruff, ty, frontend lint, production build, Actionlint and whitespace checks pass.
+All 14 deterministic trajectories still match the baseline exactly. No paid model
+calls were made. Playwright closes its keyless backend and temporary database.
+No task services or agent-browser sessions remain open.
 
-An upstream coverage-path mapping defect was reproduced and reported at
-https://github.com/peteromallet/desloppify/issues/958 under the invoked workflow
-guide. Seeded RNG warnings concern deterministic simulation/bootstrap, not tokens;
-replacing them with SystemRandom would break replay. Draft parsing deliberately
-throws to its record-isolation/recovery callers.
+New asynchronous component tests cover note-save races/failure recovery, late
+request responses, chat-history retry and pending-to-validated replies. Latest
+run: 32 passed / one accessibility-name expectation corrected; rerun pending.
 
-The old task-owned backend on 8093 was stopped. Playwright closes its backend,
-uses fresh temporary storage on 8094, and accepts an explicit disposable-instance
-override. No agent-browser session is open.
+Fresh independent reviews are running, with three review workers overall:
+- Backend: exec session 57300; backend/.desloppify/integrated-review.log (2 workers).
+- Frontend: exec session 23145; frontend/.desloppify/integrated-review.log (1 worker).
+Do not change reviewed production sources until their run finishes. New test-only
+coverage can proceed. Root-context backend review session 63609 was terminated
+because the import-mapping issue requires backend-local scanning; its partial
+artifacts are retained as historical evidence, with no imported assessments.
 
-### Integration acceptance criteria and next steps
+Next: complete blind reviews, import/triage their findings, follow next/fix/resolve
+until queues clear, rescan each program and pursue strict 90 honestly. Prior
+scores 87.0/87.8 predated integration and the corrected Python scan context; do
+not present them as current final scores. Mechanical debt remains, including
+complexity and test-import heuristics. Seeded RNG warnings represent deterministic
+simulation/bootstrap, not security tokens; replacing RNG breaks exact replay.
 
-Publication checks found this branch starts at bfdb35c, while origin/main now
-contains merged PR #4's later redesign. Do not publish a PR that reverts it.
-Merged origin/main (e4092b2) at c5832dd, preserving unified Agent/chat streaming, the current
-workspace shell/styles, JAS configuration compatibility and all quality fixes.
-Resolve overlaps by responsibility, remove superseded duplicate UI components,
-and update existing/new browser tests for current navigation. Re-run affected
-checks and independent reviews/scans after integration. Never rewrite shared
-history or modify another worktree.
+Upstream coverage-path repro: https://github.com/peteromallet/desloppify/issues/958
+filed under the invoked guide. Draft parse exceptions intentionally propagate to
+record-isolation/recovery callers. Preserve research reports and frozen provenance.
+README absorbed redundant PRODUCT.md; DESIGN/EVALUATION/INTERFACE were shortened
+without deleting frozen benchmark artifacts or claiming historical checks are current.
 
 Useful verification commands:
 
