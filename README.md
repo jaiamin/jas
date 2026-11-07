@@ -41,8 +41,9 @@ so it uses the same volume. Frozen benchmark artifacts retain their original pro
 4. Select two to four runs to compare, or tune an experiment into an immutable new revision.
    Export preserves all revisions and evidence. Unfinished edits remain browser drafts.
 
-Settings shows provider availability, budget reservations, usage and storage. Change
-provider keys and deployment settings through `.env`, then restart. The sidebar supports
+Settings shows provider availability, budget reservations, usage and storage. Normal startup
+loads provider keys from the process environment and `.env`; it does not disable keys or
+seed example results. Change provider keys and deployment settings through `.env`, then restart. The sidebar supports
 collapse, light/dark themes and a mobile drawer. **Ask AI** opens scoped evidence assistance.
 
 ## Development

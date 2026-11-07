@@ -30,14 +30,17 @@ annotations, replay, exports, provider traces, and assistant evidence boundaries
 - `DESIGN.md` is the single design authority. Route inventory/verification lives in
   `docs/INTERFACE.md`; this file holds implementation progress, not duplicate tokens.
 
-## Local verification environment
+## Running application
 
-Project-local Python `.venv`; uv at `.tools/bin/uv`; pnpm at
-`/home/agent/.local/bin/pnpm`. Dependency installation and baseline production build pass.
-Keyless QA API: port 8082, `data/redesign-qa.sqlite3`. Preview fixture uses a separate
-`data/redesign-preview.sqlite3` and port 8083. Never share a database between engines.
-Existing `data/ass.sqlite3` and `data/evaluation.sqlite3`, if present, are user data.
-Do not delete or use them for verification. No paid model requests are authorized.
+The user requested the normal application on port 8080 with all available keys loaded.
+Started with `.venv/bin/jas --host 0.0.0.0 --port 8080`; provider credentials are inherited
+normally from the process environment and loaded from `.env` if present. Both OpenAI and
+Anthropic report configured. The application uses its normal configured database.
+The user-facing browser tab and service are intentionally left running for testing.
+Do not replace this with a keyless or seeded demonstration server.
+
+Automated tests use separate disposable databases. Never point them at user data or share
+a database between execution engines. Project tooling: `.venv`, `.tools/bin/uv`, pnpm.
 
 ## Completed implementation
 
@@ -51,7 +54,7 @@ Do not delete or use them for verification. No paid model requests are authorize
   remain compatible. The repository name/remote is unchanged at the user's request.
 - Canonical DESIGN.md and machine metadata synchronized by the documenter. Independent
   Impeccable review scored both material findings resolved. Detailed checks and representative
-  offline-fixture screenshots are in docs/INTERFACE.md.
+  current application screenshots are in docs/INTERFACE.md.
 
 ## Verification
 
@@ -60,8 +63,9 @@ ty, Biome, TypeScript/Vite build, Actionlint, Compose config validation and stag
 Manual browser checks included desktop/mobile/tablet, saved observations, exact replay
 (24 turns), export contents, keyboard focus and sampled text/placeholder contrast.
 No paid model calls; no production deployment or non-Chromium/assistive-technology audit.
-Task browser and disposable services are closed; task-generated databases and scratch scripts
-were removed after verification. User data was not touched.
+Disposable verification services, scratch scripts, the empty temporary user-preview database,
+and sample-result screenshots were removed. The normal port-8080 app remains running.
+User data was not touched.
 
 ## Review handoff
 
