@@ -90,7 +90,13 @@ def test_assistant_scopes_history_to_frozen_cutoff_and_rejects_unread_citations(
             "question": "What happened?",
             "cutoffs": {rid: 1},
         }
-        output = await assistant._investigate(row)
+        output = await assistant._investigate(
+            row["id"],
+            row["question"],
+            study_id=row["study_id"],
+            run_id=row["run_id"],
+            cutoffs=row["cutoffs"],
+        )
         progress = assistant.get(key)["output"]
         assert progress["stage"] == "investigating"
         assert progress["examined"] == output["examined"]
@@ -211,3 +217,35 @@ def test_final_investigation_call_cannot_fetch_evidence_without_a_consumer(
     asyncio.run(exercise())
     assert len(prompts) == 4
     assert len(reads) == 4  # Initial cutoff plus three evidence-gathering rounds.
+
+
+def test_initial_worker_read_failure_is_persisted_and_logged(runtime, caplog):
+    from agent_sim.db import Analysis
+    from sqlalchemy import event
+
+    db, llm, research, _ = runtime
+    assistant = Assistants(db, research, llm)
+    with db.session.begin() as session:
+        request = Analysis(question="Inspect evidence", purpose="analysis", cutoffs={})
+        session.add(request)
+        session.flush()
+        key = request.id
+    failed = False
+
+    def fail_first_read(connection, cursor, statement, parameters, context, executemany):
+        nonlocal failed
+        if not failed and statement.lstrip().startswith("SELECT"):
+            failed = True
+            raise RuntimeError("one-shot initialization failure")
+
+    event.listen(db.engine, "before_cursor_execute", fail_first_read)
+    try:
+        asyncio.run(assistant._execute(key))
+    finally:
+        event.remove(db.engine, "before_cursor_execute", fail_first_read)
+    with db.session() as session:
+        request = session.get_one(Analysis, key)
+        assert request.status == "failed"
+        assert request.error == "Research assistant failed (RuntimeError); no fallback."
+    assert f"Analysis {key} failed" in caplog.text
+    assert llm.usage()["requests"] == 0

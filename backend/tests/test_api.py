@@ -191,3 +191,13 @@ def test_verification_rejects_corrupt_evidence(client, design):
 def test_operation_schemas_reject_unsupported_inputs(client, path, payload):
     assert client.post(path, json=payload).status_code == 422
     assert client.get("/api/settings").json()["usage"]["requests"] == 0
+
+
+def test_initial_and_recorded_evidence_share_the_same_envelope(client, design):
+    sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+    initial = client.get(f"/api/runs/{rid}/turns/0").json()
+    assert initial["round"] == initial["checkpoint"]["round"] == 1
+    step_run(client, rid)
+    recorded = client.get(f"/api/runs/{rid}/turns/1").json()
+    assert initial.keys() == recorded.keys()

@@ -1,6 +1,5 @@
 import json
 import os
-from collections.abc import Mapping
 from typing import Any
 
 from pydantic import Field, ValidationError
@@ -207,9 +206,8 @@ class Planner:
                 raise ValueError("AI-proposed studies must have a spending ceiling at or below $10")
         return design
 
-    async def run(self, row: Mapping[str, Any]) -> dict[str, Any]:
-        key = row["id"]
-        context = self._context(row["question"])
+    async def run(self, key: str, question: str) -> dict[str, Any]:
+        context = self._context(question)
 
         self.progress(key, "scoping")
         brief = await self._call(

@@ -167,7 +167,8 @@ class TrustExchange(World[TrustCheckpoint]):
         events, measures = self.apply(actor, decision.action)
         transfer = next(e for e in events if e.kind == "transfer")
         if transfer.data["phase"] == "send":
-            assert transfer.target is not None
+            if transfer.target is None:
+                raise ValueError("Transfer must name its counterparty")
             forecasts[transfer.target] = decision.forecast
         else:
             prediction = forecasts.pop(actor, None)

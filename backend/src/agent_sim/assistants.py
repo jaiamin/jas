@@ -157,12 +157,21 @@ class Assistants:
             return [self.serialize(row, usage.get(row.id)) for row in rows]
 
     async def _execute(self, key: str) -> None:
-        row = self.get(key)
         try:
-            if row["purpose"] == "design":
-                output = await Planner(self.db, self.research, self.models).run(row)
+            with self.db.session() as session:
+                request = session.get_one(Analysis, key)
+            if request.purpose == "design":
+                output = await Planner(self.db, self.research, self.models).run(
+                    key, request.question
+                )
             else:
-                output = await self._investigate(row)
+                output = await self._investigate(
+                    key,
+                    request.question,
+                    study_id=request.study_id,
+                    run_id=request.run_id,
+                    cutoffs=request.cutoffs,
+                )
             with self.db.session.begin() as session:
                 saved = session.get_one(Analysis, key)
                 saved.output, saved.status = output, "complete"
@@ -188,14 +197,14 @@ class Assistants:
         with self.db.session.begin() as session:
             session.get_one(Analysis, key).output = {"stage": stage, "examined": examined}
 
-    def _conversation(self, row: dict) -> Sequence[dict]:
+    def _conversation(self, key: str, study_id: str | None, run_id: str | None) -> Sequence[dict]:
         with self.db.session() as session:
-            current = session.get_one(Analysis, row["id"])
+            current = session.get_one(Analysis, key)
             previous = session.scalars(
                 select(Analysis)
                 .where(
-                    Analysis.study_id == row["study_id"],
-                    Analysis.run_id == row["run_id"],
+                    Analysis.study_id == study_id,
+                    Analysis.run_id == run_id,
                     Analysis.purpose != "design",
                     Analysis.status == "complete",
                     Analysis.created < current.created,
@@ -286,25 +295,33 @@ class Assistants:
                 }
         return examined_range, data
 
-    async def _investigate(self, row: dict) -> dict:
-        self._progress(row["id"], "indexing", [])
-        conversation = self._conversation(row)
-        index = self._evidence_index(row["cutoffs"])
+    async def _investigate(
+        self,
+        key: str,
+        question: str,
+        *,
+        study_id: str | None,
+        run_id: str | None,
+        cutoffs: dict[str, int],
+    ) -> dict:
+        self._progress(key, "indexing", [])
+        conversation = self._conversation(key, study_id, run_id)
+        index = self._evidence_index(cutoffs)
         gathered, examined = [], []
         iteration = 0
         while True:
-            self._progress(row["id"], "investigating", examined)
+            self._progress(key, "investigating", examined)
             result = await self.models.generate(
                 Investigation,
                 model="openai:gpt-6.1-sol",
                 instructions=INVESTIGATION,
                 purpose="analysis",
-                study_id=row["study_id"],
-                run_id=row["run_id"],
-                analysis_id=row["id"],
+                study_id=study_id,
+                run_id=run_id,
+                analysis_id=key,
                 prompt=json.dumps(
                     {
-                        "question": row["question"],
+                        "question": question,
                         "conversation": conversation,
                         "index": index,
                         "evidence": gathered,
@@ -316,10 +333,7 @@ class Assistants:
             )
             if result.answer is not None:
                 for citation in result.answer.citations:
-                    if (
-                        citation.run_id not in row["cutoffs"]
-                        or citation.turn > row["cutoffs"][citation.run_id]
-                    ):
+                    if citation.run_id not in cutoffs or citation.turn > cutoffs[citation.run_id]:
                         raise ValueError(
                             "Assistant returned a citation outside the captured evidence"
                         )
@@ -336,10 +350,10 @@ class Assistants:
             if not result.requests:
                 raise ValueError("Assistant returned neither evidence requests nor an answer")
             for request in result.requests:
-                examined_range, data = self._requested_evidence(request, row["cutoffs"])
+                examined_range, data = self._requested_evidence(request, cutoffs)
                 gathered.append({"range": examined_range, "data": data})
                 examined.append(examined_range)
-                self._progress(row["id"], "reading", examined)
+                self._progress(key, "reading", examined)
             iteration += 1
 
     async def close(self) -> None:

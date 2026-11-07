@@ -51,9 +51,7 @@ def test_planner_reviews_and_repairs_design_before_returning(runtime, design, mo
         return next(answers)
 
     monkeypatch.setattr(llm, "generate", generate)
-    result = asyncio.run(
-        Planner(db, research, llm).run({"id": key, "question": "Compare cooperation"})
-    )
+    result = asyncio.run(Planner(db, research, llm).run(key, "Compare cooperation"))
     assert result["supported"] and result["design"]["seeds"] == [7]
     assert "Seed identifiers must be unique" in prompts[2]["feedback"][0]
     assert prompts[4]["feedback"] == ["Use a shorter descriptive title"]
@@ -91,9 +89,7 @@ def test_planner_does_not_research_or_invent_unsupported_worlds(runtime, monkeyp
         )
 
     monkeypatch.setattr(llm, "generate", generate)
-    result = asyncio.run(
-        Planner(db, research, llm).run({"id": key, "question": "Predict an election"})
-    )
+    result = asyncio.run(Planner(db, research, llm).run(key, "Predict an election"))
     assert result["design"] is None and not result["supported"]
     assert len(calls) == 1 and research.studies() == []
 
@@ -132,7 +128,7 @@ def test_planner_rejects_unresolved_review(runtime, design, monkeypatch):
 
     monkeypatch.setattr(llm, "generate", generate)
     with pytest.raises(ValueError, match="unresolved issues"):
-        asyncio.run(Planner(db, research, llm).run({"id": key, "question": "Compare strategies"}))
+        asyncio.run(Planner(db, research, llm).run(key, "Compare strategies"))
     assert research.studies() == []
 
 
@@ -172,10 +168,10 @@ def test_planner_validates_revised_capability_and_counts(runtime, design, monkey
     monkeypatch.setattr(llm, "generate", generate)
     planner = Planner(db, research, llm)
     if declined:
-        result = asyncio.run(planner.run({"id": key, "question": row.question}))
+        result = asyncio.run(planner.run(key, row.question))
         assert result["design"] is None and not result["supported"]
         assert result["planning"]["reviews"] == [{"kind": "review", "issues": []}]
     else:
         with pytest.raises(ValueError, match="planned counts"):
-            asyncio.run(planner.run({"id": key, "question": row.question}))
+            asyncio.run(planner.run(key, row.question))
     assert research.studies() == []

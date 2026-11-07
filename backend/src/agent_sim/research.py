@@ -410,12 +410,14 @@ class Research:
             raise ValueError("Turn is outside this run's recorded evidence")
         with self.db.session() as session:
             if number == 0:
+                checkpoint = create_world(design, condition.parameters, run.seed).snapshot()
                 return {
+                    "round": checkpoint["round"],
                     "number": 0,
                     "actor": None,
                     "observation": {},
                     "decision": {},
-                    "checkpoint": create_world(design, condition.parameters, run.seed).snapshot(),
+                    "checkpoint": checkpoint,
                     "events": [],
                     "state_hash": None,
                 }
