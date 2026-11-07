@@ -30,6 +30,7 @@ export interface Parameters {
   };
   resource: {
     capacity: number;
+    initial_stock: number | null;
     regeneration: number;
     extraction_limit: number;
   };

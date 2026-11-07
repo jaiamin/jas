@@ -158,8 +158,9 @@ async def run(args):
     manifest_file = output / "manifest.json"
     if manifest_file.exists():
         previous = json.loads(manifest_file.read_text())
-        if previous["suite_sha256"] != fingerprint():
-            raise ValueError("Suite changed: use a new output directory")
+        for field in ["suite_sha256", "source_sha256", "model", "database", "budget_usd"]:
+            if previous.get(field) != manifest[field]:
+                raise ValueError(f"{field} changed: use a new output directory")
     else:
         manifest_file.write_text(json.dumps(manifest, indent=2) + "\n")
     records = prior.copy()

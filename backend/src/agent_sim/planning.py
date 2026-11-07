@@ -6,7 +6,7 @@ from pydantic import Field, ValidationError
 from sqlalchemy import select
 
 from .db import Analysis, Database, ProviderCall
-from .domain import Design, DesignSpec, Parameters, PlannedStudy, Strict
+from .domain import Design, DesignSpec, PlannedStudy, Strict
 from .environments import CATALOG, create_world
 from .llm import LanguageModels
 from .research import Research
@@ -67,6 +67,12 @@ private_signal=false publishes all signals; true reveals only the actor's own si
 Memory modes ablate retained history/notes, not current authoritative tasks or choices.
 No new parameter names or invented mechanics. Inactive environment parameters retain defaults.
 All study/profile/condition keys must be lowercase identifiers. Return all schema fields.
+The scoped agent/condition/seed/repetition/round counts are a binding plan, not suggestions.
+Do not replace an unsupported request with a placeholder design labeled unavailable.
+Recorded turn-level evidence can answer round-specific questions; summary metrics are not
+the only available evidence. Distinguish absolute action amounts from normalized rates.
+For a short pilot, operationalize broad repeated behavior as the requested finite opportunities
+and disclose that limit; do not add rounds or claim a long-term effect.
 """
 
 
@@ -85,7 +91,9 @@ class StudyBrief(Strict):
 
 class Candidate(Strict):
     explanation: str = Field(max_length=2000)
-    design: DesignSpec
+    design: DesignSpec | None = Field(
+        description="Complete protocol, or null if essential capabilities are unavailable."
+    )
 
 
 class DesignReview(Strict):
@@ -145,6 +153,8 @@ class Planner:
                     "parameters": adapter.parameters,
                     "measures": adapter.measures,
                     "rules_example": world.observe(actor)["rules"],
+                    "example_note": "Example values are template settings, not fixed constants. "
+                    "Use the design schema descriptions to identify changeable parameters.",
                 }
             )
         context = {
@@ -153,7 +163,19 @@ class Planner:
             == "openai:gpt-6.1-sol",
             "capabilities": capabilities,
             "models": self.models.catalog(),
-            "parameter_schema": Parameters.model_json_schema(),
+            "design_schema": DesignSpec.model_json_schema(),
+            "evidence": {
+                "turns": "Round, actor, actual observation, action amount/target/message/report/"
+                "promise, forecast, private note and self-reported rationale.",
+                "events": "Typed events include transfers with phase/amount/available, claims "
+                "with reported/known_truth/accurate, commitments with amount, and resolved "
+                "commitments with eligible/fulfilled. Infeasible commitments have eligible=false.",
+                "analysis": "Events, actions and metrics can be filtered by actor, turn and round. "
+                "Initial transfers, promise incidence/amounts and shock windows are observable. "
+                "Metrics are also summarized, but are not aggregate-only.",
+                "trust_forecast": "A sender forecasts its partner's return divided by received "
+                "credits; forecast_error scores that fraction when a return opportunity exists.",
+            },
         }
 
         async def call(output, instruction: str, data: dict, **options):
@@ -228,16 +250,39 @@ class Planner:
             )
             context["candidate"] = candidate.model_dump()
             try:
-                design = Design.model_validate(candidate.design.model_dump())
-                self.research.validate_design(design)
-                if design.response_tokens < 2048:
-                    raise ValueError(
-                        "AI protocols need at least 2048 response tokens to avoid truncation"
+                design = (
+                    Design.model_validate(candidate.design.model_dump())
+                    if candidate.design
+                    else None
+                )
+                if design:
+                    self.research.validate_design(design)
+                    actual = (
+                        len(design.profiles),
+                        len(design.conditions),
+                        len(design.seeds),
+                        design.repetitions,
+                        design.rounds,
                     )
-                if design.budget_usd > 10:
-                    raise ValueError(
-                        "AI-proposed studies must have a spending ceiling at or below $10"
+                    expected = (
+                        brief.agents,
+                        brief.conditions,
+                        brief.seeds,
+                        brief.repetitions,
+                        brief.rounds,
                     )
+                    if actual != expected:
+                        raise ValueError(
+                            f"Protocol must retain planned counts {expected}; got {actual}"
+                        )
+                    if design.response_tokens < 2048:
+                        raise ValueError(
+                            "AI protocols need at least 2048 response tokens to avoid truncation"
+                        )
+                    if design.budget_usd > 10:
+                        raise ValueError(
+                            "AI-proposed studies must have a spending ceiling at or below $10"
+                        )
             except (ValidationError, ValueError) as error:
                 feedback = [str(error)]
                 planning["reviews"].append({"kind": "validation", "issues": feedback})
@@ -246,7 +291,10 @@ class Planner:
             review = await call(
                 DesignReview,
                 PLANNING + "\nCritique this protocol against the original question. "
-                "Return material issues only; an empty list approves it. Do not add requirements "
+                "Return material issues only; an empty list approves it. "
+                "If the candidate declines, check the claimed gap against the complete schema "
+                "and recorded evidence contract; reject mistaken capability declines. "
+                "Do not add requirements "
                 "such as differentiated roles, partner-specific feelings, arbitrary thresholds "
                 "or statistical power for requested pilots. A shared goal and task graph "
                 "is a valid coordination protocol. Return-rate is a valid reciprocity proxy. "
@@ -263,7 +311,9 @@ class Planner:
             if not feedback:
                 return {
                     **PlannedStudy(
-                        supported=True, explanation=candidate.explanation, design=design
+                        supported=design is not None,
+                        explanation=candidate.explanation,
+                        design=design,
                     ).model_dump(),
                     "planning": planning,
                 }

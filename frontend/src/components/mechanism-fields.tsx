@@ -56,7 +56,7 @@ export function MechanismFields({
   if (!(environment in groups)) return null;
   const config = groups[environment as keyof typeof groups];
   const values = parameters[config.key];
-  const change = (key: string, value: number | boolean | string[]) =>
+  const change = (key: string, value: number | boolean | string[] | null) =>
     onChange({ [config.key]: { ...values, [key]: value } });
   return (
     <FieldGroup className="condition-fields mechanism-fields">
@@ -74,6 +74,25 @@ export function MechanismFields({
           />
         </Field>
       ))}
+      {environment === "renewable_resource" && (
+        <Field>
+          <FieldLabel htmlFor={`${id}-initial-stock`}>Initial stock</FieldLabel>
+          <Input
+            id={`${id}-initial-stock`}
+            type="number"
+            min={1}
+            max={parameters.resource.capacity}
+            placeholder="Full capacity"
+            value={parameters.resource.initial_stock ?? ""}
+            onChange={(e) =>
+              change(
+                "initial_stock",
+                e.target.value === "" ? null : Number(e.target.value),
+              )
+            }
+          />
+        </Field>
+      )}
       {config.toggles.map(([key, label]) => (
         <Field key={key} className="mechanism-toggle">
           <input

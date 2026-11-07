@@ -7,7 +7,7 @@ from agent_sim.domain import EnvironmentId, Strict
 from pydantic import Field
 
 ROOT = Path(__file__).parent
-SUITE_VERSION = 2
+SUITE_VERSION = 3
 METRICS = {
     "commons": ["contribution_rate"],
     "trust_exchange": ["return_rate"],

@@ -152,6 +152,20 @@ def test_new_mechanism_boundaries_reject_unavailable_actions():
         schema(action=action("sanction", 1).model_dump(), rationale="", memory="", forecast=None)
 
 
+def test_depleted_stock_regenerates_and_restore_preserves_it():
+    from agent_sim.domain import ResourceRules
+
+    with pytest.raises(ValidationError, match="cannot exceed"):
+        ResourceRules(capacity=10, initial_stock=11)
+    world = world_for("renewable_resource", resource={"initial_stock": 6, "regeneration": 0.25})
+    assert world.state["stock"] == 6
+    for _ in world.ids:
+        world.apply(world.actor(), action("extract", 0))
+    assert world.state["stock"] == pytest.approx(7.35)
+    restored = create_world(world.design, world.parameters, world.seed, world.snapshot())
+    assert restored.state["stock"] == world.state["stock"]
+
+
 def test_hidden_outcome_feedback_also_withholds_rewards_until_run_end():
     world = world_for("information", information={"accuracy": 1, "reveal_outcome": False})
     while world.state["round"] == 1:

@@ -403,7 +403,8 @@ class Information(Mechanism):
 class RenewableResource(Mechanism):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.state.setdefault("stock", float(self.parameters.resource.capacity))
+        rules = self.parameters.resource
+        self.state.setdefault("stock", float(rules.initial_stock or rules.capacity))
 
     def observe(self, agent):
         rules = self.parameters.resource

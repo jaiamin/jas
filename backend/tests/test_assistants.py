@@ -110,6 +110,8 @@ def test_planner_reviews_and_repairs_design_before_returning(runtime, design, mo
     assert "Seed identifiers must be unique" in prompts[2]["feedback"][0]
     assert prompts[4]["feedback"] == ["Use a shorter descriptive title"]
     assert len(result["planning"]["reviews"]) == 3
+    assert "role" in prompts[0]["design_schema"]["$defs"]["Profile"]["properties"]
+    assert "events" in prompts[0]["evidence"]
     assert research.studies() == []
 
 
@@ -208,3 +210,48 @@ def test_independent_questions_can_plan_concurrently_but_duplicates_are_blocked(
         await assistant.close()
 
     asyncio.run(exercise())
+
+
+@pytest.mark.parametrize("declined", [False, True])
+def test_planner_validates_revised_capability_and_counts(runtime, design, monkeypatch, declined):
+    from agent_sim.db import Analysis
+    from agent_sim.planning import Candidate, DesignReview, Planner, StudyBrief
+
+    db, llm, research, _ = runtime
+    with db.session.begin() as session:
+        row = Analysis(purpose="design", question="Two matched conditions", cutoffs={})
+        session.add(row)
+        session.flush()
+        key = row.id
+
+    async def generate(output, **kwargs):
+        if output is StudyBrief:
+            return StudyBrief(
+                supported=True,
+                explanation="Pilot",
+                operationalization="Contribution rate",
+                size_rationale="Two matched conditions",
+                agents=6,
+                conditions=2,
+                seeds=1,
+                repetitions=1,
+                rounds=2,
+                research_query=None,
+            )
+        if output is Candidate:
+            return Candidate(
+                explanation="Capability unavailable" if declined else "One condition",
+                design=None if declined else design,
+            )
+        return DesignReview(issues=[])
+
+    monkeypatch.setattr(llm, "generate", generate)
+    planner = Planner(db, research, llm)
+    if declined:
+        result = asyncio.run(planner.run({"id": key, "question": row.question}))
+        assert result["design"] is None and not result["supported"]
+        assert result["planning"]["reviews"] == [{"kind": "review", "issues": []}]
+    else:
+        with pytest.raises(ValueError, match="planned counts"):
+            asyncio.run(planner.run({"id": key, "question": row.question}))
+    assert research.studies() == []

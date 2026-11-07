@@ -25,6 +25,12 @@ for (const theme of ["light", "dark"]) {
       await page.goto(`/new?template=${environment}`);
       await page.locator(".condition-summary").first().click();
       await expect(page.getByLabel(control).first()).toBeVisible();
+      if (environment === "renewable_resource") {
+        await page
+          .getByLabel("Initial stock", { exact: true })
+          .first()
+          .fill("9");
+      }
       await page
         .getByRole("button", { name: "Create experiment", exact: true })
         .click();
@@ -32,10 +38,21 @@ for (const theme of ["light", "dark"]) {
       const studyID = new URL(page.url()).pathname.split("/").at(-1);
       const study = await (await request.get(`/api/studies/${studyID}`)).json();
       expect(study.design.environment).toBe(environment);
+      if (environment === "renewable_resource") {
+        expect(
+          study.design.conditions[0].parameters.resource.initial_stock,
+        ).toBe(9);
+      }
       await page.goto(`/runs/${study.runs[0].id}`);
       await expect(
         page.getByRole("heading", { name: title, exact: true }),
       ).toBeVisible();
+      if (environment === "renewable_resource") {
+        await expect(page.getByRole("progressbar")).toHaveAttribute(
+          "value",
+          "9",
+        );
+      }
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth,

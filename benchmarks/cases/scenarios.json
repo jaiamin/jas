@@ -150,7 +150,7 @@
     [
       "Does a larger transfer multiplier change trust?",
       "multiplier",
-      "return_rate"
+      "trust_rate"
     ],
     [
       "Does communication change returned fractions?",
@@ -160,7 +160,7 @@
     [
       "Does sender endowment change the fraction initially entrusted?",
       "endowment",
-      "return_rate"
+      "trust_rate"
     ],
     [
       "Does publishing private factual signals change inaccurate reports in exchanges?",
@@ -180,7 +180,7 @@
     [
       "Do agents transfer more after a persistent endowment increase?",
       "resource_schedule",
-      "return_rate"
+      "trust_rate"
     ],
     [
       "Does a private-payoff goal change reciprocity without explicitly prescribing selfish actions?",
@@ -190,17 +190,17 @@
     [
       "Does a mutual-benefit goal change initial trust?",
       "goals",
-      "return_rate"
+      "trust_rate"
     ],
     [
       "Does changing role labels to lender and steward alter transfers without debt mechanics?",
       "roles",
-      "return_rate"
+      "trust_rate"
     ],
     [
       "Does near-unit transfer multiplication discourage sending?",
       "multiplier",
-      "return_rate"
+      "trust_rate"
     ],
     [
       "Do public messages improve forecasts of partner return fractions?",
@@ -225,7 +225,7 @@
     [
       "Do repeated resource shocks alter entrusted fractions?",
       "resource_schedule",
-      "return_rate"
+      "trust_rate"
     ],
     [
       "Does generous transfer multiplication change returned absolute amounts and fractions?",
@@ -235,7 +235,7 @@
     [
       "Do public factual signals affect trust despite being payoff irrelevant?",
       "private_signal",
-      "return_rate"
+      "trust_rate"
     ],
     [
       "Do personal versus collective goal framings change feasible promise fulfillment?",
@@ -250,7 +250,7 @@
     [
       "For a space-trader credit exchange, does higher multiplication change trust under rotating partners?",
       "multiplier",
-      "return_rate"
+      "trust_rate"
     ],
     [
       "For paired disaster responders exchanging supplies as credits, does communication improve return rates?",
@@ -894,7 +894,7 @@
     ],
     [
       "Does a nearly depleted small-capacity stock collapse faster?",
-      "resource.capacity",
+      "resource.initial_stock",
       "collapse_rate"
     ],
     [

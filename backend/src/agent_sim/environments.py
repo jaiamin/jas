@@ -133,7 +133,9 @@ class TrustExchange(World):
             "The receiver may return any received amount; both keep what remains. "
             "Pairs change by a seeded round schedule. A promise is a minimum future transfer "
             "next time you act, scored only if you have enough credits available. "
-            "Report states your private signal; forecast predicts the partner's transfer fraction. "
+            "Report states your private signal. On a sender turn, forecast predicts the partner's "
+            "return divided by received credits; it is scored when received credits are positive. "
+            "On receiver turns forecast is null. "
             "Target selects a message recipient; the exchange partner is set by the rules.",
             [{"kind": "return" if receiving else "send", "amount_min": 0, "amount_max": available}],
         )

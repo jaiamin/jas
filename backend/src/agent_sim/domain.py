@@ -40,8 +40,15 @@ class InstitutionRules(Strict):
 
 
 class BargainingRules(Strict):
-    discount: float = Field(default=0.9, ge=0.1, le=1)
-    outside_option: int = Field(default=1, ge=0, le=50)
+    discount: float = Field(
+        default=0.9, ge=0.1, le=1, description="Fraction of the pie retained each round."
+    )
+    outside_option: int = Field(
+        default=1,
+        ge=0,
+        le=50,
+        description="Credits paid to each negotiator on exit or no agreement.",
+    )
 
 
 class InformationRules(Strict):
@@ -52,13 +59,33 @@ class InformationRules(Strict):
 
 class ResourceRules(Strict):
     capacity: int = Field(default=60, ge=2, le=500)
+    initial_stock: int | None = Field(
+        default=None, ge=1, le=500, description="Starting stock; null starts at carrying capacity."
+    )
     regeneration: float = Field(default=0.25, ge=0, le=1)
     extraction_limit: int = Field(default=10, ge=1, le=100)
 
+    @model_validator(mode="after")
+    def stock_fits_capacity(self) -> Self:
+        if self.initial_stock is not None and self.initial_stock > self.capacity:
+            raise ValueError("Initial resource stock cannot exceed carrying capacity")
+        return self
+
 
 class Parameters(Strict):
-    endowment: int = Field(default=10, ge=2, le=100)
-    multiplier: float = Field(default=2.0, ge=1, le=5)
+    endowment: int = Field(
+        default=10,
+        ge=2,
+        le=100,
+        description="Fresh credits per round in commons/trust; allocation budget in institutions; "
+        "INITIAL divisible pie in bargaining. Changing it changes bargaining surplus.",
+    )
+    multiplier: float = Field(
+        default=2.0,
+        ge=1,
+        le=5,
+        description="Shared-fund return in commons; multiplier on sent credits in trust exchange.",
+    )
     communication: bool = Field(
         default=True, description="Enables messages, factual reports and supported promises."
     )
@@ -78,7 +105,12 @@ class Parameters(Strict):
         description="True: each agent sees only its own signal. "
         "False: public_signals exposes every participant's signal to everyone.",
     )
-    task_count: int = Field(default=8, ge=3, le=30)
+    task_count: int = Field(
+        default=8,
+        ge=3,
+        le=30,
+        description="Generated coordination task count; ignored when design.tasks is supplied.",
+    )
     institution: InstitutionRules = Field(default_factory=InstitutionRules)
     bargaining: BargainingRules = Field(default_factory=BargainingRules)
     information: InformationRules = Field(default_factory=InformationRules)
