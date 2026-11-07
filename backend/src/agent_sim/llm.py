@@ -42,6 +42,16 @@ class Usage(TypedDict):
     partial: bool
 
 
+def empty_usage() -> Usage:
+    return {
+        "requests": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cost_usd": 0.0,
+        "partial": False,
+    }
+
+
 def usage_record(row: Mapping[str, Any]) -> Usage:
     return {
         "requests": int(row["requests"]),

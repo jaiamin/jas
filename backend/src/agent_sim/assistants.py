@@ -11,7 +11,7 @@ from .config import setting
 from .db import Analysis, Database, Measurement, RecordedEvent, Turn, digest, uid
 from .diagnostics import log_failure
 from .domain import Finding, Strict
-from .llm import LanguageModels, ProviderFailure, Usage
+from .llm import LanguageModels, ProviderFailure, Usage, empty_usage
 from .metrics import aggregate_metrics
 from .planning import Planner, stream_partial
 from .research import Research, event_dict
@@ -186,7 +186,7 @@ class Assistants:
             "created": row.created,
             "study_id": row.study_id,
             "run_id": row.run_id,
-            "usage": usage,
+            "usage": usage if usage is not None else empty_usage(),
         }
 
     def get(self, key: str) -> dict:

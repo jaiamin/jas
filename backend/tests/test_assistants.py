@@ -349,3 +349,32 @@ def test_internal_value_error_retains_assistant_diagnostics(runtime, monkeypatch
     asyncio.run(exercise())
     assert "broken_general" in caplog.text
     assert "invalid internal result" not in caplog.text
+
+
+@pytest.mark.parametrize("status", ["pending", "failed"])
+def test_analysis_usage_is_consistent_before_any_provider_call(runtime, status):
+    from agent_sim.db import Analysis
+
+    db, llm, research, _ = runtime
+    assistant = Assistants(db, research, llm)
+    with db.session.begin() as session:
+        request = Analysis(
+            question="Saved without provider work",
+            purpose="general",
+            status=status,
+            chat_id="usage-chat",
+            cutoffs={},
+        )
+        session.add(request)
+        session.flush()
+        key = request.id
+    detail = assistant.get(key)
+    assert assistant.list(purpose="general") == [detail]
+    assert assistant.chat("usage-chat") == [detail]
+    assert detail["usage"] == {
+        "requests": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cost_usd": 0.0,
+        "partial": False,
+    }

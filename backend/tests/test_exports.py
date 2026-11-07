@@ -53,12 +53,16 @@ def test_export_keeps_own_provenance_and_evidence_without_unrelated_work(runtime
             session.add(Annotation(run_id=key, turn=1, label="Review", note=key))
     before = models.usage()
     exported = export_study(research, sid)
-    assert [row["id"] for row in exported["analyses"]] == [proposal_id]
-    assert {row["analysis_id"] for row in exported["requests"]} == {proposal_id, None}
-    assert len(exported["requests"]) == 2
-    assert [row["run_id"] for row in exported["annotations"]] == [rid]
-    assert len(exported["runs"]) == 1
-    evidence = exported["runs"][0]["evidence"]
+    analyses, requests = exported["analyses"], exported["requests"]
+    annotations, runs = exported["annotations"], exported["runs"]
+    assert isinstance(analyses, list) and isinstance(requests, list)
+    assert isinstance(annotations, list) and isinstance(runs, list)
+    assert [row["id"] for row in analyses] == [proposal_id]
+    assert {row["analysis_id"] for row in requests} == {proposal_id, None}
+    assert len(requests) == 2
+    assert [row["run_id"] for row in annotations] == [rid]
+    assert len(runs) == 1
+    evidence = runs[0]["evidence"]
     assert evidence[1] == research.evidence(rid, 1)
     assert evidence[1]["events"]
     assert models.usage() == before

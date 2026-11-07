@@ -20,7 +20,7 @@ from .db import (
     digest,
 )
 from .domain import Design, Treatment
-from .llm import PRICES, LanguageModels, Usage
+from .llm import PRICES, LanguageModels, Usage, empty_usage
 from .metrics import RunMetrics, aggregate_metrics, condition_results, matched_effects
 from .simulation.environments import CATALOG, create_world
 
@@ -229,13 +229,7 @@ class Research:
                 query = query.where(Run.id.in_(run_ids))
             rows = session.execute(query).all()
             usage = self.models.usage_by_run({run.id for run, _, _ in rows})
-            empty: Usage = {
-                "requests": 0,
-                "input_tokens": 0,
-                "output_tokens": 0,
-                "cost_usd": 0.0,
-                "partial": False,
-            }
+            empty = empty_usage()
             designs = {
                 revision.id: Design.model_validate(revision.design) for _, _, revision in rows
             }

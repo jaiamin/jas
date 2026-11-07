@@ -48,22 +48,27 @@ def test_pause_finishes_current_request_and_double_click_has_one_writer(
             await release.wait()
             return await generate(*args, **kwargs)
 
-        monkeypatch.setattr(llm, "generate", delayed)
-        engine.start(rid)
-        first = engine.executions[rid].task
-        await started.wait()
-        engine.start(rid)
-        assert engine.executions[rid].task is first
-        engine.pause(rid)
-        release.set()
-        await first
-        record, _, _ = research.configuration(rid)
-        assert record.status == "paused" and record.turn == 1
-        assert llm.usage(run_id=rid)["requests"] == 1
-        engine.start(rid, single=True)
-        await engine.executions[rid].task
-        assert research.configuration(rid)[0].turn == 2
-        await engine.close()
+        async with asyncio.timeout(10):
+            try:
+                monkeypatch.setattr(llm, "generate", delayed)
+                engine.start(rid)
+                first = engine.executions[rid].task
+                await started.wait()
+                engine.start(rid)
+                assert engine.executions[rid].task is first
+                engine.pause(rid)
+                release.set()
+                await first
+                record, _, _ = research.configuration(rid)
+                assert record.status == "paused" and record.turn == 1
+                assert llm.usage(run_id=rid)["requests"] == 1
+                engine.start(rid, single=True)
+                await engine.executions[rid].task
+                assert research.configuration(rid)[0].turn == 2
+                await engine.close()
+            finally:
+                release.set()
+                await asyncio.wait_for(engine.close(), timeout=5)
 
     asyncio.run(exercise())
 
@@ -184,20 +189,25 @@ def test_capacity_one_and_pausing_queued_run_send_one_request(runtime, design, m
             await release.wait()
             return await generate(*args, **kwargs)
 
-        monkeypatch.setattr(llm, "generate", delayed)
-        engine.start(runs[0].id, single=True)
-        await entered.wait()
-        engine.start(runs[1].id, single=True)
-        await asyncio.sleep(0)
-        assert calls == [runs[0].id]
-        assert research.configuration(runs[1].id)[0].status == "queued"
-        engine.pause(runs[1].id)
-        release.set()
-        await engine.close()
-        assert calls == [runs[0].id]
-        assert research.configuration(runs[1].id)[0].turn == 0
-        assert research.configuration(runs[1].id)[0].status == "paused"
-        assert llm.usage()["requests"] == 1
+        async with asyncio.timeout(10):
+            try:
+                monkeypatch.setattr(llm, "generate", delayed)
+                engine.start(runs[0].id, single=True)
+                await entered.wait()
+                engine.start(runs[1].id, single=True)
+                await asyncio.sleep(0)
+                assert calls == [runs[0].id]
+                assert research.configuration(runs[1].id)[0].status == "queued"
+                engine.pause(runs[1].id)
+                release.set()
+                await engine.close()
+                assert calls == [runs[0].id]
+                assert research.configuration(runs[1].id)[0].turn == 0
+                assert research.configuration(runs[1].id)[0].status == "paused"
+                assert llm.usage()["requests"] == 1
+            finally:
+                release.set()
+                await asyncio.wait_for(engine.close(), timeout=5)
 
     asyncio.run(exercise())
 
@@ -244,25 +254,30 @@ def test_concurrent_runs_cannot_reserve_above_shared_budget(runtime, design, mon
                 usage=RequestUsage(input_tokens=100, output_tokens=50),
             )
 
-        monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=delayed))
-        engine.start(runs[0].id, single=True)
-        await entered.wait()
-        with db.session.begin() as session:
-            workspace = session.get_one(Workspace, 1)
-            workspace.ceiling = workspace.charged
-            reserved = workspace.charged
-        engine.start(runs[1].id, single=True)
-        await engine.executions[runs[1].id].task
-        assert research.configuration(runs[1].id)[0].status == "failed"
-        assert len(requests) == 1
-        with db.session() as session:
-            assert session.get_one(Workspace, 1).charged == reserved
-            assert len(session.scalars(select(ProviderCall)).all()) == 1
-        release.set()
-        await engine.executions[runs[0].id].task
-        with db.session() as session:
-            assert session.get_one(Workspace, 1).charged == 35
-        await engine.close()
+        async with asyncio.timeout(10):
+            try:
+                monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=delayed))
+                engine.start(runs[0].id, single=True)
+                await entered.wait()
+                with db.session.begin() as session:
+                    workspace = session.get_one(Workspace, 1)
+                    workspace.ceiling = workspace.charged
+                    reserved = workspace.charged
+                engine.start(runs[1].id, single=True)
+                await engine.executions[runs[1].id].task
+                assert research.configuration(runs[1].id)[0].status == "failed"
+                assert len(requests) == 1
+                with db.session() as session:
+                    assert session.get_one(Workspace, 1).charged == reserved
+                    assert len(session.scalars(select(ProviderCall)).all()) == 1
+                release.set()
+                await engine.executions[runs[0].id].task
+                with db.session() as session:
+                    assert session.get_one(Workspace, 1).charged == 35
+                await engine.close()
+            finally:
+                release.set()
+                await asyncio.wait_for(engine.close(), timeout=5)
 
     asyncio.run(exercise())
 
