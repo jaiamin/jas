@@ -1,5 +1,38 @@
 # ASS handoff
 
+## Active code quality work
+
+Branch: `t3/improve-codebase-quality`. Use the project-local
+`.tools/desloppify/bin/desloppify` (installed with the `full` extra) and the
+installed `.agents/skills/desloppify/SKILL.md` workflow. State in `.desloppify/`
+is local and ignored. System Python is externally managed, so the scanner uses
+an isolated virtual environment; application dependencies stay in `.venv`.
+
+Acceptance criteria:
+- Scan the Python backend and TypeScript frontend separately, without excluding
+  production code, tests, or maintained documentation to improve scores.
+- Follow each scan's `next` queue: investigate, fix, verify, resolve, repeat.
+- Preserve simulation semantics, request accounting, persisted evidence, and UI flows.
+- Pass backend tests/Ruff/ty and frontend lint/tests/build; exercise affected UI
+  flows in a keyless disposable browser-test instance.
+- Rescan and report measured scores, remaining findings, and any concrete blockers.
+
+Progress and next steps:
+1. [x] Inspect repository, Python version, branch, and project boundaries.
+2. [x] Install Desloppify and its Codex guide; ignore local scanner state.
+3. [x] Exclude tool/dependency/cache/build output and scan each project.
+4. [ ] Execute review, planning, and fix queues; record material decisions here.
+5. [ ] Verify, rescan, commit coherent changes, and publish one draft PR.
+
+Initial evidence: backend objective 73.4, frontend objective 75.6; subjective
+dimensions await independent review. Baseline Ruff/ty and frontend lint, five
+unit tests, production build, and 20 keyless browser tests pass. Backend baseline
+had 146 passes and one API test racing asynchronous step completion; the API
+tests now await the actual engine task (all five pass).
+
+Previous implementation context follows; historical test counts and local-service
+state below describe earlier work and must be reverified for this checkout.
+
 Branch `feat/empirical-research-platform`; draft PR https://github.com/jaiamin/ass/pull/3.
 Read README for setup, docs/ARCHITECTURE.md for boundaries, GLOSSARY.md for terminology,
 DESIGN.md for current visual tokens and docs/INTERFACE.md for the redesign evidence.
