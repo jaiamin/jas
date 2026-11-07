@@ -17,15 +17,21 @@ class ActionOption:
     targets: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class DecisionRules:
+    allow_forecast: bool = False
+    promise_limit: Literal["action", "unbounded"] | None = None
+    report_maximum: int | None = None
+
+
 @lru_cache(maxsize=256)
 def decision_schema(
-    environment: str,
+    rules: DecisionRules,
     communication: bool,
     options: tuple[ActionOption, ...],
     channels: tuple[str, ...] = ("messages", "reports", "promises"),
 ) -> type[Decision]:
     variants = []
-    legacy = environment in {"commons", "trust_exchange", "coordination"}
     for index, option in enumerate(options):
         fields: dict[str, Any] = {
             "kind": (StrEnum(f"Kind{index}", {option.kind: option.kind}), ...),
@@ -35,12 +41,12 @@ def decision_schema(
                 ...,
             ),
         }
-        if environment == "commons":
+        if rules.promise_limit == "action":
             fields["promise"] = (Annotated[int, Field(ge=0, le=option.maximum)] | None, ...)
-        elif environment != "trust_exchange":
+        elif rules.promise_limit is None:
             fields["promise"] = (type(None), ...)
-        if environment == "information":
-            fields["report"] = (Annotated[int, Field(ge=0, le=1)] | None, ...)
+        if rules.report_maximum is not None:
+            fields["report"] = (Annotated[int, Field(ge=0, le=rules.report_maximum)] | None, ...)
         if not communication or "messages" not in channels:
             fields["message"] = (Literal[""], ...)
         if not communication or "reports" not in channels:
@@ -50,7 +56,7 @@ def decision_schema(
         variants.append(create_model(f"LegalAction{index}", __base__=Action, **fields))
     if not variants:
         raise ValueError("A decision requires at least one legal action")
-    fields = {} if legacy else {"forecast": (type(None), ...)}
+    fields = {} if rules.allow_forecast else {"forecast": (type(None), ...)}
     return create_model(
         "TurnDecision", __base__=Decision, action=(reduce(or_, variants), ...), **fields
     )

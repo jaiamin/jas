@@ -207,3 +207,89 @@ def test_research_sources_reject_unsafe_or_malformed_links():
         {"url": "https://example.org/paper", "title": "A paper"},
         {"url": "https://example.org/other", "title": "example.org"},
     ]
+
+
+def test_settlement_failure_preserves_provider_failure_and_reservation(runtime, monkeypatch):
+    import pytest
+    from agent_sim.llm import ProviderFailure
+
+    db, llm, _, _ = runtime
+
+    async def failed(messages, info):
+        raise TimeoutError("primary provider failure")
+
+    def failed_settlement(*args):
+        raise RuntimeError("secondary accounting failure")
+
+    monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=failed))
+    monkeypatch.setattr(llm, "_settle", failed_settlement)
+    with pytest.raises(ProviderFailure) as failure:
+        asyncio.run(
+            llm.generate(
+                str,
+                model="openai:gpt-6-luna",
+                prompt="test",
+                instructions="test",
+                purpose="analysis",
+            )
+        )
+    assert isinstance(failure.value.__cause__, TimeoutError)
+    with db.session() as session:
+        call = session.scalars(select(ProviderCall)).one()
+        assert call.status == "pending"
+        assert session.get_one(Workspace, 1).charged == call.reserved > 0
+    llm.recover()
+    with db.session() as session:
+        assert session.scalars(select(ProviderCall)).one().status == "unknown"
+
+
+def test_settlement_failure_preserves_cancellation(runtime, monkeypatch):
+    import pytest
+
+    _, llm, _, _ = runtime
+
+    async def cancelled(messages, info):
+        raise asyncio.CancelledError()
+
+    def failed_settlement(*args):
+        raise RuntimeError("secondary accounting failure")
+
+    monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=cancelled))
+    monkeypatch.setattr(llm, "_settle", failed_settlement)
+    with pytest.raises(asyncio.CancelledError):
+        asyncio.run(
+            llm.generate(
+                str,
+                model="openai:gpt-6-luna",
+                prompt="test",
+                instructions="test",
+                purpose="analysis",
+            )
+        )
+
+
+def test_settlement_failure_after_success_propagates(runtime, monkeypatch):
+    import pytest
+
+    _, llm, _, _ = runtime
+
+    async def completed(messages, info):
+        return ModelResponse(
+            parts=[ToolCallPart(info.output_tools[0].name, {"response": "answer"})]
+        )
+
+    def failed_settlement(*args):
+        raise RuntimeError("accounting unavailable")
+
+    monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=completed))
+    monkeypatch.setattr(llm, "_settle", failed_settlement)
+    with pytest.raises(RuntimeError, match="accounting unavailable"):
+        asyncio.run(
+            llm.generate(
+                str,
+                model="openai:gpt-6-luna",
+                prompt="test",
+                instructions="test",
+                purpose="analysis",
+            )
+        )

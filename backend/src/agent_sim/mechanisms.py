@@ -1,14 +1,27 @@
 import random
+from typing import cast
 
-from .domain import Action, Design, Event, Measure, Parameters
+from .checkpoints import (
+    ActionPayload,
+    BargainingCheckpoint,
+    Checkpoint,
+    InformationCheckpoint,
+    InstitutionCheckpoint,
+    LegalAction,
+    Observation,
+    ResourceCheckpoint,
+    Sanction,
+)
+from .decisions import DecisionRules
+from .domain import Action, Event, Measure
 from .world import World
 
 
-def legal(kind: str, maximum: int = 0, targets: list[str] | None = None) -> dict:
+def legal(kind: str, maximum: int = 0, targets: list[str] | None = None) -> LegalAction:
     return {"kind": kind, "amount_min": 0, "amount_max": maximum, "targets": targets or [""]}
 
 
-class Mechanism(World):
+class Mechanism[StateT: Checkpoint](World[StateT]):
     version = "2.0.0"
 
     def validate(self, agent: str, action: Action) -> None:
@@ -45,8 +58,11 @@ class Mechanism(World):
         return self.communication_events(agent, action.model_copy(update={"target": ""}))
 
 
-class Institution(Mechanism):
-    def observe(self, agent: str) -> dict:
+class Institution(Mechanism[InstitutionCheckpoint]):
+    def initial_state(self) -> InstitutionCheckpoint:
+        return {**self.common_state()}
+
+    def observe(self, agent: str) -> Observation:
         rules = self.parameters.institution
         authority = agent in rules.authorities
         options = (
@@ -129,7 +145,7 @@ class Institution(Mechanism):
             amount = min(action.amount, max(0, balances[action.target]))
             balances[action.target] -= amount
             balances[agent] -= 1
-            record = {
+            record: Sanction = {
                 "actor": agent,
                 "target": action.target,
                 "amount": amount,
@@ -227,13 +243,16 @@ class Institution(Mechanism):
         return self.finish(events, measures)
 
 
-class Bargaining(Mechanism):
+class Bargaining(Mechanism[BargainingCheckpoint]):
+    def initial_state(self) -> BargainingCheckpoint:
+        return {**self.common_state()}
+
     def order(self) -> list[str]:
         # Alternating proposer, then responder; offer persists across those two decisions.
         ids = self.ids if self.seed % 2 == 0 else self.ids[::-1]
         return ids if self.state["round"] % 2 else ids[::-1]
 
-    def observe(self, agent: str) -> dict:
+    def observe(self, agent: str) -> Observation:
         pie = int(
             self.parameters.endowment
             * self.parameters.bargaining.discount ** (self.state["round"] - 1)
@@ -309,8 +328,17 @@ class Bargaining(Mechanism):
         return self.finish(events, measures)
 
 
-class Information(Mechanism):
-    def evidence(self, agent):
+class Information(Mechanism[InformationCheckpoint]):
+    decision_rules = DecisionRules(report_maximum=1)
+
+    def initial_state(self) -> InformationCheckpoint:
+        return {**self.common_state(), "pending": {}}
+
+    def new_round(self) -> None:
+        super().new_round()
+        self.state["pending"] = {}
+
+    def truth_and_signal(self, agent: str) -> tuple[int, int]:
         truth = random.Random(f"{self.seed}:truth:{self.state['round']}").randint(0, 1)
         accurate = (
             random.Random(f"{self.seed}:evidence:{self.state['round']}:{agent}").random()
@@ -318,8 +346,8 @@ class Information(Mechanism):
         )
         return truth, truth if accurate else 1 - truth
 
-    def observe(self, agent: str) -> dict:
-        _, signal = self.evidence(agent)
+    def observe(self, agent: str) -> Observation:
+        _, signal = self.truth_and_signal(agent)
         observation = self.base_observation(
             agent,
             "Choose amount 0 or 1 to predict the hidden binary state. Each participant receives "
@@ -336,7 +364,7 @@ class Information(Mechanism):
         )
         observation["your_private_signal"] = signal
         observation["public_signals"] = (
-            {key: self.evidence(key)[1] for key in self.ids}
+            {key: self.truth_and_signal(key)[1] for key in self.ids}
             if not self.parameters.private_signal
             else {}
         )
@@ -347,7 +375,7 @@ class Information(Mechanism):
         events = super().communication_events(agent, action)
         for event in events:
             if event.kind == "claim":
-                truth = self.evidence(agent)[1]
+                truth = self.truth_and_signal(agent)[1]
                 event.data.update(known_truth=truth, accurate=action.report == truth)
         return events
 
@@ -355,7 +383,7 @@ class Information(Mechanism):
         self.validate(agent, action)
         if action.report is not None and action.report not in (0, 1):
             raise ValueError("Binary signal reports must be 0 or 1")
-        truth, signal = self.evidence(agent)
+        truth, signal = self.truth_and_signal(agent)
         self.state["pending"][agent] = action.amount
         events = self.public_communication_events(agent, action) + [
             Event(
@@ -402,15 +430,20 @@ class Information(Mechanism):
         return self.finish(events, measures)
 
 
-class RenewableResource(Mechanism):
-    def __init__(
-        self, design: Design, parameters: Parameters, seed: int, state: dict | None = None
-    ):
-        super().__init__(design, parameters, seed, state)
-        rules = self.parameters.resource
-        self.state.setdefault("stock", float(rules.initial_stock or rules.capacity))
+class RenewableResource(Mechanism[ResourceCheckpoint]):
+    def initial_state(self) -> ResourceCheckpoint:
+        rules = self._parameters.resource
+        return {
+            **self.common_state(),
+            "pending": {},
+            "stock": float(rules.initial_stock or rules.capacity),
+        }
 
-    def observe(self, agent: str) -> dict:
+    def new_round(self) -> None:
+        super().new_round()
+        self.state["pending"] = {}
+
+    def observe(self, agent: str) -> Observation:
         rules = self.parameters.resource
         observation = self.base_observation(
             agent,
@@ -428,7 +461,7 @@ class RenewableResource(Mechanism):
 
     def apply(self, agent: str, action: Action) -> tuple[list[Event], list[Measure]]:
         self.validate(agent, action)
-        self.state["pending"][agent] = action.model_dump()
+        self.state["pending"][agent] = cast(ActionPayload, action.model_dump())
         if self.state["position"] < len(self.ids) - 1:
             self.state["position"] += 1
             return [

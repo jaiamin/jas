@@ -1,5 +1,6 @@
 from collections import Counter, defaultdict
 from collections.abc import Sequence
+from dataclasses import dataclass
 
 from sqlalchemy import select
 
@@ -48,6 +49,13 @@ def event_dict(event: RecordedEvent) -> dict:
         "text": event.text,
         "data": event.data,
     }
+
+
+@dataclass(frozen=True)
+class OperationalRun:
+    id: str
+    turn: int
+    models: tuple[str, ...]
 
 
 class Research:
@@ -258,6 +266,26 @@ class Research:
                 )
             return result
 
+    def operational_runs(self, study_id: str, number: int | None = None) -> list[OperationalRun]:
+        """Read a revision's runnable identities without computing report statistics."""
+        with self.db.session() as session:
+            study = session.get_one(Study, study_id)
+            rows = session.execute(
+                select(Run.id, Run.turn, Agent.model)
+                .join(Condition, Condition.id == Run.condition_id)
+                .join(Revision, Revision.id == Condition.revision_id)
+                .join(Agent, Agent.run_id == Run.id)
+                .where(Revision.study_id == study_id, Revision.number == (number or study.revision))
+                .order_by(Run.created.desc())
+            ).all()
+        grouped: dict[tuple[str, int], set[str]] = defaultdict(set)
+        for run_id, turn, model in rows:
+            grouped[run_id, turn].add(model)
+        return [
+            OperationalRun(key, turn, tuple(sorted(models)))
+            for (key, turn), models in grouped.items()
+        ]
+
     def study(self, study_id: str, number: int | None = None) -> dict:
         with self.db.session() as session:
             study = session.get_one(Study, study_id)
@@ -271,12 +299,8 @@ class Research:
                 .where(Revision.study_id == study_id)
                 .order_by(Revision.number.desc())
             ).all()
-            condition_ids = set(
-                session.scalars(select(Condition.id).where(Condition.revision_id == revision.id))
-            )
-            all_runs = session.scalars(select(Run).where(Run.study_id == study_id)).all()
-            selected_ids = {run.id for run in all_runs if run.condition_id in condition_ids}
-        summaries = [r for r in self.runs(study_id) if r["id"] in selected_ids]
+        selected_ids = {run.id for run in self.operational_runs(study_id, revision.number)}
+        summaries = self.runs(study_id, run_ids=selected_ids)
         completed = [run for run in summaries if run["status"] == "complete"]
         metrics = self.metrics_many({run["id"] for run in completed})
         samples = [

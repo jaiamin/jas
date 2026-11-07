@@ -179,7 +179,12 @@ class LanguageModels:
                     "No retry or substitute model was used."
                 ) from error
             finally:
-                self._settle(call, messages, failure)
+                try:
+                    self._settle(call, messages, failure)
+                except Exception as settlement_error:
+                    if failure is None:
+                        raise
+                    log_failure(f"Provider call {call.id} settlement failed", settlement_error)
 
     def _reserve(self, call: ProviderCall) -> None:
         with self.db.session.begin() as session:

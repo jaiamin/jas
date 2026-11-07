@@ -1,50 +1,57 @@
 import copy
 import random
 from abc import ABC, abstractmethod
+from collections.abc import Mapping
+from typing import Any, cast
 
-from .decisions import ActionOption, decision_schema
+from .checkpoints import Checkpoint, LegalAction, Observation
+from .decisions import ActionOption, DecisionRules, decision_schema
 from .domain import Action, Decision, Design, Event, Measure, Parameters
 
 RULE_VERSION = "1.0.0"
 
 
-class World(ABC):
+class World[StateT: Checkpoint](ABC):
     version = RULE_VERSION
+    decision_rules = DecisionRules()
 
     @abstractmethod
-    def observe(self, agent: str) -> dict: ...
+    def observe(self, agent: str) -> Observation: ...
 
     @abstractmethod
     def apply(self, agent: str, action: Action) -> tuple[list[Event], list[Measure]]: ...
 
     def __init__(
-        self, design: Design, parameters: Parameters, seed: int, state: dict | None = None
+        self,
+        design: Design,
+        parameters: Parameters,
+        seed: int,
+        state: Mapping[str, Any] | None = None,
     ):
         self.design, self._parameters, self.seed = design, parameters, seed
         self.ids = [p.key for p in design.profiles]
-        self.state = (
-            copy.deepcopy(state)
-            if state is not None
-            else {
-                "rule_version": self.version,
-                "round": 1,
-                "position": 0,
-                "done": False,
-                "balances": dict.fromkeys(self.ids, 0.0),
-                "pending": {},
-                "history": [],
-                "notes": dict.fromkeys(self.ids, ""),
-                "experiences": {key: [] for key in self.ids},
-                "promises": {},
-                "signals": {},
-                "relations": {},
-                "tasks": [],
-                "phase": "send",
-                "escrow": {},
-            }
+        # The database boundary is JSON; each concrete world owns its typed shape.
+        self.state: StateT = (
+            cast(StateT, copy.deepcopy(state)) if state is not None else self.initial_state()
         )
         if state is None:
             self.new_round()
+
+    @abstractmethod
+    def initial_state(self) -> StateT: ...
+
+    def common_state(self) -> Checkpoint:
+        return {
+            "rule_version": self.version,
+            "round": 1,
+            "position": 0,
+            "done": False,
+            "balances": dict.fromkeys(self.ids, 0.0),
+            "history": [],
+            "notes": dict.fromkeys(self.ids, ""),
+            "experiences": {key: [] for key in self.ids},
+            "signals": {},
+        }
 
     def order(self) -> list[str]:
         order = self.ids.copy()
@@ -64,7 +71,6 @@ class World(ABC):
 
     def new_round(self) -> None:
         self.state["position"] = 0
-        self.state["pending"] = {}
         self.state["signals"] = {
             key: random.Random(f"{self.seed}:signal:{self.state['round']}:{key}").randint(
                 0, self.parameters.endowment
@@ -80,7 +86,7 @@ class World(ABC):
                 }
             )
 
-    def base_observation(self, agent: str, rules: str, actions: list[dict]) -> dict:
+    def base_observation(self, agent: str, rules: str, actions: list[LegalAction]) -> Observation:
         memory = self.parameters.memory
         return {
             "round": self.state["round"],
@@ -176,7 +182,10 @@ class World(ABC):
             self.state["round"] += 1
             self.new_round()
 
-    def decision_schema(self, observation: dict) -> type[Decision]:
+    def schema_rules(self, observation: Observation) -> DecisionRules:
+        return self.decision_rules
+
+    def decision_schema(self, observation: Observation) -> type[Decision]:
         grouped: dict[tuple[str, int, int], list[str]] = {}
         for action in observation["legal_actions"]:
             key = (action["kind"], action.get("amount_min", 0), action.get("amount_max", 0))
@@ -189,7 +198,7 @@ class World(ABC):
             for (kind, minimum, maximum), targets in grouped.items()
         )
         return decision_schema(
-            self.design.environment,
+            self.schema_rules(observation),
             self.parameters.communication,
             options,
             tuple(self.parameters.communication_channels),
@@ -207,7 +216,6 @@ class World(ABC):
             ),
             None,
         )
-        self.state.setdefault("forecasts", {})
         events, measures = self._apply_decision(actor, decision)
         if change:
             events.insert(
@@ -237,23 +245,20 @@ class World(ABC):
                         denominator=1,
                     )
                 )
-            elif event.kind in (
-                "task_progress",
-                "task_completed",
-                "blocked_work",
-                "duplicate_work",
-            ):
-                for kind in ("blocked_work", "duplicate_work"):
-                    measures.append(
-                        Measure(
-                            key=f"{kind}_rate",
-                            agent=event.actor,
-                            value=float(event.kind == kind),
-                            denominator=1,
-                        )
-                    )
         self.state["notes"][actor] = decision.memory
         return events, measures
 
-    def snapshot(self) -> dict:
-        return copy.deepcopy(self.state)
+    def snapshot(self) -> StateT:
+        # Versions 1 and 2 persisted these inert fields for every environment.
+        # Keep that envelope so existing hashes and recorded replay remain exact.
+        legacy = {
+            "pending": {},
+            "promises": {},
+            "relations": {},
+            "tasks": [],
+            "phase": "send",
+            "escrow": {},
+        }
+        if self.state["position"] or self.state["round"] > 1 or self.state["done"]:
+            legacy["forecasts"] = {}
+        return cast(StateT, copy.deepcopy({**legacy, **self.state}))

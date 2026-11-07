@@ -1,10 +1,10 @@
 import os
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal, Self
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import FileResponse, JSONResponse
-from pydantic import Field
+from pydantic import Field, model_validator
 from sqlalchemy import select, text
 
 from .assistants import Assistants
@@ -68,10 +68,19 @@ class SaveStudy(Strict):
     plan_id: str | None = None
 
 
-class Ask(Strict):
+class DesignRequest(Strict):
     question: str = Field(min_length=1, max_length=4000)
+
+
+class AnalysisRequest(DesignRequest):
     study_id: str | None = None
     run_id: str | None = None
+
+    @model_validator(mode="after")
+    def exactly_one_scope(self) -> Self:
+        if bool(self.study_id) == bool(self.run_id):
+            raise ValueError("Choose exactly one run or study for analysis")
+        return self
 
 
 class Note(Strict):
@@ -80,8 +89,12 @@ class Note(Strict):
     note: str = Field(min_length=1, max_length=4000)
 
 
-class Control(Strict):
-    action: str = Field(pattern="^(start|pause|step)$")
+class StudyControl(Strict):
+    action: Literal["start", "pause"]
+
+
+class RunControl(Strict):
+    action: Literal["start", "pause", "step"]
 
 
 @router.get("/api/health")
@@ -162,9 +175,7 @@ async def revise_study(study_id: str, body: SaveStudy, *, research: ResearchDep)
 
 
 @router.post("/api/studies/{study_id}/control")
-async def control_study(study_id: str, body: Control, *, engine: EngineDep) -> dict[str, Any]:
-    if body.action == "step":
-        raise ValueError("Step is available on individual runs")
+async def control_study(study_id: str, body: StudyControl, *, engine: EngineDep) -> dict[str, Any]:
     if body.action == "start":
         engine.start_study(study_id)
     else:
@@ -211,7 +222,7 @@ async def get_evidence(run_id: str, number: int, *, research: ResearchDep) -> di
 
 
 @router.post("/api/runs/{run_id}/control")
-async def control_run(run_id: str, body: Control, *, engine: EngineDep) -> dict[str, Any]:
+async def control_run(run_id: str, body: RunControl, *, engine: EngineDep) -> dict[str, Any]:
     if body.action == "pause":
         engine.pause(run_id)
     else:
@@ -251,16 +262,12 @@ async def add_note(
 
 
 @router.post("/api/plan", status_code=202)
-async def plan(body: Ask, *, assistants: AssistantsDep) -> dict[str, Any]:
-    if body.study_id or body.run_id:
-        raise ValueError("Design requests cannot change an existing run")
+async def plan(body: DesignRequest, *, assistants: AssistantsDep) -> dict[str, Any]:
     return {"id": assistants.start(body.question, purpose="design")}
 
 
 @router.post("/api/analyses", status_code=202)
-async def ask(body: Ask, *, assistants: AssistantsDep) -> dict[str, Any]:
-    if not body.run_id and (not body.study_id):
-        raise ValueError("Choose a run or study for analysis")
+async def ask(body: AnalysisRequest, *, assistants: AssistantsDep) -> dict[str, Any]:
     return {
         "id": assistants.start(
             body.question, purpose="analysis", study_id=body.study_id, run_id=body.run_id

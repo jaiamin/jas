@@ -163,3 +163,31 @@ def test_saved_ai_proposal_provenance_survives_revision_and_export(client, desig
     assert exported["study"]["plan_id"] is None
     assert exported["revisions"][0]["source"] == f"plan:{pid}"
     assert exported["analyses"][0]["id"] == pid
+
+
+def test_verification_rejects_corrupt_evidence(client, design):
+    from agent_sim.db import Turn
+    from sqlalchemy import select
+
+    sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+    step_run(client, rid)
+    with client.app.state.db.session.begin() as session:
+        session.scalars(select(Turn).where(Turn.run_id == rid)).one().state_hash = "corrupted"
+    response = client.post(f"/api/runs/{rid}/verify")
+    assert response.status_code == 422
+    assert "State mismatch at turn 1" in response.json()["detail"]
+
+
+@pytest.mark.parametrize(
+    "path,payload",
+    [
+        ("/api/plan", {"question": "test", "run_id": "run"}),
+        ("/api/analyses", {"question": "test"}),
+        ("/api/analyses", {"question": "test", "study_id": "one", "run_id": "two"}),
+        ("/api/studies/unknown/control", {"action": "step"}),
+    ],
+)
+def test_operation_schemas_reject_unsupported_inputs(client, path, payload):
+    assert client.post(path, json=payload).status_code == 422
+    assert client.get("/api/settings").json()["usage"]["requests"] == 0

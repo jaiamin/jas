@@ -1,15 +1,34 @@
 import copy
 from dataclasses import dataclass
+from typing import cast
 
+from .checkpoints import (
+    ActionPayload,
+    CommonsCheckpoint,
+    CoordinationCheckpoint,
+    Observation,
+    Promise,
+    TrustCheckpoint,
+)
+from .decisions import DecisionRules
 from .domain import Action, Decision, Design, Event, Measure, Parameters
 from .mechanisms import Bargaining, Information, Institution, RenewableResource
 from .world import World
 
 
-class Commons(World):
+class Commons(World[CommonsCheckpoint]):
+    decision_rules = DecisionRules(allow_forecast=True, promise_limit="action")
+
+    def initial_state(self) -> CommonsCheckpoint:
+        return {**self.common_state(), "pending": {}, "promises": {}}
+
+    def new_round(self) -> None:
+        super().new_round()
+        self.state["pending"] = {}
+
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
         endowment = self.parameters.endowment
-        forecasts = self.state["forecasts"]
+        forecasts = self.state.setdefault("forecasts", {})
         forecasts[actor] = decision.forecast
         events, measures = self.apply(actor, decision.action)
         if any(e.kind == "contribution" for e in events):
@@ -30,7 +49,7 @@ class Commons(World):
                     )
         return events, measures
 
-    def observe(self, agent: str) -> dict:
+    def observe(self, agent: str) -> Observation:
         endowment = self.parameters.endowment
         return self.base_observation(
             agent,
@@ -53,7 +72,7 @@ class Commons(World):
         if action.promise is not None and action.promise > self.parameters.endowment:
             raise ValueError("Promise exceeds the round endowment")
         self.communication_events(agent, action)
-        self.state["pending"][agent] = action.model_dump()
+        self.state["pending"][agent] = cast(ActionPayload, action.model_dump())
         self.state["position"] += 1
         if self.state["position"] < len(self.ids):
             return [
@@ -107,7 +126,7 @@ class Commons(World):
                 )
             events += self.communication_events(key, chosen)
             if chosen.promise is not None and self.state["round"] < self.design.rounds:
-                promise = {"amount": chosen.promise, "due_round": self.state["round"] + 1}
+                promise: Promise = {"amount": chosen.promise, "due_round": self.state["round"] + 1}
                 self.state["promises"][key] = promise
                 events.append(
                     Event(
@@ -134,12 +153,21 @@ class Commons(World):
         return events, measures
 
 
-class TrustExchange(World):
+class TrustExchange(World[TrustCheckpoint]):
+    def schema_rules(self, observation: Observation) -> DecisionRules:
+        return DecisionRules(
+            allow_forecast=observation["role"] == "sender", promise_limit="unbounded"
+        )
+
+    def initial_state(self) -> TrustCheckpoint:
+        return {**self.common_state(), "promises": {}, "escrow": {}, "relations": {}}
+
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
-        forecasts = self.state["forecasts"]
+        forecasts = self.state.setdefault("forecasts", {})
         events, measures = self.apply(actor, decision.action)
         transfer = next(e for e in events if e.kind == "transfer")
         if transfer.data["phase"] == "send":
+            assert transfer.target is not None
             forecasts[transfer.target] = decision.forecast
         else:
             prediction = forecasts.pop(actor, None)
@@ -162,7 +190,7 @@ class TrustExchange(World):
         pair = position // 2 * 2
         return order[pair], order[pair + 1]
 
-    def observe(self, agent: str) -> dict:
+    def observe(self, agent: str) -> Observation:
         sender, receiver = self.partners()
         receiving = agent == receiver
         available = (
@@ -278,9 +306,11 @@ class TrustExchange(World):
         return events, [measure]
 
 
-class Coordination(World):
+class Coordination(World[CoordinationCheckpoint]):
+    decision_rules = DecisionRules(allow_forecast=True)
+
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
-        forecasts = self.state["forecasts"]
+        forecasts = self.state.setdefault("forecasts", {})
         prior_coordination = forecasts.get("next_completion")
         events, measures = self.apply(actor, decision.action)
         rate = next(m.value for m in measures if m.key == "completion_rate")
@@ -291,17 +321,22 @@ class Coordination(World):
         forecasts["next_completion"] = decision.forecast
         return events, measures
 
-    def __init__(
-        self, design: Design, parameters: Parameters, seed: int, state: dict | None = None
-    ):
-        super().__init__(design, parameters, seed, state)
-        if state is None:
-            self.state["tasks"] = (
+    def initial_state(self) -> CoordinationCheckpoint:
+        return {
+            **self.common_state(),
+            "tasks": (
                 [
-                    {**task.model_dump(), "progress": 0, "completed_by": None}
-                    for task in design.tasks
+                    {
+                        "key": task.key,
+                        "name": task.name,
+                        "dependencies": task.dependencies,
+                        "effort": task.effort,
+                        "progress": 0,
+                        "completed_by": None,
+                    }
+                    for task in self.design.tasks
                 ]
-                if design.tasks
+                if self.design.tasks
                 else [
                     {
                         "key": f"task-{i + 1}",
@@ -311,11 +346,27 @@ class Coordination(World):
                         "progress": 0,
                         "completed_by": None,
                     }
-                    for i in range(parameters.task_count)
+                    for i in range(self._parameters.task_count)
                 ]
-            )
+            ),
+        }
 
-    def observe(self, agent: str) -> dict:
+    def step(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        events, measures = super().step(actor, decision)
+        for event in events:
+            if event.kind in {"task_progress", "task_completed", "blocked_work", "duplicate_work"}:
+                for kind in ("blocked_work", "duplicate_work"):
+                    measures.append(
+                        Measure(
+                            key=f"{kind}_rate",
+                            agent=event.actor,
+                            value=float(event.kind == kind),
+                            denominator=1,
+                        )
+                    )
+        return events, measures
+
+    def observe(self, agent: str) -> Observation:
         observation = self.base_observation(
             agent,
             "Coordinate a team project. Work on one task per turn or wait. "

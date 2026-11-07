@@ -78,6 +78,10 @@ class Assistants:
         loop = asyncio.get_running_loop()
         if self.closing:
             raise ValueError("Server is stopping")
+        if purpose == "design" and (study_id or run_id):
+            raise ValueError("Design requests cannot change an existing run")
+        if purpose != "design" and bool(study_id) == bool(run_id):
+            raise ValueError("Choose exactly one run or study for analysis")
         question = question.strip()
         if not question or len(question) > 4000:
             raise ValueError("Enter a question between 1 and 4,000 characters")
@@ -92,7 +96,7 @@ class Assistants:
             study_id = run.study_id
             cutoffs = {run_id: run.turn}
         elif study_id:
-            cutoffs = {r["id"]: r["turn"] for r in self.research.study(study_id)["runs"]}
+            cutoffs = {r.id: r.turn for r in self.research.operational_runs(study_id)}
         with self.db.session.begin() as session:
             active = session.scalars(
                 select(Analysis).where(
@@ -184,8 +188,7 @@ class Assistants:
         with self.db.session.begin() as session:
             session.get_one(Analysis, key).output = {"stage": stage, "examined": examined}
 
-    async def _investigate(self, row: dict) -> dict:
-        self._progress(row["id"], "indexing", [])
+    def _conversation(self, row: dict) -> Sequence[dict]:
         with self.db.session() as session:
             current = session.get_one(Analysis, row["id"])
             previous = session.scalars(
@@ -208,8 +211,11 @@ class Assistants:
                 }
                 for item in reversed(previous)
             ]
+        return conversation
+
+    def _evidence_index(self, cutoffs: dict[str, int]) -> dict:
         index, protocols, conditions = [], {}, {}
-        for run_id, cutoff in row["cutoffs"].items():
+        for run_id, cutoff in cutoffs.items():
             run, design, condition = self.research.configuration(run_id)
             protocol_id = digest(design.model_dump())[:16]
             protocols[protocol_id] = design.model_dump()
@@ -234,9 +240,59 @@ class Assistants:
                     "metrics": metrics,
                 }
             )
-        index = {"protocols": protocols, "conditions": conditions, "runs": index}
+        return {"protocols": protocols, "conditions": conditions, "runs": index}
+
+    def _requested_evidence(
+        self, request: TurnRequest | HistoryRequest, cutoffs: dict[str, int]
+    ) -> tuple[dict, dict]:
+        cutoff = cutoffs.get(request.run_id)
+        start = request.turn if isinstance(request, TurnRequest) else request.start
+        if cutoff is None or start > cutoff:
+            raise ValueError("Assistant requested evidence outside the captured run")
+        end = start if isinstance(request, TurnRequest) else min(start + request.count - 1, cutoff)
+        examined_range = {
+            "run_id": request.run_id,
+            "start": start,
+            "end": end,
+            "full_turn": isinstance(request, TurnRequest),
+        }
+        if isinstance(request, TurnRequest):
+            data = self.research.evidence(request.run_id, start)
+        else:
+            with self.db.session() as session:
+                turns = session.scalars(
+                    select(Turn)
+                    .where(
+                        Turn.run_id == request.run_id,
+                        Turn.number >= start,
+                        Turn.number <= end,
+                    )
+                    .order_by(Turn.number)
+                ).all()
+                events = session.scalars(
+                    select(RecordedEvent)
+                    .where(
+                        RecordedEvent.run_id == request.run_id,
+                        RecordedEvent.turn >= start,
+                        RecordedEvent.turn <= end,
+                    )
+                    .order_by(RecordedEvent.id)
+                ).all()
+                data = {
+                    "turns": [
+                        {"turn": t.number, "actor": t.actor, "decision": t.decision} for t in turns
+                    ],
+                    "events": [event_dict(e) for e in events],
+                }
+        return examined_range, data
+
+    async def _investigate(self, row: dict) -> dict:
+        self._progress(row["id"], "indexing", [])
+        conversation = self._conversation(row)
+        index = self._evidence_index(row["cutoffs"])
         gathered, examined = [], []
-        for iteration in range(4):
+        iteration = 0
+        while True:
             self._progress(row["id"], "investigating", examined)
             result = await self.models.generate(
                 Investigation,
@@ -280,56 +336,11 @@ class Assistants:
             if not result.requests:
                 raise ValueError("Assistant returned neither evidence requests nor an answer")
             for request in result.requests:
-                cutoff = row["cutoffs"].get(request.run_id)
-                start = request.turn if isinstance(request, TurnRequest) else request.start
-                if cutoff is None or start > cutoff:
-                    raise ValueError("Assistant requested evidence outside the captured run")
-                end = (
-                    start
-                    if isinstance(request, TurnRequest)
-                    else min(start + request.count - 1, cutoff)
-                )
-                examined_range = {
-                    "run_id": request.run_id,
-                    "start": start,
-                    "end": end,
-                    "full_turn": isinstance(request, TurnRequest),
-                }
-                if isinstance(request, TurnRequest):
-                    data = self.research.evidence(request.run_id, start)
-                else:
-                    with self.db.session() as session:
-                        turns = session.scalars(
-                            select(Turn)
-                            .where(
-                                Turn.run_id == request.run_id,
-                                Turn.number >= start,
-                                Turn.number <= end,
-                            )
-                            .order_by(Turn.number)
-                        ).all()
-                        events = session.scalars(
-                            select(RecordedEvent)
-                            .where(
-                                RecordedEvent.run_id == request.run_id,
-                                RecordedEvent.turn >= start,
-                                RecordedEvent.turn <= end,
-                            )
-                            .order_by(RecordedEvent.id)
-                        ).all()
-                        data = {
-                            "turns": [
-                                {"turn": t.number, "actor": t.actor, "decision": t.decision}
-                                for t in turns
-                            ],
-                            "events": [event_dict(e) for e in events],
-                        }
+                examined_range, data = self._requested_evidence(request, row["cutoffs"])
                 gathered.append({"range": examined_range, "data": data})
                 examined.append(examined_range)
                 self._progress(row["id"], "reading", examined)
-        raise ValueError(
-            "Evidence investigation reached its request limit. Ask a narrower question."
-        )
+            iteration += 1
 
     async def close(self) -> None:
         self.closing = True

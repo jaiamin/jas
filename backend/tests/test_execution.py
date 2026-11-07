@@ -140,3 +140,128 @@ def test_composed_protocol_preserves_memory_privacy_and_replays_through_shock(ru
         assert not observed["public_history"] and not observed["your_experiences"]
         assert not observed["your_note"]
         assert observed["legal_actions"][0]["amount_max"] == (10 if turn <= 6 else 3)
+
+
+@pytest.mark.parametrize("field", ["actor", "decision", "state_hash"])
+def test_replay_rejects_corruption_without_requests_or_checkpoint_changes(runtime, design, field):
+    from agent_sim.db import Turn
+    from sqlalchemy import select
+
+    db, llm, research, engine = runtime
+    sid = research.save_design(design)
+    rid = research.operational_runs(sid)[0].id
+
+    async def step():
+        engine.start(rid, single=True)
+        await engine.executions[rid].task
+
+    asyncio.run(step())
+    before = research.configuration(rid)[0].checkpoint
+    usage = llm.usage()
+    with db.session.begin() as session:
+        turn = session.scalars(select(Turn).where(Turn.run_id == rid)).one()
+        setattr(turn, field, {"invalid": True} if field == "decision" else "corrupted")
+    with pytest.raises(ValueError):
+        engine.replay(rid)
+    assert research.configuration(rid)[0].checkpoint == before
+    assert llm.usage() == usage
+
+
+def test_capacity_one_and_pausing_queued_run_send_one_request(runtime, design, monkeypatch):
+    db, llm, research, _ = runtime
+    engine = Engine(db, research, llm, concurrency=1)
+    design.seeds = [7, 8]
+    runs = research.operational_runs(research.save_design(design))
+    generate = llm.generate
+
+    async def exercise():
+        entered, release = asyncio.Event(), asyncio.Event()
+        calls = []
+
+        async def delayed(*args, **kwargs):
+            calls.append(kwargs["run_id"])
+            entered.set()
+            await release.wait()
+            return await generate(*args, **kwargs)
+
+        monkeypatch.setattr(llm, "generate", delayed)
+        engine.start(runs[0].id, single=True)
+        await entered.wait()
+        engine.start(runs[1].id, single=True)
+        await asyncio.sleep(0)
+        assert calls == [runs[0].id]
+        assert research.configuration(runs[1].id)[0].status == "queued"
+        engine.pause(runs[1].id)
+        release.set()
+        await engine.close()
+        assert calls == [runs[0].id]
+        assert research.configuration(runs[1].id)[0].turn == 0
+        assert research.configuration(runs[1].id)[0].status == "paused"
+        assert llm.usage()["requests"] == 1
+
+    asyncio.run(exercise())
+
+
+def test_concurrent_runs_cannot_reserve_above_shared_budget(runtime, design, monkeypatch):
+
+    from agent_sim.db import ProviderCall
+    from pydantic_ai.messages import ModelResponse, ToolCallPart
+    from pydantic_ai.models.function import FunctionModel
+    from pydantic_ai.usage import RequestUsage
+    from sqlalchemy import select
+
+    db, llm, research, engine = runtime
+    design.seeds = [7, 8]
+    runs = research.operational_runs(research.save_design(design))
+
+    async def exercise():
+        entered, release = asyncio.Event(), asyncio.Event()
+        requests = []
+
+        async def delayed(messages, info):
+            requests.append(messages)
+            entered.set()
+            await release.wait()
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        info.output_tools[0].name,
+                        {
+                            "action": {
+                                "kind": "contribute",
+                                "amount": 0,
+                                "target": "",
+                                "message": "",
+                                "report": None,
+                                "promise": None,
+                            },
+                            "memory": "",
+                            "rationale": "",
+                            "forecast": None,
+                        },
+                    )
+                ],
+                usage=RequestUsage(input_tokens=100, output_tokens=50),
+            )
+
+        monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=delayed))
+        engine.start(runs[0].id, single=True)
+        await entered.wait()
+        with db.session.begin() as session:
+            workspace = session.get_one(Workspace, 1)
+            workspace.ceiling = workspace.charged
+            reserved = workspace.charged
+        engine.start(runs[1].id, single=True)
+        await engine.executions[runs[1].id].task
+        assert research.configuration(runs[1].id)[0].status == "failed"
+        assert len(requests) == 1
+        with db.session() as session:
+            assert session.get_one(Workspace, 1).charged == reserved
+            assert len(session.scalars(select(ProviderCall)).all()) == 1
+        release.set()
+        await engine.executions[runs[0].id].task
+        with db.session() as session:
+            assert session.get_one(Workspace, 1).charged == 35
+        await engine.close()
+
+    asyncio.run(exercise())

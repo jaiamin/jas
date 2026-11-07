@@ -39,7 +39,8 @@ validation/review feedback. Provider failures stop visibly without retries or su
 Proposal stages, research sources, reviews and provider traces remain Analysis data.
 Revisions record the originating proposal; exports retain that proposal and its requests.
 
-Browser drafts preserve unfinished visual edits and raw JSON per editor route. Invalid drafts
+Browser drafts preserve unfinished visual edits and raw JSON per source document;
+assistant visibility and other presentation parameters do not change draft identity. Invalid drafts
 can be recovered in the specification editor. Only backend-validated designs become immutable
 revisions and run matrices; saving does not start execution.
 
@@ -48,8 +49,23 @@ revisions and run matrices; saving does not start execution.
 An adapter validates parameters, initializes seeded state, selects an actor, constructs that
 actor's observation, validates/applies an action, emits events/measurements and snapshots/restores
 state. It knows nothing about providers, persistence or React. A catalog describes supported
-parameters and measurements. Register a new adapter there and add its typed action contract;
-the React environment view renders the current state and recorded events of every adapter.
+parameters and measurements. `World` owns common turn bookkeeping. Concrete worlds own
+checkpoint initialization, legal-action schema capabilities and derived environment measures;
+`decisions.py` builds schemas from those capabilities without selecting environments.
+`checkpoints.py` declares shared observations/actions and each world's state. Snapshot/restore
+boundaries preserve the versioned JSON envelope, including inert legacy fields required by
+existing state hashes.
+
+Adding an environment requires these explicit integration points:
+
+1. Add its identifier, parameter model and cross-design invariants in `domain.py`.
+2. Implement its World, typed checkpoint, observation, rules and measured consequences.
+   Set `decision_rules`, or override `schema_rules` when capabilities vary by turn.
+3. Register metadata, supported parameters and measures in `environments.py`; add a
+   validated template in `templates.py` and describe new measurement meanings.
+4. Add the frontend identifier/state presentation and supported editing controls.
+5. Test action constraints, privacy, deterministic restore, completion and exact replay.
+   Increment the world rule version whenever persisted behavior changes.
 
 ## Trust and epistemics
 

@@ -199,17 +199,17 @@ class Engine:
             run.status, run.error, run.updated = status, error, now()
 
     def start_study(self, study_id: str) -> None:
-        detail = self.research.study(study_id)
+        runs = self.research.operational_runs(study_id)
         # Validate all model access locally before starting any member of the matrix.
-        for run in detail["runs"]:
-            for model in run["models"]:
+        for run in runs:
+            for model in run.models:
                 self.models.model(model)
-        for run in detail["runs"]:
-            self.start(run["id"])
+        for run in runs:
+            self.start(run.id)
 
     def pause_study(self, study_id: str) -> None:
-        for run in self.research.study(study_id)["runs"]:
-            self.pause(run["id"])
+        for run in self.research.operational_runs(study_id):
+            self.pause(run.id)
 
     def replay(self, run_id: str) -> dict:
         run, design, condition = self.research.configuration(run_id)
