@@ -18,7 +18,7 @@ annotations, replay, exports, provider traces, and assistant evidence boundaries
 - [x] Remove only verified obsolete code/docs; update setup and product documentation.
 - [x] Pass frontend/backend checks and meaningful browser regressions.
 - [x] Capture representative screenshots and complete independent design review.
-- [ ] Commit and publish one draft PR.
+- [x] Commit and publish one draft PR.
 
 ## Decisions
 
@@ -63,6 +63,10 @@ No paid model calls; no production deployment or non-Chromium/assistive-technolo
 Task browser and disposable services are closed; task-generated databases and scratch scripts
 were removed after verification. User data was not touched.
 
-## Next
+## Review handoff
 
-Publish the verified task branch as one draft PR. Keep user databases untouched.
+Draft PR: https://github.com/jaiamin/ass/pull/4
+
+Implementation, cleanup and local verification are complete. No requested implementation
+work remains. The PR is ready for human review; it has not been merged. The repository
+rename is left to the user.
