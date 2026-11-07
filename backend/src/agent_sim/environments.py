@@ -1,13 +1,36 @@
 import copy
 from dataclasses import dataclass
 
-from .domain import Action, Design, Event, Measure, Parameters
+from .domain import Action, Decision, Design, Event, Measure, Parameters
 from .mechanisms import Bargaining, Information, Institution, RenewableResource
 from .world import RULE_VERSION as RULE_VERSION
 from .world import World
 
 
 class Commons(World):
+    def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        endowment = self.parameters.endowment
+        forecasts = self.state["forecasts"]
+        forecasts[actor] = decision.forecast
+        events, measures = self.apply(actor, decision.action)
+        if any(e.kind == "contribution" for e in events):
+            contributions = {e.actor: e.data["amount"] for e in events if e.kind == "contribution"}
+            for key, amount in contributions.items():
+                prediction = forecasts.get(key)
+                if prediction is not None:
+                    actual = (sum(contributions.values()) - amount) / (
+                        (len(contributions) - 1) * endowment
+                    )
+                    measures.append(
+                        Measure(
+                            key="forecast_error",
+                            agent=key,
+                            value=abs(prediction - actual),
+                            denominator=1,
+                        )
+                    )
+        return events, measures
+
     def observe(self, agent: str) -> dict:
         endowment = self.parameters.endowment
         return self.base_observation(
@@ -113,6 +136,27 @@ class Commons(World):
 
 
 class TrustExchange(World):
+    def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        forecasts = self.state["forecasts"]
+        events, measures = self.apply(actor, decision.action)
+        transfer = next(e for e in events if e.kind == "transfer")
+        if transfer.data["phase"] == "send":
+            forecasts[transfer.target] = decision.forecast
+        else:
+            prediction = forecasts.pop(actor, None)
+            if prediction is not None and transfer.data["available"]:
+                measures.append(
+                    Measure(
+                        key="forecast_error",
+                        agent=transfer.target,
+                        value=abs(
+                            prediction - transfer.data["amount"] / transfer.data["available"]
+                        ),
+                        denominator=1,
+                    )
+                )
+        return events, measures
+
     def partners(self) -> tuple[str, str]:
         order = self.order()
         position = self.state["position"]
@@ -236,6 +280,18 @@ class TrustExchange(World):
 
 
 class Coordination(World):
+    def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        forecasts = self.state["forecasts"]
+        prior_coordination = forecasts.get("next_completion")
+        events, measures = self.apply(actor, decision.action)
+        rate = next(m.value for m in measures if m.key == "completion_rate")
+        if prior_coordination is not None and rate is not None:
+            measures.append(
+                Measure(key="forecast_error", value=abs(prior_coordination - rate), denominator=1)
+            )
+        forecasts["next_completion"] = decision.forecast
+        return events, measures
+
     def __init__(
         self, design: Design, parameters: Parameters, seed: int, state: dict | None = None
     ):

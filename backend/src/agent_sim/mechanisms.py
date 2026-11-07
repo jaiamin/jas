@@ -1,6 +1,6 @@
 import random
 
-from .domain import Action, Event, Measure
+from .domain import Action, Design, Event, Measure, Parameters
 from .world import World
 
 
@@ -26,7 +26,9 @@ class Mechanism(World):
             raise ValueError("This environment has no promise mechanism")
         self.communication(agent, action)
 
-    def finish(self, events: list[Event], measures: list[Measure]):
+    def finish(
+        self, events: list[Event], measures: list[Measure]
+    ) -> tuple[list[Event], list[Measure]]:
         self.state["history"].extend(
             {"round": self.state["round"], **e.model_dump(exclude={"data"})}
             for e in events
@@ -92,7 +94,7 @@ class Institution(Mechanism):
         )
         return observation
 
-    def apply(self, agent: str, action: Action):
+    def apply(self, agent: str, action: Action) -> tuple[list[Event], list[Measure]]:
         self.validate(agent, action)
         rules = self.parameters.institution
         balances = self.state["balances"]
@@ -226,12 +228,12 @@ class Institution(Mechanism):
 
 
 class Bargaining(Mechanism):
-    def order(self):
+    def order(self) -> list[str]:
         # Alternating proposer, then responder; offer persists across those two decisions.
         ids = self.ids if self.seed % 2 == 0 else self.ids[::-1]
         return ids if self.state["round"] % 2 else ids[::-1]
 
-    def observe(self, agent):
+    def observe(self, agent: str) -> dict:
         pie = int(
             self.parameters.endowment
             * self.parameters.bargaining.discount ** (self.state["round"] - 1)
@@ -255,7 +257,7 @@ class Bargaining(Mechanism):
         observation.update(pie=pie, offer=offer, proposer=self.order()[0])
         return observation
 
-    def apply(self, agent, action):
+    def apply(self, agent: str, action: Action) -> tuple[list[Event], list[Measure]]:
         self.validate(agent, action)
         events, measures = self.communicate(agent, action), []
         pie = self.observe(agent)["pie"]
@@ -316,7 +318,7 @@ class Information(Mechanism):
         )
         return truth, truth if accurate else 1 - truth
 
-    def observe(self, agent):
+    def observe(self, agent: str) -> dict:
         _, signal = self.evidence(agent)
         observation = self.base_observation(
             agent,
@@ -341,7 +343,7 @@ class Information(Mechanism):
         observation["choices"] = self.state["pending"].copy()
         return observation
 
-    def communication(self, agent, action):
+    def communication(self, agent: str, action: Action) -> list[Event]:
         events = super().communication(agent, action)
         for event in events:
             if event.kind == "claim":
@@ -349,7 +351,7 @@ class Information(Mechanism):
                 event.data.update(known_truth=truth, accurate=action.report == truth)
         return events
 
-    def apply(self, agent, action):
+    def apply(self, agent: str, action: Action) -> tuple[list[Event], list[Measure]]:
         self.validate(agent, action)
         if action.report is not None and action.report not in (0, 1):
             raise ValueError("Binary signal reports must be 0 or 1")
@@ -401,12 +403,14 @@ class Information(Mechanism):
 
 
 class RenewableResource(Mechanism):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self, design: Design, parameters: Parameters, seed: int, state: dict | None = None
+    ):
+        super().__init__(design, parameters, seed, state)
         rules = self.parameters.resource
         self.state.setdefault("stock", float(rules.initial_stock or rules.capacity))
 
-    def observe(self, agent):
+    def observe(self, agent: str) -> dict:
         rules = self.parameters.resource
         observation = self.base_observation(
             agent,
@@ -422,7 +426,7 @@ class RenewableResource(Mechanism):
         observation["stock"] = self.state["stock"]
         return observation
 
-    def apply(self, agent, action):
+    def apply(self, agent: str, action: Action) -> tuple[list[Event], list[Measure]]:
         self.validate(agent, action)
         self.state["pending"][agent] = action.model_dump()
         if self.state["position"] < len(self.ids) - 1:

@@ -2,7 +2,8 @@ import copy
 import random
 from abc import ABC, abstractmethod
 
-from .domain import Action, Design, Event, Measure, Parameters
+from .decisions import ActionOption, decision_schema
+from .domain import Action, Decision, Design, Event, Measure, Parameters
 
 RULE_VERSION = "1.0.0"
 
@@ -174,6 +175,85 @@ class World(ABC):
         else:
             self.state["round"] += 1
             self.new_round()
+
+    def decision_schema(self, observation: dict) -> type[Decision]:
+        grouped: dict[tuple[str, int, int], list[str]] = {}
+        for action in observation["legal_actions"]:
+            key = (action["kind"], action.get("amount_min", 0), action.get("amount_max", 0))
+            targets = (
+                [action["target"]] if "target" in action else action.get("targets", ["", *self.ids])
+            )
+            grouped.setdefault(key, []).extend(targets)
+        options = tuple(
+            ActionOption(kind, minimum, maximum, tuple(dict.fromkeys(targets)))
+            for (kind, minimum, maximum), targets in grouped.items()
+        )
+        return decision_schema(
+            self.design.environment,
+            self.parameters.communication,
+            options,
+            tuple(self.parameters.communication_channels),
+        )
+
+    def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        return self.apply(actor, decision.action)
+
+    def step(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        change = next(
+            (
+                c
+                for c in self.parameters.resource_schedule
+                if c.round == self.state["round"] and self.state["position"] == 0
+            ),
+            None,
+        )
+        self.state.setdefault("forecasts", {})
+        events, measures = self._apply_decision(actor, decision)
+        if change:
+            events.insert(
+                0,
+                Event(
+                    kind="resource_change",
+                    text=f"Credits per round changed to {change.endowment}.",
+                    data=change.model_dump(),
+                ),
+            )
+        for event in events:
+            if event.kind == "claim":
+                measures.append(
+                    Measure(
+                        key="false_report_rate",
+                        agent=event.actor,
+                        value=float(not event.data["accurate"]),
+                        denominator=1,
+                    )
+                )
+            elif event.kind == "commitment_resolved" and event.data.get("eligible", True):
+                measures.append(
+                    Measure(
+                        key="promise_fulfillment_rate",
+                        agent=event.actor,
+                        value=float(event.data["fulfilled"]),
+                        denominator=1,
+                    )
+                )
+            elif event.kind in (
+                "task_progress",
+                "task_completed",
+                "blocked_work",
+                "duplicate_work",
+            ):
+                for kind in ("blocked_work", "duplicate_work"):
+                    measures.append(
+                        Measure(
+                            key=f"{kind}_rate",
+                            agent=event.actor,
+                            value=float(event.kind == kind),
+                            denominator=1,
+                        )
+                    )
+        self.state["notes"][actor] = decision.memory
+        return events, measures
 
     def snapshot(self) -> dict:
         return copy.deepcopy(self.state)

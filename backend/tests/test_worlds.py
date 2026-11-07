@@ -118,7 +118,6 @@ def test_seed_restore_and_memory_ablation(template):
 
 def test_resource_shock_changes_legal_budget_without_announcing_future(design):
     from agent_sim.domain import Decision, ResourceChange
-    from agent_sim.execution import transition
 
     design.rounds = 3
     parameters = Parameters(endowment=10, resource_schedule=[ResourceChange(round=2, endowment=3)])
@@ -127,16 +126,13 @@ def test_resource_shock_changes_legal_budget_without_announcing_future(design):
     for _ in design.profiles:
         choice = action(amount=5)
         choice.promise = 8
-        transition(
-            world, actor(world), Decision(action=choice, rationale="", memory="", forecast=None)
-        )
+        world.step(actor(world), Decision(action=choice, rationale="", memory="", forecast=None))
     assert world.parameters.endowment == 3
     restored = Commons(design, parameters, 7, world.snapshot())
     assert restored.observe(actor(restored)) == world.observe(actor(world))
     assert world.observe(actor(world))["legal_actions"][0]["amount_max"] == 3
     for index, _ in enumerate(design.profiles):
-        events, measures = transition(
-            world,
+        events, measures = world.step(
             actor(world),
             Decision(action=action(amount=3), rationale="", memory="", forecast=None),
         )
@@ -156,13 +152,11 @@ def test_resource_schedule_validation(design):
 
 def test_forecast_is_scored_against_settled_resources_before_next_shock(design):
     from agent_sim.domain import Decision, ResourceChange
-    from agent_sim.execution import transition
 
     params = Parameters(endowment=10, resource_schedule=[ResourceChange(round=2, endowment=2)])
     world = Commons(design, params, 7)
     for _ in design.profiles:
-        _, measures = transition(
-            world,
+        _, measures = world.step(
             actor(world),
             Decision(action=action(amount=5), memory="", rationale="", forecast=0.5),
         )
@@ -172,7 +166,6 @@ def test_forecast_is_scored_against_settled_resources_before_next_shock(design):
 
 def test_messages_can_be_ablated_without_removing_reporting_or_commitments(design):
     from agent_sim.domain import Action
-    from agent_sim.execution import decision_schema
 
     params = design.conditions[0].parameters.model_copy(
         update={"communication_channels": ["reports", "promises"]}
@@ -188,9 +181,7 @@ def test_messages_can_be_ablated_without_removing_reporting_or_commitments(desig
         report=world.state["signals"][actor],
         promise=1,
     )
-    schema = decision_schema(
-        "commons", True, 10, tuple([""] + world.ids), ("contribute",), ("reports", "promises")
-    )
+    schema = world.decision_schema(world.observe(actor))
     schema(action=legal.model_dump(), rationale="", memory="", forecast=None)
     with pytest.raises(ValueError, match="channel is disabled"):
         world.apply(actor, legal.model_copy(update={"message": "Hello"}))

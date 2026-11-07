@@ -3,7 +3,6 @@ import random
 import pytest
 from agent_sim.domain import Action, Design
 from agent_sim.environments import create_world
-from agent_sim.execution import mechanism_schema, transition
 from agent_sim.templates import templates
 from pydantic import ValidationError
 
@@ -120,32 +119,22 @@ def test_random_legal_trajectories_are_replayable(environment, seed):
             rng.randint(selected["amount_min"], selected["amount_max"]),
             rng.choice(selected["targets"]),
         )
-        schema = mechanism_schema(
-            tuple(
-                (a["kind"], a["amount_min"], a["amount_max"], tuple(a["targets"])) for a in options
-            ),
-            True,
-            environment == "information",
-        )
+        schema = world.decision_schema(world.observe(actor))
         decision = schema(action=chosen.model_dump(), rationale="", memory="", forecast=None)
-        transition(world, actor, decision)
+        world.step(actor, decision)
         decisions.append((actor, decision, world.snapshot()))
         assert len(decisions) <= world.design.turn_count
     replay = create_world(world.design, world.parameters, seed, initial)
     for actor, decision, snapshot in decisions:
         assert replay.actor() == actor
-        transition(replay, actor, decision)
+        replay.step(actor, decision)
         assert replay.snapshot() == snapshot
 
 
 def test_new_mechanism_boundaries_reject_unavailable_actions():
     world = world_for("bargaining")
-    options = world.observe(world.actor())["legal_actions"]
-    schema = mechanism_schema(
-        tuple((a["kind"], a["amount_min"], a["amount_max"], tuple(a["targets"])) for a in options),
-        False,
-        False,
-    )
+    world._parameters.communication = False
+    schema = world.decision_schema(world.observe(world.actor()))
     with pytest.raises(ValidationError):
         schema(action=action("offer", 21).model_dump(), rationale="", memory="", forecast=None)
     with pytest.raises(ValidationError):

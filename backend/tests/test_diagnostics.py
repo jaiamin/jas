@@ -3,7 +3,7 @@ import json
 
 import pytest
 from agent_sim.db import ProviderCall, Study, Workspace
-from agent_sim.execution import decision_schema
+from agent_sim.decisions import ActionOption, decision_schema
 from pydantic import ValidationError
 from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
@@ -12,7 +12,7 @@ from sqlalchemy import select
 
 
 def test_disabled_communication_schema_prevents_illegal_choices(design):
-    output = decision_schema("commons", False, 5, ("", "alex"), ("contribute",))
+    output = decision_schema("commons", False, (ActionOption("contribute", 0, 5, ("", "alex")),))
     payload = {
         "action": {
             "kind": "contribute",
@@ -130,7 +130,11 @@ def test_structured_actions_encode_cross_field_constraints():
         ("work", "", False),
         ("wait", "task-a", False),
     ]:
-        output = decision_schema("coordination", True, 0, ("", "task-a"), ("work", "wait"))
+        output = decision_schema(
+            "coordination",
+            True,
+            (ActionOption("work", 0, 0, ("task-a",)), ActionOption("wait", 0, 0, ("",))),
+        )
         payload = {
             "action": {
                 "kind": kind,
@@ -149,7 +153,7 @@ def test_structured_actions_encode_cross_field_constraints():
         else:
             with pytest.raises(ValidationError):
                 output.model_validate(payload)
-    output = decision_schema("commons", True, 3, ("", "alex"), ("contribute",))
+    output = decision_schema("commons", True, (ActionOption("contribute", 0, 3, ("", "alex")),))
     payload["action"].update(kind="contribute", target="", promise=4)
     with pytest.raises(ValidationError):
         output.model_validate(payload)
