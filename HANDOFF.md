@@ -34,9 +34,11 @@ annotations, replay, exports, provider traces and evidence boundaries.
 - Conversation identity lives on Analysis rows. Schema v3 additively migrates existing
   history without changing evidence or usage. Legacy API and route entry points remain
   supported. Scoped history stays inside its selected chat, purpose and evidence cutoff.
-- The global sidebar shows only the supplied logo. Its collapse control stays inside;
-  the collapsed logo reveals expansion on hover/focus. Lucide icons remain after the
-  user rejected the retro icon alternative. Only the favicon has additional logo padding.
+- The expanded sidebar pairs the supplied logo with lowercase `jas` in locally hosted
+  Bricolage Grotesque; the collapsed rail keeps the mark alone. The collapse control
+  stays inside, and the collapsed logo reveals expansion on hover/focus. Lucide icons
+  remain after the user rejected the retro icon alternative. Only the favicon has
+  additional logo padding.
 - Use shadcn/Radix, React Query, Vite and the existing Python execution engine.
   `DESIGN.md` owns visual rules, `docs/INTERFACE.md` owns route/state verification, and
   `docs/ARCHITECTURE.md` owns implementation contracts.

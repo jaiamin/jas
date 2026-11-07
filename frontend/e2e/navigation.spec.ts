@@ -13,15 +13,20 @@ test("JAS preserves the previous workspace theme and navigation preference", asy
   await expect(
     page.locator('[data-slot="sidebar"][data-state="collapsed"]'),
   ).toBeVisible();
+  const wordmark = page.locator(".brand-wordmark");
+  await expect(wordmark).toHaveText("jas");
+  await expect(wordmark).toBeHidden();
   await page
     .getByRole("button", { name: "Expand sidebar", exact: true })
     .click();
+  await expect(wordmark).toBeVisible();
   await page.getByRole("button", { name: "Switch to light mode" }).click();
   await page.reload();
   await expect(page.locator("html")).not.toHaveClass("dark");
   await expect(
     page.locator('[data-slot="sidebar"][data-state="expanded"]'),
   ).toBeVisible();
+  await expect(wordmark).toBeVisible();
 });
 
 test("browser titles follow navigation, history and saved experiment identity", async ({

@@ -84,7 +84,8 @@ route changes and browser history were also checked against the live port-8080 a
 The Agent follow-up checks the inner history rail, responsive chat picker, session draft
 recovery, saved chat resumption, context changes, proposal-to-editor review and return,
 manual-editor generation entry, cited evidence, original-scope retries, missing providers,
-and server errors. The logo-only sidebar retains
+and server errors. The sidebar pairs its mark with a lowercase `jas` wordmark when
+expanded, and keeps the mark alone when collapsed. The sidebar retains
 focus when toggled, aligns its collapsed controls, and reveals expansion on hover/focus.
 The composed textarea has no rectangular outline; its rounded group retains keyboard
 focus. Suggestions have visible boundaries and fill the draft without sending. The context
@@ -92,6 +93,12 @@ menu is viewport-bounded and at least 340px on the 390px test viewport. Generic 
 and routine composer hints were removed; record identity and errors remain.
 
 Current application captures (normal database, no sample experiment data):
+
+The lowercase wordmark refinement uses a locally hosted 22px/800 Bricolage Grotesque
+subset. Its desktop light/dark and 390px mobile layouts were inspected, font loading
+confirmed, and collapsed visibility checked by the navigation regression. Formatting,
+lint, unit tests and the production build passed. Workspace captures below include
+this refinement; other captures document their respective workflows.
 
 - [Agent · light](screenshots/agent-light.png)
 - [Agent · dark](screenshots/agent-dark.png)

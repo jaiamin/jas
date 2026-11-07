@@ -1,4 +1,13 @@
 /* biome-ignore-all lint/style/noDescendingSpecificity: Component scopes and responsive rules intentionally share element names. */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/bricolage-grotesque-jas-800.woff2") format("woff2");
+  unicode-range: U+0061, U+006A, U+0073;
+}
+
 .shell-body {
   container: workspace / inline-size;
   min-width: 0;
@@ -27,6 +36,21 @@
 
 .brand[hidden] {
   display: none;
+}
+
+.brand-home {
+  width: auto;
+  justify-content: flex-start;
+  gap: 8px;
+  padding-inline: 4px;
+}
+
+.brand-wordmark {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
 }
 
 .sidebar-toggle {

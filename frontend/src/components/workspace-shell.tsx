@@ -174,7 +174,7 @@ export default function WorkspaceShell() {
         <SidebarHeader>
           <Link
             to="/studies"
-            className="brand"
+            className="brand brand-home"
             hidden={state === "collapsed" && !isMobile}
             aria-label="JAS home"
             onClick={() => setOpenMobile(false)}
@@ -186,6 +186,7 @@ export default function WorkspaceShell() {
               height={24}
               alt=""
             />
+            <span className="brand-wordmark">jas</span>
           </Link>
           <Button
             data-sidebar="trigger"

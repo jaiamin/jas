@@ -1042,6 +1042,10 @@
       }
     },
     "typographyMeta": {
+      "wordmark": {
+        "displayName": "Lowercase jas wordmark",
+        "purpose": "Expanded sidebar only: locally hosted Bricolage Grotesque, 22px/800, line-height 1 and -0.04em tracking. The collapsed rail retains the mark alone."
+      },
       "headline": {
         "displayName": "Page headline",
         "purpose": "The page title, reduced on small screens; Agent welcomes use 26px/500 and 24px on mobile."

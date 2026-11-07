@@ -77,6 +77,12 @@ colors:
   dark-text-secondary: "#c2c2c2"
   dark-text-tertiary: "#999999"
 typography:
+  wordmark:
+    fontFamily: '"Bricolage Grotesque", sans-serif'
+    fontSize: "22px"
+    fontWeight: 800
+    lineHeight: 1
+    letterSpacing: "-0.04em"
   body:
     fontFamily: '"Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
     fontSize: "13px"
@@ -243,7 +249,9 @@ in `frontend/public/favicon.svg` preserves the same paths with an 8-unit inset o
 edge (`viewBox="-8 -8 144 144"`), making only the browser-tab mark slightly smaller.
 Preserve the supplied geometry and red/blue details. Its main ink switches from near-black
 to white with the containing surface's color scheme; the favicon follows the browser's
-scheme. The sidebar uses only the 24px mark, with no wordmark or subheading. Its collapse control
+scheme. The expanded sidebar pairs the 24px mark with lowercase `jas`, using a locally
+hosted Bricolage Grotesque wordmark at 22px/800, -0.04em tracking and an 8px gap. There
+is no subheading. Only the mark remains in the collapsed rail. The collapse control
 sits inside the header. In the 48px collapsed rail, hovering or focusing the mark reveals
 the expand icon in the same aligned target; the control retains keyboard focus when toggled. Do not substitute a generic experiment icon
 for the product logo.
@@ -267,6 +275,12 @@ Locally hosted Geist Variable supplies the headline, body, title, label and meta
 in the frontmatter. The full source fallback stack is preserved there. Code and JSON use
 the code role; run identifiers use platform monospace. Numeric measurements use tabular
 figures. Prose has a maximum measure of 75ch.
+
+The lowercase sidebar wordmark alone uses Bricolage Grotesque, bringing a rounded,
+playful accent to the restrained interface. Its 800-weight, 24px optical-size WOFF2
+contains only `jas` (1.3KB), served from `frontend/public/fonts` with its
+[SIL Open Font License](frontend/public/fonts/OFL.txt). Source:
+[Bricolage Grotesque](https://github.com/ateliertriay/bricolage), distributed via Google Fonts.
 
 Headlines identify pages, titles identify sections, labels name controls, and metadata
 qualifies a record. Supporting captions and count badges sometimes use 11px. Below 600px,
