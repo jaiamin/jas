@@ -76,6 +76,7 @@ export function TasksEditor({
                   }
                 />
                 <Input
+                  key={task.dependencies.join(",")}
                   aria-label={`Prerequisites for ${task.key}`}
                   placeholder="Prerequisites, e.g. task-1"
                   defaultValue={task.dependencies.join(", ")}

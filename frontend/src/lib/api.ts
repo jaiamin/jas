@@ -1,5 +1,14 @@
 import { type QueryClient, useQuery } from "@tanstack/react-query";
 
+export class ApiError extends Error {
+  readonly status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 export async function api<T>(path: string, body?: unknown): Promise<T> {
   const response = await fetch(`/api${path}`, {
     headers:
@@ -34,12 +43,14 @@ export async function api<T>(path: string, body?: unknown): Promise<T> {
             : "";
         return [location ? `${location}: ${entry.msg}` : entry.msg];
       });
-      if (messages.length) throw new Error(messages.join(". "));
+      if (messages.length)
+        throw new ApiError(messages.join(". "), response.status);
     }
-    throw new Error(
+    throw new ApiError(
       typeof detail === "string"
         ? detail
         : `Request failed (${response.status})`,
+      response.status,
     );
   }
   return response.json() as Promise<T>;

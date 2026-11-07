@@ -4,6 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Empty, Table } from "@/components/ui/data";
 import type { Event, Profile, RunDetail, State } from "@/lib/types";
 
+function isContributions(value: unknown): value is Record<string, number> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value) &&
+    Object.values(value).every(
+      (amount) => typeof amount === "number" && Number.isFinite(amount),
+    )
+  );
+}
+
 export function WorldView({
   run,
   state,
@@ -106,10 +117,12 @@ export function WorldView({
         onAgent={onAgent}
       />
     );
-  const previous = state.history.findLast((item) => "contributions" in item);
-  const contributions = previous?.contributions as
-    | Record<string, number>
-    | undefined;
+  const previous = state.history.findLast((item) =>
+    isContributions(item.contributions),
+  );
+  const contributions = isContributions(previous?.contributions)
+    ? previous.contributions
+    : undefined;
   return (
     <section className="commons-panel">
       <div className="section-heading">

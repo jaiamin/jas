@@ -120,7 +120,12 @@ export default function Study() {
           label="Design revision"
           value={String(study.revision)}
           onValueChange={(v) => {
-            setParams({ revision: v, tab });
+            setParams((previous) => {
+              const next = new URLSearchParams(previous);
+              next.set("revision", v);
+              next.set("tab", tab);
+              return next;
+            });
           }}
           options={study.revisions.map((r) => ({
             value: String(r.number),

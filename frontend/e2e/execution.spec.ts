@@ -99,3 +99,24 @@ test("study control follows active runs, including pausing, and preserves old re
     page.getByRole("button", { name: "Run experiment" }),
   ).toHaveCount(0);
 });
+
+test("switching study revisions preserves assistant visibility and the selected tab", async ({
+  page,
+  request,
+}) => {
+  const { study } = await createStudy(request);
+  await request.post(`/api/studies/${study.id}/revisions`, {
+    data: { design: { ...study.design, title: "Revision two" } },
+  });
+  await page.goto(`/studies/${study.id}?assistant=1&tab=runs`);
+  await page.getByRole("combobox", { name: "Design revision" }).click();
+  await page.getByRole("option", { name: "Revision 1", exact: true }).click();
+  await expect(page).toHaveURL(/assistant=1/);
+  await expect(page).toHaveURL(/tab=runs/);
+  await expect(
+    page.getByRole("button", { name: "Ask AI", exact: true }),
+  ).toHaveAttribute("aria-expanded", "true");
+  await expect(
+    page.getByRole("heading", { name: study.design.title, exact: true }),
+  ).toBeVisible();
+});

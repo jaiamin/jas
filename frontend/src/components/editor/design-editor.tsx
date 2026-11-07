@@ -59,22 +59,7 @@ export function DesignEditor({
   draftPath: string;
   draft?: Draft;
 }) {
-  const [design, setDesign] = useState<Design>(() =>
-    structuredClone({
-      ...initial,
-      tasks: initial.tasks ?? [],
-      conditions: initial.conditions.map((c) => ({
-        ...c,
-        parameters: {
-          ...catalog.templates.find((t) => t.id === initial.environment)?.design
-            .conditions[0]?.parameters,
-          ...c.parameters,
-          resource_schedule: c.parameters.resource_schedule ?? [],
-        },
-        profile_overrides: c.profile_overrides ?? [],
-      })),
-    }),
-  );
+  const [design, setDesign] = useState<Design>(() => structuredClone(initial));
   const [json, setJson] = useState(draft?.json ?? "");
   const [mode, setMode] = useState<"visual" | "json">(draft?.mode ?? "visual");
   const [step, setStep] = useState("question");

@@ -7,9 +7,16 @@ import { PlanningProgress } from "@/components/planning-progress";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Alert, Empty } from "@/components/ui/data";
-import { api, useApi } from "@/lib/api";
-import { editorDraftPath, readDraft, removeDraft } from "@/lib/drafts";
+import { ApiError, api, useApi } from "@/lib/api";
+import {
+  type Draft,
+  editorDraftPath,
+  readDraft,
+  removeDraft,
+} from "@/lib/drafts";
 import type { Analysis, Catalog, Design, StudyDetail } from "@/lib/types";
+
+class DraftReadError extends Error {}
 
 export default function Editor() {
   const [params] = useSearchParams();
@@ -19,7 +26,12 @@ export default function Editor() {
   const draft = useQuery({
     queryKey: ["draft", draftPath],
     queryFn: async () => {
-      const saved = readDraft(draftPath);
+      let saved: Draft | null;
+      try {
+        saved = readDraft(draftPath);
+      } catch (cause) {
+        throw new DraftReadError((cause as Error).message, { cause });
+      }
       if (!saved) return null;
       try {
         const design = await api<Design>("/design/validate", {
@@ -27,7 +39,8 @@ export default function Editor() {
         });
         return { saved, design, error: null };
       } catch (error) {
-        return { saved, design: null, error: error as Error };
+        if (!(error instanceof ApiError) || error.status !== 422) throw error;
+        return { saved, design: null, error };
       }
     },
     gcTime: 0,
@@ -67,9 +80,11 @@ export default function Editor() {
       <>
         <ErrorState error={draft.error} onRetry={draft.refetch} />
         {discardError && <Alert variant="error">{discardError}</Alert>}
-        <Button variant="outline" onClick={discardDraft}>
-          Discard unreadable draft
-        </Button>
+        {draft.error instanceof DraftReadError && (
+          <Button variant="outline" onClick={discardDraft}>
+            Discard unreadable draft
+          </Button>
+        )}
       </>
     );
   if (catalog.error || plan.error || previous.error)

@@ -128,53 +128,46 @@ function Shell() {
       /* Storage can be unavailable in private contexts. */
     }
   }
-  const section = location.pathname.startsWith("/new")
-    ? "Experiment design"
-    : location.pathname.startsWith("/studies")
-      ? "Experiments"
-      : location.pathname.startsWith("/runs")
-        ? "Runs"
-        : location.pathname.startsWith("/environments")
-          ? "Environments"
-          : location.pathname.startsWith("/settings")
-            ? "Settings"
-            : location.pathname.startsWith("/compare")
-              ? "Compare runs"
-              : "Home";
+  const section =
+    [
+      ["/new", "Experiment design"],
+      ["/studies", "Experiments"],
+      ["/runs", "Runs"],
+      ["/environments", "Environments"],
+      ["/settings", "Settings"],
+      ["/compare", "Compare runs"],
+    ].find(([prefix]) => prefix && location.pathname.startsWith(prefix))?.[1] ??
+    "Home";
   const runId = location.pathname.match(/^\/runs\/([^/]+)$/)?.[1];
   const studyId = location.pathname.match(/^\/studies\/([^/]+)$/)?.[1];
   const selectedRun = runs.data?.find((r) => r.id === runId);
   const selectedStudy = runs.data?.find((r) => r.study_id === studyId);
-  const crumbs: { label: string; to?: string }[] = runId
-    ? [
+  function breadcrumbs(): { label: string; to?: string }[] {
+    if (runId) {
+      const result = [{ label: "Experiments", to: "/studies" }];
+      if (selectedRun)
+        result.push({
+          label: selectedRun.study_title,
+          to: `/studies/${selectedRun.study_id}`,
+        });
+      return [...result, { label: selectedRun?.condition ?? "Run" }];
+    }
+    if (studyId)
+      return [
         { label: "Experiments", to: "/studies" },
-        ...(selectedRun
-          ? [
-              {
-                label: selectedRun.study_title,
-                to: `/studies/${selectedRun.study_id}`,
-              },
-            ]
-          : []),
-        { label: selectedRun?.condition ?? "Run" },
-      ]
-    : studyId
-      ? [
-          { label: "Experiments", to: "/studies" },
-          { label: selectedStudy?.study_title ?? "Experiment" },
-        ]
-      : location.pathname === "/new"
-        ? [
-            { label: "Experiments", to: "/studies" },
-            {
-              label: new URLSearchParams(location.search).has("study")
-                ? "Tune experiment"
-                : "New experiment",
-            },
-          ]
-        : location.pathname === "/compare"
-          ? [{ label: "Runs", to: "/runs" }, { label: "Compare" }]
-          : [{ label: section }];
+        { label: selectedStudy?.study_title ?? "Experiment" },
+      ];
+    if (location.pathname === "/new")
+      return [
+        { label: "Experiments", to: "/studies" },
+        { label: params.has("study") ? "Tune experiment" : "New experiment" },
+      ];
+    if (location.pathname === "/compare")
+      return [{ label: "Runs", to: "/runs" }, { label: "Compare" }];
+    return [{ label: section }];
+  }
+  const crumbs = breadcrumbs();
+
   return (
     <>
       <a href="#main" className="skip-link">
@@ -318,7 +311,13 @@ function Shell() {
         </main>
       </SidebarInset>
       <Sheet modal={agentModal} open={agentOpen} onOpenChange={setAgentOpen}>
-        <SheetContent className="agent-panel" showCloseButton>
+        <SheetContent
+          className="agent-panel"
+          showCloseButton
+          onInteractOutside={(event) => {
+            if (!agentModal) event.preventDefault();
+          }}
+        >
           <SheetHeader>
             <SheetTitle>Research assistant</SheetTitle>
             <SheetDescription className="sr-only">

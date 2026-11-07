@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { afterEach, expect, test, vi } from "vitest";
-import { api, invalidateResources } from "./api";
+import { ApiError, api, invalidateResources } from "./api";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -47,7 +47,12 @@ test.each([
       }),
     ),
   );
-  await expect(api("/runs/missing")).rejects.toThrow(message);
+  await expect(api("/runs/missing")).rejects.toMatchObject({
+    name: "ApiError",
+    message,
+    status,
+  });
+  await expect(api("/runs/missing")).rejects.toBeInstanceOf(ApiError);
 });
 
 test("network failures preserve their cause", async () => {

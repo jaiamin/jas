@@ -213,3 +213,47 @@ test("Home exposes independent template and AI-history failures with retry", asy
     page.getByRole("button", { name: "Retry", exact: true }),
   ).toHaveCount(0);
 });
+
+test("transient draft validation failures retry without classifying the draft as corrupt", async ({
+  page,
+  request,
+}) => {
+  const catalog = await (await request.get("/api/catalog")).json();
+  await page.addInitScript(
+    (design) =>
+      localStorage.setItem(
+        "ass:draft:/new",
+        JSON.stringify({
+          path: "/new",
+          title: "Valid saved draft",
+          design: { ...design, title: "Valid saved draft" },
+          json: "",
+          mode: "visual",
+          updated: new Date().toISOString(),
+        }),
+      ),
+    templateDesign(catalog),
+  );
+  let failing = true;
+  await page.route("**/api/design/validate", (route) =>
+    failing
+      ? route.fulfill({
+          status: 503,
+          json: { detail: "Validation temporarily unavailable" },
+        })
+      : route.continue(),
+  );
+  await page.goto("/new");
+  await expect(page.getByRole("alert")).toContainText(
+    "Validation temporarily unavailable",
+  );
+  await expect(page.getByRole("button", { name: /Discard/ })).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "Recover your draft" }),
+  ).toHaveCount(0);
+  failing = false;
+  await page.getByRole("button", { name: "Retry", exact: true }).click();
+  await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
+    "Valid saved draft",
+  );
+});
