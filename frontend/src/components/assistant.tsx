@@ -49,10 +49,12 @@ import { money } from "@/lib/utils";
 export function ResearchAssistant({
   studyId,
   runId,
-}: {
-  studyId?: string;
-  runId?: string;
-}) {
+}:
+  | {
+      studyId: string;
+      runId?: never;
+    }
+  | { runId: string; studyId?: never }) {
   const path = `/analyses?${runId ? `run_id=${runId}` : `study_id=${studyId}`}`;
   const analyses = useApi<Analysis[]>(path, true);
   const [question, setQuestion] = useState("");
@@ -73,7 +75,7 @@ export function ResearchAssistant({
   return (
     <section className="research-assistant">
       {analyses.error ? (
-        <ErrorState error={analyses.error} />
+        <ErrorState error={analyses.error} onRetry={analyses.refetch} />
       ) : !analyses.data ? (
         <Loading />
       ) : !analyses.data.length ? (

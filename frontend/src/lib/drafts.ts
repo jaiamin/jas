@@ -27,19 +27,38 @@ export function readDraft(path: string): Draft | null {
     !("json" in value) ||
     typeof value.json !== "string" ||
     !("mode" in value) ||
-    !["visual", "json"].includes(String(value.mode)) ||
+    (value.mode !== "visual" && value.mode !== "json") ||
     !("design" in value)
   )
     throw new Error("This draft could not be read.");
-  return value as Draft;
+  return {
+    path: value.path,
+    title: value.title,
+    updated: value.updated,
+    json: value.json,
+    mode: value.mode,
+    design: value.design,
+  };
 }
 
-export function listDrafts(): Draft[] {
-  return Object.keys(localStorage)
-    .filter((key) => key.startsWith(prefix))
-    .map((key) => readDraft(key.slice(prefix.length)))
-    .filter((draft): draft is Draft => draft !== null)
-    .sort((a, b) => b.updated.localeCompare(a.updated));
+export function listDrafts(): { items: Draft[]; unreadable: string[] } {
+  const items: Draft[] = [];
+  const unreadable: string[] = [];
+  for (const key of Object.keys(localStorage).filter((key) =>
+    key.startsWith(prefix),
+  )) {
+    const path = key.slice(prefix.length);
+    try {
+      const draft = readDraft(path);
+      if (draft) items.push(draft);
+    } catch {
+      unreadable.push(path);
+    }
+  }
+  return {
+    items: items.sort((a, b) => b.updated.localeCompare(a.updated)),
+    unreadable,
+  };
 }
 
 export function writeDraft(

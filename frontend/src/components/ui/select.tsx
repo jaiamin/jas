@@ -189,7 +189,7 @@ export {
 };
 
 // Compact composition shared by filters, protocol fields and agent context.
-export function Select({
+export function Select<Value extends string>({
   value,
   onValueChange,
   options,
@@ -197,15 +197,22 @@ export function Select({
   disabled,
   className,
 }: {
-  value: string;
-  onValueChange: (value: string) => void;
-  options: { value: string; label: string }[];
+  value: Value;
+  onValueChange: (value: Value) => void;
+  options: { value: Value; label: string }[];
   label: string;
   disabled?: boolean;
   className?: string;
 }) {
   return (
-    <SelectRoot value={value} onValueChange={onValueChange} disabled={disabled}>
+    <SelectRoot
+      value={value}
+      onValueChange={(value) => {
+        const option = options.find((option) => option.value === value);
+        if (option) onValueChange(option.value);
+      }}
+      disabled={disabled}
+    >
       <SelectTrigger
         aria-label={label}
         className={cn("select-trigger", className)}

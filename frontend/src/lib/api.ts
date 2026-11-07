@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { type QueryClient, useQuery } from "@tanstack/react-query";
 
 export async function api<T>(path: string, body?: unknown): Promise<T> {
   const response = await fetch(`/api${path}`, {
@@ -13,15 +13,29 @@ export async function api<T>(path: string, body?: unknown): Promise<T> {
       error && typeof error === "object" && "detail" in error
         ? error.detail
         : null;
-    if (Array.isArray(detail))
-      throw new Error(
-        detail
-          .map(
-            (e: { loc: string[]; msg: string }) =>
-              `${e.loc.slice(1).join(" → ")}: ${e.msg}`,
-          )
-          .join(". "),
-      );
+    if (Array.isArray(detail)) {
+      const messages = detail.flatMap((entry: unknown) => {
+        if (
+          !entry ||
+          typeof entry !== "object" ||
+          !("msg" in entry) ||
+          typeof entry.msg !== "string"
+        )
+          return [];
+        const location =
+          "loc" in entry && Array.isArray(entry.loc)
+            ? entry.loc
+                .slice(1)
+                .filter(
+                  (part: unknown) =>
+                    typeof part === "string" || typeof part === "number",
+                )
+                .join(" → ")
+            : "";
+        return [location ? `${location}: ${entry.msg}` : entry.msg];
+      });
+      if (messages.length) throw new Error(messages.join(". "));
+    }
     throw new Error(
       typeof detail === "string"
         ? detail
@@ -36,5 +50,13 @@ export function useApi<T>(path: string, poll = false) {
     queryFn: () => api<T>(path),
     refetchInterval: poll ? 1500 : false,
     refetchOnWindowFocus: true,
+  });
+}
+
+export function invalidateResources(client: QueryClient, paths: string[]) {
+  return client.invalidateQueries({
+    predicate: (query) =>
+      typeof query.queryKey[0] === "string" &&
+      paths.includes(query.queryKey[0].split("?")[0] ?? ""),
   });
 }

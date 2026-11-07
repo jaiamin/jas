@@ -17,16 +17,7 @@ import { useApi } from "@/lib/api";
 import type { Catalog, RunSummary, Settings } from "@/lib/types";
 import { modelLabel, money } from "@/lib/utils";
 
-export default function Library({
-  view,
-}: {
-  view: "runs" | "environments" | "settings";
-}) {
-  if (view === "runs") return <Runs />;
-  if (view === "environments") return <Environments />;
-  return <SettingsPage />;
-}
-function Runs() {
+export function Runs() {
   const runs = useApi<RunSummary[]>("/runs", true);
   return (
     <>
@@ -39,7 +30,7 @@ function Runs() {
         </Button>
       </PageHeading>
       {runs.error ? (
-        <ErrorState error={runs.error} />
+        <ErrorState error={runs.error} onRetry={runs.refetch} />
       ) : !runs.data ? (
         <Loading />
       ) : runs.data.length ? (
@@ -57,13 +48,13 @@ function Runs() {
     </>
   );
 }
-function Environments() {
+export function Environments() {
   const catalog = useApi<Catalog>("/catalog");
   return (
     <>
       <PageHeading title="Environments" />
       {catalog.error ? (
-        <ErrorState error={catalog.error} />
+        <ErrorState error={catalog.error} onRetry={catalog.refetch} />
       ) : !catalog.data ? (
         <Loading />
       ) : (
@@ -125,9 +116,10 @@ function Environments() {
     </>
   );
 }
-function SettingsPage() {
+export function SettingsPage() {
   const settings = useApi<Settings>("/settings", true);
-  if (settings.error) return <ErrorState error={settings.error} />;
+  if (settings.error)
+    return <ErrorState error={settings.error} onRetry={settings.refetch} />;
   if (!settings.data) return <Loading />;
   const s = settings.data;
   return (

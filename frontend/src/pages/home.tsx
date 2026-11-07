@@ -37,11 +37,19 @@ export function Home() {
   const plans = useApi<Analysis[]>("/analyses", true);
   const [drafts, setDrafts] = useState(() => {
     try {
-      return { items: listDrafts(), error: "" };
+      return { ...listDrafts(), error: "" };
     } catch (error) {
-      return { items: [], error: (error as Error).message };
+      return { items: [], unreadable: [], error: (error as Error).message };
     }
   });
+  function discardDraft(path: string) {
+    try {
+      removeDraft(path);
+      setDrafts({ ...listDrafts(), error: "" });
+    } catch (error) {
+      setDrafts((drafts) => ({ ...drafts, error: (error as Error).message }));
+    }
+  }
   const [question, setQuestion] = useState(() =>
     typeof location.state?.question === "string" ? location.state.question : "",
   );
@@ -122,7 +130,7 @@ export function Home() {
           </Button>
         </div>
         {studies.error ? (
-          <ErrorState error={studies.error} />
+          <ErrorState error={studies.error} onRetry={studies.refetch} />
         ) : studies.data ? (
           <StudyTable studies={studies.data.slice(0, 5)} compact />
         ) : (
@@ -132,6 +140,23 @@ export function Home() {
       {drafts.error && (
         <Alert variant="error">
           Drafts could not be loaded: {drafts.error}
+        </Alert>
+      )}
+      {drafts.unreadable.length > 0 && (
+        <Alert variant="error" title="Some drafts could not be read">
+          <p>
+            Your other drafts are still available. Unreadable drafts remain in
+            browser storage until you discard them.
+          </p>
+          {drafts.unreadable.map((path) => (
+            <Button
+              key={path}
+              variant="outline"
+              onClick={() => discardDraft(path)}
+            >
+              Discard unreadable draft · {path}
+            </Button>
+          ))}
         </Alert>
       )}
       {drafts.items.length > 0 && (
@@ -148,17 +173,7 @@ export function Home() {
                     variant="ghost"
                     size="icon"
                     aria-label={`Discard ${draft.title || "untitled"} draft`}
-                    onClick={() => {
-                      try {
-                        removeDraft(draft.path);
-                        setDrafts({ items: listDrafts(), error: "" });
-                      } catch (error) {
-                        setDrafts({
-                          ...drafts,
-                          error: (error as Error).message,
-                        });
-                      }
-                    }}
+                    onClick={() => discardDraft(draft.path)}
                   >
                     <Trash2 />
                   </Button>
@@ -203,7 +218,7 @@ export function Studies() {
         </Button>
       </PageHeading>
       {studies.error ? (
-        <ErrorState error={studies.error} />
+        <ErrorState error={studies.error} onRetry={studies.refetch} />
       ) : studies.data ? (
         <StudyTable studies={studies.data} />
       ) : (

@@ -62,7 +62,19 @@ const AgentPanel = lazy(() => import("@/components/agent-panel"));
 const Editor = lazy(() => import("@/pages/editor"));
 const Study = lazy(() => import("@/pages/study"));
 const Run = lazy(() => import("@/pages/run"));
-const Library = lazy(() => import("@/pages/library"));
+const Runs = lazy(() =>
+  import("@/pages/library").then((module) => ({ default: module.Runs })),
+);
+const Environments = lazy(() =>
+  import("@/pages/library").then((module) => ({
+    default: module.Environments,
+  })),
+);
+const SettingsPage = lazy(() =>
+  import("@/pages/library").then((module) => ({
+    default: module.SettingsPage,
+  })),
+);
 const Compare = lazy(() => import("@/pages/compare"));
 
 class PageBoundary extends Component<
@@ -349,10 +361,10 @@ export default function App() {
         <Route path="studies" element={<Studies />} />
         <Route path="studies/:id" element={<Study />} />
         <Route path="new" element={<Editor />} />
-        <Route path="runs" element={<Library view="runs" />} />
+        <Route path="runs" element={<Runs />} />
         <Route path="runs/:id" element={<Run />} />
-        <Route path="environments" element={<Library view="environments" />} />
-        <Route path="settings" element={<Library view="settings" />} />
+        <Route path="environments" element={<Environments />} />
+        <Route path="settings" element={<SettingsPage />} />
         <Route path="compare" element={<Compare />} />
         <Route
           path="*"

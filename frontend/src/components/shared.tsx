@@ -1,4 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { ArrowRight, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
@@ -46,16 +45,17 @@ export function Loading() {
     </div>
   );
 }
-export function ErrorState({ error }: { error: Error }) {
-  const client = useQueryClient();
+export function ErrorState({
+  error,
+  onRetry,
+}: {
+  error: Error;
+  onRetry: () => unknown;
+}) {
   return (
     <Alert variant="error" title="Could not load this view">
       {error.message}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => client.invalidateQueries()}
-      >
+      <Button variant="outline" size="sm" onClick={() => onRetry()}>
         Retry
       </Button>
     </Alert>

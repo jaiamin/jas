@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, Empty, Table } from "@/components/ui/data";
 import { Select } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { api, useApi } from "@/lib/api";
+import { api, invalidateResources, useApi } from "@/lib/api";
 import type { StudyDetail } from "@/lib/types";
 import { label, metric, money } from "@/lib/utils";
 
@@ -36,14 +36,22 @@ export default function Study() {
   const client = useQueryClient();
   const control = useMutation({
     mutationFn: (action: string) => api(`/studies/${id}/control`, { action }),
-    onSuccess: () => client.invalidateQueries(),
+    onSuccess: () =>
+      invalidateResources(client, [
+        "/studies",
+        `/studies/${id}`,
+        "/runs",
+        ...(query.data?.runs.map((run) => `/runs/${run.id}`) ?? []),
+      ]),
   });
-  if (query.error) return <ErrorState error={query.error} />;
+  if (query.error)
+    return <ErrorState error={query.error} onRetry={query.refetch} />;
   if (!query.data) return <Loading />;
   const study = query.data;
-  const active = study.runs.some((r) =>
-    ["running", "queued", "pausing"].includes(r.status),
+  const activeRun = study.runs.find((run) =>
+    ["running", "queued", "pausing"].includes(run.status),
   );
+  const active = !!activeRun;
   const complete = study.runs.every((r) => r.status === "complete");
   const tab =
     ["overview", "runs", "design"].find(
@@ -160,11 +168,9 @@ export default function Study() {
                       : "The protocol is saved. Run the experiment to start model decisions."
                   }
                 >
-                  {active && (
+                  {activeRun && (
                     <Button variant="outline" asChild>
-                      <Link
-                        to={`/runs/${study.runs.find((r) => ["running", "queued"].includes(r.status))?.id}`}
-                      >
+                      <Link to={`/runs/${activeRun?.id}`}>
                         Watch live
                         <ArrowUpRight data-icon="inline-end" />
                       </Link>

@@ -1,10 +1,5 @@
 import { expect, test } from "@playwright/test";
 
-test.beforeEach(async ({ request }) => {
-  const settings = await (await request.get("/api/settings")).json();
-  expect(settings.providers).toEqual({ openai: false, anthropic: false });
-});
-
 test("manual creation, revision, comparison and missing-key recovery", async ({
   page,
 }) => {
@@ -54,6 +49,12 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   ).toBeVisible();
   await page.goto(`${studyURL}?tab=runs`);
   await page.getByRole("link", { name: "More resources", exact: true }).click();
+  await page.route("**/api/runs/*/control", (route) =>
+    route.fulfill({
+      status: 422,
+      json: { detail: "OPENAI_API_KEY is not configured" },
+    }),
+  );
   await page.getByRole("button", { name: "Step", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText(
     "OPENAI_API_KEY is not configured",

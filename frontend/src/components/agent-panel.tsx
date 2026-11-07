@@ -3,6 +3,7 @@ import { ArrowUp } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ResearchAssistant } from "@/components/assistant";
+import { ErrorState } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Alert, Empty } from "@/components/ui/data";
 import {
@@ -54,14 +55,16 @@ export default function AgentPanel({
           options={options}
         />
       </div>
+      {studies.error && (
+        <ErrorState error={studies.error} onRetry={studies.refetch} />
+      )}
+      {runs.error && <ErrorState error={runs.error} onRetry={runs.refetch} />}
       {kind === "design" ? (
         <DesignAssistant />
+      ) : kind === "study" ? (
+        <ResearchAssistant key={scope} studyId={id} />
       ) : (
-        <ResearchAssistant
-          key={scope}
-          studyId={kind === "study" ? id : undefined}
-          runId={kind === "run" ? id : undefined}
-        />
+        <ResearchAssistant key={scope} runId={id} />
       )}
     </>
   );
