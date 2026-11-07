@@ -1,53 +1,57 @@
-# Model decision reliability
+# ASS handoff
 
-## Acceptance criteria
+Branch `feat/empirical-research-platform`; draft PR https://github.com/jaiamin/ass/pull/3.
+Read README for setup, docs/ARCHITECTURE.md for boundaries, GLOSSARY.md for terminology,
+DESIGN.md for current visual tokens and docs/INTERFACE.md for the redesign evidence.
 
-- Valid actions continue when the model writes overlong rationale, memory, or radio text.
-- Free text retains its documented character limits; malformed actions still fail validation.
-- Each turn uses at most one model request; request/token caps and checkpoint replay remain intact.
-- Regression tests and a complete live 120-turn simulation pass.
-- The viewer runs in the Docker Sandbox on port 8080 for user testing.
+## Running
 
-## Diagnosis and decision
+Main app: http://localhost:8080. Start with
+`.venv/bin/ass --host 0.0.0.0 --port 8080` or `docker compose up --build`.
+The local app uses `data/ass.sqlite3`; five user studies and 32 runs are preserved.
+Never run two engines against one database. Credentials remain in .env/environment.
+Python uses .venv. Native uv crashes on this sandbox kernel;
+`.tools/uv-0.13.7.data/scripts/uv` works. Disposable UI QA services and browser are closed;
+main 8080 remains running. Evaluation workers have finished.
 
-- Reproduced the user's failure in an in-memory copy of their saved run at turn 14.
-- `UnexpectedModelBehavior` wrapped a Pydantic `string_too_long` error for rationale
-  (400-character limit). The response used 284 output tokens, below its 600-token cap.
-- Bound descriptive text before validation/persistence instead of discarding a valid action
-  or spending extra requests to shorten it. Keep all action rules and model budgets intact.
-- A longer live run exposed a second cause at turn 30: the model returned a top-level
-  `message` instead of nesting it inside `action`. The request did not enable strict
-  tool schemas. Explicit `ToolOutput(..., strict=True)` constrains the provider response.
-- Work branch: `fix/model-decision-recovery`.
+## Implemented
 
-## Progress
+React/TypeScript/shadcn; Python/FastAPI; SQLite WAL, immutable protocol revisions,
+atomic checkpoints and explicit request reservations. Seven deterministic rule systems:
+commons, trust exchange, coordination, institution, bargaining, information and renewable
+resource. Independent communication channels, private observations and memory treatments.
+Planner scopes, optionally researches, drafts, validates and reviews. Production planner
+and investigator default to Sol; participants default to Luna. No model substitutions.
 
-- All acceptance criteria met. Both failures were captured; regression tests failed before
-  their respective fixes.
-- All 44 tests, Ruff, diff checks, and Gitleaks pass.
-- Browser New run -> Play -> Pause reached turn 7; its checkpoint replay verifies exactly.
-  The separate browser session was closed afterward.
-- Live run `164ff7c6367c` completed all 120 turns without intervention, using exactly
-  120 requests and 254,928 tokens under the original 300,000-token cap. All 120 saved
-  turns replay-verified exactly. Its database is ignored `.venv/reliability.sqlite3`.
-- Updated viewer is running on port 8080 with process-local Anthropic credentials.
-  It remains running at the user's request.
+Every view now shares source shadcn controls, compact collapsible navigation, neutral
+light/dark themes and restrained orange. Centered Home composer, progressive editor task
+tabs, recoverable drafts, full-width comparison and linked replay/evidence. The contextual
+assistant has explicit experiment/run selection, real evidence activity, bounded follow-up
+context and an anchored composer; desktop content reflows beside it. Run identities include
+immutable revision numbers. Attachments await an ingestion workflow.
 
-## Local viewer setup
+## Verification
 
-- The existing viewer uses process-local Anthropic authentication; credentials are never
-  persisted in source, this handoff, or global configuration.
-- Ignored `.venv/viewer-scenarios/` contains local copies of the shipped scenarios with
-  Anthropic assigned to every settler. Tracked scenario defaults remain unchanged.
-- OpenAI's configured credential is still missing Responses API write permission.
-- Preserve existing `runs.sqlite3`; diagnostic reproductions use in-memory copies.
+Current interface: 147 backend tests, Ruff, ty, frontend Biome/five unit tests/production
+build and 20 keyless browser workflows pass. Nineteen captures cover 1280/1440px desktop,
+tablet and mobile. Final Docker build, health and browser entry smoke pass. No paid model
+calls during this redesign; investigator/planner states use controlled test responses.
+Design documentation and the tracked token sidecar match current source. Impeccable
+returned `ship` for all four scored finish-review fixes; no regressions were observed.
 
-## User testing and verification
+Earlier frozen application c5db913: 221/230 strict live GPT-6 Luna cases passed;
+206 supported cases completed both conditions, 413 runs and 5,190 exactly replayed turns.
+All 20 capability cases passed. All 464 recorded attempts remain in compressed reports;
+see benchmarks/reports/README.md and EVALUATION.md. Evaluation estimated/reserved usage
+was $3.677626; earlier task about $1.69, total about $5.36. Do not delete/reset ignored
+`data/evaluation.sqlite3` or run overlapping benchmark processes. Suite v5 offline rescore
+224/230 is post-audit evidence, not independent improvement. Nine strict failures remain.
+The current UI and investigator changes postdate that frozen evaluation.
 
-- Refresh the user's forwarded port-8080 URL. Create a new run and press Play, or select
-  a saved run, press Resume latest, then Play. Old checkpoints need no migration.
-- Verify locally with `.venv/bin/python -m pytest -q` and
-  `.venv/bin/ruff check src tests`.
-- Real provider authentication/rate limits, configured budgets, and genuinely malformed
-  actions can still stop a run; no substitute actions or hidden retries were introduced.
-- Live verification used Anthropic; OpenAI still requires Responses API write access.
+## Limits
+
+Trusted single-user deployment; no live Anthropic or large-scale-load validation. Human
+realism, psychological motives and causal validity are unestablished. There were no live
+sanctions, appeals or bargaining exits in the frozen suite. Add independently tested
+mechanics and calibrated reference protocols before broader claims. PRODUCT.md has
+pre-existing schema drift; preserved outside this interface task.

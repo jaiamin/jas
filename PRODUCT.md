@@ -1,24 +1,34 @@
-# Agent simulation sandbox
+# ASS — Agent Simulation Environment
 
-<!-- impeccable:product-schema 1 -->
+A local research workspace for experiments with model-controlled agents: ask a question,
+review an explicit protocol, run controlled trials, inspect decisions, compare and tune.
 
-## Platform
-web
+Researchers need reproducible rules, independent trials, denominators and uncertainty.
+Developers need observed inputs, actual outputs, failures and model costs. Enthusiasts need
+an approachable starting point and a useful live view. The same workflow serves all three;
+advanced configuration is disclosed when needed, without pretend enterprise controls.
 
-## Stack
-Python, PydanticAI, SQLite, NiceGUI; validated YAML configuration. A headless CLI remains the primary execution path.
+The initial product is a trusted, single-user application. No account is needed. Frontend
+and API share one origin; provider keys stay on the backend. Local storage and a single
+Docker Compose service keep setup small. Google sign-in would not supply tenant isolation,
+RBAC, audit trails, retention controls or validated research methods; hosted collaboration
+needs those capabilities together and is outside this release.
 
-## Users and purpose
-An experimenter building and studying agent simulations. The viewer prioritizes watching and inspecting one run, as confirmed by the user.
+Supported worlds have explicit mechanics: shared resources, trust exchanges and task
+coordination. Named task graphs, private goals, heterogeneous models, memory conditions,
+resource shocks and repeated interactions support variations within those mechanics.
+AI produces validated protocols, not arbitrary executable worlds. New mechanics require
+an environment adapter. Seeds control environment randomization, not model determinism.
 
-## Capabilities and constraints
-A thin extensible sandbox contract. Frontier Colony is the first environment: six settlers, five connected facilities, shared resources, individual memory, radio and Python-enforced actions. Shared policies, capped model calls, controls, logging, checkpoints and exact replay. OpenAI and Anthropic only; credentials come from the existing environment. Every new decision uses a real model; opening the viewer and saved replay make no calls. YAML scenarios and experiments configure profiles, parameters, conditions, seeds, repetitions and metrics. Keep the implementation small and dependencies minimal.
+Success means a user can trace an interesting outcome back to what an agent observed and
+did, reproduce it from recorded decisions, and compare a revised protocol without losing
+the original. A compelling narrative is not a result. False factual reports, unfulfilled
+promises and directed exchanges are observations; intent, affection and human validity
+are separate hypotheses. This is a useful research instrument, not a validated human
+prediction service, frontier autonomous society or enterprise-ready product.
 
-## Brand commitments
-A clean dark research workspace. The map and events occupy the center, agent details sit alongside, and run and replay controls remain visible.
-
-## Product principles
-- Python owns outcomes; agents choose typed actions.
-- A saved run is inspectable without a model or network.
-- Adding an environment should not require modifying the runner.
-- Prefer explicit configuration and small modules to speculative frameworks.
+Design is restrained and practical: compact tables, consistent controls, an evidence
+inspector and a linked turn rail. Geist, white/black work surfaces, sharp corners, monochrome
+controls and restrained orange selection. Settings and appearance belong in the sidebar
+footer; there is no workspace switcher or account UI in this single-user release. Data
+colors identify series and agents, never moral rank.

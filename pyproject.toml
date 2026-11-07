@@ -3,32 +3,46 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "agent-sandbox"
-version = "0.1.0"
-description = "Small, deterministic sandboxes for agent experiments"
-requires-python = ">=3.11"
+name = "agent-simulation-environment"
+version = "0.2.0"
+description = "An empirical workspace for agent experiments"
+requires-python = ">=3.13"
 dependencies = [
+  "fastapi>=0.135,<1",
+  "uvicorn[standard]>=0.42,<1",
+  "sqlalchemy>=2.0.48,<3",
   "pydantic>=2.12,<3",
   "pydantic-ai-slim[openai,anthropic]>=2.66,<3",
-  "PyYAML>=6.0,<7",
   "python-dotenv>=1.2,<2",
 ]
 
-[project.optional-dependencies]
-viewer = ["nicegui>=3.6,<4"]
-dev = ["pytest>=8,<10", "ruff>=0.14,<1"]
+[dependency-groups]
+dev = [
+    "pytest>=9,<10",
+    "httpx>=0.28,<1",
+    "ruff>=0.15,<1",
+    "ty>=0.0.24,<1",
+    "inspect-ai>=0.3.200,<0.4",
+]
 
 [project.scripts]
-sandbox = "agent_sandbox.cli:main"
+ass = "agent_sim.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend/src/agent_sim"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["backend/tests"]
 
 [tool.ruff]
 line-length = 100
+target-version = "py313"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B"]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/agent_sandbox"]
+[tool.ty.environment]
+root = ["backend/src"]
+
+[tool.ty.src]
+include = ["backend"]

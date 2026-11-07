@@ -1,0 +1,20 @@
+services:
+  app:
+    build: .
+    ports:
+      - "${ASS_PORT:-8080}:8080"
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      ANTHROPIC_BASE_URL: ${ANTHROPIC_BASE_URL:-https://api.anthropic.com}
+      ASS_DATABASE_URL: sqlite:////app/data/ass.sqlite3
+      ASS_CONCURRENT_RUNS: ${ASS_CONCURRENT_RUNS:-3}
+      ASS_PLANNER_MODEL: ${ASS_PLANNER_MODEL:-openai:gpt-6.1-sol}
+      ASS_BUDGET_USD: ${ASS_BUDGET_USD:-25}
+    volumes:
+      - ass-data:/app/data
+    init: true
+    stop_grace_period: 2m
+volumes:
+  ass-data:

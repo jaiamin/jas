@@ -1,0 +1,161 @@
+{
+  "date": "2026-11-07",
+  "primary_score": {
+    "passed": 221,
+    "attempted": 230
+  },
+  "supported_cases_with_both_runs_complete": 206,
+  "post_audit_rescore": {
+    "passed": 224,
+    "attempted": 230,
+    "provider_requests": 0,
+    "suite_version": 5,
+    "suite_sha256": "835b07d405d667505dfd2989467067d62696aa675bc06432b04a209b514f120b",
+    "changes": [
+      {
+        "id": "institution-27",
+        "old_measure": "self_allocation_rate",
+        "new_measure": null,
+        "original_passed": false,
+        "rescored_passed": true
+      },
+      {
+        "id": "coordination-long-1",
+        "old_measure": "completion_rate",
+        "new_measure": "blocked_work_rate",
+        "original_passed": true,
+        "rescored_passed": true
+      },
+      {
+        "id": "bargaining-28",
+        "old_measure": "efficiency",
+        "new_measure": null,
+        "original_passed": false,
+        "rescored_passed": true
+      },
+      {
+        "id": "institution-long-1",
+        "old_measure": "self_allocation_rate",
+        "new_measure": "unjustified_sanction_rate",
+        "original_passed": false,
+        "rescored_passed": true
+      },
+      {
+        "id": "renewable_resource-long-1",
+        "old_measure": "stock_fraction",
+        "new_measure": "collapse_rate",
+        "original_passed": true,
+        "rescored_passed": true
+      }
+    ],
+    "note": "Offline measurement-criterion correction only; not an independent evaluation or model improvement. Original v4 score is primary. V5 prompt clarification for generated task_count was not applied retroactively."
+  },
+  "mechanism_coverage": {
+    "bargaining": {
+      "persisted_cases": 29,
+      "completed_runs": 58,
+      "actions": {
+        "accept": 58,
+        "offer": 84,
+        "reject": 26
+      },
+      "non_null_measurement_rows": {
+        "agreement_rate": 58,
+        "efficiency": 58,
+        "false_report_rate": 158
+      }
+    },
+    "commons": {
+      "persisted_cases": 31,
+      "completed_runs": 62,
+      "actions": {
+        "contribute": 988
+      },
+      "non_null_measurement_rows": {
+        "contribution_rate": 226,
+        "false_report_rate": 805,
+        "forecast_error": 955,
+        "group_payoff": 226,
+        "payoff": 988,
+        "promise_fulfillment_rate": 377
+      }
+    },
+    "coordination": {
+      "persisted_cases": 29,
+      "completed_runs": 57,
+      "actions": {
+        "work": 466
+      },
+      "non_null_measurement_rows": {
+        "blocked_work_rate": 466,
+        "completion_rate": 466,
+        "duplicate_work_rate": 466,
+        "false_report_rate": 412,
+        "forecast_error": 404
+      }
+    },
+    "information": {
+      "persisted_cases": 31,
+      "completed_runs": 62,
+      "actions": {
+        "choose": 984
+      },
+      "non_null_measurement_rows": {
+        "accuracy": 984,
+        "false_report_rate": 746,
+        "signal_override_rate": 984
+      }
+    },
+    "institution": {
+      "persisted_cases": 28,
+      "completed_runs": 56,
+      "actions": {
+        "allocate": 204,
+        "work": 708
+      },
+      "non_null_measurement_rows": {
+        "false_report_rate": 788,
+        "sanction_rate": 204,
+        "self_allocation_rate": 204,
+        "work_rate": 708
+      }
+    },
+    "renewable_resource": {
+      "persisted_cases": 30,
+      "completed_runs": 60,
+      "actions": {
+        "extract": 720
+      },
+      "non_null_measurement_rows": {
+        "collapse_rate": 169,
+        "extraction_rate": 720,
+        "false_report_rate": 679,
+        "stock_fraction": 169
+      }
+    },
+    "trust_exchange": {
+      "persisted_cases": 29,
+      "completed_runs": 58,
+      "actions": {
+        "return": 476,
+        "send": 476
+      },
+      "non_null_measurement_rows": {
+        "false_report_rate": 838,
+        "forecast_error": 456,
+        "promise_fulfillment_rate": 178,
+        "return_rate": 462,
+        "trust_rate": 476
+      }
+    }
+  },
+  "historical_attempts": 234,
+  "total_recorded_attempts": 464,
+  "limits": [
+    "Single-seed small pilots do not establish intervention effects or human validity.",
+    "No live institutional sanctions or appeals were chosen; their semantics have deterministic regression coverage, but live treatment efficacy is untested.",
+    "Reserved generalization contexts reuse the seven mechanics and treatment vocabulary; they are not unfamiliar mechanics.",
+    "One HTTP 400 remained a failed run; unknown usage retains its reservation.",
+    "A passing workflow does not establish psychological motives or a perfected ontology."
+  ]
+}
