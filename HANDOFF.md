@@ -1,197 +1,30 @@
-# Model decision reliability
+# ASS handoff
 
-## Acceptance criteria
+Branch: `feat/empirical-research-platform`. Fresh React/TypeScript and Python local platform;
+old NiceGUI source removed, ignored old databases retained. Read README, PRODUCT and
+IMPLEMENTATION first. Architecture/research details live in docs/; ontology in GLOSSARY.
 
-- Valid actions continue when the model writes overlong rationale, memory, or radio text.
-- Free text retains its documented character limits; malformed actions still fail validation.
-- Each turn uses at most one model request; request/token caps and checkpoint replay remain intact.
-- Regression tests and a complete live 120-turn simulation pass.
-- The viewer runs in the Docker Sandbox on port 8080 for user testing.
+Data: `data/ass.sqlite3`, schema v2. Never run two engines against this database. Native uv
+crashes on this sandbox kernel; `.tools/uv-0.13.7.data/scripts/uv` works. Project environment
+is `.venv`. CLI: `.venv/bin/ass --host 0.0.0.0 --port 8080`. Docker uses its own volume.
+Provider keys remain in the existing environment/.env and must never be printed or committed.
 
-## Diagnosis and decision
+Verified: 36 Python tests, 3 frontend unit tests, 5 keyless browser workflows, lint/types/build,
+Docker health and persistence, 19 live completed runs with 318 exact replayed turns.
+Live ledger estimated/reserved $1.242269 of the authorized $25 maximum; no further paid
+requests needed. Benchmarks/results.json preserves attempts and limitations. GPT-6.1 Luna
+is unavailable (HTTP404); requested follow-up is not silently replaced by GPT-6 Luna.
 
-- Reproduced the user's failure in an in-memory copy of their saved run at turn 14.
-- `UnexpectedModelBehavior` wrapped a Pydantic `string_too_long` error for rationale
-  (400-character limit). The response used 284 output tokens, below its 600-token cap.
-- Bound descriptive text before validation/persistence instead of discarding a valid action
-  or spending extra requests to shorten it. Keep all action rules and model budgets intact.
-- A longer live run exposed a second cause at turn 30: the model returned a top-level
-  `message` instead of nesting it inside `action`. The request did not enable strict
-  tool schemas. Explicit `ToolOutput(..., strict=True)` constrains the provider response.
-- Work branch: `fix/model-decision-recovery`.
+Final visual evidence is `.impeccable/review/final/` (ignored). This is a code-led Operate
+surface; `.impeccable/surfaces/frontend.md` holds its direction. Orange accent, neutral
+white/charcoal themes and no green were the user's final design steering. Detector ran
+once with no findings. Fresh review covered all 40 required captures; both copy fixes
+were scored resolved. DESIGN.md and the token sidecar match the shipped source. Reviewer
+and documenter used the skill's degraded contracts in fresh native agent handoffs.
 
-## Progress
-
-- All acceptance criteria met. Both failures were captured; regression tests failed before
-  their respective fixes.
-- All 44 tests, Ruff, diff checks, and Gitleaks pass.
-- Browser New run -> Play -> Pause reached turn 7; its checkpoint replay verifies exactly.
-  The separate browser session was closed afterward.
-- Live run `164ff7c6367c` completed all 120 turns without intervention, using exactly
-  120 requests and 254,928 tokens under the original 300,000-token cap. All 120 saved
-  turns replay-verified exactly. Its database is ignored `.venv/reliability.sqlite3`.
-- Updated viewer is running on port 8080 with the inherited OpenAI credential.
-  It remains running at the user's request.
-
-## Local viewer setup
-
-- Both shipped scenarios now use `openai:gpt-6-luna` for every settler. The viewer uses
-  the shipped `scenarios/` directory and the inherited OpenAI credential.
-- Ignored `.venv/viewer-scenarios/` contains local copies of the shipped scenarios with
-  Anthropic assigned to every settler; these copies are retained but are not in use.
-- OpenAI authentication now works. A live Luna turn completed with one request and
-  replay-verified exactly using an in-memory journal. All 44 tests and Ruff pass.
-- Model-default work is on `fix/gpt-6-luna-default`. Saved runs retain their original
-  model configuration; create a new run to use Luna.
-- Preserve existing `runs.sqlite3`; diagnostic reproductions use in-memory copies.
-
-## User testing and verification
-
-- Refresh the user's forwarded port-8080 URL. Create a new run and press Play, or select
-  a saved run, press Resume latest, then Play. Old checkpoints need no migration.
-- Verify locally with `.venv/bin/python -m pytest -q` and
-  `.venv/bin/ruff check src tests`.
-- Real provider authentication/rate limits, configured budgets, and genuinely malformed
-  actions can still stop a run; no substitute actions or hidden retries were introduced.
-- The complete 120-turn verification used Anthropic. Luna has a one-turn live smoke
-  check; a complete Luna run has not been checked.
-
-## Optional total-token budget
-
-- Work branch: `feat/optional-token-budget`, following the Luna default change.
-- Total-token budgets now default to `None` (no cap). Both shipped scenarios and the
-  provider comparison omit the cap. Explicit positive `max_total_tokens` values are
-  still enforced, including those in existing saved runs; no saved journal was changed.
-- Token accounting, per-request input/output limits, request caps, timeouts and the
-  120-turn scenario endpoint remain. Create a new run to use the uncapped settings.
-- All 46 tests and Ruff pass. An offline regression accounts for 333,000 tokens across
-  30 turns, pauses/resumes midway, and replay-verifies every turn. Request caps are
-  tested with and without a total-token cap; saved explicit token caps remain enforced.
-- Browser checks against a disposable journal confirmed a new paused Luna run shows
-  `No total token cap`, and a saved capped run displays its numeric limit.
-- The browser and temporary viewer were closed; the user's viewer was restarted on
-  port 8080 with the existing journal. No live API requests were needed for this change.
-
-## Viewer cost estimate
-
-- Work branch: `feat/viewer-cost-estimate`. The usage row now shows whole-run estimated
-  USD cost from stored input/output tokens, so saved runs work without migration.
-- Rates cover Luna ($0.10/$0.50 per million input/output tokens), GPT-4.1 Mini
-  ($0.40/$1.60), and Haiku 4.5 ($1/$5). OpenAI rates were verified against official
-  model pages; Anthropic's pricing pages returned HTTP 403, so Haiku rates use the
-  installed genai-prices snapshot. The snapshot's older Luna rate was not used.
-- Estimates exclude credits, cache discounts and unknown pending/failed usage.
-  Unknown usage adds a partial label; mixed or unpriced models show unavailable.
-- All 51 tests and Ruff pass. Disposable browser checks verified a nonzero saved-run
-  estimate, the partial marker and a new run's zero estimate. No live API calls were made.
-- The temporary viewer and browser were closed. The user's viewer was restarted on
-  port 8080; refresh the page to see estimates for existing or new runs.
-
-## Evaluation workspace redesign
-
-- Branch `feat/evaluation-workspace`, based on cost-estimate work. Full UI replacement
-  explicitly requested with Impeccable. User chose a mix of browsing/comparing saved runs
-  and live monitoring; environment-panel placement delegated to implementation.
-- Runs-first library, comparison, separate setup, environment catalog, and a shared
-  Overview/Environment/Decisions/Configuration workspace are implemented. Colony-specific
-  UI remains in its registered panel. No runner/policy/budget or journal-schema changes.
-- Lightweight history/read helpers avoid decoding all saved checkpoints for analysis.
-- Plan and acceptance criteria: `UI_REDESIGN.md`. Direction: Research index, code-led
-  Operate. Concept service unavailable; degraded local assignment recorded in plan.
-- 55 tests, Ruff and diff checks pass. Browser flows use a disposable TestModel journal,
-  with no provider requests. Captures span 1440, 1280, 1024 and 390 widths; automated axe
-  reports zero violations in library, overview, decisions, setup and mobile Environment.
-- Independent Impeccable review scored all five listed material fixes resolved and returned
-  `ship` for that list: exact recorded decision input vs post-turn state, separate chart
-  legend/axis, responsive drawer completion, replacement design documentation, and map
-  accessibility. Review/documenter used the installed fallback role definitions; the remote
-  concept service/card was unavailable. Evidence stays in ignored `.impeccable/review/`.
-- DESIGN.md and `.impeccable/design.json` capture the source-backed system. PRODUCT.md and
-  README describe the confirmed mixed evaluation/live workflow and environment extension.
-- All 55 tests, Ruff and diff checks pass. Browser errors were empty. All inspected axe
-  states have zero violations; one incomplete contrast check requires manual judgment.
-- Viewer restarted on port 8080 using `.venv/bin/sandbox view --host 0.0.0.0 --port 8080`.
-  HTTP 200 and read-only inspection of an existing 7-turn saved run passed. It remains running
-  at the user's request. Existing journal, model configuration and credentials preserved.
-- QA services8081/8082, browser and generated QA journal/scripts are closed/removed. No new
-  live-provider run was performed for this UI change. Real provider availability remains
-  governed by existing credentials and limits; fresh model runs still default to GPT-6 Luna.
-
-## SaaS interface refinement
-
-- Branch `feat/saas-ui-refinement`, based on `451fbf3`. The user requested a restrained
-  all-page refinement using Impeccable, keeping the dark identity and table formats.
-- Compact breadcrumb shell, integrated run-table toolbar, denser rows and controls,
-  narrower setup, scenario tables, side-by-side comparison and Configuration sections,
-  tighter analysis/evidence layouts, and reduced instructional/debug copy.
-- Completed live runs now immediately offer recorded Replay. Simulation, provider,
-  budget, accounting and persistence behavior remain unchanged.
-- Plan/evidence: `UI_REFINEMENT.md`. Independent documentation refresh merged current
-  sizing into `DESIGN.md` and all nine sidecar specimens. Independent finish verdict:
-  `ship`, no blocking findings. Optional documentation notes are resolved.
-- All 55 tests, Ruff and changed-file formatting pass. Repository-wide format check
-  finds pre-existing differences in sandbox.py and two test files, outside this task.
-- Browser checks cover 390/768/1280/1440 widths and all pages, filters, comparison,
-  paused creation, completion, recorded replay, decision evidence and responsive nav.
-  Two disposable 3-turn TestModel runs used exactly 3 requests each and replay-verify;
-  playback added no requests. No live provider requests were made.
-- Inspected axe states have zero WCAG A/AA violations. SVG contrast was checked manually
-  (tested text pairs 6.32–10.75:1). Final browser console is clean. One Impeccable scan
-  retained pinned Roboto intentionally; updated sizes are documented.
-- The user's viewer remains running on port 8080, exec session 9751. HTTP 200 and
-  read-only inspection of its existing 8-run journal/7-turn saved run pass. Refresh
-  the forwarded port to see changes. QA ports 8081/8082 and the browser are closed.
-- Ignored evidence stays in `.impeccable/review/saas/`; generated QA scripts, tools and
-  databases are disposable and removed after verification. Existing journals untouched.
-
-## Reasoning response truncation recovery
-
-- Branch `fix/luna-decision-errors`, based on `ec4a5c2`. The reported turn-5 failure
-  was reproduced from an isolated copy: HTTP 200 incomplete/max_output_tokens with
-  600 output tokens, including 503 thinking tokens, and truncated decision JSON.
-- New-run and shipped scenario/experiment response allowances are 4096. Thinking
-  remains enabled; explicit limits, request caps, strict output and zero retries remain.
-  Length-finished model failures now explain the limit safely. Provider-reported failed
-  usage settles to actual tokens; unknown usage keeps the conservative reservation.
-- All 58 tests pass, including real SDK mocked-HTTP regressions. Ruff, changed source
-  formatting and diff checks pass. Live isolated continuation made exactly 10 requests,
-  advancing turns 5 to 15; replay verified. Full 120-turn completion was not tested.
-- Actual stopped run `2dd9c2a6c284` now has response allowance 4096, with the old 600
-  value and recovery reason recorded in metadata. Atomic assertions verified every
-  frame and existing usage/call counter unchanged. Still at turn 5; Resume loads it
-  correctly. The historical error remains recorded until a successful new decision.
-- Viewer restarted on port 8080, exec session 40792; HTTP 200. Refresh, open the run,
-  Resume run and Play. No UI changes or browser interaction checks in this task.
-- Detailed evidence and acceptance: `RUN_RESPONSE_RELIABILITY.md`. Diagnostic scripts
-  and captured provider payloads are disposable and removed before the checkpoint commit.
-
-## Background execution and run questions
-
-- Branch `fix/background-run-lifecycle`, based on `ce8970c`. Durable acceptance and
-  evidence are in `RUN_WORKFLOW.md`. UI refinement preserves the existing design system.
-- Root cause: NiceGUI's per-client timer owned the awaited model turn, so client
-  deletion cancelled it; navigation also paused execution. `RunService` now owns tasks
-  independently of pages. Tabs share one writer, Pause finishes the current request,
-  and shutdown saves/pauses rather than automatically resuming after restart.
-- Fixed initial refresh/click race, pagination resets, evidence inspection during live
-  progress, URL restoration, execution/replay ambiguity and historical cancellation copy.
-  New variations allow names, agent goals and request settings to change in a paused copy.
-- Ask AI uses only `openai:gpt-6.1-sol`, with bounded read-only history/turn tools,
-  a fixed evidence cutoff, saved conversation and clickable turn citations. Additive
-  `analyses` storage tracks its tokens separately; simulation counters remain unchanged.
-  Analysis survives browser navigation and fails safely on server interruption.
-- 67 tests pass, including actual NiceGUI client deletion, one-writer multi-tab control,
-  pause/shutdown/restart and analysis tool/usage/isolation regressions. Ruff, formatting
-  and diff checks pass. Desktop/mobile browser flows verified with offline models;
-  no live provider request was used to validate this task. GPT-6.1 Sol access is unverified.
-- Removed the per-turn UI scheduler delay; simulated six-turn timing improved from
-  3.022s to 0.380s at 50ms fake model latency. Real turns remain sequential and mostly
-  model-latency bound. Thinking and simulation model settings were preserved.
-- Real journal at restart: `b3322b6f2a1b`, failed/CancelledError, turn 175, 177 calls.
-  Existing run/frame rows and usage are identical across restart. Play explicitly
-  retries the saved checkpoint; no automatic spending or history changes were made.
-- Viewer is running on port 8080, exec session 41112, HTTP 200. Real Ask AI page renders.
-  Refresh the forwarded port. QA service/browser are closed; ignored visual evidence
-  is in `.impeccable/review/workflow/`. Disposable QA scripts/databases are removed.
-- Impeccable detector retained the pinned Roboto and existing icon-size advisories;
-  design sidecar drift remains unchanged and can be refreshed in a dedicated document pass.
+The new frontend/API is running on8080; the disposable QA instance on8082 is stopped after
+verification. The actual outgoing Git index passed Gitleaks. An ignored old generated
+Impeccable artifact triggered an earlier workspace scan and is excluded from publication.
+No merges/default-branch pushes. Future work should begin with
+reserved holdout scenarios and duration/inventory/contract mechanics supported by explicit
+rules and independent validation, not arbitrary model-authored consequences.

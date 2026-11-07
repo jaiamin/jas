@@ -1,261 +1,63 @@
-# Agent sandbox
+# ASS · Agent Simulation Environment
 
-A small Python sandbox for running and inspecting agent experiments. The headless runner
-and NiceGUI viewer use the same rules, policies, controls and SQLite journal.
-Frontier Colony is the first environment; the runner knows nothing about colony mechanics.
+A local workspace for agent experiments. Ask a question or write a protocol; run matched
+trials, watch decisions, inspect evidence, compare outcomes and tune preserved revisions.
 
-## Start
+**Requires:** Docker Compose and an OpenAI key for AI design/analysis. Agent decisions
+support OpenAI and Anthropic. Manual configuration, saved evidence and replay work offline.
 
-Python 3.11+:
-
-```bash
-python3 -m venv .venv
-. .venv/bin/activate
-pip install -e '.[viewer,dev]'
-cp .env.example .env                 # fill in real provider API keys
-sandbox run --steps 2               # two real OpenAI decisions
-sandbox view                        # http://localhost:8080
+```sh
+cp .env.example .env # set provider keys
+docker compose up --build
 ```
 
-Run commands from the repository root. Install `pip install -e .` for the headless CLI
-without NiceGUI; `.[viewer]` adds the viewer and `.[dev]` adds pytest and Ruff.
-No frontend build or database server is needed. Running agents requires a provider API key.
-Opening the viewer or inspecting replay sends no model requests.
+Open **http://localhost:8080**. Data persists in the `ass-data` Docker volume.
+Set `ASS_PORT` for a different port. Stop with `docker compose down`.
+The app is single-user and unauthenticated; use it on a trusted local network.
 
-If this runs inside a Docker Sandbox, expose the viewer from your **host** with
-`sbx ports <sandbox-name> --publish 8080:8080` and open `http://localhost:8080` there.
-The viewer binds to `0.0.0.0`; it is a local research tool with no authentication.
+## Development
 
-## Headless workflow
+Python 3.13+, uv, Node 24+, pnpm 12.
 
-```bash
-sandbox validate scenarios/frontier.yaml
-sandbox --db runs.sqlite3 run scenarios/frontier.yaml --steps 24
-sandbox runs
-sandbox resume RUN_ID --steps 12
-sandbox replay RUN_ID --tick 18       # full saved frame as JSON
-sandbox replay RUN_ID --verify        # execute recorded actions, no policies or model calls
-sandbox validate experiments/resilience.yaml --experiment
-sandbox experiment experiments/resilience.yaml > results.json
-pytest -q
-ruff check src tests
+```sh
+uv sync --frozen
+pnpm --dir frontend install --frozen-lockfile
+pnpm --dir frontend build
+uv run ass --host 0.0.0.0 --port 8080
 ```
 
-`--db` and `--verbose` precede the subcommand. Commands print JSON to stdout and progress/errors
-to stderr. Ctrl+C pauses at the last committed checkpoint. `resume` continues the **same** run;
-its original scenario and budgets are immutable. Use a new run to change configuration.
-Use one active writer per run; multiple independent runs can share the database.
+For frontend development, run the API on 8081 and `pnpm --dir frontend dev`.
 
-## Models and spending
-
-Only OpenAI and Anthropic are accepted. Put real provider API keys in the repository's
-`.env` as `OPENAI_API_KEY` and/or `ANTHROPIC_API_KEY`; `.env` is ignored by Git.
-Every CLI command, including `sandbox view`, loads `.env` from the current working directory
-at startup. Its values override inherited environment variables, including sandbox OAuth
-credentials. Empty values also override: leave an unused provider blank. Restart the viewer
-after editing the file. Without `.env`, the existing environment is used.
-Keys never go in YAML or SQLite. There is no automatic provider fallback.
-Model identifiers are explicit and editable in YAML; the supplied names are examples,
-not a promise about model availability in your account.
-
-```bash
-sandbox run scenarios/frontier.yaml --steps 2
-sandbox experiment experiments/providers.yaml  # 24 requests maximum; both keys required
+```sh
+uv run ruff check backend
+uv run ty check
+uv run pytest
+pnpm --dir frontend lint
+pnpm --dir frontend test
+pnpm --dir frontend build
 ```
 
-Every agent decision uses a real model. There is no offline policy, fixture mode, opt-in
-checkbox or fallback. Both shipped scenarios assign all six settlers to `openai:gpt-6-luna`.
-To use Anthropic, choose `anthropic:claude-haiku-4-5` in the viewer's model selector before
-creating a run, or set profile aliases to `anthropic` in YAML. Scenario assignments preserve
-per-agent models; choosing a model in the viewer applies it to all agents in the new run.
+Browser tests require a **keyless disposable instance** on 8082; see the
+[CI setup](.github/workflows/checks.yml).
 
-OpenAI keys need Responses API write permission; Anthropic keys need Messages API access.
-A Codex/ChatGPT session credential alone does not grant general model API access.
-Missing keys prevent run creation; rejected requests pause without inventing an action.
-Credentials configured by the sandbox proxy can remain proxy-managed.
-
-In the viewer, new runs start paused. **Step** sends one model request, and **Play** continues up to the
-configured limits. Saved replay works without provider keys. Historical demo runs remain
-accurately labeled, replay-only archives; they cannot be resumed as model runs.
-
-Each decision uses PydanticAI's typed `Decision[SandboxAction]` output, requesting strict
-schema enforcement from providers that support it. No tools,
-conversation history, SDK retries, output retries, or hidden second requests are enabled.
-The run stores a call reservation **before** sending. Invalid output, timeouts and interrupted
-requests remain charged against the cap; there is no substitute action.
-
-`limits` sets the maximum calls, per-call input/output tokens and timeout. There is no
-total-token cap by default. Set `max_total_tokens` to a positive integer to opt into one;
-omit it or use `null` for no total-token cap. Both shipped scenarios run for up to 120 turns.
-Before each call, a conservative UTF-8 byte estimate of the input, schema and instructions
-must fit the input cap. The entire configured input + output allowance is recorded as a
-reservation and checked against the total token budget when one is configured;
-a response settles to provider-reported usage, even if its decision is invalid or incomplete.
-Unknown usage keeps the full reservation. PydanticAI checks reported token usage and the
-provider receives the output limit. These are request/token caps, **not a dollar guarantee**;
-provider tokenization/accounting and pricing remain external. Reaching a cap stops the run
-at its last checkpoint. Experiment caps apply in addition to per-run caps.
-
-The default response allowance is 4,096 tokens, including any model thinking tokens.
-A smaller allowance can truncate the decision JSON and stop a run. Existing saved runs
-retain their recorded limits; new defaults apply to new runs.
-
-## Viewer
-
-The usage row shows estimated whole-run USD cost from reported input/output tokens at
-standard list prices, before credits or cache discounts. Pending or failed requests with
-unknown usage are excluded and marked partial. Mixed-model or unpriced runs show no estimate.
-Rates cover GPT-6 Luna, GPT-4.1 Mini and Claude Haiku 4.5; estimates also work for saved runs.
-
-The workspace opens on **Runs**, a searchable, sortable library with status and environment
-filters. Select two or more runs from the same environment to compare shared final metrics,
-model assignments, seeds, usage and histories aligned by turn. Comparison reads saved data.
-
-**New run** opens a dedicated setup page for name, scenario, model, seed, maximum turns
-and agent goals. Advanced controls set response allowance and request timeout.
-The request cap matches the chosen turn limit; other limits remain defined in the scenario.
-Creating a run starts paused and makes no model request. **Environments** lists available
-scenarios from the configured scenario directory.
-
-Opening a run shows execution controls and a separate recorded-turn scrubber above five views:
-
-- **Overview:** metric history, outcomes and recent activity.
-- **Environment:** the registered environment panel. The colony panel offers a clickable
-  map and a keyboard-accessible facility selector; occupants link to agent evidence.
-- **Decisions:** the recorded log, agent filtering, rationale, goals, memory, radio and
-  observations. Exact saved model input is labeled separately from state after the turn.
-  Select a decision's turn to synchronize the timeline and agent evidence.
-- **Ask AI:** ask about cooperation, strategy or outcomes using GPT-6.1 Sol. Answers are
-  saved with evidence-turn links and a fixed cutoff at the latest turn when asked. The
-  assistant can read the entire run's history, observations, memories, messages and
-  checkpoints; it cannot change the simulation. Questions send separate OpenAI requests
-  using the existing `OPENAI_API_KEY`. Analysis tokens are tracked separately and excluded
-  from the simulation cost estimate. No fallback model or automatic retries are used.
-- **Settings:** resolved scenario, limits, usage, experiment metadata, replay verification
-  and JSON export.
-
-Opening a run sends no model calls. **Play** continues from its latest checkpoint and
-**Step** requests one decision. **Pause** finishes the current request before stopping.
-Execution belongs to the server: navigation, refresh and closing a tab do not stop it,
-and other tabs share the same controls. The server must stay running. After a server
-restart, interrupted runs remain paused until you explicitly continue.
-
-The scrubber and **Replay** inspect saved evidence without making requests. Inspecting
-history or expanding decision evidence holds your selected turn while execution continues;
-**Live** follows new turns again. **New variation** copies settings and goals into a new
-paused run. Completed runs remain replayable. Ask AI also survives browser navigation;
-server shutdown interrupts an unfinished answer without rerunning it automatically.
-On narrow screens, navigation collapses into a drawer and wide tables scroll within
-their containers.
-The viewer is optional and no environment imports NiceGUI during headless execution.
-
-## Frontier Colony rules
-
-Six settlers share food, energy and materials across five connected facilities:
-Habitat, Greenhouse, Reactor, Quarry and Workshop. The graph is fixed; settlers move one
-connection per action. Round-robin selection skips settlers with zero health.
-
-| Action | Python-enforced outcome |
-| --- | --- |
-| Move | Adjacent facility only; costs 3 stamina. |
-| Work | Costs 12 stamina. Greenhouse produces food, reactor energy, quarry materials. Greenhouse/quarry consume 1 energy. Workshop converts 2 energy to 3 materials. Habitat has no production. |
-| Rest | Recovers 35 stamina at the habitat, 25 elsewhere, up to 100. |
-| Repair | Costs 3 materials and 8 stamina; restores 20 facility integrity, up to 100. |
-| Build | Upgrades the current facility, up to level 3; costs `8 + 4 × level` materials, 2 energy and 15 stamina. Production upgrades improve greenhouse/reactor/quarry yield. |
-
-Every six turns, the colony consumes the scenario's food and energy allowances. Shortages
-reduce settler health by 8; a supplied cycle restores 2 health for surviving settlers.
-Seeded storms damage facilities. Integrity below 30 halves production; zero prevents work.
-Invalid actions consume a turn and produce a rejection event without granting their effects.
-Radio can accompany any physical action, including a rejected one.
-
-Settlers see shared resources, public facility conditions, their own state, colocated
-settlers and their own radio inbox. They cannot read another settler's memory or inbox.
-The researcher can inspect all agents in the viewer. Memory is an 800-character private note
-replaced after each decision. Radio is limited to 240 characters, with the last 12 received
-messages retained per agent. Observations include the rules; Python validates every chosen action.
-Rationales are limited to 400 characters. Overlong memory, rationale and radio text is
-shortened to these limits before validation, so verbose prose cannot discard an otherwise
-valid action. Action kinds, targets, recipients and field types are still validated normally;
-there are no extra model requests to shorten text.
-
-## Configuration and experiments
-
-YAML is loaded with `safe_load` and validated by Pydantic with unknown fields rejected.
-Environment parameters are validated against the selected sandbox's parameter model.
-See `scenarios/` for complete model-backed examples.
-
-A scenario defines `sandbox`, `name`, `seed`, `max_steps`, `parameters`, `agents`, `models`
-and `limits`. Profiles require an id, name, goal and model alias.
-Model aliases resolve only to `openai:MODEL` or `anthropic:MODEL`.
-
-An experiment defines a scenario path **relative to the experiment YAML**, conditions, seeds,
-repetitions, requested metrics and a total call cap. Optional `max_steps` bounds all its runs.
-Conditions merge environment parameters, select a shared model, optionally override
-individual profiles' goal/model, and can replace per-run limits. All expanded scenarios
-and metric names are checked before the first run or model call. Each condition runs against
-the same seed list. Repetitions deliberately reuse the seed: the environment stays controlled
-while model decisions can differ. A seed controls the environment; it does not make fresh
-model decisions deterministic.
-Execution is sequential; output includes every run id, selected final metrics and condition
-means. The experiment label, condition, repetition and metrics are also saved with each run.
-If execution fails, completed runs stay in SQLite; there is no automatic experiment restart.
-
-## Adding a sandbox
-
-Start with a single environment module and Pydantic parameter/action models. Implement the
-`Sandbox` protocol in [sandbox.py](src/agent_sandbox/sandbox.py):
-
-```python
-class YourSandbox:
-    action_type = YourAction
-
-    def initialize(self, parameters: dict, agent_ids: list[str], seed: int) -> None: ...
-    def observe(self, agent_id: str) -> dict: ...
-    def next_agent(self) -> str | None: ...  # None means terminal
-    def step(self, agent_id: str, action: YourAction) -> list[Event]: ...
-    def metrics(self) -> dict[str, float]: ...
-    def snapshot(self) -> dict: ...
-    def restore(self, snapshot: dict) -> None: ...
+```sh
+pnpm --dir frontend exec playwright install chromium
+pnpm --dir frontend test:e2e
 ```
 
-Snapshots and observations must be JSON-serializable, finite, and detached from mutable state.
-Snapshot **everything** affecting future outcomes, including RNG state, turn order, inboxes
-and environment parameters. Use an instance-local seeded RNG, never wall-clock time or global
-randomness. `step` must enforce legality and outcomes; typed output alone is not rule validation.
-Keep visibility in `observe`, scheduling in `next_agent`, and domain metrics in `metrics`.
-The runner stores private memory separately; it supplies policies with `{environment, profile, memory}`.
+## Scope
 
-Register one `SandboxSpec` in `sandboxes.SANDBOXES`:
+Three mechanics: sealed shared contributions, paired trust exchanges and dependency-based
+team tasks. Protocols support 2–12 agents, per-agent models/goals, memory conditions,
+resource shocks, matched seeds and bounded spending. AI proposals require review before
+execution. There are no substitute models or automatic request retries.
 
-```python
-SANDBOXES['your_sandbox'] = SandboxSpec(
-    parameters=YourParameters,
-    create=YourSandbox,
-    panel=None,     # optional (snapshot, select_agent) -> None
-)
-```
+Each turn records its observation, decision, consequences and checkpoint. Exports include
+all revisions, evidence and request traces. Replay verifies recorded actions without calling
+models. Cost is an estimate using configured rates; unknown usage retains a reservation.
 
-Add a YAML scenario naming `your_sandbox`. The runner, CLI, budgets, checkpoints, experiments
-and replay need no changes. Without a panel, the viewer shows the environment snapshot and
-generic agent inspection. If desired, add a panel in a separate module, lazily importing NiceGUI
-there. The panel may inspect the researcher's complete snapshot; it cannot change simulation state.
+These experiments measure **model behavior under stated rules**, not human psychology or
+validated real-world predictions. Natural-language context does not invent new mechanics.
 
-[test_runner.py](tests/test_runner.py) includes a tiny counter environment exercising this
-contract independently of colony concepts. Tests also verify full seeded trajectories across
-resume, exact replay, local visibility, invalid actions, strict YAML and typed mock-model budgets.
-
-## Saved data and replay
-
-SQLite has two tables: `runs` stores the resolved scenario, metadata, status, errors and
-usage; `frames` stores each observation, validated decision, events, metrics and full checkpoint.
-Frame zero is initialization. Every subsequent frame commits atomically; failed steps restore
-the previous state. Both the database schema and checkpoints carry a version.
-Copy the SQLite database while the app is stopped, or use SQLite's backup API while it runs.
-
-Replay displays stored frames, so it does not depend on model determinism or provider access.
-`replay --verify` additionally re-executes the recorded actions against environment code and
-compares every checkpoint, event and metric, including RNG state. It reports drift when rules
-change. Model randomness is not seeded; recorded decisions are the source of exact replay.
-This project intentionally has no plugin loader, workflow engine, distributed scheduler,
-ORM, vector memory, or background job service.
+[Architecture](docs/ARCHITECTURE.md) · [Research](docs/RESEARCH.md) ·
+[Validation](benchmarks/README.md) · [Domain](GLOSSARY.md)
