@@ -14,7 +14,7 @@ for (const theme of ["light", "dark"]) {
       const errors: string[] = [];
       page.on("pageerror", (error) => errors.push(error.message));
       await page.addInitScript(
-        (value) => localStorage.setItem("ass-theme", value),
+        (value) => localStorage.setItem("jas-theme", value),
         theme,
       );
       await page.setViewportSize(
@@ -49,6 +49,7 @@ for (const theme of ["light", "dark"]) {
           row.condition_key === study.design.conditions[0].key,
       );
       await page.goto(`/runs/${run.id}`);
+      await page.getByRole("tab", { name: "Environment", exact: true }).click();
       await expect(
         page.getByRole("heading", { name: title, exact: true }),
       ).toBeVisible();

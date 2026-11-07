@@ -99,13 +99,16 @@ test("mobile navigation and theme persist without page overflow", async ({
   ).toBe(true);
   await expect(page.getByRole("dialog")).not.toBeVisible();
   await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("link", { name: "ASS home" }).focus();
+  await page.getByRole("link", { name: "JAS home" }).focus();
   await page.keyboard.press("Shift+Tab");
   await expect(
-    page.getByRole("button", { name: "Close", exact: true }),
+    page.getByRole("button", { name: "Switch to light mode", exact: true }),
   ).toBeFocused();
   await page.getByRole("button", { name: "Switch to light mode" }).click();
   await expect(page.locator("html")).not.toHaveClass("dark");
+  await page.getByRole("button", { name: "Close menu", exact: true }).click();
+  await expect(page.getByRole("dialog")).not.toBeVisible();
+  await expect(page.getByRole("button", { name: "Open menu" })).toBeFocused();
 });
 
 test("removing agents removes condition overrides and environment changes need confirmation", async ({
@@ -193,7 +196,7 @@ test("AI design progress opens a reviewable protocol with design notes", async (
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
     catalog.templates[0].design.title,
   );
-  await page.getByText("AI design notes", { exact: true }).click();
+  await page.getByText("Protocol notes", { exact: true }).click();
   await expect(
     page.getByRole("link", { name: "Methods", exact: true }),
   ).toHaveAttribute("href", "https://example.org/methods");
@@ -218,16 +221,11 @@ test("failed AI designs remain reachable and restore the original question", asy
   );
   await page.goto("/new?plan=qa-failed");
   await expect(page.getByRole("alert")).toContainText(failed.error);
-  await page
-    .getByRole("link", { name: "Return to your question", exact: true })
-    .click();
-  await expect(
-    page.getByLabel("Your research question", { exact: true }),
-  ).toHaveValue(question);
-  await page.getByText("Recent AI designs", { exact: true }).click();
-  await page
-    .getByRole("link", { name: `${question} failed`, exact: true })
-    .click();
+  await page.getByRole("link", { name: "Back to Agent", exact: true }).click();
+  await expect(page.getByLabel("Message Agent", { exact: true })).toHaveValue(
+    question,
+  );
+  await page.goto("/new?plan=qa-failed");
   await expect(
     page.getByRole("heading", { name: "Design request stopped", exact: true }),
   ).toBeVisible();

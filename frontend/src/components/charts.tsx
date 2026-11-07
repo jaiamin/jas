@@ -112,6 +112,9 @@ export function MetricChart({
               dataKey={`series${index}`}
               stroke={`var(--chart-${(index % 6) + 1})`}
               strokeWidth={2}
+              strokeDasharray={
+                ["0", "7 4", "2 4", "8 3 2 3", "12 4", "6 3 2 3 2 3"][index % 6]
+              }
               dot={data.length < 12 ? { r: 3, strokeWidth: 0 } : false}
               activeDot={{ r: 4 }}
               isAnimationActive={false}

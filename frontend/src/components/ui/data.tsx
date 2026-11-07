@@ -1,3 +1,4 @@
+import { CircleAlert } from "lucide-react";
 import type * as React from "react";
 import {
   AlertDescription,
@@ -31,6 +32,7 @@ export function Alert({
       variant={variant === "error" ? "destructive" : "default"}
       className="alert"
     >
+      {variant === "error" && <CircleAlert aria-hidden="true" />}
       {title && <AlertTitle>{title}</AlertTitle>}
       <AlertDescription>{children}</AlertDescription>
     </AlertRoot>

@@ -5,12 +5,8 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
-import {
-  ErrorState,
-  Loading,
-  PageHeading,
-  RunTable,
-} from "@/components/shared";
+import { RunTable } from "@/components/run-table";
+import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Badge, Empty, Table } from "@/components/ui/data";
 import { useApi } from "@/lib/api";
@@ -45,14 +41,7 @@ function Runs() {
       ) : runs.data.length ? (
         <RunTable runs={runs.data} selectable />
       ) : (
-        <Empty
-          title="No runs yet"
-          description="Create an experiment to define the agents, conditions, and rules."
-        >
-          <Button asChild>
-            <Link to="/new">Create experiment</Link>
-          </Button>
-        </Empty>
+        <Empty title="No runs yet" />
       )}
     </>
   );
@@ -87,16 +76,11 @@ function Environments() {
                   </td>
                   <td>
                     <div className="environment-measures">
-                      {env.measures.slice(0, 3).map((measure) => (
+                      {env.measures.map((measure) => (
                         <Badge key={measure} variant="secondary">
                           {measure.replaceAll("_", " ")}
                         </Badge>
                       ))}
-                      {env.measures.length > 3 && (
-                        <span className="muted">
-                          +{env.measures.length - 3}
-                        </span>
-                      )}
                     </div>
                   </td>
                   <td>
@@ -113,15 +97,6 @@ function Environments() {
           </Table>
         </div>
       )}
-      <Disclosure className="disclosure">
-        <DisclosureTrigger>Add an environment</DisclosureTrigger>
-        <DisclosureContent>
-          <p className="muted">
-            Implement a Python environment adapter to add new mechanics. AI uses
-            the environments installed here.
-          </p>
-        </DisclosureContent>
-      </Disclosure>
     </>
   );
 }
@@ -148,7 +123,7 @@ function SettingsPage() {
                   className={configured ? "status status-complete" : "status"}
                 >
                   {configured && <Check />}
-                  {configured ? "Key configured" : "Not configured"}
+                  {configured ? "Configured" : "Not configured"}
                 </Badge>
               </div>
             ))}
@@ -157,7 +132,9 @@ function SettingsPage() {
             Set keys in <code>.env</code> and restart.
           </p>
           <div className="section-space">
-            <h2>Model pricing</h2>
+            <h2 title="Token estimates before credits, cache discounts or web search">
+              Model pricing
+            </h2>
             <div className="table-frame">
               <Table className="table">
                 <thead>
@@ -178,9 +155,6 @@ function SettingsPage() {
                 </tbody>
               </Table>
             </div>
-            <p className="muted">
-              Token estimates before credits, cache discounts or web search.
-            </p>
           </div>
         </section>
         <section>
@@ -205,7 +179,7 @@ function SettingsPage() {
             </div>
             <div>
               <dt>Storage</dt>
-              <dd>{s.storage} · persistent local data</dd>
+              <dd>{s.storage}</dd>
             </div>
             <div>
               <dt>Concurrent runs</dt>
@@ -218,7 +192,7 @@ function SettingsPage() {
               <p className="muted">
                 Each request reserves its upper allowance before sending.
                 Unknown usage retains that reservation. Adjust{" "}
-                <code>ASS_BUDGET_USD</code> in <code>.env</code> for the
+                <code>JAS_BUDGET_USD</code> in <code>.env</code> for the
                 workspace ceiling.
               </p>
               <p className="muted">

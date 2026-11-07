@@ -26,12 +26,12 @@ jobs:
       - run: pnpm --dir frontend lint
       - run: pnpm --dir frontend test
       - run: pnpm --dir frontend build
-      - run: docker compose -p ass-qa up -d --build --wait
+      - run: docker compose -p jas-qa up -d --build --wait
         env:
-          ASS_PORT: "8082"
+          JAS_PORT: "8082"
           OPENAI_API_KEY: ""
           ANTHROPIC_API_KEY: ""
       - run: pnpm --dir frontend exec playwright install --with-deps chromium
       - run: pnpm --dir frontend test:e2e
       - if: always()
-        run: docker compose -p ass-qa down -v
+        run: docker compose -p jas-qa down -v

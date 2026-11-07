@@ -30,10 +30,7 @@ export default function Compare() {
     return (
       <>
         <PageHeading title="Compare runs" />
-        <Empty
-          title="Choose runs to compare"
-          description="Select two to four runs from the run library."
-        >
+        <Empty title="Choose runs to compare" description="Select 2–4 runs.">
           <Button asChild>
             <Link to="/runs">Browse runs</Link>
           </Button>
@@ -51,7 +48,11 @@ export default function Compare() {
     : (keys[0] ?? "contribution_rate");
   return (
     <>
-      <PageHeading title="Compare runs" />
+      <PageHeading title="Compare runs">
+        <Button variant="outline" asChild>
+          <Link to="/runs">Choose runs</Link>
+        </Button>
+      </PageHeading>
       {!compatible && (
         <Alert>
           These runs use different environments. Shared metric names may have
@@ -70,6 +71,9 @@ export default function Compare() {
                   <th>Measurement</th>
                   {runs.map((r) => (
                     <th key={r.summary.id}>
+                      <span className="table-secondary">
+                        {r.summary.study_title}
+                      </span>
                       <Link to={`/runs/${r.summary.id}`}>
                         {r.summary.condition}
                       </Link>

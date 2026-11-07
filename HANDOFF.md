@@ -1,57 +1,93 @@
-# ASS handoff
+# JAS workspace redesign
 
-Branch `feat/empirical-research-platform`; draft PR https://github.com/jaiamin/ass/pull/3.
-Read README for setup, docs/ARCHITECTURE.md for boundaries, GLOSSARY.md for terminology,
-DESIGN.md for current visual tokens and docs/INTERFACE.md for the redesign evidence.
+Branch: `t3/developer-workspace-redesign`, isolated Linux Docker Sandbox.
+Draft PR: https://github.com/jaiamin/ass/pull/4
 
-## Running
+## Objective and acceptance
 
-Main app: http://localhost:8080. Start with
-`.venv/bin/ass --host 0.0.0.0 --port 8080` or `docker compose up --build`.
-The local app uses `data/ass.sqlite3`; five user studies and 32 runs are preserved.
-Never run two engines against one database. Credentials remain in .env/environment.
-Python uses .venv. Native uv crashes on this sandbox kernel;
-`.tools/uv-0.13.7.data/scripts/uv` works. Disposable UI QA services and browser are closed;
-main 8080 remains running. Evaluation workers have finished.
+Build a calm developer workspace around experiment → run → recorded decision → comparison.
+Laminar's actual product screens guide evidence composition. The supplied Clay application
+screenshot now guides white/slate surfaces, restrained blue, fine dividers and Inter typography.
+Preserve seven environments, immutable revisions, budgets, execution controls, observations,
+replay, exports, provider traces and evidence boundaries.
 
-## Implemented
+- [x] Inventory routes, tasks, contracts, repeated patterns and important states.
+- [x] Establish canonical `DESIGN.md` and apply shared shadcn patterns across all views.
+- [x] Rename product branding to JAS while preserving supported legacy interfaces.
+- [x] Keep the supplied logo and approved 22px/800 lowercase Bricolage wordmark.
+- [x] Replace the assistant panel and creation tabs with one full-page Agent surface.
+- [x] Persist independent chats in an inner history rail, with a compact mobile picker.
+- [x] Keep the composer at the bottom and four connected suggestions in the middle.
+- [x] Tailor examples to General, creation, and the selected protocol or recorded run.
+- [x] Stream provider prose with real stage activity, Markdown formatting and reduced motion.
+- [x] Preserve validation, evidence cutoffs, usage accounting and spending limits while streaming.
+- [x] Simplify redundant copy/actions and remove superseded fonts, components and styles.
+- [x] Verify responsive workflows, refresh screenshots and synchronize documentation.
 
-React/TypeScript/shadcn; Python/FastAPI; SQLite WAL, immutable protocol revisions,
-atomic checkpoints and explicit request reservations. Seven deterministic rule systems:
-commons, trust exchange, coordination, institution, bargaining, information and renewable
-resource. Independent communication channels, private observations and memory treatments.
-Planner scopes, optionally researches, drafts, validates and reviews. Production planner
-and investigator default to Sol; participants default to Luna. No model substitutions.
+## Product decisions
 
-Every view now shares source shadcn controls, compact collapsible navigation, neutral
-light/dark themes and restrained orange. Centered Home composer, progressive editor task
-tabs, recoverable drafts, full-width comparison and linked replay/evidence. The contextual
-assistant has explicit experiment/run selection, real evidence activity, bounded follow-up
-context and an anchored composer; desktop content reflows beside it. Run identities include
-immutable revision numbers. Attachments await an ingestion workflow.
+Experiments is the default view. Its New experiment action opens the manual editor;
+Generate with Agent preserves the manual draft and opens a separate creation chat.
+Proposals require review before saving. Saving never starts model calls.
 
-## Verification
+Agent handles general questions, scoped investigation and creation in one conversation
+interface. Its selector lists General, New experiment, saved experiments and runs.
+Each submitted turn retains its original context; Retry preserves that context. Ask Agent
+links appear on experiment/run details. Past chats stay inside Agent.
 
-Current interface: 147 backend tests, Ruff, ty, frontend Biome/five unit tests/production
-build and 20 keyless browser workflows pass. Nineteen captures cover 1280/1440px desktop,
-tablet and mobile. Final Docker build, health and browser entry smoke pass. No paid model
-calls during this redesign; investigator/planner states use controlled test responses.
-Design documentation and the tracked token sidecar match current source. Impeccable
-returned `ship` for all four scored finish-review fixes; no regressions were observed.
+Four examples per context fill the composer without sending. General teaches methods;
+creation offers controlled studies; scoped examples use actual questions, treatments,
+measures, environment and run identity. Unstarted work gets setup questions. In-progress
+recorded turns count as evidence even before a run completes, with revision boundaries.
 
-Earlier frozen application c5db913: 221/230 strict live GPT-6 Luna cases passed;
-206 supported cases completed both conditions, 413 runs and 5,190 exactly replayed turns.
-All 20 capability cases passed. All 464 recorded attempts remain in compressed reports;
-see benchmarks/reports/README.md and EVALUATION.md. Evaluation estimated/reserved usage
-was $3.677626; earlier task about $1.69, total about $5.36. Do not delete/reset ignored
-`data/evaluation.sqlite3` or run overlapping benchmark processes. Suite v5 offline rescore
-224/230 is post-audit evidence, not independent improvement. Nine strict failures remain.
-The current UI and investigator changes postdate that frozen evaluation.
+Provider prose streams into pending Analysis output through the existing validated model
+path. SSE sends only the active turn; polling/reload recovers an interrupted connection
+without another model request. Schema/citation/protocol checks gate completion. Failures
+remove partial prose and preserve provider usage. Never expose private model reasoning.
+Thinking, reading, research, drafting and review indicators reflect actual server stages.
 
-## Limits
+The main sidebar has no creation action. Its collapse control stays inside; hovering or
+focusing the collapsed mark reveals expansion. Only the favicon has extra logo padding.
+Use Lucide at 1.75 stroke. The user rejected the retro pixel icon alternative.
 
-Trusted single-user deployment; no live Anthropic or large-scale-load validation. Human
-realism, psychological motives and causal validity are unestablished. There were no live
-sanctions, appeals or bargaining exits in the frozen suite. Add independently tested
-mechanics and calibrated reference protocols before broader claims. PRODUCT.md has
-pre-existing schema drift; preserved outside this interface task.
+## Sources of truth and compatibility
+
+`DESIGN.md` owns visual rules, `docs/INTERFACE.md` owns route/state verification, and
+`docs/ARCHITECTURE.md` owns implementation contracts. README covers setup/public usage.
+Keep shared shadcn/Radix controls, React Query and the existing Python engine.
+
+Schema v3 additively stores chat identity without changing evidence or usage. Legacy API
+routes, CLI/config aliases, browser state, database selection, volume identity and frozen
+export/benchmark formats remain supported. The user will rename the repository; do not
+change its remote or rewrite published history.
+
+## Running application
+
+The real app is intentionally left running on **8080**, with its normal database and
+inherited environment/.env credentials. Command:
+
+```sh
+.venv/bin/jas --host 0.0.0.0 --port 8080
+```
+
+Both providers report configured without exposing keys. No seeded results or keyless user
+mode. The active process was restarted as PID 57143 for the streaming backend. Browser
+verification does not mutate user records or make paid calls. Tests use separate disposable
+databases; never share one database between engines. Local tools: `.venv`, `.tools/bin/uv`, pnpm.
+
+## Validation and limits
+
+165 backend tests, 11 frontend unit tests and 37 Playwright tests passed. Focused evidence
+and streaming/comparison captures passed after the full suite. Ruff lint/format, ty, Biome,
+TypeScript and the production build passed. Impeccable typography detection returned no
+findings. Earlier Actionlint and Compose validation still applies to unchanged configuration.
+
+42 normal-app route/theme/viewport captures at 390px, 834px and 1440px showed no page
+overflow. Expanded/collapsed navigation, popup sizing, keyboard focus and reduced-motion
+activity were verified. All 47 sampled text/surface pairs meet 4.5:1 in both themes.
+Evidence/comparison/streaming captures use explicit controlled test responses; normal-app
+captures contain no sample experiment results. Prior verification covered saved observations,
+exports, immutable revisions and exact 24-turn replay.
+
+No paid-provider run, non-Chromium audit, full screen-reader audit or production deployment.
+Publication state and final head are recorded in Git and the linked draft PR. Do not merge.

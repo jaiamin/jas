@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
-  Check,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -18,6 +17,7 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { RunRecord } from "@/components/run-record";
 import {
   ErrorState,
   Json,
@@ -38,13 +38,7 @@ import {
   WorldView,
 } from "@/components/world-view";
 import { api, useApi } from "@/lib/api";
-import type {
-  Annotation,
-  Evidence,
-  RequestEvidence,
-  RunDetail,
-  State,
-} from "@/lib/types";
+import type { Annotation, Evidence, RunDetail, State } from "@/lib/types";
 import { label, money, runModelLabel } from "@/lib/utils";
 
 export default function Run() {
@@ -57,27 +51,26 @@ export default function Run() {
   const inspectorHeading = useRef<HTMLHeadingElement>(null);
   const inspector = useRef<HTMLElement>(null);
   const journalHeading = useRef<HTMLHeadingElement>(null);
-  const [requestId, setRequestId] = useState<string | null>(null);
-  const request = useQuery({
-    queryKey: ["request", requestId],
-    queryFn: () => api<RequestEvidence>(`/requests/${requestId}`),
-    enabled: !!requestId,
-  });
-  const [annotation, setAnnotation] = useState("");
+  const evidenceReturn = useRef<HTMLButtonElement>(null);
+  const [annotationDrafts, setAnnotationDrafts] = useState<
+    Record<string, string>
+  >({});
   const query = useApi<RunDetail>(`/runs/${id}`, true);
   const notes = useApi<Annotation[]>(`/runs/${id}/annotations`);
   const client = useQueryClient();
   const tab =
     ["live", "decisions", "relationships", "settings"].find(
       (value) => value === params.get("tab"),
-    ) ?? "live";
+    ) ?? "decisions";
   useEffect(() => {
     if (jumpToEvidence && tab === "decisions") {
-      inspectorHeading.current?.focus({ preventScroll: true });
-      inspector.current?.scrollIntoView({
-        block: "start",
-        behavior: "instant",
-      });
+      if (evidenceReturn.current?.getClientRects().length) {
+        inspectorHeading.current?.focus({ preventScroll: true });
+        inspector.current?.scrollIntoView({
+          block: "start",
+          behavior: "instant",
+        });
+      }
       setJumpToEvidence(false);
     }
   }, [jumpToEvidence, tab]);
@@ -88,6 +81,8 @@ export default function Run() {
       ? Math.max(0, Math.min(maxTurn, Number(requested) || 0))
       : maxTurn;
   const pinned = requested !== null;
+  const annotationKey = `${id}:${turn}`;
+  const annotation = annotationDrafts[annotationKey] ?? "";
   const evidence = useQuery({
     queryKey: ["evidence", id, turn],
     queryFn: () => api<Evidence>(`/runs/${id}/turns/${turn}`),
@@ -97,20 +92,24 @@ export default function Run() {
     mutationFn: (action: string) => api(`/runs/${id}/control`, { action }),
     onSuccess: () => client.invalidateQueries(),
   });
-  const verify = useMutation({
-    mutationFn: () => api<{ verified_turns: number }>(`/runs/${id}/verify`, {}),
-    onSuccess: () => client.invalidateQueries(),
-  });
   const note = useMutation({
-    mutationFn: () =>
-      api(`/runs/${id}/annotations`, {
-        turn,
+    mutationFn: (draft: { runId: string; turn: number; note: string }) =>
+      api(`/runs/${draft.runId}/annotations`, {
+        turn: draft.turn,
         label: "Observation",
-        note: annotation,
+        note: draft.note,
       }),
-    onSuccess: () => {
-      setAnnotation("");
-      client.invalidateQueries({ queryKey: [`/runs/${id}/annotations`] });
+    onSuccess: (_, draft) => {
+      setAnnotationDrafts((current) => {
+        const key = `${draft.runId}:${draft.turn}`;
+        if (current[key] !== draft.note) return current;
+        const next = { ...current };
+        delete next[key];
+        return next;
+      });
+      client.invalidateQueries({
+        queryKey: [`/runs/${draft.runId}/annotations`],
+      });
     },
   });
   if (query.error) return <ErrorState error={query.error} />;
@@ -122,10 +121,7 @@ export default function Run() {
     pinned && evidence.data ? evidence.data.checkpoint : run.state;
   const events = run.events.filter((e) => e.turn <= turn);
   const visibleTurns = run.turns
-    .filter(
-      (t) =>
-        t.number <= turn && (actorFilter === "all" || t.actor === actorFilter),
-    )
+    .filter((t) => actorFilter === "all" || t.actor === actorFilter)
     .toReversed();
   const pages = Math.max(1, Math.ceil(visibleTurns.length / 15));
   const current = Math.min(page, pages - 1);
@@ -136,8 +132,7 @@ export default function Run() {
     ? selectedMetric
     : (metricKeys[0] ?? "contribution_rate");
   function selectTurn(value: number, decision = false) {
-    if (decision && matchMedia("(max-width: 900px)").matches)
-      setJumpToEvidence(true);
+    if (decision) setJumpToEvidence(true);
     setParams(
       {
         ...Object.fromEntries(params),
@@ -310,9 +305,9 @@ export default function Run() {
           )
         }
       >
-        <TabsList>
-          <TabsTrigger value="live">Environment</TabsTrigger>
+        <TabsList variant="line">
           <TabsTrigger value="decisions">Decisions</TabsTrigger>
+          <TabsTrigger value="live">Environment</TabsTrigger>
           <TabsTrigger value="relationships">Interactions</TabsTrigger>
           <TabsTrigger value="settings">Record</TabsTrigger>
         </TabsList>
@@ -357,8 +352,7 @@ export default function Run() {
                   metricKey={chosenMetric}
                 />
                 <p className="table-note">
-                  Recorded outcomes through turn {turn}. Each point summarizes
-                  one round.
+                  Through turn {turn} · one point per round
                 </p>
               </section>
             </div>
@@ -368,10 +362,7 @@ export default function Run() {
               <h2>Recent events</h2>
             </div>
             {!events.length ? (
-              <Empty
-                title="Waiting for the first consequence"
-                description="Start the run or step through one agent decision."
-              />
+              <Empty title="No events yet" />
             ) : (
               <div className="event-feed">
                 {events
@@ -520,7 +511,8 @@ export default function Run() {
               <Button
                 variant="outline"
                 size="sm"
-                className="mobile-evidence-return"
+                ref={evidenceReturn}
+                className="evidence-return"
                 onClick={() => {
                   journalHeading.current?.focus({ preventScroll: true });
                   journalHeading.current?.scrollIntoView({ block: "start" });
@@ -581,8 +573,7 @@ export default function Run() {
                     )}
                   </dl>
                   <p className="evidence-disclaimer">
-                    Rationale and memory are model self-reports. They do not
-                    expose its internal reasoning.
+                    Rationale and memory are model self-reports.
                   </p>
                   <Disclosure
                     className="disclosure"
@@ -636,7 +627,12 @@ export default function Run() {
                   </Disclosure>
                 </>
               )}
-              <Disclosure className="disclosure">
+              <Disclosure
+                className="disclosure"
+                onOpenChange={(open) => {
+                  if (open && !pinned) selectTurn(turn);
+                }}
+              >
                 <DisclosureTrigger>Researcher observations</DisclosureTrigger>
                 <DisclosureContent>
                   {notes.data
@@ -656,7 +652,13 @@ export default function Run() {
                         id="annotation"
                         rows={3}
                         value={annotation}
-                        onChange={(e) => setAnnotation(e.target.value)}
+                        onChange={(e) => {
+                          if (!pinned) selectTurn(turn);
+                          setAnnotationDrafts({
+                            ...annotationDrafts,
+                            [annotationKey]: e.target.value,
+                          });
+                        }}
                         maxLength={4000}
                       />
                     </Field>
@@ -665,7 +667,9 @@ export default function Run() {
                     variant="outline"
                     size="sm"
                     disabled={!annotation.trim() || note.isPending}
-                    onClick={() => note.mutate()}
+                    onClick={() =>
+                      note.mutate({ runId: summary.id, turn, note: annotation })
+                    }
                   >
                     Save observation
                   </Button>
@@ -680,8 +684,7 @@ export default function Run() {
         <TabsContent value="relationships">
           <div className="section-heading">
             <div>
-              <h2>Interaction patterns</h2>
-              <p>Directed exchanges and direct messages through turn {turn}.</p>
+              <h2>Interactions through turn {turn}</h2>
             </div>
           </div>
           <div className="interactions-layout">
@@ -691,11 +694,7 @@ export default function Run() {
               onAgent={selectAgent}
             />
             <div>
-              <h2>Verifiable behavior</h2>
-              <p className="muted">
-                Ground truth comes from the rules and the information each actor
-                received.
-              </p>
+              <h2>Exchanges</h2>
               <RelationshipTable
                 profiles={run.design.profiles}
                 events={events}
@@ -704,164 +703,7 @@ export default function Run() {
           </div>
         </TabsContent>
         <TabsContent value="settings">
-          <div className="settings-layout">
-            <section>
-              <h2>Execution record</h2>
-              <dl className="key-values">
-                <div>
-                  <dt>Run ID</dt>
-                  <dd>
-                    <code>{summary.id}</code>
-                  </dd>
-                </div>
-                <div>
-                  <dt>Model</dt>
-                  <dd>{summary.model}</dd>
-                </div>
-                <div>
-                  <dt>Environment</dt>
-                  <dd>
-                    {label(summary.environment)} · rules {state.rule_version}
-                  </dd>
-                </div>
-                <div>
-                  <dt>Usage</dt>
-                  <dd>
-                    {summary.usage.input_tokens.toLocaleString()} input /{" "}
-                    {summary.usage.output_tokens.toLocaleString()} output tokens
-                  </dd>
-                </div>
-                <div>
-                  <dt>Price estimate</dt>
-                  <dd>
-                    {money(summary.usage.cost_usd)}
-                    {summary.usage.partial &&
-                      " · includes pending/unknown reservations"}
-                  </dd>
-                </div>
-                <div>
-                  <dt>Response limit</dt>
-                  <dd>
-                    {run.design.response_tokens} tokens including reasoning
-                  </dd>
-                </div>
-              </dl>
-              <Button
-                variant="outline"
-                disabled={verify.isPending}
-                onClick={() => verify.mutate()}
-              >
-                <Check data-icon="inline-start" />
-                Verify exact replay
-              </Button>
-              {verify.data && (
-                <Alert>
-                  {verify.data.verified_turns} turns verified locally. No model
-                  calls.
-                </Alert>
-              )}
-              {verify.error && (
-                <Alert variant="error">{verify.error.message}</Alert>
-              )}
-            </section>
-            <section>
-              <h2>Resolved condition</h2>
-              <Json value={run.parameters} />
-              <Disclosure className="disclosure">
-                <DisclosureTrigger>
-                  Full experiment specification
-                </DisclosureTrigger>
-                <DisclosureContent>
-                  <Json value={run.design} />
-                </DisclosureContent>
-              </Disclosure>
-            </section>
-          </div>
-          <section className="section-space">
-            <div className="section-heading">
-              <h2>Model requests</h2>
-              <span className="muted">Includes unsuccessful attempts</span>
-            </div>
-            <div className="table-frame">
-              <Table className="table">
-                <thead>
-                  <tr>
-                    <th>Request</th>
-                    <th>Turn</th>
-                    <th>Status</th>
-                    <th>Tokens in / out</th>
-                    <th>Estimated cost</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {run.requests.map((call) => (
-                    <tr key={call.id} data-selected={requestId === call.id}>
-                      <td>
-                        <Button
-                          variant="link"
-                          size="sm"
-                          type="button"
-                          className="turn-link"
-                          onClick={() => setRequestId(call.id)}
-                        >
-                          {call.id.slice(0, 8)}
-                        </Button>
-                      </td>
-                      <td>{call.turn ?? "—"}</td>
-                      <td>
-                        <Status value={call.status} />
-                        <span className="table-secondary">{call.error}</span>
-                      </td>
-                      <td className="numeric">
-                        {call.input_tokens.toLocaleString()} /{" "}
-                        {call.output_tokens.toLocaleString()}
-                      </td>
-                      <td className="numeric">
-                        {money(call.cost_usd)}
-                        {["unknown", "pending"].includes(call.status) && "*"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-              {!run.requests.length && (
-                <p className="table-no-results">No provider requests sent.</p>
-              )}
-            </div>
-            {requestId && (
-              <div className="request-inspector">
-                {request.error ? (
-                  <ErrorState error={request.error} />
-                ) : !request.data ? (
-                  <Loading />
-                ) : (
-                  <>
-                    <h3>Request {request.data.id.slice(0, 8)}</h3>
-                    {!request.data.request ? (
-                      <p className="muted">
-                        This pilot request predates payload tracing.
-                      </p>
-                    ) : (
-                      <Disclosure className="disclosure">
-                        <DisclosureTrigger>
-                          Exact request, schema & settings
-                        </DisclosureTrigger>
-                        <DisclosureContent>
-                          <Json value={request.data.request} />
-                        </DisclosureContent>
-                      </Disclosure>
-                    )}
-                    <Disclosure className="disclosure" defaultOpen>
-                      <DisclosureTrigger>Provider response</DisclosureTrigger>
-                      <DisclosureContent>
-                        <Json value={request.data.response} />
-                      </DisclosureContent>
-                    </Disclosure>
-                  </>
-                )}
-              </div>
-            )}
-          </section>
+          <RunRecord key={id} run={run} />
         </TabsContent>
       </Tabs>
     </>

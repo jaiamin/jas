@@ -1,40 +1,101 @@
-# Interface redesign
+# Interface scope and verification
 
-Replace the inconsistent composition with a compact shadcn application. Preserve all experiment, replay, evidence, export, budget and revision behavior. Neutral light/dark surfaces, restrained orange, sharp corners. No account theatre, decorative metrics or invented agent activity.
+Primary reference: Laminar product screens inspected on 2026-11-07 in its
+[trace documentation](https://laminar.sh/docs/platform/viewing-traces) and
+[table documentation](https://laminar.sh/docs/platform/table-views). Public screenshots
+showed its actual trace tree, adjacent span inspector, compact tables and control bars.
+No authenticated Laminar session was available or required. Its marketing page was not
+used as the application layout. The user's supplied Clay application screenshot now guides the visual treatment: white
+sidebar, fine group dividers, pale blue active rows, Inter typography, a neutral canvas
+and a softly framed composer. The approved 22px lowercase Bricolage wordmark remains.
+`DESIGN.md` owns the resulting design system.
 
-## Evidence
+## Route and task inventory
 
-Reviewed official documentation and product screenshots on 2026-11-07:
+| Route | Task | Important states |
+| --- | --- | --- |
+| `/` → `/studies` | Open saved work | Empty workspace, redirect |
+| `/studies` | Search/filter experiments, recover drafts | Loading, error/retry, empty, filtered empty, pagination |
+| `/agent` | General questions, selected evidence analysis, reviewed creation and proposals | Inner chat history, per-message context, pending, failure/retry, proposal review, provider unavailable |
+| `/design` | Compatible redirect to Agent creation | Retried question preserved |
+| `/new` | Configure a protocol or generate with Agent | Question, agents, conditions, execution, JSON, template, proposal review/return, new revision, recovered draft, save error, disabled limits |
+| `/studies/:id` | Read results, run matrix, protocol and revisions | Ready, executing, paused, complete, failed, historical revision, no eligible results |
+| `/runs` | Find runs and select 2–4 to compare | Filters, pagination, selection across filters, selection cap |
+| `/runs/:id` | Inspect environment, decisions, interactions, record | Initial checkpoint, running/pause, pinned turn, evidence loading/error, no interactions, annotations, replay, request trace |
+| `/compare?runs=…` | Compare outcomes and history | Fewer than two, 2–4 selections, incompatible worlds, missing measurements, query failure |
+| `/environments` | Choose one of seven supported rule systems | Loading/error, each template and its measurements |
+| `/settings` | Check providers, budgets, usage, storage | Key configured/missing, unknown usage; deployment config is read-only |
+| Experiment/run + `assistant=1` or `tab=research` | Compatible redirect to full Agent | Selected record preserved; no docked panel |
+| Unknown route | Recover navigation | Not-found state and link to experiments |
 
-- [Langfuse trace UI](https://langfuse.com/docs/observability/overview): compact record toolbar, trace list and contextual evidence inspector. The live demo requires an account; public screenshots were used.
-- [Braintrust comparisons](https://docs.braintrust.dev/evaluate/compare-experiments): checkbox selection, aligned metric tables, persistent comparison context.
-- [Linear views](https://linear.app/docs/custom-views): one contextual toolbar, dense records, details revealed alongside work.
-- [Vercel projects](https://vercel.com/docs/projects/managing-projects): concise creation controls and clear separation of work and settings. Public screenshot is an older project layout, not evidence of the current authenticated dashboard.
-- [LangSmith threads](https://docs.langchain.com/langsmith/threads): conversation context with inspectable evidence, separate from execution traces.
-- [shadcn dashboard](https://ui.shadcn.com/view/new-york-v4/dashboard-01), [sidebar](https://ui.shadcn.com/docs/components/radix/sidebar), [chat scrolling](https://ui.shadcn.com/docs/components/radix/message-scroller): standard primitives, collapsible navigation, anchored conversations.
+## Preserved contracts
 
-Baseline audit: Home puts seven templates above saved work; headers repeat context; list rows and toolbar controls have mismatched sizing; long protocol prose crowds comparison tables; the editor is an unbounded form; analysis has document-like Q&A without an anchored composer. Environment illustrations add height without helping selection. Compare gives half the viewport to a horizontally clipped table.
+Saving never starts execution. Old revisions and runs remain immutable. Pause finishes
+an in-flight turn. Replay uses recorded actions without model requests. Export includes
+all revisions and evidence. Conditions, seeds and repetitions identify each run. Model
+self-report remains distinct from recorded observations and enforced consequences.
+There are no account, RBAC or upload APIs: the UI does not invent these permissions.
+Missing provider configuration and browser storage failure are explicit capability states.
 
-## Direction
+## Shared patterns
 
-- Shared compact collapsible navigation, 48px breadcrumb bar, 20–24px content gutters. One page title/action row; no duplicate section introductions.
-- Home: question composer, compact starter choices, recent work in the first viewport. Drafts and AI history stay discoverable.
-- Lists/catalog: common filter toolbar, 44–52px records, aligned numeric values, useful pagination only.
-- Experiment: full-width comparison, concise protocol disclosure and shared tabs. Preserve uncertainty and provenance in contextual detail.
-- Editor: task tabs for question, agents, conditions and execution; sticky execution summary/save. Advanced settings progressively disclosed.
-- Run: compact replay toolbar, consistent tabs; environment and evidence remain the working surfaces. Keep mobile return-to-journal navigation.
-- Agent: a contextual Sheet opened from the header, nonmodal on desktop and full-screen on mobile. Explicit design/experiment/run selection, shadcn Message/Bubble/MessageScroller, anchored composer, real evidence activity, follow-up context and linked turns. Retain Pydantic AI and bounded evidence gathering; attachments wait for a defined ingestion workflow.
-- Avoid new large frameworks. Reuse existing API/query/data flow; no database migration or paid calls for this redesign.
+Application shell and breadcrumbs; page heading/actions; compact filter/table/footer;
+page tabs; structured fields and disclosures; revision/run identity; status with text;
+loading/error/empty feedback; linked turn controls and evidence; anchored AI composer.
 
-## Acceptance / progress
+## Verification record
 
-- [x] Read-only audit of every route and competitor references.
-- [x] Shared components, shell, tables and themes rebuilt.
-- [x] Home, experiments, editor, experiment detail, runs, run detail, compare, environments and settings follow the same grammar.
-- [x] Planner and investigator activity accurately reflects server state; failed requests are retryable; saved evidence remains accessible.
-- [x] Browser flows: create/tune/drafts, filters/comparison, replay/inspection, chat pending/complete/failure, theme/navigation.
-- [x] Desktop 1280/1440, tablet and mobile; long copy, empty/error/loading, keyboard and contrast checks.
-- [x] Lint, types, unit tests, build, backend regressions and browser suite pass.
-- [x] Fresh Impeccable review, synchronized design docs, clean handoff and server on 8080.
+Verified on 2026-11-07. The normal application on port 8080 loads its configured database
+and available provider credentials. It has no demo mode or seeded results. Visual review
+made no model requests and did not modify user experiments or conversations.
 
-Final verification: 147 backend tests, five frontend unit tests and 20 keyless browser workflows passed, along with Ruff, ty, Biome and production build. Docker build/health and browser entry smoke passed. The finish reviewer inspected all 19 recaptures and returned `ship` for the four scored fixes: revision identity, mobile menu bounds, concurrent evidence and synchronized design documentation. No paid model calls were made.
+| Verified view / state | Coverage |
+| --- | --- |
+| Experiments and runs | Empty/populated lists, filters/reset, pagination, selection and comparison |
+| Experiment details | Results, run matrix, protocol, revision selection and tuning |
+| Protocol editor | Question, agents, conditions, execution, JSON; validation, templates, save, draft recovery and proposal handoff |
+| Run evidence | Journal remains intact; turn slider, selected inspector, adjacent desktop and stacked mobile layouts; focus and return |
+| Observations and record | Notes remain attached to their turn during polling/navigation; saved notes/export and exact 24-turn replay verified during the redesign |
+| Environment and interactions | Initial state, history, empty interaction network; seven rule systems covered by API/browser tests |
+| Comparison | Two-to-four runs, aligned outcomes, distinct line patterns and matching legends in both themes |
+| Agent | Independent histories/reload, context popup, bottom composer, four middle suggestions, scoped questions, citations, original-context retry and reviewed creation |
+| Agent streaming | Actual provider-stream integration, pending prose, final validation, SSE/reconnect, interrupted-stream usage, budget rejection; Markdown headings, ordered lists, tables and code |
+| Tailored suggestions | Four per context; actual question/treatments/measures, historical run identity, incomplete runs and no submission on selection |
+| Settings and recovery | Configured/missing providers, budgets/storage, failed requests, missing records and unknown-route recovery |
+| Accessibility | Visible focus, keyboard navigation, mobile drawer focus trap/Escape/return, reduced-motion activity and contained horizontal table scrolling |
+| JAS compatibility | Browser titles, CLI/config aliases, database selection, old browser preferences and drafts |
+
+Current normal-app captures cover **42 route/theme/viewport combinations**: Experiments,
+Runs, editor, Environments, Settings, empty comparison and Agent at 390px, 834px and
+1440px in light/dark themes. No page overflow was measured. The font was confirmed as
+Inter. Expanded/collapsed navigation and the context menu were inspected separately.
+Rendered evidence, comparison and streaming replies were inspected using controlled test
+responses in an isolated database; these are explicitly test captures, not live outcomes.
+
+All 47 sampled text/surface token pairs per theme meet 4.5:1. Focus remains visible around
+the rounded composer group, without a rectangular textarea outline. Coarse-pointer
+controls expand to at least 44px. Suggestions fill a draft without spending; unstarted
+experiments receive setup questions rather than invented results. Activity reflects server
+stages, never a fake progress timer. Completed replies replace pending prose after validation.
+
+Checks passed: **165 backend tests**, Ruff lint/format and ty; **11 frontend unit tests**,
+Biome, TypeScript and the Vite production build; **37 Playwright tests**, plus focused
+capture checks for evidence and streaming/comparison. Earlier Actionlint and Docker Compose
+validation remains applicable because this refinement does not change those files.
+
+Normal application captures:
+
+- [Agent · light](screenshots/agent-light.png) · [dark](screenshots/agent-dark.png) · [mobile](screenshots/agent-mobile.png)
+- [Context menu](screenshots/agent-context.png) · [collapsed navigation](screenshots/agent-collapsed.png)
+- [Workspace · light](screenshots/workspace.png) · [dark](screenshots/workspace-dark.png)
+- [Editor · dark](screenshots/editor-dark.png) · [settings](screenshots/settings.png)
+
+Controlled browser-test captures:
+
+- [Streaming reply · light](screenshots/agent-streaming-light.png) · [mobile dark](screenshots/agent-streaming-mobile.png)
+- [Decision evidence](screenshots/evidence-light.png) · [mobile evidence](screenshots/evidence-mobile.png)
+- [Comparison](screenshots/comparison-light.png)
+
+Limits: Chromium only; no paid-provider calls, full screen-reader audit or production
+deployment. Model success/failure paths use controlled responses; this verifies stream
+handling and rendering without claiming a live-provider run.

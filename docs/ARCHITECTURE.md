@@ -20,7 +20,7 @@ commit each turn's input, decision, consequences, metrics and checkpoint togethe
 | Turn | Append-only observed input, typed output, state hash and complete checkpoint. |
 | Event | Typed consequence with actor, recipient, visibility and structured payload. |
 | Measurement | Versioned metric value, denominator and turn/round. Null rates stay null. |
-| Analysis | Explicit question, frozen evidence cutoff, answer/citations and status. |
+| Analysis | Design proposal, general conversation or scoped analysis; explicit question, answer and status. Scoped analysis freezes evidence cutoffs. |
 | Annotation | Researcher interpretation attached to a specific run/turn. |
 | Provider call | Reservation before sending; actual or unknown usage after. Atomic workspace/study ceilings. |
 
@@ -42,6 +42,43 @@ Revisions record the originating proposal; exports retain that proposal and its 
 Browser drafts preserve unfinished visual edits and raw JSON per editor route. Invalid drafts
 can be recovered in the specification editor. Only backend-validated designs become immutable
 revisions and run matrices; saving does not start execution.
+
+## Agent workspace
+
+`/agent` is a single conversation surface with an inner history sidebar and a contextual
+composer. Experiment/run Ask Agent links select their record on that page. `/design`
+redirects to Agent with New experiment selected, preserving a retried question. The new
+protocol editor also offers Generate with Agent while keeping unfinished manual drafts.
+Proposals stay in chat until Review protocol opens the editor; Back to Agent returns to
+their conversation. No proposal automatically saves or runs.
+
+`POST /api/chats` accepts a question, context (`general`, `new`, `study:<id>`, or `run:<id>`),
+and optional existing `chat_id`. The first accepted message creates the conversation.
+`GET /api/chats` lists summaries; `GET /api/chats/{id}` restores ordered Analysis turns.
+`GET /api/chats/{id}/events` streams the latest turn as server-sent snapshots, with a
+heartbeat during quiet stages and completion closing the stream. Only the active turn is
+sent, avoiding repeated transmission of the conversation. Disconnecting never cancels or
+resubmits provider work; polling and reload restore the same persisted record.
+
+Provider streaming uses the existing budget reservation, single-request limit, timeout and
+trace accounting. Partial prose is stored under `Analysis.output.partial`; it is pending
+content, not a validated finding or protocol. Final schema, citation and design checks still
+gate completion; failures remove partial prose. No private model reasoning is exposed.
+Conversation identity is an indexed Analysis field, with no duplicate message store.
+One pending turn per chat prevents overlapping follow-ups; independent chats can run
+concurrently. Failed turns stay inspectable and retry as a new turn in their original context.
+
+The existing planner, investigator, provider tracing and budget accounting execute the
+messages. General answers receive the environment catalog and recent same-chat general
+answers/proposals, never unselected run evidence. Investigation history matches the chat,
+exact scope and purpose, and citations still require inspected turns within frozen cutoffs.
+The model receives up to three completed prior turns; design refinements include previous
+proposals and revalidate all rules. Complete transcripts remain saved and visible.
+
+The existing `/api/plan`, `/api/analyses`, `/api/agent` and Analysis formats remain supported.
+Unscoped `GET /api/analyses` still defaults to design proposals. Legacy unthreaded scoped
+submissions continue the most recent conversation in that scope. Provider availability is
+reported without keys; the composer checks the configured planner provider for creation.
 
 ## Environment seam
 
@@ -87,7 +124,9 @@ Communication channels can be ablated independently. Public-history-only memory 
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-SQLite schema v2 migrates v1 request tracing in place. Study export v2 includes every
+Schema v3 adds indexed conversation identity without changing recorded evidence or usage.
+It groups legacy scoped answers by purpose and record, and retains each independent
+design proposal as a conversation. The v1 request-tracing migration remains supported. Study export v2 includes every
 revision and its runs, exact turn evidence and provider traces; it batches journal queries.
 Full checkpoints favor auditability over storage efficiency. This is appropriate for small
 local studies; large deployments need retention/compaction and paginated evidence APIs.

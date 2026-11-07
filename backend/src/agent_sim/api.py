@@ -1,16 +1,20 @@
+import asyncio
+import json
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Literal
 from urllib.parse import urlparse
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from pydantic import Field
 from sqlalchemy import select, text
 from sqlalchemy.exc import NoResultFound
 
 from .assistants import Assistants
+from .config import default_database_url, setting
 from .db import Annotation, Database, ProviderCall, Workspace
 from .domain import Design, Strict
 from .environments import CATALOG, MEASURE_DESCRIPTIONS, RULE_VERSION
@@ -31,6 +35,12 @@ class Ask(Strict):
     run_id: str | None = None
 
 
+class ChatMessage(Strict):
+    question: str = Field(min_length=1, max_length=4000)
+    context: str = "general"
+    chat_id: str | None = None
+
+
 class Note(Strict):
     turn: int = Field(ge=0)
     label: str = Field(min_length=1, max_length=80)
@@ -49,9 +59,9 @@ def create_app(
     concurrent_runs: int | None = None,
 ) -> FastAPI:
     db = Database(
-        database_url or os.getenv("ASS_DATABASE_URL", "sqlite:///data/ass.sqlite3"),
+        database_url or setting("DATABASE_URL", default_database_url()),
         round(
-            (budget_usd if budget_usd is not None else float(os.getenv("ASS_BUDGET_USD", "25")))
+            (budget_usd if budget_usd is not None else float(setting("BUDGET_USD", "25")))
             * 1_000_000
         ),
     )
@@ -61,9 +71,7 @@ def create_app(
         db,
         research,
         models,
-        concurrent_runs
-        if concurrent_runs is not None
-        else int(os.getenv("ASS_CONCURRENT_RUNS", "3")),
+        concurrent_runs if concurrent_runs is not None else int(setting("CONCURRENT_RUNS", "3")),
     )
     assistants = Assistants(db, research, models)
 
@@ -76,7 +84,7 @@ def create_app(
         db.close()
 
     app = FastAPI(
-        title="ASS",
+        title="JAS",
         version="0.2.0",
         lifespan=lifespan,
         docs_url="/api/docs",
@@ -147,6 +155,7 @@ def create_app(
                 "providers": {
                     p: bool(os.environ.get(f"{p.upper()}_API_KEY")) for p in ("openai", "anthropic")
                 },
+                "planner_model": setting("PLANNER_MODEL", "openai:gpt-6.1-sol"),
                 "models": models.catalog(),
                 "budget_usd": workspace.ceiling / 1_000_000,
                 "charged_usd": workspace.charged / 1_000_000,
@@ -192,7 +201,7 @@ def create_app(
     async def export_study(study_id: str) -> JSONResponse:
         return JSONResponse(
             research.export(study_id),
-            headers={"Content-Disposition": f'attachment; filename="ass-{study_id}.json"'},
+            headers={"Content-Disposition": f'attachment; filename="jas-{study_id}.json"'},
         )
 
     @app.get("/api/runs")
@@ -273,15 +282,63 @@ def create_app(
             )
         }
 
+    @app.post("/api/agent", status_code=202)
+    async def general_question(body: Ask) -> dict:
+        if body.study_id or body.run_id:
+            raise ValueError("Use scoped analysis for experiment or run questions")
+        return {"id": assistants.start(body.question, purpose="general")}
+
     @app.get("/api/analyses")
-    async def analyses(study_id: str | None = None, run_id: str | None = None) -> list[dict]:
-        return assistants.list(study_id, run_id)
+    async def analyses(
+        study_id: str | None = None,
+        run_id: str | None = None,
+        purpose: Literal["design", "general"] = "design",
+    ) -> list[dict]:
+        return assistants.list(study_id, run_id, purpose=purpose)
 
     @app.get("/api/analyses/{analysis_id}")
     async def get_analysis(analysis_id: str) -> dict:
         return assistants.get(analysis_id)
 
-    frontend = Path(static_dir or os.getenv("ASS_STATIC_DIR", "frontend/dist")).resolve()
+    @app.get("/api/chats")
+    async def chats() -> list[dict]:
+        return list(assistants.chats())
+
+    @app.get("/api/chats/{chat_id}")
+    async def chat(chat_id: str) -> list[dict]:
+        return list(assistants.chat(chat_id))
+
+    @app.get("/api/chats/{chat_id}/events")
+    async def chat_events(chat_id: str) -> StreamingResponse:
+        key = assistants.chat(chat_id)[-1]["id"]
+
+        async def events():
+            previous, heartbeat = None, asyncio.get_running_loop().time()
+            while True:
+                row = assistants.get(key)
+                snapshot = json.dumps(row)
+                now = asyncio.get_running_loop().time()
+                if snapshot != previous:
+                    yield f"data: {snapshot}\n\n"
+                    previous, heartbeat = snapshot, now
+                elif now - heartbeat >= 15:
+                    yield ": keep-alive\n\n"
+                    heartbeat = now
+                if row["status"] != "pending":
+                    return
+                await asyncio.sleep(0.15)
+
+        return StreamingResponse(
+            events(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        )
+
+    @app.post("/api/chats", status_code=202)
+    async def send_chat(body: ChatMessage) -> dict:
+        return assistants.send(body.question, body.context, body.chat_id)
+
+    frontend = Path(static_dir or setting("STATIC_DIR", "frontend/dist")).resolve()
 
     @app.get("/{path:path}", include_in_schema=False)
     async def web(path: str):

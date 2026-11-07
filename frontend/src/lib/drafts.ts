@@ -1,6 +1,7 @@
 import type { Design } from "@/lib/types";
 
-const prefix = "ass:draft:";
+const prefix = "jas:draft:";
+const legacyPrefix = "ass:draft:";
 export interface Draft {
   path: string;
   title: string;
@@ -11,7 +12,9 @@ export interface Draft {
 }
 
 export function readDraft(path: string): Draft | null {
-  const raw = localStorage.getItem(prefix + path);
+  const raw =
+    localStorage.getItem(prefix + path) ??
+    localStorage.getItem(legacyPrefix + path);
   if (!raw) return null;
   const value: unknown = JSON.parse(raw);
   if (
@@ -35,9 +38,16 @@ export function readDraft(path: string): Draft | null {
 }
 
 export function listDrafts(): Draft[] {
-  return Object.keys(localStorage)
-    .filter((key) => key.startsWith(prefix))
-    .map((key) => readDraft(key.slice(prefix.length)))
+  const paths = new Set(
+    Object.keys(localStorage).flatMap((key) => {
+      const matched = [prefix, legacyPrefix].find((value) =>
+        key.startsWith(value),
+      );
+      return matched ? [key.slice(matched.length)] : [];
+    }),
+  );
+  return [...paths]
+    .map(readDraft)
     .filter((draft): draft is Draft => draft !== null)
     .sort((a, b) => b.updated.localeCompare(a.updated));
 }
@@ -59,8 +69,18 @@ export function writeDraft(
       updated: new Date().toISOString(),
     } satisfies Draft),
   );
+  localStorage.removeItem(legacyPrefix + path);
 }
 
 export function removeDraft(path: string) {
   localStorage.removeItem(prefix + path);
+  localStorage.removeItem(legacyPrefix + path);
+}
+
+export function editorDraftPath(pathname: string, search: string) {
+  const params = new URLSearchParams(search);
+  params.delete("assistant");
+  if (params.get("tab") === "research") params.delete("tab");
+  const query = params.toString();
+  return pathname + (query ? `?${query}` : "");
 }

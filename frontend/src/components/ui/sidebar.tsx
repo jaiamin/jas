@@ -22,9 +22,9 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
-const SIDEBAR_WIDTH = "12.5rem";
+const SIDEBAR_WIDTH = "15rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
-const SIDEBAR_WIDTH_ICON = "3rem";
+const SIDEBAR_WIDTH_ICON = "3.25rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
 type SidebarContextProps = {
@@ -66,7 +66,10 @@ function SidebarProvider({
 
   const [_open, _setOpen] = React.useState(() => {
     try {
-      return localStorage.getItem("ass-sidebar") !== "collapsed" && defaultOpen;
+      return (
+        (localStorage.getItem("jas-sidebar") ??
+          localStorage.getItem("ass-sidebar")) !== "collapsed" && defaultOpen
+      );
     } catch {
       return defaultOpen;
     }
@@ -83,7 +86,7 @@ function SidebarProvider({
 
       try {
         localStorage.setItem(
-          "ass-sidebar",
+          "jas-sidebar",
           openState ? "expanded" : "collapsed",
         );
       } catch {
@@ -185,6 +188,7 @@ function Sidebar({
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
         <SheetContent
+          showCloseButton={false}
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
@@ -264,7 +268,7 @@ function SidebarTrigger({
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar, isMobile } = useSidebar();
+  const { toggleSidebar, isMobile, openMobile } = useSidebar();
 
   return (
     <Button
@@ -281,7 +285,11 @@ function SidebarTrigger({
     >
       <PanelLeftIcon />
       <span className="sr-only">
-        {isMobile ? "Open menu" : "Toggle sidebar"}
+        {isMobile
+          ? openMobile
+            ? "Close menu"
+            : "Open menu"
+          : "Toggle sidebar"}
       </span>
     </Button>
   );
