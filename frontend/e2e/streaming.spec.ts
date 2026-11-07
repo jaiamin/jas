@@ -127,3 +127,71 @@ for (const theme of ["light", "dark"]) {
     ).toBeVisible();
   });
 }
+
+for (const malformed of ["invalid-json", "invalid-output"]) {
+  test(`Agent recovers through polling after ${malformed} without resubmitting`, async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    let submissions = 0;
+    let streams = 0;
+    let row = {
+      id: "recover-answer",
+      chat_id: "recover-chat",
+      question: "Explain matched seeds",
+      purpose: "general",
+      status: "pending",
+      cutoffs: {},
+      study_id: null,
+      run_id: null,
+      created: "2026-11-07",
+      error: null,
+      output: { partial: "", answer: "", citations: [], caveats: [] },
+    };
+    await page.route("**/api/settings", (route) =>
+      route.fulfill({ json: { providers: { openai: true } } }),
+    );
+    await page.route("**/api/chats", (route) => {
+      if (route.request().method() !== "POST")
+        return route.fulfill({ json: [] });
+      submissions++;
+      return route.fulfill({
+        status: 202,
+        json: { id: row.id, chat_id: row.chat_id },
+      });
+    });
+    await page.route("**/api/chats/recover-chat", (route) =>
+      route.fulfill({ json: [row] }),
+    );
+    await page.route("**/api/chats/recover-chat/events", (route) => {
+      streams++;
+      return route.fulfill({
+        contentType: "text/event-stream",
+        body: `data: ${malformed === "invalid-json" ? "{" : JSON.stringify({ ...row, output: null })}\n\n`,
+      });
+    });
+    await page.goto("/agent");
+    await page.getByLabel("Message Agent", { exact: true }).fill(row.question);
+    await page
+      .getByRole("button", { name: "Send message", exact: true })
+      .click();
+    await expect.poll(() => streams).toBe(1);
+    row = {
+      ...row,
+      status: "complete",
+      output: {
+        ...row.output,
+        answer: "Recovered through the saved response.",
+      },
+    };
+    await expect(
+      page.getByText("Recovered through the saved response."),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Send message", exact: true }),
+    ).toBeDisabled();
+    expect(submissions).toBe(1);
+    expect(errors).toEqual([]);
+  });
+}

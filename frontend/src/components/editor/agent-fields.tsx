@@ -10,6 +10,7 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { removeProfile } from "@/lib/design";
 import type { Catalog, Design, ModelId, Profile } from "@/lib/types";
 import { modelLabel } from "@/lib/utils";
 
@@ -143,20 +144,7 @@ export function AgentFields({
                   size="icon"
                   aria-label={`Remove ${p.name}`}
                   disabled={design.profiles.length <= 2}
-                  onClick={() =>
-                    onChange({
-                      ...design,
-                      profiles: design.profiles.filter(
-                        (_, index) => index !== i,
-                      ),
-                      conditions: design.conditions.map((c) => ({
-                        ...c,
-                        profile_overrides: c.profile_overrides.filter(
-                          (value) => value.key !== p.key,
-                        ),
-                      })),
-                    })
-                  }
+                  onClick={() => onChange(removeProfile(design, p.key))}
                 >
                   <Trash2 />
                 </Button>

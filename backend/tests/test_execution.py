@@ -48,22 +48,27 @@ def test_pause_finishes_current_request_and_double_click_has_one_writer(
             await release.wait()
             return await generate(*args, **kwargs)
 
-        monkeypatch.setattr(llm, "generate", delayed)
-        engine.start(rid)
-        first = engine.executions[rid].task
-        await started.wait()
-        engine.start(rid)
-        assert engine.executions[rid].task is first
-        engine.pause(rid)
-        release.set()
-        await first
-        record, _, _ = research.configuration(rid)
-        assert record.status == "paused" and record.turn == 1
-        assert llm.usage(run_id=rid)["requests"] == 1
-        engine.start(rid, single=True)
-        await engine.executions[rid].task
-        assert research.configuration(rid)[0].turn == 2
-        await engine.close()
+        async with asyncio.timeout(10):
+            try:
+                monkeypatch.setattr(llm, "generate", delayed)
+                engine.start(rid)
+                first = engine.executions[rid].task
+                await started.wait()
+                engine.start(rid)
+                assert engine.executions[rid].task is first
+                engine.pause(rid)
+                release.set()
+                await first
+                record, _, _ = research.configuration(rid)
+                assert record.status == "paused" and record.turn == 1
+                assert llm.usage(run_id=rid)["requests"] == 1
+                engine.start(rid, single=True)
+                await engine.executions[rid].task
+                assert research.configuration(rid)[0].turn == 2
+                await engine.close()
+            finally:
+                release.set()
+                await asyncio.wait_for(engine.close(), timeout=5)
 
     asyncio.run(exercise())
 
@@ -140,3 +145,214 @@ def test_composed_protocol_preserves_memory_privacy_and_replays_through_shock(ru
         assert not observed["public_history"] and not observed["your_experiences"]
         assert not observed["your_note"]
         assert observed["legal_actions"][0]["amount_max"] == (10 if turn <= 6 else 3)
+
+
+@pytest.mark.parametrize("field", ["actor", "decision", "state_hash"])
+def test_replay_rejects_corruption_without_requests_or_checkpoint_changes(runtime, design, field):
+    from agent_sim.db import Turn
+    from sqlalchemy import select
+
+    db, llm, research, engine = runtime
+    sid = research.save_design(design)
+    rid = research.operational_runs(sid)[0].id
+
+    async def step():
+        engine.start(rid, single=True)
+        await engine.executions[rid].task
+
+    asyncio.run(step())
+    before = research.configuration(rid)[0].checkpoint
+    usage = llm.usage()
+    with db.session.begin() as session:
+        turn = session.scalars(select(Turn).where(Turn.run_id == rid)).one()
+        setattr(turn, field, {"invalid": True} if field == "decision" else "corrupted")
+    with pytest.raises(ValueError):
+        engine.replay(rid)
+    assert research.configuration(rid)[0].checkpoint == before
+    assert llm.usage() == usage
+
+
+def test_capacity_one_and_pausing_queued_run_send_one_request(runtime, design, monkeypatch):
+    db, llm, research, _ = runtime
+    engine = Engine(db, research, llm, concurrency=1)
+    design.seeds = [7, 8]
+    runs = research.operational_runs(research.save_design(design))
+    generate = llm.generate
+
+    async def exercise():
+        entered, release = asyncio.Event(), asyncio.Event()
+        calls = []
+
+        async def delayed(*args, **kwargs):
+            calls.append(kwargs["run_id"])
+            entered.set()
+            await release.wait()
+            return await generate(*args, **kwargs)
+
+        async with asyncio.timeout(10):
+            try:
+                monkeypatch.setattr(llm, "generate", delayed)
+                engine.start(runs[0].id, single=True)
+                await entered.wait()
+                engine.start(runs[1].id, single=True)
+                await asyncio.sleep(0)
+                assert calls == [runs[0].id]
+                assert research.configuration(runs[1].id)[0].status == "queued"
+                engine.pause(runs[1].id)
+                release.set()
+                await engine.close()
+                assert calls == [runs[0].id]
+                assert research.configuration(runs[1].id)[0].turn == 0
+                assert research.configuration(runs[1].id)[0].status == "paused"
+                assert llm.usage()["requests"] == 1
+            finally:
+                release.set()
+                await asyncio.wait_for(engine.close(), timeout=5)
+
+    asyncio.run(exercise())
+
+
+def test_concurrent_runs_cannot_reserve_above_shared_budget(runtime, design, monkeypatch):
+
+    from agent_sim.db import ProviderCall
+    from pydantic_ai.messages import ModelResponse, ToolCallPart
+    from pydantic_ai.models.function import FunctionModel
+    from pydantic_ai.usage import RequestUsage
+    from sqlalchemy import select
+
+    db, llm, research, engine = runtime
+    design.seeds = [7, 8]
+    runs = research.operational_runs(research.save_design(design))
+
+    async def exercise():
+        entered, release = asyncio.Event(), asyncio.Event()
+        requests = []
+
+        async def delayed(messages, info):
+            requests.append(messages)
+            entered.set()
+            await release.wait()
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        info.output_tools[0].name,
+                        {
+                            "action": {
+                                "kind": "contribute",
+                                "amount": 0,
+                                "target": "",
+                                "message": "",
+                                "report": None,
+                                "promise": None,
+                            },
+                            "memory": "",
+                            "rationale": "",
+                            "forecast": None,
+                        },
+                    )
+                ],
+                usage=RequestUsage(input_tokens=100, output_tokens=50),
+            )
+
+        async with asyncio.timeout(10):
+            try:
+                monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=delayed))
+                engine.start(runs[0].id, single=True)
+                await entered.wait()
+                with db.session.begin() as session:
+                    workspace = session.get_one(Workspace, 1)
+                    workspace.ceiling = workspace.charged
+                    reserved = workspace.charged
+                engine.start(runs[1].id, single=True)
+                await engine.executions[runs[1].id].task
+                assert research.configuration(runs[1].id)[0].status == "failed"
+                assert len(requests) == 1
+                with db.session() as session:
+                    assert session.get_one(Workspace, 1).charged == reserved
+                    assert len(session.scalars(select(ProviderCall)).all()) == 1
+                release.set()
+                await engine.executions[runs[0].id].task
+                with db.session() as session:
+                    assert session.get_one(Workspace, 1).charged == 35
+                await engine.close()
+            finally:
+                release.set()
+                await asyncio.wait_for(engine.close(), timeout=5)
+
+    asyncio.run(exercise())
+
+
+def test_replay_rejects_an_incompatible_checkpoint_without_recorded_turns(runtime, design):
+    db, llm, research, engine = runtime
+    sid = research.save_design(design)
+    rid = research.operational_runs(sid)[0].id
+    with db.session.begin() as session:
+        saved = session.get_one(Run, rid)
+        saved.checkpoint = saved.checkpoint | {"rule_version": "incompatible"}
+    with pytest.raises(ValueError, match="different environment rule version"):
+        engine.replay(rid)
+    assert llm.usage()["requests"] == 0
+
+
+def test_bulk_start_preflights_every_checkpoint_before_queueing(runtime, design):
+    db, llm, research, engine = runtime
+    design.seeds = [7, 8]
+    sid = research.save_design(design)
+    runs = research.operational_runs(sid)
+    with db.session.begin() as session:
+        saved = session.get_one(Run, runs[-1].id)
+        saved.checkpoint = saved.checkpoint | {"rule_version": "incompatible"}
+
+    async def exercise():
+        with pytest.raises(ValueError, match="different environment rule version"):
+            engine.start_study(sid)
+        assert not engine.executions
+        assert all(research.configuration(run.id)[0].status == "ready" for run in runs)
+        assert llm.usage()["requests"] == 0
+
+    asyncio.run(exercise())
+
+
+def test_bulk_start_ignores_completed_runs_with_old_rules(runtime, design):
+    db, _, research, engine = runtime
+    design.seeds = [7, 8]
+    sid = research.save_design(design)
+    runs = research.operational_runs(sid)
+    with db.session.begin() as session:
+        saved = session.get_one(Run, runs[0].id)
+        saved.status = "complete"
+        saved.checkpoint = saved.checkpoint | {"rule_version": "historical"}
+
+    async def exercise():
+        engine.start_study(sid)
+        task = engine.executions[runs[1].id].task
+        engine.start_study(sid)
+        assert engine.executions[runs[1].id].task is task
+        assert runs[0].id not in engine.executions
+        await engine.close()
+        assert research.configuration(runs[0].id)[0].status == "complete"
+
+    asyncio.run(exercise())
+
+
+def test_internal_value_error_retains_worker_diagnostics(runtime, design, monkeypatch, caplog):
+    _, llm, research, engine = runtime
+    rid = research.operational_runs(research.save_design(design))[0].id
+
+    detail = "invalid internal result"
+
+    async def broken_generation(*args, **kwargs):
+        raise ValueError(detail)
+
+    monkeypatch.setattr(llm, "generate", broken_generation)
+
+    async def exercise():
+        engine.start(rid)
+        await engine.executions[rid].task
+        await engine.close()
+
+    asyncio.run(exercise())
+    assert research.configuration(rid)[0].status == "failed"
+    assert f"Run {rid} failed (ValueError)" in caplog.text
+    assert "broken_generation" in caplog.text
+    assert "invalid internal result" not in caplog.text

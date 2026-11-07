@@ -2,13 +2,20 @@ import asyncio
 import json
 import math
 import os
-from collections.abc import Callable
-from typing import Literal, TypeVar
+from collections.abc import Callable, Iterator, Mapping
+from typing import Any, Literal, TypedDict, TypeVar
+from urllib.parse import urlparse
 
 from pydantic import TypeAdapter
 from pydantic_ai import Agent, ToolOutput, WebSearchTool, capture_run_messages
 from pydantic_ai.capabilities import NativeTool
-from pydantic_ai.messages import ModelMessagesTypeAdapter, ModelResponse, TextPart, ToolCallPart
+from pydantic_ai.messages import (
+    ModelMessage,
+    ModelMessagesTypeAdapter,
+    ModelResponse,
+    TextPart,
+    ToolCallPart,
+)
 from pydantic_ai.models import Model
 from pydantic_ai.models.openai import OpenAIResponsesModelSettings
 from pydantic_ai.usage import UsageLimits
@@ -16,6 +23,7 @@ from pydantic_core import from_json
 from sqlalchemy import func, select, update
 
 from .db import Database, ProviderCall, Study, Workspace
+from .diagnostics import log_failure
 
 T = TypeVar("T")
 PRICES: dict[str, tuple[float, float]] = {
@@ -24,6 +32,53 @@ PRICES: dict[str, tuple[float, float]] = {
     "openai:gpt-6.1-terra": (1.0, 5.0),
     "anthropic:claude-haiku-4-5": (1.0, 5.0),
 }
+
+
+class Usage(TypedDict):
+    requests: int
+    input_tokens: int
+    output_tokens: int
+    cost_usd: float
+    partial: bool
+
+
+def empty_usage() -> Usage:
+    return {
+        "requests": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cost_usd": 0.0,
+        "partial": False,
+    }
+
+
+def usage_record(row: Mapping[str, Any]) -> Usage:
+    return {
+        "requests": int(row["requests"]),
+        "input_tokens": int(row["input_tokens"]),
+        "output_tokens": int(row["output_tokens"]),
+        "cost_usd": float(row["cost_usd"]),
+        "partial": bool(row["partial"]),
+    }
+
+
+def partial_outputs(response: ModelResponse, *, web_search: bool) -> Iterator[dict]:
+    """Decode provisional payloads; final validation remains the provider run's job."""
+    for part in response.parts:
+        if not isinstance(part, ToolCallPart):
+            continue
+        try:
+            partial = (
+                from_json(part.args, allow_partial="trailing-strings")
+                if isinstance(part.args, str)
+                else part.args
+            )
+        except ValueError:
+            continue
+        if isinstance(partial, dict):
+            yield partial
+    if web_search:
+        yield {"text": "".join(p.content for p in response.parts if isinstance(p, TextPart))}
 
 
 class ProviderFailure(Exception):
@@ -103,51 +158,25 @@ class LanguageModels:
                 math.ceil(1_050_000 * input_rate * 2 + max_tokens * output_rate * 1.5) + 20_000
             )
         async with self.capacity:
-            with self.db.session.begin() as session:
-                if (
-                    session.execute(
-                        update(Workspace)
-                        .where(Workspace.id == 1, Workspace.charged + reserved <= Workspace.ceiling)
-                        .values(charged=Workspace.charged + reserved)
-                        .returning(Workspace.id)
-                    ).scalar_one_or_none()
-                    is None
-                ):
-                    raise ProviderFailure(
-                        "Workspace spending ceiling reached. No request was sent."
-                    )
-                if (
-                    study_id
-                    and session.execute(
-                        update(Study)
-                        .where(Study.id == study_id, Study.charged + reserved <= Study.ceiling)
-                        .values(charged=Study.charged + reserved)
-                        .returning(Study.id)
-                    ).scalar_one_or_none()
-                    is None
-                ):
-                    raise ProviderFailure("Study spending ceiling reached. No request was sent.")
-                call = ProviderCall(
-                    study_id=study_id,
-                    run_id=run_id,
-                    analysis_id=analysis_id,
-                    purpose=purpose,
-                    model=model,
-                    turn=turn,
-                    request_payload={
-                        "instructions": instructions,
-                        "prompt": prompt,
-                        "schema": schema,
-                        "web_search": web_search,
-                        "settings": settings,
-                        "price_per_million": [input_rate, output_rate],
-                    },
-                    reserved=reserved,
-                    charged=reserved,
-                )
-                session.add(call)
-                session.flush()
-                call_id = call.id
+            call = ProviderCall(
+                study_id=study_id,
+                run_id=run_id,
+                analysis_id=analysis_id,
+                purpose=purpose,
+                model=model,
+                turn=turn,
+                request_payload={
+                    "instructions": instructions,
+                    "prompt": prompt,
+                    "schema": schema,
+                    "web_search": web_search,
+                    "settings": settings,
+                    "price_per_million": [input_rate, output_rate],
+                },
+                reserved=reserved,
+                charged=reserved,
+            )
+            self._reserve(call)
             messages, failure = [], None
             try:
                 agent = Agent(
@@ -171,32 +200,11 @@ class LanguageModels:
                             prompt, usage_limits=UsageLimits(request_limit=1)
                         ) as stream:
                             async for response in stream.stream_response(debounce_by=0.08):
-                                for part in response.parts:
-                                    if isinstance(part, ToolCallPart):
-                                        try:
-                                            partial = (
-                                                from_json(
-                                                    part.args, allow_partial="trailing-strings"
-                                                )
-                                                if isinstance(part.args, str)
-                                                else part.args
-                                            )
-                                        except ValueError:
-                                            continue
-                                        if isinstance(partial, dict):
-                                            on_partial(partial)
-                                if web_search:
-                                    on_partial(
-                                        {
-                                            "text": "".join(
-                                                p.content
-                                                for p in response.parts
-                                                if isinstance(p, TextPart)
-                                            )
-                                        }
-                                    )
+                                for partial in partial_outputs(response, web_search=web_search):
+                                    on_partial(partial)
                             return await stream.get_output()
             except (Exception, asyncio.CancelledError) as error:
+                log_failure(f"Provider call {call.id} failed", error)
                 failure = type(error).__name__
                 status = getattr(error, "status_code", None)
                 if isinstance(status, int):
@@ -214,46 +222,92 @@ class LanguageModels:
                 raise ProviderFailure(
                     f"{model} request failed ({failure}). {detail}"
                     "No retry or substitute model was used."
-                ) from None
+                ) from error
             finally:
-                responses = [m for m in messages if isinstance(m, ModelResponse)]
-                inputs = sum(m.usage.input_tokens for m in responses)
-                outputs = sum(m.usage.output_tokens for m in responses)
-                reasoning = sum(m.usage.details.get("reasoning_tokens", 0) for m in responses)
-                search_calls = sum(m.usage.details.get("web_search_requests", 0) for m in responses)
-                long_context = web_search and inputs > 272_000
-                charged = (
-                    math.ceil(
-                        inputs * input_rate * (2 if long_context else 1)
-                        + outputs * output_rate * (1.5 if long_context else 1)
+                try:
+                    self._settle(call, messages, failure)
+                except Exception as settlement_error:
+                    if failure is None:
+                        raise
+                    log_failure(f"Provider call {call.id} settlement failed", settlement_error)
+
+    def _reserve(self, call: ProviderCall) -> None:
+        with self.db.session.begin() as session:
+            if (
+                session.execute(
+                    update(Workspace)
+                    .where(
+                        Workspace.id == 1, Workspace.charged + call.reserved <= Workspace.ceiling
                     )
-                    + search_calls * 10_000
-                    if responses
-                    else reserved
+                    .values(charged=Workspace.charged + call.reserved)
+                    .returning(Workspace.id)
+                ).scalar_one_or_none()
+                is None
+            ):
+                raise ProviderFailure("Workspace spending ceiling reached. No request was sent.")
+            if (
+                call.study_id
+                and session.execute(
+                    update(Study)
+                    .where(
+                        Study.id == call.study_id, Study.charged + call.reserved <= Study.ceiling
+                    )
+                    .values(charged=Study.charged + call.reserved)
+                    .returning(Study.id)
+                ).scalar_one_or_none()
+                is None
+            ):
+                raise ProviderFailure("Study spending ceiling reached. No request was sent.")
+            session.add(call)
+            session.flush()
+
+    def _settle(
+        self, call: ProviderCall, messages: list[ModelMessage], failure: str | None
+    ) -> None:
+        payload = call.request_payload
+        if payload is None:
+            raise ValueError("Provider request is missing its accounting metadata")
+        input_rate, output_rate = payload["price_per_million"]
+        web_search = payload["web_search"]
+        responses = [m for m in messages if isinstance(m, ModelResponse)]
+        inputs = sum(m.usage.input_tokens for m in responses)
+        outputs = sum(m.usage.output_tokens for m in responses)
+        reasoning = sum(m.usage.details.get("reasoning_tokens", 0) for m in responses)
+        search_calls = sum(m.usage.details.get("web_search_requests", 0) for m in responses)
+        usage_known = bool(responses) and (failure is None or inputs + outputs + search_calls > 0)
+        long_context = web_search and inputs > 272_000
+        charged = (
+            math.ceil(
+                inputs * input_rate * (2 if long_context else 1)
+                + outputs * output_rate * (1.5 if long_context else 1)
+            )
+            + search_calls * 10_000
+            if usage_known
+            else call.reserved
+        )
+        with self.db.session.begin() as session:
+            record = session.get_one(ProviderCall, call.id)
+            record.status = (
+                "complete" if failure is None else "failed" if usage_known else "unknown"
+            )
+            record.response_payload = ModelMessagesTypeAdapter.dump_python(
+                [*responses], mode="json"
+            )
+            record.error = failure
+            record.charged = charged
+            record.input_tokens, record.output_tokens = inputs, outputs
+            record.reasoning_tokens = reasoning
+            session.execute(
+                update(Workspace)
+                .where(Workspace.id == 1)
+                .values(charged=Workspace.charged + charged - call.reserved)
+            )
+            if call.study_id:
+                session.execute(
+                    update(Study)
+                    .where(Study.id == call.study_id)
+                    .values(charged=Study.charged + charged - call.reserved)
                 )
-                with self.db.session.begin() as session:
-                    record = session.get_one(ProviderCall, call_id)
-                    record.status = (
-                        "complete" if failure is None else "failed" if responses else "unknown"
-                    )
-                    record.response_payload = ModelMessagesTypeAdapter.dump_python(
-                        [*responses], mode="json"
-                    )
-                    record.error = failure
-                    record.charged = charged
-                    record.input_tokens, record.output_tokens = inputs, outputs
-                    record.reasoning_tokens = reasoning
-                    session.execute(
-                        update(Workspace)
-                        .where(Workspace.id == 1)
-                        .values(charged=Workspace.charged + charged - reserved)
-                    )
-                    if study_id:
-                        session.execute(
-                            update(Study)
-                            .where(Study.id == study_id)
-                            .values(charged=Study.charged + charged - reserved)
-                        )
 
     async def close(self) -> None:
         for model in self.models.values():
@@ -288,7 +342,7 @@ class LanguageModels:
 
     def usage(
         self, study_id: str | None = None, run_id: str | None = None, analysis_id: str | None = None
-    ) -> dict:
+    ) -> Usage:
         query = select(*self.usage_columns())
         if study_id:
             query = query.where(ProviderCall.study_id == study_id)
@@ -297,28 +351,64 @@ class LanguageModels:
         if analysis_id:
             query = query.where(ProviderCall.analysis_id == analysis_id)
         with self.db.session() as session:
-            result = dict(session.execute(query).mappings().one())
-        result["cost_usd"], result["partial"] = float(result["cost_usd"]), bool(result["partial"])
-        return result
+            return usage_record(session.execute(query).mappings().one())
 
-    def usage_by_run(self, run_ids: set[str]) -> dict[str, dict]:
+    def usage_by_run(self, run_ids: set[str]) -> dict[str, Usage]:
         return self._group_usage(ProviderCall.run_id, run_ids)
 
-    def usage_by_analysis(self, analysis_ids: set[str]) -> dict[str, dict]:
+    def usage_by_analysis(self, analysis_ids: set[str]) -> dict[str, Usage]:
         return self._group_usage(ProviderCall.analysis_id, analysis_ids)
 
-    def _group_usage(self, column, keys: set[str]) -> dict[str, dict]:
+    def _group_usage(self, column, keys: set[str]) -> dict[str, Usage]:
         with self.db.session() as session:
             rows = session.execute(
                 select(column.label("key"), *self.usage_columns())
                 .where(column.in_(keys))
                 .group_by(column)
             ).mappings()
-            return {
-                row["key"]: {
-                    key: float(value) if key == "cost_usd" else value
-                    for key, value in row.items()
-                    if key != "key"
-                }
-                for row in rows
-            }
+            return {row["key"]: usage_record(row) for row in rows}
+
+    def sources(self, analysis_id: str) -> list[dict[str, str]]:
+        found = {}
+        with self.db.session() as session:
+            calls = session.scalars(
+                select(ProviderCall).where(ProviderCall.analysis_id == analysis_id)
+            )
+            for call in calls:
+                found.update(
+                    (source["url"], source) for source in web_sources(call.response_payload)
+                )
+        return list(found.values())
+
+
+def web_sources(messages: list[dict] | None) -> list[dict[str, str]]:
+    parts = (
+        part
+        for message in messages or []
+        for part in message.get("parts", [])
+        if part.get("tool_name") == "web_search"
+    )
+    found = {}
+    for part in parts:
+        content = part.get("content")
+        if not isinstance(content, dict):
+            continue
+        for source in content.get("sources", []):
+            normalized = research_source(source)
+            if normalized is not None:
+                found[normalized["url"]] = normalized
+    return list(found.values())
+
+
+def research_source(source: object) -> dict[str, str] | None:
+    if not isinstance(source, dict) or not isinstance(source.get("url"), str):
+        return None
+    url = source["url"]
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username:
+            return None
+    except ValueError:
+        return None
+    title = source.get("title")
+    return {"url": url, "title": title if isinstance(title, str) and title else parsed.hostname}

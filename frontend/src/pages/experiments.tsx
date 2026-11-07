@@ -18,9 +18,9 @@ export default function Experiments() {
   const studies = useApi<StudySummary[]>("/studies", true);
   const [drafts, setDrafts] = useState(() => {
     try {
-      return { items: listDrafts(), error: "" };
+      return { ...listDrafts(), error: "" };
     } catch (error) {
-      return { items: [], error: (error as Error).message };
+      return { items: [], unreadable: [], error: (error as Error).message };
     }
   });
   return (
@@ -34,7 +34,7 @@ export default function Experiments() {
         </Button>
       </PageHeading>
       {studies.error ? (
-        <ErrorState error={studies.error} />
+        <ErrorState error={studies.error} onRetry={studies.refetch} />
       ) : studies.data ? (
         <StudyTable studies={studies.data} />
       ) : (
@@ -43,6 +43,29 @@ export default function Experiments() {
       {drafts.error && (
         <Alert variant="error">
           Drafts could not be loaded: {drafts.error}
+        </Alert>
+      )}
+      {drafts.unreadable.length > 0 && (
+        <Alert variant="error">
+          Some drafts could not be read. Other drafts remain available.
+          {drafts.unreadable.map((path) => (
+            <Button
+              key={path}
+              variant="outline"
+              size="sm"
+              aria-label={`Discard unreadable draft · ${path}`}
+              onClick={() => {
+                try {
+                  removeDraft(path);
+                  setDrafts({ ...listDrafts(), error: "" });
+                } catch (error) {
+                  setDrafts({ ...drafts, error: (error as Error).message });
+                }
+              }}
+            >
+              Discard unreadable draft · {path}
+            </Button>
+          ))}
         </Alert>
       )}
       {drafts.items.length > 0 && (
@@ -62,7 +85,7 @@ export default function Experiments() {
                     onClick={() => {
                       try {
                         removeDraft(draft.path);
-                        setDrafts({ items: listDrafts(), error: "" });
+                        setDrafts({ ...listDrafts(), error: "" });
                       } catch (error) {
                         setDrafts({
                           ...drafts,

@@ -6,8 +6,8 @@ remain ordered. Only explicit user actions create paid work. Restart pauses inte
 
 ## Storage
 
-SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. An explicit schema
-migration runs at startup; unsupported future schema versions fail visibly. Local transactions
+SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. Startup creates
+schema v4 for fresh workspaces and rejects incompatible schemas. Local transactions
 commit each turn's input, decision, consequences, metrics and checkpoint together.
 
 | Record | Purpose / invariant |
@@ -39,16 +39,16 @@ validation/review feedback. Provider failures stop visibly without retries or su
 Proposal stages, research sources, reviews and provider traces remain Analysis data.
 Revisions record the originating proposal; exports retain that proposal and its requests.
 
-Browser drafts preserve unfinished visual edits and raw JSON per editor route. Invalid drafts
+Browser drafts preserve unfinished visual edits and raw JSON per source document;
+assistant visibility and other presentation parameters do not change draft identity. Invalid drafts
 can be recovered in the specification editor. Only backend-validated designs become immutable
 revisions and run matrices; saving does not start execution.
 
 ## Agent workspace
 
 `/agent` is a single conversation surface with an inner history sidebar and a contextual
-composer. Experiment/run Ask Agent links select their record on that page. `/design`
-redirects to Agent with New experiment selected, preserving a retried question. The new
-protocol editor also offers Generate with Agent while keeping unfinished manual drafts.
+composer. Experiment/run Ask Agent links select their record on that page. The protocol
+editor offers Generate with Agent while keeping unfinished manual drafts.
 Proposals stay in chat until Review protocol opens the editor; Back to Agent returns to
 their conversation. No proposal automatically saves or runs.
 
@@ -75,18 +75,38 @@ exact scope and purpose, and citations still require inspected turns within froz
 The model receives up to three completed prior turns; design refinements include previous
 proposals and revalidate all rules. Complete transcripts remain saved and visible.
 
-The existing `/api/plan`, `/api/analyses`, `/api/agent` and Analysis formats remain supported.
-Unscoped `GET /api/analyses` still defaults to design proposals. Legacy unthreaded scoped
-submissions continue the most recent conversation in that scope. Provider availability is
-reported without keys; the composer checks the configured planner provider for creation.
+All assistant submissions use `POST /api/chats`. The protocol editor reads individual
+proposals through `GET /api/analyses/{id}`. Provider availability is reported without keys;
+the composer checks the configured planner provider for creation.
 
 ## Environment seam
 
-An adapter validates parameters, initializes seeded state, selects an actor, constructs that
-actor's observation, validates/applies an action, emits events/measurements and snapshots/restores
-state. It knows nothing about providers, persistence or React. A catalog describes supported
-parameters and measurements. Register a new adapter there and add its typed action contract;
-the React environment view renders the current state and recorded events of every adapter.
+The `simulation/` package owns world rules, state and action schemas. A world initializes
+seeded state, selects an actor, constructs its observation, validates/applies actions,
+emits events/measurements and snapshots/restores state. It knows nothing about providers,
+persistence or React. A catalog describes supported
+parameters and measurements. `World` owns common turn bookkeeping. Concrete worlds own
+checkpoint initialization, legal-action schema capabilities and derived environment measures;
+`decisions.py` builds schemas from those capabilities without selecting environments.
+`checkpoints.py` declares shared observations/actions and each world's state. Snapshots
+contain only that world's state. All seven worlds use rule version 3.0.0; incompatible
+checkpoints fail explicitly. `environments.py` contains the catalog and three games;
+`mechanisms.py` implements the other four worlds.
+
+Profiles describe goals; parameterized permissions enforce action affordances. Per-turn
+schemas constrain requests, and world rules validate transitions again before committing.
+Models never settle their own actions.
+
+Adding an environment requires these explicit integration points:
+
+1. Add its identifier, parameter model and cross-design invariants in `domain.py`.
+2. Implement its World, typed checkpoint, observation, rules and measured consequences.
+   Set `decision_rules`, or override `schema_rules` when capabilities vary by turn.
+3. Register metadata, supported parameters and measures in `environments.py`; add a
+   validated template in `templates.py` and describe new measurement meanings.
+4. Add the frontend identifier/state presentation and supported editing controls.
+5. Test action constraints, privacy, deterministic restore, completion and exact replay.
+   Increment the world rule version whenever persisted behavior changes.
 
 ## Trust and epistemics
 
@@ -95,6 +115,8 @@ them. Researcher analysis can inspect complete recorded state, but its tools are
 scoped to selected run cutoffs. Recorded prose is evidence, never tool instructions. Rationale
 is self-report, not a faithful transcript of internal reasoning. No generated text is evaluated
 as code. The local app is for trusted networks; it is not an authenticated hosted SaaS.
+Host validation defaults to localhost and loopback addresses; additional LAN/proxy hostnames
+must be explicit in `JAS_ALLOWED_HOSTS`. Mutations with a foreign browser origin are rejected.
 
 ## Portability
 
@@ -120,31 +142,20 @@ with automatic retries disabled. Only the two registered providers are implement
 Resource changes are immutable condition data, applied at round boundaries and reconstructed
 from the round on restore. Future changes are hidden from participants. Infeasible promises
 after a shock remain events but are excluded from the fulfillment denominator.
-Communication channels can be ablated independently. Public-history-only memory is the
+Public history includes messages, factual reports and commitments without researcher-only
+truth payloads. Its 64-record window accommodates a full round for all 12 participants.
+Direct communication stays recipient-scoped. Communication channels can be ablated
+independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Schema v3 adds indexed conversation identity without changing recorded evidence or usage.
-It groups legacy scoped answers by purpose and record, and retains each independent
-design proposal as a conversation. The v1 request-tracing migration remains supported. Study export v2 includes every
-revision and its runs, exact turn evidence and provider traces; it batches journal queries.
+Every Analysis has an indexed conversation identity. Study export v3 (`jas-study`)
+includes every revision and its runs, exact turn evidence and provider traces; it batches
+journal queries.
 Full checkpoints favor auditability over storage efficiency. This is appropriate for small
 local studies; large deployments need retention/compaction and paginated evidence APIs.
 
-## Environment and evaluation seams
-
-`world.py` owns the checkpoint/observation interface. `environments.py` registers adapters
-and contains the original three games; `mechanisms.py` implements four additional state
-machines. The legacy games retain rule version 1.0.0; additional mechanics use 2.0.0.
-Version checks are per adapter. Old studies keep their original snapshots and remain
-replayable; incompatible rule changes must fail explicitly, never migrate evidence silently.
-New optional parameter groups use schema defaults when reading older design revisions.
-No database table migration is needed: immutable protocols and checkpoints remain JSON.
-
-Profiles describe goals; parameterized permissions control actions. The runtime derives
-per-action schemas from current affordances, then the adapter validates the transition
-again before commit. This allows offer-only amounts, target restrictions and role permissions
-without asking the model to interpret narrative authority. Models never settle their own actions.
+## Evaluation tooling
 
 Inspect is a development-only dependency. Its application solver calls the same FastAPI
 routes as the frontend through an in-process HTTP transport, including the multi-stage

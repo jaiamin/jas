@@ -118,6 +118,41 @@ test("observation drafts stay with their recorded turn through polling and navig
   );
 });
 
+test("unsaved observations survive run tabs and actor filters", async ({
+  page,
+  request,
+}) => {
+  const { id, run } = await recordedRun(page, request);
+  await page.goto(`/runs/${id}?turn=20`);
+  const observations = page.getByRole("button", {
+    name: "Researcher observations",
+  });
+  const note = page.getByLabel("Add an observation at turn 20");
+  await observations.click();
+  await note.fill("Keep this unfinished interpretation");
+
+  for (const tab of ["Environment", "Interactions", "Record"]) {
+    await page.getByRole("tab", { name: tab, exact: true }).click();
+    await expect(page.getByRole("tabpanel", { name: tab })).toBeVisible();
+    await page.getByRole("tab", { name: "Decisions", exact: true }).click();
+    await observations.click();
+    await expect(note).toHaveValue("Keep this unfinished interpretation");
+  }
+
+  await page.getByRole("combobox", { name: "Filter actor" }).click();
+  await page
+    .getByRole("option", { name: run.design.profiles[0].name, exact: true })
+    .click();
+  await observations.click();
+  await expect(note).toHaveValue("Keep this unfinished interpretation");
+  await page.getByRole("button", { name: "Previous recorded turn" }).click();
+  await expect(page.getByLabel("Add an observation at turn 19")).toHaveValue(
+    "",
+  );
+  await page.getByRole("button", { name: "Next recorded turn" }).click();
+  await expect(note).toHaveValue("Keep this unfinished interpretation");
+});
+
 for (const theme of ["light", "dark"]) {
   test(`comparison identifies line patterns through the legend · ${theme}`, async ({
     page,

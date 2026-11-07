@@ -4,7 +4,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
-from sqlalchemy import JSON, ForeignKey, Index, UniqueConstraint, create_engine, event, select, text
+from sqlalchemy import JSON, ForeignKey, Index, UniqueConstraint, create_engine, event, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 
@@ -139,7 +139,7 @@ class Measurement(Base):
 class Analysis(Base):
     __tablename__ = "analyses"
     id: Mapped[str] = mapped_column(primary_key=True, default=uid)
-    chat_id: Mapped[str | None] = mapped_column(index=True)
+    chat_id: Mapped[str] = mapped_column(default=uid, index=True)
     study_id: Mapped[str | None] = mapped_column(ForeignKey("studies.id"), index=True)
     run_id: Mapped[str | None] = mapped_column(ForeignKey("runs.id"), index=True)
     purpose: Mapped[str]
@@ -198,40 +198,21 @@ class Database:
                 connection.execute("PRAGMA busy_timeout=5000")
 
         self.session = sessionmaker(self.engine, expire_on_commit=False)
-        self.migrate(ceiling)
+        self.initialize(ceiling)
 
-    def migrate(self, ceiling: int) -> None:
+    def initialize(self, ceiling: int) -> None:
         with self.engine.begin() as connection:
             connection.execute(
                 text("CREATE TABLE IF NOT EXISTS schema_version (version INTEGER NOT NULL)")
             )
             version = connection.execute(text("SELECT version FROM schema_version")).scalar()
-            if version not in (None, 1, 2, 3):
-                raise ValueError(f"Unsupported database schema version: {version}")
+            if version not in (None, 4):
+                raise ValueError(
+                    f"Unsupported database schema version: {version}; create a fresh workspace"
+                )
             if version is None:
                 Base.metadata.create_all(connection)
-                connection.execute(text("INSERT INTO schema_version VALUES (3)"))
-            elif version == 1:
-                for column in ("turn INTEGER", "request_payload JSON", "response_payload JSON"):
-                    connection.execute(text(f"ALTER TABLE provider_calls ADD COLUMN {column}"))
-            if version in (1, 2):
-                connection.execute(text("ALTER TABLE analyses ADD COLUMN chat_id VARCHAR"))
-                connection.execute(text("CREATE INDEX ix_analyses_chat_id ON analyses (chat_id)"))
-                conversations = {}
-                for row in connection.execute(
-                    select(
-                        Analysis.id, Analysis.purpose, Analysis.study_id, Analysis.run_id
-                    ).order_by(Analysis.created)
-                ):
-                    scope = (row.purpose, row.study_id, row.run_id)
-                    chat_id = (
-                        uid() if row.purpose == "design" else conversations.setdefault(scope, uid())
-                    )
-                    connection.execute(
-                        text("UPDATE analyses SET chat_id=:chat_id WHERE id=:id"),
-                        {"chat_id": chat_id, "id": row.id},
-                    )
-                connection.execute(text("UPDATE schema_version SET version=3"))
+                connection.execute(text("INSERT INTO schema_version VALUES (4)"))
         with self.session.begin() as session:
             workspace = session.get(Workspace, 1)
             if workspace is None:

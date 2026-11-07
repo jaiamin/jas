@@ -14,10 +14,11 @@ def test_streamed_prose_precedes_completion_and_preserves_validation_and_cost(
 ):
     db, models, research, _ = runtime
     snapshots = []
+    partial_observed = asyncio.Event()
 
     async def stream(messages, info):
         yield {0: DeltaToolCall(name=info.output_tools[0].name, json_args='{"answer":"Matched')}
-        await asyncio.sleep(0.12)
+        await asyncio.wait_for(partial_observed.wait(), timeout=5)
         if ending == "interrupted":
             raise TimeoutError("Interrupted test stream")
         citations = (
@@ -38,6 +39,7 @@ def test_streamed_prose_precedes_completion_and_preserves_validation_and_cost(
         def observe(key, text):
             publish(key, text)
             snapshots.append(agent.get(key))
+            partial_observed.set()
 
         monkeypatch.setattr(agent, "_partial", observe)
         result = agent.send("Explain matched seeds", "general")
@@ -89,3 +91,24 @@ def test_streaming_budget_rejection_never_contacts_provider(runtime, monkeypatch
             )
         )
     assert not contacted and models.usage()["requests"] == 0
+
+
+def test_partial_outputs_handle_incomplete_and_non_object_fragments():
+    from agent_sim.llm import partial_outputs
+    from pydantic_ai.messages import ModelResponse, TextPart, ToolCallPart
+
+    response = ModelResponse(
+        parts=[
+            ToolCallPart("answer", "}"),
+            ToolCallPart("answer", "[]"),
+            ToolCallPart("answer", '{"answer":"Partial'),
+            ToolCallPart("answer", {"answer": "Complete"}),
+            TextPart("First "),
+            TextPart("second"),
+        ]
+    )
+    assert list(partial_outputs(response, web_search=False)) == [
+        {"answer": "Partial"},
+        {"answer": "Complete"},
+    ]
+    assert list(partial_outputs(response, web_search=True))[-1] == {"text": "First second"}

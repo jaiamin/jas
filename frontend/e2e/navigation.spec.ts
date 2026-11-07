@@ -1,11 +1,15 @@
 import { expect, test } from "@playwright/test";
 
-test("JAS preserves the previous workspace theme and navigation preference", async ({
+test("JAS persists the workspace theme and navigation preference", async ({
   page,
 }) => {
   await page.addInitScript(() => {
-    localStorage.setItem("ass-theme", "dark");
-    localStorage.setItem("ass-sidebar", "collapsed");
+    if (localStorage.getItem("jas-theme") === null) {
+      localStorage.setItem("jas-theme", "dark");
+    }
+    if (localStorage.getItem("jas-sidebar") === null) {
+      localStorage.setItem("jas-sidebar", "collapsed");
+    }
   });
   await page.goto("/");
   await expect(page).toHaveTitle("Experiments | JAS");
@@ -46,7 +50,7 @@ test("browser titles follow navigation, history and saved experiment identity", 
   for (const [path, title] of [
     ["/new", "New experiment"],
     ["/runs", "Runs"],
-    ["/design", "Agent"],
+    ["/agent", "Agent"],
     ["/compare", "Compare runs"],
   ]) {
     await page.goto(path);

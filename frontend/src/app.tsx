@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Empty } from "@/components/ui/data";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -10,13 +10,10 @@ const AgentPage = lazy(() => import("@/pages/agent"));
 const Editor = lazy(() => import("@/pages/editor"));
 const Study = lazy(() => import("@/pages/study"));
 const Run = lazy(() => import("@/pages/run"));
-const Library = lazy(() => import("@/pages/library"));
+const Runs = lazy(() => import("@/pages/runs"));
+const Environments = lazy(() => import("@/pages/environments"));
+const Settings = lazy(() => import("@/pages/settings"));
 const Compare = lazy(() => import("@/pages/compare"));
-
-function LegacyDesignRedirect() {
-  const location = useLocation();
-  return <Navigate to="/agent?context=new" state={location.state} replace />;
-}
 
 export default function App() {
   return (
@@ -31,13 +28,12 @@ export default function App() {
         <Route index element={<Navigate to="/studies" replace />} />
         <Route path="studies" element={<Experiments />} />
         <Route path="agent" element={<AgentPage />} />
-        <Route path="design" element={<LegacyDesignRedirect />} />
         <Route path="studies/:id" element={<Study />} />
         <Route path="new" element={<Editor />} />
-        <Route path="runs" element={<Library view="runs" />} />
+        <Route path="runs" element={<Runs />} />
         <Route path="runs/:id" element={<Run />} />
-        <Route path="environments" element={<Library view="environments" />} />
-        <Route path="settings" element={<Library view="settings" />} />
+        <Route path="environments" element={<Environments />} />
+        <Route path="settings" element={<Settings />} />
         <Route path="compare" element={<Compare />} />
         <Route
           path="*"

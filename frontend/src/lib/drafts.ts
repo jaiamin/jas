@@ -1,7 +1,6 @@
 import type { Design } from "@/lib/types";
 
 const prefix = "jas:draft:";
-const legacyPrefix = "ass:draft:";
 export interface Draft {
   path: string;
   title: string;
@@ -11,12 +10,25 @@ export interface Draft {
   mode: "visual" | "json";
 }
 
+export function editorDraftPath(params: URLSearchParams): string {
+  const source = new URLSearchParams();
+  for (const key of ["plan", "study", "revision", "template"]) {
+    const value = params.get(key);
+    if (value !== null) source.set(key, value);
+  }
+  return `/new${source.size ? `?${source}` : ""}`;
+}
+
+/** Returns null for a missing record; throws for corrupt records or inaccessible storage. */
 export function readDraft(path: string): Draft | null {
-  const raw =
-    localStorage.getItem(prefix + path) ??
-    localStorage.getItem(legacyPrefix + path);
-  if (!raw) return null;
-  const value: unknown = JSON.parse(raw);
+  const raw = localStorage.getItem(prefix + path);
+  if (raw === null) return null;
+  let value: unknown;
+  try {
+    value = JSON.parse(raw);
+  } catch (cause) {
+    throw new Error("This draft could not be read.", { cause });
+  }
   if (
     !value ||
     typeof value !== "object" ||
@@ -30,26 +42,39 @@ export function readDraft(path: string): Draft | null {
     !("json" in value) ||
     typeof value.json !== "string" ||
     !("mode" in value) ||
-    !["visual", "json"].includes(String(value.mode)) ||
+    (value.mode !== "visual" && value.mode !== "json") ||
     !("design" in value)
   )
     throw new Error("This draft could not be read.");
-  return value as Draft;
+  return {
+    path: value.path,
+    title: value.title,
+    updated: value.updated,
+    json: value.json,
+    mode: value.mode,
+    design: value.design,
+  };
 }
 
-export function listDrafts(): Draft[] {
-  const paths = new Set(
-    Object.keys(localStorage).flatMap((key) => {
-      const matched = [prefix, legacyPrefix].find((value) =>
-        key.startsWith(value),
-      );
-      return matched ? [key.slice(matched.length)] : [];
-    }),
-  );
-  return [...paths]
-    .map(readDraft)
-    .filter((draft): draft is Draft => draft !== null)
-    .sort((a, b) => b.updated.localeCompare(a.updated));
+/** Collects unreadable record paths separately; throws if storage cannot be enumerated. */
+export function listDrafts(): { items: Draft[]; unreadable: string[] } {
+  const items: Draft[] = [];
+  const unreadable: string[] = [];
+  const paths = Object.keys(localStorage)
+    .filter((key) => key.startsWith(prefix))
+    .map((key) => key.slice(prefix.length));
+  for (const path of paths) {
+    try {
+      const draft = readDraft(path);
+      if (draft) items.push(draft);
+    } catch {
+      unreadable.push(path);
+    }
+  }
+  return {
+    items: items.sort((a, b) => b.updated.localeCompare(a.updated)),
+    unreadable,
+  };
 }
 
 export function writeDraft(
@@ -69,18 +94,8 @@ export function writeDraft(
       updated: new Date().toISOString(),
     } satisfies Draft),
   );
-  localStorage.removeItem(legacyPrefix + path);
 }
 
 export function removeDraft(path: string) {
   localStorage.removeItem(prefix + path);
-  localStorage.removeItem(legacyPrefix + path);
-}
-
-export function editorDraftPath(pathname: string, search: string) {
-  const params = new URLSearchParams(search);
-  params.delete("assistant");
-  if (params.get("tab") === "research") params.delete("tab");
-  const query = params.toString();
-  return pathname + (query ? `?${query}` : "");
 }

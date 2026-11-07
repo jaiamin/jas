@@ -1,7 +1,80 @@
 import pytest
 from agent_sim.domain import Action, Design, Parameters
-from agent_sim.environments import Commons, Coordination, TrustExchange, World, create_world
+from agent_sim.simulation.environments import (
+    Commons,
+    Coordination,
+    TrustExchange,
+    World,
+    create_world,
+)
 from agent_sim.templates import templates
+
+
+@pytest.mark.parametrize("environment", ["commons", "trust_exchange", "coordination"])
+@pytest.mark.parametrize("memory", ["episodic", "history", "notes", "none"])
+def test_public_communication_is_delivered_without_private_truth(environment, memory):
+    import json
+
+    from agent_sim.domain import Decision
+
+    design = Design.model_validate(next(t["design"] for t in templates() if t["id"] == environment))
+    parameters = design.conditions[0].parameters.model_copy(update={"memory": memory})
+    world = create_world(design, parameters, 7)
+    first = actor(world)
+    option = world.observe(first)["legal_actions"][0]
+    chosen = action(option["kind"])
+    chosen.message, chosen.report = "Public delivery check", 0
+    chosen.target = option.get("target", "")
+    world.step(first, Decision(action=chosen, memory="Private note", rationale="", forecast=None))
+    if environment == "commons":
+        while world.state["round"] == 1:
+            world.step(
+                actor(world), Decision(action=action(), memory="", rationale="", forecast=None)
+            )
+    observation = world.observe(actor(world))
+    public = json.dumps(observation["public_history"])
+    assert ("Public delivery check" in public) == (memory != "none")
+    assert ("Reports private signal 0" in public) == (memory != "none")
+    assert "known_truth" not in public and "Private note" not in public
+    if memory != "episodic":
+        assert not observation["your_experiences"]
+
+
+@pytest.mark.parametrize("environment", ["commons", "trust_exchange"])
+@pytest.mark.parametrize("memory", ["episodic", "history", "notes"])
+def test_direct_communication_stays_out_of_public_history(environment, memory):
+    import json
+
+    design = Design.model_validate(next(t["design"] for t in templates() if t["id"] == environment))
+    world = create_world(
+        design, design.conditions[0].parameters.model_copy(update={"memory": memory}), 7
+    )
+    first, recipient, outsider = world.order()[:3]
+    chosen = action("contribute" if environment == "commons" else "send")
+    chosen.target, chosen.message, chosen.report = recipient, "Private delivery check", 0
+    world.apply(first, chosen)
+    if environment == "commons":
+        while world.state["round"] == 1:
+            world.apply(actor(world), action())
+    assert "Private delivery check" not in json.dumps(world.observe(outsider))
+    assert "Reports private signal 0" not in json.dumps(world.observe(outsider))
+    assert "Private delivery check" not in json.dumps(world.observe(recipient)["public_history"])
+
+
+def test_public_history_keeps_a_full_round_of_communication_and_outcomes(design):
+    from agent_sim.domain import Decision
+
+    design.profiles = [
+        design.profiles[0].model_copy(update={"key": f"agent-{index}"}) for index in range(12)
+    ]
+    world = Commons(design, Parameters(memory="history"), 7)
+    for _ in design.profiles:
+        chosen = action()
+        chosen.message, chosen.report, chosen.promise = "Public message", 0, 1
+        world.step(actor(world), Decision(action=chosen, memory="", rationale="", forecast=None))
+    history = world.observe(actor(world))["public_history"]
+    assert sum(event.get("kind") == "message" for event in history) == 12
+    assert any("contributions" in event for event in history)
 
 
 def actor(world: World) -> str:
@@ -118,7 +191,6 @@ def test_seed_restore_and_memory_ablation(template):
 
 def test_resource_shock_changes_legal_budget_without_announcing_future(design):
     from agent_sim.domain import Decision, ResourceChange
-    from agent_sim.execution import transition
 
     design.rounds = 3
     parameters = Parameters(endowment=10, resource_schedule=[ResourceChange(round=2, endowment=3)])
@@ -127,16 +199,13 @@ def test_resource_shock_changes_legal_budget_without_announcing_future(design):
     for _ in design.profiles:
         choice = action(amount=5)
         choice.promise = 8
-        transition(
-            world, actor(world), Decision(action=choice, rationale="", memory="", forecast=None)
-        )
+        world.step(actor(world), Decision(action=choice, rationale="", memory="", forecast=None))
     assert world.parameters.endowment == 3
     restored = Commons(design, parameters, 7, world.snapshot())
     assert restored.observe(actor(restored)) == world.observe(actor(world))
     assert world.observe(actor(world))["legal_actions"][0]["amount_max"] == 3
     for index, _ in enumerate(design.profiles):
-        events, measures = transition(
-            world,
+        events, measures = world.step(
             actor(world),
             Decision(action=action(amount=3), rationale="", memory="", forecast=None),
         )
@@ -156,13 +225,11 @@ def test_resource_schedule_validation(design):
 
 def test_forecast_is_scored_against_settled_resources_before_next_shock(design):
     from agent_sim.domain import Decision, ResourceChange
-    from agent_sim.execution import transition
 
     params = Parameters(endowment=10, resource_schedule=[ResourceChange(round=2, endowment=2)])
     world = Commons(design, params, 7)
     for _ in design.profiles:
-        _, measures = transition(
-            world,
+        _, measures = world.step(
             actor(world),
             Decision(action=action(amount=5), memory="", rationale="", forecast=0.5),
         )
@@ -172,7 +239,6 @@ def test_forecast_is_scored_against_settled_resources_before_next_shock(design):
 
 def test_messages_can_be_ablated_without_removing_reporting_or_commitments(design):
     from agent_sim.domain import Action
-    from agent_sim.execution import decision_schema
 
     params = design.conditions[0].parameters.model_copy(
         update={"communication_channels": ["reports", "promises"]}
@@ -188,9 +254,7 @@ def test_messages_can_be_ablated_without_removing_reporting_or_commitments(desig
         report=world.state["signals"][actor],
         promise=1,
     )
-    schema = decision_schema(
-        "commons", True, 10, tuple([""] + world.ids), ("contribute",), ("reports", "promises")
-    )
+    schema = world.decision_schema(world.observe(actor))
     schema(action=legal.model_dump(), rationale="", memory="", forecast=None)
     with pytest.raises(ValueError, match="channel is disabled"):
         world.apply(actor, legal.model_copy(update={"message": "Hello"}))

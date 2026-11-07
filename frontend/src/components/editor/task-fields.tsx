@@ -2,6 +2,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { removeTask } from "@/lib/design";
 import type { Design } from "@/lib/types";
 
 export function TaskFields({
@@ -15,6 +16,14 @@ export function TaskFields({
 }) {
   function update<K extends keyof Design>(key: K, value: Design[K]) {
     onChange({ ...design, [key]: value });
+  }
+  function updateTask(index: number, patch: Partial<Design["tasks"][number]>) {
+    update(
+      "tasks",
+      design.tasks.map((task, i) =>
+        i === index ? { ...task, ...patch } : task,
+      ),
+    );
   }
 
   return (
@@ -65,12 +74,7 @@ export function TaskFields({
                       value={task.name}
                       maxLength={100}
                       onChange={(e) =>
-                        update(
-                          "tasks",
-                          design.tasks.map((t, j) =>
-                            j === index ? { ...t, name: e.target.value } : t,
-                          ),
-                        )
+                        updateTask(index, { name: e.target.value })
                       }
                     />
                     <Input
@@ -80,35 +84,21 @@ export function TaskFields({
                       max={20}
                       value={task.effort}
                       onChange={(e) =>
-                        update(
-                          "tasks",
-                          design.tasks.map((t, j) =>
-                            j === index
-                              ? { ...t, effort: Number(e.target.value) }
-                              : t,
-                          ),
-                        )
+                        updateTask(index, { effort: Number(e.target.value) })
                       }
                     />
                     <Input
                       aria-label={`Prerequisites for ${task.key}`}
                       placeholder="Prerequisites, e.g. task-1"
+                      key={task.dependencies.join(",")}
                       defaultValue={task.dependencies.join(", ")}
                       onBlur={(e) =>
-                        update(
-                          "tasks",
-                          design.tasks.map((t, j) =>
-                            j === index
-                              ? {
-                                  ...t,
-                                  dependencies: e.target.value
-                                    .split(",")
-                                    .map((v) => v.trim())
-                                    .filter(Boolean),
-                                }
-                              : t,
-                          ),
-                        )
+                        updateTask(index, {
+                          dependencies: e.target.value
+                            .split(",")
+                            .map((value) => value.trim())
+                            .filter(Boolean),
+                        })
                       }
                     />
                     <Button
@@ -116,17 +106,10 @@ export function TaskFields({
                       size="icon"
                       aria-label={`Remove ${task.key}`}
                       onClick={() =>
-                        update(
-                          "tasks",
-                          design.tasks
-                            .filter((t) => t.key !== task.key)
-                            .map((t) => ({
-                              ...t,
-                              dependencies: t.dependencies.filter(
-                                (key) => key !== task.key,
-                              ),
-                            })),
-                        )
+                        onChange({
+                          ...design,
+                          tasks: removeTask(design.tasks, task.key),
+                        })
                       }
                     >
                       <Trash2 />

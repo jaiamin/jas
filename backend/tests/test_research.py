@@ -6,20 +6,6 @@ from agent_sim.domain import Design, TaskDefinition
 from pydantic import ValidationError
 
 
-def test_custom_graph_rejects_cycles_and_missing_dependencies(design):
-    payload = design.model_dump()
-    payload["environment"] = "coordination"
-    payload["tasks"] = [
-        dict(key="a", name="A", effort=1, dependencies=["b"]),
-        dict(key="b", name="B", effort=1, dependencies=["a"]),
-    ]
-    with pytest.raises(ValidationError, match="acyclic"):
-        Design.model_validate(payload)
-    payload["tasks"][1]["dependencies"] = ["missing"]
-    with pytest.raises(ValidationError, match="dependencies"):
-        Design.model_validate(payload)
-
-
 def test_conditions_resolve_private_profiles_without_mutating_base(runtime, design):
     _, _, research, _ = runtime
     profile = design.profiles[0].model_copy(
@@ -71,15 +57,29 @@ def test_matched_effects_cluster_repetitions_and_exclude_incomplete_runs(runtime
     for run in research.study(sid)["runs"]:
         with db.session.begin() as session:
             session.get_one(Run, run["id"]).status = "complete"
-            value = run["seed"] / 10 + (0.2 if run["condition_key"] == "treatment" else 0)
+            effect = {(1, 1): 0.0, (1, 2): 0.2, (2, 1): 0.2, (2, 2): 0.6, (3, 1): 0.4, (3, 2): 0.8}[
+                run["seed"], run["repetition"]
+            ]
+            value = effect if run["condition_key"] == "treatment" else 0.0
             session.add(
                 Measurement(run_id=run["id"], turn=1, round=1, key="contribution_rate", value=value)
             )
     detail = research.study(sid)
     effect = next(e for e in detail["effects"] if e["metric"] == "contribution_rate")
-    assert effect["mean"] == pytest.approx(0.2)
+    assert effect["mean"] == pytest.approx((0.1 + 0.4 + 0.6) / 3)
     assert effect["seeds"] == 3 and effect["pairs"] == 6
-    assert effect["interval"] == pytest.approx([0.2, 0.2])
+    assert effect["interval"] == pytest.approx([0.1, 0.6])
     with db.session.begin() as session:
-        session.get_one(Run, detail["runs"][0]["id"]).status = "failed"
-    assert sum(r["runs"] for r in research.study(sid)["results"]) == 11
+        missing_control = next(
+            run
+            for run in detail["runs"]
+            if run["condition_key"] != "treatment" and run["seed"] == 3 and run["repetition"] == 2
+        )
+        session.get_one(Run, missing_control["id"]).status = "failed"
+    updated = research.study(sid)
+    assert sum(r["runs"] for r in updated["results"]) == 11
+    matched = next(e for e in updated["effects"] if e["metric"] == "contribution_rate")
+    assert matched["pairs"] == 5 and matched["seeds"] == 3
+    assert matched["mean"] == pytest.approx(0.3)
+    assert matched["mean"] != pytest.approx((0.0 + 0.2 + 0.2 + 0.6 + 0.4) / 5)
+    assert matched["interval"] == pytest.approx([0.1, 0.4])

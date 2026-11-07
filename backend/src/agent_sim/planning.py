@@ -1,15 +1,15 @@
 import json
-from urllib.parse import urlparse
+from collections.abc import Sequence
+from typing import Any
 
 from pydantic import Field, ValidationError
-from sqlalchemy import select
 
 from .config import setting
-from .db import Analysis, Database, ProviderCall
+from .db import Analysis, Database
 from .domain import Design, DesignSpec, PlannedStudy, Strict
-from .environments import CATALOG, MEASURE_DESCRIPTIONS, create_world
 from .llm import LanguageModels
 from .research import Research
+from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, create_world
 from .templates import templates
 
 PLANNING = """Design empirical studies of model-controlled agents, not claims of human prediction.
@@ -45,7 +45,7 @@ not rules. Explain that limit. Forecast error is not proof of learning.
 Use condition.profile_overrides to manipulate role or private-goal text, retaining the same
 agent keys across conditions. Never claim those interventions when profiles are unchanged.
 Coordination studies may define named tasks, effort and acyclic dependencies in design.tasks;
-otherwise the adapter supplies generic work packages. Context alone does not change task rules.
+otherwise the environment supplies generic work packages. Context alone does not change task rules.
 Commons and trust conditions can specify resource_schedule with round/endowment entries.
 Each change begins at that round and persists until the next change. Future changes are not
 announced to agents; current rules and budgets are visible. Use matched control conditions
@@ -112,65 +112,64 @@ class Planner:
     def __init__(self, db: Database, research: Research, models: LanguageModels):
         self.db, self.research, self.models = db, research, models
 
-    def progress(self, key: str, stage: str, **details) -> None:
+    def progress(self, key: str, stage: str, **details: object) -> None:
         with self.db.session.begin() as session:
             row = session.get_one(Analysis, key)
             partial = (row.output or {}).get("partial") if stage == "reviewing" else None
             row.output = {"stage": stage, **details, **({"partial": partial} if partial else {})}
 
-    def sources(self, key: str) -> list[dict]:
-        found = {}
-        with self.db.session() as session:
-            calls = session.scalars(select(ProviderCall).where(ProviderCall.analysis_id == key))
-            for call in calls:
-                for message in call.response_payload or []:
-                    for part in message.get("parts", []):
-                        content = part.get("content")
-                        if part.get("tool_name") != "web_search" or not isinstance(content, dict):
-                            continue
-                        for source in content.get("sources", []):
-                            if not isinstance(source, dict) or not isinstance(
-                                source.get("url"), str
-                            ):
-                                continue
-                            url = source.get("url", "")
-                            parsed = urlparse(url)
-                            if (
-                                parsed.scheme in {"http", "https"}
-                                and parsed.hostname
-                                and not parsed.username
-                            ):
-                                found[url] = {
-                                    "url": url,
-                                    "title": source.get("title") or parsed.hostname,
-                                }
-        return list(found.values())
+    async def _call[T](
+        self,
+        key: str,
+        output: type[T],
+        instruction: str,
+        data: dict[str, object],
+        *,
+        max_tokens: int,
+        web_search: bool = False,
+    ) -> T:
+        return await self.models.generate(
+            output,
+            model=setting("PLANNER_MODEL", "openai:gpt-6.1-sol"),
+            instructions=instruction,
+            prompt=json.dumps(data),
+            purpose="design",
+            analysis_id=key,
+            openai_reasoning_effort="medium",
+            max_tokens=max_tokens,
+            web_search=web_search,
+            on_partial=(lambda value: stream_partial(self.db, key, value.get("explanation")))
+            if output is Candidate
+            else None,
+        )
 
-    async def run(self, row: dict) -> dict:
-        key = row["id"]
+    def _context(self, question: str, conversation: Sequence[dict]) -> dict[str, object]:
         capabilities = []
-        for adapter in CATALOG.values():
+        for environment_definition in CATALOG.values():
             example = Design.model_validate(
-                next(t["design"] for t in templates() if t["id"] == adapter.key)
+                next(t["design"] for t in templates() if t["id"] == environment_definition.key)
             )
             world = create_world(example, example.conditions[0].parameters, 0)
             actor = world.actor()
-            assert actor is not None
+            if actor is None:
+                raise ValueError(f"Template {environment_definition.key} has no initial actor")
             capabilities.append(
                 {
-                    "key": adapter.key,
-                    "description": adapter.description,
-                    "parameters": adapter.parameters,
-                    "measures": adapter.measures,
-                    "measure_definitions": {m: MEASURE_DESCRIPTIONS[m] for m in adapter.measures},
+                    "key": environment_definition.key,
+                    "description": environment_definition.description,
+                    "parameters": environment_definition.parameters,
+                    "measures": environment_definition.measures,
+                    "measure_definitions": {
+                        m: MEASURE_DESCRIPTIONS[m] for m in environment_definition.measures
+                    },
                     "rules_example": world.observe(actor)["rules"],
                     "example_note": "Example values are template settings, not fixed constants. "
                     "Use the design schema descriptions to identify changeable parameters.",
                 }
             )
-        context = {
-            "question": row["question"],
-            "conversation": row.get("conversation", []),
+        return {
+            "question": question,
+            "conversation": conversation,
             "research_available": setting("PLANNER_MODEL", "openai:gpt-6.1-sol")
             == "openai:gpt-6.1-sol",
             "capabilities": capabilities,
@@ -190,23 +189,42 @@ class Planner:
             },
         }
 
-        async def call(output, instruction: str, data: dict, **options):
-            return await self.models.generate(
-                output,
-                model=setting("PLANNER_MODEL", "openai:gpt-6.1-sol"),
-                instructions=instruction,
-                prompt=json.dumps(data),
-                purpose="design",
-                analysis_id=key,
-                openai_reasoning_effort="medium",
-                on_partial=(lambda value: stream_partial(self.db, key, value.get("explanation")))
-                if output is Candidate
-                else None,
-                **options,
+    def _validate_candidate(self, candidate: Candidate, brief: StudyBrief) -> Design | None:
+        design = Design.model_validate(candidate.design.model_dump()) if candidate.design else None
+        if design:
+            self.research.validate_design(design)
+            actual = (
+                len(design.profiles),
+                len(design.conditions),
+                len(design.seeds),
+                design.repetitions,
+                design.rounds,
             )
+            expected = (
+                brief.agents,
+                brief.conditions,
+                brief.seeds,
+                brief.repetitions,
+                brief.rounds,
+            )
+            if actual != expected:
+                raise ValueError(f"Protocol must retain planned counts {expected}; got {actual}")
+            if design.response_tokens < 2048:
+                raise ValueError(
+                    "AI protocols need at least 2048 response tokens to avoid truncation"
+                )
+            if design.budget_usd > 10:
+                raise ValueError("AI-proposed studies must have a spending ceiling at or below $10")
+        return design
+
+    async def run(
+        self, key: str, question: str, conversation: Sequence[dict] = ()
+    ) -> dict[str, Any]:
+        context = self._context(question, conversation)
 
         self.progress(key, "scoping")
-        brief = await call(
+        brief = await self._call(
+            key,
             StudyBrief,
             PLANNING + "\nFirst operationalize the question and choose the design size. "
             "Honor explicit counts within supported limits. Explain agents, conditions, seeds, "
@@ -233,7 +251,8 @@ class Planner:
         context["brief"] = brief.model_dump()
         if brief.research_query:
             self.progress(key, "researching", planning=planning)
-            notes = await call(
+            notes = await self._call(
+                key,
                 str,
                 "Search the web for primary research or official methods relevant to this "
                 "experiment. Use the search tool, then summarize methodological choices, "
@@ -244,7 +263,7 @@ class Planner:
                 max_tokens=4096,
                 web_search=True,
             )
-            planning["sources"] = self.sources(key)
+            planning["sources"] = self.models.sources(key)
             if not planning["sources"]:
                 raise ValueError(
                     "Web research returned no verifiable sources. "
@@ -255,7 +274,8 @@ class Planner:
         feedback = []
         for attempt in range(3):
             self.progress(key, "drafting" if attempt == 0 else "revising", planning=planning)
-            candidate = await call(
+            candidate = await self._call(
+                key,
                 Candidate,
                 PLANNING + "\nProduce the complete protocol from the brief. "
                 "Resolve the supplied validation/review issues; do not repeat a rejected draft. "
@@ -265,45 +285,14 @@ class Planner:
             )
             context["candidate"] = candidate.model_dump()
             try:
-                design = (
-                    Design.model_validate(candidate.design.model_dump())
-                    if candidate.design
-                    else None
-                )
-                if design:
-                    self.research.validate_design(design)
-                    actual = (
-                        len(design.profiles),
-                        len(design.conditions),
-                        len(design.seeds),
-                        design.repetitions,
-                        design.rounds,
-                    )
-                    expected = (
-                        brief.agents,
-                        brief.conditions,
-                        brief.seeds,
-                        brief.repetitions,
-                        brief.rounds,
-                    )
-                    if actual != expected:
-                        raise ValueError(
-                            f"Protocol must retain planned counts {expected}; got {actual}"
-                        )
-                    if design.response_tokens < 2048:
-                        raise ValueError(
-                            "AI protocols need at least 2048 response tokens to avoid truncation"
-                        )
-                    if design.budget_usd > 10:
-                        raise ValueError(
-                            "AI-proposed studies must have a spending ceiling at or below $10"
-                        )
+                design = self._validate_candidate(candidate, brief)
             except (ValidationError, ValueError) as error:
                 feedback = [str(error)]
                 planning["reviews"].append({"kind": "validation", "issues": feedback})
                 continue
             self.progress(key, "reviewing", planning=planning)
-            review = await call(
+            review = await self._call(
+                key,
                 DesignReview,
                 PLANNING + "\nCritique this protocol against the original question. "
                 "Return material issues only; an empty list approves it. "

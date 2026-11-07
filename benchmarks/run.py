@@ -55,7 +55,7 @@ async def evaluate(client, case, record):
             "passed": False,
         }
     )
-    response = await client.post("/api/plan", json={"question": case.prompt})
+    response = await client.post("/api/chats", json={"question": case.prompt, "context": "new"})
     response.raise_for_status()
     key = response.json()["id"]
     record["analysis_id"] = key
@@ -115,6 +115,16 @@ async def evaluate(client, case, record):
     return record
 
 
+def source_digest():
+    root = Path(__file__).resolve().parents[1]
+    paths = sorted((root / "backend/src/agent_sim").rglob("*.py"))
+    paths += [Path(__file__).resolve(), Path(__file__).resolve().with_name("suite.py")]
+    source_hash = hashlib.sha256()
+    for source in paths:
+        source_hash.update(str(source.relative_to(root)).encode() + b"\0" + source.read_bytes())
+    return source_hash.hexdigest()
+
+
 async def run(args):
     selected = [
         c
@@ -137,20 +147,9 @@ async def run(args):
         print("No unattempted cases. Use a new output directory for an explicit retest.")
         return
     database = await asyncio.to_thread(Path(args.database).resolve)
-    app = create_app(
-        f"sqlite:///{database}", budget_usd=args.budget_usd, concurrent_runs=args.concurrency
-    )
-    app.state.models.capacity = asyncio.Semaphore(args.concurrency)
     git_head = await asyncio.to_thread(
         subprocess.check_output, ["git", "rev-parse", "HEAD"], text=True
     )
-
-    def source_digest():
-        source_hash = hashlib.sha256()
-        paths = sorted(Path("backend/src/agent_sim").glob("*.py"))
-        for source in paths + [Path(__file__), Path(__file__).with_name("suite.py")]:
-            source_hash.update(source.read_bytes())
-        return source_hash.hexdigest()
 
     source_hash = await asyncio.to_thread(source_digest)
     manifest = {
@@ -174,9 +173,13 @@ async def run(args):
     else:
         manifest_file.write_text(json.dumps(manifest, indent=2) + "\n")
     records = prior.copy()
+    app = create_app(
+        f"sqlite:///{database}", budget_usd=args.budget_usd, concurrent_runs=args.concurrency
+    )
+    app.state.models.capacity = asyncio.Semaphore(args.concurrency)
     async with app.router.lifespan_context(app):
         async with httpx.AsyncClient(
-            transport=httpx.ASGITransport(app=app), base_url="http://jas.test", timeout=60
+            transport=httpx.ASGITransport(app=app), base_url="http://localhost", timeout=60
         ) as client:
 
             @solver

@@ -15,7 +15,6 @@ import {
   NavLink,
   Outlet,
   useLocation,
-  useNavigate,
   useSearchParams,
 } from "react-router-dom";
 import { Loading } from "@/components/shared";
@@ -72,7 +71,6 @@ class PageBoundary extends Component<
 export default function WorkspaceShell() {
   const { setOpenMobile, state, isMobile, toggleSidebar } = useSidebar();
   const [params] = useSearchParams();
-  const navigate = useNavigate();
   const [dark, setDark] = useState(() =>
     document.documentElement.classList.contains("dark"),
   );
@@ -98,28 +96,24 @@ export default function WorkspaceShell() {
       /* Storage can be unavailable in private contexts. */
     }
   }
-  const section = location.pathname.startsWith("/new")
-    ? "Experiment design"
-    : location.pathname.startsWith("/studies")
-      ? "Experiments"
-      : location.pathname.startsWith("/runs")
-        ? "Runs"
-        : location.pathname.startsWith("/environments")
-          ? "Environments"
-          : location.pathname.startsWith("/settings")
-            ? "Settings"
-            : location.pathname.startsWith("/compare")
-              ? "Compare runs"
-              : location.pathname.startsWith("/design") ||
-                  location.pathname.startsWith("/agent")
-                ? "Agent"
-                : "Workspace";
+  const section =
+    [
+      { prefix: "/new", label: "Experiment design" },
+      { prefix: "/studies", label: "Experiments" },
+      { prefix: "/runs", label: "Runs" },
+      { prefix: "/environments", label: "Environments" },
+      { prefix: "/settings", label: "Settings" },
+      { prefix: "/compare", label: "Compare runs" },
+      { prefix: "/agent", label: "Agent" },
+    ].find(({ prefix }) => location.pathname.startsWith(prefix))?.label ??
+    "Workspace";
   const runId = location.pathname.match(/^\/runs\/([^/]+)$/)?.[1];
   const studyId = location.pathname.match(/^\/studies\/([^/]+)$/)?.[1];
   const selectedRun = runs.data?.find((r) => r.id === runId);
   const selectedStudy = studies.data?.find((study) => study.id === studyId);
-  const crumbs: { label: string; to?: string }[] = runId
-    ? [
+  function breadcrumbs(): { label: string; to?: string }[] {
+    if (runId)
+      return [
         { label: "Experiments", to: "/studies" },
         ...(selectedRun
           ? [
@@ -130,36 +124,24 @@ export default function WorkspaceShell() {
             ]
           : []),
         { label: selectedRun?.condition ?? "Run" },
-      ]
-    : studyId
-      ? [
-          { label: "Experiments", to: "/studies" },
-          { label: selectedStudy?.title ?? "Experiment" },
-        ]
-      : location.pathname === "/new"
-        ? [
-            { label: "Experiments", to: "/studies" },
-            {
-              label: new URLSearchParams(location.search).has("study")
-                ? "Tune experiment"
-                : "New experiment",
-            },
-          ]
-        : location.pathname === "/compare"
-          ? [{ label: "Runs", to: "/runs" }, { label: "Compare" }]
-          : [{ label: section }];
-  useEffect(() => {
-    if (params.has("assistant") || params.get("tab") === "research") {
-      const context = runId
-        ? `run:${runId}`
-        : studyId
-          ? `study:${studyId}`
-          : "general";
-      navigate(`/agent?context=${encodeURIComponent(context)}`, {
-        replace: true,
-      });
-    }
-  }, [params, runId, studyId, navigate]);
+      ];
+    if (studyId)
+      return [
+        { label: "Experiments", to: "/studies" },
+        { label: selectedStudy?.title ?? "Experiment" },
+      ];
+    if (location.pathname === "/new")
+      return [
+        { label: "Experiments", to: "/studies" },
+        {
+          label: params.has("study") ? "Tune experiment" : "New experiment",
+        },
+      ];
+    if (location.pathname === "/compare")
+      return [{ label: "Runs", to: "/runs" }, { label: "Compare" }];
+    return [{ label: section }];
+  }
+  const crumbs = breadcrumbs();
   const pageTitle =
     runId || studyId || location.pathname === "/new"
       ? (crumbs.at(-1)?.label ?? section)

@@ -23,8 +23,8 @@ def test_chats_persist_followups_isolate_contexts_and_keep_proposals_reviewable(
             answer="A matched seed shares an initial randomization.", citations=[], caveats=[]
         )
 
-    async def plan(_planner, row):
-        plans.append(row)
+    async def plan(_planner, key, question, conversation):
+        plans.append({"id": key, "question": question, "conversation": conversation})
         return {"supported": True, "explanation": "A reviewed pilot", "design": design.model_dump()}
 
     monkeypatch.setattr(models, "generate", generate)

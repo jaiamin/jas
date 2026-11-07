@@ -224,14 +224,14 @@ export interface State {
   position: number;
   done: boolean;
   balances: Record<string, number>;
-  pending: Record<string, Action>;
+  pending?: Record<string, Action>;
   history: Record<string, unknown>[];
   notes: Record<string, string>;
   experiences: Record<string, unknown[]>;
-  promises: Record<string, unknown>;
+  promises?: Record<string, unknown>;
   signals: Record<string, number>;
-  relations: Record<string, { amount: number; count: number }>;
-  tasks: Task[];
+  relations?: Record<string, { amount: number; count: number }>;
+  tasks?: Task[];
 }
 export interface Turn {
   number: number;
@@ -345,7 +345,6 @@ export interface Settings {
   budget_usd: number;
   charged_usd: number;
   usage: Usage;
-  rule_version: string;
   storage: string;
   concurrent_runs: number;
   mode: string;

@@ -1,15 +1,13 @@
-import random
-import statistics
 from collections import Counter, defaultdict
 from collections.abc import Sequence
-from functools import lru_cache
+from dataclasses import dataclass
+from typing import TypedDict
 
 from sqlalchemy import select
 
 from .db import (
     Agent,
     Analysis,
-    Annotation,
     Condition,
     Database,
     Measurement,
@@ -22,17 +20,22 @@ from .db import (
     digest,
 )
 from .domain import Design, Treatment
-from .environments import CATALOG, create_world
-from .llm import PRICES, LanguageModels
+from .llm import PRICES, LanguageModels, Usage, empty_usage
+from .metrics import RunMetrics, aggregate_metrics, condition_results, matched_effects
+from .simulation.environments import CATALOG, create_world
 
 
-@lru_cache(maxsize=512)
-def interval(values: tuple[float, ...]) -> list[float] | None:
-    if len(values) < 3:
-        return None
-    rng = random.Random(71)
-    samples = sorted(statistics.mean(rng.choices(values, k=len(values))) for _ in range(1000))
-    return [samples[24], samples[974]]
+def study_status(statuses: Sequence[str]) -> str:
+    counts = Counter(statuses)
+    if any(counts[status] for status in ("running", "queued", "pausing")):
+        return "running"
+    if counts["complete"] == len(statuses):
+        return "complete"
+    if counts["failed"]:
+        return "failed"
+    if counts["ready"] == len(statuses):
+        return "ready"
+    return "paused"
 
 
 def event_dict(event: RecordedEvent) -> dict:
@@ -49,6 +52,34 @@ def event_dict(event: RecordedEvent) -> dict:
     }
 
 
+class RunSummary(TypedDict):
+    id: str
+    study_id: str
+    study_title: str
+    revision: int
+    condition: str
+    condition_key: str
+    environment: str
+    model: str
+    models: list[str]
+    status: str
+    turn: int
+    round: int
+    total_turns: int
+    total_rounds: int
+    seed: int
+    repetition: int
+    created: str
+    error: str | None
+    usage: Usage
+
+
+@dataclass(frozen=True)
+class OperationalRun:
+    id: str
+    turn: int
+
+
 class Research:
     def __init__(self, db: Database, models: LanguageModels):
         self.db, self.models = db, models
@@ -60,11 +91,12 @@ class Research:
             for p in design.profiles + [p for c in design.conditions for p in c.profile_overrides]
         ):
             raise ValueError("Choose a model in the reviewed provider catalog")
-        adapter = CATALOG[design.environment]
-        unsupported = sorted(set(design.measures) - set(adapter.measures))
+        environment_definition = CATALOG[design.environment]
+        unsupported = sorted(set(design.measures) - set(environment_definition.measures))
         if unsupported:
             raise ValueError(
-                f"Unsupported measurements {unsupported}; choose from {list(adapter.measures)}"
+                f"Unsupported measurements {unsupported}; "
+                f"choose from {list(environment_definition.measures)}"
             )
 
     def save_design(
@@ -142,9 +174,7 @@ class Research:
 
     def configuration(self, run_id: str) -> tuple[Run, Design, Treatment]:
         with self.db.session() as session:
-            run = session.get(Run, run_id)
-            if run is None:
-                raise ValueError("Run not found")
+            run = session.get_one(Run, run_id)
             condition = session.get_one(Condition, run.condition_id)
             revision = session.get_one(Revision, condition.revision_id)
             treatment = Treatment.model_validate(condition.specification)
@@ -156,8 +186,8 @@ class Research:
         design: Design,
         condition: Treatment,
         revision: int,
-        usage: dict | None = None,
-    ) -> dict:
+        usage: Usage | None = None,
+    ) -> RunSummary:
         return {
             "id": run.id,
             "study_id": run.study_id,
@@ -182,7 +212,9 @@ class Research:
             "usage": usage if usage is not None else self.models.usage(run_id=run.id),
         }
 
-    def runs(self, study_id: str | None = None, *, run_ids: set[str] | None = None) -> list[dict]:
+    def runs(
+        self, study_id: str | None = None, *, run_ids: set[str] | None = None
+    ) -> list[RunSummary]:
         with self.db.session() as session:
             query = (
                 select(Run, Condition, Revision)
@@ -196,13 +228,7 @@ class Research:
                 query = query.where(Run.id.in_(run_ids))
             rows = session.execute(query).all()
             usage = self.models.usage_by_run({run.id for run, _, _ in rows})
-            empty = {
-                "requests": 0,
-                "input_tokens": 0,
-                "output_tokens": 0,
-                "cost_usd": 0.0,
-                "partial": False,
-            }
+            empty = empty_usage()
             designs = {
                 revision.id: Design.model_validate(revision.design) for _, _, revision in rows
             }
@@ -241,17 +267,7 @@ class Research:
                 design = Design.model_validate(latest[study.id].design)
                 statuses = by_study[study.id]
                 counts = Counter(statuses)
-                status = (
-                    "running"
-                    if counts["running"] or counts["queued"] or counts["pausing"]
-                    else "complete"
-                    if counts["complete"] == len(statuses)
-                    else "failed"
-                    if counts["failed"]
-                    else "ready"
-                    if counts["ready"] == len(statuses)
-                    else "paused"
-                )
+                status = study_status(statuses)
                 result.append(
                     {
                         "id": study.id,
@@ -269,11 +285,22 @@ class Research:
                 )
             return result
 
+    def operational_runs(self, study_id: str, number: int | None = None) -> list[OperationalRun]:
+        """Read a revision's runnable identities without computing report statistics."""
+        with self.db.session() as session:
+            study = session.get_one(Study, study_id)
+            rows = session.execute(
+                select(Run.id, Run.turn)
+                .join(Condition, Condition.id == Run.condition_id)
+                .join(Revision, Revision.id == Condition.revision_id)
+                .where(Revision.study_id == study_id, Revision.number == (number or study.revision))
+                .order_by(Run.created.desc())
+            ).all()
+        return [OperationalRun(run_id, turn) for run_id, turn in rows]
+
     def study(self, study_id: str, number: int | None = None) -> dict:
         with self.db.session() as session:
-            study = session.get(Study, study_id)
-            if study is None:
-                raise ValueError("Study not found")
+            study = session.get_one(Study, study_id)
             revision = session.scalars(
                 select(Revision).where(
                     Revision.study_id == study_id, Revision.number == (number or study.revision)
@@ -284,12 +311,20 @@ class Research:
                 .where(Revision.study_id == study_id)
                 .order_by(Revision.number.desc())
             ).all()
-            condition_ids = set(
-                session.scalars(select(Condition.id).where(Condition.revision_id == revision.id))
+        selected_ids = {run.id for run in self.operational_runs(study_id, revision.number)}
+        summaries = self.runs(study_id, run_ids=selected_ids)
+        completed = [run for run in summaries if run["status"] == "complete"]
+        metrics = self.metrics_many({run["id"] for run in completed})
+        samples = [
+            RunMetrics(
+                condition_key=run["condition_key"],
+                condition=run["condition"],
+                seed=run["seed"],
+                repetition=run["repetition"],
+                metrics=metrics[run["id"]],
             )
-            all_runs = session.scalars(select(Run).where(Run.study_id == study_id)).all()
-            selected_ids = {run.id for run in all_runs if run.condition_id in condition_ids}
-        summaries = [r for r in self.runs(study_id) if r["id"] in selected_ids]
+            for run in completed
+        ]
         return {
             "id": study_id,
             "design": revision.design,
@@ -303,8 +338,8 @@ class Research:
                 {"number": r.number, "created": r.created, "sha256": r.sha256} for r in revisions
             ],
             "runs": summaries,
-            "results": self.results(summaries),
-            "effects": self.effects(summaries, Design.model_validate(revision.design)),
+            "results": condition_results(samples),
+            "effects": matched_effects(samples, Design.model_validate(revision.design)),
             "usage": self.models.usage(study_id=study_id),
         }
 
@@ -387,12 +422,14 @@ class Research:
             raise ValueError("Turn is outside this run's recorded evidence")
         with self.db.session() as session:
             if number == 0:
+                checkpoint = create_world(design, condition.parameters, run.seed).snapshot()
                 return {
+                    "round": checkpoint["round"],
                     "number": 0,
                     "actor": None,
                     "observation": {},
                     "decision": {},
-                    "checkpoint": create_world(design, condition.parameters, run.seed).snapshot(),
+                    "checkpoint": checkpoint,
                     "events": [],
                     "state_hash": None,
                 }
@@ -415,29 +452,18 @@ class Research:
                 "events": [event_dict(e) for e in events],
             }
 
-    def metrics(self, run_id: str) -> dict[str, float | None]:
+    def metrics(self, run_id: str) -> dict[str, float]:
         return self.metrics_many({run_id})[run_id]
 
-    def metrics_many(self, run_ids: set[str]) -> dict[str, dict[str, float | None]]:
+    def metrics_many(self, run_ids: set[str]) -> dict[str, dict[str, float]]:
         with self.db.session() as session:
             measures = session.scalars(
                 select(Measurement).where(Measurement.run_id.in_(run_ids)).order_by(Measurement.id)
             ).all()
-        groups: dict[str, dict[str, list[float]]] = {key: defaultdict(list) for key in run_ids}
+        groups: dict[str, list[tuple[str, float | None]]] = {key: [] for key in run_ids}
         for measure in measures:
-            if measure.value is not None:
-                groups[measure.run_id][measure.key].append(measure.value)
-        return {
-            run_id: {
-                key: values[-1]
-                if key in {"completion_rate", "stock_fraction"}
-                else max(values)
-                if key == "collapse_rate"
-                else statistics.mean(values)
-                for key, values in grouped.items()
-            }
-            for run_id, grouped in groups.items()
-        }
+            groups[measure.run_id].append((measure.key, measure.value))
+        return {run_id: aggregate_metrics(values) for run_id, values in groups.items()}
 
     @staticmethod
     def relationships(events: Sequence[RecordedEvent]) -> list[dict]:
@@ -472,177 +498,3 @@ class Research:
                 row["eligible_promises"] += 1
                 row["kept"] += event.data["fulfilled"]
         return list(pairs.values())
-
-    def results(self, summaries: list[dict]) -> list[dict]:
-        runs = [r for r in summaries if r["status"] == "complete"]
-        metrics = self.metrics_many({r["id"] for r in runs})
-        by_condition: dict[str, list[dict]] = defaultdict(list)
-        for run in runs:
-            by_condition[run["condition_key"]].append({**run, "metrics": metrics[run["id"]]})
-        results = []
-        for key, group in by_condition.items():
-            keys = sorted({metric for run in group for metric in run["metrics"]})
-            for metric in keys:
-                values = [
-                    r["metrics"][metric] for r in group if r["metrics"].get(metric) is not None
-                ]
-                results.append(
-                    {
-                        "condition_key": key,
-                        "condition": group[0]["condition"],
-                        "metric": metric,
-                        "mean": statistics.mean(values) if values else None,
-                        "runs": len(values),
-                        "interval": interval(tuple(values)),
-                        "method": "run-level percentile bootstrap, 1000 resamples"
-                        if len(values) >= 3
-                        else "Too few independent runs for an interval",
-                    }
-                )
-        return results
-
-    def effects(self, summaries: list[dict], design: Design) -> list[dict]:
-        runs = [r for r in summaries if r["status"] == "complete"]
-        metrics = self.metrics_many({r["id"] for r in runs})
-        baseline = design.conditions[0]
-        controls = {
-            (r["seed"], r["repetition"]): r for r in runs if r["condition_key"] == baseline.key
-        }
-        effects = []
-        for condition in design.conditions[1:]:
-            differences: dict[str, dict[int, list[float]]] = defaultdict(lambda: defaultdict(list))
-            for run in runs:
-                control = controls.get((run["seed"], run["repetition"]))
-                if run["condition_key"] != condition.key or control is None:
-                    continue
-                for key in design.measures:
-                    left, right = metrics[control["id"]].get(key), metrics[run["id"]].get(key)
-                    if left is not None and right is not None:
-                        differences[key][run["seed"]].append(right - left)
-            for key, seeds in differences.items():
-                values = tuple(statistics.mean(pairs) for pairs in seeds.values())
-                effects.append(
-                    {
-                        "condition": condition.name,
-                        "baseline": baseline.name,
-                        "metric": key,
-                        "mean": statistics.mean(values),
-                        "seeds": len(values),
-                        "pairs": sum(map(len, seeds.values())),
-                        "interval": interval(values),
-                        "method": "Matched differences; repetitions averaged within seed; "
-                        "95% seed-level percentile bootstrap, 1000 resamples",
-                    }
-                )
-        return effects
-
-    def export(self, study_id: str) -> dict:
-        detail = self.study(study_id)
-        with self.db.session() as session:
-            revisions = session.scalars(
-                select(Revision).where(Revision.study_id == study_id).order_by(Revision.number)
-            ).all()
-            runs = session.scalars(select(Run).where(Run.study_id == study_id)).all()
-            plan_ids = [
-                r.source.removeprefix("plan:") for r in revisions if r.source.startswith("plan:")
-            ]
-            ids = [r.id for r in runs]
-            turns = session.scalars(
-                select(Turn).where(Turn.run_id.in_(ids)).order_by(Turn.number)
-            ).all()
-            events = session.scalars(
-                select(RecordedEvent)
-                .where(RecordedEvent.run_id.in_(ids))
-                .order_by(RecordedEvent.id)
-            ).all()
-            calls = session.scalars(
-                select(ProviderCall).where(
-                    (ProviderCall.study_id == study_id) | ProviderCall.analysis_id.in_(plan_ids)
-                )
-            ).all()
-            annotations = session.scalars(
-                select(Annotation).where(Annotation.run_id.in_(ids))
-            ).all()
-            analyses = session.scalars(
-                select(Analysis).where((Analysis.study_id == study_id) | Analysis.id.in_(plan_ids))
-            ).all()
-        grouped_events: dict[tuple[str, int], list[dict]] = defaultdict(list)
-        grouped_turns: dict[str, list[dict]] = defaultdict(list)
-        for event in events:
-            grouped_events[event.run_id, event.turn].append(event_dict(event))
-        for turn in turns:
-            grouped_turns[turn.run_id].append(
-                {
-                    "number": turn.number,
-                    "round": turn.round,
-                    "actor": turn.actor,
-                    "observation": turn.observation,
-                    "decision": turn.decision,
-                    "checkpoint": turn.checkpoint,
-                    "state_hash": turn.state_hash,
-                    "events": grouped_events[turn.run_id, turn.number],
-                }
-            )
-        return {
-            "format": "ass-study",
-            "version": 2,
-            "rule_version": CATALOG[detail["design"]["environment"]].world.version,
-            "study": detail,
-            "annotations": [
-                {
-                    "run_id": a.run_id,
-                    "turn": a.turn,
-                    "label": a.label,
-                    "note": a.note,
-                    "created": a.created,
-                }
-                for a in annotations
-            ],
-            "analyses": [
-                {
-                    "id": a.id,
-                    "run_id": a.run_id,
-                    "question": a.question,
-                    "status": a.status,
-                    "cutoffs": a.cutoffs,
-                    "output": a.output,
-                    "error": a.error,
-                    "created": a.created,
-                }
-                for a in analyses
-            ],
-            "revisions": [
-                {
-                    "number": r.number,
-                    "design": r.design,
-                    "sha256": r.sha256,
-                    "created": r.created,
-                    "source": r.source,
-                }
-                for r in revisions
-            ],
-            "requests": [
-                {
-                    "id": c.id,
-                    "run_id": c.run_id,
-                    "analysis_id": c.analysis_id,
-                    "turn": c.turn,
-                    "model": c.model,
-                    "status": c.status,
-                    "request": c.request_payload,
-                    "response": c.response_payload,
-                    "input_tokens": c.input_tokens,
-                    "output_tokens": c.output_tokens,
-                    "cost_usd": c.charged / 1_000_000,
-                    "error": c.error,
-                }
-                for c in calls
-            ],
-            "runs": [
-                {
-                    "record": self.run(r.id),
-                    "evidence": [self.evidence(r.id, 0), *grouped_turns[r.id]],
-                }
-                for r in runs
-            ],
-        }

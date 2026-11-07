@@ -3,44 +3,177 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { EnvironmentId, Parameters, Profile } from "@/lib/types";
 
-const groups = {
-  institution: {
-    key: "institution",
-    numbers: [
-      ["oversight", "Oversight probability", 0, 1, 0.1],
-      ["sanction_cap", "Maximum sanction", 0, 20, 1],
-    ],
-    toggles: [
-      ["transparent", "Public sanction records"],
-      ["appeal", "Allow appeals"],
-    ],
-  },
-  bargaining: {
-    key: "bargaining",
-    numbers: [
-      ["discount", "Surplus retained each round", 0.1, 1, 0.05],
-      ["outside_option", "Exit payoff per agent", 0, 50, 1],
-    ],
-    toggles: [],
-  },
-  information: {
-    key: "information",
-    numbers: [
-      ["accuracy", "Private evidence accuracy", 0.5, 1, 0.05],
-      ["correct_reward", "Correct choice reward", 1, 100, 1],
-    ],
-    toggles: [["reveal_outcome", "Reveal outcomes after each round"]],
-  },
-  renewable_resource: {
-    key: "resource",
-    numbers: [
-      ["capacity", "Carrying capacity", 2, 500, 1],
-      ["regeneration", "Regeneration rate", 0, 1, 0.05],
-      ["extraction_limit", "Extraction limit per agent", 1, 100, 1],
-    ],
-    toggles: [],
-  },
-} as const;
+interface NumericField {
+  key: string;
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  onChange: (value: number) => void;
+}
+interface ToggleField {
+  key: string;
+  label: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+}
+
+function mechanismFields(
+  environment: EnvironmentId,
+  parameters: Parameters,
+  onChange: (patch: Partial<Parameters>) => void,
+): { numbers: NumericField[]; toggles: ToggleField[] } {
+  switch (environment) {
+    case "institution": {
+      const rules = parameters.institution;
+      return {
+        numbers: [
+          {
+            key: "oversight",
+            label: "Oversight probability",
+            value: rules.oversight,
+            min: 0,
+            max: 1,
+            step: 0.1,
+            onChange: (value) =>
+              onChange({ institution: { ...rules, oversight: value } }),
+          },
+          {
+            key: "sanction_cap",
+            label: "Maximum sanction",
+            value: rules.sanction_cap,
+            min: 0,
+            max: 20,
+            step: 1,
+            onChange: (value) =>
+              onChange({ institution: { ...rules, sanction_cap: value } }),
+          },
+        ],
+        toggles: [
+          {
+            key: "transparent",
+            label: "Public sanction records",
+            value: rules.transparent,
+            onChange: (value) =>
+              onChange({ institution: { ...rules, transparent: value } }),
+          },
+          {
+            key: "appeal",
+            label: "Allow appeals",
+            value: rules.appeal,
+            onChange: (value) =>
+              onChange({ institution: { ...rules, appeal: value } }),
+          },
+        ],
+      };
+    }
+    case "bargaining": {
+      const rules = parameters.bargaining;
+      return {
+        numbers: [
+          {
+            key: "discount",
+            label: "Surplus retained each round",
+            value: rules.discount,
+            min: 0.1,
+            max: 1,
+            step: 0.05,
+            onChange: (value) =>
+              onChange({ bargaining: { ...rules, discount: value } }),
+          },
+          {
+            key: "outside_option",
+            label: "Exit payoff per agent",
+            value: rules.outside_option,
+            min: 0,
+            max: 50,
+            step: 1,
+            onChange: (value) =>
+              onChange({ bargaining: { ...rules, outside_option: value } }),
+          },
+        ],
+        toggles: [],
+      };
+    }
+    case "information": {
+      const rules = parameters.information;
+      return {
+        numbers: [
+          {
+            key: "accuracy",
+            label: "Private evidence accuracy",
+            value: rules.accuracy,
+            min: 0.5,
+            max: 1,
+            step: 0.05,
+            onChange: (value) =>
+              onChange({ information: { ...rules, accuracy: value } }),
+          },
+          {
+            key: "correct_reward",
+            label: "Correct choice reward",
+            value: rules.correct_reward,
+            min: 1,
+            max: 100,
+            step: 1,
+            onChange: (value) =>
+              onChange({ information: { ...rules, correct_reward: value } }),
+          },
+        ],
+        toggles: [
+          {
+            key: "reveal_outcome",
+            label: "Reveal outcomes after each round",
+            value: rules.reveal_outcome,
+            onChange: (value) =>
+              onChange({ information: { ...rules, reveal_outcome: value } }),
+          },
+        ],
+      };
+    }
+    case "renewable_resource": {
+      const rules = parameters.resource;
+      return {
+        numbers: [
+          {
+            key: "capacity",
+            label: "Carrying capacity",
+            value: rules.capacity,
+            min: 2,
+            max: 500,
+            step: 1,
+            onChange: (value) =>
+              onChange({ resource: { ...rules, capacity: value } }),
+          },
+          {
+            key: "regeneration",
+            label: "Regeneration rate",
+            value: rules.regeneration,
+            min: 0,
+            max: 1,
+            step: 0.05,
+            onChange: (value) =>
+              onChange({ resource: { ...rules, regeneration: value } }),
+          },
+          {
+            key: "extraction_limit",
+            label: "Extraction limit per agent",
+            value: rules.extraction_limit,
+            min: 1,
+            max: 100,
+            step: 1,
+            onChange: (value) =>
+              onChange({ resource: { ...rules, extraction_limit: value } }),
+          },
+        ],
+        toggles: [],
+      };
+    }
+    default:
+      return { numbers: [], toggles: [] };
+  }
+}
 
 export function MechanismFields({
   environment,
@@ -55,14 +188,10 @@ export function MechanismFields({
   id: string;
   onChange: (patch: Partial<Parameters>) => void;
 }) {
-  if (!(environment in groups)) return null;
-  const config = groups[environment as keyof typeof groups];
-  const values = parameters[config.key];
-  const change = (key: string, value: number | boolean | string[] | null) =>
-    onChange({ [config.key]: { ...values, [key]: value } });
+  const config = mechanismFields(environment, parameters, onChange);
   return (
     <FieldGroup className="condition-fields mechanism-fields">
-      {config.numbers.map(([key, label, min, max, step]) => (
+      {config.numbers.map(({ key, label, value, min, max, step, onChange }) => (
         <Field key={key}>
           <FieldLabel htmlFor={`${id}-${key}`}>{label}</FieldLabel>
           <Input
@@ -71,8 +200,8 @@ export function MechanismFields({
             min={min}
             max={max}
             step={step}
-            value={Number(values[key as keyof typeof values])}
-            onChange={(e) => change(key, Number(e.target.value))}
+            value={value}
+            onChange={(e) => onChange(Number(e.target.value))}
           />
         </Field>
       ))}
@@ -87,20 +216,23 @@ export function MechanismFields({
             placeholder="Full capacity"
             value={parameters.resource.initial_stock ?? ""}
             onChange={(e) =>
-              change(
-                "initial_stock",
-                e.target.value === "" ? null : Number(e.target.value),
-              )
+              onChange({
+                resource: {
+                  ...parameters.resource,
+                  initial_stock:
+                    e.target.value === "" ? null : Number(e.target.value),
+                },
+              })
             }
           />
         </Field>
       )}
-      {config.toggles.map(([key, label]) => (
+      {config.toggles.map(({ key, label, value, onChange }) => (
         <Field key={key} className="mechanism-toggle" orientation="horizontal">
           <Checkbox
             id={`${id}-${key}`}
-            checked={Boolean(values[key as keyof typeof values])}
-            onCheckedChange={(checked) => change(key, checked === true)}
+            checked={value}
+            onCheckedChange={(checked) => onChange(checked === true)}
           />
           <FieldLabel htmlFor={`${id}-${key}`}>{label}</FieldLabel>
         </Field>
@@ -119,14 +251,17 @@ export function MechanismFields({
                   profile.key,
                 )}
                 onCheckedChange={(checked) =>
-                  change(
-                    "authorities",
-                    checked === true
-                      ? [...parameters.institution.authorities, profile.key]
-                      : parameters.institution.authorities.filter(
-                          (key) => key !== profile.key,
-                        ),
-                  )
+                  onChange({
+                    institution: {
+                      ...parameters.institution,
+                      authorities:
+                        checked === true
+                          ? [...parameters.institution.authorities, profile.key]
+                          : parameters.institution.authorities.filter(
+                              (key) => key !== profile.key,
+                            ),
+                    },
+                  })
                 }
               />
               {profile.name}

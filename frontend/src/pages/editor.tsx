@@ -1,77 +1,37 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  ArrowRight,
-  Check,
-  Code2,
-  LoaderCircle,
-  MessageSquare,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
-import {
-  Disclosure,
-  DisclosureContent,
-  DisclosureTrigger,
-} from "@/components/disclosure";
-import { AgentFields } from "@/components/editor/agent-fields";
-import { ConditionFields } from "@/components/editor/condition-fields";
-import { ExecutionFields } from "@/components/editor/execution-fields";
-import { TaskFields } from "@/components/editor/task-fields";
-import { PlanningProgress } from "@/components/planning-progress";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { PlanningProgress } from "@/components/agent/planning-progress";
+import { DesignEditor } from "@/components/editor/design-editor";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Alert } from "@/components/ui/data";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
-import { api, useApi } from "@/lib/api";
+import { Alert, Empty } from "@/components/ui/data";
+import { ApiError, api, useApi } from "@/lib/api";
 import {
   type Draft,
   editorDraftPath,
   readDraft,
   removeDraft,
-  writeDraft,
 } from "@/lib/drafts";
-import type {
-  Analysis,
-  Catalog,
-  Design,
-  EnvironmentId,
-  StudyDetail,
-} from "@/lib/types";
-import { money } from "@/lib/utils";
+import type { Analysis, Catalog, Design, StudyDetail } from "@/lib/types";
+
+class DraftReadError extends Error {}
 
 export default function Editor() {
   const [params] = useSearchParams();
-  const location = useLocation();
-  const draftPath = editorDraftPath(location.pathname, location.search);
+  const draftPath = editorDraftPath(params);
+  const [discardError, setDiscardError] = useState("");
   const [recoverDraft, setRecoverDraft] = useState(false);
   const draft = useQuery({
     queryKey: ["draft", draftPath],
     queryFn: async () => {
-      const saved = readDraft(draftPath);
+      let saved: Draft | null;
+      try {
+        saved = readDraft(draftPath);
+      } catch (cause) {
+        throw new DraftReadError((cause as Error).message, { cause });
+      }
       if (!saved) return null;
       try {
         const design = await api<Design>("/design/validate", {
@@ -79,7 +39,8 @@ export default function Editor() {
         });
         return { saved, design, error: null };
       } catch (error) {
-        return { saved, design: null, error: error as Error };
+        if (!(error instanceof ApiError) || error.status !== 422) throw error;
+        return { saved, design: null, error };
       }
     },
     gcTime: 0,
@@ -96,32 +57,47 @@ export default function Editor() {
       query.state.data?.status === "pending" ? 1500 : false,
   });
   const previous = useQuery({
-    queryKey: ["/studies", studyId, params.get("revision")],
+    queryKey: [
+      `/studies/${studyId}${params.get("revision") ? `?revision=${params.get("revision")}` : ""}`,
+    ],
     queryFn: () =>
       api<StudyDetail>(
         `/studies/${studyId}${params.get("revision") ? `?revision=${params.get("revision")}` : ""}`,
       ),
     enabled: !!studyId,
   });
+  function discardDraft() {
+    try {
+      removeDraft(draftPath);
+      setDiscardError("");
+      void draft.refetch();
+    } catch (error) {
+      setDiscardError((error as Error).message);
+    }
+  }
   if (draft.error)
     return (
       <>
-        <ErrorState error={draft.error} />
-        <Button
-          variant="outline"
-          onClick={() => {
-            removeDraft(draftPath);
-            draft.refetch();
-          }}
-        >
-          Discard unreadable draft
-        </Button>
+        <ErrorState error={draft.error} onRetry={draft.refetch} />
+        {discardError && <Alert variant="error">{discardError}</Alert>}
+        {draft.error instanceof DraftReadError && (
+          <Button variant="outline" onClick={discardDraft}>
+            Discard unreadable draft
+          </Button>
+        )}
       </>
     );
   if (catalog.error || plan.error || previous.error)
     return (
       <ErrorState
         error={(catalog.error || plan.error || previous.error) as Error}
+        onRetry={() =>
+          Promise.all(
+            [catalog, plan, previous]
+              .filter((query) => query.error)
+              .map((query) => query.refetch()),
+          )
+        }
       />
     );
   if (!catalog.data || draft.isPending || (studyId && !previous.data))
@@ -131,17 +107,12 @@ export default function Editor() {
       <>
         <PageHeading title="Recover your draft" />
         <Alert variant="error">{draft.data.error.message}</Alert>
+        {discardError && <Alert variant="error">{discardError}</Alert>}
         <div className="actions">
           <Button onClick={() => setRecoverDraft(true)}>
             Edit specification
           </Button>
-          <Button
-            variant="outline"
-            onClick={() => {
-              removeDraft(draftPath);
-              draft.refetch();
-            }}
-          >
+          <Button variant="outline" onClick={discardDraft}>
             Discard draft
           </Button>
         </div>
@@ -172,16 +143,21 @@ export default function Editor() {
   if (plan.data?.output?.supported === false)
     return (
       <>
-        <PageHeading title="Unsupported experiment" />
-        <Alert>{plan.data.output.explanation}</Alert>
-        <div className="actions">
+        <PageHeading title="This question needs different capabilities" />
+        <Alert title="No experiment was invented">
+          {plan.data.output.explanation}
+        </Alert>
+        <Empty
+          title="Keep the question. Change the method."
+          description="Explore the supported mechanics, or start a custom study with an explicit scope."
+        >
           <Button variant="outline" asChild>
             <Link to="/environments">
               Explore environments
               <ArrowRight data-icon="inline-end" />
             </Link>
           </Button>
-        </div>
+        </Empty>
       </>
     );
   const initial =
@@ -216,474 +192,5 @@ export default function Editor() {
           : draft.data?.saved
       }
     />
-  );
-}
-
-function DesignEditor({
-  initial,
-  catalog,
-  studyId,
-  planId,
-  agentChatId,
-  explanation,
-  planning,
-  draftPath,
-  draft,
-}: {
-  initial: Design;
-  catalog: Catalog;
-  studyId: string | null;
-  planId: string | null;
-  agentChatId?: string | null;
-  explanation?: string;
-  planning?: NonNullable<Analysis["output"]>["planning"];
-  draftPath: string;
-  draft?: Draft;
-}) {
-  const [design, setDesign] = useState<Design>(() =>
-    structuredClone({
-      ...initial,
-      tasks: initial.tasks ?? [],
-      conditions: initial.conditions.map((c) => ({
-        ...c,
-        parameters: {
-          ...catalog.templates.find((t) => t.id === initial.environment)?.design
-            .conditions[0]?.parameters,
-          ...c.parameters,
-          resource_schedule: c.parameters.resource_schedule ?? [],
-        },
-        profile_overrides: c.profile_overrides ?? [],
-      })),
-    }),
-  );
-  const [agentDraftId] = useState(() => crypto.randomUUID());
-  const [json, setJson] = useState(draft?.json ?? "");
-  const [mode, setMode] = useState<"visual" | "json">(draft?.mode ?? "visual");
-  const [step, setStep] = useState("question");
-  const [draftStatus, setDraftStatus] = useState(draft ? "Draft saved" : "");
-  const lastSnapshot = useRef(JSON.stringify({ design, json, mode }));
-  useEffect(() => {
-    const snapshot = JSON.stringify({ design, json, mode });
-    if (snapshot === lastSnapshot.current) return;
-    try {
-      writeDraft(draftPath, design, json, mode);
-      lastSnapshot.current = snapshot;
-      setDraftStatus("Draft saved");
-    } catch {
-      setDraftStatus("Draft could not be saved in this browser");
-    }
-  }, [design, json, mode, draftPath]);
-  const [error, setError] = useState("");
-  const [pendingEnvironment, setPendingEnvironment] =
-    useState<EnvironmentId | null>(null);
-  const navigate = useNavigate();
-  const save = useMutation({
-    mutationFn: (specification: Design) =>
-      api<{ id: string }>(
-        studyId ? `/studies/${studyId}/revisions` : "/studies",
-        { design: specification, plan_id: planId },
-      ),
-    onSuccess: (result) => {
-      let notice: string | undefined;
-      try {
-        removeDraft(draftPath);
-      } catch {
-        notice = "Experiment saved. The browser draft could not be cleared.";
-      }
-      navigate(`/studies/${result.id}`, { state: { notice } });
-    },
-  });
-  const environment = catalog.environments.find(
-    (e) => e.key === design.environment,
-  );
-  if (!environment) throw new Error("Unknown environment in protocol");
-  const runCount =
-    design.conditions.length * design.seeds.length * design.repetitions;
-  function update<K extends keyof Design>(key: K, value: Design[K]) {
-    setDesign((previous) => ({ ...previous, [key]: value }));
-  }
-  const validate = useMutation({
-    mutationFn: (specification: unknown) =>
-      api<Design>("/design/validate", { design: specification }),
-    onSuccess: (validated) => {
-      setDesign(validated);
-      setMode("visual");
-      setError("");
-    },
-  });
-  function changeMode(value: string) {
-    if (value === "json") {
-      setJson(JSON.stringify(design, null, 2));
-      setMode(value);
-    } else {
-      try {
-        validate.mutate(JSON.parse(json));
-      } catch {
-        setError(
-          "The specification is not valid JSON. Fix it before switching views.",
-        );
-      }
-    }
-  }
-  function submit() {
-    setError("");
-    if (mode === "json") {
-      try {
-        save.mutate(JSON.parse(json) as Design);
-      } catch {
-        setError("Enter a valid JSON specification.");
-      }
-    } else save.mutate(design);
-  }
-  return (
-    <>
-      <PageHeading title={studyId ? "Tune experiment" : "New experiment"}>
-        {!studyId && (
-          <Button variant="outline" size="sm" asChild>
-            <Link
-              to={
-                agentChatId
-                  ? `/agent?chat=${agentChatId}`
-                  : `/agent?context=new&new=${agentDraftId}`
-              }
-              state={agentChatId ? null : { question: design.question }}
-            >
-              <MessageSquare data-icon="inline-start" />
-              {agentChatId ? "Back to Agent" : "Generate with Agent"}
-            </Link>
-          </Button>
-        )}
-        {draftStatus && (
-          <span
-            className="draft-state"
-            role="status"
-            title="Saved in this browser"
-          >
-            {draftStatus}
-          </span>
-        )}
-      </PageHeading>
-      {explanation && (
-        <Disclosure className="disclosure design-explanation">
-          <DisclosureTrigger>Protocol notes</DisclosureTrigger>
-          <DisclosureContent>
-            <p>{explanation}</p>
-            {planning && (
-              <>
-                <p>{planning.brief.size_rationale}</p>
-                <ul>
-                  {planning.sources.slice(0, 5).map((source) => (
-                    <li key={source.url}>
-                      <a href={source.url} target="_blank" rel="noreferrer">
-                        {source.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-                {planning.sources.length > 5 && (
-                  <Disclosure className="disclosure">
-                    <DisclosureTrigger>
-                      {planning.sources.length - 5} more sources
-                    </DisclosureTrigger>
-                    <DisclosureContent>
-                      <ul>
-                        {planning.sources.slice(5).map((source) => (
-                          <li key={source.url}>
-                            <a
-                              href={source.url}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              {source.title}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </DisclosureContent>
-                  </Disclosure>
-                )}
-              </>
-            )}
-          </DisclosureContent>
-        </Disclosure>
-      )}
-      <div className="editor-layout">
-        <div className="editor-main">
-          <Tabs
-            value={mode === "json" ? "json" : step}
-            onValueChange={(value) => {
-              if (value === "json") changeMode(value);
-              else {
-                setStep(value);
-                if (mode === "json") changeMode("visual");
-              }
-            }}
-          >
-            <TabsList variant="line">
-              <TabsTrigger value="question">Question</TabsTrigger>
-              <TabsTrigger value="agents">
-                Agents{" "}
-                <span className="tab-count">{design.profiles.length}</span>
-              </TabsTrigger>
-              <TabsTrigger value="conditions">
-                Conditions{" "}
-                <span className="tab-count">{design.conditions.length}</span>
-              </TabsTrigger>
-              <TabsTrigger value="execution">Execution</TabsTrigger>
-              <TabsTrigger value="json">
-                <Code2 />
-                Specification
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="json">
-              <FieldGroup>
-                <Field>
-                  <FieldLabel htmlFor="specification">
-                    Complete JSON specification
-                  </FieldLabel>
-                  <Textarea
-                    id="specification"
-                    className="specification-editor"
-                    spellCheck={false}
-                    value={json}
-                    onChange={(e) => setJson(e.target.value)}
-                  />
-                </Field>
-              </FieldGroup>
-            </TabsContent>
-            <TabsContent value={step}>
-              <section className="form-section" hidden={step !== "question"}>
-                <h2>Research question</h2>
-                <FieldGroup>
-                  <Field>
-                    <FieldLabel htmlFor="title">Experiment name</FieldLabel>
-                    <Input
-                      id="title"
-                      value={design.title}
-                      maxLength={100}
-                      onChange={(e) => update("title", e.target.value)}
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="question">
-                      What do you want to understand?
-                    </FieldLabel>
-                    <Textarea
-                      id="question"
-                      rows={2}
-                      value={design.question}
-                      maxLength={4000}
-                      onChange={(e) => update("question", e.target.value)}
-                    />
-                  </Field>
-                  <Disclosure className="disclosure">
-                    <DisclosureTrigger>Hypothesis</DisclosureTrigger>
-                    <DisclosureContent>
-                      <Field>
-                        <FieldLabel htmlFor="hypothesis">Hypothesis</FieldLabel>
-                        <Input
-                          id="hypothesis"
-                          placeholder="An expected pattern to investigate"
-                          value={design.hypothesis}
-                          onChange={(e) => update("hypothesis", e.target.value)}
-                        />
-                      </Field>
-                    </DisclosureContent>
-                  </Disclosure>
-                  <Field>
-                    <FieldLabel>Environment</FieldLabel>
-                    <Select
-                      label="Environment"
-                      value={design.environment}
-                      onValueChange={(value) =>
-                        setPendingEnvironment(value as EnvironmentId)
-                      }
-                      options={catalog.environments.map((e) => ({
-                        value: e.key,
-                        label: e.name,
-                      }))}
-                    />
-                    <FieldDescription>
-                      {environment.description}
-                    </FieldDescription>
-                  </Field>
-                  <Disclosure className="disclosure">
-                    <DisclosureTrigger>Scenario context</DisclosureTrigger>
-                    <DisclosureContent>
-                      <Field>
-                        <FieldLabel htmlFor="context">
-                          Scenario context{" "}
-                          <span className="optional">optional</span>
-                        </FieldLabel>
-                        <Textarea
-                          id="context"
-                          rows={2}
-                          placeholder="Put the interaction in a meaningful setting. Rules remain defined by the environment."
-                          value={design.context}
-                          onChange={(e) => update("context", e.target.value)}
-                        />
-                      </Field>
-                    </DisclosureContent>
-                  </Disclosure>
-                </FieldGroup>
-              </section>
-              <AgentFields
-                design={design}
-                catalog={catalog}
-                onChange={setDesign}
-                hidden={step !== "agents"}
-              />
-              <ConditionFields
-                design={design}
-                catalog={catalog}
-                onChange={setDesign}
-                hidden={step !== "conditions"}
-              />
-              <TaskFields
-                design={design}
-                onChange={setDesign}
-                hidden={step !== "conditions"}
-              />
-              <ExecutionFields
-                design={design}
-                catalog={catalog}
-                onChange={setDesign}
-                hidden={step !== "execution"}
-                setError={setError}
-              />
-            </TabsContent>
-          </Tabs>
-          {(error || save.error || validate.error) && (
-            <Alert variant="error">
-              {error || save.error?.message || validate.error?.message}
-            </Alert>
-          )}
-          {mode === "visual" && step !== "execution" && (
-            <div className="editor-next">
-              <Button
-                variant="outline"
-                onClick={() =>
-                  setStep(
-                    step === "question"
-                      ? "agents"
-                      : step === "agents"
-                        ? "conditions"
-                        : "execution",
-                  )
-                }
-              >
-                Continue
-                <ArrowRight data-icon="inline-end" />
-              </Button>
-            </div>
-          )}
-        </div>
-        <aside className="design-summary">
-          <h2>Execution plan</h2>
-          <dl>
-            <div>
-              <dt>Environment</dt>
-              <dd>{environment.name}</dd>
-            </div>
-            <div>
-              <dt>Agents per run</dt>
-              <dd>{design.profiles.length}</dd>
-            </div>
-            <div>
-              <dt>Conditions</dt>
-              <dd>{design.conditions.length}</dd>
-            </div>
-            <div>
-              <dt>Independent runs</dt>
-              <dd>{runCount}</dd>
-            </div>
-            <div>
-              <dt>Maximum decisions</dt>
-              <dd>
-                {(
-                  runCount *
-                  design.rounds *
-                  design.profiles.length
-                ).toLocaleString()}
-              </dd>
-            </div>
-            <div>
-              <dt>Spending ceiling</dt>
-              <dd>{money(design.budget_usd)}</dd>
-            </div>
-          </dl>
-          <div className="form-submit editor-save">
-            <Button
-              onClick={submit}
-              disabled={save.isPending || validate.isPending}
-            >
-              {save.isPending ? (
-                <LoaderCircle className="spin" data-icon="inline-start" />
-              ) : (
-                <Check data-icon="inline-start" />
-              )}
-              {studyId ? "Save new revision" : "Create experiment"}
-            </Button>
-          </div>
-          <Disclosure className="disclosure">
-            <DisclosureTrigger>What stays fixed</DisclosureTrigger>
-            <DisclosureContent>
-              <p>
-                Saving creates runs with this protocol. Tuning creates a new
-                revision; earlier runs and evidence keep their original rules.
-                Environment mechanics are defined by the installed adapter.
-              </p>
-            </DisclosureContent>
-          </Disclosure>
-        </aside>
-      </div>
-      <AlertDialog
-        open={pendingEnvironment !== null}
-        onOpenChange={(open) => {
-          if (!open) setPendingEnvironment(null);
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Change environment?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Measurements will reset. Tasks and resource schedules that do not
-              apply will be removed.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                const value = pendingEnvironment;
-                if (!value) return;
-                const env = catalog.environments.find((e) => e.key === value);
-                if (!env) return;
-                setDesign({
-                  ...design,
-                  environment: value,
-                  measures: env.measures.slice(0, 3),
-                  tasks: value === "coordination" ? design.tasks : [],
-                  conditions: design.conditions.map((condition) => ({
-                    ...condition,
-                    parameters: {
-                      ...condition.parameters,
-                      resource_schedule: ["commons", "trust_exchange"].includes(
-                        value,
-                      )
-                        ? condition.parameters.resource_schedule
-                        : [],
-                    },
-                  })),
-                });
-                setPendingEnvironment(null);
-              }}
-            >
-              Change environment
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
   );
 }

@@ -12,60 +12,74 @@ beforeEach(() => localStorage.clear());
 
 test("drafts preserve incomplete edits and invalid JSON without affecting other storage", () => {
   const design = { title: "", profiles: [] } as unknown as Design;
-  localStorage.setItem("ass-theme", "dark");
+  localStorage.setItem("jas-theme", "dark");
   writeDraft("/new?template=commons", design, '{"unfinished":', "json");
   expect(readDraft("/new?template=commons")).toMatchObject({
     design,
     json: '{"unfinished":',
     mode: "json",
   });
-  expect(listDrafts()).toHaveLength(1);
+  expect(listDrafts().items).toHaveLength(1);
   removeDraft("/new?template=commons");
-  expect(listDrafts()).toEqual([]);
-  expect(localStorage.getItem("ass-theme")).toBe("dark");
+  expect(listDrafts()).toEqual({ items: [], unreadable: [] });
+  expect(localStorage.getItem("jas-theme")).toBe("dark");
+});
+
+test("listing isolates corrupt drafts and preserves their contents for recovery", () => {
+  writeDraft(
+    "/new?template=commons",
+    { title: "Valid" } as Design,
+    "{}",
+    "visual",
+  );
+  localStorage.setItem("jas:draft:/new?template=broken", "{unfinished");
+  expect(listDrafts()).toMatchObject({
+    items: [{ title: "Valid" }],
+    unreadable: ["/new?template=broken"],
+  });
+  expect(localStorage.getItem("jas:draft:/new?template=broken")).toBe(
+    "{unfinished",
+  );
+  expect(() => readDraft("/new?template=broken")).toThrow(
+    "This draft could not be read.",
+  );
+});
+
+test("mode accepts only the declared string literals", () => {
+  writeDraft("/new", { title: "Valid" } as Design, "{}", "visual");
+  const stored = JSON.parse(localStorage.getItem("jas:draft:/new") ?? "{}");
+  localStorage.setItem(
+    "jas:draft:/new",
+    JSON.stringify({ ...stored, mode: ["visual"] }),
+  );
+  expect(() => readDraft("/new")).toThrow("could not be read");
 });
 
 test("corrupt or misplaced drafts are rejected without deleting data", () => {
   localStorage.setItem(
-    "ass:draft:/new",
+    "jas:draft:/new",
     JSON.stringify({ path: "https://example.com" }),
   );
   expect(() => readDraft("/new")).toThrow("could not be read");
-  expect(localStorage.getItem("ass:draft:/new")).not.toBeNull();
+  expect(localStorage.getItem("jas:draft:/new")).not.toBeNull();
 });
 
-test("assistant visibility does not change the editor draft identity", () => {
-  expect(editorDraftPath("/new", "?template=commons&assistant=1")).toBe(
-    "/new?template=commons",
-  );
+test("editor identity follows source parameters and ignores presentation and ordering", () => {
   expect(
-    editorDraftPath("/new", "?study=study-1&revision=2&tab=research"),
-  ).toBe("/new?study=study-1&revision=2");
-  expect(editorDraftPath("/new", "?assistant=1")).toBe("/new");
+    editorDraftPath(new URLSearchParams("assistant&template=commons")),
+  ).toBe(editorDraftPath(new URLSearchParams("template=commons")));
+  expect(
+    editorDraftPath(new URLSearchParams("revision=2&study=one&assistant")),
+  ).toBe("/new?study=one&revision=2");
+  expect(editorDraftPath(new URLSearchParams("template=trust"))).not.toBe(
+    editorDraftPath(new URLSearchParams("template=commons")),
+  );
 });
 
-test("legacy drafts survive the JAS rename, deduplicate, and can be saved or discarded", () => {
-  const path = "/new?template=commons";
-  const design = {
-    title: "Existing experiment",
-    profiles: [],
-  } as unknown as Design;
-  const legacy = JSON.stringify({
-    path,
-    title: design.title,
-    design,
-    json: "{}",
-    mode: "visual",
-    updated: "2026-01-01",
-  });
-  localStorage.setItem(`ass:draft:${path}`, legacy);
-  expect(readDraft(path)?.title).toBe(design.title);
-  expect(listDrafts()).toHaveLength(1);
-  writeDraft(path, { ...design, title: "Updated experiment" }, "{}", "visual");
-  expect(localStorage.getItem(`ass:draft:${path}`)).toBeNull();
-  expect(readDraft(path)?.title).toBe("Updated experiment");
-  localStorage.setItem(`ass:draft:${path}`, legacy);
-  expect(listDrafts()).toHaveLength(1);
-  removeDraft(path);
-  expect(listDrafts()).toEqual([]);
+test("empty stored drafts remain visible as corruption and preserve recovery data", () => {
+  expect(readDraft("/new")).toBeNull();
+  localStorage.setItem("jas:draft:/new", "");
+  expect(() => readDraft("/new")).toThrow();
+  expect(listDrafts()).toEqual({ items: [], unreadable: ["/new"] });
+  expect(localStorage.getItem("jas:draft:/new")).toBe("");
 });

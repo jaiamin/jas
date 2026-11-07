@@ -1,0 +1,153 @@
+import type {
+  Catalog,
+  Design,
+  Parameters,
+  RunDetail,
+  State,
+} from "@/lib/types";
+export const parameters: Parameters = {
+  endowment: 10,
+  multiplier: 2,
+  communication: true,
+  communication_channels: ["messages"],
+  memory: "notes",
+  private_signal: false,
+  task_count: 3,
+  institution: {
+    authorities: [],
+    oversight: 0.5,
+    sanction_cap: 5,
+    transparent: true,
+    appeal: true,
+  },
+  bargaining: { discount: 0.9, outside_option: 2 },
+  information: { accuracy: 0.8, correct_reward: 10, reveal_outcome: true },
+  resource: {
+    capacity: 100,
+    initial_stock: 50,
+    regeneration: 0.1,
+    extraction_limit: 10,
+  },
+  resource_schedule: [],
+};
+
+export const design: Design = {
+  title: "Fixture",
+  question: "Does oversight help?",
+  hypothesis: "",
+  environment: "institution",
+  context: "",
+  profiles: [
+    { key: "a", name: "Alice", role: "Monitor", goal: "Observe", model: null },
+    {
+      key: "b",
+      name: "Bob",
+      role: "Participant",
+      goal: "Contribute",
+      model: null,
+    },
+  ],
+  tasks: [
+    { key: "first", name: "First", effort: 2, dependencies: [] },
+    { key: "second", name: "Second", effort: 3, dependencies: ["first"] },
+  ],
+  conditions: [
+    {
+      key: "baseline",
+      name: "Baseline",
+      description: "",
+      model: "openai:gpt-6-luna",
+      parameters: {
+        ...parameters,
+        institution: { ...parameters.institution, authorities: ["a", "b"] },
+        resource_schedule: [{ round: 2, endowment: 5 }],
+      },
+      profile_overrides: [
+        {
+          key: "a",
+          name: "Alice",
+          role: "Monitor",
+          goal: "Enforce rules",
+          model: null,
+        },
+      ],
+    },
+  ],
+  seeds: [7],
+  repetitions: 1,
+  rounds: 3,
+  budget_usd: 1,
+  openai_reasoning_effort: null,
+  response_tokens: 1024,
+  limitations: [],
+  measures: ["cooperation"],
+};
+
+export const state: State = {
+  rule_version: "3.0.0",
+  round: 2,
+  position: 0,
+  done: false,
+  balances: { a: 12, b: 8 },
+  history: [],
+  notes: {},
+  experiences: {},
+  signals: {},
+};
+
+export const catalog: Catalog = {
+  models: [],
+  environments: [
+    {
+      key: "institution",
+      name: "Institution",
+      description: "Oversight and sanctions",
+      primary_metric: "sanction_rate",
+      parameters: [],
+      measures: ["sanction_rate"],
+      rule_version: "3.0.0",
+    },
+  ],
+  templates: [{ id: "institution", design }],
+  design_schema: {},
+};
+
+export const runDetail: RunDetail = {
+  next_actor: "a",
+  requests: [],
+  summary: {
+    id: "run",
+    study_id: "study",
+    study_title: design.title,
+    revision: 1,
+    condition: "Baseline",
+    condition_key: "baseline",
+    environment: design.environment,
+    model: "openai:gpt-6-luna",
+    models: ["openai:gpt-6-luna"],
+    status: "paused",
+    turn: 2,
+    round: 1,
+    total_turns: 6,
+    total_rounds: 3,
+    seed: 7,
+    repetition: 1,
+    created: "2026-11-07",
+    error: null,
+    usage: {
+      requests: 0,
+      input_tokens: 0,
+      output_tokens: 0,
+      cost_usd: 0,
+      partial: false,
+    },
+  },
+  design,
+  parameters,
+  state,
+  turns: [],
+  events: [],
+  measurements: [],
+  metrics: {},
+  relationships: [],
+};

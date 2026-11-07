@@ -4,19 +4,19 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { ProfileOverridesEditor } from "@/components/editor/profile-overrides-editor";
+import { ResourceScheduleEditor } from "@/components/editor/resource-schedule-editor";
 import { MechanismFields } from "@/components/mechanism-fields";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import type {
   Catalog,
   Design,
   ModelId,
   Parameters,
-  Profile,
   Treatment,
 } from "@/lib/types";
 import { modelLabel } from "@/lib/utils";
@@ -278,187 +278,24 @@ export function ConditionFields({
                   }
                 />
                 {environment.parameters.includes("resource_schedule") && (
-                  <Disclosure className="disclosure">
-                    <DisclosureTrigger>
-                      Resource changes during the run
-                      {c.parameters.resource_schedule.length > 0 &&
-                        ` · ${c.parameters.resource_schedule.length}`}
-                    </DisclosureTrigger>
-                    <DisclosureContent>
-                      <p className="table-note">
-                        Changes take effect at the start of a round and persist.
-                        Agents see the new budget when it changes; future
-                        changes are hidden.
-                      </p>
-                      {c.parameters.resource_schedule.map((change, j) => (
-                        <FieldGroup
-                          className="condition-fields"
-                          key={
-                            // biome-ignore lint/suspicious/noArrayIndexKey: Controlled fields retain focus while the round is edited; rows are never reordered.
-                            `${c.key}-change-${j}`
-                          }
-                        >
-                          <Field>
-                            <FieldLabel htmlFor={`${c.key}-change-round-${j}`}>
-                              Starting round
-                            </FieldLabel>
-                            <Input
-                              id={`${c.key}-change-round-${j}`}
-                              type="number"
-                              min={2}
-                              max={design.rounds}
-                              value={change.round}
-                              onChange={(e) =>
-                                parameter(
-                                  i,
-                                  "resource_schedule",
-                                  c.parameters.resource_schedule.map((v, k) =>
-                                    k === j
-                                      ? {
-                                          ...v,
-                                          round: Number(e.target.value),
-                                        }
-                                      : v,
-                                  ),
-                                )
-                              }
-                            />
-                          </Field>
-                          <Field>
-                            <FieldLabel
-                              htmlFor={`${c.key}-change-credits-${j}`}
-                            >
-                              Credits per round
-                            </FieldLabel>
-                            <Input
-                              id={`${c.key}-change-credits-${j}`}
-                              type="number"
-                              min={2}
-                              max={100}
-                              value={change.endowment}
-                              onChange={(e) =>
-                                parameter(
-                                  i,
-                                  "resource_schedule",
-                                  c.parameters.resource_schedule.map((v, k) =>
-                                    k === j
-                                      ? {
-                                          ...v,
-                                          endowment: Number(e.target.value),
-                                        }
-                                      : v,
-                                  ),
-                                )
-                              }
-                            />
-                          </Field>
-                          <Button
-                            variant="ghost"
-                            onClick={() =>
-                              parameter(
-                                i,
-                                "resource_schedule",
-                                c.parameters.resource_schedule.filter(
-                                  (_, k) => k !== j,
-                                ),
-                              )
-                            }
-                          >
-                            Remove change
-                          </Button>
-                        </FieldGroup>
-                      ))}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        disabled={
-                          design.rounds < 2 ||
-                          c.parameters.resource_schedule.length >= 12
-                        }
-                        onClick={() =>
-                          parameter(i, "resource_schedule", [
-                            ...c.parameters.resource_schedule,
-                            {
-                              round: Math.max(2, Math.ceil(design.rounds / 2)),
-                              endowment: 3,
-                            },
-                          ])
-                        }
-                      >
-                        Add resource change
-                      </Button>
-                    </DisclosureContent>
-                  </Disclosure>
+                  <ResourceScheduleEditor
+                    id={c.key}
+                    schedule={c.parameters.resource_schedule}
+                    rounds={design.rounds}
+                    onChange={(schedule) =>
+                      parameter(i, "resource_schedule", schedule)
+                    }
+                  />
                 )}
-                <Disclosure className="disclosure">
-                  <DisclosureTrigger>
-                    Roles & goals for this condition
-                    {c.profile_overrides.length > 0 &&
-                      ` · ${c.profile_overrides.length} modified`}
-                  </DisclosureTrigger>
-                  <DisclosureContent>
-                    <FieldGroup>
-                      {design.profiles.map((base) => {
-                        const resolved =
-                          c.profile_overrides.find((p) => p.key === base.key) ??
-                          base;
-                        function override(changes: Partial<Profile>) {
-                          const edited = { ...resolved, ...changes };
-                          condition(i, {
-                            profile_overrides: [
-                              ...c.profile_overrides.filter(
-                                (p) => p.key !== base.key,
-                              ),
-                              edited,
-                            ],
-                          });
-                        }
-                        return (
-                          <Field key={base.key}>
-                            <FieldLabel htmlFor={`${c.key}-${base.key}-goal`}>
-                              {base.name}
-                            </FieldLabel>
-                            <Input
-                              aria-label={`${c.name} role for ${base.name}`}
-                              value={resolved.role}
-                              onChange={(e) =>
-                                override({ role: e.target.value })
-                              }
-                              maxLength={80}
-                            />
-                            <Textarea
-                              id={`${c.key}-${base.key}-goal`}
-                              value={resolved.goal}
-                              onChange={(e) =>
-                                override({ goal: e.target.value })
-                              }
-                              maxLength={2000}
-                              rows={2}
-                            />
-                            {c.profile_overrides.some(
-                              (p) => p.key === base.key,
-                            ) && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  condition(i, {
-                                    profile_overrides:
-                                      c.profile_overrides.filter(
-                                        (p) => p.key !== base.key,
-                                      ),
-                                  })
-                                }
-                              >
-                                Use baseline profile
-                              </Button>
-                            )}
-                          </Field>
-                        );
-                      })}
-                    </FieldGroup>
-                  </DisclosureContent>
-                </Disclosure>
+                <ProfileOverridesEditor
+                  id={c.key}
+                  name={c.name}
+                  profiles={design.profiles}
+                  overrides={c.profile_overrides}
+                  onChange={(overrides) =>
+                    condition(i, { profile_overrides: overrides })
+                  }
+                />
                 <div className="condition-switches">
                   <FieldLabel htmlFor={`communication-${c.key}`}>
                     <Checkbox

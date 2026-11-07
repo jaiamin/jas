@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  ArrowLeft,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -9,80 +8,47 @@ import {
   Radio,
   SkipForward,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { MetricChart } from "@/components/charts";
-import {
-  Disclosure,
-  DisclosureContent,
-  DisclosureTrigger,
-} from "@/components/disclosure";
-import { RunRecord } from "@/components/run-record";
-import {
-  ErrorState,
-  Json,
-  Loading,
-  PageHeading,
-  Status,
-} from "@/components/shared";
+import { DecisionBrowser } from "@/components/run/decision-browser";
+import { RunRecord } from "@/components/run/run-record";
+import { ErrorState, Loading, PageHeading, Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { Alert, Badge, Empty, Table } from "@/components/ui/data";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Alert, Badge, Empty } from "@/components/ui/data";
 import { Select } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 import {
   RelationshipGraph,
   RelationshipTable,
   WorldView,
 } from "@/components/world-view";
-import { api, useApi } from "@/lib/api";
-import type { Annotation, Evidence, RunDetail, State } from "@/lib/types";
+import { api, invalidateResources, useApi } from "@/lib/api";
+import type { Evidence, RunDetail, State } from "@/lib/types";
 import { label, money, runModelLabel } from "@/lib/utils";
 
 export default function Run() {
   const { id } = useParams();
   const [params, setParams] = useSearchParams();
   const [selectedMetric, setSelectedMetric] = useState("");
-  const [actorFilter, setActorFilter] = useState("all");
-  const [page, setPage] = useState(0);
-  const [jumpToEvidence, setJumpToEvidence] = useState(false);
-  const inspectorHeading = useRef<HTMLHeadingElement>(null);
-  const inspector = useRef<HTMLElement>(null);
-  const journalHeading = useRef<HTMLHeadingElement>(null);
-  const evidenceReturn = useRef<HTMLButtonElement>(null);
+  const [focusRequest, setFocusRequest] = useState(0);
   const [annotationDrafts, setAnnotationDrafts] = useState<
     Record<string, string>
   >({});
   const query = useApi<RunDetail>(`/runs/${id}`, true);
-  const notes = useApi<Annotation[]>(`/runs/${id}/annotations`);
   const client = useQueryClient();
   const tab =
     ["live", "decisions", "relationships", "settings"].find(
       (value) => value === params.get("tab"),
     ) ?? "decisions";
-  useEffect(() => {
-    if (jumpToEvidence && tab === "decisions") {
-      if (evidenceReturn.current?.getClientRects().length) {
-        inspectorHeading.current?.focus({ preventScroll: true });
-        inspector.current?.scrollIntoView({
-          block: "start",
-          behavior: "instant",
-        });
-      }
-      setJumpToEvidence(false);
-    }
-  }, [jumpToEvidence, tab]);
   const requested = params.get("turn");
   const maxTurn = query.data?.summary.turn ?? 0;
   const turn =
     requested !== null
-      ? Math.max(0, Math.min(maxTurn, Number(requested) || 0))
+      ? Math.max(0, Math.min(maxTurn, Math.trunc(Number(requested) || 0)))
       : maxTurn;
   const pinned = requested !== null;
-  const annotationKey = `${id}:${turn}`;
-  const annotation = annotationDrafts[annotationKey] ?? "";
   const evidence = useQuery({
     queryKey: ["evidence", id, turn],
     queryFn: () => api<Evidence>(`/runs/${id}/turns/${turn}`),
@@ -90,29 +56,16 @@ export default function Run() {
   });
   const control = useMutation({
     mutationFn: (action: string) => api(`/runs/${id}/control`, { action }),
-    onSuccess: () => client.invalidateQueries(),
+    onSuccess: () =>
+      invalidateResources(client, [
+        `/runs/${id}`,
+        "/runs",
+        "/studies",
+        `/studies/${query.data?.summary.study_id}`,
+      ]),
   });
-  const note = useMutation({
-    mutationFn: (draft: { runId: string; turn: number; note: string }) =>
-      api(`/runs/${draft.runId}/annotations`, {
-        turn: draft.turn,
-        label: "Observation",
-        note: draft.note,
-      }),
-    onSuccess: (_, draft) => {
-      setAnnotationDrafts((current) => {
-        const key = `${draft.runId}:${draft.turn}`;
-        if (current[key] !== draft.note) return current;
-        const next = { ...current };
-        delete next[key];
-        return next;
-      });
-      client.invalidateQueries({
-        queryKey: [`/runs/${draft.runId}/annotations`],
-      });
-    },
-  });
-  if (query.error) return <ErrorState error={query.error} />;
+  if (query.error)
+    return <ErrorState error={query.error} onRetry={query.refetch} />;
   if (!query.data) return <Loading />;
   const run = query.data;
   const summary = run.summary;
@@ -120,11 +73,6 @@ export default function Run() {
   const state: State =
     pinned && evidence.data ? evidence.data.checkpoint : run.state;
   const events = run.events.filter((e) => e.turn <= turn);
-  const visibleTurns = run.turns
-    .filter((t) => actorFilter === "all" || t.actor === actorFilter)
-    .toReversed();
-  const pages = Math.max(1, Math.ceil(visibleTurns.length / 15));
-  const current = Math.min(page, pages - 1);
   const metricKeys = [...new Set(run.measurements.map((m) => m.key))].filter(
     (key) => run.measurements.some((m) => m.key === key && m.value !== null),
   );
@@ -132,7 +80,7 @@ export default function Run() {
     ? selectedMetric
     : (metricKeys[0] ?? "contribution_rate");
   function selectTurn(value: number, decision = false) {
-    if (decision) setJumpToEvidence(true);
+    if (decision) setFocusRequest((request) => request + 1);
     setParams(
       {
         ...Object.fromEntries(params),
@@ -143,16 +91,17 @@ export default function Run() {
     );
   }
   function selectAgent(key: string) {
-    setActorFilter(key);
-    setPage(0);
     const last = run.turns.findLast((t) => t.actor === key && t.number <= turn);
-    if (last) selectTurn(last.number, true);
-    else
-      setParams({
+    setFocusRequest((request) => request + 1);
+    setParams(
+      {
         ...Object.fromEntries(params),
+        actor: key,
         tab: "decisions",
-        turn: String(turn),
-      });
+        turn: String(last?.number ?? turn),
+      },
+      { replace: true },
+    );
   }
   function live() {
     const next = new URLSearchParams(params);
@@ -306,14 +255,14 @@ export default function Run() {
         }
       >
         <TabsList variant="line">
-          <TabsTrigger value="decisions">Decisions</TabsTrigger>
           <TabsTrigger value="live">Environment</TabsTrigger>
+          <TabsTrigger value="decisions">Decisions</TabsTrigger>
           <TabsTrigger value="relationships">Interactions</TabsTrigger>
           <TabsTrigger value="settings">Record</TabsTrigger>
         </TabsList>
         <TabsContent value="live">
           {pinned && evidence.error ? (
-            <ErrorState error={evidence.error} />
+            <ErrorState error={evidence.error} onRetry={evidence.refetch} />
           ) : pinned && !evidence.data ? (
             <Loading />
           ) : (
@@ -352,7 +301,8 @@ export default function Run() {
                   metricKey={chosenMetric}
                 />
                 <p className="table-note">
-                  Through turn {turn} · one point per round
+                  Recorded outcomes through turn {turn}. Each point summarizes
+                  one round.
                 </p>
               </section>
             </div>
@@ -362,7 +312,10 @@ export default function Run() {
               <h2>Recent events</h2>
             </div>
             {!events.length ? (
-              <Empty title="No events yet" />
+              <Empty
+                title="Waiting for the first consequence"
+                description="Start the run or step through one agent decision."
+              />
             ) : (
               <div className="event-feed">
                 {events
@@ -392,299 +345,23 @@ export default function Run() {
           </section>
         </TabsContent>
         <TabsContent value="decisions">
-          <div className="decision-layout">
-            <section>
-              <div className="section-heading">
-                <h2
-                  ref={journalHeading}
-                  tabIndex={-1}
-                  className="inspection-anchor"
-                >
-                  Decision journal
-                </h2>
-                <Select
-                  label="Filter actor"
-                  value={actorFilter}
-                  onValueChange={(v) => {
-                    setActorFilter(v);
-                    setPage(0);
-                    if (!pinned) selectTurn(turn);
-                  }}
-                  options={[
-                    { value: "all", label: "All agents" },
-                    ...run.design.profiles.map((p) => ({
-                      value: p.key,
-                      label: p.name,
-                    })),
-                  ]}
-                />
-              </div>
-              <div className="table-frame">
-                <Table className="table">
-                  <thead>
-                    <tr>
-                      <th>Turn</th>
-                      <th>Agent</th>
-                      <th>Decision</th>
-                      <th>Time</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {visibleTurns
-                      .slice(current * 15, (current + 1) * 15)
-                      .map((t) => (
-                        <tr key={t.number} data-selected={t.number === turn}>
-                          <td>
-                            <Button
-                              variant="link"
-                              size="sm"
-                              className="turn-link"
-                              type="button"
-                              onClick={() => selectTurn(t.number, true)}
-                            >
-                              {t.number}
-                            </Button>
-                          </td>
-                          <td>
-                            {run.design.profiles.find((p) => p.key === t.actor)
-                              ?.name ?? t.actor}
-                          </td>
-                          <td>
-                            <strong className="action-label">
-                              {label(t.action.kind)}
-                              {["contribute", "send", "return"].includes(
-                                t.action.kind,
-                              ) && ` ${t.action.amount}`}
-                              {t.action.target && ` → ${t.action.target}`}
-                            </strong>
-                            <span className="table-secondary rationale-preview">
-                              {t.rationale}
-                            </span>
-                          </td>
-                          <td className="numeric muted">
-                            {(t.latency_ms / 1000).toFixed(1)}s
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </Table>
-                {!visibleTurns.length && (
-                  <p className="table-no-results">
-                    No decisions recorded for this selection.
-                  </p>
-                )}
-                <div className="table-footer">
-                  <span>{visibleTurns.length} decisions</span>
-                  <div className="actions">
-                    <span>
-                      {current + 1} / {pages}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      disabled={!current}
-                      aria-label="Previous decisions page"
-                      onClick={() => {
-                        setPage(current - 1);
-                        if (!pinned) selectTurn(turn);
-                      }}
-                    >
-                      <ChevronLeft />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      disabled={current + 1 >= pages}
-                      aria-label="Next decisions page"
-                      onClick={() => {
-                        setPage(current + 1);
-                        if (!pinned) selectTurn(turn);
-                      }}
-                    >
-                      <ChevronRight />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </section>
-            <aside ref={inspector} className="evidence-inspector">
-              <Button
-                variant="outline"
-                size="sm"
-                ref={evidenceReturn}
-                className="evidence-return"
-                onClick={() => {
-                  journalHeading.current?.focus({ preventScroll: true });
-                  journalHeading.current?.scrollIntoView({ block: "start" });
-                }}
-              >
-                <ArrowLeft data-icon="inline-start" />
-                Back to decisions
-              </Button>
-              <div className="section-heading">
-                <h2
-                  ref={inspectorHeading}
-                  tabIndex={-1}
-                  className="inspection-anchor"
-                >
-                  Turn {turn} evidence
-                </h2>
-                <Badge>Saved input & output</Badge>
-              </div>
-              {evidence.error ? (
-                <ErrorState error={evidence.error} />
-              ) : !evidence.data ? (
-                <Loading />
-              ) : evidence.data.number === 0 ? (
-                <Empty
-                  title="Initial state"
-                  description="Turn zero is the starting checkpoint, before any model decision."
-                />
-              ) : (
-                <>
-                  <h3 className="inspector-actor">
-                    {
-                      run.design.profiles.find(
-                        (p) => p.key === evidence.data?.actor,
-                      )?.name
-                    }
-                  </h3>
-                  <p className="decision-rationale">
-                    {evidence.data.decision.rationale}
-                  </p>
-                  <dl className="key-values">
-                    <div>
-                      <dt>Action</dt>
-                      <dd>
-                        {label(evidence.data.decision.action?.kind ?? "")}
-                        {evidence.data.decision.action?.target &&
-                          ` → ${evidence.data.decision.action.target}`}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Private note</dt>
-                      <dd>{evidence.data.decision.memory || "No note"}</dd>
-                    </div>
-                    {evidence.data.decision.action?.message && (
-                      <div>
-                        <dt>Message</dt>
-                        <dd>{evidence.data.decision.action.message}</dd>
-                      </div>
-                    )}
-                  </dl>
-                  <p className="evidence-disclaimer">
-                    Rationale and memory are model self-reports.
-                  </p>
-                  <Disclosure
-                    className="disclosure"
-                    onOpenChange={(open) => {
-                      if (open && !pinned) selectTurn(turn, true);
-                    }}
-                  >
-                    <DisclosureTrigger>
-                      Exact observation before the decision
-                    </DisclosureTrigger>
-                    <DisclosureContent>
-                      <Json value={evidence.data.observation} />
-                    </DisclosureContent>
-                  </Disclosure>
-                  <Disclosure
-                    className="disclosure"
-                    onOpenChange={(open) => {
-                      if (open && !pinned) selectTurn(turn, true);
-                    }}
-                  >
-                    <DisclosureTrigger>Typed decision</DisclosureTrigger>
-                    <DisclosureContent>
-                      <Json value={evidence.data.decision} />
-                    </DisclosureContent>
-                  </Disclosure>
-                  <Disclosure
-                    className="disclosure"
-                    onOpenChange={(open) => {
-                      if (open && !pinned) selectTurn(turn, true);
-                    }}
-                  >
-                    <DisclosureTrigger>
-                      Consequences & verified facts
-                    </DisclosureTrigger>
-                    <DisclosureContent>
-                      <Json value={evidence.data.events} />
-                    </DisclosureContent>
-                  </Disclosure>
-                  <Disclosure
-                    className="disclosure"
-                    onOpenChange={(open) => {
-                      if (open && !pinned) selectTurn(turn, true);
-                    }}
-                  >
-                    <DisclosureTrigger>
-                      Complete state after turn {turn}
-                    </DisclosureTrigger>
-                    <DisclosureContent>
-                      <Json value={evidence.data.checkpoint} />
-                    </DisclosureContent>
-                  </Disclosure>
-                </>
-              )}
-              <Disclosure
-                className="disclosure"
-                onOpenChange={(open) => {
-                  if (open && !pinned) selectTurn(turn);
-                }}
-              >
-                <DisclosureTrigger>Researcher observations</DisclosureTrigger>
-                <DisclosureContent>
-                  {notes.data
-                    ?.filter((n) => n.turn === turn)
-                    .map((n) => (
-                      <div className="annotation" key={n.id}>
-                        <Badge>{n.label}</Badge>
-                        <p>{n.note}</p>
-                      </div>
-                    ))}
-                  <FieldGroup>
-                    <Field>
-                      <FieldLabel htmlFor="annotation">
-                        Add an observation at turn {turn}
-                      </FieldLabel>
-                      <Textarea
-                        id="annotation"
-                        rows={3}
-                        value={annotation}
-                        onChange={(e) => {
-                          if (!pinned) selectTurn(turn);
-                          setAnnotationDrafts({
-                            ...annotationDrafts,
-                            [annotationKey]: e.target.value,
-                          });
-                        }}
-                        maxLength={4000}
-                      />
-                    </Field>
-                  </FieldGroup>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={!annotation.trim() || note.isPending}
-                    onClick={() =>
-                      note.mutate({ runId: summary.id, turn, note: annotation })
-                    }
-                  >
-                    Save observation
-                  </Button>
-                  {note.error && (
-                    <Alert variant="error">{note.error.message}</Alert>
-                  )}
-                </DisclosureContent>
-              </Disclosure>
-            </aside>
-          </div>
+          <DecisionBrowser
+            key={`${summary.id}:${params.get("actor") ?? "all"}`}
+            run={run}
+            turn={turn}
+            pinned={pinned}
+            evidence={evidence}
+            focusRequest={focusRequest}
+            selectTurn={selectTurn}
+            annotationDrafts={annotationDrafts}
+            setAnnotationDrafts={setAnnotationDrafts}
+          />
         </TabsContent>
         <TabsContent value="relationships">
           <div className="section-heading">
             <div>
-              <h2>Interactions through turn {turn}</h2>
+              <h2>Interaction patterns</h2>
+              <p>Directed exchanges and direct messages through turn {turn}.</p>
             </div>
           </div>
           <div className="interactions-layout">
@@ -694,7 +371,11 @@ export default function Run() {
               onAgent={selectAgent}
             />
             <div>
-              <h2>Exchanges</h2>
+              <h2>Verifiable behavior</h2>
+              <p className="muted">
+                Ground truth comes from the rules and the information each actor
+                received.
+              </p>
               <RelationshipTable
                 profiles={run.design.profiles}
                 events={events}
@@ -703,7 +384,7 @@ export default function Run() {
           </div>
         </TabsContent>
         <TabsContent value="settings">
-          <RunRecord key={id} run={run} />
+          <RunRecord key={run.summary.id} run={run} />
         </TabsContent>
       </Tabs>
     </>

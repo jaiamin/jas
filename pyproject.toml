@@ -27,8 +27,6 @@ dev = [
 
 [project.scripts]
 jas = "agent_sim.cli:main"
-# Preserve the installed command used by earlier releases.
-ass = "agent_sim.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["backend/src/agent_sim"]

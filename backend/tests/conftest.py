@@ -52,7 +52,7 @@ def decision_for(observation: dict) -> dict:
         },
         "memory": "Remember the observed outcome.",
         "rationale": "Choose a legal action.",
-        "forecast": None if "targets" in legal else 0.5,
+        "forecast": None if "targets" in legal or observation.get("role") == "receiver" else 0.5,
     }
 
 

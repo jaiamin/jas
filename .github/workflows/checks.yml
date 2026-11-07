@@ -1,37 +1,142 @@
 name: Checks
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
 permissions:
   contents: read
+
+concurrency:
+  group: checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  verify:
+  backend:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: '0.13.7'
           python-version: '3.13'
-      - uses: pnpm/action-setup@v4
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - run: uv sync --frozen
+      - run: uv run ruff check backend benchmarks .github/scripts
+      - run: uv run ty check
+      - run: uv run pytest --junitxml=test-results/backend.xml
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: backend-test-results
+          path: test-results/
+          retention-days: 7
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: '0.13.7'
+          python-version: '3.13'
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - run: uv sync --frozen --no-dev
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
         with:
           package_json_file: frontend/package.json
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24'
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
-      - run: uv sync --frozen
-      - run: uv run ruff check backend benchmarks
-      - run: uv run ty check
-      - run: uv run pytest
       - run: pnpm --dir frontend install --frozen-lockfile
       - run: pnpm --dir frontend lint
       - run: pnpm --dir frontend test
       - run: pnpm --dir frontend build
-      - run: docker compose -p jas-qa up -d --build --wait
-        env:
-          JAS_PORT: "8082"
-          OPENAI_API_KEY: ""
-          ANTHROPIC_API_KEY: ""
       - run: pnpm --dir frontend exec playwright install --with-deps chromium
-      - run: pnpm --dir frontend test:e2e
-      - if: always()
-        run: docker compose -p jas-qa down -v
+      - run: pnpm --dir frontend test:e2e --reporter=line,html
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: browser-failure-report
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+          retention-days: 7
+
+  container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      COMPOSE_PROJECT_NAME: jas-ci-smoke
+      JAS_PORT: '8083'
+      OPENAI_API_KEY: ''
+      ANTHROPIC_API_KEY: ''
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          load: true
+          tags: jas-ci-smoke-app:latest
+          cache-from: type=gha,scope=production
+          cache-to: type=gha,mode=max,scope=production
+      - name: Start the production image with a fresh volume
+        run: docker compose --env-file /dev/null up --no-build --wait --wait-timeout 90
+      - name: Verify the published port, SPA assets and keyless runtime
+        run: |
+          curl --fail --silent --show-error http://127.0.0.1:8083/api/health
+          docker compose --env-file /dev/null exec -T app python - < .github/scripts/smoke.py
+      - name: Collect container logs
+        if: always()
+        run: docker compose --env-file /dev/null logs --no-color > container.log
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: container-failure-log
+          path: container.log
+          retention-days: 7
+      - name: Remove the disposable container and volume
+        if: always()
+        run: docker compose --env-file /dev/null down --volumes
+
+  workflows:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check workflow syntax and embedded shell commands
+        uses: docker://rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 # v1.7.12
+
+  verify:
+    if: always()
+    needs: [backend, frontend, container, workflows]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require every check to pass
+        env:
+          BACKEND: ${{ needs.backend.result }}
+          FRONTEND: ${{ needs.frontend.result }}
+          CONTAINER: ${{ needs.container.result }}
+          WORKFLOWS: ${{ needs.workflows.result }}
+        run: |
+          test "$BACKEND" = success
+          test "$FRONTEND" = success
+          test "$CONTAINER" = success
+          test "$WORKFLOWS" = success

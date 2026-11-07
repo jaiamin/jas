@@ -8,8 +8,30 @@ def client(tmp_path, monkeypatch, fake_model):
     app = create_app(f"sqlite:///{tmp_path}/api.sqlite3", static_dir=tmp_path / "static")
 
     monkeypatch.setattr(app.state.models, "model", lambda _name: fake_model)
-    with TestClient(app) as value:
+    with TestClient(app, base_url="http://localhost") as value:
         yield value
+
+
+def step_run(client, run_id):
+    response = client.post(f"/api/runs/{run_id}/control", json={"action": "step"})
+    assert response.status_code == 200
+
+    async def finished():
+        await client.app.state.engine.executions[run_id].task
+
+    client.portal.call(finished)
+
+
+def test_routers_resolve_services_from_the_current_app(client, tmp_path, design):
+    other_app = create_app(f"sqlite:///{tmp_path}/other.sqlite3", budget_usd=8)
+    with TestClient(other_app, base_url="http://localhost") as other:
+        created = client.post("/api/studies", json={"design": design.model_dump()})
+        study_id = created.json()["id"]
+        assert other.get("/api/studies").json() == []
+        assert other.get(f"/api/studies/{study_id}").status_code == 404
+        assert client.get(f"/api/studies/{study_id}").status_code == 200
+        assert other.get("/api/settings").json()["budget_usd"] == 8
+        assert client.get("/api/settings").json()["budget_usd"] == 25
 
 
 def test_manual_design_step_evidence_and_export(client, design):
@@ -18,7 +40,7 @@ def test_manual_design_step_evidence_and_export(client, design):
     sid = result.json()["id"]
     rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
     assert client.get("/api/settings").json()["usage"]["requests"] == 0
-    assert client.post(f"/api/runs/{rid}/control", json={"action": "step"}).status_code == 200
+    step_run(client, rid)
     run = client.get(f"/api/runs/{rid}").json()
     assert run["summary"]["turn"] == 1
     assert run["summary"]["status"] == "paused"
@@ -38,7 +60,8 @@ def test_manual_design_step_evidence_and_export(client, design):
     assert response.headers["content-disposition"] == f'attachment; filename="jas-{sid}.json"'
     assert client.get("/api/openapi.json").json()["info"]["title"] == "JAS"
     export = response.json()
-    assert export["format"] == "ass-study"
+    assert export["format"] == "jas-study"
+    assert export["version"] == 3
     assert export["runs"][0]["evidence"][1] == evidence
     assert client.post(f"/api/runs/{rid}/verify", json={}).json()["verified_turns"] == 1
 
@@ -61,34 +84,98 @@ def test_validation_and_origin_guard_do_not_spend(client, design):
     assert client.get("/api/analyses/missing").status_code == 404
 
 
+def test_untrusted_host_cannot_read_or_write_with_a_matching_origin(client, design):
+    headers = {"Host": "attacker.example:8080", "Origin": "http://attacker.example:8080"}
+    assert client.get("/api/studies", headers=headers).status_code == 400
+    assert (
+        client.post(
+            "/api/studies", json={"design": design.model_dump()}, headers=headers
+        ).status_code
+        == 400
+    )
+    assert client.get("/api/studies").json() == []
+    assert client.get("/api/settings").json()["usage"]["requests"] == 0
+
+
+@pytest.mark.parametrize("host", ["localhost:8080", "127.0.0.1:8080", "[::1]:8080"])
+def test_local_hosts_accept_same_origin_writes(client, design, host):
+    response = client.post(
+        "/api/studies",
+        json={"design": design.model_dump()},
+        headers={"Host": host, "Origin": f"http://{host}"},
+    )
+    assert response.status_code == 201
+
+
+def test_configured_host_keeps_origin_checks(tmp_path, monkeypatch, design):
+    monkeypatch.setenv("JAS_ALLOWED_HOSTS", "localhost, lab.example")
+    app = create_app(f"sqlite:///{tmp_path}/hosts.sqlite3")
+    with TestClient(app, base_url="http://lab.example") as client:
+        assert client.get("/api/health").status_code == 200
+        assert (
+            client.post(
+                "/api/studies",
+                json={"design": design.model_dump()},
+                headers={"Origin": "http://untrusted.example"},
+            ).status_code
+            == 403
+        )
+        assert (
+            client.post(
+                "/api/studies",
+                json={"design": design.model_dump()},
+                headers={"Origin": "http://lab.example"},
+            ).status_code
+            == 201
+        )
+
+
 def test_invalid_json_design_does_not_create_study(client):
     assert client.post("/api/design/validate", json={"design": {"profiles": 4}}).status_code == 422
     assert client.get("/api/studies").json() == []
 
 
-def test_general_agent_submission_preserves_scoped_analysis_contract(client, monkeypatch):
-    submitted = []
-    monkeypatch.setattr(
-        client.app.state.assistants,
-        "start",
-        lambda question, **kwargs: submitted.append((question, kwargs)) or "general-request",
-    )
-    response = client.post("/api/agent", json={"question": "What is a matched seed?"})
-    assert response.status_code == 202 and response.json() == {"id": "general-request"}
-    assert submitted == [("What is a matched seed?", {"purpose": "general"})]
-    assert (
-        client.post("/api/agent", json={"question": "Inspect it", "run_id": "a"}).status_code == 422
-    )
-    assert client.post("/api/analyses", json={"question": "Inspect it"}).status_code == 422
-    assert client.get("/api/analyses?purpose=general").json() == []
-    assert len(submitted) == 1
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/studies/missing",
+        "/studies/missing/export",
+        "/runs/missing",
+        "/runs/missing/turns/0",
+        "/runs/missing/annotations",
+        "/requests/missing",
+        "/analyses/missing",
+    ],
+)
+def test_missing_records_have_one_not_found_contract(client, path):
+    response = client.get(f"/api{path}")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Record not found"}
+
+
+@pytest.mark.parametrize("action", ["start", "step", "pause"])
+def test_missing_run_controls_are_not_found_without_spending(client, action):
+    response = client.post("/api/runs/missing/control", json={"action": action})
+    assert response.status_code == 404
+    assert client.get("/api/settings").json()["usage"]["requests"] == 0
+
+
+def test_openapi_describes_application_and_validation_errors(client):
+    schema = client.get("/api/openapi.json").json()
+    responses = schema["paths"]["/api/studies"]["post"]["responses"]
+    for status in ("403", "404", "409", "422"):
+        assert responses[status]["content"]["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/ErrorResponse"
+        }
+    detail = schema["components"]["schemas"]["ErrorResponse"]["properties"]["detail"]
+    assert {variant["type"] for variant in detail["anyOf"]} == {"string", "array"}
 
 
 def test_export_includes_previous_revisions_and_their_recorded_turns(client, design):
     sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
     old = client.get(f"/api/studies/{sid}").json()
     rid = old["runs"][0]["id"]
-    client.post(f"/api/runs/{rid}/control", json={"action": "step"})
+    step_run(client, rid)
     design.title = "Revised study"
     client.post(f"/api/studies/{sid}/revisions", json={"design": design.model_dump()})
     exported = client.get(f"/api/studies/{sid}/export").json()
@@ -127,6 +214,44 @@ def test_saved_ai_proposal_provenance_survives_revision_and_export(client, desig
     assert exported["study"]["plan_id"] is None
     assert exported["revisions"][0]["source"] == f"plan:{pid}"
     assert exported["analyses"][0]["id"] == pid
+
+
+def test_verification_rejects_corrupt_evidence(client, design):
+    from agent_sim.db import Turn
+    from sqlalchemy import select
+
+    sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+    step_run(client, rid)
+    with client.app.state.db.session.begin() as session:
+        session.scalars(select(Turn).where(Turn.run_id == rid)).one().state_hash = "corrupted"
+    response = client.post(f"/api/runs/{rid}/verify")
+    assert response.status_code == 422
+    assert "State mismatch at turn 1" in response.json()["detail"]
+
+
+@pytest.mark.parametrize(
+    "path,payload",
+    [
+        ("/api/chats", {"question": "test", "run_id": "run"}),
+        ("/api/chats", {"question": "test", "context": "invalid"}),
+        ("/api/chats", {"question": "test", "study_id": "one", "run_id": "two"}),
+        ("/api/studies/unknown/control", {"action": "step"}),
+    ],
+)
+def test_operation_schemas_reject_unsupported_inputs(client, path, payload):
+    assert client.post(path, json=payload).status_code == 422
+    assert client.get("/api/settings").json()["usage"]["requests"] == 0
+
+
+def test_initial_and_recorded_evidence_share_the_same_envelope(client, design):
+    sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+    initial = client.get(f"/api/runs/{rid}/turns/0").json()
+    assert initial["round"] == initial["checkpoint"]["round"] == 1
+    step_run(client, rid)
+    recorded = client.get(f"/api/runs/{rid}/turns/1").json()
+    assert initial.keys() == recorded.keys()
 
 
 def test_chat_api_returns_saved_history_and_validates_requests(client, monkeypatch):
@@ -169,9 +294,21 @@ def test_chat_events_deliver_partial_and_final_records_without_resubmission(clie
 
     from pydantic_ai.models.function import DeltaToolCall, FunctionModel
 
+    partial_observed = asyncio.Event()
+    assistants = client.app.state.assistants
+    get = assistants.get
+
+    def observe_snapshot(key):
+        row = get(key)
+        if row["status"] == "pending" and row["output"].get("partial") == "Matched":
+            partial_observed.set()
+        return row
+
+    monkeypatch.setattr(assistants, "get", observe_snapshot)
+
     async def stream(messages, info):
         yield {0: DeltaToolCall(name=info.output_tools[0].name, json_args='{"answer":"Matched')}
-        await asyncio.sleep(0.3)
+        await asyncio.wait_for(partial_observed.wait(), timeout=5)
         yield {
             0: DeltaToolCall(json_args=' seeds share randomization.","citations":[],"caveats":[]}')
         }
@@ -199,3 +336,42 @@ def test_chat_events_deliver_partial_and_final_records_without_resubmission(clie
     assert json.loads(resumed.text.split("data: ")[1]) == updates[-1]
     assert client.get("/api/settings").json()["usage"]["requests"] == 1
     assert client.get("/api/chats/missing/events").status_code == 404
+
+
+@pytest.mark.parametrize("scope", ["study", "run"])
+def test_scoped_chat_serializes_followups(client, design, monkeypatch, scope):
+    import asyncio
+
+    from agent_sim.db import Analysis
+
+    assistant = client.app.state.assistants
+    release = asyncio.Event()
+
+    async def execute(key):
+        await release.wait()
+        with assistant.db.session.begin() as session:
+            row = session.get_one(Analysis, key)
+            row.status, row.output = "complete", {"answer": "Recorded answer"}
+
+    monkeypatch.setattr(assistant, "_execute", execute)
+    sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+    context = f"{scope}:{sid if scope == 'study' else rid}"
+    first = client.post("/api/chats", json={"question": "What happened?", "context": context})
+    assert first.status_code == 202
+    key, chat_id = first.json()["id"], first.json()["chat_id"]
+    followup = {"question": "Why did it happen?", "context": context, "chat_id": chat_id}
+    assert client.post("/api/chats", json=followup).status_code == 422
+    assert len(assistant.tasks) == 1
+
+    async def finish():
+        release.set()
+        await assistant.tasks[key]
+
+    client.portal.call(finish)
+    assert client.post("/api/chats", json=followup).status_code == 202
+    assert [row["question"] for row in assistant.chat(chat_id)] == [
+        "What happened?",
+        "Why did it happen?",
+    ]
+    assert client.get("/api/settings").json()["usage"]["requests"] == 0

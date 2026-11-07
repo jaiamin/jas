@@ -4,6 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Empty, Table } from "@/components/ui/data";
 import type { Event, Profile, RunDetail, State } from "@/lib/types";
 
+function isContributions(value: unknown): value is Record<string, number> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value) &&
+    Object.values(value).every(
+      (amount) => typeof amount === "number" && Number.isFinite(amount),
+    )
+  );
+}
+
 export function WorldView({
   run,
   state,
@@ -16,20 +27,22 @@ export function WorldView({
   onAgent: (key: string) => void;
 }) {
   const profiles = run.design.profiles;
-  if (run.design.environment === "coordination")
+  if (run.design.environment === "coordination") {
+    const tasks = state.tasks;
+    if (!tasks) throw new Error("Coordination checkpoint is missing tasks");
     return (
       <section className="task-board">
         <div className="section-heading">
           <div>
             <h2>Shared project</h2>
             <p>
-              {state.tasks.filter((t) => t.completed_by).length} of{" "}
-              {state.tasks.length} work packages complete
+              {tasks.filter((t) => t.completed_by).length} of {tasks.length}{" "}
+              work packages complete
             </p>
           </div>
         </div>
         <div className="task-grid">
-          {state.tasks.map((task) => (
+          {tasks.map((task) => (
             <div
               className="task-node"
               data-complete={!!task.completed_by}
@@ -77,6 +90,7 @@ export function WorldView({
         </div>
       </section>
     );
+  }
   if (run.design.environment === "trust_exchange")
     return (
       <section>
@@ -106,10 +120,14 @@ export function WorldView({
         onAgent={onAgent}
       />
     );
-  const previous = state.history.findLast((item) => "contributions" in item);
-  const contributions = previous?.contributions as
-    | Record<string, number>
-    | undefined;
+  if (!state.pending)
+    throw new Error("Commons checkpoint is missing sealed choices");
+  const previous = state.history.findLast((item) =>
+    isContributions(item.contributions),
+  );
+  const contributions = isContributions(previous?.contributions)
+    ? previous.contributions
+    : undefined;
   return (
     <section className="commons-panel">
       <div className="section-heading">

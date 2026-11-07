@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
     <meta name="description" content="JAS: a local workspace for designing agent experiments and following recorded evidence." />
     <title>Workspace | JAS</title>
-    <script>try{const theme=(localStorage.getItem('jas-theme')??localStorage.getItem('ass-theme'));if(theme==='dark'||(!theme&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch{}</script>
+    <script>try{const theme=localStorage.getItem('jas-theme');if(theme==='dark'||(!theme&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch{}</script>
   </head>
   <body>
     <div id="root"></div>

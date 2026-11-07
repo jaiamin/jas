@@ -6,9 +6,56 @@ from agent_sim.domain import PlannedStudy
 from agent_sim.planning import Candidate, DesignReview, StudyBrief
 
 
+def test_benchmark_resume_rejects_changed_simulation_before_opening_database(tmp_path, monkeypatch):
+    import argparse
+    import asyncio
+    import importlib
+    import json
+
+    monkeypatch.syspath_prepend(str(Path(__file__).parents[2] / "benchmarks"))
+    harness = importlib.import_module("run")
+    source = tmp_path / "backend/src/agent_sim/simulation/world.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("original rules")
+    runner = tmp_path / "benchmarks/run.py"
+    runner.parent.mkdir()
+    runner.write_text("runner")
+    runner.with_name("suite.py").write_text("suite")
+    monkeypatch.setattr(harness, "__file__", str(runner))
+    original = harness.source_digest()
+    output = tmp_path / "results"
+    output.mkdir()
+    database = tmp_path / "evaluation.sqlite3"
+    (output / "manifest.json").write_text(
+        json.dumps(
+            {
+                "suite_sha256": harness.fingerprint(),
+                "source_sha256": original,
+                "model": "openai:gpt-6-luna",
+                "database": str(database),
+                "budget_usd": 1,
+            }
+        )
+    )
+    source.write_text("changed rules")
+    assert harness.source_digest() != original
+    args = argparse.Namespace(
+        split=None,
+        ids=None,
+        limit=1,
+        output=str(output),
+        database=str(database),
+        budget_usd=1,
+        concurrency=1,
+    )
+    with pytest.raises(ValueError, match="source_sha256 changed"):
+        asyncio.run(harness.run(args))
+    assert not database.exists()
+
+
 def load_suite():
     path = Path(__file__).parents[2] / "benchmarks/suite.py"
-    spec = importlib.util.spec_from_file_location("ass_suite", path)
+    spec = importlib.util.spec_from_file_location("jas_suite", path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -23,7 +70,7 @@ def test_suite_is_unique_and_split_before_tuning():
     assert sum(case.split == "generalization" for case in cases) == 56
     assert sum(case.environment is not None for case in cases) == 210
     assert len(suite.fingerprint()) == 64
-    from agent_sim.environments import CATALOG, MEASURE_DESCRIPTIONS
+    from agent_sim.simulation.environments import CATALOG, MEASURE_DESCRIPTIONS
 
     assert set(MEASURE_DESCRIPTIONS) == {m for a in CATALOG.values() for m in a.measures}
 
@@ -122,7 +169,7 @@ def test_full_harness_uses_real_api_routes(tmp_path, monkeypatch, fake_model, de
     async def exercise():
         async with app.router.lifespan_context(app):
             async with httpx.AsyncClient(
-                transport=httpx.ASGITransport(app=app), base_url="http://jas.test"
+                transport=httpx.ASGITransport(app=app), base_url="http://localhost"
             ) as client:
                 return await harness.evaluate(client, case, {})
 

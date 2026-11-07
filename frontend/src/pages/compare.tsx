@@ -23,7 +23,19 @@ export default function Compare() {
   });
   const [selected, setSelected] = useState("");
   const error = queries.find((q) => q.error)?.error;
-  if (error) return <ErrorState error={error} />;
+  if (error)
+    return (
+      <ErrorState
+        error={error}
+        onRetry={() =>
+          Promise.all(
+            queries
+              .filter((query) => query.error)
+              .map((query) => query.refetch()),
+          )
+        }
+      />
+    );
   if (queries.some((q) => !q.data)) return <Loading />;
   const runs = queries.flatMap((q) => (q.data ? [q.data] : []));
   if (runs.length < 2)
