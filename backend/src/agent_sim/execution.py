@@ -68,10 +68,11 @@ class Engine:
         run, design, condition = self.research.configuration(run_id)
         if run.status == "complete":
             return False
-        for model in {p.model or condition.model for p in design.profiles}:
-            self.models.model(model)
+        self.research.check_run(run_id)
         if run.checkpoint.get("rule_version") != CATALOG[design.environment].world.version:
             raise ValueError("This saved run requires a different environment rule version")
+        for model in {p.model or condition.model for p in design.profiles}:
+            self.models.model(model)
         return True
 
     def _enqueue(

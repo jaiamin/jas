@@ -14,11 +14,15 @@ export class ApiError extends Error {
  * HTTP failures reject with ApiError; transport, serialization and successful-response
  * parsing failures propagate their original errors.
  */
-export async function api<T>(path: string, body?: unknown): Promise<T> {
+export async function api<T>(
+  path: string,
+  body?: unknown,
+  method?: "POST" | "PUT" | "DELETE",
+): Promise<T> {
   const response = await fetch(`/api${path}`, {
     headers:
       body === undefined ? undefined : { "Content-Type": "application/json" },
-    method: body === undefined ? "GET" : "POST",
+    method: method ?? (body === undefined ? "GET" : "POST"),
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (!response.ok) {

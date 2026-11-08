@@ -1,4 +1,5 @@
 import asyncio
+import json
 
 import pytest
 from agent_sim.assistants import Assistants, HistoryRequest, Investigation
@@ -58,7 +59,7 @@ def test_general_agent_keeps_history_separate_and_rejects_unselected_evidence(
                     "cutoffs": {},
                 }
             ]
-            assert len(prompt["environments"]) == 7
+            assert len(prompt["environments"]) == 8
             assert "index" not in prompt and "evidence" not in prompt
             return Finding(
                 answer="Matched seeds support more informative comparisons.",
@@ -445,6 +446,67 @@ def test_evidence_index_counts_opportunities_at_the_frozen_cutoff(runtime, desig
         assert counts["feasible_commitments"] == 1
         assert counts["infeasible_commitments"] == 1
         assert counts["fulfilled_feasible_commitments"] == 1
+        await assistant.close()
+
+    asyncio.run(exercise())
+
+
+def test_composed_accounting_uses_frozen_evidence_not_later_consumption(runtime, monkeypatch):
+    from agent_sim.templates import composed_template
+
+    db, models, research, engine = runtime
+    design = composed_template()
+    design.rounds, design.seeds = 2, [7]
+    design.conditions = design.conditions[:1]
+    composition = design.conditions[0].parameters.composition
+    assert composition is not None
+    composition.resources[0].initial_stock = 12
+    rid = research.operational_runs(research.save_design(design))[0].id
+
+    async def equal_sharing(output, **kwargs):
+        observation = json.loads(kwargs["prompt"])
+        controller = observation["you"]["key"] == "alex"
+        return output.model_validate(
+            dict(
+                action=dict(
+                    kind="allocate" if controller else "wait",
+                    amount=4 if controller else 0,
+                    target="food:*" if controller else "",
+                    message="",
+                    report=None,
+                    promise=None,
+                ),
+                memory="",
+                rationale="Scripted equal sharing.",
+                forecast=None,
+            )
+        )
+
+    monkeypatch.setattr(models, "generate", equal_sharing)
+
+    async def exercise():
+        engine.start(rid)
+        await engine.executions[rid].task
+        assistant = Assistants(db, research, models)
+        before = assistant._evidence_index({rid: 1})["runs"][0]
+        settled = assistant._evidence_index({rid: 4})["runs"][0]
+        final = assistant._evidence_index({rid: 8})["runs"][0]
+        for row, stock, inventory, consumed, utility in (
+            (before, 8, 1, 0, 0),
+            (settled, 8, 0, 1, 8),
+            (final, 4, 0, 2, 16),
+        ):
+            accounting = row["resource_accounting"]
+            assert accounting["shared_stocks"] == {"food": stock}
+            assert accounting["personal_inventory"]["food"] == dict.fromkeys(
+                (p.key for p in design.profiles), inventory
+            )
+            assert accounting["consumed"]["food"] == dict.fromkeys(
+                (p.key for p in design.profiles), consumed
+            )
+            assert sum(accounting["unmet_need"]["food"].values()) == 0
+            assert row["outcome"]["total_utility"] == utility
+        assert not before["completed_at_cutoff"] and final["completed_at_cutoff"]
         await assistant.close()
 
     asyncio.run(exercise())

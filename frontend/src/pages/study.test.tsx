@@ -7,6 +7,13 @@ import { renderWithQueries } from "@/test/queries";
 import Study from "./study";
 
 const study: StudyDetail = {
+  preflight: {
+    status: "checked",
+    issues: [],
+    comparisons: [],
+    probe_turns: 6,
+    limits: "Mechanical checks only.",
+  },
   id: "study",
   design,
   revision: 1,

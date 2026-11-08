@@ -15,6 +15,7 @@ from .assistants import Assistants
 from .config import setting
 from .db import Database
 from .domain import Strict
+from .environment_library import EnvironmentConflict
 from .execution import Engine
 from .llm import LanguageModels, ProviderFailure
 from .research import Research
@@ -79,6 +80,7 @@ def create_app(
         await engine.close()
         await assistants.close()
         await models.close()
+        research.environments.close()
         db.close()
 
     app = FastAPI(
@@ -104,6 +106,7 @@ def create_app(
         ],
         www_redirect=False,
     )
+    app.add_exception_handler(EnvironmentConflict, provider_error)
     app.add_exception_handler(ValueError, invalid)
     app.add_exception_handler(NoResultFound, missing)
     app.add_exception_handler(ProviderFailure, provider_error)

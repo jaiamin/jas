@@ -60,7 +60,7 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v3.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v4.
 This WIP uses only the current schema and rules; incompatible workspaces must be reset.
 
 `JAS_ALLOWED_HOSTS` lists accepted hostnames/IPs without ports (comma-separated).
@@ -86,3 +86,8 @@ scoped evidence answers. Both default to `openai:gpt-6.1-sol`. `JAS_CONCURRENT_R
 controls the shared provider pool (1–32, default 4), independently of
 `JAS_CONCURRENT_RUNS` (1–16, default 3). Compose forwards these settings. A larger request
 pool can increase rate-limit failures; it does not give participants more information.
+
+Reusable custom environments are versioned files beside the configured SQLite database in
+`<database-stem>.environments/`; keep that directory when backing up a workspace. The app
+retains complete environment rules inside each immutable experiment, so library deletion
+never deletes run evidence. See [custom environments](CUSTOM_ENVIRONMENTS.md).

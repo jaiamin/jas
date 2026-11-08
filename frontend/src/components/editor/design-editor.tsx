@@ -17,6 +17,7 @@ import { AgentFields } from "@/components/editor/agent-fields";
 import { ConditionFields } from "@/components/editor/condition-fields";
 import { ExecutionFields } from "@/components/editor/execution-fields";
 import { TaskFields } from "@/components/editor/task-fields";
+import { ExperimentCheck } from "@/components/experiment-check";
 import { PageHeading } from "@/components/shared";
 import {
   AlertDialog,
@@ -43,8 +44,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api";
 import { changeEnvironment } from "@/lib/design";
 import { type Draft, removeDraft, writeDraft } from "@/lib/drafts";
-import { saveSetup } from "@/lib/setups";
-import type { Analysis, Catalog, Design, EnvironmentId } from "@/lib/types";
+
+import type {
+  Analysis,
+  Catalog,
+  Design,
+  EnvironmentId,
+  ExperimentPreflight,
+  SavedEnvironment,
+} from "@/lib/types";
 import { money } from "@/lib/utils";
 
 export function DesignEditor({
@@ -59,6 +67,7 @@ export function DesignEditor({
   draft,
   initialStep = "question",
   setupId,
+  setupRevision,
 }: {
   initial: Design;
   catalog: Catalog;
@@ -71,6 +80,7 @@ export function DesignEditor({
   draft?: Draft;
   initialStep?: string;
   setupId?: string | null;
+  setupRevision?: number;
 }) {
   const [design, setDesign] = useState<Design>(() => structuredClone(initial));
   const [agentDraftId] = useState(() => crypto.randomUUID());
@@ -92,6 +102,10 @@ export function DesignEditor({
   }, [design, json, mode, draftPath]);
   const [error, setError] = useState("");
   const [setupNotice, setSetupNotice] = useState("");
+  const [savedSetup, setSavedSetup] = useState({
+    id: setupId,
+    revision: setupRevision,
+  });
   const [pendingEnvironment, setPendingEnvironment] =
     useState<EnvironmentId | null>(null);
   const navigate = useNavigate();
@@ -134,19 +148,36 @@ export function DesignEditor({
       const validated = await api<Design>("/design/validate", {
         design: mode === "json" ? JSON.parse(json) : design,
       });
-      const rules = catalog.environments.find(
-        (item) => item.key === validated.environment,
-      )?.rule_version;
-      if (!rules) throw new Error("Unknown environment rules.");
-      saveSetup(validated, rules, setupId ?? undefined);
+      return api<SavedEnvironment>(
+        savedSetup.id ? `/environments/${savedSetup.id}` : "/environments",
+        { design: validated, revision: savedSetup.revision ?? null },
+        savedSetup.id ? "PUT" : "POST",
+      );
     },
-    onSuccess: () =>
+    onSuccess: (record) => {
+      setSavedSetup({ id: record.id, revision: record.revision });
       setSetupNotice(
-        "Setup saved in this browser. Reuse or edit it from Environments.",
-      ),
+        "Custom environment saved. Reuse, edit or delete it from Environments.",
+      );
+    },
   });
+  const snapshot = mode === "json" ? json : JSON.stringify(design);
+  const check = useMutation({
+    mutationFn: async (submitted: string) => ({
+      snapshot: submitted,
+      report: await api<ExperimentPreflight>("/design/preflight", {
+        design: JSON.parse(submitted),
+        plan_id: planId,
+      }),
+    }),
+  });
+  const currentCheck =
+    check.data?.snapshot === snapshot ? check.data.report : null;
   const busy =
-    save.isPending || validate.isPending || saveEnvironment.isPending;
+    save.isPending ||
+    validate.isPending ||
+    saveEnvironment.isPending ||
+    check.isPending;
   function changeMode(value: string) {
     if (busy) return;
     if (value === "json") {
@@ -212,7 +243,9 @@ export function DesignEditor({
             saveEnvironment.mutate();
           }}
         >
-          {setupId ? "Update saved setup" : "Save reusable setup"}
+          {savedSetup.id
+            ? "Update custom environment"
+            : "Save custom environment"}
         </Button>
         <span className="muted">
           Keep these rules, roles and conditions for another experiment.
@@ -349,16 +382,26 @@ export function DesignEditor({
                     />
                   </Field>
                   <Disclosure className="disclosure">
-                    <DisclosureTrigger>Hypothesis</DisclosureTrigger>
+                    <DisclosureTrigger>
+                      Hypothesis & analysis plan
+                    </DisclosureTrigger>
                     <DisclosureContent>
                       <Field>
-                        <FieldLabel htmlFor="hypothesis">Hypothesis</FieldLabel>
-                        <Input
+                        <FieldLabel htmlFor="hypothesis">
+                          Hypothesis & analysis plan
+                        </FieldLabel>
+                        <Textarea
                           id="hypothesis"
-                          placeholder="An expected pattern to investigate"
+                          placeholder="Expected pattern, observable outcomes and how you will compare them"
+                          rows={4}
+                          maxLength={2000}
                           value={design.hypothesis}
                           onChange={(e) => update("hypothesis", e.target.value)}
                         />
+                        <FieldDescription>
+                          Define calculations from recorded actions and outcomes
+                          here. Participants do not receive this plan.
+                        </FieldDescription>
                       </Field>
                     </DisclosureContent>
                   </Disclosure>
@@ -483,8 +526,25 @@ export function DesignEditor({
               <dd>{money(design.budget_usd)}</dd>
             </div>
           </dl>
+          <Button
+            variant="outline"
+            disabled={busy}
+            onClick={() => check.mutate(snapshot)}
+          >
+            {check.isPending ? "Checking mechanics…" : "Check experiment"}
+          </Button>
+          {check.error && <Alert variant="error">{check.error.message}</Alert>}
+          {check.data && !currentCheck && (
+            <p className="muted" role="status">
+              Protocol changed. Check again for current findings.
+            </p>
+          )}
+          {currentCheck && <ExperimentCheck report={currentCheck} />}
           <div className="form-submit editor-save">
-            <Button onClick={submit} disabled={busy}>
+            <Button
+              onClick={submit}
+              disabled={busy || currentCheck?.status === "blocked"}
+            >
               {save.isPending ? (
                 <LoaderCircle className="spin" data-icon="inline-start" />
               ) : (

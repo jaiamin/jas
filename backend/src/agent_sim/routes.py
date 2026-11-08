@@ -71,6 +71,11 @@ class SaveStudy(Strict):
     plan_id: str | None = None
 
 
+class SaveEnvironment(Strict):
+    design: Design
+    revision: int | None = Field(default=None, ge=1)
+
+
 class ChatMessage(Strict):
     question: str = Field(min_length=1, max_length=4000)
     context: str = "general"
@@ -120,6 +125,38 @@ async def catalog(*, models: LanguageModelsDep) -> dict[str, Any]:
     }
 
 
+@router.get("/api/environments")
+async def custom_environments(*, research: ResearchDep) -> list[dict]:
+    return [record.model_dump() for record in research.environments.list()]
+
+
+@router.get("/api/environments/{key}")
+async def custom_environment(key: str, *, research: ResearchDep) -> dict:
+    return research.environments.get(key).model_dump()
+
+
+@router.post("/api/environments", status_code=201)
+async def create_environment(body: SaveEnvironment, *, research: ResearchDep) -> dict:
+    research.validate_design(body.design)
+    return (await asyncio.to_thread(research.environments.save, body.design)).model_dump()
+
+
+@router.put("/api/environments/{key}")
+async def update_environment(key: str, body: SaveEnvironment, *, research: ResearchDep) -> dict:
+    research.validate_design(body.design)
+    return (
+        await asyncio.to_thread(research.environments.save, body.design, key, body.revision)
+    ).model_dump()
+
+
+@router.delete("/api/environments/{key}")
+async def delete_environment(
+    key: str, revision: int = Query(ge=1), *, research: ResearchDep
+) -> dict:
+    await asyncio.to_thread(research.environments.delete, key, revision)
+    return {"ok": True}
+
+
 @router.get("/api/settings")
 async def settings(
     *, db: DatabaseDep, models: LanguageModelsDep, engine: EngineDep
@@ -154,8 +191,15 @@ async def validate_design(body: SaveStudy, *, research: ResearchDep) -> dict[str
     return body.design.model_dump()
 
 
+@router.post("/api/design/preflight")
+async def check_design(body: SaveStudy, *, research: ResearchDep) -> dict[str, Any]:
+    research.validate_design(body.design)
+    return await asyncio.to_thread(research.preflight, body.design, body.plan_id)
+
+
 @router.post("/api/studies", status_code=201)
 async def create_study(body: SaveStudy, *, research: ResearchDep) -> dict[str, Any]:
+    await asyncio.to_thread(research.preflight, body.design, body.plan_id)
     return {"id": research.save_design(body.design, plan_id=body.plan_id)}
 
 
@@ -163,11 +207,12 @@ async def create_study(body: SaveStudy, *, research: ResearchDep) -> dict[str, A
 async def get_study(
     study_id: str, revision: int | None = Query(default=None, ge=1), *, research: ResearchDep
 ) -> dict[str, Any]:
-    return research.study(study_id, revision)
+    return await asyncio.to_thread(research.study, study_id, revision)
 
 
 @router.post("/api/studies/{study_id}/revisions", status_code=201)
 async def revise_study(study_id: str, body: SaveStudy, *, research: ResearchDep) -> dict[str, Any]:
+    await asyncio.to_thread(research.preflight, body.design, body.plan_id)
     return {"id": research.save_design(body.design, study_id=study_id, plan_id=body.plan_id)}
 
 

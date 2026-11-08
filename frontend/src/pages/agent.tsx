@@ -492,6 +492,9 @@ function AgentSuggestions({
     queryFn: () => api<{ design: Design }>(path),
     enabled: !!(study || run),
   });
+  if (protocol.error)
+    return <ErrorState error={protocol.error} onRetry={protocol.refetch} />;
+  if ((study || run) && !protocol.data) return <Loading />;
   const suggestions = agentSuggestions({
     context,
     study,

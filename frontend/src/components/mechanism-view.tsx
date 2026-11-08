@@ -21,6 +21,7 @@ export function MechanismView({
     throw new Error("Resource checkpoint is missing sealed requests");
   const names = new Map(run.design.profiles.map((p) => [p.key, p.name]));
   const titles = {
+    composed: "Resources & needs",
     institution: "Allocation & authority",
     bargaining: "Negotiation",
     information: "Evidence & decisions",
@@ -30,6 +31,8 @@ export function MechanismView({
   const latest = events
     .filter((e) =>
       [
+        "resource_transfer",
+        "consumption",
         "allocation",
         "sanction",
         "appeal",
@@ -49,6 +52,67 @@ export function MechanismView({
       <div className="section-heading">
         <h2>{title}</h2>
       </div>
+      {environment === "composed" &&
+        run.parameters.composition?.resources.map((resource) => (
+          <section key={resource.key} className="composition-resource">
+            <h3>{resource.name}</h3>
+            <p>
+              Shared stock:{" "}
+              <strong className="numeric">
+                {state.stocks?.[resource.key]?.toFixed(2)}
+              </strong>{" "}
+              / {resource.capacity}
+              {" · "}Stock:{" "}
+              {resource.stock_visibility === "public"
+                ? "public"
+                : "controllers only"}
+              {" · "}Allocations: {resource.allocation_visibility}
+            </p>
+            <p className="muted">
+              Researcher view includes private inventories and consumption.
+            </p>
+            <div className="table-frame">
+              <Table className="table">
+                <thead>
+                  <tr>
+                    <th>Agent</th>
+                    <th>Permission</th>
+                    <th className="numeric">Inventory</th>
+                    <th className="numeric">Consumed</th>
+                    <th className="numeric">Unmet need</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {run.design.profiles.map((profile) => (
+                    <tr key={profile.key}>
+                      <td>{profile.name}</td>
+                      <td>
+                        {resource.controllers.includes(profile.key)
+                          ? "Allocate"
+                          : resource.controllers.length
+                            ? "Receive"
+                            : "Extract"}
+                      </td>
+                      <td className="numeric">
+                        {state.inventories?.[resource.key]?.[
+                          profile.key
+                        ]?.toFixed(2)}
+                      </td>
+                      <td className="numeric">
+                        {state.consumed?.[resource.key]?.[profile.key]?.toFixed(
+                          2,
+                        )}
+                      </td>
+                      <td className="numeric">
+                        {state.unmet?.[resource.key]?.[profile.key]?.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          </section>
+        ))}
       {environment === "renewable_resource" && (
         <div className="resource-state">
           <div>

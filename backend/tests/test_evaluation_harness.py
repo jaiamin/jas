@@ -88,6 +88,14 @@ def test_real_planner_routes_and_paired_engine_arms(tmp_path, monkeypatch, fake_
         if output is StudyBrief:
             return StudyBrief(
                 supported=True,
+                requirements=[
+                    {
+                        "source": "shortage",
+                        "capability": "capacity_shocks",
+                        "mapping": "direct",
+                        "explanation": "Scheduled capacity reduction.",
+                    }
+                ],
                 explanation="Pilot",
                 operationalization="Resource shock",
                 size_rationale="Explicit diagnostic",
@@ -244,3 +252,33 @@ def test_source_archive_includes_build_metadata_and_verification_inputs():
         ".dockerignore",
     } <= paths
     assert ".env" not in paths and not any("node_modules/" in path for path in paths)
+
+
+def test_development_diagnostic_counts_failed_and_substituted_plans(design):
+    from benchmarks.development import EXAMPLES, assess
+
+    assert len(EXAMPLES) == 30 and len({e[0] for e in EXAMPLES}) == 30
+    unsupported = next(e for e in EXAMPLES if e[0] == "shortage-power")
+    assert all(
+        assess(
+            unsupported, {"status": "complete", "output": {"supported": False, "design": None}}
+        ).values()
+    )
+    assert not all(
+        assess(
+            unsupported, {"status": "failed", "output": {"supported": False, "design": None}}
+        ).values()
+    )
+    assert not all(
+        assess(
+            unsupported,
+            {"status": "complete", "output": {"supported": True, "design": design.model_dump()}},
+        ).values()
+    )
+    requested = next(e for e in EXAMPLES if e[0] == "costly-contributions")
+    # A matching world and different endowments do not install a messaging contrast.
+    result = assess(
+        requested,
+        {"status": "complete", "output": {"supported": True, "design": design.model_dump()}},
+    )
+    assert result["world"] and not result["intervention"]

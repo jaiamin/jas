@@ -11,6 +11,7 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { ExperimentCheck } from "@/components/experiment-check";
 import { RunTable } from "@/components/run-table";
 import {
   ErrorState,
@@ -92,7 +93,10 @@ export default function Study() {
         </Button>
         {!complete && !isOld && (
           <Button
-            disabled={control.isPending}
+            disabled={
+              control.isPending ||
+              (!active && study.preflight.status === "blocked")
+            }
             onClick={() => control.mutate(active ? "pause" : "start")}
           >
             {active ? (
@@ -151,6 +155,7 @@ export default function Study() {
           <TabsTrigger value="design">Protocol</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
+          <ExperimentCheck report={study.preflight} />
           <div className="study-overview">
             <section>
               <div className="section-heading">
@@ -225,7 +230,7 @@ export default function Study() {
                 <p className="protocol-question">{study.design.question}</p>
                 <dl className="key-values">
                   <div>
-                    <dt>Hypothesis</dt>
+                    <dt>Hypothesis & analysis plan</dt>
                     <dd>{study.design.hypothesis || "Exploratory study"}</dd>
                   </div>
                   <div>

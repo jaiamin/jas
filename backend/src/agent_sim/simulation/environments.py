@@ -11,6 +11,7 @@ from .checkpoints import (
     Promise,
     TrustCheckpoint,
 )
+from .composed import Composed
 from .decisions import DecisionRules
 from .mechanisms import Bargaining, Information, Institution, RenewableResource
 from .world import World
@@ -465,6 +466,14 @@ class EnvironmentDefinition:
 
 
 MEASURE_DESCRIPTIONS = {
+    "unmet_need_rate": "Unconsumed required units / total required units at each round settlement; "
+    "not a psychological measure. Inspect resource-specific consumption events.",
+    "retention_rate": "Controller allocation received personally / actual stock allocated; "
+    "null when nothing was allocated. Equal shares include the controller's share.",
+    "inventory": "Mean personal unconsumed inventory across actors and round settlements; "
+    "units are summed across resources; inspect resource-specific checkpoints too.",
+    "group_utility": "Cumulative sum of enforced utility at round settlement, including "
+    "consumption rewards, unmet-need penalties and terminal inventory valuation.",
     "contribution_rate": "Contributed credits / available endowment for each actor and round.",
     "group_payoff": "Total credits earned by the group at a commons settlement.",
     "payoff": "Credits earned by one actor at a commons settlement.",
@@ -502,6 +511,15 @@ MEASURE_DESCRIPTIONS = {
 
 
 CATALOG = {
+    "composed": EnvironmentDefinition(
+        "composed",
+        "Custom resource economy",
+        "Compose finite stocks, allocation rights, visibility, transfers and consumption.",
+        Composed,
+        "unmet_need_rate",
+        ("composition", "communication", "communication_channels", "memory"),
+        ("unmet_need_rate", "retention_rate", "inventory", "group_utility", "false_report_rate"),
+    ),
     "commons": EnvironmentDefinition(
         "commons",
         "Shared commons",

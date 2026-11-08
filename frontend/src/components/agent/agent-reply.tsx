@@ -9,6 +9,7 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { ExperimentCheck } from "@/components/experiment-check";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/data";
 import {
@@ -210,6 +211,15 @@ function DesignReply({ row }: { row: Analysis }) {
             </span>
             <span>{money(design.budget_usd)} ceiling</span>
           </div>
+          {row.output?.planning?.preflight && (
+            <ExperimentCheck
+              report={{
+                ...row.output.planning.preflight,
+                original_question: row.question,
+                question_mapping: row.output.planning.brief.requirements,
+              }}
+            />
+          )}
           <Button variant="outline" size="sm" asChild>
             <Link to={`/new?plan=${row.id}`}>
               Review protocol

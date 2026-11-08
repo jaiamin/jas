@@ -352,3 +352,17 @@ pre {
 .disclosure-trigger[data-state="open"] > .disclosure-indicator {
   transform: rotate(90deg);
 }
+
+.experiment-check {
+  min-width: 0;
+  margin-block: 16px;
+  overflow-wrap: anywhere;
+}
+
+.experiment-check ul {
+  padding-inline-start: 18px;
+}
+
+.experiment-check li + li {
+  margin-top: 10px;
+}

@@ -312,10 +312,10 @@ test("environment mechanics lead to editable reusable setups", async ({
     .getByLabel("Experiment name", { exact: true })
     .fill("Supply-chain recovery");
   await page
-    .getByRole("button", { name: "Save reusable setup", exact: true })
+    .getByRole("button", { name: "Save custom environment", exact: true })
     .click();
   await expect(
-    page.getByText("Setup saved in this browser.", { exact: false }),
+    page.getByText("Custom environment saved.", { exact: false }),
   ).toBeVisible();
   await page.goto("/environments");
   await page
@@ -329,16 +329,22 @@ test("environment mechanics lead to editable reusable setups", async ({
     .getByLabel("Experiment name", { exact: true })
     .fill("Revised recovery");
   await page
-    .getByRole("button", { name: "Update saved setup", exact: true })
+    .getByRole("button", { name: "Update custom environment", exact: true })
     .click();
   await expect(
-    page.getByText("Setup saved in this browser.", { exact: false }),
+    page.getByText("Custom environment saved.", { exact: false }),
   ).toBeVisible();
   await page.goto("/environments");
   await expect(
     page.getByRole("link", { name: "Revised recovery", exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Remove", exact: true }).click();
+  await page
+    .locator(".saved-setup-list > div")
+    .filter({
+      has: page.getByRole("link", { name: "Revised recovery", exact: true }),
+    })
+    .getByRole("button", { name: "Delete", exact: true })
+    .click();
   await expect(page.getByRole("alertdialog")).toContainText("Revised recovery");
   await page.screenshot({
     path: testInfo.outputPath("setup-removal.png"),
@@ -349,8 +355,16 @@ test("environment mechanics lead to editable reusable setups", async ({
   await expect(
     page.getByRole("link", { name: "Revised recovery", exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Remove", exact: true }).click();
-  await page.getByRole("button", { name: "Remove setup", exact: true }).click();
+  await page
+    .locator(".saved-setup-list > div")
+    .filter({
+      has: page.getByRole("link", { name: "Revised recovery", exact: true }),
+    })
+    .getByRole("button", { name: "Delete", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Delete environment", exact: true })
+    .click();
   await expect(
     page.getByRole("link", { name: "Revised recovery", exact: true }),
   ).toHaveCount(0);

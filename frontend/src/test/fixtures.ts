@@ -28,6 +28,7 @@ export const parameters: Parameters = {
     regeneration: 0.1,
     extraction_limit: 10,
   },
+  composition: null,
   resource_schedule: [],
 };
 
@@ -84,7 +85,7 @@ export const design: Design = {
 };
 
 export const state: State = {
-  rule_version: "3.0.0",
+  rule_version: "4.0.0",
   round: 2,
   position: 0,
   done: false,
@@ -106,7 +107,7 @@ export const catalog: Catalog = {
       parameters: [],
       measures: ["sanction_rate"],
       measure_definitions: {},
-      rule_version: "3.0.0",
+      rule_version: "4.0.0",
     },
   ],
   templates: [{ id: "institution", design }],
@@ -115,6 +116,7 @@ export const catalog: Catalog = {
 
 export const runDetail: RunDetail = {
   next_actor: "a",
+  execution_blocked: null,
   requests: [],
   summary: {
     id: "run",

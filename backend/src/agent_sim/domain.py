@@ -11,6 +11,7 @@ EnvironmentId = Literal[
     "bargaining",
     "information",
     "renewable_resource",
+    "composed",
 ]
 
 
@@ -72,6 +73,69 @@ class ResourceRules(Strict):
         return self
 
 
+class ResourcePrimitive(Strict):
+    key: str = Field(pattern=r"^[a-z][a-z0-9_-]{0,23}$")
+    name: str = Field(min_length=1, max_length=60)
+    capacity: int = Field(default=60, ge=1, le=500)
+    initial_stock: int = Field(default=24, ge=0, le=500)
+    replenishment: int = Field(
+        default=0,
+        ge=0,
+        le=100,
+        description="Units added after consumption each nonterminal round, capped by capacity.",
+    )
+    controllers: list[str] = Field(
+        default_factory=list,
+        max_length=12,
+        description="Empty permits shared extraction; otherwise only controllers allocate.",
+    )
+    action_limit: int = Field(
+        default=12,
+        ge=1,
+        le=100,
+        description="Maximum total units requested in one action, independent of hidden stock.",
+    )
+    need: int = Field(
+        default=1,
+        ge=0,
+        le=20,
+        description="Units automatically consumed per participant at each round end.",
+    )
+    consumption_value: float = Field(default=2, ge=0, le=20)
+    shortfall_penalty: float = Field(default=3, ge=0, le=20)
+    terminal_value: float = Field(
+        default=1,
+        ge=0,
+        le=20,
+        description="Utility per unit left in personal inventory at the end of the run.",
+    )
+    stock_visibility: Literal["public", "controllers"] = "public"
+    allocation_visibility: Literal["public", "parties"] = "public"
+    transfers: bool = True
+
+    @model_validator(mode="after")
+    def resource_is_valid(self) -> Self:
+        if self.initial_stock > self.capacity:
+            raise ValueError("Initial stock cannot exceed capacity")
+        if len(set(self.controllers)) != len(self.controllers):
+            raise ValueError("Resource controllers must be unique")
+        return self
+
+
+class CompositionRules(Strict):
+    resources: list[ResourcePrimitive] = Field(min_length=1, max_length=4)
+    controllers_first: bool = Field(
+        default=True,
+        description="Controllers act before other participants, with seeded order within groups.",
+    )
+
+    @model_validator(mode="after")
+    def distinct_resources(self) -> Self:
+        if len({r.key for r in self.resources}) != len(self.resources):
+            raise ValueError("Resource keys must be unique")
+        return self
+
+
 class Parameters(Strict):
     endowment: int = Field(
         default=10,
@@ -116,6 +180,7 @@ class Parameters(Strict):
     bargaining: BargainingRules = Field(default_factory=BargainingRules)
     information: InformationRules = Field(default_factory=InformationRules)
     resource: ResourceRules = Field(default_factory=ResourceRules)
+    composition: CompositionRules | None = None
     resource_schedule: list[ResourceChange] = Field(default_factory=list, max_length=12)
 
 
@@ -138,7 +203,13 @@ class TaskDefinition(Strict):
 class DesignSpec(Strict):
     title: str = Field(min_length=1, max_length=100)
     question: str = Field(min_length=1, max_length=4000)
-    hypothesis: str = Field(default="", max_length=2000)
+    hypothesis: str = Field(
+        default="",
+        max_length=2000,
+        description="Researcher-facing hypothesis and analysis plan. Define observable outcomes, "
+        "recorded fields, calculations and comparisons for event-derived outcomes here. "
+        "This text is not sent to participants.",
+    )
     environment: EnvironmentId = "commons"
     context: str = Field(default="", max_length=4000)
     profiles: list[Profile] = Field(min_length=2, max_length=12)
@@ -151,7 +222,12 @@ class DesignSpec(Strict):
     openai_reasoning_effort: Literal["low", "medium", "high"] | None = None
     response_tokens: int = Field(default=4096, ge=512, le=8192)
     limitations: list[str] = Field(default_factory=list, max_length=12)
-    measures: list[str] = Field(default_factory=list, max_length=12)
+    measures: list[str] = Field(
+        default_factory=list,
+        max_length=12,
+        description="Registered metric identifiers only. Additional event-derived calculations "
+        "belong in hypothesis, not in this list; they are analysis plans, not engine metrics.",
+    )
 
 
 class Design(DesignSpec):
@@ -165,6 +241,15 @@ class Design(DesignSpec):
             if len(set(values)) != len(values):
                 raise ValueError(f"{label} identifiers must be unique")
         for condition in self.conditions:
+            composition = condition.parameters.composition
+            if self.environment == "composed":
+                if composition is None:
+                    raise ValueError("Composed environments require explicit resource mechanics")
+                for resource in composition.resources:
+                    if not set(resource.controllers) <= {p.key for p in self.profiles}:
+                        raise ValueError("Resource controllers must be existing participants")
+            elif composition is not None:
+                raise ValueError("Composition mechanics require the composed environment")
             rounds = [change.round for change in condition.parameters.resource_schedule]
             if rounds and self.environment not in {"commons", "trust_exchange"}:
                 raise ValueError("Resource changes require commons or trust exchange")

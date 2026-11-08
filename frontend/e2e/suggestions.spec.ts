@@ -37,10 +37,25 @@ test("four examples adapt to creation, saved treatments and a run without submit
     .getByRole("button", { name: "Oversight & sanctions", exact: true })
     .click();
   await expect(draft).toHaveValue(/Vary only oversight probability/);
+  let release: () => void = () => {};
+  const pending = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route(`**/api/studies/${id}`, async (route) => {
+    await pending;
+    await route.continue();
+  });
   await context.click();
   await page
     .getByRole("option", { name: "Messages under scarcity", exact: true })
     .click();
+  try {
+    await expect(page.getByRole("status", { name: "Loading" })).toBeVisible();
+    await expect(suggestions).toHaveCount(0);
+    await expect(draft).toHaveValue(/Vary only oversight probability/);
+  } finally {
+    release();
+  }
   await expect(
     page.getByRole("button", { name: "Review the setup", exact: true }),
   ).toBeVisible();
@@ -53,13 +68,44 @@ test("four examples adapt to creation, saved treatments and a run without submit
     .getByRole("button", { name: "Review the setup", exact: true })
     .click();
   await expect(draft).toHaveValue(/Do public messages change contributions\?/);
+  let failed = true;
+  let releaseRun: () => void = () => {};
+  const runPending = new Promise<void>((resolve) => {
+    releaseRun = resolve;
+  });
+  await page.route(`**/api/runs/${run.id}`, async (route) => {
+    if (failed)
+      return route.fulfill({
+        status: 503,
+        json: { detail: "Run protocol unavailable" },
+      });
+    await runPending;
+    await route.continue();
+  });
   await context.click();
   await page
     .getByRole("option", {
       name: new RegExp(`Rev ${run.revision} .*${run.id.slice(0, 6)}`),
     })
     .click();
+  await expect(page.getByRole("alert")).toContainText(
+    "Run protocol unavailable",
+  );
+  await expect(suggestions).toHaveCount(0);
+  await expect(draft).toHaveValue(/Do public messages change contributions\?/);
+  failed = false;
+  await page.getByRole("button", { name: "Retry", exact: true }).click();
+  try {
+    await expect(page.getByRole("status", { name: "Loading" })).toBeVisible();
+    await expect(suggestions).toHaveCount(0);
+    await expect(draft).toHaveValue(
+      /Do public messages change contributions\?/,
+    );
+  } finally {
+    releaseRun();
+  }
   await expect(suggestions).toHaveCount(4);
+  await expect(page.getByRole("alert")).toHaveCount(0);
   await page
     .getByRole("button", { name: "Review this condition", exact: true })
     .click();
