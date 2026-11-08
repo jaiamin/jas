@@ -1,5 +1,6 @@
 import asyncio
 import json
+from collections import Counter
 from collections.abc import Sequence
 from typing import Literal
 
@@ -12,7 +13,7 @@ from .db import Analysis, Database, Measurement, RecordedEvent, Turn, digest, ui
 from .diagnostics import log_failure
 from .domain import Finding, Strict
 from .llm import LanguageModels, ProviderFailure, Usage, empty_usage
-from .metrics import aggregate_metrics
+from .metrics import RunMetrics, aggregate_metrics, matched_effects
 from .planning import Planner, stream_partial
 from .research import Research, event_dict
 from .simulation.environments import CATALOG
@@ -23,13 +24,23 @@ messages, actions and consequences separately. Rationale and memory are self-rep
 of internal reasoning. Define selfishness, strategy or relationship criteria before applying them.
 A false factual report is measurable; deception intent is not established automatically. No
 model-weight learning or human predictive validity may be inferred from these traces.
-The index lists run cutoffs and aggregate outcomes. Request relevant history ranges and exact
-turns before factual claims. History requests use start/count (at most 20); turn requests
+The index lists run cutoffs, computed opportunity counts, actual balances and matched-seed
+comparisons. Counts and effects cover the captured scope, while inspected turns are examples;
+state those different coverage levels. Missing opportunities are not perfect behavior.
+Average repetitions within seed; do not treat turns or repeated seeds as independent samples.
+For a useful insight, report the measured finding, plausible competing explanations, limits,
+and one concrete next controlled comparison (factor, outcome, horizon, matched seeds and cost).
+Do not recommend adding narrative detail as if it installs new environment mechanics.
+Use the computed index for numerical totals; do not recount every turn. Inspect a few relevant
+turns before qualitative claims. Never request the same evidence twice; already_examined lists
+available ranges. Gather necessary requests together before answering. History requests use
+start/count (at most 20); turn requests
 select one exact turn. A history page stops at the captured cutoff. Request up to 4 ranges
 per iteration and at most 20 turns
-per range; exact turn evidence includes the full observation and checkpoint. For whole-run
-claims, cover all necessary history or explicitly state which portions were examined. Never
-claim unexamined evidence supports you. Comparisons use independent runs and matched seeds;
+per range; exact turn evidence includes the full observation and checkpoint. For aggregate
+claims use the computed cutoff scope; for qualitative claims state which turns
+were examined. Never claim unexamined examples support you. Compare independent runs and
+matched seeds;
 no causal certainty from one trajectory. Answer concisely in Markdown. Cite supporting run IDs
 and turns in the structured citations. Distinguish measured facts from interpretations. No
 fabricated metrics, scores, citations or actions. When enough evidence is available, return
@@ -343,10 +354,13 @@ class Assistants:
 
     def _evidence_index(self, cutoffs: dict[str, int]) -> dict:
         index, protocols, conditions = [], {}, {}
+        completed: dict[str, list[RunMetrics]] = {}
+        designs = {}
         for run_id, cutoff in cutoffs.items():
             run, design, condition = self.research.configuration(run_id)
             protocol_id = digest(design.model_dump())[:16]
             protocols[protocol_id] = design.model_dump()
+            designs[protocol_id] = design
             conditions[run.condition_id] = condition.model_dump()
             with self.db.session() as session:
                 state = self.research.evidence(run_id, cutoff)["checkpoint"]
@@ -355,7 +369,41 @@ class Assistants:
                     .where(Measurement.run_id == run_id, Measurement.turn <= cutoff)
                     .order_by(Measurement.id)
                 ).all()
+                events = session.scalars(
+                    select(RecordedEvent).where(
+                        RecordedEvent.run_id == run_id, RecordedEvent.turn <= cutoff
+                    )
+                ).all()
             metrics = aggregate_metrics((measure.key, measure.value) for measure in measures)
+            claims = [
+                event for event in events if event.kind == "claim" and event.data.get("eligible")
+            ]
+            commitments = [event for event in events if event.kind == "commitment_resolved"]
+            opportunities = {
+                "reports": len(claims),
+                "inaccurate_reports": sum(
+                    event.data["reported"] != event.data["known_truth"] for event in claims
+                ),
+                "feasible_commitments": sum(
+                    bool(event.data.get("eligible")) for event in commitments
+                ),
+                "infeasible_commitments": sum(
+                    not event.data.get("eligible") for event in commitments
+                ),
+                "fulfilled_feasible_commitments": sum(
+                    bool(event.data.get("eligible"))
+                    and event.data["actual"] >= event.data["amount"]
+                    for event in commitments
+                ),
+                "scored_forecasts": sum(
+                    measure.key == "forecast_error" and measure.value is not None
+                    for measure in measures
+                ),
+            }
+            if state["done"]:
+                completed.setdefault(protocol_id, []).append(
+                    RunMetrics(condition.key, condition.name, run.seed, run.repetition, metrics)
+                )
             index.append(
                 {
                     "run_id": run_id,
@@ -366,9 +414,24 @@ class Assistants:
                     "repetition": run.repetition,
                     "completed_at_cutoff": state["done"],
                     "metrics": metrics,
+                    "opportunities": opportunities,
+                    "measurement_counts": dict(
+                        Counter(measure.key for measure in measures if measure.value is not None)
+                    ),
+                    "outcome": {
+                        "balances": state["balances"],
+                        "total_utility": sum(state["balances"].values()),
+                        "remaining_stock": state.get("stock"),
+                    },
                 }
             )
-        return {"protocols": protocols, "conditions": conditions, "runs": index}
+        effects = {key: matched_effects(rows, designs[key]) for key, rows in completed.items()}
+        return {
+            "protocols": protocols,
+            "conditions": conditions,
+            "runs": index,
+            "matched_effects": {key: rows for key, rows in effects.items() if rows},
+        }
 
     def _requested_evidence(
         self, request: TurnRequest | HistoryRequest, cutoffs: dict[str, int]
@@ -432,8 +495,9 @@ class Assistants:
         iteration = 0
         while True:
             self._progress(key, "investigating", examined)
+            finalizing = iteration == 3
             result = await self.models.generate(
-                Investigation,
+                Finding if finalizing else Investigation,
                 model=setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol"),
                 instructions=INVESTIGATION,
                 purpose="analysis",
@@ -446,20 +510,24 @@ class Assistants:
                         "conversation": conversation,
                         "index": index,
                         "evidence": gathered,
+                        "already_examined": examined,
                         "iterations_remaining": 3 - iteration,
                     }
                 ),
                 max_tokens=8192,
                 openai_reasoning_effort="low",
-                on_partial=lambda value: self._partial(
+                on_partial=lambda value, finalizing=finalizing: self._partial(
                     key,
-                    (value.get("answer") or {}).get("answer")
+                    value.get("answer")
+                    if finalizing
+                    else (value.get("answer") or {}).get("answer")
                     if isinstance(value.get("answer"), dict)
                     else None,
                 ),
             )
-            if result.answer is not None:
-                for citation in result.answer.citations:
+            answer = result if isinstance(result, Finding) else result.answer
+            if answer is not None:
+                for citation in answer.citations:
                     if citation.run_id not in cutoffs or citation.turn > cutoffs[citation.run_id]:
                         raise ValueError(
                             "Assistant returned a citation outside the captured evidence"
@@ -469,16 +537,17 @@ class Assistants:
                         for r in examined
                     ):
                         raise ValueError("Assistant cited a turn it did not inspect")
-                return {**result.answer.model_dump(), "examined": examined}
-            if iteration == 3:
-                raise ValueError(
-                    "Evidence investigation reached its request limit. Ask a narrower question."
-                )
+                return {**answer.model_dump(), "examined": examined}
+            assert isinstance(result, Investigation)
             if not result.requests:
                 raise ValueError("Assistant returned neither evidence requests nor an answer")
             for request in result.requests:
+                if any(request.model_dump() == item["request"] for item in gathered):
+                    continue
                 examined_range, data = self._requested_evidence(request, cutoffs)
-                gathered.append({"range": examined_range, "data": data})
+                gathered.append(
+                    {"request": request.model_dump(), "range": examined_range, "data": data}
+                )
                 examined.append(examined_range)
                 self._progress(key, "reading", examined)
             iteration += 1

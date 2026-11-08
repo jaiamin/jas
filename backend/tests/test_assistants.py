@@ -279,8 +279,16 @@ def test_final_investigation_call_cannot_fetch_evidence_without_a_consumer(
         reads.append(args)
         return evidence(*args)
 
-    async def request_more(*args, **kwargs):
+    async def request_more(output, **kwargs):
         prompts.append(kwargs["prompt"])
+        if len(prompts) == 4:
+            assert output is Finding
+            return Finding(
+                answer="No decisions have been made.",
+                citations=[],
+                caveats=["No behavioral evidence exists at cutoff zero."],
+            )
+        assert output is Investigation
         return Investigation(requests=[TurnRequest(kind="turn", run_id=rid, turn=0)], answer=None)
 
     monkeypatch.setattr(llm, "generate", request_more)
@@ -290,13 +298,13 @@ def test_final_investigation_call_cannot_fetch_evidence_without_a_consumer(
         assistant = Assistants(db, research, llm)
         key = assistant.start("Inspect everything", purpose="analysis", run_id=rid)
         await assistant.tasks[key]
-        assert assistant.get(key)["status"] == "failed"
-        assert "request limit" in assistant.get(key)["error"]
+        assert assistant.get(key)["status"] == "complete"
+        assert assistant.get(key)["output"]["caveats"]
         await assistant.close()
 
     asyncio.run(exercise())
     assert len(prompts) == 4
-    assert len(reads) == 4  # Initial cutoff plus three evidence-gathering rounds.
+    assert len(reads) == 2  # Cutoff plus one deduplicated request; final call cannot request.
 
 
 def test_initial_worker_read_failure_is_persisted_and_logged(runtime, caplog):
@@ -380,3 +388,87 @@ def test_analysis_usage_is_consistent_before_any_provider_call(runtime, status):
         "cost_usd": 0.0,
         "partial": False,
     }
+
+
+def test_evidence_index_counts_opportunities_at_the_frozen_cutoff(runtime, design):
+    db, llm, research, engine = runtime
+    design.profiles = design.profiles[:2]
+    design.rounds = 2
+    design.conditions[0].parameters.endowment = 10
+    sid = research.save_design(design)
+    rid = research.study(sid)["runs"][0]["id"]
+
+    async def exercise():
+        engine.start(rid)
+        await engine.executions[rid].task
+        assistant = Assistants(db, research, llm)
+        index = assistant._evidence_index({rid: 2})
+        row = index["runs"][0]
+        assert row["opportunities"]["reports"] == 2
+        assert row["opportunities"]["inaccurate_reports"] == 0
+        assert row["opportunities"]["feasible_commitments"] == 0
+        assert row["outcome"]["total_utility"] == 30
+        assert row["through_turn"] == 2
+        assert row["completed_at_cutoff"] is False
+        assert index["matched_effects"] == {}
+        from agent_sim.db import RecordedEvent
+
+        with db.session.begin() as session:
+            for turn, kind, payload in [
+                (
+                    2,
+                    "commitment_resolved",
+                    dict(eligible=True, actual=5, amount=4, fulfilled=False),
+                ),
+                (
+                    2,
+                    "commitment_resolved",
+                    dict(eligible=False, actual=0, amount=9, fulfilled=False),
+                ),
+                (3, "claim", dict(eligible=True, reported=0, known_truth=1, accurate=True)),
+            ]:
+                session.add(
+                    RecordedEvent(
+                        run_id=rid,
+                        turn=turn,
+                        round=1,
+                        kind=kind,
+                        actor=None,
+                        target=None,
+                        visibility="researcher",
+                        text="Calibration",
+                        data=payload,
+                    )
+                )
+        counts = assistant._evidence_index({rid: 2})["runs"][0]["opportunities"]
+        assert counts["reports"] == 2 and counts["inaccurate_reports"] == 0
+        assert counts["feasible_commitments"] == 1
+        assert counts["infeasible_commitments"] == 1
+        assert counts["fulfilled_feasible_commitments"] == 1
+        await assistant.close()
+
+    asyncio.run(exercise())
+
+
+def test_configured_assistant_model_is_used_without_substitution(runtime, monkeypatch):
+    from agent_sim.domain import Finding
+
+    db, llm, research, _ = runtime
+    monkeypatch.setenv("JAS_ASSISTANT_MODEL", "openai:gpt-6-luna")
+
+    async def generate(output, **kwargs):
+        assert kwargs["model"] == "openai:gpt-6-luna"
+        return Finding(
+            answer="Select recorded evidence to inspect outcomes.", citations=[], caveats=[]
+        )
+
+    monkeypatch.setattr(llm, "generate", generate)
+
+    async def exercise():
+        assistant = Assistants(db, research, llm)
+        key = assistant.start("How can I inspect behavior?", purpose="general")
+        await assistant.tasks[key]
+        assert assistant.get(key)["status"] == "complete"
+        await assistant.close()
+
+    asyncio.run(exercise())

@@ -51,3 +51,16 @@ exclusive attempt marker before spending. It is never silently repeated after in
 The application remains responsible for providers, persistence, error handling and atomic
 budget reservations. The harness uses its real API and engine; no evaluation framework or
 compatibility runner remains in production or development dependencies.
+
+Replay and summarize exported participant attempts without paid calls:
+
+```sh
+uv run python -m benchmarks.replay benchmarks/results/participant-baseline/attempts.jsonl.gz
+uv run python -m benchmarks.report benchmarks/results/participant-baseline/attempts.jsonl.gz \
+  --output data/quality/participant-comparisons.json
+```
+
+Replay verifies observations, actors, consequences, measurements, checkpoints and final
+behavior summaries. Missing traces are counted explicitly. Use the checkpoint's source
+archive and frozen dataset when reproducing a historical rule contract. Model requests
+cannot be reproduced bit-for-bit; replay uses the saved model decisions.

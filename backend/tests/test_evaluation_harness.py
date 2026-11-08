@@ -1,6 +1,7 @@
 """Real routes/engine and negative controls for the replacement evaluation."""
 
 import asyncio
+import copy
 from types import SimpleNamespace
 
 import httpx
@@ -17,6 +18,8 @@ from benchmarks.evaluate import (
     validate_final,
 )
 from benchmarks.quality import assess
+from benchmarks.replay import replay_record
+from benchmarks.report import summarize
 
 
 def test_final_checkpoint_enforces_declared_jobs(monkeypatch):
@@ -121,8 +124,61 @@ def test_real_planner_routes_and_paired_engine_arms(tmp_path, monkeypatch, fake_
             assert results[0]["parameters"]["resource_schedule"] == []
             assert results[1]["parameters"]["resource_schedule"] == [{"round": 3, "endowment": 4}]
             assert results[1]["behavior"]["utility"] < results[0]["behavior"]["utility"]
+            assert replay_record(results[0]) == 48
+            altered = copy.deepcopy(results[0])
+            altered["trace"][0]["checkpoint"]["balances"]["p0"] += 1
+            with pytest.raises(AssertionError, match="State mismatch"):
+                replay_record(altered)
 
     asyncio.run(exercise())
+
+
+def test_report_preserves_missing_attempts_and_averages_within_seed():
+    records = []
+    for variant, seed in [(0, 17), (4, 43), (8, 89)]:
+        for repetition in (0, 1):
+            for arm in (0, 1):
+                records.append(
+                    dict(
+                        id=f"public-goods-incentives-{variant:02d}",
+                        family="public-goods-incentives",
+                        mode="baseline",
+                        seed=seed,
+                        repetition=repetition,
+                        arm=arm,
+                        passed=True,
+                        checks={"complete": True},
+                        decision_allowance=48,
+                        usage={"cost_usd": 0.01},
+                        behavior=dict(
+                            utility=seed + arm * 10,
+                            turns=48,
+                            reports=0,
+                            false_reports=0,
+                            eligible_commitments=0,
+                            infeasible_commitments=0,
+                            fulfilled_commitments=0,
+                            completion=None,
+                            stock=None,
+                            false_report_rate=None,
+                            fulfillment_rate=None,
+                            forecast_error=None,
+                        ),
+                    )
+                )
+    records[-1].pop("behavior")
+    records[-1].update(passed=False, checks={"complete": False})
+    result = summarize(records)
+    assert result["attempted"] == 12 and result["passed"] == 11
+    comparison = result["comparisons"][0]
+    assert comparison["arms"][1]["attempted"] == 6
+    assert comparison["arms"][1]["missing_traces"] == 1
+    assert comparison["arms"][1]["decision_allowance"] == 288
+    assert comparison["arms"][1]["means"]["utility"] == (27 + 53 + 99) / 3
+    effect = comparison["effects"]["utility"]
+    assert effect["pairs"] == 5 and effect["attempted_pairs"] == 6
+    assert effect["mean"] == 10 and effect["interval"] == [10, 10]
+    assert comparison["effects"]["fulfillment_rate"]["mean"] is None
 
 
 @pytest.mark.parametrize(

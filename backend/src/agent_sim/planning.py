@@ -65,6 +65,9 @@ Communication is a master switch for all channels. To isolate public messaging, 
 communication=true and vary communication_channels by removing only "messages", retaining
 "reports" and "promises" in both conditions. To study promise fulfillment, keep the promise
 channel enabled so both conditions have eligible opportunities. The same applies to factual reports.
+Configured channels do not add actions a world lacks. A master-switch comparison still tests
+the communication available in that world; disclose unusable channels without declining a
+supported comparison. Do not claim effects of promise use where promises must be null.
 private_signal=false publishes all signals; true reveals only the actor's own signal.
 Memory modes ablate retained history/notes, not current authoritative tasks or choices.
 Compare notes versus history to isolate private-note retention while keeping public history.

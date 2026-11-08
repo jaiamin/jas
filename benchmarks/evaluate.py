@@ -13,6 +13,7 @@ import subprocess
 import tarfile
 import time
 from collections import Counter
+from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
@@ -43,6 +44,12 @@ def source_paths() -> list[Path]:
                 "uv.lock",
                 "frontend/package.json",
                 "frontend/pnpm-lock.yaml",
+                "Dockerfile",
+                "compose.yaml",
+                ".env.example",
+                "benchmarks/quality-cases.jsonl",
+                "benchmarks/families.json",
+                "benchmarks/protocol.md",
             )
         ]
         + sorted(p for p in (ROOT / "frontend/public").rglob("*") if p.is_file())
@@ -170,6 +177,8 @@ async def participant_trial(app, case, mode: str, repetition: int, arm: int, stu
 
 
 async def run(args) -> dict:
+    started = time.monotonic()
+    started_utc = datetime.now(UTC).isoformat()
     output = Path(args.output)
     gate = json.loads(await asyncio.to_thread(Path(args.gate).read_text))
     if (
@@ -229,6 +238,12 @@ async def run(args) -> dict:
                 )
         cap = 75 if args.split == "heldout" else 60
         manifest = dict(
+            started_utc=started_utc,
+            source_runs_sha256=hashlib.sha256(
+                await asyncio.to_thread(Path(args.source_runs).read_bytes)
+            ).hexdigest()
+            if args.kind == "analysis"
+            else None,
             suite_sha256=fingerprint(),
             source_sha256=source_digest(),
             model=MODEL,
@@ -253,16 +268,8 @@ async def run(args) -> dict:
             ).strip(),
         )
         (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
-        snapshot_paths = source_paths() + [
-            ROOT / p
-            for p in (
-                "benchmarks/quality-cases.jsonl",
-                "benchmarks/families.json",
-                "benchmarks/protocol.md",
-            )
-        ]
         with tarfile.open(output / "source.tar.gz", "w:gz") as archive:
-            for path in snapshot_paths:
+            for path in source_paths():
                 archive.add(path, arcname=str(path.relative_to(ROOT)))
         os.environ["JAS_CONCURRENT_REQUESTS"] = str(args.request_concurrency)
         app = create_app(f"sqlite:///{db_path}", budget_usd=cap, concurrent_runs=args.concurrency)
@@ -367,6 +374,7 @@ async def run(args) -> dict:
             counts = Counter(k for r in records for k, v in r["checks"].items() if not v)
             summary = dict(
                 manifest=manifest,
+                elapsed_seconds=round(time.monotonic() - started, 3),
                 source_unchanged=manifest["source_sha256"] == source_digest(),
                 phase_usage={
                     "requests": len(calls),
@@ -409,7 +417,7 @@ def main():
     parser.add_argument("--families", nargs="+")
     parser.add_argument("--limit", type=int)
     parser.add_argument("--repetitions", type=int, default=1, choices=range(1, 4))
-    parser.add_argument("--concurrency", type=int, default=4, choices=range(1, 9))
+    parser.add_argument("--concurrency", type=int, default=4, choices=range(1, 17))
     parser.add_argument(
         "--modes",
         nargs="+",

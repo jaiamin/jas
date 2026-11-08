@@ -165,3 +165,9 @@ application's persistent aggregate budget ledger and permits only `openai:gpt-6-
 Source/suite hashes, complete attempts, provider traces and run-level scores identify each
 checkpoint. Frozen held-out model families are opened only at the declared final checkpoint;
 the report preserves failures, costs and remaining uncertainty. See [protocol](../benchmarks/protocol.md).
+
+The investigator's computed index includes cutoff-scoped opportunity counts, actual
+balances/utility, measurement counts and matched-seed effects for completed runs. These
+aggregates cover the captured scope; inspected turns support qualitative examples. Repeated
+identical evidence requests are deduplicated, and the fourth call has an answer-only schema.
+The Agent still validates every citation against an inspected range and frozen cutoff.

@@ -80,3 +80,9 @@ non-local URL; keep localhost entries for health checks. Restart after configura
 
 The browser suite uses Chromium and controlled provider responses. It does not validate
 paid providers, screen-reader coverage, hosted deployment or human predictive accuracy.
+
+`JAS_PLANNER_MODEL` selects protocol design; `JAS_ASSISTANT_MODEL` selects general and
+scoped evidence answers. Both default to `openai:gpt-6.1-sol`. `JAS_CONCURRENT_REQUESTS`
+controls the shared provider pool (1–32, default 4), independently of
+`JAS_CONCURRENT_RUNS` (1–16, default 3). Compose forwards these settings. A larger request
+pool can increase rate-limit failures; it does not give participants more information.
