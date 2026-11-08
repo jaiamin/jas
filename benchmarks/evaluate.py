@@ -34,8 +34,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def source_paths() -> list[Path]:
-    return (
+    paths = (
         sorted((ROOT / "backend/src").rglob("*.py"))
+        + sorted((ROOT / "backend/tests").rglob("*.py"))
+        + sorted((ROOT / ".github/scripts").glob("*.py"))
+        + sorted(
+            p
+            for p in (ROOT / "frontend/e2e").rglob("*")
+            if p.is_file() and p.suffix in {".py", ".ts"}
+        )
         + sorted((ROOT / "benchmarks").glob("*.py"))
         + sorted(p for p in (ROOT / "frontend/src").rglob("*") if p.is_file())
         + [
@@ -43,9 +50,18 @@ def source_paths() -> list[Path]:
             for p in (
                 "pyproject.toml",
                 "uv.lock",
+                "frontend/index.html",
+                "frontend/vite.config.ts",
+                "frontend/tsconfig.json",
+                "frontend/tsconfig.app.json",
+                "frontend/tsconfig.node.json",
+                "frontend/playwright.config.ts",
+                "frontend/biome.json",
+                "frontend/components.json",
                 "frontend/package.json",
                 "frontend/pnpm-lock.yaml",
                 "Dockerfile",
+                ".dockerignore",
                 "compose.yaml",
                 ".env.example",
                 "benchmarks/quality-cases.jsonl",
@@ -55,6 +71,8 @@ def source_paths() -> list[Path]:
         ]
         + sorted(p for p in (ROOT / "frontend/public").rglob("*") if p.is_file())
     )
+
+    return sorted(set(paths))
 
 
 def source_digest() -> str:

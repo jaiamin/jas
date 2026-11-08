@@ -171,3 +171,15 @@ balances/utility, measurement counts and matched-seed effects for completed runs
 aggregates cover the captured scope; inspected turns support qualitative examples. Repeated
 identical evidence requests are deduplicated, and the fourth call has an answer-only schema.
 The Agent still validates every citation against an inspected range and frozen cutoff.
+
+## Analysis calculations
+
+The investigator receives cutoff-scoped opportunity counts, actual balances, decision usage
+and completed-run matched effects. Conditions group by immutable revision even when their
+private profiles differ. Shared experiment ceilings are distinct from measured execution cost.
+
+For immediate commons counterfactuals, a bounded `commons_payoffs` request evaluates supplied
+team sizes and contributions against the inspected round's enforced endowment and multiplier.
+It respects resource changes and evidence cutoffs, rejects infeasible assumptions and other
+worlds, and labels every result hypothetical. It neither executes actions nor forecasts future
+strategies. Other interpretations remain model judgments that require evidence and caveats.

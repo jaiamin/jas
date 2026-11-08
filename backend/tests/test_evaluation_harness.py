@@ -226,3 +226,21 @@ def test_deterministic_participants_have_identical_results_at_run_concurrency_on
         assert outcomes[0] == outcomes[1]
 
     asyncio.run(exercise())
+
+
+def test_source_archive_includes_build_metadata_and_verification_inputs():
+    from benchmarks.evaluate import ROOT, source_paths
+
+    paths = {str(path.relative_to(ROOT)) for path in source_paths()}
+    assert {
+        "frontend/index.html",
+        "frontend/vite.config.ts",
+        "frontend/tsconfig.app.json",
+        "frontend/tsconfig.node.json",
+        "frontend/tsconfig.json",
+        "frontend/playwright.config.ts",
+        "frontend/e2e/server.py",
+        "backend/tests/conftest.py",
+        ".dockerignore",
+    } <= paths
+    assert ".env" not in paths and not any("node_modules/" in path for path in paths)

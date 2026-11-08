@@ -64,3 +64,10 @@ Replay verifies observations, actors, consequences, measurements, checkpoints an
 behavior summaries. Missing traces are counted explicitly. Use the checkpoint's source
 archive and frozen dataset when reproducing a historical rule contract. Model requests
 cannot be reproduced bit-for-bit; replay uses the saved model decisions.
+
+Current source archives include frontend build metadata, browser/server fixtures and backend
+correctness tests. Extract into a fresh directory, then use the committed lockfiles and normal
+build/check commands. The `pythonpath` pytest setting makes both `pytest` and `python -m pytest`
+collect the benchmark calibration tests. The final archive is checked by running its tests and
+building its Docker image outside the working checkout. Earlier archives retain evaluated
+backend/benchmark source but need their recorded git checkpoint for omitted UI build metadata.

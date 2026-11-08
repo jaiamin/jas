@@ -32,6 +32,7 @@ packages = ["backend/src/agent_sim"]
 
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100
