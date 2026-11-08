@@ -8,7 +8,7 @@ from ..domain import Action, Decision, Design, Event, Measure, Parameters
 from .checkpoints import Checkpoint, LegalAction, Observation
 from .decisions import ActionOption, DecisionRules, decision_schema
 
-RULE_VERSION = "3.0.0"
+RULE_VERSION = "4.0.0"
 
 
 class World[StateT: Checkpoint](ABC):
@@ -100,14 +100,18 @@ class World[StateT: Checkpoint](ABC):
             ],
             "your_balance": self.state["balances"][agent],
             "your_private_signal": self.state["signals"][agent],
-            "public_signals": self.state["signals"] if not self.parameters.private_signal else {},
-            "public_history": self.state["history"][-64:] if memory != "none" else [],
-            "your_experiences": self.state["experiences"][agent][-12:]
+            "public_signals": self.state["signals"].copy()
+            if not self.parameters.private_signal
+            else {},
+            "public_history": copy.deepcopy(self.state["history"][-64:])
+            if memory != "none"
+            else [],
+            "your_experiences": copy.deepcopy(self.state["experiences"][agent][-12:])
             if memory == "episodic"
             else [],
             "your_note": self.state["notes"][agent] if memory in {"episodic", "notes"} else "",
             "communication": self.parameters.communication,
-            "communication_channels": self.parameters.communication_channels
+            "communication_channels": self.parameters.communication_channels.copy()
             if self.parameters.communication
             else [],
             "legal_actions": actions,
@@ -217,6 +221,10 @@ class World[StateT: Checkpoint](ABC):
         return self.apply(actor, decision.action)
 
     def step(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        if actor != self.actor() or self.actor() is None:
+            raise ValueError("Expected the current actor of an unfinished run")
+        # Validate before forecast bookkeeping or any other state mutation.
+        self.decision_schema(self.observe(actor)).model_validate(decision.model_dump())
         change = next(
             (
                 c

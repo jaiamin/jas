@@ -42,7 +42,7 @@ target-version = "py313"
 select = ["E", "F", "I", "UP", "B", "ASYNC"]
 
 [tool.ty.environment]
-root = ["backend/src"]
+root = ["backend/src", "."]
 
 [tool.ty.src]
 include = ["backend"]
