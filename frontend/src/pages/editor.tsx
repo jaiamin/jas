@@ -14,8 +14,14 @@ import {
   readDraft,
   removeDraft,
 } from "@/lib/drafts";
-import { listSetups } from "@/lib/setups";
-import type { Analysis, Catalog, Design, StudyDetail } from "@/lib/types";
+
+import type {
+  Analysis,
+  Catalog,
+  Design,
+  SavedEnvironment,
+  StudyDetail,
+} from "@/lib/types";
 
 class DraftReadError extends Error {}
 
@@ -53,17 +59,18 @@ export default function Editor() {
     queryKey: ["setup", setupId],
     enabled: !!setupId && !!catalog.data,
     queryFn: async () => {
-      const saved = listSetups().find((item) => item.id === setupId);
-      if (!saved)
-        throw new Error("This saved setup no longer exists in this browser.");
+      const saved = await api<SavedEnvironment>(`/environments/${setupId}`);
       const environment = catalog.data?.environments.find(
-        (item) => item.key === saved.environment,
+        (item) => item.key === saved.design.environment,
       );
       if (!environment || saved.rules !== environment.rule_version)
         throw new Error(
           "This setup uses incompatible environment rules. Create a fresh setup.",
         );
-      return api<Design>("/design/validate", { design: saved.design });
+      const design = await api<Design>("/design/validate", {
+        design: saved.design,
+      });
+      return { design, revision: saved.revision };
     },
   });
   const planId = params.get("plan");
@@ -193,7 +200,7 @@ export default function Editor() {
     draft.data?.design ??
     plan.data?.output?.design ??
     previous.data?.design ??
-    setup.data ??
+    setup.data?.design ??
     catalog.data.templates.find((t) => t.id === params.get("template"))
       ?.design ??
     catalog.data.templates[0]?.design;
@@ -203,6 +210,7 @@ export default function Editor() {
       key={draftPath}
       initial={initial}
       setupId={setupId}
+      setupRevision={setup.data?.revision}
       initialStep={
         params.get("step") === "conditions" ? "conditions" : "question"
       }

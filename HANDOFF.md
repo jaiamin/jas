@@ -97,3 +97,48 @@ suite c05f3f353bcd6be3aeba94b145517e7b2e935907bbe1914b09d3f1bac4d3a8ff. Historic
 planner 206/240, participants 96/96, analysis 96/96; 302 backend/66 frontend/65 browser tests.
 These are not new-source scores. New regressions belong in correctness/development tests.
 Public provider traces must omit reasoning/signatures. Never bypass secret scanning.
+
+## Active follow-up: environment composition
+
+Branch: feat/environment-composition (based on PR #7; do not merge either PR).
+User approved agent-assisted composition and editable/deletable custom environments.
+Acceptance: typed resource primitives (finite stock, controlled/shared access, transfers,
+consumption, regeneration, stock/allocation visibility), deterministic enforcement and privacy;
+planner composes supported mechanics and declines absent ones; custom library CRUD with
+optimistic revisions and immutable experiment snapshots; visual editing and reuse; end-to-end
+shortage example; adversarial, strategy/oracle, replay, API and browser verification.
+No runtime generated code or model-settled consequences. No guaranteed optimal agent choices.
+Keep historical evidence/database and frozen benchmark families intact. Use existing spending
+ledger/cap for any paid calls; deterministic verification first. Leave owned preview on 8080.
+Library records are versioned files beside the workspace DB, independent from immutable
+SQL evidence, avoiding a schema migration or reset. Built-ins cannot be edited/deleted.
+
+Composition implementation complete; final paid verbatim-question check is in progress.
+Typed resource primitives and custom library CRUD are integrated with planner/editor,
+research accounting, exports and deterministic replay. Built-in templates are immutable;
+custom records have optimistic revisions and can be edited/deleted without changing any
+saved experiment. Removed obsolete browser-only setup storage; no compatibility importer.
+New independent oracles distinguish equal sharing (group utility 24) from controller retention
+(group utility -12). Added 96 conservation/replay combinations, privacy/schema checks,
+invalid-action atomicity, 12-agent/four-resource/100-round restoration, API lifecycle,
+cutoff-scoped analysis accounting and desktop/mobile browser lifecycle coverage.
+Observed final verification: 904 backend tests, 70 frontend unit tests, 70 browser tests;
+Ruff/ty/frontend lint/build passed. Final-source production image passed keyless/non-root
+health/SPA/assets and custom-environment CRUD smoke; owned smoke container removed.
+Planner development: first 9/12 ($0.087151/38 calls), corrected 12/12 ($0.072582/32 calls).
+Exact evaluated source 9920fd853425c8d4fcdcf85b28e4b039ea531fa3ea7d812dc49645465ba9a90d;
+final formatted source 27856bd9da81be3655846ebff971934a8a8fbce430215d732afe8eecff3462c7.
+Every backend AST is identical across that line-wrap-only change; both hashes/archives
+are retained in composition-model-final/formatting-provenance.json.
+Matched execution: 4/4 runs complete, 64/64 decisions; conservation, needs, utility,
+nonnegativity and exact replay all passed, $0.019598. All three noncontrollers consumed
+zero in every run; this is not evidence that transparency improves cooperation.
+Artifacts: data/quality/composition-model-development, composition-model-final,
+composition-participants, composition-production-smoke.json and composition-*-final logs.
+Aggregate before verbatim-question check: $14.680786, no new unknowns; old 11 retained.
+Frozen benchmark cases/scores untouched. Remaining known narrative condition-label error
+from previous diagnostics is not certified fixed by this implementation.
+Latest owned 8080 preview: exec session 56645, PID 97255, same preserved database
+`data/quality/manual-preview.sqlite3`; health/catalog/library and SPA routes returned 200.
+Next: finish exact original-question diagnostic; reconcile ledger, record final results,
+commit/secret-scan/push and create one draft PR based on feat/experiment-validity.

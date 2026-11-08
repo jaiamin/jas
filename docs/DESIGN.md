@@ -57,8 +57,10 @@ composer gutters on mobile.
 
 The environment workbench pairs a vertical mechanics index with a precise contract: observation,
 enforcement, controls and measurement definitions. Below 700px the index scrolls horizontally.
-Saved setups reuse validated protocols in browser storage, check rule versions before opening,
-and remain independent of immutable saved experiments. They do not install new rule engines.
+Custom environments reuse validated protocols in the workspace library, check rule versions
+before opening, and remain independent of immutable saved experiments. Edit/delete acts on
+the reusable record; saved experiments retain their rules and evidence. Resource composition
+exposes enforced mechanics explicitly and does not install generated code.
 
 Experiment/run headers link Ask Agent to the selected record. The editor's Generate with
 Agent carries the question and preserves the draft; reviewed proposals link Back to Agent.

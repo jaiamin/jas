@@ -15,7 +15,7 @@ def aggregate_metrics(measurements: Iterable[tuple[str, float | None]]) -> dict[
             groups[key].append(value)
     result = {}
     for key, values in groups.items():
-        if key in {"completion_rate", "stock_fraction"}:
+        if key in {"completion_rate", "stock_fraction", "group_utility"}:
             result[key] = values[-1]
         elif key == "collapse_rate":
             result[key] = max(values)

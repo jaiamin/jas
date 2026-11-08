@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowRight, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -17,13 +17,18 @@ import { Button } from "@/components/ui/button";
 import { Alert, Badge } from "@/components/ui/data";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useApi } from "@/lib/api";
-import { listSetups, removeSetup, type Setup } from "@/lib/setups";
-import type { Catalog, EnvironmentId } from "@/lib/types";
+import { api, useApi } from "@/lib/api";
+import type { Catalog, EnvironmentId, SavedEnvironment } from "@/lib/types";
 import { label } from "@/lib/utils";
 
 const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
   {
+    composed: {
+      observes:
+        "Own inventory, needs and utility. Stock and other inventories follow the selected visibility rules; controllers know the stocks they allocate.",
+      enforces:
+        "Finite stocks, allocation permissions, transfers, round consumption, unmet-need penalties, replenishment and terminal inventory utility. One action per agent per round.",
+    },
     commons: {
       observes:
         "Own resources and signal; settled public contributions when history is retained. Choices within a round stay sealed.",
@@ -70,12 +75,23 @@ const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
 
 export default function Environments() {
   const horizontal = useIsMobile(701);
-  const [pendingRemoval, setPendingRemoval] = useState<Setup | null>(null);
-  const [storageError, setStorageError] = useState("");
+  const [pendingRemoval, setPendingRemoval] = useState<SavedEnvironment | null>(
+    null,
+  );
+  const client = useQueryClient();
   const catalog = useApi<Catalog>("/catalog");
-  const setups = useQuery({
-    queryKey: ["environment-setups"],
-    queryFn: listSetups,
+  const setups = useApi<SavedEnvironment[]>("/environments");
+  const remove = useMutation({
+    mutationFn: (record: SavedEnvironment) =>
+      api(
+        `/environments/${record.id}?revision=${record.revision}`,
+        undefined,
+        "DELETE",
+      ),
+    onSuccess: () => {
+      setPendingRemoval(null);
+      void client.invalidateQueries({ queryKey: ["/environments"] });
+    },
   });
   const [params, setParams] = useSearchParams();
   const environments = catalog.data?.environments ?? [];
@@ -180,26 +196,29 @@ export default function Environments() {
                 </dl>
               </section>
               <p className="environment-footnote">
-                New mechanics are installed as validated Python environment
-                adapters. Existing rules support custom task graphs, resource
-                shocks, oversight, private evidence and renewable systems.
+                Compose custom resource economies from tested mechanics. Other
+                new mechanics require an environment implementation and
+                correctness checks.
               </p>
             </TabsContent>
           ))}
         </Tabs>
       )}
-      {storageError && <Alert variant="error">{storageError}</Alert>}
+
       <section className="saved-setups">
         <div className="section-heading">
           <div>
-            <h2>Saved setups</h2>
+            <h2>Custom environments</h2>
             <p className="muted">
-              Reusable configurations in this browser. Edit a setup without
-              changing saved experiments.
+              Reusable rules and experiment setups saved in this workspace.
+              Editing or deleting one leaves saved experiments and evidence
+              intact.
             </p>
           </div>
           <Button variant="outline" asChild>
-            <Link to="/new?step=conditions">New setup</Link>
+            <Link to="/new?template=composed&step=conditions">
+              Create environment
+            </Link>
           </Button>
         </div>
         {setups.error ? (
@@ -208,8 +227,9 @@ export default function Environments() {
           <Loading />
         ) : setups.data.length === 0 ? (
           <p className="environment-footnote">
-            Configure an experiment, then choose Save reusable setup. Setups
-            include roles, task graphs, conditions and execution settings.
+            Compose mechanics or adapt a template, then choose Save custom
+            environment. Include roles, resource rules, conditions and execution
+            settings.
           </p>
         ) : (
           <div className="saved-setup-list">
@@ -217,10 +237,11 @@ export default function Environments() {
               <div key={item.id}>
                 <div>
                   <Link to={`/new?setup=${item.id}&step=conditions`}>
-                    {item.title}
+                    {item.design.title}
                   </Link>
                   <p className="muted">
-                    {label(item.environment)} · Rules {item.rules}
+                    {label(item.design.environment)} · Revision {item.revision}{" "}
+                    · Rules {item.rules}
                   </p>
                 </div>
                 <div className="actions">
@@ -232,9 +253,12 @@ export default function Environments() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setPendingRemoval(item)}
+                    onClick={() => {
+                      remove.reset();
+                      setPendingRemoval(item);
+                    }}
                   >
-                    Remove
+                    Delete
                   </Button>
                 </div>
               </div>
@@ -251,28 +275,26 @@ export default function Environments() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Remove “{pendingRemoval?.title}”?
+              Delete “{pendingRemoval?.design.title}”?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This removes the reusable setup from this browser. Saved
-              experiments and their evidence remain available.
+              This deletes the custom environment from your workspace library.
+              Saved experiments keep their own rules and evidence.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {remove.error && (
+            <Alert variant="error">{remove.error.message}</Alert>
+          )}
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
-                if (!pendingRemoval) return;
-                try {
-                  removeSetup(pendingRemoval.id);
-                  setStorageError("");
-                  void setups.refetch();
-                } catch (error) {
-                  setStorageError((error as Error).message);
-                }
+              disabled={remove.isPending}
+              onClick={(event) => {
+                event.preventDefault();
+                if (pendingRemoval) remove.mutate(pendingRemoval);
               }}
             >
-              Remove setup
+              {remove.isPending ? "Deleting…" : "Delete environment"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

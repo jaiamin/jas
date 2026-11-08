@@ -11,6 +11,9 @@ export interface AgentSuggestion {
 }
 
 const evidenceQuestions: Record<EnvironmentId, string> = {
+  composed:
+    "Trace resource allocations, consumption and unmet needs. Separate stock visibility " +
+    "from allocation visibility and inferred information; compare enforced utility with private goals.",
   commons:
     "Trace how contribution decisions changed the shared return, separating individual and collective outcomes.",
   trust_exchange:

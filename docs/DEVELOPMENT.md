@@ -86,3 +86,8 @@ scoped evidence answers. Both default to `openai:gpt-6.1-sol`. `JAS_CONCURRENT_R
 controls the shared provider pool (1–32, default 4), independently of
 `JAS_CONCURRENT_RUNS` (1–16, default 3). Compose forwards these settings. A larger request
 pool can increase rate-limit failures; it does not give participants more information.
+
+Reusable custom environments are versioned files beside the configured SQLite database in
+`<database-stem>.environments/`; keep that directory when backing up a workspace. The app
+retains complete environment rules inside each immutable experiment, so library deletion
+never deletes run evidence. See [custom environments](CUSTOM_ENVIRONMENTS.md).

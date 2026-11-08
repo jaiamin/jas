@@ -44,13 +44,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api";
 import { changeEnvironment } from "@/lib/design";
 import { type Draft, removeDraft, writeDraft } from "@/lib/drafts";
-import { saveSetup } from "@/lib/setups";
+
 import type {
   Analysis,
   Catalog,
   Design,
   EnvironmentId,
   ExperimentPreflight,
+  SavedEnvironment,
 } from "@/lib/types";
 import { money } from "@/lib/utils";
 
@@ -66,6 +67,7 @@ export function DesignEditor({
   draft,
   initialStep = "question",
   setupId,
+  setupRevision,
 }: {
   initial: Design;
   catalog: Catalog;
@@ -78,6 +80,7 @@ export function DesignEditor({
   draft?: Draft;
   initialStep?: string;
   setupId?: string | null;
+  setupRevision?: number;
 }) {
   const [design, setDesign] = useState<Design>(() => structuredClone(initial));
   const [agentDraftId] = useState(() => crypto.randomUUID());
@@ -99,6 +102,10 @@ export function DesignEditor({
   }, [design, json, mode, draftPath]);
   const [error, setError] = useState("");
   const [setupNotice, setSetupNotice] = useState("");
+  const [savedSetup, setSavedSetup] = useState({
+    id: setupId,
+    revision: setupRevision,
+  });
   const [pendingEnvironment, setPendingEnvironment] =
     useState<EnvironmentId | null>(null);
   const navigate = useNavigate();
@@ -141,16 +148,18 @@ export function DesignEditor({
       const validated = await api<Design>("/design/validate", {
         design: mode === "json" ? JSON.parse(json) : design,
       });
-      const rules = catalog.environments.find(
-        (item) => item.key === validated.environment,
-      )?.rule_version;
-      if (!rules) throw new Error("Unknown environment rules.");
-      saveSetup(validated, rules, setupId ?? undefined);
+      return api<SavedEnvironment>(
+        savedSetup.id ? `/environments/${savedSetup.id}` : "/environments",
+        { design: validated, revision: savedSetup.revision ?? null },
+        savedSetup.id ? "PUT" : "POST",
+      );
     },
-    onSuccess: () =>
+    onSuccess: (record) => {
+      setSavedSetup({ id: record.id, revision: record.revision });
       setSetupNotice(
-        "Setup saved in this browser. Reuse or edit it from Environments.",
-      ),
+        "Custom environment saved. Reuse, edit or delete it from Environments.",
+      );
+    },
   });
   const snapshot = mode === "json" ? json : JSON.stringify(design);
   const check = useMutation({
@@ -234,7 +243,9 @@ export function DesignEditor({
             saveEnvironment.mutate();
           }}
         >
-          {setupId ? "Update saved setup" : "Save reusable setup"}
+          {savedSetup.id
+            ? "Update custom environment"
+            : "Save custom environment"}
         </Button>
         <span className="muted">
           Keep these rules, roles and conditions for another experiment.

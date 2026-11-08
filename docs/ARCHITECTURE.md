@@ -89,9 +89,9 @@ parameters and measurements. `World` owns common turn bookkeeping. Concrete worl
 checkpoint initialization, legal-action schema capabilities and derived environment measures;
 `decisions.py` builds schemas from those capabilities without selecting environments.
 `checkpoints.py` declares shared observations/actions and each world's state. Snapshots
-contain only that world's state. Institution uses rule version 4.1.0; the other worlds use 4.0.0. Incompatible
+contain only that world's state. Institution uses rule version 4.1.0, composition uses 1.0.0, and the other worlds use 4.0.0. Incompatible
 checkpoints fail explicitly. `environments.py` contains the catalog and three games;
-`mechanisms.py` implements the other four worlds.
+`mechanisms.py` implements four fixed worlds; `composed.py` interprets resource compositions.
 
 Profiles describe goals; parameterized permissions enforce action affordances. Per-turn
 schemas constrain requests, and world rules validate transitions again before committing.
@@ -197,3 +197,27 @@ cutoff exposure, preserving recorded observations as the historical authority.
 Its evidence index also supplies the current environment capabilities, active controls,
 measures and rule versions so recommendations distinguish runnable follow-ups from
 environment extensions; inactive parameter blocks never establish world mechanics.
+
+## Composed environments and library lifecycle
+
+The `composed` world (`simulation/composed.py`, rules 1.0.0) interprets a bounded typed
+resource specification, not generated executable code. Each of up to four resources defines
+finite shared stock, controlled allocation or shared extraction, optional inventory transfers,
+consumption needs, replenishment, utility and separate stock/allocation visibility. The same
+World interface supplies legal actions, observations, checkpoints and replay. Every environment
+continues to settle its own consequences independently of model prose.
+
+`EnvironmentLibrary` owns reusable custom setups as versioned JSON records in a sibling
+`<database-stem>.environments` directory. An in-memory workspace uses a temporary library.
+Writes normalize and validate a complete protocol, run deterministic preflight, hash content,
+and atomically replace a file. Updates and deletions require the current record revision;
+stale writes return 409. Built-in templates are catalog constants and have no library IDs.
+The library is single-process, like the local app; it needs a transactional store/lock design
+before multiple server processes can write it.
+
+Saved study revisions embed the entire resource specification and have no mutable dependency
+on library records. Editing or deleting a reusable environment therefore never changes past
+or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
+12 recent compatible setups as untrusted examples; new proposals still undergo scope mapping,
+parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
+call or run. See [custom environments](CUSTOM_ENVIRONMENTS.md) for mechanics and limitations.

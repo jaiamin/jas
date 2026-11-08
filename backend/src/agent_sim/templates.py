@@ -1,10 +1,12 @@
 from .domain import (
     BargainingRules,
+    CompositionRules,
     Design,
     InformationRules,
     InstitutionRules,
     Parameters,
     Profile,
+    ResourcePrimitive,
     ResourceRules,
     Treatment,
 )
@@ -215,6 +217,51 @@ def renewable_resource_template() -> Design:
     )
 
 
+def composed_template() -> Design:
+    participants = profiles()[:4]
+    participants[0] = participants[0].model_copy(update={"role": "Resource controller"})
+    return Design(
+        title="Transparency under resource shortage",
+        question="Does publishing resource allocations change retention and unmet needs "
+        "when one agent controls a scarce shared stock?",
+        environment="composed",
+        profiles=participants,
+        seeds=[7, 19, 43],
+        rounds=6,
+        openai_reasoning_effort="low",
+        conditions=[
+            Treatment(
+                key=visibility,
+                name=f"{visibility.title()} allocations",
+                parameters=Parameters(
+                    composition=CompositionRules(
+                        resources=[
+                            ResourcePrimitive(
+                                key="food",
+                                name="Food",
+                                capacity=48,
+                                initial_stock=18,
+                                action_limit=12,
+                                need=1,
+                                controllers=[participants[0].key],
+                                stock_visibility="public",
+                                allocation_visibility=visibility,
+                            )
+                        ]
+                    )
+                ),
+            )
+            for visibility in ("public", "parties")
+        ],
+        measures=["unmet_need_rate", "retention_rate", "inventory", "group_utility"],
+        limitations=[
+            "Allocations and current inventories are published together in the public arm.",
+            "Finite synthetic utility is not evidence of human behavior or deceptive intent.",
+            "A controller allocates to one participant or equally to everyone per turn.",
+        ],
+    )
+
+
 def templates() -> list[dict[str, object]]:
     examples = [
         commons_template(),
@@ -224,5 +271,6 @@ def templates() -> list[dict[str, object]]:
         bargaining_template(),
         information_template(),
         renewable_resource_template(),
+        composed_template(),
     ]
     return [{"id": design.environment, "design": design.model_dump()} for design in examples]

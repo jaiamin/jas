@@ -104,6 +104,13 @@ class ResourceCheckpoint(Checkpoint):
     stock: float
 
 
+class ComposedCheckpoint(Checkpoint):
+    stocks: dict[str, float]
+    inventories: dict[str, dict[str, float]]
+    consumed: dict[str, dict[str, float]]
+    unmet: dict[str, dict[str, float]]
+
+
 class Observation(TypedDict):
     round: int
     total_rounds: int
@@ -133,3 +140,4 @@ class Observation(TypedDict):
     proposer: NotRequired[str]
     choices: NotRequired[dict[str, int]]
     stock: NotRequired[float]
+    resources: NotRequired[list[dict[str, Any]]]

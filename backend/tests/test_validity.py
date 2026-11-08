@@ -33,11 +33,14 @@ def protocol(environment, agents=6, rounds=4):
     design.rounds, design.seeds = rounds, [0, 7, 19]
     for condition in design.conditions:
         condition.parameters.institution.authorities = ["p0"]
+        if condition.parameters.composition:
+            for resource in condition.parameters.composition.resources:
+                resource.controllers = ["p0"]
     return Design.model_validate(design.model_dump())
 
 
 @pytest.mark.parametrize("environment,memory,channel_index,rounds", MATRIX)
-def test_336_simple_and_complex_protocols(environment, memory, channel_index, rounds):
+def test_simple_and_complex_protocols(environment, memory, channel_index, rounds):
     """Legal probes must handle every world/channel/memory/horizon combination."""
     agents = (2, 6, 12)[(rounds + channel_index) % 3]
     design = protocol(environment, agents, rounds)
@@ -106,7 +109,7 @@ def test_inactive_mechanics_cannot_be_passed_off_as_treatments(environment):
     )
 
 
-def test_shortage_construct_combination_is_not_implemented_by_any_world():
+def test_shortage_construct_combination_requires_composed_mechanics():
     needs = [
         Requirement(
             source="resource shortage",
@@ -121,7 +124,8 @@ def test_shortage_construct_combination_is_not_implemented_by_any_world():
             explanation="Enforced allocation rights.",
         ),
     ]
-    assert all(requirement_issues(world, needs) for world in CATALOG)
+    assert all(requirement_issues(world, needs) for world in CATALOG if world != "composed")
+    assert requirement_issues("composed", needs) == []
     assert requirement_issues("institution", [needs[0]])
     proxy = needs[0].model_copy(update={"capability": "allocation_budget", "mapping": "proxy"})
     assert requirement_issues("institution", [proxy])

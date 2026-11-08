@@ -87,9 +87,12 @@ across runs instead of falsely labeling mixed-version evidence with the current 
 For incompatible engines it marks an unrecorded initial state unavailable and exports the
 recorded turns; it never reconstructs old evidence using new rules.
 
-A stock-shortage question combining unequal allocation powers and configurable resource
-transparency remains unsupported. Rejecting that substitution is the correct result;
-implementing and validating those joint mechanics is future environment work.
+At that checkpoint, a stock-shortage question combining unequal allocation powers and
+configurable resource transparency remained unsupported. The subsequent
+[custom-environment composition engine](CUSTOM_ENVIRONMENTS.md) now implements those joint
+mechanics through finite stocks, controlled allocation, consumption needs and separate
+stock/record visibility. The historical institution protocol still cannot answer that question;
+create a new experiment using the appropriate mechanics.
 
 ## Verification and limits
 

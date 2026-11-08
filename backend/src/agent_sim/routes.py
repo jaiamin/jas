@@ -71,6 +71,11 @@ class SaveStudy(Strict):
     plan_id: str | None = None
 
 
+class SaveEnvironment(Strict):
+    design: Design
+    revision: int | None = Field(default=None, ge=1)
+
+
 class ChatMessage(Strict):
     question: str = Field(min_length=1, max_length=4000)
     context: str = "general"
@@ -118,6 +123,38 @@ async def catalog(*, models: LanguageModelsDep) -> dict[str, Any]:
         "templates": templates(),
         "design_schema": Design.model_json_schema(),
     }
+
+
+@router.get("/api/environments")
+async def custom_environments(*, research: ResearchDep) -> list[dict]:
+    return [record.model_dump() for record in research.environments.list()]
+
+
+@router.get("/api/environments/{key}")
+async def custom_environment(key: str, *, research: ResearchDep) -> dict:
+    return research.environments.get(key).model_dump()
+
+
+@router.post("/api/environments", status_code=201)
+async def create_environment(body: SaveEnvironment, *, research: ResearchDep) -> dict:
+    research.validate_design(body.design)
+    return (await asyncio.to_thread(research.environments.save, body.design)).model_dump()
+
+
+@router.put("/api/environments/{key}")
+async def update_environment(key: str, body: SaveEnvironment, *, research: ResearchDep) -> dict:
+    research.validate_design(body.design)
+    return (
+        await asyncio.to_thread(research.environments.save, body.design, key, body.revision)
+    ).model_dump()
+
+
+@router.delete("/api/environments/{key}")
+async def delete_environment(
+    key: str, revision: int = Query(ge=1), *, research: ResearchDep
+) -> dict:
+    await asyncio.to_thread(research.environments.delete, key, revision)
+    return {"ok": True}
 
 
 @router.get("/api/settings")
