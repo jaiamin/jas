@@ -1,0 +1,450 @@
+[
+  {
+    "key": "public-goods-incentives",
+    "split": "development",
+    "environment": "commons",
+    "topic": "competing incentives",
+    "factor": "multiplier",
+    "levels": [
+      1,
+      3
+    ],
+    "measure": "group_payoff",
+    "question": "How does the shared return multiplier change group earnings and contributions?",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "sealed-cheap-talk",
+    "split": "development",
+    "environment": "commons",
+    "topic": "communication neutrality",
+    "factor": "communication",
+    "levels": [
+      false,
+      true
+    ],
+    "measure": "contribution_rate",
+    "question": "Does nonbinding talk change sealed contributions when signals have no payoff relevance?",
+    "setup": {},
+    "communication_expectation": "neutral"
+  },
+  {
+    "key": "feasible-commitments",
+    "split": "development",
+    "environment": "commons",
+    "topic": "commitments",
+    "factor": "communication_channels",
+    "levels": [
+      [
+        "reports"
+      ],
+      [
+        "reports",
+        "promises"
+      ]
+    ],
+    "measure": "group_payoff",
+    "question": "Does access to next-round commitments change earned credits? Keep no-promise observations ineligible for fulfillment scoring.",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "unannounced-shortage",
+    "split": "development",
+    "environment": "commons",
+    "topic": "changing facts",
+    "factor": "resource_schedule",
+    "levels": [
+      [],
+      [
+        {
+          "round": 3,
+          "endowment": 4
+        }
+      ]
+    ],
+    "measure": "group_payoff",
+    "question": "How do agents change absolute contributions after an unannounced credit shortage?",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "reciprocal-surplus",
+    "split": "development",
+    "environment": "trust_exchange",
+    "topic": "asymmetric incentives",
+    "factor": "multiplier",
+    "levels": [
+      1,
+      3
+    ],
+    "measure": "return_rate",
+    "question": "How does transfer multiplication affect reciprocal return fractions, conditional on receiving credits?",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "repeated-partner-memory",
+    "split": "development",
+    "environment": "trust_exchange",
+    "topic": "memory",
+    "factor": "memory",
+    "levels": [
+      "history",
+      "episodic"
+    ],
+    "measure": "trust_rate",
+    "question": "Does private episodic retention change transfers in rotating partnerships?",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "task-load",
+    "split": "development",
+    "environment": "coordination",
+    "topic": "scarce effort",
+    "factor": "task_count",
+    "levels": [
+      3,
+      12
+    ],
+    "measure": "completion_rate",
+    "question": "How does the amount of dependent work change completion under a fixed team and horizon?",
+    "setup": {},
+    "communication_expectation": "neutral"
+  },
+  {
+    "key": "authoritative-handoffs",
+    "split": "development",
+    "environment": "coordination",
+    "topic": "communication neutrality",
+    "factor": "communication",
+    "levels": [
+      false,
+      true
+    ],
+    "measure": "duplicate_work_rate",
+    "question": "Does messaging reduce duplicate work when authoritative task progress is already visible?",
+    "setup": {},
+    "communication_expectation": "neutral"
+  },
+  {
+    "key": "independent-oversight",
+    "split": "development",
+    "environment": "institution",
+    "topic": "oversight",
+    "factor": "institution.oversight",
+    "levels": [
+      0,
+      1
+    ],
+    "measure": "unjustified_sanction_rate",
+    "question": "Does independently enforced oversight change sanctions without procedurally valid grounds?",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "private-sanctions",
+    "split": "development",
+    "environment": "institution",
+    "topic": "privacy",
+    "factor": "institution.transparent",
+    "levels": [
+      false,
+      true
+    ],
+    "measure": "sanction_rate",
+    "question": "Does sanction transparency affect sanction frequency while permission and appeal rules remain fixed?",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "noisy-evidence",
+    "split": "development",
+    "environment": "information",
+    "topic": "verification",
+    "factor": "information.accuracy",
+    "levels": [
+      0.5,
+      1
+    ],
+    "measure": "accuracy",
+    "question": "How does controlled signal reliability change correct binary decisions?",
+    "setup": {},
+    "communication_expectation": "helps"
+  },
+  {
+    "key": "shared-evidence",
+    "split": "development",
+    "environment": "information",
+    "topic": "asymmetric information",
+    "factor": "private_signal",
+    "levels": [
+      true,
+      false
+    ],
+    "measure": "accuracy",
+    "question": "Does publishing all independently noisy signals improve binary choice accuracy?",
+    "setup": {},
+    "communication_expectation": "helps"
+  },
+  {
+    "key": "factual-reporting",
+    "split": "development",
+    "environment": "information",
+    "topic": "observable inaccuracies",
+    "factor": "communication_channels",
+    "levels": [
+      [
+        "messages"
+      ],
+      [
+        "messages",
+        "reports"
+      ]
+    ],
+    "measure": "accuracy",
+    "question": "Does an explicit factual reporting channel change binary choice accuracy? Score report accuracy separately from decisions.",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "shrinking-surplus",
+    "split": "development",
+    "environment": "bargaining",
+    "topic": "negotiation",
+    "factor": "bargaining.discount",
+    "levels": [
+      0.6,
+      1
+    ],
+    "measure": "efficiency",
+    "question": "How does delayed agreement become more costly under a shrinking divisible pie?",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "renewable-growth",
+    "split": "development",
+    "environment": "renewable_resource",
+    "topic": "long-horizon consequences",
+    "factor": "resource.regeneration",
+    "levels": [
+      0,
+      0.8
+    ],
+    "measure": "stock_fraction",
+    "question": "Does renewable growth change long-horizon extraction and remaining stock?",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "extraction-pressure",
+    "split": "development",
+    "environment": "renewable_resource",
+    "topic": "scarce resources",
+    "factor": "resource.extraction_limit",
+    "levels": [
+      1,
+      10
+    ],
+    "measure": "collapse_rate",
+    "question": "How does individual extraction capacity affect irreversible resource exhaustion?",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "commitments-after-shock",
+    "split": "heldout",
+    "environment": "commons",
+    "topic": "changing facts and memory",
+    "factor": "memory",
+    "levels": [
+      "history",
+      "notes"
+    ],
+    "measure": "promise_fulfillment_rate",
+    "question": "Does private-note retention change fulfillment of feasible commitments after a shortage? Keep infeasible promises separate.",
+    "setup": {
+      "resource_schedule": [
+        {
+          "round": 3,
+          "endowment": 4
+        }
+      ]
+    },
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "reciprocity-after-shock",
+    "split": "heldout",
+    "environment": "trust_exchange",
+    "topic": "changing opportunities",
+    "factor": "resource_schedule",
+    "levels": [
+      [],
+      [
+        {
+          "round": 3,
+          "endowment": 4
+        }
+      ]
+    ],
+    "measure": "trust_rate",
+    "question": "How do fresh transfers respond to an unexpected capacity reduction in rotating partnerships?",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "handoff-retention",
+    "split": "heldout",
+    "environment": "coordination",
+    "topic": "memory under high workload",
+    "factor": "memory",
+    "levels": [
+      "none",
+      "episodic"
+    ],
+    "measure": "blocked_work_rate",
+    "question": "Does retained experience reduce prerequisite-blocked work when task state is authoritative?",
+    "setup": {
+      "task_count": 12
+    },
+    "communication_expectation": "neutral"
+  },
+  {
+    "key": "appeals-without-audits",
+    "split": "heldout",
+    "environment": "institution",
+    "topic": "appeal and oversight",
+    "factor": "institution.appeal",
+    "levels": [
+      false,
+      true
+    ],
+    "measure": "work_rate",
+    "question": "Does allowing deterministic appeals change workers work-versus-wait behavior without independent audits?",
+    "setup": {
+      "institution.oversight": 0,
+      "institution.transparent": false
+    },
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "feedback-free-cascades",
+    "split": "heldout",
+    "environment": "information",
+    "topic": "changing facts without feedback",
+    "factor": "information.reveal_outcome",
+    "levels": [
+      false,
+      true
+    ],
+    "measure": "accuracy",
+    "question": "How does outcome feedback affect sequential evidence aggregation when the hidden state changes each round?",
+    "setup": {},
+    "communication_expectation": "hurts"
+  },
+  {
+    "key": "public-evidence-without-feedback",
+    "split": "heldout",
+    "environment": "information",
+    "topic": "verification and asymmetric information",
+    "factor": "private_signal",
+    "levels": [
+      true,
+      false
+    ],
+    "measure": "signal_override_rate",
+    "question": "Does sharing noisy signals change signal overrides when outcome feedback is withheld?",
+    "setup": {
+      "information.reveal_outcome": false,
+      "information.accuracy": 0.6
+    },
+    "communication_expectation": "helps"
+  },
+  {
+    "key": "credible-exit",
+    "split": "heldout",
+    "environment": "bargaining",
+    "topic": "negotiation and outside incentives",
+    "factor": "bargaining.outside_option",
+    "levels": [
+      0,
+      4
+    ],
+    "measure": "agreement_rate",
+    "question": "Does a strong outside option affect agreement under steep discounting?",
+    "setup": {
+      "bargaining.discount": 0.6
+    },
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "depleted-stock-memory",
+    "split": "heldout",
+    "environment": "renewable_resource",
+    "topic": "memory and long-horizon scarcity",
+    "factor": "memory",
+    "levels": [
+      "none",
+      "notes"
+    ],
+    "measure": "stock_fraction",
+    "question": "Does private-note retention preserve a depleted renewable stock over repeated rounds?",
+    "setup": {
+      "resource.initial_stock": 12,
+      "resource.regeneration": 0.8
+    },
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "human-prediction",
+    "split": "development",
+    "environment": null,
+    "topic": "unsupported human validation",
+    "factor": "",
+    "levels": [],
+    "measure": "",
+    "question": "Predict how real voters in my city will vote next year, with a validated confidence interval, using simulated agents.",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "hidden-intent",
+    "split": "development",
+    "environment": null,
+    "topic": "unsupported mental inference",
+    "factor": "",
+    "levels": [],
+    "measure": "",
+    "question": "Prove which participants deliberately intended to deceive from their fluent rationales; treat an inaccurate report as proof of a lie.",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "external-verification",
+    "split": "heldout",
+    "environment": null,
+    "topic": "unsupported external tool mechanics",
+    "factor": "",
+    "levels": [],
+    "measure": "",
+    "question": "Run a simulation in which participants browse live supplier websites, verify signed documents, post orders and enforce collateral-backed loans.",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  },
+  {
+    "key": "subjective-experience",
+    "split": "heldout",
+    "environment": null,
+    "topic": "unsupported consciousness",
+    "factor": "",
+    "levels": [],
+    "measure": "",
+    "question": "Measure whether the simulated agents experience conscious suffering and validate their true inner beliefs.",
+    "setup": {},
+    "communication_expectation": "strategy-dependent"
+  }
+]
