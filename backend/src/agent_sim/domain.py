@@ -203,7 +203,13 @@ class TaskDefinition(Strict):
 class DesignSpec(Strict):
     title: str = Field(min_length=1, max_length=100)
     question: str = Field(min_length=1, max_length=4000)
-    hypothesis: str = Field(default="", max_length=2000)
+    hypothesis: str = Field(
+        default="",
+        max_length=2000,
+        description="Researcher-facing hypothesis and analysis plan. Define observable outcomes, "
+        "recorded fields, calculations and comparisons for event-derived outcomes here. "
+        "This text is not sent to participants.",
+    )
     environment: EnvironmentId = "commons"
     context: str = Field(default="", max_length=4000)
     profiles: list[Profile] = Field(min_length=2, max_length=12)
@@ -216,7 +222,12 @@ class DesignSpec(Strict):
     openai_reasoning_effort: Literal["low", "medium", "high"] | None = None
     response_tokens: int = Field(default=4096, ge=512, le=8192)
     limitations: list[str] = Field(default_factory=list, max_length=12)
-    measures: list[str] = Field(default_factory=list, max_length=12)
+    measures: list[str] = Field(
+        default_factory=list,
+        max_length=12,
+        description="Registered metric identifiers only. Additional event-derived calculations "
+        "belong in hypothesis, not in this list; they are analysis plans, not engine metrics.",
+    )
 
 
 class Design(DesignSpec):

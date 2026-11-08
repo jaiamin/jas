@@ -382,16 +382,26 @@ export function DesignEditor({
                     />
                   </Field>
                   <Disclosure className="disclosure">
-                    <DisclosureTrigger>Hypothesis</DisclosureTrigger>
+                    <DisclosureTrigger>
+                      Hypothesis & analysis plan
+                    </DisclosureTrigger>
                     <DisclosureContent>
                       <Field>
-                        <FieldLabel htmlFor="hypothesis">Hypothesis</FieldLabel>
-                        <Input
+                        <FieldLabel htmlFor="hypothesis">
+                          Hypothesis & analysis plan
+                        </FieldLabel>
+                        <Textarea
                           id="hypothesis"
-                          placeholder="An expected pattern to investigate"
+                          placeholder="Expected pattern, observable outcomes and how you will compare them"
+                          rows={4}
+                          maxLength={2000}
                           value={design.hypothesis}
                           onChange={(e) => update("hypothesis", e.target.value)}
                         />
+                        <FieldDescription>
+                          Define calculations from recorded actions and outcomes
+                          here. Participants do not receive this plan.
+                        </FieldDescription>
                       </Field>
                     </DisclosureContent>
                   </Disclosure>

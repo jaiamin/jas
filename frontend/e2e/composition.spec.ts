@@ -43,6 +43,14 @@ for (const theme of ["light", "dark"]) {
     const title = `Custom shortage ${theme}`;
     await page.getByLabel("Experiment name", { exact: true }).fill(title);
     await page
+      .getByRole("button", { name: "Hypothesis & analysis plan", exact: true })
+      .click();
+    const analysisPlan =
+      "Compare allocations to others and unallocated stock across conditions.";
+    await page
+      .getByLabel("Hypothesis & analysis plan", { exact: true })
+      .fill(analysisPlan);
+    await page
       .getByRole("button", { name: "Save custom environment", exact: true })
       .click();
     await expect(
@@ -54,6 +62,7 @@ for (const theme of ["light", "dark"]) {
     await expect(page).toHaveURL(/\/studies\//);
     const studyId = new URL(page.url()).pathname.split("/").at(-1);
     const study = await (await request.get(`/api/studies/${studyId}`)).json();
+    expect(study.design.hypothesis).toBe(analysisPlan);
     const baseline =
       study.design.conditions[0].parameters.composition.resources[0];
     expect(baseline.initial_stock).toBe(16);

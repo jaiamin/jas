@@ -39,8 +39,17 @@ def test_library_update_delete_and_corruption_are_explicit(tmp_path):
 def test_environment_lifecycle_preserves_pinned_runs_and_replay(tmp_path, monkeypatch, fake_model):
     app = create_app(f"sqlite:///{tmp_path}/app.sqlite3")
     monkeypatch.setattr(app.state.models, "model", lambda _name: fake_model)
+    plan = "Researcher-only plan: compare allocations to others against self-allocation."
+    generate = app.state.models.generate
+
+    async def private_plan(output, **kwargs):
+        assert plan not in kwargs["prompt"]
+        return await generate(output, **kwargs)
+
+    monkeypatch.setattr(app.state.models, "generate", private_plan)
     with TestClient(app, base_url="http://localhost") as client:
         design = composed_template().model_dump()
+        design["hypothesis"] = plan
         design["rounds"] = 2
         design["seeds"] = [7]
         created = client.post("/api/environments", json={"design": design})
@@ -85,6 +94,7 @@ def test_environment_lifecycle_preserves_pinned_runs_and_replay(tmp_path, monkey
         assert client.post(f"/api/runs/{run_id}/verify", json={}).json()["verified_turns"] == 1
         exported = client.get(f"/api/studies/{study_id}/export").json()
         assert exported["rule_versions"] == ["1.0.0"]
+        assert exported["study"]["design"]["hypothesis"] == plan
         assert client.get(f"/api/studies/{study_id}").json()["design"] == pinned
         assert client.delete("/api/environments/commons?revision=1").status_code == 404
         assert (

@@ -17,6 +17,12 @@ arbitrary simulator or a promise that model-generated experiments are always opt
 4. Create experiment saves an independent immutable revision. Explicitly run it when ready.
    Editing/deleting the reusable environment cannot alter its experiments or evidence.
 
+Use **Hypothesis & analysis plan** for observable choice definitions, recorded fields,
+formulas, denominators and comparison rules. Additional calculations belong there rather
+than among registered metric identifiers. This plan is researcher-facing and is not sent
+to participants. A written formula does not install a new automatically computed metric;
+verify derived analyses against the recorded evidence.
+
 Custom environments are stored beside the SQLite workspace in `<database-stem>.environments/`.
 Back up that directory with the database. Browser-only reusable setups have been removed;
 there is no legacy importer. Existing saved experiments and their embedded evidence are retained.
@@ -82,6 +88,8 @@ multiple resources, deterministic checkpoint restoration and exact replay. The b
 matrix also varies memory, channels, agent counts and horizon. API tests edit/delete a library
 record and then execute/replay its unchanged experiment. Browser flows cover resource edits,
 creation, reuse, deletion and retained evidence at desktop and mobile sizes.
+Preflight consequence hashes include event disclosure metadata: a witness difference is not
+itself a change in physical allocation or utility. Inspect the explicit accounting and trials.
 
 The supported composition deliberately excludes per-person needs, arbitrary allocation vectors,
 production recipes, loans/collateral, external tools and generated Python execution. One action

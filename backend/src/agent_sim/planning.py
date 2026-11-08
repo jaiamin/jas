@@ -123,8 +123,12 @@ In commons/trust, available per-action credits (endowment) are an agent's resour
 a scheduled reduction can make an earlier promise infeasible. This is not physical capacity.
 No new parameter names or invented mechanics. Inactive environment parameters retain defaults.
 All study/profile/condition keys must be lowercase identifiers. Return all schema fields.
-Use registered measure keys only; describe any additional calculation from recorded events
-in the protocol, never invent a measurement key. Template example values are not requirements:
+Use registered measure keys only in design.measures. Put additional outcome definitions and
+calculations in design.hypothesis: name recorded fields/events, the formula or event filter,
+the denominator and the comparison. Distinguish observable choices from their consequences;
+do not merely promise to inspect evidence. These calculations are analysis plans, not new
+engine metrics. Keep researcher analysis instructions out of participant context and goals.
+Template example values are not requirements:
 compare conditions to each other and the actual request, not to template numeric constants.
 The scoped agent/condition/seed/repetition/round counts are a binding plan, not suggestions.
 Do not replace an unsupported request with a placeholder design labeled unavailable.
@@ -442,6 +446,8 @@ class Planner:
                 "or extra brief entries when the protocol already implements both levels. "
                 "The brief is fixed at this stage; request material protocol corrections, "
                 "not cosmetic changes to the brief. "
+                "Counts stay fixed; other brief suggestions may be improved if the original "
+                "question's essential mechanics are preserved and material changes explained. "
                 "Check for renamed proxies, cost-free cooperation, ceiling effects and dormant "
                 "treatments using the computed preflight. Do not rubber-stamp caveats that "
                 "disclaim the central question. Check that participant context excludes "
@@ -451,7 +457,7 @@ class Planner:
                 "goals avoid prescribing the behavior under study, and unsupported realism "
                 "claims are absent. Do not invent statistical power or add unnecessary complexity.",
                 context,
-                max_tokens=4096,
+                max_tokens=8192,
             )
             feedback = review.issues
             planning["reviews"].append({"kind": "review", "issues": feedback})
