@@ -6,7 +6,37 @@ export type EnvironmentId =
   | "institution"
   | "bargaining"
   | "information"
-  | "renewable_resource";
+  | "renewable_resource"
+  | "composed";
+export interface ResourcePrimitive {
+  key: string;
+  name: string;
+  capacity: number;
+  initial_stock: number;
+  replenishment: number;
+  controllers: string[];
+  action_limit: number;
+  need: number;
+  consumption_value: number;
+  shortfall_penalty: number;
+  terminal_value: number;
+  stock_visibility: "public" | "controllers";
+  allocation_visibility: "public" | "parties";
+  transfers: boolean;
+}
+export interface CompositionRules {
+  resources: ResourcePrimitive[];
+  controllers_first: boolean;
+}
+export interface SavedEnvironment {
+  format: "jas-environment-v1";
+  id: string;
+  revision: number;
+  updated: string;
+  rules: string;
+  sha256: string;
+  design: Design;
+}
 export interface Parameters {
   endowment: number;
   multiplier: number;
@@ -34,6 +64,7 @@ export interface Parameters {
     regeneration: number;
     extraction_limit: number;
   };
+  composition: CompositionRules | null;
   resource_schedule: { round: number; endowment: number }[];
 }
 export interface Profile {
@@ -237,6 +268,10 @@ export interface Task {
   completed_by: string | null;
 }
 export interface State {
+  stocks?: Record<string, number>;
+  inventories?: Record<string, Record<string, number>>;
+  consumed?: Record<string, Record<string, number>>;
+  unmet?: Record<string, Record<string, number>>;
   stock?: number;
   shared_output?: number;
   offer?: { actor: string; amount: number; pie: number };

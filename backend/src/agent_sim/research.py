@@ -20,10 +20,11 @@ from .db import (
     digest,
 )
 from .domain import Design, Treatment
+from .environment_library import EnvironmentLibrary
 from .llm import PRICES, LanguageModels, Usage, empty_usage
 from .metrics import RunMetrics, aggregate_metrics, condition_results, matched_effects
 from .simulation.environments import CATALOG, create_world
-from .validity import Requirement, preflight, require_valid, requirement_issues
+from .validity import Requirement, factorial_issues, preflight, require_valid, requirement_issues
 
 
 def study_status(statuses: Sequence[str]) -> str:
@@ -84,6 +85,7 @@ class OperationalRun:
 class Research:
     def __init__(self, db: Database, models: LanguageModels):
         self.db, self.models = db, models
+        self.environments = EnvironmentLibrary(db.engine.url.database)
 
     def preflight(self, design: Design, plan_id: str | None = None) -> dict:
         result = preflight(design)
@@ -99,6 +101,11 @@ class Research:
                 ):
                     raise ValueError("Choose a completed, supported AI design")
                 brief = ((plan.output or {}).get("planning") or {}).get("brief") or {}
+                if brief.get("factorial"):
+                    problems = factorial_issues(result["condition_grid"])
+                    result["issues"].extend(problems)
+                    if problems:
+                        result["status"] = "blocked"
                 requirements = [
                     Requirement.model_validate(r) for r in brief.get("requirements", [])
                 ]
@@ -116,7 +123,7 @@ class Research:
                     if result["status"] == "checked":
                         result["status"] = "review"
             result["question_mapping"] = [r.model_dump() for r in requirements]
-            for message in requirement_issues(design.environment, requirements):
+            for message in requirement_issues(design.environment, requirements, design):
                 result["issues"].append(
                     {"code": "missing_construct", "severity": "error", "message": message}
                 )
@@ -567,7 +574,8 @@ class Research:
             if (
                 not event.actor
                 or not event.target
-                or event.kind not in ("transfer", "message", "claim", "commitment_resolved")
+                or event.kind
+                not in ("transfer", "resource_transfer", "message", "claim", "commitment_resolved")
             ):
                 continue
             row = pairs.setdefault(
@@ -584,7 +592,7 @@ class Research:
                 },
             )
             row["interactions"] += 1
-            if event.kind == "transfer":
+            if event.kind in {"transfer", "resource_transfer"}:
                 row["transfers"] += event.data["amount"]
             if event.kind == "claim":
                 row["claims"] += 1

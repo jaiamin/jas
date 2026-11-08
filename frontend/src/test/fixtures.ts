@@ -28,6 +28,7 @@ export const parameters: Parameters = {
     regeneration: 0.1,
     extraction_limit: 10,
   },
+  composition: null,
   resource_schedule: [],
 };
 

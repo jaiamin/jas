@@ -5,6 +5,7 @@ import hashlib
 import json
 from collections import Counter
 from functools import lru_cache
+from math import prod
 from typing import Literal
 
 from pydantic import Field, field_validator
@@ -51,7 +52,21 @@ CAPABILITIES = {
         "noisy_evidence": "Binary evidence accuracy; hidden truth redraws each round.",
         "outcome_feedback": "Immediate versus delayed rewards/outcomes; a bundled feedback rule.",
     },
+    "composed": {
+        "shared_extraction": "Resources with no controllers permit each participant to extract "
+        "from the persistent shared stock, under the action limit.",
+        "finite_stock": "Explicit persistent stocks; no fresh allocation credits.",
+        "resource_depletion": "Consumption, stock extraction and configured replenishment.",
+        "allocation_power": "Configured controllers alone allocate each controlled stock; "
+        "one recipient or an equal split of the total among everyone per turn.",
+        "resource_visibility": "Separate public/controller-only stock and public/party-only "
+        "allocation records. Public allocation visibility also reveals current inventories.",
+        "consumption_needs": "Automatic round consumption, unmet-need penalties and terminal "
+        "inventory utility. Needs are uniform per resource, not calibrated physiology.",
+        "inventory_transfers": "Optional transfers from personally held resources; no loans.",
+    },
     "renewable_resource": {
+        "shared_extraction": "Every participant has equal extraction permissions.",
         "finite_stock": "Renewable stock, sealed extraction, proportional rationing.",
         "resource_depletion": "Extraction, regeneration and collapse; stock is always visible.",
     },
@@ -59,7 +74,12 @@ CAPABILITIES = {
 
 
 class Requirement(Strict):
-    source: str = Field(min_length=1, max_length=300, description="Verbatim user-question phrase.")
+    source: str = Field(
+        min_length=1,
+        max_length=300,
+        description="Verbatim phrase naming an essential mechanic; "
+        "exclude behavioral outcome labels.",
+    )
     capability: Literal[
         "allocation_budget",
         "allocation_power",
@@ -77,13 +97,21 @@ class Requirement(Strict):
         "reciprocal_transfers",
         "repeated_interaction",
         "resource_depletion",
+        "resource_visibility",
+        "shared_extraction",
+        "consumption_needs",
+        "inventory_transfers",
         "retained_memory",
         "sanction_visibility",
         "signal_disclosure",
         "task_dependencies",
         "unavailable",
     ]
-    mapping: Literal["direct", "proxy", "missing"]
+    mapping: Literal["direct", "proxy", "missing"] = Field(
+        description="Direct means the requested mechanic is enforced. Operationalizing "
+        "observable behavior with supported actions and caveats is not a proxy. Proxy means "
+        "replacing an essential mechanic with a different one."
+    )
     explanation: str = Field(min_length=1, max_length=400)
 
     @field_validator("source")
@@ -107,8 +135,30 @@ def capabilities(environment: str) -> dict[str, str]:
     return {**COMMON, **CAPABILITIES[environment]}
 
 
-def requirement_issues(environment: str, requirements: list[Requirement]) -> list[str]:
+def requirement_issues(
+    environment: str, requirements: list[Requirement], design: Design | None = None
+) -> list[str]:
     available = capabilities(environment)
+    if environment == "composed" and design is not None:
+        compositions = [c.parameters.composition for c in design.conditions]
+        if not any(
+            r
+            and any(
+                resource.controllers
+                and set(resource.controllers) < {p.key for p in design.profiles}
+                for resource in r.resources
+            )
+            for r in compositions
+        ):
+            available.pop("allocation_power", None)
+        if not any(r and any(resource.need > 0 for resource in r.resources) for r in compositions):
+            available.pop("consumption_needs", None)
+        if not any(r and any(resource.transfers for resource in r.resources) for r in compositions):
+            available.pop("inventory_transfers", None)
+        if not any(
+            r and any(not resource.controllers for resource in r.resources) for r in compositions
+        ):
+            available.pop("shared_extraction", None)
     return [
         f"{r.source}: {r.explanation} (requires {r.capability}; {r.mapping} mapping)."
         for r in requirements
@@ -123,9 +173,90 @@ def _differences(left: dict, right: dict, prefix: str = "") -> list[str]:
         a, b = left.get(key), right.get(key)
         if isinstance(a, dict) and isinstance(b, dict):
             result.extend(_differences(a, b, path))
+        elif (
+            isinstance(a, list)
+            and isinstance(b, list)
+            and a
+            and b
+            and all(isinstance(v, dict) and "key" in v for v in [*a, *b])
+            and {v["key"] for v in a} == {v["key"] for v in b}
+        ):
+            if [v["key"] for v in a] != [v["key"] for v in b]:
+                result.append(f"{path}.order")
+            result.extend(_differences({v["key"]: v for v in a}, {v["key"]: v for v in b}, path))
         elif a != b:
             result.append(path)
     return result
+
+
+def condition_grid(design: Design) -> dict:
+    """Crossing of executable settings; perfectly coupled fields form one bundle."""
+
+    def fields(value: object, prefix: str = "") -> dict:
+        if (
+            isinstance(value, list)
+            and value
+            and all(isinstance(item, dict) and "key" in item for item in value)
+        ):
+            return {
+                f"{prefix}.order": [item["key"] for item in value],
+                **fields({item["key"]: item for item in value}, prefix),
+            }
+        if isinstance(value, dict):
+            return {
+                path: leaf
+                for key, item in value.items()
+                for path, leaf in fields(item, f"{prefix}.{key}" if prefix else key).items()
+            }
+        return {prefix: value}
+
+    rows = [
+        fields(
+            {
+                "parameters": c.parameters.model_dump(),
+                "model": c.model,
+                "profiles": [p.model_dump() for p in design.resolve(c).profiles],
+            }
+        )
+        for c in design.conditions
+    ]
+    bundles: dict[tuple[int, ...], list[str]] = {}
+    for path in sorted(set().union(*(row.keys() for row in rows))):
+        levels: dict[str, int] = {}
+        partition = []
+        for row in rows:
+            value = json.dumps([path in row, row.get(path)], sort_keys=True)
+            partition.append(levels.setdefault(value, len(levels)))
+        if len(levels) > 1:
+            bundles.setdefault(tuple(partition), []).append(path)
+    cells: dict[tuple[int, ...], list[str]] = {}
+    for i, c in enumerate(design.conditions):
+        cells.setdefault(tuple(axis[i] for axis in bundles), []).append(c.key)
+    expected = prod(len(set(axis)) for axis in bundles)
+    return {
+        "factors": [{"fields": paths, "levels": len(set(axis))} for axis, paths in bundles.items()],
+        "expected_cells": expected,
+        "observed_cells": len(cells),
+        "complete": expected == len(cells),
+        "duplicate_conditions": [keys for keys in cells.values() if len(keys) > 1],
+        "limits": "Inferred from executable settings. Perfectly coupled fields count as one "
+        "bundled factor; coverage does not establish causal isolation or statistical power.",
+    }
+
+
+def factorial_issues(grid: dict) -> list[dict]:
+    if len(grid["factors"]) >= 2 and grid["complete"]:
+        return []
+    return [
+        {
+            "code": "incomplete_factorial",
+            "severity": "error",
+            "message": "Declared factorial requires at least two independently varied factor "
+            f"bundles and every crossed cell; found {len(grid['factors'])} bundles and "
+            f"{grid['observed_cells']}/{grid['expected_cells']} cells. "
+            "Duplicate arms do not replace missing cells.",
+        }
+    ]
 
 
 def _instrument(world: World, actor: str, observation: Observation, variant: int) -> Decision:
@@ -147,7 +278,7 @@ def _instrument(world: World, actor: str, observation: Observation, variant: int
         )
         kind, target = ("work", task["key"]) if variant != 0 and task else ("wait", "")
         amount = 0
-    elif kind == "allocate":
+    elif kind == "allocate" and "resources" not in observation:
         target = next(p["key"] for p in observation["participants"] if p["key"] != actor)
     elif "pie" in observation and variant == 2:
         kind = "offer" if observation["proposer"] == actor else "reject"
@@ -251,6 +382,86 @@ def _preflight(specification: str) -> dict:
             "Allocation credits are renewed each round. This world has no finite "
             "resource stock, consumption needs or deprivation.",
         )
+    if design.environment == "composed":
+        issue(
+            "composition_limits",
+            "Each participant has one action per round across all resources. "
+            "A controller can allocate to one recipient or split a total equally among everyone. "
+            "Private records still permit inference from personal receipts or messages.",
+        )
+        for c in design.conditions:
+            composition = c.parameters.composition
+            assert composition is not None
+            communicative = c.parameters.communication and bool(
+                set(c.parameters.communication_channels) & {"messages", "reports"}
+            )
+            active = {
+                key
+                for r in composition.resources
+                for key in (r.controllers or [p.key for p in design.profiles])
+            }
+            passive = [p.key for p in design.profiles if p.key not in active]
+            if (
+                passive
+                and not communicative
+                and not any(r.transfers for r in composition.resources)
+            ):
+                issue(
+                    "passive_resource_audience",
+                    f"{c.name}: {', '.join(passive)} can only wait; communication and personal "
+                    "transfers are disabled and they control no resource. Disclosure gives them "
+                    "no action to respond with. Any effect concerns allocators' response to "
+                    "announced visibility or presented information, not responsive community "
+                    "cooperation or an enforced accountability consequence.",
+                )
+            for r in composition.resources:
+                capacity_per_round = r.action_limit * (len(r.controllers) or len(design.profiles))
+                fastest_empty_round = (
+                    r.initial_stock + capacity_per_round - 1
+                ) // capacity_per_round
+                if (
+                    r.initial_stock > 0
+                    and r.replenishment == 0
+                    and fastest_empty_round < design.rounds
+                ):
+                    issue(
+                        "early_resource_exhaustion",
+                        f"{c.name} / {r.name}: legal maximum requests can empty shared stock "
+                        f"within {fastest_empty_round} round(s), before the {design.rounds}-round "
+                        "horizon. Later rounds do not guarantee further stock-allocation "
+                        "opportunities. Match action limits and timing claims to the question; "
+                        "one-shot allocation can still be valid, and personal transfers and "
+                        "consumption may continue after shared stock is exhausted.",
+                    )
+                need = r.need * len(design.profiles) * design.rounds
+                supply = r.initial_stock + r.replenishment * (design.rounds - 1)
+                if need and supply < need:
+                    issue(
+                        "unavoidable_shortfall",
+                        f"{c.name} / {r.name}: at most {supply} units "
+                        f"can meet {need} required units. Some deprivation is unavoidable even "
+                        "under ideal sharing; compare its distribution and magnitude.",
+                    )
+                elif need:
+                    issue(
+                        "scarcity_not_guaranteed",
+                        f"{c.name} / {r.name}: the total supply bound "
+                        "covers needs. Timing and access may still constrain consumption; "
+                        "do not presume a real shortage.",
+                    )
+                if r.allocation_visibility == "public":
+                    issue(
+                        "published_inventories",
+                        f"{c.name} / {r.name}: public allocation "
+                        "visibility publishes both receipts and current personal inventories. "
+                        "This is an information bundle, not receipt visibility alone.",
+                    )
+                if r.stock_visibility == "controllers" and not r.controllers:
+                    issue(
+                        "hidden_stock_without_controller",
+                        f"{c.name} / {r.name}: stock is "
+                        "hidden from everyone; extraction receipts can still support inference.",
+                    )
     if design.environment == "commons":
         for c in design.conditions:
             marginal = c.parameters.multiplier / len(design.profiles) - 1
@@ -331,13 +542,6 @@ def _preflight(specification: str) -> dict:
                 f"{', '.join(inactive)}.",
                 "error",
             )
-        if not changes and not assignment_changed:
-            issue(
-                "identical_conditions",
-                f"{c.name} [{c.key}]: executable settings, profiles and models match the baseline. "
-                "Labels/descriptions do not create a treatment. "
-                "Valid as replication/placebo arms, not as a manipulated contrast.",
-            )
         if len(changes) > 1:
             issue(
                 "bundled_intervention",
@@ -394,6 +598,20 @@ def _preflight(specification: str) -> dict:
                 "witnesses": witnesses,
             }
         )
+    grid = condition_grid(design)
+    for keys in grid["duplicate_conditions"]:
+        issue(
+            "identical_conditions",
+            f"Conditions {', '.join(keys)} have identical executable settings, profiles and "
+            "models. Labels do not create a treatment; valid as replication/placebo arms, "
+            "not as a manipulated contrast.",
+        )
+    if not grid["complete"]:
+        issue(
+            "partial_condition_grid",
+            f"Observed {grid['observed_cells']}/{grid['expected_cells']} crossed cells. "
+            "Partial comparisons can be valid, but do not claim a complete factorial.",
+        )
     return {
         "status": "blocked"
         if any(i["severity"] == "error" for i in issues)
@@ -402,6 +620,7 @@ def _preflight(specification: str) -> dict:
         else "checked",
         "issues": issues,
         "comparisons": comparisons,
+        "condition_grid": grid,
         "probe_turns": sum(r["turns"] for rows in traces.values() for r in rows),
         "probe_limit_per_instrument": 96,
         "limits": f"Checks use current rules {CATALOG[design.environment].world.version}. "
@@ -426,6 +645,14 @@ def exposure(environment: str, actions: list[dict], events: list[dict]) -> dict:
             warnings.append(
                 "Work rate is at its ceiling on the captured work/wait choices; work also "
                 "pays more personally than waiting."
+            )
+    if environment == "composed":
+        receipts = [e for e in events if e["kind"] == "resource_transfer"]
+        if not any(e["data"]["amount"] > 0 for e in receipts):
+            warnings.append(
+                "No positive resource transfers occurred in this cutoff. "
+                "Allocation-record visibility had no positive receipts to expose; "
+                "announced rules or visible inventories may still differ."
             )
     commitments = sum(e["kind"] == "commitment_resolved" for e in events)
     return {

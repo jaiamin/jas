@@ -1,4 +1,9 @@
-import type { Design, Environment, TaskDefinition } from "./types";
+import type {
+  Design,
+  Environment,
+  ResourcePrimitive,
+  TaskDefinition,
+} from "./types";
 
 export function removeProfile(design: Design, key: string): Design {
   return {
@@ -11,6 +16,19 @@ export function removeProfile(design: Design, key: string): Design {
       ),
       parameters: {
         ...condition.parameters,
+        composition: condition.parameters.composition
+          ? {
+              ...condition.parameters.composition,
+              resources: condition.parameters.composition.resources.map(
+                (resource) => ({
+                  ...resource,
+                  controllers: resource.controllers.filter(
+                    (controller) => controller !== key,
+                  ),
+                }),
+              ),
+            }
+          : null,
         institution: {
           ...condition.parameters.institution,
           authorities: condition.parameters.institution.authorities.filter(
@@ -49,6 +67,13 @@ export function changeEnvironment(
       ...condition,
       parameters: {
         ...condition.parameters,
+        composition:
+          environment.key === "composed"
+            ? (condition.parameters.composition ?? {
+                controllers_first: true,
+                resources: [newResource()],
+              })
+            : null,
         resource_schedule: ["commons", "trust_exchange"].includes(
           environment.key,
         )
@@ -56,5 +81,24 @@ export function changeEnvironment(
           : [],
       },
     })),
+  };
+}
+
+export function newResource(index = 1): ResourcePrimitive {
+  return {
+    key: `resource-${index}`,
+    name: `Resource ${index}`,
+    capacity: 60,
+    initial_stock: 24,
+    replenishment: 0,
+    controllers: [],
+    action_limit: 12,
+    need: 1,
+    consumption_value: 2,
+    shortfall_penalty: 3,
+    terminal_value: 1,
+    stock_visibility: "public",
+    allocation_visibility: "public",
+    transfers: true,
   };
 }

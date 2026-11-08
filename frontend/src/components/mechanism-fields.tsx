@@ -1,3 +1,4 @@
+import { CompositionFields } from "@/components/composition-fields";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -189,6 +190,16 @@ export function MechanismFields({
   onChange: (patch: Partial<Parameters>) => void;
 }) {
   const config = mechanismFields(environment, parameters, onChange);
+  if (environment === "composed" && parameters.composition) {
+    return (
+      <CompositionFields
+        rules={parameters.composition}
+        profiles={profiles}
+        id={id}
+        onChange={(composition) => onChange({ composition })}
+      />
+    );
+  }
   return (
     <FieldGroup className="condition-fields mechanism-fields">
       {config.numbers.map(({ key, label, value, min, max, step, onChange }) => (

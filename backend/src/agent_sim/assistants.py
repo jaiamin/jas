@@ -513,6 +513,16 @@ class Assistants:
                     "completed_at_cutoff": state["done"],
                     "metrics": metrics,
                     "opportunities": opportunities,
+                    "resource_accounting": {
+                        "shared_stocks": state.get("stocks", {}),
+                        "personal_inventory": state.get("inventories", {}),
+                        "consumed": state.get("consumed", {}),
+                        "unmet_need": state.get("unmet", {}),
+                        "note": "Exact cumulative accounting through the evidence cutoff; "
+                        "utility balances are distinct from physical inventories.",
+                    }
+                    if design.environment == "composed"
+                    else None,
                     "treatment_exposure": exposure(
                         design.environment,
                         [d["action"] for d in actions],

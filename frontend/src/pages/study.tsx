@@ -230,7 +230,7 @@ export default function Study() {
                 <p className="protocol-question">{study.design.question}</p>
                 <dl className="key-values">
                   <div>
-                    <dt>Hypothesis</dt>
+                    <dt>Hypothesis & analysis plan</dt>
                     <dd>{study.design.hypothesis || "Exploratory study"}</dd>
                   </div>
                   <div>
