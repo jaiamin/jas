@@ -1,0 +1,160 @@
+{
+  "manifest": {
+    "started_utc": "2026-11-08T17:03:43.576421+00:00",
+    "source_runs_sha256": null,
+    "suite_sha256": "c05f3f353bcd6be3aeba94b145517e7b2e935907bbe1914b09d3f1bac4d3a8ff",
+    "source_sha256": "8d569b99d647448d27bae08fc65d60755823a8235011758371f526419d7c1acf",
+    "model": "openai:gpt-6-luna",
+    "checkpoint": "participants-development",
+    "split": "development",
+    "kind": "participants",
+    "database": "/home/agent/workspace/data/quality/aggregate.sqlite3",
+    "aggregate_cap_usd": 75,
+    "phase_ceiling_usd": 60,
+    "selected": [
+      "public-goods-incentives-00",
+      "public-goods-incentives-04",
+      "public-goods-incentives-08",
+      "sealed-cheap-talk-00",
+      "sealed-cheap-talk-04",
+      "sealed-cheap-talk-08",
+      "feasible-commitments-00",
+      "feasible-commitments-04",
+      "feasible-commitments-08",
+      "unannounced-shortage-00",
+      "unannounced-shortage-04",
+      "unannounced-shortage-08",
+      "reciprocal-surplus-00",
+      "reciprocal-surplus-04",
+      "reciprocal-surplus-08",
+      "repeated-partner-memory-00",
+      "repeated-partner-memory-04",
+      "repeated-partner-memory-08",
+      "task-load-00",
+      "task-load-04",
+      "task-load-08",
+      "authoritative-handoffs-00",
+      "authoritative-handoffs-04",
+      "authoritative-handoffs-08",
+      "independent-oversight-00",
+      "independent-oversight-04",
+      "independent-oversight-08",
+      "private-sanctions-00",
+      "private-sanctions-04",
+      "private-sanctions-08",
+      "noisy-evidence-00",
+      "noisy-evidence-04",
+      "noisy-evidence-08",
+      "shared-evidence-00",
+      "shared-evidence-04",
+      "shared-evidence-08",
+      "factual-reporting-00",
+      "factual-reporting-04",
+      "factual-reporting-08",
+      "shrinking-surplus-00",
+      "shrinking-surplus-04",
+      "shrinking-surplus-08",
+      "renewable-growth-00",
+      "renewable-growth-04",
+      "renewable-growth-08",
+      "extraction-pressure-00",
+      "extraction-pressure-04",
+      "extraction-pressure-08"
+    ],
+    "modes": [
+      "baseline"
+    ],
+    "repetitions": 2,
+    "concurrency": 8,
+    "decision_allowance_per_arm": 48,
+    "request_concurrency": 8,
+    "planner_reasoning_effort": "medium",
+    "participant_reasoning_effort": "low unless medium-effort",
+    "git_head": "2457cf055a5f309a538e6324655a7cba516fa3d7"
+  },
+  "elapsed_seconds": 2238.725,
+  "source_unchanged": true,
+  "phase_usage": {
+    "requests": 7786,
+    "cost_usd": 2.741032,
+    "input_tokens": 21984122,
+    "output_tokens": 1078214,
+    "partial": false
+  },
+  "attempted": 192,
+  "passed": 192,
+  "failures": {},
+  "ledger": {
+    "requests": 13512,
+    "input_tokens": 53969727,
+    "output_tokens": 3463550,
+    "cost_usd": 7.327775,
+    "partial": true
+  },
+  "by_family": {
+    "private-sanctions": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "unannounced-shortage": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "renewable-growth": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "reciprocal-surplus": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "repeated-partner-memory": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "authoritative-handoffs": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "task-load": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "public-goods-incentives": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "independent-oversight": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "factual-reporting": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "extraction-pressure": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "sealed-cheap-talk": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "noisy-evidence": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "shrinking-surplus": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "feasible-commitments": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "shared-evidence": {
+      "attempted": 12,
+      "passed": 12
+    }
+  }
+}

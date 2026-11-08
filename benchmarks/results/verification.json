@@ -1,0 +1,36 @@
+{
+  "scope": "synthetic populated development workspace copied into a keyless isolated UI database",
+  "chat_count": 918,
+  "observations": {
+    "page_scroll_width": 1280,
+    "viewport_width": 1280,
+    "composer_visible": true,
+    "citation_href": "/runs/a208906d645c4301?turn=2&tab=decisions"
+  },
+  "screenshots": [
+    "ui/agent-populated-history.png",
+    "ui/agent-populated-answer.png"
+  ],
+  "checks": {
+    "frontend_unit_tests": 66,
+    "browser_tests": 65,
+    "backend_tests_before_calculator": 297,
+    "backend_tests_with_calculator": 299,
+    "ruff": true,
+    "ty": true,
+    "biome": true,
+    "build": true,
+    "container_smoke": true,
+    "actionlint": true,
+    "pytest_entry_point": true,
+    "extracted_source_tests": 299,
+    "extracted_source_docker_build": true,
+    "extracted_source_container_smoke": true
+  },
+  "limitations": [
+    "Populated desktop state manually inspected; responsive/pending/error flows covered with browser fixtures.",
+    "No human usability study."
+  ],
+  "verified_source_sha256": "2f22455976d34d4d56bb299a3f303526b490d38c2ee7c9d3e826928e4f70e030",
+  "archive_file_sha256": "3c6c0baf84db4160937b5be7c39d0396ac597cf05738a8e434cb276ad61882a7"
+}

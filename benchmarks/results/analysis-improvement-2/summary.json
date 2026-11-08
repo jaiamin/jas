@@ -1,0 +1,97 @@
+{
+  "manifest": {
+    "started_utc": "2026-11-08T16:21:07.280877+00:00",
+    "source_runs_sha256": "249f5dfa0af85b1fc60239bf08619f5879cc98af35a8e6594e98a4e3143dad25",
+    "suite_sha256": "16c81e889d62312f0dbfbb37297a427a78c9fb8463cabd78c1dd2d2f72573eaf",
+    "source_sha256": "b74ce91ee16505f16d46d3816780384f2d169eb42266633fd42f5a0ff8f5f9ba",
+    "model": "openai:gpt-6-luna",
+    "checkpoint": "analysis-improvement-2",
+    "split": "development",
+    "kind": "analysis",
+    "database": "/home/agent/workspace/data/quality/aggregate.sqlite3",
+    "aggregate_cap_usd": 75,
+    "phase_ceiling_usd": 60,
+    "selected": [
+      "public-goods-incentives-00",
+      "public-goods-incentives-04",
+      "public-goods-incentives-08",
+      "reciprocal-surplus-00",
+      "reciprocal-surplus-04",
+      "reciprocal-surplus-08",
+      "task-load-00",
+      "task-load-04",
+      "task-load-08",
+      "independent-oversight-00",
+      "independent-oversight-04",
+      "independent-oversight-08",
+      "shared-evidence-00",
+      "shared-evidence-04",
+      "shared-evidence-08",
+      "shrinking-surplus-00",
+      "shrinking-surplus-04",
+      "shrinking-surplus-08",
+      "renewable-growth-00",
+      "renewable-growth-04",
+      "renewable-growth-08"
+    ],
+    "modes": [
+      "baseline"
+    ],
+    "repetitions": 2,
+    "concurrency": 8,
+    "decision_allowance_per_arm": 48,
+    "request_concurrency": 8,
+    "planner_reasoning_effort": "medium",
+    "participant_reasoning_effort": "low unless medium-effort",
+    "git_head": "eac5c11024d5cd03c102516819b34f07e815f69d"
+  },
+  "elapsed_seconds": 96.151,
+  "source_unchanged": true,
+  "phase_usage": {
+    "requests": 202,
+    "cost_usd": 0.235927,
+    "input_tokens": 2048482,
+    "output_tokens": 61969,
+    "partial": false
+  },
+  "attempted": 84,
+  "passed": 84,
+  "failures": {},
+  "ledger": {
+    "requests": 4308,
+    "input_tokens": 21563209,
+    "output_tokens": 1169415,
+    "cost_usd": 2.935897,
+    "partial": true
+  },
+  "by_family": {
+    "reciprocal-surplus": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "shrinking-surplus": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "renewable-growth": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "shared-evidence": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "public-goods-incentives": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "independent-oversight": {
+      "attempted": 12,
+      "passed": 12
+    },
+    "task-load": {
+      "attempted": 12,
+      "passed": 12
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "policy": "Publish observable provider outputs and accounting, omitting all thinking parts, including opaque signatures. Original local ledger is retained; no scoring or token accounting changes.",
+  "files": [
+    {
+      "file": "analysis-baseline/provider-calls.jsonl.gz",
+      "records": 282,
+      "omitted_thinking_parts": 4,
+      "original_file_sha256": "40e39715379bc69ebdcbdb285783b3f16500f9eb2e6f66db6e2725ee71ebff33",
+      "published_file_sha256": "7c7cb7a0f24e53ffb58c24428a52da8937c9e521952d4e7f56946f4f4661907a"
+    },
+    {
+      "file": "analysis-improvement-1/provider-calls.jsonl.gz",
+      "records": 182,
+      "omitted_thinking_parts": 3,
+      "original_file_sha256": "771999429a32896f00bd81e9af0f5f414f9ca2ca49110d688f2facf94eff7e62",
+      "published_file_sha256": "f0bc72e4a1234eac4cc6c92c92b34e01dbe5e54f9bb955dedbfe2c62e3b53475"
+    },
+    {
+      "file": "analysis-improvement-2/provider-calls.jsonl.gz",
+      "records": 202,
+      "omitted_thinking_parts": 3,
+      "original_file_sha256": "7e6095d6da64ef90e5925ad009a78f3ade3710e33de228b6b1462d039b049d60",
+      "published_file_sha256": "202a20eeebec54348fd22cbebdd78517ece70010b2da508d39c94c4dd5a566b4"
+    },
+    {
+      "file": "incentives-baseline/provider-calls.jsonl.gz",
+      "records": 42,
+      "omitted_thinking_parts": 3,
+      "original_file_sha256": "e8fa2454e0771c40fb38bc8ab61c3e39741feeb9412ed895df5784cbe7c921a3",
+      "published_file_sha256": "cf2189c0d49a00ad43e5001d3e2a48840c1e651b09d78f1b8ffac6138ddd78c0"
+    },
+    {
+      "file": "incentives-improvement-1/provider-calls.jsonl.gz",
+      "records": 41,
+      "omitted_thinking_parts": 9,
+      "original_file_sha256": "36adc4af90afc6ded44e0c2e750442b1fb199c34d9b8554ef001e71c338412cd",
+      "published_file_sha256": "bea8de2d2a997adacbaf632f936529253c112efbabc055d8c0f8c7f801ca74f4"
+    },
+    {
+      "file": "initial-planner/provider-calls.jsonl.gz",
+      "records": 354,
+      "omitted_thinking_parts": 510,
+      "original_file_sha256": "e802da988037db8c6dccd7ad7a52b1b6e926626a559da759ac7921e693806ac5",
+      "published_file_sha256": "93004b400638c3201980de27e555c8bbd718c2c738b5cdd3aad6f597dea90819"
+    },
+    {
+      "file": "participant-baseline/provider-calls.jsonl.gz",
+      "records": 2952,
+      "omitted_thinking_parts": 577,
+      "original_file_sha256": "3f15df1186a8cab9f1beebdfd36710d84c6cd498bdabe52b57dc582d99fa7948",
+      "published_file_sha256": "529b14a6bb4f45b8e70abd09c73e1ba059b059aee1984e96be22ce44c4673315"
+    },
+    {
+      "file": "participants-development/provider-calls.jsonl.gz",
+      "records": 7786,
+      "omitted_thinking_parts": 1452,
+      "original_file_sha256": "b2b7b0d0ace38feb5852e6cd3caded7a89ba1d15002b207b754d39069bfce5ce",
+      "published_file_sha256": "6b254cfb20d2332dd4382666cf9e5e55007c0221162fc57332b072bf4fda34ce"
+    },
+    {
+      "file": "planner-audience-correction/provider-calls.jsonl.gz",
+      "records": 22,
+      "omitted_thinking_parts": 30,
+      "original_file_sha256": "3ed9f9d8405db8ef054f39d6a3b38ef4bb6243b73652c01eefe9dbe5fe57e22c",
+      "published_file_sha256": "3c3519eafeb64152b8146982e55beb8ac8da7bf24e01d892ac15fd0c1b1d72e8"
+    },
+    {
+      "file": "planner-baseline/provider-calls.jsonl.gz",
+      "records": 336,
+      "omitted_thinking_parts": 428,
+      "original_file_sha256": "5d25ede2d3d5bda46754a1806a5ab5c4a77a6059b246c57900a44799cea366cb",
+      "published_file_sha256": "06a58e43680abd0f2e4b6bbcc0b2efe06f7ea5d6d00875b892333041e13e17f7"
+    },
+    {
+      "file": "planner-development-v2/provider-calls.jsonl.gz",
+      "records": 1278,
+      "omitted_thinking_parts": 1630,
+      "original_file_sha256": "e6f438e98b0a2bf46f5958aaf9c573416668de396e6c6bd37bcbac1e8937434d",
+      "published_file_sha256": "c74dafdba9c79db805bf213782d76e0a6713a1c35bd3c89d453a43ebff5a474f"
+    }
+  ]
+}
