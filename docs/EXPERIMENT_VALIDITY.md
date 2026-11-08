@@ -165,6 +165,13 @@ environment extensions, explain the two-party disclosure limit and distinguish i
 parameters from world mechanics. Only `assistants.py` changed after the final planner source;
 the planner and all world/validity code remain identical. A repeat of the same six questions
 is recorded separately, without changing the original outcomes or planner scores.
+The second six responses completed for $0.013842 (14 calls), again returning exact count
+audits and rejecting unsupported causal claims. Advice more clearly separated available
+resource worlds from needs/deprivation extensions and required a third party for wider
+disclosure. However, one qualitative example reversed the oversight condition labels despite
+correct aggregate facts. The index now gives each run its condition key and name directly,
+reducing lookup through opaque identifiers. This does not certify prose: citation-range
+validation cannot prove that every sentence accurately describes its cited turn.
 
 These are public development requests and mechanical acceptance scores. They do not establish
 independent insight quality, calibrated human behavior, statistical power or unseen-family

@@ -28,7 +28,7 @@ Primary-source research and decisions are recorded in docs/EXPERIMENT_VALIDITY.m
 Implemented shared capability/construct checks, bounded scripted preflight, save/run gates,
 actual sanction-visibility observation (institution rules 4.1.0), exposure-aware analysis,
 editor/proposal/overview findings, historical read-only access and mixed-rule export v4.
-336 protocol combinations + 55 payoff oracles and regression tests added. Backend 732 tests,
+336 protocol combinations + 55 payoff oracles and regression tests added. Backend 735 tests,
 frontend 69 unit tests, all 68 browser tests, lint/types/build passed. Full deterministic gate:
 288 executable cases, 576 arms, 5,208 invariant checks, no failures; privacy/memory, scripted
 communication and visibility witnesses passed. Source: data/quality/validity-gate-repaired.
@@ -42,12 +42,25 @@ quotations despite implemented history/notes arms. Review now judges material ex
 contrasts; coordination warns about public state, private reward and greedy completion;
 two-agent sanction visibility warns when no wider disclosure audience exists. Supplemental
 explicit-count/isolation audit is data/quality/audit-validity.py (does not change raw scores).
-Latest source gate: data/quality/validity-gate-final-source, exec session 18395; backend
-tests rerunning, expected 735. NEXT: after gate passes, run SAME 30-question two-repeat Luna
-diagnostic as label validity-final, output data/quality/validity-final, max $2. Source should
-remain unchanged during/after final model check unless another material failure is found.
-Inspect results, preserve failures, record honest comparison in docs/EXPERIMENT_VALIDITY.md,
-update costs and PR. No universal quality score or hidden held-out tuning.
+Final planner: 60/60 (32 supported, 28 unsupported), 137 calls/$0.222692; source 4d552c0,
+fingerprint 22eefac5b0eb38500e1b9698074d7a7ba2dc4767f03a8d8f62c071a42026616c.
+All 32 accepted protocols passed the supplemental count/isolation audit. Total planner
+diagnostics cost $0.815804. Historical frozen cases and scores remain unchanged.
+Fresh analysis diagnostics use only existing DEVELOPMENT study 5db1a4843c2a4d23 (independent
+oversight, two 48-turn runs; 48 work/0 wait/0 sanctions). Three questions x two repetitions.
+Initial six responses had correct counts/limits but weak follow-up advice and null-stock
+interpretation: data/quality/validity-analysis ($0.035939). Added capabilities/active-controls
+catalog and explicit engineering/audience distinctions; second six responses:
+data/quality/validity-analysis-final ($0.013842). One qualitative example still reversed
+condition labels despite correct aggregates. Added direct per-run condition key/name to
+reduce opaque ID lookup. Do NOT call six completions a universal insight-quality pass.
+Current source gate: data/quality/validity-analysis-labeled-gate, exec session 88856.
+NEXT: after gate passes, run PYTHONPATH=. .venv/bin/python
+data/quality/check-validity-analysis.py --output data/quality/validity-analysis-labeled
+(max $0.50 within existing ledger); inspect ALL six responses and exact numeric JSON.
+Keep remaining errors explicit; do not tune forever against familiar traces. Update results,
+cost audit, HANDOFF and PR; restart owned 8080 service for the final labels; verify health,
+saved detail/export; clean disposable services. No new held-out/generalization claim.
 Do not reopen old held-out model cases or tune against published held-out scores.
 
 ## Workspace and publication
@@ -57,7 +70,7 @@ PR #6 was already merged externally. New task branch starts at origin/main, with
 subsequent experiment-validity changes; draft PR https://github.com/jaiamin/ass/pull/7.
 Never merge/main-push or
 rewrite history. No new subagents. User is testing: preserve existing local database and runs.
-Current preview is exec session 81560, PID 79517 on 8080, dedicated database
+Current preview is exec session 69120, PID 85584 on 8080, dedicated database
 `data/quality/manual-preview.sqlite3`; refresh/restart this owned service when needed.
 Health, SPA, saved experiment detail and v4 export all returned 200 after restart.
 System uv crashes; use installed `.venv` or `.tools/uv-0.13.7.data/scripts/uv`.
@@ -68,7 +81,8 @@ Historical evidence commit a2ce6ba940398ca12b2c8baba25787e0d43f5c10; full local 
 `data/quality/archive-a2ce6ba/benchmarks`. Read-only shortage diagnosis is in
 `data/quality/shortage-review/REVIEW.md` and its saved export/script. No provider calls spent
 on that review. Existing aggregate evaluation ledger `data/quality/aggregate.sqlite3` must
-never reset. 26,688 Luna calls; $13.608157 charged/reserved of $75 including 11 unknowns.
+never reset. Historical checkpoint: 26,688 Luna calls/$13.608157, including 11 unknowns.
+After planner and first two analysis diagnostics: $14.473742 charged/reserved of $75.
 Any paid verification must use only openai:gpt-6-luna and the same aggregate cap/ledger.
 Prefer deterministic tests first. Never rerun/tune against the published held-out suite.
 

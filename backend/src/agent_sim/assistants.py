@@ -506,6 +506,8 @@ class Assistants:
                     "through_turn": cutoff,
                     "protocol": protocol_id,
                     "condition": run.condition_id,
+                    "condition_key": condition.key,
+                    "condition_name": condition.name,
                     "seed": run.seed,
                     "repetition": run.repetition,
                     "completed_at_cutoff": state["done"],

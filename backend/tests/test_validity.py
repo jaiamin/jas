@@ -344,6 +344,8 @@ def test_cutoff_exposure_cannot_see_later_actions_or_invent_opportunities(runtim
     assistant = Assistants(db, research, llm)
     first_index = assistant._evidence_index({rid: 1})
     first = first_index["runs"][0]
+    assert first["condition_key"] == design.conditions[0].key
+    assert first["condition_name"] == design.conditions[0].name
     catalog = first_index["environment_catalog"]
     assert "finite_stock" not in catalog["institution"]["capabilities"]
     assert "finite_stock" in catalog["renewable_resource"]["capabilities"]
