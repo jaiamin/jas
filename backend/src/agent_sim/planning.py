@@ -17,7 +17,13 @@ from .validity import capabilities as environment_capabilities
 
 PLANNING = """Design empirical studies of model-controlled agents, not claims of human prediction.
 Preserve the essential meaning of the ORIGINAL user question. First map its essential constructs
-to the supplied capability identifiers, quoting the user's words in requirements.source.
+to the enumerated capability identifiers, quoting a contiguous user phrase in requirements.source.
+Requirements describe essential WORLD MECHANICS, information structures or agent instructions.
+Do not classify environment names, agent/round counts, pilot status, reporting cautions or
+analysis constraints as missing mechanics. Those belong in the brief's counts, size rationale
+or operationalization. Private profile instructions are supported without enforced preferences.
+Use capability=unavailable for an essential mechanic absent from the catalog; explain its
+missing state, action or information rule. Do not invent capability identifiers.
 Mark each mapping direct, proxy, or missing. A smaller allocation budget is not a finite stock;
 sanction visibility is not stock/allocation transparency; a role label is not an enforced right.
 Do not drop a construct, change its meaning or accept a proxy merely to fit an available world.
@@ -243,48 +249,68 @@ class Planner:
     ) -> dict[str, Any]:
         context = self._context(question, conversation)
 
-        self.progress(key, "scoping")
-        brief = await self._call(
-            key,
-            StudyBrief,
-            PLANNING + "\nFirst operationalize the question and choose the design size. "
-            "Honor explicit counts within supported limits. Explain agents, conditions, seeds, "
-            "repetitions and duration. Pilot choices do not establish statistical power. "
-            "Request a public research query only when research_available is true and external "
-            "methods or domain facts would "
-            "change the design, or the user asks for research; omit private context from it. "
-            "This is a scoping stage: the orchestrator WILL perform web search in the next stage "
-            "when you supply research_query. You do not need a search tool in this call. "
-            "Do not decline a supported study because research has not run yet. "
-            "Return unsupported if the "
-            "essential mechanics are missing. Do not invent unavailable tools.",
-            context,
-            max_tokens=4096,
+        planning = {"sources": [], "reviews": []}
+        user_text = " ".join(
+            " ".join([question, *(str(turn.get("question", "")) for turn in conversation)])
+            .casefold()
+            .split()
         )
-        planning = {"brief": brief.model_dump(), "sources": [], "reviews": []}
-        if not brief.supported:
-            return {
-                **PlannedStudy(
-                    supported=False, explanation=brief.explanation, design=None
-                ).model_dump(),
-                "planning": planning,
-            }
-        user_text = " ".join([question, *(str(turn.get("question", "")) for turn in conversation)])
-        if not brief.requirements or any(
-            r.source.casefold() not in user_text.casefold() for r in brief.requirements
-        ):
-            raise ValueError(
-                "Question mapping must quote the user's essential constructs before a "
-                "protocol can be approved"
+        for attempt in range(2):
+            self.progress(key, "scoping", planning=planning)
+            brief = await self._call(
+                key,
+                StudyBrief,
+                PLANNING + "\nFirst operationalize the question and choose the design size. "
+                "Honor explicit counts within supported limits. Explain agents, conditions, seeds, "
+                "repetitions and duration. Pilot choices do not establish statistical power. "
+                "Request a public research query only when research_available is true and external "
+                "methods or domain facts would "
+                "change the design, or the user asks for research; omit private context from it. "
+                "This is a scoping stage: the orchestrator performs web search next "
+                "when you supply research_query. You do not need a search tool in this call. "
+                "Do not decline a supported study because research has not run yet. "
+                "Return unsupported if the "
+                "essential mechanics are missing. Do not invent unavailable tools.",
+                context,
+                max_tokens=4096,
             )
-        if not any(
-            not requirement_issues(environment, brief.requirements) for environment in CATALOG
-        ):
+
+            planning["brief"] = brief.model_dump()
+            self.progress(key, "scoping", planning=planning)
+            if not brief.supported:
+                return {
+                    **PlannedStudy(
+                        supported=False, explanation=brief.explanation, design=None
+                    ).model_dump(),
+                    "planning": planning,
+                }
+            unquoted = [
+                r.source for r in brief.requirements if r.source.casefold() not in user_text
+            ]
+            if brief.requirements and not unquoted:
+                break
+            feedback = [
+                "Map essential mechanics to actual contiguous user phrases; "
+                "preserve all requested constructs while correcting the quotations."
+            ]
+            planning["reviews"].append({"kind": "scope_validation", "issues": feedback})
+            self.progress(key, "scoping", planning=planning)
+            if attempt:
+                raise ValueError("Question mapping still lacks quoted essential constructs")
+            context["scope_candidate"] = brief.model_dump()
+            context["scope_feedback"] = {"issues": feedback, "unquoted": unquoted}
+        gaps = {
+            environment: requirement_issues(environment, brief.requirements)
+            for environment in CATALOG
+        }
+        if all(gaps.values()):
+            closest = min(gaps, key=lambda environment: len(gaps[environment]))
             return {
                 **PlannedStudy(
                     supported=False,
-                    explanation="No available environment implements this required combination. "
-                    + " ".join(r.explanation for r in brief.requirements),
+                    explanation="No single environment implements this required combination. "
+                    f"Closest fit, {CATALOG[closest].name}, still lacks: "
+                    + " ".join(gaps[closest]),
                     design=None,
                 ).model_dump(),
                 "planning": planning,
@@ -345,6 +371,7 @@ class Planner:
             except (ValidationError, ValueError) as error:
                 feedback = [str(error)]
                 planning["reviews"].append({"kind": "validation", "issues": feedback})
+                self.progress(key, "revising", planning=planning)
                 continue
             self.progress(key, "reviewing", planning=planning)
             review = await self._call(
@@ -375,6 +402,7 @@ class Planner:
             )
             feedback = review.issues
             planning["reviews"].append({"kind": "review", "issues": feedback})
+            self.progress(key, "reviewing", planning=planning)
             if not feedback:
                 return {
                     **PlannedStudy(

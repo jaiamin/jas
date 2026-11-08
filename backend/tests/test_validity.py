@@ -287,3 +287,52 @@ def test_cutoff_exposure_cannot_see_later_actions_or_invent_opportunities(runtim
     assert full["treatment_exposure"]["warnings"]
     assert full["recorded_rule_version"] == "4.1.0"
     assert exposure("institution", [{"kind": "sanction"}, {"kind": "wait"}], [])["warnings"] == []
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        '"private goals"',
+        "'private goals'",
+        "“private goals”",
+        "‘private goals’",
+        "`private goals`",
+        "  private\n goals  ",
+    ],
+)
+def test_question_quotes_accept_formatting_without_accepting_new_words(source):
+    requirement = Requirement(
+        source=source,
+        capability="participant_profiles",
+        mapping="direct",
+        explanation="Private instructions.",
+    )
+    assert requirement.source == "private goals"
+
+
+def test_capability_schema_cannot_invent_ids_or_accept_empty_constructs():
+    from typing import get_args
+
+    from agent_sim.validity import CAPABILITIES, COMMON
+    from pydantic import ValidationError
+
+    expected = (
+        set(COMMON) | {key for values in CAPABILITIES.values() for key in values} | {"unavailable"}
+    )
+    assert set(get_args(Requirement.model_fields["capability"].annotation)) == expected
+    with pytest.raises(ValidationError):
+        Requirement.model_validate(
+            {
+                "source": "token institution",
+                "capability": "institution",
+                "mapping": "direct",
+                "explanation": "World name is not a capability.",
+            }
+        )
+    with pytest.raises(ValidationError, match="must contain words"):
+        Requirement(
+            source='" "',
+            capability="participant_profiles",
+            mapping="direct",
+            explanation="Empty citation.",
+        )

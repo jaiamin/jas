@@ -31,6 +31,13 @@ and review receive a computed preflight report. Construct selection and semantic
 still depend on model judgment: a quote and a capability identifier are not proof that the
 mapping is complete or correct.
 
+Capabilities are enumerated in the output schema so environment names, metric names and
+invented qualified identifiers cannot silently become missing mechanics. The mapper separates
+world requirements from counts, pilot/reporting limits and instructions. It normalizes quote
+delimiters and whitespace without accepting paraphrases; a missing or unquoted mapping gets
+one explicit correction step, recorded with its feedback and cost. Provider failures are not
+retried. Exhausted mapping/design reviews retain their final findings for inspection.
+
 `POST /api/design/preflight` makes no provider calls or persistent mutations. It checks
 inactive parameter contrasts, bundled interventions/memory changes, known incentive ceilings,
 coordination effort bounds and identical arms. Identical replication/placebo arms and pilots

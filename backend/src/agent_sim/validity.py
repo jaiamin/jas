@@ -7,7 +7,7 @@ from collections import Counter
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from .domain import Action, Decision, Design, Strict, Treatment
 from .simulation.checkpoints import Observation
@@ -59,9 +59,47 @@ CAPABILITIES = {
 
 class Requirement(Strict):
     source: str = Field(min_length=1, max_length=300, description="Verbatim user-question phrase.")
-    capability: str = Field(min_length=1, max_length=80)
+    capability: Literal[
+        "allocation_budget",
+        "allocation_power",
+        "binding_negotiation",
+        "capacity_shocks",
+        "commitments",
+        "contributions",
+        "finite_stock",
+        "messaging",
+        "model_assignment",
+        "noisy_evidence",
+        "outcome_feedback",
+        "oversight",
+        "participant_profiles",
+        "reciprocal_transfers",
+        "repeated_interaction",
+        "resource_depletion",
+        "retained_memory",
+        "sanction_visibility",
+        "signal_disclosure",
+        "task_dependencies",
+        "unavailable",
+    ]
     mapping: Literal["direct", "proxy", "missing"]
     explanation: str = Field(min_length=1, max_length=400)
+
+    @field_validator("source")
+    @classmethod
+    def quoted_phrase(cls, value: str) -> str:
+        value = " ".join(value.split())
+        if len(value) >= 2 and (value[0], value[-1]) in {
+            ('"', '"'),
+            ("'", "'"),
+            ("“", "”"),
+            ("‘", "’"),
+            ("`", "`"),
+        }:
+            value = value[1:-1].strip()
+        if not value:
+            raise ValueError("Question construct must contain words")
+        return value
 
 
 def capabilities(environment: str) -> dict[str, str]:

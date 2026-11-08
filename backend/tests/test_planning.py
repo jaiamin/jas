@@ -146,6 +146,12 @@ def test_planner_rejects_unresolved_review(runtime, design, monkeypatch):
     monkeypatch.setattr(llm, "generate", generate)
     with pytest.raises(ValueError, match="unresolved issues"):
         asyncio.run(Planner(db, research, llm).run(key, "Compare strategies"))
+    with db.session() as session:
+        output = session.get_one(Analysis, key).output
+    assert len(output["planning"]["reviews"]) == 3
+    assert output["planning"]["reviews"][-1]["issues"] == [
+        "The treatment does not manipulate the question's variable"
+    ]
     assert research.studies() == []
 
 
@@ -200,3 +206,120 @@ def test_planner_validates_revised_capability_and_counts(runtime, design, monkey
         with pytest.raises(ValueError, match="planned counts"):
             asyncio.run(planner.run(key, row.question))
     assert research.studies() == []
+
+
+@pytest.mark.parametrize("repair", [True, False])
+@pytest.mark.parametrize("invalid_source", ["Paraphrased request", None])
+def test_scoping_quote_repair_is_bounded_and_retains_review_evidence(
+    runtime, design, monkeypatch, repair, invalid_source
+):
+    from agent_sim.db import Analysis
+    from agent_sim.planning import Candidate, DesignReview, Planner, StudyBrief
+
+    db, llm, research, _ = runtime
+    question = "Compare\n cooperation"
+    with db.session.begin() as session:
+        row = Analysis(purpose="design", question=question, cutoffs={})
+        session.add(row)
+        session.flush()
+        key = row.id
+    prompts = []
+    scopes = 0
+
+    async def generate(output, **kwargs):
+        import json
+
+        nonlocal scopes
+        prompts.append(json.loads(kwargs["prompt"]))
+        if output is StudyBrief:
+            scopes += 1
+            source = "“COMPARE cooperation”" if scopes == 2 and repair else invalid_source
+            return StudyBrief(
+                supported=True,
+                explanation="Pilot",
+                operationalization="Contributions",
+                size_rationale="One descriptive arm",
+                agents=6,
+                conditions=1,
+                seeds=1,
+                repetitions=1,
+                rounds=2,
+                research_query=None,
+                requirements=[
+                    Requirement(
+                        source=source,
+                        capability="contributions",
+                        mapping="direct",
+                        explanation="Sealed contributions.",
+                    )
+                ]
+                if source is not None
+                else [],
+            )
+        if output is Candidate:
+            return Candidate(explanation="Protocol", design=design)
+        return DesignReview(issues=[])
+
+    monkeypatch.setattr(llm, "generate", generate)
+    if repair:
+        result = asyncio.run(Planner(db, research, llm).run(key, question))
+        assert result["supported"]
+        assert result["planning"]["reviews"][0]["kind"] == "scope_validation"
+        assert prompts[1]["scope_feedback"]["unquoted"] == (
+            [invalid_source] if invalid_source else []
+        )
+    else:
+        with pytest.raises(ValueError, match="still lacks quoted"):
+            asyncio.run(Planner(db, research, llm).run(key, question))
+        with db.session() as session:
+            output = session.get_one(Analysis, key).output
+        assert len(output["planning"]["reviews"]) == 2
+        requirements = output["planning"]["brief"]["requirements"]
+        assert [r["source"] for r in requirements] == ([invalid_source] if invalid_source else [])
+    assert scopes == 2
+
+
+def test_unavailable_required_construct_is_a_clear_decline_before_candidate_calls(
+    runtime, monkeypatch
+):
+    from agent_sim.db import Analysis
+    from agent_sim.planning import Planner, StudyBrief
+
+    db, llm, research, _ = runtime
+    question = "Require persistent food consumption."
+    with db.session.begin() as session:
+        row = Analysis(purpose="design", question=question, cutoffs={})
+        session.add(row)
+        session.flush()
+        key = row.id
+    calls = []
+
+    async def generate(output, **kwargs):
+        calls.append(output)
+        assert output is StudyBrief
+        return StudyBrief(
+            supported=True,
+            explanation="Scope",
+            operationalization="Food",
+            size_rationale="Four agents",
+            agents=4,
+            conditions=2,
+            seeds=3,
+            repetitions=1,
+            rounds=6,
+            research_query=None,
+            requirements=[
+                Requirement(
+                    source="persistent food consumption",
+                    capability="unavailable",
+                    mapping="missing",
+                    explanation="No world enforces food consumption or starvation.",
+                )
+            ],
+        )
+
+    monkeypatch.setattr(llm, "generate", generate)
+    result = asyncio.run(Planner(db, research, llm).run(key, question))
+    assert not result["supported"] and result["design"] is None
+    assert "food consumption" in result["explanation"]
+    assert calls == [StudyBrief]

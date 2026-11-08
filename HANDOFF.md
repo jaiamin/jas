@@ -28,21 +28,29 @@ Primary-source research and decisions are recorded in docs/EXPERIMENT_VALIDITY.m
 Implemented shared capability/construct checks, bounded scripted preflight, save/run gates,
 actual sanction-visibility observation (institution rules 4.1.0), exposure-aware analysis,
 editor/proposal/overview findings, historical read-only access and mixed-rule export v4.
-336 protocol combinations + 55 payoff oracles and regression tests added. Full frontend
-lint/build and 69 unit tests passed. All 68 browser tests passed, including three new
-zero-cost/staleness/mobile flows. Backend targeted rerun underway after historical-export fix.
-Next: finish backend verification, record a two-repeat 30-question Luna development comparison
-against pre-change HEAD using the SAME ledger (max $2 additional per checkpoint), inspect
-all failures, fix justified general issues and retest. Do not reopen old held-out cases.
-Then restart owned 8080 service with its existing DB, review and publish existing PR.
+336 protocol combinations + 55 payoff oracles and regression tests added. Backend 730 tests,
+frontend 69 unit tests, all 68 browser tests, lint/types/build passed. Full deterministic gate:
+288 executable cases, 576 arms, 5,208 invariant checks, no failures; privacy/memory, scripted
+communication and visibility witnesses passed. Source: data/quality/validity-gate-repaired.
+Pre-validity development baseline: 54/60 accepted (two-repeat 30-question set); strict first
+iteration: 46/60, catching unsupported substitutes but falsely rejecting 14 supported requests.
+Diagnosed invented capability IDs, formatting quotes and reporting constraints mapped as world
+requirements. Fixed with enumerated capabilities, explicit scope instructions, normalized
+quotations and one recorded correction step. Final failed review persistence also fixed.
+Current two-repeat 30-question Luna development run: data/quality/validity-corrected, exec
+session 57227, max $2 within SAME existing ledger. Inspect all results, preserve failures,
+record honest comparison in docs/EXPERIMENT_VALIDITY.md, update costs and publish draft PR.
+Do not reopen old held-out model cases or tune against published held-out scores.
 
 ## Workspace and publication
 
-Linux isolated Docker Sandbox, /home/agent/workspace, branch feat/rigorous-evaluation.
-Existing draft PR https://github.com/jaiamin/ass/pull/6; update it, never merge/main-push or
+Linux isolated Docker Sandbox, /home/agent/workspace, branch feat/experiment-validity.
+PR #6 was already merged externally. New task branch starts at origin/main, with only the
+subsequent experiment-validity changes; create a new draft PR. Never merge/main-push or
 rewrite history. No new subagents. User is testing: preserve existing local database and runs.
-Current preview is exec session 86664, PID 67033 on 8080, dedicated database
+Current preview is exec session 81560, PID 79517 on 8080, dedicated database
 `data/quality/manual-preview.sqlite3`; refresh/restart this owned service when needed.
+Health, SPA, saved experiment detail and v4 export all returned 200 after restart.
 System uv crashes; use installed `.venv` or `.tools/uv-0.13.7.data/scripts/uv`.
 
 ## Evidence and evaluation boundary
