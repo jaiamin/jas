@@ -1,6 +1,7 @@
 import asyncio
 import json
 
+import pytest
 from agent_sim.db import ProviderCall, Study, Workspace
 from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
@@ -293,3 +294,17 @@ def test_settlement_failure_after_success_propagates(runtime, monkeypatch):
                 purpose="analysis",
             )
         )
+
+
+@pytest.mark.parametrize("capacity", [0, 33])
+def test_provider_concurrency_rejects_out_of_range_settings(tmp_path, monkeypatch, capacity):
+    from agent_sim.db import Database
+    from agent_sim.llm import LanguageModels
+
+    monkeypatch.setenv("JAS_CONCURRENT_REQUESTS", str(capacity))
+    db = Database(f"sqlite:///{tmp_path}/pool.sqlite3")
+    try:
+        with pytest.raises(ValueError, match="between 1 and 32"):
+            LanguageModels(db)
+    finally:
+        db.close()

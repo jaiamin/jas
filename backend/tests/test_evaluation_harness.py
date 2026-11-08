@@ -9,8 +9,41 @@ from agent_sim.api import create_app
 from agent_sim.planning import Candidate, DesignReview, StudyBrief
 
 from benchmarks.cases import cases
-from benchmarks.evaluate import participant_trial, planner_trial, run
+from benchmarks.evaluate import (
+    evaluation_config,
+    participant_trial,
+    planner_trial,
+    run,
+    validate_final,
+)
 from benchmarks.quality import assess
+
+
+def test_final_checkpoint_enforces_declared_jobs(monkeypatch):
+    from benchmarks import evaluate
+
+    monkeypatch.setattr(evaluate, "source_digest", lambda: "source")
+    monkeypatch.setattr(evaluate, "fingerprint", lambda: "suite")
+    args = SimpleNamespace(
+        kind="participants",
+        modes=["baseline"],
+        repetitions=2,
+        concurrency=4,
+        request_concurrency=4,
+    )
+    selected = cases("heldout")[:2]
+    final = dict(
+        source_sha256="source",
+        suite_sha256="suite",
+        evaluations={"participants": evaluation_config(args, selected)},
+    )
+    validate_final(args, selected, final)
+    args.repetitions = 1
+    with pytest.raises(ValueError, match="configuration differs"):
+        validate_final(args, selected, final)
+    args.repetitions = 2
+    with pytest.raises(ValueError, match="configuration differs"):
+        validate_final(args, selected[:1], final)
 
 
 def test_gate_rejects_stale_source_before_opening_database(tmp_path):
@@ -77,12 +110,63 @@ def test_real_planner_routes_and_paired_engine_arms(tmp_path, monkeypatch, fake_
             ) as client:
                 planned = await planner_trial(app, client, case)
                 assert all(planned["checks"].values())
-            results = [await participant_trial(app, case, "baseline", 0, arm) for arm in (0, 1)]
+            studies = {}
+            results = [
+                await participant_trial(app, case, "baseline", 0, arm, studies) for arm in (0, 1)
+            ]
             assert all(all(r["checks"].values()) for r in results)
+            assert len({r["study_id"] for r in results}) == 1
             assert [r["decision_allowance"] for r in results] == [48, 48]
             assert [r["behavior"]["turns"] for r in results] == [48, 48]
             assert results[0]["parameters"]["resource_schedule"] == []
             assert results[1]["parameters"]["resource_schedule"] == [{"round": 3, "endowment": 4}]
             assert results[1]["behavior"]["utility"] < results[0]["behavior"]["utility"]
+
+    asyncio.run(exercise())
+
+
+@pytest.mark.parametrize(
+    "family",
+    [
+        "public-goods-incentives",
+        "reciprocal-surplus",
+        "task-load",
+        "independent-oversight",
+        "shared-evidence",
+        "shrinking-surplus",
+        "renewable-growth",
+    ],
+)
+def test_deterministic_participants_have_identical_results_at_run_concurrency_one_and_four(
+    runtime, family
+):
+    from agent_sim.execution import Engine
+
+    db, models, research, _ = runtime
+    design = next(c for c in cases() if c.family.key == family).design()
+    design.rounds = 4
+    design.seeds = [17, 43, 89]
+
+    async def exercise():
+        outcomes = []
+        for concurrency in (1, 4):
+            engine = Engine(db, research, models, concurrency=concurrency)
+            study_id = research.save_design(design)
+            runs = research.operational_runs(study_id)
+            for identity in runs:
+                engine.start(identity.id)
+            for identity in runs:
+                task = engine.executions[identity.id].task
+                assert task is not None
+                await task
+            snapshots = {}
+            for identity in runs:
+                record, _, condition = research.configuration(identity.id)
+                snapshots[(condition.key, record.seed, record.repetition)] = record.checkpoint
+            outcomes.append(snapshots)
+            assert all(research.configuration(r.id)[0].status == "complete" for r in runs)
+            assert all(engine.replay(r.id)["model_requests"] == 0 for r in runs)
+            await engine.close()
+        assert outcomes[0] == outcomes[1]
 
     asyncio.run(exercise())

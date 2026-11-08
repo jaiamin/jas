@@ -22,7 +22,6 @@ dev = [
     "httpx>=0.28,<1",
     "ruff>=0.15,<1",
     "ty>=0.0.24,<1",
-    "inspect-ai>=0.3.200,<0.4",
 ]
 
 [project.scripts]

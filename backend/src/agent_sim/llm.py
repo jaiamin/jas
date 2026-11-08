@@ -22,6 +22,7 @@ from pydantic_ai.usage import UsageLimits
 from pydantic_core import from_json
 from sqlalchemy import func, select, update
 
+from .config import setting
 from .db import Database, ProviderCall, Study, Workspace
 from .diagnostics import log_failure
 
@@ -89,7 +90,10 @@ class LanguageModels:
     def __init__(self, db: Database):
         self.db = db
         self.models: dict[str, Model] = {}
-        self.capacity = asyncio.Semaphore(4)
+        self.concurrency = int(setting("CONCURRENT_REQUESTS", "4"))
+        if not 1 <= self.concurrency <= 32:
+            raise ValueError("Concurrent provider requests must be between 1 and 32")
+        self.capacity = asyncio.Semaphore(self.concurrency)
 
     def model(self, name: str) -> Model:
         if name in self.models:

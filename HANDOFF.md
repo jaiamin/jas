@@ -2,79 +2,90 @@
 
 ## Objective and acceptance
 
-Replace the v5 workflow benchmark with independently validated experiment-quality,
-environment-validity and observable-behavior evaluation. Establish a current baseline,
-improve on development evidence, and evaluate frozen held-out families once at a
-declared final checkpoint. All model evaluation calls use `openai:gpt-6-luna` with
-one persistent aggregate ledger capped at **$75**, including failures/unknown usage.
-No invented improvement claims, human validity claims or intent labels.
+Replace obsolete planner-centric benchmarks with independently validated experiment quality,
+environment validity and observable behavior evaluation. Deliver 336 frozen explicit cases,
+family-held-out evaluation, fair repeated trials, trace-level evidence, measured iteration,
+and a modern experiment/environment/Agent workspace. No human validity, intent inference,
+weight-training or global-optimum claims. No compatibility scaffolding.
 
-Deliver hundreds of cases across distinct reviewed families; independent expected
-outcomes, strategy discrimination, solvability, adversarial/privacy/replay checks;
-fair repeated model trials and uncertainty; trace-level reproducibility; retained
-correctness tests; obsolete benchmark removal after replacement verification.
-Improve the experiment/environment/Agent workflow in a restrained Linear/Vercel
-visual direction; verify changed flows in a browser. One current contract, no
-fallbacks or compatibility layers. User authorizes routine decisions, paid trials
-within $75, coherent commits, branch push and one draft PR. No questions requested.
+All paid evaluation requests use `openai:gpt-6-luna`; aggregate cap **$75**, development
+ceiling $60 reserving $15. Persistent ledger **data/quality/aggregate.sqlite3**, never reset.
+User is away; routine decisions and spending within cap authorized, no questions.
 
-## Starting point
+## Git / environment
 
-- Task branch `feat/rigorous-evaluation` starts at `origin/main` 1977f3f.
-  The assigned checkout's local main was stale (537c8d4); other worktrees untouched.
-- Current platform: seven deterministic environments; immutable protocols; private
-  observations; exact replay; PydanticAI structured decisions; SQLite budget ledger.
-- Existing v5 benchmark: 230 cases, mostly planner compliance, single-seed one-repeat
-  pilots; held-out combinations share development families. Historical artifacts in
-  ignored `data/` are not fresh baseline evidence and will not be overwritten.
-- Official model docs fetched 2026-11-08: Luna standard token rates $0.10/$0.50 per
-  million input/output; no model substitution. Application prices match.
-- User explicitly requests no compatibility scaffolding and permits replacing data
-  contracts; preserve unrelated workspace data nonetheless.
+- Linux Docker Sandbox, assigned checkout /home/agent/workspace.
+- Branch feat/rigorous-evaluation from origin/main 1977f3f; other worktrees untouched.
+- Commits c6af75c protocol; ee28c3f atomicity/privacy; d4c72e1 workspace; 3789d45 corrected suite.
+- Authorized coherent commits, task push and one draft PR. Next call after PR creation/push
+  must link_pull_request with full URL. Never merge/push main.
+- /usr/bin/uv crashes (jemalloc page size). Working existing binary
+  `.tools/uv-0.13.7.data/scripts/uv`. Use `.venv/bin/python -m pytest` (plain pytest lacks root import).
 
-## Plan
+## Plan / current checkpoint
 
-1. [completed] Audit code and sources, predeclare family split, scoring and budgets.
-2. [completed] Implement replacement suite and pass zero-cost independent validity gate.
-3. [in progress] Record baseline; diagnose development failures; implement and rerun matched
-   improvements. Keep all failures and checkpoint provenance.
-4. [pending] Improve Agent insights and experiment/environment workspace; browser QA.
-5. [pending] Freeze final source checkpoint; run held-out once; report weaknesses without
-   tuning; complete checks, remove obsolete runners/cases, commit/push/draft PR.
+1. [complete] Audit, primary research, predeclared protocol, 336 frozen unique cases:
+   28 families (18 development / 10 held-out), 288 supported / 48 unsupported.
+2. [complete] Original zero-cost baseline and safety fixes. 3,528/4,608 (76.5625%) to
+   4,608/4,608 on identical kernel. Deep-copy observations; reject wrong/invalid actions
+   before mutation; rule version4. Baseline in benchmarks/results/baseline.
+3. [in progress] Paid development baselines, matched improvement, configuration comparisons.
+4. [complete] Modern workspace, reusable browser-local setups, environment mechanics detail,
+   improved Agent location/composer/context. Browser review fixes cleared by same reviewer.
+5. [pending] Final exact source/config declaration; held-out once; report without tuning;
+   full checks, commits, branch push and draft PR.
 
-## Decisions
+## Evidence / caveats
 
-- Budget is a maximum, not a spending target. Model quantity will follow information
-  value; no claim of a global optimum or '100x' improvement without evidence.
-- Cases split by scenario family, not random paraphrase. Held-out results cannot
-  influence improvements; executable validity checks may run before final scoring.
-- Report separate quality dimensions, failures, task utility, violations and cost.
-  Transcript drama and presumed deception have no reward.
-- No new orchestration service, vector database, compatibility adapters or speculative
-  complexity. Existing environments and execution are the platform under test.
+- Initial planner sweep exposed contradictory benchmark questions. Archived under
+  benchmarks/results/initial-planner; raw90/108 is NOT a valid improvement baseline.
+- Version2 digest16c81e889d62312f0dbfbb37297a427a78c9fb8463cabd78c1dd2d2f72573eaf.
+- Corrected paid planner baseline107/108, 18dev families ×3seeds ×2fresh repetitions.
+  12/12 unsupported rejected. One false capability decline/review oscillation for
+  coordination master-communication comparison. Evidence benchmarks/results/planner-baseline.
+- Cumulative cost before participants$0.833258. Planner reasoning medium; participants low.
+- Scripted communication probes20seeds,8agents,12rounds: pooling+0.10104 accuracy,
+  copying false reports−0.4375, ignoring0. These are scripted counterexamples, not model findings.
+- Current fresh gate running session71184 to data/quality/current-gate; includes strategy
+  discrimination (5,184kernel checks), 336privacy/memory assertions and communication probes.
+  Older current-gate predecessor reports do not carry current gate hash; never use stale gate.
+- Source snapshots now archive backend/frontend/benchmark source and lockfiles, no secrets.
+  Do not edit digested source during paid phases.
 
-## Verification / next
+## Current uncommitted changes
 
-- Frozen protocol/cases committed at c6af75c; safety fixes and baseline at ee28c3f.
-- Corrected original-platform zero-cost baseline: 3,528/4,608 checks (76.5625%).
-  Observation aliasing and invalid/wrong-actor state mutation fixed; new gate passes
-  4,608/4,608. Evidence in benchmarks/results/baseline and data/quality/preflight.
-- Paid initial planner baseline runs in session 2252, data/quality/planner-baseline,
-  shared ledger data/quality/aggregate.sqlite3. All calls guarded to Luna; $75 total,
-  development ceiling $60. 108 attempts, currently finishing. Never reset this DB.
-- Development exposed inconsistent benchmark questions (rotating partners with two
-  agents; message-only question with master communication toggle; endowment required
-  in environments where it is inactive). Correct/version these before a corrected
-  baseline; preserve initial attempts and do not count justified refusals as defects.
-- UI: neutral tokens, 208px sidebar, conversation toolbar/context, environment mechanics
-  workbench, validated browser-local reusable setups and direct configuration links.
-- Checks: 278 backend, 66 frontend tests, type checks/lint/build passed. Full browser
-  retest session 4425 after fixing content-width breakpoint and first-open condition
-  assertions; 56 tests. Detector ran once on changed targets: no findings.
-- Next: finish initial baseline, version corrected case specifications, strengthen
-  validity/calibration checks, record corrected baseline, then improve planner/analysis
-  and run repeated participants. Do not open held-out model results before final freeze.
-- uv executable crashes (jemalloc page size); use existing .venv/bin tooling. No global
-  install needed. Disposable UI server sessions 35161 (8091) and 31396 (5191); close at end.
-- Browser tab tab_5_f9b40002-edd9-471c-a028-00fd38eeaaf8 belongs to this task; tab_4 error
-  page also owned. Close when finished. UI source changes do not affect baseline digest.
+- Seed-level condition uncertainty; explicit configurable assistant model and request concurrency.
+- Evaluator paired arms in same study,48decisions/arm, source archives, analysis scorer,
+  full final-declared config enforcement, phase-only usage/provider call exports.
+- Obsolete run.py/suite.py/cases.jsonl/test_benchmarks removed after replacement integration
+  passed. inspect-ai removed; lock105→52packages. Existing correctness tests retained.
+- UI tabs orientation responsive and setup AlertDialog; reviewer ship verdict scoped to fixes.
+- One intentionally RED test `test_evidence_index_counts_opportunities_at_the_frozen_cutoff`:
+  apply Agent evidence enhancement ONLY AFTER paid analysis baseline. Prepared scratch
+  data/quality/assistants-next.py predates model-setting change; merge index/prompt sections,
+  preserving JAS_ASSISTANT_MODEL. Add opportunities, real utility, matched effects, inspected ranges.
+
+## Verification
+
+Observed earlier278backend tests,66frontend tests,56full browser plus8new responsive,
+latest targeted16pass and setup dialog1pass. Latest harness4pass, Ruff/ty pass.
+Full backend currently contains deliberate RED Agent-index regression. Do not claim green.
+Design detector ran once:[]; do not rerun. Reviewer resolved two findings and returned ship,
+limited to reviewed captures/code; populated Agent states lack visual captures.
+
+## Next
+
+- Finish fresh gate, then participants baseline7environments ×3seeds ×2reps ×2arms=84runs:
+  families public-goods-incentives reciprocal-surplus task-load independent-oversight
+  shared-evidence shrinking-surplus renewable-growth, variants0 4 8, concurrency/request8.
+- Analysis baseline on saved participant traces via real scoped Agent, same selection.
+- Improve shared planner critique capability framing and Agent computed evidence;
+  fresh gate, matched retests. Configuration comparisons across2/4/8/12agents, memory,
+  effort, communication and execution concurrency with equal48decisions per arm.
+- Broader development validation, two informative retests without material gains or evidence
+  limit/$60 stops development; never claim global optimum.
+- Final source/suite/config freeze before held-out model results. Held-out once, no tuning.
+- Publish compact reproducible evidence/report, full checks, commit/push/draft PR/link.
+- Owned stale UI services sessions35161(port8091),31396(port5191); close at end.
+  Owned preview tabs tab_5_f9b40002-edd9-471c-a028-00fd38eeaaf8 and tab_4_f9b40002-edd9-471c-a028-00fd38eeaaf8.
+  Do not touch another agent's8081 service. Project E2E owns disposable8097server.

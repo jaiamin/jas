@@ -1,33 +1,53 @@
 # Evaluation
 
+The replacement suite has **336 unique frozen requests across 28 reviewed families**,
+with 18 development families and 10 held-out families. It evaluates experiment
+identification, deterministic instrument validity, execution and observable behavior.
+See [predeclared protocol](protocol.md), [family specifications](families.json), [scenario review](REVIEW.md) and
+[results](results/). The initial inconsistent specification and its failures remain
+archived; it is not used as the improvement baseline.
+
 ```sh
-uv sync --group dev
-uv run python benchmarks/run.py --live --output data/evaluations/full
-uv run python benchmarks/run.py --live --split development capability --output data/evaluations/dev
-uv run python benchmarks/run.py --live --split generalization longitudinal --output data/evaluations/test
-uv run inspect view --log-dir data/evaluations/test/inspect
+uv sync --frozen
+uv run python -m benchmarks.validity --output data/quality/preflight
+uv run python -m benchmarks.evaluate --live --checkpoint baseline \
+  --variants 0 4 8 --repetitions 2 --output data/quality/planner-baseline
+uv run python -m benchmarks.evaluate --live --kind participants --checkpoint participants \
+  --families public-goods-incentives reciprocal-surplus task-load independent-oversight \
+  shared-evidence shrinking-surplus renewable-growth --variants 0 4 8 --repetitions 2 \
+  --concurrency 8 --request-concurrency 8 --output data/quality/participants
+uv run python -m benchmarks.evaluate --live --kind analysis --checkpoint analysis \
+  --source-runs data/quality/participants/attempts.jsonl.gz \
+  --families public-goods-incentives reciprocal-surplus task-load independent-oversight \
+  shared-evidence shrinking-surplus renewable-growth --variants 0 4 8 --repetitions 2 \
+  --concurrency 8 --request-concurrency 8 --output data/quality/analysis
 ```
 
-The 230-case v5 suite covers seven environments: 140 development cases, 56 reserved
-context combinations, 14 longer protocols and 20 capability-limit questions. Cases specify
-mechanics, treatment isolation, counts and measurements. Raw-action questions require
-complete exported decision/observation evidence. Outcomes are not scored for a desired
-behavior, psychological motive or human predictive validity.
+The complete fresh gate must pass before every paid phase. It checks mathematical
+payoffs, per-turn JSON replay, action atomicity, detached observations, sealed choices,
+privacy and memory, plus communication that helps, hurts or is ignored under explicitly
+scripted strategies. Scripted probes are instruments, never participant fallbacks.
 
-Both planner and participants use `openai:gpt-6-luna`, without web research. Inspect's
-mock model schedules the real application through its chat/API routes. Every supported
-case saves and executes both conditions, exports evidence and checks exact replay.
-Short single-seed pilots verify mechanics; they do not establish reliable treatment effects.
+All paid calls are `openai:gpt-6-luna`, guarded at the actual provider boundary. One
+persistent `data/quality/aggregate.sqlite3` ledger enforces the **$75 aggregate cap**,
+including failures and unknown reservations. Development cannot exceed $60; $15 is
+reserved for final evaluation. Do not reset this database or run competing evaluators.
+`--live` acknowledges paid work. Fresh repeats get new output directories; no hidden retries.
 
-`--live` explicitly enables paid calls. The default $18 ceiling includes all usage in
-`data/evaluation.sqlite3`, including explicit retests and unknown requests. Do not reset
-accounting or run multiple processes against that database. `--database`, `--budget-usd`
-and `--concurrency` (1–16) configure an authorized evaluation.
+Each participant comparison preserves both conditions in one immutable experiment.
+Each arm has the same 48-decision allowance, response-token limit and dollar ceiling.
+Bargaining or completed tasks can stop early. More agents trade against rounds; this
+is a fixed-resource configuration comparison, not an isolated count effect. Memory
+ablations cannot erase a case's intended memory factor; the same applies to communication.
 
-Outputs stay in ignored `data/`: attempts, manifests, summaries and Inspect logs. A fixed
-case digest and recursive source fingerprint identify the tested implementation. Reusing
-an output directory skips attempted cases and rejects changed source. Use `--ids` with a
-new output directory for an explicit retest. Provider failures receive no automatic retry
-or substitute model. No benchmark score is claimed for the current code without a fresh run.
+Analysis is tested against independently counted trace facts and captured-cutoff citations.
+Its narrative insight quality remains reviewable qualitative evidence, not a flattering
+LLM-judge score. Missing opportunities never count as perfect behavior.
 
-For keyless verification, use the [development checks](../docs/DEVELOPMENT.md).
+Outputs include all attempts, provider calls, source/suite hashes, costs and replay evidence.
+Held-out evaluation requires a matching declared `final-checkpoint.json` and writes an
+exclusive attempt marker before spending. It is never silently repeated after interruption.
+
+The application remains responsible for providers, persistence, error handling and atomic
+budget reservations. The harness uses its real API and engine; no evaluation framework or
+compatibility runner remains in production or development dependencies.

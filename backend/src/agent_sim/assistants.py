@@ -114,7 +114,7 @@ class Assistants:
         self.models.model(
             setting("PLANNER_MODEL", "openai:gpt-6.1-sol")
             if purpose == "design"
-            else "openai:gpt-6.1-sol"
+            else setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol")
         )
         cutoffs = {}
         if run_id:
@@ -319,7 +319,7 @@ class Assistants:
         self._progress(row.id, "answering", [])
         answer = await self.models.generate(
             Finding,
-            model="openai:gpt-6.1-sol",
+            model=setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol"),
             instructions=GENERAL,
             purpose="general",
             analysis_id=row.id,
@@ -434,7 +434,7 @@ class Assistants:
             self._progress(key, "investigating", examined)
             result = await self.models.generate(
                 Investigation,
-                model="openai:gpt-6.1-sol",
+                model=setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol"),
                 instructions=INVESTIGATION,
                 purpose="analysis",
                 study_id=study_id,

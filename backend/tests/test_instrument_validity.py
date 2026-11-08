@@ -122,3 +122,28 @@ def test_score_does_not_read_rationale():
         row["decision"]["rationale"] = "I am dramatic and perfectly honest!"
     assert score_trace(altered, initial) == score
     assert json.loads(json.dumps(initial)) == initial
+
+
+def test_analysis_numbers_are_checked_against_facts_and_reject_fabricated_counts():
+    from benchmarks.analysis import assess_analysis
+
+    initial = {"balances": {"a": 12.0, "b": 18.0}}
+    numbers = dict(
+        reports=0,
+        false_reports=0,
+        eligible_commitments=0,
+        infeasible_commitments=0,
+        fulfilled_commitments=0,
+        utility=30,
+    )
+    output = dict(
+        answer="```json\n" + json.dumps(numbers) + "\n```",
+        citations=[],
+        caveats=["No reporting opportunity."],
+    )
+    assert all(assess_analysis(output, [], initial).values())
+    numbers["reports"] = 8
+    output["answer"] = "```json\n" + json.dumps(numbers) + "\n```"
+    assert not assess_analysis(output, [], initial)["reports"]
+    output["answer"] = "A dramatic story with perfect honesty."
+    assert not assess_analysis(output, [], initial)["numeric_summary"]

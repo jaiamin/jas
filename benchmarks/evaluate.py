@@ -10,6 +10,7 @@ import os
 import random
 import sqlite3
 import subprocess
+import tarfile
 import time
 from collections import Counter
 from pathlib import Path
@@ -21,25 +22,54 @@ from agent_sim.domain import Design
 from dotenv import load_dotenv
 from sqlalchemy import select
 
+from benchmarks.analysis import analysis_trial
 from benchmarks.cases import MODEL, cases, fingerprint
 from benchmarks.oracles import score_trace
-from benchmarks.provenance import backend_digest
+from benchmarks.provenance import backend_digest, gate_digest
 from benchmarks.quality import assess
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def source_digest() -> str:
-    paths = (
+def source_paths() -> list[Path]:
+    return (
         sorted((ROOT / "backend/src").rglob("*.py"))
         + sorted((ROOT / "benchmarks").glob("*.py"))
-        + sorted(
-            p for p in (ROOT / "frontend/src").rglob("*") if p.suffix in {".ts", ".tsx", ".css"}
-        )
+        + sorted(p for p in (ROOT / "frontend/src").rglob("*") if p.is_file())
+        + [
+            ROOT / p
+            for p in (
+                "pyproject.toml",
+                "uv.lock",
+                "frontend/package.json",
+                "frontend/pnpm-lock.yaml",
+            )
+        ]
+        + sorted(p for p in (ROOT / "frontend/public").rglob("*") if p.is_file())
     )
+
+
+def source_digest() -> str:
     return hashlib.sha256(
-        b"".join(str(p.relative_to(ROOT)).encode() + p.read_bytes() for p in paths)
+        b"".join(str(p.relative_to(ROOT)).encode() + p.read_bytes() for p in source_paths())
     ).hexdigest()
+
+
+def evaluation_config(args, selected) -> dict:
+    return dict(
+        selected=[c.id for c in selected],
+        modes=args.modes if args.kind == "participants" else [args.kind],
+        repetitions=args.repetitions,
+        concurrency=args.concurrency,
+        request_concurrency=args.request_concurrency,
+    )
+
+
+def validate_final(args, selected, final: dict) -> None:
+    if final["source_sha256"] != source_digest() or final["suite_sha256"] != fingerprint():
+        raise ValueError("Final checkpoint does not match source/suite")
+    if final["evaluations"].get(args.kind) != evaluation_config(args, selected):
+        raise ValueError("Held-out configuration differs from the declared final evaluation")
 
 
 async def planner_trial(app, client, case) -> dict:
@@ -60,22 +90,34 @@ async def planner_trial(app, client, case) -> dict:
     }
 
 
-async def participant_trial(app, case, mode: str, repetition: int, arm: int) -> dict:
+async def participant_trial(app, case, mode: str, repetition: int, arm: int, studies: dict) -> dict:
     design = case.design()
     # Equal 48-decision allowances preserve round-three shocks even with 12 agents.
     data = design.model_dump()
     data.update(rounds=max(2, 48 // case.agents), repetitions=1)
-    data["conditions"] = [data["conditions"][arm]]
-    params = data["conditions"][0]["parameters"]
-    if mode.startswith("memory-"):
-        params["memory"] = mode.removeprefix("memory-")
-    elif mode == "no-communication":
-        params["communication"] = False
-    elif mode == "medium-effort":
-        data["openai_reasoning_effort"] = "medium"
+    for condition in data["conditions"]:
+        params = condition["parameters"]
+        if mode.startswith("memory-"):
+            if case.family.factor == "memory":
+                raise ValueError("A configuration must not erase the intended memory intervention")
+            params["memory"] = mode.removeprefix("memory-")
+        elif mode == "no-communication":
+            if case.family.factor in {"communication", "communication_channels"}:
+                raise ValueError("A configuration must not erase the communication intervention")
+            params["communication"] = False
+        elif mode == "medium-effort":
+            data["openai_reasoning_effort"] = "medium"
     design = Design.model_validate(data)
-    study_id = app.state.research.save_design(design)
-    run_id = app.state.research.operational_runs(study_id)[0].id
+    key = (case.id, mode, repetition)
+    if key not in studies:
+        studies[key] = app.state.research.save_design(design)
+    study_id = studies[key]
+    run_id = next(
+        r["id"]
+        for r in app.state.research.study(study_id)["runs"]
+        if r["condition_key"] == design.conditions[arm].key
+    )
+    params = data["conditions"][arm]["parameters"]
     initial = app.state.research.evidence(run_id, 0)["checkpoint"]
     app.state.engine.start(run_id)
     await app.state.engine.executions[run_id].task
@@ -105,6 +147,7 @@ async def participant_trial(app, case, mode: str, repetition: int, arm: int) -> 
         "id": case.id,
         "family": case.family.key,
         "run_id": run_id,
+        "study_id": study_id,
         "mode": mode,
         "arm": arm,
         "parameters": params,
@@ -112,7 +155,7 @@ async def participant_trial(app, case, mode: str, repetition: int, arm: int) -> 
         "seed": case.seed,
         "repetition": repetition,
         "rounds": design.rounds,
-        "decision_allowance": design.turn_count,
+        "decision_allowance": design.rounds * len(design.profiles),
         "status": record.status,
         "error": record.error,
         "replay": replay,
@@ -131,9 +174,17 @@ async def run(args) -> dict:
     gate = json.loads(await asyncio.to_thread(Path(args.gate).read_text))
     if (
         gate["failures"]
+        or gate.get("gate_sha256") != gate_digest()
         or gate["backend_sha256"] != backend_digest()
         or gate["suite_sha256"] != fingerprint()
         or gate["cases"] != 288
+        or len(gate.get("records", [])) != 576
+        or any(
+            not all(value is True for value in row["checks"].values())
+            for row in gate.get("records", [])
+        )
+        or len(gate.get("privacy_matrix", [])) != 28
+        or any(row["checks"] != row["passed"] for row in gate.get("privacy_matrix", []))
     ):
         raise ValueError("Fresh complete validity gate must pass before paid evaluation")
     await asyncio.to_thread(output.mkdir, parents=True, exist_ok=False)
@@ -146,12 +197,19 @@ async def run(args) -> dict:
         selected = selected[: args.limit]
     if not selected:
         raise ValueError("No selected cases")
-    if args.kind == "participants":
+    if args.kind in {"participants", "analysis"}:
         selected = [c for c in selected if c.family.environment]
     if args.split == "heldout":
         final = json.loads((ROOT / "benchmarks/final-checkpoint.json").read_text())
-        if final["source_sha256"] != source_digest() or final["suite_sha256"] != fingerprint():
-            raise ValueError("Final checkpoint does not match source/suite")
+        validate_final(args, selected, final)
+    sources = {}
+    if args.kind == "analysis":
+        with gzip.open(args.source_runs, "rt") as stream:
+            sources = {
+                (r["id"], r["repetition"], r["arm"]): r
+                for line in stream
+                if (r := json.loads(line)).get("mode") == "baseline" and "trace" in r
+            }
     db_path = await asyncio.to_thread(Path(args.database).resolve)
     db_path.parent.mkdir(parents=True, exist_ok=True)
     # File lock remains held for the entire app lifespan: no competing evaluator/recovery.
@@ -185,6 +243,7 @@ async def run(args) -> dict:
             repetitions=args.repetitions,
             concurrency=args.concurrency,
             decision_allowance_per_arm=48,
+            request_concurrency=args.request_concurrency,
             planner_reasoning_effort="medium",
             participant_reasoning_effort="low unless medium-effort",
             git_head=(
@@ -194,6 +253,18 @@ async def run(args) -> dict:
             ).strip(),
         )
         (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+        snapshot_paths = source_paths() + [
+            ROOT / p
+            for p in (
+                "benchmarks/quality-cases.jsonl",
+                "benchmarks/families.json",
+                "benchmarks/protocol.md",
+            )
+        ]
+        with tarfile.open(output / "source.tar.gz", "w:gz") as archive:
+            for path in snapshot_paths:
+                archive.add(path, arcname=str(path.relative_to(ROOT)))
+        os.environ["JAS_CONCURRENT_REQUESTS"] = str(args.request_concurrency)
         app = create_app(f"sqlite:///{db_path}", budget_usd=cap, concurrent_runs=args.concurrency)
         generate = app.state.models.generate
 
@@ -206,6 +277,7 @@ async def run(args) -> dict:
         with app.state.db.session() as session:
             previous_calls = set(session.scalars(select(ProviderCall.id)).all())
         records = []
+        studies = {}
         capacity = asyncio.Semaphore(args.concurrency)
         async with app.router.lifespan_context(app):
             async with httpx.AsyncClient(
@@ -216,11 +288,16 @@ async def run(args) -> dict:
                     async with capacity:
                         started = time.monotonic()
                         try:
-                            result = await (
-                                planner_trial(app, client, case)
-                                if args.kind == "planner"
-                                else participant_trial(app, case, mode, repetition, arm)
-                            )
+                            if args.kind == "planner":
+                                result = await planner_trial(app, client, case)
+                            elif args.kind == "analysis":
+                                result = await analysis_trial(
+                                    app, client, sources[(case.id, repetition, arm)]
+                                )
+                            else:
+                                result = await participant_trial(
+                                    app, case, mode, repetition, arm, studies
+                                )
                         except Exception as e:
                             # Provider exception bodies can contain credentials; class only.
                             result = dict(
@@ -249,9 +326,9 @@ async def run(args) -> dict:
                 jobs = [
                     (c, m, r, arm)
                     for c in selected
-                    for m in (args.modes if args.kind == "participants" else ["planner"])
+                    for m in (args.modes if args.kind == "participants" else [args.kind])
                     for r in range(args.repetitions)
-                    for arm in (range(2) if args.kind == "participants" else [None])
+                    for arm in (range(2) if args.kind in {"participants", "analysis"} else [None])
                 ]
                 random.Random(20261108).shuffle(jobs)
                 await asyncio.gather(*(trial(*job) for job in jobs))
@@ -320,7 +397,11 @@ def main():
     parser.add_argument("--live", action="store_true", required=True)
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--split", choices=["development", "heldout"], default="development")
-    parser.add_argument("--kind", choices=["planner", "participants"], default="planner")
+    parser.add_argument(
+        "--kind", choices=["planner", "participants", "analysis"], default="planner"
+    )
+    parser.add_argument("--source-runs", help="Baseline participant attempts for evidence analysis")
+    parser.add_argument("--request-concurrency", type=int, default=4, choices=range(1, 33))
     parser.add_argument("--database", default="data/quality/aggregate.sqlite3")
     parser.add_argument("--gate", default="data/quality/preflight/validity.json")
     parser.add_argument("--output", required=True)
@@ -346,6 +427,7 @@ def main():
     args = parser.parse_args()
     load_dotenv(ROOT / ".env", override=True, interpolate=False)
     os.environ["JAS_PLANNER_MODEL"] = MODEL
+    os.environ["JAS_ASSISTANT_MODEL"] = MODEL
     asyncio.run(run(args))
 
 

@@ -50,18 +50,24 @@ def condition_results(runs: list[RunMetrics]) -> list[dict[str, object]]:
     for key, group in by_condition.items():
         keys = sorted({metric for run in group for metric in run.metrics})
         for metric in keys:
-            values = [r.metrics[metric] for r in group if r.metrics.get(metric) is not None]
+            eligible = [r for r in group if r.metrics.get(metric) is not None]
+            by_seed: dict[int, list[float]] = defaultdict(list)
+            for run in eligible:
+                by_seed[run.seed].append(run.metrics[metric])
+            values = tuple(statistics.mean(repetitions) for repetitions in by_seed.values())
             results.append(
                 {
                     "condition_key": key,
                     "condition": group[0].condition,
                     "metric": metric,
                     "mean": statistics.mean(values) if values else None,
-                    "runs": len(values),
+                    "runs": len(eligible),
+                    "seeds": len(values),
                     "interval": bootstrap_mean_interval(tuple(values)),
-                    "method": "run-level percentile bootstrap, 1000 resamples"
+                    "method": "Repetitions averaged within seed; "
+                    "seed-level percentile bootstrap, 1000 resamples"
                     if len(values) >= 3
-                    else "Too few independent runs for an interval",
+                    else "Too few independent seeds for an interval",
                 }
             )
     return results

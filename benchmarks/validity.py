@@ -14,7 +14,7 @@ from agent_sim.simulation.environments import create_world
 from benchmarks.cases import cases, fingerprint
 from benchmarks.oracles import expected_balances, score_trace, scripted
 from benchmarks.probes import communication_probes, privacy_matrix
-from benchmarks.provenance import backend_digest
+from benchmarks.provenance import backend_digest, gate_digest
 
 
 def trajectory(case, condition, productive):
@@ -131,6 +131,7 @@ def adversarial(case, condition) -> dict[str, bool]:
 
 def evaluate(selected=None, output: Path | None = None) -> dict:
     initial_source = backend_digest()
+    initial_gate = gate_digest()
     records = []
     trace_file = gzip.open(output / "validity-traces.jsonl.gz", "wt") if output else None
     try:
@@ -140,11 +141,13 @@ def evaluate(selected=None, output: Path | None = None) -> dict:
             for condition in case.design().conditions:
                 checks = adversarial(case, condition)
                 strategies = []
+                signatures = []
                 for productive in (False, True):
                     try:
                         initial, rows = trajectory(case, condition, productive)
                         checks[f"oracle_replay_{productive}"] = True
                         strategies.append(score_trace(rows, initial))
+                        signatures.append(digest([row["decision"]["action"] for row in rows]))
                         if trace_file:
                             trace_file.write(
                                 json.dumps(
@@ -161,6 +164,9 @@ def evaluate(selected=None, output: Path | None = None) -> dict:
                     except (AssertionError, ValueError) as e:
                         checks[f"oracle_replay_{productive}"] = False
                         checks[f"error_{productive}"] = str(e)
+                checks["strategy_discrimination"] = (
+                    len(signatures) == 2 and signatures[0] != signatures[1]
+                )
                 records.append(
                     dict(
                         case=case.id,
@@ -182,9 +188,11 @@ def evaluate(selected=None, output: Path | None = None) -> dict:
                 stream.write(json.dumps(record) + "\n")
     else:
         communication.pop("records")
+    assert initial_gate == gate_digest(), "Gate source changed during validity checks"
     assert initial_source == backend_digest(), "Source changed during validity gate"
     summary = dict(
         backend_sha256=initial_source,
+        gate_sha256=initial_gate,
         privacy_matrix=privacy,
         communication_probes=communication,
         suite_sha256=fingerprint(),
