@@ -173,6 +173,22 @@ correct aggregate facts. The index now gives each run its condition key and name
 reducing lookup through opaque identifiers. This does not certify prose: citation-range
 validation cannot prove that every sentence accurately describes its cited turn.
 
+The final labeled-index retest (`validity-analysis-labeled`) completed all six responses for
+$0.027713 (16 calls). Both numeric audits again returned 0 sanctions, 48 work and 0 wait;
+all responses retained citations and uncertainty and rejected the unsupported causal claims.
+Manual trace review still found an internally contradictory allocation comparison in
+`transparency`, repetition 0: it first reversed the oversight conditions, then described
+their examples correctly. This is a retained narrative error, not an insight-quality pass.
+The observed ground truth is self-allocation **1.0 under oversight 1** and **0.890625 under
+oversight 0**, with authority/worker balances **384/48** and **342/90**, respectively.
+Generated prose therefore still needs review against computed facts and inspected evidence.
+
+All follow-up diagnostics together cost **$0.893298**. The final aggregate reconciliation is
+**27,277 Luna-only calls, $14.501455 charged/reserved of $75**, with 11 earlier unknown calls
+retained and no pending calls. Sum of provider charges equals the workspace ledger exactly.
+`data/quality/validity-comparison.json` records each phase, artifact hashes, costs and remaining
+weaknesses; source snapshots and complete sanitized traces remain beside each phase.
+
 These are public development requests and mechanical acceptance scores. They do not establish
 independent insight quality, calibrated human behavior, statistical power or unseen-family
 generalization. A further explicit-count/isolation audit is supplemental: it examines accepted

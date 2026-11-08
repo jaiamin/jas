@@ -1,6 +1,6 @@
 # JAS handoff: experiment validity
 
-## Active task and acceptance
+## Completed task and acceptance
 
 The user authorized a general experiment-validity gate after reviewing the weak shortage
 experiment. Implement question fidelity, deterministic incentive/treatment checks, visible
@@ -54,13 +54,19 @@ catalog and explicit engineering/audience distinctions; second six responses:
 data/quality/validity-analysis-final ($0.013842). One qualitative example still reversed
 condition labels despite correct aggregates. Added direct per-run condition key/name to
 reduce opaque ID lookup. Do NOT call six completions a universal insight-quality pass.
-Current source gate: data/quality/validity-analysis-labeled-gate, exec session 88856.
-NEXT: after gate passes, run PYTHONPATH=. .venv/bin/python
-data/quality/check-validity-analysis.py --output data/quality/validity-analysis-labeled
-(max $0.50 within existing ledger); inspect ALL six responses and exact numeric JSON.
-Keep remaining errors explicit; do not tune forever against familiar traces. Update results,
-cost audit, HANDOFF and PR; restart owned 8080 service for the final labels; verify health,
-saved detail/export; clean disposable services. No new held-out/generalization claim.
+Final source gate: data/quality/validity-analysis-labeled-gate, 5,208 checks passed.
+Final labeled-index analysis retest: data/quality/validity-analysis-labeled, all six complete,
+16 calls/$0.027713. Both count audits exact (0 sanctions/48 work/0 wait), valid citations and
+caveats. One transparency repetition 0 still contradicts the actual condition allocation
+comparison, then describes it correctly later. Keep this narrative failure explicit; do not
+claim a universal insight-quality score or continue tuning against these familiar traces.
+All diagnostics and source hashes are in data/quality/validity-comparison.json. Total new
+spend $0.893298; aggregate 27,277 Luna-only calls/$14.501455, 11 earlier unknowns retained,
+no pending calls; sum of provider charges equals the ledger. Cap remains $75.
+Planner/world source unchanged after the 60/60 checkpoint; only assistants.py subsequently
+changed for capability catalog and direct condition labels. Backend 735 tests passed;
+frontend 69/browser 68 plus lint/types/build and production smoke passed. Final docs/PR
+publication and status checks remain before handoff; user-requested 8080 stays running.
 Do not reopen old held-out model cases or tune against published held-out scores.
 
 ## Workspace and publication
@@ -70,7 +76,7 @@ PR #6 was already merged externally. New task branch starts at origin/main, with
 subsequent experiment-validity changes; draft PR https://github.com/jaiamin/ass/pull/7.
 Never merge/main-push or
 rewrite history. No new subagents. User is testing: preserve existing local database and runs.
-Current preview is exec session 69120, PID 85584 on 8080, dedicated database
+Current preview is exec session 85891, PID 86472 on 8080, dedicated database
 `data/quality/manual-preview.sqlite3`; refresh/restart this owned service when needed.
 Health, SPA, saved experiment detail and v4 export all returned 200 after restart.
 System uv crashes; use installed `.venv` or `.tools/uv-0.13.7.data/scripts/uv`.
@@ -82,7 +88,7 @@ Historical evidence commit a2ce6ba940398ca12b2c8baba25787e0d43f5c10; full local 
 `data/quality/shortage-review/REVIEW.md` and its saved export/script. No provider calls spent
 on that review. Existing aggregate evaluation ledger `data/quality/aggregate.sqlite3` must
 never reset. Historical checkpoint: 26,688 Luna calls/$13.608157, including 11 unknowns.
-After planner and first two analysis diagnostics: $14.473742 charged/reserved of $75.
+Current aggregate: $14.501455 charged/reserved of $75.
 Any paid verification must use only openai:gpt-6-luna and the same aggregate cap/ledger.
 Prefer deterministic tests first. Never rerun/tune against the published held-out suite.
 
