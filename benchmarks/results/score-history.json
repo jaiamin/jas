@@ -1,0 +1,163 @@
+{
+  "status": "development; held-out pending",
+  "no_omnibus_score": true,
+  "tracks": [
+    {
+      "dimension": "original_invariant_kernel",
+      "limitation": "Identical original 4,608 checks. Expanded v3 checks are a separate validation contract.",
+      "checkpoints": [
+        {
+          "checkpoint": "before_safety_fixes",
+          "passed": 3528,
+          "attempted": 4608
+        },
+        {
+          "checkpoint": "after_safety_fixes",
+          "passed": 4608,
+          "attempted": 4608
+        }
+      ],
+      "evidence": [
+        "baseline/validity.json",
+        "validity-current/validity.json"
+      ]
+    },
+    {
+      "dimension": "planner_identification",
+      "limitation": "Two-agent requests cannot isolate a third-party disclosure effect; exclude every old attempt regardless of answer",
+      "checkpoints": [
+        {
+          "checkpoint": "matched_baseline",
+          "passed": 101,
+          "attempted": 102
+        },
+        {
+          "checkpoint": "matched_improved",
+          "passed": 102,
+          "attempted": 102
+        }
+      ],
+      "evidence": "planner-comparison.json"
+    },
+    {
+      "dimension": "analysis_facts_citations_and_limits",
+      "limitation": "Matched saved participant traces. Strict structured contract; not a narrative-insight score.",
+      "checkpoints": [
+        {
+          "checkpoint": "analysis-baseline",
+          "passed": 3,
+          "attempted": 84,
+          "percent": 3.5714285714285716,
+          "cost_usd": 0.620124,
+          "source_sha256": "df43b26f456bc5997e9e9b44c31ddd77caf025a15c0a5e634d56808888a3e981",
+          "evidence": "analysis-baseline/attempts.jsonl.gz"
+        },
+        {
+          "checkpoint": "analysis-improvement-1",
+          "passed": 64,
+          "attempted": 84,
+          "percent": 76.19047619047619,
+          "cost_usd": 0.194712,
+          "source_sha256": "9e62fce10c16dde4014c05814b42e5b959324f20bf2fc05bdd1a9f7f166e6cfe",
+          "evidence": "analysis-improvement-1/attempts.jsonl.gz"
+        },
+        {
+          "checkpoint": "analysis-improvement-2",
+          "passed": 84,
+          "attempted": 84,
+          "percent": 100.0,
+          "cost_usd": 0.235927,
+          "source_sha256": "b74ce91ee16505f16d46d3816780384f2d169eb42266633fd42f5a0ff8f5f9ba",
+          "evidence": "analysis-improvement-2/attempts.jsonl.gz"
+        },
+        {
+          "checkpoint": "analysis-confirmation",
+          "passed": 80,
+          "attempted": 84,
+          "percent": 95.23809523809524,
+          "cost_usd": 0.244663,
+          "source_sha256": "2f22455976d34d4d56bb299a3f303526b490d38c2ee7c9d3e826928e4f70e030",
+          "evidence": "analysis-confirmation/attempts.jsonl.gz"
+        },
+        {
+          "checkpoint": "analysis-final-confirmation",
+          "passed": 83,
+          "attempted": 84,
+          "percent": 98.80952380952381,
+          "cost_usd": 0.2226,
+          "source_sha256": "7f2a136a2d71124fc5b962fb0fde3f5b5bd77de35453e7a63f04d22a2a69997a",
+          "evidence": "analysis-final-confirmation/attempts.jsonl.gz"
+        },
+        {
+          "checkpoint": "analysis-stability-1",
+          "passed": 84,
+          "attempted": 84,
+          "percent": 100.0,
+          "cost_usd": 0.209627,
+          "source_sha256": "7f2a136a2d71124fc5b962fb0fde3f5b5bd77de35453e7a63f04d22a2a69997a",
+          "evidence": "analysis-stability-1/attempts.jsonl.gz"
+        },
+        {
+          "checkpoint": "analysis-stability-2",
+          "passed": 83,
+          "attempted": 84,
+          "percent": 98.80952380952381,
+          "cost_usd": 0.226568,
+          "source_sha256": "7f2a136a2d71124fc5b962fb0fde3f5b5bd77de35453e7a63f04d22a2a69997a",
+          "evidence": "analysis-stability-2/attempts.jsonl.gz"
+        }
+      ]
+    },
+    {
+      "dimension": "commons_counterfactuals",
+      "limitation": "Same saved development traces; new independent hypothetical payoff probe introduced after qualitative errors. Instruction-only iteration retained.",
+      "checkpoints": [
+        {
+          "checkpoint": "incentives-baseline",
+          "passed": 4,
+          "attempted": 12,
+          "percent": 33.333333333333336,
+          "cost_usd": 0.018603,
+          "source_sha256": "71469ddc7d8ad7c0a4b426d1480c8af7496e595ee4e0e4af2257ff698a13a6dc",
+          "evidence": "incentives-baseline/attempts.jsonl.gz"
+        },
+        {
+          "checkpoint": "incentives-improvement-1",
+          "passed": 4,
+          "attempted": 12,
+          "percent": 33.333333333333336,
+          "cost_usd": 0.017175,
+          "source_sha256": "a88df1c479ae638dce873cecfad367d939f2746deb2638ca38b18fddc08110a3",
+          "evidence": "incentives-improvement-1/attempts.jsonl.gz"
+        },
+        {
+          "checkpoint": "incentives-improvement-2",
+          "passed": 12,
+          "attempted": 12,
+          "percent": 100.0,
+          "cost_usd": 0.020247,
+          "source_sha256": "8d569b99d647448d27bae08fc65d60755823a8235011758371f526419d7c1acf",
+          "evidence": "incentives-improvement-2/attempts.jsonl.gz"
+        },
+        {
+          "checkpoint": "incentives-confirmation",
+          "passed": 12,
+          "attempted": 12,
+          "percent": 100.0,
+          "cost_usd": 0.019376,
+          "source_sha256": "2f22455976d34d4d56bb299a3f303526b490d38c2ee7c9d3e826928e4f70e030",
+          "evidence": "incentives-confirmation/attempts.jsonl.gz"
+        },
+        {
+          "checkpoint": "incentives-final-confirmation",
+          "passed": 12,
+          "attempted": 12,
+          "percent": 100.0,
+          "cost_usd": 0.017914,
+          "source_sha256": "7f2a136a2d71124fc5b962fb0fde3f5b5bd77de35453e7a63f04d22a2a69997a",
+          "evidence": "incentives-final-confirmation/attempts.jsonl.gz"
+        }
+      ]
+    }
+  ]
+}

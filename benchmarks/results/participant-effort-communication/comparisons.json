@@ -1,0 +1,428 @@
+{
+  "attempted": 36,
+  "passed": 36,
+  "failures": {},
+  "missing_traces": 0,
+  "comparisons": [
+    {
+      "family": "shared-evidence",
+      "mode": "baseline",
+      "agents": 2,
+      "arms": {
+        "0": {
+          "attempted": 6,
+          "completed": 6,
+          "missing_traces": 0,
+          "turns": 288,
+          "decision_allowance": 288,
+          "cost_usd": 0.091765,
+          "reports": 259,
+          "false_reports": 0,
+          "eligible_commitments": 0,
+          "infeasible_commitments": 0,
+          "fulfilled_commitments": 0,
+          "seed_means": {
+            "utility": {
+              "17": 330.0,
+              "43": 340.0,
+              "89": 390.0
+            },
+            "completion": {},
+            "stock": {},
+            "false_report_rate": {
+              "17": 0.0,
+              "43": 0.0,
+              "89": 0.0
+            },
+            "fulfillment_rate": {},
+            "forecast_error": {}
+          },
+          "means": {
+            "utility": 353.3333333333333,
+            "completion": null,
+            "stock": null,
+            "false_report_rate": 0.0,
+            "fulfillment_rate": null,
+            "forecast_error": null
+          }
+        },
+        "1": {
+          "attempted": 6,
+          "completed": 6,
+          "missing_traces": 0,
+          "turns": 288,
+          "decision_allowance": 288,
+          "cost_usd": 0.095359,
+          "reports": 278,
+          "false_reports": 0,
+          "eligible_commitments": 0,
+          "infeasible_commitments": 0,
+          "fulfilled_commitments": 0,
+          "seed_means": {
+            "utility": {
+              "17": 330.0,
+              "43": 340.0,
+              "89": 390.0
+            },
+            "completion": {},
+            "stock": {},
+            "false_report_rate": {
+              "17": 0.0,
+              "43": 0.0,
+              "89": 0.0
+            },
+            "fulfillment_rate": {},
+            "forecast_error": {}
+          },
+          "means": {
+            "utility": 353.3333333333333,
+            "completion": null,
+            "stock": null,
+            "false_report_rate": 0.0,
+            "fulfillment_rate": null,
+            "forecast_error": null
+          }
+        }
+      },
+      "effects": {
+        "utility": {
+          "seed_effects": {
+            "17": 0.0,
+            "43": 0.0,
+            "89": 0.0
+          },
+          "mean": 0.0,
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "pairs": 6,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "completion": {
+          "seed_effects": {},
+          "mean": null,
+          "interval": null,
+          "pairs": 0,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "stock": {
+          "seed_effects": {},
+          "mean": null,
+          "interval": null,
+          "pairs": 0,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "false_report_rate": {
+          "seed_effects": {
+            "17": 0.0,
+            "43": 0.0,
+            "89": 0.0
+          },
+          "mean": 0.0,
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "pairs": 6,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "fulfillment_rate": {
+          "seed_effects": {},
+          "mean": null,
+          "interval": null,
+          "pairs": 0,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "forecast_error": {
+          "seed_effects": {},
+          "mean": null,
+          "interval": null,
+          "pairs": 0,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        }
+      }
+    },
+    {
+      "family": "shared-evidence",
+      "mode": "medium-effort",
+      "agents": 2,
+      "arms": {
+        "0": {
+          "attempted": 6,
+          "completed": 6,
+          "missing_traces": 0,
+          "turns": 288,
+          "decision_allowance": 288,
+          "cost_usd": 0.11325,
+          "reports": 288,
+          "false_reports": 0,
+          "eligible_commitments": 0,
+          "infeasible_commitments": 0,
+          "fulfilled_commitments": 0,
+          "seed_means": {
+            "utility": {
+              "17": 330.0,
+              "43": 340.0,
+              "89": 385.0
+            },
+            "completion": {},
+            "stock": {},
+            "false_report_rate": {
+              "17": 0.0,
+              "43": 0.0,
+              "89": 0.0
+            },
+            "fulfillment_rate": {},
+            "forecast_error": {}
+          },
+          "means": {
+            "utility": 351.6666666666667,
+            "completion": null,
+            "stock": null,
+            "false_report_rate": 0.0,
+            "fulfillment_rate": null,
+            "forecast_error": null
+          }
+        },
+        "1": {
+          "attempted": 6,
+          "completed": 6,
+          "missing_traces": 0,
+          "turns": 288,
+          "decision_allowance": 288,
+          "cost_usd": 0.119828,
+          "reports": 267,
+          "false_reports": 0,
+          "eligible_commitments": 0,
+          "infeasible_commitments": 0,
+          "fulfilled_commitments": 0,
+          "seed_means": {
+            "utility": {
+              "17": 330.0,
+              "43": 340.0,
+              "89": 390.0
+            },
+            "completion": {},
+            "stock": {},
+            "false_report_rate": {
+              "17": 0.0,
+              "43": 0.0,
+              "89": 0.0
+            },
+            "fulfillment_rate": {},
+            "forecast_error": {}
+          },
+          "means": {
+            "utility": 353.3333333333333,
+            "completion": null,
+            "stock": null,
+            "false_report_rate": 0.0,
+            "fulfillment_rate": null,
+            "forecast_error": null
+          }
+        }
+      },
+      "effects": {
+        "utility": {
+          "seed_effects": {
+            "43": 0.0,
+            "89": 5.0,
+            "17": 0.0
+          },
+          "mean": 1.6666666666666667,
+          "interval": [
+            0.0,
+            5.0
+          ],
+          "pairs": 6,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "completion": {
+          "seed_effects": {},
+          "mean": null,
+          "interval": null,
+          "pairs": 0,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "stock": {
+          "seed_effects": {},
+          "mean": null,
+          "interval": null,
+          "pairs": 0,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "false_report_rate": {
+          "seed_effects": {
+            "43": 0.0,
+            "89": 0.0,
+            "17": 0.0
+          },
+          "mean": 0.0,
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "pairs": 6,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "fulfillment_rate": {
+          "seed_effects": {},
+          "mean": null,
+          "interval": null,
+          "pairs": 0,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "forecast_error": {
+          "seed_effects": {},
+          "mean": null,
+          "interval": null,
+          "pairs": 0,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        }
+      }
+    },
+    {
+      "family": "shared-evidence",
+      "mode": "no-communication",
+      "agents": 2,
+      "arms": {
+        "0": {
+          "attempted": 6,
+          "completed": 6,
+          "missing_traces": 0,
+          "turns": 288,
+          "decision_allowance": 288,
+          "cost_usd": 0.081081,
+          "reports": 0,
+          "false_reports": 0,
+          "eligible_commitments": 0,
+          "infeasible_commitments": 0,
+          "fulfilled_commitments": 0,
+          "seed_means": {
+            "utility": {
+              "17": 330.0,
+              "43": 340.0,
+              "89": 390.0
+            },
+            "completion": {},
+            "stock": {},
+            "false_report_rate": {},
+            "fulfillment_rate": {},
+            "forecast_error": {}
+          },
+          "means": {
+            "utility": 353.3333333333333,
+            "completion": null,
+            "stock": null,
+            "false_report_rate": null,
+            "fulfillment_rate": null,
+            "forecast_error": null
+          }
+        },
+        "1": {
+          "attempted": 6,
+          "completed": 6,
+          "missing_traces": 0,
+          "turns": 288,
+          "decision_allowance": 288,
+          "cost_usd": 0.082451,
+          "reports": 0,
+          "false_reports": 0,
+          "eligible_commitments": 0,
+          "infeasible_commitments": 0,
+          "fulfilled_commitments": 0,
+          "seed_means": {
+            "utility": {
+              "17": 330.0,
+              "43": 340.0,
+              "89": 390.0
+            },
+            "completion": {},
+            "stock": {},
+            "false_report_rate": {},
+            "fulfillment_rate": {},
+            "forecast_error": {}
+          },
+          "means": {
+            "utility": 353.3333333333333,
+            "completion": null,
+            "stock": null,
+            "false_report_rate": null,
+            "fulfillment_rate": null,
+            "forecast_error": null
+          }
+        }
+      },
+      "effects": {
+        "utility": {
+          "seed_effects": {
+            "17": 0.0,
+            "89": 0.0,
+            "43": 0.0
+          },
+          "mean": 0.0,
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "pairs": 6,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "completion": {
+          "seed_effects": {},
+          "mean": null,
+          "interval": null,
+          "pairs": 0,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "stock": {
+          "seed_effects": {},
+          "mean": null,
+          "interval": null,
+          "pairs": 0,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "false_report_rate": {
+          "seed_effects": {},
+          "mean": null,
+          "interval": null,
+          "pairs": 0,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "fulfillment_rate": {
+          "seed_effects": {},
+          "mean": null,
+          "interval": null,
+          "pairs": 0,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        },
+        "forecast_error": {
+          "seed_effects": {},
+          "mean": null,
+          "interval": null,
+          "pairs": 0,
+          "attempted_pairs": 6,
+          "method": "Arm1 minus arm0; repetitions averaged within seed; 95% percentile bootstrap, 2000 resamples. Three seeds give weak uncertainty."
+        }
+      }
+    }
+  ]
+}

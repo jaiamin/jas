@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "known additive offset and degenerate interval",
+    "run-order invariance",
+    "failed attempt retained in denominator",
+    "missing alternative retained in denominator"
+  ],
+  "passed": 4,
+  "model_requests": 0
+}

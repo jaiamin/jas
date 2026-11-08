@@ -1,0 +1,55 @@
+{
+  "manifest": {
+    "started_utc": "2026-11-08T18:30:04.969012+00:00",
+    "source_runs_sha256": null,
+    "suite_sha256": "c05f3f353bcd6be3aeba94b145517e7b2e935907bbe1914b09d3f1bac4d3a8ff",
+    "source_sha256": "2f22455976d34d4d56bb299a3f303526b490d38c2ee7c9d3e826928e4f70e030",
+    "model": "openai:gpt-6-luna",
+    "checkpoint": "participant-parallel",
+    "split": "development",
+    "kind": "participants",
+    "database": "/home/agent/workspace/data/quality/aggregate.sqlite3",
+    "aggregate_cap_usd": 75,
+    "phase_ceiling_usd": 60,
+    "selected": [
+      "shrinking-surplus-00",
+      "shrinking-surplus-04",
+      "shrinking-surplus-08"
+    ],
+    "modes": [
+      "baseline"
+    ],
+    "repetitions": 2,
+    "concurrency": 4,
+    "decision_allowance_per_arm": 48,
+    "request_concurrency": 4,
+    "planner_reasoning_effort": "medium",
+    "participant_reasoning_effort": "low unless medium-effort",
+    "git_head": "dc634f23aa5f06707b382e610ad5dbc28100a3b8"
+  },
+  "elapsed_seconds": 39.266,
+  "source_unchanged": true,
+  "phase_usage": {
+    "requests": 28,
+    "cost_usd": 0.00744,
+    "input_tokens": 26792,
+    "output_tokens": 9494,
+    "partial": false
+  },
+  "attempted": 12,
+  "passed": 12,
+  "failures": {},
+  "ledger": {
+    "requests": 20802,
+    "input_tokens": 72605378,
+    "output_tokens": 4659984,
+    "cost_usd": 9.792763,
+    "partial": true
+  },
+  "by_family": {
+    "shrinking-surplus": {
+      "attempted": 12,
+      "passed": 12
+    }
+  }
+}

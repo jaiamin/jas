@@ -1,0 +1,74 @@
+{
+  "manifest": {
+    "started_utc": "2026-11-08T18:40:07.970320+00:00",
+    "source_runs_sha256": "91824bd9b677cb6424c1c98155849a2570b238461c3ec54de41e1aa675e43c20",
+    "suite_sha256": "c05f3f353bcd6be3aeba94b145517e7b2e935907bbe1914b09d3f1bac4d3a8ff",
+    "source_sha256": "7f2a136a2d71124fc5b962fb0fde3f5b5bd77de35453e7a63f04d22a2a69997a",
+    "model": "openai:gpt-6-luna",
+    "checkpoint": "analysis-agent-counts-improvement",
+    "split": "development",
+    "kind": "analysis",
+    "database": "/home/agent/workspace/data/quality/aggregate.sqlite3",
+    "aggregate_cap_usd": 75,
+    "phase_ceiling_usd": 60,
+    "selected": [
+      "task-load-01",
+      "task-load-02",
+      "task-load-03",
+      "task-load-05",
+      "task-load-06",
+      "task-load-07",
+      "task-load-09",
+      "task-load-10",
+      "task-load-11",
+      "shared-evidence-01",
+      "shared-evidence-02",
+      "shared-evidence-03",
+      "shared-evidence-05",
+      "shared-evidence-06",
+      "shared-evidence-07",
+      "shared-evidence-09",
+      "shared-evidence-10",
+      "shared-evidence-11"
+    ],
+    "modes": [
+      "baseline"
+    ],
+    "repetitions": 2,
+    "concurrency": 8,
+    "decision_allowance_per_arm": 48,
+    "request_concurrency": 8,
+    "planner_reasoning_effort": "medium",
+    "participant_reasoning_effort": "low unless medium-effort",
+    "git_head": "8b3e77df8d3fbb80b8319494db88d015c5b5db62"
+  },
+  "elapsed_seconds": 77.8,
+  "source_unchanged": true,
+  "phase_usage": {
+    "requests": 177,
+    "cost_usd": 0.189397,
+    "input_tokens": 1659649,
+    "output_tokens": 46721,
+    "partial": false
+  },
+  "attempted": 72,
+  "passed": 72,
+  "failures": {},
+  "ledger": {
+    "requests": 21403,
+    "input_tokens": 78562935,
+    "output_tokens": 4828752,
+    "cost_usd": 10.473164,
+    "partial": true
+  },
+  "by_family": {
+    "task-load": {
+      "attempted": 36,
+      "passed": 36
+    },
+    "shared-evidence": {
+      "attempted": 36,
+      "passed": 36
+    }
+  }
+}

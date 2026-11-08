@@ -1,0 +1,149 @@
+{
+  "interpretation": "Strict pass requires completion, the requested JSON summary, exact counts/utility, citations and caveats. Missing JSON is a format failure and remains a strict failure; prose values are not automatically certified. Narrative usefulness is not scored by this table.",
+  "checkpoints": [
+    {
+      "checkpoint": "analysis-agent-counts",
+      "attempted": 72,
+      "strict_passed": 65,
+      "completed": 71,
+      "parsed_summaries": 66,
+      "numeric_exact_given_parse": 65,
+      "complete_without_requested_structured_summary": 5,
+      "failures": {
+        "numeric_summary": 6,
+        "reports": 7,
+        "false_reports": 6,
+        "eligible_commitments": 6,
+        "infeasible_commitments": 6,
+        "fulfilled_commitments": 6,
+        "utility": 6,
+        "complete": 1,
+        "cited_evidence": 1,
+        "stated_limits": 1
+      }
+    },
+    {
+      "checkpoint": "analysis-agent-counts-improvement",
+      "attempted": 72,
+      "strict_passed": 72,
+      "completed": 72,
+      "parsed_summaries": 72,
+      "numeric_exact_given_parse": 72,
+      "complete_without_requested_structured_summary": 0,
+      "failures": {}
+    },
+    {
+      "checkpoint": "analysis-baseline",
+      "attempted": 84,
+      "strict_passed": 3,
+      "completed": 10,
+      "parsed_summaries": 9,
+      "numeric_exact_given_parse": 3,
+      "complete_without_requested_structured_summary": 1,
+      "failures": {
+        "complete": 74,
+        "numeric_summary": 75,
+        "reports": 75,
+        "false_reports": 75,
+        "eligible_commitments": 75,
+        "infeasible_commitments": 75,
+        "fulfilled_commitments": 75,
+        "utility": 81,
+        "cited_evidence": 74,
+        "stated_limits": 75
+      }
+    },
+    {
+      "checkpoint": "analysis-confirmation",
+      "attempted": 84,
+      "strict_passed": 80,
+      "completed": 81,
+      "parsed_summaries": 80,
+      "numeric_exact_given_parse": 80,
+      "complete_without_requested_structured_summary": 1,
+      "failures": {
+        "complete": 3,
+        "numeric_summary": 4,
+        "reports": 4,
+        "false_reports": 4,
+        "eligible_commitments": 4,
+        "infeasible_commitments": 4,
+        "fulfilled_commitments": 4,
+        "utility": 4,
+        "cited_evidence": 3,
+        "stated_limits": 3
+      }
+    },
+    {
+      "checkpoint": "analysis-final-confirmation",
+      "attempted": 84,
+      "strict_passed": 83,
+      "completed": 84,
+      "parsed_summaries": 83,
+      "numeric_exact_given_parse": 83,
+      "complete_without_requested_structured_summary": 1,
+      "failures": {
+        "numeric_summary": 1,
+        "reports": 1,
+        "false_reports": 1,
+        "eligible_commitments": 1,
+        "infeasible_commitments": 1,
+        "fulfilled_commitments": 1,
+        "utility": 1
+      }
+    },
+    {
+      "checkpoint": "analysis-improvement-1",
+      "attempted": 84,
+      "strict_passed": 64,
+      "completed": 83,
+      "parsed_summaries": 83,
+      "numeric_exact_given_parse": 83,
+      "complete_without_requested_structured_summary": 0,
+      "failures": {
+        "stated_limits": 20,
+        "complete": 1,
+        "numeric_summary": 1,
+        "reports": 1,
+        "false_reports": 1,
+        "eligible_commitments": 1,
+        "infeasible_commitments": 1,
+        "fulfilled_commitments": 1,
+        "utility": 1,
+        "cited_evidence": 1
+      }
+    },
+    {
+      "checkpoint": "analysis-improvement-2",
+      "attempted": 84,
+      "strict_passed": 84,
+      "completed": 84,
+      "parsed_summaries": 84,
+      "numeric_exact_given_parse": 84,
+      "complete_without_requested_structured_summary": 0,
+      "failures": {}
+    },
+    {
+      "checkpoint": "analysis-stability-1",
+      "attempted": 84,
+      "strict_passed": 84,
+      "completed": 84,
+      "parsed_summaries": 84,
+      "numeric_exact_given_parse": 84,
+      "complete_without_requested_structured_summary": 0,
+      "failures": {}
+    },
+    {
+      "checkpoint": "analysis-stability-2",
+      "attempted": 84,
+      "strict_passed": 83,
+      "completed": 84,
+      "parsed_summaries": 84,
+      "numeric_exact_given_parse": 83,
+      "complete_without_requested_structured_summary": 0,
+      "failures": {
+        "utility": 1
+      }
+    }
+  ]
+}

@@ -71,3 +71,19 @@ build/check commands. The `pythonpath` pytest setting makes both `pytest` and `p
 collect the benchmark calibration tests. The final archive is checked by running its tests and
 building its Docker image outside the working checkout. Earlier archives retain evaluated
 backend/benchmark source but need their recorded git checkpoint for omitted UI build metadata.
+
+Published provider traces retain observable outputs and usage; all thinking parts, including
+opaque signatures, are omitted. The publication audit records original/published hashes for
+historical traces. This does not change scored decisions, observable answers or token costs.
+The local spending ledger is retained. See [publication audit](results/trace-publication.json).
+
+The [score history](results/score-history.json) preserves comparable checkpoints and failed
+iterations. To regenerate the cross-configuration contrasts from every published participant
+phase, run from the repository root:
+
+```sh
+PYTHONPATH=. uv run python benchmarks/results/reproduce-configurations.py
+```
+
+The report keeps intended treatment effects separate from cross-configuration effects.
+All seed-block values, weak uncertainty intervals and attempted denominators remain available.

@@ -1,0 +1,31 @@
+{
+  "started_utc": "2026-11-08T18:01:37.660682+00:00",
+  "source_runs_sha256": null,
+  "suite_sha256": "c05f3f353bcd6be3aeba94b145517e7b2e935907bbe1914b09d3f1bac4d3a8ff",
+  "source_sha256": "2f22455976d34d4d56bb299a3f303526b490d38c2ee7c9d3e826928e4f70e030",
+  "model": "openai:gpt-6-luna",
+  "checkpoint": "participant-memory",
+  "split": "development",
+  "kind": "participants",
+  "database": "/home/agent/workspace/data/quality/aggregate.sqlite3",
+  "aggregate_cap_usd": 75,
+  "phase_ceiling_usd": 60,
+  "selected": [
+    "reciprocal-surplus-00",
+    "reciprocal-surplus-04",
+    "reciprocal-surplus-08"
+  ],
+  "modes": [
+    "memory-none",
+    "memory-history",
+    "memory-notes",
+    "memory-episodic"
+  ],
+  "repetitions": 2,
+  "concurrency": 8,
+  "decision_allowance_per_arm": 48,
+  "request_concurrency": 8,
+  "planner_reasoning_effort": "medium",
+  "participant_reasoning_effort": "low unless medium-effort",
+  "git_head": "dc634f23aa5f06707b382e610ad5dbc28100a3b8"
+}
