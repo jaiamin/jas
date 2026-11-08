@@ -1,6 +1,6 @@
-# JAS handoff: experiment validity
+# JAS handoff
 
-## Completed task and acceptance
+## Previous task: experiment validity (historical)
 
 The user authorized a general experiment-validity gate after reviewing the weak shortage
 experiment. Implement question fidelity, deterministic incentive/treatment checks, visible
@@ -69,16 +69,13 @@ frontend 69/browser 68 plus lint/types/build and production smoke passed. Final 
 are published; final CI status is on PR #7. User-requested 8080 stays running.
 Do not reopen old held-out model cases or tune against published held-out scores.
 
-## Workspace and publication
+## Previous task publication
 
-Linux isolated Docker Sandbox, /home/agent/workspace, branch feat/experiment-validity.
+Linux isolated Docker Sandbox, /home/agent/workspace. Previous branch: feat/experiment-validity.
 PR #6 was already merged externally. New task branch starts at origin/main, with only the
 subsequent experiment-validity changes; draft PR https://github.com/jaiamin/ass/pull/7.
 Never merge/main-push or
 rewrite history. No new subagents. User is testing: preserve existing local database and runs.
-Current preview is exec session 85891, PID 86472 on 8080, dedicated database
-`data/quality/manual-preview.sqlite3`; refresh/restart this owned service when needed.
-Health, SPA, saved experiment detail and v4 export all returned 200 after restart.
 System uv crashes; use installed `.venv` or `.tools/uv-0.13.7.data/scripts/uv`.
 
 ## Evidence and evaluation boundary
@@ -88,7 +85,7 @@ Historical evidence commit a2ce6ba940398ca12b2c8baba25787e0d43f5c10; full local 
 `data/quality/shortage-review/REVIEW.md` and its saved export/script. No provider calls spent
 on that review. Existing aggregate evaluation ledger `data/quality/aggregate.sqlite3` must
 never reset. Historical checkpoint: 26,688 Luna calls/$13.608157, including 11 unknowns.
-Current aggregate: $14.501455 charged/reserved of $75.
+Aggregate at start of composition task: $14.501455 charged/reserved of $75.
 Any paid verification must use only openai:gpt-6-luna and the same aggregate cap/ledger.
 Prefer deterministic tests first. Never rerun/tune against the published held-out suite.
 
@@ -98,66 +95,75 @@ planner 206/240, participants 96/96, analysis 96/96; 302 backend/66 frontend/65 
 These are not new-source scores. New regressions belong in correctness/development tests.
 Public provider traces must omit reasoning/signatures. Never bypass secret scanning.
 
-## Active follow-up: environment composition
+## Current task: custom environment composition
 
-Branch: feat/environment-composition (based on PR #7; do not merge either PR).
-User approved agent-assisted composition and editable/deletable custom environments.
-Acceptance: typed resource primitives (finite stock, controlled/shared access, transfers,
-consumption, regeneration, stock/allocation visibility), deterministic enforcement and privacy;
-planner composes supported mechanics and declines absent ones; custom library CRUD with
-optimistic revisions and immutable experiment snapshots; visual editing and reuse; end-to-end
-shortage example; adversarial, strategy/oracle, replay, API and browser verification.
-No runtime generated code or model-settled consequences. No guaranteed optimal agent choices.
-Keep historical evidence/database and frozen benchmark families intact. Use existing spending
-ledger/cap for any paid calls; deterministic verification first. Leave owned preview on 8080.
-Library records are versioned files beside the workspace DB, independent from immutable
-SQL evidence, avoiding a schema migration or reset. Built-ins cannot be edited/deleted.
+Branch `feat/environment-composition`, based on PR #7 at aa2aee0; never merge either PR.
+PR #7 is unwatched; do not relink/watch/list it. No push or PR for this branch yet.
+User approved autonomous composition, editable/deletable custom environments and testing.
+Implementation commits: f4ca72d, d83495b, 12f9d6b, 2c9e6e0, e17e54a; factorial fix pending commit.
 
-Composition implementation complete; final paid verbatim-question check is in progress.
-Typed resource primitives and custom library CRUD are integrated with planner/editor,
-research accounting, exports and deterministic replay. Built-in templates are immutable;
-custom records have optimistic revisions and can be edited/deleted without changing any
-saved experiment. Removed obsolete browser-only setup storage; no compatibility importer.
-New independent oracles distinguish equal sharing (group utility 24) from controller retention
-(group utility -12). Added 96 conservation/replay combinations, privacy/schema checks,
-invalid-action atomicity, 12-agent/four-resource/100-round restoration, API lifecycle,
-cutoff-scoped analysis accounting and desktop/mobile browser lifecycle coverage.
-Observed final verification: 904 backend tests, 70 frontend unit tests, 70 browser tests;
-Ruff/ty/frontend lint/build passed. Final-source production image passed keyless/non-root
-health/SPA/assets and custom-environment CRUD smoke; owned smoke container removed.
-Planner development: first 9/12 ($0.087151/38 calls), corrected 12/12 ($0.072582/32 calls).
-Exact evaluated source 9920fd853425c8d4fcdcf85b28e4b039ea531fa3ea7d812dc49645465ba9a90d;
-final formatted source 27856bd9da81be3655846ebff971934a8a8fbce430215d732afe8eecff3462c7.
-Every backend AST is identical across that line-wrap-only change; both hashes/archives
-are retained in composition-model-final/formatting-provenance.json.
-Matched execution: 4/4 runs complete, 64/64 decisions; conservation, needs, utility,
-nonnegativity and exact replay all passed, $0.019598. All three noncontrollers consumed
-zero in every run; this is not evidence that transparency improves cooperation.
-Artifacts: data/quality/composition-model-development, composition-model-final,
-composition-participants, composition-production-smoke.json and composition-*-final logs.
-Aggregate before verbatim-question check: $14.680786, no new unknowns; old 11 retained.
-Frozen benchmark cases/scores untouched. Remaining known narrative condition-label error
-from previous diagnostics is not certified fixed by this implementation.
-Latest owned 8080 preview: exec session 56645, PID 97255, same preserved database
-`data/quality/manual-preview.sqlite3`; health/catalog/library and SPA routes returned 200.
-Next: finish exact original-question diagnostic; reconcile ledger, record final results,
-commit/secret-scan/push and create one draft PR based on feat/experiment-validity.
+Completed acceptance criteria:
+- Typed finite stocks, controlled/shared access, transfers, consumption, replenishment,
+  incentives and separate stock/allocation visibility; deterministic enforcement and privacy.
+- Planner composition with construct checks and critique; no generated executable code.
+- Server-side custom-library CRUD, optimistic revisions, atomic writes and immutable study
+  snapshots; removing/editing a library record cannot change saved runs or evidence.
+- Resource editing/reuse, researcher ledgers and clearer researcher-only analysis-plan input.
+  Removed obsolete browser-only setup storage; no compatibility importer or data reset.
+- Independent sharing/hoarding utility oracles; 96 conservation/replay combinations,
+  capacity overflow/no terminal replenishment, invalid-action atomicity, hidden-stock/schema
+  privacy, 12-agent/four-resource/100-round restoration, cutoff-scoped accounting, API lifecycle
+  and desktop/mobile browser lifecycle. Analysis-plan privacy checked at provider boundary.
+- Computed condition-grid coverage and typed factorial declaration. Duplicate nonbaseline
+  arms and missing cells trigger bounded repair or rejection; declared intent is rechecked on
+  save/run. Perfectly coupled settings form one bundle. Partial comparisons/replication remain
+  valid with warnings. Exact earlier failed model proposal now deterministically caught.
 
-Verbatim-question check exposed a further false rejection: 1/2, 6 calls/$0.015264.
-The mapper treated "real resource shortage" as physical-world calibration despite the
-explicit AI-agent question. Added a general scope distinction to PLANNING: mechanically
-enforced finite stocks/needs directly implement scarcity inside a simulation; explicit
-physical-world validity remains unsupported without empirical grounding. This changes only
-planner instructions; execution rules and participant configurations are unchanged.
-Added an independent capacity-overflow/no-terminal-replenishment oracle. Latest full backend
-905 passed; planner/validity/analysis subset 504 passed, plus Ruff/ty. Current-source paid
-rerun has all six scoped questions plus the verbatim question, two repetitions, a fresh
-source archive, an additional $2 ceiling and the same aggregate ledger. Checks additionally
-require one factor or a complete crossing for a broad factorial request, and a supply-shortage
-bound where required. Source fingerprint:
-`bf55986b408c7db6af98a6b8ac97721aa1438346ac3959b548718c3aec838390`.
-Session 84426; artifacts data/quality/composition-model-scope-corrected; no frozen families.
-Aggregate before this rerun $14.696050; total task diagnostics $0.194595/140 calls then.
-Preview refreshed after the instruction change: session 65968, PID 98249 on 8080, same DB;
-health/catalog/library/SPA verified. Engine production smoke belongs to checkpoint 27856bd;
-only planner instructions subsequently changed. Full current-source CI remains required.
+Observed checks: 915 backend tests; latest targeted desktop/mobile browser flow 2/2.
+Fresh frontend unit70/70, lint/build passed; before factorial changes the full browser suite
+passed70/70. Ruff/ty passed. Latest production image passed non-root/keyless
+health/SPA/assets and custom-library CRUD; owned smoke container removed. No model calls in
+correctness/browser/container checks. Workflow unchanged. No benchmark files changed.
+
+Development history (Luna-only, no frozen families or published scores changed):
+- Six scoped questions x2: 9/12, 38 calls/$0.087151; corrected mapper 12/12,
+  32 calls/$0.072582. Exposed outcome-as-proxy and disabled-control/permission confusion.
+- Verbatim shortage question x2: 1/2, 6 calls/$0.015264. Corrected a false interpretation
+  of simulated real scarcity as requiring physical-world calibration.
+- Seven questions x2 after scope fix: 11/14, 55 calls/$0.136028. Two reviews exhausted
+  4096 tokens; one protocol never specified precise cooperation/withholding calculations.
+- Review limit8192 and explicit analysis-plan formulas: 13/14, 40 calls/$0.100023;
+  both verbatim trials passed. Remaining failure called a mechanic directly supported while
+  labeling its capability unavailable. Deterministic regressions cover repair/fail-closed.
+- Scope guard uses the existing one-correction limit; no provider retry or larger loop.
+  Focused multi-resource/verbatim/unsupported production x2: 5/6, 20 calls/$0.050102.
+  One failed after three revisions: stock could vanish in one action despite repeated-allocation
+  claims. Added early-exhaustion warning; one-shot designs remain valid.
+- Following verbatim x2: 1/2, 10 calls/$0.028624. Accepted incomplete factorial had duplicate
+  nonbaseline cell. Do not rescore as success. New computed-grid regression catches this3/4.
+- Final factorial guard x2 RUNNING session45258, data/quality/composition-model-factorial-guard.log.
+  Source frozen during calls, additional $1 cap within aggregate75. This is familiar development
+  verification, not held-out generalization or insight quality. Retain any failures.
+- Matched participant check: 4/4 runs, 64/64 decisions; conservation, needs, nonnegativity,
+  utility and replay passed. $0.019598. All noncontrollers consumed zero in every run;
+  this is not evidence that transparency improves cooperation or participant optimality.
+
+Every phase has exact source archive/hash, manifest, attempts and sanitized provider traces
+in data/quality/composition-*/. A line-wrap-only provenance file belongs to the earlier12/12
+checkpoint; later semantic edits are separately evaluated. Before final factorial check:
+aggregate $15.010827; task $0.509372/265 calls. Earlier11 unknown reservations retained;
+no new unknowns through completed phases. Reconcile after final calls and restore75 ceiling.
+
+Latest owned preview: session14028, PID107664, 0.0.0.0:8080, preserved database
+`data/quality/manual-preview.sqlite3`; factorial source loaded, health verified.
+Leave this requested preview running. Disposable browser/backend/container services closed.
+
+Next: finish final evaluation, reconcile ledger, finalize docs/HANDOFF without claiming an unrun
+14-case or held-out score. Secret-scan all task commits, push task branch, create one draft PR
+with base feat/experiment-validity, immediately T3-link; handle CI. If waiting on CI, watch/end;
+unwatch before final handoff. Never merge/main-push.
+Limits: bounded resource primitives, uniform needs, one action per agent/round; no arbitrary
+Python, recipes, collateral, sanctions or authority removal. Public records/inventories are
+bundled. Model choices and interpretations are fallible; the earlier condition-label analysis
+error is not certified fixed. No new generalization/insight-quality score. Full grid coverage
+cannot certify intended factors, semantic claims, causal isolation or statistical power.

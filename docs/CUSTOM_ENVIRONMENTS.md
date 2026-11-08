@@ -120,22 +120,45 @@ and exact replay checks. In all four runs, the three noncontrollers consumed no 
 small diagnostic does not establish that transparency improves cooperation or predicts a
 population effect. It also does not certify participant optimality or narrative accuracy.
 
+Subsequent public development checks retained every failed attempt. After clarifying scope,
+11/14 passed; two reviews exhausted the old 4096-token limit and one protocol lacked explicit
+outcome calculations. Reviews now allow 8192 tokens, and analysis plans must identify recorded
+fields, formulas, denominators and comparisons. That checkpoint passed 13/14; the remaining
+attempt contradicted itself by claiming an unavailable capability was directly supported.
+A bounded scope correction now catches that contradiction rather than accepting it.
+
+A focused check then passed 5/6: one proposal correctly stopped after three unsuccessful
+revisions because its claims required repeated allocation but its settings allowed the entire
+stock to disappear in one action. Preflight now reports the earliest possible exhaustion for
+nonreplenished stocks, without rejecting legitimate one-shot allocations. The following
+verbatim-question check passed 1/2: one accepted proposal duplicated a nonbaseline condition
+and omitted a cell while claiming a 2×2 interaction. This exposed a mechanical validation gap,
+not a successful factorial. Those original results remain failures.
+
+Preflight now computes the crossed grid from executable parameters and resolved assignments,
+groups perfectly coupled fields into factor bundles, and reports duplicate arms across all
+conditions. A typed planner declaration requires complete crossing of at least two bundles for
+factorial/interaction designs. Missing cells block approval, save and execution; partial
+comparisons and intentional replication remain permitted with warnings. Grid coverage cannot
+establish statistical power, identify the scientifically correct factors, or certify prose.
+
 All paid diagnostics use only `openai:gpt-6-luna` and the existing $75 aggregate ledger.
-Each planner batch has an additional $2 ceiling; participant and verbatim-question checks
-have separate additional $1 ceilings. Actual costs and source fingerprints are recorded in
+Initial planner batches have additional $2 ceilings; focused planner and participant
+checks have separate additional $1 ceilings. Actual costs and source fingerprints are recorded in
 HANDOFF.md. Local manifests, exact source archives, attempts and sanitized provider traces
 live in `data/quality/composition-model-development/`, `composition-model-final/`,
-`composition-model-raw-question/`, `composition-model-scope-corrected/` and
-`composition-participants/`. Historical benchmark reports
-and frozen families remain unchanged. A line wrap after the final planner batch preserved
-every backend AST and string value; its provenance file records both source byte hashes.
+`composition-model-raw-question/`, `composition-model-scope-corrected/`, `composition-model-review-corrected/`,
+`composition-model-mapping-guard/`, `composition-model-final-verbatim/`,
+`composition-model-factorial-guard/` and `composition-participants/`. Historical benchmark reports
+and frozen families remain unchanged. A line wrap after the earlier 12/12 batch preserved every backend AST and string value;
+its provenance file records both byte hashes. Later semantic changes have distinct archives.
 
 Reproduce the keyless correctness checks with:
 
 ```sh
-uv run pytest backend/tests/test_composed.py backend/tests/test_environment_library.py backend/tests/test_assistants.py
+uv run pytest backend/tests/test_composed.py backend/tests/test_environment_library.py backend/tests/test_validity.py backend/tests/test_planning.py backend/tests/test_assistants.py
 pnpm --dir frontend test
-JAS_TEST_PORT=8197 pnpm --dir frontend test:e2e -- composition.spec.ts
+JAS_TEST_PORT=8197 pnpm --dir frontend exec playwright test e2e/composition.spec.ts
 ```
 
 Paid diagnostics are not part of these commands. Their saved designs, seeds, expectations

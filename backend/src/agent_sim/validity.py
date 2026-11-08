@@ -5,6 +5,7 @@ import hashlib
 import json
 from collections import Counter
 from functools import lru_cache
+from math import prod
 from typing import Literal
 
 from pydantic import Field, field_validator
@@ -186,6 +187,76 @@ def _differences(left: dict, right: dict, prefix: str = "") -> list[str]:
         elif a != b:
             result.append(path)
     return result
+
+
+def condition_grid(design: Design) -> dict:
+    """Crossing of executable settings; perfectly coupled fields form one bundle."""
+
+    def fields(value: object, prefix: str = "") -> dict:
+        if (
+            isinstance(value, list)
+            and value
+            and all(isinstance(item, dict) and "key" in item for item in value)
+        ):
+            return {
+                f"{prefix}.order": [item["key"] for item in value],
+                **fields({item["key"]: item for item in value}, prefix),
+            }
+        if isinstance(value, dict):
+            return {
+                path: leaf
+                for key, item in value.items()
+                for path, leaf in fields(item, f"{prefix}.{key}" if prefix else key).items()
+            }
+        return {prefix: value}
+
+    rows = [
+        fields(
+            {
+                "parameters": c.parameters.model_dump(),
+                "model": c.model,
+                "profiles": [p.model_dump() for p in design.resolve(c).profiles],
+            }
+        )
+        for c in design.conditions
+    ]
+    bundles: dict[tuple[int, ...], list[str]] = {}
+    for path in sorted(set().union(*(row.keys() for row in rows))):
+        levels: dict[str, int] = {}
+        partition = []
+        for row in rows:
+            value = json.dumps([path in row, row.get(path)], sort_keys=True)
+            partition.append(levels.setdefault(value, len(levels)))
+        if len(levels) > 1:
+            bundles.setdefault(tuple(partition), []).append(path)
+    cells: dict[tuple[int, ...], list[str]] = {}
+    for i, c in enumerate(design.conditions):
+        cells.setdefault(tuple(axis[i] for axis in bundles), []).append(c.key)
+    expected = prod(len(set(axis)) for axis in bundles)
+    return {
+        "factors": [{"fields": paths, "levels": len(set(axis))} for axis, paths in bundles.items()],
+        "expected_cells": expected,
+        "observed_cells": len(cells),
+        "complete": expected == len(cells),
+        "duplicate_conditions": [keys for keys in cells.values() if len(keys) > 1],
+        "limits": "Inferred from executable settings. Perfectly coupled fields count as one "
+        "bundled factor; coverage does not establish causal isolation or statistical power.",
+    }
+
+
+def factorial_issues(grid: dict) -> list[dict]:
+    if len(grid["factors"]) >= 2 and grid["complete"]:
+        return []
+    return [
+        {
+            "code": "incomplete_factorial",
+            "severity": "error",
+            "message": "Declared factorial requires at least two independently varied factor "
+            f"bundles and every crossed cell; found {len(grid['factors'])} bundles and "
+            f"{grid['observed_cells']}/{grid['expected_cells']} cells. "
+            "Duplicate arms do not replace missing cells.",
+        }
+    ]
 
 
 def _instrument(world: World, actor: str, observation: Observation, variant: int) -> Decision:
@@ -449,13 +520,6 @@ def _preflight(specification: str) -> dict:
                 f"{', '.join(inactive)}.",
                 "error",
             )
-        if not changes and not assignment_changed:
-            issue(
-                "identical_conditions",
-                f"{c.name} [{c.key}]: executable settings, profiles and models match the baseline. "
-                "Labels/descriptions do not create a treatment. "
-                "Valid as replication/placebo arms, not as a manipulated contrast.",
-            )
         if len(changes) > 1:
             issue(
                 "bundled_intervention",
@@ -512,6 +576,20 @@ def _preflight(specification: str) -> dict:
                 "witnesses": witnesses,
             }
         )
+    grid = condition_grid(design)
+    for keys in grid["duplicate_conditions"]:
+        issue(
+            "identical_conditions",
+            f"Conditions {', '.join(keys)} have identical executable settings, profiles and "
+            "models. Labels do not create a treatment; valid as replication/placebo arms, "
+            "not as a manipulated contrast.",
+        )
+    if not grid["complete"]:
+        issue(
+            "partial_condition_grid",
+            f"Observed {grid['observed_cells']}/{grid['expected_cells']} crossed cells. "
+            "Partial comparisons can be valid, but do not claim a complete factorial.",
+        )
     return {
         "status": "blocked"
         if any(i["severity"] == "error" for i in issues)
@@ -520,6 +598,7 @@ def _preflight(specification: str) -> dict:
         else "checked",
         "issues": issues,
         "comparisons": comparisons,
+        "condition_grid": grid,
         "probe_turns": sum(r["turns"] for rows in traces.values() for r in rows),
         "probe_limit_per_instrument": 96,
         "limits": f"Checks use current rules {CATALOG[design.environment].world.version}. "

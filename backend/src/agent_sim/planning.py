@@ -12,7 +12,7 @@ from .llm import LanguageModels
 from .research import Research
 from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, create_world
 from .templates import templates
-from .validity import Requirement, preflight, requirement_issues
+from .validity import Requirement, factorial_issues, preflight, requirement_issues
 from .validity import capabilities as environment_capabilities
 
 PLANNING = """Design empirical studies of model-controlled agents, not claims of human prediction.
@@ -60,6 +60,9 @@ design for this question; do not copy template counts.
 Dyadic exchange needs paired agents; team coordination needs enough agents for meaningful
 dependencies. A descriptive pilot may need one condition; an intervention needs a matched
 control; dose-response may need three or more levels. Justify every extra condition.
+Set brief.factorial=true for a full crossed design or an interaction claim. Include each
+combination exactly as intended; duplicated arms cannot replace a missing cell. Computed
+condition_grid groups perfectly coupled settings into one factor bundle and reports coverage.
 Choose rounds for repeated opportunities and early completion, not an arbitrary turn target.
 All profiles are hypotheses, not validated humans. Do not directly instruct an
 agent to behave selfishly or lie when studying whether those behaviors emerge. Goals may
@@ -141,6 +144,12 @@ and disclose that limit; do not add rounds or claim a long-term effect.
 
 class StudyBrief(Strict):
     supported: bool
+    factorial: bool = Field(
+        default=False,
+        description="True when proposing a full crossed factorial or estimating an interaction. "
+        "All crossed cells of at least two independent factor bundles must be present. "
+        "False for partial comparisons or a single bundled intervention.",
+    )
     explanation: str = Field(max_length=1200)
     operationalization: str = Field(
         max_length=1500,
@@ -433,6 +442,10 @@ class Planner:
                             "Required constructs are not implemented: " + " ".join(problems)
                         )
                     check = await asyncio.to_thread(preflight, design)
+                    if brief.factorial:
+                        check["issues"].extend(factorial_issues(check["condition_grid"]))
+                        if any(i["severity"] == "error" for i in check["issues"]):
+                            check["status"] = "blocked"
                     planning["preflight"] = check
                     context["preflight"] = check
                     if check["status"] == "blocked":

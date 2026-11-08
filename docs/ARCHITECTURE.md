@@ -36,6 +36,9 @@ The planner scopes the question and justifies agents, conditions, seeds, repetit
 rounds; optionally retrieves public methodological research; drafts a typed protocol; validates
 its invariants; and obtains a separate critique. At most three protocol revisions resolve
 validation/review feedback. Provider failures stop visibly without retries or substitution.
+Declared factorials require complete computed condition-grid coverage; the originating brief
+is checked again at save and execution. Coupled fields count as one bundle; partial designs
+remain allowed without a full-factorial claim.
 Proposal stages, research sources, reviews and provider traces remain Analysis data.
 Revisions record the originating proposal; exports retain that proposal and its requests.
 

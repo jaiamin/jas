@@ -24,7 +24,7 @@ from .environment_library import EnvironmentLibrary
 from .llm import PRICES, LanguageModels, Usage, empty_usage
 from .metrics import RunMetrics, aggregate_metrics, condition_results, matched_effects
 from .simulation.environments import CATALOG, create_world
-from .validity import Requirement, preflight, require_valid, requirement_issues
+from .validity import Requirement, factorial_issues, preflight, require_valid, requirement_issues
 
 
 def study_status(statuses: Sequence[str]) -> str:
@@ -101,6 +101,11 @@ class Research:
                 ):
                     raise ValueError("Choose a completed, supported AI design")
                 brief = ((plan.output or {}).get("planning") or {}).get("brief") or {}
+                if brief.get("factorial"):
+                    problems = factorial_issues(result["condition_grid"])
+                    result["issues"].extend(problems)
+                    if problems:
+                        result["status"] = "blocked"
                 requirements = [
                     Requirement.model_validate(r) for r in brief.get("requirements", [])
                 ]

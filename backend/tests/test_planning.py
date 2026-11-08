@@ -387,3 +387,92 @@ def test_direct_unavailable_mapping_gets_one_correction_and_never_a_false_declin
         with db.session() as session:
             assert len(session.get_one(Analysis, key).output["planning"]["reviews"]) == 2
     assert scopes == 2
+
+
+@pytest.mark.parametrize("repair", [True, False])
+def test_declared_factorial_is_repaired_or_rejected_before_model_review(
+    runtime, monkeypatch, repair
+):
+    import json
+    from itertools import product
+
+    from agent_sim.db import Analysis
+    from agent_sim.domain import Design, DesignSpec
+    from agent_sim.planning import Candidate, DesignReview, Planner, StudyBrief
+    from agent_sim.templates import templates
+
+    db, llm, research, _ = runtime
+    design = Design.model_validate(next(t["design"] for t in templates() if t["id"] == "composed"))
+    design.rounds, design.seeds = 2, [7]
+    base = design.conditions[0]
+    design.conditions = []
+    for i, (stock, allocations) in enumerate(product((False, True), repeat=2)):
+        c = base.model_copy(update={"key": f"cell_{i}", "name": f"Cell {i}"}, deep=True)
+        assert c.parameters.composition is not None
+        c.parameters.composition.resources[0].stock_visibility = (
+            "public" if stock else "controllers"
+        )
+        c.parameters.composition.resources[0].allocation_visibility = (
+            "public" if allocations else "parties"
+        )
+        design.conditions.append(c)
+    question = "Compare resource visibility interaction"
+    with db.session.begin() as session:
+        row = Analysis(purpose="design", question=question, cutoffs={})
+        session.add(row)
+        session.flush()
+        key = row.id
+    candidates, reviews = 0, 0
+
+    async def generate(output, **kwargs):
+        nonlocal candidates, reviews
+        if output is StudyBrief:
+            return StudyBrief(
+                supported=True,
+                factorial=True,
+                explanation="Cross both visibility factors.",
+                operationalization="Interaction of stock and allocation visibility on unmet needs.",
+                size_rationale="Full 2x2",
+                agents=len(design.profiles),
+                conditions=4,
+                seeds=1,
+                repetitions=design.repetitions,
+                rounds=2,
+                research_query=None,
+                requirements=[
+                    Requirement(
+                        source="resource visibility",
+                        capability="resource_visibility",
+                        mapping="direct",
+                        explanation="Explicit stock and receipt rules.",
+                    )
+                ],
+            )
+        if output is Candidate:
+            candidates += 1
+            candidate = design.model_copy(deep=True)
+            if candidates == 1 or not repair:
+                candidate.conditions[-1].parameters = candidate.conditions[
+                    -2
+                ].parameters.model_copy(deep=True)
+            if candidates > 1:
+                assert "Declared factorial" in json.loads(kwargs["prompt"])["feedback"][0]
+            return Candidate(
+                explanation="Crossed cells",
+                design=DesignSpec.model_validate(candidate.model_dump()),
+            )
+        assert output is DesignReview
+        reviews += 1
+        return DesignReview(issues=[])
+
+    monkeypatch.setattr(llm, "generate", generate)
+    if repair:
+        result = asyncio.run(Planner(db, research, llm).run(key, question))
+        assert result["supported"]
+        assert result["planning"]["preflight"]["condition_grid"]["observed_cells"] == 4
+        assert candidates == 2 and reviews == 1
+    else:
+        with pytest.raises(ValueError, match="unresolved issues"):
+            asyncio.run(Planner(db, research, llm).run(key, question))
+        assert candidates == 3 and reviews == 0
+    assert research.studies() == []

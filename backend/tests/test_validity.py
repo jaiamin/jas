@@ -412,3 +412,101 @@ def test_capability_schema_cannot_invent_ids_or_accept_empty_constructs():
             mapping="direct",
             explanation="Empty citation.",
         )
+
+
+def factorial_protocol():
+    design = protocol("composed", 4, 2)
+    base = design.conditions[0]
+    design.conditions = []
+    for i, (stock, allocations) in enumerate(
+        product(("controllers", "public"), ("parties", "public"))
+    ):
+        c = base.model_copy(update={"key": f"cell_{i}", "name": f"Cell {i}"}, deep=True)
+        for r in c.parameters.composition.resources:
+            r.stock_visibility, r.allocation_visibility = stock, allocations
+        design.conditions.append(c)
+    return design
+
+
+def test_condition_grid_catches_duplicate_nonbaseline_and_missing_crossing():
+    from agent_sim.validity import factorial_issues
+
+    design = factorial_protocol()
+    grid = preflight(design)["condition_grid"]
+    assert (grid["observed_cells"], grid["expected_cells"]) == (4, 4)
+    assert len(grid["factors"]) == 2
+    assert factorial_issues(grid) == []
+    design.conditions[-1].parameters = design.conditions[-2].parameters.model_copy(deep=True)
+    report = preflight(design)
+    grid = report["condition_grid"]
+    assert (grid["observed_cells"], grid["expected_cells"]) == (3, 4)
+    assert grid["duplicate_conditions"] == [["cell_2", "cell_3"]]
+    assert factorial_issues(grid)[0]["severity"] == "error"
+    assert {"identical_conditions", "partial_condition_grid"} <= {
+        i["code"] for i in report["issues"]
+    }
+    assert report["status"] != "blocked"  # descriptive/replication designs remain valid
+
+
+def test_condition_grid_groups_coupled_resource_settings_and_assignments():
+    from agent_sim.validity import condition_grid, factorial_issues
+
+    design = factorial_protocol()
+    for c in design.conditions:
+        resources = c.parameters.composition.resources
+        second = resources[0].model_copy(update={"key": "water", "name": "Water"}, deep=True)
+        resources.append(second)
+    grid = condition_grid(design)
+    assert len(grid["factors"]) == 2
+    assert all(len(f["fields"]) == 2 for f in grid["factors"])
+    assert grid["expected_cells"] == 4
+    # A single perfectly coupled intervention is not two independent factors.
+    design.conditions = [design.conditions[0], design.conditions[-1]]
+    assert len(condition_grid(design)["factors"]) == 1
+    assert factorial_issues(condition_grid(design))
+    # Resolved participant instructions are part of the executable assignment.
+    design.conditions[1].parameters = design.conditions[0].parameters.model_copy(deep=True)
+    design.conditions[1].profile_overrides = [
+        design.profiles[0].model_copy(update={"goal": "Keep everything."})
+    ]
+    grid = condition_grid(design)
+    assert grid["observed_cells"] == 2
+    assert grid["factors"][0]["fields"] == ["profiles.p0.goal"]
+
+
+def test_factorial_intent_is_rechecked_on_save_and_run(runtime, monkeypatch):
+    db, llm, research, engine = runtime
+    design = factorial_protocol()
+    with db.session.begin() as session:
+        plan = Analysis(
+            purpose="design",
+            question="Full factorial?",
+            status="complete",
+            cutoffs={},
+            output={
+                "supported": True,
+                "design": design.model_dump(),
+                "planning": {"brief": {"factorial": True}},
+            },
+        )
+        session.add(plan)
+        session.flush()
+        key = plan.id
+    sid = research.save_design(design, plan_id=key)
+    design.conditions[-1].parameters = design.conditions[-2].parameters.model_copy(deep=True)
+    assert research.preflight(design, key)["status"] == "blocked"
+    with pytest.raises(ValueError, match="Declared factorial"):
+        research.save_design(design, plan_id=key)
+    with db.session.begin() as session:
+        revision = session.scalars(select(Revision)).one()
+        revision.design = design.model_dump()
+    monkeypatch.setattr(llm, "model", lambda _: pytest.fail("Invalid factorial must not spend"))
+
+    async def start():
+        with pytest.raises(ValueError, match="Declared factorial"):
+            engine.start_study(sid)
+        assert not engine.executions
+
+    asyncio.run(start())
+    with db.session() as session:
+        assert session.scalar(select(func.count()).select_from(ProviderCall)) == 0
