@@ -66,7 +66,7 @@ no pending calls; sum of provider charges equals the ledger. Cap remains $75.
 Planner/world source unchanged after the 60/60 checkpoint; only assistants.py subsequently
 changed for capability catalog and direct condition labels. Backend 735 tests passed;
 frontend 69/browser 68 plus lint/types/build and production smoke passed. Final docs/PR
-publication and status checks remain before handoff; user-requested 8080 stays running.
+are published; final CI status is on PR #7. User-requested 8080 stays running.
 Do not reopen old held-out model cases or tune against published held-out scores.
 
 ## Workspace and publication
