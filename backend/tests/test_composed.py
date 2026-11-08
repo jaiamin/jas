@@ -78,6 +78,19 @@ def test_equal_sharing_and_retention_have_distinct_expected_outcomes():
     assert sum(hoard.state["balances"].values()) == -12
 
 
+def test_replenishment_discards_capacity_overflow_and_stops_at_terminal_round():
+    design = design_for(initial_stock=5, capacity=5, replenishment=4, need=0)
+    world, trace = play(
+        design,
+        lambda _world, actor: decision("allocate", 2, "food:alex")
+        if actor == "alex"
+        else decision("wait"),
+    )
+    assert [trace[i][3]["stocks"]["food"] for i in (3, 7, 11)] == [5, 5, 3]
+    assert world.state["inventories"]["food"]["alex"] == 6
+    assert world.state["balances"]["alex"] == 6
+
+
 @pytest.mark.parametrize(
     "controlled,stock,allocations,need,replenishment,seed",
     list(

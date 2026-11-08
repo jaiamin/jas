@@ -62,6 +62,13 @@ Both strategies are legal; the engine and scoring distinguish them without presu
 Keeping the same actions while changing visibility preserves physical outcomes but changes
 participant information. Model trials must discover whether choices actually respond.
 
+Visibility changes information, not allocation rights or the utility formula. A fixed sole
+controller has no enforced sanction, election or loss-of-authority consequence for retaining
+resources. The experiment can test whether model choices respond to disclosure under those
+rules; it cannot establish the effect of accountability institutions. Different controllers
+for different resources can introduce reciprocal dependence. Sanctions or authority removal
+require additional mechanics and should not be invented through role instructions.
+
 The investigator receives cutoff-scoped stock, personal inventory, consumption and unmet-need
 accounting, separately from utility balances. The run Environment view labels researcher-only
 access and shows each resource's ledger. Study exports contain complete composed rules,
@@ -91,6 +98,13 @@ mechanics, disabled controls mistaken for unsupported transfers, and equal extra
 mistaken for unequal allocation power. The corrected planner passed 12/12 on the same cases.
 These are development results, not held-out generalization or an insight-quality score.
 
+A separate verbatim-question check initially passed only 1/2 attempts: the mapper interpreted
+"real resource shortage" as a requirement for physical-world calibration despite the explicit
+AI-agent setting. The scope instruction now distinguishes mechanically enforced scarcity
+inside a simulation from claims requiring empirical physical-world validation. Both the
+rejection and the subsequent evaluation remain recorded; the caveat about synthetic outcomes
+is retained.
+
 Four additional model runs compare public/party-only allocation information across matched
 seeds 7/19: four agents, four rounds, 12 food units and 16 required units per run. All 64
 decisions completed, and all runs passed independent conservation, need, utility, nonnegativity
@@ -103,7 +117,8 @@ Each planner batch has an additional $2 ceiling; participant and verbatim-questi
 have separate additional $1 ceilings. Actual costs and source fingerprints are recorded in
 HANDOFF.md. Local manifests, exact source archives, attempts and sanitized provider traces
 live in `data/quality/composition-model-development/`, `composition-model-final/`,
-`composition-model-raw-question/` and `composition-participants/`. Historical benchmark reports
+`composition-model-raw-question/`, `composition-model-scope-corrected/` and
+`composition-participants/`. Historical benchmark reports
 and frozen families remain unchanged. A line wrap after the final planner batch preserved
 every backend AST and string value; its provenance file records both source byte hashes.
 

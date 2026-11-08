@@ -25,6 +25,10 @@ choices and consequences without claiming motives. Caveats about internal intent
 an implemented mechanic into a proxy. Inaccessible mental states and human validity remain
 unsupported. Use shared_extraction for equal extraction permissions, not allocation_power.
 A deliberately disabled control arm does not make a mechanic unavailable in the other arm.
+For questions about AI/model agents, genuine or real resource scarcity can mean enforced
+finite stock and unmet consumption needs inside the simulation. That is a direct mechanic,
+not a proxy merely because resources are simulated. Require physical-world calibration only
+when the question explicitly asks for it; always disclose the scope of synthetic outcomes.
 Do not classify environment names, agent/round counts, pilot status, reporting cautions or
 analysis constraints as missing mechanics. Those belong in the brief's counts, size rationale
 or operationalization. Private profile instructions are supported without enforced preferences.

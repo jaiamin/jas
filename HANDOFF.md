@@ -142,3 +142,22 @@ Latest owned 8080 preview: exec session 56645, PID 97255, same preserved databas
 `data/quality/manual-preview.sqlite3`; health/catalog/library and SPA routes returned 200.
 Next: finish exact original-question diagnostic; reconcile ledger, record final results,
 commit/secret-scan/push and create one draft PR based on feat/experiment-validity.
+
+Verbatim-question check exposed a further false rejection: 1/2, 6 calls/$0.015264.
+The mapper treated "real resource shortage" as physical-world calibration despite the
+explicit AI-agent question. Added a general scope distinction to PLANNING: mechanically
+enforced finite stocks/needs directly implement scarcity inside a simulation; explicit
+physical-world validity remains unsupported without empirical grounding. This changes only
+planner instructions; execution rules and participant configurations are unchanged.
+Added an independent capacity-overflow/no-terminal-replenishment oracle. Latest full backend
+905 passed; planner/validity/analysis subset 504 passed, plus Ruff/ty. Current-source paid
+rerun has all six scoped questions plus the verbatim question, two repetitions, a fresh
+source archive, an additional $2 ceiling and the same aggregate ledger. Checks additionally
+require one factor or a complete crossing for a broad factorial request, and a supply-shortage
+bound where required. Source fingerprint:
+`bf55986b408c7db6af98a6b8ac97721aa1438346ac3959b548718c3aec838390`.
+Session 84426; artifacts data/quality/composition-model-scope-corrected; no frozen families.
+Aggregate before this rerun $14.696050; total task diagnostics $0.194595/140 calls then.
+Preview refreshed after the instruction change: session 65968, PID 98249 on 8080, same DB;
+health/catalog/library/SPA verified. Engine production smoke belongs to checkpoint 27856bd;
+only planner instructions subsequently changed. Full current-source CI remains required.
