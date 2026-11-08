@@ -464,3 +464,39 @@ test("submission errors keep the draft and missing providers disable sending", a
     page.getByRole("link", { name: "Configure a provider" }),
   ).toBeVisible();
 });
+
+test("large chat histories keep the conversation and composer within the viewport", async ({
+  page,
+}) => {
+  await page.route("**/api/chats", (route) =>
+    route.fulfill({
+      json: Array.from({ length: 120 }, (_, index) => ({
+        id: `chat-${index}`,
+        title:
+          "A long experiment question about competing incentives and the evidence needed to distinguish strategies",
+        status: "complete",
+      })),
+    }),
+  );
+  await page.goto("/agent");
+  await expect(
+    page.getByRole("heading", { name: "What can we explore?" }),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("Message Agent", { exact: true }),
+  ).toBeInViewport();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  const history = page.getByRole("navigation", {
+    name: "Past chats",
+    exact: true,
+  });
+  expect(
+    await history.evaluate(
+      (element) => element.scrollWidth > element.clientWidth,
+    ),
+  ).toBe(true);
+});

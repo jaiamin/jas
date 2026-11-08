@@ -23,6 +23,7 @@ METRICS = (
 def interval(values):
     if len(values) < 3:
         return None
+    values = tuple(sorted(values))
     rng = random.Random(20261108)
     means = sorted(statistics.mean(rng.choices(values, k=len(values))) for _ in range(2000))
     return [means[49], means[1949]]

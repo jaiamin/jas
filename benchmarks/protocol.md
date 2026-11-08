@@ -1,4 +1,12 @@
-# Evaluation protocol 2 — corrected before development improvements
+# Evaluation protocol 3 — observable sanction audience
+
+Version 3 changes only three development sanction-visibility requests from two to three
+participants. A disclosure intervention needs an observer beyond authority and target. The
+wide planner's justified objections exposed this gate gap; they are not platform failures.
+All 120 held-out request lines are byte-identical to version 2; see the correction record.
+Exclude every old attempt for the three changed IDs when comparing versions, including
+accepted designs. Unchanged requests remain comparable; corrected requests get fresh trials.
+The gate now includes third-party audience eligibility and scripted disclosure witnesses.
 
 Version 1 is archived with its initial results. Development evidence exposed conflicting
 communication estimands, a two-agent rotating-partner question and irrelevant endowment

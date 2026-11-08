@@ -498,3 +498,118 @@ def test_turn_tool_preserves_observation_and_outcomes_without_duplicating_memory
         await assistant.close()
 
     asyncio.run(exercise())
+
+
+def test_private_goal_conditions_share_the_original_protocol_and_matched_effects(runtime, design):
+    db, models, research, engine = runtime
+    alternate = design.conditions[0].model_copy(deep=True)
+    alternate.key, alternate.name = "alternate", "Alternate private goal"
+    alternate.profile_overrides = [
+        design.profiles[0].model_copy(
+            update={"goal": "Earn credits while considering the shared project."}
+        )
+    ]
+    design.conditions.append(alternate)
+    design.seeds, design.repetitions = [17, 43, 89], 2
+    runs = research.operational_runs(research.save_design(design))
+
+    async def exercise():
+        for identity in runs:
+            engine.start(identity.id)
+        for identity in runs:
+            task = engine.executions[identity.id].task
+            assert task is not None
+            await task
+        assistant = Assistants(db, research, models)
+        cutoffs = {r.id: research.configuration(r.id)[0].turn for r in runs}
+        index = assistant._evidence_index(cutoffs)
+        assert len(index["protocols"]) == 1
+        effects = next(iter(index["matched_effects"].values()))
+        effect = next(e for e in effects if e["metric"] == "contribution_rate")
+        assert effect["seeds"] == 3 and effect["pairs"] == 6
+        assert effect["mean"] == 0
+        await assistant.close()
+
+    asyncio.run(exercise())
+
+
+def test_index_execution_cost_is_cutoff_scoped_and_excludes_analysis_calls(runtime, design):
+    from agent_sim.db import ProviderCall
+
+    db, models, research, engine = runtime
+    design.profiles = design.profiles[:2]
+    rid = research.operational_runs(research.save_design(design))[0].id
+
+    async def exercise():
+        engine.start(rid)
+        await engine.executions[rid].task
+        with db.session.begin() as session:
+            session.add(
+                ProviderCall(
+                    run_id=rid,
+                    purpose="analysis",
+                    model="openai:gpt-6-luna",
+                    turn=1,
+                    reserved=0,
+                    charged=999999,
+                    status="complete",
+                    input_tokens=999,
+                    output_tokens=999,
+                )
+            )
+        assistant = Assistants(db, research, models)
+        indexed = assistant._evidence_index({rid: 2})["runs"][0]
+        assert indexed["execution_usage"] == dict(
+            requests=2, input_tokens=200, output_tokens=100, cost_usd=0.00007, partial=False
+        )
+        assert indexed["experiment_budget_ceiling_usd"] == design.budget_usd
+        assert "shared equally" in indexed["rules_at_last_observed_turn"]
+        await assistant.close()
+
+    asyncio.run(exercise())
+
+
+def test_commons_counterfactuals_use_observed_rules_and_enforce_scope(runtime, design):
+    from agent_sim.assistants import CommonsPayoffRequest
+    from agent_sim.domain import ResourceChange
+
+    db, models, research, engine = runtime
+    design.conditions[0].parameters.endowment = 10
+    design.conditions[0].parameters.multiplier = 3
+    design.conditions[0].parameters.resource_schedule = [ResourceChange(round=2, endowment=6)]
+    rid = research.operational_runs(research.save_design(design))[0].id
+
+    async def exercise():
+        engine.start(rid)
+        await engine.executions[rid].task
+        assistant = Assistants(db, research, models)
+        request = CommonsPayoffRequest(
+            kind="commons_payoffs",
+            run_id=rid,
+            turn=1,
+            scenarios=[
+                dict(agents=2, own_contribution=own, other_contribution_per_agent=10)
+                for own in (0, 10)
+            ],
+        )
+        _, data = assistant._requested_evidence(request, {rid: 1})
+        assert [c["private_payoff"] for c in data["counterfactual_payoffs"]["scenarios"]] == [
+            25,
+            30,
+        ]
+        assert data["counterfactual_payoffs"]["hypothetical"]
+        assert data["observation"] and data["number"] == 1
+        with pytest.raises(ValueError, match="outside"):
+            assistant._requested_evidence(request, {rid: 0})
+        request.turn = len(design.profiles) + 1
+        with pytest.raises(ValueError, match="exceeds observed"):
+            assistant._requested_evidence(request, {rid: request.turn})
+        request.scenarios[0].own_contribution = 0
+        request.scenarios[0].other_contribution_per_agent = 6
+        request.scenarios = request.scenarios[:1]
+        _, data = assistant._requested_evidence(request, {rid: request.turn})
+        assert data["counterfactual_payoffs"]["endowment"] == 6
+        assert data["counterfactual_payoffs"]["scenarios"][0]["private_payoff"] == 15
+        await assistant.close()
+
+    asyncio.run(exercise())

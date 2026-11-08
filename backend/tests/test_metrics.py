@@ -42,3 +42,14 @@ def test_condition_mean_weights_environment_seeds_equally_when_repetitions_are_m
     runs = [RunMetrics("a", "A", 17, i, {"accuracy": 0.0}) for i in range(4)]
     runs.append(RunMetrics("a", "A", 43, 0, {"accuracy": 1.0}))
     assert condition_results(runs)[0]["mean"] == 0.5
+
+
+def test_bootstrap_uncertainty_is_invariant_to_run_order():
+    from agent_sim.metrics import bootstrap_mean_interval
+
+    from benchmarks.report import interval
+
+    values = (0, 1, 3, 7, 10, 20, 22)
+    for estimate in (bootstrap_mean_interval, interval):
+        assert estimate(values) == estimate(tuple(reversed(values)))
+        assert estimate(values) == estimate(values[3:] + values[:3])

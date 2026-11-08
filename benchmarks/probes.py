@@ -129,3 +129,59 @@ def communication_probes() -> dict:
     assert effects["copy-false"]["mean"] < 0, "copying inaccurate reports should hurt"
     assert effects["ignore"]["mean"] == 0, "unused communication should be neutral"
     return dict(effects=effects, records=records)
+
+
+def transparency_probe(agents: int) -> dict:
+    case = next(c for c in cases() if c.family.environment == "institution")
+    design = case.design()
+    design.profiles = [
+        Profile(key=f"p{i}", name=f"P{i}", goal="Earn credits.") for i in range(agents)
+    ]
+    design.rounds = 2
+    witnesses = []
+    for transparent in (False, True):
+        params = design.conditions[0].parameters.model_copy(deep=True)
+        params.institution.authorities = ["p0"]
+        params.institution.oversight = 0
+        params.institution.transparent = transparent
+        world = create_world(design, params, 17)
+        rows = []
+        while (actor := world.actor()) is not None:
+            obs = world.observe(actor)
+            obs["you"] = next(p.model_dump() for p in design.profiles if p.key == actor)
+            decision = scripted(dict(obs), True)
+            if actor == "p0":
+                decision.action.kind = "allocate" if obs["round"] == 1 else "sanction"
+                decision.action.target = "p1"
+                decision.action.amount = params.endowment if obs["round"] == 1 else 3
+            before = world.snapshot()
+            events, measures = world.step(actor, decision)
+            replay = create_world(design, params, 17, json.loads(json.dumps(before)))
+            replay_events, replay_measures = replay.step(actor, decision)
+            assert replay.snapshot() == world.snapshot()
+            assert replay_events == events and replay_measures == measures
+            rows.append(
+                dict(
+                    actor=actor,
+                    observation=obs,
+                    decision=decision.model_dump(),
+                    events=[e.model_dump() for e in events],
+                    measures=[m.model_dump() for m in measures],
+                    checkpoint=world.snapshot(),
+                )
+            )
+        third_party_views = {
+            key: world.observe(key)["sanctions"] for key in world.ids if key not in ("p0", "p1")
+        }
+        witnesses.append(
+            dict(transparent=transparent, third_party_views=third_party_views, trace=rows)
+        )
+    assert all(not value for value in witnesses[0]["third_party_views"].values())
+    assert all(len(value) == 1 for value in witnesses[1]["third_party_views"].values())
+    return dict(
+        agents=agents,
+        audience=agents - 2,
+        identifiable=agents > 2,
+        verified=True,
+        witnesses=witnesses,
+    )

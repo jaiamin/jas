@@ -23,6 +23,7 @@ def gate_digest() -> str:
             "validity.py",
             "quality.py",
             "analysis.py",
+            "incentives.py",
             "provenance.py",
         )
     ]

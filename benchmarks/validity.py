@@ -13,7 +13,7 @@ from agent_sim.simulation.environments import create_world
 
 from benchmarks.cases import cases, fingerprint
 from benchmarks.oracles import expected_balances, score_trace, scripted
-from benchmarks.probes import communication_probes, privacy_matrix
+from benchmarks.probes import communication_probes, privacy_matrix, transparency_probe
 from benchmarks.provenance import backend_digest, gate_digest
 
 
@@ -119,7 +119,7 @@ def adversarial(case, condition) -> dict[str, bool]:
             )
             world.step(actor, decision)
             sealed = marker not in json.dumps(world.observe(world.actor()))
-    return {
+    checks = {
         "detached_observation": detached,
         "invalid_action_rejected": rejected,
         "invalid_action_atomic": atomic,
@@ -127,6 +127,9 @@ def adversarial(case, condition) -> dict[str, bool]:
         "wrong_actor_atomic": turn_atomic,
         "sealed_submission_private": sealed,
     }
+    if case.family.factor == "institution.transparent":
+        checks["third_party_audience"] = case.agents >= 3
+    return checks
 
 
 def evaluate(selected=None, output: Path | None = None) -> dict:
@@ -182,6 +185,13 @@ def evaluate(selected=None, output: Path | None = None) -> dict:
     failures = Counter(k for r in records for k, v in r["checks"].items() if v is False)
     privacy = privacy_matrix()
     communication = communication_probes()
+    transparency = [transparency_probe(n) for n in (2, 3, 4, 8, 12)]
+    if output:
+        with gzip.open(output / "transparency-traces.jsonl.gz", "wt") as stream:
+            for record in transparency:
+                stream.write(json.dumps(record) + "\n")
+    for record in transparency:
+        record.pop("witnesses")
     if output:
         with gzip.open(output / "communication-traces.jsonl.gz", "wt") as stream:
             for record in communication.pop("records"):
@@ -195,6 +205,7 @@ def evaluate(selected=None, output: Path | None = None) -> dict:
         gate_sha256=initial_gate,
         privacy_matrix=privacy,
         communication_probes=communication,
+        transparency_probes=transparency,
         suite_sha256=fingerprint(),
         cases=len({r["case"] for r in records}),
         arms=len(records),

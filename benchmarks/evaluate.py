@@ -25,6 +25,7 @@ from sqlalchemy import select
 
 from benchmarks.analysis import analysis_trial
 from benchmarks.cases import MODEL, cases, fingerprint
+from benchmarks.incentives import incentive_trial
 from benchmarks.oracles import score_trace
 from benchmarks.provenance import backend_digest, gate_digest
 from benchmarks.quality import assess
@@ -192,6 +193,8 @@ async def run(args) -> dict:
             not all(value is True for value in row["checks"].values())
             for row in gate.get("records", [])
         )
+        or len(gate.get("transparency_probes", [])) != 5
+        or any(not row.get("verified") for row in gate.get("transparency_probes", []))
         or len(gate.get("privacy_matrix", [])) != 28
         or any(row["checks"] != row["passed"] for row in gate.get("privacy_matrix", []))
     ):
@@ -206,13 +209,15 @@ async def run(args) -> dict:
         selected = selected[: args.limit]
     if not selected:
         raise ValueError("No selected cases")
-    if args.kind in {"participants", "analysis"}:
+    if args.kind in {"participants", "analysis", "incentives"}:
         selected = [c for c in selected if c.family.environment]
+    if args.kind == "incentives" and any(c.family.environment != "commons" for c in selected):
+        raise ValueError("Incentive calibration requires commons cases")
     if args.split == "heldout":
         final = json.loads((ROOT / "benchmarks/final-checkpoint.json").read_text())
         validate_final(args, selected, final)
     sources = {}
-    if args.kind == "analysis":
+    if args.kind in {"analysis", "incentives"}:
         with gzip.open(args.source_runs, "rt") as stream:
             sources = {
                 (r["id"], r["repetition"], r["arm"]): r
@@ -242,7 +247,7 @@ async def run(args) -> dict:
             source_runs_sha256=hashlib.sha256(
                 await asyncio.to_thread(Path(args.source_runs).read_bytes)
             ).hexdigest()
-            if args.kind == "analysis"
+            if args.kind in {"analysis", "incentives"}
             else None,
             suite_sha256=fingerprint(),
             source_sha256=source_digest(),
@@ -301,6 +306,10 @@ async def run(args) -> dict:
                                 result = await analysis_trial(
                                     app, client, sources[(case.id, repetition, arm)]
                                 )
+                            elif args.kind == "incentives":
+                                result = await incentive_trial(
+                                    app, client, sources[(case.id, repetition, arm)]
+                                )
                             else:
                                 result = await participant_trial(
                                     app, case, mode, repetition, arm, studies
@@ -335,7 +344,11 @@ async def run(args) -> dict:
                     for c in selected
                     for m in (args.modes if args.kind == "participants" else [args.kind])
                     for r in range(args.repetitions)
-                    for arm in (range(2) if args.kind in {"participants", "analysis"} else [None])
+                    for arm in (
+                        range(2)
+                        if args.kind in {"participants", "analysis", "incentives"}
+                        else [None]
+                    )
                 ]
                 random.Random(20261108).shuffle(jobs)
                 await asyncio.gather(*(trial(*job) for job in jobs))
@@ -406,7 +419,7 @@ def main():
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--split", choices=["development", "heldout"], default="development")
     parser.add_argument(
-        "--kind", choices=["planner", "participants", "analysis"], default="planner"
+        "--kind", choices=["planner", "participants", "analysis", "incentives"], default="planner"
     )
     parser.add_argument("--source-runs", help="Baseline participant attempts for evidence analysis")
     parser.add_argument("--request-concurrency", type=int, default=4, choices=range(1, 33))

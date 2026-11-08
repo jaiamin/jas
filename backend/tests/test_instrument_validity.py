@@ -147,3 +147,15 @@ def test_analysis_numbers_are_checked_against_facts_and_reject_fabricated_counts
     assert not assess_analysis(output, [], initial)["reports"]
     output["answer"] = "A dramatic story with perfect honesty."
     assert not assess_analysis(output, [], initial)["numeric_summary"]
+
+
+def test_transparency_requires_a_third_party_audience():
+    from benchmarks.probes import transparency_probe
+
+    case = next(c for c in cases() if c.family.key == "private-sanctions")
+    assert case.agents >= 3
+    invalid = copy.copy(case)
+    object.__setattr__(invalid, "agents", 2)
+    assert not adversarial(invalid, invalid.design().conditions[0])["third_party_audience"]
+    assert not transparency_probe(2)["identifiable"]
+    assert transparency_probe(3)["identifiable"]

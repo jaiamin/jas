@@ -37,6 +37,7 @@ class RunMetrics:
 def bootstrap_mean_interval(values: tuple[float, ...]) -> list[float] | None:
     if len(values) < 3:
         return None
+    values = tuple(sorted(values))
     rng = random.Random(71)
     samples = sorted(statistics.mean(rng.choices(values, k=len(values))) for _ in range(1000))
     return [samples[24], samples[974]]

@@ -184,6 +184,8 @@ def build() -> None:
     for f in families():
         for variant in range(12):
             count = 2 if f.environment == "bargaining" else [2, 4, 8, 12][variant % 4]
+            if f.factor == "institution.transparent":
+                count = max(3, count)
             result.append(
                 Case(
                     id=f"{f.key}-{variant:02d}",

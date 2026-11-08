@@ -52,12 +52,14 @@
 
 .agent-layout {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr);
   height: 100%;
   min-height: 0;
 }
 
 .agent-history {
+  min-width: 0;
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: row;
@@ -93,6 +95,8 @@
 }
 
 .chat-history-list {
+  flex: 1;
+  min-width: 0;
   overflow-x: auto;
   min-height: 0;
   padding: 0;
@@ -103,8 +107,9 @@
   gap: 4px;
 }
 
-.chat-history-list li + li {
-  margin-top: 2px;
+.chat-history-list li {
+  flex: 0 0 220px;
+  min-width: 0;
 }
 
 .chat-history-link {
@@ -663,6 +668,7 @@
     grid-template-rows: auto minmax(0, 1fr);
   }
   .agent-history {
+    min-width: 0;
     border-right: 0;
     border-bottom: 1px solid var(--border);
   }
