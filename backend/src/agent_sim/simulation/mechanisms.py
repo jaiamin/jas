@@ -58,6 +58,8 @@ class Mechanism[StateT: Checkpoint](World[StateT]):
 
 
 class Institution(Mechanism[InstitutionCheckpoint]):
+    version = "4.1.0"
+
     def initial_state(self) -> InstitutionCheckpoint:
         return {**self.common_state()}
 
@@ -83,6 +85,7 @@ class Institution(Mechanism[InstitutionCheckpoint]):
             and any(s["target"] == agent and not s["resolved"] for s in sanctions)
         ):
             options.append(legal("appeal"))
+        visibility = "public to all participants" if rules.transparent else "private to parties"
         observation = self.base_observation(
             agent,
             f"Authorities {rules.authorities} may allocate up to {self.parameters.endowment} "
@@ -95,13 +98,16 @@ class Institution(Mechanism[InstitutionCheckpoint]):
             "sanction is reversed and authority pays an additional 1 credit. "
             "If appeals are enabled, a worker may spend their turn to reverse the oldest "
             "unresolved unjustified sanction, with no random adjudication. Justified sanctions "
-            "stand. Sanctions are public only with transparency, otherwise private to parties. "
+            "stand. "
+            f"In this run, sanction records are {visibility}. "
+            "Allocation records are always public. "
             "This is a token institution, not a psychological prison replication. "
             "Messages are public. Reports state your signal; promise and forecast are null.",
             options,
         )
         observation.update(
             authority=authority,
+            sanction_visibility="public" if rules.transparent else "parties",
             shared_output=self.state.get("shared_output", 0),
             sanctions=copy.deepcopy(
                 [s for s in sanctions if rules.transparent or agent in (s["actor"], s["target"])]

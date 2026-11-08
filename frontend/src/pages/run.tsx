@@ -128,14 +128,18 @@ export default function Run() {
           <>
             <Button
               variant="outline"
-              disabled={active || control.isPending}
+              disabled={active || control.isPending || !!run.execution_blocked}
               onClick={() => control.mutate("step")}
             >
               <SkipForward data-icon="inline-start" />
               Step
             </Button>
             <Button
-              disabled={control.isPending || summary.status === "pausing"}
+              disabled={
+                control.isPending ||
+                summary.status === "pausing" ||
+                (!active && !!run.execution_blocked)
+              }
               onClick={() => {
                 control.mutate(active ? "pause" : "start");
                 if (!active) live();
@@ -187,6 +191,9 @@ export default function Run() {
           </span>
         )}
       </div>
+      {run.execution_blocked && (
+        <Alert title="Recorded rules">{run.execution_blocked}</Alert>
+      )}
       {(summary.error || control.error) && (
         <Alert variant="error" title="Execution stopped safely">
           {control.error?.message ?? summary.error} Saved through turn{" "}

@@ -17,6 +17,7 @@ import { AgentFields } from "@/components/editor/agent-fields";
 import { ConditionFields } from "@/components/editor/condition-fields";
 import { ExecutionFields } from "@/components/editor/execution-fields";
 import { TaskFields } from "@/components/editor/task-fields";
+import { ExperimentCheck } from "@/components/experiment-check";
 import { PageHeading } from "@/components/shared";
 import {
   AlertDialog,
@@ -44,7 +45,13 @@ import { api } from "@/lib/api";
 import { changeEnvironment } from "@/lib/design";
 import { type Draft, removeDraft, writeDraft } from "@/lib/drafts";
 import { saveSetup } from "@/lib/setups";
-import type { Analysis, Catalog, Design, EnvironmentId } from "@/lib/types";
+import type {
+  Analysis,
+  Catalog,
+  Design,
+  EnvironmentId,
+  ExperimentPreflight,
+} from "@/lib/types";
 import { money } from "@/lib/utils";
 
 export function DesignEditor({
@@ -145,8 +152,23 @@ export function DesignEditor({
         "Setup saved in this browser. Reuse or edit it from Environments.",
       ),
   });
+  const snapshot = mode === "json" ? json : JSON.stringify(design);
+  const check = useMutation({
+    mutationFn: async (submitted: string) => ({
+      snapshot: submitted,
+      report: await api<ExperimentPreflight>("/design/preflight", {
+        design: JSON.parse(submitted),
+        plan_id: planId,
+      }),
+    }),
+  });
+  const currentCheck =
+    check.data?.snapshot === snapshot ? check.data.report : null;
   const busy =
-    save.isPending || validate.isPending || saveEnvironment.isPending;
+    save.isPending ||
+    validate.isPending ||
+    saveEnvironment.isPending ||
+    check.isPending;
   function changeMode(value: string) {
     if (busy) return;
     if (value === "json") {
@@ -483,8 +505,25 @@ export function DesignEditor({
               <dd>{money(design.budget_usd)}</dd>
             </div>
           </dl>
+          <Button
+            variant="outline"
+            disabled={busy}
+            onClick={() => check.mutate(snapshot)}
+          >
+            {check.isPending ? "Checking mechanics…" : "Check experiment"}
+          </Button>
+          {check.error && <Alert variant="error">{check.error.message}</Alert>}
+          {check.data && !currentCheck && (
+            <p className="muted" role="status">
+              Protocol changed. Check again for current findings.
+            </p>
+          )}
+          {currentCheck && <ExperimentCheck report={currentCheck} />}
           <div className="form-submit editor-save">
-            <Button onClick={submit} disabled={busy}>
+            <Button
+              onClick={submit}
+              disabled={busy || currentCheck?.status === "blocked"}
+            >
               {save.isPending ? (
                 <LoaderCircle className="spin" data-icon="inline-start" />
               ) : (

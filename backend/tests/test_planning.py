@@ -1,6 +1,7 @@
 import asyncio
 
 import pytest
+from agent_sim.validity import Requirement
 
 
 def test_planner_reviews_and_repairs_design_before_returning(runtime, design, monkeypatch):
@@ -18,6 +19,14 @@ def test_planner_reviews_and_repairs_design_before_returning(runtime, design, mo
     invalid["seeds"] = [7, 7]
     brief = StudyBrief(
         supported=True,
+        requirements=[
+            Requirement(
+                source="Compare cooperation",
+                capability="contributions",
+                mapping="direct",
+                explanation="Sealed contribution choices.",
+            )
+        ],
         explanation="A pilot",
         operationalization="Contribution rate",
         size_rationale="One small descriptive group; repeated trials remain necessary.",
@@ -110,6 +119,14 @@ def test_planner_rejects_unresolved_review(runtime, design, monkeypatch):
         if output is StudyBrief:
             return StudyBrief(
                 supported=True,
+                requirements=[
+                    Requirement(
+                        source="Compare strategies",
+                        capability="contributions",
+                        mapping="direct",
+                        explanation="Sealed contribution choices.",
+                    )
+                ],
                 explanation="Pilot",
                 operationalization="Payoff",
                 size_rationale="Small group",
@@ -148,6 +165,14 @@ def test_planner_validates_revised_capability_and_counts(runtime, design, monkey
         if output is StudyBrief:
             return StudyBrief(
                 supported=True,
+                requirements=[
+                    Requirement(
+                        source="Two matched conditions",
+                        capability="contributions",
+                        mapping="direct",
+                        explanation="Sealed contribution choices.",
+                    )
+                ],
                 explanation="Pilot",
                 operationalization="Contribution rate",
                 size_rationale="Two matched conditions",

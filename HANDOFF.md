@@ -1,49 +1,62 @@
-# JAS handoff
+# JAS handoff: experiment validity
 
-## Current state
+## Active task and acceptance
 
-Implementation, frozen evaluation and OSS benchmark cleanup are complete on
-`feat/rigorous-evaluation`; existing draft PR: https://github.com/jaiamin/ass/pull/6.
-Cleanup keeps 22 files under 0.5 MB: reusable harness, frozen dataset/families, protocol,
-review, original final declaration and four compact result documents. Generated artifacts
-are ignored; every historical file was archived and byte-verified before removal.
-Historical evidence remains at commit `a2ce6ba940398ca12b2c8baba25787e0d43f5c10` and
-`data/quality/archive-a2ce6ba/benchmarks/`. Recovery/replay commands are in the results report.
-No frozen source/test/prompt/case/scorer changed; source/suite hashes still match.
+The user authorized a general experiment-validity gate after reviewing the weak shortage
+experiment. Implement question fidelity, deterministic incentive/treatment checks, visible
+preflight findings, and exposure-aware analysis. Improve the existing workflow at any supported
+scale without promising arbitrary simulations or forcing interesting/non-null outcomes.
 
-Cleanup checks passed: 302 backend tests; Ruff formatting/lint, ty, diff checks; complete
-5,208-check validity gate, 336 privacy assertions and five disclosure witnesses; documented
-archive replay of 96 runs / 3,692 decisions and exact regenerated comparison equality;
-local documentation links, JSON parsing, artifact ignore rules and secret scanning.
-Frontend rebuilt for the requested manual preview. No new paid evaluation requests.
+Acceptance criteria:
+- Essential requested constructs map to declared supported mechanics; missing capabilities
+  cannot be disguised as supported proxies. Preserve original question through review.
+- Shared deterministic preflight runs without provider calls, checks changed active factors,
+  incentive pitfalls, and relevant legal treatment witnesses; bounded work at max design size.
+- Planning receives computed evidence; manual design/run flows display the same findings.
+- Analysis reports missing treatment opportunities/ceiling effects before causal narratives.
+- Regression coverage for the shortage failure plus valid hidden, delayed, memory and model
+  interventions; avoid blanket rejection of pilots/null results.
+- Verify backend/frontend/lint/types/build and affected browser flows. Keep app on 8080 usable.
+- Do not change old frozen cases, scoring, checkpoint or historical results; clearly label
+  new production changes as subsequent to published scores. Keep benchmarks concise.
 
-User requested the app left running on port 8080. Uvicorn PID 65794 (exec session 96698),
-0.0.0.0:8080, fresh dedicated database `data/quality/manual-preview.sqlite3`, normal `.env`
-provider configuration. Health, entry assets and experiment/environment/Agent routes passed
-HTTP checks. Leave it running for the user; do not touch other sessions/services.
+Progress: inspected planner/domain/research/execution and diagnosed saved study
+cb2fad05b89c4cc2. All 144 decisions replay; flipping visibility changes zero observations or
+schemas on its recorded paths. Worker work 108/108; sanction/appeal 0. Institution rule text
+omits active visibility. Planner returned supported=true and critique issues=[].
+Primary-source research and decisions are recorded in docs/EXPERIMENT_VALIDITY.md.
+Implemented shared capability/construct checks, bounded scripted preflight, save/run gates,
+actual sanction-visibility observation (institution rules 4.1.0), exposure-aware analysis,
+editor/proposal/overview findings, historical read-only access and mixed-rule export v4.
+336 protocol combinations + 55 payoff oracles and regression tests added. Full frontend
+lint/build and 69 unit tests passed. All 68 browser tests passed, including three new
+zero-cost/staleness/mobile flows. Backend targeted rerun underway after historical-export fix.
+Next: finish backend verification, record a two-repeat 30-question Luna development comparison
+against pre-change HEAD using the SAME ledger (max $2 additional per checkpoint), inspect
+all failures, fix justified general issues and retest. Do not reopen old held-out cases.
+Then restart owned 8080 service with its existing DB, review and publish existing PR.
 
-The existing draft PR is the review target; do not create another PR or merge.
-Remote CI for the cleanup has not yet been observed.
+## Workspace and publication
 
-## Frozen evaluation record
+Linux isolated Docker Sandbox, /home/agent/workspace, branch feat/rigorous-evaluation.
+Existing draft PR https://github.com/jaiamin/ass/pull/6; update it, never merge/main-push or
+rewrite history. No new subagents. User is testing: preserve existing local database and runs.
+Current preview is exec session 86664, PID 67033 on 8080, dedicated database
+`data/quality/manual-preview.sqlite3`; refresh/restart this owned service when needed.
+System uv crashes; use installed `.venv` or `.tools/uv-0.13.7.data/scripts/uv`.
 
-Freeze commit: `53f42e5`; production fix commit: `8b3e77d`.
-Source: `7f2a136a2d71124fc5b962fb0fde3f5b5bd77de35453e7a63f04d22a2a69997a`.
-Suite: `c05f3f353bcd6be3aeba94b145517e7b2e935907bbe1914b09d3f1bac4d3a8ff`.
-336 synthetic cases, 28 author-reviewed families (18 development / 10 held-out).
-Held-out: planner 206/240; participants 96/96; strict analysis 96/96. No post-held-out tuning.
-Independent replay: 576/576 runs, 21,720 decisions. All failed iterations remain recoverable.
-26,688 Luna calls: $13.608157 charged/reserved of $75; 11 unknown reservations retained.
-Canonical ledger: `data/quality/aggregate.sqlite3`. Never reset it. No further model spending.
-Original verification: 302 backend, 66 frontend, 65 browser tests; lint/types/build,
-archive Docker smoke and archive-aware secret scan passed.
+## Evidence and evaluation boundary
 
-## Constraints and limits
+Historical evidence commit a2ce6ba940398ca12b2c8baba25787e0d43f5c10; full local archive at
+`data/quality/archive-a2ce6ba/benchmarks`. Read-only shortage diagnosis is in
+`data/quality/shortage-review/REVIEW.md` and its saved export/script. No provider calls spent
+on that review. Existing aggregate evaluation ledger `data/quality/aggregate.sqlite3` must
+never reset. 26,688 Luna calls; $13.608157 charged/reserved of $75 including 11 unknowns.
+Any paid verification must use only openai:gpt-6-luna and the same aggregate cap/ledger.
+Prefer deterministic tests first. Never rerun/tune against the published held-out suite.
 
-No questions/new agents/paid calls. Never merge, push main or rewrite published history.
-System `uv` crashes; use `.tools/uv-0.13.7.data/scripts/uv` or installed `.venv` tools.
-Public historical traces omit all thinking parts/signatures; no secret-scan bypasses.
-Known limits: author-correlated synthetic specs; three heterogeneous blocks give weak
-uncertainty; larger teams trade rounds for agents; missing truth-redraw planner metadata,
-ambiguous bundled memory comparisons and occasional narrative errors. Strict numerical
-compliance does not certify useful insight, human validity, intent or weight learning.
+Published checkpoint: source 7f2a136a2d71124fc5b962fb0fde3f5b5bd77de35453e7a63f04d22a2a69997a;
+suite c05f3f353bcd6be3aeba94b145517e7b2e935907bbe1914b09d3f1bac4d3a8ff. Historical results:
+planner 206/240, participants 96/96, analysis 96/96; 302 backend/66 frontend/65 browser tests.
+These are not new-source scores. New regressions belong in correctness/development tests.
+Public provider traces must omit reasoning/signatures. Never bypass secret scanning.

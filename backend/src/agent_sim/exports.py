@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from sqlalchemy import select
 
-from .db import Analysis, Annotation, ProviderCall, RecordedEvent, Revision, Run, Turn
+from .db import Analysis, Annotation, Condition, ProviderCall, RecordedEvent, Revision, Run, Turn
 from .research import Research, event_dict
 from .simulation.environments import CATALOG
 
@@ -14,6 +14,13 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
             select(Revision).where(Revision.study_id == study_id).order_by(Revision.number)
         ).all()
         runs = session.scalars(select(Run).where(Run.study_id == study_id)).all()
+        environments = dict(
+            session.execute(
+                select(Condition.id, Revision.design["environment"].as_string())
+                .join(Revision, Condition.revision_id == Revision.id)
+                .where(Revision.study_id == study_id)
+            ).all()
+        )
         plan_ids = [
             r.source.removeprefix("plan:") for r in revisions if r.source.startswith("plan:")
         ]
@@ -50,10 +57,16 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
                 "events": grouped_events[turn.run_id, turn.number],
             }
         )
+    initial = {
+        run.id: research.evidence(run.id, 0)
+        for run in runs
+        if run.turn == 0
+        or run.checkpoint["rule_version"] == CATALOG[environments[run.condition_id]].world.version
+    }
     return {
         "format": "jas-study",
-        "version": 3,
-        "rule_version": CATALOG[detail["design"]["environment"]].world.version,
+        "version": 4,
+        "rule_versions": sorted({run.checkpoint["rule_version"] for run in runs}),
         "study": detail,
         "annotations": [
             {
@@ -108,7 +121,8 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
         "runs": [
             {
                 "record": research.run(r.id),
-                "evidence": [research.evidence(r.id, 0), *grouped_turns[r.id]],
+                "initial_state_available": r.id in initial,
+                "evidence": ([initial[r.id]] if r.id in initial else []) + grouped_turns[r.id],
             }
             for r in runs
         ],

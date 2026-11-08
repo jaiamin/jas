@@ -60,7 +60,7 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v3.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v4.
 This WIP uses only the current schema and rules; incompatible workspaces must be reset.
 
 `JAS_ALLOWED_HOSTS` lists accepted hostnames/IPs without ports (comma-separated).

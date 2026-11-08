@@ -79,3 +79,20 @@ Only the compact [report](results/REPORT.md), [score history](results/score-hist
 here. Full historical traces, source bundles and one-off commands are recoverable at the
 immutable evidence commit; see the report's archive/replay instructions. Saved decisions
 replay exactly with their matching rules; fresh model responses are stochastic.
+
+## Later planner development checks
+
+The post-checkpoint [development diagnostic](development.py) contains 30 independently
+specified supported/unsupported requests. It does not reopen or modify frozen cases.
+Run only after correctness checks; it uses the existing ledger, Luna, a separate phase
+allowance and two repetitions by default:
+
+```sh
+uv run python -m benchmarks.development --label current \
+  --output data/quality/validity-current --max-usd 2
+```
+
+Its acceptance checks cover completion, supported capability combinations, environment
+selection and required executable interventions. These are development diagnostics, not
+held-out generalization or semantic insight scores. Every attempt and sanitized provider
+trace stays with an exact backend source snapshot in the ignored output directory.

@@ -126,7 +126,33 @@ export interface Result {
   interval: number[] | null;
   method: string;
 }
+export interface QuestionRequirement {
+  source: string;
+  capability: string;
+  mapping: "direct" | "proxy" | "missing";
+  explanation: string;
+}
+export interface ExperimentPreflight {
+  status: "blocked" | "review" | "checked";
+  issues: { code: string; severity: "error" | "warning"; message: string }[];
+  comparisons: {
+    baseline: string;
+    condition: string;
+    changed_parameters: string[];
+    agent_assignment_changed: boolean;
+    witnesses: {
+      instrument: number;
+      observation_difference: boolean;
+      outcome_difference: boolean;
+    }[];
+  }[];
+  probe_turns: number;
+  limits: string;
+  question_mapping?: QuestionRequirement[];
+  original_question?: string | null;
+}
 export interface StudyDetail {
+  preflight: ExperimentPreflight;
   id: string;
   design: Design;
   revision: number;
@@ -274,6 +300,7 @@ export interface RequestEvidence {
 }
 export interface RunDetail {
   next_actor: string | null;
+  execution_blocked: string | null;
   requests: RequestSummary[];
   summary: RunSummary;
   design: Design;
@@ -314,7 +341,12 @@ export interface Analysis {
     stage?: string;
     partial?: string;
     planning?: {
-      brief: { size_rationale: string; operationalization: string };
+      brief: {
+        size_rationale: string;
+        operationalization: string;
+        requirements?: QuestionRequirement[];
+      };
+      preflight?: ExperimentPreflight;
       sources: { url: string; title: string }[];
     };
     supported?: boolean;

@@ -154,8 +154,15 @@ async def validate_design(body: SaveStudy, *, research: ResearchDep) -> dict[str
     return body.design.model_dump()
 
 
+@router.post("/api/design/preflight")
+async def check_design(body: SaveStudy, *, research: ResearchDep) -> dict[str, Any]:
+    research.validate_design(body.design)
+    return await asyncio.to_thread(research.preflight, body.design, body.plan_id)
+
+
 @router.post("/api/studies", status_code=201)
 async def create_study(body: SaveStudy, *, research: ResearchDep) -> dict[str, Any]:
+    await asyncio.to_thread(research.preflight, body.design, body.plan_id)
     return {"id": research.save_design(body.design, plan_id=body.plan_id)}
 
 
@@ -163,11 +170,12 @@ async def create_study(body: SaveStudy, *, research: ResearchDep) -> dict[str, A
 async def get_study(
     study_id: str, revision: int | None = Query(default=None, ge=1), *, research: ResearchDep
 ) -> dict[str, Any]:
-    return research.study(study_id, revision)
+    return await asyncio.to_thread(research.study, study_id, revision)
 
 
 @router.post("/api/studies/{study_id}/revisions", status_code=201)
 async def revise_study(study_id: str, body: SaveStudy, *, research: ResearchDep) -> dict[str, Any]:
+    await asyncio.to_thread(research.preflight, body.design, body.plan_id)
     return {"id": research.save_design(body.design, study_id=study_id, plan_id=body.plan_id)}
 
 

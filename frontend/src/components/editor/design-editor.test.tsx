@@ -102,3 +102,52 @@ for (const mode of ["visual", "json"]) {
     });
   }
 }
+
+test("free mechanics checks block invalid saves and become stale after editing", async () => {
+  const fetcher = vi.fn().mockResolvedValue(
+    Response.json({
+      status: "blocked",
+      probe_turns: 12,
+      comparisons: [],
+      limits: "Bounded instruments only.",
+      issues: [
+        {
+          code: "inactive_intervention",
+          severity: "error",
+          message: "Changed setting is inactive.",
+        },
+      ],
+    }),
+  );
+  vi.stubGlobal("fetch", fetcher);
+  renderWithQueries(
+    <MemoryRouter>
+      <DesignEditor
+        initial={design}
+        catalog={catalog}
+        studyId={null}
+        planId={null}
+        draftPath="/checks"
+      />
+    </MemoryRouter>,
+  );
+  const create = screen.getByRole("button", { name: "Create experiment" });
+  fireEvent.click(screen.getByRole("button", { name: "Check experiment" }));
+  expect(
+    await screen.findByText("Changed setting is inactive."),
+  ).toBeInTheDocument();
+  expect(create).toBeDisabled();
+  expect(fetcher).toHaveBeenCalledTimes(1);
+  expect(fetcher.mock.calls[0][0]).toBe("/api/design/preflight");
+  fireEvent.change(screen.getByLabelText("Experiment name"), {
+    target: { value: "Edited protocol" },
+  });
+  expect(
+    screen.getByText("Protocol changed. Check again for current findings."),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByText("Changed setting is inactive."),
+  ).not.toBeInTheDocument();
+  expect(create).toBeEnabled();
+  expect(fetcher).toHaveBeenCalledTimes(1);
+});

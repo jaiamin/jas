@@ -125,6 +125,7 @@ class Observation(TypedDict):
     role: NotRequired[str]
     tasks: NotRequired[list[TaskState]]
     authority: NotRequired[bool]
+    sanction_visibility: NotRequired[Literal["public", "parties"]]
     shared_output: NotRequired[int]
     sanctions: NotRequired[list[Sanction]]
     pie: NotRequired[int]

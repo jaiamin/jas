@@ -329,3 +329,15 @@
   align-items: center;
   gap: 8px;
 }
+
+.design-summary .experiment-check {
+  border-block: 1px solid var(--border);
+  padding-block: 14px;
+}
+
+.design-summary .experiment-check .alert {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+}

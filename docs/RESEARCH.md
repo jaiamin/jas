@@ -39,3 +39,6 @@ workflows and mechanics; it does not validate human predictions.
 
 Seed controls environment randomization, not LLM sampling. Model/version, settings,
 rule versions, requests, outputs and estimated costs remain part of each saved run.
+
+See [experiment validity](EXPERIMENT_VALIDITY.md) for the later primary-source review,
+implemented preflight, capability limits and post-checkpoint verification.

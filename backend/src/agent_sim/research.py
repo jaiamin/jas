@@ -23,6 +23,7 @@ from .domain import Design, Treatment
 from .llm import PRICES, LanguageModels, Usage, empty_usage
 from .metrics import RunMetrics, aggregate_metrics, condition_results, matched_effects
 from .simulation.environments import CATALOG, create_world
+from .validity import Requirement, preflight, require_valid, requirement_issues
 
 
 def study_status(statuses: Sequence[str]) -> str:
@@ -84,6 +85,44 @@ class Research:
     def __init__(self, db: Database, models: LanguageModels):
         self.db, self.models = db, models
 
+    def preflight(self, design: Design, plan_id: str | None = None) -> dict:
+        result = preflight(design)
+        result["question_mapping"] = []
+        result["original_question"] = None
+        if plan_id:
+            with self.db.session() as session:
+                plan = session.get_one(Analysis, plan_id)
+                if (
+                    plan.purpose != "design"
+                    or plan.status != "complete"
+                    or not (plan.output or {}).get("supported")
+                ):
+                    raise ValueError("Choose a completed, supported AI design")
+                brief = ((plan.output or {}).get("planning") or {}).get("brief") or {}
+                requirements = [
+                    Requirement.model_validate(r) for r in brief.get("requirements", [])
+                ]
+                result["original_question"] = plan.question
+                if design.model_dump() != (plan.output or {}).get("design"):
+                    result["issues"].append(
+                        {
+                            "code": "edited_proposal",
+                            "severity": "warning",
+                            "message": "Protocol changed since model review. "
+                            "Supported capabilities "
+                            "were rechecked; semantic fit to the question was not re-reviewed.",
+                        }
+                    )
+                    if result["status"] == "checked":
+                        result["status"] = "review"
+            result["question_mapping"] = [r.model_dump() for r in requirements]
+            for message in requirement_issues(design.environment, requirements):
+                result["issues"].append(
+                    {"code": "missing_construct", "severity": "error", "message": message}
+                )
+                result["status"] = "blocked"
+        return result
+
     @staticmethod
     def validate_design(design: Design) -> None:
         if any(c.model not in PRICES for c in design.conditions) or any(
@@ -103,6 +142,7 @@ class Research:
         self, design: Design, *, study_id: str | None = None, plan_id: str | None = None
     ) -> str:
         self.validate_design(design)
+        require_valid(self.preflight(design, plan_id))
         payload = design.model_dump()
         with self.db.session.begin() as session:
             if plan_id:
@@ -171,6 +211,19 @@ class Research:
                             ]
                         )
             return study.id
+
+    def check_run(self, run_id: str) -> None:
+        with self.db.session() as session:
+            revision = session.scalars(
+                select(Revision)
+                .join(Condition, Condition.revision_id == Revision.id)
+                .join(Run, Run.condition_id == Condition.id)
+                .where(Run.id == run_id)
+            ).one()
+        plan_id = (
+            revision.source.removeprefix("plan:") if revision.source.startswith("plan:") else None
+        )
+        require_valid(self.preflight(Design.model_validate(revision.design), plan_id))
 
     def configuration(self, run_id: str) -> tuple[Run, Design, Treatment]:
         with self.db.session() as session:
@@ -325,6 +378,33 @@ class Research:
             )
             for run in completed
         ]
+        check = self.preflight(
+            Design.model_validate(revision.design),
+            revision.source.removeprefix("plan:") if revision.source.startswith("plan:") else None,
+        )
+        with self.db.session() as session:
+            versions = session.execute(
+                select(Run.status, Run.checkpoint["rule_version"].as_string())
+                .join(Condition, Run.condition_id == Condition.id)
+                .where(Condition.revision_id == revision.id)
+            ).all()
+        current_version = CATALOG[revision.design["environment"]].world.version
+        incompatible = [
+            (status, version) for status, version in versions if version != current_version
+        ]
+        if incompatible:
+            blocked = any(status != "complete" for status, _ in incompatible)
+            check["issues"].append(
+                {
+                    "code": "historical_rules",
+                    "severity": "error" if blocked else "warning",
+                    "message": "Saved runs use a different rule version. Evidence stays readable; "
+                    "replay/resume requires its original engine. "
+                    "Save a new revision for current rules. "
+                    "The mechanical checks below use current rules.",
+                }
+            )
+            check["status"] = "blocked" if blocked or check["status"] == "blocked" else "review"
         return {
             "id": study_id,
             "design": revision.design,
@@ -341,6 +421,7 @@ class Research:
             "results": condition_results(samples),
             "effects": matched_effects(samples, Design.model_validate(revision.design)),
             "usage": self.models.usage(study_id=study_id),
+            "preflight": check,
         }
 
     def run(self, run_id: str) -> dict:
@@ -373,7 +454,13 @@ class Research:
             "parameters": condition.parameters.model_dump(),
             "next_actor": create_world(
                 design, condition.parameters, run.seed, run.checkpoint
-            ).actor(),
+            ).actor()
+            if run.checkpoint["rule_version"] == CATALOG[design.environment].world.version
+            else None,
+            "execution_blocked": None
+            if run.checkpoint["rule_version"] == CATALOG[design.environment].world.version
+            else "Saved rules differ from this engine. Inspect evidence or save a new revision; "
+            "this run cannot resume or replay here.",
             "requests": [
                 {
                     "id": c.id,
@@ -422,7 +509,15 @@ class Research:
             raise ValueError("Turn is outside this run's recorded evidence")
         with self.db.session() as session:
             if number == 0:
-                checkpoint = create_world(design, condition.parameters, run.seed).snapshot()
+                if run.turn == 0:
+                    checkpoint = run.checkpoint
+                elif run.checkpoint["rule_version"] != CATALOG[design.environment].world.version:
+                    raise ValueError(
+                        "Initial state cannot be reconstructed with different rules; "
+                        "inspect recorded turns"
+                    )
+                else:
+                    checkpoint = create_world(design, condition.parameters, run.seed).snapshot()
                 return {
                     "round": checkpoint["round"],
                     "number": 0,

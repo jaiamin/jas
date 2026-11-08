@@ -89,7 +89,7 @@ parameters and measurements. `World` owns common turn bookkeeping. Concrete worl
 checkpoint initialization, legal-action schema capabilities and derived environment measures;
 `decisions.py` builds schemas from those capabilities without selecting environments.
 `checkpoints.py` declares shared observations/actions and each world's state. Snapshots
-contain only that world's state. All seven worlds use rule version 4.0.0; incompatible
+contain only that world's state. Institution uses rule version 4.1.0; the other worlds use 4.0.0. Incompatible
 checkpoints fail explicitly. `environments.py` contains the catalog and three games;
 `mechanisms.py` implements the other four worlds.
 
@@ -149,8 +149,9 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v3 (`jas-study`)
-includes every revision and its runs, exact turn evidence and provider traces; it batches
+Every Analysis has an indexed conversation identity. Study export v4 (`jas-study`)
+includes every revision and its runs, actual recorded rule versions, exact turn evidence
+and provider traces; it batches
 journal queries.
 Full checkpoints favor auditability over storage efficiency. This is appropriate for small
 local studies; large deployments need retention/compaction and paginated evidence APIs.
@@ -189,3 +190,7 @@ supports it; other worlds offer only scoped history/turn inspection. Runtime val
 still rejects invalid targets and cutoffs. Provider records retain observable response
 parts and token accounting, omitting reasoning parts and opaque signatures. The original
 in-memory responses remain available to the provider library during the call.
+
+Shared zero-cost [experiment validity checks](EXPERIMENT_VALIDITY.md) constrain planner
+proposals, saves and execution. Analysis combines those current-rule checks with actual
+cutoff exposure, preserving recorded observations as the historical authority.
