@@ -37,6 +37,10 @@ world requirements from counts, pilot/reporting limits and instructions. It norm
 delimiters and whitespace without accepting paraphrases; a missing or unquoted mapping gets
 one explicit correction step, recorded with its feedback and cost. Provider failures are not
 retried. Exhausted mapping/design reviews retain their final findings for inspection.
+One development attempt implemented history versus notes correctly but exhausted all reviews
+because the critic demanded a duplicate comparator quotation in the fixed brief. Review now
+explicitly judges the executable contrast and requests material protocol corrections; one
+capability mapping may cover both implemented levels. The failed attempt remains evidence.
 
 `POST /api/design/preflight` makes no provider calls or persistent mutations. It checks
 inactive parameter contrasts, bundled interventions/memory changes, known incentive ceilings,
