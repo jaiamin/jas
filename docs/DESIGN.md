@@ -5,8 +5,7 @@
 
 ## Visual language
 
-Use white and neutral work surfaces, graphite text and restrained blue for actions,
-links, selection and focus. Borders and tonal steps separate records; reserve shadows
+Use white and neutral work surfaces, graphite text and graphite primary actions and restrained blue for links, charts and focus. Borders and tonal steps separate records; reserve shadows
 for overlays, the composer and the fixed mobile save action. Avoid nested card frames.
 Status color always accompanies text/icons. Charts retain labels and distinct line
 patterns, mirrored in legends; hue never implies moral rank.
@@ -23,7 +22,7 @@ mark, revealing the expand control on hover/focus without losing keyboard focus.
 
 ## Layout and controls
 
-The shell has a 240px sidebar, 52px collapsed rail and at least 56px breadcrumb bar.
+The shell has a 208px sidebar, 52px collapsed rail and 52px breadcrumb bar.
 Pages use 32px gutters, 48px bottom padding and a 1600px maximum width. Records share a
 heading/action row, one filter toolbar and a contained table region. Page tabs use the
 line variant; related local choices use the segmented variant.
@@ -42,18 +41,24 @@ Coarse-pointer targets are at least 44px. Check 390px, 834px, 1280px and 1440px 
 
 | Surface | Contract |
 | --- | --- |
-| Navigation | Experiments, Runs; divider; Agent, Environments; Settings/theme in footer. Creation stays in page actions. |
+| Navigation | Experiments, Environments, Runs; divider; Agent; Settings/theme in footer. Creation stays in page actions. |
 | Records | Stable identity, status, measurements and contained scroll; run selection survives filters and supports 2–4 comparisons. |
 | Editor | Question → Agents → Conditions → Execution, with JSON available and a persistent summary/save. Draft identity follows its source; server validation gates revisions. |
 | Experiment | Question and revision stay visible; Overview, Runs and Protocol preserve historical identity. Saving never executes. |
 | Run | Decisions first, then Environment, Interactions and Record. Shared turn rail, complete journal and adjacent/stacked evidence inspector. |
-| Agent | Full-page conversation, inner history rail and context selector; one Send action; reviewed proposals open in the editor. |
+| Agent | Full-page conversation, conversation toolbar and context selector; one Send action; reviewed proposals open in the editor. |
 
-Agent keeps an 800px conversation/composer measure and a 216px inner history rail;
-at 1000px the rail becomes a chat picker. The composer stays below the independently
-scrolling transcript. Before the first message, the heading and four suggestions occupy
-the middle; they never displace the composer. Suggestions fill a draft without spending
-or inventing results. Use 24px internal gutters and 12px composer gutters on mobile.
+Agent keeps an 800px conversation/composer measure. Conversation history is a compact
+horizontal toolbar above the transcript; selected evidence and its scope stay visible.
+The composer stays below the independently scrolling transcript. Before the first message,
+a left-aligned question and quiet suggested prompts explain the available work. Suggestions
+fill a draft without spending or inventing results. Use 24px internal gutters and 12px
+composer gutters on mobile.
+
+The environment workbench pairs a vertical mechanics index with a precise contract: observation,
+enforcement, controls and measurement definitions. Below 700px the index scrolls horizontally.
+Saved setups reuse validated protocols in browser storage, check rule versions before opening,
+and remain independent of immutable saved experiments. They do not install new rule engines.
 
 Experiment/run headers link Ask Agent to the selected record. The editor's Generate with
 Agent carries the question and preserves the draft; reviewed proposals link Back to Agent.

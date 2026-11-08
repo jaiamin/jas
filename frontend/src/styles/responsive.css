@@ -280,7 +280,7 @@
   }
 }
 
-@container workspace (max-width: 720px) {
+@container workspace (max-width: 784px) {
   .evidence-return {
     display: inline-flex;
     margin-bottom: 12px;

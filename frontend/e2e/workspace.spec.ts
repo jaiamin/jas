@@ -289,3 +289,57 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   await page.goto("/");
   await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
 });
+
+test("environment mechanics lead to editable reusable setups", async ({
+  page,
+}) => {
+  await page.goto("/environments");
+  await expect(
+    page.getByRole("heading", { name: "What agents observe" }),
+  ).toBeVisible();
+  await page
+    .getByRole("tab", { name: "Team coordination", exact: false })
+    .click();
+  await page
+    .getByRole("link", { name: "Configure experiment", exact: true })
+    .click();
+  await expect(page.getByRole("tab", { name: /^Conditions/ })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await page
+    .getByLabel("Experiment name", { exact: true })
+    .fill("Supply-chain recovery");
+  await page
+    .getByRole("button", { name: "Save reusable setup", exact: true })
+    .click();
+  await expect(
+    page.getByText("Setup saved in this browser.", { exact: false }),
+  ).toBeVisible();
+  await page.goto("/environments");
+  await page
+    .getByRole("link", { name: "Supply-chain recovery", exact: true })
+    .click();
+  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
+    "Supply-chain recovery",
+  );
+  await page
+    .getByLabel("Experiment name", { exact: true })
+    .fill("Revised recovery");
+  await page
+    .getByRole("button", { name: "Update saved setup", exact: true })
+    .click();
+  await expect(
+    page.getByText("Setup saved in this browser.", { exact: false }),
+  ).toBeVisible();
+  await page.goto("/environments");
+  await expect(
+    page.getByRole("link", { name: "Revised recovery", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Remove", exact: true }).click();
+  await expect(
+    page.getByRole("link", { name: "Revised recovery", exact: true }),
+  ).toHaveCount(0);
+});

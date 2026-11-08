@@ -155,6 +155,7 @@ export interface Environment {
   parameters: string[];
   measures: string[];
   rule_version: string;
+  measure_definitions: Record<string, string>;
 }
 export interface Catalog {
   models: {

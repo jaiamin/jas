@@ -87,7 +87,11 @@ export function ConditionFields({
       </div>
       <div className="condition-list">
         {design.conditions.map((c, i) => (
-          <Disclosure className="condition-disclosure" key={c.key}>
+          <Disclosure
+            className="condition-disclosure"
+            key={c.key}
+            defaultOpen={i === 0}
+          >
             <DisclosureTrigger indicator={false} className="condition-summary">
               <span className="condition-index" data-series={i % 6}>
                 {String.fromCharCode(65 + i)}

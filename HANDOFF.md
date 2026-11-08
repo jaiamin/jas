@@ -34,9 +34,9 @@ within $75, coherent commits, branch push and one draft PR. No questions request
 
 ## Plan
 
-1. [in progress] Audit code and sources, predeclare family split, scoring and budgets.
-2. [pending] Implement replacement suite and pass zero-cost independent validity gate.
-3. [pending] Record baseline; diagnose development failures; implement and rerun matched
+1. [completed] Audit code and sources, predeclare family split, scoring and budgets.
+2. [completed] Implement replacement suite and pass zero-cost independent validity gate.
+3. [in progress] Record baseline; diagnose development failures; implement and rerun matched
    improvements. Keep all failures and checkpoint provenance.
 4. [pending] Improve Agent insights and experiment/environment workspace; browser QA.
 5. [pending] Freeze final source checkpoint; run held-out once; report weaknesses without
@@ -55,5 +55,26 @@ within $75, coherent commits, branch push and one draft PR. No questions request
 
 ## Verification / next
 
-Initial inspection only; no new trials or baseline scores yet. Next: finish environment
-and assistant audit; commit protocol/case manifest before platform changes.
+- Frozen protocol/cases committed at c6af75c; safety fixes and baseline at ee28c3f.
+- Corrected original-platform zero-cost baseline: 3,528/4,608 checks (76.5625%).
+  Observation aliasing and invalid/wrong-actor state mutation fixed; new gate passes
+  4,608/4,608. Evidence in benchmarks/results/baseline and data/quality/preflight.
+- Paid initial planner baseline runs in session 2252, data/quality/planner-baseline,
+  shared ledger data/quality/aggregate.sqlite3. All calls guarded to Luna; $75 total,
+  development ceiling $60. 108 attempts, currently finishing. Never reset this DB.
+- Development exposed inconsistent benchmark questions (rotating partners with two
+  agents; message-only question with master communication toggle; endowment required
+  in environments where it is inactive). Correct/version these before a corrected
+  baseline; preserve initial attempts and do not count justified refusals as defects.
+- UI: neutral tokens, 208px sidebar, conversation toolbar/context, environment mechanics
+  workbench, validated browser-local reusable setups and direct configuration links.
+- Checks: 278 backend, 66 frontend tests, type checks/lint/build passed. Full browser
+  retest session 4425 after fixing content-width breakpoint and first-open condition
+  assertions; 56 tests. Detector ran once on changed targets: no findings.
+- Next: finish initial baseline, version corrected case specifications, strengthen
+  validity/calibration checks, record corrected baseline, then improve planner/analysis
+  and run repeated participants. Do not open held-out model results before final freeze.
+- uv executable crashes (jemalloc page size); use existing .venv/bin tooling. No global
+  install needed. Disposable UI server sessions 35161 (8091) and 31396 (5191); close at end.
+- Browser tab tab_5_f9b40002-edd9-471c-a028-00fd38eeaaf8 belongs to this task; tab_4 error
+  page also owned. Close when finished. UI source changes do not affect baseline digest.

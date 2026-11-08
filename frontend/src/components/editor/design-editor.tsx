@@ -43,6 +43,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api";
 import { changeEnvironment } from "@/lib/design";
 import { type Draft, removeDraft, writeDraft } from "@/lib/drafts";
+import { saveSetup } from "@/lib/setups";
 import type { Analysis, Catalog, Design, EnvironmentId } from "@/lib/types";
 import { money } from "@/lib/utils";
 
@@ -56,6 +57,8 @@ export function DesignEditor({
   planning,
   draftPath,
   draft,
+  initialStep = "question",
+  setupId,
 }: {
   initial: Design;
   catalog: Catalog;
@@ -66,12 +69,14 @@ export function DesignEditor({
   planning?: NonNullable<Analysis["output"]>["planning"];
   draftPath: string;
   draft?: Draft;
+  initialStep?: string;
+  setupId?: string | null;
 }) {
   const [design, setDesign] = useState<Design>(() => structuredClone(initial));
   const [agentDraftId] = useState(() => crypto.randomUUID());
   const [json, setJson] = useState(draft?.json ?? "");
   const [mode, setMode] = useState<"visual" | "json">(draft?.mode ?? "visual");
-  const [step, setStep] = useState("question");
+  const [step, setStep] = useState(initialStep);
   const [draftStatus, setDraftStatus] = useState(draft ? "Draft saved" : "");
   const lastSnapshot = useRef(JSON.stringify({ design, json, mode }));
   useEffect(() => {
@@ -86,6 +91,7 @@ export function DesignEditor({
     }
   }, [design, json, mode, draftPath]);
   const [error, setError] = useState("");
+  const [setupNotice, setSetupNotice] = useState("");
   const [pendingEnvironment, setPendingEnvironment] =
     useState<EnvironmentId | null>(null);
   const navigate = useNavigate();
@@ -123,7 +129,24 @@ export function DesignEditor({
       setError("");
     },
   });
-  const busy = save.isPending || validate.isPending;
+  const saveEnvironment = useMutation({
+    mutationFn: async () => {
+      const validated = await api<Design>("/design/validate", {
+        design: mode === "json" ? JSON.parse(json) : design,
+      });
+      const rules = catalog.environments.find(
+        (item) => item.key === validated.environment,
+      )?.rule_version;
+      if (!rules) throw new Error("Unknown environment rules.");
+      saveSetup(validated, rules, setupId ?? undefined);
+    },
+    onSuccess: () =>
+      setSetupNotice(
+        "Setup saved in this browser. Reuse or edit it from Environments.",
+      ),
+  });
+  const busy =
+    save.isPending || validate.isPending || saveEnvironment.isPending;
   function changeMode(value: string) {
     if (busy) return;
     if (value === "json") {
@@ -179,6 +202,30 @@ export function DesignEditor({
           </span>
         )}
       </PageHeading>
+      <div className="setup-actions">
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={busy}
+          onClick={() => {
+            setSetupNotice("");
+            saveEnvironment.mutate();
+          }}
+        >
+          {setupId ? "Update saved setup" : "Save reusable setup"}
+        </Button>
+        <span className="muted">
+          Keep these rules, roles and conditions for another experiment.
+        </span>
+      </div>
+      {setupNotice && (
+        <p role="status" className="muted">
+          {setupNotice}
+        </p>
+      )}
+      {saveEnvironment.error && (
+        <Alert variant="error">{saveEnvironment.error.message}</Alert>
+      )}
       {explanation && (
         <Disclosure className="disclosure design-explanation">
           <DisclosureTrigger>Protocol notes</DisclosureTrigger>

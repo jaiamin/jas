@@ -105,6 +105,7 @@ export const catalog: Catalog = {
       primary_metric: "sanction_rate",
       parameters: [],
       measures: ["sanction_rate"],
+      measure_definitions: {},
       rule_version: "3.0.0",
     },
   ],

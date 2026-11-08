@@ -227,12 +227,50 @@ function AgentConversation({
   }
   const blocked = busy || send.isPending || !settings.data;
   const disabled = blocked || !!unavailable;
+  const selectedStudy = studies.find(
+    (study) => context === `study:${study.id}`,
+  );
+  const selectedRun = runs.find((run) => context === `run:${run.id}`);
   return (
     <section
       className="agent-workspace"
       aria-label="Agent workspace"
       data-empty={!messages.length}
     >
+      <header className="agent-context-strip">
+        <div>
+          <strong>
+            {context === "new"
+              ? "Experiment design"
+              : (selectedStudy?.title ??
+                selectedRun?.study_title ??
+                "Research assistant")}
+          </strong>
+          <span>
+            {selectedRun
+              ? `${selectedRun.condition} · seed ${selectedRun.seed} · ${selectedRun.turn} recorded decisions`
+              : selectedStudy
+                ? `${selectedStudy.completed_runs} / ${selectedStudy.run_count} runs complete`
+                : context === "new"
+                  ? "A reviewed protocol before you spend on runs"
+                  : "Design studies and investigate recorded behavior"}
+          </span>
+        </div>
+        {(selectedStudy || selectedRun) && (
+          <Button variant="outline" size="sm" asChild>
+            <Link
+              to={
+                selectedRun
+                  ? `/runs/${selectedRun.id}`
+                  : `/studies/${selectedStudy?.id}`
+              }
+            >
+              View {selectedRun ? "run" : "experiment"}
+              <ArrowUpRight data-icon="inline-end" />
+            </Link>
+          </Button>
+        )}
+      </header>
       {messages.length ? (
         <MessageScrollerProvider
           autoScroll={busy}
@@ -295,6 +333,26 @@ function AgentConversation({
                   ? "What can we explore?"
                   : "What does the evidence show?"}
             </h1>
+            <p>
+              {context === "new"
+                ? "Describe the behavior you want to understand. We’ll work out the controls, measurements and limits."
+                : context === "general"
+                  ? "Turn a question into a controlled experiment, or connect a run to understand what happened."
+                  : "Separate what agents did from what they said. Compare outcomes, inspect decisions and choose your next test."}
+            </p>
+            {context === "general" && (
+              <div className="agent-entry-actions">
+                <Button asChild>
+                  <Link to="/agent?context=new">
+                    Design an experiment
+                    <ArrowUpRight data-icon="inline-end" />
+                  </Link>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link to="/environments">Explore environments</Link>
+                </Button>
+              </div>
+            )}
           </div>
           <AgentSuggestions
             context={context}
@@ -320,7 +378,11 @@ function AgentConversation({
               ref={composer}
               aria-label="Message Agent"
               placeholder={
-                context === "new" ? "Describe an experiment…" : "Ask anything…"
+                context === "new"
+                  ? "What behavior do you want to investigate?"
+                  : selectedStudy || selectedRun
+                    ? "Ask about the selected evidence…"
+                    : "Ask a research question…"
               }
               value={question}
               onChange={(event) => setQuestion(event.target.value)}

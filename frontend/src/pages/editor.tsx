@@ -14,6 +14,7 @@ import {
   readDraft,
   removeDraft,
 } from "@/lib/drafts";
+import { listSetups } from "@/lib/setups";
 import type { Analysis, Catalog, Design, StudyDetail } from "@/lib/types";
 
 class DraftReadError extends Error {}
@@ -47,6 +48,24 @@ export default function Editor() {
     refetchOnWindowFocus: false,
   });
   const catalog = useApi<Catalog>("/catalog");
+  const setupId = params.get("setup");
+  const setup = useQuery({
+    queryKey: ["setup", setupId],
+    enabled: !!setupId && !!catalog.data,
+    queryFn: async () => {
+      const saved = listSetups().find((item) => item.id === setupId);
+      if (!saved)
+        throw new Error("This saved setup no longer exists in this browser.");
+      const environment = catalog.data?.environments.find(
+        (item) => item.key === saved.environment,
+      );
+      if (!environment || saved.rules !== environment.rule_version)
+        throw new Error(
+          "This setup uses incompatible environment rules. Create a fresh setup.",
+        );
+      return api<Design>("/design/validate", { design: saved.design });
+    },
+  });
   const planId = params.get("plan");
   const studyId = params.get("study");
   const plan = useQuery({
@@ -87,20 +106,30 @@ export default function Editor() {
         )}
       </>
     );
-  if (catalog.error || plan.error || previous.error)
+  if (catalog.error || plan.error || previous.error || setup.error)
     return (
       <ErrorState
-        error={(catalog.error || plan.error || previous.error) as Error}
+        error={
+          (catalog.error ||
+            plan.error ||
+            previous.error ||
+            setup.error) as Error
+        }
         onRetry={() =>
           Promise.all(
-            [catalog, plan, previous]
+            [catalog, plan, previous, setup]
               .filter((query) => query.error)
               .map((query) => query.refetch()),
           )
         }
       />
     );
-  if (!catalog.data || draft.isPending || (studyId && !previous.data))
+  if (
+    !catalog.data ||
+    draft.isPending ||
+    (studyId && !previous.data) ||
+    (setupId && !setup.data)
+  )
     return <Loading />;
   if (draft.data?.error && !recoverDraft)
     return (
@@ -164,6 +193,7 @@ export default function Editor() {
     draft.data?.design ??
     plan.data?.output?.design ??
     previous.data?.design ??
+    setup.data ??
     catalog.data.templates.find((t) => t.id === params.get("template"))
       ?.design ??
     catalog.data.templates[0]?.design;
@@ -172,6 +202,10 @@ export default function Editor() {
     <DesignEditor
       key={draftPath}
       initial={initial}
+      setupId={setupId}
+      initialStep={
+        params.get("step") === "conditions" ? "conditions" : "question"
+      }
       catalog={catalog.data}
       studyId={studyId}
       planId={planId}
