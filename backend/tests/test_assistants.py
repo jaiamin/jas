@@ -472,3 +472,29 @@ def test_configured_assistant_model_is_used_without_substitution(runtime, monkey
         await assistant.close()
 
     asyncio.run(exercise())
+
+
+def test_turn_tool_preserves_observation_and_outcomes_without_duplicating_memory(runtime, design):
+    from agent_sim.assistants import TurnRequest
+
+    db, models, research, engine = runtime
+    rid = research.operational_runs(research.save_design(design))[0].id
+
+    async def exercise():
+        engine.start(rid)
+        await engine.executions[rid].task
+        assistant = Assistants(db, research, models)
+        full = research.evidence(rid, 2)
+        _, compact = assistant._requested_evidence(
+            TurnRequest(kind="turn", run_id=rid, turn=2), {rid: 2}
+        )
+        assert compact["observation"] == full["observation"]
+        assert compact["events"] == full["events"]
+        assert compact["decision"] == full["decision"]
+        assert compact["checkpoint"]["balances"] == full["checkpoint"]["balances"]
+        assert set(compact["omitted_checkpoint_fields"]) == {"history", "notes", "experiences"}
+        assert "experiences" not in compact["checkpoint"]
+        assert research.evidence(rid, 2) == full
+        await assistant.close()
+
+    asyncio.run(exercise())

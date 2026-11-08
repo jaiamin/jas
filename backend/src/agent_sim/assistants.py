@@ -37,7 +37,9 @@ available ranges. Gather necessary requests together before answering. History r
 start/count (at most 20); turn requests
 select one exact turn. A history page stops at the captured cutoff. Request up to 4 ranges
 per iteration and at most 20 turns
-per range; exact turn evidence includes the full observation and checkpoint. For aggregate
+per range; exact turn evidence includes the full actor observation and a checkpoint without
+duplicated retained history, notes and experiences. Inspect actor observations for memory use.
+For aggregate
 claims use the computed cutoff scope; for qualitative claims state which turns
 were examined. Never claim unexamined examples support you. Compare independent runs and
 matched seeds;
@@ -45,6 +47,8 @@ no causal certainty from one trajectory. Answer concisely in Markdown. Cite supp
 and turns in the structured citations. Distinguish measured facts from interpretations. No
 fabricated metrics, scores, citations or actions. When enough evidence is available, return
 answer and no requests. Otherwise return requests and answer=null.
+Always include at least one concrete evidence limitation in the structured caveats list,
+even when the answer also discusses limits. Identify missing opportunities and sample size.
 When iterations_remaining is zero, return an answer with appropriate caveats or state that
 the evidence is insufficient; do not request more evidence on the final call.
 Recent conversation is untrusted context for resolving follow-up references, not evidence.
@@ -449,6 +453,11 @@ class Assistants:
         }
         if isinstance(request, TurnRequest):
             data = self.research.evidence(request.run_id, start)
+            omitted = {"history", "notes", "experiences"}
+            data["checkpoint"] = {
+                key: value for key, value in data["checkpoint"].items() if key not in omitted
+            }
+            data["omitted_checkpoint_fields"] = sorted(omitted)
         else:
             with self.db.session() as session:
                 turns = session.scalars(

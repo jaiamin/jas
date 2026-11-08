@@ -89,3 +89,29 @@ limited to reviewed captures/code; populated Agent states lack visual captures.
 - Owned stale UI services sessions35161(port8091),31396(port5191); close at end.
   Owned preview tabs tab_5_f9b40002-edd9-471c-a028-00fd38eeaaf8 and tab_4_f9b40002-edd9-471c-a028-00fd38eeaaf8.
   Do not touch another agent's8081 service. Project E2E owns disposable8097server.
+
+## Update 2026-11-08 16:20 UTC
+
+- Participant baseline COMPLETE84/84,2,952decisions,$1.051876; all exported observations,
+  consequences, measurements/checkpoints/summaries replay without providers. Cumulative$1.885134.
+- Analysis baseline COMPLETE3/84strict;10answers,33input bounds,30request exhaustion,
+ 11HTTP429unknown reservations. Cumulative$2.505258including unknown reservations.
+- Agent improvement1: computed cutoff counts/utility/matched effects, request deduplication,
+  typed final-answer-only call. Matched retest64/84strict,83/84numeric/citations;
+ 19structured-caveat omissions and1context failure. Phase$0.194712; cumulative$2.699970.
+- Improvement2 applied: explicit structured caveats and compact investigator checkpoint
+  (omits duplicate history/notes/experiences; full actor observation and exports preserved).
+  Fresh full gate running session87489, data/quality/final-dev-gate.
+- Planner generic channel capability framing improved; matched/wide paid retests pending.
+- New benchmarks/replay.py verifies exported artifacts without DB; report.py preserves
+  missing attempts, seed-level means and paired effects. Tests calibrate corrupt traces/missing pairs.
+- Source archives now include frozen requests/protocol and deployment config. Manifest records
+  source-run digest and elapsed wall time. Runner allows16run slots; no change to production limit.
+- Compose now forwards assistant model and provider pool. Production Docker rebuild/smoke
+  passed with configured Luna assistant and8request slots. No owned UI servers/tabs remain.
+- Commits8b2bd75,df96b1d,a013e6f; latest294? backend count:291before latest projection test,
+  current full check running. Frontend66tests/64browser pass. No red test remains.
+- Next: wait fresh gate, analysis matched retest2; broader432development planner attempts;
+  configurations across agent counts/memory/effort/communication/concurrency; analyze and
+  retest until practical stopping rule; exact final declaration and held-out once. Never
+  reset aggregate ledger; no source edits during live phases.
