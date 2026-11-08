@@ -286,7 +286,7 @@ def test_unavailable_required_construct_is_a_clear_decline_before_candidate_call
     from agent_sim.planning import Planner, StudyBrief
 
     db, llm, research, _ = runtime
-    question = "Require persistent food consumption."
+    question = "Require individually calibrated metabolism."
     with db.session.begin() as session:
         row = Analysis(purpose="design", question=question, cutoffs={})
         session.add(row)
@@ -310,10 +310,10 @@ def test_unavailable_required_construct_is_a_clear_decline_before_candidate_call
             research_query=None,
             requirements=[
                 Requirement(
-                    source="persistent food consumption",
+                    source="individually calibrated metabolism",
                     capability="unavailable",
                     mapping="missing",
-                    explanation="No world enforces food consumption or starvation.",
+                    explanation="No world implements individually calibrated metabolism.",
                 )
             ],
         )
@@ -321,5 +321,69 @@ def test_unavailable_required_construct_is_a_clear_decline_before_candidate_call
     monkeypatch.setattr(llm, "generate", generate)
     result = asyncio.run(Planner(db, research, llm).run(key, question))
     assert not result["supported"] and result["design"] is None
-    assert "food consumption" in result["explanation"]
+    assert "metabolism" in result["explanation"]
     assert calls == [StudyBrief]
+
+
+@pytest.mark.parametrize("repair", [True, False])
+def test_direct_unavailable_mapping_gets_one_correction_and_never_a_false_decline(
+    runtime, design, monkeypatch, repair
+):
+    import json
+
+    from agent_sim.db import Analysis
+    from agent_sim.planning import Candidate, DesignReview, Planner, StudyBrief
+
+    db, models, research, _ = runtime
+    question = "Compare contributions"
+    with db.session.begin() as session:
+        row = Analysis(purpose="design", question=question, cutoffs={})
+        session.add(row)
+        session.flush()
+        key = row.id
+    scopes, candidates, prompts = 0, 0, []
+
+    async def generate(output, **kwargs):
+        nonlocal scopes, candidates
+        prompts.append(json.loads(kwargs["prompt"]))
+        if output is StudyBrief:
+            scopes += 1
+            return StudyBrief(
+                supported=True,
+                explanation="A pilot",
+                operationalization="Contribution choices",
+                size_rationale="One descriptive group",
+                agents=len(design.profiles),
+                conditions=1,
+                seeds=1,
+                repetitions=1,
+                rounds=design.rounds,
+                research_query=None,
+                requirements=[
+                    Requirement(
+                        source="contributions",
+                        capability="contributions" if repair and scopes == 2 else "unavailable",
+                        mapping="direct",
+                        explanation="Contribution choices are directly supported.",
+                    )
+                ],
+            )
+        if output is Candidate:
+            candidates += 1
+            return Candidate(explanation="Protocol", design=design)
+        return DesignReview(issues=[])
+
+    monkeypatch.setattr(models, "generate", generate)
+    if repair:
+        result = asyncio.run(Planner(db, research, models).run(key, question))
+        assert result["supported"] and candidates == 1
+        assert result["planning"]["reviews"][0]["kind"] == "scope_validation"
+        assert prompts[1]["scope_feedback"]["inconsistent"] == ["contributions"]
+        assert prompts[1]["scope_candidate"]["requirements"][0]["capability"] == "unavailable"
+    else:
+        with pytest.raises(ValueError, match="inconsistent capability"):
+            asyncio.run(Planner(db, research, models).run(key, question))
+        assert candidates == 0
+        with db.session() as session:
+            assert len(session.get_one(Analysis, key).output["planning"]["reviews"]) == 2
+    assert scopes == 2

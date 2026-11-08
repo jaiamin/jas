@@ -339,18 +339,39 @@ class Planner:
             unquoted = [
                 r.source for r in brief.requirements if r.source.casefold() not in user_text
             ]
-            if brief.requirements and not unquoted:
-                break
-            feedback = [
-                "Map essential mechanics to actual contiguous user phrases; "
-                "preserve all requested constructs while correcting the quotations."
+            inconsistent = [
+                r.source
+                for r in brief.requirements
+                if r.capability == "unavailable" and r.mapping == "direct"
             ]
+            if brief.requirements and not unquoted and not inconsistent:
+                break
+            feedback = []
+            if not brief.requirements or unquoted:
+                feedback.append(
+                    "Map essential mechanics to actual contiguous user phrases; "
+                    "preserve all requested constructs while correcting the quotations."
+                )
+            if inconsistent:
+                feedback.append(
+                    "The unavailable capability cannot have a direct mapping. Recheck the "
+                    "catalog: choose the supported mechanic, or declare an actual missing "
+                    "capability. Keep reporting constraints in operationalization."
+                )
             planning["reviews"].append({"kind": "scope_validation", "issues": feedback})
             self.progress(key, "scoping", planning=planning)
             if attempt:
-                raise ValueError("Question mapping still lacks quoted essential constructs")
+                raise ValueError(
+                    "Question mapping still has inconsistent capability declarations"
+                    if inconsistent and brief.requirements and not unquoted
+                    else "Question mapping still lacks quoted essential constructs"
+                )
             context["scope_candidate"] = brief.model_dump()
-            context["scope_feedback"] = {"issues": feedback, "unquoted": unquoted}
+            context["scope_feedback"] = {
+                "issues": feedback,
+                "unquoted": unquoted,
+                "inconsistent": inconsistent,
+            }
         gaps = {
             environment: requirement_issues(environment, brief.requirements)
             for environment in CATALOG
