@@ -98,7 +98,7 @@ Public provider traces must omit reasoning/signatures. Never bypass secret scann
 ## Current task: custom environment composition
 
 Branch `feat/environment-composition`, based on PR #7 at aa2aee0; never merge either PR.
-PR #7 is unwatched; do not relink/watch/list it. Publication target: one draft PR stacked on feat/experiment-validity; URL in the thread.
+PR #7 is unwatched; do not relink/watch/list it. Draft PR: https://github.com/jaiamin/ass/pull/8 (base feat/experiment-validity). Code checkpoint cf7c8a1; linked in T3, unmerged.
 User approved autonomous composition, editable/deletable custom environments and testing.
 Implementation commits: f4ca72d, d83495b, 12f9d6b, 2c9e6e0, e17e54a, 939eab8; subsequent passive-audience warning is covered below.
 
@@ -164,9 +164,9 @@ Latest owned preview: session43417, PID109011, 0.0.0.0:8080, preserved database
 `data/quality/manual-preview.sqlite3`; final source loaded; health, catalog, library, SPA and both new preflight outputs verified.
 Leave this requested preview running. Disposable browser/backend/container services closed.
 
-Publication: secret-scan all task commits, push task branch, and create one draft PR with base
-feat/experiment-validity; immediately T3-link and handle CI. If waiting on CI, watch/end; unwatch
-before final handoff. No more paid trials required. No unrun final14-case, held-out or insight-
+Publication: all task commits secret-scanned, task branch pushed and draft PR8 linked.
+CI queued/in progress on first read, no comments/reviews. Next: handle CI via T3 watch;
+watch/end while pending and unwatch before final handoff. No more paid trials required. No unrun final14-case, held-out or insight-
 quality claim. Never merge/main-push. Final code archive/manifest is data/quality/composition-final-code;
 its hash is recorded separately from the last model-evaluated source in composition-results.json.
 Limits: bounded resource primitives, uniform needs, one action per agent/round; no arbitrary
