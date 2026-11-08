@@ -78,7 +78,13 @@ test("saved conversations resume after reload and new chats keep separate histor
   page,
 }) => {
   await page.route("**/api/settings", (route) =>
-    route.fulfill({ json: { providers: { openai: true } } }),
+    route.fulfill({
+      json: {
+        providers: { openai: true },
+        planner_model: "openai:gpt-6.1-sol",
+        assistant_model: "openai:gpt-6.1-sol",
+      },
+    }),
   );
   const messages: object[] = [];
   const submitted: object[] = [];
@@ -183,7 +189,13 @@ for (const theme of ["light", "dark"]) {
     request,
   }) => {
     await page.route("**/api/settings", (route) =>
-      route.fulfill({ json: { providers: { openai: true } } }),
+      route.fulfill({
+        json: {
+          providers: { openai: true },
+          planner_model: "openai:gpt-6.1-sol",
+          assistant_model: "openai:gpt-6.1-sol",
+        },
+      }),
     );
     const catalog = await (await request.get("/api/catalog")).json();
     const { id } = await (
@@ -350,7 +362,13 @@ test("creation stays in chat and hands a reviewed protocol to the editor", async
   let message: object | undefined;
   let submitted: object | undefined;
   await page.route("**/api/settings", (route) =>
-    route.fulfill({ json: { providers: { openai: true } } }),
+    route.fulfill({
+      json: {
+        providers: { openai: true },
+        planner_model: "openai:gpt-6.1-sol",
+        assistant_model: "openai:gpt-6.1-sol",
+      },
+    }),
   );
   await page.route("**/api/chats", (route) => {
     if (route.request().method() !== "POST")
@@ -417,7 +435,13 @@ test("submission errors keep the draft and missing providers disable sending", a
 }) => {
   let available = true;
   await page.route("**/api/settings", (route) =>
-    route.fulfill({ json: { providers: { openai: available } } }),
+    route.fulfill({
+      json: {
+        providers: { openai: available },
+        planner_model: "openai:gpt-6.1-sol",
+        assistant_model: "openai:gpt-6.1-sol",
+      },
+    }),
   );
   await page.route("**/api/chats", (route) =>
     route.request().method() === "POST"

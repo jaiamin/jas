@@ -292,7 +292,7 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
 
 test("environment mechanics lead to editable reusable setups", async ({
   page,
-}) => {
+}, testInfo) => {
   await page.goto("/environments");
   await expect(
     page.getByRole("heading", { name: "What agents observe" }),
@@ -339,6 +339,18 @@ test("environment mechanics lead to editable reusable setups", async ({
     page.getByRole("link", { name: "Revised recovery", exact: true }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Remove", exact: true }).click();
+  await expect(page.getByRole("alertdialog")).toContainText("Revised recovery");
+  await page.screenshot({
+    path: testInfo.outputPath("setup-removal.png"),
+    fullPage: false,
+    animations: "disabled",
+  });
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await expect(
+    page.getByRole("link", { name: "Revised recovery", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Remove", exact: true }).click();
+  await page.getByRole("button", { name: "Remove setup", exact: true }).click();
   await expect(
     page.getByRole("link", { name: "Revised recovery", exact: true }),
   ).toHaveCount(0);

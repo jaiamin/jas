@@ -25,6 +25,26 @@ for (const width of [390, 834, 1280, 1440]) {
             () => document.documentElement.scrollWidth <= innerWidth,
           ),
         ).toBe(true);
+        if (route === "environments") {
+          const index = page.getByRole("tablist", {
+            name: "Environments",
+            exact: true,
+          });
+          await expect(index).toHaveAttribute(
+            "aria-orientation",
+            width <= 700 ? "horizontal" : "vertical",
+          );
+          const first = page.getByRole("tab", {
+            name: "Shared commons",
+            exact: false,
+          });
+          await first.focus();
+          await first.press(width <= 700 ? "ArrowRight" : "ArrowDown");
+          await expect(
+            page.getByRole("tab", { name: "Trust exchange", exact: false }),
+          ).toBeFocused();
+          await first.click();
+        }
         await page.screenshot({
           path: testInfo.outputPath(`${route}-${theme}-${width}.png`),
           fullPage: true,

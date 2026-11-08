@@ -3,11 +3,22 @@ import { ArrowRight, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Alert, Badge } from "@/components/ui/data";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useApi } from "@/lib/api";
-import { listSetups, removeSetup } from "@/lib/setups";
+import { listSetups, removeSetup, type Setup } from "@/lib/setups";
 import type { Catalog, EnvironmentId } from "@/lib/types";
 import { label } from "@/lib/utils";
 
@@ -58,6 +69,8 @@ const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
   };
 
 export default function Environments() {
+  const horizontal = useIsMobile(701);
+  const [pendingRemoval, setPendingRemoval] = useState<Setup | null>(null);
   const [storageError, setStorageError] = useState("");
   const catalog = useApi<Catalog>("/catalog");
   const setups = useQuery({
@@ -82,7 +95,7 @@ export default function Environments() {
       ) : (
         <Tabs
           className="environment-workbench"
-          orientation="vertical"
+          orientation={horizontal ? "horizontal" : "vertical"}
           value={selected}
           onValueChange={(value) =>
             setParams({ environment: value }, { replace: true })
@@ -219,15 +232,7 @@ export default function Environments() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => {
-                      try {
-                        removeSetup(item.id);
-                        setStorageError("");
-                        void setups.refetch();
-                      } catch (error) {
-                        setStorageError((error as Error).message);
-                      }
-                    }}
+                    onClick={() => setPendingRemoval(item)}
                   >
                     Remove
                   </Button>
@@ -237,6 +242,41 @@ export default function Environments() {
           </div>
         )}
       </section>
+      <AlertDialog
+        open={pendingRemoval !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingRemoval(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Remove “{pendingRemoval?.title}”?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This removes the reusable setup from this browser. Saved
+              experiments and their evidence remain available.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!pendingRemoval) return;
+                try {
+                  removeSetup(pendingRemoval.id);
+                  setStorageError("");
+                  void setups.refetch();
+                } catch (error) {
+                  setStorageError((error as Error).message);
+                }
+              }}
+            >
+              Remove setup
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

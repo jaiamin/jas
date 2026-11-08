@@ -122,6 +122,7 @@ export interface Result {
   metric: string;
   mean: number | null;
   runs: number;
+  seeds: number;
   interval: number[] | null;
   method: string;
 }
@@ -336,7 +337,8 @@ export interface Analysis {
   run_id: string | null;
 }
 export interface Settings {
-  planner_model?: string;
+  planner_model: string;
+  assistant_model: string;
   providers: Record<string, boolean>;
   models: {
     id: ModelId;
@@ -348,6 +350,7 @@ export interface Settings {
   usage: Usage;
   storage: string;
   concurrent_runs: number;
+  concurrent_requests: number;
   mode: string;
 }
 export interface Annotation {

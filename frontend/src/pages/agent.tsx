@@ -184,8 +184,11 @@ function AgentConversation({
     }
   }, [draftKey, question]);
   const settings = useApi<Settings>("/settings");
-  const plannerModel = settings.data?.planner_model ?? "openai:gpt-6.1-sol";
-  const provider = context === "new" ? plannerModel.split(":")[0] : "openai";
+  const plannerModel = settings.data?.planner_model ?? "";
+  const assistantModel = settings.data?.assistant_model ?? "";
+  const provider = (context === "new" ? plannerModel : assistantModel).split(
+    ":",
+  )[0];
   const unavailable = settings.data?.providers[provider] === false;
   const busy = messages.some((message) => message.status === "pending");
   const client = useQueryClient();
@@ -306,7 +309,7 @@ function AgentConversation({
                         settings.data?.providers[
                           row.purpose === "design"
                             ? plannerModel.split(":")[0]
-                            : "openai"
+                            : assistantModel.split(":")[0]
                         ] === false
                       }
                       onRetry={() =>
