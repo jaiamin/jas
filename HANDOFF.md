@@ -1,72 +1,49 @@
-# JAS evaluation handoff
+# JAS handoff
 
-## Acceptance and current state
+## Current state
 
-Implementation and evaluation are complete. Only publication and the final reply remain.
+Implementation, frozen evaluation and OSS benchmark cleanup are complete on
+`feat/rigorous-evaluation`; existing draft PR: https://github.com/jaiamin/ass/pull/6.
+Cleanup keeps 22 files under 0.5 MB: reusable harness, frozen dataset/families, protocol,
+review, original final declaration and four compact result documents. Generated artifacts
+are ignored; every historical file was archived and byte-verified before removal.
+Historical evidence remains at commit `a2ce6ba940398ca12b2c8baba25787e0d43f5c10` and
+`data/quality/archive-a2ce6ba/benchmarks/`. Recovery/replay commands are in the results report.
+No frozen source/test/prompt/case/scorer changed; source/suite hashes still match.
 
-- Replaced obsolete benchmarks with 336 explicit cases across 28 reviewed families:
-  18 development / 10 held-out, 288 supported / 48 unsupported. No compatibility runner.
-- Validated equations, adversarial scripts, solvability, privacy, memory, channels and replay.
-- Fixed observation isolation, action atomicity, Agent evidence/calculations/tool scope and costs.
-- Redesigned experiment management, environment setups and the contextual Agent workspace.
-- Completed baselines, iterations, configurations, stability and held-out evaluation once.
-- No source, test, prompt, case or scorer changed after final freeze or against held-out results.
-- No paid process, owned browser tab, UI server or smoke container remains active.
+Cleanup checks passed: 302 backend tests; Ruff formatting/lint, ty, diff checks; complete
+5,208-check validity gate, 336 privacy assertions and five disclosure witnesses; documented
+archive replay of 96 runs / 3,692 decisions and exact regenerated comparison equality;
+local documentation links, JSON parsing, artifact ignore rules and secret scanning.
+Frontend rebuilt for the requested manual preview. No new paid evaluation requests.
 
-## Final checkpoint and evidence
+User requested the app left running on port 8080. Uvicorn PID 65794 (exec session 96698),
+0.0.0.0:8080, fresh dedicated database `data/quality/manual-preview.sqlite3`, normal `.env`
+provider configuration. Health, entry assets and experiment/environment/Agent routes passed
+HTTP checks. Leave it running for the user; do not touch other sessions/services.
 
-Freeze commit: 53f42e5. Production commit: 8b3e77d.
-Source: 7f2a136a2d71124fc5b962fb0fde3f5b5bd77de35453e7a63f04d22a2a69997a
-Suite: c05f3f353bcd6be3aeba94b145517e7b2e935907bbe1914b09d3f1bac4d3a8ff
-Exact declaration/configurations: benchmarks/final-checkpoint.json and heldout-runs.json.
-Report: benchmarks/results/REPORT.md. Score history, comparisons, traces and all failures retained.
+The existing draft PR is the review target; do not create another PR or merge.
+Remote CI for the cleanup has not yet been observed.
 
-- Original identical invariant checks: 3,528/4,608 → 4,608/4,608. Expanded gate: 5,208/5,208,
-  plus 336 privacy assertions and five disclosure witnesses.
-- Valid matched planner: 101/102 → 102/102. Wider composed development: 432/432.
-  Invalid original baseline and corrected requests are never credited as platform gains.
-- Analysis: 3/84 → 64/84 → 84/84, then 80/84 regression, scoped-tool fix and 83/84.
-  Larger teams: 65/72 → 72/72. Fresh stability: 84/84 and 83/84; utility error retained.
-- Incentive probes: 4/12 → 4/12 instruction-only → 12/12 calculator; confirmations 12/12.
-- Held-out: planner 206/240 (supported 158/192, unsupported 48/48), participants 96/96,
-  strict analysis 96/96. All 34 planner failures remain. Post-hoc audit does not adjust scores.
-- Independent export replay: 576/576 runs and 21,720 decisions, zero model calls.
-- Cost: $13.608157 charged/reserved of $75; $13.415183 known charges and $0.192974 for
-  11 unknown HTTP 429 reservations. All 26,688 calls use Luna; zero pending requests,
-  missing/duplicate public IDs or ledger mismatches. Canonical ledger was NEVER reset:
-  data/quality/aggregate.sqlite3. No further model spending is needed.
-- Checks: 302 backend, 66 frontend, 65 browser tests; Ruff formatting/lint, ty, Biome,
-  production build, Actionlint. Extracted 207-file archive installs/tests/builds independently
-  and passes keyless non-root smoke. Source archive and runtime versions are published.
+## Frozen evaluation record
 
-## Remaining steps
+Freeze commit: `53f42e5`; production fix commit: `8b3e77d`.
+Source: `7f2a136a2d71124fc5b962fb0fde3f5b5bd77de35453e7a63f04d22a2a69997a`.
+Suite: `c05f3f353bcd6be3aeba94b145517e7b2e935907bbe1914b09d3f1bac4d3a8ff`.
+336 synthetic cases, 28 author-reviewed families (18 development / 10 held-out).
+Held-out: planner 206/240; participants 96/96; strict analysis 96/96. No post-held-out tuning.
+Independent replay: 576/576 runs, 21,720 decisions. All failed iterations remain recoverable.
+26,688 Luna calls: $13.608157 charged/reserved of $75; 11 unknown reservations retained.
+Canonical ledger: `data/quality/aggregate.sqlite3`. Never reset it. No further model spending.
+Original verification: 302 backend, 66 frontend, 65 browser tests; lint/types/build,
+archive Docker smoke and archive-aware secret scan passed.
 
-1. [complete] Archive-aware Gitleaks: zero findings across 2.42 GB. No exclusions or bypasses.
-2. Commit final docs/results, push task branch and create ONE draft PR.
-3. NEXT TOOL CALL after push/creation must link_pull_request with the full PR URL.
-4. html_render the already previewed scorecard before final. HTML is in functions store
-   jas_scorecard_html, or benchmarks/results/scorecard.html. Preview at 390px passed,
-   contentHeight 809, no console errors. Do not rerun the completed design detector/reviewer.
-5. Concise final: PR/report links, measured results, cost/checks and material limitations.
-   Last one or two lines state risks/skips. Never merge or claim unobserved remote CI success.
+## Constraints and limits
 
-## Constraints and limitations
-
-User is away: no questions. Ponytail full active. No new subagents. Linux Docker Sandbox,
-/home/agent/workspace, branch feat/rigorous-evaluation from origin/main 1977f3f. Other
-worktrees and another session's 8081 service are untouched. Task push and one draft PR authorized.
-System uv crashes; use .tools/uv-0.13.7.data/scripts/uv if needed. No further source edits.
-
-Gitleaks previously stopped publication for two opaque thinking signatures matching token rules.
-No matched values were printed. Public historical traces omit ALL thinking parts; original/
-published hashes are retained. Production filters thinking at persistence while preserving
-observable outputs, token accounting and raw in-memory messages. Local originals/ledger remain.
-Never suppress scans or publish private reasoning. Earlier archives need recorded git
-checkpoints for omitted UI metadata; the verified final archive contains those inputs.
-
-No omnibus quality/morality score or human/intent/weight-learning/global-optimum claim.
-Specs/tests/code share an author. Three heterogeneous seed blocks give weak uncertainty;
-larger teams trade rounds for agents. Held-out failures expose missing truth-redraw metadata
-and ambiguous bundled memory contrasts. Qualitative answers still have imprecise budget and
-memory-isolation wording. Strict numerical/citation compliance does not certify useful insight.
-All remaining weaknesses are reported without post-held-out tuning.
+No questions/new agents/paid calls. Never merge, push main or rewrite published history.
+System `uv` crashes; use `.tools/uv-0.13.7.data/scripts/uv` or installed `.venv` tools.
+Public historical traces omit all thinking parts/signatures; no secret-scan bypasses.
+Known limits: author-correlated synthetic specs; three heterogeneous blocks give weak
+uncertainty; larger teams trade rounds for agents; missing truth-redraw planner metadata,
+ambiguous bundled memory comparisons and occasional narrative errors. Strict numerical
+compliance does not certify useful insight, human validity, intent or weight learning.

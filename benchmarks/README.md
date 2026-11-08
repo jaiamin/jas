@@ -1,89 +1,81 @@
-# Evaluation
+# JAS evaluation
 
-The replacement suite has **336 unique frozen requests across 28 reviewed families**,
-with 18 development families and 10 held-out families. It evaluates experiment
-identification, deterministic instrument validity, execution and observable behavior.
-See [predeclared protocol](protocol.md), [family specifications](families.json), [scenario review](REVIEW.md) and
-[results](results/). The initial inconsistent specification and its failures remain
-archived; it is not used as the improvement baseline.
+336 frozen synthetic cases across 28 author-reviewed families test experiment design,
+environment validity, participant execution and observable behavior. There are 18 development
+and 10 held-out families across seven rule-based worlds. This is a diagnostic benchmark;
+passing it does not establish human realism, intent or useful scientific insight.
+
+| Read or reuse | Entry point |
+| --- | --- |
+| Scenario definitions and frozen requests | [families.json](families.json), [quality-cases.jsonl](quality-cases.jsonl) |
+| Measurement contracts and research sources | [protocol](protocol.md), [scenario review](REVIEW.md) |
+| Independent equations, scripts and adversarial checks | `oracles.py`, `probes.py`, `validity.py` |
+| Real API trials and scoring | `evaluate.py`, `quality.py`, `analysis.py`, `incentives.py` |
+| Export replay and paired summaries | `replay.py`, `report.py` |
+| Published results and caveats | [report](results/REPORT.md), [limitations](results/LIMITATIONS.md) |
+
+## Run without spending
+
+From the repository root, using the [normal development setup](../docs/DEVELOPMENT.md):
 
 ```sh
 uv sync --frozen
+uv run pytest
 uv run python -m benchmarks.validity --output data/quality/preflight
-uv run python -m benchmarks.evaluate --live --checkpoint baseline \
-  --variants 0 4 8 --repetitions 2 --output data/quality/planner-baseline
+```
+
+The complete gate checks independent payoffs, solvability, invalid-action atomicity,
+observation isolation, sealed choices, privacy, memory and deterministic per-turn replay.
+Scripted witnesses cover communication that helps, hurts or makes no difference. They
+validate the instrument; they are not production participants or preferred model outcomes.
+
+## Run model trials
+
+Set `OPENAI_API_KEY` in the root `.env`. These commands spend real credits and require the
+fresh gate above. Every request uses `openai:gpt-6-luna`. The persistent
+`data/quality/aggregate.sqlite3` ledger caps aggregate spending at $75, including unknown
+reservations; development stops at $60, reserving $15 for held-out work. Never reset the
+ledger or run competing evaluators. Use a new output directory for each checkpoint.
+
+```sh
+uv run python -m benchmarks.evaluate --live --checkpoint planner \
+  --variants 0 4 8 --repetitions 2 --output data/quality/planner
 uv run python -m benchmarks.evaluate --live --kind participants --checkpoint participants \
   --families public-goods-incentives reciprocal-surplus task-load independent-oversight \
   shared-evidence shrinking-surplus renewable-growth --variants 0 4 8 --repetitions 2 \
-  --concurrency 8 --request-concurrency 8 --output data/quality/participants
+  --output data/quality/participants
 uv run python -m benchmarks.evaluate --live --kind analysis --checkpoint analysis \
   --source-runs data/quality/participants/attempts.jsonl.gz \
   --families public-goods-incentives reciprocal-surplus task-load independent-oversight \
   shared-evidence shrinking-surplus renewable-growth --variants 0 4 8 --repetitions 2 \
-  --concurrency 8 --request-concurrency 8 --output data/quality/analysis
+  --output data/quality/analysis
 ```
 
-The complete fresh gate must pass before every paid phase. It checks mathematical
-payoffs, per-turn JSON replay, action atomicity, detached observations, sealed choices,
-privacy and memory, plus communication that helps, hurts or is ignored under explicitly
-scripted strategies. Scripted probes are instruments, never participant fallbacks.
+`--help` lists configuration controls. Each participant arm gets 48 decisions; more agents
+trade rounds for team size. Memory/communication ablations cannot erase the case's intended
+intervention. Analysis checks independently counted facts and cutoff-scoped citations;
+qualitative usefulness still needs independent review. Failures stay in the denominator.
 
-All paid calls are `openai:gpt-6-luna`, guarded at the actual provider boundary. One
-persistent `data/quality/aggregate.sqlite3` ledger enforces the **$75 aggregate cap**,
-including failures and unknown reservations. Development cannot exceed $60; $15 is
-reserved for final evaluation. Do not reset this database or run competing evaluators.
-`--live` acknowledges paid work. Fresh repeats get new output directories; no hidden retries.
-
-Each participant comparison preserves both conditions in one immutable experiment.
-Each arm has the same 48-decision allowance, response-token limit and dollar ceiling.
-Bargaining or completed tasks can stop early. More agents trade against rounds; this
-is a fixed-resource configuration comparison, not an isolated count effect. Memory
-ablations cannot erase a case's intended memory factor; the same applies to communication.
-
-Analysis is tested against independently counted trace facts and captured-cutoff citations.
-Its narrative insight quality remains reviewable qualitative evidence, not a flattering
-LLM-judge score. Missing opportunities never count as perfect behavior.
-
-Outputs include all attempts, provider calls, source/suite hashes, costs and replay evidence.
-Held-out evaluation requires a matching declared `final-checkpoint.json` and writes an
-exclusive attempt marker before spending. It is never silently repeated after interruption.
-
-The application remains responsible for providers, persistence, error handling and atomic
-budget reservations. The harness uses its real API and engine; no evaluation framework or
-compatibility runner remains in production or development dependencies.
-
-Replay and summarize exported participant attempts without paid calls:
+Outputs contain attempts, observable provider calls, source snapshots, hashes, costs and
+summaries. All generated files belong in ignored `data/quality/`, outside this directory.
+Replay and summarize participant exports without credentials or model calls:
 
 ```sh
-uv run python -m benchmarks.replay benchmarks/results/participant-baseline/attempts.jsonl.gz
-uv run python -m benchmarks.report benchmarks/results/participant-baseline/attempts.jsonl.gz \
+uv run python -m benchmarks.replay data/quality/participants/attempts.jsonl.gz
+uv run python -m benchmarks.report data/quality/participants/attempts.jsonl.gz \
   --output data/quality/participant-comparisons.json
 ```
 
-Replay verifies observations, actors, consequences, measurements, checkpoints and final
-behavior summaries. Missing traces are counted explicitly. Use the checkpoint's source
-archive and frozen dataset when reproducing a historical rule contract. Model requests
-cannot be reproduced bit-for-bit; replay uses the saved model decisions.
+## Frozen results and reuse
 
-Current source archives include frontend build metadata, browser/server fixtures and backend
-correctness tests. Extract into a fresh directory, then use the committed lockfiles and normal
-build/check commands. The `pythonpath` pytest setting makes both `pytest` and `python -m pytest`
-collect the benchmark calibration tests. The final archive is checked by running its tests and
-building its Docker image outside the working checkout. Earlier archives retain evaluated
-backend/benchmark source but need their recorded git checkpoint for omitted UI build metadata.
+[final-checkpoint.json](final-checkpoint.json) is the original held-out declaration, retained
+verbatim. `--split heldout` checks source/suite hashes and exact configuration, then creates
+an exclusive attempt marker beside the ledger before spending. Do not remove markers to
+repeat a published score. These families are now public; a future claim about unseen
+families needs a new reviewed split and a new declaration before opening its results.
 
-Published provider traces retain observable outputs and usage; all thinking parts, including
-opaque signatures, are omitted. The publication audit records original/published hashes for
-historical traces. This does not change scored decisions, observable answers or token costs.
-The local spending ledger is retained. See [publication audit](results/trace-publication.json).
-
-The [score history](results/score-history.json) preserves comparable checkpoints and failed
-iterations. To regenerate the cross-configuration contrasts from every published participant
-phase, run from the repository root:
-
-```sh
-PYTHONPATH=. uv run python benchmarks/results/reproduce-configurations.py
-```
-
-The report keeps intended treatment effects separate from cross-configuration effects.
-All seed-block values, weak uncertainty intervals and attempted denominators remain available.
+Only the compact [report](results/REPORT.md), [score history](results/score-history.json),
+[cost audit](results/aggregate-cost.json) and [limitations](results/LIMITATIONS.md) are kept
+here. Full historical traces, source bundles and one-off commands are recoverable at the
+immutable evidence commit; see the report's archive/replay instructions. Saved decisions
+replay exactly with their matching rules; fresh model responses are stochastic.

@@ -23,3 +23,10 @@ frontend/test-results/
 .DS_Store
 .idea/
 .vscode/
+
+# Publish compact benchmark results; keep generated evidence in data/quality/.
+/benchmarks/results/*
+!/benchmarks/results/REPORT.md
+!/benchmarks/results/LIMITATIONS.md
+!/benchmarks/results/score-history.json
+!/benchmarks/results/aggregate-cost.json
