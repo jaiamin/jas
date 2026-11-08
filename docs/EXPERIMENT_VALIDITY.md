@@ -103,3 +103,70 @@ The separate development planner evaluation records its expectations before call
 attempt, exact source snapshots, model/settings and the existing aggregate spending ledger.
 It does not modify or reopen the frozen held-out evaluation. Development improvements are
 not new generalization scores. See the development results for observed failures and costs.
+
+## Development history
+
+Thirty requests, each repeated twice with `openai:gpt-6-luna`, include 16 supported questions
+and 14 missing-capability questions. The pre-change run used the same questions in two batches;
+their manifests match the later combined set. Settings, concurrency and acceptance rules stay
+the same. Completion, support/decline, environment and required executable factor must all pass;
+errors and false rejections remain in the denominator. No desired model behavior is scored.
+
+| Checkpoint | All attempts | Supported requests | Unsupported requests | Calls | Charged/reserved |
+| --- | --- | --- | --- | --- | --- |
+| Before validity checks | 54/60 | 32/32 | 22/28 | 148 | $0.185460 |
+| First strict mapping | 46/60 | 18/32 | 28/28 | 112 | $0.179538 |
+| Corrected mapper | 59/60 | 31/32 | 28/28 | 140 | $0.228114 |
+| Final review and preflight | 60/60 | 32/32 | 28/28 | 137 | $0.222692 |
+
+The original planner sometimes accepted missing mechanisms as narrower token proxies. The
+first strict mapping fixed those decisions but regressed on supported requests through invented
+capability IDs, decorative quotes and reporting constraints mistaken for mechanics. The
+corrected mapper fixed those failures; its remaining failure was the redundant comparator
+quotation requested repeatedly by the critic. Both failed iterations are retained.
+The final checkpoint also includes the public-task and missing-disclosure-audience warnings.
+An explicit-count/isolation audit passed for all 32 accepted final protocols. Responses remain
+stochastic; these small development differences are descriptive, not a significance claim.
+
+Artifacts live outside the OSS benchmark directory in `data/quality/`: `validity-before`,
+`validity-before-broad`, `validity-after`, `validity-corrected` and `validity-final`. Each contains a manifest,
+exact backend source archive, every attempt and sanitized provider traces. The evaluator
+uses the existing aggregate ledger; no ledger or unknown reservation is reset.
+The final backend source fingerprint is
+`22eefac5b0eb38500e1b9698074d7a7ba2dc4767f03a8d8f62c071a42026616c`
+(code checkpoint `4d552c0`); every archived source file matched the current backend.
+All five development batches cost **$0.815804** in total. Through the final planner checkpoint,
+the aggregate ledger records **$14.423961 charged/reserved of $75**, including earlier unknown
+reservations. Historical published costs and held-out scores are unchanged.
+
+Fresh validation passed 735 backend tests, 69 frontend tests, 68 browser tests, lint/types/build
+and the keyless non-root production smoke check. The final-source environment gate passed
+5,208 invariant checks across 288 executable cases / 576 arms, plus all privacy/memory,
+communication and disclosure probes. GitHub's backend, frontend, container, workflows and
+aggregate verification jobs passed on the code checkpoint. Secret scanning found no leaks.
+
+An additional six-response analysis diagnostic uses only the existing `independent-oversight`
+development study: two 48-turn runs, no sanctions, 48 work choices and no wait choices; oversight
+varies 0/1 while sanction visibility stays fixed. Its questions and expected interpretations are
+declared before calls in `data/quality/validity-analysis/manifest.json`, with at most $0.50 more
+within the same ledger. It checks current analysis of recorded 4.0.0 evidence, not new participant
+behavior or a new held-out score.
+
+The initial six analysis responses completed with valid citations/caveats; both numeric audits
+returned exactly 0 sanctions, 48 work and 0 wait. They correctly rejected the broad causal
+claims, but some follow-ups suggested unavailable mechanics without a clear engineering label,
+or missed the need for a third participant in a wider-disclosure study. One also treated a
+null inactive stock parameter as evidence that a stock was absent. Those responses remain
+in `validity-analysis` ($0.035939, 22 calls).
+
+The subsequent analysis-only change supplies the capability catalog, active controls, measures
+and current rule versions. Instructions distinguish executable follow-ups from required
+environment extensions, explain the two-party disclosure limit and distinguish inactive
+parameters from world mechanics. Only `assistants.py` changed after the final planner source;
+the planner and all world/validity code remain identical. A repeat of the same six questions
+is recorded separately, without changing the original outcomes or planner scores.
+
+These are public development requests and mechanical acceptance scores. They do not establish
+independent insight quality, calibrated human behavior, statistical power or unseen-family
+generalization. A further explicit-count/isolation audit is supplemental: it examines accepted
+protocols and does not remove failed attempts or change these primary scores.

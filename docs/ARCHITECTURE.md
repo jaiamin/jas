@@ -194,3 +194,6 @@ in-memory responses remain available to the provider library during the call.
 Shared zero-cost [experiment validity checks](EXPERIMENT_VALIDITY.md) constrain planner
 proposals, saves and execution. Analysis combines those current-rule checks with actual
 cutoff exposure, preserving recorded observations as the historical authority.
+Its evidence index also supplies the current environment capabilities, active controls,
+measures and rule versions so recommendations distinguish runnable follow-ups from
+environment extensions; inactive parameter blocks never establish world mechanics.

@@ -342,7 +342,14 @@ def test_cutoff_exposure_cannot_see_later_actions_or_invent_opportunities(runtim
 
     asyncio.run(run())
     assistant = Assistants(db, research, llm)
-    first = assistant._evidence_index({rid: 1})["runs"][0]
+    first_index = assistant._evidence_index({rid: 1})
+    first = first_index["runs"][0]
+    catalog = first_index["environment_catalog"]
+    assert "finite_stock" not in catalog["institution"]["capabilities"]
+    assert "finite_stock" in catalog["renewable_resource"]["capabilities"]
+    assert "resource" not in catalog["institution"]["active_parameters"]
+    assert "resource" in catalog["renewable_resource"]["active_parameters"]
+    assert catalog["institution"]["rule_version"] == "4.1.0"
     full = assistant._evidence_index({rid: 6})["runs"][0]
     assert sum(first["treatment_exposure"]["action_counts"].values()) == 1
     assert sum(full["treatment_exposure"]["action_counts"].values()) == 6
