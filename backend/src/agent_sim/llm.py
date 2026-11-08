@@ -3,6 +3,7 @@ import json
 import math
 import os
 from collections.abc import Callable, Iterator, Mapping
+from dataclasses import replace
 from typing import Any, Literal, TypedDict, TypeVar
 from urllib.parse import urlparse
 
@@ -14,6 +15,7 @@ from pydantic_ai.messages import (
     ModelMessagesTypeAdapter,
     ModelResponse,
     TextPart,
+    ThinkingPart,
     ToolCallPart,
 )
 from pydantic_ai.models import Model
@@ -22,6 +24,7 @@ from pydantic_ai.usage import UsageLimits
 from pydantic_core import from_json
 from sqlalchemy import func, select, update
 
+from .config import setting
 from .db import Database, ProviderCall, Study, Workspace
 from .diagnostics import log_failure
 
@@ -89,7 +92,10 @@ class LanguageModels:
     def __init__(self, db: Database):
         self.db = db
         self.models: dict[str, Model] = {}
-        self.capacity = asyncio.Semaphore(4)
+        self.concurrency = int(setting("CONCURRENT_REQUESTS", "4"))
+        if not 1 <= self.concurrency <= 32:
+            raise ValueError("Concurrent provider requests must be between 1 and 32")
+        self.capacity = asyncio.Semaphore(self.concurrency)
 
     def model(self, name: str) -> Model:
         if name in self.models:
@@ -291,7 +297,16 @@ class LanguageModels:
                 "complete" if failure is None else "failed" if usage_known else "unknown"
             )
             record.response_payload = ModelMessagesTypeAdapter.dump_python(
-                [*responses], mode="json"
+                [
+                    replace(
+                        response,
+                        parts=[
+                            part for part in response.parts if not isinstance(part, ThinkingPart)
+                        ],
+                    )
+                    for response in responses
+                ],
+                mode="json",
             )
             record.error = failure
             record.charged = charged

@@ -18,7 +18,7 @@ workflows and mechanics; it does not validate human predictions.
 | --- | --- |
 | [Melting Pot](https://arxiv.org/abs/2107.06857) | Hold out partners, combinations and wording; report performance outside the development distribution. |
 | [PettingZoo parallel API](https://pettingzoo.farama.org/api/parallel/) | Separate private observations; settle joint actions together when causality requires it. Serialized model requests do not make observations sequential. |
-| [Inspect](https://inspect.aisi.org.uk/solvers.html) | Exercise the real application through an inspectable evaluation harness; preserve original failures and label retests separately. |
+| [tau-bench](https://arxiv.org/abs/2406.12045) | Score independently specified outcomes and repeated-trial reliability through real application execution; preserve failures and label retests. |
 | [Le Texier, *Debunking the Stanford Prison Experiment*](https://doi.org/10.1037/amp0000401) | Do not use the original study's claims as ground truth. The institutional token game measures permissions and oversight, not prison psychology. |
 
 ## Interpretation limits
@@ -29,8 +29,9 @@ workflows and mechanics; it does not validate human predictions.
   False reports do not by themselves establish intent to deceive.
 - Compare memory conditions against recorded experience. Reflection may add errors;
   behavior changes do not imply model weight updates.
-- Runs are independent experimental units. Keep matched seeds, all failures, explicit
-  denominators and uncertainty; turn counts are not independent sample counts.
+- Average fresh repetitions within environment seed for summaries and matched comparisons.
+  Keep all failures, explicit denominators and seed-level uncertainty; turns and repeated
+  seeds do not create extra independent environment randomizations.
 - Report payoff, accuracy, stock, sanctions and agreements separately. There is no
   universal personality, morality or human-realism score.
 - Human predictive claims require consented reference data, held-out participants,

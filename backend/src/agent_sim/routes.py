@@ -131,6 +131,8 @@ async def settings(
                 p: bool(os.environ.get(f"{p.upper()}_API_KEY")) for p in ("openai", "anthropic")
             },
             "planner_model": setting("PLANNER_MODEL", "openai:gpt-6.1-sol"),
+            "assistant_model": setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol"),
+            "concurrent_requests": models.concurrency,
             "models": models.catalog(),
             "budget_usd": workspace.ceiling / 1000000,
             "charged_usd": workspace.charged / 1000000,

@@ -12,6 +12,8 @@ services:
       JAS_DATABASE_URL: ${JAS_DATABASE_URL:-}
       JAS_CONCURRENT_RUNS: ${JAS_CONCURRENT_RUNS:-3}
       JAS_PLANNER_MODEL: ${JAS_PLANNER_MODEL:-openai:gpt-6.1-sol}
+      JAS_ASSISTANT_MODEL: ${JAS_ASSISTANT_MODEL:-openai:gpt-6.1-sol}
+      JAS_CONCURRENT_REQUESTS: ${JAS_CONCURRENT_REQUESTS:-4}
       JAS_BUDGET_USD: ${JAS_BUDGET_USD:-25}
     volumes:
       - jas-data:/app/data

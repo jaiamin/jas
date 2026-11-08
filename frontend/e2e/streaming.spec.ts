@@ -14,7 +14,13 @@ for (const theme of ["light", "dark"]) {
         : { width: 1440, height: 900 },
     );
     await page.route("**/api/settings", (route) =>
-      route.fulfill({ json: { providers: { openai: true } } }),
+      route.fulfill({
+        json: {
+          providers: { openai: true },
+          planner_model: "openai:gpt-6.1-sol",
+          assistant_model: "openai:gpt-6.1-sol",
+        },
+      }),
     );
     let row = {
       id: "stream-answer",
@@ -150,7 +156,13 @@ for (const malformed of ["invalid-json", "invalid-output"]) {
       output: { partial: "", answer: "", citations: [], caveats: [] },
     };
     await page.route("**/api/settings", (route) =>
-      route.fulfill({ json: { providers: { openai: true } } }),
+      route.fulfill({
+        json: {
+          providers: { openai: true },
+          planner_model: "openai:gpt-6.1-sol",
+          assistant_model: "openai:gpt-6.1-sol",
+        },
+      }),
     );
     await page.route("**/api/chats", (route) => {
       if (route.request().method() !== "POST")

@@ -1,4 +1,4 @@
-import { Plus, Trash2 } from "lucide-react";
+import { MessageSquare, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -25,7 +25,16 @@ export default function Experiments() {
   });
   return (
     <>
-      <PageHeading title="Experiments">
+      <PageHeading
+        title="Experiments"
+        description="Ask a question. Control the conditions. Follow the evidence."
+      >
+        <Button variant="outline" asChild>
+          <Link to="/agent?context=new">
+            <MessageSquare data-icon="inline-start" />
+            Design with Agent
+          </Link>
+        </Button>
         <Button asChild>
           <Link to="/new">
             <Plus data-icon="inline-start" />

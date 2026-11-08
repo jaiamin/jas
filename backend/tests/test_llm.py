@@ -1,6 +1,7 @@
 import asyncio
 import json
 
+import pytest
 from agent_sim.db import ProviderCall, Study, Workspace
 from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
@@ -293,3 +294,65 @@ def test_settlement_failure_after_success_propagates(runtime, monkeypatch):
                 purpose="analysis",
             )
         )
+
+
+@pytest.mark.parametrize("capacity", [0, 33])
+def test_provider_concurrency_rejects_out_of_range_settings(tmp_path, monkeypatch, capacity):
+    from agent_sim.db import Database
+    from agent_sim.llm import LanguageModels
+
+    monkeypatch.setenv("JAS_CONCURRENT_REQUESTS", str(capacity))
+    db = Database(f"sqlite:///{tmp_path}/pool.sqlite3")
+    try:
+        with pytest.raises(ValueError, match="between 1 and 32"):
+            LanguageModels(db)
+    finally:
+        db.close()
+
+
+def test_provider_trace_keeps_observable_output_and_usage_without_thinking(runtime, monkeypatch):
+    from pydantic_ai.messages import ThinkingPart
+
+    db, llm, _, _ = runtime
+    captured = []
+
+    async def respond(messages, info):
+        response = ModelResponse(
+            parts=[
+                ThinkingPart(
+                    content="private-reasoning-canary", signature="opaque-signature-canary"
+                ),
+                ToolCallPart(info.output_tools[0].name, {"response": "Observable answer"}),
+            ],
+            usage=RequestUsage(
+                input_tokens=120, output_tokens=30, details={"reasoning_tokens": 12}
+            ),
+        )
+        captured.append(response)
+        return response
+
+    monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=respond))
+    answer = asyncio.run(
+        llm.generate(
+            str,
+            model="openai:gpt-6-luna",
+            prompt="Return an observable answer",
+            instructions="Answer briefly",
+            purpose="analysis",
+        )
+    )
+    assert answer == "Observable answer"
+    with db.session() as session:
+        call = session.scalar(select(ProviderCall))
+        serialized = json.dumps(call.response_payload)
+        assert "Observable answer" in serialized
+        assert "private-reasoning-canary" not in serialized
+        assert "opaque-signature-canary" not in serialized
+        assert all(
+            part["part_kind"] != "thinking"
+            for message in call.response_payload
+            for part in message["parts"]
+        )
+        assert (call.input_tokens, call.output_tokens, call.reasoning_tokens) == (120, 30, 12)
+        assert call.charged == 27 and call.status == "complete"
+    assert isinstance(captured[0].parts[0], ThinkingPart)

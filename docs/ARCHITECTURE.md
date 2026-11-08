@@ -46,7 +46,7 @@ revisions and run matrices; saving does not start execution.
 
 ## Agent workspace
 
-`/agent` is a single conversation surface with an inner history sidebar and a contextual
+`/agent` is a single conversation surface with a conversation toolbar and a contextual
 composer. Experiment/run Ask Agent links select their record on that page. The protocol
 editor offers Generate with Agent while keeping unfinished manual drafts.
 Proposals stay in chat until Review protocol opens the editor; Back to Agent returns to
@@ -89,7 +89,7 @@ parameters and measurements. `World` owns common turn bookkeeping. Concrete worl
 checkpoint initialization, legal-action schema capabilities and derived environment measures;
 `decisions.py` builds schemas from those capabilities without selecting environments.
 `checkpoints.py` declares shared observations/actions and each world's state. Snapshots
-contain only that world's state. All seven worlds use rule version 3.0.0; incompatible
+contain only that world's state. All seven worlds use rule version 4.0.0; incompatible
 checkpoints fail explicitly. `environments.py` contains the catalog and three games;
 `mechanisms.py` implements the other four worlds.
 
@@ -157,9 +157,35 @@ local studies; large deployments need retention/compaction and paginated evidenc
 
 ## Evaluation tooling
 
-Inspect is a development-only dependency. Its application solver calls the same FastAPI
-routes as the frontend through an in-process HTTP transport, including the multi-stage
-planner, complete run matrix, export and verification. The application still owns provider
-clients, checkpoints and atomic accounting. Production images omit the evaluation framework.
-Each benchmark process owns one database/engine; a source digest and fixed case digest
-identify the tested implementation. Reserved combinations are evaluated only after development.
+The replacement evaluation uses a standalone stdlib harness against the real FastAPI
+planner and production execution engine. Its 336 frozen requests span 28 reviewed families,
+split by entire family. Mathematical payoff oracles, scripted counterexamples, privacy/memory
+checks and exact checkpoint replay gate paid work. The harness reserves calls through the
+application's persistent aggregate budget ledger and permits only `openai:gpt-6-luna`.
+Source/suite hashes, complete attempts, provider traces and run-level scores identify each
+checkpoint. Frozen held-out model families are opened only at the declared final checkpoint;
+the report preserves failures, costs and remaining uncertainty. See [protocol](../benchmarks/protocol.md).
+
+The investigator's computed index includes cutoff-scoped opportunity counts, actual
+balances/utility, measurement counts and matched-seed effects for completed runs. These
+aggregates cover the captured scope; inspected turns support qualitative examples. Repeated
+identical evidence requests are deduplicated, and the fourth call has an answer-only schema.
+The Agent still validates every citation against an inspected range and frozen cutoff.
+
+## Analysis calculations
+
+The investigator receives cutoff-scoped opportunity counts, actual balances, decision usage
+and completed-run matched effects. Conditions group by immutable revision even when their
+private profiles differ. Shared experiment ceilings are distinct from measured execution cost.
+
+For immediate commons counterfactuals, a bounded `commons_payoffs` request evaluates supplied
+team sizes and contributions against the inspected round's enforced endowment and multiplier.
+It respects resource changes and evidence cutoffs, rejects infeasible assumptions and other
+worlds, and labels every result hypothetical. It neither executes actions nor forecasts future
+strategies. Other interpretations remain model judgments that require evidence and caveats.
+
+Investigation schemas expose the commons calculator only when the selected environment
+supports it; other worlds offer only scoped history/turn inspection. Runtime validation
+still rejects invalid targets and cutoffs. Provider records retain observable response
+parts and token accounting, omitting reasoning parts and opaque signatures. The original
+in-memory responses remain available to the provider library during the call.

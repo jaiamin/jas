@@ -198,7 +198,8 @@ export default function Study() {
                               <td key={c.key} className="numeric">
                                 {metric(key, result?.mean)}
                                 <span className="table-secondary">
-                                  {result?.runs ?? 0} eligible runs
+                                  {result?.runs ?? 0} eligible runs ·{" "}
+                                  {result?.seeds ?? 0} seeds
                                   {result?.interval &&
                                     ` · ${metric(key, result.interval[0])}–${metric(key, result.interval[1])}`}
                                 </span>
@@ -210,9 +211,10 @@ export default function Study() {
                     </tbody>
                   </Table>
                   <div className="table-note">
-                    Ranges: run-level 95% percentile bootstrap intervals,
-                    available with ≥3 eligible runs. Small samples remain
-                    uncertain; turns are not independent replications.
+                    Ranges: 95% seed-level percentile bootstrap intervals,
+                    available with ≥3 independent seeds. Repetitions are
+                    averaged within seed; turns are not independent
+                    replications.
                   </div>
                 </div>
               )}

@@ -72,6 +72,16 @@ export default function SettingsPage() {
           <h2>Usage & storage</h2>
           <dl className="key-values">
             <div>
+              <dt>Protocol designer</dt>
+              <dd>{modelLabel(s.planner_model)}</dd>
+            </div>
+            <div>
+              <dt>Evidence assistant</dt>
+              <dd>{modelLabel(s.assistant_model)}</dd>
+            </div>
+          </dl>
+          <dl className="key-values">
+            <div>
               <dt>Committed cost</dt>
               <dd>
                 {money(s.charged_usd)} / {money(s.budget_usd)}
@@ -95,6 +105,10 @@ export default function SettingsPage() {
             <div>
               <dt>Concurrent runs</dt>
               <dd>{s.concurrent_runs}</dd>
+            </div>
+            <div>
+              <dt>Concurrent provider requests</dt>
+              <dd>{s.concurrent_requests}</dd>
             </div>
           </dl>
           <Disclosure className="disclosure">

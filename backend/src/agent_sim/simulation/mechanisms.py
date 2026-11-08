@@ -1,3 +1,4 @@
+import copy
 import random
 from typing import cast
 
@@ -102,9 +103,9 @@ class Institution(Mechanism[InstitutionCheckpoint]):
         observation.update(
             authority=authority,
             shared_output=self.state.get("shared_output", 0),
-            sanctions=[
-                s for s in sanctions if rules.transparent or agent in (s["actor"], s["target"])
-            ],
+            sanctions=copy.deepcopy(
+                [s for s in sanctions if rules.transparent or agent in (s["actor"], s["target"])]
+            ),
         )
         return observation
 
@@ -271,7 +272,7 @@ class Bargaining(Mechanism[BargainingCheckpoint]):
             if proposing
             else [legal("accept"), legal("reject"), legal("exit")],
         )
-        observation.update(pie=pie, offer=offer, proposer=self.order()[0])
+        observation.update(pie=pie, offer=copy.deepcopy(offer), proposer=self.order()[0])
         return observation
 
     def apply(self, agent: str, action: Action) -> tuple[list[Event], list[Measure]]:

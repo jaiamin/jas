@@ -84,6 +84,7 @@ export default function WorkspaceShell() {
   const studies = useApi<StudySummary[]>("/studies", true);
   const links = [
     { to: "/studies", label: "Experiments", icon: FlaskConical },
+    { to: "/environments", label: "Environments", icon: Layers2 },
     { to: "/runs", label: "Runs", icon: Play },
   ];
   function changeTheme() {
@@ -241,23 +242,21 @@ export default function WorkspaceShell() {
           <Separator className="sidebar-separator" />
           <SidebarGroup>
             <SidebarMenu>
-              {[
-                { to: "/agent", label: "Agent", icon: MessageCircle },
-                {
-                  to: "/environments",
-                  label: "Environments",
-                  icon: Layers2,
-                },
-              ].map((item) => (
-                <SidebarMenuItem key={item.to}>
-                  <SidebarMenuButton asChild tooltip={item.label}>
-                    <NavLink to={item.to} onClick={() => setOpenMobile(false)}>
-                      <item.icon aria-hidden="true" />
-                      <span>{item.label}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {[{ to: "/agent", label: "Agent", icon: MessageCircle }].map(
+                (item) => (
+                  <SidebarMenuItem key={item.to}>
+                    <SidebarMenuButton asChild tooltip={item.label}>
+                      <NavLink
+                        to={item.to}
+                        onClick={() => setOpenMobile(false)}
+                      >
+                        <item.icon aria-hidden="true" />
+                        <span>{item.label}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ),
+              )}
             </SidebarMenu>
           </SidebarGroup>
           {!!studies.data?.length && (

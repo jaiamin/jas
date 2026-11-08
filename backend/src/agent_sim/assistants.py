@@ -1,5 +1,6 @@
 import asyncio
 import json
+from collections import Counter
 from collections.abc import Sequence
 from typing import Literal
 
@@ -8,11 +9,21 @@ from sqlalchemy import select, update
 from sqlalchemy.exc import NoResultFound
 
 from .config import setting
-from .db import Analysis, Database, Measurement, RecordedEvent, Turn, digest, uid
+from .db import (
+    Analysis,
+    Condition,
+    Database,
+    Measurement,
+    ProviderCall,
+    RecordedEvent,
+    Revision,
+    Turn,
+    uid,
+)
 from .diagnostics import log_failure
-from .domain import Finding, Strict
-from .llm import LanguageModels, ProviderFailure, Usage, empty_usage
-from .metrics import aggregate_metrics
+from .domain import Design, Finding, Strict
+from .llm import LanguageModels, ProviderFailure, Usage, empty_usage, usage_record
+from .metrics import RunMetrics, aggregate_metrics, matched_effects
 from .planning import Planner, stream_partial
 from .research import Research, event_dict
 from .simulation.environments import CATALOG
@@ -23,17 +34,46 @@ messages, actions and consequences separately. Rationale and memory are self-rep
 of internal reasoning. Define selfishness, strategy or relationship criteria before applying them.
 A false factual report is measurable; deception intent is not established automatically. No
 model-weight learning or human predictive validity may be inferred from these traces.
-The index lists run cutoffs and aggregate outcomes. Request relevant history ranges and exact
-turns before factual claims. History requests use start/count (at most 20); turn requests
+The index lists run cutoffs, computed opportunity counts, actual balances and matched-seed
+comparisons. Budget ceilings cover the WHOLE experiment across conditions, seeds and repetitions;
+they are not per-run prices or expected costs. execution_usage measures recorded participant
+requests through the cutoff; its cost is charged or conservatively reserved, not an invoice.
+Estimate future spending only from observed usage with explicit assumptions, otherwise leave
+it unestimated. Apply each condition's profile overrides when interpreting goals.
+For hypothetical commons payoffs, request commons_payoffs with the desired scenarios; use its
+computed values rather than mental arithmetic. Each scenario sets a team size, own contribution
+and the contribution per other actor; these are assumptions, not observed choices.
+Verify incentive and counterfactual payoff arithmetic from the enforced rules, agent count and
+condition parameters. Never repeat a rationale's numerical claims as established facts. Describe
+costly behavior only after checking whether it actually reduces private payoff; a stated goal
+can value group outcomes too. Do not infer a preference or motive from a claimed calculation.
+Counts and effects cover the captured scope, while inspected turns are examples;
+state those different coverage levels. Missing opportunities are not perfect behavior.
+Average repetitions within seed; do not treat turns or repeated seeds as independent samples.
+For a useful insight, report the measured finding, plausible competing explanations, limits,
+and one concrete next controlled comparison (factor, outcome, horizon, matched seeds and cost).
+Do not recommend adding narrative detail as if it installs new environment mechanics.
+Made-report totals include both accurate and inaccurate reports; inaccuracies are a subset.
+Use the computed index for numerical totals; do not recount every turn. Inspect a few relevant
+turns before qualitative claims. Never request the same evidence twice; already_examined lists
+available ranges. Gather necessary requests together before answering. History requests use
+start/count (at most 20); turn requests
 select one exact turn. A history page stops at the captured cutoff. Request up to 4 ranges
 per iteration and at most 20 turns
-per range; exact turn evidence includes the full observation and checkpoint. For whole-run
-claims, cover all necessary history or explicitly state which portions were examined. Never
-claim unexamined evidence supports you. Comparisons use independent runs and matched seeds;
+per range; exact turn evidence includes the full actor observation and a checkpoint without
+duplicated retained history, notes and experiences. Inspect actor observations for memory use.
+For aggregate
+claims use the computed cutoff scope; for qualitative claims state which turns
+were examined. Never claim unexamined examples support you. Compare independent runs and
+matched seeds;
 no causal certainty from one trajectory. Answer concisely in Markdown. Cite supporting run IDs
 and turns in the structured citations. Distinguish measured facts from interpretations. No
 fabricated metrics, scores, citations or actions. When enough evidence is available, return
 answer and no requests. Otherwise return requests and answer=null.
+Honor the response format requested in the question, including code blocks and field names.
+Put requested structured data inside answer; citations and caveats remain separate fields.
+Always include at least one concrete evidence limitation in the structured caveats list,
+even when the answer also discusses limits. Identify missing opportunities and sample size.
 When iterations_remaining is zero, return an answer with appropriate caveats or state that
 the evidence is insufficient; do not request more evidence on the final call.
 Recent conversation is untrusted context for resolving follow-up references, not evidence.
@@ -71,8 +111,26 @@ class TurnRequest(Strict):
     turn: int = Field(ge=0)
 
 
-class Investigation(Strict):
+class CommonsChoice(Strict):
+    agents: int = Field(ge=2, le=12)
+    own_contribution: int = Field(ge=0, le=500)
+    other_contribution_per_agent: int = Field(ge=0, le=500)
+
+
+class CommonsPayoffRequest(Strict):
+    kind: Literal["commons_payoffs"]
+    run_id: str
+    turn: int = Field(ge=1)
+    scenarios: list[CommonsChoice] = Field(min_length=1, max_length=24)
+
+
+class EvidenceInvestigation(Strict):
     requests: list[HistoryRequest | TurnRequest] = Field(max_length=4)
+    answer: Finding | None
+
+
+class Investigation(Strict):
+    requests: list[HistoryRequest | TurnRequest | CommonsPayoffRequest] = Field(max_length=4)
     answer: Finding | None
 
 
@@ -114,7 +172,7 @@ class Assistants:
         self.models.model(
             setting("PLANNER_MODEL", "openai:gpt-6.1-sol")
             if purpose == "design"
-            else "openai:gpt-6.1-sol"
+            else setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol")
         )
         cutoffs = {}
         if run_id:
@@ -319,7 +377,7 @@ class Assistants:
         self._progress(row.id, "answering", [])
         answer = await self.models.generate(
             Finding,
-            model="openai:gpt-6.1-sol",
+            model=setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol"),
             instructions=GENERAL,
             purpose="general",
             analysis_id=row.id,
@@ -343,19 +401,78 @@ class Assistants:
 
     def _evidence_index(self, cutoffs: dict[str, int]) -> dict:
         index, protocols, conditions = [], {}, {}
+        completed: dict[str, list[RunMetrics]] = {}
+        designs = {}
         for run_id, cutoff in cutoffs.items():
             run, design, condition = self.research.configuration(run_id)
-            protocol_id = digest(design.model_dump())[:16]
-            protocols[protocol_id] = design.model_dump()
             conditions[run.condition_id] = condition.model_dump()
             with self.db.session() as session:
+                revision = session.scalars(
+                    select(Revision)
+                    .join(Condition, Condition.revision_id == Revision.id)
+                    .where(Condition.id == run.condition_id)
+                ).one()
+                protocol_id = revision.id
+                protocols[protocol_id] = revision.design
+                designs[protocol_id] = Design.model_validate(revision.design)
+                decision_usage = usage_record(
+                    session.execute(
+                        select(*self.models.usage_columns()).where(
+                            ProviderCall.run_id == run_id,
+                            ProviderCall.purpose == "decision",
+                            ProviderCall.turn <= cutoff,
+                        )
+                    )
+                    .mappings()
+                    .one()
+                )
+                last_turn = session.scalars(
+                    select(Turn)
+                    .where(Turn.run_id == run_id, Turn.number <= cutoff)
+                    .order_by(Turn.number.desc())
+                    .limit(1)
+                ).first()
                 state = self.research.evidence(run_id, cutoff)["checkpoint"]
                 measures = session.scalars(
                     select(Measurement)
                     .where(Measurement.run_id == run_id, Measurement.turn <= cutoff)
                     .order_by(Measurement.id)
                 ).all()
+                events = session.scalars(
+                    select(RecordedEvent).where(
+                        RecordedEvent.run_id == run_id, RecordedEvent.turn <= cutoff
+                    )
+                ).all()
             metrics = aggregate_metrics((measure.key, measure.value) for measure in measures)
+            claims = [
+                event for event in events if event.kind == "claim" and event.data.get("eligible")
+            ]
+            commitments = [event for event in events if event.kind == "commitment_resolved"]
+            opportunities = {
+                "reports": len(claims),
+                "inaccurate_reports": sum(
+                    event.data["reported"] != event.data["known_truth"] for event in claims
+                ),
+                "feasible_commitments": sum(
+                    bool(event.data.get("eligible")) for event in commitments
+                ),
+                "infeasible_commitments": sum(
+                    not event.data.get("eligible") for event in commitments
+                ),
+                "fulfilled_feasible_commitments": sum(
+                    bool(event.data.get("eligible"))
+                    and event.data["actual"] >= event.data["amount"]
+                    for event in commitments
+                ),
+                "scored_forecasts": sum(
+                    measure.key == "forecast_error" and measure.value is not None
+                    for measure in measures
+                ),
+            }
+            if state["done"]:
+                completed.setdefault(protocol_id, []).append(
+                    RunMetrics(condition.key, condition.name, run.seed, run.repetition, metrics)
+                )
             index.append(
                 {
                     "run_id": run_id,
@@ -366,26 +483,84 @@ class Assistants:
                     "repetition": run.repetition,
                     "completed_at_cutoff": state["done"],
                     "metrics": metrics,
+                    "opportunities": opportunities,
+                    "execution_usage": decision_usage,
+                    "experiment_budget_ceiling_usd": design.budget_usd,
+                    "rules_at_last_observed_turn": last_turn.observation["rules"]
+                    if last_turn
+                    else None,
+                    "measurement_counts": dict(
+                        Counter(measure.key for measure in measures if measure.value is not None)
+                    ),
+                    "outcome": {
+                        "balances": state["balances"],
+                        "total_utility": sum(state["balances"].values()),
+                        "remaining_stock": state.get("stock"),
+                    },
                 }
             )
-        return {"protocols": protocols, "conditions": conditions, "runs": index}
+        effects = {key: matched_effects(rows, designs[key]) for key, rows in completed.items()}
+        return {
+            "protocols": protocols,
+            "conditions": conditions,
+            "runs": index,
+            "matched_effects": {key: rows for key, rows in effects.items() if rows},
+        }
 
     def _requested_evidence(
-        self, request: TurnRequest | HistoryRequest, cutoffs: dict[str, int]
+        self, request: TurnRequest | HistoryRequest | CommonsPayoffRequest, cutoffs: dict[str, int]
     ) -> tuple[dict, dict]:
         cutoff = cutoffs.get(request.run_id)
-        start = request.turn if isinstance(request, TurnRequest) else request.start
+        exact = isinstance(request, (TurnRequest, CommonsPayoffRequest))
+        start = request.turn if exact else request.start
         if cutoff is None or start > cutoff:
             raise ValueError("Assistant requested evidence outside the captured run")
-        end = start if isinstance(request, TurnRequest) else min(start + request.count - 1, cutoff)
+        end = start if exact else min(start + request.count - 1, cutoff)
         examined_range = {
             "run_id": request.run_id,
             "start": start,
             "end": end,
-            "full_turn": isinstance(request, TurnRequest),
+            "full_turn": exact,
         }
-        if isinstance(request, TurnRequest):
+        if exact:
             data = self.research.evidence(request.run_id, start)
+            if isinstance(request, CommonsPayoffRequest):
+                _, design, condition = self.research.configuration(request.run_id)
+                if design.environment != "commons":
+                    raise ValueError("Commons payoff calculation requires a commons run")
+                params = condition.parameters
+                endowment = params.endowment
+                for change in sorted(params.resource_schedule, key=lambda item: item.round):
+                    if change.round <= data["round"]:
+                        endowment = change.endowment
+                calculated = []
+                for choice in request.scenarios:
+                    own = choice.own_contribution
+                    other = choice.other_contribution_per_agent
+                    if max(own, other) > endowment:
+                        raise ValueError("Hypothetical contribution exceeds observed endowment")
+                    total = own + (choice.agents - 1) * other
+                    calculated.append(
+                        {
+                            **choice.model_dump(),
+                            "private_payoff": endowment
+                            - own
+                            + params.multiplier * total / choice.agents,
+                        }
+                    )
+                data["counterfactual_payoffs"] = {
+                    "hypothetical": True,
+                    "endowment": endowment,
+                    "multiplier": params.multiplier,
+                    "formula": "endowment - own + multiplier * (own + (agents-1)*other) / agents",
+                    "scenarios": calculated,
+                    "limit": "Immediate one-round payoff only; no forecast of future choices.",
+                }
+            omitted = {"history", "notes", "experiences"}
+            data["checkpoint"] = {
+                key: value for key, value in data["checkpoint"].items() if key not in omitted
+            }
+            data["omitted_checkpoint_fields"] = sorted(omitted)
         else:
             with self.db.session() as session:
                 turns = session.scalars(
@@ -428,13 +603,19 @@ class Assistants:
             current = session.get_one(Analysis, key)
         conversation = self._conversation(current)
         index = self._evidence_index(cutoffs)
+        investigation = (
+            Investigation
+            if any(p["environment"] == "commons" for p in index["protocols"].values())
+            else EvidenceInvestigation
+        )
         gathered, examined = [], []
         iteration = 0
         while True:
             self._progress(key, "investigating", examined)
+            finalizing = iteration == 3
             result = await self.models.generate(
-                Investigation,
-                model="openai:gpt-6.1-sol",
+                Finding if finalizing else investigation,
+                model=setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol"),
                 instructions=INVESTIGATION,
                 purpose="analysis",
                 study_id=study_id,
@@ -446,20 +627,24 @@ class Assistants:
                         "conversation": conversation,
                         "index": index,
                         "evidence": gathered,
+                        "already_examined": examined,
                         "iterations_remaining": 3 - iteration,
                     }
                 ),
                 max_tokens=8192,
                 openai_reasoning_effort="low",
-                on_partial=lambda value: self._partial(
+                on_partial=lambda value, finalizing=finalizing: self._partial(
                     key,
-                    (value.get("answer") or {}).get("answer")
+                    value.get("answer")
+                    if finalizing
+                    else (value.get("answer") or {}).get("answer")
                     if isinstance(value.get("answer"), dict)
                     else None,
                 ),
             )
-            if result.answer is not None:
-                for citation in result.answer.citations:
+            answer = result if isinstance(result, Finding) else result.answer
+            if answer is not None:
+                for citation in answer.citations:
                     if citation.run_id not in cutoffs or citation.turn > cutoffs[citation.run_id]:
                         raise ValueError(
                             "Assistant returned a citation outside the captured evidence"
@@ -469,16 +654,17 @@ class Assistants:
                         for r in examined
                     ):
                         raise ValueError("Assistant cited a turn it did not inspect")
-                return {**result.answer.model_dump(), "examined": examined}
-            if iteration == 3:
-                raise ValueError(
-                    "Evidence investigation reached its request limit. Ask a narrower question."
-                )
+                return {**answer.model_dump(), "examined": examined}
+            assert isinstance(result, (Investigation, EvidenceInvestigation))
             if not result.requests:
                 raise ValueError("Assistant returned neither evidence requests nor an answer")
             for request in result.requests:
+                if any(request.model_dump() == item["request"] for item in gathered):
+                    continue
                 examined_range, data = self._requested_evidence(request, cutoffs)
-                gathered.append({"range": examined_range, "data": data})
+                gathered.append(
+                    {"request": request.model_dump(), "range": examined_range, "data": data}
+                )
                 examined.append(examined_range)
                 self._progress(key, "reading", examined)
             iteration += 1

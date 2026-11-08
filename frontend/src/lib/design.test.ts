@@ -34,6 +34,7 @@ test.each(["commons", "coordination", "information"] as const)(
       primary_metric: "score",
       parameters: [],
       measures: ["score", "cost", "effort", "other"],
+      measure_definitions: {},
       rule_version: "1",
     };
     const changed = changeEnvironment(design, environment);
