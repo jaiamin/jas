@@ -174,3 +174,25 @@ Python, recipes, collateral, sanctions or authority removal. Public records/inve
 bundled. Model choices and interpretations are fallible; the earlier condition-label analysis
 error is not certified fixed. No new generalization/insight-quality score. Full grid coverage
 cannot certify intended factors, semantic claims, causal isolation or statistical power.
+
+## PR #7 CI repair (2026-11-08)
+
+Current task is the focused repair of https://github.com/jaiamin/ass/pull/7 on
+`feat/experiment-validity`; earlier composition publication instructions above are historical.
+No PR review comments were present. Run 42534047116 failed only the suggestions browser
+test; `verify` failed because it aggregates the frontend result.
+
+Root cause: saved experiment/run suggestions were clickable before their full protocol
+loaded, inserting generic prompts without condition names. Suggestions now wait for the
+protocol and reuse the existing loading/error/retry controls. The browser regression holds
+the experiment response, fails then holds the run response on retry, verifies draft retention
+and exact condition names, and checks that no chat is submitted. The delayed experiment
+case failed before the fix; the expanded targeted regression passes afterward.
+
+Frontend lint, 70 unit tests, production build and all 70 browser tests passed. Gitleaks
+found no leaks in the repair diff. Playwright shut down its owned keyless backend.
+No backend/runtime/workflow changes or paid calls. Do not merge. Push this focused repair
+and watch PR #7 checks; no new PR is needed.
+
+Sandbox tooling: system `/usr/bin/uv` aborts on 16 KiB pages. The ignored project-local
+`.tools/pr7-uv/bin/uv` (same version 0.13.7) successfully ran `sync --frozen`.
