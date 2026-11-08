@@ -392,6 +392,28 @@ def _preflight(specification: str) -> dict:
         for c in design.conditions:
             composition = c.parameters.composition
             assert composition is not None
+            communicative = c.parameters.communication and bool(
+                set(c.parameters.communication_channels) & {"messages", "reports"}
+            )
+            active = {
+                key
+                for r in composition.resources
+                for key in (r.controllers or [p.key for p in design.profiles])
+            }
+            passive = [p.key for p in design.profiles if p.key not in active]
+            if (
+                passive
+                and not communicative
+                and not any(r.transfers for r in composition.resources)
+            ):
+                issue(
+                    "passive_resource_audience",
+                    f"{c.name}: {', '.join(passive)} can only wait; communication and personal "
+                    "transfers are disabled and they control no resource. Disclosure gives them "
+                    "no action to respond with. Any effect concerns allocators' response to "
+                    "announced visibility or presented information, not responsive community "
+                    "cooperation or an enforced accountability consequence.",
+                )
             for r in composition.resources:
                 capacity_per_round = r.action_limit * (len(r.controllers) or len(design.profiles))
                 fastest_empty_round = (

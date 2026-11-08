@@ -510,3 +510,29 @@ def test_factorial_intent_is_rechecked_on_save_and_run(runtime, monkeypatch):
     asyncio.run(start())
     with db.session() as session:
         assert session.scalar(select(func.count()).select_from(ProviderCall)) == 0
+
+
+@pytest.mark.parametrize("response", ["none", "messages", "transfers", "extraction", "control"])
+def test_passive_disclosure_audience_warning_tracks_actual_response_paths(response):
+    design = factorial_protocol()
+    for c in design.conditions:
+        c.parameters.communication = response == "messages"
+        c.parameters.communication_channels = ["messages"]
+        composition = c.parameters.composition
+        for r in composition.resources:
+            r.transfers = response == "transfers"
+            if response == "extraction":
+                r.controllers = []
+            elif response == "control":
+                r.controllers = [p.key for p in design.profiles]
+    report = preflight(design)
+    warnings = [i for i in report["issues"] if i["code"] == "passive_resource_audience"]
+    assert bool(warnings) == (response == "none")
+    if warnings:
+        world = create_world(
+            design.resolve(design.conditions[0]), design.conditions[0].parameters, 7
+        )
+        for key in ("p1", "p2", "p3"):
+            assert [a["kind"] for a in world.observe(key)["legal_actions"]] == ["wait"]
+        assert all(i["severity"] == "warning" for i in warnings)
+    assert report["status"] != "blocked"  # allocator/norm-response studies can be intentional

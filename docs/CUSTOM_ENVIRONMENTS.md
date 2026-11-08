@@ -142,6 +142,14 @@ factorial/interaction designs. Missing cells block approval, save and execution;
 comparisons and intentional replication remain permitted with warnings. Grid coverage cannot
 establish statistical power, identify the scientifically correct factors, or certify prose.
 
+The final two familiar-question trials passed the declared mechanical checks (12 calls,
+$0.036109). Manual inspection still found one protocol with passive noncontrollers: transfers
+and communication were disabled, leaving only wait actions for the audience. It cannot establish
+responsive community cooperation. A subsequent deterministic preflight warning now names
+that limitation; it does not reject intentional allocator/norm-response studies. That warning
+has correctness coverage but no subsequent paid planner score. The two passes belong to the
+preceding exact source archive, not a universal experiment-quality certification.
+
 All paid diagnostics use only `openai:gpt-6-luna` and the existing $75 aggregate ledger.
 Initial planner batches have additional $2 ceilings; focused planner and participant
 checks have separate additional $1 ceilings. Actual costs and source fingerprints are recorded in

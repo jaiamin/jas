@@ -98,9 +98,9 @@ Public provider traces must omit reasoning/signatures. Never bypass secret scann
 ## Current task: custom environment composition
 
 Branch `feat/environment-composition`, based on PR #7 at aa2aee0; never merge either PR.
-PR #7 is unwatched; do not relink/watch/list it. No push or PR for this branch yet.
+PR #7 is unwatched; do not relink/watch/list it. Publication target: one draft PR stacked on feat/experiment-validity; URL in the thread.
 User approved autonomous composition, editable/deletable custom environments and testing.
-Implementation commits: f4ca72d, d83495b, 12f9d6b, 2c9e6e0, e17e54a; factorial fix pending commit.
+Implementation commits: f4ca72d, d83495b, 12f9d6b, 2c9e6e0, e17e54a, 939eab8; subsequent passive-audience warning is covered below.
 
 Completed acceptance criteria:
 - Typed finite stocks, controlled/shared access, transfers, consumption, replenishment,
@@ -118,8 +118,11 @@ Completed acceptance criteria:
   arms and missing cells trigger bounded repair or rejection; declared intent is rechecked on
   save/run. Perfectly coupled settings form one bundle. Partial comparisons/replication remain
   valid with warnings. Exact earlier failed model proposal now deterministically caught.
+- Passive disclosure audiences are now explicitly warned about when their only legal action is
+  wait and communication/transfers are off. Other response paths suppress the warning; no
+  blanket rejection of intentional allocator/norm-response studies.
 
-Observed checks: 915 backend tests; latest targeted desktop/mobile browser flow 2/2.
+Final observed checks: 920 backend tests; latest targeted desktop/mobile browser flow2/2.
 Fresh frontend unit70/70, lint/build passed; before factorial changes the full browser suite
 passed70/70. Ruff/ty passed. Latest production image passed non-root/keyless
 health/SPA/assets and custom-library CRUD; owned smoke container removed. No model calls in
@@ -141,27 +144,31 @@ Development history (Luna-only, no frozen families or published scores changed):
   claims. Added early-exhaustion warning; one-shot designs remain valid.
 - Following verbatim x2: 1/2, 10 calls/$0.028624. Accepted incomplete factorial had duplicate
   nonbaseline cell. Do not rescore as success. New computed-grid regression catches this3/4.
-- Final factorial guard x2 RUNNING session45258, data/quality/composition-model-factorial-guard.log.
-  Source frozen during calls, additional $1 cap within aggregate75. This is familiar development
-  verification, not held-out generalization or insight quality. Retain any failures.
+- Final factorial guard x2: 2/2 declared mechanical checks, 12 calls/$0.036109. Exact evaluated
+  source939eab8, hash7cee110a0414319146c9cbe1c579d3a2a7283bfc6d8fdf1f78e420ed2c114b3e.
+  Manual interpretation audit found one passive-audience protocol despite that mechanical pass.
+  Added deterministic warning afterward; no new paid score for that source change. No held-out
+  generalization or insight-quality score. Keep every prior failure.
 - Matched participant check: 4/4 runs, 64/64 decisions; conservation, needs, nonnegativity,
   utility and replay passed. $0.019598. All noncontrollers consumed zero in every run;
   this is not evidence that transparency improves cooperation or participant optimality.
 
 Every phase has exact source archive/hash, manifest, attempts and sanitized provider traces
 in data/quality/composition-*/. A line-wrap-only provenance file belongs to the earlier12/12
-checkpoint; later semantic edits are separately evaluated. Before final factorial check:
-aggregate $15.010827; task $0.509372/265 calls. Earlier11 unknown reservations retained;
-no new unknowns through completed phases. Reconcile after final calls and restore75 ceiling.
+checkpoint; later semantic edits are separately evaluated. Final reconciliation: aggregate $15.046936; task $0.545481/277 calls. All new calls Luna-only;
+no pending or new unknowns, earlier11 unknown reservations retained. Two known-charge review
+truncation failures retained. Sum of provider charges equals ledger; ceiling restored75.
+Updated local summary: data/quality/composition-results.json.
 
-Latest owned preview: session14028, PID107664, 0.0.0.0:8080, preserved database
-`data/quality/manual-preview.sqlite3`; factorial source loaded, health verified.
+Latest owned preview: session43417, PID109011, 0.0.0.0:8080, preserved database
+`data/quality/manual-preview.sqlite3`; final source loaded; health, catalog, library, SPA and both new preflight outputs verified.
 Leave this requested preview running. Disposable browser/backend/container services closed.
 
-Next: finish final evaluation, reconcile ledger, finalize docs/HANDOFF without claiming an unrun
-14-case or held-out score. Secret-scan all task commits, push task branch, create one draft PR
-with base feat/experiment-validity, immediately T3-link; handle CI. If waiting on CI, watch/end;
-unwatch before final handoff. Never merge/main-push.
+Publication: secret-scan all task commits, push task branch, and create one draft PR with base
+feat/experiment-validity; immediately T3-link and handle CI. If waiting on CI, watch/end; unwatch
+before final handoff. No more paid trials required. No unrun final14-case, held-out or insight-
+quality claim. Never merge/main-push. Final code archive/manifest is data/quality/composition-final-code;
+its hash is recorded separately from the last model-evaluated source in composition-results.json.
 Limits: bounded resource primitives, uniform needs, one action per agent/round; no arbitrary
 Python, recipes, collateral, sanctions or authority removal. Public records/inventories are
 bundled. Model choices and interpretations are fallible; the earlier condition-label analysis
