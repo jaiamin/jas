@@ -159,6 +159,18 @@ def test_actual_visibility_is_announced_and_private_sanctions_stay_private(trans
         create_world(design, params, 7, snapshot)
 
 
+@pytest.mark.parametrize("agents", [2, 3, 12])
+def test_disclosure_contrast_needs_a_third_party_for_a_wider_audience(agents):
+    design = protocol("institution", agents, 3)
+    design.conditions[1].parameters = design.conditions[0].parameters.model_copy(deep=True)
+    design.conditions[0].parameters.institution.transparent = False
+    design.conditions[1].parameters.institution.transparent = True
+    report = preflight(design)
+    codes = {i["code"] for i in report["issues"]}
+    assert ("no_disclosure_audience" in codes) == (agents == 2)
+    assert report["status"] != "blocked"  # Announced framing can still be a valid question.
+
+
 def test_hidden_delayed_model_and_placebo_interventions_are_not_blanket_rejected():
     design = protocol("commons", 12, 100)
     baseline = design.conditions[0]

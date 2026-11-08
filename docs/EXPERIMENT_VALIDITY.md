@@ -67,6 +67,9 @@ checks, cutoff-scoped action/commitment counts, sanction opportunities and work 
 An announced sanction-visibility rule can influence anticipation even without sanctions;
 no realized sanctions means there were no sanction records to disclose. Recorded observations
 remain authoritative for historical runs; current static checks do not describe an old engine.
+Two-agent visibility contrasts also flag the absence of an additional audience: both parties
+already see their sanction record. Different announcements can test framing, but cannot
+establish an effect of wider disclosure in that setup.
 
 ## Shortage failure and upgrade
 

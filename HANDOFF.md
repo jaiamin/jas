@@ -28,7 +28,7 @@ Primary-source research and decisions are recorded in docs/EXPERIMENT_VALIDITY.m
 Implemented shared capability/construct checks, bounded scripted preflight, save/run gates,
 actual sanction-visibility observation (institution rules 4.1.0), exposure-aware analysis,
 editor/proposal/overview findings, historical read-only access and mixed-rule export v4.
-336 protocol combinations + 55 payoff oracles and regression tests added. Backend 730 tests,
+336 protocol combinations + 55 payoff oracles and regression tests added. Backend 732 tests,
 frontend 69 unit tests, all 68 browser tests, lint/types/build passed. Full deterministic gate:
 288 executable cases, 576 arms, 5,208 invariant checks, no failures; privacy/memory, scripted
 communication and visibility witnesses passed. Source: data/quality/validity-gate-repaired.
@@ -37,16 +37,25 @@ iteration: 46/60, catching unsupported substitutes but falsely rejecting 14 supp
 Diagnosed invented capability IDs, formatting quotes and reporting constraints mapped as world
 requirements. Fixed with enumerated capabilities, explicit scope instructions, normalized
 quotations and one recorded correction step. Final failed review persistence also fixed.
-Current two-repeat 30-question Luna development run: data/quality/validity-corrected, exec
-session 57227, max $2 within SAME existing ledger. Inspect all results, preserve failures,
-record honest comparison in docs/EXPERIMENT_VALIDITY.md, update costs and publish draft PR.
+Corrected mapper: 59/60, $0.228114, 140 calls, one false critique demanding duplicate comparator
+quotations despite implemented history/notes arms. Review now judges material executable
+contrasts; coordination warns about public state, private reward and greedy completion;
+two-agent sanction visibility warns when no wider disclosure audience exists. Supplemental
+explicit-count/isolation audit is data/quality/audit-validity.py (does not change raw scores).
+Latest source gate: data/quality/validity-gate-final-source, exec session 18395; backend
+tests rerunning, expected 735. NEXT: after gate passes, run SAME 30-question two-repeat Luna
+diagnostic as label validity-final, output data/quality/validity-final, max $2. Source should
+remain unchanged during/after final model check unless another material failure is found.
+Inspect results, preserve failures, record honest comparison in docs/EXPERIMENT_VALIDITY.md,
+update costs and PR. No universal quality score or hidden held-out tuning.
 Do not reopen old held-out model cases or tune against published held-out scores.
 
 ## Workspace and publication
 
 Linux isolated Docker Sandbox, /home/agent/workspace, branch feat/experiment-validity.
 PR #6 was already merged externally. New task branch starts at origin/main, with only the
-subsequent experiment-validity changes; create a new draft PR. Never merge/main-push or
+subsequent experiment-validity changes; draft PR https://github.com/jaiamin/ass/pull/7.
+Never merge/main-push or
 rewrite history. No new subagents. User is testing: preserve existing local database and runs.
 Current preview is exec session 81560, PID 79517 on 8080, dedicated database
 `data/quality/manual-preview.sqlite3`; refresh/restart this owned service when needed.

@@ -352,6 +352,17 @@ def _preflight(specification: str) -> dict:
                     f"{c.name} [{c.key}]: this memory contrast changes multiple retained "
                     "information sources; it does not isolate private notes or retrieval alone.",
                 )
+        if (
+            design.environment == "institution"
+            and "institution.transparent" in changes
+            and len(design.profiles) == 2
+        ):
+            issue(
+                "no_disclosure_audience",
+                f"{c.name} [{c.key}]: only the sanctioning agent and its target exist. "
+                "Public and party-only sanction records have the same recipients. "
+                "Rule announcements can differ, but this does not test wider disclosure.",
+            )
         a, b = traces.get(baseline.key), traces.get(c.key)
         witnesses = []
         if a and b:
