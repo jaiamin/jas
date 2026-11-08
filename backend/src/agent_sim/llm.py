@@ -3,6 +3,7 @@ import json
 import math
 import os
 from collections.abc import Callable, Iterator, Mapping
+from dataclasses import replace
 from typing import Any, Literal, TypedDict, TypeVar
 from urllib.parse import urlparse
 
@@ -14,6 +15,7 @@ from pydantic_ai.messages import (
     ModelMessagesTypeAdapter,
     ModelResponse,
     TextPart,
+    ThinkingPart,
     ToolCallPart,
 )
 from pydantic_ai.models import Model
@@ -295,7 +297,16 @@ class LanguageModels:
                 "complete" if failure is None else "failed" if usage_known else "unknown"
             )
             record.response_payload = ModelMessagesTypeAdapter.dump_python(
-                [*responses], mode="json"
+                [
+                    replace(
+                        response,
+                        parts=[
+                            part for part in response.parts if not isinstance(part, ThinkingPart)
+                        ],
+                    )
+                    for response in responses
+                ],
+                mode="json",
             )
             record.error = failure
             record.charged = charged

@@ -308,3 +308,51 @@ def test_provider_concurrency_rejects_out_of_range_settings(tmp_path, monkeypatc
             LanguageModels(db)
     finally:
         db.close()
+
+
+def test_provider_trace_keeps_observable_output_and_usage_without_thinking(runtime, monkeypatch):
+    from pydantic_ai.messages import ThinkingPart
+
+    db, llm, _, _ = runtime
+    captured = []
+
+    async def respond(messages, info):
+        response = ModelResponse(
+            parts=[
+                ThinkingPart(
+                    content="private-reasoning-canary", signature="opaque-signature-canary"
+                ),
+                ToolCallPart(info.output_tools[0].name, {"response": "Observable answer"}),
+            ],
+            usage=RequestUsage(
+                input_tokens=120, output_tokens=30, details={"reasoning_tokens": 12}
+            ),
+        )
+        captured.append(response)
+        return response
+
+    monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=respond))
+    answer = asyncio.run(
+        llm.generate(
+            str,
+            model="openai:gpt-6-luna",
+            prompt="Return an observable answer",
+            instructions="Answer briefly",
+            purpose="analysis",
+        )
+    )
+    assert answer == "Observable answer"
+    with db.session() as session:
+        call = session.scalar(select(ProviderCall))
+        serialized = json.dumps(call.response_payload)
+        assert "Observable answer" in serialized
+        assert "private-reasoning-canary" not in serialized
+        assert "opaque-signature-canary" not in serialized
+        assert all(
+            part["part_kind"] != "thinking"
+            for message in call.response_payload
+            for part in message["parts"]
+        )
+        assert (call.input_tokens, call.output_tokens, call.reasoning_tokens) == (120, 30, 12)
+        assert call.charged == 27 and call.status == "complete"
+    assert isinstance(captured[0].parts[0], ThinkingPart)

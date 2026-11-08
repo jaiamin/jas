@@ -183,3 +183,9 @@ team sizes and contributions against the inspected round's enforced endowment an
 It respects resource changes and evidence cutoffs, rejects infeasible assumptions and other
 worlds, and labels every result hypothetical. It neither executes actions nor forecasts future
 strategies. Other interpretations remain model judgments that require evidence and caveats.
+
+Investigation schemas expose the commons calculator only when the selected environment
+supports it; other worlds offer only scoped history/turn inspection. Runtime validation
+still rejects invalid targets and cutoffs. Provider records retain observable response
+parts and token accounting, omitting reasoning parts and opaque signatures. The original
+in-memory responses remain available to the provider library during the call.

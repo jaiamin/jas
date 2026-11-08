@@ -53,6 +53,7 @@ Average repetitions within seed; do not treat turns or repeated seeds as indepen
 For a useful insight, report the measured finding, plausible competing explanations, limits,
 and one concrete next controlled comparison (factor, outcome, horizon, matched seeds and cost).
 Do not recommend adding narrative detail as if it installs new environment mechanics.
+Made-report totals include both accurate and inaccurate reports; inaccuracies are a subset.
 Use the computed index for numerical totals; do not recount every turn. Inspect a few relevant
 turns before qualitative claims. Never request the same evidence twice; already_examined lists
 available ranges. Gather necessary requests together before answering. History requests use
@@ -69,6 +70,8 @@ no causal certainty from one trajectory. Answer concisely in Markdown. Cite supp
 and turns in the structured citations. Distinguish measured facts from interpretations. No
 fabricated metrics, scores, citations or actions. When enough evidence is available, return
 answer and no requests. Otherwise return requests and answer=null.
+Honor the response format requested in the question, including code blocks and field names.
+Put requested structured data inside answer; citations and caveats remain separate fields.
 Always include at least one concrete evidence limitation in the structured caveats list,
 even when the answer also discusses limits. Identify missing opportunities and sample size.
 When iterations_remaining is zero, return an answer with appropriate caveats or state that
@@ -119,6 +122,11 @@ class CommonsPayoffRequest(Strict):
     run_id: str
     turn: int = Field(ge=1)
     scenarios: list[CommonsChoice] = Field(min_length=1, max_length=24)
+
+
+class EvidenceInvestigation(Strict):
+    requests: list[HistoryRequest | TurnRequest] = Field(max_length=4)
+    answer: Finding | None
 
 
 class Investigation(Strict):
@@ -595,13 +603,18 @@ class Assistants:
             current = session.get_one(Analysis, key)
         conversation = self._conversation(current)
         index = self._evidence_index(cutoffs)
+        investigation = (
+            Investigation
+            if any(p["environment"] == "commons" for p in index["protocols"].values())
+            else EvidenceInvestigation
+        )
         gathered, examined = [], []
         iteration = 0
         while True:
             self._progress(key, "investigating", examined)
             finalizing = iteration == 3
             result = await self.models.generate(
-                Finding if finalizing else Investigation,
+                Finding if finalizing else investigation,
                 model=setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol"),
                 instructions=INVESTIGATION,
                 purpose="analysis",
@@ -642,7 +655,7 @@ class Assistants:
                     ):
                         raise ValueError("Assistant cited a turn it did not inspect")
                 return {**answer.model_dump(), "examined": examined}
-            assert isinstance(result, Investigation)
+            assert isinstance(result, (Investigation, EvidenceInvestigation))
             if not result.requests:
                 raise ValueError("Assistant returned neither evidence requests nor an answer")
             for request in result.requests:

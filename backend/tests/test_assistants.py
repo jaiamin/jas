@@ -613,3 +613,60 @@ def test_commons_counterfactuals_use_observed_rules_and_enforce_scope(runtime, d
         await assistant.close()
 
     asyncio.run(exercise())
+
+
+@pytest.mark.parametrize("environment", ["commons", "coordination"])
+def test_investigation_only_exposes_calculations_supported_by_selected_world(
+    runtime, monkeypatch, environment
+):
+    from agent_sim.domain import Design
+    from agent_sim.templates import templates
+    from pydantic import ValidationError
+
+    db, models, research, _ = runtime
+    designs = (Design.model_validate(t["design"]) for t in templates())
+    design = next(d for d in designs if d.environment == environment)
+    rid = research.operational_runs(research.save_design(design))[0].id
+    seen = []
+
+    async def answer(output, **kwargs):
+        request = dict(
+            kind="commons_payoffs",
+            run_id=rid,
+            turn=1,
+            scenarios=[dict(agents=2, own_contribution=0, other_contribution_per_agent=10)],
+        )
+        if environment == "commons":
+            assert (
+                output.model_validate(dict(requests=[request], answer=None)).requests[0].kind
+                == "commons_payoffs"
+            )
+        else:
+            with pytest.raises(ValidationError):
+                output.model_validate(dict(requests=[request], answer=None))
+            assert output.model_validate(
+                dict(requests=[dict(kind="turn", run_id=rid, turn=0)], answer=None)
+            )
+        seen.append(output)
+        return output.model_validate(
+            dict(
+                requests=[],
+                answer=dict(
+                    answer="No decisions have been observed.",
+                    citations=[],
+                    caveats=["Cutoff zero."],
+                ),
+            )
+        )
+
+    monkeypatch.setattr(models, "generate", answer)
+
+    async def exercise():
+        assistant = Assistants(db, research, models)
+        key = assistant.start("Audit available evidence", purpose="analysis", run_id=rid)
+        await assistant.tasks[key]
+        assert assistant.get(key)["status"] == "complete"
+        assert len(seen) == 1
+        await assistant.close()
+
+    asyncio.run(exercise())
