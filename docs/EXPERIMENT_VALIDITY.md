@@ -44,6 +44,13 @@ coordination effort bounds and identical arms. Identical replication/placebo arm
 are warnings, not invalid experiments. Save and execution reject confirmed errors; manual
 protocols can be mechanically checked without pretending their question was model-reviewed.
 
+Coordination checks disclose that task state is public, all agents can perform all tasks,
+and useful work pays personally. For feasible graphs with spare turns, an independent
+effort bound shows that a greedy no-message strategy can finish. Completion timing and
+blocked/duplicate work may distinguish strategies when final completion saturates. This
+does not force communication to help or reject legitimate null-effect studies. Private
+expertise, hidden task state and enforced specialization are absent mechanics.
+
 Three legal scripted instruments per condition exercise low/high choices and additional
 sanction/appeal or delayed-negotiation paths. They compare observation and consequence hashes
 on the first seed, capped at 96 turns each (at most 1,728 decisions). These are witnesses,

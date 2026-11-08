@@ -200,6 +200,56 @@ def test_custom_tasks_replace_task_count_and_feasibility_is_condition_specific()
     assert "completion_ceiling" not in {i["code"] for i in report["issues"]}
 
 
+@pytest.mark.parametrize("custom_tasks", [True, False])
+def test_public_task_completion_does_not_require_messages_or_private_sacrifice(custom_tasks):
+    from agent_sim.domain import Action, Decision
+
+    design = protocol("coordination", 4, 8)
+    design.conditions = design.conditions[:1]
+    if custom_tasks:
+        design.tasks = [
+            TaskDefinition(key="first", name="First", effort=2),
+            TaskDefinition(key="last", name="Last", dependencies=["first"], effort=3),
+        ]
+    condition = design.conditions[0]
+    condition.parameters.communication = False
+    world = create_world(design, condition.parameters, 7)
+    effort = sum(t["effort"] for t in world.state["tasks"])
+    turns = 0
+    while (actor := world.actor()) is not None:
+        observation = world.observe(actor)
+        completed = {t["key"] for t in observation["tasks"] if t["completed_by"]}
+        ready = next(
+            t
+            for t in observation["tasks"]
+            if not t["completed_by"] and set(t["dependencies"]) <= completed
+        )
+        balance = world.state["balances"][actor]
+        world.step(
+            actor,
+            Decision(
+                action=Action(
+                    kind="work",
+                    target=ready["key"],
+                    amount=0,
+                    message="",
+                    report=None,
+                    promise=None,
+                ),
+                rationale="Greedy no-message witness.",
+                memory="",
+                forecast=None,
+            ),
+        )
+        assert world.state["balances"][actor] == balance + 1
+        turns += 1
+    assert turns == effort < design.turn_count
+    assert all(t["completed_by"] for t in world.state["tasks"])
+    report = preflight(design)
+    assert report["status"] == "review"  # A valid pilot or null-effect study can still run.
+    assert {"public_task_coordination", "completion_slack"} <= {i["code"] for i in report["issues"]}
+
+
 def test_checks_gate_saving_and_execution_before_providers_or_mutations(
     runtime, design, monkeypatch
 ):

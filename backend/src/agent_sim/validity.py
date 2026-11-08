@@ -35,7 +35,8 @@ CAPABILITIES = {
         "commitments": "Recorded promises with feasible/infeasible fulfillment scoring.",
     },
     "coordination": {
-        "task_dependencies": "Authoritative tasks, effort and prerequisites; work pays personally.",
+        "task_dependencies": "Public authoritative tasks, effort and prerequisites; any agent "
+        "can work on any task and useful work pays personally. No private skills or task state.",
     },
     "institution": {
         "allocation_power": "Authorities allocate fresh credits or sanction workers.",
@@ -260,6 +261,12 @@ def _preflight(specification: str) -> dict:
                     f"by {marginal:+.3f}; contribution need not involve private sacrifice.",
                 )
     if design.environment == "coordination":
+        issue(
+            "public_task_coordination",
+            "All task dependencies and progress are public; any agent can work on any task. "
+            "Useful work earns 1 personal credit; waiting earns none. Completion need not "
+            "require communication or personal sacrifice. Private expertise is not enforced.",
+        )
         for c in design.conditions:
             effort = (
                 sum(t.effort for t in design.tasks)
@@ -272,6 +279,15 @@ def _preflight(specification: str) -> dict:
                     f"{c.name} [{c.key}]: tasks require {effort} effort actions but the run has "
                     f"{design.turn_count} turns. Full completion is infeasible; "
                     "partial progress may still be informative.",
+                )
+            elif effort < design.turn_count:
+                issue(
+                    "completion_slack",
+                    f"{c.name} [{c.key}]: a strategy selecting an available unfinished task "
+                    f"can finish in {effort} work actions without messages, within "
+                    f"{design.turn_count} available turns. Final completion can saturate; "
+                    "inspect completion timing and blocked/duplicate work too. This is a "
+                    "solvability bound, not a prediction of model behavior.",
                 )
     if len(design.seeds) < 3:
         issue(
