@@ -19,3 +19,16 @@
 - The kernel's strategy-discrimination check distinguishes scripted action traces. Analytical
   outcome checks and scoring mutation tests are separate evidence. Distinct strategies can
   produce tied payoffs; passing the kernel is not a statistical strategy-classifier score.
+- The final held-out planner scored 206/240 under the frozen rubric. One family exposed
+  missing planner metadata about enforced per-round truth redraw; another asks specifically
+  about private notes but prescribes a contrast that also changes public history. Raw failures
+  remain. The post-checkpoint specification audit does not adjust scores or denominators.
+- A single changed parameter can bundle several informational mechanisms. None-versus-episodic
+  retention and outcome-feedback/reward-visibility contrasts need this broader interpretation.
+  Passing transition/payoff/privacy/replay checks alone cannot validate the wording of an estimand.
+- Fresh stability checks scored 84/84 and 83/84 on identical saved traces. The latter substituted
+  one participant's utility for group utility. Verified source data does not guarantee that
+  freeform model prose will select or restate the correct quantity.
+- Post-hoc review of eight held-out answers still found insufficient explanation of bundled
+  memory mechanisms and imprecise whole-ceiling reservation wording. Strict numerical and
+  citation compliance does not certify these recommendations as sound experimental design.

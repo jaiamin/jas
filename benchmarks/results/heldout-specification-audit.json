@@ -1,0 +1,18 @@
+{
+  "timing": "Post-checkpoint audit after held-out failures became visible; all ten held-out families reviewed",
+  "policy": "No source, test, prompt, case, expected answer or scorer changes. Frozen raw scores retain every attempt; this audit does not adjust denominators or produce a corrected headline score.",
+  "families": [
+    {"family": "commitments-after-shock", "assessment": "History versus notes isolates private notes while holding public history. Capacity shock and feasible/infeasible commitment separation are supported."},
+    {"family": "reciprocity-after-shock", "assessment": "Supported scheduled capacity intervention. Seeded partners remain enforced; behavioral response is not evidence about belief or motive."},
+    {"family": "handoff-retention", "assessment": "None versus episodic is a bundled retention-mode contrast: public history, private notes and retrieved experience change. It cannot identify the episodic component alone; interpret retained-experience wording broadly or treat it as ambiguous."},
+    {"family": "appeals-without-audits", "assessment": "Supported appeal affordance. No sanctions means no appeal-quality opportunity; work-rate excludes appeal turns. Neutral behavior is a valid result."},
+    {"family": "feedback-free-cascades", "assessment": "The implemented information world redraws binary truth by seed and round. Planner capability descriptions omit this fact, causing false unsupported rejections. Feedback also changes when rewards become visible to prevent balance leakage; this is a bundled feedback mechanism.", "evidence": ["backend/src/agent_sim/simulation/mechanisms.py:340", "backend/src/agent_sim/simulation/mechanisms.py:395", "backend/src/agent_sim/planning.py:60"]},
+    {"family": "public-evidence-without-feedback", "assessment": "Supported public versus private noisy signals with delayed feedback. Signal-report accuracy is distinct from truth-prediction accuracy."},
+    {"family": "credible-exit", "assessment": "Supported outside-option intervention. Immediate agreement can make the contrast behaviorally neutral; this is not an execution failure."},
+    {"family": "depleted-stock-memory", "assessment": "Specification ambiguity: the question singles out private-note retention, but none versus notes also changes public-history retention. Some planner objections are justified identification concerns. Frozen raw failures are retained and must not all be interpreted as platform defects."},
+    {"family": "external-verification", "assessment": "Correctly unsupported: participant external tools and real-world enforcement are absent."},
+    {"family": "subjective-experience", "assessment": "Correctly unsupported: the platform cannot validate subjective experience or unobservable internal states."}
+  ],
+  "gate_weakness": "Passing transition, payoff, privacy and replay checks does not establish that natural-language questions identify their claimed variable. A single changed parameter can still bundle multiple informational mechanisms.",
+  "followup_only": "Expose full enforced dynamics in capability metadata and independently review intervention semantics. These changes are not made against this held-out evaluation."
+}

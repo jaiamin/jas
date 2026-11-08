@@ -38,5 +38,18 @@
   "verified_source_sha256": "7f2a136a2d71124fc5b962fb0fde3f5b5bd77de35453e7a63f04d22a2a69997a",
   "archive_file_sha256": "a6328407cb82483ea534d85fbb3d4ec50ae02b1e7535be04a8fd46c486179783",
   "previous_verified_source_sha256": "2f22455976d34d4d56bb299a3f303526b490d38c2ee7c9d3e826928e4f70e030",
-  "source_archive": "verification/source.tar.gz"
+  "source_archive": "verification/source.tar.gz",
+  "post_heldout_source_sha256": "7f2a136a2d71124fc5b962fb0fde3f5b5bd77de35453e7a63f04d22a2a69997a",
+  "scorecard_preview": {
+    "width": 390,
+    "content_height": 809,
+    "console_errors": 0
+  },
+  "paid_work_complete": true,
+  "final_archive_secret_scan": {
+    "findings": 0,
+    "scanned_bytes": 2423860662,
+    "archive_depth": 2,
+    "redacted": true
+  }
 }

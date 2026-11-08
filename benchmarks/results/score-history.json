@@ -1,5 +1,5 @@
 {
-  "status": "development; held-out pending",
+  "status": "Complete: final held-out evaluated once; no post-held-out tuning",
   "no_omnibus_score": true,
   "tracks": [
     {
@@ -158,6 +158,157 @@
           "evidence": "incentives-final-confirmation/attempts.jsonl.gz"
         }
       ]
+    },
+    {
+      "dimension": "larger_team_analysis",
+      "limitation": "Same 72 saved larger-team traces, fresh calls; strict facts/format/citations/caveats contract.",
+      "checkpoints": [
+        {
+          "checkpoint": "analysis-agent-counts",
+          "passed": 65,
+          "attempted": 72,
+          "source_sha256": "2f22455976d34d4d56bb299a3f303526b490d38c2ee7c9d3e826928e4f70e030"
+        },
+        {
+          "checkpoint": "analysis-agent-counts-improvement",
+          "passed": 72,
+          "attempted": 72,
+          "source_sha256": "7f2a136a2d71124fc5b962fb0fde3f5b5bd77de35453e7a63f04d22a2a69997a"
+        }
+      ]
     }
-  ]
+  ],
+  "heldout": {
+    "planner": {
+      "attempted": 240,
+      "passed": 206,
+      "failures": {
+        "capability": 33,
+        "valid_design": 33,
+        "complete": 15,
+        "explanation": 15,
+        "intervention": 1
+      },
+      "by_family": {
+        "handoff-retention": {
+          "attempted": 24,
+          "passed": 24
+        },
+        "commitments-after-shock": {
+          "attempted": 24,
+          "passed": 24
+        },
+        "depleted-stock-memory": {
+          "attempted": 24,
+          "passed": 13
+        },
+        "feedback-free-cascades": {
+          "attempted": 24,
+          "passed": 1
+        },
+        "reciprocity-after-shock": {
+          "attempted": 24,
+          "passed": 24
+        },
+        "public-evidence-without-feedback": {
+          "attempted": 24,
+          "passed": 24
+        },
+        "subjective-experience": {
+          "attempted": 24,
+          "passed": 24
+        },
+        "external-verification": {
+          "attempted": 24,
+          "passed": 24
+        },
+        "credible-exit": {
+          "attempted": 24,
+          "passed": 24
+        },
+        "appeals-without-audits": {
+          "attempted": 24,
+          "passed": 24
+        }
+      }
+    },
+    "participants": {
+      "attempted": 96,
+      "passed": 96,
+      "failures": {},
+      "by_family": {
+        "commitments-after-shock": {
+          "attempted": 12,
+          "passed": 12
+        },
+        "depleted-stock-memory": {
+          "attempted": 12,
+          "passed": 12
+        },
+        "public-evidence-without-feedback": {
+          "attempted": 12,
+          "passed": 12
+        },
+        "credible-exit": {
+          "attempted": 12,
+          "passed": 12
+        },
+        "feedback-free-cascades": {
+          "attempted": 12,
+          "passed": 12
+        },
+        "appeals-without-audits": {
+          "attempted": 12,
+          "passed": 12
+        },
+        "handoff-retention": {
+          "attempted": 12,
+          "passed": 12
+        },
+        "reciprocity-after-shock": {
+          "attempted": 12,
+          "passed": 12
+        }
+      }
+    },
+    "analysis": {
+      "attempted": 96,
+      "passed": 96,
+      "failures": {},
+      "by_family": {
+        "handoff-retention": {
+          "attempted": 12,
+          "passed": 12
+        },
+        "commitments-after-shock": {
+          "attempted": 12,
+          "passed": 12
+        },
+        "appeals-without-audits": {
+          "attempted": 12,
+          "passed": 12
+        },
+        "depleted-stock-memory": {
+          "attempted": 12,
+          "passed": 12
+        },
+        "feedback-free-cascades": {
+          "attempted": 12,
+          "passed": 12
+        },
+        "public-evidence-without-feedback": {
+          "attempted": 12,
+          "passed": 12
+        },
+        "reciprocity-after-shock": {
+          "attempted": 12,
+          "passed": 12
+        },
+        "credible-exit": {
+          "attempted": 12,
+          "passed": 12
+        }
+      }
+    }
+  }
 }

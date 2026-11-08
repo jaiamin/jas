@@ -1,0 +1,163 @@
+{
+  "aggregate_cap_usd": 75,
+  "ledger_ceiling_usd": 75.0,
+  "charged_or_reserved_usd": 13.608157,
+  "known_request_charges_usd": 13.415183,
+  "unknown_retained_reservations_usd": 0.192974,
+  "requests": 26688,
+  "status_counts": {
+    "complete": 26677,
+    "unknown": 11
+  },
+  "models": {
+    "openai:gpt-6-luna": 26688
+  },
+  "published_unique_request_ids": 26688,
+  "duplicate_ids": 0,
+  "missing_published_calls": 0,
+  "ledger_mismatches": 0,
+  "phase_files": [
+    {
+      "file": "analysis-agent-counts/provider-calls.jsonl.gz",
+      "requests": 191,
+      "cost_usd": 0.226965
+    },
+    {
+      "file": "analysis-agent-counts-improvement/provider-calls.jsonl.gz",
+      "requests": 177,
+      "cost_usd": 0.189397
+    },
+    {
+      "file": "analysis-baseline/provider-calls.jsonl.gz",
+      "requests": 282,
+      "cost_usd": 0.620124
+    },
+    {
+      "file": "analysis-confirmation/provider-calls.jsonl.gz",
+      "requests": 201,
+      "cost_usd": 0.244663
+    },
+    {
+      "file": "analysis-final-confirmation/provider-calls.jsonl.gz",
+      "requests": 199,
+      "cost_usd": 0.2226
+    },
+    {
+      "file": "analysis-improvement-1/provider-calls.jsonl.gz",
+      "requests": 182,
+      "cost_usd": 0.194712
+    },
+    {
+      "file": "analysis-improvement-2/provider-calls.jsonl.gz",
+      "requests": 202,
+      "cost_usd": 0.235927
+    },
+    {
+      "file": "analysis-stability-1/provider-calls.jsonl.gz",
+      "requests": 190,
+      "cost_usd": 0.209627
+    },
+    {
+      "file": "analysis-stability-2/provider-calls.jsonl.gz",
+      "requests": 199,
+      "cost_usd": 0.226568
+    },
+    {
+      "file": "final-heldout-analysis/provider-calls.jsonl.gz",
+      "requests": 222,
+      "cost_usd": 0.2674
+    },
+    {
+      "file": "final-heldout-participants/provider-calls.jsonl.gz",
+      "requests": 3692,
+      "cost_usd": 1.249172
+    },
+    {
+      "file": "final-heldout-planner/provider-calls.jsonl.gz",
+      "requests": 754,
+      "cost_usd": 0.941712
+    },
+    {
+      "file": "incentives-baseline/provider-calls.jsonl.gz",
+      "requests": 42,
+      "cost_usd": 0.018603
+    },
+    {
+      "file": "incentives-confirmation/provider-calls.jsonl.gz",
+      "requests": 32,
+      "cost_usd": 0.019376
+    },
+    {
+      "file": "incentives-final-confirmation/provider-calls.jsonl.gz",
+      "requests": 29,
+      "cost_usd": 0.017914
+    },
+    {
+      "file": "incentives-improvement-1/provider-calls.jsonl.gz",
+      "requests": 41,
+      "cost_usd": 0.017175
+    },
+    {
+      "file": "incentives-improvement-2/provider-calls.jsonl.gz",
+      "requests": 35,
+      "cost_usd": 0.020247
+    },
+    {
+      "file": "initial-planner/provider-calls.jsonl.gz",
+      "requests": 354,
+      "cost_usd": 0.4346
+    },
+    {
+      "file": "participant-agent-counts/provider-calls.jsonl.gz",
+      "requests": 3198,
+      "cost_usd": 1.16941
+    },
+    {
+      "file": "participant-baseline/provider-calls.jsonl.gz",
+      "requests": 2952,
+      "cost_usd": 1.051876
+    },
+    {
+      "file": "participant-effort-communication/provider-calls.jsonl.gz",
+      "requests": 1728,
+      "cost_usd": 0.583734
+    },
+    {
+      "file": "participant-memory/provider-calls.jsonl.gz",
+      "requests": 2304,
+      "cost_usd": 0.696823
+    },
+    {
+      "file": "participant-parallel/provider-calls.jsonl.gz",
+      "requests": 28,
+      "cost_usd": 0.00744
+    },
+    {
+      "file": "participant-serial/provider-calls.jsonl.gz",
+      "requests": 32,
+      "cost_usd": 0.007581
+    },
+    {
+      "file": "participants-development/provider-calls.jsonl.gz",
+      "requests": 7786,
+      "cost_usd": 2.741032
+    },
+    {
+      "file": "planner-audience-correction/provider-calls.jsonl.gz",
+      "requests": 22,
+      "cost_usd": 0.02768
+    },
+    {
+      "file": "planner-baseline/provider-calls.jsonl.gz",
+      "requests": 336,
+      "cost_usd": 0.398658
+    },
+    {
+      "file": "planner-development-v2/provider-calls.jsonl.gz",
+      "requests": 1278,
+      "cost_usd": 1.567141
+    }
+  ],
+  "units": "One ledger unit is one millionth USD; token prices are estimates, not invoices. Unknown calls retain reservations. No ledger reset.",
+  "reconciliation": "All published calls reconcile exactly by ID, charge, status and model with the persistent aggregate ledger; workspace charge equals summed calls."
+}

@@ -1,0 +1,27 @@
+{
+  "final_source_sha256": "7f2a136a2d71124fc5b962fb0fde3f5b5bd77de35453e7a63f04d22a2a69997a",
+  "checks": [
+    {
+      "kind": "planner",
+      "attempted": 240,
+      "unique_job_keys": 240,
+      "source_unchanged": true,
+      "exclusive_marker_retained": true
+    },
+    {
+      "kind": "participants",
+      "attempted": 96,
+      "unique_job_keys": 96,
+      "source_unchanged": true,
+      "exclusive_marker_retained": true
+    },
+    {
+      "kind": "analysis",
+      "attempted": 96,
+      "unique_job_keys": 96,
+      "source_unchanged": true,
+      "exclusive_marker_retained": true
+    }
+  ],
+  "post_holdout_source_or_scoring_changes": false
+}
