@@ -322,6 +322,24 @@ def _preflight(specification: str) -> dict:
             composition = c.parameters.composition
             assert composition is not None
             for r in composition.resources:
+                capacity_per_round = r.action_limit * (len(r.controllers) or len(design.profiles))
+                fastest_empty_round = (
+                    r.initial_stock + capacity_per_round - 1
+                ) // capacity_per_round
+                if (
+                    r.initial_stock > 0
+                    and r.replenishment == 0
+                    and fastest_empty_round < design.rounds
+                ):
+                    issue(
+                        "early_resource_exhaustion",
+                        f"{c.name} / {r.name}: legal maximum requests can empty shared stock "
+                        f"within {fastest_empty_round} round(s), before the {design.rounds}-round "
+                        "horizon. Later rounds do not guarantee further stock-allocation "
+                        "opportunities. Match action limits and timing claims to the question; "
+                        "one-shot allocation can still be valid, and personal transfers and "
+                        "consumption may continue after shared stock is exhausted.",
+                    )
                 need = r.need * len(design.profiles) * design.rounds
                 supply = r.initial_stock + r.replenishment * (design.rounds - 1)
                 if need and supply < need:

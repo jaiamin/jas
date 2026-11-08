@@ -82,13 +82,37 @@ def test_replenishment_discards_capacity_overflow_and_stops_at_terminal_round():
     design = design_for(initial_stock=5, capacity=5, replenishment=4, need=0)
     world, trace = play(
         design,
-        lambda _world, actor: decision("allocate", 2, "food:alex")
-        if actor == "alex"
-        else decision("wait"),
+        lambda _world, actor: (
+            decision("allocate", 2, "food:alex") if actor == "alex" else decision("wait")
+        ),
     )
     assert [trace[i][3]["stocks"]["food"] for i in (3, 7, 11)] == [5, 5, 3]
     assert world.state["inventories"]["food"]["alex"] == 6
     assert world.state["balances"]["alex"] == 6
+
+
+@pytest.mark.parametrize("controllers,stocks", [(["alex"], [2, 0, 0]), ([], [0, 0, 0])])
+def test_preflight_exhaustion_warning_has_a_legal_witness_without_blocking_one_shot(
+    controllers, stocks
+):
+    design = design_for(initial_stock=5, action_limit=3, controllers=controllers)
+
+    def maximum_request(world, actor):
+        option = world.observe(actor)["legal_actions"][0]
+        return decision(option["kind"], option["amount_max"], option["targets"][0])
+
+    _, trace = play(design, maximum_request)
+    assert [trace[i][3]["stocks"]["food"] for i in (3, 7, 11)] == stocks
+    report = preflight(design)
+    assert report["status"] != "blocked"
+    assert any(i["code"] == "early_resource_exhaustion" for i in report["issues"])
+
+
+def test_preflight_does_not_presume_persistent_exhaustion_with_inflows_or_slower_access():
+    for design in (design_for(replenishment=2), design_for(initial_stock=12, action_limit=2)):
+        assert not any(
+            i["code"] == "early_resource_exhaustion" for i in preflight(design)["issues"]
+        )
 
 
 @pytest.mark.parametrize(
