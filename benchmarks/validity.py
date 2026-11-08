@@ -13,6 +13,7 @@ from agent_sim.simulation.environments import create_world
 
 from benchmarks.cases import cases, fingerprint
 from benchmarks.oracles import expected_balances, score_trace, scripted
+from benchmarks.probes import communication_probes, privacy_matrix
 from benchmarks.provenance import backend_digest
 
 
@@ -45,6 +46,15 @@ def trajectory(case, condition, productive):
         assert digest(restored.snapshot()) == digest(row["checkpoint"]), "checkpoint replay"
         assert replay_events == events and replay_measures == measures, "outcome replay"
         assert "known_truth" not in json.dumps(observation), "researcher truth leaked"
+        for event in row["events"]:
+            if event["kind"] == "claim":
+                assert event["data"]["accurate"] == (
+                    event["data"]["reported"] == event["data"]["known_truth"]
+                ), "claim truth scoring"
+            if event["kind"] == "commitment_resolved":
+                assert event["data"]["fulfilled"] == (
+                    event["data"]["actual"] >= event["data"]["amount"]
+                ), "commitment scoring"
         rows.append(row)
         assert len(rows) <= design.turn_count, "nontermination"
     expected = expected_balances(case, condition.parameters, productive)
@@ -120,6 +130,7 @@ def adversarial(case, condition) -> dict[str, bool]:
 
 
 def evaluate(selected=None, output: Path | None = None) -> dict:
+    initial_source = backend_digest()
     records = []
     trace_file = gzip.open(output / "validity-traces.jsonl.gz", "wt") if output else None
     try:
@@ -163,8 +174,19 @@ def evaluate(selected=None, output: Path | None = None) -> dict:
         if trace_file:
             trace_file.close()
     failures = Counter(k for r in records for k, v in r["checks"].items() if v is False)
+    privacy = privacy_matrix()
+    communication = communication_probes()
+    if output:
+        with gzip.open(output / "communication-traces.jsonl.gz", "wt") as stream:
+            for record in communication.pop("records"):
+                stream.write(json.dumps(record) + "\n")
+    else:
+        communication.pop("records")
+    assert initial_source == backend_digest(), "Source changed during validity gate"
     summary = dict(
-        backend_sha256=backend_digest(),
+        backend_sha256=initial_source,
+        privacy_matrix=privacy,
+        communication_probes=communication,
         suite_sha256=fingerprint(),
         cases=len({r["case"] for r in records}),
         arms=len(records),

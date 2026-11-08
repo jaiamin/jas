@@ -132,8 +132,9 @@ def score_trace(rows: list[dict], initial: dict) -> dict:
         "completion": sum(bool(t["completed_by"]) for t in tasks) / len(tasks) if tasks else None,
         "stock": final.get("stock"),
         "reports": len(claims),
-        "false_reports": sum(not e["data"]["accurate"] for e in claims),
-        "false_report_rate": sum(not e["data"]["accurate"] for e in claims) / len(claims)
+        "false_reports": sum(e["data"]["reported"] != e["data"]["known_truth"] for e in claims),
+        "false_report_rate": sum(e["data"]["reported"] != e["data"]["known_truth"] for e in claims)
+        / len(claims)
         if claims
         else None,
         "eligible_commitments": len(commitments),

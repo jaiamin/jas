@@ -1,4 +1,12 @@
-# Evaluation protocol 1 — frozen before platform changes
+# Evaluation protocol 2 — corrected before development improvements
+
+Version 1 is archived with its initial results. Development evidence exposed conflicting
+communication estimands, a two-agent rotating-partner question and irrelevant endowment
+requirements. Version 2 corrects those specifications (the same mechanical pairing
+clarification applies to the unopened held-out family), freezes explicit unique prompts,
+and varies bargaining horizons to remove duplicate cases. No held-out model results
+were opened. The original 90/108 raw pass count is not an improvement baseline.
+A fresh corrected baseline precedes further planner/participant/analysis changes.
 
 ## Questions and units
 
@@ -31,7 +39,7 @@ there is no scripted production participant or model fallback.
 
 ## Model evaluation and resource allocation
 
-Every model request uses exactly `openai:gpt-6-luna`, low reasoning unless an explicit
+Every model request uses exactly `openai:gpt-6-luna`, medium reasoning for the multi-stage planner and low for participants unless an explicit
 medium-effort arm is being tested. No provider substitution, hidden retries or browsing
 inside trials. One dedicated SQLite workspace ledger, never reset between checkpoints,
 has a $75 aggregate ceiling. Each request reserves conservative input/output cost before
@@ -49,7 +57,7 @@ Participant trials execute saved predeclared protocols through the production en
 Use matched seeds 17, 43, 89 and two repetitions, randomize/balance scheduling by seed.
 Compare communication, memory (none/history/notes/episodic), low/medium effort and 2/4/8/12
 agents where mechanically justified (bargaining exactly 2; trust even). Cap total
-decisions per arm equally; increased agents trade against rounds and are explicitly a
+decisions per arm at 48 equally (ensuring at least four rounds at 12 agents); increased agents trade against rounds and are explicitly a
 fixed-resource configuration comparison, not a pure count effect. Run concurrency is
 an execution setting, not extra participant information. Compare concurrency 1 and 4
 with equal protocols/budgets; scripted parity first, fresh-model results are stochastic.
@@ -80,7 +88,7 @@ intention-to-evaluate denominator including all attempts.
 ## Iteration, checkpoint and stopping
 
 Record every checkpoint's git/source hash, suite digest, configuration, attempts and
-aggregate ledger in `benchmarks/results/`. Baseline precedes production fixes. Diagnose
+aggregate ledger in `benchmarks/results/`. The zero-cost baseline precedes safety fixes; paid baselines necessarily follow the passing safety gate. Diagnose
 development failures; change shared causes, not case IDs or expected answers. Keep the
 suite fixed; any genuine oracle correction versions the suite and invalidates comparisons.
 Stop development after two informative retests without material gains, remaining issues

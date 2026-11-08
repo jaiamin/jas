@@ -69,7 +69,12 @@ def assess(case: Case, result: dict) -> dict[str, bool]:
         a.get("parameters." + k) == value and b.get("parameters." + k) == value
         for k, value in case.family.setup.items()
     )
-    if case.family.factor != "endowment":
+    if case.family.factor != "endowment" and case.family.environment in {
+        "commons",
+        "trust_exchange",
+        "institution",
+        "bargaining",
+    }:
         checks["setup"] &= all(v["parameters.endowment"] == case.endowment for v in (a, b))
     checks["effective_channel"] = case.family.factor != "communication_channels" or all(
         c.parameters.communication for c in design.conditions

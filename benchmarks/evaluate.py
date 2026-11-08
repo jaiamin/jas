@@ -30,8 +30,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def source_digest() -> str:
-    paths = sorted((ROOT / "backend/src").rglob("*.py")) + sorted(
-        (ROOT / "benchmarks").glob("*.py")
+    paths = (
+        sorted((ROOT / "backend/src").rglob("*.py"))
+        + sorted((ROOT / "benchmarks").glob("*.py"))
+        + sorted(
+            p for p in (ROOT / "frontend/src").rglob("*") if p.suffix in {".ts", ".tsx", ".css"}
+        )
     )
     return hashlib.sha256(
         b"".join(str(p.relative_to(ROOT)).encode() + p.read_bytes() for p in paths)
@@ -56,12 +60,12 @@ async def planner_trial(app, client, case) -> dict:
     }
 
 
-async def participant_trial(app, case, mode: str, repetition: int) -> dict:
+async def participant_trial(app, case, mode: str, repetition: int, arm: int) -> dict:
     design = case.design()
-    # All arms keep a 24-decision allowance; bargaining may terminate early.
+    # Equal 48-decision allowances preserve round-three shocks even with 12 agents.
     data = design.model_dump()
-    data.update(rounds=max(2, 24 // case.agents), repetitions=1)
-    data["conditions"] = data["conditions"][:1]
+    data.update(rounds=max(2, 48 // case.agents), repetitions=1)
+    data["conditions"] = [data["conditions"][arm]]
     params = data["conditions"][0]["parameters"]
     if mode.startswith("memory-"):
         params["memory"] = mode.removeprefix("memory-")
@@ -102,6 +106,8 @@ async def participant_trial(app, case, mode: str, repetition: int) -> dict:
         "family": case.family.key,
         "run_id": run_id,
         "mode": mode,
+        "arm": arm,
+        "parameters": params,
         "agents": case.agents,
         "seed": case.seed,
         "repetition": repetition,
@@ -156,6 +162,13 @@ async def run(args) -> dict:
                 (cap,) = db.execute("SELECT ceiling FROM workspace WHERE id=1").fetchone()
                 if cap > 75_000_000:
                     raise ValueError("Existing ledger has a ceiling above the authorized cap")
+        if args.split == "heldout":
+            # Exclusive marker survives interruption; never silently repeat a frozen test.
+            marker = db_path.parent / f"heldout-{args.kind}.attempted.json"
+            with marker.open("x") as stream:
+                json.dump(
+                    {"checkpoint": args.checkpoint, "selected": [c.id for c in selected]}, stream
+                )
         cap = 75 if args.split == "heldout" else 60
         manifest = dict(
             suite_sha256=fingerprint(),
@@ -171,6 +184,9 @@ async def run(args) -> dict:
             modes=args.modes,
             repetitions=args.repetitions,
             concurrency=args.concurrency,
+            decision_allowance_per_arm=48,
+            planner_reasoning_effort="medium",
+            participant_reasoning_effort="low unless medium-effort",
             git_head=(
                 await asyncio.to_thread(
                     subprocess.check_output, ["git", "rev-parse", "HEAD"], text=True
@@ -187,6 +203,8 @@ async def run(args) -> dict:
             return await generate(output_type, **kwargs)
 
         app.state.models.generate = luna_only
+        with app.state.db.session() as session:
+            previous_calls = set(session.scalars(select(ProviderCall.id)).all())
         records = []
         capacity = asyncio.Semaphore(args.concurrency)
         async with app.router.lifespan_context(app):
@@ -194,14 +212,14 @@ async def run(args) -> dict:
                 transport=httpx.ASGITransport(app=app), base_url="http://localhost", timeout=1800
             ) as client:
 
-                async def trial(case, mode, repetition):
+                async def trial(case, mode, repetition, arm):
                     async with capacity:
                         started = time.monotonic()
                         try:
                             result = await (
                                 planner_trial(app, client, case)
                                 if args.kind == "planner"
-                                else participant_trial(app, case, mode, repetition)
+                                else participant_trial(app, case, mode, repetition, arm)
                             )
                         except Exception as e:
                             # Provider exception bodies can contain credentials; class only.
@@ -214,7 +232,7 @@ async def run(args) -> dict:
                                 error=type(e).__name__,
                             )
                         result["seconds"] = round(time.monotonic() - started, 3)
-                        result.update(mode=mode, repetition=repetition)
+                        result.update(mode=mode, repetition=repetition, arm=arm)
                         result["passed"] = all(result["checks"].values())
                         records.append(result)
                         with gzip.open(output / "attempts.jsonl.gz", "at") as stream:
@@ -229,16 +247,21 @@ async def run(args) -> dict:
                         )
 
                 jobs = [
-                    (c, m, r)
+                    (c, m, r, arm)
                     for c in selected
                     for m in (args.modes if args.kind == "participants" else ["planner"])
                     for r in range(args.repetitions)
+                    for arm in (range(2) if args.kind == "participants" else [None])
                 ]
                 random.Random(20261108).shuffle(jobs)
                 await asyncio.gather(*(trial(*job) for job in jobs))
             with app.state.db.session() as session:
                 ledger = session.get_one(Workspace, 1)
-                calls = session.scalars(select(ProviderCall)).all()
+                calls = [
+                    c
+                    for c in session.scalars(select(ProviderCall)).all()
+                    if c.id not in previous_calls
+                ]
                 assert all(c.model == MODEL for c in calls), "Non-Luna evaluation call"
                 usage = app.state.models.usage()
                 with gzip.open(output / "provider-calls.jsonl.gz", "wt") as stream:
@@ -267,6 +290,14 @@ async def run(args) -> dict:
             counts = Counter(k for r in records for k, v in r["checks"].items() if not v)
             summary = dict(
                 manifest=manifest,
+                source_unchanged=manifest["source_sha256"] == source_digest(),
+                phase_usage={
+                    "requests": len(calls),
+                    "cost_usd": sum(c.charged for c in calls) / 1_000_000,
+                    "input_tokens": sum(c.input_tokens for c in calls),
+                    "output_tokens": sum(c.output_tokens for c in calls),
+                    "partial": any(c.status in {"pending", "unknown"} for c in calls),
+                },
                 attempted=len(records),
                 passed=sum(r["passed"] for r in records),
                 failures=dict(counts),

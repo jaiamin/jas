@@ -19,10 +19,17 @@
     "split": "development",
     "environment": "commons",
     "topic": "communication neutrality",
-    "factor": "communication",
+    "factor": "communication_channels",
     "levels": [
-      false,
-      true
+      [
+        "reports",
+        "promises"
+      ],
+      [
+        "messages",
+        "reports",
+        "promises"
+      ]
     ],
     "measure": "contribution_rate",
     "question": "Does nonbinding talk change sealed contributions when signals have no payoff relevance?",
@@ -95,7 +102,7 @@
       "episodic"
     ],
     "measure": "trust_rate",
-    "question": "Does private episodic retention change transfers in rotating partnerships?",
+    "question": "Do retained memory modes change repeated paired transfers under the seeded partner schedule? Episodic versus history also changes private-note retention; interpret the bundled memory-mode effect.",
     "setup": {},
     "communication_expectation": "strategy-dependent"
   },
@@ -125,7 +132,7 @@
       true
     ],
     "measure": "duplicate_work_rate",
-    "question": "Does messaging reduce duplicate work when authoritative task progress is already visible?",
+    "question": "Does communication availability reduce duplicate work when authoritative task progress is already visible? This is the effect of the full communication package.",
     "setup": {},
     "communication_expectation": "neutral"
   },
@@ -292,7 +299,7 @@
       ]
     ],
     "measure": "trust_rate",
-    "question": "How do fresh transfers respond to an unexpected capacity reduction in rotating partnerships?",
+    "question": "How do fresh paired transfers respond to an unexpected capacity reduction under the seeded partner schedule?",
     "setup": {},
     "communication_expectation": "strategy-dependent"
   },

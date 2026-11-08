@@ -16,7 +16,7 @@ from benchmarks.validity import adversarial, trajectory
 
 def test_family_split_and_frozen_dataset_contract():
     data = cases()
-    assert len(data) == len({c.id for c in data}) == 336
+    assert len(data) == len({c.id for c in data}) == len({c.prompt for c in data}) == 336
     dev = {c.family.key for c in cases("development")}
     heldout = {c.family.key for c in cases("heldout")}
     assert not dev & heldout and len(dev) == 18 and len(heldout) == 10
@@ -113,7 +113,7 @@ def test_false_reports_commitments_and_shocks_have_independent_denominators():
     assert score["eligible_commitments"] == 0 and score["fulfillment_rate"] is None
 
 
-def test_replay_detects_forged_state_and_score_does_not_read_rationale():
+def test_score_does_not_read_rationale():
     case = next(c for c in cases() if c.family.environment == "commons")
     initial, rows = trajectory(case, case.design().conditions[0], True)
     score = score_trace(rows, initial)
