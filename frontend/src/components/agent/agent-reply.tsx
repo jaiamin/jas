@@ -44,6 +44,7 @@ export const AgentReply = memo(function AgentReply({
   const pending = row.status === "pending";
   const complete = row.status === "complete";
   const design = row.output?.design;
+  const introduction = row.output?.introduction;
   const text =
     row.purpose === "design"
       ? pending
@@ -54,10 +55,12 @@ export const AgentReply = memo(function AgentReply({
       : pending
         ? (row.output?.partial ?? "")
         : (row.output?.answer ?? "");
+  const messageText = introduction ?? (row.status === "failed" ? "" : text);
+  const answerText = [introduction, text].filter(Boolean).join("\n\n");
   const copyText =
     row.purpose === "design" && design && row.output?.supported
       ? [
-          text,
+          answerText,
           design.title,
           design.question,
           `${design.profiles.length} agents · ${design.conditions.length} conditions · ${design.conditions.length * design.seeds.length * design.repetitions} runs`,
@@ -65,7 +68,9 @@ export const AgentReply = memo(function AgentReply({
         ]
           .filter(Boolean)
           .join("\n\n")
-      : [text, ...(row.output?.caveats ?? [])].filter(Boolean).join("\n\n");
+      : [answerText, ...(row.output?.caveats ?? [])]
+          .filter(Boolean)
+          .join("\n\n");
   return (
     <Message>
       <MessageContent>
@@ -76,6 +81,12 @@ export const AgentReply = memo(function AgentReply({
           />
         </MessageHeader>
         <ReplyActivity row={row} />
+        {messageText && (
+          <AgentMarkdown
+            text={messageText}
+            streaming={pending && !introduction}
+          />
+        )}
         {row.status === "failed" ? (
           <Alert variant="error" title="Request stopped">
             <p>{row.error}</p>
@@ -90,7 +101,9 @@ export const AgentReply = memo(function AgentReply({
           </Alert>
         ) : (
           <>
-            {text && <AgentMarkdown text={text} streaming={pending} />}
+            {introduction && text && (
+              <AgentMarkdown text={text} streaming={pending} />
+            )}
             {complete &&
               row.purpose === "design" &&
               (design && row.output?.supported ? (

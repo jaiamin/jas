@@ -390,6 +390,7 @@ export interface Analysis {
     supported?: boolean;
     explanation?: string;
     summary?: string;
+    introduction?: string;
     design?: Design | null;
     answer?: string;
     citations?: { run_id: string; turn: number }[];

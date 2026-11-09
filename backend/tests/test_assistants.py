@@ -823,6 +823,7 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
         assert row["purpose"] == "design" and row["status"] == "pending"
         assert row["output"]["stage"] == "scoping"
         assert "partial" not in row["output"]
+        assert row["output"]["introduction"] == "I can help with that."
         with pytest.raises(ValueError, match="current request"):
             assistant.send("Duplicate follow-up", "general", "intent-chat")
         if route == "planner-unavailable":
@@ -873,6 +874,8 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
             assert row["purpose"] == "design" and row["status"] == "failed"
             assert row["error"] == "Configured planner provider unavailable"
         assert "partial" not in row["output"]
+        if route != "answer":
+            assert row["output"]["introduction"] == "I can help with that."
         with db.session() as session:
             calls = session.scalars(select(ProviderCall)).all()
             assert len(calls) == (2 if route == "proposal" else 1)

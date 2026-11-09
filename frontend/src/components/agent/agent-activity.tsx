@@ -91,7 +91,7 @@ function ActivityDetail({
 
 /** Show recorded work and public outputs, never private model reasoning. */
 export function ReplyActivity({ row }: { row: Analysis }) {
-  const [expandedStatus, setExpandedStatus] = useState<string | null>();
+  const [expanded, setExpanded] = useState<boolean>();
   const planning = row.output?.planning;
   const activity = row.output?.activity ?? [];
   const sources = planning?.sources ?? [];
@@ -148,23 +148,23 @@ export function ReplyActivity({ row }: { row: Analysis }) {
       <TraceTitle>{title}</TraceTitle>
     </TraceLine>
   );
+  // Open once when live work arrives; completion must not hide what the user is reading.
+  if (
+    expanded === undefined &&
+    pending &&
+    (activity.length > 1 ||
+      !!planning?.brief ||
+      !!planning?.preflight ||
+      sources.length > 0 ||
+      examined.length > 0 ||
+      !!draftNotes)
+  ) {
+    setExpanded(true);
+  }
   if (!hasDetails) return pending ? <Trace>{summary}</Trace> : null;
-  const open =
-    expandedStatus === undefined
-      ? pending &&
-        (activity.length > 1 ||
-          !!planning?.brief ||
-          !!planning?.preflight ||
-          sources.length > 0 ||
-          examined.length > 0 ||
-          !!draftNotes)
-      : expandedStatus === row.status;
   return (
     <Trace>
-      <TraceCollapsible
-        open={open}
-        onOpenChange={(open) => setExpandedStatus(open ? row.status : null)}
-      >
+      <TraceCollapsible open={expanded ?? false} onOpenChange={setExpanded}>
         <TraceCollapsibleTrigger
           aria-label={
             pending

@@ -106,6 +106,7 @@ export default function AgentPage() {
                 output: {
                   ...(update.purpose !== message.purpose ? {} : message.output),
                   partial: update.partial,
+                  introduction: update.introduction,
                   stage: update.stage,
                   ...(update.activity ? { activity: update.activity } : {}),
                 },

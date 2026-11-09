@@ -75,6 +75,9 @@ check results remain the authoritative evidence. This adds no provider request.
 Public stage names persist in `output.activity`, including checks and payoff calculations;
 slow read-only tools publish their stage before executing off the event loop. Live tool
 results and saved records use the same scope/source/preflight/inspected-range evidence.
+A general-to-design handoff persists the public acknowledgement in `output.introduction`,
+retains it through every planner stage and terminal status, and transports it in live events;
+it stays separate from the reviewed proposal summary and never represents private reasoning.
 Conversation identity is an indexed Analysis field, with no duplicate message store.
 One pending turn per chat prevents overlapping follow-ups; independent chats can run
 concurrently. Failed turns stay inspectable and retry as a new turn in their original context.

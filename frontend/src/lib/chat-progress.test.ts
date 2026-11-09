@@ -43,6 +43,7 @@ test("malformed events cannot enter the analysis cache", () => {
       null,
       [],
       { partial: 3 },
+      { introduction: [] },
       { stage: {} },
       { activity: "thinking" },
       { activity: [{}] },
@@ -66,11 +67,20 @@ test("purpose transitions expose public planning stages without unvalidated prop
         id: "current",
         status: "pending",
         purpose: "design",
-        output: { stage: "scoping", design: { unvalidated: true } },
+        output: {
+          stage: "scoping",
+          introduction: "I will prepare a protocol for review.",
+          design: { unvalidated: true },
+        },
       }),
       "current",
     ),
-  ).toEqual({ status: "pending", purpose: "design", stage: "scoping" });
+  ).toEqual({
+    status: "pending",
+    purpose: "design",
+    stage: "scoping",
+    introduction: "I will prepare a protocol for review.",
+  });
   expect(
     chatProgress(
       JSON.stringify({

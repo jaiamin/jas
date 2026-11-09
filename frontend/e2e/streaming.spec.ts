@@ -185,8 +185,7 @@ for (const theme of ["light", "dark"]) {
       exact: true,
     });
     await expect(activity).toBeVisible();
-    await expect(activity).toHaveAttribute("aria-expanded", "false");
-    await activity.click();
+    await expect(activity).toHaveAttribute("aria-expanded", "true");
     const recorded = page.locator('[aria-label="Recorded activity"]');
     await expect(recorded).toContainText("Thinking");
     await expect(recorded).toContainText("Writing");
@@ -328,6 +327,7 @@ for (const theme of ["light", "dark"]) {
       output: {
         stage: "answering",
         partial: "I will prepare a protocol for review.",
+        introduction: undefined as string | undefined,
         supported: true,
         design,
         explanation:
@@ -387,14 +387,19 @@ for (const theme of ["light", "dark"]) {
     await expect(
       page.getByText(row.output.partial, { exact: true }),
     ).toBeVisible();
+    // Keep the node being read mounted through the purpose handoff.
+    const acknowledgement = await page
+      .getByText(row.output.partial, { exact: true })
+      .elementHandle();
     row.purpose = "design";
     row.output.stage = "scoping";
     row.output.activity.push("scoping");
+    row.output.introduction = row.output.partial;
     row.output.partial = "";
     release();
     await expect(
       page.getByText("I will prepare a protocol for review.", { exact: true }),
-    ).toHaveCount(0);
+    ).toBeVisible();
     for (const [stage, label] of [
       ["scoping", "Scoping the question"],
       ["researching", "Researching methods"],
@@ -409,6 +414,9 @@ for (const theme of ["light", "dark"]) {
       await expect(
         page.locator('[data-slot="trace-line"][role="status"]'),
       ).toHaveText(label ?? "");
+      expect(
+        await acknowledgement?.evaluate((element) => element.isConnected),
+      ).toBe(true);
     }
     await expect(
       page.getByRole("button", { name: "Refining the protocol", exact: true }),
@@ -464,9 +472,10 @@ for (const theme of ["light", "dark"]) {
       proposal.getByRole("link", { name: "Review protocol" }),
     ).toHaveAttribute("href", `/new?plan=${row.id}`);
     await expect(proposal).toContainText("Ready for review. Nothing has run.");
-    await expect(page.locator('[data-streaming="false"]')).toHaveText(
+    await expect(page.locator('[data-streaming="false"]')).toHaveText([
+      row.output.introduction,
       row.output.summary,
-    );
+    ]);
     await expect(
       page.getByText(row.output.explanation, { exact: true }),
     ).toHaveCount(0);
@@ -497,7 +506,15 @@ for (const theme of ["light", "dark"]) {
       theme === "dark" ? 0 : 1,
     );
     await expect(page.locator('main img[src="/logo.svg"]')).toHaveCount(0);
+    expect(
+      await acknowledgement?.evaluate((element) => element.isConnected),
+    ).toBe(true);
     const activity = page.getByRole("button", { name: "Protocol reviewed" });
+    await expect(activity).toHaveAttribute("aria-expanded", "true");
+    await expect(
+      page.getByText(row.output.planning.brief.operationalization),
+    ).toBeVisible();
+    await activity.click();
     await expect(activity).toHaveAttribute("aria-expanded", "false");
     await activity.click();
     await page
@@ -512,9 +529,10 @@ for (const theme of ["light", "dark"]) {
       animations: "disabled",
     });
     await page.reload();
-    await expect(page.locator('[data-streaming="false"]')).toHaveText(
+    await expect(page.locator('[data-streaming="false"]')).toHaveText([
+      row.output.introduction,
       row.output.summary,
-    );
+    ]);
     await activity.click();
     await page
       .getByRole("button", { name: "Draft notes (before checks)", exact: true })

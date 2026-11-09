@@ -159,3 +159,55 @@ test("design drafting does not publish unvalidated notes as answer prose", () =>
   ).not.toBeInTheDocument();
   expect(screen.getByText("Drafting the protocol")).toBeVisible();
 });
+
+test("live activity stays open when the reply finishes so its content remains readable", () => {
+  const pending: Analysis = {
+    ...row,
+    purpose: "design",
+    output: {
+      stage: "checking",
+      activity: ["scoping", "drafting", "checking"],
+      planning: {
+        sources: [],
+        brief: {
+          operationalization: "Compare cooperation under two resource levels.",
+          size_rationale: "A small matched pilot.",
+        },
+      },
+    },
+  };
+  const reply = (value: Analysis) => (
+    <MemoryRouter>
+      <TooltipProvider>
+        <AgentReply row={value} disabled={false} onRetry={() => {}} />
+      </TooltipProvider>
+    </MemoryRouter>
+  );
+  const view = render(reply(pending));
+  fireEvent.click(screen.getByRole("button", { name: "Study scope" }));
+  expect(
+    screen.getByText("Compare cooperation under two resource levels."),
+  ).toBeVisible();
+  view.rerender(
+    reply({
+      ...pending,
+      status: "complete",
+      output: {
+        ...pending.output,
+        supported: true,
+        design,
+        summary: "A reviewed comparison.",
+      },
+    }),
+  );
+  expect(
+    screen.getByText("Compare cooperation under two resource levels."),
+  ).toBeVisible();
+  expect(
+    screen.getByRole("button", { name: "Protocol reviewed" }),
+  ).toHaveAttribute("aria-expanded", "true");
+  fireEvent.click(screen.getByRole("button", { name: "Protocol reviewed" }));
+  expect(
+    screen.queryByText("Compare cooperation under two resource levels."),
+  ).not.toBeInTheDocument();
+});

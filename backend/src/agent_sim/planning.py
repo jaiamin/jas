@@ -207,6 +207,11 @@ class Planner:
             row.output = {
                 "stage": stage,
                 "activity": public_activity(row.output, stage),
+                **(
+                    {"introduction": row.output["introduction"]}
+                    if row.output and "introduction" in row.output
+                    else {}
+                ),
                 **details,
             }
 

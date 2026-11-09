@@ -338,7 +338,15 @@ class Assistants:
                 )
             with self.db.session.begin() as session:
                 saved = session.get_one(Analysis, key)
-                saved.output = {**output, "activity": (saved.output or {}).get("activity", [])}
+                saved.output = {
+                    **output,
+                    "activity": (saved.output or {}).get("activity", []),
+                    **(
+                        {"introduction": saved.output["introduction"]}
+                        if saved.output and "introduction" in saved.output
+                        else {}
+                    ),
+                }
                 saved.status = "complete"
         except (Exception, asyncio.CancelledError) as error:
             if not isinstance(error, (ProviderFailure, asyncio.CancelledError)):
@@ -442,6 +450,7 @@ class Assistants:
                 saved.output = {
                     "stage": "scoping",
                     "activity": public_activity(saved.output, "scoping"),
+                    "introduction": answer.answer,
                 }
             return await Planner(self.db, self.research, self.models).run(
                 row.id, row.question, conversation

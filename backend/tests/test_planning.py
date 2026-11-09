@@ -11,7 +11,12 @@ def test_planner_reviews_and_repairs_design_before_returning(runtime, design, mo
 
     db, llm, research, _ = runtime
     with db.session.begin() as session:
-        row = Analysis(purpose="design", question="Compare cooperation", cutoffs={})
+        row = Analysis(
+            purpose="design",
+            question="Compare cooperation",
+            cutoffs={},
+            output={"introduction": "I will prepare a matched comparison."},
+        )
         session.add(row)
         session.flush()
         key = row.id
@@ -63,6 +68,11 @@ def test_planner_reviews_and_repairs_design_before_returning(runtime, design, mo
 
         prompts.append(json.loads(kwargs["prompt"]))
         assert kwargs.get("on_partial") is None
+        with db.session() as session:
+            assert (
+                session.get_one(Analysis, key).output["introduction"]
+                == "I will prepare a matched comparison."
+            )
         return next(answers)
 
     monkeypatch.setattr(llm, "generate", generate)

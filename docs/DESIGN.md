@@ -214,7 +214,8 @@ Assistant replies use a blue Target with no repeated Agent label or response cos
 The Target occupies its own compact header row; activity sits below it.
 One stock TraceCollapsible presents the current public stage and recorded scope,
 research sources, examined evidence and mechanical checks. It opens during substantive
-recorded work, respects manual collapse, and closes on completion; users can reopen it.
+recorded work and respects manual collapse. Live activity stays open across completion
+or failure so it never hides content being read; saved replies start collapsed.
 Recorded steps show their running/stopped state. Scope, sources, inspected evidence,
 mechanical checks, review feedback, public draft notes and limitations use compact
 nested Trace disclosures when those results exist. Mechanical checks reuse the shared
@@ -237,6 +238,9 @@ Supported proposals show a short summary written by the existing review call aft
 mechanical checks, using 1–3 sentences (at most 600 characters). Draft explanations
 never stream into the main reply or substitute for that summary. Without a recorded
 post-check summary, the card remains the concise presentation and notes stay in activity.
+The general Agent’s public acknowledgement persists as an introduction when it hands
+off to planning, through live events, completion, failure and reload. Keep its Markdown
+node mounted while switching from the streamed acknowledgement to that introduction.
 Unsupported requests keep their direct capability explanation. No extra summary request
 or model-generated intermediate reasoning is needed.
 
