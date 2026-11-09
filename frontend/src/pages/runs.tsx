@@ -1,39 +1,29 @@
-import { Link } from "react-router-dom";
-import { Empty } from "@/components/feedback";
-import { Plus } from "@/components/icons";
+import { Play } from "@/components/icons";
+import { RecordListHeading } from "@/components/record-list-heading";
+import { RecordTableLoading } from "@/components/record-table-loading";
 import { RunTable } from "@/components/run-table";
-import { ErrorState, Loading, PageHeading } from "@/components/shared";
-import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/shared";
+import { useRecordFilters } from "@/hooks/use-record-filters";
 import { useApi } from "@/lib/api";
 import type { RunSummary } from "@/lib/types";
 
 export default function Runs() {
   const runs = useApi<RunSummary[]>("/runs", true);
+  const filters = useRecordFilters();
   return (
     <>
-      <PageHeading title="Runs">
-        <Button asChild>
-          <Link to="/new">
-            <Plus data-icon="inline-start" />
-            New experiment
-          </Link>
-        </Button>
-      </PageHeading>
+      <RecordListHeading
+        title="Runs"
+        icon={Play}
+        search={filters.search}
+        onSearchChange={filters.setSearch}
+      />
       {runs.error ? (
         <ErrorState error={runs.error} onRetry={runs.refetch} />
       ) : !runs.data ? (
-        <Loading />
-      ) : runs.data.length ? (
-        <RunTable runs={runs.data} selectable />
+        <RecordTableLoading columns={6} />
       ) : (
-        <Empty
-          title="No runs yet"
-          description="Create an experiment to define the agents, conditions, and rules."
-        >
-          <Button asChild>
-            <Link to="/new">Create experiment</Link>
-          </Button>
-        </Empty>
+        <RunTable runs={runs.data} filters={filters} selectable />
       )}
     </>
   );

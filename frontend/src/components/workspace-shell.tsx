@@ -80,6 +80,7 @@ export default function WorkspaceShell() {
   const location = useLocation();
   const isAgent = location.pathname === "/agent";
   const isHome = location.pathname === "/";
+  const isRecordList = ["/studies", "/runs"].includes(location.pathname);
   const runs = useApi<RunSummary[]>("/runs", true);
   const active =
     runs.data?.filter((r) =>
@@ -316,7 +317,9 @@ export default function WorkspaceShell() {
                 ? "h-full min-h-0"
                 : isHome
                   ? "pb-10"
-                  : "mx-auto max-w-7xl p-4 pb-10 sm:p-6 lg:p-8",
+                  : isRecordList
+                    ? "pb-10"
+                    : "mx-auto max-w-7xl p-4 pb-10 sm:p-6 lg:p-8",
             )}
             tabIndex={-1}
           >

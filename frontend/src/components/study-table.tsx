@@ -1,20 +1,9 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Empty } from "@/components/feedback";
-import {
-  ChevronLeft,
-  ChevronRight,
-  FlaskConical,
-  Search,
-} from "@/components/icons";
+import { ChevronLeft, ChevronRight, ExperimentIcon } from "@/components/icons";
 import { OptionSelect as Select } from "@/components/option-select";
 import { Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
 import {
   Table,
   TableBody,
@@ -23,12 +12,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { RecordFilters } from "@/hooks/use-record-filters";
 import { date, label } from "@/lib/format";
 import type { StudySummary } from "@/lib/types";
-export function StudyTable({ studies }: { studies: StudySummary[] }) {
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("all");
-  const [page, setPage] = useState(0);
+export function StudyTable({
+  studies,
+  filters,
+}: {
+  studies: StudySummary[];
+  filters: RecordFilters;
+}) {
+  const { search, status, page, setStatus, setPage } = filters;
   const filtered = studies.filter(
     (s) =>
       `${s.title} ${s.question}`.toLowerCase().includes(search.toLowerCase()) &&
@@ -38,43 +32,20 @@ export function StudyTable({ studies }: { studies: StudySummary[] }) {
   const current = Math.min(page, pageCount - 1);
   if (!studies.length)
     return (
-      <Empty title="No experiments yet">
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <Button size="sm" asChild>
-            <Link to="/agent">Design experiment</Link>
-          </Button>
-          <Button size="sm" variant="outline" asChild>
-            <Link to="/environments">Environments</Link>
-          </Button>
-        </div>
-      </Empty>
+      <div className="min-w-0">
+        <Empty
+          title="No experiments yet"
+          description="Create an experiment to define the agents, conditions, and rules."
+        />
+      </div>
     );
   return (
-    <div className="min-w-0 overflow-hidden rounded-lg border">
-      <div className="flex flex-wrap items-center gap-3 p-4">
-        <div className="mr-auto w-full sm:w-72">
-          <InputGroup>
-            <InputGroupInput
-              aria-label="Search experiments"
-              placeholder="Search experiments…"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(0);
-              }}
-            />
-            <InputGroupAddon align="inline-start">
-              <Search />
-            </InputGroupAddon>
-          </InputGroup>
-        </div>
+    <div className="min-w-0 overflow-hidden">
+      <div className="flex flex-wrap items-center gap-3 p-3">
         <Select
           label="Filter experiment status"
           value={status}
-          onValueChange={(v) => {
-            setStatus(v);
-            setPage(0);
-          }}
+          onValueChange={setStatus}
           options={[
             "all",
             "ready",
@@ -105,7 +76,7 @@ export function StudyTable({ studies }: { studies: StudySummary[] }) {
             <TableRow key={study.id}>
               <TableCell className="min-w-48 max-w-96">
                 <div className="flex items-center gap-2 [&>svg]:size-4 [&>svg]:text-muted-foreground">
-                  <FlaskConical aria-hidden="true" />
+                  <ExperimentIcon aria-hidden="true" />
                   <Link
                     className="font-medium underline-offset-4 hover:underline"
                     to={`/studies/${study.id}`}
@@ -136,20 +107,13 @@ export function StudyTable({ studies }: { studies: StudySummary[] }) {
       </Table>
       {!filtered.length && (
         <Empty title="No matching experiments">
-          <Button
-            variant="outline"
-            onClick={() => {
-              setSearch("");
-              setStatus("all");
-              setPage(0);
-            }}
-          >
+          <Button variant="outline" onClick={filters.clear}>
             Clear filters
           </Button>
         </Empty>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t px-4 py-3 text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm text-muted-foreground">
         <span>
           {filtered.length} experiment{filtered.length !== 1 && "s"}
         </span>

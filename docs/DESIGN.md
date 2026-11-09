@@ -431,6 +431,17 @@ Keep creation actions out of the composer/Experiment ideas area. The empty messa
 EmptyDescription text rather than a title. Full record lists remain on their
 dedicated destinations.
 
+Experiments and Runs share one list heading: a muted rounded-square icon beside
+the title, with search and a primary New action at the right (stacked below on
+mobile). Keep the header inset, but let both tables reach the full content width
+without side gutters or an enclosing border. Stock Table row separators provide
+one line per boundary; do not add a second divider around the table or pagination.
+The two pages share filter state and row-loading skeletons while retaining their
+own columns. Runs link to their exact experiment revision and keep comparison
+selections across filtering. Loading affects database rows only, leaving search,
+the heading and New available. Empty lists keep a single creation action in the
+heading. Embedded experiment runs use the same controlled table/search contract.
+
 Home renders its heading, animation, composer, Experiment ideas and creation/navigation
 buttons immediately. Drafts are read synchronously from local browser storage;
 omit their section when none exist, without a loading placeholder. Only the initial

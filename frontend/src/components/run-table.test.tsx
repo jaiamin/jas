@@ -1,7 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { expect, test } from "vitest";
+import { RecordSearch } from "@/components/record-list-heading";
 import { RunTable } from "@/components/run-table";
+import { useRecordFilters } from "@/hooks/use-record-filters";
 import type { RunSummary } from "@/lib/types";
 
 const runs: RunSummary[] = Array.from({ length: 5 }, (_, i) => ({
@@ -31,12 +33,22 @@ const runs: RunSummary[] = Array.from({ length: 5 }, (_, i) => ({
     partial: false,
   },
 }));
-test("run comparison preserves selections through filtering and caps selection at four", () => {
-  render(
+function RunTableFixture() {
+  const filters = useRecordFilters();
+  return (
     <MemoryRouter>
-      <RunTable runs={runs} selectable />
-    </MemoryRouter>,
+      <RecordSearch
+        label="Search runs"
+        value={filters.search}
+        onChange={filters.setSearch}
+      />
+      <RunTable runs={runs} filters={filters} selectable />
+    </MemoryRouter>
   );
+}
+
+test("run comparison preserves selections through filtering and caps selection at four", () => {
+  render(<RunTableFixture />);
   expect(screen.getByRole("button", { name: "Compare runs" })).toBeDisabled();
   fireEvent.click(screen.getByLabelText(/^Select Condition 0, seed 0,/));
   fireEvent.change(screen.getByRole("textbox", { name: "Search runs" }), {

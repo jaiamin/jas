@@ -1,16 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Empty } from "@/components/feedback";
-import { ChevronLeft, ChevronRight, Search, X } from "@/components/icons";
+import { ChevronLeft, ChevronRight, X } from "@/components/icons";
 import { OptionSelect as Select } from "@/components/option-select";
 import { Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
 import {
   Table,
   TableBody,
@@ -19,19 +14,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { RecordFilters } from "@/hooks/use-record-filters";
 import { label, money } from "@/lib/format";
 import type { RunSummary } from "@/lib/types";
 export function RunTable({
   runs,
+  filters,
   selectable = false,
 }: {
   runs: RunSummary[];
+  filters: RecordFilters;
   selectable?: boolean;
 }) {
   const [selected, setSelected] = useState<string[]>([]);
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("all");
-  const [page, setPage] = useState(0);
+  const { search, status, page, setStatus, setPage } = filters;
   const filtered = runs.filter(
     (r) =>
       `${r.study_title} ${r.condition} ${r.id}`
@@ -41,32 +37,22 @@ export function RunTable({
   );
   const pages = Math.max(1, Math.ceil(filtered.length / 15));
   const current = Math.min(page, pages - 1);
+  if (!runs.length)
+    return (
+      <div className="min-w-0">
+        <Empty
+          title="No runs yet"
+          description="Create an experiment to define the agents, conditions, and rules."
+        />
+      </div>
+    );
   return (
-    <div className="min-w-0 overflow-hidden rounded-lg border">
-      <div className="flex flex-wrap items-center gap-3 p-4">
-        <div className="mr-auto w-full sm:w-72">
-          <InputGroup>
-            <InputGroupInput
-              aria-label="Search runs"
-              placeholder="Search runs…"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(0);
-              }}
-            />
-            <InputGroupAddon align="inline-start">
-              <Search />
-            </InputGroupAddon>
-          </InputGroup>
-        </div>
+    <div className="min-w-0 overflow-hidden">
+      <div className="flex flex-wrap items-center gap-3 p-3">
         <Select
           label="Filter run status"
           value={status}
-          onValueChange={(v) => {
-            setStatus(v);
-            setPage(0);
-          }}
+          onValueChange={setStatus}
           options={[
             "all",
             "ready",
@@ -115,6 +101,7 @@ export function RunTable({
               </TableHead>
             )}
             <TableHead>Run</TableHead>
+            <TableHead>Experiment</TableHead>
             <TableHead>Status</TableHead>
 
             <TableHead className="text-right">Progress</TableHead>
@@ -154,9 +141,18 @@ export function RunTable({
                   {run.condition}
                 </Link>
                 <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
-                  {run.study_title} · Seed {run.seed} · rev {run.revision} ·
-                  repetition {run.repetition}
+                  Seed {run.seed} · rev {run.revision} · repetition{" "}
+                  {run.repetition}
                 </span>
+              </TableCell>
+              <TableCell className="min-w-40 max-w-80">
+                <Link
+                  className="block truncate underline-offset-4 hover:underline"
+                  title={run.study_title}
+                  to={`/studies/${run.study_id}?revision=${run.revision}`}
+                >
+                  {run.study_title}
+                </Link>
               </TableCell>
               <TableCell>
                 <Status value={run.status} />
@@ -179,31 +175,27 @@ export function RunTable({
           title="No matching runs"
           description="Try another experiment, condition or run ID."
         >
-          <Button
-            variant="outline"
-            onClick={() => {
-              setSearch("");
-              setStatus("all");
-              setPage(0);
-            }}
-          >
+          <Button variant="outline" onClick={filters.clear}>
             Clear filters
           </Button>
         </Empty>
       )}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t px-4 py-3 text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm text-muted-foreground">
         <span>
           {filtered.length} runs
           {selected.length > 0 && ` · ${selected.length} selected`}
         </span>
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <span>
-            {current + 1} / {pages}
-          </span>
+          {pages > 1 && (
+            <span>
+              {current + 1} / {pages}
+            </span>
+          )}
           <Button
             variant="ghost"
             size="icon"
             aria-label="Previous run page"
+            hidden={pages === 1}
             disabled={!current}
             onClick={() => setPage(current - 1)}
           >
@@ -213,6 +205,7 @@ export function RunTable({
             variant="ghost"
             size="icon"
             aria-label="Next run page"
+            hidden={pages === 1}
             disabled={current + 1 >= pages}
             onClick={() => setPage(current + 1)}
           >
