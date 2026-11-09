@@ -65,7 +65,7 @@ export function AgentIcon(props: SVGProps<SVGSVGElement>) {
     <TargetIcon {...props} data-partial-fill="target">
       <path
         data-ring=""
-        d="M18 12a6 6 0 1 0-12 0 6 6 0 0 0 12 0ZM14 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
+        d="M22 12a10 10 0 1 0-20 0 10 10 0 0 0 20 0ZM18 12a6 6 0 1 0-12 0 6 6 0 0 0 12 0ZM14 12a2 2 0 1 0-4 0 2 2 0 0 0 4 0Z"
         fillRule="evenodd"
         stroke="none"
       />

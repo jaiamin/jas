@@ -1206,3 +1206,5 @@ results, keyboard selection, clearing and aligned divider insets. Own preview ta
 closed; 8080 remains available. No paid calls or user-data mutations.
 
 Agent icon update: replace Bot with Lucide Target at the shared AgentIcon boundary, updating sidebar and experiment/run Agent actions together. The selected sidebar fills only the annulus between the middle and inner circles; its center and outer band stay unfilled. The partial-fill path shares the existing semantic CSS treatment, with no fill outside selected navigation. Verification: lint/build and focused compact-header/navigation browser regression passed. Live browser review confirmed selected light/dark colors and unselected outline; own preview tab closed and 8080 retained.
+
+Selected Target preference updated: fill the outer annulus and center disk, leaving the middle band transparent. Preserve the stock Lucide outlines and existing semantic selected color. Lint/build passed; live browser review and SVG hit tests confirmed outer=true, middle=false, center=true. Own preview closed; 8080 retains the rebuilt app.

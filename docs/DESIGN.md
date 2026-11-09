@@ -135,8 +135,8 @@ insets. The full-width footer divider and continuous divider under the top bars
 remain. Footer button
 heights stay 32px for Settings and 48px for the workspace menu in both states, so
 their vertical positions and padding do not change when labels disappear. Navigation glyphs are 15px; the sidebar toggle glyph is 14px in its unchanged 28px target. Selected sidebar icons fill,
-with the requested exceptions: Agent uses Lucide Target with only its middle
-annulus filled (the center and outer ring stay unfilled), House fills only
+with the requested exceptions: Agent uses Lucide Target with its outer band and
+center filled (the middle band stays unfilled), House fills only
 its door, Layers2 fills only its upper layer, Settings fills only its center circle,
 and FlaskConical fills only its liquid. The flask fill stays at the icon boundary;
 conversation rows are text-only. Do not invent accounts or organizations.
