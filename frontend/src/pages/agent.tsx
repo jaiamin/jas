@@ -249,15 +249,13 @@ function AgentConversation({
                 selectedRun?.study_title ??
                 "Research assistant")}
           </strong>
-          <span>
-            {selectedRun
-              ? `${selectedRun.condition} · seed ${selectedRun.seed} · ${selectedRun.turn} recorded decisions`
-              : selectedStudy
-                ? `${selectedStudy.completed_runs} / ${selectedStudy.run_count} runs complete`
-                : context === "new"
-                  ? "A reviewed protocol before you spend on runs"
-                  : "Design studies and investigate recorded behavior"}
-          </span>
+          {(selectedRun || selectedStudy) && (
+            <span>
+              {selectedRun
+                ? `${selectedRun.condition} · seed ${selectedRun.seed} · ${selectedRun.turn} recorded decisions`
+                : `${selectedStudy?.completed_runs} / ${selectedStudy?.run_count} runs complete`}
+            </span>
+          )}
         </div>
         {(selectedStudy || selectedRun) && (
           <Button variant="outline" size="sm" asChild>
@@ -290,7 +288,7 @@ function AgentConversation({
                   >
                     <Message align="end">
                       <MessageContent>
-                        <Bubble variant="muted" align="end">
+                        <Bubble variant="outline" align="end">
                           <BubbleContent>{row.question}</BubbleContent>
                         </Bubble>
                         {(row.run_id || row.study_id) && (

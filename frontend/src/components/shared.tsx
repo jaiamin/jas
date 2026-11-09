@@ -103,7 +103,7 @@ export function ErrorState({
 }
 export function Json({ value }: { value: unknown }) {
   return (
-    <pre className="my-3 max-h-96 overflow-auto rounded-md bg-muted p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words">
+    <pre className="my-3 max-h-96 overflow-auto rounded-md border bg-background p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words">
       {JSON.stringify(value, null, 2)}
     </pre>
   );

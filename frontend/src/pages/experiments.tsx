@@ -6,12 +6,22 @@ import {
   DisclosureTrigger,
 } from "@/components/disclosure";
 import { Alert } from "@/components/feedback";
-import { MessageSquare, Plus, Trash2 } from "@/components/icons";
+import { MessageSquare, PenLine, Plus, Trash2 } from "@/components/icons";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { StudyTable } from "@/components/study-table";
 import { Button } from "@/components/ui/button";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
 import { useApi } from "@/lib/api";
 import { listDrafts, removeDraft } from "@/lib/drafts";
+import { date } from "@/lib/format";
 import type { StudySummary } from "@/lib/types";
 
 export default function Experiments() {
@@ -25,10 +35,7 @@ export default function Experiments() {
   });
   return (
     <>
-      <PageHeading
-        title="Experiments"
-        description="Ask a question. Control the conditions. Follow the evidence."
-      >
+      <PageHeading title="Experiments">
         <Button variant="outline" asChild>
           <Link to="/agent?context=new">
             <MessageSquare data-icon="inline-start" />
@@ -78,36 +85,59 @@ export default function Experiments() {
         </Alert>
       )}
       {drafts.items.length > 0 && (
-        <Disclosure className="min-w-0 mb-6">
+        <Disclosure className="mt-6 min-w-0">
           <DisclosureTrigger>Drafts · {drafts.items.length}</DisclosureTrigger>
-          <DisclosureContent>
-            <div className="flex flex-col gap-2">
+          <DisclosureContent className="pt-3">
+            <ItemGroup>
               {drafts.items.map((draft) => (
-                <div key={draft.path}>
-                  <Link to={draft.path}>
-                    {draft.title || "Untitled experiment"}
-                  </Link>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={`Discard ${draft.title || "untitled"} draft`}
-                    onClick={() => {
-                      try {
-                        removeDraft(draft.path);
-                        setDrafts({ ...listDrafts(), error: "" });
-                      } catch (error) {
-                        setDrafts({
-                          ...drafts,
-                          error: (error as Error).message,
-                        });
-                      }
-                    }}
-                  >
-                    <Trash2 />
-                  </Button>
-                </div>
+                <Item
+                  key={draft.path}
+                  variant="outline"
+                  size="sm"
+                  className="flex-nowrap"
+                >
+                  <ItemMedia variant="icon">
+                    <PenLine />
+                  </ItemMedia>
+                  <ItemContent className="min-w-0">
+                    <ItemTitle className="max-w-full">
+                      <Link
+                        to={draft.path}
+                        className="truncate hover:underline"
+                        title={draft.title || "Untitled experiment"}
+                      >
+                        {draft.title || "Untitled experiment"}
+                      </Link>
+                    </ItemTitle>
+                    {Number.isFinite(Date.parse(draft.updated)) && (
+                      <ItemDescription>
+                        Edited {date(draft.updated)}
+                      </ItemDescription>
+                    )}
+                  </ItemContent>
+                  <ItemActions>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label={`Discard ${draft.title || "untitled"} draft`}
+                      onClick={() => {
+                        try {
+                          removeDraft(draft.path);
+                          setDrafts({ ...listDrafts(), error: "" });
+                        } catch (error) {
+                          setDrafts({
+                            ...drafts,
+                            error: (error as Error).message,
+                          });
+                        }
+                      }}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </ItemActions>
+                </Item>
               ))}
-            </div>
+            </ItemGroup>
           </DisclosureContent>
         </Disclosure>
       )}

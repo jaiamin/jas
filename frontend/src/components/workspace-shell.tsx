@@ -165,33 +165,33 @@ export default function WorkspaceShell() {
         <a href="#main">Skip to content</a>
       </Button>
       <Sidebar collapsible="icon">
-        <SidebarHeader>
+        <SidebarHeader
+          className={isMobile ? undefined : "h-14 justify-center py-1"}
+        >
           {isMobile && (
             <SidebarTrigger className="ml-auto" aria-label="Close menu" />
           )}
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                size="lg"
-                asChild
-                tooltip={
-                  !isMobile && state === "collapsed" ? "JAS home" : undefined
-                }
-              >
+            <SidebarMenuItem className="flex items-center group-data-[collapsible=icon]:justify-center">
+              <Button variant="link" asChild className="h-auto w-fit gap-2 p-0">
                 <Link
                   to="/studies"
                   aria-label="JAS home"
+                  title="JAS home"
                   onClick={() => setOpenMobile(false)}
                 >
-                  <img src="/logo.svg" width={28} height={28} alt="" />
-                  <div className="grid flex-1 gap-0.5 text-left">
-                    <span className="text-sm font-semibold">JAS</span>
-                    <span className="text-xs text-muted-foreground">
-                      Agent experiments
-                    </span>
-                  </div>
+                  <img
+                    src="/logo.svg"
+                    width={20}
+                    height={20}
+                    className="size-5 shrink-0 object-contain"
+                    alt=""
+                  />
+                  <span className="font-brand text-[22px] font-extrabold leading-none tracking-[-0.04em] group-data-[collapsible=icon]:hidden">
+                    jas
+                  </span>
                 </Link>
-              </SidebarMenuButton>
+              </Button>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
@@ -258,7 +258,7 @@ export default function WorkspaceShell() {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset className="min-w-0">
-        <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b px-4 sm:px-6">
+        <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b pr-4 pl-3 sm:pr-6">
           <div className="flex min-w-0 items-center gap-3">
             <SidebarTrigger
               ref={menuTrigger}
@@ -270,7 +270,10 @@ export default function WorkspaceShell() {
                     : "Collapse sidebar"
               }
             />
-            <Separator orientation="vertical" className="h-4" />
+            <Separator
+              orientation="vertical"
+              className="h-4 data-vertical:self-center"
+            />
             <Breadcrumb className="min-w-0">
               <BreadcrumbList className="flex-nowrap">
                 {crumbs.map((crumb, i) => (

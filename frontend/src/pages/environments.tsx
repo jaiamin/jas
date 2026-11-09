@@ -115,10 +115,7 @@ export default function Environments() {
     environments[0]?.key;
   return (
     <>
-      <PageHeading
-        title="Environments"
-        description="Understand the rules. Configure the world your agents act in."
-      />
+      <PageHeading title="Environments" />
       {catalog.error ? (
         <ErrorState error={catalog.error} onRetry={catalog.refetch} />
       ) : !catalog.data ? (

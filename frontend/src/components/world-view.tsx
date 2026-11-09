@@ -187,7 +187,7 @@ export function WorldView({
           </TableBody>
         </Table>
       </div>
-      <Item variant="muted">
+      <Item variant="outline">
         <ItemContent>
           <ItemTitle>
             Total contribution{" "}

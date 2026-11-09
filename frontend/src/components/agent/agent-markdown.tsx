@@ -50,7 +50,7 @@ export function AgentMarkdown({
                 </a>
               ),
               pre: ({ children }) => (
-                <pre className="max-w-full overflow-auto rounded-md bg-muted p-4 font-mono text-xs">
+                <pre className="max-w-full overflow-auto rounded-md border bg-background p-4 font-mono text-xs">
                   {children}
                 </pre>
               ),

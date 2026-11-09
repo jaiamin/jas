@@ -43,10 +43,7 @@ export default function SettingsPage() {
   const s = settings.data;
   return (
     <div className="mx-auto max-w-4xl">
-      <PageHeading
-        title="Settings"
-        description="Providers, usage and storage for your local workspace."
-      />
+      <PageHeading title="Settings" />
       <div className="flex flex-col gap-6">
         <Card>
           <CardHeader>
@@ -125,9 +122,6 @@ export default function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Usage & budget</CardTitle>
-            <CardDescription>
-              Known charges and reserved allowances across the workspace.
-            </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-5">
             <div className="flex flex-col gap-3">
@@ -172,12 +166,9 @@ export default function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Local workspace</CardTitle>
-            <CardDescription>
-              Single-user storage and execution.
-            </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            <Item variant="muted">
+            <Item variant="outline">
               <ItemMedia variant="icon">
                 <Database />
               </ItemMedia>

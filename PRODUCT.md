@@ -23,6 +23,10 @@ fonts, colors and icons. Keep preset configuration and generated components auth
 see [Design](docs/DESIGN.md) for the workflow and app icon alignment step. Experiments and
 environments remain core destinations; Agent helps design and interpret them. Preserve the
 supplied JAS logo as a brand asset. Support both themes, mobile and keyboard navigation.
+Keep the original Bricolage Grotesque font only for the top-left lowercase wordmark,
+without a subtitle. Main surfaces, cards, sidebars and overlays are pure black in dark
+mode and white in light mode. Selection uses a subtle blue accent with a weaker
+hover state. Avoid redundant descriptive subtitles.
 
 ## Working assumptions
 The initial audience is a single researcher using a local workspace. Shared accounts,

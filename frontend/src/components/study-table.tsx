@@ -38,16 +38,15 @@ export function StudyTable({ studies }: { studies: StudySummary[] }) {
   const current = Math.min(page, pageCount - 1);
   if (!studies.length)
     return (
-      <Empty
-        title="Your first experiment starts with a question"
-        description="Choose an environment and define what to compare. Agent can help turn your question into a reviewed protocol."
-      >
-        <Button asChild>
-          <Link to="/agent?context=new">Design an experiment</Link>
-        </Button>
-        <Button variant="outline" asChild>
-          <Link to="/environments">Explore environments</Link>
-        </Button>
+      <Empty title="No experiments yet">
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <Button size="sm" asChild>
+            <Link to="/agent?context=new">Design experiment</Link>
+          </Button>
+          <Button size="sm" variant="outline" asChild>
+            <Link to="/environments">Environments</Link>
+          </Button>
+        </div>
       </Empty>
     );
   return (

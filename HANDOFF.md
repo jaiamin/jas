@@ -267,3 +267,27 @@ Publication: implementation commit `2b9f67c`, task branch pushed, draft PR
 https://github.com/jaiamin/ass/pull/9 created and linked in T3. Staged diff and commit
 hook secret scans found no leaks. PR remains draft/unmerged; no merge or main push.
 No further implementation work remains. Keep the requested port 8080 app running.
+
+
+## Refinement checkpoint: sidebar, surfaces and drafts
+
+User refinements are implemented on the same task branch and draft PR #9. Shared
+tokens now make page/card/sidebar/overlay surfaces white in light mode and black
+in dark mode, with subtle blue selection and weaker hover. Tabs/sidebar items have
+4px separation. Restored Workspace/Assistant sidebar labels. Only the compact
+logo/wordmark link navigates home, without hover fill; original Bricolage font is
+limited to the lowercase wordmark, and the 20px logo stays uncropped on collapse.
+Header divider is vertically centered and collapse-button left gutter matches its
+12px gap to the divider. Empty experiment actions share a row on mobile/desktop;
+removed redundant generic subtitles. Drafts now use stock outlined Item rows with
+truncated title, edited timestamp and separate discard action. Preset exceptions
+are documented centrally in docs/DESIGN.md.
+
+Observed verification: frontend lint, 70 unit tests, production build and 10 targeted
+keyless browser checks passed after refinements. Additional live-browser geometry
+and visual checks passed in both themes at 390/1440px, including logo, header
+spacing, hover/selection, draft overflow and empty actions. Earlier full redesign
+suite passed 76/76; it was not repeated for these focused refinements. No backend
+changes or paid calls. Port 8080 returns HTTP 200 and remains running in session
+13109; user is actively using its database and provider configuration. Do not reset
+data, replace credentials or stop the requested preview.

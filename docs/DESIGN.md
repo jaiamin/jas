@@ -9,15 +9,19 @@ colors:
   light-primary-foreground: "oklch(0.985 0 0)"
   light-muted: "oklch(0.97 0 0)"
   light-muted-foreground: "oklch(0.556 0 0)"
+  light-accent: "oklch(0.932 0.032 255.585)"
+  light-accent-foreground: "oklch(0.424 0.199 265.638)"
   light-border: "oklch(0.922 0 0)"
   light-destructive: "oklch(0.577 0.245 27.325)"
-  dark-background: "oklch(0.145 0 0)"
+  dark-background: "oklch(0 0 0)"
   dark-foreground: "oklch(0.985 0 0)"
-  dark-card: "oklch(0.205 0 0)"
+  dark-card: "oklch(0 0 0)"
   dark-primary: "oklch(0.922 0 0)"
   dark-primary-foreground: "oklch(0.205 0 0)"
   dark-muted: "oklch(0.269 0 0)"
   dark-muted-foreground: "oklch(0.708 0 0)"
+  dark-accent: "oklch(0.282 0.091 267.935)"
+  dark-accent-foreground: "oklch(0.882 0.059 254.128)"
   dark-border: "oklch(1 0 0 / 10%)"
   dark-destructive: "oklch(0.704 0.191 22.216)"
   chart-1: "oklch(0.87 0 0)"
@@ -62,9 +66,13 @@ spacing:
 ## Overview
 
 JAS uses default stock shadcn components and preset styling. The current preset is
-`b2fA`: Nova, Radix, neutral, Geist and Lucide. Preserve the supplied
-[`logo.svg`](../frontend/public/logo.svg) as a brand asset; it does not define a
-separate palette, typeface or component style.
+`b2fA`: Nova, Radix, neutral, Geist and Lucide, with the user-requested surface
+colors and wordmark below. Preserve the supplied
+[`logo.svg`](../frontend/public/logo.svg). The top-left lowercase `jas` wordmark
+alone uses the original locally hosted Bricolage Grotesque subset at 22px/800,
+without a subtitle. All other interface text follows the preset font.
+The compact brand link covers only the logo and wordmark and has no hover fill.
+The 20px logo stays centered and uncropped when navigation collapses.
 
 [`components.json`](../frontend/components.json) owns preset configuration;
 [`index.css`](../frontend/src/index.css) owns theme colors, chart colors, fonts and
@@ -78,7 +86,11 @@ responsive navigation and explicit workflow states.
 
 ## Colors
 
-The neutral preset supplies white light surfaces and near-black dark surfaces.
+Page, sidebar, card and overlay surfaces use pure white in light mode and pure
+black in dark mode, as explicitly requested. These shared theme tokens apply to
+both navigation sidebars and every view.
+Selection uses a subtle blue accent. Hover uses half-strength accent, while the
+selected item keeps its full accent on hover. Both are shared semantic tokens.
 Primary actions use the primary/foreground pair; secondary surfaces, muted text,
 borders, focus and destructive states use their corresponding semantic tokens.
 Keep foreground/background pairs together when composing components.
@@ -93,7 +105,7 @@ Geist Variable supplies interface text and headings. The shared type ramp uses
 small metadata, regular interface text, medium card titles and semibold page
 headings. Page headings can grow to 30px on wider screens. Code and identifiers
 use the default monospace utility; measurements use tabular figures. Font changes
-belong to the preset and its stylesheet, including the JAS wordmark text.
+belong to the preset and its stylesheet, except the dedicated brand wordmark.
 
 ## Layout
 
@@ -110,9 +122,10 @@ below that breakpoint. Decisions and evidence stack below 1440px.
 
 ## Elevation & Depth
 
-Use the preset's surface colors, borders, rings, shadows and motion unchanged.
-Cards and overlays keep their generated treatments; app layout utilities arrange
-these components without introducing custom effects or elevation tokens.
+Use shared theme tokens for surfaces, including the requested pure white/black
+colors. Keep the preset's borders, rings, shadows and motion. Cards and overlays
+retain their generated treatments except CardFooter uses the card surface token;
+app layout utilities introduce no custom effects or elevation tokens.
 
 ## Shapes
 
@@ -157,6 +170,9 @@ pnpm dlx shadcn@latest apply --preset <code>
    semantics, Chart style children and stable keys, valid Field/Item/InputGroup
    roles, and narrow lint annotations. Keep chart legend text readable and retain
    distinct line patterns.
+   Retain the requested 4px gaps between tabs and sidebar items, centered header
+   divider, pure white/black surface tokens, CardFooter card surface, subtle blue
+   selection with weaker hover, and dedicated wordmark font unless superseded.
 4. Keep app behavior outside regeneratable helpers: domain formatters live in
    `src/lib/format.ts`; `src/lib/utils.ts` only exports `cn`. Workspace persistence
    lives in `workspace-provider.tsx`; app breakpoints use `hooks/use-compact.ts`,
@@ -172,6 +188,8 @@ pnpm dlx shadcn@latest apply --preset <code>
 - **Do** use layout utilities to compose screens and preserve usable mobile states.
 - **Do** verify readable text, visible focus and non-color status/series cues in both themes.
 - **Do** keep loading, error, empty and retry states explicit without discarding drafts.
-- **Don't** add custom stylesheets, palettes, fonts, visual variants or copied component implementations.
+- **Don't** add custom stylesheets, visual variants or copied component implementations.
+  Keep the explicit surface, selection, spacing and wordmark exceptions above
+  when applying a preset.
 - **Don't** treat snapshot values as constraints on the next preset.
 - **Don't** display fabricated activity, private reasoning or unsupported empirical outcomes.

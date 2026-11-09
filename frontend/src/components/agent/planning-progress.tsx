@@ -26,7 +26,7 @@ export function PlanningProgress({ plan }: { plan?: Analysis }) {
         <Message align="end">
           <MessageContent>
             <MessageHeader>You</MessageHeader>
-            <Bubble variant="muted" align="end">
+            <Bubble variant="outline" align="end">
               <BubbleContent>
                 {plan?.question ?? "Loading your question…"}
               </BubbleContent>
