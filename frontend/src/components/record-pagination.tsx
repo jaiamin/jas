@@ -55,7 +55,7 @@ export function RecordPagination({
         <PaginationItem>
           <Button
             variant="ghost"
-            className="gap-0"
+            className="gap-0.5"
             disabled={page === 0}
             aria-label={`Previous ${noun} page`}
             onClick={() => onPageChange(page - 1)}
@@ -68,7 +68,7 @@ export function RecordPagination({
         <PaginationItem>
           <Button
             variant="ghost"
-            className="gap-0"
+            className="gap-0.5"
             disabled={page + 1 >= pages}
             aria-label={`Next ${noun} page`}
             onClick={() => onPageChange(page + 1)}

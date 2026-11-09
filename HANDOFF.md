@@ -1313,3 +1313,6 @@ List page title refinement: use 22px semibold Experiments/Runs headings on deskt
 
 
 Pagination spacing follow-up: remove the remaining 4px flex gap between Previous/Next labels and chevrons in shared RecordPagination. Preserve stock icon sizes, button hit areas and compact mobile controls. Frontend lint/type/build and all four desktop/mobile experiment/run pagination browser flows passed, including exact zero-gap assertions, navigation and filter reset. Reviewed desktop pagination capture; rebuilt UI remains on 8080.
+
+
+Pagination spacing adjustment: latest preference sets the shared Previous/Next arrow-label gap to 2px, between the previous 0px and 4px treatments. Frontend lint/type/build and all four desktop/mobile experiment/run pagination browser checks passed, including exact gap assertions. Rebuilt UI remains on 8080.
