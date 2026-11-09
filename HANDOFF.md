@@ -744,7 +744,8 @@ Approved 3D suggestion illustrations (2026-11-09):
 - Download free CC0 source PNGs through the normal icon download API. Preview
   thumbnails flatten transparency, so use RGBA downloads instead. Trim transparent
   margins, preserve aspect ratio and export WebP with a 120px longest edge at
-  quality 0.9. Reserve 40px boxes to prevent layout shifts; left-align artwork
+  quality 0.9. Reserve 36px boxes (reduced from 40px per final refinement) to
+  prevent layout shifts; left-align artwork
   with text on desktop and vertically center it beside text on narrow screens.
 - The four optimized images total 18,128 bytes. No dependency or external runtime
   requests; empty alt text keeps artwork decorative.
@@ -756,3 +757,7 @@ all four local image loads, prompt filling/submission and responsive light/dark
 layouts. Reviewed final desktop-dark and phone-light captures for the requested
 views, transparent backgrounds and artwork/text alignment.
 No backend/data changes or paid calls. Requested port 8080 stays live.
+
+Final size refinement: reduced illustration boxes from 40px to 36px while
+preserving aspect ratio and text alignment. Frontend lint/build and the four
+responsive light/dark Home layout checks passed again; reviewed desktop capture.
