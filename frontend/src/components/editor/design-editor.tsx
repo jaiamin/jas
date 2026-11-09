@@ -222,9 +222,15 @@ export function DesignEditor({
               to={
                 agentChatId
                   ? `/agent?chat=${agentChatId}`
-                  : `/agent?context=new&new=${agentDraftId}`
+                  : `/agent?new=${agentDraftId}`
               }
-              state={agentChatId ? null : { question: design.question }}
+              state={
+                agentChatId
+                  ? null
+                  : {
+                      question: `Help me design an experiment to investigate: ${design.question}`,
+                    }
+              }
             >
               <MessageSquare data-icon="inline-start" />
               {agentChatId ? "Back to Agent" : "Generate with Agent"}

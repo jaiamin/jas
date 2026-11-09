@@ -1,30 +1,22 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Disclosure,
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { DraftList } from "@/components/draft-list";
 import { Alert } from "@/components/feedback";
-import { MessageSquare, PenLine, Plus, Trash2 } from "@/components/icons";
+import { MessageSquare, Plus } from "@/components/icons";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { StudyTable } from "@/components/study-table";
 import { Button } from "@/components/ui/button";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
 import { useApi } from "@/lib/api";
 import { listDrafts, removeDraft } from "@/lib/drafts";
-import { date } from "@/lib/format";
 import type { StudySummary } from "@/lib/types";
 
 export default function Experiments() {
+  const location = useLocation();
   const studies = useApi<StudySummary[]>("/studies", true);
   const [drafts, setDrafts] = useState(() => {
     try {
@@ -33,11 +25,15 @@ export default function Experiments() {
       return { items: [], unreadable: [], error: (error as Error).message };
     }
   });
+  useEffect(() => {
+    if (location.hash === "#drafts" && !studies.isPending)
+      document.getElementById("drafts")?.scrollIntoView({ block: "start" });
+  }, [location.hash, studies.isPending]);
   return (
     <>
       <PageHeading title="Experiments">
         <Button variant="outline" asChild>
-          <Link to="/agent?context=new">
+          <Link to="/agent">
             <MessageSquare data-icon="inline-start" />
             Design with Agent
           </Link>
@@ -85,59 +81,23 @@ export default function Experiments() {
         </Alert>
       )}
       {drafts.items.length > 0 && (
-        <Disclosure className="mt-6 min-w-0">
+        <Disclosure
+          id="drafts"
+          defaultOpen={location.hash === "#drafts"}
+          className="mt-6 min-w-0"
+        >
           <DisclosureTrigger>Drafts · {drafts.items.length}</DisclosureTrigger>
           <DisclosureContent className="pt-3">
-            <ItemGroup>
-              {drafts.items.map((draft) => (
-                <Item
-                  key={draft.path}
-                  variant="outline"
-                  size="sm"
-                  className="flex-nowrap"
-                >
-                  <ItemMedia variant="icon">
-                    <PenLine />
-                  </ItemMedia>
-                  <ItemContent className="min-w-0">
-                    <ItemTitle className="max-w-full">
-                      <Link
-                        to={draft.path}
-                        className="truncate hover:underline"
-                        title={draft.title || "Untitled experiment"}
-                      >
-                        {draft.title || "Untitled experiment"}
-                      </Link>
-                    </ItemTitle>
-                    {Number.isFinite(Date.parse(draft.updated)) && (
-                      <ItemDescription>
-                        Edited {date(draft.updated)}
-                      </ItemDescription>
-                    )}
-                  </ItemContent>
-                  <ItemActions>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      aria-label={`Discard ${draft.title || "untitled"} draft`}
-                      onClick={() => {
-                        try {
-                          removeDraft(draft.path);
-                          setDrafts({ ...listDrafts(), error: "" });
-                        } catch (error) {
-                          setDrafts({
-                            ...drafts,
-                            error: (error as Error).message,
-                          });
-                        }
-                      }}
-                    >
-                      <Trash2 />
-                    </Button>
-                  </ItemActions>
-                </Item>
-              ))}
-            </ItemGroup>
+            <DraftList
+              drafts={drafts.items}
+              onDelete={(path) => {
+                removeDraft(path);
+                setDrafts((current) => ({
+                  ...current,
+                  items: current.items.filter((draft) => draft.path !== path),
+                }));
+              }}
+            />
           </DisclosureContent>
         </Disclosure>
       )}

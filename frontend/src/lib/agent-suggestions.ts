@@ -30,6 +30,29 @@ const evidenceQuestions: Record<EnvironmentId, string> = {
     "Trace extraction decisions and resource regeneration. Which recorded decisions changed the stock trajectory?",
 };
 
+const experimentSuggestions: AgentSuggestion[] = [
+  {
+    title: "Communication & cooperation",
+    prompt:
+      "Design a shared-commons experiment testing whether public messages change contribution rates. Compare messages enabled and disabled, keeping reports, promises, agent goals and other rules identical. Use matched seeds, a compact pilot and a $3 spending ceiling.",
+  },
+  {
+    title: "Memory & reciprocity",
+    prompt:
+      "Design a trust-exchange experiment testing whether retained private notes change return rates. Compare episodic memory with history-only memory while holding goals, communication and resources constant. Use matched seeds, a compact pilot and a $3 spending ceiling.",
+  },
+  {
+    title: "Oversight & sanctions",
+    prompt:
+      "Design an institutional-oversight experiment testing whether oversight probability changes sanction use. Vary only oversight probability, keeping authority, goals and sanction limits identical. Use matched seeds, a compact pilot and a $3 spending ceiling; make no claims of psychological replication.",
+  },
+  {
+    title: "Regeneration & resource use",
+    prompt:
+      "Design a renewable-resource experiment testing how regeneration rate affects extraction and resource survival. Vary only regeneration, keeping initial stock, capacity, extraction limits and agent goals constant. Use matched seeds, a compact pilot and a $3 spending ceiling.",
+  },
+];
+
 export function agentSuggestions({
   context,
   study,
@@ -59,35 +82,9 @@ export function agentSuggestions({
         prompt:
           "How should I interpret a small pilot? Explain independent runs, uncertainty and what I should avoid concluding.",
       },
-      {
-        title: "What can JAS measure reliably?",
-        prompt:
-          "What can JAS measure reliably? Distinguish recorded actions and consequences from model self-reports and real-world predictions.",
-      },
+      { ...experimentSuggestions[0], title: "Design a cooperation experiment" },
     ];
-  if (context === "new")
-    return [
-      {
-        title: "Communication & cooperation",
-        prompt:
-          "Design a shared-commons experiment testing whether public messages change contribution rates. Compare messages enabled and disabled, keeping reports, promises, agent goals and other rules identical. Use matched seeds, a compact pilot and a $3 spending ceiling.",
-      },
-      {
-        title: "Memory & reciprocity",
-        prompt:
-          "Design a trust-exchange experiment testing whether retained private notes change return rates. Compare episodic memory with history-only memory while holding goals, communication and resources constant. Use matched seeds, a compact pilot and a $3 spending ceiling.",
-      },
-      {
-        title: "Oversight & sanctions",
-        prompt:
-          "Design an institutional-oversight experiment testing whether oversight probability changes sanction use. Vary only oversight probability, keeping authority, goals and sanction limits identical. Use matched seeds, a compact pilot and a $3 spending ceiling; make no claims of psychological replication.",
-      },
-      {
-        title: "Regeneration & resource use",
-        prompt:
-          "Design a renewable-resource experiment testing how regeneration rate affects extraction and resource survival. Vary only regeneration, keeping initial stock, capacity, extraction limits and agent goals constant. Use matched seeds, a compact pilot and a $3 spending ceiling.",
-      },
-    ];
+  if (context === "new") return experimentSuggestions;
   if (!study && !run) return [];
   const title = run?.study_title ?? study?.title;
   const identity = run

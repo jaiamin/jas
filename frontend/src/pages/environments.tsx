@@ -161,7 +161,7 @@ export default function Environments() {
                 </Button>
                 <Button variant="outline" asChild>
                   <Link
-                    to="/agent?context=new"
+                    to="/agent"
                     state={{
                       question: `Help me design an experiment using ${env.name}. Explain which behavior it can identify, suggest an isolated comparison, and flag limitations before proposing a protocol.`,
                     }}

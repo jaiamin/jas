@@ -157,6 +157,17 @@
   );
 }
 
+.home-heading::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -0.5rem -1rem;
+  pointer-events: none;
+  background: color-mix(in oklch, var(--background) 30%, transparent);
+  backdrop-filter: blur(3px);
+  mask-image: radial-gradient(ellipse, #000 60%, transparent 100%);
+}
+
 .home-grid-cell {
   opacity: 0.16;
   animation: home-grid-tide 36s ease-in-out infinite;

@@ -14,6 +14,15 @@ test("Agent is one full page with an inner history rail and contextual composer"
   ).toHaveCount(0);
   await page.getByRole("link", { name: "Agent", exact: true }).click();
   await expect(page).toHaveTitle("JAS");
+  const defaultContext = page.getByRole("combobox", {
+    name: "Message context",
+  });
+  await expect(defaultContext).toContainText("No experiment");
+  await defaultContext.click();
+  await expect(
+    page.getByRole("option", { name: "New experiment", exact: true }),
+  ).toHaveCount(0);
+  await page.keyboard.press("Escape");
   await expect(page.getByRole("tab")).toHaveCount(0);
   await expect(
     sidebar.getByRole("complementary", { name: "Chat history" }),
@@ -65,13 +74,22 @@ test("Agent is one full page with an inner history rail and contextual composer"
   });
   await input.fill("Compare the recorded strategies");
   await context.click();
-  await page.getByRole("option", { name: "General", exact: true }).click();
+  await page
+    .getByRole("option", { name: "No experiment", exact: true })
+    .click();
   await expect(input).toHaveValue("Compare the recorded strategies");
   await page.reload();
   await expect(input).toHaveValue("Compare the recorded strategies");
-  await expect(context).toContainText("General");
+  await expect(context).toContainText("No experiment");
+  await context.click();
+  await page
+    .getByRole("option", { name: "Context selection experiment", exact: true })
+    .click();
+  await expect(context).toContainText("Context selection experiment");
+  await expect(input).toHaveValue("Compare the recorded strategies");
   await page.getByRole("button", { name: "New chat", exact: true }).click();
   await expect(input).toHaveValue("");
+  await expect(context).toContainText("No experiment");
 });
 
 test("saved conversations resume after reload and new chats keep separate histories", async ({
@@ -130,6 +148,9 @@ test("saved conversations resume after reload and new chats keep separate histor
     route.fulfill({ json: messages }),
   );
   await page.goto("/agent");
+  await expect(
+    page.getByRole("combobox", { name: "Message context" }),
+  ).toContainText("No experiment");
   const input = page.getByLabel("Message Agent", { exact: true });
   await input.fill("What is a matched seed?");
   await input.press("Shift+Enter");
@@ -314,7 +335,9 @@ for (const theme of ["light", "dark"]) {
     await page.getByText("Limitations & uncertainty", { exact: true }).click();
     await expect(page.getByText("One run is descriptive.")).toBeVisible();
     await context.click();
-    await page.getByRole("option", { name: "General", exact: true }).click();
+    await page
+      .getByRole("option", { name: "No experiment", exact: true })
+      .click();
     await page
       .getByLabel("Message Agent", { exact: true })
       .fill("An unsent follow-up");
@@ -408,7 +431,7 @@ test("creation stays in chat and hands a reviewed protocol to the editor", async
   await page.route("**/api/analyses/proposal-answer", (route) =>
     route.fulfill({ json: message }),
   );
-  await page.goto("/agent?context=new");
+  await page.goto("/agent");
   await page
     .getByLabel("Message Agent", { exact: true })
     .fill("Study cooperation");
@@ -416,7 +439,7 @@ test("creation stays in chat and hands a reviewed protocol to the editor", async
   await expect(page.getByRole("heading", { name: design.title })).toBeVisible();
   expect(submitted).toEqual({
     question: "Study cooperation",
-    context: "new",
+    context: "general",
     chat_id: null,
   });
   await expect(page).toHaveURL(/agent\?chat=proposal-chat/);

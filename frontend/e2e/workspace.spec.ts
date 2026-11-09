@@ -273,7 +273,11 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   await page.goto("/studies");
   await page.getByText(/^Drafts ·/).click();
   await page
-    .getByRole("button", { name: "Discard Recovered protocol draft" })
+    .getByRole("button", { name: "Delete Recovered protocol draft" })
+    .click();
+  await page
+    .getByRole("alertdialog")
+    .getByRole("button", { name: "Delete draft", exact: true })
     .click();
   await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
   await page.goto("/new?template=commons");

@@ -129,7 +129,7 @@ test("visiting Agent preserves the editor's single recoverable draft", async ({
   await page
     .getByRole("link", { name: "Generate with Agent", exact: true })
     .click();
-  await expect(page).toHaveURL(/agent\?context=new/);
+  await expect(page).toHaveURL(/agent\?new=/);
   await page.goBack();
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
     "Preserved while asking AI",

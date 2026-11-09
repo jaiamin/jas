@@ -61,6 +61,14 @@ test("Home submits once, opens the saved Agent conversation and never resubmits 
   await page.goto("/");
   await expect(page).toHaveTitle("JAS");
   await expect(
+    page.getByRole("region", { name: "Drafts", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page
+      .getByRole("region", { name: "Recent experiments" })
+      .getByRole("link", { name: "New", exact: true }),
+  ).toHaveAttribute("href", "/new");
+  await expect(
     page.getByRole("combobox", { name: "Message context" }),
   ).toHaveCount(0);
   await expect(page.locator('[data-slot="input-group"]')).toHaveCSS(
@@ -229,16 +237,22 @@ for (const width of [390, 1440])
           for (const [index, title] of [
             "Continue the latest protocol",
             "An older unfinished protocol",
+            "",
+            "An earlier draft",
+            "The oldest draft",
           ].entries()) {
-            const path = `/new?template=${index ? "trust" : "commons"}`;
+            const path =
+              index === 0
+                ? "/new?template=commons"
+                : `/new?plan=draft-${index}`;
             localStorage.setItem(
               `jas:draft:${path}`,
               JSON.stringify({
                 path,
                 title,
                 updated: `2026-11-0${9 - index}T00:00:00Z`,
-                design,
-                json: JSON.stringify(design),
+                design: { ...design, title },
+                json: JSON.stringify({ ...design, title }),
                 mode: "visual",
               }),
             );
@@ -250,6 +264,9 @@ for (const width of [390, 1440])
         route.fulfill({
           json: Array.from({ length: 6 }, (_, i) => ({
             id: `recent-${i}`,
+            environment: study.design.environment,
+            question: study.design.question,
+            revision: 1,
             title: `Experiment ${i}: a long title about resource allocation and cooperation`,
             created: `2026-11-0${9 - i}T00:00:00Z`,
             run_count: 4,
@@ -292,9 +309,12 @@ for (const width of [390, 1440])
           .getByRole("region", { name: "Recent experiments" })
           .getByRole("link", { name: /^Experiment \d/ }),
       ).toHaveCount(4);
-      const continueDraft = page.getByRole("link", {
-        name: "Continue draft",
+      const draftSection = page.getByRole("region", {
+        name: "Drafts",
         exact: true,
+      });
+      const continueDraft = draftSection.getByRole("link", {
+        name: /^Continue the latest protocol/,
       });
       await expect(continueDraft).toHaveAttribute(
         "href",
@@ -304,10 +324,25 @@ for (const width of [390, 1440])
         "title",
         "Continue the latest protocol",
       );
+      await expect(draftSection.locator('[data-slot="item-title"]')).toHaveText(
+        [
+          "Continue the latest protocol",
+          "An older unfinished protocol",
+          "Untitled experiment",
+        ],
+      );
+      await expect(
+        draftSection.getByRole("link", { name: "View all drafts" }),
+      ).toHaveAttribute("href", "/studies#drafts");
       await expect(
         page
           .getByRole("region", { name: "Recent experiments" })
-          .getByRole("link", { name: "Continue draft", exact: true }),
+          .getByRole("link", { name: "New", exact: true }),
+      ).toHaveAttribute("href", "/new");
+      await expect(
+        page
+          .getByRole("region", { name: "Experiment suggestions" })
+          .getByRole("link"),
       ).toHaveCount(0);
       await expect(
         page
@@ -335,6 +370,120 @@ for (const width of [390, 1440])
         );
       });
       expect(completeCells).toBe(true);
+      const filledEdges = await page.locator(".home-grid").evaluate((svg) => {
+        const cells = [
+          ...svg.querySelectorAll<SVGRectElement>(".home-grid-cell"),
+        ];
+        return {
+          top: Math.min(...cells.map((cell) => cell.y.baseVal.value)),
+          bottom: Math.max(
+            ...cells.map(
+              (cell) => cell.y.baseVal.value + cell.height.baseVal.value,
+            ),
+          ),
+          height: (svg as SVGSVGElement).viewBox.baseVal.height,
+        };
+      });
+      expect(filledEdges.top).toBe(0);
+      expect(filledEdges.bottom).toBe(filledEdges.height);
+      const draftToggle = draftSection.getByRole("button", {
+        name: "Drafts",
+        exact: true,
+      });
+      await draftToggle.click();
+      await expect(continueDraft).toHaveCount(0);
+      await expect(draftToggle).toHaveAttribute("aria-expanded", "false");
+      await expect(draftSection.locator('[data-slot="separator"]')).toHaveCount(
+        0,
+      );
+      await draftToggle.click();
+      await expect(continueDraft).toBeVisible();
+      const experiments = page.getByRole("region", {
+        name: "Recent experiments",
+      });
+      const experimentToggle = experiments.getByRole("button", {
+        name: "Recent experiments",
+        exact: true,
+      });
+      await experimentToggle.click();
+      await expect(experiments.locator('[data-slot="separator"]')).toHaveCount(
+        0,
+      );
+      await expect(
+        experiments.getByRole("link", { name: /^Experiment \d/ }),
+      ).toHaveCount(0);
+      await expect(
+        experiments.getByRole("link", { name: "New", exact: true }),
+      ).toBeVisible();
+      await experimentToggle.click();
+      await expect(
+        experiments.getByRole("link", { name: /^Experiment \d/ }),
+      ).toHaveCount(4);
+      for (const toggle of [draftToggle, experimentToggle]) {
+        await toggle.hover();
+        await expect(toggle).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+        const hitArea = await toggle.evaluate((button) => ({
+          button: button.getBoundingClientRect().width,
+          heading: button.parentElement?.getBoundingClientRect().width ?? 0,
+        }));
+        expect(hitArea.button).toBeLessThan(hitArea.heading);
+      }
+      await continueDraft.hover();
+      await expect(continueDraft).toHaveCSS(
+        "background-color",
+        "rgba(0, 0, 0, 0)",
+      );
+      const firstExperiment = experiments
+        .getByRole("link", { name: /^Experiment \d/ })
+        .first();
+      await firstExperiment.hover();
+      await expect(firstExperiment).toHaveCSS(
+        "background-color",
+        "rgba(0, 0, 0, 0)",
+      );
+      const suggestionSection = page.getByRole("region", {
+        name: "Experiment suggestions",
+      });
+      const firstSuggestion = suggestionSection.getByRole("button").first();
+      await firstSuggestion.hover();
+      const suggestionEdges = await suggestionSection
+        .locator('[data-slot="item-group"]')
+        .evaluate((group) => {
+          const bounds = group.getBoundingClientRect();
+          const buttons = [...group.querySelectorAll("button")];
+          const boxes = buttons.map((button) => button.getBoundingClientRect());
+          const horizontal = getComputedStyle(group).flexDirection === "row";
+          const last = boxes.at(-1);
+          if (!last) throw new Error("Suggestions are missing");
+          return {
+            topGap: boxes[0].top - bounds.top,
+            leftGap: boxes[0].left - bounds.left,
+            endGap: horizontal
+              ? bounds.right - last.right
+              : bounds.bottom - last.bottom,
+            gaps: boxes
+              .slice(1)
+              .map((box, index) =>
+                horizontal
+                  ? box.left - boxes[index].right
+                  : box.top - boxes[index].bottom,
+              ),
+            borders: buttons.map(
+              (button) => getComputedStyle(button).borderTopWidth,
+            ),
+          };
+        });
+      expect(suggestionEdges.topGap).toBeCloseTo(1, 1);
+      expect(suggestionEdges.leftGap).toBeCloseTo(1, 1);
+      expect(suggestionEdges.endGap).toBeCloseTo(1, 1);
+      for (const gap of suggestionEdges.gaps) expect(gap).toBeCloseTo(1, 1);
+      expect(suggestionEdges.borders).toEqual(Array(5).fill("0px"));
+      await page.screenshot({
+        path: testInfo.outputPath(`home-hover-${theme}-${width}.png`),
+        fullPage: true,
+        animations: "disabled",
+      });
+      await page.mouse.move(0, 0);
       await page.emulateMedia({ reducedMotion: "reduce" });
       await expect(page.locator(".home-grid-cell").first()).toHaveCSS(
         "animation-name",
@@ -366,6 +515,21 @@ for (const width of [390, 1440])
         await page
           .getByRole("button", { name: "Close menu", exact: true })
           .click();
+      await draftSection.getByRole("link", { name: "View all drafts" }).click();
+      await expect(page).toHaveURL(/\/studies#drafts$/);
+      await expect(
+        page.getByRole("button", { name: "Drafts · 5", exact: true }),
+      ).toHaveAttribute("aria-expanded", "true");
+      await expect(
+        page.getByRole("link", { name: "The oldest draft", exact: true }),
+      ).toBeVisible();
+      await page.goBack();
+      await continueDraft.click();
+      await expect(page).toHaveURL(/\/new\?template=commons$/);
+      await expect(
+        page.getByLabel("Experiment name", { exact: true }),
+      ).toHaveValue("Continue the latest protocol");
+      await page.goBack();
       await page.getByRole("link", { name: "New", exact: true }).click();
       await expect(page).toHaveURL(/\/new$/);
     });

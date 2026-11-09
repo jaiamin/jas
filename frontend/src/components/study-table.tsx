@@ -41,7 +41,7 @@ export function StudyTable({ studies }: { studies: StudySummary[] }) {
       <Empty title="No experiments yet">
         <div className="flex flex-wrap items-center justify-center gap-2">
           <Button size="sm" asChild>
-            <Link to="/agent?context=new">Design experiment</Link>
+            <Link to="/agent">Design experiment</Link>
           </Button>
           <Button size="sm" variant="outline" asChild>
             <Link to="/environments">Environments</Link>

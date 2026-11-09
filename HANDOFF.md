@@ -569,3 +569,49 @@ final populated dark-desktop and light-phone captures: full cells, single border
 aligned suggestions, separate draft actions and no overflow. No paid calls.
 The final focused run was clean; earlier navigation disconnects emitted the
 previously documented Starlette log without failures. Port 8080 stays live.
+
+
+Home/Agent workflow follow-up (2026-11-09):
+Acceptance criteria and decisions:
+- [x] New sits with Recent experiments, outside composer and Suggestions.
+- [x] Drafts only appear when present/need recovery, with at most three recent
+      drafts on Home; View all opens and scrolls to the expanded full list.
+- [x] Both Home record sections are initially expanded stock Collapsibles.
+      14px heading triggers have full-width underlines; row separators stop
+      before the last item. Chevrons sit immediately after heading text. Only the text/chevron
+      button toggles the section; all trigger backgrounds stay transparent. New stays outside collapsed content.
+- [x] Suggestions use a 12px heading, 15px title and 11px description; icons remain 20px.
+- [x] Shared stock DraftList has clickable rows with title/edited time and confirmed
+      Delete on both pages. Delete appears on mouse hover/keyboard focus and
+      stays visible on touch screens. Failed removal retains the draft and the dialog.
+- [x] Grid fills reach exact cell boundaries, with strokes above fills and no
+      doubled perimeter. A local 3px backdrop blur and feathered surface tint behind only the heading
+      text improve readability; the remaining animation stays sharp.
+- [x] Remove the manual New experiment mode and every associated entry URL.
+      All normal unscoped prompts use the existing shared server intent harness.
+      Agent defaults to No experiment; existing experiment/run choices remain.
+      Editor handoff expresses design intent in its draft prompt. Direct retries
+      of validated/failed planning turns preserve their planner purpose.
+Verification so far: frontend lint, 72/72 unit tests, build and five shared-server
+general intent tests pass. Home/Agent/navigation/recovery/streaming/suggestions
+checks passed 39/39 before the final deletion/collapse/type refinements.
+The initial extended Home navigation check exposed incomplete test fixtures
+(missing environment and inconsistent draft title/design); fixtures now match
+the real API and stored drafts. No production compatibility changes were made.
+Final draft/Home/workspace/recovery browser checks passed 31/31, including
+confirmed/cancelled deletion, storage failures, keyboard and touch access,
+collapse and exact draft restoration. Reviewed final phone-light/desktop-dark
+captures. A misplaced confirmation step in the existing workspace test was
+corrected after its timeout; the final run passed cleanly. Latest presentation
+request places header chevrons immediately after their text.
+Final hover refinements: record rows and heading triggers stay transparent on hover.
+Only the heading text/chevron button is clickable, not the remaining row. Suggestions are direct Button/Separator children,
+without transparent button borders that caused inset hover gaps.
+Final Home/draft hover checks passed 14/14, confirming transparent record rows,
+mouse/keyboard/touch delete visibility, and suggestion hover fills meeting all
+outer edges and 1px dividers. Local heading blur received an additional four
+phone/desktop light/dark checks. Final heading-only hit areas, transparent
+trigger hover, hidden collapsed dividers and 15px suggestion titles pass all
+four responsive/theme layout checks. Final lint/build and diff checks pass.
+Visual review confirms the local feathered heading blur and flush hover fill.
+No paid calls; requested port 8080 remains live.

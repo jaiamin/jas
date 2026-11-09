@@ -67,6 +67,20 @@ export function HomeGrid() {
       viewBox={`0 0 ${columns * cellSize} ${rows * cellSize}`}
       preserveAspectRatio="none"
     >
+      {cells.map(({ x, y, hash }) => (
+        <rect
+          key={`${x}-${y}`}
+          x={x * cellSize}
+          y={y * cellSize}
+          width={cellSize}
+          height={cellSize}
+          fill={colors[Math.floor(hash / 3) % colors.length]}
+          className="home-grid-cell"
+          style={{
+            animationDelay: `-${(x * 0.65 + y * 1.1 + (hash % 5) * 0.3) % 36}s`,
+          }}
+        />
+      ))}
       <path
         d={[
           ...Array.from(
@@ -83,20 +97,6 @@ export function HomeGrid() {
         strokeOpacity="0.12"
         strokeWidth="0.6"
       />
-      {cells.map(({ x, y, hash }) => (
-        <rect
-          key={`${x}-${y}`}
-          x={x * cellSize + 0.5}
-          y={y * cellSize + 0.5}
-          width={cellSize - 1}
-          height={cellSize - 1}
-          fill={colors[Math.floor(hash / 3) % colors.length]}
-          className="home-grid-cell"
-          style={{
-            animationDelay: `-${(x * 0.65 + y * 1.1 + (hash % 5) * 0.3) % 36}s`,
-          }}
-        />
-      ))}
     </svg>
   );
 }

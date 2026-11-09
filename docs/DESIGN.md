@@ -164,6 +164,9 @@ and their purple blend. Brand decoration colors live in the Home CSS scope;
 controls retain preset tokens. The SVG fits a whole number of rows and columns
 to the backdrop without cropping cells. Only internal grid lines are drawn; the
 existing header and section separators supply the perimeter without doubled edges.
+Cell fills meet every boundary directly; draw grid strokes over the fills without inset gaps.
+A slight 3px backdrop blur and feathered surface tint sit directly behind the
+heading’s text span; the heading stays opaque and the remaining grid stays sharp.
 It never captures input and has no visible
 pause control. Motion pauses offscreen or in hidden tabs; reduced motion shows
 a still three-color pattern.
@@ -172,24 +175,42 @@ Heading top spacing is 80px on mobile and 96px on desktop. A 3:2 grid split
 places three fifths of the composer within the backdrop and two fifths below its
 bottom edge; the opaque surface keeps the grid out of the text field. A stock
 `shadow-lg` gives the composer soft depth along its sides and bottom.
-Home has no context selector: its general prompt lets Agent answer or create a
-validated experiment proposal. Scope selection stays on Agent. Five experiment
+Every unscoped entry point uses the same server intent routing: Agent answers a
+question or creates a validated experiment proposal from the prompt, without a
+manual creation mode. Home has no selector. Agent has an optional experiment/run
+selector, defaulting to No experiment, solely for selecting existing evidence.
+Explicitly scoped links and resumed chats preserve the selected evidence identity. Five experiment
 suggestions fill the draft without submitting. Under the Suggestions heading,
 they share one rounded ItemGroup border with Separator dividers: aligned icons,
-two-line semibold title tracks and smaller descriptions in equal columns
+15px two-line semibold title tracks and 11px descriptions in equal columns
 on wide screens, stacked rows on smaller screens. Stock ghost Buttons keep the
-whole section of each suggestion keyboard-accessible, with icon, title and description. An explicit send creates one chat
+whole section of each suggestion keyboard-accessible, with icon, title and description.
+Buttons sit directly between dividers without transparent border insets, so the
+hover fill meets every edge and follows the group’s clipped outer corners. An explicit send creates one chat
 and opens that saved conversation.
 A late response leaves subsequent navigation intact.
 
 Below suggestions, show up to three active runs only when underway and four
 experiments ordered by creation time.
-Keep the manual creation action, labeled New on Home, available in the empty
-state. Continue draft is a quiet ghost action next to New in a separate action row
-directly beneath the composer, above Suggestions, with its saved title available
-on hover. Keep continuation separate from the saved
-Recent experiments list, without an icon, badge, date or Home dismissal.
-Draft management stays in Experiments. The empty message uses regular muted
+Place the primary New action beside Recent experiments, including its empty
+state. Drafts and Recent experiments are initially expanded stock Collapsibles.
+Their 14px heading triggers are larger than the 12px Suggestions heading; each
+has a full-width Separator below it and a chevron immediately after its text.
+Only the text/chevron button toggles the section; its background stays transparent
+on hover and while expanded. New remains available when collapsed; the heading divider hides with its content.
+Show Drafts immediately above Recent experiments only when drafts exist or need
+recovery, with up to three most recently edited drafts. Both record lists use
+stock Items separated by horizontal rules, without a rule after the final item.
+Draft and recent experiment rows remain transparent on hover; preserve keyboard
+focus rings and link cursors.
+The shared DraftList uses compact clickable Item xs rows with titles and
+last-edited times. Delete appears on mouse hover and keyboard focus, and stays
+visible on touch screens. Use Untitled experiment when
+unnamed. Both Home and Experiments confirm deletion in a stock AlertDialog;
+failed storage writes retain the draft and show a recoverable dialog error.
+Home hides the section after its final draft is deleted. Offer View all drafts
+when more exist, opening and scrolling to the full draft list in Experiments.
+Keep creation actions out of the composer/Suggestions area. The empty message uses regular muted
 EmptyDescription text rather than a title. Full record lists remain on their
 dedicated destinations.
 

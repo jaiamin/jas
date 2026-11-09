@@ -12,14 +12,12 @@ import {
 
 export function AgentComposer({
   state,
-  context,
   contextControl,
   placeholder,
   className,
   children,
 }: {
   state: ReturnType<typeof useAgentComposer>;
-  context: string;
   contextControl?: ReactNode;
   placeholder: string;
   className?: string;
@@ -105,15 +103,8 @@ export function AgentComposer({
       )}
       {unavailable && (
         <p className="mt-3 text-xs leading-relaxed text-muted-foreground [&_a]:underline [&_a]:underline-offset-4">
-          {provider === "openai" ? "OpenAI" : "Anthropic"} is required for this
-          context. <Link to="/settings">Configure a provider</Link>
-          {context === "new" && (
-            <>
-              {" "}
-              or <Link to="/new">configure an experiment manually</Link>
-            </>
-          )}
-          .
+          {provider === "openai" ? "OpenAI" : "Anthropic"} is required to send a
+          message. <Link to="/settings">Configure a provider</Link>.
         </p>
       )}
     </form>

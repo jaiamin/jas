@@ -167,10 +167,7 @@ export default function Editor() {
         <PageHeading title="Design request stopped" />
         <Alert variant="error">{plan.data.error}</Alert>
         <Button variant="outline" asChild>
-          <Link
-            to="/agent?context=new"
-            state={{ question: plan.data.question }}
-          >
+          <Link to="/agent" state={{ question: plan.data.question }}>
             Back to Agent
           </Link>
         </Button>

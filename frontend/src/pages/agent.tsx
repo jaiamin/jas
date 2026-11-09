@@ -277,18 +277,14 @@ function AgentConversation({
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-8 sm:px-6">
           <div className="mx-auto mt-auto w-full max-w-xl text-center [&_p]:mt-3 [&_p]:text-muted-foreground [&_p]:leading-relaxed">
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              {context === "new"
-                ? "What would you like to test?"
-                : context === "general"
-                  ? "What can we explore?"
-                  : "What does the evidence show?"}
+              {context === "general"
+                ? "What can we explore?"
+                : "What does the evidence show?"}
             </h1>
             <p>
-              {context === "new"
-                ? "Describe the behavior you want to understand. We’ll work out the controls, measurements and limits."
-                : context === "general"
-                  ? "Turn a question into a controlled experiment, or connect a run to understand what happened."
-                  : "Separate what agents did from what they said. Compare outcomes, inspect decisions and choose your next test."}
+              {context === "general"
+                ? "Ask a question, design an experiment, or select an experiment or run to explore its evidence."
+                : "Separate what agents did from what they said. Compare outcomes, inspect decisions and choose your next test."}
             </p>
           </div>
           <AgentSuggestions
@@ -304,7 +300,6 @@ function AgentConversation({
       )}
       <AgentComposer
         state={state}
-        context={context}
         contextControl={
           <AgentContext
             value={context}
@@ -315,11 +310,9 @@ function AgentConversation({
           />
         }
         placeholder={
-          context === "new"
-            ? "What behavior do you want to investigate?"
-            : selectedStudy || selectedRun
-              ? "Ask about the selected evidence…"
-              : "Ask a research question…"
+          selectedStudy || selectedRun
+            ? "Ask about the selected evidence…"
+            : "Ask a question or describe an experiment…"
         }
         className="mx-auto w-full max-w-3xl shrink-0 p-4 sm:px-6 sm:pb-6"
       >

@@ -1,7 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AgentComposer } from "@/components/agent/agent-composer";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
+import {
+  Disclosure,
+  DisclosureContent,
+  DisclosureTrigger,
+} from "@/components/disclosure";
+import { DraftList } from "@/components/draft-list";
 import { Alert } from "@/components/feedback";
 import { HomeGrid } from "@/components/home-grid";
 import {
@@ -25,12 +31,13 @@ import {
   ItemDescription,
   ItemGroup,
   ItemMedia,
+  ItemSeparator,
   ItemTitle,
 } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import { agentSuggestions } from "@/lib/agent-suggestions";
 import { useApi } from "@/lib/api";
-import { listDrafts } from "@/lib/drafts";
+import { listDrafts, removeDraft } from "@/lib/drafts";
 import type { RunSummary, StudySummary } from "@/lib/types";
 
 const suggestions = [
@@ -48,6 +55,8 @@ const suggestionIcons = [
   Sprout,
   Target,
 ];
+const recordTriggerClassName =
+  "hover:bg-transparent aria-expanded:bg-transparent aria-expanded:hover:bg-transparent dark:hover:bg-transparent dark:aria-expanded:hover:bg-transparent";
 const suggestionDescriptions = [
   "Test how public messages change contributions.",
   "Compare private notes with history-only memory.",
@@ -76,7 +85,7 @@ export default function Home() {
         navigate(`/agent?chat=${result.chat_id}`);
     },
   });
-  const [drafts] = useState(() => {
+  const [drafts, setDrafts] = useState(() => {
     try {
       return { ...listDrafts(), error: "" };
     } catch {
@@ -87,7 +96,7 @@ export default function Home() {
       };
     }
   });
-  const draft = drafts.items[0];
+  const recentDrafts = drafts.items.slice(0, 3);
   const recent = [...(studies.data ?? [])]
     .sort((a, b) => b.created.localeCompare(a.created))
     .slice(0, 4);
@@ -110,65 +119,32 @@ export default function Home() {
           id="home-title"
           className="relative col-start-1 row-start-1 mt-20 mb-6 px-4 text-center text-2xl font-semibold tracking-tight sm:mt-24 sm:px-6 sm:text-3xl"
         >
-          What would you like to test?
+          <span className="home-heading relative isolate inline-block">
+            What would you like to test?
+          </span>
         </h1>
         <div className="relative col-start-1 row-start-2 row-end-4 min-w-0 px-4 sm:px-6">
           <AgentComposer
             className="mx-auto w-full max-w-2xl [&_[data-slot=input-group]]:shadow-lg"
             state={state}
-            context="general"
             placeholder="Ask a question or describe an experiment…"
           />
         </div>
       </section>
-      <div className="px-4 sm:px-6">
-        <nav
-          className="mx-auto mt-3 flex w-full max-w-2xl items-center justify-end gap-2"
-          aria-label="Experiment actions"
-        >
-          {draft && (
-            <Button variant="ghost" size="sm" asChild>
-              <Link
-                to={draft.path}
-                title={draft.title || "Untitled experiment"}
-              >
-                Continue draft
-              </Link>
-            </Button>
-          )}
-          <Button size="sm" asChild>
-            <Link to="/new">
-              <Plus data-icon="inline-start" />
-              New
-            </Link>
-          </Button>
-        </nav>
-      </div>
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-4 py-8 sm:px-6 sm:py-10">
         <section
           aria-label="Experiment suggestions"
           className="flex flex-col gap-3"
         >
-          <h2 className="text-base font-medium">Suggestions</h2>
-          {(drafts.error || drafts.unreadable.length > 0) && (
-            <Alert variant="error">
-              {drafts.error || "Some drafts could not be read."}{" "}
-              <Link to="/studies" className="underline underline-offset-4">
-                Review drafts
-              </Link>
-            </Alert>
-          )}
+          <h2 className="text-xs font-medium">Suggestions</h2>
           <ItemGroup className="gap-0 overflow-hidden rounded-xl border xl:flex-row">
             {suggestions.map(({ title, prompt }, index) => {
               const Icon = suggestionIcons[index];
               return (
-                <div
-                  key={title}
-                  className="flex min-w-0 flex-1 flex-col xl:flex-row"
-                >
+                <Fragment key={title}>
                   <Button
                     variant="ghost"
-                    className="h-full w-full items-start justify-start gap-3 rounded-none px-5 py-4 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-5 xl:flex-col"
+                    className="h-auto w-full min-w-0 flex-1 items-start justify-start gap-3 rounded-none border-0 px-5 py-4 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-5 xl:flex-col"
                     disabled={state.send.isPending}
                     onClick={() => {
                       state.setQuestion(prompt);
@@ -181,10 +157,10 @@ export default function Home() {
                       aria-hidden="true"
                     />
                     <span className="flex min-w-0 flex-col gap-1.5">
-                      <span className="text-base leading-tight font-semibold xl:min-h-[2lh]">
+                      <span className="text-[0.9375rem] leading-4 font-semibold xl:min-h-[2lh]">
                         {title}
                       </span>
-                      <span className="text-xs leading-4 font-normal text-muted-foreground">
+                      <span className="text-[0.6875rem] leading-4 font-normal text-muted-foreground">
                         {suggestionDescriptions[index]}
                       </span>
                     </span>
@@ -198,7 +174,7 @@ export default function Home() {
                       />
                     </>
                   )}
-                </div>
+                </Fragment>
               );
             })}
           </ItemGroup>
@@ -209,7 +185,7 @@ export default function Home() {
             className="flex flex-col gap-3"
           >
             <div className="flex items-center justify-between gap-3">
-              <h2 id="active-runs-title" className="text-base font-medium">
+              <h2 id="active-runs-title" className="text-sm font-medium">
                 In progress
               </h2>
               <Button variant="ghost" size="sm" asChild>
@@ -243,57 +219,150 @@ export default function Home() {
             </ItemGroup>
           </section>
         )}
+        {(recentDrafts.length > 0 ||
+          drafts.error ||
+          drafts.unreadable.length > 0) && (
+          <section
+            aria-labelledby="drafts-title"
+            className="flex flex-col gap-3"
+          >
+            <Disclosure defaultOpen className="flex flex-col gap-3">
+              <div className="flex items-center justify-between gap-3">
+                <h2
+                  id="drafts-title"
+                  className="min-w-0 flex-1 text-sm font-medium"
+                >
+                  <DisclosureTrigger
+                    size="default"
+                    indicatorPosition="end"
+                    className={recordTriggerClassName}
+                  >
+                    Drafts
+                  </DisclosureTrigger>
+                </h2>
+                {drafts.items.length > recentDrafts.length && (
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to="/studies#drafts">
+                      View all drafts
+                      <ArrowUpRight data-icon="inline-end" />
+                    </Link>
+                  </Button>
+                )}
+              </div>
+              <DisclosureContent className="flex flex-col gap-3">
+                <Separator />
+                {(drafts.error || drafts.unreadable.length > 0) && (
+                  <Alert variant="error">
+                    {drafts.error || "Some drafts could not be read."}{" "}
+                    <Link
+                      to="/studies"
+                      className="underline underline-offset-4"
+                    >
+                      Review drafts
+                    </Link>
+                  </Alert>
+                )}
+                {recentDrafts.length > 0 && (
+                  <DraftList
+                    drafts={recentDrafts}
+                    onDelete={(path) => {
+                      removeDraft(path);
+                      setDrafts((current) => ({
+                        ...current,
+                        items: current.items.filter(
+                          (draft) => draft.path !== path,
+                        ),
+                      }));
+                    }}
+                  />
+                )}
+              </DisclosureContent>
+            </Disclosure>
+          </section>
+        )}
         <section
           aria-labelledby="recent-experiments-title"
           className="flex flex-col gap-3"
         >
-          <h2 id="recent-experiments-title" className="text-base font-medium">
-            Recent experiments
-          </h2>
-          {studies.error ? (
-            <ErrorState error={studies.error} onRetry={studies.refetch} />
-          ) : !studies.data ? (
-            <Loading />
-          ) : recent.length ? (
-            <ItemGroup>
-              {recent.map((study) => (
-                <Item key={study.id} size="sm" asChild>
-                  <Link to={`/studies/${study.id}`}>
-                    <ItemMedia variant="icon">
-                      <FlaskConical />
-                    </ItemMedia>
-                    <ItemContent className="min-w-0">
-                      <ItemTitle className="max-w-full">
-                        <span className="truncate">{study.title}</span>
-                      </ItemTitle>
-                      <ItemDescription>
-                        {study.completed_runs} / {study.run_count} runs complete
-                      </ItemDescription>
-                    </ItemContent>
-                    <ItemActions>
-                      <Status value={study.status} />
-                    </ItemActions>
+          <Disclosure defaultOpen className="flex flex-col gap-3">
+            <div className="flex items-center justify-between gap-3">
+              <h2
+                id="recent-experiments-title"
+                className="min-w-0 flex-1 text-sm font-medium"
+              >
+                <DisclosureTrigger
+                  size="default"
+                  indicatorPosition="end"
+                  className={recordTriggerClassName}
+                >
+                  Recent experiments
+                </DisclosureTrigger>
+              </h2>
+              <Button size="sm" asChild>
+                <Link to="/new">
+                  <Plus data-icon="inline-start" />
+                  New
+                </Link>
+              </Button>
+            </div>
+            <DisclosureContent className="flex flex-col gap-3">
+              <Separator />
+              {studies.error ? (
+                <ErrorState error={studies.error} onRetry={studies.refetch} />
+              ) : !studies.data ? (
+                <Loading />
+              ) : recent.length ? (
+                <ItemGroup className="has-data-[size=sm]:gap-0">
+                  {recent.map((study, index) => (
+                    <Fragment key={study.id}>
+                      <Item
+                        size="sm"
+                        className="[a]:hover:bg-transparent"
+                        asChild
+                      >
+                        <Link to={`/studies/${study.id}`}>
+                          <ItemMedia variant="icon">
+                            <FlaskConical />
+                          </ItemMedia>
+                          <ItemContent className="min-w-0">
+                            <ItemTitle className="max-w-full">
+                              <span className="truncate">{study.title}</span>
+                            </ItemTitle>
+                            <ItemDescription>
+                              {study.completed_runs} / {study.run_count} runs
+                              complete
+                            </ItemDescription>
+                          </ItemContent>
+                          <ItemActions>
+                            <Status value={study.status} />
+                          </ItemActions>
+                        </Link>
+                      </Item>
+                      {index < recent.length - 1 && (
+                        <ItemSeparator className="my-0" />
+                      )}
+                    </Fragment>
+                  ))}
+                </ItemGroup>
+              ) : (
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyDescription>
+                      Your experiments will appear here
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              )}
+              {recent.length > 0 && (
+                <Button className="self-end" variant="ghost" size="sm" asChild>
+                  <Link to="/studies">
+                    View all experiments
+                    <ArrowUpRight data-icon="inline-end" />
                   </Link>
-                </Item>
-              ))}
-            </ItemGroup>
-          ) : (
-            <Empty>
-              <EmptyHeader>
-                <EmptyDescription>
-                  Your experiments will appear here
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          )}
-          {recent.length > 0 && (
-            <Button className="self-end" variant="ghost" size="sm" asChild>
-              <Link to="/studies">
-                View all experiments
-                <ArrowUpRight data-icon="inline-end" />
-              </Link>
-            </Button>
-          )}
+                </Button>
+              )}
+            </DisclosureContent>
+          </Disclosure>
         </section>
       </div>
     </>

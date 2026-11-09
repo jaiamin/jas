@@ -41,7 +41,7 @@ export function PlanningProgress({ plan }: { plan?: Analysis }) {
         </Message>
       </div>
       <Button variant="outline" asChild>
-        <Link to="/agent?context=new" state={{ question: plan?.question }}>
+        <Link to="/agent" state={{ question: plan?.question }}>
           Back to workspace
         </Link>
       </Button>

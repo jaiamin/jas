@@ -1,4 +1,4 @@
-import { FlaskConical, Globe, Play, Plus } from "@/components/icons";
+import { FlaskConical, Globe, Play } from "@/components/icons";
 import {
   SelectContent,
   SelectGroup,
@@ -28,8 +28,7 @@ export function contextLabel(
   studies: StudySummary[],
   runs: RunSummary[],
 ) {
-  if (context === "new") return "New experiment";
-  if (context === "general") return "General";
+  if (context === "general") return "No experiment";
   const [kind, id] = context.split(":");
   if (kind === "study")
     return (
@@ -56,11 +55,9 @@ export function AgentContext({
 }) {
   const known =
     value === "general" ||
-    value === "new" ||
     studies.some((study) => value === `study:${study.id}`) ||
     runs.some((run) => value === `run:${run.id}`);
-  const Icon =
-    value === "general" ? Globe : value === "new" ? Plus : FlaskConical;
+  const Icon = value === "general" ? Globe : FlaskConical;
   return (
     <SelectRoot value={value} onValueChange={onChange} disabled={disabled}>
       <SelectTrigger
@@ -78,11 +75,7 @@ export function AgentContext({
         <SelectGroup>
           <SelectItem value="general">
             <Globe aria-hidden="true" />
-            General
-          </SelectItem>
-          <SelectItem value="new">
-            <Plus aria-hidden="true" />
-            New experiment
+            No experiment
           </SelectItem>
         </SelectGroup>
         {!known && (
