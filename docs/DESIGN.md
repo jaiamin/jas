@@ -215,6 +215,8 @@ uses foreground/65 for legibility. Navigation preserves the unsent message and n
 Use 14px side insets for text and footer controls, retaining the original 8px
 top and bottom insets and 23px text line height for a compact vertical rhythm. The textarea still starts
 with three lines, grows to its existing cap, then scrolls internally.
+The send button has an 8px right inset to match its bottom inset; keep the
+context control's left inset at 14px.
 
 The four decorative suggestion illustrations are explicitly approved exceptions
 to preset icons: [3dicons](https://3dicons.co/), Dynamic (the slight-angle view)

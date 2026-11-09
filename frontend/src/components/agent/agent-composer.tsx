@@ -70,7 +70,7 @@ export function AgentComposer({
                   }
                 }}
               />
-              <InputGroupAddon align="block-end" className="gap-3 px-3.5">
+              <InputGroupAddon align="block-end" className="gap-3 pl-3.5 pr-2">
                 {contextControl}
                 <Button
                   type="submit"

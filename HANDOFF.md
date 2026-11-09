@@ -868,3 +868,11 @@ Composer footer baseline and line spacing refinement (2026-11-09):
 Verification: frontend lint/build and seven responsive Home/composer browser
 checks passed. Reviewed the Agent phone capture for inline footer alignment,
 normal word spacing and the closer underline. Port 8080 remains healthy.
+
+Send-button inset refinement (2026-11-09):
+- Reduce only the shared composer's send-button right inset from 14px to 8px to
+  match the existing bottom inset. Preserve textarea sides and context-control
+  left padding at 14px, plus all vertical spacing.
+Verification: frontend lint/build and both responsive Home/Agent composer
+browser checks passed. Reviewed the phone capture for matching send-button
+right/bottom insets. Port 8080 remains healthy (HTTP 200).
