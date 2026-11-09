@@ -1116,3 +1116,11 @@ its loading/error states. An unscoped/scoped new-chat view already creates a new
 conversation and keeps only History. Preserve the New flow from saved chats and
 late-response/draft safety coverage. Lint/build and all five affected browser
 tests passed; the user-facing app remains available on port 8080.
+
+Agent vertical-position refinement: bias the new-chat group slightly above center
+by distributing remaining space 2:3 above/below. Empty grid tracks shrink on short
+viewports and content scrolls normally; saved-chat transcript/composer positions
+are unchanged.
+Verification: lint/build and all five affected composer/streaming browser tests
+passed. Live geometry confirms the upward bias and normal scrolling at 320×400.
+Own review tab is closed; port 8080 remains available.

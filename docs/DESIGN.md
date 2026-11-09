@@ -177,8 +177,10 @@ and New available. Downloading the lazy Agent module uses only a small spinner,
 not a page of fake database content. Long
 labels truncate inside the popup beside a stock chat-bubble icon and relative
 last-message time; hovering the time exposes the full local timestamp. There is no conversation rail or separate mobile
-history Sheet. New chats center the main heading, plain composer and suggestions
-in that order, without a subtitle. The plain Agent composer omits Home’s gray
+history Sheet. New chats group the main heading, plain composer and suggestions
+in that order, without a subtitle, slightly above center. Remaining vertical
+space splits 2:3 above/below the group and shrinks to zero on short screens;
+content remains scrollable without translated or clipped headings. The plain Agent composer omits Home’s gray
 Card surround and manual-editor footer. Saved chats retain the streaming
 MessageScroller and bottom composer. Decisions and evidence stack below 1440px.
 
