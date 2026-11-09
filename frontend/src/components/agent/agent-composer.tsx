@@ -48,7 +48,7 @@ export function AgentComposer({
         <InputGroup className="has-[[data-slot=input-group-control]:focus-visible]:border-input has-[[data-slot=input-group-control]:focus-visible]:ring-0">
           <InputGroupTextarea
             ref={composer}
-            className="min-h-22 max-h-48 overflow-y-auto overscroll-contain px-4 text-[0.9375rem] leading-6 md:text-[0.9375rem]"
+            className="min-h-22 max-h-48 overflow-y-auto overscroll-contain px-3.5 text-[0.9375rem] leading-6 md:text-[0.9375rem]"
             aria-label="Message Agent"
             placeholder={placeholder}
             value={question}
@@ -67,7 +67,7 @@ export function AgentComposer({
               }
             }}
           />
-          <InputGroupAddon align="block-end" className="gap-3 px-4">
+          <InputGroupAddon align="block-end" className="gap-3 px-3.5">
             {contextControl}
             <Button
               type="submit"

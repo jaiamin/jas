@@ -185,7 +185,7 @@ selector, defaulting to No experiment, solely for selecting existing evidence.
 Explicitly scoped links and resumed chats preserve the selected evidence identity. Four experiment
 suggestions fill the draft without submitting. Under the Suggestions heading,
 they share one rounded ItemGroup border with Separator dividers: aligned illustrations,
-15px semibold titles and 13px descriptions with 18px line height in one row of
+15px semibold titles with 19px line height and 13px descriptions with 18px line height in one row of
 four on wide screens. Descriptions use foreground/60, matching record timestamps.
 Spell out “and” in suggestion titles rather than using ampersands.
 Use concrete experiment questions covering communication/cooperation, memory/
@@ -204,7 +204,7 @@ A late response leaves subsequent navigation intact.
 The shared Home/Agent composer keeps its resting border and shadow when its
 textarea is focused; do not add an outer focus border or ring. Other form inputs
 retain the stock shadcn focus treatment.
-Use 16px side insets for text and footer controls, retaining the original 8px
+Use 14px side insets for text and footer controls, retaining the original 8px
 top and bottom insets for a compact vertical rhythm. The textarea still starts
 with three lines, grows to its existing cap, then scrolls internally.
 

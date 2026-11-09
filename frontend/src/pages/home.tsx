@@ -157,7 +157,7 @@ export default function Home() {
                       aria-hidden="true"
                     />
                     <span className="flex min-w-0 flex-col gap-1.5">
-                      <span className="text-[0.9375rem] leading-5 font-semibold">
+                      <span className="text-[0.9375rem] leading-[1.1875rem] font-semibold">
                         {title}
                       </span>
                       <span className="text-[0.8125rem] leading-4.5 font-normal text-foreground/60">

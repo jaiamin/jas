@@ -807,3 +807,16 @@ Composer spacing correction (2026-11-09):
 Verification: frontend lint/build and six responsive Home/composer browser checks
 passed. Reviewed phone-light capture for restored vertical spacing and wider
 sides. Port 8080 had stopped; restarted the existing local app.
+
+Suggestion title leading refinement (2026-11-09):
+- Tighten Home's four suggestion titles from 20px to 19px line height; preserve
+  font size/weight, descriptions, title/description gap and tile layout.
+Verification: frontend lint/build and four responsive Home browser checks
+passed for title leading.
+
+Composer side inset refinement (2026-11-09):
+- Reduce shared Home/Agent side padding from 16px to 14px. Preserve original
+  8px top/bottom spacing, three text rows and the prior focus treatment.
+Verification: frontend lint/build and six responsive Home/composer browser
+checks passed. Reviewed desktop capture for tighter title leading and composer
+spacing.
