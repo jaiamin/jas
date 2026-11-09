@@ -166,7 +166,10 @@ The shared Home/Agent textarea starts at three rows with 15px text and 23px
 line height (88px including padding), grows to 192px, then scrolls internally
 while keeping its action row visible.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
-background surface. At the upper right, a 32px stock outline history button
+background surface. The new-chat heading has a decorative primary-colored Target
+at left (32px, 36px on larger screens). Its CSS ring pulse radiates outward twice
+and settles within 4.3 seconds; reduced motion shows the static outline. It never
+signals loading or delays the composer. At the upper right, a 32px stock outline history button
 with the standard rounded corners sits beside the stock 32px New button when a
 saved conversation is selected. The base new-chat view shows only History. History uses a
 stock Popover and ScrollArea in every viewport, with local skeleton rows, empty

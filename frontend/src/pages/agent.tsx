@@ -17,6 +17,7 @@ import { AgentReply } from "@/components/agent/agent-reply";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
 import { Alert } from "@/components/feedback";
 import {
+  AgentIcon,
   BookOpen,
   FlaskConical,
   GitCompareArrows,
@@ -321,8 +322,12 @@ function AgentConversation({
       ) : (
         <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)_auto_minmax(0,2fr)] overflow-y-auto px-4 py-8 sm:px-6">
           <div className="row-start-2 mx-auto flex w-full max-w-3xl flex-col gap-6">
-            <h1 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
-              What can we explore?
+            <h1 className="flex items-center justify-center gap-3 text-center text-2xl font-semibold tracking-tight sm:text-3xl">
+              <AgentIcon
+                aria-hidden="true"
+                className="agent-heading-target size-8 shrink-0 text-primary sm:size-9"
+              />
+              <span>What can we explore?</span>
             </h1>
             {composer}
           </div>

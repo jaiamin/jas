@@ -205,6 +205,40 @@
   }
 }
 
+/* A brief welcome pulse radiates outward, then rests in the stock outline. */
+.agent-heading-target > circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: agent-target-pulse 2s cubic-bezier(0.16, 1, 0.3, 1) 2;
+}
+.agent-heading-target > circle:nth-child(2) {
+  animation-delay: 140ms;
+}
+.agent-heading-target > circle:first-child {
+  animation-delay: 280ms;
+}
+@keyframes agent-target-pulse {
+  0%,
+  60%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  12% {
+    transform: scale(0.86);
+    opacity: 0.45;
+  }
+  30% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .agent-heading-target > circle {
+    animation: none;
+  }
+}
+
 /* Requested partial fills preserve the stock Lucide icon outlines. */
 [data-partial-fill="flask"] > [data-liquid],
 [data-partial-fill="target"] > [data-ring] {
