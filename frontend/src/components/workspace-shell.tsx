@@ -6,13 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  Link,
-  NavLink,
-  Outlet,
-  useLocation,
-  useSearchParams,
-} from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { Empty } from "@/components/feedback";
 import {
   AgentIcon,
@@ -45,7 +39,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useApi } from "@/lib/api";
-import type { RunSummary, StudySummary } from "@/lib/types";
+import type { RunSummary } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 class PageBoundary extends Component<
@@ -79,7 +73,6 @@ export default function WorkspaceShell() {
     wasOpenMobile.current = openMobile;
   }, [openMobile]);
   const [brandHovered, setBrandHovered] = useState(false);
-  const [params] = useSearchParams();
   const [dark, setDark] = useState(() =>
     document.documentElement.classList.contains("dark"),
   );
@@ -91,15 +84,24 @@ export default function WorkspaceShell() {
     runs.data?.filter((r) =>
       ["running", "queued", "pausing"].includes(r.status),
     ) ?? [];
-  const studies = useApi<StudySummary[]>("/studies", true);
   const primaryLinks = [
-    { to: "/", label: "Home", icon: House },
-    { to: "/agent", label: "Agent", icon: AgentIcon },
+    { to: "/", label: "Home", icon: House, partialFill: "house" },
+    { to: "/agent", label: "Agent", icon: AgentIcon, partialFill: "none" },
   ];
   const links = [
-    { to: "/studies", label: "Experiments", icon: ExperimentIcon },
-    { to: "/runs", label: "Runs", icon: Play },
-    { to: "/environments", label: "Environments", icon: Layers2 },
+    {
+      to: "/studies",
+      label: "Experiments",
+      icon: ExperimentIcon,
+      partialFill: undefined,
+    },
+    { to: "/runs", label: "Runs", icon: Play, partialFill: undefined },
+    {
+      to: "/environments",
+      label: "Environments",
+      icon: Layers2,
+      partialFill: "layers",
+    },
   ];
   function changeTheme() {
     const next = !dark;
@@ -111,34 +113,6 @@ export default function WorkspaceShell() {
       /* Storage can be unavailable in private contexts. */
     }
   }
-  const section = isHome
-    ? "Home"
-    : ([
-        { prefix: "/new", label: "Experiment design" },
-        { prefix: "/studies", label: "Experiments" },
-        { prefix: "/runs", label: "Runs" },
-        { prefix: "/environments", label: "Environments" },
-        { prefix: "/settings", label: "Settings" },
-        { prefix: "/compare", label: "Compare runs" },
-        { prefix: "/agent", label: "Agent" },
-      ].find(({ prefix }) => location.pathname.startsWith(prefix))?.label ??
-      "Workspace");
-  const runId = location.pathname.match(/^\/runs\/([^/]+)$/)?.[1];
-  const studyId = location.pathname.match(/^\/studies\/([^/]+)$/)?.[1];
-  const selectedRun = runs.data?.find((r) => r.id === runId);
-  const selectedStudy = studies.data?.find((study) => study.id === studyId);
-  const pageTitle = runId
-    ? (selectedRun?.condition ?? "Run")
-    : studyId
-      ? (selectedStudy?.title ?? "Experiment")
-      : location.pathname === "/new"
-        ? params.has("study")
-          ? "Tune experiment"
-          : "New experiment"
-        : section;
-  useEffect(() => {
-    document.title = `${pageTitle} | JAS`;
-  }, [pageTitle]);
   return (
     <>
       <Button
@@ -262,13 +236,7 @@ export default function WorkspaceShell() {
                           >
                             <item.icon
                               aria-hidden="true"
-                              data-partial-fill={
-                                item.to === "/"
-                                  ? "house"
-                                  : item.to === "/agent"
-                                    ? "none"
-                                    : undefined
-                              }
+                              data-partial-fill={item.partialFill}
                             />
                             <span>{item.label}</span>
                           </NavLink>
@@ -284,7 +252,7 @@ export default function WorkspaceShell() {
             ))}
           </nav>
         </SidebarContent>
-        <SidebarSeparator className="mx-0 group-data-[collapsible=icon]:hidden" />
+        <SidebarSeparator className="mx-0" />
         <SidebarFooter>
           <nav aria-label="Workspace settings">
             <SidebarMenu>
@@ -297,7 +265,7 @@ export default function WorkspaceShell() {
                   }
                 >
                   <NavLink to="/settings" onClick={() => setOpenMobile(false)}>
-                    <Settings aria-hidden="true" />
+                    <Settings aria-hidden="true" data-partial-fill="settings" />
                     <span>Settings</span>
                   </NavLink>
                 </SidebarMenuButton>

@@ -12,7 +12,7 @@ test("JAS persists the workspace theme and navigation preference", async ({
     }
   });
   await page.goto("/");
-  await expect(page).toHaveTitle("Home | JAS");
+  await expect(page).toHaveTitle("JAS");
   await expect(page.locator("html")).toHaveClass("dark");
   await expect(
     page.locator('[data-slot="sidebar"][data-state="collapsed"]'),
@@ -34,29 +34,24 @@ test("JAS persists the workspace theme and navigation preference", async ({
   await expect(wordmark).toBeVisible();
 });
 
-test("browser titles follow navigation, history and saved experiment identity", async ({
+test("browser title stays JAS across navigation, history and saved experiments", async ({
   page,
   request,
 }) => {
   await page.goto("/");
-  await expect(page).toHaveTitle("Home | JAS");
+  await expect(page).toHaveTitle("JAS");
   await page.getByRole("button", { name: /Local workspace/ }).click();
   await page.getByRole("menuitem", { name: "Settings", exact: true }).click();
-  await expect(page).toHaveTitle("Settings | JAS");
+  await expect(page).toHaveTitle("JAS");
   await page.getByRole("link", { name: "Environments", exact: true }).click();
-  await expect(page).toHaveTitle("Environments | JAS");
+  await expect(page).toHaveTitle("JAS");
   await page.goBack();
-  await expect(page).toHaveTitle("Settings | JAS");
+  await expect(page).toHaveTitle("JAS");
   await page.reload();
-  await expect(page).toHaveTitle("Settings | JAS");
-  for (const [path, title] of [
-    ["/new", "New experiment"],
-    ["/runs", "Runs"],
-    ["/agent", "Agent"],
-    ["/compare", "Compare runs"],
-  ]) {
+  await expect(page).toHaveTitle("JAS");
+  for (const path of ["/new", "/runs", "/agent", "/compare"]) {
     await page.goto(path);
-    await expect(page).toHaveTitle(`${title} | JAS`);
+    await expect(page).toHaveTitle("JAS");
   }
   const catalog = await (await request.get("/api/catalog")).json();
   const title = "Cooperation & evidence";
@@ -66,7 +61,7 @@ test("browser titles follow navigation, history and saved experiment identity", 
     })
   ).json();
   await page.goto(`/studies/${study.id}`);
-  await expect(page).toHaveTitle(`${title} | JAS`);
+  await expect(page).toHaveTitle("JAS");
 });
 
 test("Home is the entry point; AI creation stays available without a key", async ({
@@ -126,7 +121,7 @@ test("Agent navigation preserves incomplete editor state and one recoverable dra
   await expect(
     page.getByLabel("Message Agent", { exact: true }),
   ).not.toHaveValue("");
-  await expect(page).toHaveTitle("Agent | JAS");
+  await expect(page).toHaveTitle("JAS");
   await page.goBack();
   await expect(page.getByLabel("Complete JSON specification")).toHaveValue(
     '{"unfinished":',
@@ -276,6 +271,12 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
   const brand = page.getByRole("link", { name: "JAS home" });
   const logo = brand.locator("img");
   const before = await logo.boundingBox();
+  const footer = page.locator('[data-slot="sidebar-footer"]');
+  const avatar = footer.locator('[data-slot="avatar"]');
+  const avatarBefore = await avatar.boundingBox();
+  const settingsBefore = await footer
+    .getByRole("link", { name: "Settings", exact: true })
+    .boundingBox();
   await page
     .getByRole("button", { name: "Collapse sidebar", exact: true })
     .click();
@@ -286,8 +287,17 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
   await expect(expand).toHaveCSS("opacity", "0");
   const separators = page.locator('[data-slot="sidebar-separator"]');
   await expect(separators).toHaveCount(2);
-  for (const separator of await separators.all())
-    await expect(separator).toBeHidden();
+  await expect(separators.first()).toBeHidden();
+  await expect(separators.last()).toBeVisible();
+  await expect(footer.getByRole("button")).toHaveCSS("height", "48px");
+  expect((await avatar.boundingBox())?.y).toBe(avatarBefore?.y);
+  expect(
+    (
+      await footer
+        .getByRole("link", { name: "Settings", exact: true })
+        .boundingBox()
+    )?.y,
+  ).toBe(settingsBefore?.y);
   await page.mouse.move(800, 400);
   await expect(logo).toHaveJSProperty("complete", true);
   const after = await logo.boundingBox();
@@ -310,5 +320,5 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
     .getByRole("navigation", { name: "Workspace settings" })
     .getByRole("link", { name: "Settings", exact: true })
     .click();
-  await expect(page).toHaveTitle("Settings | JAS");
+  await expect(page).toHaveTitle("JAS");
 });

@@ -13,7 +13,7 @@ test("Agent is one full page with an inner history rail and contextual composer"
     page.getByRole("link", { name: "Ask Agent", exact: true }),
   ).toHaveCount(0);
   await page.getByRole("link", { name: "Agent", exact: true }).click();
-  await expect(page).toHaveTitle("Agent | JAS");
+  await expect(page).toHaveTitle("JAS");
   await expect(page.getByRole("tab")).toHaveCount(0);
   await expect(
     sidebar.getByRole("complementary", { name: "Chat history" }),

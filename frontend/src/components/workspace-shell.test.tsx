@@ -3,11 +3,12 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, expect, test, vi } from "vitest";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { runDetail } from "@/test/fixtures";
-import { deferredResponse, renderWithQueries } from "@/test/queries";
+import { renderWithQueries } from "@/test/queries";
+import appHtml from "../../index.html?raw";
 import WorkspaceShell from "./workspace-shell";
 
 beforeEach(() => {
+  document.title = new DOMParser().parseFromString(appHtml, "text/html").title;
   vi.stubGlobal(
     "matchMedia",
     vi.fn((media: string) => ({
@@ -35,59 +36,23 @@ function renderShell(path: string) {
   );
 }
 
-test("browser run title retains record identity as the navigation catalog loads", async () => {
-  const response = deferredResponse();
+test.each([
+  "/runs/run",
+  "/studies/study",
+  "/new",
+  "/new?study=study",
+  "/compare?runs=one,two",
+])("%s keeps the static JAS browser title", async (path) => {
   vi.stubGlobal(
     "fetch",
-    vi.fn((path: string) =>
-      path === "/api/runs"
-        ? response.promise
-        : Promise.resolve(Response.json([])),
-    ),
+    vi.fn(() => Promise.resolve(Response.json([]))),
   );
-  renderShell("/runs/run");
-  expect(document.title).toBe("Run | JAS");
-  response.resolve(Response.json([runDetail.summary]));
-  await waitFor(() => expect(document.title).toBe("Baseline | JAS"));
+  renderShell(path);
+  await waitFor(() => expect(document.title).toBe("JAS"));
   expect(
     screen.queryByRole("navigation", { name: "breadcrumb" }),
   ).not.toBeInTheDocument();
 });
-
-test("browser experiment title replaces the catalog loading fallback", async () => {
-  const response = deferredResponse();
-  vi.stubGlobal(
-    "fetch",
-    vi.fn((path: string) =>
-      path === "/api/studies"
-        ? response.promise
-        : Promise.resolve(Response.json([])),
-    ),
-  );
-  renderShell("/studies/study");
-  expect(document.title).toBe("Experiment | JAS");
-  response.resolve(Response.json([{ id: "study", title: "Saved protocol" }]));
-  await waitFor(() => expect(document.title).toBe("Saved protocol | JAS"));
-});
-
-test.each([
-  ["/new", "New experiment | JAS"],
-  ["/new?study=study", "Tune experiment | JAS"],
-  ["/compare?runs=one,two", "Compare runs | JAS"],
-])(
-  "%s preserves its task browser title without a redundant header title",
-  async (path, title) => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(() => Promise.resolve(Response.json([]))),
-    );
-    renderShell(path);
-    await waitFor(() => expect(document.title).toBe(title));
-    expect(
-      screen.queryByRole("navigation", { name: "breadcrumb" }),
-    ).not.toBeInTheDocument();
-  },
-);
 
 test("header theme control persists appearance and Settings has a direct footer link", async () => {
   vi.stubGlobal(

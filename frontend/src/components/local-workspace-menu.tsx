@@ -40,7 +40,7 @@ export function LocalWorkspaceMenu({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0!"
+              className="group-data-[collapsible=icon]:h-12! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0!"
               tooltip={
                 !isMobile && state === "collapsed"
                   ? "Local workspace"

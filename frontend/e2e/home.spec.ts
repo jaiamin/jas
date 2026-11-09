@@ -59,7 +59,7 @@ test("Home submits once, opens the saved Agent conversation and never resubmits 
     }),
   );
   await page.goto("/");
-  await expect(page).toHaveTitle("Home | JAS");
+  await expect(page).toHaveTitle("JAS");
   await expect(
     page.getByRole("combobox", { name: "Message context" }),
   ).toContainText("New experiment");
@@ -196,7 +196,7 @@ test("late Home responses keep the user's destination and leave the chat in hist
   await page.getByRole("button", { name: "Send message" }).click();
   await page.getByRole("link", { name: "Experiments", exact: true }).click();
   release();
-  await expect(page).toHaveTitle("Experiments | JAS");
+  await expect(page).toHaveTitle("JAS");
   await page.getByRole("link", { name: "Agent", exact: true }).click();
   await expect(
     page

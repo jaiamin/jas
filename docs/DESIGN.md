@@ -122,10 +122,13 @@ sidebar selection in both themes, centered
 within the collapsed rail with the label and menu chevron hidden.
 A stock SidebarSeparator with 16px edge insets aligns with the navigation icons
 between primary and workspace groups. The separator above the local-workspace
-footer spans the full sidebar width. Both section separators hide in the collapsed
-rail; the continuous divider under the top bars remains. Navigation glyphs and collapse control are 15px. Selected sidebar icons fill,
+footer spans the full sidebar width. Only the navigation section separator hides in the collapsed rail. The full-width
+footer divider and continuous divider under the top bars remain. Footer button
+heights stay 32px for Settings and 48px for the workspace menu in both states, so
+their vertical positions and padding do not change when labels disappear. Navigation glyphs and collapse control are 15px. Selected sidebar icons fill,
 with the requested exceptions: the stock Bot stays outlined, House fills only
-its door and FlaskConical fills only its liquid. The flask fill stays at the icon boundary;
+its door, Layers2 fills only its upper layer, Settings fills only its center circle,
+and FlaskConical fills only its liquid. The flask fill stays at the icon boundary;
 conversation rows are text-only. Do not invent accounts or organizations.
 Navigation becomes a Sheet on mobile.
 
@@ -139,7 +142,8 @@ Only visible keyboard focus also reveals the control; pointer focus must not kee
 it visible after hover ends. Hover is tracked on the control rather than the
 shrinking header; opacity changes immediately and the logo is hidden beneath the
 overlay, so neither a lingering button nor the logo bleeds through. Mobile retains an Open menu button and close/focus
-restoration. Browser document titles still follow record identity. Contextual Ask
+restoration. The static browser title is always `JAS`, including initial load and record views;
+there is no route/catalog title derivation. Contextual Ask
 Agent actions live with experiment/run actions, and runs link to their experiment.
 Agent viewport height uses the same token. Ordinary pages use a centered 1280px maximum
 width and 16px, 24px or 32px responsive gutters. Tables scroll within their own
@@ -205,7 +209,7 @@ pnpm dlx shadcn@latest apply --preset <code>
    `components.json` `iconLibrary`, updating dependencies as needed. The CLI updates
    generated UI imports; it does **not** migrate these semantic app reexports
    automatically. The official `shadcn migrate icons` handles concrete icon imports,
-   not this reexport mapping. Keep stock glyphs and the explicitly requested partial house/flask fills
+   not this reexport mapping. Keep stock glyphs and the explicitly requested partial house/layers/settings/flask fills
    together at this boundary; update these small compositions with a new library.
    The GitHub brand mark is a CC0 Simple Icons asset, distinct from preset UI glyphs.
    Avoid a runtime icon resolver.

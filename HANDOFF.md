@@ -433,3 +433,23 @@ Browser reviewed both themes and mobile history; no paid calls or backend edits.
 Port 8080 remains healthy and running against the user's existing data. Owned
 browser/test services closed. Artifacts in ignored .tools/shadcn-redesign/ include
 sidebar-*-e2e.txt, sidebar-final-unit.txt and final screenshots.
+
+Selected-icon follow-up: Environments fills only the top Layers2 path and Settings
+fills only the center circle. Other paths keep the stock outline. Both treatments
+use the same centralized partial-fill rules as Home and the flask.
+
+Browser-title follow-up supersedes record-specific titles: frontend/index.html
+now has the constant JAS title. Removed all runtime title derivation and the
+shell’s studies catalog poll that existed only for titles. Updated unit/browser
+coverage to require JAS across navigation, history, reload and saved records.
+
+Collapsed-footer correction: only the middle navigation separator hides. The
+full-width separator above Settings remains visible. Preserve the profile button’s
+48px height in both states, keeping Settings and Avatar at their original vertical
+positions when labels hide; browser coverage asserts heights and matching Y positions.
+
+Final follow-up verification: lint/build and all 71 unit tests passed. Home/Agent/
+navigation browser checks passed 21/21 after the constant-title/partial-fill changes;
+final footer/navigation checks passed 7/7. Browser inspected both themes: Layers2
+upper path alone and Settings center circle alone fill, with other paths unfilled.
+Port 8080 serves the final build; owned browser and keyless test services closed.
