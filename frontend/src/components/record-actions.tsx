@@ -40,7 +40,7 @@ function RecordActionsMenu({
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          size="icon-sm"
+          size="icon-xs"
           className="text-muted-foreground"
           aria-label={`Actions for ${name}`}
           ref={triggerRef}
