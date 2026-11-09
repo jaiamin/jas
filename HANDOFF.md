@@ -1216,3 +1216,5 @@ Continuous heading Target supersedes the brief welcome sequence: rings use unequ
 Target selected-state preference: keep Target outlined in the sidebar, retaining the blue row selection. Remove the obsolete annulus path and target fill CSS; AgentIcon is now a direct stock Lucide Target export. The heading animation continues to operate on its circles. Lint/build passed; browser inspection confirmed selected=true, three unfilled circles, no custom fill path, and active heading motion. Own preview closed, 8080 retained.
 
 Heading alignment follow-up: remove the 1px upward transform, moving Target down 1px to the text center while preserving the 10px gap and continuous animation. Lint/build passed; browser measured zero vertical-center difference and running motion. Preview closed; 8080 retained.
+
+Heading Target size/spacing: reduce icon by 2px to 30px mobile/34px desktop and gap by 2px to 8px. Keep centered alignment and existing motion. Lint/build passed; browser confirmed 34px size, 8px gap and zero vertical-center difference. Preview closed; 8080 retained.

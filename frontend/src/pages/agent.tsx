@@ -365,11 +365,11 @@ function AgentWelcomeHeading() {
   return (
     <h1
       ref={heading}
-      className="flex items-center justify-center gap-2.5 text-center text-2xl font-semibold tracking-tight sm:text-3xl"
+      className="flex items-center justify-center gap-2 text-center text-2xl font-semibold tracking-tight sm:text-3xl"
     >
       <AgentIcon
         aria-hidden="true"
-        className="agent-heading-target size-8 shrink-0 text-primary sm:size-9"
+        className="agent-heading-target size-7.5 shrink-0 text-primary sm:size-8.5"
       />
       <span>What can we explore?</span>
     </h1>
