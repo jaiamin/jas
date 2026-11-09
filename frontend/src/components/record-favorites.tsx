@@ -31,14 +31,14 @@ export function RecordListView({
       <div className="px-4 py-2 sm:px-6 lg:px-8">
         <TabsList
           aria-label={`View ${noun}`}
-          className="group-data-horizontal/tabs:h-7 border border-input p-0.5"
+          className="group-data-horizontal/tabs:h-7 border border-input p-0.5 [--accent:var(--background)] [--accent-foreground:var(--foreground)]"
         >
-          <TabsTrigger value="all" className="h-full py-0">
+          <TabsTrigger value="all" className="h-full px-2.5 py-0">
             All
           </TabsTrigger>
           <TabsTrigger
             value="favorites"
-            className="h-full py-0"
+            className="h-full px-2.5 py-0"
             disabled={!favorites.available}
           >
             Favorites

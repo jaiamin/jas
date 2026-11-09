@@ -448,3 +448,46 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
     .click();
   await expect(page).toHaveTitle("JAS");
 });
+
+for (const theme of ["light", "dark"]) {
+  test(`focus decoration follows keyboard navigation, not pointer clicks · ${theme}`, async ({
+    page,
+  }) => {
+    await page.addInitScript(
+      (value) => localStorage.setItem("jas-theme", value),
+      theme,
+    );
+    await page.goto("/studies");
+    const search = page.getByRole("textbox", { name: "Search experiments" });
+    const group = search.locator("..");
+    const ring = (locator: typeof group) =>
+      locator.evaluate((element) =>
+        getComputedStyle(element).getPropertyValue("--tw-ring-shadow").trim(),
+      );
+    await search.click();
+    const noRing = await ring(group);
+    await search.pressSequentially("example");
+    expect(await ring(group)).toBe(noRing);
+    await search.press("Shift+Tab");
+    await page.keyboard.press("Tab");
+    await expect(search).toBeFocused();
+    expect(await ring(group)).not.toBe(noRing);
+    await search.click();
+    expect(await ring(group)).toBe(noRing);
+    const create = page.getByRole("link", {
+      name: "New experiment",
+      exact: true,
+    });
+    await page.keyboard.press("Tab");
+    await expect(create).toBeFocused();
+    const keyboardRing = await ring(create);
+    await create.click({ modifiers: ["Control"] });
+    expect(await ring(create)).not.toBe(keyboardRing);
+    await page.goto("/agent");
+    const composer = page.getByRole("textbox").first();
+    await composer.click();
+    const textareaRing = await ring(composer);
+    await composer.pressSequentially("A question");
+    expect(await ring(composer)).toBe(textareaRing);
+  });
+}

@@ -4,6 +4,7 @@ import { Empty } from "@/components/feedback";
 import { Button } from "@/components/ui/button";
 import { WorkspaceProvider } from "@/components/workspace-provider";
 import WorkspaceShell from "@/components/workspace-shell";
+import { useInputModality } from "@/hooks/use-input-modality";
 import Experiments from "@/pages/experiments";
 import Home from "@/pages/home";
 import Runs from "@/pages/runs";
@@ -17,6 +18,7 @@ const Settings = lazy(() => import("@/pages/settings"));
 const Compare = lazy(() => import("@/pages/compare"));
 
 export default function App() {
+  useInputModality();
   return (
     <Routes>
       <Route

@@ -77,6 +77,23 @@ for (const [path, noun, size] of [
       await expect(all).toHaveCSS("opacity", "1");
       await all.click();
       await expect(all).toBeChecked();
+      const selection = page.getByRole("group", {
+        name: "Selection",
+        exact: true,
+      });
+      await expect(selection).toHaveCSS("height", "28px");
+      await expect(selection.getByRole("status")).toHaveText(
+        `${size} selected`,
+      );
+      const clear = selection.getByRole("button", { name: "Clear selection" });
+      await clear.hover();
+      await expect(
+        page.getByRole("tooltip", { name: "Clear selection" }),
+      ).toBeVisible();
+      await page.keyboard.press("Escape");
+      await expect(
+        page.getByRole("tooltip", { name: "Clear selection" }),
+      ).not.toBeVisible();
       await expect(
         table.locator('tbody [role="checkbox"][aria-checked="true"]'),
       ).toHaveCount(size);
@@ -119,6 +136,8 @@ for (const [path, noun, size] of [
       await expect(all).toHaveAttribute("aria-checked", "mixed");
       await page.getByRole("button", { name: "Clear selection" }).click();
       await expect(all).not.toBeChecked();
+      await expect(all).toBeFocused();
+      await expect(selection).toHaveCount(0);
     });
   }
 }
@@ -198,12 +217,17 @@ for (const theme of ["light", "dark"]) {
         ).not.toBe("none");
         const search = header.getByRole("textbox", { name: `Search ${noun}` });
         await expect(search).toBeVisible();
+        expect(await search.getAttribute("placeholder")).toBeNull();
         const create = header.getByRole("link", {
           name: "New experiment",
           exact: true,
         });
-        await expect(create).toHaveText("New");
-        await expect(create).toHaveAttribute("href", "/new");
+        if (path === "/studies") {
+          await expect(create).toHaveText("New");
+          await expect(create).toHaveAttribute("href", "/new");
+        } else {
+          await expect(create).toHaveCount(0);
+        }
         await expect(main.getByRole("table")).toBeVisible();
         await expect(main.locator('[data-slot="skeleton"]')).toHaveCount(0);
         const tableBounds = await main
@@ -231,7 +255,15 @@ for (const theme of ["light", "dark"]) {
         await expect(views).toHaveCSS("border-top-width", "1px");
         for (const tab of await views.getByRole("tab").all()) {
           await expect(tab).toHaveCSS("height", "22px");
+          await expect(tab).toHaveCSS("padding-left", "10px");
+          await expect(tab).toHaveCSS("padding-right", "10px");
         }
+        await expect(views.getByRole("tab", { selected: true })).toHaveCSS(
+          "background-color",
+          await page
+            .locator("body")
+            .evaluate((element) => getComputedStyle(element).backgroundColor),
+        );
         for (const name of [
           path === "/studies" ? "Environment" : "Experiment",
           "Status",
@@ -398,7 +430,8 @@ for (const theme of ["light", "dark"]) {
         const headingBounds = await heading.boundingBox();
         const searchBounds = await search.boundingBox();
         const iconBounds = await icon.boundingBox();
-        const createBounds = await create.boundingBox();
+        const createBounds =
+          path === "/studies" ? await create.boundingBox() : null;
         expect(
           headingBounds &&
             iconBounds &&
@@ -415,16 +448,18 @@ for (const theme of ["light", "dark"]) {
               searchBounds &&
               searchBounds.x > headingBounds.x + headingBounds.width,
           ).toBe(true);
-          expect(
-            createBounds &&
-              iconBounds &&
-              Math.abs(
-                createBounds.y +
-                  createBounds.height / 2 -
-                  iconBounds.y -
-                  iconBounds.height / 2,
-              ),
-          ).toBeLessThanOrEqual(1);
+          if (path === "/studies") {
+            expect(
+              createBounds &&
+                iconBounds &&
+                Math.abs(
+                  createBounds.y +
+                    createBounds.height / 2 -
+                    iconBounds.y -
+                    iconBounds.height / 2,
+                ),
+            ).toBeLessThanOrEqual(1);
+          }
         }
         expect(
           await page.evaluate(
@@ -502,7 +537,7 @@ for (const [path, endpoint, title, noun] of [
       ).toBeVisible();
       await expect(
         header.getByRole("link", { name: "New experiment", exact: true }),
-      ).toBeVisible();
+      ).toHaveCount(path === "/studies" ? 1 : 0);
       await expect(header.locator('[data-slot="skeleton"]')).toHaveCount(0);
       const table = page.getByRole("table");
       await expect(

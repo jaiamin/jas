@@ -21,7 +21,6 @@ export function RecordSearch({
     <InputGroup>
       <InputGroupInput
         aria-label={label}
-        placeholder={`${label}…`}
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />
@@ -72,12 +71,14 @@ export function RecordListHeading({
             onChange={onSearchChange}
           />
         </div>
-        <Button asChild>
-          <Link to="/new" aria-label="New experiment">
-            <Plus data-icon="inline-start" />
-            New
-          </Link>
-        </Button>
+        {title === "Experiments" && (
+          <Button asChild>
+            <Link to="/new" aria-label="New experiment">
+              <Plus data-icon="inline-start" />
+              New
+            </Link>
+          </Button>
+        )}
       </div>
     </header>
   );

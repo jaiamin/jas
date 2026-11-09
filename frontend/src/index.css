@@ -14,6 +14,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Native text inputs match :focus-visible even after clicks. Keep preset focus
+   decoration for keyboard use, consistently across controls and their groups. */
+@custom-variant focus-visible (
+  &:focus-visible:where(html:not([data-input-modality="pointer"]) *)
+);
+@custom-variant has-focus-visible (
+  &:has(:focus-visible):where(html:not([data-input-modality="pointer"]) *)
+);
+
 @theme inline {
   --font-sans: "Geist Variable", sans-serif;
   --font-brand: "Bricolage Grotesque", sans-serif;

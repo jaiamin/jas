@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Empty } from "@/components/feedback";
-import { X } from "@/components/icons";
 import { RunActions } from "@/components/record-actions";
 import { FavoriteButton, RecordListView } from "@/components/record-favorites";
 import {
@@ -11,6 +10,7 @@ import {
 import { RecordPagination } from "@/components/record-pagination";
 import {
   RecordSelectAllCheckbox,
+  RecordSelectionActions,
   RecordSelectionCheckbox,
   RecordTable,
 } from "@/components/record-table";
@@ -39,6 +39,7 @@ export function RunTable({
   selectable?: boolean;
 }) {
   const [selection, setSelected] = useState<string[]>([]);
+  const selectAllRef = useRef<HTMLButtonElement>(null);
   const selected = selection.filter((id) => runs?.some((run) => run.id === id));
   const favorites = useRecordFavorites("runs");
   const { search, status, scope, view, page, setStatus, setScope, setPage } =
@@ -93,21 +94,13 @@ export function RunTable({
         />
         {selectable && (
           <div className="ml-auto flex flex-wrap items-center gap-2">
-            {selected.length > 0 && (
-              <>
-                <span role="status" className="text-sm text-muted-foreground">
-                  {selected.length} selected
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelected([])}
-                >
-                  <X data-icon="inline-start" />
-                  Clear selection
-                </Button>
-              </>
-            )}
+            <RecordSelectionActions
+              count={selected.length}
+              onClear={() => {
+                setSelected([]);
+                selectAllRef.current?.focus();
+              }}
+            />
             <Button
               variant="outline"
               size="sm"
@@ -139,6 +132,7 @@ export function RunTable({
             <TableHead aria-label="Name" className="relative">
               {selectable && (
                 <RecordSelectAllCheckbox
+                  ref={selectAllRef}
                   ids={visible.map((run) => run.id)}
                   selected={selected}
                   onSelectionChange={setSelected}

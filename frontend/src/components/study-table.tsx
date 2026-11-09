@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Empty } from "@/components/feedback";
-import { ExperimentIcon, X } from "@/components/icons";
+import { ExperimentIcon } from "@/components/icons";
 import { ExperimentActions } from "@/components/record-actions";
 import { FavoriteButton, RecordListView } from "@/components/record-favorites";
 import {
@@ -11,6 +11,7 @@ import {
 import { RecordPagination } from "@/components/record-pagination";
 import {
   RecordSelectAllCheckbox,
+  RecordSelectionActions,
   RecordSelectionCheckbox,
   RecordTable,
 } from "@/components/record-table";
@@ -43,6 +44,7 @@ export function StudyTable({
 }) {
   const favorites = useRecordFavorites("studies");
   const [selection, setSelected] = useState<string[]>([]);
+  const selectAllRef = useRef<HTMLButtonElement>(null);
   const selected = selection.filter((id) =>
     studies?.some((study) => study.id === id),
   );
@@ -97,12 +99,13 @@ export function StudyTable({
         />
         {selected.length > 0 && (
           <div className="ml-auto flex items-center gap-2">
-            <span role="status" className="text-sm text-muted-foreground">
-              {selected.length} selected
-            </span>
-            <Button variant="ghost" size="sm" onClick={() => setSelected([])}>
-              <X data-icon="inline-start" /> Clear selection
-            </Button>
+            <RecordSelectionActions
+              count={selected.length}
+              onClear={() => {
+                setSelected([]);
+                selectAllRef.current?.focus();
+              }}
+            />
           </div>
         )}
       </div>
@@ -117,6 +120,7 @@ export function StudyTable({
           <TableRow className="group/record">
             <TableHead aria-label="Name" className="relative w-1/3">
               <RecordSelectAllCheckbox
+                ref={selectAllRef}
                 ids={visible.map((study) => study.id)}
                 selected={selected}
                 onSelectionChange={setSelected}

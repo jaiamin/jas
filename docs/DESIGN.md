@@ -103,6 +103,14 @@ borders, focus and destructive states use their corresponding semantic tokens.
 Keep foreground/background pairs together when composing components.
 Shared cursor rules give enabled actions, links, labels and portalled menu/select
 items a pointer. Text entry keeps its text cursor; disabled controls are excluded.
+Focus decoration follows input modality throughout the app, including portals:
+pointer clicks do not add rings; keyboard navigation retains the preset focus
+indicators. Typing into a pointer-focused text field does not turn the ring on.
+`useInputModality` tracks this once at the root; shared `focus-visible` and
+`has-focus-visible` Tailwind variants gate focus styles in `index.css`.
+InputGroup, Field and CodeBlock use the latter for their enclosing surface.
+Keep these small variant substitutions when regenerating those primitives from
+a preset; validation and selected-state styling remain independent of focus.
 
 Charts use the five chart tokens. Keep legend text in the foreground color so it
 remains readable independently of each series color. Labels and distinct line
@@ -348,7 +356,7 @@ and opens that saved conversation.
 A late response leaves subsequent navigation intact.
 The shared Home/Agent composer keeps its resting border and shadow when its
 textarea is focused; do not add an outer focus border or ring. Other form inputs
-retain the stock shadcn focus treatment.
+retain the stock shadcn focus treatment during keyboard navigation.
 Use a shared muted-gray Card backing with 8px padding, stock radius and an outer
 shadow-lg. The inner input keeps its stock input border and background surface;
 the shadow belongs to the backing, not the inner field. A compact CardFooter
@@ -435,8 +443,10 @@ dedicated destinations.
 
 Experiments and Runs share one list heading: a muted rounded-square icon beside
 the title (filled Play or flask liquid, matching navigation), using a borderless 36px
-background (`muted-foreground/15`) and an 18px glyph, with search and a primary New action at the right (stacked below on
-mobile). Keep the header inset, but let both tables reach the full content width
+background (`muted-foreground/15`) and an 18px glyph, with search at the right
+(stacked below on mobile). Search fields have no placeholder text and retain their
+accessible labels. Only Experiments includes a primary New action; start runs from
+an experiment detail page. Keep the header inset, but let both tables reach the full content width
 without side gutters or an enclosing border. Inset the outer header/data cells and
 filter controls to match the page heading, including skeleton rows. Reserve a 32px
 name gutter for selection on both lists (also on narrow screens); keep dividers full-width.
@@ -449,7 +459,9 @@ glyphs aligned with their column heading while retaining the full icon-button ta
 Stars use a light 1.5px stroke and the normal data color, including when filled.
 A compact star column with a visible Favorite heading follows
 each name. A stock TabsList above the filter row switches All/Favorites, with a subtle
-input-color border and 28px overall height matching the filters. Search,
+input-color border, 28px overall height matching the filters, and 10px horizontal
+padding inside each item. Selected items use the page background and foreground
+through local semantic accent aliases, keeping this toggle neutral in both themes. Search,
 status and scope apply within that view; Clear filters keeps the chosen view.
 Experiments filters by Environment; Runs filters by Experiment, with searchable full labels
 from the catalogue or loaded run identities. Each stock ButtonGroup joins a medium-weight
@@ -495,7 +507,10 @@ the gutter so it cannot intercept name links. A matching checkbox beside Name se
 the current filtered page, preserving selections on other pages and outside the filter.
 The header checkbox follows the same hover/focus/touch behavior and stays visible for
 full or partial page selections; disable it while loading or when no rows match.
-Both lists show a selection count and clear action only while needed. Selection is
+Both lists show a compact 28px stock ButtonGroup only while rows are selected:
+a muted count joined to an outline clear icon button with a Clear selection tooltip
+and accessible name. Clearing returns focus to the header checkbox. Keep Compare
+beside it on Runs. Selection is
 independent of comparison: Compare accepts two through four runs and is disabled
 with an explicit limit above four selections. A final Actions column uses bordered stock ellipsis buttons and
 DropdownMenu. Experiments offers Open, Edit as new revision, Duplicate, Export evidence,
