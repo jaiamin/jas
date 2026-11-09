@@ -153,6 +153,15 @@ def test_assistant_scopes_history_to_frozen_cutoff_and_rejects_unread_citations(
             return next(responses)
 
         monkeypatch.setattr(llm, "generate", generate)
+        read_evidence = assistant._requested_evidence
+
+        def observed_read(request, cutoffs):
+            progress = assistant.get(key)["output"]
+            assert progress["stage"] == "reading"
+            assert progress["examined"] == []
+            return read_evidence(request, cutoffs)
+
+        monkeypatch.setattr(assistant, "_requested_evidence", observed_read)
         with db.session.begin() as session:
             analysis = Analysis(
                 purpose="analysis",
@@ -754,6 +763,7 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
             "cutoffs": {},
             "proposal": design.model_dump(mode="json"),
             "explanation": "An earlier reviewed proposal.",
+            "summary": "Compare contribution choices under matched conditions.",
         }
     ]
     with db.session.begin() as session:
@@ -768,6 +778,7 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
                     output={
                         "design": design.model_dump(mode="json"),
                         "explanation": conversation[0]["explanation"],
+                        "summary": conversation[0]["summary"],
                     },
                 ),
                 Analysis(

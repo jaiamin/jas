@@ -123,7 +123,7 @@ export default function Home() {
           />
         </div>
       </section>
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pt-8 pb-6 sm:px-6 sm:pt-10 sm:pb-8">
+      <div className="mx-auto flex w-full max-w-232 flex-col gap-8 px-4 pt-8 pb-6 sm:px-6 sm:pt-10 sm:pb-8">
         <section
           aria-labelledby="experiment-ideas-title"
           className="flex flex-col gap-3"

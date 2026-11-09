@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { expect, test, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { Analysis } from "@/lib/types";
+import { design } from "@/test/fixtures";
 import { AgentReply } from "./agent-reply";
 
 const row: Analysis = {
@@ -94,4 +95,67 @@ test("completed replies retain their recorded public activity in a collapsed dis
   fireEvent.click(activity);
   expect(screen.getByText("Thinking")).toBeVisible();
   expect(screen.getByText("Writing")).toBeVisible();
+});
+
+test("proposal draft notes stay out of the answer and remain available in activity", () => {
+  const notes =
+    "Supported: finite_stock maps directly. No preflight evidence was supplied.";
+  const summary =
+    "Compare resource conditions using matched seeds before reviewing the protocol.";
+  render(
+    <MemoryRouter>
+      <TooltipProvider>
+        <AgentReply
+          row={{
+            ...row,
+            purpose: "design",
+            status: "complete",
+            output: {
+              supported: true,
+              design,
+              summary,
+              explanation: notes,
+              activity: ["scoping", "drafting", "checking", "reviewing"],
+            },
+          }}
+          disabled={false}
+          onRetry={() => {}}
+        />
+      </TooltipProvider>
+    </MemoryRouter>,
+  );
+  expect(screen.getByText(summary)).toBeVisible();
+  expect(screen.queryByText(notes)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Protocol reviewed" }));
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Draft notes (before checks)",
+    }),
+  );
+  expect(screen.getByText(notes)).toBeVisible();
+});
+
+test("design drafting does not publish unvalidated notes as answer prose", () => {
+  render(
+    <MemoryRouter>
+      <TooltipProvider>
+        <AgentReply
+          row={{
+            ...row,
+            purpose: "design",
+            output: {
+              stage: "drafting",
+              partial: "No preflight tool was supplied.",
+            },
+          }}
+          disabled={false}
+          onRetry={() => {}}
+        />
+      </TooltipProvider>
+    </MemoryRouter>,
+  );
+  expect(
+    screen.queryByText("No preflight tool was supplied."),
+  ).not.toBeInTheDocument();
+  expect(screen.getByText("Drafting the protocol")).toBeVisible();
 });

@@ -44,11 +44,16 @@ export const AgentReply = memo(function AgentReply({
   const pending = row.status === "pending";
   const complete = row.status === "complete";
   const design = row.output?.design;
-  const text = pending
-    ? (row.output?.partial ?? "")
-    : row.purpose === "design"
-      ? (row.output?.explanation ?? "")
-      : (row.output?.answer ?? "");
+  const text =
+    row.purpose === "design"
+      ? pending
+        ? ""
+        : row.output?.supported
+          ? (row.output?.summary ?? "")
+          : (row.output?.explanation ?? "")
+      : pending
+        ? (row.output?.partial ?? "")
+        : (row.output?.answer ?? "");
   const copyText =
     row.purpose === "design" && design && row.output?.supported
       ? [

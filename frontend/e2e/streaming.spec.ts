@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import type { ExperimentPreflight } from "../src/lib/types.js";
 
 for (const theme of ["light", "dark"]) {
   test(`Agent streams formatted prose, keeps the composer anchored and recovers after disconnect · ${theme}`, async ({
@@ -310,6 +311,11 @@ for (const theme of ["light", "dark"]) {
   }, testInfo) => {
     const catalog = await (await request.get("/api/catalog")).json();
     const design = catalog.templates[0].design;
+    const checked = await request.post("/api/design/preflight", {
+      data: { design },
+    });
+    expect(checked.ok()).toBe(true);
+    const preflight: ExperimentPreflight = await checked.json();
     const row = {
       id: "planning-answer",
       chat_id: "planning-chat",
@@ -324,8 +330,13 @@ for (const theme of ["light", "dark"]) {
         partial: "I will prepare a protocol for review.",
         supported: true,
         design,
-        explanation: "A controlled comparison with matched seeds.",
+        explanation:
+          "Supported: finite_stock maps directly. No preflight evidence was supplied.",
+        summary:
+          "Compare cooperation under two resource levels using matched seeds.",
+        activity: ["answering"],
         planning: {
+          preflight: null as ExperimentPreflight | null,
           brief: {
             operationalization:
               "Compare cooperation under two resource levels.",
@@ -378,6 +389,7 @@ for (const theme of ["light", "dark"]) {
     ).toBeVisible();
     row.purpose = "design";
     row.output.stage = "scoping";
+    row.output.activity.push("scoping");
     row.output.partial = "";
     release();
     await expect(
@@ -387,21 +399,53 @@ for (const theme of ["light", "dark"]) {
       ["scoping", "Scoping the question"],
       ["researching", "Researching methods"],
       ["drafting", "Drafting the protocol"],
+      ["checking", "Checking mechanics"],
       ["reviewing", "Reviewing the design"],
       ["revising", "Refining the protocol"],
     ]) {
       row.output.stage = stage ?? "scoping";
+      row.output.activity.push(row.output.stage);
+      if (stage === "reviewing") row.output.planning.preflight = preflight;
       await expect(
         page.locator('[data-slot="trace-line"][role="status"]'),
       ).toHaveText(label ?? "");
     }
-    await page.getByRole("button", { name: "Refining the protocol" }).click();
+    await expect(
+      page.getByRole("button", { name: "Refining the protocol", exact: true }),
+    ).toHaveAttribute("aria-expanded", "true");
+    await page
+      .getByRole("button", { name: "Study scope", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Research sources", exact: true })
+      .click();
     await expect(
       page.getByText(row.output.planning.brief.operationalization),
     ).toBeVisible();
     await expect(
       page.getByRole("link", { name: /Methods reference/ }),
     ).toHaveAttribute("href", "https://example.org/methods");
+    await page
+      .getByRole("button", { name: "Mechanical checks", exact: true })
+      .click();
+    await expect(
+      page.getByText(/scripted decisions · No model calls/),
+    ).toBeVisible();
+    await expect(
+      page.getByText("No mechanical issues found", { exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.locator(
+        '[data-slot="trace-collapsible-content"] [data-slot="alert"]',
+      ),
+    ).toHaveCount(0);
+    await page.screenshot({
+      path: testInfo.outputPath(`checks-${theme}.png`),
+      animations: "disabled",
+    });
+    await page
+      .getByRole("button", { name: "Mechanical checks", exact: true })
+      .click();
     await page.screenshot({
       path: testInfo.outputPath(`planning-${theme}.png`),
       animations: "disabled",
@@ -420,6 +464,12 @@ for (const theme of ["light", "dark"]) {
       proposal.getByRole("link", { name: "Review protocol" }),
     ).toHaveAttribute("href", `/new?plan=${row.id}`);
     await expect(proposal).toContainText("Ready for review. Nothing has run.");
+    await expect(page.locator('[data-streaming="false"]')).toHaveText(
+      row.output.summary,
+    );
+    await expect(
+      page.getByText(row.output.explanation, { exact: true }),
+    ).toHaveCount(0);
     const summary = proposal.getByLabel("Protocol summary");
     await expect(summary.locator("dt")).toHaveText([
       "Agents",
@@ -450,6 +500,9 @@ for (const theme of ["light", "dark"]) {
     const activity = page.getByRole("button", { name: "Protocol reviewed" });
     await expect(activity).toHaveAttribute("aria-expanded", "false");
     await activity.click();
+    await page
+      .getByRole("button", { name: "Study scope", exact: true })
+      .click();
     await expect(
       page.getByText(row.output.planning.brief.operationalization),
     ).toBeVisible();
@@ -458,6 +511,17 @@ for (const theme of ["light", "dark"]) {
       path: testInfo.outputPath(`proposal-${theme}.png`),
       animations: "disabled",
     });
+    await page.reload();
+    await expect(page.locator('[data-streaming="false"]')).toHaveText(
+      row.output.summary,
+    );
+    await activity.click();
+    await page
+      .getByRole("button", { name: "Draft notes (before checks)", exact: true })
+      .click();
+    await expect(
+      page.getByText(row.output.explanation, { exact: true }),
+    ).toBeVisible();
   });
 }
 

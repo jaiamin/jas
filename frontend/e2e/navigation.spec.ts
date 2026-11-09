@@ -28,14 +28,19 @@ for (const width of [390, 1280]) {
       ).toHaveCount(0);
       await page.mouse.move(width - 16, 440);
       await page.mouse.wheel(0, 800);
-      const overflows = await page.evaluate(
-        () => document.documentElement.scrollHeight > innerHeight,
-      );
-      if (overflows) {
+      const content = page.locator('[data-slot="workspace-content"]');
+      if (
+        path !== "/agent" &&
+        (await content.evaluate(
+          (element) => element.scrollHeight > element.clientHeight,
+        ))
+      ) {
         await expect
-          .poll(() => page.evaluate(() => scrollY))
+          .poll(() => content.evaluate((element) => element.scrollTop))
           .toBeGreaterThan(0);
       }
+      // The viewport itself must not scroll; a sticky document header can still bounce.
+      expect(await page.evaluate(() => scrollY)).toBe(0);
       await expect.poll(async () => (await header.boundingBox())?.y).toBe(0);
       if (path.startsWith("/new") && width === 1280) {
         const plan = page.locator('[data-slot="card"]').filter({

@@ -382,11 +382,14 @@ export interface Analysis {
         operationalization: string;
         requirements?: QuestionRequirement[];
       };
+      draft_notes?: string;
+      reviews?: { kind: string; issues: string[] }[];
       preflight?: ExperimentPreflight;
       sources: { url: string; title: string }[];
     };
     supported?: boolean;
     explanation?: string;
+    summary?: string;
     design?: Design | null;
     answer?: string;
     citations?: { run_id: string; turn: number }[];

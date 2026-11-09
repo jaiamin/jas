@@ -401,6 +401,7 @@ class Assistants:
                         {
                             "proposal": (item.output or {}).get("design"),
                             "explanation": (item.output or {}).get("explanation"),
+                            "summary": (item.output or {}).get("summary"),
                         }
                         if row.purpose == "design" or item.purpose == "design"
                         else {}
@@ -749,12 +750,16 @@ class Assistants:
             for request in result.requests:
                 if any(request.model_dump() == item["request"] for item in gathered):
                     continue
-                examined_range, data = self._requested_evidence(request, cutoffs)
+                stage = "calculating" if isinstance(request, CommonsPayoffRequest) else "reading"
+                self._progress(key, stage, examined)
+                examined_range, data = await asyncio.to_thread(
+                    self._requested_evidence, request, cutoffs
+                )
                 gathered.append(
                     {"request": request.model_dump(), "range": examined_range, "data": data}
                 )
                 examined.append(examined_range)
-                self._progress(key, "reading", examined)
+                self._progress(key, stage, examined)
             iteration += 1
 
     async def close(self) -> None:

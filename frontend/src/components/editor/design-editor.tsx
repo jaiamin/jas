@@ -494,7 +494,7 @@ export function DesignEditor({
             </div>
           )}
         </FieldSet>
-        <Card className="min-w-0 xl:sticky xl:top-[calc(var(--workspace-header-height)+1.5rem)]">
+        <Card className="min-w-0 xl:sticky xl:top-6">
           <CardHeader>
             <CardTitle>Execution plan</CardTitle>
           </CardHeader>

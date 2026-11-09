@@ -144,9 +144,11 @@ Navigation becomes a Sheet on mobile.
 
 The global controls and desktop brand headers share `--workspace-header-height` (52px),
 with one continuous bottom divider. The global bar stays at the viewport top
-while page content scrolls beneath its opaque background. Keep fragment/keyboard
-scroll targets below it, and offset the editor's sticky plan by the same header
-height. Agent retains its existing independent scrollers. The global bar has no title or breadcrumb;
+inside a viewport-height shell, outside every page scroller. The document never
+scrolls; page content owns vertical scrolling with contained overscroll, stable scrollbar
+gutters and 16px scroll-target padding. Path navigation resets the page scroller.
+The editor’s sticky plan sits 24px below the content viewport top. Agent retains
+its existing independent scrollers. The global bar has no title or breadcrumb;
 theme toggle precedes the GitHub brand link at right. These glyphs use the stock 16px size;
 the outer icon edge matches the navigation glyphs’ 16px edge inset. Settings uses
 the stock gear glyph in both navigation and the local workspace menu. Desktop collapse sits on the
@@ -211,13 +213,17 @@ title remains JAS. Loading the title uses a local skeleton only.
 Assistant replies use a blue Target with no repeated Agent label or response cost.
 The Target occupies its own compact header row; activity sits below it.
 One stock TraceCollapsible presents the current public stage and recorded scope,
-research sources, examined evidence and mechanical checks. It starts collapsed and
-closes on completion; users can reopen it. Completed general replies label it
+research sources, examined evidence and mechanical checks. It opens during substantive
+recorded work, respects manual collapse, and closes on completion; users can reopen it.
+Recorded steps show their running/stopped state. Scope, sources, inspected evidence,
+mechanical checks, review feedback, public draft notes and limitations use compact
+nested Trace disclosures when those results exist. Mechanical checks reuse the shared
+check evidence directly, without another Alert/card or outer vertical margins. Completed general replies label it
 “Activity,” without a completion announcement. The server appends public stage names
 on transitions and when writing begins, deduplicating consecutive repeats and
 preserving them through completion/failure. SSE and saved queries expose the same
-stages after reconnect/reload. Never retain private provider reasoning or draft
-prose as activity. A failed request marks its last observed stage as stopped. Markdown renderers
+stages after reconnect/reload. Never expose private provider reasoning. Public design
+rationale is labeled “Draft notes (before checks)” and remains separate from the answer. A failed request marks its last observed stage as stopped. Markdown renderers
 remain stable between partial and validated output. Fenced code uses stock CodeBlock
 with per-block copy and on-demand Shiki languages; replies have a stock copy control
 below them, with its glyph aligned to the prose and a compact gap; reserve footer
@@ -226,6 +232,13 @@ the scroller item’s paint boundary. Leave at least 24px between the final repl
 and composer at the scroll end. Keep transcript top padding compact. Its 12px stock fade
 overlaps the composer top by 12px, avoiding a faded gap above the input. Preserve citations,
 limitations and captured evidence cutoffs.
+
+Supported proposals show a short summary written by the existing review call after
+mechanical checks, using 1–3 sentences (at most 600 characters). Draft explanations
+never stream into the main reply or substitute for that summary. Without a recorded
+post-check summary, the card remains the concise presentation and notes stay in activity.
+Unsupported requests keep their direct capability explanation. No extra summary request
+or model-generated intermediate reasoning is needed.
 
 The generated protocol Card uses a title/question, a compact content-width definition
 list (Agents, Conditions, Planned runs), using 24px horizontal gaps, muted labels
@@ -239,6 +252,9 @@ Scope, sources and checks live in activity rather than competing with the card.
 The pending editor view shares the same reply component. Add context keeps visually
 balanced hover padding around its leading plus and trailing label.
 Decisions and evidence stack below 1440px.
+
+Home’s experiment ideas, drafts, active runs and recent experiments share a centered
+58rem maximum-width content column below the composer. Keep their edges aligned.
 
 Home uses a full-width composer section with a living 18-unit pixel grid, the
 explicit decorative exception requested for this surface. A single local ecosystem

@@ -67,6 +67,14 @@ Provider streaming uses the existing budget reservation, single-request limit, t
 trace accounting. Partial prose is stored under `Analysis.output.partial`; it is pending
 content, not a validated finding or protocol. Final schema, citation and design checks still
 gate completion; failures remove partial prose. No private model reasoning is exposed.
+Design candidates do not stream their technical explanations into answer prose.
+The existing post-preflight DesignReview call produces a bounded user-facing `summary`
+alongside its issues. Only an approved review publishes it; candidate `explanation`
+remains public pre-check rationale under activity. Structured mappings and computed
+check results remain the authoritative evidence. This adds no provider request.
+Public stage names persist in `output.activity`, including checks and payoff calculations;
+slow read-only tools publish their stage before executing off the event loop. Live tool
+results and saved records use the same scope/source/preflight/inspected-range evidence.
 Conversation identity is an indexed Analysis field, with no duplicate message store.
 One pending turn per chat prevents overlapping follow-ups; independent chats can run
 concurrently. Failed turns stay inspectable and retry as a new turn in their original context.
