@@ -449,6 +449,21 @@ for (const theme of ["light", "dark"]) {
     await page
       .getByRole("button", { name: "Refining the protocol", exact: true })
       .click();
+    const guide = page
+      .locator(
+        '[data-slot="message-header"] [data-slot="trace-collapsible-content-inner"]',
+      )
+      .first();
+    await expect(guide).toBeVisible();
+    const targetBounds = await page
+      .getByLabel("Assistant", { exact: true })
+      .boundingBox();
+    const guideBounds = await guide.boundingBox();
+    expect(
+      targetBounds &&
+        guideBounds &&
+        Math.abs(guideBounds.x + 0.5 - targetBounds.x - targetBounds.width / 2),
+    ).toBeLessThanOrEqual(1);
     await page
       .getByRole("button", { name: "Study scope", exact: true })
       .click();
