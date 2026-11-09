@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Alert } from "@/components/feedback";
-import { History, MessageSquare, Plus } from "@/components/icons";
+import { Plus } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -20,7 +20,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuBadge,
@@ -31,6 +30,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCompact } from "@/hooks/use-compact";
 import { useApi } from "@/lib/api";
 import type { ChatSummary } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 export function AgentHistory() {
   const chats = useApi<ChatSummary[]>("/chats", true);
@@ -45,15 +45,25 @@ export function AgentHistory() {
   }
   const content = (
     <>
-      <SidebarHeader>
-        <Button variant="outline" onClick={newChat}>
-          <Plus data-icon="inline-start" />
-          New chat
+      <SidebarHeader
+        className={cn(
+          "flex-row items-center justify-between px-4 py-3",
+          compact && "pr-14",
+        )}
+      >
+        <h2 className="text-sm font-medium">Conversations</h2>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label="New chat"
+          title="New chat"
+          onClick={newChat}
+        >
+          <Plus />
         </Button>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Conversations</SidebarGroupLabel>
           {chats.error ? (
             <Alert variant="error">
               Could not load chats.
@@ -97,7 +107,6 @@ export function AgentHistory() {
                         aria-current={current === chat.id ? "page" : undefined}
                         onClick={() => setOpen(false)}
                       >
-                        <MessageSquare />
                         <span>{chat.title}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -121,12 +130,11 @@ export function AgentHistory() {
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="sm">
-              <History data-icon="inline-start" />
               Conversations
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="flex flex-col gap-0">
-            <SheetHeader>
+            <SheetHeader className="sr-only">
               <SheetTitle>Agent conversations</SheetTitle>
             </SheetHeader>
             {content}

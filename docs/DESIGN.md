@@ -97,6 +97,8 @@ Send and New experiment use the primary Button variant. Primary actions use a
 shared blue primary token with a light foreground in both themes; secondary surfaces, muted text,
 borders, focus and destructive states use their corresponding semantic tokens.
 Keep foreground/background pairs together when composing components.
+Shared cursor rules give enabled actions, links, labels and portalled menu/select
+items a pointer. Text entry keeps its text cursor; disabled controls are excluded.
 
 Charts use the five chart tokens. Keep legend text in the foreground color so it
 remains readable independently of each series color. Labels and distinct line
@@ -114,19 +116,37 @@ belong to the preset and its stylesheet, except the dedicated brand wordmark.
 
 The stock Sidebar starts with an untitled Home/Agent group above Workspace
 (Experiments, Runs, Environments). The compact brand link returns to Home. Its
-footer opens the local workspace menu with Settings and appearance.
+footer has a direct Settings link beneath the full-width divider, followed by the
+local workspace menu with Settings and appearance. Its Avatar is 28px with the same subtle blue background/foreground token pair as
+sidebar selection in both themes, centered
+within the collapsed rail with the label and menu chevron hidden.
 A stock SidebarSeparator with 16px edge insets aligns with the navigation icons
 between primary and workspace groups. The separator above the local-workspace
-footer spans the full sidebar width. Selected sidebar icons use the stock SVG
-fill; inactive icons remain outlined, including conversation history. Do not invent accounts or organizations.
+footer spans the full sidebar width. Both section separators hide in the collapsed
+rail; the continuous divider under the top bars remains. Navigation glyphs and collapse control are 15px. Selected sidebar icons fill,
+with the requested exceptions: the stock Bot stays outlined, House fills only
+its door and FlaskConical fills only its liquid. The flask fill stays at the icon boundary;
+conversation rows are text-only. Do not invent accounts or organizations.
 Navigation becomes a Sheet on mobile.
 
-The breadcrumb and desktop brand headers share `--workspace-header-height` (52px),
-with one continuous bottom divider. Agent viewport height uses the same token. Ordinary pages use a centered 1280px maximum
+The global controls and desktop brand headers share `--workspace-header-height` (52px),
+with one continuous bottom divider. The global bar has no title or breadcrumb;
+theme toggle precedes the GitHub brand link at right. These glyphs use the stock 16px size;
+the outer icon edge matches the navigation glyphs’ 16px edge inset. Settings uses
+the stock gear glyph in both navigation and the local workspace menu. Desktop collapse sits on the
+right of the brand row and overlays the stationary logo on hover when collapsed.
+Only visible keyboard focus also reveals the control; pointer focus must not keep
+it visible after hover ends. Hover is tracked on the control rather than the
+shrinking header; opacity changes immediately and the logo is hidden beneath the
+overlay, so neither a lingering button nor the logo bleeds through. Mobile retains an Open menu button and close/focus
+restoration. Browser document titles still follow record identity. Contextual Ask
+Agent actions live with experiment/run actions, and runs link to their experiment.
+Agent viewport height uses the same token. Ordinary pages use a centered 1280px maximum
 width and 16px, 24px or 32px responsive gutters. Tables scroll within their own
 containers. The Agent page fills the remaining viewport, with an independently
 scrolling transcript and a composer below it; both use a 768px maximum width.
-Its independent conversation Sidebar appears at 1100px and above, with a Sheet
+The Agent header pairs its name with the stock outlined Bot. No duplicate creation/browse
+buttons appear in the introduction. Its independent text-only conversation Sidebar appears at 1100px and above, with a Sheet
 below that breakpoint. Decisions and evidence stack below 1440px.
 
 Home uses a full-width composer section with a faint animated pixel grid, the
@@ -181,12 +201,14 @@ pnpm dlx shadcn@latest apply --preset <code>
 
 1. Review generated components, dependencies, `components.json` and `index.css`.
    Use the preset's fonts, colors, icons and component styles throughout the app.
-2. Align the stock reexports in `src/components/icons.ts` with the resulting
+2. Align the stock reexports in `src/components/icons.tsx` with the resulting
    `components.json` `iconLibrary`, updating dependencies as needed. The CLI updates
    generated UI imports; it does **not** migrate these semantic app reexports
    automatically. The official `shadcn migrate icons` handles concrete icon imports,
-   not this reexport mapping. Keep stock icons without custom drawing or a runtime
-   icon resolver.
+   not this reexport mapping. Keep stock glyphs and the explicitly requested partial house/flask fills
+   together at this boundary; update these small compositions with a new library.
+   The GitHub brand mark is a CC0 Simple Icons asset, distinct from preset UI glyphs.
+   Avoid a runtime icon resolver.
 3. Preserve nonvisual fixes if regeneration overwrites them: Progress bounds and
    custom maximum, Slider thumb labels, Tabs orientation, Breadcrumb current-item
    semantics, Chart style children and stable keys, valid Field/Item/InputGroup
@@ -194,7 +216,7 @@ pnpm dlx shadcn@latest apply --preset <code>
    InputGroup disabled styling scoped to its input control (a disabled
    submit button must not dim an editable composer), and narrow lint annotations. Keep chart legend text readable and retain
    distinct line patterns.
-   Retain the requested 4px gaps between tabs and sidebar items, centered header
+   Retain the requested 4px gaps between tabs and sidebar items, continuous header
    divider, pure white/black surface tokens, CardFooter card surface, subtle blue
    selection with weaker hover, filled selected sidebar icons, blue primary
    actions, and dedicated wordmark font
@@ -215,7 +237,7 @@ pnpm dlx shadcn@latest apply --preset <code>
 - **Do** verify readable text, visible focus and non-color status/series cues in both themes.
 - **Do** keep loading, error, empty and retry states explicit without discarding drafts.
 - **Don't** add custom stylesheets, visual variants or copied component implementations.
-  Keep the explicit Home decoration, surface, selection, spacing and wordmark exceptions above
+  Keep the explicit Home decoration, partial icon fills, surface, selection, spacing and wordmark exceptions above
   when applying a preset.
 - **Don't** treat snapshot values as constraints on the next preset.
 - **Don't** display fabricated activity, private reasoning or unsupported empirical outcomes.

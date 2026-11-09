@@ -15,24 +15,19 @@ import {
 } from "react-router-dom";
 import { Empty } from "@/components/feedback";
 import {
-  FlaskConical,
+  AgentIcon,
+  ExperimentIcon,
+  Github,
   House,
   Layers2,
-  MessageSquare,
+  Moon,
   Play,
+  Settings,
+  Sun,
 } from "@/components/icons";
 import { LocalWorkspaceMenu } from "@/components/local-workspace-menu";
 import { Loading } from "@/components/shared";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -83,6 +78,7 @@ export default function WorkspaceShell() {
     if (wasOpenMobile.current && !openMobile) menuTrigger.current?.focus();
     wasOpenMobile.current = openMobile;
   }, [openMobile]);
+  const [brandHovered, setBrandHovered] = useState(false);
   const [params] = useSearchParams();
   const [dark, setDark] = useState(() =>
     document.documentElement.classList.contains("dark"),
@@ -98,10 +94,10 @@ export default function WorkspaceShell() {
   const studies = useApi<StudySummary[]>("/studies", true);
   const primaryLinks = [
     { to: "/", label: "Home", icon: House },
-    { to: "/agent", label: "Agent", icon: MessageSquare },
+    { to: "/agent", label: "Agent", icon: AgentIcon },
   ];
   const links = [
-    { to: "/studies", label: "Experiments", icon: FlaskConical },
+    { to: "/studies", label: "Experiments", icon: ExperimentIcon },
     { to: "/runs", label: "Runs", icon: Play },
     { to: "/environments", label: "Environments", icon: Layers2 },
   ];
@@ -131,41 +127,15 @@ export default function WorkspaceShell() {
   const studyId = location.pathname.match(/^\/studies\/([^/]+)$/)?.[1];
   const selectedRun = runs.data?.find((r) => r.id === runId);
   const selectedStudy = studies.data?.find((study) => study.id === studyId);
-  function breadcrumbs(): { label: string; to?: string }[] {
-    if (runId)
-      return [
-        { label: "Experiments", to: "/studies" },
-        ...(selectedRun
-          ? [
-              {
-                label: selectedRun.study_title,
-                to: `/studies/${selectedRun.study_id}`,
-              },
-            ]
-          : []),
-        { label: selectedRun?.condition ?? "Run" },
-      ];
-    if (studyId)
-      return [
-        { label: "Experiments", to: "/studies" },
-        { label: selectedStudy?.title ?? "Experiment" },
-      ];
-    if (location.pathname === "/new")
-      return [
-        { label: "Experiments", to: "/studies" },
-        {
-          label: params.has("study") ? "Tune experiment" : "New experiment",
-        },
-      ];
-    if (location.pathname === "/compare")
-      return [{ label: "Runs", to: "/runs" }, { label: "Compare" }];
-    return [{ label: section }];
-  }
-  const crumbs = breadcrumbs();
-  const pageTitle =
-    runId || studyId || location.pathname === "/new"
-      ? (crumbs.at(-1)?.label ?? section)
-      : section;
+  const pageTitle = runId
+    ? (selectedRun?.condition ?? "Run")
+    : studyId
+      ? (selectedStudy?.title ?? "Experiment")
+      : location.pathname === "/new"
+        ? params.has("study")
+          ? "Tune experiment"
+          : "New experiment"
+        : section;
   useEffect(() => {
     document.title = `${pageTitle} | JAS`;
   }, [pageTitle]);
@@ -189,11 +159,14 @@ export default function WorkspaceShell() {
             <SidebarTrigger className="ml-auto" aria-label="Close menu" />
           )}
           <SidebarMenu>
-            <SidebarMenuItem className="flex items-center px-1.5">
+            <SidebarMenuItem className="relative flex h-7 items-center justify-between pr-0.5 pl-1.5">
               <Button
                 variant="link"
                 asChild
-                className="h-auto w-fit gap-2 border-0 p-0 text-foreground hover:no-underline active:not-aria-[haspopup]:translate-y-0"
+                className={cn(
+                  "h-auto w-fit gap-2 border-0 p-0 text-foreground transition-none hover:no-underline active:not-aria-[haspopup]:translate-y-0",
+                  state === "collapsed" && brandHovered && "opacity-0",
+                )}
               >
                 <Link
                   to="/"
@@ -213,6 +186,38 @@ export default function WorkspaceShell() {
                   </span>
                 </Link>
               </Button>
+              {!isMobile && (
+                <SidebarTrigger
+                  aria-label={
+                    state === "collapsed"
+                      ? "Expand sidebar"
+                      : "Collapse sidebar"
+                  }
+                  onPointerEnter={() => {
+                    if (state === "collapsed") setBrandHovered(true);
+                  }}
+                  onPointerLeave={(event) =>
+                    setBrandHovered(
+                      event.currentTarget.matches(":focus-visible"),
+                    )
+                  }
+                  onFocus={(event) =>
+                    setBrandHovered(
+                      event.currentTarget.matches(":focus-visible"),
+                    )
+                  }
+                  onBlur={() => setBrandHovered(false)}
+                  onClick={(event) =>
+                    setBrandHovered(
+                      event.currentTarget.matches(":focus-visible"),
+                    )
+                  }
+                  className={cn(
+                    "shrink-0 transition-colors group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:left-0.5 group-data-[collapsible=icon]:bg-sidebar",
+                    state === "collapsed" && !brandHovered && "opacity-0",
+                  )}
+                />
+              )}
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarHeader>
@@ -223,7 +228,9 @@ export default function WorkspaceShell() {
               { label: "Workspace", items: links },
             ].map((group, index) => (
               <Fragment key={group.label ?? "primary"}>
-                {index > 0 && <SidebarSeparator className="mx-4" />}
+                {index > 0 && (
+                  <SidebarSeparator className="mx-4 group-data-[collapsible=icon]:hidden" />
+                )}
                 <SidebarGroup>
                   {group.label && (
                     <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
@@ -253,7 +260,16 @@ export default function WorkspaceShell() {
                             end={item.to === "/"}
                             onClick={() => setOpenMobile(false)}
                           >
-                            <item.icon aria-hidden="true" />
+                            <item.icon
+                              aria-hidden="true"
+                              data-partial-fill={
+                                item.to === "/"
+                                  ? "house"
+                                  : item.to === "/agent"
+                                    ? "none"
+                                    : undefined
+                              }
+                            />
                             <span>{item.label}</span>
                           </NavLink>
                         </SidebarMenuButton>
@@ -268,61 +284,57 @@ export default function WorkspaceShell() {
             ))}
           </nav>
         </SidebarContent>
-        <SidebarSeparator className="mx-0" />
+        <SidebarSeparator className="mx-0 group-data-[collapsible=icon]:hidden" />
         <SidebarFooter>
+          <nav aria-label="Workspace settings">
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={location.pathname === "/settings"}
+                  tooltip={
+                    !isMobile && state === "collapsed" ? "Settings" : undefined
+                  }
+                >
+                  <NavLink to="/settings" onClick={() => setOpenMobile(false)}>
+                    <Settings aria-hidden="true" />
+                    <span>Settings</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </nav>
           <LocalWorkspaceMenu dark={dark} onThemeChange={changeTheme} />
         </SidebarFooter>
       </Sidebar>
       <SidebarInset className="min-w-0">
-        <header className="flex h-(--workspace-header-height) shrink-0 items-center justify-between gap-3 border-b pr-4 pl-3 sm:pr-6">
-          <div className="flex min-w-0 items-center gap-3">
-            <SidebarTrigger
-              ref={menuTrigger}
-              aria-label={
-                isMobile
-                  ? "Open menu"
-                  : state === "collapsed"
-                    ? "Expand sidebar"
-                    : "Collapse sidebar"
-              }
-            />
-            <Separator
-              orientation="vertical"
-              className="h-4 data-vertical:self-center"
-            />
-            <Breadcrumb className="min-w-0">
-              <BreadcrumbList className="flex-nowrap">
-                {crumbs.map((crumb, i) => (
-                  <Fragment key={crumb.to ?? "current"}>
-                    {i > 0 && <BreadcrumbSeparator />}
-                    <BreadcrumbItem className="min-w-0" title={crumb.label}>
-                      {crumb.to ? (
-                        <BreadcrumbLink asChild>
-                          <Link className="truncate" to={crumb.to}>
-                            {crumb.label}
-                          </Link>
-                        </BreadcrumbLink>
-                      ) : (
-                        <BreadcrumbPage className="truncate">
-                          {crumb.label}
-                        </BreadcrumbPage>
-                      )}
-                    </BreadcrumbItem>
-                  </Fragment>
-                ))}
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-          {(runId || studyId) && (
-            <Button variant="outline" size="sm" asChild>
-              <Link
-                to={`/agent?context=${encodeURIComponent(runId ? `run:${runId}` : `study:${studyId}`)}`}
-              >
-                <MessageSquare data-icon="inline-start" />
-                Ask Agent
-              </Link>
-            </Button>
+        <header
+          className="flex h-(--workspace-header-height) shrink-0 items-center gap-2 border-b px-2.5"
+          data-slot="workspace-header"
+        >
+          {isMobile && (
+            <SidebarTrigger ref={menuTrigger} aria-label="Open menu" />
           )}
+          <div className="ml-auto flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={changeTheme}
+              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {dark ? <Sun /> : <Moon />}
+            </Button>
+            <Button variant="ghost" size="icon-sm" asChild>
+              <a
+                href="https://github.com/jaiamin/ass"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="GitHub repository"
+              >
+                <Github />
+              </a>
+            </Button>
+          </div>
         </header>
         <div
           id="main"

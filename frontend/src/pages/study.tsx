@@ -13,6 +13,7 @@ import {
 import { ExperimentCheck } from "@/components/experiment-check";
 import { Alert, Empty } from "@/components/feedback";
 import {
+  AgentIcon,
   ArrowUpRight,
   Download,
   Pause,
@@ -89,6 +90,12 @@ export default function Study() {
         title={study.design.title}
         description={study.design.question}
       >
+        <Button variant="outline" size="sm" asChild>
+          <Link to={`/agent?context=${encodeURIComponent(`study:${id}`)}`}>
+            <AgentIcon data-icon="inline-start" />
+            Ask Agent
+          </Link>
+        </Button>
         <Button variant="outline" size="sm" asChild>
           <Link to={`/new?study=${id}&revision=${study.revision}`}>
             <Settings2 data-icon="inline-start" />

@@ -8,6 +8,7 @@ import { AgentReply } from "@/components/agent/agent-reply";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
 import { Alert } from "@/components/feedback";
 import {
+  AgentIcon,
   ArrowUpRight,
   BookOpen,
   FlaskConical,
@@ -187,21 +188,18 @@ function AgentConversation({
       aria-label="Agent workspace"
       data-empty={!messages.length}
     >
-      <header className="flex shrink-0 items-center justify-between gap-3 px-4 py-3 sm:px-6 [&>div]:min-w-0 [&_strong]:block [&_strong]:truncate [&_strong]:text-sm [&_span]:mt-1 [&_span]:block [&_span]:text-xs [&_span]:text-muted-foreground">
-        <div>
-          <strong>
-            {context === "new"
-              ? "Experiment design"
-              : (selectedStudy?.title ??
-                selectedRun?.study_title ??
-                "Research assistant")}
-          </strong>
+      <header className="flex shrink-0 items-center justify-between gap-3 px-4 py-3 sm:px-6">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-sm font-semibold">
+            <AgentIcon className="size-4 shrink-0" aria-hidden="true" />
+            Agent
+          </div>
           {(selectedRun || selectedStudy) && (
-            <span>
+            <p className="mt-1 truncate text-xs text-muted-foreground">
               {selectedRun
-                ? `${selectedRun.condition} · seed ${selectedRun.seed} · ${selectedRun.turn} recorded decisions`
-                : `${selectedStudy?.completed_runs} / ${selectedStudy?.run_count} runs complete`}
-            </span>
+                ? `${selectedRun.study_title} · ${selectedRun.condition} · seed ${selectedRun.seed} · ${selectedRun.turn} recorded decisions`
+                : `${selectedStudy?.title} · ${selectedStudy?.completed_runs} / ${selectedStudy?.run_count} runs complete`}
+            </p>
           )}
         </div>
         {(selectedStudy || selectedRun) && (
@@ -288,19 +286,6 @@ function AgentConversation({
                   ? "Turn a question into a controlled experiment, or connect a run to understand what happened."
                   : "Separate what agents did from what they said. Compare outcomes, inspect decisions and choose your next test."}
             </p>
-            {context === "general" && (
-              <div className="mt-6 flex flex-wrap justify-center gap-2">
-                <Button asChild>
-                  <Link to="/agent?context=new">
-                    Design an experiment
-                    <ArrowUpRight data-icon="inline-end" />
-                  </Link>
-                </Button>
-                <Button variant="outline" asChild>
-                  <Link to="/environments">Explore environments</Link>
-                </Button>
-              </div>
-            )}
           </div>
           <AgentSuggestions
             context={context}

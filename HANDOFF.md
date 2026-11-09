@@ -383,3 +383,53 @@ both states. Browser closed; app remains on 8080.
 Section-divider spacing verified: exactly 8px above and below the navigation-group
 separator in both expanded and collapsed states, using the stock group padding.
 No extra spacing override was needed. The footer divider remains full width.
+
+## Active sidebar and Agent finish (2026-11-09)
+
+Acceptance: compact blank global header with theme/GitHub actions; collapse within
+brand row with a hover/focus overlay when collapsed; 15px navigation glyphs; Bot
+stays outlined, Home fills only its door, flask selection fills only liquid; Settings below the
+full-width footer divider above workspace menu; text-only conversation history;
+Agent header with stock outlined Bot and no redundant intro buttons. Preserve browser
+titles, contextual Agent/evidence navigation, mobile focus and unfinished drafts.
+Use stock shadcn controls and semantic colors; the explicitly requested partial
+icon fills are centralized at the existing Lucide import boundary. White/black
+surfaces, Geist type and existing spacing stay unchanged. Verify lint/unit/build,
+keyless browser flows and light/dark desktop/mobile geometry before publication.
+
+Sidebar/Agent finish implemented. Removed global breadcrumb/title/divider UI while
+retaining browser document titles; theme toggle and GitHub sit at right. Moved Ask
+Agent to experiment/run actions and retained a run-to-experiment link. Desktop
+collapse lives beside the brand; pointer hover is tracked on the control (not the
+shrinking header), opacity has no transition, and the logo hides beneath the
+hover/focus overlay. Mouse focus alone cannot keep the overlay visible. Added a
+fixed-height brand row and reduced the control's right inset by 4px. The top bars'
+continuous divider remains; both section separators hide in the collapsed rail.
+
+Latest user corrections supersede the initial filled Bot request: Agent now uses
+the unmodified stock Lucide Bot, outlined even when selected and in its header.
+Home fills only the stock House door; FlaskConical fills only liquid. Removed the
+custom bot drawing/fill rules. Sidebar/collapse glyphs are 15px; top-right glyphs
+are stock 16px with a 16px right icon inset matching navigation's left inset.
+Settings uses the stock gear, with a direct footer link above Local workspace.
+Workspace Avatar is 28px, centered in the collapsed rail, and uses exactly the
+sidebar selection background/foreground token pair in both themes. Verified the
+avatar/selection background equality live in light and dark.
+
+Conversation rows are text-only with a compact header/new-chat action. Mobile
+history reserves room for the Sheet close control. Agent intro no longer has
+redundant experiment/environment buttons. Shared CSS supplies pointer cursors for
+enabled controls and portalled menu/select items, preserving text-entry cursors
+and excluding disabled controls. Icons boundary is now components/icons.tsx;
+GitHub is a CC0 Simple Icons brand asset (Lucide no longer ships brand marks).
+
+Verification: lint, production build and 71 unit tests passed. Full keyless E2E
+passed 84/84, followed by 22/22 Agent/navigation/workspace checks after the stock
+Bot, cursor, profile and spacing refinements. Subsequent overlay/theme/icon checks
+passed 7/7, including immediate pointer-close hiding, keyboard reappearance,
+hidden logo under overlay, cursor semantics and exact header/icon edge geometry.
+The final separator refinement adds expanded/collapsed visibility assertions.
+Browser reviewed both themes and mobile history; no paid calls or backend edits.
+Port 8080 remains healthy and running against the user's existing data. Owned
+browser/test services closed. Artifacts in ignored .tools/shadcn-redesign/ include
+sidebar-*-e2e.txt, sidebar-final-unit.txt and final screenshots.

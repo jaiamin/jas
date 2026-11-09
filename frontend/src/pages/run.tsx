@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { MetricChart } from "@/components/charts";
 import { Alert, Empty } from "@/components/feedback";
 import {
+  AgentIcon,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -116,6 +117,12 @@ export default function Run() {
         title={summary.condition}
         description={`${runModelLabel(summary)} · Rev ${summary.revision} · Seed ${summary.seed} · Repetition ${summary.repetition}`}
       >
+        <Button variant="outline" size="sm" asChild>
+          <Link to={`/agent?context=${encodeURIComponent(`run:${id}`)}`}>
+            <AgentIcon data-icon="inline-start" />
+            Ask Agent
+          </Link>
+        </Button>
         <Button
           variant="ghost"
           size="icon"
@@ -165,6 +172,9 @@ export default function Run() {
         aria-label="Run progress"
         className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground"
       >
+        <Button variant="link" size="sm" className="h-auto p-0" asChild>
+          <Link to={`/studies/${summary.study_id}`}>{summary.study_title}</Link>
+        </Button>
         <Status value={summary.status} />
         <span>
           Round{" "}

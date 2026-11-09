@@ -3,7 +3,7 @@ import {
   ChevronsUpDown,
   Monitor,
   Moon,
-  Settings2,
+  Settings,
   Sun,
 } from "@/components/icons";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -40,24 +40,25 @@ export function LocalWorkspaceMenu({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
+              className="group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0!"
               tooltip={
                 !isMobile && state === "collapsed"
                   ? "Local workspace"
                   : undefined
               }
             >
-              <Avatar>
-                <AvatarFallback>
-                  <Monitor className="size-4" />
+              <Avatar className="size-7">
+                <AvatarFallback className="bg-sidebar-accent text-sidebar-accent-foreground">
+                  <Monitor />
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate font-medium">Local workspace</span>
                 <span className="truncate text-xs text-muted-foreground">
                   Settings & appearance
                 </span>
               </div>
-              <ChevronsUpDown className="ml-auto" />
+              <ChevronsUpDown className="ml-auto group-data-[collapsible=icon]:hidden" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -69,7 +70,7 @@ export function LocalWorkspaceMenu({
               <DropdownMenuLabel>Local workspace</DropdownMenuLabel>
               <DropdownMenuItem asChild>
                 <Link to="/settings" onClick={() => setOpenMobile(false)}>
-                  <Settings2 />
+                  <Settings />
                   Settings
                 </Link>
               </DropdownMenuItem>
