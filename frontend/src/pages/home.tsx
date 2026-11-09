@@ -137,7 +137,7 @@ export default function Home() {
                 <Fragment key={title}>
                   <Button
                     variant="ghost"
-                    className="h-auto w-full min-w-0 flex-1 items-center justify-start gap-3 rounded-none border-0 p-4 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-4 xl:flex-col xl:items-start"
+                    className="h-auto w-full min-w-0 flex-1 items-center justify-start gap-3 rounded-none border-0 p-4 pr-3.5 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-4 xl:flex-col xl:items-start"
                     disabled={state.send.isPending}
                     onClick={() => state.chooseSuggestion(prompt)}
                   >
