@@ -1,130 +1,236 @@
 @import "tailwindcss";
-@import "./styles/shared.css";
-@import "./styles/workspace.css";
-@import "./styles/records.css";
-@import "./styles/editor.css";
-@import "./styles/evidence.css";
-@import "./styles/assistant.css";
-@import "./styles/responsive.css";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/bricolage-grotesque-jas-800.woff2") format("woff2");
+  unicode-range: U+0061, U+006A, U+0073;
+}
 
 @custom-variant dark (&:is(.dark *));
+
 @theme inline {
+  --font-sans: "Geist Variable", sans-serif;
+  --font-brand: "Bricolage Grotesque", sans-serif;
+  --font-heading: var(--font-sans);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--foreground);
-  --color-brand: var(--brand);
-  --color-destructive: var(--destructive);
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
-  --font-sans:
-    "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --color-sidebar-border: var(--sidebar-border);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
   --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--foreground);
-  --color-sidebar-accent: var(--accent);
-  --color-sidebar-accent-foreground: var(--foreground);
-  --color-sidebar-primary: var(--primary);
-  --color-sidebar-primary-foreground: var(--primary-foreground);
-  --color-sidebar-ring: var(--ring);
-  --color-secondary: var(--muted);
-  --color-secondary-foreground: var(--foreground);
-  --color-card: var(--background);
-  --color-card-foreground: var(--foreground);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
+
 :root {
-  --radius: 8px;
-  --header-height: 52px;
   color-scheme: light;
-  --background: #ffffff;
-  --foreground: #202124;
-  --primary: #242528;
-  --primary-foreground: #ffffff;
-  --muted: #f5f5f5;
-  --muted-foreground: #666970;
-  --border: #e8e8e9;
-  --input: #dcdcdf;
-  --ring: #2879df;
-  --accent: #f0f0f1;
-  --accent-foreground: #20242c;
-  --popover: #ffffff;
-  --destructive: #b42318;
-  --danger-background: #fef3f2;
-  --success: #347254;
-  --warning: #825b18;
-  --warning-background: #fef8ed;
-  --sidebar: #ffffff;
-  --sidebar-border: #e8e8e9;
-  --chart-1: #0866d9;
-  --chart-2: #526178;
-  --chart-3: #606f83;
-  --chart-4: #344154;
-  --chart-5: #596b83;
-  --chart-6: #49566a;
-  --series-0-background: #edf3fb;
-  --series-1-background: #f1f3f6;
-  --series-2-background: #f1f3f6;
-  --series-3-background: #f1f3f6;
-  --series-4-background: #f1f3f6;
-  --series-5-background: #f1f3f6;
-  --brand: #0866d9;
-  --selection-background: #efeff0;
-  --selection-foreground: #202124;
-  --canvas: #ffffff;
-  --panel: #fafafa;
-  --control-background: #ffffff;
-  --text-secondary: #4c5564;
-  --text-tertiary: #646e7e;
+  --radius: 0.625rem;
+  --workspace-header-height: 3.25rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.546 0.245 262.881);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.932 0.032 255.585);
+  --accent-foreground: oklch(0.424 0.199 265.638);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
+
 .dark {
   color-scheme: dark;
-  --background: #141416;
-  --foreground: #ededee;
-  --primary: #ededee;
-  --primary-foreground: #171719;
-  --muted: #202023;
-  --muted-foreground: #a0a0a8;
-  --border: #2b2b30;
-  --input: #414148;
-  --ring: #78adf5;
-  --accent: #252529;
-  --accent-foreground: #eef0f3;
-  --popover: #202023;
-  --destructive: #ffb4ab;
-  --danger-background: #352624;
-  --success: #a4c4ae;
-  --warning: #e1c28f;
-  --warning-background: #342c20;
-  --sidebar: #141416;
-  --sidebar-border: #2b2b30;
-  --chart-1: #8cbcff;
-  --chart-2: #c1cbd9;
-  --chart-3: #9caabd;
-  --chart-4: #e1e6ee;
-  --chart-5: #adbacb;
-  --chart-6: #cdd5e0;
-  --series-0-background: #21334c;
-  --series-1-background: #252d38;
-  --series-2-background: #252d38;
-  --series-3-background: #252d38;
-  --series-4-background: #252d38;
-  --series-5-background: #252d38;
-  --brand: #8cbcff;
-  --selection-background: #27272c;
-  --selection-foreground: #f0f0f2;
-  --canvas: #141416;
-  --panel: #1b1b1e;
-  --control-background: #18181b;
-  --text-secondary: #c2c2c9;
-  --text-tertiary: #a0a0a8;
+  --background: oklch(0 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.546 0.245 262.881);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.282 0.091 267.935);
+  --accent-foreground: oklch(0.882 0.059 254.128);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading;
+  }
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+}
+
+[hidden] {
+  display: none;
+}
+
+/* Home's requested brand decoration stays separate from preset control colors. */
+.home-grid {
+  --home-grid-red: #ff5757;
+  --home-grid-blue: #4d8dff;
+  --home-grid-purple: color-mix(
+    in oklch,
+    var(--home-grid-red),
+    var(--home-grid-blue)
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    rgb(0 0 0 / 40%) 4%,
+    rgb(0 0 0 / 85%) 9%,
+    #000 14%,
+    #000 86%,
+    rgb(0 0 0 / 85%) 91%,
+    rgb(0 0 0 / 40%) 96%,
+    transparent
+  );
+}
+
+.home-heading::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -0.75rem -1.5rem;
+  pointer-events: none;
+  background: color-mix(in oklch, var(--background) 12%, transparent);
+  backdrop-filter: blur(3px);
+  mask-image: radial-gradient(
+    ellipse,
+    #000 0%,
+    rgb(0 0 0 / 80%) 30%,
+    rgb(0 0 0 / 35%) 65%,
+    transparent 100%
+  );
+}
+
+.home-grid-cell {
+  opacity: 0;
+  transition:
+    opacity 650ms ease-in-out,
+    fill 650ms ease-in-out;
+}
+
+.home-grid[data-paused="true"] .home-grid-cell {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-grid-cell {
+    transition: none;
+  }
+}
+
+/* Requested partial fills preserve the stock Lucide icon outlines. */
+[data-partial-fill="flask"] > [data-liquid] {
+  fill: none;
+}
+[data-active="true"] > [data-partial-fill="house"] > path:first-child,
+[data-active="true"] > [data-partial-fill="layers"] > path:first-child,
+[data-active="true"] > [data-partial-fill="settings"] > circle,
+[data-active="true"] > [data-partial-fill="flask"] > [data-liquid] {
+  fill: currentColor;
+}
+
+/* One shared cursor rule, including portalled shadcn menu/select items. */
+:is(
+  button,
+  a[href],
+  summary,
+  label[for],
+  select,
+  [role="button"],
+  [role="tab"],
+  [role="checkbox"],
+  [role="radio"],
+  [role="switch"],
+  [role="combobox"],
+  [role="menuitem"],
+  [role="menuitemcheckbox"],
+  [role="menuitemradio"],
+  [role="option"],
+  [data-slot="slider"]
+):not(:disabled, [aria-disabled="true"], [data-disabled], input, textarea) {
+  cursor: pointer;
 }

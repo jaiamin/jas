@@ -2,9 +2,8 @@ import asyncio
 import json
 
 import pytest
-from agent_sim.assistants import Assistants
+from agent_sim.assistants import Assistants, GeneralResponse
 from agent_sim.db import Analysis
-from agent_sim.domain import Finding
 from agent_sim.planning import Planner
 from sqlalchemy.exc import NoResultFound
 
@@ -19,7 +18,7 @@ def test_chats_persist_followups_isolate_contexts_and_keep_proposals_reviewable(
 
     async def generate(output, **kwargs):
         prompts.append(json.loads(kwargs["prompt"]))
-        return Finding(
+        return GeneralResponse(
             answer="A matched seed shares an initial randomization.", citations=[], caveats=[]
         )
 
@@ -69,7 +68,7 @@ def test_chats_persist_followups_isolate_contexts_and_keep_proposals_reviewable(
         assert agent.get(proposed["id"])["purpose"] == "design"
         assert len(agent.chats()) == 2
         assert agent.chats()[0]["title"] == "What is a matched seed?"
-        assert agent.chats()[0]["context"] == "new"
+        assert agent.chats()[0]["context"] == "general"
         assert len(agent.chat(first["chat_id"])) == 6
         await agent.close()
         reopened = Assistants(db, research, models)

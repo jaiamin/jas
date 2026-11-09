@@ -1,5 +1,15 @@
+import { cn } from "cn";
 import type * as React from "react";
-import { cn } from "@/lib/utils";
+
+function MessageGroup({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="message-group"
+      className={cn("flex min-w-0 flex-col gap-2", className)}
+      {...props}
+    />
+  );
+}
 
 function Message({
   className,
@@ -12,6 +22,19 @@ function Message({
       data-align={align}
       className={cn(
         "group/message relative flex w-full min-w-0 gap-2 text-sm data-[align=end]:flex-row-reverse",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+function MessageAvatar({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="message-avatar"
+      className={cn(
+        "flex w-fit min-w-8 shrink-0 items-center justify-center self-end overflow-hidden rounded-full bg-muted group-has-data-[slot=message-footer]/message:-translate-y-8",
         className,
       )}
       {...props}
@@ -58,4 +81,11 @@ function MessageFooter({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-export { Message, MessageContent, MessageFooter, MessageHeader };
+export {
+  Message,
+  MessageAvatar,
+  MessageContent,
+  MessageFooter,
+  MessageGroup,
+  MessageHeader,
+};

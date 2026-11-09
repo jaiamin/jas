@@ -2,7 +2,7 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import type { Event } from "@/lib/types";
 import { runDetail, state } from "@/test/fixtures";
-import { RelationshipGraph, RelationshipTable, WorldView } from "./world-view";
+import { InteractionTable, RelationshipTable, WorldView } from "./world-view";
 
 function event(
   kind: string,
@@ -117,7 +117,7 @@ test("relationships aggregate directed transfers and exclude ineligible promises
   ];
   render(
     <>
-      <RelationshipGraph
+      <InteractionTable
         profiles={runDetail.design.profiles}
         events={events}
         onAgent={vi.fn()}
@@ -125,15 +125,14 @@ test("relationships aggregate directed transfers and exclude ineligible promises
       <RelationshipTable profiles={runDetail.design.profiles} events={events} />
     </>,
   );
+  const interactions = screen.getByRole("table", {
+    name: "Directed agent interactions",
+  });
   expect(
-    screen.getByText("Alice → Bob: 7 credits, 3 interactions", {
-      selector: "title",
-    }),
+    within(interactions).getByRole("row", { name: "Alice Bob 7 3" }),
   ).toBeInTheDocument();
   expect(
-    screen.getByText("Bob → Alice: 2 credits, 1 interactions", {
-      selector: "title",
-    }),
+    within(interactions).getByRole("row", { name: "Bob Alice 2 1" }),
   ).toBeInTheDocument();
   const alice = screen.getByRole("row", { name: "Alice 1 / 2 1 / 1 7" });
   expect(

@@ -18,10 +18,19 @@ Synthetic observations do not establish human validity, intent or model weight u
 Installed environment mechanics are code-backed; parameters are editable in protocols.
 
 ## Design direction
-User explicitly requests a modern Linear/Vercel approach: restrained, precise, easy to
-navigate and centered on useful work. Experiments and environments are core destinations;
-Agent should help design and interpret them rather than present an isolated generic chat.
-Preserve the supplied JAS logo. Support both themes, mobile and keyboard navigation.
+Use default stock shadcn components and support changing the complete preset, including
+fonts, colors and icons. Keep preset configuration and generated components authoritative;
+see [Design](docs/DESIGN.md) for the workflow and app icon alignment step. Experiments and
+environments remain core destinations; Agent helps design and interpret them. Preserve the
+supplied JAS logo as a brand asset. Support both themes, mobile and keyboard navigation.
+Keep the original Bricolage Grotesque font only for the top-left lowercase wordmark,
+without a subtitle. Main surfaces, cards, sidebars and overlays are pure black in dark
+mode and white in light mode. Primary actions use theme blue; selection uses a
+subtle blue accent with a weaker hover state. Avoid redundant descriptive subtitles. Home starts with the shared
+Agent composer in New experiment context and four suggested experiments. Keep
+Home/Agent together above Workspace navigation; surface unfinished work and active
+runs conditionally, with full experiment/run lists in their existing destinations.
+The Home composer has a faint, reduced-motion-aware pixel-grid backdrop.
 
 ## Working assumptions
 The initial audience is a single researcher using a local workspace. Shared accounts,

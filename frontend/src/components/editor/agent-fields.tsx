@@ -1,18 +1,20 @@
-import { ChevronDown, Plus, Trash2 } from "lucide-react";
+import { Alert } from "@/components/feedback";
+import { Plus, Trash2 } from "@/components/icons";
+import { OptionSelect as Select } from "@/components/option-select";
 import {
-  Disclosure,
-  DisclosureContent,
-  DisclosureTrigger,
-} from "@/components/disclosure";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Alert } from "@/components/ui/data";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { removeProfile } from "@/lib/design";
+import { modelLabel } from "@/lib/format";
 import type { Catalog, Design, ModelId, Profile } from "@/lib/types";
-import { modelLabel } from "@/lib/utils";
 
 export function AgentFields({
   design,
@@ -35,11 +37,14 @@ export function AgentFields({
     );
   }
   return (
-    <section className="form-section" hidden={hidden}>
-      <div className="section-heading">
+    <section className="mb-6 flex flex-col gap-6" hidden={hidden}>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
         <div>
-          <h2>
-            Agents <span className="muted">{design.profiles.length}</span>
+          <h2 className="text-base font-semibold">
+            Agents{" "}
+            <span className="text-muted-foreground">
+              {design.profiles.length}
+            </span>
           </h2>
         </div>
         <Button
@@ -65,25 +70,24 @@ export function AgentFields({
           Add agent
         </Button>
       </div>
-      <div className="profile-list">
+      <Accordion type="multiple">
         {design.profiles.map((p, i) => (
-          <Disclosure className="profile-disclosure" key={p.key}>
-            <DisclosureTrigger indicator={false} className="profile-heading">
-              <span className="profile-avatar" data-series={i % 6}>
-                {p.name.slice(0, 1)}
-              </span>
-              <span className="profile-summary">
+          <AccordionItem value={p.key} key={p.key}>
+            <AccordionTrigger className="w-full justify-start gap-3">
+              <Avatar>
+                <AvatarFallback>{p.name.slice(0, 1)}</AvatarFallback>
+              </Avatar>
+              <span className="flex min-w-0 flex-col items-start gap-1 [&>span]:text-xs [&>span]:text-muted-foreground">
                 <strong>{p.name || "Unnamed agent"}</strong>
                 <span>{p.role}</span>
               </span>
-              <span className="profile-model">
+              <span className="ml-auto hidden truncate sm:inline">
                 {p.model ? modelLabel(p.model) : "Condition model"}
               </span>
-              <ChevronDown />
-            </DisclosureTrigger>
-            <DisclosureContent>
-              <div className="profile-editor">
-                <FieldGroup className="profile-fields">
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex items-start gap-3 p-4">
+                <FieldGroup className="grid min-w-0 flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
                   <Field>
                     <FieldLabel htmlFor={`agent-${p.key}-name`}>
                       Name
@@ -127,7 +131,7 @@ export function AgentFields({
                       ]}
                     />
                   </Field>
-                  <Field className="profile-goal">
+                  <Field className="col-span-full">
                     <FieldLabel htmlFor={`agent-${p.key}-goal`}>
                       Private goal
                     </FieldLabel>
@@ -149,10 +153,10 @@ export function AgentFields({
                   <Trash2 />
                 </Button>
               </div>
-            </DisclosureContent>
-          </Disclosure>
+            </AccordionContent>
+          </AccordionItem>
         ))}
-      </div>
+      </Accordion>
       {design.environment === "trust_exchange" &&
         design.profiles.length % 2 !== 0 && (
           <Alert variant="error">

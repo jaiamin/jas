@@ -20,7 +20,7 @@ test("a corrupt draft leaves valid drafts available with targeted recovery", asy
     );
     localStorage.setItem("jas:draft:/new?template=broken", "{unfinished");
   }, templateDesign(catalog));
-  await page.goto("/");
+  await page.goto("/studies");
   await expect(page.getByRole("alert")).toContainText(
     "Some drafts could not be read",
   );
@@ -129,7 +129,7 @@ test("visiting Agent preserves the editor's single recoverable draft", async ({
   await page
     .getByRole("link", { name: "Generate with Agent", exact: true })
     .click();
-  await expect(page).toHaveURL(/agent\?context=new/);
+  await expect(page).toHaveURL(/agent\?new=/);
   await page.goBack();
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
     "Preserved while asking AI",
@@ -247,7 +247,7 @@ test("chat history failures have a local retry", async ({ page }) => {
   failing = false;
   await history.getByRole("button", { name: "Retry", exact: true }).click();
   await expect(
-    history.getByText("No chats yet.", { exact: true }),
+    history.getByText("No chats yet", { exact: true }),
   ).toBeVisible();
 });
 

@@ -1,17 +1,30 @@
-import { ChevronLeft, ChevronRight, FlaskConical, Search } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Empty } from "@/components/feedback";
+import {
+  ChevronLeft,
+  ChevronRight,
+  FlaskConical,
+  Search,
+} from "@/components/icons";
+import { OptionSelect as Select } from "@/components/option-select";
 import { Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { Empty, Table } from "@/components/ui/data";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Select } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { date, label } from "@/lib/format";
 import type { StudySummary } from "@/lib/types";
-import { date, label, money } from "@/lib/utils";
 export function StudyTable({ studies }: { studies: StudySummary[] }) {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
@@ -25,22 +38,21 @@ export function StudyTable({ studies }: { studies: StudySummary[] }) {
   const current = Math.min(page, pageCount - 1);
   if (!studies.length)
     return (
-      <Empty
-        title="Your first experiment starts with a question"
-        description="Choose an environment and define what to compare. Agent can help turn your question into a reviewed protocol."
-      >
-        <Button asChild>
-          <Link to="/agent?context=new">Design an experiment</Link>
-        </Button>
-        <Button variant="outline" asChild>
-          <Link to="/environments">Explore environments</Link>
-        </Button>
+      <Empty title="No experiments yet">
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <Button size="sm" asChild>
+            <Link to="/agent">Design experiment</Link>
+          </Button>
+          <Button size="sm" variant="outline" asChild>
+            <Link to="/environments">Environments</Link>
+          </Button>
+        </div>
       </Empty>
     );
   return (
-    <div className="table-frame">
-      <div className="table-toolbar">
-        <div className="search">
+    <div className="min-w-0 overflow-hidden rounded-lg border">
+      <div className="flex flex-wrap items-center gap-3 p-4">
+        <div className="mr-auto w-full sm:w-72">
           <InputGroup>
             <InputGroupInput
               aria-label="Search experiments"
@@ -77,51 +89,50 @@ export function StudyTable({ studies }: { studies: StudySummary[] }) {
           }))}
         />
       </div>
-      <Table className="table">
-        <thead>
-          <tr>
-            <th>Experiment</th>
-            <th>Status</th>
-            <th>Environment</th>
-            <th className="table-heading-numeric">Runs</th>
-            <th className="table-heading-numeric">Cost</th>
-            <th>Created</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Experiment</TableHead>
+            <TableHead>Status</TableHead>
+
+            <TableHead className="text-right">Runs</TableHead>
+
+            <TableHead>Created</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {filtered.slice(current * 10, (current + 1) * 10).map((study) => (
-            <tr key={study.id}>
-              <td className="name-cell">
-                <div className="record-title">
+            <TableRow key={study.id}>
+              <TableCell className="min-w-48 max-w-96">
+                <div className="flex items-center gap-2 [&>svg]:size-4 [&>svg]:text-muted-foreground">
                   <FlaskConical aria-hidden="true" />
-                  <Link className="record-link" to={`/studies/${study.id}`}>
+                  <Link
+                    className="font-medium underline-offset-4 hover:underline"
+                    to={`/studies/${study.id}`}
+                  >
                     {study.title}
                   </Link>
                 </div>
                 <span
-                  className="table-secondary record-description"
+                  className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground"
                   title={study.question}
                 >
-                  {study.question}
+                  {label(study.environment)} · Revision {study.revision}
                 </span>
-              </td>
-              <td>
+              </TableCell>
+              <TableCell>
                 <Status value={study.status} />
-              </td>
-              <td>
-                {label(study.environment)}
-                <span className="table-secondary">
-                  Revision {study.revision}
-                </span>
-              </td>
-              <td className="numeric">
+              </TableCell>
+              <TableCell className="text-right tabular-nums">
                 {study.completed_runs} / {study.run_count}
-              </td>
-              <td className="numeric">{money(study.cost_usd)}</td>
-              <td className="muted nowrap">{date(study.created)}</td>
-            </tr>
+              </TableCell>
+
+              <TableCell className="text-muted-foreground whitespace-nowrap">
+                {date(study.created)}
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
+        </TableBody>
       </Table>
       {!filtered.length && (
         <Empty title="No matching experiments">
@@ -138,11 +149,11 @@ export function StudyTable({ studies }: { studies: StudySummary[] }) {
         </Empty>
       )}
 
-      <div className="table-footer">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t px-4 py-3 text-sm text-muted-foreground">
         <span>
           {filtered.length} experiment{filtered.length !== 1 && "s"}
         </span>
-        <div className="actions">
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           {pageCount > 1 && (
             <span>
               {current + 1} / {pageCount}

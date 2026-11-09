@@ -1,5 +1,4 @@
 import type { UseQueryResult } from "@tanstack/react-query";
-import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   type Dispatch,
   type SetStateAction,
@@ -13,13 +12,29 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { Empty } from "@/components/feedback";
+import { ArrowLeft, ChevronLeft, ChevronRight } from "@/components/icons";
+import { OptionSelect as Select } from "@/components/option-select";
 import { TurnAnnotations } from "@/components/run/turn-annotations";
 import { ErrorState, Json, Loading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { Badge, Empty, Table } from "@/components/ui/data";
-import { Select } from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { label } from "@/lib/format";
 import type { Evidence, RunDetail } from "@/lib/types";
-import { label } from "@/lib/utils";
 
 export function DecisionBrowser({
   run,
@@ -59,7 +74,7 @@ export function DecisionBrowser({
   const visibleTurns = run.turns
     .filter((t) => actorFilter === "all" || t.actor === actorFilter)
     .toReversed();
-  const pages = Math.max(1, Math.ceil(visibleTurns.length / 15));
+  const pages = Math.max(1, Math.ceil(visibleTurns.length / 10));
   const current = Math.min(page, pages - 1);
   function setActorFilter(actor: string) {
     setParams(
@@ -74,10 +89,10 @@ export function DecisionBrowser({
     );
   }
   return (
-    <div className="decision-layout">
+    <div className="grid min-w-0 items-start gap-6 min-[1440px]:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
       <section>
-        <div className="section-heading">
-          <h2 ref={journalHeading} tabIndex={-1} className="inspection-anchor">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
+          <h2 ref={journalHeading} tabIndex={-1} className="scroll-mt-20">
             Decision journal
           </h2>
           <Select
@@ -96,61 +111,63 @@ export function DecisionBrowser({
             ]}
           />
         </div>
-        <div className="table-frame">
-          <Table className="table">
-            <thead>
-              <tr>
-                <th>Turn</th>
-                <th>Agent</th>
-                <th>Decision</th>
-                <th>Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visibleTurns.slice(current * 15, (current + 1) * 15).map((t) => (
-                <tr key={t.number} data-selected={t.number === turn}>
-                  <td>
+        <div className="min-w-0 overflow-hidden rounded-lg border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Turn</TableHead>
+                <TableHead>Agent</TableHead>
+                <TableHead>Decision</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {visibleTurns.slice(current * 10, (current + 1) * 10).map((t) => (
+                <TableRow
+                  key={t.number}
+                  data-state={t.number === turn ? "selected" : undefined}
+                >
+                  <TableCell>
                     <Button
                       variant="link"
                       size="sm"
-                      className="turn-link"
                       type="button"
                       onClick={() => selectTurn(t.number, true)}
                     >
                       {t.number}
                     </Button>
-                  </td>
-                  <td>
+                  </TableCell>
+                  <TableCell>
                     {run.design.profiles.find((p) => p.key === t.actor)?.name ??
                       t.actor}
-                  </td>
-                  <td>
-                    <strong className="action-label">
+                    <span className="mt-1 block text-xs text-muted-foreground">
+                      {(t.latency_ms / 1000).toFixed(1)}s
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <strong className="font-medium">
                       {label(t.action.kind)}
                       {["contribute", "send", "return"].includes(
                         t.action.kind,
                       ) && ` ${t.action.amount}`}
                       {t.action.target && ` → ${t.action.target}`}
                     </strong>
-                    <span className="table-secondary rationale-preview">
+                    <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground line-clamp-2 min-w-40 max-w-72 whitespace-normal">
                       {t.rationale}
                     </span>
-                  </td>
-                  <td className="numeric muted">
-                    {(t.latency_ms / 1000).toFixed(1)}s
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
+            </TableBody>
           </Table>
           {!visibleTurns.length && (
-            <p className="table-no-results">
-              No decisions recorded for this selection.
-            </p>
+            <Empty
+              title="No decisions recorded"
+              description="Choose another agent or start the run."
+            />
           )}
-          <div className="table-footer">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t px-4 py-3 text-sm text-muted-foreground">
             <span>{visibleTurns.length} decisions</span>
-            <div className="actions">
+            <div className="flex shrink-0 flex-wrap items-center gap-2">
               <span>
                 {current + 1} / {pages}
               </span>
@@ -180,107 +197,118 @@ export function DecisionBrowser({
           </div>
         </div>
       </section>
-      <aside ref={inspector} className="evidence-inspector">
-        <Button
-          variant="outline"
-          size="sm"
-          ref={evidenceReturn}
-          className="evidence-return"
-          onClick={() => {
-            journalHeading.current?.focus({ preventScroll: true });
-            journalHeading.current?.scrollIntoView({ block: "start" });
-          }}
-        >
-          <ArrowLeft data-icon="inline-start" />
-          Back to decisions
-        </Button>
-        <div className="section-heading">
-          <h2
-            ref={inspectorHeading}
-            tabIndex={-1}
-            className="inspection-anchor"
-          >
-            Turn {turn} evidence
-          </h2>
-          <Badge>Saved input & output</Badge>
-        </div>
-        {evidence.error ? (
-          <ErrorState error={evidence.error} onRetry={evidence.refetch} />
-        ) : !evidence.data ? (
-          <Loading />
-        ) : evidence.data.number === 0 ? (
-          <Empty
-            title="Initial state"
-            description="Turn zero is the starting checkpoint, before any model decision."
-          />
-        ) : (
-          <>
-            <h3 className="inspector-actor">
-              {
-                run.design.profiles.find((p) => p.key === evidence.data?.actor)
-                  ?.name
-              }
-            </h3>
-            <p className="decision-rationale">
-              {evidence.data.decision.rationale}
-            </p>
-            <dl className="key-values">
-              <div>
-                <dt>Action</dt>
-                <dd>
-                  {label(evidence.data.decision.action?.kind ?? "")}
-                  {evidence.data.decision.action?.target &&
-                    ` → ${evidence.data.decision.action.target}`}
-                </dd>
-              </div>
-              <div>
-                <dt>Private note</dt>
-                <dd>{evidence.data.decision.memory || "No note"}</dd>
-              </div>
-              {evidence.data.decision.action?.message && (
-                <div>
-                  <dt>Message</dt>
-                  <dd>{evidence.data.decision.action.message}</dd>
-                </div>
-              )}
-            </dl>
-            <p className="evidence-disclaimer">
-              Rationale and memory are model self-reports. They do not expose
-              its internal reasoning.
-            </p>
-            {[
-              [
-                "Exact observation before the decision",
-                evidence.data.observation,
-              ],
-              ["Typed decision", evidence.data.decision],
-              ["Consequences & verified facts", evidence.data.events],
-              [`Complete state after turn ${turn}`, evidence.data.checkpoint],
-            ].map(([title, value]) => (
-              <Disclosure
-                key={String(title)}
-                className="disclosure"
-                onOpenChange={(open) => {
-                  if (open && !pinned) selectTurn(turn, true);
-                }}
-              >
-                <DisclosureTrigger>{String(title)}</DisclosureTrigger>
-                <DisclosureContent>
-                  <Json value={value} />
-                </DisclosureContent>
-              </Disclosure>
-            ))}
-          </>
-        )}
-        <TurnAnnotations
-          runId={run.summary.id}
-          turn={turn}
-          drafts={annotationDrafts}
-          setDrafts={setAnnotationDrafts}
-          onInteract={() => {
-            if (!pinned) selectTurn(turn);
-          }}
-        />
+      <aside
+        ref={inspector}
+        className="min-w-0 scroll-mt-6 max-[1439px]:min-h-[calc(100svh-3rem)]"
+      >
+        <Card>
+          <CardHeader>
+            <Button
+              variant="outline"
+              size="sm"
+              ref={evidenceReturn}
+              className="mb-4 inline-flex min-[1440px]:hidden"
+              onClick={() => {
+                journalHeading.current?.focus({ preventScroll: true });
+                journalHeading.current?.scrollIntoView({ block: "start" });
+              }}
+            >
+              <ArrowLeft data-icon="inline-start" />
+              Back to decisions
+            </Button>
+            <CardTitle>
+              <h2 ref={inspectorHeading} tabIndex={-1}>
+                Turn {turn} evidence
+              </h2>
+            </CardTitle>
+            <CardDescription>
+              Saved input, decision and consequences.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            {evidence.error ? (
+              <ErrorState error={evidence.error} onRetry={evidence.refetch} />
+            ) : !evidence.data ? (
+              <Loading />
+            ) : evidence.data.number === 0 ? (
+              <Empty
+                title="Initial state"
+                description="Turn zero is the starting checkpoint, before any model decision."
+              />
+            ) : (
+              <>
+                <h3 className="mb-2 font-medium">
+                  {
+                    run.design.profiles.find(
+                      (p) => p.key === evidence.data?.actor,
+                    )?.name
+                  }
+                </h3>
+                <p className="text-sm leading-relaxed">
+                  {evidence.data.decision.rationale}
+                </p>
+                <dl className="grid gap-3 text-sm [&>div]:grid [&>div]:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] [&>div]:gap-4 [&_dt]:text-muted-foreground [&_dd]:min-w-0 [&_dd]:break-words">
+                  <div>
+                    <dt>Action</dt>
+                    <dd>
+                      {label(evidence.data.decision.action?.kind ?? "")}
+                      {evidence.data.decision.action?.target &&
+                        ` → ${evidence.data.decision.action.target}`}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Private note</dt>
+                    <dd>{evidence.data.decision.memory || "No note"}</dd>
+                  </div>
+                  {evidence.data.decision.action?.message && (
+                    <div>
+                      <dt>Message</dt>
+                      <dd>{evidence.data.decision.action.message}</dd>
+                    </div>
+                  )}
+                </dl>
+                <p className="my-4 text-xs leading-relaxed text-muted-foreground">
+                  Rationale and memory are model self-reports. They do not
+                  expose its internal reasoning.
+                </p>
+                {[
+                  [
+                    "Exact observation before the decision",
+                    evidence.data.observation,
+                  ],
+                  ["Typed decision", evidence.data.decision],
+                  ["Consequences & verified facts", evidence.data.events],
+                  [
+                    `Complete state after turn ${turn}`,
+                    evidence.data.checkpoint,
+                  ],
+                ].map(([title, value]) => (
+                  <Disclosure
+                    key={String(title)}
+                    className="min-w-0"
+                    onOpenChange={(open) => {
+                      if (open && !pinned) selectTurn(turn, true);
+                    }}
+                  >
+                    <DisclosureTrigger>{String(title)}</DisclosureTrigger>
+                    <DisclosureContent>
+                      <Json value={value} />
+                    </DisclosureContent>
+                  </Disclosure>
+                ))}
+              </>
+            )}
+            <TurnAnnotations
+              runId={run.summary.id}
+              turn={turn}
+              drafts={annotationDrafts}
+              setDrafts={setAnnotationDrafts}
+              onInteract={() => {
+                if (!pinned) selectTurn(turn);
+              }}
+            />
+          </CardContent>
+        </Card>
       </aside>
     </div>
   );

@@ -5,12 +5,20 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { Empty } from "@/components/feedback";
 import { ErrorState, Json, Loading, Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { Table } from "@/components/ui/data";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { api } from "@/lib/api";
+import { money } from "@/lib/format";
 import type { RequestEvidence, RunDetail } from "@/lib/types";
-import { money } from "@/lib/utils";
 export function RequestInspector({
   requests,
 }: {
@@ -23,72 +31,78 @@ export function RequestInspector({
     enabled: !!requestId,
   });
   return (
-    <section className="section-space">
-      <div className="section-heading">
-        <h2>Model requests</h2>
-        <span className="muted">Includes unsuccessful attempts</span>
+    <section className="mt-8">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
+        <h2 className="text-base font-semibold">Model requests</h2>
+        <span className="text-muted-foreground">
+          Includes unsuccessful attempts
+        </span>
       </div>
-      <div className="table-frame">
-        <Table className="table">
-          <thead>
-            <tr>
-              <th>Request</th>
-              <th>Turn</th>
-              <th>Status</th>
-              <th>Tokens in / out</th>
-              <th>Estimated cost</th>
-            </tr>
-          </thead>
-          <tbody>
+      <div className="min-w-0 overflow-hidden rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Request</TableHead>
+              <TableHead>Turn</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Tokens in / out</TableHead>
+              <TableHead>Estimated cost</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {requests.map((call) => (
-              <tr key={call.id} data-selected={requestId === call.id}>
-                <td>
+              <TableRow
+                key={call.id}
+                data-state={requestId === call.id ? "selected" : undefined}
+              >
+                <TableCell>
                   <Button
                     variant="link"
                     size="sm"
                     type="button"
-                    className="turn-link"
                     onClick={() => setRequestId(call.id)}
                   >
                     {call.id.slice(0, 8)}
                   </Button>
-                </td>
-                <td>{call.turn ?? "—"}</td>
-                <td>
+                </TableCell>
+                <TableCell>{call.turn ?? "—"}</TableCell>
+                <TableCell>
                   <Status value={call.status} />
-                  <span className="table-secondary">{call.error}</span>
-                </td>
-                <td className="numeric">
+                  <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
+                    {call.error}
+                  </span>
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
                   {call.input_tokens.toLocaleString()} /{" "}
                   {call.output_tokens.toLocaleString()}
-                </td>
-                <td className="numeric">
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
                   {money(call.cost_usd)}
                   {["unknown", "pending"].includes(call.status) && "*"}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
+          </TableBody>
         </Table>
-        {!requests.length && (
-          <p className="table-no-results">No provider requests sent.</p>
-        )}
+        {!requests.length && <Empty title="No provider requests sent" />}
       </div>
       {requestId && (
-        <div className="request-inspector">
+        <div className="mt-6">
           {request.error ? (
             <ErrorState error={request.error} onRetry={request.refetch} />
           ) : !request.data ? (
             <Loading />
           ) : (
             <>
-              <h3>Request {request.data.id.slice(0, 8)}</h3>
+              <h3 className="text-sm font-medium">
+                Request {request.data.id.slice(0, 8)}
+              </h3>
               {!request.data.request ? (
-                <p className="muted">
+                <p className="text-muted-foreground">
                   This pilot request predates payload tracing.
                 </p>
               ) : (
-                <Disclosure className="disclosure">
+                <Disclosure className="min-w-0">
                   <DisclosureTrigger>
                     Exact request, schema & settings
                   </DisclosureTrigger>
@@ -97,7 +111,7 @@ export function RequestInspector({
                   </DisclosureContent>
                 </Disclosure>
               )}
-              <Disclosure className="disclosure" defaultOpen>
+              <Disclosure className="min-w-0" defaultOpen>
                 <DisclosureTrigger>Provider response</DisclosureTrigger>
                 <DisclosureContent>
                   <Json value={request.data.response} />

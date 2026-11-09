@@ -1,4 +1,4 @@
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -29,10 +29,10 @@ export function TaskFields({
   return (
     <>
       {design.environment === "coordination" && (
-        <section className="form-section" hidden={hidden}>
-          <div className="section-heading">
+        <section className="mb-6 flex flex-col gap-6" hidden={hidden}>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
             <div>
-              <h2>Task graph</h2>
+              <h2 className="text-base font-semibold">Task graph</h2>
             </div>
             <Button
               variant="outline"
@@ -57,7 +57,7 @@ export function TaskFields({
             </Button>
           </div>
           {!design.tasks.length ? (
-            <p className="muted">
+            <p className="text-muted-foreground">
               Using the environment’s default dependency graph. Add a task to
               define your own graph.
             </p>
@@ -68,7 +68,7 @@ export function TaskFields({
                   <FieldLabel htmlFor={`task-name-${task.key}`}>
                     <code>{task.key}</code>
                   </FieldLabel>
-                  <div className="task-editor-row">
+                  <div className="grid grid-cols-[minmax(0,1fr)_4rem_minmax(0,1fr)_auto] gap-2">
                     <Input
                       id={`task-name-${task.key}`}
                       value={task.name}

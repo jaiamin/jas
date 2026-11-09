@@ -1,8 +1,15 @@
+import { OptionSelect as Select } from "@/components/option-select";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { newResource } from "@/lib/design";
 import type { CompositionRules, Profile, ResourcePrimitive } from "@/lib/types";
 
@@ -36,11 +43,11 @@ export function CompositionFields({
       ),
     });
   return (
-    <section className="composition-editor">
-      <div className="section-heading">
+    <section className="flex min-w-0 flex-col gap-5">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
         <div>
-          <h3>Resource mechanics</h3>
-          <p className="muted">
+          <h3 className="text-sm font-medium">Resource mechanics</h3>
+          <p className="text-muted-foreground">
             One action per agent per round. Needs consume inventory after
             everyone acts.
           </p>
@@ -62,7 +69,7 @@ export function CompositionFields({
           Add resource
         </Button>
       </div>
-      <Field orientation="horizontal" className="mechanism-toggle">
+      <Field orientation="horizontal" className="flex-row items-center gap-3">
         <Checkbox
           id={`${id}-priority`}
           checked={rules.controllers_first}
@@ -75,9 +82,13 @@ export function CompositionFields({
         </FieldLabel>
       </Field>
       {rules.resources.map((r, index) => (
-        <fieldset key={r.key} className="composition-resource">
-          <legend>{r.name || `Resource ${index + 1}`}</legend>
-          <div className="condition-fields">
+        <FieldSet
+          aria-label="Resource"
+          key={r.key}
+          className="flex min-w-0 flex-col gap-4"
+        >
+          <FieldLegend>{r.name || `Resource ${index + 1}`}</FieldLegend>
+          <FieldGroup className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
             <Field>
               <FieldLabel htmlFor={`${id}-${index}-name`}>
                 Resource name
@@ -156,10 +167,10 @@ export function CompositionFields({
                 }
               />
             </Field>
-          </div>
-          <fieldset className="agent-permissions">
-            <legend>Allocation controllers</legend>
-            <p className="muted">
+          </FieldGroup>
+          <FieldSet className="col-span-full flex flex-wrap gap-4">
+            <FieldLegend>Allocation controllers</FieldLegend>
+            <p className="text-muted-foreground">
               With none selected, everyone may extract. Controllers may allocate
               to one agent or split a total equally.
             </p>
@@ -183,8 +194,11 @@ export function CompositionFields({
                 {profile.name}
               </FieldLabel>
             ))}
-          </fieldset>
-          <Field orientation="horizontal" className="mechanism-toggle">
+          </FieldSet>
+          <Field
+            orientation="horizontal"
+            className="flex-row items-center gap-3"
+          >
             <Checkbox
               id={`${id}-${index}-transfers`}
               checked={r.transfers}
@@ -213,7 +227,7 @@ export function CompositionFields({
           >
             Remove resource
           </Button>
-        </fieldset>
+        </FieldSet>
       ))}
     </section>
   );

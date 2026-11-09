@@ -24,19 +24,20 @@ test("four examples adapt to creation, saved treatments and a run without submit
       submitted++;
   });
   await page.goto("/agent");
-  const suggestions = page.locator(".agent-suggestions button");
+  const suggestions = page
+    .getByRole("region", { name: "Suggested questions" })
+    .getByRole("button");
   await expect(suggestions).toHaveCount(4);
   const context = page.getByRole("combobox", { name: "Message context" });
   const draft = page.getByLabel("Message Agent", { exact: true });
-  await context.click();
+  await expect(context).toContainText("No experiment");
   await page
-    .getByRole("option", { name: "New experiment", exact: true })
+    .getByRole("button", {
+      name: "Design a cooperation experiment",
+      exact: true,
+    })
     .click();
-  await expect(suggestions).toHaveCount(4);
-  await page
-    .getByRole("button", { name: "Oversight & sanctions", exact: true })
-    .click();
-  await expect(draft).toHaveValue(/Vary only oversight probability/);
+  await expect(draft).toHaveValue(/Design a shared-commons experiment/);
   let release: () => void = () => {};
   const pending = new Promise<void>((resolve) => {
     release = resolve;
@@ -52,7 +53,7 @@ test("four examples adapt to creation, saved treatments and a run without submit
   try {
     await expect(page.getByRole("status", { name: "Loading" })).toBeVisible();
     await expect(suggestions).toHaveCount(0);
-    await expect(draft).toHaveValue(/Vary only oversight probability/);
+    await expect(draft).toHaveValue(/Design a shared-commons experiment/);
   } finally {
     release();
   }

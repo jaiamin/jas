@@ -1,6 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Table } from "@/components/ui/data";
 import { Progress } from "@/components/ui/progress";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import type { Event, RunDetail, State } from "@/lib/types";
 
 export function MechanismView({
@@ -49,16 +56,16 @@ export function MechanismView({
     .slice(-8);
   return (
     <section>
-      <div className="section-heading">
-        <h2>{title}</h2>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
+        <h2 className="text-base font-semibold">{title}</h2>
       </div>
       {environment === "composed" &&
         run.parameters.composition?.resources.map((resource) => (
-          <section key={resource.key} className="composition-resource">
-            <h3>{resource.name}</h3>
+          <section key={resource.key} className="flex min-w-0 flex-col gap-4">
+            <h3 className="text-sm font-medium">{resource.name}</h3>
             <p>
               Shared stock:{" "}
-              <strong className="numeric">
+              <strong className="tabular-nums">
                 {state.stocks?.[resource.key]?.toFixed(2)}
               </strong>{" "}
               / {resource.capacity}
@@ -68,56 +75,62 @@ export function MechanismView({
                 : "controllers only"}
               {" · "}Allocations: {resource.allocation_visibility}
             </p>
-            <p className="muted">
+            <p className="text-muted-foreground">
               Researcher view includes private inventories and consumption.
             </p>
-            <div className="table-frame">
-              <Table className="table">
-                <thead>
-                  <tr>
-                    <th>Agent</th>
-                    <th>Permission</th>
-                    <th className="numeric">Inventory</th>
-                    <th className="numeric">Consumed</th>
-                    <th className="numeric">Unmet need</th>
-                  </tr>
-                </thead>
-                <tbody>
+            <div className="min-w-0 overflow-hidden rounded-lg border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Agent</TableHead>
+                    <TableHead>Permission</TableHead>
+                    <TableHead className="text-right tabular-nums">
+                      Inventory
+                    </TableHead>
+                    <TableHead className="text-right tabular-nums">
+                      Consumed
+                    </TableHead>
+                    <TableHead className="text-right tabular-nums">
+                      Unmet need
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {run.design.profiles.map((profile) => (
-                    <tr key={profile.key}>
-                      <td>{profile.name}</td>
-                      <td>
+                    <TableRow key={profile.key}>
+                      <TableCell>{profile.name}</TableCell>
+                      <TableCell>
                         {resource.controllers.includes(profile.key)
                           ? "Allocate"
                           : resource.controllers.length
                             ? "Receive"
                             : "Extract"}
-                      </td>
-                      <td className="numeric">
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
                         {state.inventories?.[resource.key]?.[
                           profile.key
                         ]?.toFixed(2)}
-                      </td>
-                      <td className="numeric">
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
                         {state.consumed?.[resource.key]?.[profile.key]?.toFixed(
                           2,
                         )}
-                      </td>
-                      <td className="numeric">
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
                         {state.unmet?.[resource.key]?.[profile.key]?.toFixed(2)}
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
+                </TableBody>
               </Table>
             </div>
           </section>
         ))}
       {environment === "renewable_resource" && (
-        <div className="resource-state">
+        <div className="flex flex-col gap-3 py-4 [&>div]:flex [&>div]:justify-between">
           <div>
             <span>Available stock</span>
-            <strong className="numeric">
+            <strong className="tabular-nums">
               {state.stock?.toFixed(2)}{" "}
               <small>/ {run.parameters.resource.capacity}</small>
             </strong>
@@ -137,7 +150,7 @@ export function MechanismView({
         </div>
       )}
       {environment === "bargaining" && (
-        <div className="pool-summary">
+        <div className="flex flex-wrap items-center gap-3 py-4 text-sm text-muted-foreground [&>svg]:size-4">
           {state.offer ? (
             <>
               <span>Latest offer to responder</span>
@@ -151,18 +164,18 @@ export function MechanismView({
           )}
         </div>
       )}
-      <div className="table-frame">
-        <Table className="table">
-          <thead>
-            <tr>
-              <th>Agent</th>
-              <th>
+      <div className="min-w-0 overflow-hidden rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Agent</TableHead>
+              <TableHead>
                 {environment === "institution" ? "Permission" : "Latest action"}
-              </th>
-              <th className="numeric">Payoff</th>
-            </tr>
-          </thead>
-          <tbody>
+              </TableHead>
+              <TableHead className="text-right tabular-nums">Payoff</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {run.design.profiles.map((profile) => {
               const last = events.findLast(
                 (e) =>
@@ -175,8 +188,8 @@ export function MechanismView({
                   ].includes(e.kind),
               );
               return (
-                <tr key={profile.key}>
-                  <td>
+                <TableRow key={profile.key}>
+                  <TableCell>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -184,8 +197,8 @@ export function MechanismView({
                     >
                       {profile.name}
                     </Button>
-                  </td>
-                  <td>
+                  </TableCell>
+                  <TableCell>
                     {environment === "institution"
                       ? run.parameters.institution.authorities.includes(
                           profile.key,
@@ -195,39 +208,41 @@ export function MechanismView({
                           ? "Work · wait · appeal"
                           : "Work · wait"
                       : (last?.kind.replaceAll("_", " ") ?? "—")}
-                  </td>
-                  <td className="numeric">
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums">
                     {state.balances[profile.key]?.toFixed(2)}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </tbody>
+          </TableBody>
         </Table>
       </div>
       {latest.length > 0 && (
-        <div className="table-frame">
-          <Table className="table">
-            <thead>
-              <tr>
-                <th>Round</th>
-                <th>Agent</th>
-                <th>Event</th>
-                <th>Visibility</th>
-              </tr>
-            </thead>
-            <tbody>
+        <div className="min-w-0 overflow-hidden rounded-lg border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Round</TableHead>
+                <TableHead>Agent</TableHead>
+                <TableHead>Event</TableHead>
+                <TableHead>Visibility</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {latest.map((event) => (
-                <tr key={event.id}>
-                  <td className="numeric">{event.round}</td>
-                  <td>
+                <TableRow key={event.id}>
+                  <TableCell className="text-right tabular-nums">
+                    {event.round}
+                  </TableCell>
+                  <TableCell>
                     {event.actor ? names.get(event.actor) : "Environment"}
-                  </td>
-                  <td>{event.text}</td>
-                  <td>{event.visibility}</td>
-                </tr>
+                  </TableCell>
+                  <TableCell>{event.text}</TableCell>
+                  <TableCell>{event.visibility}</TableCell>
+                </TableRow>
               ))}
-            </tbody>
+            </TableBody>
           </Table>
         </div>
       )}

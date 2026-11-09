@@ -31,7 +31,10 @@ for (const theme of ["light", "dark"]) {
       .getByRole("button", { name: "Add resource", exact: true })
       .first()
       .click();
-    const resources = page.locator(".composition-resource");
+    const resources = page.getByRole("group", {
+      name: "Resource",
+      exact: true,
+    });
     await expect(resources).toHaveCount(2);
     await resources.nth(1).getByLabel("Resource name").fill("Water");
     await resources
@@ -79,7 +82,7 @@ for (const theme of ["light", "dark"]) {
     ).toBeVisible();
     await page.goto("/environments");
     await page
-      .locator(".saved-setup-list")
+      .locator("[data-slot=item-group]")
       .getByRole("link", { name: title, exact: true })
       .click();
     await page.getByRole("tab", { name: "Question", exact: true }).click();
@@ -93,9 +96,11 @@ for (const theme of ["light", "dark"]) {
       page.getByText("Custom environment saved.", { exact: false }),
     ).toBeVisible();
     await page.goto("/environments");
-    const row = page.locator(".saved-setup-list > div").filter({
-      has: page.getByRole("link", { name: `${title} updated`, exact: true }),
-    });
+    const row = page
+      .locator("[data-slot=item-group] > [data-slot=item]")
+      .filter({
+        has: page.getByRole("link", { name: `${title} updated`, exact: true }),
+      });
     await row.getByRole("button", { name: "Delete", exact: true }).click();
     await expect(page.getByRole("alertdialog")).toContainText(
       "Saved experiments keep their own rules and evidence",

@@ -1,6 +1,12 @@
 import { CompositionFields } from "@/components/composition-fields";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { EnvironmentId, Parameters, Profile } from "@/lib/types";
 
@@ -201,7 +207,7 @@ export function MechanismFields({
     );
   }
   return (
-    <FieldGroup className="condition-fields mechanism-fields">
+    <FieldGroup className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
       {config.numbers.map(({ key, label, value, min, max, step, onChange }) => (
         <Field key={key}>
           <FieldLabel htmlFor={`${id}-${key}`}>{label}</FieldLabel>
@@ -239,7 +245,11 @@ export function MechanismFields({
         </Field>
       )}
       {config.toggles.map(({ key, label, value, onChange }) => (
-        <Field key={key} className="mechanism-toggle" orientation="horizontal">
+        <Field
+          key={key}
+          className="flex-row items-center gap-3"
+          orientation="horizontal"
+        >
           <Checkbox
             id={`${id}-${key}`}
             checked={value}
@@ -249,8 +259,8 @@ export function MechanismFields({
         </Field>
       ))}
       {environment === "institution" && (
-        <fieldset className="agent-permissions">
-          <legend>Authorities</legend>
+        <FieldSet className="col-span-full flex flex-wrap gap-4">
+          <FieldLegend>Authorities</FieldLegend>
           {profiles.map((profile) => (
             <FieldLabel
               key={profile.key}
@@ -278,7 +288,7 @@ export function MechanismFields({
               {profile.name}
             </FieldLabel>
           ))}
-        </fieldset>
+        </FieldSet>
       )}
     </FieldGroup>
   );

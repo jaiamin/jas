@@ -3,13 +3,14 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
-import { Alert, Badge } from "@/components/ui/data";
+import { Alert } from "@/components/feedback";
+import { Badge } from "@/components/ui/badge";
 import type { ExperimentPreflight } from "@/lib/types";
 
 export function ExperimentCheck({ report }: { report: ExperimentPreflight }) {
   const blocked = report.status === "blocked";
   return (
-    <section className="experiment-check" aria-label="Experiment check">
+    <section className="my-4 min-w-0 break-words" aria-label="Experiment check">
       <Alert
         title={
           blocked
@@ -24,7 +25,7 @@ export function ExperimentCheck({ report }: { report: ExperimentPreflight }) {
           {report.probe_turns.toLocaleString()} scripted decisions · No model
           calls
         </p>
-        <Disclosure className="disclosure" defaultOpen={blocked}>
+        <Disclosure className="min-w-0" defaultOpen={blocked}>
           <DisclosureTrigger>
             {report.issues.length
               ? `Review ${report.issues.length} findings`
@@ -85,7 +86,7 @@ export function ExperimentCheck({ report }: { report: ExperimentPreflight }) {
                 difference.
               </p>
             ))}
-            <p className="muted">{report.limits}</p>
+            <p className="text-muted-foreground">{report.limits}</p>
           </DisclosureContent>
         </Disclosure>
       </Alert>

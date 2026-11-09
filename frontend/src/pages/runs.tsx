@@ -1,9 +1,9 @@
-import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Empty } from "@/components/feedback";
+import { Plus } from "@/components/icons";
 import { RunTable } from "@/components/run-table";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { Empty } from "@/components/ui/data";
 import { useApi } from "@/lib/api";
 import type { RunSummary } from "@/lib/types";
 
@@ -12,7 +12,7 @@ export default function Runs() {
   return (
     <>
       <PageHeading title="Runs">
-        <Button variant="outline" asChild>
+        <Button asChild>
           <Link to="/new">
             <Plus data-icon="inline-start" />
             New experiment

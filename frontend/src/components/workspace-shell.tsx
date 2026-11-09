@@ -1,34 +1,27 @@
 import {
-  FlaskConical,
+  Component,
+  Fragment,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { Empty } from "@/components/feedback";
+import {
+  AgentIcon,
+  ExperimentIcon,
+  Github,
+  House,
   Layers2,
-  MessageCircle,
-  MessageSquare,
   Moon,
-  PanelLeft,
   Play,
-  SlidersHorizontal,
+  Settings,
   Sun,
-} from "lucide-react";
-import { Component, Fragment, Suspense, useEffect, useState } from "react";
-import {
-  Link,
-  NavLink,
-  Outlet,
-  useLocation,
-  useSearchParams,
-} from "react-router-dom";
+} from "@/components/icons";
+import { LocalWorkspaceMenu } from "@/components/local-workspace-menu";
 import { Loading } from "@/components/shared";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Badge, Empty } from "@/components/ui/data";
-import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -38,13 +31,16 @@ import {
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useApi } from "@/lib/api";
-import type { RunSummary, StudySummary } from "@/lib/types";
+import type { RunSummary } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 class PageBoundary extends Component<
   { children: React.ReactNode },
@@ -69,23 +65,43 @@ class PageBoundary extends Component<
 }
 
 export default function WorkspaceShell() {
-  const { setOpenMobile, state, isMobile, toggleSidebar } = useSidebar();
-  const [params] = useSearchParams();
+  const { openMobile, setOpenMobile, state, isMobile } = useSidebar();
+  const menuTrigger = useRef<HTMLButtonElement>(null);
+  const wasOpenMobile = useRef(openMobile);
+  useEffect(() => {
+    if (wasOpenMobile.current && !openMobile) menuTrigger.current?.focus();
+    wasOpenMobile.current = openMobile;
+  }, [openMobile]);
+  const [brandHovered, setBrandHovered] = useState(false);
   const [dark, setDark] = useState(() =>
     document.documentElement.classList.contains("dark"),
   );
   const location = useLocation();
   const isAgent = location.pathname === "/agent";
+  const isHome = location.pathname === "/";
   const runs = useApi<RunSummary[]>("/runs", true);
   const active =
     runs.data?.filter((r) =>
       ["running", "queued", "pausing"].includes(r.status),
     ) ?? [];
-  const studies = useApi<StudySummary[]>("/studies", true);
+  const primaryLinks = [
+    { to: "/", label: "Home", icon: House, partialFill: "house" },
+    { to: "/agent", label: "Agent", icon: AgentIcon, partialFill: "none" },
+  ];
   const links = [
-    { to: "/studies", label: "Experiments", icon: FlaskConical },
-    { to: "/environments", label: "Environments", icon: Layers2 },
-    { to: "/runs", label: "Runs", icon: Play },
+    {
+      to: "/studies",
+      label: "Experiments",
+      icon: ExperimentIcon,
+      partialFill: undefined,
+    },
+    { to: "/runs", label: "Runs", icon: Play, partialFill: undefined },
+    {
+      to: "/environments",
+      label: "Environments",
+      icon: Layers2,
+      partialFill: "layers",
+    },
   ];
   function changeTheme() {
     const next = !dark;
@@ -97,248 +113,200 @@ export default function WorkspaceShell() {
       /* Storage can be unavailable in private contexts. */
     }
   }
-  const section =
-    [
-      { prefix: "/new", label: "Experiment design" },
-      { prefix: "/studies", label: "Experiments" },
-      { prefix: "/runs", label: "Runs" },
-      { prefix: "/environments", label: "Environments" },
-      { prefix: "/settings", label: "Settings" },
-      { prefix: "/compare", label: "Compare runs" },
-      { prefix: "/agent", label: "Agent" },
-    ].find(({ prefix }) => location.pathname.startsWith(prefix))?.label ??
-    "Workspace";
-  const runId = location.pathname.match(/^\/runs\/([^/]+)$/)?.[1];
-  const studyId = location.pathname.match(/^\/studies\/([^/]+)$/)?.[1];
-  const selectedRun = runs.data?.find((r) => r.id === runId);
-  const selectedStudy = studies.data?.find((study) => study.id === studyId);
-  function breadcrumbs(): { label: string; to?: string }[] {
-    if (runId)
-      return [
-        { label: "Experiments", to: "/studies" },
-        ...(selectedRun
-          ? [
-              {
-                label: selectedRun.study_title,
-                to: `/studies/${selectedRun.study_id}`,
-              },
-            ]
-          : []),
-        { label: selectedRun?.condition ?? "Run" },
-      ];
-    if (studyId)
-      return [
-        { label: "Experiments", to: "/studies" },
-        { label: selectedStudy?.title ?? "Experiment" },
-      ];
-    if (location.pathname === "/new")
-      return [
-        { label: "Experiments", to: "/studies" },
-        {
-          label: params.has("study") ? "Tune experiment" : "New experiment",
-        },
-      ];
-    if (location.pathname === "/compare")
-      return [{ label: "Runs", to: "/runs" }, { label: "Compare" }];
-    return [{ label: section }];
-  }
-  const crumbs = breadcrumbs();
-  const pageTitle =
-    runId || studyId || location.pathname === "/new"
-      ? (crumbs.at(-1)?.label ?? section)
-      : section;
-  useEffect(() => {
-    document.title = `${pageTitle} | JAS`;
-  }, [pageTitle]);
   return (
     <>
-      <a href="#main" className="skip-link">
-        Skip to content
-      </a>
+      <Button
+        asChild
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50"
+      >
+        <a href="#main">Skip to content</a>
+      </Button>
       <Sidebar collapsible="icon">
-        <SidebarHeader>
-          <Link
-            to="/studies"
-            className="brand brand-home"
-            hidden={state === "collapsed" && !isMobile}
-            aria-label="JAS home"
-            onClick={() => setOpenMobile(false)}
-          >
-            <img
-              className="brand-mark"
-              src="/logo.svg"
-              width={24}
-              height={24}
-              alt=""
-            />
-            <span className="brand-wordmark">jas</span>
-          </Link>
-          <Button
-            data-sidebar="trigger"
-            variant="ghost"
-            size="icon"
-            className={
-              state === "collapsed" && !isMobile
-                ? "brand brand-toggle"
-                : "sidebar-toggle"
-            }
-            aria-label={
-              isMobile
-                ? "Close menu"
-                : state === "collapsed"
-                  ? "Expand sidebar"
-                  : "Collapse sidebar"
-            }
-            title={
-              isMobile
-                ? "Close menu"
-                : `${state === "collapsed" ? "Expand" : "Collapse"} sidebar (Ctrl/⌘ B)`
-            }
-            onClick={toggleSidebar}
-          >
-            {state === "collapsed" && !isMobile && (
-              <img
-                className="brand-mark"
-                src="/logo.svg"
-                width={24}
-                height={24}
-                alt=""
-              />
-            )}
-            <PanelLeft
-              className={
-                state === "collapsed" && !isMobile
-                  ? "brand-toggle-icon"
-                  : undefined
-              }
-              aria-hidden="true"
-            />
-          </Button>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup>
-            <nav aria-label="Main navigation">
-              <SidebarMenu>
-                {links.map((item) => (
-                  <SidebarMenuItem key={item.to}>
-                    <SidebarMenuButton asChild tooltip={item.label}>
-                      <NavLink
-                        to={item.to}
-                        title={state === "collapsed" ? item.label : undefined}
-                        onClick={() => setOpenMobile(false)}
-                      >
-                        <item.icon aria-hidden="true" />
-                        <span>{item.label}</span>
-                        {item.to === "/runs" && active.length > 0 && (
-                          <Badge className="nav-count">{active.length}</Badge>
-                        )}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </nav>
-          </SidebarGroup>
-          <Separator className="sidebar-separator" />
-          <SidebarGroup>
-            <SidebarMenu>
-              {[{ to: "/agent", label: "Agent", icon: MessageCircle }].map(
-                (item) => (
-                  <SidebarMenuItem key={item.to}>
-                    <SidebarMenuButton asChild tooltip={item.label}>
-                      <NavLink
-                        to={item.to}
-                        onClick={() => setOpenMobile(false)}
-                      >
-                        <item.icon aria-hidden="true" />
-                        <span>{item.label}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ),
-              )}
-            </SidebarMenu>
-          </SidebarGroup>
-          {!!studies.data?.length && (
-            <SidebarGroup className="recent-navigation">
-              <SidebarGroupLabel>Recent</SidebarGroupLabel>
-              <SidebarMenu>
-                {studies.data.slice(0, 5).map((study) => (
-                  <SidebarMenuItem key={study.id}>
-                    <SidebarMenuButton asChild isActive={studyId === study.id}>
-                      <Link
-                        to={`/studies/${study.id}`}
-                        title={study.title}
-                        onClick={() => setOpenMobile(false)}
-                      >
-                        <span className="recent-mark" />
-                        <span>{study.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroup>
-          )}
-        </SidebarContent>
-        <SidebarFooter>
+        <SidebarHeader className="h-(--workspace-header-height) shrink-0 justify-center border-b py-1">
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Settings">
-                <NavLink to="/settings" onClick={() => setOpenMobile(false)}>
-                  <SlidersHorizontal aria-hidden="true" />
-                  <span>Settings</span>
-                </NavLink>
-              </SidebarMenuButton>
+            <SidebarMenuItem className="relative flex h-7 items-center justify-between pr-0.5 pl-1.5">
+              <Button
+                variant="link"
+                asChild
+                className={cn(
+                  "h-auto w-fit gap-2 border-0 p-0 text-foreground transition-none hover:no-underline active:not-aria-[haspopup]:translate-y-0",
+                  state === "collapsed" && brandHovered && "opacity-0",
+                )}
+              >
+                <Link
+                  to="/"
+                  aria-label="JAS home"
+                  title="JAS home"
+                  onClick={() => setOpenMobile(false)}
+                >
+                  <img
+                    src="/logo.svg"
+                    width={20}
+                    height={20}
+                    className="size-5 shrink-0 object-contain"
+                    alt=""
+                  />
+                  <span className="font-brand text-[22px] font-extrabold leading-none tracking-[-0.04em] group-data-[collapsible=icon]:hidden">
+                    jas
+                  </span>
+                </Link>
+              </Button>
+              {isMobile ? (
+                <SidebarTrigger className="shrink-0" aria-label="Close menu" />
+              ) : (
+                <SidebarTrigger
+                  aria-label={
+                    state === "collapsed"
+                      ? "Expand sidebar"
+                      : "Collapse sidebar"
+                  }
+                  onPointerEnter={() => {
+                    if (state === "collapsed") setBrandHovered(true);
+                  }}
+                  onPointerLeave={(event) =>
+                    setBrandHovered(
+                      event.currentTarget.matches(":focus-visible"),
+                    )
+                  }
+                  onFocus={(event) =>
+                    setBrandHovered(
+                      event.currentTarget.matches(":focus-visible"),
+                    )
+                  }
+                  onBlur={() => setBrandHovered(false)}
+                  onClick={(event) =>
+                    setBrandHovered(
+                      event.currentTarget.matches(":focus-visible"),
+                    )
+                  }
+                  className={cn(
+                    "shrink-0 transition-colors group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:left-0.5 group-data-[collapsible=icon]:bg-sidebar",
+                    state === "collapsed" && !brandHovered && "opacity-0",
+                  )}
+                />
+              )}
             </SidebarMenuItem>
           </SidebarMenu>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-            onClick={changeTheme}
-          >
-            {dark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
-          </Button>
+        </SidebarHeader>
+        <SidebarContent>
+          <nav aria-label="Main navigation">
+            {[
+              { label: null, items: primaryLinks },
+              { label: "Workspace", items: links },
+            ].map((group, index) => (
+              <Fragment key={group.label ?? "primary"}>
+                {index > 0 && (
+                  <SidebarSeparator className="mx-4 group-data-[collapsible=icon]:hidden" />
+                )}
+                <SidebarGroup>
+                  {group.label && (
+                    <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+                  )}
+                  <SidebarMenu className="gap-0.75">
+                    {group.items.map((item) => (
+                      <SidebarMenuItem key={item.to}>
+                        <SidebarMenuButton
+                          asChild
+                          tooltip={
+                            !isMobile && state === "collapsed"
+                              ? item.label
+                              : undefined
+                          }
+                          isActive={
+                            location.pathname === item.to ||
+                            (item.to !== "/" &&
+                              location.pathname.startsWith(item.to)) ||
+                            (item.to === "/studies" &&
+                              location.pathname === "/new") ||
+                            (item.to === "/runs" &&
+                              location.pathname === "/compare")
+                          }
+                        >
+                          <NavLink
+                            to={item.to}
+                            end={item.to === "/"}
+                            onClick={() => setOpenMobile(false)}
+                          >
+                            <item.icon
+                              aria-hidden="true"
+                              data-partial-fill={item.partialFill}
+                            />
+                            <span>{item.label}</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                        {item.to === "/runs" && active.length > 0 && (
+                          <SidebarMenuBadge>{active.length}</SidebarMenuBadge>
+                        )}
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroup>
+              </Fragment>
+            ))}
+          </nav>
+        </SidebarContent>
+        <SidebarSeparator className="mx-0" />
+        <SidebarFooter>
+          <nav aria-label="Workspace settings">
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={location.pathname === "/settings"}
+                  tooltip={
+                    !isMobile && state === "collapsed" ? "Settings" : undefined
+                  }
+                >
+                  <NavLink to="/settings" onClick={() => setOpenMobile(false)}>
+                    <Settings aria-hidden="true" data-partial-fill="settings" />
+                    <span>Settings</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </nav>
+          <LocalWorkspaceMenu dark={dark} onThemeChange={changeTheme} />
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset className="shell-body">
-        <header className="shell-header">
-          <div className="header-path">
-            {isMobile && <SidebarTrigger />}
-            <Breadcrumb>
-              <BreadcrumbList>
-                {crumbs.map((crumb, i) => (
-                  <Fragment key={crumb.to ?? "current"}>
-                    {i > 0 && <BreadcrumbSeparator />}
-                    <BreadcrumbItem title={crumb.label}>
-                      {crumb.to ? (
-                        <BreadcrumbLink asChild>
-                          <Link to={crumb.to}>{crumb.label}</Link>
-                        </BreadcrumbLink>
-                      ) : (
-                        <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-                      )}
-                    </BreadcrumbItem>
-                  </Fragment>
-                ))}
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-          {(runId || studyId) && (
-            <Button variant="outline" size="sm" asChild>
-              <Link
-                to={`/agent?context=${encodeURIComponent(runId ? `run:${runId}` : `study:${studyId}`)}`}
-              >
-                <MessageSquare data-icon="inline-start" />
-                Ask Agent
-              </Link>
-            </Button>
+      <SidebarInset className="min-w-0">
+        <header
+          className="flex h-(--workspace-header-height) shrink-0 items-center gap-2 border-b px-2.5"
+          data-slot="workspace-header"
+        >
+          {isMobile && (
+            <SidebarTrigger ref={menuTrigger} aria-label="Open menu" />
           )}
+          <div className="ml-auto flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={changeTheme}
+              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {dark ? <Sun /> : <Moon />}
+            </Button>
+            <Button variant="ghost" size="icon-sm" asChild>
+              <a
+                href="https://github.com/jaiamin/ass"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="GitHub repository"
+              >
+                <Github />
+              </a>
+            </Button>
+          </div>
         </header>
-        <main
+        <div
           id="main"
-          className={isAgent ? "page page-agent" : "page"}
+          className={cn(
+            "min-w-0 w-full",
+            isAgent
+              ? "h-[calc(100svh-var(--workspace-header-height))] min-h-0"
+              : isHome
+                ? "pb-10"
+                : "mx-auto max-w-7xl p-4 pb-10 sm:p-6 lg:p-8",
+          )}
           tabIndex={-1}
         >
           <Suspense fallback={<Loading />}>
@@ -346,7 +314,7 @@ export default function WorkspaceShell() {
               <Outlet />
             </PageBoundary>
           </Suspense>
-        </main>
+        </div>
       </SidebarInset>
     </>
   );

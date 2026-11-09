@@ -28,19 +28,19 @@ export function ResourceScheduleEditor({
     );
   }
   return (
-    <Disclosure className="disclosure">
+    <Disclosure className="min-w-0">
       <DisclosureTrigger>
         Resource changes during the run
         {schedule.length > 0 && ` · ${schedule.length}`}
       </DisclosureTrigger>
       <DisclosureContent>
-        <p className="table-note">
+        <p className="p-4 text-xs leading-relaxed text-muted-foreground">
           Changes take effect at the start of a round and persist. Agents see
           the new budget when it changes; future changes are hidden.
         </p>
         {schedule.map((change, j) => (
           <FieldGroup
-            className="condition-fields"
+            className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2"
             key={
               // biome-ignore lint/suspicious/noArrayIndexKey: Controlled fields retain focus while the round is edited; rows are never reordered.
               `${id}-change-${j}`

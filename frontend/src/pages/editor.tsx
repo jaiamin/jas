@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { PlanningProgress } from "@/components/agent/planning-progress";
 import { DesignEditor } from "@/components/editor/design-editor";
+import { Alert, Empty } from "@/components/feedback";
+import { ArrowRight } from "@/components/icons";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { Alert, Empty } from "@/components/ui/data";
 import { ApiError, api, useApi } from "@/lib/api";
 import {
   type Draft,
@@ -144,7 +144,7 @@ export default function Editor() {
         <PageHeading title="Recover your draft" />
         <Alert variant="error">{draft.data.error.message}</Alert>
         {discardError && <Alert variant="error">{discardError}</Alert>}
-        <div className="actions">
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           <Button onClick={() => setRecoverDraft(true)}>
             Edit specification
           </Button>
@@ -167,10 +167,7 @@ export default function Editor() {
         <PageHeading title="Design request stopped" />
         <Alert variant="error">{plan.data.error}</Alert>
         <Button variant="outline" asChild>
-          <Link
-            to="/agent?context=new"
-            state={{ question: plan.data.question }}
-          >
+          <Link to="/agent" state={{ question: plan.data.question }}>
             Back to Agent
           </Link>
         </Button>

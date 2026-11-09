@@ -1,17 +1,26 @@
-import { ChevronDown, Plus, Trash2 } from "lucide-react";
-import {
-  Disclosure,
-  DisclosureContent,
-  DisclosureTrigger,
-} from "@/components/disclosure";
 import { ProfileOverridesEditor } from "@/components/editor/profile-overrides-editor";
 import { ResourceScheduleEditor } from "@/components/editor/resource-schedule-editor";
+import { Plus, Trash2 } from "@/components/icons";
 import { MechanismFields } from "@/components/mechanism-fields";
+import { OptionSelect as Select } from "@/components/option-select";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import { modelLabel } from "@/lib/format";
 import type {
   Catalog,
   Design,
@@ -19,7 +28,6 @@ import type {
   Parameters,
   Treatment,
 } from "@/lib/types";
-import { modelLabel } from "@/lib/utils";
 
 export function ConditionFields({
   design,
@@ -54,11 +62,14 @@ export function ConditionFields({
     if (c) condition(index, { parameters: { ...c.parameters, [key]: value } });
   }
   return (
-    <section className="form-section" hidden={hidden}>
-      <div className="section-heading">
+    <section className="mb-6 flex flex-col gap-6" hidden={hidden}>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
         <div>
-          <h2>
-            Conditions <span className="muted">{design.conditions.length}</span>
+          <h2 className="text-base font-semibold">
+            Conditions{" "}
+            <span className="text-muted-foreground">
+              {design.conditions.length}
+            </span>
           </h2>
         </div>
         <Button
@@ -85,27 +96,23 @@ export function ConditionFields({
           Add condition
         </Button>
       </div>
-      <div className="condition-list">
+      <Accordion
+        type="multiple"
+        defaultValue={[design.conditions[0]?.key ?? ""]}
+      >
         {design.conditions.map((c, i) => (
-          <Disclosure
-            className="condition-disclosure"
-            key={c.key}
-            defaultOpen={i === 0}
-          >
-            <DisclosureTrigger indicator={false} className="condition-summary">
-              <span className="condition-index" data-series={i % 6}>
-                {String.fromCharCode(65 + i)}
-              </span>
+          <AccordionItem value={c.key} key={c.key}>
+            <AccordionTrigger className="w-full justify-start gap-3">
+              <Badge variant="secondary">{String.fromCharCode(65 + i)}</Badge>
               <strong>{c.name || "Unnamed condition"}</strong>
               <span>{modelLabel(c.model)}</span>
-              <ChevronDown />
-            </DisclosureTrigger>
-            <DisclosureContent>
-              <div className="condition-editor">
-                <div className="condition-heading">
-                  <span className="condition-index" data-series={i % 6}>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-col gap-6 p-4">
+                <div className="flex items-center gap-3">
+                  <Badge variant="secondary">
                     {String.fromCharCode(65 + i)}
-                  </span>
+                  </Badge>
                   <Input
                     aria-label={`Condition ${i + 1} name`}
                     value={c.name}
@@ -126,7 +133,7 @@ export function ConditionFields({
                     <Trash2 />
                   </Button>
                 </div>
-                <FieldGroup className="condition-fields">
+                <FieldGroup className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
                   <Field>
                     <FieldLabel>Model</FieldLabel>
                     <Select
@@ -226,8 +233,8 @@ export function ConditionFields({
                   </Field>
                 </FieldGroup>
                 {c.parameters.communication && (
-                  <fieldset className="agent-permissions">
-                    <legend>Communication channels</legend>
+                  <FieldSet className="col-span-full flex flex-wrap gap-4">
+                    <FieldLegend>Communication channels</FieldLegend>
                     {(["messages", "reports", "promises"] as const)
                       .filter(
                         (channel) =>
@@ -268,7 +275,7 @@ export function ConditionFields({
                               : "Messages"}
                         </FieldLabel>
                       ))}
-                  </fieldset>
+                  </FieldSet>
                 )}
                 <MechanismFields
                   environment={design.environment}
@@ -300,7 +307,7 @@ export function ConditionFields({
                     condition(i, { profile_overrides: overrides })
                   }
                 />
-                <div className="condition-switches">
+                <div className="flex flex-wrap gap-5">
                   <FieldLabel htmlFor={`communication-${c.key}`}>
                     <Checkbox
                       id={`communication-${c.key}`}
@@ -323,10 +330,10 @@ export function ConditionFields({
                   </FieldLabel>
                 </div>
               </div>
-            </DisclosureContent>
-          </Disclosure>
+            </AccordionContent>
+          </AccordionItem>
         ))}
-      </div>
+      </Accordion>
     </section>
   );
 }

@@ -5,7 +5,7 @@ test("Agent is one full page with an inner history rail and contextual composer"
   request,
 }) => {
   await page.goto("/studies");
-  const sidebar = page.locator('[data-slot="sidebar"]');
+  const sidebar = page.locator('[data-slot="sidebar"]').first();
   await expect(
     sidebar.getByRole("link", { name: "New experiment", exact: true }),
   ).toHaveCount(0);
@@ -13,7 +13,16 @@ test("Agent is one full page with an inner history rail and contextual composer"
     page.getByRole("link", { name: "Ask Agent", exact: true }),
   ).toHaveCount(0);
   await page.getByRole("link", { name: "Agent", exact: true }).click();
-  await expect(page).toHaveTitle("Agent | JAS");
+  await expect(page).toHaveTitle("JAS");
+  const defaultContext = page.getByRole("combobox", {
+    name: "Message context",
+  });
+  await expect(defaultContext).toContainText("No experiment");
+  await defaultContext.click();
+  await expect(
+    page.getByRole("option", { name: "New experiment", exact: true }),
+  ).toHaveCount(0);
+  await page.keyboard.press("Escape");
   await expect(page.getByRole("tab")).toHaveCount(0);
   await expect(
     sidebar.getByRole("complementary", { name: "Chat history" }),
@@ -35,7 +44,7 @@ test("Agent is one full page with an inner history rail and contextual composer"
   await expect(draft).toBeFocused();
   await draft.focus();
   await expect(draft).toHaveCSS("outline-style", "none");
-  await expect(page.locator('fieldset[data-slot="input-group"]')).toHaveCSS(
+  await expect(page.locator('[data-slot="input-group"]')).toHaveCSS(
     "box-shadow",
     /0px 0px 0px 3px/,
   );
@@ -65,13 +74,22 @@ test("Agent is one full page with an inner history rail and contextual composer"
   });
   await input.fill("Compare the recorded strategies");
   await context.click();
-  await page.getByRole("option", { name: "General", exact: true }).click();
+  await page
+    .getByRole("option", { name: "No experiment", exact: true })
+    .click();
   await expect(input).toHaveValue("Compare the recorded strategies");
   await page.reload();
   await expect(input).toHaveValue("Compare the recorded strategies");
-  await expect(context).toContainText("General");
+  await expect(context).toContainText("No experiment");
+  await context.click();
+  await page
+    .getByRole("option", { name: "Context selection experiment", exact: true })
+    .click();
+  await expect(context).toContainText("Context selection experiment");
+  await expect(input).toHaveValue("Compare the recorded strategies");
   await page.getByRole("button", { name: "New chat", exact: true }).click();
   await expect(input).toHaveValue("");
+  await expect(context).toContainText("No experiment");
 });
 
 test("saved conversations resume after reload and new chats keep separate histories", async ({
@@ -130,6 +148,9 @@ test("saved conversations resume after reload and new chats keep separate histor
     route.fulfill({ json: messages }),
   );
   await page.goto("/agent");
+  await expect(
+    page.getByRole("combobox", { name: "Message context" }),
+  ).toContainText("No experiment");
   const input = page.getByLabel("Message Agent", { exact: true });
   await input.fill("What is a matched seed?");
   await input.press("Shift+Enter");
@@ -264,6 +285,11 @@ for (const theme of ["light", "dark"]) {
     const context = page.getByRole("combobox", { name: "Message context" });
     await expect(context).toContainText(study.design.title);
     await context.click();
+    await expect
+      .poll(
+        async () => (await page.getByRole("listbox").boundingBox())?.width ?? 0,
+      )
+      .toBeGreaterThanOrEqual(theme === "dark" ? 340 : 400);
     const menu = await page.getByRole("listbox").boundingBox();
     expect(menu?.x).toBeGreaterThanOrEqual(0);
     expect(menu?.width).toBeGreaterThanOrEqual(theme === "dark" ? 340 : 400);
@@ -309,7 +335,9 @@ for (const theme of ["light", "dark"]) {
     await page.getByText("Limitations & uncertainty", { exact: true }).click();
     await expect(page.getByText("One run is descriptive.")).toBeVisible();
     await context.click();
-    await page.getByRole("option", { name: "General", exact: true }).click();
+    await page
+      .getByRole("option", { name: "No experiment", exact: true })
+      .click();
     await page
       .getByLabel("Message Agent", { exact: true })
       .fill("An unsent follow-up");
@@ -334,18 +362,17 @@ for (const theme of ["light", "dark"]) {
       ),
     ).toBe(true);
     if (theme === "dark") {
-      const picker = page.getByRole("combobox", {
-        name: "Past chats",
-        exact: true,
-      });
-      await expect(picker).toBeVisible();
-      await picker.click();
       await page
-        .getByRole("option", {
+        .getByRole("button", { name: "Conversations", exact: true })
+        .click();
+      await page
+        .getByRole("dialog", { name: "Agent conversations" })
+        .getByRole("link", {
           name: "What changed after the first round?",
           exact: true,
         })
         .click();
+      await expect(page.getByRole("dialog")).toHaveCount(0);
     }
   });
 }
@@ -404,7 +431,7 @@ test("creation stays in chat and hands a reviewed protocol to the editor", async
   await page.route("**/api/analyses/proposal-answer", (route) =>
     route.fulfill({ json: message }),
   );
-  await page.goto("/agent?context=new");
+  await page.goto("/agent");
   await page
     .getByLabel("Message Agent", { exact: true })
     .fill("Study cooperation");
@@ -412,7 +439,7 @@ test("creation stays in chat and hands a reviewed protocol to the editor", async
   await expect(page.getByRole("heading", { name: design.title })).toBeVisible();
   expect(submitted).toEqual({
     question: "Study cooperation",
-    context: "new",
+    context: "general",
     chat_id: null,
   });
   await expect(page).toHaveURL(/agent\?chat=proposal-chat/);
@@ -490,13 +517,12 @@ test("large chat histories keep the conversation and composer within the viewpor
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
-  const history = page.getByRole("navigation", {
-    name: "Past chats",
-    exact: true,
-  });
+  const history = page
+    .getByRole("complementary", { name: "Chat history" })
+    .locator('[data-slot="sidebar-content"]');
   expect(
     await history.evaluate(
-      (element) => element.scrollWidth > element.clientWidth,
+      (element) => element.scrollHeight > element.clientHeight,
     ),
   ).toBe(true);
 });

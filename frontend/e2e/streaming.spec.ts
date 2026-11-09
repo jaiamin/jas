@@ -64,9 +64,11 @@ for (const theme of ["light", "dark"]) {
       });
     });
     await page.goto("/agent");
-    const composer = page.locator(".assistant-form");
+    const composer = page.getByRole("form", { name: "Agent composer" });
     const emptyBounds = await composer.boundingBox();
-    const suggestions = await page.locator(".agent-suggestions").boundingBox();
+    const suggestions = await page
+      .getByRole("region", { name: "Suggested questions" })
+      .boundingBox();
     expect(emptyBounds?.y).toBeGreaterThan(
       (page.viewportSize()?.height ?? 0) * 0.6,
     );
@@ -79,16 +81,20 @@ for (const theme of ["light", "dark"]) {
     await page
       .getByRole("button", { name: "Send message", exact: true })
       .click();
-    await expect(page.getByRole("status")).toHaveText("Thinking");
-    await expect(page.locator(".agent-thinking i")).toHaveCount(3);
+    await expect(
+      page.locator('[data-slot="trace-line"][role="status"]'),
+    ).toHaveText("Thinking");
+    await expect(page.locator("[data-slot=spinner]")).toHaveCount(1);
     releaseStream();
     await expect(
       page.getByRole("heading", { name: "Matched seeds", exact: true }),
     ).toBeVisible();
-    await expect(page.getByRole("status")).toHaveText("Writing");
+    await expect(
+      page.locator('[data-slot="trace-line"][role="status"]'),
+    ).toHaveText("Writing");
     await expect(page.getByRole("table")).toContainText("Treatment");
-    await expect(page.locator(".agent-prose ol li")).toHaveCount(2);
-    await expect(page.locator(".agent-prose pre code")).toContainText(
+    await expect(page.locator("[data-slot=bubble] ol li")).toHaveCount(2);
+    await expect(page.locator("[data-slot=bubble] pre code")).toContainText(
       "seeds = [7, 19, 42]",
     );
     await expect(page.locator('[data-streaming="true"]')).toHaveAttribute(
@@ -112,7 +118,7 @@ for (const theme of ["light", "dark"]) {
     await page.emulateMedia({ reducedMotion: "reduce" });
     expect(
       await page
-        .locator(".agent-activity svg")
+        .locator("[data-slot=trace-line][role=status] svg")
         .evaluate((element) =>
           parseFloat(getComputedStyle(element).animationDuration),
         ),
@@ -123,7 +129,9 @@ for (const theme of ["light", "dark"]) {
       output: { ...row.output, partial: "", answer: row.output.partial },
     };
     await expect(page.locator('[data-streaming="true"]')).toHaveCount(0);
-    await expect(page.getByRole("status")).toHaveCount(0);
+    await expect(
+      page.locator('[data-slot="trace-line"][role="status"]'),
+    ).toHaveCount(0);
     await expect(
       page.getByRole("heading", { name: "Matched seeds", exact: true }),
     ).toBeVisible();
@@ -207,3 +215,180 @@ for (const malformed of ["invalid-json", "invalid-output"]) {
     expect(errors).toEqual([]);
   });
 }
+
+for (const theme of ["light", "dark"]) {
+  test(`Agent presents each planning stage and a reviewable proposal · ${theme}`, async ({
+    page,
+    request,
+  }, testInfo) => {
+    const catalog = await (await request.get("/api/catalog")).json();
+    const design = catalog.templates[0].design;
+    const row = {
+      id: "planning-answer",
+      chat_id: "planning-chat",
+      question: "Design a cooperation pilot",
+      purpose: "general",
+      status: "pending",
+      cutoffs: {},
+      study_id: null,
+      run_id: null,
+      output: {
+        stage: "answering",
+        partial: "I will prepare a protocol for review.",
+        supported: true,
+        design,
+        explanation: "A controlled comparison with matched seeds.",
+        planning: {
+          brief: {
+            operationalization:
+              "Compare cooperation under two resource levels.",
+            size_rationale:
+              "Use matched seeds to compare the same starting conditions.",
+          },
+          sources: [
+            { url: "https://example.org/methods", title: "Methods reference" },
+          ],
+        },
+      },
+    };
+    await page.addInitScript(
+      (value) => localStorage.setItem("jas-theme", value),
+      theme,
+    );
+    await page.setViewportSize({
+      width: theme === "dark" ? 390 : 1440,
+      height: 900,
+    });
+    await page.route("**/api/chats", (route) =>
+      route.fulfill({
+        json: [{ id: row.chat_id, title: row.question, status: row.status }],
+      }),
+    );
+    await page.route("**/api/chats/planning-chat", (route) =>
+      route.fulfill({ json: [row] }),
+    );
+    let release = () => {};
+    const ready = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await page.route("**/api/chats/planning-chat/events", async (route) => {
+      await ready;
+      await route.fulfill({
+        contentType: "text/event-stream",
+        body: `data: ${JSON.stringify(row)}\n\n`,
+      });
+    });
+    await page.goto("/agent?chat=planning-chat");
+    await expect(
+      page.getByText(row.output.partial, { exact: true }),
+    ).toBeVisible();
+    row.purpose = "design";
+    row.output.stage = "scoping";
+    row.output.partial = "";
+    release();
+    await expect(
+      page.getByText("I will prepare a protocol for review.", { exact: true }),
+    ).toHaveCount(0);
+    for (const [stage, label] of [
+      ["scoping", "Scoping the question"],
+      ["researching", "Researching methods"],
+      ["drafting", "Drafting the protocol"],
+      ["reviewing", "Reviewing the design"],
+      ["revising", "Refining the protocol"],
+    ]) {
+      row.output.stage = stage ?? "scoping";
+      await expect(
+        page.locator('[data-slot="trace-line"][role="status"]'),
+      ).toHaveText(label ?? "");
+    }
+    await page.getByRole("button", { name: "Study scope" }).click();
+    await expect(
+      page.getByText(row.output.planning.brief.operationalization),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "1 research sources" }).click();
+    await expect(
+      page.getByRole("link", { name: /Methods reference/ }),
+    ).toHaveAttribute("href", "https://example.org/methods");
+    await page.screenshot({
+      path: testInfo.outputPath(`planning-${theme}.png`),
+      animations: "disabled",
+    });
+    row.status = "complete";
+    await expect(
+      page.getByRole("combobox", { name: "Message context" }),
+    ).toContainText("No experiment");
+    await expect(
+      page.getByText("Protocol reviewed", { exact: true }),
+    ).toBeVisible();
+    const proposal = page
+      .locator('[data-slot="card"]')
+      .filter({ has: page.getByRole("heading", { name: design.title }) });
+    await expect(
+      proposal.getByRole("link", { name: "Review protocol" }),
+    ).toHaveAttribute("href", `/new?plan=${row.id}`);
+    await expect(proposal).toContainText("Ready for review. Nothing has run.");
+    await expect(page.getByRole("link", { name: "JAS home" })).toHaveCount(
+      theme === "dark" ? 0 : 1,
+    );
+    await expect(page.locator('main img[src="/logo.svg"]')).toHaveCount(0);
+    await page.getByRole("button", { name: "Study scope" }).click();
+    await page.getByRole("button", { name: "1 research sources" }).click();
+    await page.screenshot({
+      path: testInfo.outputPath(`proposal-${theme}.png`),
+      animations: "disabled",
+    });
+  });
+}
+
+test("retrying a failed automatic proposal keeps the planner purpose", async ({
+  page,
+}) => {
+  await page.route("**/api/settings", (route) =>
+    route.fulfill({
+      json: {
+        providers: { openai: true },
+        planner_model: "openai:gpt-6.1-sol",
+        assistant_model: "openai:gpt-6.1-sol",
+      },
+    }),
+  );
+  const row = {
+    id: "failed-plan",
+    chat_id: "failed-plan-chat",
+    purpose: "design",
+    status: "failed",
+    question: "Design a cooperation pilot",
+    error: "Planner temporarily unavailable",
+    study_id: null,
+    run_id: null,
+    cutoffs: {},
+    output: { stage: "scoping" },
+  };
+  await page.route("**/api/chats/failed-plan-chat", (route) =>
+    route.fulfill({ json: [row] }),
+  );
+  let submissions = 0;
+  await page.route("**/api/chats", (route) => {
+    if (route.request().method() !== "POST") return route.fulfill({ json: [] });
+    const body = route.request().postDataJSON();
+    expect(body).toMatchObject({
+      question: row.question,
+      context: "new",
+      chat_id: row.chat_id,
+    });
+    submissions++;
+    return route.fulfill({
+      status: 503,
+      json: { detail: "Planner temporarily unavailable" },
+    });
+  });
+  await page.goto("/agent?chat=failed-plan-chat");
+  await expect(
+    page.getByRole("combobox", { name: "Message context" }),
+  ).toContainText("No experiment");
+  await page.getByRole("button", { name: "Try again", exact: true }).click();
+  await expect(page.getByRole("alert").last()).toContainText(
+    "Your message is kept above",
+  );
+  expect(submissions).toBe(1);
+});

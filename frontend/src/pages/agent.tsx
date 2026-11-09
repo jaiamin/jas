@@ -1,14 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  ArrowUp,
-  ArrowUpRight,
-  BookOpen,
-  FlaskConical,
-  GitCompareArrows,
-  ScanLine,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { AgentComposer } from "@/components/agent/agent-composer";
 import {
   AgentContext,
   contextLabel,
@@ -16,15 +9,19 @@ import {
 } from "@/components/agent/agent-context";
 import { AgentHistory } from "@/components/agent/agent-history";
 import { AgentReply } from "@/components/agent/agent-reply";
+import { useAgentComposer } from "@/components/agent/use-agent-composer";
+import { Alert } from "@/components/feedback";
+import {
+  AgentIcon,
+  ArrowUpRight,
+  BookOpen,
+  FlaskConical,
+  GitCompareArrows,
+  ScanLine,
+} from "@/components/icons";
 import { ErrorState, Loading } from "@/components/shared";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
-import { Alert } from "@/components/ui/data";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupTextarea,
-} from "@/components/ui/input-group";
 import {
   Message,
   MessageContent,
@@ -41,15 +38,7 @@ import {
 import { agentSuggestions } from "@/lib/agent-suggestions";
 import { api, useApi } from "@/lib/api";
 import { chatProgress } from "@/lib/chat-progress";
-import type {
-  Analysis,
-  Design,
-  RunSummary,
-  Settings,
-  StudySummary,
-} from "@/lib/types";
-
-type Submission = { question: string; context: string };
+import type { Analysis, Design, RunSummary, StudySummary } from "@/lib/types";
 
 export default function AgentPage() {
   const [params] = useSearchParams();
@@ -87,14 +76,11 @@ export default function AgentPage() {
           message.id === pending && message.status === "pending"
             ? {
                 ...message,
+                purpose: update.purpose,
                 output: {
-                  ...message.output,
-                  ...(update.partial === undefined
-                    ? {}
-                    : { partial: update.partial }),
-                  ...(update.stage === undefined
-                    ? {}
-                    : { stage: update.stage }),
+                  ...(update.purpose !== message.purpose ? {} : message.output),
+                  partial: update.partial,
+                  stage: update.stage,
                 },
               }
             : message,
@@ -106,11 +92,11 @@ export default function AgentPage() {
     return () => stream.close();
   }, [chatId, pending, client]);
   return (
-    <div className="agent-layout">
+    <div className="flex h-full min-h-0 min-w-0 flex-col min-[1100px]:flex-row">
       <AgentHistory />
-      <div className="agent-canvas">
+      <div className="min-h-0 min-w-0 flex-1">
         {chat.error ? (
-          <div className="agent-load-state">
+          <div className="flex flex-col gap-4 p-6">
             <ErrorState error={chat.error} onRetry={chat.refetch} />
             <Button asChild variant="outline">
               <Link to="/agent">Start a new chat</Link>
@@ -163,101 +149,59 @@ function AgentConversation({
       ? messageContext(messages[messages.length - 1])
       : "general");
   const draftKey = `jas:agent-draft:${chatId ?? params.get("new") ?? "new"}`;
-  const [question, setQuestion] = useState<string>(() => {
-    if (typeof location.state?.question === "string")
-      return location.state.question;
-    try {
-      return sessionStorage.getItem(draftKey) ?? "";
-    } catch {
-      return "";
-    }
-  });
-  const composer = useRef<HTMLTextAreaElement>(null);
-  const [draftUnavailable, setDraftUnavailable] = useState(false);
-  useEffect(() => {
-    try {
-      if (question) sessionStorage.setItem(draftKey, question);
-      else sessionStorage.removeItem(draftKey);
-      setDraftUnavailable(false);
-    } catch {
-      setDraftUnavailable(true);
-    }
-  }, [draftKey, question]);
-  const settings = useApi<Settings>("/settings");
-  const plannerModel = settings.data?.planner_model ?? "";
-  const assistantModel = settings.data?.assistant_model ?? "";
-  const provider = (context === "new" ? plannerModel : assistantModel).split(
-    ":",
-  )[0];
-  const unavailable = settings.data?.providers[provider] === false;
   const busy = messages.some((message) => message.status === "pending");
-  const client = useQueryClient();
-  const send = useMutation({
-    mutationFn: (submission: Submission) =>
-      api<{ id: string; chat_id: string }>("/chats", {
-        ...submission,
-        chat_id: chatId,
-      }),
-    onSuccess: (result, submitted) => {
-      setQuestion((current) => (current === submitted.question ? "" : current));
-      try {
-        if (sessionStorage.getItem(draftKey) === submitted.question)
-          sessionStorage.removeItem(draftKey);
-      } catch {
-        setDraftUnavailable(true);
-      }
-      client.invalidateQueries({ queryKey: ["/chats"] });
-      client.invalidateQueries({ queryKey: [`/chats/${result.chat_id}`] });
+  const state = useAgentComposer({
+    context,
+    chatId,
+    draftKey,
+    busy,
+    initialQuestion:
+      typeof location.state?.question === "string"
+        ? location.state.question
+        : undefined,
+    onSent: (result) => {
       if (!chatId)
         setParams({ chat: result.chat_id }, { replace: true, state: null });
     },
   });
-  function submit() {
-    if (
-      question.trim() &&
-      !busy &&
-      !send.isPending &&
-      !unavailable &&
-      settings.data
-    )
-      send.mutate({ question, context });
-  }
+  const {
+    setQuestion,
+    composer,
+    settings,
+    plannerModel,
+    assistantModel,
+    send,
+    blocked,
+  } = state;
   function changeContext(value: string) {
     const next = new URLSearchParams(params);
     next.set("context", value);
     setParams(next, { replace: true });
     send.reset();
   }
-  const blocked = busy || send.isPending || !settings.data;
-  const disabled = blocked || !!unavailable;
   const selectedStudy = studies.find(
     (study) => context === `study:${study.id}`,
   );
   const selectedRun = runs.find((run) => context === `run:${run.id}`);
   return (
     <section
-      className="agent-workspace"
+      className="flex h-full min-h-0 flex-col"
       aria-label="Agent workspace"
       data-empty={!messages.length}
     >
-      <header className="agent-context-strip">
-        <div>
-          <strong>
-            {context === "new"
-              ? "Experiment design"
-              : (selectedStudy?.title ??
-                selectedRun?.study_title ??
-                "Research assistant")}
-          </strong>
-          <span>
-            {selectedRun
-              ? `${selectedRun.condition} · seed ${selectedRun.seed} · ${selectedRun.turn} recorded decisions`
-              : selectedStudy
-                ? `${selectedStudy.completed_runs} / ${selectedStudy.run_count} runs complete`
-                : context === "new"
-                  ? "A reviewed protocol before you spend on runs"
-                  : "Design studies and investigate recorded behavior"}
-          </span>
+      <header className="flex shrink-0 items-center justify-between gap-3 px-4 py-3 sm:px-6">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-sm font-semibold">
+            <AgentIcon className="size-4 shrink-0" aria-hidden="true" />
+            Agent
+          </div>
+          {(selectedRun || selectedStudy) && (
+            <p className="mt-1 truncate text-xs text-muted-foreground">
+              {selectedRun
+                ? `${selectedRun.study_title} · ${selectedRun.condition} · seed ${selectedRun.seed} · ${selectedRun.turn} recorded decisions`
+                : `${selectedStudy?.title} · ${selectedStudy?.completed_runs} / ${selectedStudy?.run_count} runs complete`}
+            </p>
+          )}
         </div>
         {(selectedStudy || selectedRun) && (
           <Button variant="outline" size="sm" asChild>
@@ -279,9 +223,9 @@ function AgentConversation({
           autoScroll={busy}
           defaultScrollPosition="last-anchor"
         >
-          <MessageScroller>
+          <MessageScroller className="flex-1">
             <MessageScrollerViewport aria-label="Agent conversation">
-              <MessageScrollerContent className="research-thread">
+              <MessageScrollerContent className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
                 {messages.flatMap((row) => [
                   <MessageScrollerItem
                     key={`${row.id}-question`}
@@ -290,7 +234,7 @@ function AgentConversation({
                   >
                     <Message align="end">
                       <MessageContent>
-                        <Bubble variant="muted" align="end">
+                        <Bubble variant="outline" align="end">
                           <BubbleContent>{row.question}</BubbleContent>
                         </Bubble>
                         {(row.run_id || row.study_id) && (
@@ -315,7 +259,10 @@ function AgentConversation({
                       onRetry={() =>
                         send.mutate({
                           question: row.question,
-                          context: messageContext(row),
+                          context:
+                            row.purpose === "design"
+                              ? "new"
+                              : messageContext(row),
                         })
                       }
                     />
@@ -327,35 +274,18 @@ function AgentConversation({
           </MessageScroller>
         </MessageScrollerProvider>
       ) : (
-        <div className="agent-empty-content">
-          <div className="agent-welcome">
-            <h1>
-              {context === "new"
-                ? "What would you like to test?"
-                : context === "general"
-                  ? "What can we explore?"
-                  : "What does the evidence show?"}
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-8 sm:px-6">
+          <div className="mx-auto mt-auto w-full max-w-xl text-center [&_p]:mt-3 [&_p]:text-muted-foreground [&_p]:leading-relaxed">
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+              {context === "general"
+                ? "What can we explore?"
+                : "What does the evidence show?"}
             </h1>
             <p>
-              {context === "new"
-                ? "Describe the behavior you want to understand. We’ll work out the controls, measurements and limits."
-                : context === "general"
-                  ? "Turn a question into a controlled experiment, or connect a run to understand what happened."
-                  : "Separate what agents did from what they said. Compare outcomes, inspect decisions and choose your next test."}
+              {context === "general"
+                ? "Ask a question, design an experiment, or select an experiment or run to explore its evidence."
+                : "Separate what agents did from what they said. Compare outcomes, inspect decisions and choose your next test."}
             </p>
-            {context === "general" && (
-              <div className="agent-entry-actions">
-                <Button asChild>
-                  <Link to="/agent?context=new">
-                    Design an experiment
-                    <ArrowUpRight data-icon="inline-end" />
-                  </Link>
-                </Button>
-                <Button variant="outline" asChild>
-                  <Link to="/environments">Explore environments</Link>
-                </Button>
-              </div>
-            )}
           </div>
           <AgentSuggestions
             context={context}
@@ -368,79 +298,24 @@ function AgentConversation({
           />
         </div>
       )}
-      <form
-        className="assistant-form"
-        onSubmit={(event) => {
-          event.preventDefault();
-          submit();
-        }}
+      <AgentComposer
+        state={state}
+        contextControl={
+          <AgentContext
+            value={context}
+            onChange={changeContext}
+            studies={studies}
+            runs={runs}
+            disabled={state.send.isPending}
+          />
+        }
+        placeholder={
+          selectedStudy || selectedRun
+            ? "Ask about the selected evidence…"
+            : "Ask a question or describe an experiment…"
+        }
+        className="mx-auto w-full max-w-3xl shrink-0 p-4 sm:px-6 sm:pb-6"
       >
-        <div className="agent-composer-frame">
-          <InputGroup>
-            <InputGroupTextarea
-              ref={composer}
-              aria-label="Message Agent"
-              placeholder={
-                context === "new"
-                  ? "What behavior do you want to investigate?"
-                  : selectedStudy || selectedRun
-                    ? "Ask about the selected evidence…"
-                    : "Ask a research question…"
-              }
-              value={question}
-              onChange={(event) => setQuestion(event.target.value)}
-              maxLength={4000}
-              rows={3}
-              disabled={send.isPending}
-              onKeyDown={(event) => {
-                if (
-                  event.key === "Enter" &&
-                  !event.shiftKey &&
-                  !event.nativeEvent.isComposing
-                ) {
-                  event.preventDefault();
-                  submit();
-                }
-              }}
-            />
-            <InputGroupAddon align="block-end">
-              <AgentContext
-                value={context}
-                onChange={changeContext}
-                studies={studies}
-                runs={runs}
-                disabled={send.isPending}
-              />
-              <Button
-                type="submit"
-                size="icon"
-                className="agent-send"
-                aria-label="Send message"
-                title="Send message (Enter)"
-                disabled={disabled || !question.trim()}
-              >
-                <ArrowUp aria-hidden="true" />
-              </Button>
-            </InputGroupAddon>
-          </InputGroup>
-        </div>
-        {send.error && (
-          <Alert variant="error">
-            {send.error.message} Your message is kept above.
-          </Alert>
-        )}
-        {settings.error && (
-          <Alert variant="error">
-            Could not check provider availability.{" "}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => settings.refetch()}
-            >
-              Retry
-            </Button>
-          </Alert>
-        )}
         {contextError && (
           <Alert variant="error">
             {contextError.message}
@@ -449,25 +324,7 @@ function AgentConversation({
             </Button>
           </Alert>
         )}
-        {draftUnavailable && (
-          <p className="capability-note">
-            This browser could not keep your message draft.
-          </p>
-        )}
-        {unavailable && (
-          <p className="capability-note">
-            {provider === "openai" ? "OpenAI" : "Anthropic"} is required for
-            this context. <Link to="/settings">Configure a provider</Link>
-            {context === "new" && (
-              <>
-                {" "}
-                or <Link to="/new">configure an experiment manually</Link>
-              </>
-            )}
-            .
-          </p>
-        )}
-      </form>
+      </AgentComposer>
     </section>
   );
 }
@@ -504,19 +361,25 @@ function AgentSuggestions({
   });
   if (!suggestions.length) return null;
   return (
-    <div className="agent-suggestions">
+    <section
+      aria-label="Suggested questions"
+      className="mx-auto mt-6 mb-auto flex w-full max-w-xl flex-wrap justify-center gap-2"
+    >
       {suggestions.map(({ title, prompt }, index) => {
         const Icon = [BookOpen, GitCompareArrows, ScanLine, FlaskConical][
           index
         ];
         return (
-          <Button variant="ghost" key={title} onClick={() => onChoose(prompt)}>
-            <Icon aria-hidden="true" />
+          <Button
+            variant="outline"
+            key={title}
+            onClick={() => onChoose(prompt)}
+          >
+            <Icon data-icon="inline-start" aria-hidden="true" />
             <span>{title}</span>
-            <ArrowUpRight aria-hidden="true" />
           </Button>
         );
       })}
-    </div>
+    </section>
   );
 }

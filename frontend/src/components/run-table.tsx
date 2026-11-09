@@ -1,18 +1,26 @@
-import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Empty } from "@/components/feedback";
+import { ChevronLeft, ChevronRight, Search, X } from "@/components/icons";
+import { OptionSelect as Select } from "@/components/option-select";
 import { Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Empty, Table } from "@/components/ui/data";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Select } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { label, money } from "@/lib/format";
 import type { RunSummary } from "@/lib/types";
-import { label, money, runModelLabel } from "@/lib/utils";
 export function RunTable({
   runs,
   selectable = false,
@@ -34,9 +42,9 @@ export function RunTable({
   const pages = Math.max(1, Math.ceil(filtered.length / 15));
   const current = Math.min(page, pages - 1);
   return (
-    <div className="table-frame">
-      <div className="table-toolbar">
-        <div className="search">
+    <div className="min-w-0 overflow-hidden rounded-lg border">
+      <div className="flex flex-wrap items-center gap-3 p-4">
+        <div className="mr-auto w-full sm:w-72">
           <InputGroup>
             <InputGroupInput
               aria-label="Search runs"
@@ -74,7 +82,7 @@ export function RunTable({
           }))}
         />
         {selectable && (
-          <div className="selection-summary">
+          <div className="ml-auto flex flex-wrap items-center gap-2">
             {selected.length > 0 && (
               <Button variant="ghost" size="sm" onClick={() => setSelected([])}>
                 <X data-icon="inline-start" />
@@ -98,28 +106,30 @@ export function RunTable({
           </div>
         )}
       </div>
-      <Table className="table">
-        <thead>
-          <tr>
+      <Table>
+        <TableHeader>
+          <TableRow>
             {selectable && (
-              <th className="checkbox-cell">
+              <TableHead className="w-10">
                 <span className="sr-only">Select</span>
-              </th>
+              </TableHead>
             )}
-            <th>Run</th>
-            <th>Status</th>
-            <th>Model</th>
-            <th className="table-heading-numeric">Progress</th>
-            <th className="table-heading-numeric">Seed</th>
-            <th className="table-heading-numeric">Cost</th>
-            <th className="table-heading-numeric">Requests</th>
-          </tr>
-        </thead>
-        <tbody>
+            <TableHead>Run</TableHead>
+            <TableHead>Status</TableHead>
+
+            <TableHead className="text-right">Progress</TableHead>
+
+            <TableHead className="text-right">Cost</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {filtered.slice(current * 15, (current + 1) * 15).map((run) => (
-            <tr key={run.id} data-selected={selected.includes(run.id)}>
+            <TableRow
+              key={run.id}
+              data-state={selected.includes(run.id) ? "selected" : undefined}
+            >
               {selectable && (
-                <td>
+                <TableCell>
                   <Checkbox
                     aria-label={`Select ${run.condition}, seed ${run.seed}, revision ${run.revision}, repetition ${run.repetition}, ${run.id.slice(0, 6)}`}
                     checked={selected.includes(run.id)}
@@ -134,33 +144,35 @@ export function RunTable({
                       )
                     }
                   />
-                </td>
+                </TableCell>
               )}
-              <td className="name-cell">
-                <Link className="record-link" to={`/runs/${run.id}`}>
+              <TableCell className="min-w-48 max-w-96">
+                <Link
+                  className="font-medium underline-offset-4 hover:underline"
+                  to={`/runs/${run.id}`}
+                >
                   {run.condition}
                 </Link>
-                <span className="table-secondary">
-                  {run.study_title} · rev {run.revision} · repetition{" "}
-                  {run.repetition}
+                <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
+                  {run.study_title} · Seed {run.seed} · rev {run.revision} ·
+                  repetition {run.repetition}
                 </span>
-              </td>
-              <td>
+              </TableCell>
+              <TableCell>
                 <Status value={run.status} />
-              </td>
-              <td className="nowrap">{runModelLabel(run)}</td>
-              <td className="numeric nowrap">
+              </TableCell>
+
+              <TableCell className="text-right tabular-nums whitespace-nowrap">
                 {run.turn} / {run.total_turns} turns
-              </td>
-              <td className="numeric">{run.seed}</td>
-              <td className="numeric">
+              </TableCell>
+
+              <TableCell className="text-right tabular-nums">
                 {money(run.usage.cost_usd)}
                 {run.usage.partial && "*"}
-              </td>
-              <td className="numeric">{run.usage.requests}</td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
+        </TableBody>
       </Table>
       {!filtered.length && (
         <Empty
@@ -179,12 +191,12 @@ export function RunTable({
           </Button>
         </Empty>
       )}
-      <div className="table-footer">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t px-4 py-3 text-sm text-muted-foreground">
         <span>
           {filtered.length} runs
           {selected.length > 0 && ` · ${selected.length} selected`}
         </span>
-        <div className="actions">
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           <span>
             {current + 1} / {pages}
           </span>

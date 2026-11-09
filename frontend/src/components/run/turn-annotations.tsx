@@ -5,9 +5,10 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { Alert } from "@/components/feedback";
 import { ErrorState } from "@/components/shared";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Alert, Badge } from "@/components/ui/data";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 import { api, useApi } from "@/lib/api";
@@ -51,7 +52,7 @@ export function TurnAnnotations({
   });
   return (
     <Disclosure
-      className="disclosure"
+      className="min-w-0"
       onOpenChange={(open) => {
         if (open) onInteract();
       }}
@@ -64,7 +65,7 @@ export function TurnAnnotations({
         {notes.data
           ?.filter((n) => n.turn === turn)
           .map((n) => (
-            <div className="annotation" key={n.id}>
+            <div className="min-w-0" key={n.id}>
               <Badge>{n.label}</Badge>
               <p>{n.note}</p>
             </div>

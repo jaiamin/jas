@@ -73,14 +73,24 @@ concurrently. Failed turns stay inspectable and retry as a new turn in their ori
 
 The existing planner, investigator, provider tracing and budget accounting execute the
 messages. General answers receive the environment catalog and recent same-chat general
-answers/proposals, never unselected run evidence. Investigation history matches the chat,
+answers/proposals, never unselected run evidence. A typed intent in the general response
+chooses an answer or a handoff to the existing validated Planner. The handoff persists
+the design purpose and scoping stage on the same Analysis, clears preliminary prose,
+and accounts for both steps under that request. SSE exposes the purpose transition.
+Unscoped follow-ups return to general intent selection; proposals never save or run
+automatically. All unscoped entry points, including Agent, use this shared server
+harness; the UI has no manual creation mode. Home has no scope selector; Agent
+defaults to no selected experiment and offers existing experiment/run evidence selection.
+Investigation history matches the chat,
 exact scope and purpose, and citations still require inspected turns within frozen cutoffs.
 The model receives up to three completed prior turns; design refinements include previous
 proposals and revalidate all rules. Complete transcripts remain saved and visible.
 
 All assistant submissions use `POST /api/chats`. The protocol editor reads individual
 proposals through `GET /api/analyses/{id}`. Provider availability is reported without keys;
-the composer checks the configured planner provider for creation.
+the composer checks the configured assistant provider for ordinary messages.
+The automatic handoff uses the configured planner provider and reports its failures;
+explicit retries of failed proposals keep their design purpose and planner provider.
 
 ## Environment seam
 

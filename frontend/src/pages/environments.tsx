@@ -1,8 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowRight, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { Alert, Empty } from "@/components/feedback";
+import { ArrowRight, MessageSquare } from "@/components/icons";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,13 +20,21 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Alert, Badge } from "@/components/ui/data";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useCompact } from "@/hooks/use-compact";
 import { api, useApi } from "@/lib/api";
+import { label } from "@/lib/format";
 import type { Catalog, EnvironmentId, SavedEnvironment } from "@/lib/types";
-import { label } from "@/lib/utils";
 
 const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
   {
@@ -74,7 +89,7 @@ const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
   };
 
 export default function Environments() {
-  const horizontal = useIsMobile(701);
+  const horizontal = useCompact(701);
   const [pendingRemoval, setPendingRemoval] = useState<SavedEnvironment | null>(
     null,
   );
@@ -100,30 +115,27 @@ export default function Environments() {
     environments[0]?.key;
   return (
     <>
-      <PageHeading
-        title="Environments"
-        description="Understand the rules. Configure the world your agents act in."
-      />
+      <PageHeading title="Environments" />
       {catalog.error ? (
         <ErrorState error={catalog.error} onRetry={catalog.refetch} />
       ) : !catalog.data ? (
         <Loading />
       ) : (
         <Tabs
-          className="environment-workbench"
+          className="min-w-0 gap-6"
           orientation={horizontal ? "horizontal" : "vertical"}
           value={selected}
           onValueChange={(value) =>
             setParams({ environment: value }, { replace: true })
           }
         >
-          <TabsList className="environment-index" aria-label="Environments">
+          <TabsList
+            className="max-w-full shrink-0 justify-start overflow-auto"
+            aria-label="Environments"
+          >
             {environments.map((env) => (
               <TabsTrigger key={env.key} value={env.key}>
                 <span>{env.name}</span>
-                <span className="muted">
-                  {env.measures.length} measurements
-                </span>
               </TabsTrigger>
             ))}
           </TabsList>
@@ -131,16 +143,16 @@ export default function Environments() {
             <TabsContent
               key={env.key}
               value={env.key}
-              className="environment-detail"
+              className="flex min-w-0 flex-col gap-6"
             >
-              <div className="environment-detail-heading">
+              <div className="flex flex-wrap items-start justify-between gap-4 [&_p]:mt-2 [&_p]:max-w-prose [&_p]:text-muted-foreground">
                 <div>
-                  <h2>{env.name}</h2>
+                  <h2 className="text-base font-semibold">{env.name}</h2>
                   <p>{env.description}</p>
                 </div>
                 <Badge variant="secondary">Rules {env.rule_version}</Badge>
               </div>
-              <div className="actions">
+              <div className="flex shrink-0 flex-wrap items-center gap-2">
                 <Button asChild>
                   <Link to={`/new?template=${env.key}&step=conditions`}>
                     Configure experiment
@@ -149,7 +161,7 @@ export default function Environments() {
                 </Button>
                 <Button variant="outline" asChild>
                   <Link
-                    to="/agent?context=new"
+                    to="/agent"
                     state={{
                       question: `Help me design an experiment using ${env.name}. Explain which behavior it can identify, suggest an isolated comparison, and flag limitations before proposing a protocol.`,
                     }}
@@ -159,43 +171,53 @@ export default function Environments() {
                   </Link>
                 </Button>
               </div>
-              <div className="environment-contract">
+              <div className="grid gap-6 lg:grid-cols-2 [&_p]:mt-2 [&_p]:leading-relaxed [&_p]:text-muted-foreground">
                 <section>
-                  <h3>What agents observe</h3>
+                  <h3 className="text-sm font-medium">What agents observe</h3>
                   <p>{mechanics[env.key].observes}</p>
                 </section>
                 <section>
-                  <h3>What the environment enforces</h3>
+                  <h3 className="text-sm font-medium">
+                    What the environment enforces
+                  </h3>
                   <p>{mechanics[env.key].enforces}</p>
                 </section>
               </div>
-              <section>
-                <h3>Available controls</h3>
-                <div className="environment-measures">
-                  {env.parameters.map((parameter) => (
-                    <Badge key={parameter} variant="secondary">
-                      {label(parameter)}
-                    </Badge>
-                  ))}
-                </div>
-                <p className="environment-footnote">
-                  Edit controls, agent roles, memory and the horizon in an
-                  experiment. A narrative changes the context; these rules
-                  determine the consequences.
-                </p>
-              </section>
-              <section>
-                <h3>Measurements</h3>
-                <dl className="environment-measurements">
-                  {env.measures.map((measure) => (
-                    <div key={measure}>
-                      <dt>{label(measure)}</dt>
-                      <dd>{env.measure_definitions[measure]}</dd>
+              <Accordion type="multiple">
+                <AccordionItem value="controls">
+                  <AccordionTrigger>Available controls</AccordionTrigger>
+                  <AccordionContent>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {env.parameters.map((parameter) => (
+                        <Badge key={parameter} variant="secondary">
+                          {label(parameter)}
+                        </Badge>
+                      ))}
                     </div>
-                  ))}
-                </dl>
-              </section>
-              <p className="environment-footnote">
+                    <p className="mt-3 max-w-prose text-sm leading-relaxed text-muted-foreground">
+                      Edit controls, agent roles, memory and the horizon in an
+                      experiment. A narrative changes the context; these rules
+                      determine the consequences.
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="measurements">
+                  <AccordionTrigger>
+                    Measurements ({env.measures.length})
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <dl className="grid gap-4 [&>div]:grid [&>div]:gap-1 [&_dt]:font-medium [&_dd]:text-sm [&_dd]:text-muted-foreground">
+                      {env.measures.map((measure) => (
+                        <div key={measure}>
+                          <dt>{label(measure)}</dt>
+                          <dd>{env.measure_definitions[measure]}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+              <p className="mt-3 max-w-prose text-sm leading-relaxed text-muted-foreground">
                 Compose custom resource economies from tested mechanics. Other
                 new mechanics require an environment implementation and
                 correctness checks.
@@ -205,11 +227,11 @@ export default function Environments() {
         </Tabs>
       )}
 
-      <section className="saved-setups">
-        <div className="section-heading">
+      <section className="mt-10">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
           <div>
-            <h2>Custom environments</h2>
-            <p className="muted">
+            <h2 className="text-base font-semibold">Custom environments</h2>
+            <p className="text-muted-foreground">
               Reusable rules and experiment setups saved in this workspace.
               Editing or deleting one leaves saved experiments and evidence
               intact.
@@ -226,25 +248,26 @@ export default function Environments() {
         ) : !setups.data ? (
           <Loading />
         ) : setups.data.length === 0 ? (
-          <p className="environment-footnote">
-            Compose mechanics or adapt a template, then choose Save custom
-            environment. Include roles, resource rules, conditions and execution
-            settings.
-          </p>
+          <Empty
+            title="No custom environments yet"
+            description="Compose resource mechanics or adapt a template, then save the setup for reuse."
+          />
         ) : (
-          <div className="saved-setup-list">
+          <ItemGroup>
             {setups.data.map((item) => (
-              <div key={item.id}>
-                <div>
-                  <Link to={`/new?setup=${item.id}&step=conditions`}>
-                    {item.design.title}
-                  </Link>
-                  <p className="muted">
+              <Item key={item.id} variant="outline">
+                <ItemContent>
+                  <ItemTitle>
+                    <Link to={`/new?setup=${item.id}&step=conditions`}>
+                      {item.design.title}
+                    </Link>
+                  </ItemTitle>
+                  <ItemDescription>
                     {label(item.design.environment)} · Revision {item.revision}{" "}
                     · Rules {item.rules}
-                  </p>
-                </div>
-                <div className="actions">
+                  </ItemDescription>
+                </ItemContent>
+                <ItemActions>
                   <Button variant="outline" size="sm" asChild>
                     <Link to={`/new?setup=${item.id}&step=conditions`}>
                       Edit & reuse
@@ -260,10 +283,10 @@ export default function Environments() {
                   >
                     Delete
                   </Button>
-                </div>
-              </div>
+                </ItemActions>
+              </Item>
             ))}
-          </div>
+          </ItemGroup>
         )}
       </section>
       <AlertDialog

@@ -63,7 +63,7 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   );
   const id = new URL(page.url()).pathname.split("/").at(-1);
   const run = await (await request.get(`/api/runs/${id}`)).json();
-  await expect(page.locator(".run-facts")).toContainText(
+  await expect(page.getByLabel("Run progress")).toContainText(
     `0 / ${run.summary.total_turns}`,
   );
   expect(errors).toEqual([]);
@@ -88,14 +88,19 @@ test("mobile navigation and theme persist without page overflow", async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  await page.getByRole("button", { name: /Local workspace/ }).click();
+  await page.getByRole("menuitemradio", { name: "Dark", exact: true }).click();
+  await expect(page.locator('[data-slot="dropdown-menu-content"]')).toHaveCount(
+    0,
+  );
   await page.keyboard.press("Escape");
   await expect(page.getByRole("button", { name: "Open menu" })).toBeFocused();
   await expect(page.locator("html")).toHaveClass("dark");
   await page.reload();
   await expect(page.locator("html")).toHaveClass("dark");
   await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("link", { name: "Settings", exact: true }).click();
+  await page.getByRole("button", { name: /Local workspace/ }).click();
+  await page.getByRole("menuitem", { name: "Settings", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Settings", exact: true }),
   ).toBeVisible();
@@ -107,11 +112,12 @@ test("mobile navigation and theme persist without page overflow", async ({
   await expect(page.getByRole("dialog")).not.toBeVisible();
   await page.getByRole("button", { name: "Open menu" }).click();
   await page.getByRole("link", { name: "JAS home" }).focus();
-  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Tab");
   await expect(
-    page.getByRole("button", { name: "Switch to light mode", exact: true }),
+    page.getByRole("button", { name: "Close menu", exact: true }),
   ).toBeFocused();
-  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  await page.getByRole("button", { name: /Local workspace/ }).click();
+  await page.getByRole("menuitemradio", { name: "Light", exact: true }).click();
   await expect(page.locator("html")).not.toHaveClass("dark");
   await page.getByRole("button", { name: "Close menu", exact: true }).click();
   await expect(page.getByRole("dialog")).not.toBeVisible();
@@ -136,7 +142,7 @@ test("removing agents removes condition overrides and environment changes need c
   await page.getByRole("tab", { name: "Question", exact: true }).click();
   await page.getByRole("tab", { name: /^Agents/ }).click();
   await page
-    .locator(".profile-heading")
+    .locator("[data-slot=accordion-trigger]:visible")
     .filter({ hasText: removed.name })
     .click();
   await page
@@ -239,7 +245,7 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   page,
 }) => {
   await page.goto("/new?template=commons");
-  await page.goto("/");
+  await page.goto("/studies");
   await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
   await page.goto("/new?template=commons");
   await page
@@ -256,7 +262,7 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   await expect(page.getByLabel("Complete JSON specification")).toHaveValue(
     '{"unfinished":',
   );
-  await page.goto("/");
+  await page.goto("/studies");
   await page.getByText(/^Drafts ·/).click();
   await page
     .getByRole("link", { name: "Recovered protocol", exact: true })
@@ -264,10 +270,14 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   await expect(page.getByLabel("Complete JSON specification")).toHaveValue(
     '{"unfinished":',
   );
-  await page.goto("/");
+  await page.goto("/studies");
   await page.getByText(/^Drafts ·/).click();
   await page
-    .getByRole("button", { name: "Discard Recovered protocol draft" })
+    .getByRole("button", { name: "Delete Recovered protocol draft" })
+    .click();
+  await page
+    .getByRole("alertdialog")
+    .getByRole("button", { name: "Delete draft", exact: true })
     .click();
   await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
   await page.goto("/new?template=commons");
@@ -286,7 +296,7 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
   await expect(page.getByRole("heading", { name: design.title })).toBeVisible();
-  await page.goto("/");
+  await page.goto("/studies");
   await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
 });
 
@@ -339,7 +349,7 @@ test("environment mechanics lead to editable reusable setups", async ({
     page.getByRole("link", { name: "Revised recovery", exact: true }),
   ).toBeVisible();
   await page
-    .locator(".saved-setup-list > div")
+    .locator("[data-slot=item-group] > [data-slot=item]")
     .filter({
       has: page.getByRole("link", { name: "Revised recovery", exact: true }),
     })
@@ -356,7 +366,7 @@ test("environment mechanics lead to editable reusable setups", async ({
     page.getByRole("link", { name: "Revised recovery", exact: true }),
   ).toBeVisible();
   await page
-    .locator(".saved-setup-list > div")
+    .locator("[data-slot=item-group] > [data-slot=item]")
     .filter({
       has: page.getByRole("link", { name: "Revised recovery", exact: true }),
     })
