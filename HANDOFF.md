@@ -630,3 +630,23 @@ Verification: frontend lint/build passed; Home and shared draft E2E14/14 passed.
 After the final blur change, all four phone/desktop light/dark layout checks
 passed again. Reviewed responsive captures for alignment, same-line times and
 soft local fading; no new dependencies, backend changes or paid calls.
+
+
+Home record-list polish (2026-11-09):
+- Tighten section gaps and bottom inset. Both lists use experiment icons and
+  symmetric 12px row padding, without extra space above the first entry.
+- Keep draft Delete visible on all devices, with 12px before the action.
+  Preserve confirmed deletion and recoverable storage errors on both pages.
+- Use one relative-time formatter for draft edits and recent experiment creation:
+  Just now, minutes/hours/days ago, then short dates with year when needed.
+  Refresh mounted lists every minute through useNow; exact Edited/Created
+  timestamps remain available on hover.
+- Recent experiments now show only icon, title and creation age. Remove their
+  status and run-count metadata; the separate In progress section is unchanged.
+Verification: frontend lint, 83/83 unit tests and production build passed.
+Final Home/draft browser checks passed 14/14, covering both themes, phone/desktop,
+relative creation ages, absence of extra metadata and persistent delete controls.
+Reviewed final light-phone/dark-desktop captures for row spacing and alignment.
+One earlier browser attempt overlapped the production build and observed its
+transient missing-dist response; rerunning after build completion passed cleanly.
+No dependencies, backend changes, user data changes or paid calls. Port8080 stays live.

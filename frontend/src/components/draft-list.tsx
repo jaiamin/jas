@@ -1,7 +1,7 @@
 import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import { Alert } from "@/components/feedback";
-import { Trash2 } from "@/components/icons";
+import { FlaskConical, Trash2 } from "@/components/icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,11 +20,13 @@ import {
   ItemContent,
   ItemDescription,
   ItemGroup,
+  ItemMedia,
   ItemSeparator,
   ItemTitle,
 } from "@/components/ui/item";
+import { useNow } from "@/hooks/use-now";
 import type { Draft } from "@/lib/drafts";
-import { date } from "@/lib/format";
+import { relativeTime } from "@/lib/format";
 
 export function DraftList({
   drafts,
@@ -33,14 +35,15 @@ export function DraftList({
   drafts: Draft[];
   onDelete: (path: string) => void;
 }) {
+  const now = useNow();
   return (
     <ItemGroup className="has-data-[size=xs]:gap-0">
       {drafts.map((draft, index) => (
         <Fragment key={draft.path}>
-          <div className="group/draft flex min-w-0 items-center gap-3">
+          <div className="flex min-w-0 items-center gap-3">
             <Item
               size="xs"
-              className="min-w-0 flex-1 border-0 px-0 [a]:hover:bg-transparent"
+              className="min-w-0 flex-1 gap-2.5 border-0 px-0 py-3 [a]:hover:bg-transparent"
               asChild
             >
               <Link
@@ -48,6 +51,9 @@ export function DraftList({
                 title={draft.title || "Untitled experiment"}
                 aria-label={draft.title || "Untitled experiment"}
               >
+                <ItemMedia variant="icon">
+                  <FlaskConical aria-hidden="true" />
+                </ItemMedia>
                 <ItemContent className="min-w-0 flex-row items-center group-data-[size=xs]/item:gap-3">
                   <ItemTitle className="min-w-0 flex-1">
                     <span className="truncate">
@@ -56,8 +62,11 @@ export function DraftList({
                   </ItemTitle>
                   {Number.isFinite(Date.parse(draft.updated)) && (
                     <ItemDescription className="shrink-0 whitespace-nowrap">
-                      <time dateTime={draft.updated}>
-                        Edited {date(draft.updated)}
+                      <time
+                        dateTime={draft.updated}
+                        title={`Edited ${new Date(draft.updated).toLocaleString()}`}
+                      >
+                        {relativeTime(draft.updated, now)}
                       </time>
                     </ItemDescription>
                   )}
@@ -96,7 +105,6 @@ function DeleteDraft({
           size="icon-sm"
           aria-label={`Delete ${title} draft`}
           title="Delete draft"
-          className="opacity-0 group-hover/draft:opacity-100 group-focus-within/draft:opacity-100 [@media(hover:none)]:opacity-100 [@media(pointer:coarse)]:opacity-100"
         >
           <Trash2 aria-hidden="true" />
         </Button>

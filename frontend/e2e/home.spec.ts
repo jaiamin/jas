@@ -268,7 +268,10 @@ for (const width of [390, 1440])
             question: study.design.question,
             revision: 1,
             title: `Experiment ${i}: a long title about resource allocation and cooperation`,
-            created: `2026-11-0${9 - i}T00:00:00Z`,
+            created:
+              i === 0
+                ? new Date().toISOString()
+                : `2026-11-0${9 - i}T00:00:00Z`,
             run_count: 4,
             completed_runs: 0,
             status: "ready",
@@ -309,6 +312,20 @@ for (const width of [390, 1440])
           .getByRole("region", { name: "Recent experiments" })
           .getByRole("link", { name: /^Experiment \d/ }),
       ).toHaveCount(4);
+      const recentSection = page.getByRole("region", {
+        name: "Recent experiments",
+      });
+      await expect(recentSection.locator("time").first()).toHaveText(
+        "Just now",
+      );
+      await expect(recentSection.locator("time").first()).toHaveAttribute(
+        "title",
+        /^Created /,
+      );
+      await expect(
+        recentSection.locator('[data-slot="item-actions"]'),
+      ).toHaveCount(0);
+      await expect(recentSection).not.toContainText("runs complete");
       const draftSection = page.getByRole("region", {
         name: "Drafts",
         exact: true,

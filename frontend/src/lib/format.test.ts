@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { metric, money, runModelLabel } from "./format";
+import { metric, money, relativeTime, runModelLabel } from "./format";
 
 test("cost estimates retain small charges while unavailable metrics stay absent", () => {
   expect(money(0.0012)).toBe("$0.0012");
@@ -22,3 +22,24 @@ test("run model labels reflect resolved profile models", () => {
     }),
   ).toBe("Mixed models");
 });
+
+test.each([
+  ["2026-11-09T12:01:00Z", "Just now"],
+  ["2026-11-09T11:59:01Z", "Just now"],
+  ["2026-11-09T11:59:00Z", "1 minute ago"],
+  ["2026-11-09T11:55:00Z", "5 minutes ago"],
+  ["2026-11-09T11:00:00Z", "1 hour ago"],
+  ["2026-11-09T09:00:00Z", "3 hours ago"],
+  ["2026-11-08T12:00:00Z", "yesterday"],
+  ["2026-11-06T12:00:00Z", "3 days ago"],
+  ["2026-11-01T12:00:00Z", "Nov 1"],
+  ["2025-11-01T12:00:00Z", "Nov 1, 2025"],
+  ["invalid", "Unknown time"],
+])(
+  "draft age %s is concise without losing older dates",
+  (timestamp, expected) => {
+    expect(relativeTime(timestamp, Date.parse("2026-11-09T12:00:00Z"))).toBe(
+      expected,
+    );
+  },
+);

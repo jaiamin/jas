@@ -35,10 +35,11 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
+import { useNow } from "@/hooks/use-now";
 import { agentSuggestions } from "@/lib/agent-suggestions";
 import { useApi } from "@/lib/api";
 import { listDrafts, removeDraft } from "@/lib/drafts";
-import { date } from "@/lib/format";
+import { relativeTime } from "@/lib/format";
 import type { RunSummary, StudySummary } from "@/lib/types";
 
 const suggestions = [
@@ -67,6 +68,7 @@ const suggestionDescriptions = [
 ];
 
 export default function Home() {
+  const now = useNow();
   const navigate = useNavigate();
   const mounted = useRef(true);
   useEffect(() => {
@@ -132,7 +134,7 @@ export default function Home() {
           />
         </div>
       </section>
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-4 py-8 sm:px-6 sm:py-10">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pt-8 pb-6 sm:px-6 sm:pt-10 sm:pb-8">
         <section
           aria-label="Experiment suggestions"
           className="flex flex-col gap-3"
@@ -250,7 +252,7 @@ export default function Home() {
                   </Button>
                 )}
               </div>
-              <DisclosureContent className="flex flex-col gap-3">
+              <DisclosureContent className="flex flex-col">
                 <Separator />
                 {(drafts.error || drafts.unreadable.length > 0) && (
                   <Alert variant="error">
@@ -306,7 +308,7 @@ export default function Home() {
                 </Link>
               </Button>
             </div>
-            <DisclosureContent className="flex flex-col gap-3">
+            <DisclosureContent className="flex flex-col">
               <Separator />
               {studies.error ? (
                 <ErrorState error={studies.error} onRetry={studies.refetch} />
@@ -318,32 +320,26 @@ export default function Home() {
                     <Fragment key={study.id}>
                       <Item
                         size="sm"
-                        className="border-0 px-0 [a]:hover:bg-transparent"
+                        className="border-0 px-0 py-3 [a]:hover:bg-transparent"
                         asChild
                       >
                         <Link to={`/studies/${study.id}`}>
                           <ItemMedia variant="icon">
                             <FlaskConical />
                           </ItemMedia>
-                          <ItemContent className="min-w-0">
-                            <div className="flex min-w-0 items-center gap-3">
-                              <ItemTitle className="min-w-0 flex-1">
-                                <span className="truncate" title={study.title}>
-                                  {study.title}
-                                </span>
-                              </ItemTitle>
-                              <ItemDescription className="shrink-0 text-xs whitespace-nowrap">
-                                <time dateTime={study.created}>
-                                  Created {date(study.created)}
-                                </time>
-                              </ItemDescription>
-                              <ItemActions>
-                                <Status value={study.status} />
-                              </ItemActions>
-                            </div>
-                            <ItemDescription>
-                              {study.completed_runs} / {study.run_count} runs
-                              complete
+                          <ItemContent className="min-w-0 flex-row items-center gap-3">
+                            <ItemTitle className="min-w-0 flex-1">
+                              <span className="truncate" title={study.title}>
+                                {study.title}
+                              </span>
+                            </ItemTitle>
+                            <ItemDescription className="shrink-0 text-xs whitespace-nowrap">
+                              <time
+                                dateTime={study.created}
+                                title={`Created ${new Date(study.created).toLocaleString()}`}
+                              >
+                                {relativeTime(study.created, now)}
+                              </time>
                             </ItemDescription>
                           </ItemContent>
                         </Link>

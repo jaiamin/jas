@@ -37,8 +37,10 @@ for (const path of ["/", "/studies#drafts"]) {
       name: "Delete Draft to delete draft",
       exact: true,
     });
+    await expect(draft.locator("time")).toHaveText("Just now");
+    await expect(draft.locator("time")).toHaveAttribute("title", /^Edited /);
     await page.mouse.move(0, 0);
-    await expect(remove).toHaveCSS("opacity", "0");
+    await expect(remove).toHaveCSS("opacity", "1");
     await draft.hover();
     await expect(remove).toHaveCSS("opacity", "1");
     await page.mouse.move(0, 0);

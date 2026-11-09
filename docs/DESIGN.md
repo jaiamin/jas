@@ -206,12 +206,19 @@ Show Drafts immediately above Recent experiments only when drafts exist or need
 recovery, with up to three most recently edited drafts. Both record lists use
 stock Items separated by horizontal rules, without a rule after the final item.
 Draft and recent experiment rows remain transparent on hover; preserve keyboard
-focus rings and link cursors.
+focus rings and link cursors. Both lists use the experiment icon and symmetric
+12px row padding; no extra gap follows the heading divider before the first row.
+Home sections use 32px gaps and a slightly smaller bottom inset.
 The shared DraftList uses compact clickable Item xs rows with titles and
-last-edited times on the title row, immediately before the delete action. Recent
-experiments show their actual creation time on the title row before status; the
-API exposes no experiment edit time. Delete appears on mouse hover and keyboard focus, and stays
-visible on touch screens. Use Untitled experiment when
+last-edited times on the title row, immediately before the delete action with
+a shared 12px gap. Draft edit ages and recent experiment creation ages read
+Just now, minutes/hours ago or days ago; older entries show a short date (with
+year when needed). Update ages every minute while mounted and retain the exact
+timestamp in the native time tooltip, labeled Edited or Created respectively.
+Recent experiment rows show only the icon, title and creation age, without
+status or run counts; the API exposes no experiment edit time.
+Delete stays visible for mouse, keyboard
+and touch users. Use Untitled experiment when
 unnamed. Both Home and Experiments confirm deletion in a stock AlertDialog;
 failed storage writes retain the draft and show a recoverable dialog error.
 Home hides the section after its final draft is deleted. Offer View all drafts
