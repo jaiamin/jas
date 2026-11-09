@@ -24,10 +24,10 @@ see [Design](docs/DESIGN.md) for the workflow and app icon alignment step. Exper
 environments remain core destinations; Agent helps design and interpret them. Preserve the
 supplied JAS logo as a brand asset. Support both themes, mobile and keyboard navigation.
 Keep the original Bricolage Grotesque font only for the top-left lowercase wordmark,
-without a subtitle. Main surfaces, cards, sidebars and overlays are pure black in dark
-mode and white in light mode. Primary actions use theme blue; selection uses a
+without a subtitle. Main surfaces, cards, sidebars and overlays use deep neutral charcoal in dark
+mode, with darker muted gray surfaces, and white in light mode. Primary actions use theme blue; selection uses a
 subtle blue accent with a weaker hover state. Avoid redundant descriptive subtitles. Home starts with the shared
-Agent composer in New experiment context and four suggested experiments. Keep
+Agent composer for questions or experiment design and four experiment ideas. Keep
 Home/Agent together above Workspace navigation; surface unfinished work and active
 runs conditionally, with full experiment/run lists in their existing destinations.
 The Home composer has a faint, reduced-motion-aware pixel-grid backdrop.

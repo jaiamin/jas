@@ -1008,3 +1008,31 @@ Home heading follow-up (2026-11-09):
   name from its visible heading. Update browser locators and design documentation.
 Verification: frontend lint/build and all 17 Home/Agent-safety browser tests passed.
 Publish to existing PR #10; keep port 8080 running and monitor hosted checks.
+
+Home visual review and shared-shell follow-up (2026-11-09):
+- Reviewed live Home at desktop/mobile sizes in both themes, plus 320px geometry.
+  The composer-first hierarchy, four concrete ideas and restrained recent-work
+  lists are good; recommend no new dashboard sections or extra explanatory copy.
+  Two remaining polish recommendations, not included in the requested fixes:
+  align desktop idea descriptions despite mixed one-/two-line titles, and fix
+  the 8px overflow/cramped Recent experiments heading at 320px. The decorative
+  heading fade causes the overflow. Evidence/screenshots are ignored artifacts
+  under .tools/shadcn-redesign/home-review-* and home-current-evidence.txt.
+- Per new requests, keep the shared top bar sticky at viewport top with an opaque
+  theme background. Preserve normal document scrolling and Agent's independent
+  scrollers. Root scroll padding protects fragment/keyboard destinations; the
+  editor plan's sticky offset includes the header. Oversized plans still scroll
+  so their bottom actions remain accessible in short windows.
+- Restore stock ghost hover/expanded surfaces on draft trash and recent record
+  menus. Their hover is stronger than the muted/50 row. Per spacing refinements,
+  keep a 4px right inset while preserving icon sizes, targets and time/action gaps.
+- Replace pure-black dark surfaces with neutral charcoal oklch(0.145 0 0), around
+  #0a0a0a. Set dark muted/secondary to oklch(0.205 0 0), around #171717, so the
+  composer surround, skeletons and hovers stay subdued. Main/sidebar/card/menu
+  colors share tokens; light mode and blue actions/selections remain intact.
+Verification: lint/build and all 34 affected Home/navigation/draft/surface browser
+tests passed, including cross-route header scrolling, mobile Sheet layering,
+short-viewport plan access, action hover, inset geometry and light/dark layouts.
+Final mechanical scan of edited component targets found no issues. Own review
+tabs closed, no user records or paid calls changed; port 8080 remains running.
+Next: publish to PR #10 and observe hosted CI on the new head.

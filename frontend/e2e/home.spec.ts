@@ -643,6 +643,14 @@ for (const width of [390, 1440])
         "background-color",
         "rgba(0, 0, 0, 0)",
       );
+      const deleteDraft = draftSection.getByRole("button", {
+        name: "Delete Continue the latest protocol draft",
+      });
+      await deleteDraft.hover();
+      await expect(deleteDraft).not.toHaveCSS(
+        "background-color",
+        /(?:\/\s*0|,\s*0)\)$/,
+      );
       const firstExperiment = experiments
         .getByRole("link", { name: /^Experiment \d/ })
         .first();
@@ -651,6 +659,23 @@ for (const width of [390, 1440])
         "background-color",
         "rgba(0, 0, 0, 0)",
       );
+      await experimentOptions.first().hover();
+      await expect(experimentOptions.first()).not.toHaveCSS(
+        "background-color",
+        /(?:\/\s*0|,\s*0)\)$/,
+      );
+      for (const action of [deleteDraft, experimentOptions.first()]) {
+        const inset = await action.evaluate((button) => {
+          const row = button.parentElement?.parentElement;
+          if (!row) throw new Error("Missing record row");
+          return (
+            row.getBoundingClientRect().right -
+            button.getBoundingClientRect().right
+          );
+        });
+        expect(inset).toBeGreaterThan(0);
+        expect(inset).toBeLessThan(8);
+      }
       await page.screenshot({
         path: testInfo.outputPath(`home-record-hover-${theme}-${width}.png`),
         fullPage: true,

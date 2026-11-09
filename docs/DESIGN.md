@@ -13,12 +13,12 @@ colors:
   light-accent-foreground: "oklch(0.424 0.199 265.638)"
   light-border: "oklch(0.922 0 0)"
   light-destructive: "oklch(0.577 0.245 27.325)"
-  dark-background: "oklch(0 0 0)"
+  dark-background: "oklch(0.145 0 0)"
   dark-foreground: "oklch(0.985 0 0)"
-  dark-card: "oklch(0 0 0)"
+  dark-card: "oklch(0.145 0 0)"
   dark-primary: "oklch(0.546 0.245 262.881)"
   dark-primary-foreground: "oklch(0.985 0 0)"
-  dark-muted: "oklch(0.269 0 0)"
+  dark-muted: "oklch(0.205 0 0)"
   dark-muted-foreground: "oklch(0.708 0 0)"
   dark-accent: "oklch(0.282 0.091 267.935)"
   dark-accent-foreground: "oklch(0.882 0.059 254.128)"
@@ -88,9 +88,12 @@ responsive navigation and explicit workflow states.
 
 ## Colors
 
-Page, sidebar, card and overlay surfaces use pure white in light mode and pure
-black in dark mode, as explicitly requested. These shared theme tokens apply to
-both navigation sidebars and every view.
+Page, sidebar, card and overlay surfaces use pure white in light mode and deep
+neutral charcoal (oklch(0.145 0 0), approximately #0a0a0a) in dark mode. Dark muted
+and secondary surfaces use oklch(0.205 0 0), approximately #171717, for restrained
+separation on composer surrounds, skeletons and hover states. Keep text and border
+contrast through their paired tokens. These shared theme tokens apply to both
+navigation sidebars and every view.
 Selection uses a subtle blue accent. Hover uses half-strength accent, while the
 selected item keeps its full accent on hover. Both are shared semantic tokens.
 Send and New experiment use the primary Button variant. Primary actions use a
@@ -136,7 +139,10 @@ conversation rows are text-only. Do not invent accounts or organizations.
 Navigation becomes a Sheet on mobile.
 
 The global controls and desktop brand headers share `--workspace-header-height` (52px),
-with one continuous bottom divider. The global bar has no title or breadcrumb;
+with one continuous bottom divider. The global bar stays at the viewport top
+while page content scrolls beneath its opaque background. Keep fragment/keyboard
+scroll targets below it, and offset the editor's sticky plan by the same header
+height. Agent retains its existing independent scrollers. The global bar has no title or breadcrumb;
 theme toggle precedes the GitHub brand link at right. These glyphs use the stock 16px size;
 the outer icon edge matches the navigation glyphs’ 16px edge inset. Settings uses
 the stock gear glyph in both navigation and the local workspace menu. Desktop collapse sits on the
@@ -282,8 +288,10 @@ run counts. A separate stock three-dot DropdownMenu shows the exact Created
 timestamp as non-actionable metadata. Keep the row link and menu trigger separate;
 use the same foreground/60 color for timestamps, trash and three-dot buttons,
 slightly darker than the default muted gray in both themes.
-Action buttons stay transparent on hover and while their menu is open; only
-the full row receives the gray hover fill.
+Action buttons use the stock ghost hover/expanded background over the row's
+weaker muted/50 hover, giving each action a distinct stronger surface. Inset
+their button bounds 4px from the right row edge so that hover does not meet the
+end of the divider; keep their visible icon size and hit area unchanged.
 The API exposes no experiment edit time.
 Delete stays visible for mouse, keyboard
 and touch users. Use Untitled experiment when
@@ -307,7 +315,7 @@ that check succeeds.
 
 ## Elevation & Depth
 
-Use shared theme tokens for surfaces, including the requested pure white/black
+Use shared theme tokens for surfaces, including the requested white/charcoal
 colors. Keep the preset's borders, rings, shadows and motion. Cards and overlays
 retain their generated treatments except CardFooter uses the card surface token;
 app layout utilities introduce no custom effects or elevation tokens.
@@ -380,7 +388,7 @@ pnpm dlx shadcn@latest apply --preset <code>
    submit button must not dim an editable composer), and narrow lint annotations. Keep chart legend text readable and retain
    distinct line patterns.
    Retain 4px tab gaps and 3px sidebar-item gaps, the continuous header
-   divider, pure white/black surface tokens, CardFooter card surface, subtle blue
+   divider, white/charcoal surface tokens, CardFooter card surface, subtle blue
    selection with weaker hover, filled selected sidebar icons, blue primary
    actions, and dedicated wordmark font
    unless superseded. The wordmark retains the foreground color.

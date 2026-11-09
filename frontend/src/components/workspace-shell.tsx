@@ -270,7 +270,7 @@ export default function WorkspaceShell() {
       </Sidebar>
       <SidebarInset className="min-w-0">
         <header
-          className="flex h-(--workspace-header-height) shrink-0 items-center gap-2 border-b px-2.5"
+          className="sticky top-0 z-10 flex h-(--workspace-header-height) shrink-0 items-center gap-2 border-b bg-background px-2.5"
           data-slot="workspace-header"
         >
           {isMobile && (

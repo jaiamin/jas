@@ -40,7 +40,7 @@ export function DraftList({
     <ItemGroup className="has-data-[size=xs]:gap-0">
       {drafts.map((draft, index) => (
         <Fragment key={draft.path}>
-          <div className="flex min-w-0 items-center gap-2.5 pl-1.75 transition-colors hover:bg-muted/50">
+          <div className="flex min-w-0 items-center gap-2.5 pl-1.75 pr-1 transition-colors hover:bg-muted/50">
             <Item
               size="xs"
               className="min-w-0 flex-1 gap-2.5 rounded-none border-0 px-0 py-3 [a]:hover:bg-transparent"
@@ -106,7 +106,7 @@ function DeleteDraft({
         <Button
           variant="ghost"
           size="icon-sm"
-          className="text-foreground/60 hover:bg-transparent aria-expanded:bg-transparent dark:hover:bg-transparent [&_svg:not([class*='size-'])]:size-3.5"
+          className="text-foreground/60 [&_svg:not([class*='size-'])]:size-3.5"
           aria-label={`Delete ${title} draft`}
           title="Delete draft"
         >

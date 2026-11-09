@@ -1,4 +1,87 @@
 import { expect, test } from "@playwright/test";
+import { createStudy } from "./helpers.js";
+
+for (const width of [390, 1280]) {
+  test(`workspace header stays visible above scrolling pages · ${width}`, async ({
+    page,
+    request,
+  }) => {
+    await page.setViewportSize({ width, height: 480 });
+    const { study, run } = await createStudy(request);
+    for (const path of [
+      "/",
+      "/new?template=commons",
+      "/settings",
+      "/environments",
+      "/studies",
+      "/runs",
+      `/studies/${study.id}`,
+      `/runs/${run.summary.id}`,
+      "/compare",
+      "/agent",
+    ]) {
+      await page.goto(path);
+      const header = page.locator('[data-slot="workspace-header"]');
+      await expect(header).toBeVisible();
+      await expect(
+        page.getByRole("status", { name: "Loading", exact: true }),
+      ).toHaveCount(0);
+      await page.mouse.move(width - 16, 440);
+      await page.mouse.wheel(0, 800);
+      const overflows = await page.evaluate(
+        () => document.documentElement.scrollHeight > innerHeight,
+      );
+      if (overflows) {
+        await expect
+          .poll(() => page.evaluate(() => scrollY))
+          .toBeGreaterThan(0);
+      }
+      await expect.poll(async () => (await header.boundingBox())?.y).toBe(0);
+      if (path.startsWith("/new") && width === 1280) {
+        const plan = page.locator('[data-slot="card"]').filter({
+          has: page.getByText("Execution plan", { exact: true }),
+        });
+        const bounds = await plan.boundingBox();
+        const headerHeight = (await header.boundingBox())?.height ?? 0;
+        if ((bounds?.height ?? 0) + headerHeight + 24 <= 480) {
+          expect(bounds?.y).toBeGreaterThanOrEqual(headerHeight);
+        } else {
+          // An oversized plan must scroll so its bottom actions stay reachable.
+          const action = plan.getByRole("button").last();
+          await action.scrollIntoViewIfNeeded();
+          await expect(action).toBeInViewport({ ratio: 1 });
+        }
+      }
+      expect(
+        await header.evaluate((element) => {
+          const bounds = element.getBoundingClientRect();
+          return element.contains(
+            document.elementFromPoint(bounds.right - 20, bounds.top + 20),
+          );
+        }),
+      ).toBe(true);
+      const theme = header.getByRole("button", { name: /Switch to .* mode/ });
+      const name = await theme.getAttribute("aria-label");
+      await theme.click();
+      await expect(theme).not.toHaveAccessibleName(name ?? "");
+    }
+    if (width === 390) {
+      await page.goto("/");
+      await page
+        .getByRole("region", { name: "Recent experiments" })
+        .scrollIntoViewIfNeeded();
+      await page
+        .getByRole("button", { name: "Open menu", exact: true })
+        .click();
+      await expect(page.getByRole("dialog")).toBeVisible();
+      await page
+        .getByRole("link", { name: "Experiments", exact: true })
+        .click();
+      await expect(page).toHaveURL(/\/studies$/);
+      await expect(page.getByRole("dialog")).toHaveCount(0);
+    }
+  });
+}
 
 test("narrow navigation keeps the brand and collapse control on one row", async ({
   page,
