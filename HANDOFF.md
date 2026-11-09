@@ -1036,3 +1036,13 @@ short-viewport plan access, action hover, inset geometry and light/dark layouts.
 Final mechanical scan of edited component targets found no issues. Own review
 tabs closed, no user records or paid calls changed; port 8080 remains running.
 Next: publish to PR #10 and observe hosted CI on the new head.
+
+Selected Home icon follow-up (2026-11-09):
+- Reverse the selected Home fill: retain the stock Lucide house silhouette,
+  fill its body and expose the open door against the selected surface. Keep
+  this partial-fill adaptation at the existing shared icon boundary; unselected
+  Home stays outlined, and the cutout uses the semantic sidebar accent token.
+Verification: lint/build and both affected navigation preference/compact-header
+browser tests passed. Live light/dark inspection confirms the body fill and
+door cutout match the selected navigation tokens. Review tab closed; port 8080
+remains running. Push to PR #10 and continue hosted CI verification.

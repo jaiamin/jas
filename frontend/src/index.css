@@ -209,11 +209,18 @@
 [data-partial-fill="flask"] > [data-liquid] {
   fill: none;
 }
-[data-active="true"] > [data-partial-fill="house"] > path:first-child,
+[data-partial-fill="house"] > [data-door] {
+  display: none;
+}
+[data-active="true"] > [data-partial-fill="house"] > path:nth-child(2),
 [data-active="true"] > [data-partial-fill="layers"] > path:first-child,
 [data-active="true"] > [data-partial-fill="settings"] > circle,
 [data-active="true"] > [data-partial-fill="flask"] > [data-liquid] {
   fill: currentColor;
+}
+[data-active="true"] > [data-partial-fill="house"] > [data-door] {
+  display: initial;
+  fill: var(--sidebar-accent);
 }
 
 /* One shared cursor rule, including portalled shadcn menu/select items. */

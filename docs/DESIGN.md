@@ -133,7 +133,7 @@ remain. Footer button
 heights stay 32px for Settings and 48px for the workspace menu in both states, so
 their vertical positions and padding do not change when labels disappear. Navigation glyphs and collapse control are 15px. Selected sidebar icons fill,
 with the requested exceptions: the stock Bot stays outlined, House fills only
-its door, Layers2 fills only its upper layer, Settings fills only its center circle,
+its body with an open door, Layers2 fills only its upper layer, Settings fills only its center circle,
 and FlaskConical fills only its liquid. The flask fill stays at the icon boundary;
 conversation rows are text-only. Do not invent accounts or organizations.
 Navigation becomes a Sheet on mobile.
