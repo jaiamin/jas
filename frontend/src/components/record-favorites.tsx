@@ -29,9 +29,18 @@ export function RecordListView({
       }}
     >
       <div className="px-4 py-2 sm:px-6 lg:px-8">
-        <TabsList aria-label={`View ${noun}`}>
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="favorites" disabled={!favorites.available}>
+        <TabsList
+          aria-label={`View ${noun}`}
+          className="group-data-horizontal/tabs:h-7 border border-input p-0.5"
+        >
+          <TabsTrigger value="all" className="h-full py-0">
+            All
+          </TabsTrigger>
+          <TabsTrigger
+            value="favorites"
+            className="h-full py-0"
+            disabled={!favorites.available}
+          >
             Favorites
           </TabsTrigger>
         </TabsList>

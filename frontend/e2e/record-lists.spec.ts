@@ -226,6 +226,12 @@ for (const theme of ["light", "dark"]) {
           return { right: style.paddingRight };
         });
         const table = main.getByRole("table");
+        const views = main.getByRole("tablist", { name: `View ${noun}` });
+        await expect(views).toHaveCSS("height", "28px");
+        await expect(views).toHaveCSS("border-top-width", "1px");
+        for (const tab of await views.getByRole("tab").all()) {
+          await expect(tab).toHaveCSS("height", "22px");
+        }
         for (const name of [
           path === "/studies" ? "Environment" : "Experiment",
           "Status",

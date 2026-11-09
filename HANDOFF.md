@@ -1329,3 +1329,6 @@ Verification: frontend lint, TypeScript/production build and all 105 unit tests 
 
 
 Record page icon surface refinement: increase the shared header icon backing from muted-foreground/10 to /15 for a slightly stronger neutral background on both Experiments and Runs. Preserve icon size, rounded corners and borderless appearance. Frontend lint/type/build and four desktop/mobile/light/dark list browser checks passed; final light desktop capture reviewed. Rebuilt UI remains on 8080.
+
+
+All/Favorites toggle refinement: shared RecordListView composes its stock TabsList with a subtle input-color border and a 28px height matching the filter controls. Use 2px inner padding and full-height triggers without vertical padding so labels stay centered; preserve existing selected colors and type. Generated Tabs unchanged. Frontend lint/type/build and six desktop/mobile/light/dark list and favorites persistence/filter/storage-recovery browser checks passed, with explicit 28px outer/22px trigger geometry assertions. Final desktop light capture reviewed. Rebuilt UI remains on 8080.

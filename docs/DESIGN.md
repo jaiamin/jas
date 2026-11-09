@@ -448,7 +448,8 @@ names use regular weight. Table column headings use the small text scale. Keep s
 glyphs aligned with their column heading while retaining the full icon-button target.
 Stars use a light 1.5px stroke and the normal data color, including when filled.
 A compact star column with a visible Favorite heading follows
-each name. A stock TabsList above the filter row switches All/Favorites. Search,
+each name. A stock TabsList above the filter row switches All/Favorites, with a subtle
+input-color border and 28px overall height matching the filters. Search,
 status and scope apply within that view; Clear filters keeps the chosen view.
 Experiments filters by Environment; Runs filters by Experiment, with searchable full labels
 from the catalogue or loaded run identities. Each stock ButtonGroup joins a medium-weight
