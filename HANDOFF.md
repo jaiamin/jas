@@ -701,3 +701,21 @@ first run exposed the test's old fifth-option prompt assertion; it now checks
 regeneration, the fourth remaining option. Geometry checks cover2×2 placement
 and flush hover/divider edges. Reviewed desktop-dark and phone-light captures.
 No dependencies, backend/data changes or paid calls. Port8080 stays live.
+
+
+Suggestions single-row follow-up and server restart (2026-11-09):
+- User prefers 1×4: replace 2×2 with four equal columns on wide screens, stacking
+  below 1280px. Keep stock group/dividers and seamless hover coverage.
+- Place stock 20px icons above titles in columns, aligned to their left edge.
+  Narrow layouts keep icons beside text. Retain 15px titles/12px descriptions.
+  Remove reserved title height and use a consistent 6px title/description gap;
+  fixed two-line tracks created unwanted blank space below single-line titles.
+- Clarify each short description by stating the comparison: messaging on/off,
+  private notes/history alone, more/less oversight, slower/faster renewal.
+- Confirmed 8080 had no listener; restarted the existing local workspace through
+  `.venv/bin/jas --host 0.0.0.0 --port 8080`, session 91029, PID 224198. No database
+  or settings changes. HTTP 200 confirmed after restart.
+Verification: frontend lint/build and Home browser suite 9/9 passed. After the
+final 6px title-spacing refinement, all four phone/desktop light/dark layout
+checks passed again. Reviewed final captures for consistent natural title gaps.
+No dependencies or paid calls. Leave the explicitly requested 8080 service running.

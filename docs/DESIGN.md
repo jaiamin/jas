@@ -185,9 +185,12 @@ selector, defaulting to No experiment, solely for selecting existing evidence.
 Explicitly scoped links and resumed chats preserve the selected evidence identity. Four experiment
 suggestions fill the draft without submitting. Under the Suggestions heading,
 they share one rounded ItemGroup border with Separator dividers: aligned icons,
-15px semibold titles and 12px descriptions in a compact 2×2 grid, with horizontal
-icon/text layouts and 12px vertical padding. Titles stay on one line where space
-allows without a reserved second line. Stack rows on phone widths. Stock ghost Buttons keep the
+15px semibold titles and 12px descriptions in one row of four on wide screens.
+Place icons above the text in columns, with a consistent 6px gap between each
+title and description and no reserved title height. Keep descriptions to one
+short sentence explaining the comparison.
+Use 12px vertical padding. On narrower screens, stack rows with icons to the
+left of their titles. Stock ghost Buttons keep the
 whole section of each suggestion keyboard-accessible, with icon, title and description.
 Buttons sit directly between dividers without transparent border insets, so the
 hover fill meets every edge and follows the group’s clipped outer corners. An explicit send creates one chat

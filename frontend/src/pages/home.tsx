@@ -54,10 +54,10 @@ const suggestionIcons = [MessageSquare, NotebookPen, ShieldCheck, Sprout];
 const recordTriggerClassName =
   "border-0 px-0 hover:bg-transparent aria-expanded:bg-transparent aria-expanded:hover:bg-transparent dark:hover:bg-transparent dark:aria-expanded:hover:bg-transparent";
 const suggestionDescriptions = [
-  "Test how public messages change contributions.",
-  "Compare private notes with history-only memory.",
-  "Explore how oversight changes sanction decisions.",
-  "Study extraction as resource renewal changes.",
+  "Compare contributions with messaging on and off.",
+  "Compare returns with private notes or history alone.",
+  "Compare sanction use with more or less oversight.",
+  "Compare resource use with slower or faster renewal.",
 ];
 
 export default function Home() {
@@ -133,14 +133,14 @@ export default function Home() {
           className="flex flex-col gap-3"
         >
           <h2 className="text-xs font-medium">Suggestions</h2>
-          <ItemGroup className="grid grid-cols-1 gap-0 overflow-hidden rounded-xl border sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+          <ItemGroup className="gap-0 overflow-hidden rounded-xl border xl:flex-row">
             {suggestions.map(({ title, prompt }, index) => {
               const Icon = suggestionIcons[index];
               return (
                 <Fragment key={title}>
                   <Button
                     variant="ghost"
-                    className="h-auto w-full min-w-0 items-start justify-start gap-3 rounded-none border-0 px-4 py-3 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-4"
+                    className="h-auto w-full min-w-0 flex-1 items-start justify-start gap-3 rounded-none border-0 px-4 py-3 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-4 xl:flex-col"
                     disabled={state.send.isPending}
                     onClick={() => {
                       state.setQuestion(prompt);
@@ -152,7 +152,7 @@ export default function Home() {
                       data-icon="inline-start"
                       aria-hidden="true"
                     />
-                    <span className="flex min-w-0 flex-col gap-1">
+                    <span className="flex min-w-0 flex-col gap-1.5">
                       <span className="text-[0.9375rem] leading-5 font-semibold">
                         {title}
                       </span>
@@ -161,18 +161,14 @@ export default function Home() {
                       </span>
                     </span>
                   </Button>
-                  {index === 1 ? (
-                    <Separator className="sm:col-span-3" />
-                  ) : (
-                    index < suggestions.length - 1 && (
-                      <>
-                        <Separator className="sm:hidden" />
-                        <Separator
-                          orientation="vertical"
-                          className="hidden sm:block"
-                        />
-                      </>
-                    )
+                  {index < suggestions.length - 1 && (
+                    <>
+                      <Separator className="xl:hidden" />
+                      <Separator
+                        orientation="vertical"
+                        className="hidden xl:block"
+                      />
+                    </>
                   )}
                 </Fragment>
               );

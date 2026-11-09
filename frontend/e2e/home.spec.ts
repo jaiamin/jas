@@ -497,30 +497,28 @@ for (const width of [390, 1440])
           const bounds = group.getBoundingClientRect();
           const buttons = [...group.querySelectorAll("button")];
           const boxes = buttons.map((button) => button.getBoundingClientRect());
-          const twoColumns = boxes[0].top === boxes[1].top;
+          const horizontal = getComputedStyle(group).flexDirection === "row";
           const last = boxes.at(-1);
           if (!last) throw new Error("Suggestions are missing");
           return {
-            twoColumns,
+            horizontal,
             topGap: boxes[0].top - bounds.top,
             leftGap: boxes[0].left - bounds.left,
             endGap: bounds.bottom - last.bottom,
-            gaps: twoColumns
-              ? [
-                  boxes[1].left - boxes[0].right,
-                  boxes[3].left - boxes[2].right,
-                  boxes[2].top - boxes[0].bottom,
-                ]
-              : boxes
-                  .slice(1)
-                  .map((box, index) => box.top - boxes[index].bottom),
+            gaps: boxes
+              .slice(1)
+              .map((box, index) =>
+                horizontal
+                  ? box.left - boxes[index].right
+                  : box.top - boxes[index].bottom,
+              ),
             borders: buttons.map(
               (button) => getComputedStyle(button).borderTopWidth,
             ),
           };
         });
       expect(suggestionEdges.topGap).toBeCloseTo(1, 1);
-      expect(suggestionEdges.twoColumns).toBe(width >= 640);
+      expect(suggestionEdges.horizontal).toBe(width >= 1280);
       expect(suggestionEdges.leftGap).toBeCloseTo(1, 1);
       expect(suggestionEdges.endGap).toBeCloseTo(1, 1);
       for (const gap of suggestionEdges.gaps) expect(gap).toBeCloseTo(1, 1);
