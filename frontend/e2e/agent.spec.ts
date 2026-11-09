@@ -15,9 +15,21 @@ for (const width of [320, 1440]) {
     const context = page.getByRole("combobox", { name: "Message context" });
     const input = page.getByLabel("Message Agent", { exact: true });
     await input.fill("Keep this unsent question");
-    const composer = page.locator('[data-slot="input-group"]');
+    const composer = page
+      .getByRole("form", { name: "Agent composer" })
+      .locator('[data-slot="input-group"]');
     const initial = await composer.boundingBox();
     await context.click();
+    const search = page.getByRole("combobox", {
+      name: "Search context",
+      exact: true,
+    });
+    await expect(search).toBeFocused();
+    await search.fill("no-record-matches-this-query");
+    await expect(
+      page.getByText("No matching context.", { exact: true }),
+    ).toBeVisible();
+    await search.fill(title);
     await page.getByRole("option", { name: title, exact: true }).click();
     await expect(
       page.getByRole("region", { name: "Suggested questions" }),
@@ -53,6 +65,23 @@ for (const width of [320, 1440]) {
     await expect(context).toBeFocused();
     await expect(input).toHaveValue("Keep this unsent question");
     expect(await composer.boundingBox()).toEqual(initial);
+    await context.click();
+    await search.fill(title);
+    await search.press("Enter");
+    await expect(context).toContainText(title);
+    await context.click();
+    await search.fill(title);
+    const selectedOption = page.getByRole("option", {
+      name: title,
+      exact: true,
+    });
+    await expect(selectedOption).toHaveAttribute("data-checked", "true");
+    await selectedOption.click();
+    await expect(context).toContainText("Add context");
+    await expect(input).toHaveValue("Keep this unsent question");
+    await expect(
+      page.getByRole("dialog", { name: "Choose context" }),
+    ).toHaveCount(0);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
@@ -80,6 +109,9 @@ test("Agent centers a plain contextual composer without a history rail", async (
   });
   await expect(defaultContext).toContainText("Add context");
   await defaultContext.click();
+  await expect(
+    page.getByRole("option", { name: "Ask anything", exact: true }),
+  ).toHaveCount(0);
   await expect(
     page.getByRole("option", { name: "New experiment", exact: true }),
   ).toHaveCount(0);
@@ -121,7 +153,9 @@ test("Agent centers a plain contextual composer without a history rail", async (
   await expect(
     page.getByRole("button", { name: "Open Agent workspace" }),
   ).toHaveCount(0);
-  const inputGroup = page.locator('[data-slot="input-group"]');
+  const inputGroup = page
+    .getByRole("form", { name: "Agent composer" })
+    .locator('[data-slot="input-group"]');
   const restingStyle = await inputGroup.evaluate((element) => {
     const style = getComputedStyle(element);
     return { border: style.borderColor };
@@ -414,6 +448,12 @@ for (const theme of ["light", "dark"]) {
       page.viewportSize()?.width ?? 0,
     );
     await page
+      .getByRole("combobox", { name: "Search context", exact: true })
+      .fill(`Seed ${run.seed}`);
+    await expect(
+      page.getByRole("option", { name: study.design.title, exact: true }),
+    ).toHaveCount(0);
+    await page
       .getByRole("option", {
         name: new RegExp(`Rev ${run.revision} .*${run.id.slice(0, 6)}`),
       })
@@ -451,9 +491,8 @@ for (const theme of ["light", "dark"]) {
     ).toHaveAttribute("href", `/runs/${run.id}?turn=3&tab=decisions`);
     await page.getByText("Limitations & uncertainty", { exact: true }).click();
     await expect(page.getByText("One run is descriptive.")).toBeVisible();
-    await context.click();
     await page
-      .getByRole("option", { name: "Ask anything", exact: true })
+      .getByRole("button", { name: "Clear context", exact: true })
       .click();
     await page
       .getByLabel("Message Agent", { exact: true })
@@ -755,12 +794,15 @@ test("base Agent renders immediately and only context options wait for the datab
     page.getByRole("status", { name: "Loading experiments and runs" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("option", { name: "Ask anything", exact: true }),
+    page.getByRole("combobox", { name: "Search context", exact: true }),
   ).toBeVisible();
   release();
   await expect(
     page.getByRole("status", { name: "Loading experiments and runs" }),
   ).toHaveCount(0);
+  await expect(
+    page.getByText("No saved experiments or runs.", { exact: true }),
+  ).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(input).toHaveValue("A question before records finish loading");
 });

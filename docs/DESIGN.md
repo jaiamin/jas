@@ -236,10 +236,16 @@ and clear action within one muted hover surface, with a 2px gap and 4px trailing
 padding after the clear target. The × uses muted-foreground, brightening to
 foreground on hover. Neither button adds a second hover background;
 clearing preserves the draft and returns keyboard focus to the selector. The
-stock Select popup groups experiments/runs, caps at 20rem or available height,
-and offers “Ask anything” with an explanation that Agent can answer a question
-or plan a new experiment. Loading placeholders stay inside the popup; an empty
-list explains that saved experiments/runs will appear there.
+stock Popover + Command picker has a focused search field above grouped
+experiments/runs. Only results scroll (up to 18rem or the available viewport);
+search stays visible. There is no general/“Ask anything” option or explanatory
+banner: an empty selection already means Agent handles the prompt normally.
+The group divider is inset to align with group labels and row icons.
+Checked rows indicate current context; selecting the checked row again clears
+it and closes the popup. Keyboard search, selection and Escape retain stock
+behavior. Run rows show their experiment plus condition, seed and repetition;
+revision appears when greater than one. IDs stay in search/accessible identity
+and hover titles. Loading skeletons, no matches and no saved context stay local.
 Explicitly scoped links and resumed chats preserve the selected evidence identity. Four experiment
 suggestions fill the draft without submitting. Under the Experiment ideas heading,
 they share one rounded ItemGroup border with Separator dividers: aligned illustrations,

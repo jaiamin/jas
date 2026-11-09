@@ -1189,3 +1189,18 @@ Final × polish: reduce the inter-control gap from 4px to 2px, retain the 14px
 glyph and 24px target, and explicitly use muted-foreground with foreground on
 hover. Live measurement confirms exact vertical alignment with the label.
 Lint/build and both responsive context regressions passed; preview tab closed.
+
+Context picker redesign: replace Select with stock shadcn Popover + Command,
+adding its standard cmdk dependency and generated Dialog dependency. Focused
+search stays above scrollable Experiments/Run groups. Remove “Ask anything” and
+explanatory copy: no selected context already permits automatic Agent routing.
+Selecting a checked row or the external × clears context without losing the
+draft. Preserve unknown historical selections, full accessible/searchable run
+identity, local loading placeholders and empty/no-match states. Inset the group
+divider to align with headings and row icons. Keep composer geometry unchanged.
+
+Verification: lint, production build, all 97 unit tests and all 39 affected
+Agent/recovery/navigation/streaming/suggestion browser tests passed. Live desktop
+light and 320px dark review confirmed viewport fit, fixed search with scrolling
+results, keyboard selection, clearing and aligned divider insets. Own preview tab
+closed; 8080 remains available. No paid calls or user-data mutations.

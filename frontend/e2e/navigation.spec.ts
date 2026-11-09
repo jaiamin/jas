@@ -366,8 +366,8 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
   await expect(context).toHaveCSS("cursor", "pointer");
   await context.click();
   await expect(
-    page.getByRole("option", { name: "Ask anything", exact: true }),
-  ).toHaveCSS("cursor", "pointer");
+    page.getByRole("combobox", { name: "Search context", exact: true }),
+  ).toHaveCSS("cursor", "text");
   await page.keyboard.press("Escape");
   const previous = await page.locator("html").getAttribute("class");
   await theme.click();
