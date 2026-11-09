@@ -778,3 +778,13 @@ Verification: frontend lint/build and all nine Home browser checks passed,
 including the Home/Agent focus-border regression and responsive layouts.
 Reviewed the final desktop capture for money-bag alignment.
 No paid calls or backend/data changes.
+
+Oversight illustration refinement (2026-11-09):
+- Replace the shield with 3dicons Zoom (magnifying glass), Dynamic/Color, to
+  communicate scrutiny/inspection. Keep the 36px box, transparent-margin trim,
+  aspect ratio and text alignment. Notebook and Money Bag remain unchanged.
+- Update the documented source link and variant. The four local CC0 WebP files
+  total 21,428 bytes; no new package or network request at runtime.
+Verification: production build and four responsive light/dark browser checks
+passed. Reviewed desktop capture for the magnifying-glass artwork and alignment.
+Requested 8080 service remains healthy (HTTP 200).

@@ -207,11 +207,11 @@ retain the stock shadcn focus treatment.
 
 The four decorative suggestion illustrations are explicitly approved exceptions
 to preset icons: [3dicons](https://3dicons.co/), Dynamic (the slight-angle view)
-for the chat bubble, notebook and money bag, and Front for the shield. All use
+for the chat bubble, notebook, magnifying glass and money bag. All use
 regular Color, shown in a 36px box. Trim transparent margins and preserve aspect
 ratios; align visible artwork with the text's left edge in columns and center it
 vertically beside the text on narrow screens. Sources are [Chat Bubble](https://3dicons.co/icons/eec43d-chat-bubble),
-[Notebook](https://3dicons.co/icons/628100-notebook), [Shield](https://3dicons.co/icons/b91186-shield)
+[Notebook](https://3dicons.co/icons/628100-notebook), [Zoom](https://3dicons.co/icons/b4a0af-zoom)
 and [Money Bag](https://3dicons.co/icons/36f0c6-money-bag). The free collections use CC0;
 the supplied license accompanies the local files in
 `frontend/public/illustrations/suggestions/LICENSE.txt`. Transparent WebP
