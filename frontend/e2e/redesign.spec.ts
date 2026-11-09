@@ -67,21 +67,21 @@ for (const width of [390, 1440]) {
         await page.goto(path ?? "/");
         await expect(page.getByRole("main")).toHaveCount(1);
         await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+        if (path?.startsWith("/new"))
+          await expect(
+            page.getByLabel("Experiment name", { exact: true }),
+          ).toBeAttached();
         if (
           name === "agents" ||
           name === "execution" ||
           name === "specification"
         ) {
           const tab = page.getByRole("tab", {
-            name: new RegExp(`^${name}`, "i"),
+            name:
+              name === "execution" ? "Run plan" : new RegExp(`^${name}`, "i"),
           });
           await tab.click();
           await expect(tab).toHaveAttribute("aria-selected", "true");
-          if (name === "agents")
-            await page
-              .locator('[data-slot="accordion-trigger"]:visible')
-              .first()
-              .click();
         }
         await expect(
           page.getByRole("status", { name: "Loading", exact: true }),

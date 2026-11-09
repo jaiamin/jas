@@ -206,6 +206,7 @@ export function MechanismFields({
       />
     );
   }
+  if (!config.numbers.length && !config.toggles.length) return null;
   return (
     <FieldGroup className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
       {config.numbers.map(({ key, label, value, min, max, step, onChange }) => (

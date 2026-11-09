@@ -1142,9 +1142,11 @@ for (const theme of ["light", "dark"] as const) {
     await page
       .getByLabel("Experiment name", { exact: true })
       .fill("Independent copy");
+    await page.getByRole("tab", { name: "Review", exact: true }).click();
     await page
       .getByRole("button", { name: "Create experiment", exact: true })
       .click();
+    await expect(page).toHaveURL(/\/studies\//);
     await expect(
       page.getByRole("heading", { name: "Independent copy", exact: true }),
     ).toBeVisible();
@@ -1161,9 +1163,11 @@ for (const theme of ["light", "dark"] as const) {
     await page
       .getByLabel("Experiment name", { exact: true })
       .fill("Updated revision");
+    await page.getByRole("tab", { name: "Review", exact: true }).click();
     await page
       .getByRole("button", { name: "Save new revision", exact: true })
       .click();
+    await expect(page).toHaveURL(/\/studies\//);
     await expect(
       page.getByRole("heading", { name: "Updated revision", exact: true }),
     ).toBeVisible();
@@ -1284,9 +1288,11 @@ for (const source of ["study", "copy"] as const) {
     await expect(
       page.getByLabel("Experiment name", { exact: true }),
     ).toHaveValue("Kept unfinished work");
+    await page.getByRole("tab", { name: "Review", exact: true }).click();
     await page
       .getByRole("button", { name: "Create experiment", exact: true })
       .click();
+    await expect(page).toHaveURL(/\/studies\//);
     await expect(
       page.getByRole("heading", { name: "Kept unfinished work", exact: true }),
     ).toBeVisible();

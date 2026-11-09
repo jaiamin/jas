@@ -65,8 +65,8 @@ spacing:
 
 ## Overview
 
-JAS uses default stock shadcn components and preset styling. The current preset is
-`b2fA`: Nova, Radix, neutral, Geist and Lucide, with the user-requested surfaces,
+JAS composes stock shadcn components and preset styling. The foundation uses
+Nova, Radix, neutral, Geist and Lucide, with the user-requested surfaces,
 blue actions/selection and wordmark below. Preserve the supplied
 [`logo.svg`](../frontend/public/logo.svg). The top-left lowercase `jas` wordmark
 alone uses the original locally hosted Bricolage Grotesque subset at 22px/800,
@@ -108,6 +108,10 @@ pointer clicks do not add rings; keyboard navigation retains the preset focus
 indicators. Typing into a pointer-focused text field does not turn the ring on.
 `useInputModality` tracks this once at the root; shared `focus-visible` and
 `has-focus-visible` Tailwind variants gate focus styles in `index.css`.
+The base layer also suppresses native outlines while pointer modality is active;
+Radix focus restoration can otherwise leave a browser outline on clicked tabs.
+Keyboard mode restores native and preset indicators without changing selection,
+validation rings or normal control borders.
 InputGroup, Field and CodeBlock use the latter for their enclosing surface.
 Keep these small variant substitutions when regenerating those primitives from
 a preset; validation and selected-state styling remain independent of focus.
@@ -155,7 +159,7 @@ with one continuous bottom divider. The global bar stays at the viewport top
 inside a viewport-height shell, outside every page scroller. The document never
 scrolls; page content owns vertical scrolling with contained overscroll, stable scrollbar
 gutters and 16px scroll-target padding. Path navigation resets the page scroller.
-The editor’s sticky plan sits 24px below the content viewport top. Agent retains
+The editor’s section tabs stick directly below the global header. Agent retains
 its existing independent scrollers. The global bar has no title or breadcrumb;
 theme toggle precedes the GitHub brand link at right. These glyphs use the stock 16px size;
 the outer icon edge matches the navigation glyphs’ 16px edge inset. Settings uses
@@ -556,12 +560,57 @@ preset's compact defaults and focus/disabled/invalid states. Field supplies labe
 and validation context; Badge supplies statuses; Table supplies record lists.
 Skeleton, Spinner, Empty and Alert supply loading, empty and error states.
 
-Editors group fields in Accordions with an execution summary. Settings uses three
+The experiment editor uses freely navigable section tabs and a focused form
+column, with its execution summary in Review. Settings uses three
 Cards. Agent uses MessageScroller, Message, Bubble and Trace. Trace content shows
 public server stages, scope and sources, never private model reasoning. Completed
 protocol proposals appear in a Card for review before saving or running. Preserve
 draft identity, pending output, evidence scope and recoverable errors when
 changing presentation. Saving a protocol never executes it.
+
+### Experiment editor
+
+Use the compact page-heading geometry shared by record lists: a 36px muted,
+rounded-square flask surface and the same title scale. The editor is at most
+1024px wide, with a centered 768px form column. Question, Agents, Conditions,
+Run plan and Review are revisitable sections, rather than a progress indicator
+claiming earlier steps are valid. Specification exposes the full JSON contract
+for advanced editing. Stock line Tabs scroll horizontally on narrow screens;
+their selected underline and full-width Separator share one baseline. Preserve
+these layout adjustments when regenerating Tabs from a preset.
+
+Question covers the name, research question and environment, with hypothesis and
+scenario context disclosed separately. Agents and conditions use compact stock
+Accordions; adding an item opens it and focuses its name. Communication appears
+before its dependent channel controls. Show private signals only for environments
+that implement them. Optional condition notes, profile overrides, model settings
+and limitations stay behind disclosures. Run plan keeps seeds, repetitions,
+rounds, spending ceiling and measurements visible. Task and resource fields
+stack on phones instead of squeezing several unlabeled columns together.
+
+Each form section offers Back/Continue. Review consolidates the question,
+participants, condition models and run plan with section-specific Edit actions,
+mechanical checking and one primary Create/Save action. Specification retains
+Check/Create for direct contract editing. Saving a reusable environment is a
+single-line item in Experiment options, rather than a competing primary action.
+Agent proposals open on Review. Saving never launches paid model work.
+
+Keep section content mounted when inactive so input DOM and disclosures retain
+their state. Validated JSON resets the affected uncontrolled fields to the new
+specification. Initialize the form only after loading and validating the current
+local draft; a cached empty query must not erase edits on fast back navigation.
+Validation failures retain the original JSON and recovery actions. Pending
+mutations lock their submitted snapshot. Static heading, actions and navigation
+retain their geometry during loading, with unavailable controls disabled; only
+configuration fetched from the catalogue, saved
+protocol or draft validation receives Skeleton placeholders.
+
+Research: [Carbon forms](https://carbondesignsystem.com/patterns/forms-pattern/),
+[Carbon tabs](https://carbondesignsystem.com/components/tabs/usage/),
+[Carbon progress indicators](https://carbondesignsystem.com/components/progress-indicator/usage/),
+[GOV.UK check answers](https://design-system.service.gov.uk/patterns/check-answers/),
+[GitHub repository creation](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository)
+and [React state structure](https://react.dev/learn/choosing-the-state-structure).
 
 ### Stock components and customizations
 

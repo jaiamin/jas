@@ -169,7 +169,7 @@ test("pending validation locks the submitted specification until its response", 
   await page.getByRole("tab", { name: "Question", exact: true }).click();
   await expect(text).toBeDisabled();
   await expect(
-    page.getByRole("tab", { name: "Execution", exact: true }),
+    page.getByRole("tab", { name: "Run plan", exact: true }),
   ).toBeDisabled();
   await expect(
     page.getByRole("button", { name: "Create experiment", exact: true }),
@@ -198,6 +198,7 @@ test("a delayed save locks editing and a failed save keeps the draft editable", 
       json: { detail: "Save temporarily unavailable" },
     });
   });
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   const save = page.getByRole("button", {
     name: "Create experiment",
     exact: true,
@@ -205,13 +206,17 @@ test("a delayed save locks editing and a failed save keeps the draft editable", 
   await save.click();
   await expect(name).toBeDisabled();
   await expect(
-    page.getByRole("combobox", { name: "Environment", exact: true }),
+    page.getByRole("combobox", {
+      name: "Environment",
+      exact: true,
+      includeHidden: true,
+    }),
   ).toBeDisabled();
   await expect(
     page.getByRole("tab", { name: "Specification", exact: true }),
   ).toBeDisabled();
   await expect(
-    page.getByRole("button", { name: "Continue", exact: true }),
+    page.getByRole("button", { name: "Check experiment", exact: true }),
   ).toBeDisabled();
   release();
   await expect(page.getByRole("alert")).toContainText(
@@ -219,10 +224,12 @@ test("a delayed save locks editing and a failed save keeps the draft editable", 
   );
   await expect(name).toBeEnabled();
   await expect(name).toHaveValue("Save recovery snapshot");
+  await page.getByRole("tab", { name: "Question", exact: true }).click();
   await name.fill("Recovered after failed save");
   await page.reload();
   await expect(name).toHaveValue("Recovered after failed save");
   await page.unroute("**/api/studies");
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   await save.click();
   await expect(page).toHaveURL(/\/studies\//);
   await expect(

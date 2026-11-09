@@ -3,9 +3,10 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { PlanningProgress } from "@/components/agent/planning-progress";
 import { DesignEditor } from "@/components/editor/design-editor";
+import { EditorLoading } from "@/components/editor/editor-layout";
 import { Alert, Empty } from "@/components/feedback";
 import { ArrowRight } from "@/components/icons";
-import { ErrorState, Loading, PageHeading } from "@/components/shared";
+import { ErrorState, PageHeading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { ApiError, api, useApi } from "@/lib/api";
 import {
@@ -51,6 +52,8 @@ export default function Editor() {
       }
     },
     gcTime: 0,
+    // Local edits can change while this query is cached during route transitions.
+    refetchOnMount: "always",
     refetchOnWindowFocus: false,
   });
   const catalog = useApi<Catalog>("/catalog");
@@ -139,10 +142,11 @@ export default function Editor() {
   if (
     !catalog.data ||
     draft.isPending ||
+    !draft.isFetchedAfterMount ||
     (sourceId && !previous.data && !deletedSource) ||
     (setupId && !setup.data)
   )
-    return <Loading />;
+    return <EditorLoading revision={!!studyId} fromAgent={!!planId} />;
   if (draft.data?.error && !recoverDraft)
     return (
       <>
@@ -211,7 +215,8 @@ export default function Editor() {
     catalog.data.templates.find((t) => t.id === params.get("template"))
       ?.design ??
     catalog.data.templates[0]?.design;
-  if (!initial) return <Loading />;
+  if (!initial)
+    return <EditorLoading revision={!!studyId} fromAgent={!!planId} />;
   return (
     <>
       {deletedSource && (
@@ -225,7 +230,11 @@ export default function Editor() {
         setupId={setupId}
         setupRevision={setup.data?.revision}
         initialStep={
-          params.get("step") === "conditions" ? "conditions" : "question"
+          planId
+            ? "review"
+            : params.get("step") === "conditions"
+              ? "conditions"
+              : "question"
         }
         catalog={catalog.data}
         studyId={deletedSource ? null : studyId}

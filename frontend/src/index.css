@@ -143,6 +143,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* Radix/programmatic focus can retain the browser's native :focus-visible
+     outline after a click, even when the preset focus utilities are gated. */
+  html[data-input-modality="pointer"] :focus {
+    outline: none;
+  }
   h1,
   h2,
   h3,

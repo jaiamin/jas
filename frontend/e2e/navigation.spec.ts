@@ -42,20 +42,13 @@ for (const width of [390, 1280]) {
       // The viewport itself must not scroll; a sticky document header can still bounce.
       expect(await page.evaluate(() => scrollY)).toBe(0);
       await expect.poll(async () => (await header.boundingBox())?.y).toBe(0);
-      if (path.startsWith("/new") && width === 1280) {
-        const plan = page.locator('[data-slot="card"]').filter({
-          has: page.getByText("Execution plan", { exact: true }),
+      if (path.startsWith("/new")) {
+        const next = page.getByRole("button", {
+          name: "Continue",
+          exact: true,
         });
-        const bounds = await plan.boundingBox();
-        const headerHeight = (await header.boundingBox())?.height ?? 0;
-        if ((bounds?.height ?? 0) + headerHeight + 24 <= 480) {
-          expect(bounds?.y).toBeGreaterThanOrEqual(headerHeight);
-        } else {
-          // An oversized plan must scroll so its bottom actions stay reachable.
-          const action = plan.getByRole("button").last();
-          await action.scrollIntoViewIfNeeded();
-          await expect(action).toBeInViewport({ ratio: 1 });
-        }
+        await next.scrollIntoViewIfNeeded();
+        await expect(next).toBeInViewport({ ratio: 1 });
       }
       expect(
         await header.evaluate((element) => {

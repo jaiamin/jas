@@ -212,17 +212,28 @@ for (const theme of ["light", "dark"]) {
     await expect(recorded).toContainText("Writing");
     await expect(recorded.locator("svg")).toHaveCount(0);
     await activity.click();
-    const copyIcon = await page
-      .getByTitle("Copy response", { exact: true })
-      .locator("svg")
-      .boundingBox();
-    const response = await page
-      .locator('[data-streaming="false"]')
-      .boundingBox();
-    expect(copyIcon?.x).toBeCloseTo((response?.x ?? 0) + 2, 0);
-    expect(
-      copyIcon && response && copyIcon.y - (response.y + response.height),
-    ).toBeLessThanOrEqual(14);
+    // Read both boxes in one frame: closing Activity moves both elements, so
+    // sequential boundingBox calls can manufacture a gap during the animation.
+    await expect(async () => {
+      const geometry = await page
+        .getByTitle("Copy response", { exact: true })
+        .evaluate((button) => {
+          const icon = button.querySelector("svg");
+          const response = button
+            .closest('[data-slot="message"]')
+            ?.querySelector('[data-streaming="false"]');
+          if (!icon || !response)
+            throw new Error("Missing response or copy icon");
+          const iconBox = icon.getBoundingClientRect();
+          const responseBox = response.getBoundingClientRect();
+          return {
+            left: iconBox.x - responseBox.x,
+            gap: iconBox.y - responseBox.bottom,
+          };
+        });
+      expect(geometry.left).toBeCloseTo(2, 0);
+      expect(geometry.gap).toBeLessThanOrEqual(14);
+    }).toPass();
     await page
       .context()
       .grantPermissions(["clipboard-read", "clipboard-write"]);

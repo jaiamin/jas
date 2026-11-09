@@ -11,14 +11,15 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Browser QA · scarcity");
-  await page.getByRole("tab", { name: "Execution", exact: true }).click();
+  await page.getByRole("tab", { name: "Run plan", exact: true }).click();
   await page.getByLabel("Rounds per run").fill("3");
-  await page.getByText(/^Replication ·/).click();
   await page.getByLabel("Matched seeds").fill("7");
   await page.getByLabel("Matched seeds").blur();
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
+  await expect(page).toHaveURL(/\/studies\//);
   await expect(
     page.getByRole("heading", { name: "Browser QA · scarcity" }),
   ).toBeVisible();
@@ -27,9 +28,11 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Browser QA · tuned");
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page
     .getByRole("button", { name: "Save new revision", exact: true })
     .click();
+  await expect(page).toHaveURL(/\/studies\//);
   await expect(
     page.getByRole("heading", { name: "Browser QA · tuned" }),
   ).toBeVisible();
@@ -141,10 +144,11 @@ test("removing agents removes condition overrides and environment changes need c
     .fill(JSON.stringify(design));
   await page.getByRole("tab", { name: "Question", exact: true }).click();
   await page.getByRole("tab", { name: /^Agents/ }).click();
-  await page
-    .locator("[data-slot=accordion-trigger]:visible")
-    .filter({ hasText: removed.name })
-    .click();
+  await expect(
+    page
+      .locator("[data-slot=accordion-trigger]:visible")
+      .filter({ hasText: removed.name }),
+  ).toHaveAttribute("aria-expanded", "true");
   await page
     .getByRole("button", { name: `Remove ${removed.name}`, exact: true })
     .click();
@@ -209,6 +213,7 @@ test("AI design progress opens a reviewable protocol with design notes", async (
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
     templateDesign(catalog).title,
   );
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page.getByText("Protocol notes", { exact: true }).click();
   await expect(
     page.getByRole("link", { name: "Methods", exact: true }),
@@ -305,6 +310,7 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
+  await expect(page).toHaveURL(/\/studies\//);
   await expect(page.getByRole("heading", { name: design.title })).toBeVisible();
   await page.goto("/");
   await expect(
@@ -334,7 +340,10 @@ test("environment mechanics lead to editable reusable setups", async ({
     .getByLabel("Experiment name", { exact: true })
     .fill("Supply-chain recovery");
   await page
-    .getByRole("button", { name: "Save custom environment", exact: true })
+    .getByRole("button", { name: "Experiment options", exact: true })
+    .click();
+  await page
+    .getByRole("menuitem", { name: "Save custom environment", exact: true })
     .click();
   await expect(
     page.getByText("Custom environment saved.", { exact: false }),
@@ -351,7 +360,10 @@ test("environment mechanics lead to editable reusable setups", async ({
     .getByLabel("Experiment name", { exact: true })
     .fill("Revised recovery");
   await page
-    .getByRole("button", { name: "Update custom environment", exact: true })
+    .getByRole("button", { name: "Experiment options", exact: true })
+    .click();
+  await page
+    .getByRole("menuitem", { name: "Update custom environment", exact: true })
     .click();
   await expect(
     page.getByText("Custom environment saved.", { exact: false }),

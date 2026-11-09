@@ -34,6 +34,7 @@ test("task prerequisite edits and deletion persist without stale dependent field
       response.url().endsWith("/api/studies") &&
       response.request().method() === "POST",
   );
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
@@ -66,7 +67,9 @@ test("cloned conditions keep independent nested resource schedules through savin
     .getByRole("button", { name: "Add condition", exact: true })
     .click();
   const clone = page.locator("[data-slot=accordion-item]:visible").nth(1);
-  await clone.locator("[data-slot=accordion-trigger]:visible").click();
+  await expect(
+    clone.locator("[data-slot=accordion-trigger]:visible"),
+  ).toHaveAttribute("aria-expanded", "true");
   await clone.getByText(/^Resource changes during the run/).click();
   const schedule = clone.locator("[data-slot=collapsible]").filter({
     has: page.getByRole("button", {
@@ -98,6 +101,7 @@ test("cloned conditions keep independent nested resource schedules through savin
       response.url().endsWith("/api/studies") &&
       response.request().method() === "POST",
   );
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
