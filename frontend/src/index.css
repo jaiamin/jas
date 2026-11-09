@@ -206,12 +206,14 @@
 }
 
 /* Requested partial fills preserve the stock Lucide icon outlines. */
-[data-partial-fill="flask"] > [data-liquid] {
+[data-partial-fill="flask"] > [data-liquid],
+[data-partial-fill="target"] > [data-ring] {
   fill: none;
 }
 [data-active="true"] > [data-partial-fill="house"] > path:first-child,
 [data-active="true"] > [data-partial-fill="layers"] > path:first-child,
 [data-active="true"] > [data-partial-fill="settings"] > circle,
+[data-active="true"] > [data-partial-fill="target"] > [data-ring],
 [data-active="true"] > [data-partial-fill="flask"] > [data-liquid] {
   fill: currentColor;
 }

@@ -1204,3 +1204,5 @@ Agent/recovery/navigation/streaming/suggestion browser tests passed. Live deskto
 light and 320px dark review confirmed viewport fit, fixed search with scrolling
 results, keyboard selection, clearing and aligned divider insets. Own preview tab
 closed; 8080 remains available. No paid calls or user-data mutations.
+
+Agent icon update: replace Bot with Lucide Target at the shared AgentIcon boundary, updating sidebar and experiment/run Agent actions together. The selected sidebar fills only the annulus between the middle and inner circles; its center and outer band stay unfilled. The partial-fill path shares the existing semantic CSS treatment, with no fill outside selected navigation. Verification: lint/build and focused compact-header/navigation browser regression passed. Live browser review confirmed selected light/dark colors and unselected outline; own preview tab closed and 8080 retained.
