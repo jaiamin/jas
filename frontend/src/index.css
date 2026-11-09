@@ -155,6 +155,17 @@
     var(--home-grid-red),
     var(--home-grid-blue)
   );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    rgb(0 0 0 / 40%) 4%,
+    rgb(0 0 0 / 85%) 9%,
+    #000 14%,
+    #000 86%,
+    rgb(0 0 0 / 85%) 91%,
+    rgb(0 0 0 / 40%) 96%,
+    transparent
+  );
 }
 
 .home-heading::before {

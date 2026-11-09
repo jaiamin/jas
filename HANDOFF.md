@@ -910,3 +910,13 @@ and the final 280px navigation capture. Eight sampled updates averaged 0.44ms on
 desktop and 0.15ms on phone for world stepping plus SVG mutations (excluding
 browser paint). Impeccable detector and diff checks were clean. No backend
 changes or paid calls. Existing port 8080 remains available (HTTP 200).
+
+Home grid edge fade (2026-11-09):
+- Add one CSS alpha mask to the decorative SVG, fading across the outer 14%
+  on each side through soft intermediate stops. Keep the central 72% opaque,
+  square corners, bottom section divider and foreground content unchanged.
+- No simulation changes, extra layers, dependencies or fallback paths.
+Verification: frontend lint/build and all four responsive Home layout browser
+checks passed (390/1440px, light/dark). Reviewed desktop light/dark and phone
+dark captures; computed mask matches the requested stops and no horizontal
+overflow. Closed the review browser; existing app on port 8080 remains running.

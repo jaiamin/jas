@@ -166,6 +166,9 @@ send agents onward so activity travels across the field. A fresh seed varies eac
 visit; no application data, model calls, packages or external requests are involved.
 Logo red (#ff5757), blue (#4d8dff), and their purple blend remain scoped to Home;
 controls retain preset tokens. Filled-cell opacity stays at or below 48%.
+Fade only the grid horizontally across the outer 14% on each side, with softer
+intermediate stops. Keep the central 72% fully visible, square corners and the
+bottom section divider unchanged; the heading and composer are outside the mask.
 The SVG fits whole rows and columns without cropped cells, capped at 144 × 24
 cells. Only internal grid lines are drawn; header and section separators provide
 the perimeter without doubled edges. Fills meet boundaries without inset gaps.
