@@ -14,6 +14,26 @@ for (const theme of ["light", "dark"]) {
         ? { width: 390, height: 844 }
         : { width: 1440, height: 900 },
     );
+    const expectFullWidthReply = async (streaming: boolean) => {
+      await expect
+        .poll(() =>
+          page
+            .locator(
+              `[data-streaming="${streaming}"] [data-slot="bubble-content"] > div`,
+            )
+            .evaluate((text) => {
+              const message = text.closest('[data-slot="message-content"]');
+              if (!message) throw new Error("Missing reply container");
+              const content = text.getBoundingClientRect();
+              const available = message.getBoundingClientRect();
+              return Math.max(
+                Math.abs(content.left - available.left),
+                Math.abs(available.right - content.right),
+              );
+            }),
+        )
+        .toBeLessThanOrEqual(2);
+    };
     await page.route("**/api/settings", (route) =>
       route.fulfill({
         json: {
@@ -153,6 +173,7 @@ for (const theme of ["light", "dark"]) {
       "aria-busy",
       "true",
     );
+    await expectFullWidthReply(true);
     await expect(
       page.getByRole("button", { name: "Send message", exact: true }),
     ).toBeDisabled();
@@ -187,6 +208,7 @@ for (const theme of ["light", "dark"]) {
       output: { ...row.output, partial: "", answer: row.output.partial },
     };
     await expect(page.locator('[data-streaming="true"]')).toHaveCount(0);
+    await expectFullWidthReply(false);
     await expect(
       page.locator('[data-slot="trace-line"][role="status"]'),
     ).toHaveCount(0);

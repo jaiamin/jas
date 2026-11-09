@@ -224,6 +224,8 @@ turns. History keeps its compact list title. No extra title-generation request i
 title remains JAS. Loading the title uses a local skeleton only.
 
 Assistant replies use a blue Target with no repeated Agent label or response cost.
+Reply Markdown fills the shared transcript column in both streaming and completed
+states; do not add a second prose-width cap or shrink-to-fit bubble inside it.
 The Target and text-only activity dropdown share one aligned header row. The expanded
 activity guide begins under the Target’s center, with step text aligned to its label. Activity
 stages and details have no decorative icons or completion checkmarks. While pending,

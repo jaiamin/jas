@@ -107,9 +107,14 @@ export function AgentMarkdown({
   streaming?: boolean;
 }) {
   return (
-    <Bubble variant="ghost" aria-busy={streaming} data-streaming={streaming}>
-      <BubbleContent>
-        <div className="flex min-w-0 max-w-prose flex-col gap-4 break-words text-sm leading-relaxed">
+    <Bubble
+      variant="ghost"
+      className="w-full"
+      aria-busy={streaming}
+      data-streaming={streaming}
+    >
+      <BubbleContent className="w-full">
+        <div className="flex min-w-0 flex-col gap-4 break-words text-sm leading-relaxed">
           <Markdown remarkPlugins={remarkPlugins} components={components}>
             {text}
           </Markdown>
