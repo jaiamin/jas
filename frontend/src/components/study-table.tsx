@@ -1,8 +1,7 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { EnvironmentAvatar } from "@/components/environment-avatar";
 import { Empty } from "@/components/feedback";
-import { ArrowDown, ArrowUp, ChevronsUpDown, Star } from "@/components/icons";
+import { ExperimentIcon } from "@/components/icons";
 import { ExperimentActions } from "@/components/record-actions";
 import { FavoriteButton, RecordListView } from "@/components/record-favorites";
 import {
@@ -28,17 +27,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useNow } from "@/hooks/use-now";
 import { useRecordFavorites } from "@/hooks/use-record-favorites";
 import type { RecordFilters } from "@/hooks/use-record-filters";
-import { label, relativeTime } from "@/lib/format";
+import { date, label } from "@/lib/format";
 import type { Environment, StudySummary } from "@/lib/types";
-
-const nameOrder = new Intl.Collator(undefined, {
-  numeric: true,
-  sensitivity: "base",
-});
-
 export function StudyTable({
   studies,
   filters,
@@ -51,11 +43,6 @@ export function StudyTable({
   filters: RecordFilters;
 }) {
   const favorites = useRecordFavorites("studies");
-  const now = useNow();
-  const [sort, setSort] = useState<{
-    key: "name" | "created";
-    direction: "asc" | "desc";
-  }>({ key: "created", direction: "desc" });
   const [selection, setSelected] = useState<string[]>([]);
   const selectAllRef = useRef<HTMLButtonElement>(null);
   const selected = selection.filter((id) =>
@@ -65,46 +52,19 @@ export function StudyTable({
     filters;
   const loading = studies === undefined;
   const environmentsLoading = environments === undefined && !environmentsError;
-  const environmentNames = new Map(
-    environments?.map((environment) => [environment.key, environment.name]),
-  );
   const filtered =
-    studies
-      ?.filter(
-        (s) =>
-          `${s.title} ${s.question} ${environmentNames.get(s.environment) ?? ""}`
-            .toLowerCase()
-            .includes(search.toLowerCase()) &&
-          (status === "all" || s.status === status) &&
-          (scope === "all" || s.environment === scope) &&
-          (view === "all" || favorites.ids.has(s.id)),
-      )
-      .toSorted((a, b) => {
-        const comparison =
-          sort.key === "name"
-            ? nameOrder.compare(a.title, b.title)
-            : Date.parse(a.created) - Date.parse(b.created);
-        return sort.direction === "asc" ? comparison : -comparison;
-      }) ?? [];
+    studies?.filter(
+      (s) =>
+        `${s.title} ${s.question}`
+          .toLowerCase()
+          .includes(search.toLowerCase()) &&
+        (status === "all" || s.status === status) &&
+        (scope === "all" || s.environment === scope) &&
+        (view === "all" || favorites.ids.has(s.id)),
+    ) ?? [];
   const pageCount = Math.max(1, Math.ceil(filtered.length / 10));
   const current = Math.min(page, pageCount - 1);
   const visible = filtered.slice(current * 10, (current + 1) * 10);
-  const allSelectedFavorite =
-    selected.length > 0 && selected.every((id) => favorites.ids.has(id));
-  function changeSort(key: "name" | "created") {
-    setSort((previous) => ({
-      key,
-      direction:
-        previous.key === key
-          ? previous.direction === "asc"
-            ? "desc"
-            : "asc"
-          : key === "created"
-            ? "desc"
-            : "asc",
-    }));
-    setPage(0);
-  }
   return (
     <RecordListView filters={filters} favorites={favorites} noun="experiments">
       <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
@@ -137,34 +97,8 @@ export function StudyTable({
             label: v === "all" ? "All" : label(v),
           }))}
         />
-        {(search || scope !== "all" || status !== "all") &&
-          filtered.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7"
-              onClick={filters.clear}
-            >
-              Clear filters
-            </Button>
-          )}
         {selected.length > 0 && (
           <div className="ml-auto flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7"
-              disabled={!favorites.available}
-              onClick={() => favorites.setMany(selected, !allSelectedFavorite)}
-              aria-label={
-                allSelectedFavorite
-                  ? "Unfavorite selected experiments"
-                  : "Favorite selected experiments"
-              }
-            >
-              <Star data-icon="inline-start" />
-              {allSelectedFavorite ? "Unfavorite" : "Favorite"}
-            </Button>
             <RecordSelectionActions
               count={selected.length}
               onClear={() => {
@@ -184,17 +118,7 @@ export function StudyTable({
       <RecordTable selection>
         <TableHeader className="text-xs">
           <TableRow className="group/record">
-            <TableHead
-              aria-label="Name"
-              className="relative w-1/3"
-              aria-sort={
-                sort.key === "name"
-                  ? sort.direction === "asc"
-                    ? "ascending"
-                    : "descending"
-                  : "none"
-              }
-            >
+            <TableHead aria-label="Name" className="relative w-1/3">
               <RecordSelectAllCheckbox
                 ref={selectAllRef}
                 ids={visible.map((study) => study.id)}
@@ -203,37 +127,14 @@ export function StudyTable({
                 label="Select all experiments on this page"
                 disabled={loading}
               />
-              <SortHeading
-                name="Name"
-                active={sort.key === "name"}
-                direction={sort.direction}
-                onClick={() => changeSort("name")}
-              />
+              Name
             </TableHead>
             <TableHead className="w-24">Favorite</TableHead>
-            <TableHead className="w-64">Environment</TableHead>
+            <TableHead className="w-40">Environment</TableHead>
             <TableHead className="w-32">Status</TableHead>
-            <TableHead className="w-24" title="Completed / total runs">
-              Runs
-            </TableHead>
-            <TableHead
-              className="w-40"
-              aria-label="Created"
-              aria-sort={
-                sort.key === "created"
-                  ? sort.direction === "asc"
-                    ? "ascending"
-                    : "descending"
-                  : "none"
-              }
-            >
-              <SortHeading
-                name="Created"
-                active={sort.key === "created"}
-                direction={sort.direction}
-                onClick={() => changeSort("created")}
-              />
-            </TableHead>
+            <TableHead className="w-24">Revision</TableHead>
+            <TableHead className="w-24">Runs</TableHead>
+            <TableHead className="w-48">Created</TableHead>
             <TableHead className="w-16">
               <span className="sr-only">Actions</span>
             </TableHead>
@@ -267,13 +168,16 @@ export function StudyTable({
                       )
                     }
                   />
-                  <Link
-                    className="block min-w-0 truncate underline-offset-4 hover:underline"
-                    title={`${study.title}\n${study.question}`}
-                    to={`/studies/${study.id}`}
-                  >
-                    {study.title}
-                  </Link>
+                  <div className="flex min-w-0 items-center gap-2 [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-muted-foreground">
+                    <ExperimentIcon aria-hidden="true" />
+                    <Link
+                      className="min-w-0 truncate underline-offset-4 hover:underline"
+                      title={study.title}
+                      to={`/studies/${study.id}`}
+                    >
+                      {study.title}
+                    </Link>
+                  </div>
                 </TableCell>
                 <TableCell>
                   <FavoriteButton
@@ -283,42 +187,26 @@ export function StudyTable({
                   />
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2.5">
-                    <EnvironmentAvatar environment={study.environment} />
-                    {environmentsLoading ? (
-                      <Skeleton aria-hidden="true" className="h-4 w-32" />
-                    ) : environments === undefined ? (
-                      <span className="text-muted-foreground">Unavailable</span>
-                    ) : (
-                      <Link
-                        className="underline-offset-4 hover:underline"
-                        to={`/environments?environment=${study.environment}`}
-                      >
-                        {environmentNames.get(study.environment)}
-                      </Link>
-                    )}
-                  </div>
+                  {environmentsLoading ? (
+                    <Skeleton aria-hidden="true" className="h-4 w-32" />
+                  ) : environments === undefined ? (
+                    <span className="text-muted-foreground">Unavailable</span>
+                  ) : (
+                    environments.find(
+                      (environment) => environment.key === study.environment,
+                    )?.name
+                  )}
                 </TableCell>
                 <TableCell>
                   <Status value={study.status} />
                 </TableCell>
+                <TableCell className="tabular-nums">{study.revision}</TableCell>
                 <TableCell className="tabular-nums">
-                  <Link
-                    className="underline-offset-4 hover:underline"
-                    to={`/studies/${study.id}?tab=runs`}
-                    aria-label={`View runs for ${study.title}: ${study.completed_runs} / ${study.run_count} complete`}
-                  >
-                    {study.completed_runs} / {study.run_count}
-                  </Link>
+                  {study.completed_runs} / {study.run_count}
                 </TableCell>
 
                 <TableCell className="whitespace-nowrap">
-                  <time
-                    dateTime={study.created}
-                    title={new Date(study.created).toLocaleString()}
-                  >
-                    {relativeTime(study.created, now)}
-                  </time>
+                  {date(study.created)}
                 </TableCell>
                 <TableCell>
                   <ExperimentActions study={study} />
@@ -356,35 +244,5 @@ export function StudyTable({
         noun="experiment"
       />
     </RecordListView>
-  );
-}
-
-function SortHeading({
-  name,
-  active,
-  direction,
-  onClick,
-}: {
-  name: string;
-  active: boolean;
-  direction: "asc" | "desc";
-  onClick: () => void;
-}) {
-  const Icon = active
-    ? direction === "asc"
-      ? ArrowUp
-      : ArrowDown
-    : ChevronsUpDown;
-  return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="h-7 gap-1.5 px-0 text-xs hover:bg-transparent"
-      aria-label={`Sort by ${name.toLowerCase()}`}
-      onClick={onClick}
-    >
-      {name}
-      <Icon data-icon="inline-end" className="text-muted-foreground" />
-    </Button>
   );
 }

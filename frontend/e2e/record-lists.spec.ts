@@ -308,6 +308,7 @@ for (const theme of ["light", "dark"]) {
                 "Favorite",
                 "Environment",
                 "Status",
+                "Revision",
                 "Runs",
                 "Created",
                 "Actions",
@@ -349,9 +350,7 @@ for (const theme of ["light", "dark"]) {
               (environment) => environment.key === study.design.environment,
             )?.name ?? "Missing catalogue environment",
           );
-          await expect(cells.nth(4)).toHaveText(
-            `${study.runs.filter((run) => run.status === "complete").length} / ${study.runs.length}`,
-          );
+          await expect(cells.nth(4)).toHaveText(String(study.revision));
           await expect(cells.nth(0).getByRole("link")).toHaveCSS(
             "font-weight",
             "400",
@@ -368,7 +367,7 @@ for (const theme of ["light", "dark"]) {
             "400",
           );
         }
-        const dateCell = cells.nth(path === "/studies" ? 5 : 9);
+        const dateCell = cells.nth(path === "/studies" ? 6 : 9);
         expect(
           await dateCell.evaluate((cell) => getComputedStyle(cell).color),
         ).toBe(
@@ -542,14 +541,11 @@ for (const [path, endpoint, title, noun] of [
       await expect(header.locator('[data-slot="skeleton"]')).toHaveCount(0);
       const table = page.getByRole("table");
       await expect(
-        table.getByRole("columnheader", {
-          name: path === "/studies" ? "Created" : "Revision",
-          exact: true,
-        }),
+        table.getByRole("columnheader", { name: "Revision", exact: true }),
       ).toBeVisible();
       await expect(table.locator("thead [data-slot=skeleton]")).toHaveCount(0);
       await expect(table.locator("tbody [data-slot=skeleton]")).toHaveCount(
-        path === "/studies" ? 24 : 33,
+        path === "/studies" ? 27 : 33,
       );
       await expect(table.locator("tbody")).toHaveAttribute("aria-busy", "true");
       await expect(table.locator("tbody")).toHaveAttribute(
@@ -1064,7 +1060,7 @@ for (const path of ["/studies", "/runs"] as const) {
               Number.parseFloat(getComputedStyle(element).paddingLeft),
           );
         expect(box && name && box.x + box.width < name.x).toBe(true);
-        expect(name?.x).toBeCloseTo(title, 0);
+        expect(name?.x).toBeCloseTo(title + (path === "/studies" ? 24 : 0), 0);
         if (!touch) {
           await row.hover();
           await expect(checkbox).toHaveCSS("opacity", "1");
