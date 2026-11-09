@@ -420,6 +420,29 @@ for (const theme of ["light", "dark"]) {
       proposal.getByRole("link", { name: "Review protocol" }),
     ).toHaveAttribute("href", `/new?plan=${row.id}`);
     await expect(proposal).toContainText("Ready for review. Nothing has run.");
+    const summary = proposal.getByLabel("Protocol summary");
+    await expect(summary.locator("dt")).toHaveText([
+      "Agents",
+      "Conditions",
+      "Planned runs",
+    ]);
+    await expect(summary.locator("dd")).toHaveText([
+      String(design.profiles.length),
+      String(design.conditions.length),
+      String(
+        design.conditions.length * design.seeds.length * design.repetitions,
+      ),
+    ]);
+    const cardBounds = await proposal.boundingBox();
+    const itemBounds = await proposal
+      .locator('xpath=ancestor::*[@data-slot="message-scroller-item"]')
+      .boundingBox();
+    // Stock Card draws its ring outside its box; leave it inside paint containment.
+    expect(
+      cardBounds &&
+        itemBounds &&
+        cardBounds.x + cardBounds.width + 1 <= itemBounds.x + itemBounds.width,
+    ).toBe(true);
     await expect(page.getByRole("link", { name: "JAS home" })).toHaveCount(
       theme === "dark" ? 0 : 1,
     );

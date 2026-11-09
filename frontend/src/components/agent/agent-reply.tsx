@@ -89,7 +89,7 @@ export const AgentReply = memo(function AgentReply({
             {complete &&
               row.purpose === "design" &&
               (design && row.output?.supported ? (
-                <Card className="my-4">
+                <Card className="mx-px my-4">
                   <CardHeader className="gap-2">
                     <CardTitle>
                       <h2>{design.title}</h2>
@@ -97,16 +97,39 @@ export const AgentReply = memo(function AgentReply({
                     <CardDescription>{design.question}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      {design.profiles.length} agents ·{" "}
-                      {design.conditions.length} conditions ·{" "}
-                      {design.conditions.length *
-                        design.seeds.length *
-                        design.repetitions}{" "}
-                      runs
-                    </p>
+                    <dl
+                      aria-label="Protocol summary"
+                      className="grid grid-cols-3 gap-4"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <dt className="text-xs text-muted-foreground">
+                          Agents
+                        </dt>
+                        <dd className="font-medium tabular-nums">
+                          {design.profiles.length}
+                        </dd>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <dt className="text-xs text-muted-foreground">
+                          Conditions
+                        </dt>
+                        <dd className="font-medium tabular-nums">
+                          {design.conditions.length}
+                        </dd>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <dt className="text-xs text-muted-foreground">
+                          Planned runs
+                        </dt>
+                        <dd className="font-medium tabular-nums">
+                          {design.conditions.length *
+                            design.seeds.length *
+                            design.repetitions}
+                        </dd>
+                      </div>
+                    </dl>
                   </CardContent>
-                  <CardFooter className="flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <CardFooter className="flex-col items-stretch gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
                     <Button asChild>
                       <Link to={`/new?plan=${row.id}`}>
                         Review protocol
