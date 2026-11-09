@@ -42,7 +42,7 @@ for (const width of [390, 834, 1280, 1440]) {
           ).toBeFocused();
           await builtIn.click();
           await page
-            .getByRole("button", {
+            .getByRole("link", {
               name: "Explore Shared commons",
               exact: true,
             })

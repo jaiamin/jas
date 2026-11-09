@@ -645,50 +645,49 @@ Keyboard order follows the row from brand to close. Main navigation menus use
 
 ## Environments catalogue
 
-Environments is a library for choosing world rules, separate from the Experiments
-table. Keep a compact title, blank accessible search field and one blue New action
-at the top; New opens the composed-environment editor. Neutral bordered Built-in /
-Custom tabs follow the record-list toggle geometry. A single separator introduces
-the selected collection. Do not add a subtitle, counts or a permanent empty custom
-section below the built-ins.
+Environments uses one quiet list for choosing world rules. Preserve a compact
+heading, blank accessible search field, one blue New action and the neutral
+bordered Built-in / Custom tabs. New opens the composed-environment editor.
+A separator beneath the tabs continues directly into the list; do not add cards,
+repeat Details footers or leave an extra gap before the first row.
 
-Built-ins use responsive stock Cards: one column on phones, two at intermediate
-widths and three on wide screens. Each card contains its grid identity, full name,
-original catalogue description and a Details action. Text remains selectable.
-Place the resource-composition builder last so existing mechanics lead the scan.
-`EnvironmentMark` is small authored brand artwork composed inside stock
-Avatar/Fallback: fixed 9×9 grid patterns represent pooling, reciprocal transfers,
-task dependencies, authority, bargaining, signals, replenishment and composition.
-It draws only three SVG paths using muted foreground and primary tokens, without
-animation, generated images, network requests or runtime randomness. Preserve
-these marks when applying presets; their colors follow the new semantic tokens.
-They are separate from functional preset icons, which remain at the icon boundary.
-Always show the name alongside the decorative, aria-hidden artwork.
+Built-ins compose stock Item/ItemGroup and Separators. Each row is a native React
+Router link to `?environment=<key>`, with a decorative 40px mark, medium 14px name,
+regular muted description and a small trailing chevron. Use 12px horizontal row
+insets, 16px vertical padding and 12px between mark and text. Center marks against
+the whole name/description block, including wrapped phone copy. Keep text fully
+visible and selectable; rows have square corners and a subtle stock hover surface.
+Keep the resource-composition builder last so existing mechanics lead the scan.
+Custom uses matching row spacing and mark alignment, with linked reusable setup
+names, environment/revision metadata and its existing bordered actions menu.
 
-Details open in a stock Sheet addressed by `?environment=<key>`. On phones it fills
-the width; on larger screens it is bounded to 32rem. Preserve the full original
-observations, enforced mechanics, controls, measure definitions and rule version.
-Keep the title/description and footer actions fixed, with the details scrolling
-between separators. Controls and measurements are collapsed accordions. The blue
-Configure experiment action opens the selected template; Design with Agent uses
-the shared Target icon and passes the same environment-specific design request.
-Opening details adds a browser-history entry; Back closes them. Escape/Close
-removes only the environment parameter and restores focus to the initiating action,
-or the page heading for a direct link. Invalid environment links have an explicit
-Browse environments recovery action.
+`EnvironmentMark` is authored brand SVG with no backing square, Avatar, border,
+shadow or rounded clipping. Its fixed 9×9 patterns represent pooling, reciprocal
+transfers, dependencies, authority, bargaining, signals, replenishment and resource
+composition. Preserve four SVG units of clear space on every side of the ink.
+Only three paths use semantic muted foreground and primary fills. No runtime
+randomness, animation, generated assets or requests. Colors follow presets;
+functional preset icons remain separate at the shared icon boundary.
 
-Custom owns its remote query and confirmed-delete mutation. Show reusable setups
-as compact stock Items with the environment mark, linked name and environment /
-revision metadata. A bordered ellipsis menu offers Edit and reuse and Delete;
-deletion requires AlertDialog confirmation, disables dismissal while pending, and
-retains the explanation that saved experiments preserve their rules and evidence.
-Do not repeat an edit button beside the linked name. The empty tab explains how to
-save a reusable setup without duplicating the header's New action.
+Details retain the URL-addressable stock Sheet: full width on phones, at most
+32rem on desktop. Place the bare mark beside the title in a compact header, then
+the description. Keep title and footer actions fixed while the body scrolls.
+Preserve original observations, enforced mechanics, control/measurement accordions
+and rule version. Show the composition explanation only for that environment.
+Configure experiment opens its template; Design with Agent passes the existing
+environment-specific request and uses the shared Target icon.
 
-Only pending remote catalogue/custom content uses stock Skeletons. Static title,
-search, tabs and New remain mounted. Queries load independently; custom setups
-remain usable if the catalogue fails. Retain cached collections on refresh errors
-and show a retryable error alongside them. Search covers built-in names/descriptions
-or custom names/environments, resets on a tab change, and offers Clear search for
-no matches. Do not retain the old vertical catalogue navigation or duplicate the
-full mechanics documentation on the overview.
+Native links support opening details in another tab as well as normal navigation.
+Back closes the Sheet; Escape/Close removes only the environment parameter and
+restores focus to the initiating row or the heading for a direct link. Invalid
+links have a Browse environments recovery action. Custom query/deletion ownership
+remains local; edit/reuse and confirmed deletion preserve saved experiment rules
+and evidence. Keep data-local skeletons, usable static controls, independent
+queries, cached collections during refresh errors, retries, explicit empty states
+and clear-search recovery. Remove obsolete Card compositions completely.
+
+Research informing this structure: [Carbon contained lists](https://carbondesignsystem.com/components/contained-list/usage/)
+for related content, optional linked rows and aligned separators;
+[Atlassian spacing](https://atlassian.design/foundations/spacing/) for a consistent
+scale and the relationship between internal text spacing and inter-item spacing.
+These guide composition; stock shadcn primitives and JAS tokens remain authoritative.

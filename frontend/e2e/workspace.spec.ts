@@ -317,7 +317,7 @@ test("environment mechanics lead to editable reusable setups", async ({
 }, testInfo) => {
   await page.goto("/environments");
   await page
-    .getByRole("button", { name: "Explore Team coordination", exact: true })
+    .getByRole("link", { name: "Explore Team coordination", exact: true })
     .click();
   await expect(
     page.getByRole("heading", { name: "What agents observe" }),

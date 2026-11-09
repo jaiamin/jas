@@ -50,6 +50,38 @@ for (const theme of ["light", "dark"]) {
           .locator("p")
           .evaluate((element) => getComputedStyle(element).userSelect),
       ).not.toBe("none");
+      const mark = card.locator("svg[data-environment]");
+      await expect(card.locator('[data-slot="avatar"]')).toHaveCount(0);
+      const geometry = await mark.evaluate((element) => {
+        const svg = element as SVGSVGElement;
+        const ink = svg.getBBox();
+        const view = svg.viewBox.baseVal;
+        const box = svg.getBoundingClientRect();
+        return {
+          left: ((ink.x - view.x) * box.width) / view.width,
+          right:
+            ((view.x + view.width - ink.x - ink.width) * box.width) /
+            view.width,
+          top: ((ink.y - view.y) * box.height) / view.height,
+          bottom:
+            ((view.y + view.height - ink.y - ink.height) * box.height) /
+            view.height,
+        };
+      });
+      for (const gap of Object.values(geometry))
+        expect(gap).toBeGreaterThanOrEqual(3);
+      const markBox = await mark.boundingBox();
+      const textBox = await card
+        .locator('[data-slot="item-content"]')
+        .boundingBox();
+      expect(markBox && textBox).toBeTruthy();
+      if (markBox && textBox)
+        expect(
+          Math.abs(
+            markBox.y + markBox.height / 2 - textBox.y - textBox.height / 2,
+          ),
+        ).toBeLessThanOrEqual(1);
+      await expect(page.locator('[data-slot="card"]')).toHaveCount(0);
       await page.screenshot({
         path: testInfo.outputPath(`environments-${theme}-${width}.png`),
         fullPage: true,
@@ -72,7 +104,7 @@ for (const theme of ["light", "dark"]) {
         .getByRole("button", { name: "Clear search", exact: true })
         .click();
       for (const env of catalog.environments) {
-        const trigger = page.getByRole("button", {
+        const trigger = page.getByRole("link", {
           name: `Explore ${env.name}`,
           exact: true,
         });
@@ -126,7 +158,7 @@ for (const theme of ["light", "dark"]) {
         await expect(trigger).toBeFocused();
       }
       await page
-        .getByRole("button", { name: "Explore Shared commons", exact: true })
+        .getByRole("link", { name: "Explore Shared commons", exact: true })
         .click();
       await page.goBack();
       await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -184,6 +216,11 @@ test("environment data loads independently and errors retain cached content", as
     await expect(
       page.getByRole("status", { name: "Loading environments", exact: true }),
     ).toBeVisible();
+    const loadingRow = await page
+      .getByRole("status", { name: "Loading environments", exact: true })
+      .locator('[data-slot="item"]')
+      .first()
+      .boundingBox();
     await expect(page.locator("header [data-slot=skeleton]")).toHaveCount(0);
     await expect(
       page.getByRole("link", { name: "Create environment", exact: true }),
@@ -204,6 +241,16 @@ test("environment data loads independently and errors retain cached content", as
     releaseCatalog();
     await expect(page.getByRole("article")).toHaveCount(8);
     await expect(page.getByRole("status")).toHaveCount(0);
+    const loadedRow = await page
+      .getByRole("article")
+      .first()
+      .locator('[data-slot="item"]')
+      .boundingBox();
+    expect(loadingRow && loadedRow).toBeTruthy();
+    if (loadingRow && loadedRow)
+      expect(
+        Math.abs(loadingRow.height - loadedRow.height),
+      ).toBeLessThanOrEqual(1);
     failCatalog = true;
     await page.waitForTimeout(1100);
     await page.getByRole("link", { name: "Runs", exact: true }).click();

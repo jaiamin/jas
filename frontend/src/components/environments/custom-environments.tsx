@@ -81,15 +81,15 @@ export function CustomEnvironments({
           role="status"
           aria-label="Loading custom environments"
           aria-busy="true"
-          className="flex flex-col gap-4"
+          className="flex flex-col"
         >
           {["a", "b", "c"].map((id) => (
             <div
               key={id}
               aria-hidden="true"
-              className="flex items-center gap-3 py-3"
+              className="flex items-center gap-3 px-3 py-4"
             >
-              <Skeleton className="size-12 shrink-0 rounded-lg" />
+              <Skeleton className="size-10 shrink-0" />
               <div className="flex flex-1 flex-col gap-2">
                 <Skeleton className="h-4 w-48 max-w-full" />
                 <Skeleton className="h-4 w-36" />
@@ -102,8 +102,8 @@ export function CustomEnvironments({
         <ItemGroup className="gap-0">
           {visibleSetups.map((item) => (
             <Fragment key={item.id}>
-              <Item>
-                <ItemMedia>
+              <Item className="gap-3 rounded-none border-0 px-3 py-4">
+                <ItemMedia className="group-has-data-[slot=item-description]/item:self-center group-has-data-[slot=item-description]/item:translate-y-0">
                   <EnvironmentMark environment={item.design.environment} />
                 </ItemMedia>
                 <ItemContent className="min-w-0">

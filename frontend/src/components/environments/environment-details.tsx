@@ -78,12 +78,12 @@ export function EnvironmentDetails({
 }) {
   return (
     <>
-      <SheetHeader className="gap-4 px-6 pt-6 pr-14">
-        <EnvironmentMark environment={env.key} />
-        <div className="flex flex-col gap-2">
+      <SheetHeader className="gap-3 px-6 pt-6">
+        <div className="flex items-center gap-3 pr-8">
+          <EnvironmentMark environment={env.key} />
           <SheetTitle>{env.name}</SheetTitle>
-          <SheetDescription>{env.description}</SheetDescription>
         </div>
+        <SheetDescription>{env.description}</SheetDescription>
       </SheetHeader>
       <Separator />
       <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-6 pb-6">
@@ -135,11 +135,13 @@ export function EnvironmentDetails({
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-        <p className="text-xs leading-relaxed text-muted-foreground">
-          Compose custom resource economies from tested mechanics. Other new
-          mechanics require an environment implementation and correctness
-          checks.
-        </p>
+        {env.key === "composed" && (
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            Compose custom resource economies from tested mechanics. Other new
+            mechanics require an environment implementation and correctness
+            checks.
+          </p>
+        )}
         <p className="text-xs text-muted-foreground">
           Rules {env.rule_version}
         </p>

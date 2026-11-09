@@ -1,16 +1,17 @@
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { CustomEnvironments } from "@/components/environments/custom-environments";
-import {
-  EnvironmentCard,
-  EnvironmentCardSkeleton,
-} from "@/components/environments/environment-card";
 import { EnvironmentDetails } from "@/components/environments/environment-details";
+import {
+  EnvironmentRow,
+  EnvironmentRowSkeleton,
+} from "@/components/environments/environment-row";
 import { Alert, Empty } from "@/components/feedback";
 import { Plus } from "@/components/icons";
 import { RecordSearch } from "@/components/record-list-heading";
 import { ErrorState } from "@/components/shared";
 import { Button } from "@/components/ui/button";
+import { ItemGroup } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -22,7 +23,7 @@ const skeletonIds = ["a", "b", "c", "d", "e", "f", "g", "h"];
 export default function Environments() {
   const [params, setParams] = useSearchParams();
   const [search, setSearch] = useState("");
-  const detailTrigger = useRef<HTMLButtonElement | null>(null);
+  const detailTrigger = useRef<HTMLAnchorElement | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const catalog = useApi<Catalog>("/catalog");
   const view = params.get("view") === "custom" ? "custom" : "built-in";
@@ -80,7 +81,7 @@ export default function Environments() {
       </header>
       <Tabs
         value={view}
-        className="min-w-0 gap-5"
+        className="min-w-0 gap-0"
         onValueChange={(value) => {
           setSearch("");
           setParams((previous) => {
@@ -115,29 +116,34 @@ export default function Environments() {
               role="status"
               aria-label="Loading environments"
               aria-busy="true"
-              className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+              className="flex flex-col"
             >
               {skeletonIds.map((id) => (
-                <EnvironmentCardSkeleton key={id} />
+                <Fragment key={id}>
+                  <EnvironmentRowSkeleton />
+                  <Separator />
+                </Fragment>
               ))}
             </div>
           ) : catalog.data && visibleEnvironments.length > 0 ? (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {visibleEnvironments.map((env) => (
-                <EnvironmentCard
-                  key={env.key}
-                  environment={env}
-                  onExplore={(trigger) => {
-                    detailTrigger.current = trigger;
-                    setParams((previous) => {
-                      const next = new URLSearchParams(previous);
-                      next.set("environment", env.key);
-                      return next;
-                    });
-                  }}
-                />
-              ))}
-            </div>
+            <ItemGroup className="gap-0">
+              {visibleEnvironments.map((env) => {
+                const next = new URLSearchParams(params);
+                next.set("environment", env.key);
+                return (
+                  <Fragment key={env.key}>
+                    <EnvironmentRow
+                      environment={env}
+                      href={`/environments?${next}`}
+                      onExplore={(trigger) => {
+                        detailTrigger.current = trigger;
+                      }}
+                    />
+                    <Separator />
+                  </Fragment>
+                );
+              })}
+            </ItemGroup>
           ) : catalog.data ? (
             <Empty
               title={

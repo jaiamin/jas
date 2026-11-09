@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { EnvironmentId } from "@/lib/types";
 
 // Fixed 9×9 identities: pooled contributions, paired transfers, dependency steps,
@@ -117,25 +116,15 @@ export function EnvironmentMark({
   environment: EnvironmentId;
 }) {
   return (
-    <Avatar className="size-12 rounded-lg after:rounded-lg" aria-hidden="true">
-      <AvatarFallback className="rounded-lg">
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 37 37"
-          className="size-11"
-          data-environment={environment}
-        >
-          <path
-            d={paths[environment][0]}
-            className="fill-muted-foreground/15"
-          />
-          <path
-            d={paths[environment][1]}
-            className="fill-muted-foreground/70"
-          />
-          <path d={paths[environment][2]} className="fill-primary" />
-        </svg>
-      </AvatarFallback>
-    </Avatar>
+    <svg
+      aria-hidden="true"
+      viewBox="-3 -3 43 43"
+      className="size-10 shrink-0"
+      data-environment={environment}
+    >
+      <path d={paths[environment][0]} className="fill-muted-foreground/15" />
+      <path d={paths[environment][1]} className="fill-muted-foreground/70" />
+      <path d={paths[environment][2]} className="fill-primary" />
+    </svg>
   );
 }
