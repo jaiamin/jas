@@ -650,6 +650,10 @@ for (const [path, noun, size] of [
       request,
     }, testInfo) => {
       await page.setViewportSize({ width, height: 900 });
+      await page.addInitScript(
+        (theme) => localStorage.setItem("jas-theme", theme),
+        width === 390 ? "dark" : "light",
+      );
       const { study } = await createStudy(request);
       const summary = (await (await request.get("/api/studies")).json()).find(
         (item: { id: string }) => item.id === study.id,
@@ -682,30 +686,37 @@ for (const [path, noun, size] of [
       const next = pagination.getByRole("button", {
         name: `Next ${noun} page`,
       });
-      await expect(previous).toHaveCSS("column-gap", "2px");
-      await expect(next).toHaveCSS("column-gap", "2px");
+      await expect(pagination.getByRole("button")).toHaveCount(2);
+      await expect(previous).toHaveText("");
+      await expect(next).toHaveText("");
+      await expect(previous).toHaveAttribute("data-variant", "outline");
+      await expect(next).toHaveAttribute("data-variant", "outline");
+      const previousBounds = await previous.boundingBox();
+      const nextBounds = await next.boundingBox();
+      expect(previousBounds?.height).toBe(28);
+      expect(nextBounds?.x).toBe(
+        (previousBounds?.x ?? 0) + (previousBounds?.width ?? 0),
+      );
       await expect(previous).toBeDisabled();
-      await expect(
-        pagination.getByRole("button", {
-          name: `Go to ${noun} page 1`,
-          exact: true,
-        }),
-      ).toHaveAttribute("aria-current", "page");
+      const indicator = pagination.locator('[aria-live="polite"]');
+      await expect(indicator).toHaveText("Page 1 of 8");
+      await expect(indicator).toHaveCSS("font-weight", "400");
       await next.click();
+      await expect(indicator).toHaveText("Page 2 of 8");
       await expect(table.locator("tbody tr").first()).toContainText(
         path === "/studies"
           ? `Experiment ${size + 1}`
           : `Condition ${size + 1}`,
       );
       await expect(previous).toBeEnabled();
-      await pagination
-        .getByRole("button", { name: `Go to ${noun} page 8`, exact: true })
-        .click();
+      for (let index = 0; index < 6; index++) await next.click();
+      await expect(indicator).toHaveText("Page 8 of 8");
       await expect(next).toBeDisabled();
       await expect(table.locator("tbody tr")).toHaveCount(1);
-      await expect(
-        pagination.locator('[data-slot="pagination-ellipsis"]'),
-      ).toHaveCount(1);
+      await previous.focus();
+      await page.keyboard.press("Enter");
+      await expect(indicator).toHaveText("Page 7 of 8");
+      await next.click();
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth > innerWidth,
@@ -724,12 +735,11 @@ for (const [path, noun, size] of [
       );
       await expect(previous).toBeDisabled();
       await search.fill("");
-      await expect(
-        pagination.getByRole("button", {
-          name: `Go to ${noun} page 1`,
-          exact: true,
-        }),
-      ).toHaveAttribute("aria-current", "page");
+      await expect(indicator).toHaveText("Page 1 of 8");
+      await search.fill(
+        path === "/studies" ? "Experiment 71" : "Condition 106",
+      );
+      await expect(pagination).toHaveCount(0);
     });
   }
 }

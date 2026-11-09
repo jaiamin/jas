@@ -468,11 +468,13 @@ counts and row heights to the table, retain cached rows during refreshes, and us
 one accessible loading announcement. Stock Table row separators provide
 one line per boundary, including below the final row; do not add a second divider around the table or pagination.
 The two pages share the filter-state contract and row-loading skeletons while retaining their
-own columns. Omit total counts below the tables and render pagination only when
-there is more than one page. Compose shared stock Pagination/Buttons with Previous,
-numbered pages, bounded ellipses and Next; use real disabled buttons at either end,
-aria-current for the active page, and compact icon-only arrows on narrow screens.
-Previous/Next use a 2px gap between chevrons and labels.
+own columns. Omit record totals below the tables and render pagination only when
+there is more than one page. Compose stock Pagination, ButtonGroup and two outline
+icon-sm Buttons at the bottom right. A muted regular-weight “Page X of Y” indicator
+sits beside the connected previous/next arrows, with tabular numbers and polite
+page-change announcements. Use the same compact layout on desktop and mobile,
+accessible button names, and real disabled buttons at either end. Omit numbered
+page buttons, ellipses, first/last controls and page-size selectors.
 Reset to the first page when search, scope, status or All/Favorites changes. Created dates
 use the normal data color in both tables; Runs includes its recorded creation time.
 Runs link to their exact experiment revision and keep comparison
