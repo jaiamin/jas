@@ -1,7 +1,7 @@
 // App icons share one import boundary. Keep these stock exports aligned with
 // components.json when applying a preset; generated UI icons are owned by the CLI.
 
-import { FlaskConical as FlaskIcon, Target as TargetIcon } from "lucide-react";
+import { FlaskConical as FlaskIcon } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 
 export {
@@ -52,6 +52,7 @@ export {
   Sprout,
   Sun,
   Target,
+  Target as AgentIcon,
   Trash2,
   X,
 } from "lucide-react";
@@ -60,19 +61,6 @@ export type AppIcon = ComponentType<SVGProps<SVGSVGElement>>;
 
 // Requested partial fills stay at the icon boundary, using the preset's Lucide
 // silhouettes and semantic surface colors. Other app icons remain stock exports.
-export function AgentIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <TargetIcon {...props} data-partial-fill="target">
-      <path
-        data-ring=""
-        d="M22 12a10 10 0 1 0-20 0 10 10 0 0 0 20 0ZM18 12a6 6 0 1 0-12 0 6 6 0 0 0 12 0ZM14 12a2 2 0 1 0-4 0 2 2 0 0 0 4 0Z"
-        fillRule="evenodd"
-        stroke="none"
-      />
-    </TargetIcon>
-  );
-}
-
 export function ExperimentIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <FlaskIcon {...props} data-partial-fill="flask">

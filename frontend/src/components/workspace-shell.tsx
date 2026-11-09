@@ -87,7 +87,7 @@ export default function WorkspaceShell() {
     ) ?? [];
   const primaryLinks = [
     { to: "/", label: "Home", icon: House, partialFill: "house" },
-    { to: "/agent", label: "Agent", icon: AgentIcon, partialFill: "target" },
+    { to: "/agent", label: "Agent", icon: AgentIcon, partialFill: "none" },
   ];
   const links = [
     {
