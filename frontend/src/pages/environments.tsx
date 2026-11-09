@@ -115,7 +115,10 @@ export default function Environments() {
     environments[0]?.key;
   return (
     <>
-      <PageHeading title="Environments" />
+      <PageHeading
+        title="Environments"
+        illustration="/illustrations/page-headings/lab.webp"
+      />
       {catalog.error ? (
         <ErrorState error={catalog.error} onRetry={catalog.refetch} />
       ) : !catalog.data ? (

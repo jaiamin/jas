@@ -191,30 +191,42 @@ for (const theme of ["light", "dark"]) {
           exact: true,
         });
         await expect(heading).toBeVisible();
-        const icon = header.locator('[data-slot="avatar"]');
+        const icon = header.locator(
+          path === "/runs" ? "img" : '[data-slot="avatar"]',
+        );
         await expect(icon).toBeVisible();
         await expect(icon).toHaveCSS("width", "36px");
-        expect(
-          await icon.evaluate(
-            (element) => getComputedStyle(element, "::after").borderTopWidth,
-          ),
-        ).toBe("0px");
-        await expect(icon.locator("svg")).toHaveCSS("width", "18px");
-        expect(
-          await icon.evaluate((element) => {
-            const style = getComputedStyle(element);
-            const radius = Number.parseFloat(style.borderTopLeftRadius);
-            return radius > 0 && radius < element.clientWidth / 2;
-          }),
-        ).toBe(true);
-        const filledIcon = icon.locator(
-          path === "/studies" ? "[data-liquid]" : "svg",
-        );
-        expect(
-          await filledIcon.evaluate(
-            (element) => getComputedStyle(element).fill,
-          ),
-        ).not.toBe("none");
+        if (path === "/runs") {
+          await expect(icon).toHaveAttribute(
+            "src",
+            "/illustrations/page-headings/play.webp",
+          );
+          expect(
+            await icon.evaluate(
+              (element) => (element as HTMLImageElement).naturalWidth,
+            ),
+          ).toBeGreaterThan(0);
+          await expect(header.locator('[data-slot="avatar"]')).toHaveCount(0);
+        } else {
+          expect(
+            await icon.evaluate(
+              (element) => getComputedStyle(element, "::after").borderTopWidth,
+            ),
+          ).toBe("0px");
+          await expect(icon.locator("svg")).toHaveCSS("width", "18px");
+          expect(
+            await icon.evaluate((element) => {
+              const style = getComputedStyle(element);
+              const radius = Number.parseFloat(style.borderTopLeftRadius);
+              return radius > 0 && radius < element.clientWidth / 2;
+            }),
+          ).toBe(true);
+          expect(
+            await icon
+              .locator("[data-liquid]")
+              .evaluate((element) => getComputedStyle(element).fill),
+          ).not.toBe("none");
+        }
         const search = header.getByRole("textbox", { name: `Search ${noun}` });
         await expect(search).toBeVisible();
         expect(await search.getAttribute("placeholder")).toBeNull();
