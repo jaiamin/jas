@@ -172,7 +172,7 @@ export default function WorkspaceShell() {
             <SidebarTrigger className="ml-auto" aria-label="Close menu" />
           )}
           <SidebarMenu>
-            <SidebarMenuItem className="flex items-center px-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+            <SidebarMenuItem className="flex items-center px-2">
               <Button
                 variant="link"
                 asChild

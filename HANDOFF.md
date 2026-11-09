@@ -298,3 +298,8 @@ brand link. Logo and wordmark remain one compact home link, with no hover fill.
 Collapsed logo remains 20px and fully contained. Frontend lint/build passed; live
 browser verified hover decoration, alignment, zero movement while held active,
 home navigation and collapsed containment. Owned browser closed; 8080 stays live.
+
+Collapse-position follow-up: removed collapsed-only brand centering/padding so the
+logo stays at x=16px, y=18px throughout sidebar collapse and expansion. Live browser
+sampled 39 animation frames across both transitions with zero logo movement.
+Frontend lint/build passed. Browser closed; port 8080 remains running.
