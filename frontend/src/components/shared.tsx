@@ -17,36 +17,23 @@ import { label } from "@/lib/format";
 export function PageHeading({
   title,
   description,
-  illustration,
   children,
 }: {
   title: string;
   description?: string;
-  illustration?: string;
   children?: ReactNode;
 }) {
   return (
     <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
-      <div className="flex min-w-0 items-center gap-3">
-        {illustration && (
-          <img
-            src={illustration}
-            alt=""
-            width={36}
-            height={36}
-            className="size-9 shrink-0 object-contain"
-          />
+      <div className="min-w-0">
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+          {title}
+        </h1>
+        {description && (
+          <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">
+            {description}
+          </p>
         )}
-        <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            {title}
-          </h1>
-          {description && (
-            <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">
-              {description}
-            </p>
-          )}
-        </div>
       </div>
       {children && (
         <div className="flex shrink-0 flex-wrap items-center gap-2">

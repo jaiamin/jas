@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import { ExperimentIcon, Plus, Search } from "@/components/icons";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Plus, Search } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   InputGroup,
@@ -46,27 +45,17 @@ export function RecordListHeading({
       className="flex flex-col gap-4 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8"
     >
       <div className="flex min-w-0 items-center gap-3">
-        {title === "Runs" ? (
-          <img
-            src="/illustrations/page-headings/play.webp"
-            alt=""
-            width={36}
-            height={36}
-            className="size-9 shrink-0 object-contain"
-          />
-        ) : (
-          <Avatar
-            className="size-9 rounded-lg after:rounded-lg after:border-0"
-            aria-hidden="true"
-          >
-            <AvatarFallback
-              data-active="true"
-              className="rounded-lg bg-muted-foreground/15 [&>svg]:size-4.5 [&>svg:not([data-partial-fill])]:fill-current"
-            >
-              <ExperimentIcon />
-            </AvatarFallback>
-          </Avatar>
-        )}
+        <img
+          src={
+            title === "Experiments"
+              ? "/illustrations/page-headings/lab.webp"
+              : "/illustrations/page-headings/play.webp"
+          }
+          alt=""
+          width={36}
+          height={36}
+          className="size-9 shrink-0 object-contain"
+        />
         <h1 className="text-xl font-semibold tracking-tight sm:text-[1.375rem]">
           {title}
         </h1>

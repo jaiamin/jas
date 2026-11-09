@@ -441,11 +441,10 @@ Keep creation actions out of the composer/Experiment ideas area. The empty messa
 EmptyDescription text rather than a title. Full record lists remain on their
 dedicated destinations.
 
-Experiments and Runs share one list heading. Experiments keeps its flask liquid
-in a borderless 36px rounded-square background (`muted-foreground/15`) with an
-18px glyph. Runs uses a transparent 36px front-facing Color Play illustration
-from 3dicons, without a backing tile. Environments uses the matching Lab
-illustration beside its page title. These local CC0 assets, like the Home
+Experiments and Runs share one list heading, with a transparent 36px default
+angled (Dynamic) Color illustration from 3dicons beside the title: Lab for
+Experiments and Play for Runs. Neither uses a background tile or border.
+Environments keeps its plain text heading. These local CC0 assets, like the Home
 illustrations, remain fixed across presets. Keep search at the right
 (stacked below on mobile). Search fields have no placeholder text and retain their
 accessible labels. Only Experiments includes a primary New action; start runs from

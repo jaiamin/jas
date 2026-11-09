@@ -26,31 +26,9 @@ for (const width of [390, 834, 1280, 1440]) {
           ),
         ).toBe(true);
         if (route === "environments") {
-          const heading = page.getByRole("heading", {
-            name: "Environments",
-            exact: true,
-          });
-          const illustration = heading
-            .locator("../..")
-            .locator('img[src="/illustrations/page-headings/lab.webp"]');
-          await expect(illustration).toBeVisible();
-          expect(
-            await illustration.evaluate(
-              (element) => (element as HTMLImageElement).naturalWidth,
-            ),
-          ).toBeGreaterThan(0);
-          const headingBox = await heading.boundingBox();
-          const imageBox = await illustration.boundingBox();
-          expect(
-            headingBox &&
-              imageBox &&
-              Math.abs(
-                headingBox.y +
-                  headingBox.height / 2 -
-                  imageBox.y -
-                  imageBox.height / 2,
-              ),
-          ).toBeLessThanOrEqual(1);
+          await expect(
+            page.locator('img[src="/illustrations/page-headings/lab.webp"]'),
+          ).toHaveCount(0);
           const index = page.getByRole("tablist", {
             name: "Environments",
             exact: true,
