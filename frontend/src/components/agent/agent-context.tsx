@@ -72,13 +72,13 @@ export function AgentContext({
       ? Play
       : FlaskConical;
   return (
-    <div className="flex min-w-0 max-w-[calc(100%-3rem)] items-center">
+    <div className="flex min-w-0 max-w-[calc(100%-3rem)] items-center gap-0.5">
       <SelectRoot value={value} onValueChange={onChange} disabled={disabled}>
         <SelectTrigger
           ref={trigger}
           className={cn(
             "min-w-0 flex-1 border-0 px-1.5 shadow-none hover:bg-muted dark:bg-transparent dark:hover:bg-muted [&>svg:last-child]:hidden",
-            selected && "pr-0",
+            selected && "pr-1",
           )}
           aria-label="Message context"
           title={
@@ -185,6 +185,7 @@ export function AgentContext({
           type="button"
           variant="ghost"
           size="icon-xs"
+          className="size-8 rounded-lg"
           aria-label="Clear context"
           title="Clear context"
           disabled={disabled}

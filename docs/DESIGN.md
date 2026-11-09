@@ -231,7 +231,8 @@ manual creation mode. Home has no selector. Agent has an optional experiment/run
 selector, defaulting to a borderless “Add context” control, solely for selecting
 existing evidence. Keep one leading icon (plus, experiment or run), without a
 redundant chevron. Selected evidence has an adjacent stock icon-xs ghost × Button
-(24px target, 12px glyph) to clear it, without extra gap after the label;
+(12px glyph) to clear it. Its 32px target and stock large radius match the picker,
+with a 2px gap between hover surfaces and 4px trailing padding on the picker;
 clearing preserves the draft and returns keyboard focus to the selector. The
 stock Select popup groups experiments/runs, caps at 20rem or available height,
 and offers “Ask anything” with an explanation that Agent can answer a question

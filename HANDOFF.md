@@ -1165,3 +1165,8 @@ name from its accessible description. Live light/dark, 320px and desktop review
 confirmed aligned controls, zero resting selector border, a 12px clear glyph
 centered in a 24px target and no page overflow. Own preview tab closed; 8080
 continues serving the rebuilt app.
+
+Context clear hover follow-up: keep the 12px glyph but match both controls' 32px
+hover surfaces and large radius. Add a 2px inter-control gap and 4px trailing
+picker padding. Live browser measurement confirms equal heights and exact center
+alignment; lint/build and both 320px/1440px composer regressions passed.
