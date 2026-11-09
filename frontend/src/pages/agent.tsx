@@ -121,8 +121,8 @@ export default function AgentPage() {
   const question = chat.data?.[0]?.question;
   const characters = Array.from(question ?? "");
   const title =
-    characters.length > 60
-      ? `${characters.slice(0, 59).join("").trimEnd()}…`
+    characters.length > 80
+      ? `${characters.slice(0, 79).join("").trimEnd()}…`
       : question;
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col bg-muted/50">
@@ -133,7 +133,7 @@ export default function AgentPage() {
             <Skeleton className="h-4 w-40 max-w-full sm:mx-auto" />
           ) : title ? (
             <h1
-              className="mx-auto max-w-sm truncate text-sm font-medium"
+              className="mx-auto max-w-xl truncate text-sm font-medium"
               title={question}
             >
               {title}

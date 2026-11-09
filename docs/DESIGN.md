@@ -202,7 +202,7 @@ composer. Keep “What can we explore?” unchanged across selections. Empty spa
 content remains scrollable without translated or clipped headings. The plain Agent composer omits Home’s gray
 Card surround and manual-editor footer. Saved chats retain the streaming
 MessageScroller and bottom composer, with two initial textarea rows (Home/new chat keep three).
-Saved-chat headers show the first question capped at 60 characters including an explicit
+Saved-chat headers show the first question capped at 80 characters including an explicit
 ellipsis; the full question stays in the hover title. The header stays centered on
 desktop, truncates safely on mobile, and never renames during streaming or follow-up
 turns. History keeps its compact list title. No extra title-generation request is made. The browser

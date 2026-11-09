@@ -906,7 +906,7 @@ for (const width of [320, 1440]) {
     await page.goto("/agent?chat=long-title");
     const title = page.locator("main header h1");
     await expect(title).toHaveText(
-      `${Array.from(question).slice(0, 59).join("").trimEnd()}…`,
+      `${Array.from(question).slice(0, 79).join("").trimEnd()}…`,
     );
     await expect(title).toHaveAttribute("title", question);
     await expect(title).toHaveCSS("text-overflow", "ellipsis");
