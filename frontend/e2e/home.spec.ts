@@ -315,6 +315,9 @@ for (const width of [390, 1440])
       const recentSection = page.getByRole("region", {
         name: "Recent experiments",
       });
+      await expect(
+        recentSection.getByRole("link", { name: "View all", exact: true }),
+      ).toHaveAttribute("href", "/studies");
       await expect(recentSection.locator("time").first()).toHaveText(
         "Just now",
       );
@@ -322,10 +325,28 @@ for (const width of [390, 1440])
         "title",
         /^Created /,
       );
-      await expect(
-        recentSection.locator('[data-slot="item-actions"]'),
-      ).toHaveCount(0);
+      await expect(recentSection.locator('[data-slot="badge"]')).toHaveCount(0);
       await expect(recentSection).not.toContainText("runs complete");
+      const experimentOptions = recentSection.getByRole("button", {
+        name: /^More options for Experiment /,
+      });
+      await expect(experimentOptions).toHaveCount(4);
+      const created = await recentSection
+        .locator("time")
+        .first()
+        .getAttribute("datetime");
+      await experimentOptions.first().click();
+      const experimentMenu = page.getByRole("menu");
+      await expect(experimentMenu).toBeVisible();
+      await expect(experimentMenu).toContainText("Created");
+      await expect(experimentMenu.locator("time")).toHaveAttribute(
+        "datetime",
+        created ?? "",
+      );
+      await page.keyboard.press("Escape");
+      await expect(experimentMenu).toHaveCount(0);
+      await expect(experimentOptions.first()).toBeFocused();
+      await expect(page).toHaveURL(/\/$/);
       const draftSection = page.getByRole("region", {
         name: "Drafts",
         exact: true,
@@ -431,6 +452,9 @@ for (const width of [390, 1440])
       ).toHaveCount(0);
       await expect(
         experiments.getByRole("link", { name: "New", exact: true }),
+      ).toBeVisible();
+      await expect(
+        experiments.getByRole("link", { name: "View all", exact: true }),
       ).toBeVisible();
       await experimentToggle.click();
       await expect(

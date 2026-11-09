@@ -650,3 +650,20 @@ Reviewed final light-phone/dark-desktop captures for row spacing and alignment.
 One earlier browser attempt overlapped the production build and observed its
 transient missing-dist response; rerunning after build completion passed cleanly.
 No dependencies, backend changes, user data changes or paid calls. Port8080 stays live.
+
+
+Home list hierarchy and action polish (2026-11-09):
+- Reduce header-to-divider spacing from12px to6px for Drafts/Recent experiments.
+  Entry titles use regular weight beneath medium-weight section headings.
+- Move View all into the Recent experiments header, immediately after New.
+  Use the stock gray outline Button; both actions remain visible when collapsed.
+- Add a separate three-dot DropdownMenu per recent experiment. Its only current
+  content is the exact Created timestamp as metadata. Retain inline relative
+  times and row navigation; no placeholder or unsupported CRUD commands.
+- Use text-muted-foreground for both draft trash and experiment menu buttons,
+  matching timestamps. Keep symmetric row padding and always-visible actions.
+Verification: frontend lint and production build passed. Final Home/draft E2E
+14/14 passed, including menu creation-time identity, Escape/focus restoration,
+header navigation, collapsible behavior, responsive layouts and draft deletion.
+Reviewed final dark-desktop/light-phone captures. No backend/data/dependency
+changes or paid calls; requested app remains live on8080.

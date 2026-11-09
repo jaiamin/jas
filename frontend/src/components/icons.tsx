@@ -25,6 +25,7 @@ export {
   Code2,
   Database,
   Download,
+  Ellipsis,
   FileSearch,
   FlaskConical,
   GitCompareArrows,

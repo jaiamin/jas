@@ -12,6 +12,7 @@ import { Alert } from "@/components/feedback";
 import { HomeGrid } from "@/components/home-grid";
 import {
   ArrowUpRight,
+  Ellipsis,
   FlaskConical,
   MessageSquare,
   NotebookPen,
@@ -23,6 +24,13 @@ import {
 } from "@/components/icons";
 import { ErrorState, Loading, Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Empty, EmptyDescription, EmptyHeader } from "@/components/ui/empty";
 import {
   Item,
@@ -39,7 +47,7 @@ import { useNow } from "@/hooks/use-now";
 import { agentSuggestions } from "@/lib/agent-suggestions";
 import { useApi } from "@/lib/api";
 import { listDrafts, removeDraft } from "@/lib/drafts";
-import { relativeTime } from "@/lib/format";
+import { date, relativeTime } from "@/lib/format";
 import type { RunSummary, StudySummary } from "@/lib/types";
 
 const suggestions = [
@@ -229,7 +237,7 @@ export default function Home() {
             aria-labelledby="drafts-title"
             className="flex flex-col gap-3"
           >
-            <Disclosure defaultOpen className="flex flex-col gap-3">
+            <Disclosure defaultOpen className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between gap-3">
                 <h2
                   id="drafts-title"
@@ -287,7 +295,7 @@ export default function Home() {
           aria-labelledby="recent-experiments-title"
           className="flex flex-col gap-3"
         >
-          <Disclosure defaultOpen className="flex flex-col gap-3">
+          <Disclosure defaultOpen className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between gap-3">
               <h2
                 id="recent-experiments-title"
@@ -301,12 +309,19 @@ export default function Home() {
                   Recent experiments
                 </DisclosureTrigger>
               </h2>
-              <Button size="sm" asChild>
-                <Link to="/new">
-                  <Plus data-icon="inline-start" />
-                  New
-                </Link>
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button size="sm" asChild>
+                  <Link to="/new">
+                    <Plus data-icon="inline-start" />
+                    New
+                  </Link>
+                </Button>
+                {recent.length > 0 && (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/studies">View all</Link>
+                  </Button>
+                )}
+              </div>
             </div>
             <DisclosureContent className="flex flex-col">
               <Separator />
@@ -318,32 +333,61 @@ export default function Home() {
                 <ItemGroup className="has-data-[size=sm]:gap-0">
                   {recent.map((study, index) => (
                     <Fragment key={study.id}>
-                      <Item
-                        size="sm"
-                        className="border-0 px-0 py-3 [a]:hover:bg-transparent"
-                        asChild
-                      >
-                        <Link to={`/studies/${study.id}`}>
-                          <ItemMedia variant="icon">
-                            <FlaskConical />
-                          </ItemMedia>
-                          <ItemContent className="min-w-0 flex-row items-center gap-3">
-                            <ItemTitle className="min-w-0 flex-1">
-                              <span className="truncate" title={study.title}>
-                                {study.title}
-                              </span>
-                            </ItemTitle>
-                            <ItemDescription className="shrink-0 text-xs whitespace-nowrap">
-                              <time
-                                dateTime={study.created}
-                                title={`Created ${new Date(study.created).toLocaleString()}`}
+                      <div className="flex min-w-0 items-center gap-3">
+                        <Item
+                          size="sm"
+                          className="min-w-0 flex-1 border-0 px-0 py-3 [a]:hover:bg-transparent"
+                          asChild
+                        >
+                          <Link to={`/studies/${study.id}`}>
+                            <ItemMedia variant="icon">
+                              <FlaskConical />
+                            </ItemMedia>
+                            <ItemContent className="min-w-0 flex-row items-center gap-3">
+                              <ItemTitle className="min-w-0 flex-1 font-normal">
+                                <span className="truncate" title={study.title}>
+                                  {study.title}
+                                </span>
+                              </ItemTitle>
+                              <ItemDescription className="shrink-0 text-xs whitespace-nowrap">
+                                <time
+                                  dateTime={study.created}
+                                  title={`Created ${new Date(study.created).toLocaleString()}`}
+                                >
+                                  {relativeTime(study.created, now)}
+                                </time>
+                              </ItemDescription>
+                            </ItemContent>
+                          </Link>
+                        </Item>
+                        <ItemActions>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                className="text-muted-foreground"
+                                aria-label={`More options for ${study.title}`}
                               >
-                                {relativeTime(study.created, now)}
-                              </time>
-                            </ItemDescription>
-                          </ItemContent>
-                        </Link>
-                      </Item>
+                                <Ellipsis aria-hidden="true" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56">
+                              <DropdownMenuGroup>
+                                <DropdownMenuLabel className="flex flex-col gap-1">
+                                  Created
+                                  <time
+                                    dateTime={study.created}
+                                    className="font-normal"
+                                  >
+                                    {date(study.created)}
+                                  </time>
+                                </DropdownMenuLabel>
+                              </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </ItemActions>
+                      </div>
                       {index < recent.length - 1 && (
                         <ItemSeparator className="my-0" />
                       )}
@@ -358,14 +402,6 @@ export default function Home() {
                     </EmptyDescription>
                   </EmptyHeader>
                 </Empty>
-              )}
-              {recent.length > 0 && (
-                <Button className="self-end" variant="ghost" size="sm" asChild>
-                  <Link to="/studies">
-                    View all experiments
-                    <ArrowUpRight data-icon="inline-end" />
-                  </Link>
-                </Button>
               )}
             </DisclosureContent>
           </Disclosure>

@@ -55,7 +55,7 @@ export function DraftList({
                   <FlaskConical aria-hidden="true" />
                 </ItemMedia>
                 <ItemContent className="min-w-0 flex-row items-center group-data-[size=xs]/item:gap-3">
-                  <ItemTitle className="min-w-0 flex-1">
+                  <ItemTitle className="min-w-0 flex-1 font-normal">
                     <span className="truncate">
                       {draft.title || "Untitled experiment"}
                     </span>
@@ -103,6 +103,7 @@ function DeleteDraft({
         <Button
           variant="ghost"
           size="icon-sm"
+          className="text-muted-foreground"
           aria-label={`Delete ${title} draft`}
           title="Delete draft"
         >

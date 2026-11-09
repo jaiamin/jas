@@ -195,7 +195,10 @@ A late response leaves subsequent navigation intact.
 Below suggestions, show up to three active runs only when underway and four
 experiments ordered by creation time.
 Place the primary New action beside Recent experiments, including its empty
-state. Drafts and Recent experiments are initially expanded stock Collapsibles.
+state. When experiments exist, put the stock gray-outlined View all action
+immediately after New in the same header. Both actions remain available while
+the list is collapsed.
+Drafts and Recent experiments are initially expanded stock Collapsibles.
 Their 14px heading triggers are larger than the 12px Suggestions heading; each
 has a full-width Separator below it and a chevron immediately after its text.
 Heading triggers, dividers and row content share the section’s horizontal edges;
@@ -208,6 +211,8 @@ stock Items separated by horizontal rules, without a rule after the final item.
 Draft and recent experiment rows remain transparent on hover; preserve keyboard
 focus rings and link cursors. Both lists use the experiment icon and symmetric
 12px row padding; no extra gap follows the heading divider before the first row.
+Keep only 6px between the header row and its divider. List titles use regular
+weight beneath the medium-weight section headings.
 Home sections use 32px gaps and a slightly smaller bottom inset.
 The shared DraftList uses compact clickable Item xs rows with titles and
 last-edited times on the title row, immediately before the delete action with
@@ -215,8 +220,11 @@ a shared 12px gap. Draft edit ages and recent experiment creation ages read
 Just now, minutes/hours ago or days ago; older entries show a short date (with
 year when needed). Update ages every minute while mounted and retain the exact
 timestamp in the native time tooltip, labeled Edited or Created respectively.
-Recent experiment rows show only the icon, title and creation age, without
-status or run counts; the API exposes no experiment edit time.
+Recent experiment rows show the icon, title and creation age, without status or
+run counts. A separate stock three-dot DropdownMenu shows the exact Created
+timestamp as non-actionable metadata. Keep the row link and menu trigger separate;
+use the same muted-foreground token for timestamps, trash and three-dot buttons.
+The API exposes no experiment edit time.
 Delete stays visible for mouse, keyboard
 and touch users. Use Untitled experiment when
 unnamed. Both Home and Experiments confirm deletion in a stock AlertDialog;
