@@ -20,9 +20,7 @@ export function messageContext(row: {
     ? `run:${row.run_id}`
     : row.study_id
       ? `study:${row.study_id}`
-      : row.purpose === "design"
-        ? "new"
-        : "general";
+      : "general";
 }
 
 export function contextLabel(

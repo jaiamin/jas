@@ -28,7 +28,7 @@ test("Home submits once, opens the saved Agent conversation and never resubmits 
       });
     submissions++;
     const body = route.request().postDataJSON();
-    expect(body.context).toBe("new");
+    expect(body.context).toBe("general");
     expect(body.chat_id).toBeNull();
     question = body.question;
     await pending;
@@ -62,7 +62,7 @@ test("Home submits once, opens the saved Agent conversation and never resubmits 
   await expect(page).toHaveTitle("JAS");
   await expect(
     page.getByRole("combobox", { name: "Message context" }),
-  ).toContainText("New experiment");
+  ).toHaveCount(0);
   await expect(page.locator('[data-slot="input-group"]')).toHaveCSS(
     "opacity",
     "1",
@@ -132,8 +132,8 @@ test("Home preserves failed drafts and disables paid submission without a config
     });
   });
   await page.goto("/");
-  await page.getByRole("combobox", { name: "Message context" }).click();
-  await page.getByRole("option", { name: "General", exact: true }).click();
+  // Home never inherits record scope from a URL or a previous Agent selection.
+  await page.goto("/?context=run:unselected");
   const input = page.getByLabel("Message Agent", { exact: true });
   await input.fill("Keep this experiment question");
   await input.press("Shift+Enter");
@@ -147,7 +147,7 @@ test("Home preserves failed drafts and disables paid submission without a config
   await page.reload();
   await expect(
     page.getByRole("combobox", { name: "Message context" }),
-  ).toContainText("General");
+  ).toHaveCount(0);
   await expect(input).toHaveValue("Keep this experiment question\n");
   await expect(
     page.getByRole("button", { name: "Send message" }),
@@ -211,6 +211,9 @@ for (const width of [390, 1440])
       page,
       request,
     }, testInfo) => {
+      await page.route("**/api/settings", (route) =>
+        route.fulfill({ json: settings }),
+      );
       const { study, run } = await createStudy(request);
       await page.addInitScript(
         ({ theme, design }) => {
@@ -255,6 +258,27 @@ for (const width of [390, 1440])
       await expect(
         page.getByRole("heading", { name: "What would you like to test?" }),
       ).toBeVisible();
+      const geometry = await page
+        .locator('[data-slot="input-group"]')
+        .evaluate((box) => {
+          const bounds = box.getBoundingClientRect();
+          const backdrop = document
+            .querySelector("section > div[aria-hidden]")
+            ?.getBoundingClientRect();
+          return {
+            top: bounds.top,
+            height: bounds.height,
+            width: bounds.width,
+            edge: backdrop?.bottom,
+            shadow: getComputedStyle(box).boxShadow,
+          };
+        });
+      expect(geometry.width).toBeLessThanOrEqual(672);
+      expect(geometry.height).toBeGreaterThanOrEqual(136);
+      expect(
+        ((geometry.edge ?? 0) - geometry.top) / geometry.height,
+      ).toBeCloseTo(0.6, 1);
+      expect(geometry.shadow).not.toBe("none");
       await expect(
         page
           .getByRole("region", { name: "Recent experiments" })
@@ -301,6 +325,13 @@ for (const width of [390, 1440])
         "Runs",
         "Environments",
       ]);
+      const typography = await nav.getByRole("link").evaluateAll((links) =>
+        links.map((link) => {
+          const style = getComputedStyle(link);
+          return `${style.fontSize}/${style.fontWeight}`;
+        }),
+      );
+      expect(new Set(typography).size).toBe(1);
       if (width === 390)
         await page
           .getByRole("button", { name: "Close menu", exact: true })

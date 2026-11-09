@@ -227,13 +227,14 @@ for (const theme of ["light", "dark"]) {
       id: "planning-answer",
       chat_id: "planning-chat",
       question: "Design a cooperation pilot",
-      purpose: "design",
+      purpose: "general",
       status: "pending",
       cutoffs: {},
       study_id: null,
       run_id: null,
       output: {
-        stage: "scoping",
+        stage: "answering",
+        partial: "I will prepare a protocol for review.",
         supported: true,
         design,
         explanation: "A controlled comparison with matched seeds.",
@@ -266,10 +267,28 @@ for (const theme of ["light", "dark"]) {
     await page.route("**/api/chats/planning-chat", (route) =>
       route.fulfill({ json: [row] }),
     );
-    await page.route("**/api/chats/planning-chat/events", (route) =>
-      route.abort(),
-    );
+    let release = () => {};
+    const ready = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await page.route("**/api/chats/planning-chat/events", async (route) => {
+      await ready;
+      await route.fulfill({
+        contentType: "text/event-stream",
+        body: `data: ${JSON.stringify(row)}\n\n`,
+      });
+    });
     await page.goto("/agent?chat=planning-chat");
+    await expect(
+      page.getByText(row.output.partial, { exact: true }),
+    ).toBeVisible();
+    row.purpose = "design";
+    row.output.stage = "scoping";
+    row.output.partial = "";
+    release();
+    await expect(
+      page.getByText("I will prepare a protocol for review.", { exact: true }),
+    ).toHaveCount(0);
     for (const [stage, label] of [
       ["scoping", "Scoping the question"],
       ["researching", "Researching methods"],
@@ -296,6 +315,9 @@ for (const theme of ["light", "dark"]) {
     });
     row.status = "complete";
     await expect(
+      page.getByRole("combobox", { name: "Message context" }),
+    ).toContainText("General");
+    await expect(
       page.getByText("Protocol reviewed", { exact: true }),
     ).toBeVisible();
     const proposal = page
@@ -317,3 +339,56 @@ for (const theme of ["light", "dark"]) {
     });
   });
 }
+
+test("retrying a failed automatic proposal keeps the planner purpose", async ({
+  page,
+}) => {
+  await page.route("**/api/settings", (route) =>
+    route.fulfill({
+      json: {
+        providers: { openai: true },
+        planner_model: "openai:gpt-6.1-sol",
+        assistant_model: "openai:gpt-6.1-sol",
+      },
+    }),
+  );
+  const row = {
+    id: "failed-plan",
+    chat_id: "failed-plan-chat",
+    purpose: "design",
+    status: "failed",
+    question: "Design a cooperation pilot",
+    error: "Planner temporarily unavailable",
+    study_id: null,
+    run_id: null,
+    cutoffs: {},
+    output: { stage: "scoping" },
+  };
+  await page.route("**/api/chats/failed-plan-chat", (route) =>
+    route.fulfill({ json: [row] }),
+  );
+  let submissions = 0;
+  await page.route("**/api/chats", (route) => {
+    if (route.request().method() !== "POST") return route.fulfill({ json: [] });
+    const body = route.request().postDataJSON();
+    expect(body).toMatchObject({
+      question: row.question,
+      context: "new",
+      chat_id: row.chat_id,
+    });
+    submissions++;
+    return route.fulfill({
+      status: 503,
+      json: { detail: "Planner temporarily unavailable" },
+    });
+  });
+  await page.goto("/agent?chat=failed-plan-chat");
+  await expect(
+    page.getByRole("combobox", { name: "Message context" }),
+  ).toContainText("General");
+  await page.getByRole("button", { name: "Try again", exact: true }).click();
+  await expect(page.getByRole("alert").last()).toContainText(
+    "Your message is kept above",
+  );
+  expect(submissions).toBe(1);
+});

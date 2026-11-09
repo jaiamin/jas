@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { AgentContext } from "@/components/agent/agent-context";
 import type { useAgentComposer } from "@/components/agent/use-agent-composer";
 import { Alert } from "@/components/feedback";
 import { ArrowUp } from "@/components/icons";
@@ -10,23 +9,18 @@ import {
   InputGroupAddon,
   InputGroupTextarea,
 } from "@/components/ui/input-group";
-import type { RunSummary, StudySummary } from "@/lib/types";
 
 export function AgentComposer({
   state,
   context,
-  studies,
-  runs,
-  onContextChange,
+  contextControl,
   placeholder,
   className,
   children,
 }: {
   state: ReturnType<typeof useAgentComposer>;
   context: string;
-  studies: StudySummary[];
-  runs: RunSummary[];
-  onContextChange: (value: string) => void;
+  contextControl?: ReactNode;
   placeholder: string;
   className?: string;
   children?: ReactNode;
@@ -74,17 +68,12 @@ export function AgentComposer({
               }
             }}
           />
-          <InputGroupAddon align="block-end" className="justify-between gap-3">
-            <AgentContext
-              value={context}
-              onChange={onContextChange}
-              studies={studies}
-              runs={runs}
-              disabled={send.isPending}
-            />
+          <InputGroupAddon align="block-end" className="gap-3">
+            {contextControl}
             <Button
               type="submit"
               size="icon"
+              className="ml-auto"
               aria-label="Send message"
               title="Send message (Enter)"
               disabled={disabled || !question.trim()}

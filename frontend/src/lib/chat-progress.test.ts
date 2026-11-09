@@ -7,11 +7,17 @@ test("chat events expose only the current message's live progress", () => {
       JSON.stringify({
         id: "current",
         status: "pending",
+        purpose: "general",
         output: { partial: "Draft", stage: "answering", design: "unvalidated" },
       }),
       "current",
     ),
-  ).toEqual({ status: "pending", partial: "Draft", stage: "answering" });
+  ).toEqual({
+    status: "pending",
+    purpose: "general",
+    partial: "Draft",
+    stage: "answering",
+  });
   expect(
     chatProgress(
       JSON.stringify({ id: "older", status: "complete", output: {} }),
@@ -26,10 +32,41 @@ test("malformed events cannot enter the analysis cache", () => {
     "null",
     "[]",
     "{}",
+    JSON.stringify({ id: "current", status: "pending", output: {} }),
     ...[null, [], { partial: 3 }, { stage: {} }].map((output) =>
-      JSON.stringify({ id: "current", status: "pending", output }),
+      JSON.stringify({
+        id: "current",
+        status: "pending",
+        purpose: "general",
+        output,
+      }),
     ),
   ]) {
     expect(chatProgress(data, "current")).toBeNull();
   }
+});
+
+test("purpose transitions expose public planning stages without unvalidated proposals", () => {
+  expect(
+    chatProgress(
+      JSON.stringify({
+        id: "current",
+        status: "pending",
+        purpose: "design",
+        output: { stage: "scoping", design: { unvalidated: true } },
+      }),
+      "current",
+    ),
+  ).toEqual({ status: "pending", purpose: "design", stage: "scoping" });
+  expect(
+    chatProgress(
+      JSON.stringify({
+        id: "current",
+        status: "pending",
+        purpose: "unknown",
+        output: {},
+      }),
+      "current",
+    ),
+  ).toBeNull();
 });

@@ -466,3 +466,38 @@ composer split equally (68px/68px) at desktop and 390px, without overflow.
 Home overlap follow-up: use 3:1 tracks (¾ composer inside grid, ¼ below) and add
 another 16px above the title (80px mobile, 96px desktop). This increases the
 backdrop height by 50px relative to the previous 50/50 composition.
+
+## Active general Home Agent request
+
+Home should have no context selector: submit general questions and let the model
+choose a direct answer or the existing validated proposal workflow. Keep evidence
+scope selection on Agent, preserve draft/navigation/pending/streaming identity,
+never auto-save/run proposals and account for all provider work on one Analysis.
+Do not use keyword routing. Add typed intent to the existing general response;
+when planning is requested, persist purpose/stage before handing the same request
+to Planner. Stream the purpose transition so the proposal UI follows immediately.
+Also change Home overlap to 3:2, add stock soft shadow to its composer, and keep
+selected sidebar text weight/size unchanged. Verify keyless backend routing,
+provider failures, isolated evidence, frontend flows and responsive geometry.
+
+
+Implementation complete for the general Home request:
+- [x] Home has no selector or URL-derived evidence context; suggestions only fill/focus.
+- [x] Typed general intent enters the existing Planner on the same Analysis/chat.
+      Public purpose/stage changes clear preliminary prose; no automatic save/run.
+- [x] Unscoped follow-ups use general intent; failed proposals retry the planner directly.
+- [x] Composer uses 3:2 overlap and stock shadow-lg. Sidebar text stays 14px/400.
+- [x] Backend keyless routing covers answer, safe prior proposal context, scoped-evidence
+      exclusion, pending guard, configured planner failure, costs and no execution.
+- [x] Ruff/Ty pass; full backend suite 923/923 and frontend unit suite 72/72 pass.
+- [x] Shared-browser review confirms 672px desktop / 358px phone composer width,
+      136px height, 60/40 overlap, shadow, no selector/overflow, both themes.
+Final frontend lint, unit tests (72/72) and production build pass. The full keyless
+browser suite passed 84/84, followed by 21/21 Home/Agent/streaming checks after the
+final decoder/retry refinements (including a new failed-proposal retry check).
+The full browser run logged Starlette "No response returned" during navigation
+disconnects; all checks passed and the final focused run had no such errors.
+No paid calls were made. Gitleaks staged-diff scan passed. Port 8080 was safely
+restarted after confirming no pending chats/active runs; PID 186095.
+Owned preview tabs and temporary browser backends are closed. The requested
+8080 development server remains running. Ready to publish to draft PR #9.

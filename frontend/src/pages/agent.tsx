@@ -2,7 +2,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { AgentComposer } from "@/components/agent/agent-composer";
-import { contextLabel, messageContext } from "@/components/agent/agent-context";
+import {
+  AgentContext,
+  contextLabel,
+  messageContext,
+} from "@/components/agent/agent-context";
 import { AgentHistory } from "@/components/agent/agent-history";
 import { AgentReply } from "@/components/agent/agent-reply";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
@@ -72,14 +76,11 @@ export default function AgentPage() {
           message.id === pending && message.status === "pending"
             ? {
                 ...message,
+                purpose: update.purpose,
                 output: {
-                  ...message.output,
-                  ...(update.partial === undefined
-                    ? {}
-                    : { partial: update.partial }),
-                  ...(update.stage === undefined
-                    ? {}
-                    : { stage: update.stage }),
+                  ...(update.purpose !== message.purpose ? {} : message.output),
+                  partial: update.partial,
+                  stage: update.stage,
                 },
               }
             : message,
@@ -258,7 +259,10 @@ function AgentConversation({
                       onRetry={() =>
                         send.mutate({
                           question: row.question,
-                          context: messageContext(row),
+                          context:
+                            row.purpose === "design"
+                              ? "new"
+                              : messageContext(row),
                         })
                       }
                     />
@@ -301,9 +305,15 @@ function AgentConversation({
       <AgentComposer
         state={state}
         context={context}
-        studies={studies}
-        runs={runs}
-        onContextChange={changeContext}
+        contextControl={
+          <AgentContext
+            value={context}
+            onChange={changeContext}
+            studies={studies}
+            runs={runs}
+            disabled={state.send.isPending}
+          />
+        }
         placeholder={
           context === "new"
             ? "What behavior do you want to investigate?"

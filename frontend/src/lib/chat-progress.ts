@@ -1,5 +1,6 @@
 interface ChatProgress {
   status: "pending" | "complete" | "failed";
+  purpose: "general" | "design" | "analysis";
   partial?: string;
   stage?: string;
 }
@@ -32,12 +33,20 @@ export function chatProgress(
       Array.isArray(row.output)
     )
       return null;
+    const purpose = "purpose" in row ? row.purpose : undefined;
+    if (purpose !== "general" && purpose !== "design" && purpose !== "analysis")
+      return null;
     const output = row.output;
     const partial = "partial" in output ? output.partial : undefined;
     const stage = "stage" in output ? output.stage : undefined;
     if (partial !== undefined && typeof partial !== "string") return null;
     if (stage !== undefined && typeof stage !== "string") return null;
-    return { status: row.status, partial, stage };
+    return {
+      status: row.status,
+      partial,
+      stage,
+      purpose,
+    };
   } catch {
     return null;
   }

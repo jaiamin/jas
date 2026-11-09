@@ -73,7 +73,13 @@ concurrently. Failed turns stay inspectable and retry as a new turn in their ori
 
 The existing planner, investigator, provider tracing and budget accounting execute the
 messages. General answers receive the environment catalog and recent same-chat general
-answers/proposals, never unselected run evidence. Investigation history matches the chat,
+answers/proposals, never unselected run evidence. A typed intent in the general response
+chooses an answer or a handoff to the existing validated Planner. The handoff persists
+the design purpose and scoping stage on the same Analysis, clears preliminary prose,
+and accounts for both steps under that request. SSE exposes the purpose transition.
+Unscoped follow-ups return to general intent selection; proposals never save or run
+automatically. Home has no scope selector; Agent retains explicit context selection.
+Investigation history matches the chat,
 exact scope and purpose, and citations still require inspected turns within frozen cutoffs.
 The model receives up to three completed prior turns; design refinements include previous
 proposals and revalidate all rules. Complete transcripts remain saved and visible.

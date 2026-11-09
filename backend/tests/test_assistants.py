@@ -2,7 +2,7 @@ import asyncio
 import json
 
 import pytest
-from agent_sim.assistants import Assistants, HistoryRequest, Investigation
+from agent_sim.assistants import Assistants, GeneralResponse, HistoryRequest, Investigation
 from agent_sim.domain import Citation, Finding
 
 
@@ -50,7 +50,7 @@ def test_general_agent_keeps_history_separate_and_rejects_unselected_evidence(
 
         async def generate(output, **kwargs):
             prompt = json.loads(kwargs["prompt"])
-            assert output is Finding and kwargs["purpose"] == "general"
+            assert output is GeneralResponse and kwargs["purpose"] == "general"
             assert kwargs.get("study_id") is None and kwargs.get("run_id") is None
             assert prompt["conversation"] == [
                 {
@@ -61,8 +61,9 @@ def test_general_agent_keeps_history_separate_and_rejects_unselected_evidence(
             ]
             assert len(prompt["environments"]) == 8
             assert "index" not in prompt and "evidence" not in prompt
-            return Finding(
+            return GeneralResponse(
                 answer="Matched seeds support more informative comparisons.",
+                propose_experiment=invented_citation,
                 citations=[Citation(run_id="unselected", turn=1)] if invented_citation else [],
                 caveats=[],
             )
@@ -513,14 +514,12 @@ def test_composed_accounting_uses_frozen_evidence_not_later_consumption(runtime,
 
 
 def test_configured_assistant_model_is_used_without_substitution(runtime, monkeypatch):
-    from agent_sim.domain import Finding
-
     db, llm, research, _ = runtime
     monkeypatch.setenv("JAS_ASSISTANT_MODEL", "openai:gpt-6-luna")
 
     async def generate(output, **kwargs):
         assert kwargs["model"] == "openai:gpt-6-luna"
-        return Finding(
+        return GeneralResponse(
             answer="Select recorded evidence to inspect outcomes.", citations=[], caveats=[]
         )
 
@@ -732,3 +731,145 @@ def test_investigation_only_exposes_calculations_supported_by_selected_world(
         await assistant.close()
 
     asyncio.run(exercise())
+
+
+@pytest.mark.parametrize("route", ["answer", "proposal", "planner-unavailable"])
+def test_general_intent_handoff_preserves_chat_scope_and_accounting(
+    runtime, design, monkeypatch, route
+):
+    from agent_sim.db import Analysis, ProviderCall, Workspace
+    from agent_sim.llm import ProviderFailure
+    from agent_sim.planning import StudyBrief
+    from pydantic_ai.messages import ModelResponse, ToolCallPart
+    from pydantic_ai.models.function import DeltaToolCall, FunctionModel
+    from sqlalchemy import select
+
+    db, models, research, _ = runtime
+    sid = research.save_design(design)
+    question = "Change the previous protocol to study physical-world prediction"
+    conversation = [
+        {
+            "question": "Design an earlier protocol",
+            "answer": "",
+            "cutoffs": {},
+            "proposal": design.model_dump(mode="json"),
+            "explanation": "An earlier reviewed proposal.",
+        }
+    ]
+    with db.session.begin() as session:
+        session.add_all(
+            [
+                Analysis(
+                    purpose="design",
+                    chat_id="intent-chat",
+                    question=conversation[0]["question"],
+                    status="complete",
+                    cutoffs={},
+                    output={
+                        "design": design.model_dump(mode="json"),
+                        "explanation": conversation[0]["explanation"],
+                    },
+                ),
+                Analysis(
+                    purpose="analysis",
+                    study_id=sid,
+                    chat_id="intent-chat",
+                    question="Selected private evidence",
+                    status="complete",
+                    cutoffs={},
+                    output={"answer": "Never pass selected evidence to general planning."},
+                ),
+            ]
+        )
+    monkeypatch.setenv("JAS_ASSISTANT_MODEL", "openai:gpt-6-luna")
+    monkeypatch.setenv("JAS_PLANNER_MODEL", "openai:gpt-6.1-sol")
+    planner_calls = []
+    assistant = Assistants(db, research, models)
+
+    async def general_stream(messages, info):
+        prompt = json.loads(messages[-1].parts[0].content)
+        assert prompt["conversation"] == conversation
+        assert prompt["question"] == question
+        yield {
+            0: DeltaToolCall(
+                name=info.output_tools[0].name,
+                json_args=json.dumps(
+                    {
+                        "answer": "I can help with that.",
+                        "citations": [],
+                        "caveats": [],
+                        "propose_experiment": route != "answer",
+                    }
+                ),
+            )
+        }
+
+    def planner_model(_name):
+        if _name == "openai:gpt-6-luna":
+            return FunctionModel(stream_function=general_stream)
+        # The transition is durable before a planner/provider is entered.
+        row = assistant.chat("intent-chat")[-1]
+        assert row["purpose"] == "design" and row["status"] == "pending"
+        assert row["output"]["stage"] == "scoping"
+        assert "partial" not in row["output"]
+        with pytest.raises(ValueError, match="current request"):
+            assistant.send("Duplicate follow-up", "general", "intent-chat")
+        if route == "planner-unavailable":
+            raise ProviderFailure("Configured planner provider unavailable")
+        return FunctionModel(function=plan)
+
+    async def plan(messages, info):
+        prompt = json.loads(messages[-1].parts[0].content)
+        assert prompt["conversation"] == conversation
+        assert prompt["question"] == question
+        planner_calls.append(prompt)
+        brief = StudyBrief(
+            supported=False,
+            explanation="No calibrated population model.",
+            operationalization="Unavailable",
+            size_rationale="No experiment",
+            agents=2,
+            conditions=1,
+            seeds=1,
+            repetitions=1,
+            rounds=1,
+            research_query=None,
+        )
+        return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, brief.model_dump())])
+
+    monkeypatch.setattr(models, "model", planner_model)
+
+    async def exercise():
+        result = assistant.send(question, "general", "intent-chat")
+        await assistant.tasks[result["id"]]
+        row = assistant.get(result["id"])
+        assert len(assistant.chat("intent-chat")) == 3
+        assert row["study_id"] is None and row["run_id"] is None and row["cutoffs"] == {}
+        assert assistant.chats()[0]["context"] == "general"
+        if route == "answer":
+            assert row["purpose"] == "general" and row["status"] == "complete"
+            assert row["output"] == {
+                "answer": "I can help with that.",
+                "citations": [],
+                "caveats": [],
+                "examined": [],
+            }
+        elif route == "proposal":
+            assert row["purpose"] == "design" and row["status"] == "complete"
+            assert row["output"]["supported"] is False and row["output"]["design"] is None
+        else:
+            assert row["purpose"] == "design" and row["status"] == "failed"
+            assert row["error"] == "Configured planner provider unavailable"
+        assert "partial" not in row["output"]
+        with db.session() as session:
+            calls = session.scalars(select(ProviderCall)).all()
+            assert len(calls) == (2 if route == "proposal" else 1)
+            assert all(call.analysis_id == row["id"] for call in calls)
+            assert row["usage"]["requests"] == len(calls)
+            assert session.get_one(Workspace, 1).charged == sum(call.charged for call in calls)
+        assert len(research.studies()) == 1
+        assert all(run["status"] == "ready" for run in research.study(sid)["runs"])
+        await assistant.close()
+
+    asyncio.run(exercise())
+    assert len(planner_calls) == (1 if route == "proposal" else 0)

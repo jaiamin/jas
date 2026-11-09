@@ -114,6 +114,7 @@ belong to the preset and its stylesheet, except the dedicated brand wordmark.
 
 ## Layout
 
+Selected sidebar text retains the same size and weight as unselected text.
 The stock Sidebar starts with an untitled Home/Agent group above Workspace
 (Experiments, Runs, Environments). The compact brand link returns to Home. Its
 footer has a direct Settings link beneath the full-width divider, followed by the
@@ -157,12 +158,14 @@ Home uses a full-width composer section with a faint animated pixel grid, the
 explicit decorative exception requested for this surface. The grid follows the
 foreground token, never captures input, and remains static with reduced motion.
 The Home composer has a 672px maximum width and 88px minimum text-entry height.
-Heading top spacing is 80px on mobile and 96px on desktop. A 3:1 grid split
-places three quarters of the composer within the backdrop and one quarter below its
-bottom edge; the opaque surface keeps the grid out of the text field. Shared Agent
-composer controls and behavior remain unchanged. Four existing
-experiment suggestions fill the draft without submitting. Home defaults to New
-experiment; an explicit send creates one chat and opens that saved conversation.
+Heading top spacing is 80px on mobile and 96px on desktop. A 3:2 grid split
+places three fifths of the composer within the backdrop and two fifths below its
+bottom edge; the opaque surface keeps the grid out of the text field. A stock
+`shadow-lg` gives the composer soft depth along its sides and bottom.
+Home has no context selector: its general prompt lets Agent answer or create a
+validated experiment proposal. Scope selection stays on Agent. Four experiment
+suggestions fill the draft without submitting. An explicit send creates one chat
+and opens that saved conversation.
 A late response leaves subsequent navigation intact.
 
 Below suggestions, show up to three active runs only when underway, one latest

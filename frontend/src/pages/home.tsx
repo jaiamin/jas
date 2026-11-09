@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AgentComposer } from "@/components/agent/agent-composer";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
 import { Alert, Empty } from "@/components/feedback";
@@ -57,10 +57,8 @@ export default function Home() {
   }, []);
   const studies = useApi<StudySummary[]>("/studies", true);
   const runs = useApi<RunSummary[]>("/runs", true);
-  const [params, setParams] = useSearchParams();
-  const context = params.get("context") ?? "new";
   const state = useAgentComposer({
-    context,
+    context: "general",
     draftKey: "jas:agent-draft:home",
     onSent: (result) => {
       // A lazy destination may keep Home mounted while navigation is pending.
@@ -68,13 +66,6 @@ export default function Home() {
         navigate(`/agent?chat=${result.chat_id}`);
     },
   });
-  function changeContext(value: string) {
-    const next = new URLSearchParams(params);
-    if (value === "new") next.delete("context");
-    else next.set("context", value);
-    setParams(next, { replace: true });
-    state.send.reset();
-  }
   const [drafts] = useState(() => {
     try {
       return { ...listDrafts(), error: "" };
@@ -96,7 +87,7 @@ export default function Home() {
   return (
     <>
       <section
-        className="relative isolate grid grid-cols-1 grid-rows-[auto_3fr_1fr]"
+        className="relative isolate grid grid-cols-1 grid-rows-[auto_3fr_2fr]"
         aria-labelledby="home-title"
       >
         <div
@@ -113,36 +104,11 @@ export default function Home() {
         </h1>
         <div className="relative col-start-1 row-start-2 row-end-4 min-w-0 px-4 sm:px-6">
           <AgentComposer
-            className="mx-auto w-full max-w-2xl [&_textarea]:min-h-22"
+            className="mx-auto w-full max-w-2xl [&_textarea]:min-h-22 [&_[data-slot=input-group]]:shadow-lg"
             state={state}
-            context={context}
-            studies={studies.data ?? []}
-            runs={runs.data ?? []}
-            onContextChange={changeContext}
-            placeholder={
-              context === "new"
-                ? "Describe an experiment you’d like to explore…"
-                : context === "general"
-                  ? "Ask a research question…"
-                  : "Ask about the selected evidence…"
-            }
-          >
-            {(studies.error || runs.error) && (
-              <Alert variant="error">
-                Some experiment contexts could not be loaded.{" "}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    studies.refetch();
-                    runs.refetch();
-                  }}
-                >
-                  Retry
-                </Button>
-              </Alert>
-            )}
-          </AgentComposer>
+            context="general"
+            placeholder="Ask a question or describe an experiment…"
+          />
         </div>
       </section>
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-4 py-8 sm:px-6 sm:py-10">
@@ -159,7 +125,6 @@ export default function Home() {
                 className="h-auto items-start justify-start gap-3 p-4 whitespace-normal text-left"
                 disabled={state.send.isPending}
                 onClick={() => {
-                  changeContext("new");
                   state.setQuestion(prompt);
                   state.composer.current?.focus();
                 }}
