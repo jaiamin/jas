@@ -1,3 +1,4 @@
+import { Play } from "@/components/icons";
 import { RecordListHeading } from "@/components/record-list-heading";
 import { RunTable } from "@/components/run-table";
 import { ErrorState } from "@/components/shared";
@@ -12,6 +13,7 @@ export default function Runs() {
     <>
       <RecordListHeading
         title="Runs"
+        icon={Play}
         search={filters.search}
         onSearchChange={filters.setSearch}
       />

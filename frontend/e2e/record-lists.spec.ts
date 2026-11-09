@@ -191,21 +191,30 @@ for (const theme of ["light", "dark"]) {
           exact: true,
         });
         await expect(heading).toBeVisible();
-        const icon = header.locator("img");
+        const icon = header.locator('[data-slot="avatar"]');
         await expect(icon).toBeVisible();
         await expect(icon).toHaveCSS("width", "36px");
-        await expect(icon).toHaveAttribute(
-          "src",
-          path === "/studies"
-            ? "/illustrations/page-headings/lab.webp"
-            : "/illustrations/page-headings/play.webp",
-        );
         expect(
           await icon.evaluate(
-            (element) => (element as HTMLImageElement).naturalWidth,
+            (element) => getComputedStyle(element, "::after").borderTopWidth,
           ),
-        ).toBeGreaterThan(0);
-        await expect(header.locator('[data-slot="avatar"]')).toHaveCount(0);
+        ).toBe("0px");
+        await expect(icon.locator("svg")).toHaveCSS("width", "18px");
+        expect(
+          await icon.evaluate((element) => {
+            const style = getComputedStyle(element);
+            const radius = Number.parseFloat(style.borderTopLeftRadius);
+            return radius > 0 && radius < element.clientWidth / 2;
+          }),
+        ).toBe(true);
+        const filledIcon = icon.locator(
+          path === "/studies" ? "[data-liquid]" : "svg",
+        );
+        expect(
+          await filledIcon.evaluate(
+            (element) => getComputedStyle(element).fill,
+          ),
+        ).not.toBe("none");
         const search = header.getByRole("textbox", { name: `Search ${noun}` });
         await expect(search).toBeVisible();
         expect(await search.getAttribute("placeholder")).toBeNull();

@@ -26,9 +26,6 @@ for (const width of [390, 834, 1280, 1440]) {
           ),
         ).toBe(true);
         if (route === "environments") {
-          await expect(
-            page.locator('img[src="/illustrations/page-headings/lab.webp"]'),
-          ).toHaveCount(0);
           const index = page.getByRole("tablist", {
             name: "Environments",
             exact: true,

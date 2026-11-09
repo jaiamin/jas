@@ -1,3 +1,4 @@
+import { ExperimentIcon } from "@/components/icons";
 import { RecordListHeading } from "@/components/record-list-heading";
 import { ErrorState } from "@/components/shared";
 import { StudyTable } from "@/components/study-table";
@@ -14,6 +15,7 @@ export default function Experiments() {
     <>
       <RecordListHeading
         title="Experiments"
+        icon={ExperimentIcon}
         search={filters.search}
         onSearchChange={filters.setSearch}
       />
