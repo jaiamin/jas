@@ -7,12 +7,13 @@ import { HomeGrid } from "@/components/home-grid";
 import {
   ArrowUpRight,
   FlaskConical,
-  GitCompareArrows,
   MessageSquare,
+  NotebookPen,
   Play,
   Plus,
-  Radio,
-  ScanLine,
+  ShieldCheck,
+  Sprout,
+  Target,
 } from "@/components/icons";
 import { ErrorState, Loading, Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -42,10 +43,10 @@ const suggestions = [
 ];
 const suggestionIcons = [
   MessageSquare,
-  GitCompareArrows,
-  ScanLine,
-  FlaskConical,
-  Radio,
+  NotebookPen,
+  ShieldCheck,
+  Sprout,
+  Target,
 ];
 const suggestionDescriptions = [
   "Test how public messages change contributions.",
@@ -113,19 +114,50 @@ export default function Home() {
         </h1>
         <div className="relative col-start-1 row-start-2 row-end-4 min-w-0 px-4 sm:px-6">
           <AgentComposer
-            className="mx-auto w-full max-w-2xl [&_textarea]:min-h-22 [&_[data-slot=input-group]]:shadow-lg"
+            className="mx-auto w-full max-w-2xl [&_[data-slot=input-group]]:shadow-lg"
             state={state}
             context="general"
             placeholder="Ask a question or describe an experiment…"
           />
         </div>
       </section>
+      <div className="px-4 sm:px-6">
+        <nav
+          className="mx-auto mt-3 flex w-full max-w-2xl items-center justify-end gap-2"
+          aria-label="Experiment actions"
+        >
+          {draft && (
+            <Button variant="ghost" size="sm" asChild>
+              <Link
+                to={draft.path}
+                title={draft.title || "Untitled experiment"}
+              >
+                Continue draft
+              </Link>
+            </Button>
+          )}
+          <Button size="sm" asChild>
+            <Link to="/new">
+              <Plus data-icon="inline-start" />
+              New
+            </Link>
+          </Button>
+        </nav>
+      </div>
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-4 py-8 sm:px-6 sm:py-10">
         <section
           aria-label="Experiment suggestions"
           className="flex flex-col gap-3"
         >
           <h2 className="text-base font-medium">Suggestions</h2>
+          {(drafts.error || drafts.unreadable.length > 0) && (
+            <Alert variant="error">
+              {drafts.error || "Some drafts could not be read."}{" "}
+              <Link to="/studies" className="underline underline-offset-4">
+                Review drafts
+              </Link>
+            </Alert>
+          )}
           <ItemGroup className="gap-0 overflow-hidden rounded-xl border xl:flex-row">
             {suggestions.map(({ title, prompt }, index) => {
               const Icon = suggestionIcons[index];
@@ -136,17 +168,23 @@ export default function Home() {
                 >
                   <Button
                     variant="ghost"
-                    className="h-full w-full items-start justify-start gap-4 rounded-none p-5 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-5 xl:flex-col"
+                    className="h-full w-full items-start justify-start gap-3 rounded-none px-5 py-4 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-5 xl:flex-col"
                     disabled={state.send.isPending}
                     onClick={() => {
                       state.setQuestion(prompt);
                       state.composer.current?.focus();
                     }}
                   >
-                    <Icon data-icon="inline-start" aria-hidden="true" />
-                    <span className="flex min-w-0 flex-col gap-2">
-                      <span className="text-base leading-snug">{title}</span>
-                      <span className="text-sm font-normal leading-relaxed text-muted-foreground">
+                    <Icon
+                      className="size-5"
+                      data-icon="inline-start"
+                      aria-hidden="true"
+                    />
+                    <span className="flex min-w-0 flex-col gap-1.5">
+                      <span className="text-base leading-tight font-semibold xl:min-h-[2lh]">
+                        {title}
+                      </span>
+                      <span className="text-xs leading-4 font-normal text-muted-foreground">
                         {suggestionDescriptions[index]}
                       </span>
                     </span>
@@ -209,48 +247,9 @@ export default function Home() {
           aria-labelledby="recent-experiments-title"
           className="flex flex-col gap-3"
         >
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 id="recent-experiments-title" className="text-base font-medium">
-              Recent experiments
-            </h2>
-            <div className="flex items-center gap-2">
-              <Button size="sm" asChild>
-                <Link to="/new">
-                  <Plus data-icon="inline-start" />
-                  New
-                </Link>
-              </Button>
-            </div>
-          </div>
-          {(draft || drafts.error || drafts.unreadable.length > 0) && (
-            <section
-              aria-label="Continue working"
-              className="flex flex-col gap-2"
-            >
-              {draft && (
-                <Item size="xs" asChild>
-                  <Link to={draft.path}>
-                    <ItemContent className="min-w-0">
-                      <ItemDescription className="flex min-w-0 items-baseline gap-2">
-                        <span className="shrink-0">Continue draft</span>
-                        <span className="truncate text-foreground">
-                          {draft.title || "Untitled experiment"}
-                        </span>
-                      </ItemDescription>
-                    </ItemContent>
-                  </Link>
-                </Item>
-              )}
-              {(drafts.error || drafts.unreadable.length > 0) && (
-                <Alert variant="error">
-                  {drafts.error || "Some drafts could not be read."}{" "}
-                  <Link to="/studies" className="underline underline-offset-4">
-                    Review drafts
-                  </Link>
-                </Alert>
-              )}
-            </section>
-          )}
+          <h2 id="recent-experiments-title" className="text-base font-medium">
+            Recent experiments
+          </h2>
           {studies.error ? (
             <ErrorState error={studies.error} onRetry={studies.refetch} />
           ) : !studies.data ? (

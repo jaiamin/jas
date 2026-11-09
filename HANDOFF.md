@@ -548,3 +548,24 @@ Verified lint/build and Home keyless browser checks 7/7; reviewed populated
 recovery, latest-draft identity and New destination still pass. The known
 Starlette navigation-disconnect log appeared without failures; no backend change.
 Owned preview/test service closed; requested port 8080 remains live.
+
+
+Home layout/composer follow-up (2026-11-09):
+- Fit the animated grid to complete responsive rows/columns. Draw internal lines
+  only so the header/backdrop borders never double; remove the visible pause
+  control while keeping hidden/offscreen pausing and static reduced motion.
+- Place quiet Continue draft and primary New actions directly beneath the
+  composer, separate from Suggestions and Recent experiments. Preserve exact
+  latest-draft identity and draft recovery; deletion stays in Experiments.
+- Align all five suggestion icons/titles/descriptions; use 20px stock Lucide
+  icons, semibold titles, a 6px description gap and compact 12px/16px descriptions.
+- Both composers start at three 24px lines (88px textarea), with 16px text; grow
+  to 192px then scroll internally and shrink when cleared. Send stays visible.
+Verification: frontend lint, 72/72 unit tests and production build passed.
+Home/Agent/streaming browser checks passed 23/23 before final presentation tweaks;
+final Home checks passed 9/9 after all changes, including three-row growth,
+scrolling and shrink behavior on both routes at phone/desktop widths. Reviewed
+final populated dark-desktop and light-phone captures: full cells, single border,
+aligned suggestions, separate draft actions and no overflow. No paid calls.
+The final focused run was clean; earlier navigation disconnects emitted the
+previously documented Starlette log without failures. Port 8080 stays live.

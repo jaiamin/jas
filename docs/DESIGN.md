@@ -150,6 +150,9 @@ Agent viewport height uses the same token. Ordinary pages use a centered 1280px 
 width and 16px, 24px or 32px responsive gutters. Tables scroll within their own
 containers. The Agent page fills the remaining viewport, with an independently
 scrolling transcript and a composer below it; both use a 768px maximum width.
+The shared Home/Agent textarea starts at three rows with 16px text and 24px
+line height (88px including padding), grows to 192px, then scrolls internally
+while keeping its action row visible.
 The Agent header pairs its name with the stock outlined Bot. No duplicate creation/browse
 buttons appear in the introduction. Its independent text-only conversation Sidebar appears at 1100px and above, with a Sheet
 below that breakpoint. Decisions and evidence stack below 1440px.
@@ -158,8 +161,11 @@ Home uses a full-width composer section with a dense 20-unit pixel grid, the
 explicit decorative exception requested for this surface. Fixed cell clusters follow
 a slow 36-second diagonal ripple through the logo red (#ff5757), blue (#4d8dff),
 and their purple blend. Brand decoration colors live in the Home CSS scope;
-controls retain preset tokens. The SVG never captures input. Motion pauses
-offscreen, in hidden tabs or through a stock pause Button; reduced motion shows
+controls retain preset tokens. The SVG fits a whole number of rows and columns
+to the backdrop without cropping cells. Only internal grid lines are drawn; the
+existing header and section separators supply the perimeter without doubled edges.
+It never captures input and has no visible
+pause control. Motion pauses offscreen or in hidden tabs; reduced motion shows
 a still three-color pattern.
 The Home composer has a 672px maximum width and 88px minimum text-entry height.
 Heading top spacing is 80px on mobile and 96px on desktop. A 3:2 grid split
@@ -169,17 +175,20 @@ bottom edge; the opaque surface keeps the grid out of the text field. A stock
 Home has no context selector: its general prompt lets Agent answer or create a
 validated experiment proposal. Scope selection stays on Agent. Five experiment
 suggestions fill the draft without submitting. Under the Suggestions heading,
-they share one rounded ItemGroup border with Separator dividers: equal columns
+they share one rounded ItemGroup border with Separator dividers: aligned icons,
+two-line semibold title tracks and smaller descriptions in equal columns
 on wide screens, stacked rows on smaller screens. Stock ghost Buttons keep the
 whole section of each suggestion keyboard-accessible, with icon, title and description. An explicit send creates one chat
 and opens that saved conversation.
 A late response leaves subsequent navigation intact.
 
-Below suggestions, show up to three active runs only when underway, one latest
-local editor draft when present, and four experiments ordered by creation time.
+Below suggestions, show up to three active runs only when underway and four
+experiments ordered by creation time.
 Keep the manual creation action, labeled New on Home, available in the empty
-state. The latest draft appears as a compact unbordered Continue draft row below
-the Recent experiments heading, without an icon, badge, date or Home dismissal.
+state. Continue draft is a quiet ghost action next to New in a separate action row
+directly beneath the composer, above Suggestions, with its saved title available
+on hover. Keep continuation separate from the saved
+Recent experiments list, without an icon, badge, date or Home dismissal.
 Draft management stays in Experiments. The empty message uses regular muted
 EmptyDescription text rather than a title. Full record lists remain on their
 dedicated destinations.

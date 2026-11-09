@@ -292,16 +292,22 @@ for (const width of [390, 1440])
           .getByRole("region", { name: "Recent experiments" })
           .getByRole("link", { name: /^Experiment \d/ }),
       ).toHaveCount(4);
+      const continueDraft = page.getByRole("link", {
+        name: "Continue draft",
+        exact: true,
+      });
+      await expect(continueDraft).toHaveAttribute(
+        "href",
+        "/new?template=commons",
+      );
+      await expect(continueDraft).toHaveAttribute(
+        "title",
+        "Continue the latest protocol",
+      );
       await expect(
         page
-          .getByRole("region", { name: "Continue working" })
-          .getByRole("link"),
-      ).toHaveCount(1);
-      await expect(
-        page.getByText("Continue the latest protocol", { exact: true }),
-      ).toBeVisible();
-      await expect(
-        page.getByText("An older unfinished protocol", { exact: true }),
+          .getByRole("region", { name: "Recent experiments" })
+          .getByRole("link", { name: "Continue draft", exact: true }),
       ).toHaveCount(0);
       await expect(
         page
@@ -313,26 +319,22 @@ for (const width of [390, 1440])
           () => document.documentElement.scrollWidth <= innerWidth,
         ),
       ).toBe(true);
-      await page
-        .getByRole("button", {
-          name: "Pause background animation",
-          exact: true,
-        })
-        .click();
-      await expect(page.locator(".home-grid-cell").first()).toHaveCSS(
-        "animation-play-state",
-        "paused",
-      );
-      await page
-        .getByRole("button", {
-          name: "Resume background animation",
-          exact: true,
-        })
-        .click();
-      await expect(page.locator(".home-grid-cell").first()).toHaveCSS(
-        "animation-play-state",
-        "running",
-      );
+      await expect(
+        page.getByRole("button", { name: /background animation/ }),
+      ).toHaveCount(0);
+      const completeCells = await page.locator(".home-grid").evaluate((svg) => {
+        const bounds = (svg as SVGSVGElement).viewBox.baseVal;
+        return [
+          ...svg.querySelectorAll<SVGRectElement>(".home-grid-cell"),
+        ].every(
+          (cell) =>
+            cell.x.baseVal.value >= 0 &&
+            cell.y.baseVal.value >= 0 &&
+            cell.x.baseVal.value + cell.width.baseVal.value <= bounds.width &&
+            cell.y.baseVal.value + cell.height.baseVal.value <= bounds.height,
+        );
+      });
+      expect(completeCells).toBe(true);
       await page.emulateMedia({ reducedMotion: "reduce" });
       await expect(page.locator(".home-grid-cell").first()).toHaveCSS(
         "animation-name",
@@ -368,3 +370,49 @@ for (const width of [390, 1440])
       await expect(page).toHaveURL(/\/new$/);
     });
   }
+
+for (const width of [390, 1440]) {
+  test(`Home and Agent composers grow, scroll internally and shrink again · ${width}`, async ({
+    page,
+  }) => {
+    await page.route("**/api/settings", (route) =>
+      route.fulfill({ json: settings }),
+    );
+    await page.setViewportSize({ width, height: 900 });
+    for (const path of ["/", "/agent"]) {
+      await page.goto(path);
+      const input = page.getByLabel("Message Agent", { exact: true });
+      await input.fill("A short question");
+      const initialHeight = (await input.boundingBox())?.height ?? 0;
+      expect(initialHeight).toBe(88);
+      await expect(input).toHaveCSS("font-size", "16px");
+      await input.fill(
+        Array.from({ length: 6 }, (_, i) => `Question line ${i + 1}`).join(
+          "\n",
+        ),
+      );
+      await expect
+        .poll(async () => (await input.boundingBox())?.height ?? 0)
+        .toBeGreaterThan(initialHeight);
+      await input.fill(
+        Array.from({ length: 40 }, (_, i) => `Question line ${i + 1}`).join(
+          "\n",
+        ),
+      );
+      const scroll = await input.evaluate((element) => ({
+        height: element.clientHeight,
+        content: element.scrollHeight,
+      }));
+      expect(scroll.height).toBeLessThanOrEqual(192);
+      expect(scroll.content).toBeGreaterThan(scroll.height);
+      await expect(
+        page.getByRole("button", { name: "Send message", exact: true }),
+      ).toBeInViewport();
+      await expect(input).toHaveValue(/Question line 40$/);
+      await input.fill("A short question");
+      await expect
+        .poll(async () => (await input.boundingBox())?.height ?? 0)
+        .toBe(initialHeight);
+    }
+  });
+}

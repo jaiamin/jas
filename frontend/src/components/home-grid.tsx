@@ -1,6 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
-import { Pause, Play } from "@/components/icons";
-import { Button } from "@/components/ui/button";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const cellSize = 20;
 const colors = [
@@ -8,96 +6,97 @@ const colors = [
   "var(--home-grid-purple)",
   "var(--home-grid-red)",
 ];
-// Fixed clusters keep the pattern stable across renders and visits. The diagonal
-// phase carries the ripple; small offsets keep neighboring cells from blinking together.
-const cells = Array.from({ length: 60 * 18 }, (_, index) => {
-  const x = index % 60;
-  const y = Math.floor(index / 60);
-  const hash = (x * 73 + y * 151 + x * y * 19) % 97;
-  const cluster = (Math.floor(x / 3) * 11 + Math.floor(y / 2) * 7) % 13;
-  return { x, y, hash, cluster };
-}).filter(({ hash, cluster }) => cluster < 5 && hash % 3 !== 0);
 
 export function HomeGrid() {
-  const id = useId();
   const field = useRef<SVGSVGElement>(null);
-  const [paused, setPaused] = useState(false);
+  const [{ columns, rows }, setGrid] = useState({ columns: 60, rows: 18 });
   useEffect(() => {
     const svg = field.current;
     if (!svg) return;
     let visible = true;
-    const update = () => {
-      svg.dataset.paused = String(paused || !visible || document.hidden);
+    const updateVisibility = () => {
+      svg.dataset.paused = String(!visible || document.hidden);
     };
-    const observer = new IntersectionObserver(([entry]) => {
+    const visibility = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
-      update();
+      updateVisibility();
     });
-    observer.observe(svg);
-    document.addEventListener("visibilitychange", update);
-    update();
+    const resize = new ResizeObserver(([entry]) => {
+      const columns = Math.max(
+        1,
+        Math.floor(entry.contentRect.width / cellSize),
+      );
+      const rows = Math.max(1, Math.floor(entry.contentRect.height / cellSize));
+      setGrid((current) =>
+        current.columns === columns && current.rows === rows
+          ? current
+          : { columns, rows },
+      );
+    });
+    visibility.observe(svg);
+    resize.observe(svg);
+    document.addEventListener("visibilitychange", updateVisibility);
+    updateVisibility();
     return () => {
-      observer.disconnect();
-      document.removeEventListener("visibilitychange", update);
+      visibility.disconnect();
+      resize.disconnect();
+      document.removeEventListener("visibilitychange", updateVisibility);
     };
-  }, [paused]);
+  }, []);
+
+  // Fit complete rows and columns to the backdrop instead of cropping a fixed
+  // illustration. Fixed coordinate clusters keep the ripple stable on resize.
+  const cells = useMemo(
+    () =>
+      Array.from({ length: columns * rows }, (_, index) => {
+        const x = index % columns;
+        const y = Math.floor(index / columns);
+        const hash = (x * 73 + y * 151 + x * y * 19) % 97;
+        const cluster = (Math.floor(x / 3) * 11 + Math.floor(y / 2) * 7) % 13;
+        return { x, y, hash, cluster };
+      }).filter(({ hash, cluster }) => cluster < 5 && hash % 3 !== 0),
+    [columns, rows],
+  );
 
   return (
-    <>
-      <svg
-        ref={field}
-        aria-hidden="true"
-        focusable="false"
-        className="home-grid pointer-events-none absolute inset-0 size-full text-foreground"
-        viewBox="0 0 1200 360"
-        preserveAspectRatio="xMidYMid slice"
-      >
-        <defs>
-          <pattern
-            id={id}
-            width={cellSize}
-            height={cellSize}
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d="M20 0H0V20"
-              fill="none"
-              stroke="currentColor"
-              strokeOpacity="0.12"
-              strokeWidth="0.6"
-            />
-          </pattern>
-        </defs>
-        <rect width="1200" height="360" fill={`url(#${id})`} />
-        {cells.map(({ x, y, hash }) => (
-          <rect
-            key={`${x}-${y}`}
-            x={x * cellSize + 0.5}
-            y={y * cellSize + 0.5}
-            width={cellSize - 1}
-            height={cellSize - 1}
-            fill={colors[Math.floor(hash / 3) % colors.length]}
-            className="home-grid-cell"
-            style={{
-              animationDelay: `-${(x * 0.65 + y * 1.1 + (hash % 5) * 0.3) % 36}s`,
-            }}
-          />
-        ))}
-      </svg>
-      <Button
-        variant="ghost"
-        size="icon-xs"
-        className="absolute top-2 right-2 motion-reduce:hidden"
-        aria-label={
-          paused ? "Resume background animation" : "Pause background animation"
-        }
-        title={
-          paused ? "Resume background animation" : "Pause background animation"
-        }
-        onClick={() => setPaused((value) => !value)}
-      >
-        {paused ? <Play aria-hidden="true" /> : <Pause aria-hidden="true" />}
-      </Button>
-    </>
+    <svg
+      ref={field}
+      aria-hidden="true"
+      focusable="false"
+      className="home-grid pointer-events-none absolute inset-0 size-full text-foreground"
+      viewBox={`0 0 ${columns * cellSize} ${rows * cellSize}`}
+      preserveAspectRatio="none"
+    >
+      <path
+        d={[
+          ...Array.from(
+            { length: columns - 1 },
+            (_, index) => `M${(index + 1) * cellSize} 0V${rows * cellSize}`,
+          ),
+          ...Array.from(
+            { length: rows - 1 },
+            (_, index) => `M0 ${(index + 1) * cellSize}H${columns * cellSize}`,
+          ),
+        ].join(" ")}
+        fill="none"
+        stroke="currentColor"
+        strokeOpacity="0.12"
+        strokeWidth="0.6"
+      />
+      {cells.map(({ x, y, hash }) => (
+        <rect
+          key={`${x}-${y}`}
+          x={x * cellSize + 0.5}
+          y={y * cellSize + 0.5}
+          width={cellSize - 1}
+          height={cellSize - 1}
+          fill={colors[Math.floor(hash / 3) % colors.length]}
+          className="home-grid-cell"
+          style={{
+            animationDelay: `-${(x * 0.65 + y * 1.1 + (hash % 5) * 0.3) % 36}s`,
+          }}
+        />
+      ))}
+    </svg>
   );
 }
