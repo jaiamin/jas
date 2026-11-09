@@ -168,9 +168,12 @@ while keeping its action row visible.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
 background surface. The new-chat heading has a decorative primary-colored Target
 at left (30px, 34px on larger screens), with an 8px gap and centered alignment.
-Its CSS rings pulse continuously on unequal 3.7/4.3/5.1-second cycles, keeping
-the rhythm varied. Motion pauses offscreen and in hidden tabs; reduced motion
-shows the static outline. It never
+Its stationary outline has a short outer scanning arc, followed by a gentle inner
+ring contraction and a brief center highlight. Its primary blue mixes 15%
+foreground for readable detail in either theme. Native browser animations finish
+within two seconds; each scan then rests for a varied 2.4–4.4 seconds. Motion and
+its scheduler stop offscreen/in hidden tabs; reduced motion shows the static
+outline. The animation is isolated in AgentWelcomeHeading and never
 signals loading or delays the composer. At the upper right, a 32px stock outline history button
 with the standard rounded corners sits beside the stock 32px New button when a
 saved conversation is selected. The base new-chat view shows only History. History uses a

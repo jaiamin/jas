@@ -90,6 +90,36 @@ for (const width of [320, 1440]) {
   });
 }
 
+test("Agent decoration respects motion preferences and stops offscreen", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 400 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/agent");
+  const heading = page.getByRole("heading", { name: "What can we explore?" });
+  const playing = () =>
+    heading.evaluate(
+      (element) =>
+        element
+          .getAnimations({ subtree: true })
+          .filter((animation) => animation.playState === "running").length,
+    );
+  await expect(heading).toBeVisible();
+  expect(await playing()).toBe(0);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect.poll(playing).toBeGreaterThan(0);
+  await page
+    .getByRole("button", { name: "Design a cooperation experiment" })
+    .scrollIntoViewIfNeeded();
+  await expect(heading).not.toBeInViewport();
+  await expect.poll(playing).toBe(0);
+  await heading.scrollIntoViewIfNeeded();
+  await expect.poll(playing).toBeGreaterThan(0);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect.poll(playing).toBe(0);
+  await expect(page.getByLabel("Message Agent", { exact: true })).toBeEnabled();
+});
+
 test("Agent centers a plain contextual composer without a history rail", async ({
   page,
   request,

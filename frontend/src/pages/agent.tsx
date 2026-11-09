@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import {
   Link,
   useLocation,
@@ -14,10 +14,10 @@ import {
 } from "@/components/agent/agent-context";
 import { AgentHistory } from "@/components/agent/agent-history";
 import { AgentReply } from "@/components/agent/agent-reply";
+import { AgentWelcomeHeading } from "@/components/agent/agent-welcome-heading";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
 import { Alert } from "@/components/feedback";
 import {
-  AgentIcon,
   BookOpen,
   FlaskConical,
   GitCompareArrows,
@@ -338,41 +338,6 @@ function AgentConversation({
       )}
       {messages.length > 0 && composer}
     </section>
-  );
-}
-
-function AgentWelcomeHeading() {
-  const heading = useRef<HTMLHeadingElement>(null);
-  useEffect(() => {
-    const element = heading.current;
-    if (!element) return;
-    let visible = false;
-    const updateActivity = () => {
-      element.dataset.motion =
-        visible && !document.hidden ? "running" : "paused";
-    };
-    const observer = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      updateActivity();
-    });
-    observer.observe(element);
-    document.addEventListener("visibilitychange", updateActivity);
-    return () => {
-      observer.disconnect();
-      document.removeEventListener("visibilitychange", updateActivity);
-    };
-  }, []);
-  return (
-    <h1
-      ref={heading}
-      className="flex items-center justify-center gap-2 text-center text-2xl font-semibold tracking-tight sm:text-3xl"
-    >
-      <AgentIcon
-        aria-hidden="true"
-        className="agent-heading-target size-7.5 shrink-0 text-primary sm:size-8.5"
-      />
-      <span>What can we explore?</span>
-    </h1>
   );
 }
 
