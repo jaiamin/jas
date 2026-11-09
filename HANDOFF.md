@@ -761,3 +761,20 @@ No backend/data changes or paid calls. Requested port 8080 stays live.
 Final size refinement: reduced illustration boxes from 40px to 36px while
 preserving aspect ratio and text alignment. Frontend lint/build and the four
 responsive light/dark Home layout checks passed again; reviewed desktop capture.
+
+Composer focus and resource illustration follow-up (2026-11-09):
+- Shared Home/Agent composer retains its resting border and elevation when the
+  textarea gains focus, without the stock outer focus ring. Scope the override
+  to AgentComposer so other form inputs retain their default treatment.
+- Extend the existing browser composer checks to compare resting/focused border
+  color, width and visible shadows on both pages. Normalize zero-size shadows,
+  since CSS can serialize invisible shadows differently without visual changes.
+- Replace the resource leaf with the free CC0 3dicons Money Bag, Dynamic/Color.
+  Keep the front-view shield and notebook; user cancelled the proposed Eye.
+  No Eye asset or additional license is included in the app. The four local
+  WebP files now total 20,916 bytes, preserving 36px boxes and text alignment.
+- Restart the requested 8080 service: session 47412, PID 233883. HTTP 200 confirmed.
+Verification: frontend lint/build and all nine Home browser checks passed,
+including the Home/Agent focus-border regression and responsive layouts.
+Reviewed the final desktop capture for money-bag alignment.
+No paid calls or backend/data changes.

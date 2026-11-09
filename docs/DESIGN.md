@@ -201,15 +201,18 @@ Buttons sit directly between dividers without transparent border insets, so the
 hover fill meets every edge and follows the group’s clipped outer corners. An explicit send creates one chat
 and opens that saved conversation.
 A late response leaves subsequent navigation intact.
+The shared Home/Agent composer keeps its resting border and shadow when its
+textarea is focused; do not add an outer focus border or ring. Other form inputs
+retain the stock shadcn focus treatment.
 
 The four decorative suggestion illustrations are explicitly approved exceptions
 to preset icons: [3dicons](https://3dicons.co/), Dynamic (the slight-angle view)
-for the chat bubble, notebook and leaf, and Front for the shield. All use
+for the chat bubble, notebook and money bag, and Front for the shield. All use
 regular Color, shown in a 36px box. Trim transparent margins and preserve aspect
 ratios; align visible artwork with the text's left edge in columns and center it
 vertically beside the text on narrow screens. Sources are [Chat Bubble](https://3dicons.co/icons/eec43d-chat-bubble),
 [Notebook](https://3dicons.co/icons/628100-notebook), [Shield](https://3dicons.co/icons/b91186-shield)
-and [Leaf](https://3dicons.co/icons/2c84d9-leaf). The free collections use CC0;
+and [Money Bag](https://3dicons.co/icons/36f0c6-money-bag). The free collections use CC0;
 the supplied license accompanies the local files in
 `frontend/public/illustrations/suggestions/LICENSE.txt`. Transparent WebP
 exports with a 120px longest edge provide 3× resolution without a package or external image requests.

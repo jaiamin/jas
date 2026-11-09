@@ -605,6 +605,26 @@ for (const width of [390, 1440]) {
     for (const path of ["/", "/agent"]) {
       await page.goto(path);
       const input = page.getByLabel("Message Agent", { exact: true });
+      const group = input.locator("..");
+      const appearance = () =>
+        group.evaluate((element) => {
+          const style = getComputedStyle(element);
+          return {
+            color: style.borderColor,
+            width: style.borderWidth,
+            shadows: style.boxShadow
+              .split(/,(?![^(]*\))/)
+              .filter((shadow) =>
+                (shadow.match(/-?[\d.]+px/g) ?? []).some(
+                  (length) => Number.parseFloat(length) !== 0,
+                ),
+              ),
+          };
+        });
+      await input.blur();
+      const restingBorder = await appearance();
+      await input.focus();
+      await expect.poll(appearance).toEqual(restingBorder);
       await input.fill("A short question");
       const initialHeight = (await input.boundingBox())?.height ?? 0;
       expect(initialHeight).toBe(88);
