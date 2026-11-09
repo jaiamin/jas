@@ -1,10 +1,18 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Empty } from "@/components/feedback";
-import { ExperimentIcon } from "@/components/icons";
-import { OptionSelect as Select } from "@/components/option-select";
+import { ExperimentIcon, X } from "@/components/icons";
+import { ExperimentActions } from "@/components/record-actions";
 import { FavoriteButton, RecordListView } from "@/components/record-favorites";
+import {
+  RecordScopeFilter,
+  RecordStatusFilter,
+} from "@/components/record-filters";
 import { RecordPagination } from "@/components/record-pagination";
-import { RecordTable } from "@/components/record-table";
+import {
+  RecordSelectionCheckbox,
+  RecordTable,
+} from "@/components/record-table";
 import { RecordTableSkeletonRows } from "@/components/record-table-skeleton-rows";
 import { Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -30,7 +38,12 @@ export function StudyTable({
   filters: RecordFilters;
 }) {
   const favorites = useRecordFavorites("studies");
-  const { search, status, view, page, setStatus, setPage } = filters;
+  const [selection, setSelected] = useState<string[]>([]);
+  const selected = selection.filter((id) =>
+    studies?.some((study) => study.id === id),
+  );
+  const { search, status, scope, view, page, setStatus, setScope, setPage } =
+    filters;
   const loading = studies === undefined || environments === undefined;
   const filtered =
     studies?.filter(
@@ -39,14 +52,27 @@ export function StudyTable({
           .toLowerCase()
           .includes(search.toLowerCase()) &&
         (status === "all" || s.status === status) &&
+        (scope === "all" || s.environment === scope) &&
         (view === "all" || favorites.ids.has(s.id)),
     ) ?? [];
   const pageCount = Math.max(1, Math.ceil(filtered.length / 10));
   const current = Math.min(page, pageCount - 1);
   return (
     <RecordListView filters={filters} favorites={favorites} noun="experiments">
-      <div className="flex flex-wrap items-center gap-3 px-4 py-2 sm:px-6 lg:px-8">
-        <Select
+      <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+        <RecordScopeFilter
+          noun="environment"
+          value={scope}
+          onValueChange={setScope}
+          loading={environments === undefined}
+          options={
+            environments?.map((environment) => ({
+              value: environment.key,
+              label: environment.name,
+            })) ?? []
+          }
+        />
+        <RecordStatusFilter
           label="Filter experiment status"
           value={status}
           onValueChange={setStatus}
@@ -60,9 +86,19 @@ export function StudyTable({
             "failed",
           ].map((v) => ({
             value: v,
-            label: v === "all" ? "All statuses" : label(v),
+            label: v === "all" ? "All" : label(v),
           }))}
         />
+        {selected.length > 0 && (
+          <div className="ml-auto flex items-center gap-2">
+            <span role="status" className="text-sm text-muted-foreground">
+              {selected.length} selected
+            </span>
+            <Button variant="ghost" size="sm" onClick={() => setSelected([])}>
+              <X data-icon="inline-start" /> Clear selection
+            </Button>
+          </div>
+        )}
       </div>
       <Separator />
       {loading && (
@@ -70,8 +106,8 @@ export function StudyTable({
           Loading experiments…
         </div>
       )}
-      <RecordTable>
-        <TableHeader>
+      <RecordTable selection>
+        <TableHeader className="text-xs">
           <TableRow>
             <TableHead className="w-1/3">Name</TableHead>
             <TableHead className="w-24">Favorite</TableHead>
@@ -80,6 +116,9 @@ export function StudyTable({
             <TableHead className="w-24">Revision</TableHead>
             <TableHead className="w-24">Runs</TableHead>
             <TableHead className="w-48">Created</TableHead>
+            <TableHead className="w-16">
+              <span className="sr-only">Actions</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody
@@ -87,11 +126,28 @@ export function StudyTable({
           className="[&_tr:last-child]:border-b"
         >
           {loading ? (
-            <RecordTableSkeletonRows columns={7} />
+            <RecordTableSkeletonRows columns={8} />
           ) : (
             filtered.slice(current * 10, (current + 1) * 10).map((study) => (
-              <TableRow key={study.id}>
-                <TableCell className="min-w-48 max-w-96">
+              <TableRow
+                key={study.id}
+                className="group/record"
+                data-state={
+                  selected.includes(study.id) ? "selected" : undefined
+                }
+              >
+                <TableCell className="relative min-w-48 max-w-96">
+                  <RecordSelectionCheckbox
+                    aria-label={`Select ${study.title}`}
+                    checked={selected.includes(study.id)}
+                    onCheckedChange={(checked) =>
+                      setSelected((previous) =>
+                        checked === true
+                          ? [...previous, study.id]
+                          : previous.filter((id) => id !== study.id),
+                      )
+                    }
+                  />
                   <div className="flex min-w-0 items-center gap-2 [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-muted-foreground">
                     <ExperimentIcon aria-hidden="true" />
                     <Link
@@ -128,23 +184,20 @@ export function StudyTable({
                 <TableCell className="whitespace-nowrap">
                   {date(study.created)}
                 </TableCell>
+                <TableCell>
+                  <ExperimentActions study={study} />
+                </TableCell>
               </TableRow>
             ))
           )}
         </TableBody>
       </RecordTable>
       {!loading && studies?.length === 0 ? (
-        <Empty
-          title="No experiments yet"
-          description="Create an experiment to define the agents, conditions, and rules."
-        />
+        <Empty title="No experiments yet" />
       ) : !loading &&
         view === "favorites" &&
         !studies?.some((study) => favorites.ids.has(study.id)) ? (
-        <Empty
-          title="No favorite experiments yet"
-          description="Star an experiment to keep it here."
-        >
+        <Empty title="No favorite experiments yet">
           <Button variant="outline" onClick={() => filters.setView("all")}>
             View all
           </Button>

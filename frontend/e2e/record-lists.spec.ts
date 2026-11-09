@@ -95,9 +95,46 @@ for (const theme of ["light", "dark"]) {
         expect(geometry.right).toBe(0);
         const headerPadding = await header.evaluate((element) => {
           const style = getComputedStyle(element);
-          return { left: style.paddingLeft, right: style.paddingRight };
+          return { right: style.paddingRight };
         });
         const table = main.getByRole("table");
+        for (const name of [
+          path === "/studies" ? "Environment" : "Experiment",
+          "Status",
+        ]) {
+          const filter = main.getByRole("group", {
+            name: `${name} filter`,
+            exact: true,
+          });
+          await expect(filter.locator(":scope > :first-child")).toHaveCSS(
+            "font-size",
+            "13px",
+          );
+          await expect(filter.locator(":scope > :first-child")).toHaveCSS(
+            "font-weight",
+            "500",
+          );
+          await expect(filter.getByRole("combobox")).toHaveCSS(
+            "font-size",
+            "13px",
+          );
+          await expect(filter.getByRole("combobox")).toHaveCSS(
+            "font-weight",
+            "400",
+          );
+          await expect(filter.getByRole("combobox")).toHaveCSS(
+            "height",
+            "28px",
+          );
+          expect(
+            await filter.evaluate((element) => {
+              const style = getComputedStyle(
+                element.parentElement as HTMLElement,
+              );
+              return [style.paddingTop, style.paddingBottom];
+            }),
+          ).toEqual(["12px", "12px"]);
+        }
         await expect(table.getByRole("columnheader")).toHaveText(
           path === "/studies"
             ? [
@@ -108,10 +145,10 @@ for (const theme of ["light", "dark"]) {
                 "Revision",
                 "Runs",
                 "Created",
+                "Actions",
               ]
             : [
-                "Select",
-                "Run",
+                "Name",
                 "Favorite",
                 "Experiment",
                 "Status",
@@ -121,9 +158,25 @@ for (const theme of ["light", "dark"]) {
                 "Progress",
                 "Cost",
                 "Created",
+                "Actions",
               ],
         );
         const cells = table.getByRole("row").nth(1).getByRole("cell");
+        const favoriteHeading = table.getByRole("columnheader", {
+          name: "Favorite",
+          exact: true,
+        });
+        await expect(favoriteHeading).toHaveCSS("font-size", "12px");
+        const favoriteTextX = await favoriteHeading.evaluate(
+          (element) =>
+            element.getBoundingClientRect().x +
+            Number.parseFloat(getComputedStyle(element).paddingLeft),
+        );
+        const starX = await cells
+          .nth(1)
+          .locator("svg")
+          .evaluate((element) => element.getBoundingClientRect().x);
+        expect(Math.abs(starX - favoriteTextX)).toBeLessThanOrEqual(1);
         if (path === "/studies") {
           await expect(cells.nth(0)).toHaveText(study.design.title);
           await expect(cells.nth(2)).toHaveText(
@@ -139,22 +192,20 @@ for (const theme of ["light", "dark"]) {
         } else {
           const run = study.runs[0];
           if (!run) throw new Error("Expected a created run");
-          await expect(cells.nth(1)).toHaveText(run.condition);
-          await expect(cells.nth(5)).toHaveText(String(run.seed));
-          await expect(cells.nth(6)).toHaveText(String(run.revision));
-          await expect(cells.nth(7)).toHaveText(String(run.repetition));
-          await expect(cells.nth(1).getByRole("link")).toHaveCSS(
+          await expect(cells.nth(0)).toHaveText(run.condition);
+          await expect(cells.nth(4)).toHaveText(String(run.seed));
+          await expect(cells.nth(5)).toHaveText(String(run.revision));
+          await expect(cells.nth(6)).toHaveText(String(run.repetition));
+          await expect(cells.nth(0).getByRole("link")).toHaveCSS(
             "font-weight",
             "400",
           );
         }
-        const dateCell = cells.last();
+        const dateCell = cells.nth(path === "/studies" ? 6 : 9);
         expect(
           await dateCell.evaluate((cell) => getComputedStyle(cell).color),
         ).toBe(
-          await cells
-            .nth(path === "/studies" ? 0 : 1)
-            .evaluate((cell) => getComputedStyle(cell).color),
+          await cells.nth(0).evaluate((cell) => getComputedStyle(cell).color),
         );
         await expect(dateCell).not.toBeEmpty();
         await expect(heading).toHaveCSS("font-weight", "500");
@@ -168,7 +219,7 @@ for (const theme of ["light", "dark"]) {
         ]) {
           await expect(row.locator(":scope > :first-child")).toHaveCSS(
             "padding-left",
-            headerPadding.left,
+            "32px",
           );
           await expect(row.locator(":scope > :last-child")).toHaveCSS(
             "padding-right",
@@ -180,7 +231,7 @@ for (const theme of ["light", "dark"]) {
         );
         await expect(
           main.getByRole("columnheader", {
-            name: path === "/studies" ? "Name" : "Run",
+            name: "Name",
             exact: true,
           }),
         ).toBeVisible();
@@ -290,7 +341,19 @@ for (const [path, endpoint, title, noun] of [
       await ready;
       await route.fulfill({ json: [] });
     });
+    if (path === "/studies") {
+      await page.route("**/api/catalog", async (route) => {
+        await ready;
+        await route.continue();
+      });
+    }
     await page.goto(path);
+    await expect(
+      page.getByRole("combobox", {
+        name: path === "/studies" ? "Filter environment" : "Filter experiment",
+        exact: true,
+      }),
+    ).toBeDisabled();
     await expect(
       page.getByRole("status", { name: "Loading", exact: true }),
     ).toBeVisible();
@@ -309,7 +372,7 @@ for (const [path, endpoint, title, noun] of [
     ).toBeVisible();
     await expect(table.locator("thead [data-slot=skeleton]")).toHaveCount(0);
     await expect(table.locator("tbody [data-slot=skeleton]")).toHaveCount(
-      path === "/studies" ? 21 : 33,
+      path === "/studies" ? 24 : 33,
     );
     await expect(
       page.getByRole("combobox", {
@@ -333,6 +396,12 @@ for (const [path, endpoint, title, noun] of [
       page.getByText(`No ${noun} yet`, { exact: true }),
     ).toBeVisible();
     await expect(search).toHaveValue("Keep this query");
+    await expect(
+      page.getByRole("combobox", {
+        name: path === "/studies" ? "Filter environment" : "Filter experiment",
+        exact: true,
+      }),
+    ).toBeEnabled();
     await expect(table.locator('[data-slot="skeleton"]')).toHaveCount(0);
     const after = await labels.boundingBox();
     expect(after?.y).toBe(before?.y);
@@ -481,6 +550,8 @@ for (const [path, noun, size] of [
       const next = pagination.getByRole("button", {
         name: `Next ${noun} page`,
       });
+      await expect(previous).toHaveCSS("column-gap", "4px");
+      await expect(next).toHaveCSS("column-gap", "4px");
       await expect(previous).toBeDisabled();
       await expect(
         pagination.getByRole("button", {
@@ -529,4 +600,405 @@ for (const [path, noun, size] of [
       ).toHaveAttribute("aria-current", "page");
     });
   }
+}
+
+for (const [path, noun, scopeNoun, pageSize] of [
+  ["/studies", "experiments", "environment", 10],
+  ["/runs", "runs", "experiment", 15],
+] as const) {
+  test(`${noun} scope filters search, combine with favorites and reset pagination`, async ({
+    page,
+    request,
+  }) => {
+    const { study } = await createStudy(request);
+    const catalog: Catalog = await (await request.get("/api/catalog")).json();
+    const environments = catalog.environments.slice(0, 2);
+    const [first, second] = environments;
+    if (!first || !second)
+      throw new Error("Expected two installed environments");
+    const summary = (await (await request.get("/api/studies")).json()).find(
+      (item: { id: string }) => item.id === study.id,
+    );
+    const records = Array.from({ length: pageSize * 2 + 1 }, (_, index) =>
+      path === "/studies"
+        ? {
+            ...summary,
+            id: `scope-study-${index}`,
+            title: `Experiment ${index}`,
+            environment: index === 0 ? second.key : first.key,
+          }
+        : {
+            ...study.runs[0],
+            id: `scope-run-${index}`,
+            condition: `Condition ${index}`,
+            study_id: index === 0 ? "second-study" : "first-study",
+            study_title:
+              index === 0 ? "Memory experiment" : "Resource experiment",
+          },
+    );
+    await page.route(`**/api${path}`, (route) =>
+      route.fulfill({ json: records }),
+    );
+    await page.goto(path);
+    const scope = page.getByRole("combobox", {
+      name: `Filter ${scopeNoun}`,
+      exact: true,
+    });
+    const status = page.getByRole("combobox", {
+      name: `Filter ${noun === "runs" ? "run" : "experiment"} status`,
+    });
+    await expect(scope).toBeEnabled();
+    // Both triggers use the same typography, geometry and icon treatment.
+    const appearance = (element: HTMLElement | SVGElement) => {
+      const style = getComputedStyle(element);
+      return [
+        style.fontWeight,
+        style.fontSize,
+        style.height,
+        style.paddingLeft,
+        style.paddingRight,
+        style.columnGap,
+        style.borderRadius,
+        style.borderColor,
+        style.backgroundColor,
+      ];
+    };
+    expect(await scope.evaluate(appearance)).toEqual(
+      await status.evaluate(appearance),
+    );
+    await expect(scope).toHaveCSS("font-weight", "400");
+    const table = page.getByRole("table");
+    await table
+      .locator("tbody tr")
+      .first()
+      .getByRole("button", { name: /^Add .* to favorites$/ })
+      .click();
+    await page
+      .getByRole("button", {
+        name: `Next ${noun === "runs" ? "run" : "experiment"} page`,
+      })
+      .click();
+    await scope.click();
+    const search = page.getByRole("combobox", { name: `Search ${scopeNoun}s` });
+    const selectedLabel =
+      path === "/studies" ? second.name : "Memory experiment";
+    await search.fill(selectedLabel);
+    await expect(
+      page.getByRole("option", { name: selectedLabel, exact: true }),
+    ).toBeVisible();
+    await page
+      .getByRole("option", { name: selectedLabel, exact: true })
+      .click();
+    await expect(table.locator("tbody tr")).toHaveCount(1);
+    await expect(table.locator("tbody tr")).toContainText(
+      path === "/studies" ? "Experiment 0" : "Condition 0",
+    );
+    await expect(scope).toContainText(selectedLabel);
+    const views = page.getByRole("tablist", { name: `View ${noun}` });
+    await views.getByRole("tab", { name: "Favorites", exact: true }).click();
+    await expect(table.locator("tbody tr")).toHaveCount(1);
+    await scope.click();
+    await page
+      .getByRole("option", {
+        name: path === "/studies" ? first.name : "Resource experiment",
+        exact: true,
+      })
+      .click();
+    await expect(
+      page.getByText(`No matching ${noun}`, { exact: true }),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: "Clear filters", exact: true })
+      .click();
+    await expect(scope).toHaveText("All");
+    await expect(
+      views.getByRole("tab", { name: "Favorites", exact: true }),
+    ).toHaveAttribute("aria-selected", "true");
+    await expect(table.locator("tbody tr")).toHaveCount(1);
+    await views.getByRole("tab", { name: "All", exact: true }).click();
+    await expect(
+      page.getByRole("button", {
+        name: `Previous ${noun === "runs" ? "run" : "experiment"} page`,
+      }),
+    ).toBeDisabled();
+  });
+}
+
+for (const path of ["/studies", "/runs"] as const) {
+  for (const touch of [false, true]) {
+    test.describe(`${path} selection on ${touch ? "touch" : "pointer"}`, () => {
+      test.use({
+        hasTouch: touch,
+        isMobile: touch,
+        viewport: { width: touch ? 390 : 1600, height: 900 },
+      });
+      test("checkbox stays in gutter and supports hover, keyboard and persistent selection", async ({
+        page,
+        request,
+      }) => {
+        const { study } = await createStudy(request);
+        await page.route("**/api/runs", (route) =>
+          route.fulfill({ json: study.runs }),
+        );
+        const summaries = await (await request.get("/api/studies")).json();
+        await page.route("**/api/studies", (route) =>
+          route.fulfill({
+            json: summaries.filter(
+              (item: { id: string }) => item.id === study.id,
+            ),
+          }),
+        );
+        await page.goto(path);
+        const row = page.getByRole("table").locator("tbody tr").first();
+        const checkbox = row.getByRole("checkbox");
+        const link = row.getByRole("link").first();
+        await expect(checkbox).toHaveCSS("opacity", touch ? "1" : "0");
+        const box = await checkbox.boundingBox();
+        const name = await link.boundingBox();
+        const title = await page
+          .getByRole("columnheader", { name: "Name", exact: true })
+          .evaluate(
+            (element) =>
+              element.getBoundingClientRect().x +
+              Number.parseFloat(getComputedStyle(element).paddingLeft),
+          );
+        expect(box && name && box.x + box.width < name.x).toBe(true);
+        expect(name?.x).toBeCloseTo(title + (path === "/studies" ? 24 : 0), 0);
+        if (!touch) {
+          await row.hover();
+          await expect(checkbox).toHaveCSS("opacity", "1");
+          await page.mouse.move(0, 0);
+          await expect(checkbox).toHaveCSS("opacity", "0");
+          await link.focus();
+          await page.keyboard.press("Shift+Tab");
+          await expect(checkbox).toBeFocused();
+          await expect(checkbox).toHaveCSS("opacity", "1");
+          await page.keyboard.press("Space");
+        } else {
+          await checkbox.tap();
+        }
+        await expect(checkbox).toBeChecked();
+        await page
+          .getByRole("textbox", {
+            name: path === "/studies" ? "Search experiments" : "Search runs",
+          })
+          .focus();
+        await page.mouse.move(0, 0);
+        await expect(checkbox).toHaveCSS("opacity", "1");
+        expect((await link.boundingBox())?.x).toBe(name?.x);
+        const destination = await link.getAttribute("href");
+        await link.click({ position: { x: 1, y: 10 } });
+        expect(new URL(page.url()).pathname).toBe(destination);
+      });
+    });
+  }
+}
+
+for (const theme of ["light", "dark"] as const) {
+  test(`experiment row actions preserve revisions, independent copies, and confirmed deletion · ${theme}`, async ({
+    page,
+    request,
+  }, testInfo) => {
+    await page.setViewportSize({
+      width: theme === "dark" ? 390 : 1600,
+      height: 900,
+    });
+    await page.addInitScript(
+      (value) => localStorage.setItem("jas-theme", value),
+      theme,
+    );
+    const { study } = await createStudy(request);
+    await page.route("**/api/studies", async (route) => {
+      if (route.request().method() !== "GET") return route.continue();
+      const response = await route.fetch();
+      const studies = await response.json();
+      await route.fulfill({
+        json: studies.filter((item: { id: string }) => item.id === study.id),
+      });
+    });
+    await page.goto("/studies");
+    const row = page.getByRole("table").locator("tbody tr").first();
+    const actions = row.getByRole("button", { name: /^Actions for/ });
+    await expect(actions).toHaveCSS("border-top-width", "1px");
+    await actions.click();
+    await expect(
+      page.getByRole("menuitem", { name: "Edit as new revision" }),
+    ).toHaveAttribute("href", `/new?study=${study.id}`);
+    await expect(
+      page.getByRole("menuitem", { name: "Open experiment", exact: true }),
+    ).toHaveAttribute("href", `/studies/${study.id}`);
+    await page.screenshot({
+      path: testInfo.outputPath(`experiment-actions-${theme}.png`),
+      animations: "disabled",
+    });
+    const download = page.waitForEvent("download");
+    await page.getByRole("menuitem", { name: "Export evidence" }).click();
+    expect((await download).suggestedFilename()).toBe(`jas-${study.id}.json`);
+    await actions.click();
+    await page
+      .getByRole("menuitem", { name: "Duplicate", exact: true })
+      .click();
+    await expect(page).toHaveURL(new RegExp(`/new\\?copy=${study.id}$`));
+    await expect(
+      page.getByLabel("Experiment name", { exact: true }),
+    ).toHaveValue(`${study.design.title.slice(0, 93)} (copy)`);
+    await page
+      .getByLabel("Experiment name", { exact: true })
+      .fill("Independent copy");
+    await page
+      .getByRole("button", { name: "Create experiment", exact: true })
+      .click();
+    await expect(
+      page.getByRole("heading", { name: "Independent copy", exact: true }),
+    ).toBeVisible();
+    const copyId = new URL(page.url()).pathname.split("/").at(-1);
+    expect(copyId).not.toBe(study.id);
+    expect(
+      (await (await request.get(`/api/studies/${copyId}`)).json()).revision,
+    ).toBe(1);
+    expect(
+      (await (await request.get(`/api/studies/${study.id}`)).json()).design
+        .title,
+    ).toBe(study.design.title);
+    await page.goto(`/new?study=${study.id}`);
+    await page
+      .getByLabel("Experiment name", { exact: true })
+      .fill("Updated revision");
+    await page
+      .getByRole("button", { name: "Save new revision", exact: true })
+      .click();
+    await expect(
+      page.getByRole("heading", { name: "Updated revision", exact: true }),
+    ).toBeVisible();
+    expect(
+      (await (await request.get(`/api/studies/${study.id}?revision=1`)).json())
+        .design.title,
+    ).toBe(study.design.title);
+    await page.goto("/studies");
+    await actions.click();
+    await page.getByRole("menuitem", { name: "Delete experiment…" }).click();
+    const dialog = page.getByRole("alertdialog");
+    await expect(dialog).toContainText("Spending records");
+    await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
+    await expect(actions).toBeFocused();
+    expect((await request.get(`/api/studies/${study.id}`)).status()).toBe(200);
+    // API errors remain in the confirmation so the user can retry without losing context.
+    let fail = true;
+    let release = () => {};
+    const pending = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await page.route(`**/api/studies/${study.id}`, async (route) => {
+      if (route.request().method() !== "DELETE") return route.continue();
+      if (fail)
+        return route.fulfill({
+          status: 422,
+          json: { detail: "Pause all runs before deleting." },
+        });
+      await pending;
+      return route.continue();
+    });
+    await actions.click();
+    await page.getByRole("menuitem", { name: "Delete experiment…" }).click();
+    await dialog
+      .getByRole("button", { name: "Delete experiment", exact: true })
+      .click();
+    await expect(dialog.getByRole("alert")).toContainText("Pause all runs");
+    fail = false;
+    await dialog
+      .getByRole("button", { name: "Delete experiment", exact: true })
+      .click();
+    await expect(
+      dialog.getByRole("button", { name: "Deleting…", exact: true }),
+    ).toBeDisabled();
+    await expect(
+      dialog.getByRole("button", { name: "Cancel", exact: true }),
+    ).toBeDisabled();
+    release();
+    await expect(dialog).toHaveCount(0);
+    await expect(
+      page.getByText("No experiments yet", { exact: true }),
+    ).toBeVisible();
+    expect((await request.get(`/api/studies/${study.id}`)).status()).toBe(404);
+    expect((await request.get(`/api/studies/${copyId}`)).status()).toBe(200);
+    expect(
+      (await (await request.get("/api/settings")).json()).usage.requests,
+    ).toBe(0);
+  });
+}
+
+test("run action menu opens the exact revision and exports evidence without mutating a trial", async ({
+  page,
+  request,
+}) => {
+  const { study } = await createStudy(request);
+  await page.route("**/api/runs", (route) =>
+    route.fulfill({ json: study.runs }),
+  );
+  await page.goto("/runs");
+  const run = study.runs[0];
+  if (!run) throw new Error("Expected a run");
+  const actions = page
+    .getByRole("table")
+    .locator("tbody tr")
+    .first()
+    .getByRole("button", { name: /^Actions for/ });
+  await actions.click();
+  await expect(
+    page.getByRole("menuitem", { name: "Inspect run", exact: true }),
+  ).toHaveAttribute("href", `/runs/${run.id}`);
+  await expect(
+    page.getByRole("menuitem", { name: "Open experiment", exact: true }),
+  ).toHaveAttribute("href", `/studies/${study.id}?revision=${run.revision}`);
+  await expect(page.getByRole("menuitem", { name: /Delete|Edit/ })).toHaveCount(
+    0,
+  );
+  const download = page.waitForEvent("download");
+  await page
+    .getByRole("menuitem", { name: "Export experiment evidence" })
+    .click();
+  expect((await download).suggestedFilename()).toBe(`jas-${study.id}.json`);
+  expect(
+    (await (await request.get(`/api/runs/${run.id}`)).json()).summary.turn,
+  ).toBe(0);
+});
+
+for (const source of ["study", "copy"] as const) {
+  test(`unfinished ${source} drafts remain recoverable after deleting their source experiment`, async ({
+    page,
+    request,
+  }) => {
+    const { study } = await createStudy(request);
+    const path = `/new?${source}=${study.id}`;
+    await page.goto(path);
+    await page
+      .getByLabel("Experiment name", { exact: true })
+      .fill("Kept unfinished work");
+    await expect(
+      page.getByRole("status", { name: "Saved in this browser" }),
+    ).toBeVisible();
+    expect((await request.delete(`/api/studies/${study.id}`)).status()).toBe(
+      200,
+    );
+    await page.reload();
+    await expect(
+      page.getByText("Original experiment deleted", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByLabel("Experiment name", { exact: true }),
+    ).toHaveValue("Kept unfinished work");
+    await page
+      .getByRole("button", { name: "Create experiment", exact: true })
+      .click();
+    await expect(
+      page.getByRole("heading", { name: "Kept unfinished work", exact: true }),
+    ).toBeVisible();
+    expect(new URL(page.url()).pathname).not.toBe(`/studies/${study.id}`);
+    expect(
+      await page.evaluate(
+        (key) => localStorage.getItem(`jas:draft:${key}`),
+        path,
+      ),
+    ).toBeNull();
+  });
 }

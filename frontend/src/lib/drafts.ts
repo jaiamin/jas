@@ -12,7 +12,14 @@ export interface Draft {
 
 export function editorDraftPath(params: URLSearchParams): string {
   const source = new URLSearchParams();
-  for (const key of ["plan", "study", "revision", "template", "setup"]) {
+  for (const key of [
+    "plan",
+    "study",
+    "copy",
+    "revision",
+    "template",
+    "setup",
+  ]) {
     const value = params.get(key);
     if (value !== null) source.set(key, value);
   }

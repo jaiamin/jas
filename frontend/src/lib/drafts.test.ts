@@ -83,3 +83,13 @@ test("empty stored drafts remain visible as corruption and preserve recovery dat
   expect(listDrafts()).toEqual({ items: [], unreadable: ["/new"] });
   expect(localStorage.getItem("jas:draft:/new")).toBe("");
 });
+
+test("copy drafts have an independent identity from revisions and the blank editor", () => {
+  const copy = editorDraftPath(new URLSearchParams("copy=one"));
+  expect(copy).toBe("/new?copy=one");
+  expect(copy).not.toBe(editorDraftPath(new URLSearchParams("study=one")));
+  expect(copy).not.toBe(editorDraftPath(new URLSearchParams()));
+  writeDraft(copy, { title: "Copy" } as Design, "{}", "visual");
+  expect(readDraft("/new")).toBeNull();
+  expect(readDraft(copy)?.title).toBe("Copy");
+});

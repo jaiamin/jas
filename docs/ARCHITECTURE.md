@@ -30,6 +30,20 @@ objects into an unqueryable single blob or duplicate transient UI state in the d
 Claims, commitments and exchanges are typed events with explicit payloads, not separate
 mutable truth sources. Relationship views and behavioral summaries are derived from them.
 
+## Experiment deletion
+
+`DELETE /api/studies/{id}` removes an entire experiment, all immutable revisions, its
+matched runs, annotations, measurements, events, turns and participants in one transaction.
+It removes only chat messages scoped to that experiment, preserving unrelated conversation
+turns and unscoped design proposals. There is no individual-run deletion or mutation endpoint.
+The route stays synchronous on the owning engine/assistant event loop; it checks live task
+ownership, run status, pending chat turns and unsettled calls before deletion. Acquire the
+study write lock before reading dependents. Block deletion until runs stop and related chats
+and requests settle; roll back every change on rejection. Provider-call usage/status/cost
+records survive with deleted foreign keys detached and request/response payloads cleared;
+workspace charges and ceilings never reset. This requires no schema change. UI deletion
+requires explicit confirmation; local browser drafts remain recoverable.
+
 ## Experiment design
 
 The planner scopes the question and justifies agents, conditions, seeds, repetitions and

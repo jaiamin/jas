@@ -66,16 +66,13 @@ export function FavoriteButton({
     <Button
       variant="ghost"
       size="icon-sm"
+      className="-ml-1.5"
       disabled={!favorites.available}
       aria-pressed={favorite}
       aria-label={`${favorite ? "Remove" : "Add"} ${name} ${favorite ? "from" : "to"} favorites`}
       onClick={() => favorites.toggle(id)}
     >
-      <Star
-        fill={favorite ? "currentColor" : "none"}
-        data-favorite={favorite}
-        className="data-[favorite=true]:text-primary"
-      />
+      <Star fill={favorite ? "currentColor" : "none"} strokeWidth={1.5} />
     </Button>
   );
 }

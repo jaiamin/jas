@@ -437,15 +437,24 @@ Experiments and Runs share one list heading: a muted rounded-square icon beside
 the title (filled Play or flask liquid, matching navigation), with search and a primary New action at the right (stacked below on
 mobile). Keep the header inset, but let both tables reach the full content width
 without side gutters or an enclosing border. Inset the outer header/data cells and
-filter controls to match the page heading, including skeleton rows; this padding
-must not shorten the row dividers. Left-align headers and data, retain tabular
-numerals, and label the Experiments primary column Name. Keep rows on one line:
+filter controls to match the page heading, including skeleton rows. Reserve a 32px
+name gutter for selection on both lists (also on narrow screens); keep dividers full-width.
+Left-align headers and data, retain tabular numerals, and label both primary columns Name. Keep rows on one line:
 Environment and Revision have their own Experiments columns; Seed, Revision and
 Repetition have their own Runs columns. Do not stack metadata under record names.
 Use full catalogue environment names. Page titles use medium weight and record
-names regular weight. A compact star column with a visible Favorite heading follows
-each name. A stock TabsList above the status filter switches All/Favorites. Search
-and status filters apply within that view; Clear filters keeps the chosen view.
+names regular weight. Table column headings use the small text scale. Keep star
+glyphs aligned with their column heading while retaining the full icon-button target.
+Stars use a light 1.5px stroke and the normal data color, including when filled.
+A compact star column with a visible Favorite heading follows
+each name. A stock TabsList above the filter row switches All/Favorites. Search,
+status and scope apply within that view; Clear filters keeps the chosen view.
+Experiments filters by Environment; Runs filters by Experiment, with searchable full labels
+from the catalogue or loaded run identities. Each stock ButtonGroup joins a medium-weight
+filter name to its regular-weight selected value/chevron with one dividing border (Environment | All,
+Experiment | All, Status | All). Use 13px filter text and a compact 28px control height, with 12px outside padding
+above and below the filter row. Use identical control sizing/spacing and reset popup search
+on reopening. Disable only filters whose remote options are still loading.
 Use a full-width Separator between the view control and status filters, and another
 between filters and the table. Keep both control rows compact. Store
 favorites as browser preferences under separate study/run keys, synchronize changes
@@ -462,12 +471,26 @@ own columns. Omit total counts below the tables and render pagination only when
 there is more than one page. Compose shared stock Pagination/Buttons with Previous,
 numbered pages, bounded ellipses and Next; use real disabled buttons at either end,
 aria-current for the active page, and compact icon-only arrows on narrow screens.
-Reset to the first page when search, status or All/Favorites changes. Created dates
+Reset to the first page when search, scope, status or All/Favorites changes. Created dates
 use the normal data color in both tables; Runs includes its recorded creation time.
 Runs link to their exact experiment revision and keep comparison
-selections across filtering. Loading affects database rows only, leaving search,
-the heading and New available. Empty lists keep a single creation action in the
-heading. Embedded experiment runs use the same controlled table/search contract.
+selections across filtering. Keep comparison and experiment-selection checkboxes in the name
+gutter, without a separate selection column or layout shift. Unchecked boxes reveal on row
+hover or keyboard focus; selected boxes and touch-device boxes stay visible. Use a readable
+muted-foreground outline without changing the primary selected state. Bound the hit area to
+the gutter so it cannot intercept name links. Experiments shows its selection count and clear
+action only while needed. A final Actions column uses bordered stock ellipsis buttons and
+DropdownMenu. Experiments offers Open, Edit as new revision, Duplicate, Export evidence,
+and confirmed Delete. Copy drafts use a separate source identity and save a new experiment;
+editing preserves immutable revisions. Runs offers Inspect, Open exact parent revision, and
+Export experiment evidence, with no per-trial edit/delete that would break the matched matrix.
+Use AlertDialog for experiment deletion, retain errors for retry, disable repeated submission
+and cancellation during the transaction, and return focus on cancellation. Do not delete local
+drafts; after source deletion, open their saved content with an explicit recovery notice
+and save as a new experiment. Loading affects database rows only, leaving search,
+the heading and New available. Empty states have only their title and relevant action,
+without descriptive subtitles: Clear filters for no matches, View all for empty Favorites,
+and a single New creation action in the page heading for an empty database. Embedded experiment runs use the same controlled table/search contract.
 
 Home renders its heading, animation, composer, Experiment ideas and creation/navigation
 buttons immediately. Drafts are read synchronously from local browser storage;

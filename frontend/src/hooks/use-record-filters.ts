@@ -5,6 +5,7 @@ export function useRecordFilters() {
   const [filters, setFilters] = useState({
     search: "",
     status: "all",
+    scope: "all",
     page: 0,
     view: "all" as "all" | "favorites",
   });
@@ -14,6 +15,8 @@ export function useRecordFilters() {
       setFilters((current) => ({ ...current, view, page: 0 })),
     setSearch: (search: string) =>
       setFilters((current) => ({ ...current, search, page: 0 })),
+    setScope: (scope: string) =>
+      setFilters((current) => ({ ...current, scope, page: 0 })),
     setStatus: (status: string) =>
       setFilters((current) => ({ ...current, status, page: 0 })),
     setPage: (page: number) => setFilters((current) => ({ ...current, page })),
@@ -22,6 +25,7 @@ export function useRecordFilters() {
         ...current,
         search: "",
         status: "all",
+        scope: "all",
         page: 0,
       })),
   };

@@ -2,14 +2,20 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Empty } from "@/components/feedback";
 import { X } from "@/components/icons";
-import { OptionSelect as Select } from "@/components/option-select";
+import { RunActions } from "@/components/record-actions";
 import { FavoriteButton, RecordListView } from "@/components/record-favorites";
+import {
+  RecordScopeFilter,
+  RecordStatusFilter,
+} from "@/components/record-filters";
 import { RecordPagination } from "@/components/record-pagination";
-import { RecordTable } from "@/components/record-table";
+import {
+  RecordSelectionCheckbox,
+  RecordTable,
+} from "@/components/record-table";
 import { RecordTableSkeletonRows } from "@/components/record-table-skeleton-rows";
 import { Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import {
   TableBody,
@@ -31,9 +37,11 @@ export function RunTable({
   filters: RecordFilters;
   selectable?: boolean;
 }) {
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selection, setSelected] = useState<string[]>([]);
+  const selected = selection.filter((id) => runs?.some((run) => run.id === id));
   const favorites = useRecordFavorites("runs");
-  const { search, status, view, page, setStatus, setPage } = filters;
+  const { search, status, scope, view, page, setStatus, setScope, setPage } =
+    filters;
   const loading = runs === undefined;
   const filtered =
     runs?.filter(
@@ -42,14 +50,27 @@ export function RunTable({
           .toLowerCase()
           .includes(search.toLowerCase()) &&
         (status === "all" || r.status === status) &&
+        (scope === "all" || r.study_id === scope) &&
         (view === "all" || favorites.ids.has(r.id)),
     ) ?? [];
+  const experiments = new Map<string, string>();
+  for (const run of runs ?? []) {
+    if (!experiments.has(run.study_id))
+      experiments.set(run.study_id, run.study_title);
+  }
   const pages = Math.max(1, Math.ceil(filtered.length / 15));
   const current = Math.min(page, pages - 1);
   return (
     <RecordListView filters={filters} favorites={favorites} noun="runs">
-      <div className="flex flex-wrap items-center gap-3 px-4 py-2 sm:px-6 lg:px-8">
-        <Select
+      <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+        <RecordScopeFilter
+          noun="experiment"
+          value={scope}
+          onValueChange={setScope}
+          loading={loading}
+          options={[...experiments].map(([value, label]) => ({ value, label }))}
+        />
+        <RecordStatusFilter
           label="Filter run status"
           value={status}
           onValueChange={setStatus}
@@ -64,7 +85,7 @@ export function RunTable({
             "failed",
           ].map((v) => ({
             value: v,
-            label: v === "all" ? "All statuses" : label(v),
+            label: v === "all" ? "All" : label(v),
           }))}
         />
         {selectable && (
@@ -98,15 +119,10 @@ export function RunTable({
           Loading runs…
         </div>
       )}
-      <RecordTable>
-        <TableHeader>
+      <RecordTable selection={selectable}>
+        <TableHeader className="text-xs">
           <TableRow>
-            {selectable && (
-              <TableHead className="w-10">
-                <span className="sr-only">Select</span>
-              </TableHead>
-            )}
-            <TableHead>Run</TableHead>
+            <TableHead>Name</TableHead>
             <TableHead className="w-24">Favorite</TableHead>
             <TableHead>Experiment</TableHead>
             <TableHead>Status</TableHead>
@@ -116,6 +132,9 @@ export function RunTable({
             <TableHead>Progress</TableHead>
             <TableHead>Cost</TableHead>
             <TableHead>Created</TableHead>
+            <TableHead className="w-16">
+              <span className="sr-only">Actions</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody
@@ -123,16 +142,17 @@ export function RunTable({
           className="[&_tr:last-child]:border-b"
         >
           {loading ? (
-            <RecordTableSkeletonRows columns={selectable ? 11 : 10} />
+            <RecordTableSkeletonRows columns={11} />
           ) : (
             filtered.slice(current * 15, (current + 1) * 15).map((run) => (
               <TableRow
                 key={run.id}
+                className="group/record"
                 data-state={selected.includes(run.id) ? "selected" : undefined}
               >
-                {selectable && (
-                  <TableCell>
-                    <Checkbox
+                <TableCell className="relative min-w-48 max-w-96">
+                  {selectable && (
+                    <RecordSelectionCheckbox
                       aria-label={`Select ${run.condition}, seed ${run.seed}, revision ${run.revision}, repetition ${run.repetition}, ${run.id.slice(0, 6)}`}
                       checked={selected.includes(run.id)}
                       disabled={
@@ -146,9 +166,7 @@ export function RunTable({
                         )
                       }
                     />
-                  </TableCell>
-                )}
-                <TableCell className="min-w-48 max-w-96">
+                  )}
                   <Link
                     className="block truncate underline-offset-4 hover:underline"
                     title={run.condition}
@@ -191,23 +209,20 @@ export function RunTable({
                 <TableCell className="whitespace-nowrap">
                   {date(run.created)}
                 </TableCell>
+                <TableCell>
+                  <RunActions run={run} />
+                </TableCell>
               </TableRow>
             ))
           )}
         </TableBody>
       </RecordTable>
       {runs?.length === 0 ? (
-        <Empty
-          title="No runs yet"
-          description="Create an experiment to define the agents, conditions, and rules."
-        />
+        <Empty title="No runs yet" />
       ) : !loading &&
         view === "favorites" &&
         !runs?.some((run) => favorites.ids.has(run.id)) ? (
-        <Empty
-          title="No favorite runs yet"
-          description="Star a run to keep it here."
-        >
+        <Empty title="No favorite runs yet">
           <Button variant="outline" onClick={() => filters.setView("all")}>
             View all
           </Button>
@@ -215,10 +230,7 @@ export function RunTable({
       ) : (
         !loading &&
         !filtered.length && (
-          <Empty
-            title="No matching runs"
-            description="Try another experiment, condition or run ID."
-          >
+          <Empty title="No matching runs">
             <Button variant="outline" onClick={filters.clear}>
               Clear filters
             </Button>
