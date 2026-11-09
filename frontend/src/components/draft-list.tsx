@@ -37,10 +37,10 @@ export function DraftList({
     <ItemGroup className="has-data-[size=xs]:gap-0">
       {drafts.map((draft, index) => (
         <Fragment key={draft.path}>
-          <div className="group/draft flex min-w-0 items-center">
+          <div className="group/draft flex min-w-0 items-center gap-3">
             <Item
               size="xs"
-              className="min-w-0 flex-1 [a]:hover:bg-transparent"
+              className="min-w-0 flex-1 border-0 px-0 [a]:hover:bg-transparent"
               asChild
             >
               <Link
@@ -48,21 +48,23 @@ export function DraftList({
                 title={draft.title || "Untitled experiment"}
                 aria-label={draft.title || "Untitled experiment"}
               >
-                <ItemContent className="min-w-0">
-                  <ItemTitle className="max-w-full">
+                <ItemContent className="min-w-0 flex-row items-center group-data-[size=xs]/item:gap-3">
+                  <ItemTitle className="min-w-0 flex-1">
                     <span className="truncate">
                       {draft.title || "Untitled experiment"}
                     </span>
                   </ItemTitle>
                   {Number.isFinite(Date.parse(draft.updated)) && (
-                    <ItemDescription>
-                      Edited {date(draft.updated)}
+                    <ItemDescription className="shrink-0 whitespace-nowrap">
+                      <time dateTime={draft.updated}>
+                        Edited {date(draft.updated)}
+                      </time>
                     </ItemDescription>
                   )}
                 </ItemContent>
               </Link>
             </Item>
-            <ItemActions className="pr-2.5">
+            <ItemActions>
               <DeleteDraft draft={draft} onDelete={onDelete} />
             </ItemActions>
           </div>

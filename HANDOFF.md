@@ -615,3 +615,18 @@ trigger hover, hidden collapsed dividers and 15px suggestion titles pass all
 four responsive/theme layout checks. Final lint/build and diff checks pass.
 Visual review confirms the local feathered heading blur and flush hover fill.
 No paid calls; requested port 8080 remains live.
+
+
+Home alignment/timestamp polish (2026-11-09):
+- Remove redundant heading and record horizontal padding/transparent borders so
+  headings, section dividers, row dividers and content edges share one alignment.
+- Shared DraftList places Edited timestamps on the title row before Delete.
+  Recent experiments place the actual Created timestamp before status; no edit
+  timestamp is present in the experiment API. Keep full-title tooltips/truncation.
+- Reduce the heading backdrop tint from30% to12% and replace the opaque mask
+  plateau with a continuous100/80/35/0% fade over a slightly wider local footprint.
+  The rest of the grid remains sharp and unchanged.
+Verification: frontend lint/build passed; Home and shared draft E2E14/14 passed.
+After the final blur change, all four phone/desktop light/dark layout checks
+passed again. Reviewed responsive captures for alignment, same-line times and
+soft local fading; no new dependencies, backend changes or paid calls.

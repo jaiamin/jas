@@ -38,6 +38,7 @@ import { Separator } from "@/components/ui/separator";
 import { agentSuggestions } from "@/lib/agent-suggestions";
 import { useApi } from "@/lib/api";
 import { listDrafts, removeDraft } from "@/lib/drafts";
+import { date } from "@/lib/format";
 import type { RunSummary, StudySummary } from "@/lib/types";
 
 const suggestions = [
@@ -56,7 +57,7 @@ const suggestionIcons = [
   Target,
 ];
 const recordTriggerClassName =
-  "hover:bg-transparent aria-expanded:bg-transparent aria-expanded:hover:bg-transparent dark:hover:bg-transparent dark:aria-expanded:hover:bg-transparent";
+  "border-0 px-0 hover:bg-transparent aria-expanded:bg-transparent aria-expanded:hover:bg-transparent dark:hover:bg-transparent dark:aria-expanded:hover:bg-transparent";
 const suggestionDescriptions = [
   "Test how public messages change contributions.",
   "Compare private notes with history-only memory.",
@@ -317,7 +318,7 @@ export default function Home() {
                     <Fragment key={study.id}>
                       <Item
                         size="sm"
-                        className="[a]:hover:bg-transparent"
+                        className="border-0 px-0 [a]:hover:bg-transparent"
                         asChild
                       >
                         <Link to={`/studies/${study.id}`}>
@@ -325,17 +326,26 @@ export default function Home() {
                             <FlaskConical />
                           </ItemMedia>
                           <ItemContent className="min-w-0">
-                            <ItemTitle className="max-w-full">
-                              <span className="truncate">{study.title}</span>
-                            </ItemTitle>
+                            <div className="flex min-w-0 items-center gap-3">
+                              <ItemTitle className="min-w-0 flex-1">
+                                <span className="truncate" title={study.title}>
+                                  {study.title}
+                                </span>
+                              </ItemTitle>
+                              <ItemDescription className="shrink-0 text-xs whitespace-nowrap">
+                                <time dateTime={study.created}>
+                                  Created {date(study.created)}
+                                </time>
+                              </ItemDescription>
+                              <ItemActions>
+                                <Status value={study.status} />
+                              </ItemActions>
+                            </div>
                             <ItemDescription>
                               {study.completed_runs} / {study.run_count} runs
                               complete
                             </ItemDescription>
                           </ItemContent>
-                          <ItemActions>
-                            <Status value={study.status} />
-                          </ItemActions>
                         </Link>
                       </Item>
                       {index < recent.length - 1 && (

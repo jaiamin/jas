@@ -167,6 +167,8 @@ existing header and section separators supply the perimeter without doubled edge
 Cell fills meet every boundary directly; draw grid strokes over the fills without inset gaps.
 A slight 3px backdrop blur and feathered surface tint sit directly behind the
 heading’s text span; the heading stays opaque and the remaining grid stays sharp.
+The tint uses 12% of the surface color. The blur mask falls continuously through
+100/80/35/0% opacity, with no opaque plateau or abrupt edge.
 It never captures input and has no visible
 pause control. Motion pauses offscreen or in hidden tabs; reduced motion shows
 a still three-color pattern.
@@ -196,6 +198,8 @@ Place the primary New action beside Recent experiments, including its empty
 state. Drafts and Recent experiments are initially expanded stock Collapsibles.
 Their 14px heading triggers are larger than the 12px Suggestions heading; each
 has a full-width Separator below it and a chevron immediately after its text.
+Heading triggers, dividers and row content share the section’s horizontal edges;
+remove redundant horizontal Item/trigger padding and transparent row borders.
 Only the text/chevron button toggles the section; its background stays transparent
 on hover and while expanded. New remains available when collapsed; the heading divider hides with its content.
 Show Drafts immediately above Recent experiments only when drafts exist or need
@@ -204,7 +208,9 @@ stock Items separated by horizontal rules, without a rule after the final item.
 Draft and recent experiment rows remain transparent on hover; preserve keyboard
 focus rings and link cursors.
 The shared DraftList uses compact clickable Item xs rows with titles and
-last-edited times. Delete appears on mouse hover and keyboard focus, and stays
+last-edited times on the title row, immediately before the delete action. Recent
+experiments show their actual creation time on the title row before status; the
+API exposes no experiment edit time. Delete appears on mouse hover and keyboard focus, and stays
 visible on touch screens. Use Untitled experiment when
 unnamed. Both Home and Experiments confirm deletion in a stock AlertDialog;
 failed storage writes retain the draft and show a recoverable dialog error.
