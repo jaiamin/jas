@@ -32,22 +32,22 @@ const evidenceQuestions: Record<EnvironmentId, string> = {
 
 const experimentSuggestions: AgentSuggestion[] = [
   {
-    title: "Communication & cooperation",
+    title: "Do messages change cooperation?",
     prompt:
       "Design a shared-commons experiment testing whether public messages change contribution rates. Compare messages enabled and disabled, keeping reports, promises, agent goals and other rules identical. Use matched seeds, a compact pilot and a $3 spending ceiling.",
   },
   {
-    title: "Memory & reciprocity",
+    title: "Does memory affect reciprocity?",
     prompt:
       "Design a trust-exchange experiment testing whether retained private notes change return rates. Compare episodic memory with history-only memory while holding goals, communication and resources constant. Use matched seeds, a compact pilot and a $3 spending ceiling.",
   },
   {
-    title: "Oversight & sanctions",
+    title: "Does oversight change sanctions?",
     prompt:
       "Design an institutional-oversight experiment testing whether oversight probability changes sanction use. Vary only oversight probability, keeping authority, goals and sanction limits identical. Use matched seeds, a compact pilot and a $3 spending ceiling; make no claims of psychological replication.",
   },
   {
-    title: "Regeneration & resource use",
+    title: "Can shared resources last?",
     prompt:
       "Design a renewable-resource experiment testing how regeneration rate affects extraction and resource survival. Vary only regeneration, keeping initial stock, capacity, extraction limits and agent goals constant. Use matched seeds, a compact pilot and a $3 spending ceiling.",
   },

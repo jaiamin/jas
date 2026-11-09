@@ -185,11 +185,16 @@ selector, defaulting to No experiment, solely for selecting existing evidence.
 Explicitly scoped links and resumed chats preserve the selected evidence identity. Four experiment
 suggestions fill the draft without submitting. Under the Suggestions heading,
 they share one rounded ItemGroup border with Separator dividers: aligned icons,
-15px semibold titles and 12px descriptions in one row of four on wide screens.
+15px semibold titles and 13px descriptions with 18px line height in one row of
+four on wide screens. Descriptions use foreground/60, matching record timestamps.
+Spell out “and” in suggestion titles rather than using ampersands.
+Use concrete experiment questions covering communication/cooperation, memory/
+reciprocity, oversight/sanctions and resource survival. Descriptions name the
+intervention and measured comparison, without implying outcomes are guaranteed.
 Place icons above the text in columns, with a consistent 6px gap between each
 title and description and no reserved title height. Keep descriptions to one
 short sentence explaining the comparison.
-Use 12px vertical padding. On narrower screens, stack rows with icons to the
+Use 16px padding on all sides. On narrower screens, stack rows with icons to the
 left of their titles. Stock ghost Buttons keep the
 whole section of each suggestion keyboard-accessible, with icon, title and description.
 Buttons sit directly between dividers without transparent border insets, so the

@@ -54,10 +54,10 @@ const suggestionIcons = [MessageSquare, NotebookPen, ShieldCheck, Sprout];
 const recordTriggerClassName =
   "border-0 px-0 hover:bg-transparent aria-expanded:bg-transparent aria-expanded:hover:bg-transparent dark:hover:bg-transparent dark:aria-expanded:hover:bg-transparent";
 const suggestionDescriptions = [
-  "Compare contributions with messaging on and off.",
-  "Compare returns with private notes or history alone.",
-  "Compare sanction use with more or less oversight.",
-  "Compare resource use with slower or faster renewal.",
+  "Compare contributions to a shared pool with public messages enabled or disabled.",
+  "Compare return rates with private notes versus history alone, under the same rules.",
+  "Change the chance of oversight and compare sanction use under the same limits.",
+  "Vary resource renewal and compare extraction, remaining stock, and survival.",
 ];
 
 export default function Home() {
@@ -140,7 +140,7 @@ export default function Home() {
                 <Fragment key={title}>
                   <Button
                     variant="ghost"
-                    className="h-auto w-full min-w-0 flex-1 items-start justify-start gap-3 rounded-none border-0 px-4 py-3 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-4 xl:flex-col"
+                    className="h-auto w-full min-w-0 flex-1 items-start justify-start gap-3 rounded-none border-0 p-4 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-4 xl:flex-col"
                     disabled={state.send.isPending}
                     onClick={() => {
                       state.setQuestion(prompt);
@@ -156,7 +156,7 @@ export default function Home() {
                       <span className="text-[0.9375rem] leading-5 font-semibold">
                         {title}
                       </span>
-                      <span className="text-xs leading-4 font-normal text-muted-foreground">
+                      <span className="text-[0.8125rem] leading-4.5 font-normal text-foreground/60">
                         {suggestionDescriptions[index]}
                       </span>
                     </span>

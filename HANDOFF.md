@@ -719,3 +719,18 @@ Verification: frontend lint/build and Home browser suite 9/9 passed. After the
 final 6px title-spacing refinement, all four phone/desktop light/dark layout
 checks passed again. Reviewed final captures for consistent natural title gaps.
 No dependencies or paid calls. Leave the explicitly requested 8080 service running.
+
+
+Suggestion clarity and readability follow-up (2026-11-09):
+- Reframe shared suggestion titles as four concrete experiment questions:
+  messages/cooperation, memory/reciprocity, oversight/sanctions, resource survival.
+  No ampersands. Keep the existing controlled experiment prompts and click behavior.
+- Slightly longer Home descriptions state the intervention and comparison, rather
+  than repeating a category or implying a guaranteed result.
+- Increase description text to 13px/18px and use foreground/60, matching timestamps.
+  All tile padding is 16px; retain the consistent 6px title/description gap and
+  natural wrapping, one desktop row, and stacked narrow-screen presentation.
+Verification: final frontend lint/build and Home browser suite 9/9 passed.
+Reviewed dark-desktop and light-phone captures for readability, wrapping,
+spacing and hover/divider coverage. No dependencies, backend/data changes or
+paid calls. Requested port 8080 remains running in session 91029.
