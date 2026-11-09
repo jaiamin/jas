@@ -146,21 +146,51 @@
   display: none;
 }
 
-/* Home's requested logo-inspired field; controls still use stock theme tokens. */
-.home-grid-cell {
-  opacity: 0.025;
-  animation: home-grid-fill 18s ease-in-out infinite;
+/* Home's requested brand decoration stays separate from preset control colors. */
+.home-grid {
+  --home-grid-red: #ff5757;
+  --home-grid-blue: #4d8dff;
+  --home-grid-purple: color-mix(
+    in oklch,
+    var(--home-grid-red),
+    var(--home-grid-blue)
+  );
 }
 
-@keyframes home-grid-fill {
+.home-grid-cell {
+  opacity: 0.16;
+  animation: home-grid-tide 36s ease-in-out infinite;
+}
+
+.home-grid[data-paused="true"] .home-grid-cell {
+  animation-play-state: paused;
+}
+
+@keyframes home-grid-tide {
   0%,
-  30%,
   100% {
-    opacity: 0.01;
+    opacity: 0.04;
+    fill: var(--home-grid-blue);
   }
-  55%,
-  70% {
-    opacity: 0.065;
+  16% {
+    opacity: 0.28;
+    fill: var(--home-grid-blue);
+  }
+  32% {
+    opacity: 0.22;
+    fill: var(--home-grid-purple);
+  }
+  48% {
+    opacity: 0.055;
+    fill: var(--home-grid-purple);
+  }
+  64% {
+    opacity: 0.28;
+    fill: var(--home-grid-red);
+  }
+  80% {
+    opacity: 0.22;
+    fill: var(--home-grid-purple);
   }
 }
 

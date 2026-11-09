@@ -154,9 +154,13 @@ The Agent header pairs its name with the stock outlined Bot. No duplicate creati
 buttons appear in the introduction. Its independent text-only conversation Sidebar appears at 1100px and above, with a Sheet
 below that breakpoint. Decisions and evidence stack below 1440px.
 
-Home uses a full-width composer section with a faint animated pixel grid, the
-explicit decorative exception requested for this surface. The grid follows the
-foreground token, never captures input, and remains static with reduced motion.
+Home uses a full-width composer section with a dense 20-unit pixel grid, the
+explicit decorative exception requested for this surface. Fixed cell clusters follow
+a slow 36-second diagonal ripple through the logo red (#ff5757), blue (#4d8dff),
+and their purple blend. Brand decoration colors live in the Home CSS scope;
+controls retain preset tokens. The SVG never captures input. Motion pauses
+offscreen, in hidden tabs or through a stock pause Button; reduced motion shows
+a still three-color pattern.
 The Home composer has a 672px maximum width and 88px minimum text-entry height.
 Heading top spacing is 80px on mobile and 96px on desktop. A 3:2 grid split
 places three fifths of the composer within the backdrop and two fifths below its

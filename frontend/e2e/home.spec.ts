@@ -271,7 +271,7 @@ for (const width of [390, 1440])
         .evaluate((box) => {
           const bounds = box.getBoundingClientRect();
           const backdrop = document
-            .querySelector("section > div[aria-hidden]")
+            .querySelector("[data-slot=home-backdrop]")
             ?.getBoundingClientRect();
           return {
             top: bounds.top,
@@ -313,6 +313,26 @@ for (const width of [390, 1440])
           () => document.documentElement.scrollWidth <= innerWidth,
         ),
       ).toBe(true);
+      await page
+        .getByRole("button", {
+          name: "Pause background animation",
+          exact: true,
+        })
+        .click();
+      await expect(page.locator(".home-grid-cell").first()).toHaveCSS(
+        "animation-play-state",
+        "paused",
+      );
+      await page
+        .getByRole("button", {
+          name: "Resume background animation",
+          exact: true,
+        })
+        .click();
+      await expect(page.locator(".home-grid-cell").first()).toHaveCSS(
+        "animation-play-state",
+        "running",
+      );
       await page.emulateMedia({ reducedMotion: "reduce" });
       await expect(page.locator(".home-grid-cell").first()).toHaveCSS(
         "animation-name",

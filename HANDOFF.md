@@ -513,3 +513,23 @@ Verified frontend lint/build and Home keyless E2E 7/7, including the fifth sugge
 draft preservation, no submission, both themes and mobile/desktop layouts. Browser
 review confirmed 14px outer corners, four dividers, equal 20px action insets and no
 horizontal overflow at 390/1440px. Owned preview closed; port 8080 remains running.
+
+
+Home animation follow-up: double the grid resolution in each direction (20-unit
+cells, 60x18 field) and replace isolated neutral blinks with fixed pixel clusters
+whose phase follows a slow 36-second diagonal ripple. CSS blends the exact logo
+red #ff5757 and blue #4d8dff through an OKLCH purple; the scoped brand variables
+leave preset controls unchanged. Stronger grid strokes and 4–28% animated cell
+opacity retain visible color without overwhelming the heading/composer.
+CSS/SVG only, no animation timers, per-frame React work, canvas or dependencies.
+IntersectionObserver/document visibility pause offscreen or hidden animation;
+a stock ghost Button in the clear upper corner pauses/resumes. Reduced-motion
+mode keeps a still three-color pattern and hides the redundant pause control.
+Initial mobile browser check caught the lower pause control being covered by the
+composer; moving it above the heading resolved it. Final lint/build and all 72
+frontend unit tests pass; final Home browser suite 7/7 passes including pause,
+resume and reduced motion in both themes at 390/1440px. Shared-browser review
+confirmed colored clusters, readable content, no overflow and actual offscreen
+animation pause. A navigation-disconnect Starlette log recurred without a test
+failure (already recorded above); no backend changes in this follow-up.
+Owned preview and temporary test server closed; requested port 8080 stays live.

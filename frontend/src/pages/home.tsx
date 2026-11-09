@@ -102,7 +102,7 @@ export default function Home() {
         aria-labelledby="home-title"
       >
         <div
-          aria-hidden="true"
+          data-slot="home-backdrop"
           className="relative col-start-1 row-start-1 row-end-3 overflow-hidden border-b"
         >
           <HomeGrid />
