@@ -435,7 +435,7 @@ dedicated destinations.
 
 Experiments and Runs share one list heading: a muted rounded-square icon beside
 the title (filled Play or flask liquid, matching navigation), using a borderless 36px
-background (`muted-foreground/10`) and an 18px glyph, with search and a primary New action at the right (stacked below on
+background (`muted-foreground/15`) and an 18px glyph, with search and a primary New action at the right (stacked below on
 mobile). Keep the header inset, but let both tables reach the full content width
 without side gutters or an enclosing border. Inset the outer header/data cells and
 filter controls to match the page heading, including skeleton rows. Reserve a 32px
