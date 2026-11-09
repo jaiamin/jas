@@ -70,7 +70,15 @@ test("Home submits once, opens the saved Agent conversation and never resubmits 
   const suggestions = page
     .getByRole("region", { name: "Experiment suggestions" })
     .getByRole("button");
-  await expect(suggestions).toHaveCount(4);
+  await expect(suggestions).toHaveCount(5);
+  await expect(
+    page.getByRole("heading", { name: "Suggestions", exact: true }),
+  ).toBeVisible();
+  await suggestions.last().click();
+  await expect(page.getByLabel("Message Agent", { exact: true })).toHaveValue(
+    /Vary only signal accuracy/,
+  );
+  expect(submissions).toBe(0);
   await suggestions.first().click();
   const input = page.getByLabel("Message Agent", { exact: true });
   await expect(input).toHaveValue(/public messages/);

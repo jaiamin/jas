@@ -12,6 +12,7 @@ import {
   PenLine,
   Play,
   Plus,
+  Radio,
   ScanLine,
 } from "@/components/icons";
 import { ErrorState, Loading, Status } from "@/components/shared";
@@ -26,24 +27,34 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
+import { Separator } from "@/components/ui/separator";
 import { agentSuggestions } from "@/lib/agent-suggestions";
 import { useApi } from "@/lib/api";
 import { listDrafts } from "@/lib/drafts";
 import { date } from "@/lib/format";
 import type { RunSummary, StudySummary } from "@/lib/types";
 
-const suggestions = agentSuggestions({ context: "new" });
+const suggestions = [
+  ...agentSuggestions({ context: "new" }),
+  {
+    title: "Information & accuracy",
+    prompt:
+      "Design an information-decision experiment testing how signal accuracy affects decision accuracy. Vary only signal accuracy, keeping information visibility, rewards and other rules identical. Use matched seeds, a compact pilot and a $3 spending ceiling; distinguish recorded choices from inferred beliefs.",
+  },
+];
 const suggestionIcons = [
   MessageSquare,
   GitCompareArrows,
   ScanLine,
   FlaskConical,
+  Radio,
 ];
 const suggestionDescriptions = [
-  "Public messages and contribution rates",
-  "Private notes and trust exchange",
-  "Oversight and sanction decisions",
-  "Resource renewal and extraction",
+  "Test how public messages change contributions.",
+  "Compare private notes with history-only memory.",
+  "Explore how oversight changes sanction decisions.",
+  "Study extraction as resource renewal changes.",
+  "Compare decisions under different signal accuracy.",
 ];
 
 export default function Home() {
@@ -114,31 +125,47 @@ export default function Home() {
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-4 py-8 sm:px-6 sm:py-10">
         <section
           aria-label="Experiment suggestions"
-          className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"
+          className="flex flex-col gap-3"
         >
-          {suggestions.map(({ title, prompt }, index) => {
-            const Icon = suggestionIcons[index];
-            return (
-              <Button
-                key={title}
-                variant="outline"
-                className="h-auto items-start justify-start gap-3 p-4 whitespace-normal text-left"
-                disabled={state.send.isPending}
-                onClick={() => {
-                  state.setQuestion(prompt);
-                  state.composer.current?.focus();
-                }}
-              >
-                <Icon data-icon="inline-start" aria-hidden="true" />
-                <span className="flex min-w-0 flex-col gap-1">
-                  <span>{title}</span>
-                  <span className="text-xs font-normal leading-relaxed text-muted-foreground">
-                    {suggestionDescriptions[index]}
-                  </span>
-                </span>
-              </Button>
-            );
-          })}
+          <h2 className="text-base font-medium">Suggestions</h2>
+          <ItemGroup className="gap-0 overflow-hidden rounded-xl border xl:flex-row">
+            {suggestions.map(({ title, prompt }, index) => {
+              const Icon = suggestionIcons[index];
+              return (
+                <div
+                  key={title}
+                  className="flex min-w-0 flex-1 flex-col xl:flex-row"
+                >
+                  <Button
+                    variant="ghost"
+                    className="h-full w-full items-start justify-start gap-4 rounded-none p-5 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-5 xl:flex-col"
+                    disabled={state.send.isPending}
+                    onClick={() => {
+                      state.setQuestion(prompt);
+                      state.composer.current?.focus();
+                    }}
+                  >
+                    <Icon data-icon="inline-start" aria-hidden="true" />
+                    <span className="flex min-w-0 flex-col gap-2">
+                      <span className="text-base leading-snug">{title}</span>
+                      <span className="text-sm font-normal leading-relaxed text-muted-foreground">
+                        {suggestionDescriptions[index]}
+                      </span>
+                    </span>
+                  </Button>
+                  {index < suggestions.length - 1 && (
+                    <>
+                      <Separator className="xl:hidden" />
+                      <Separator
+                        orientation="vertical"
+                        className="hidden xl:block"
+                      />
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </ItemGroup>
         </section>
         {active.length > 0 && (
           <section

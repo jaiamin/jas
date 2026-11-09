@@ -501,3 +501,15 @@ No paid calls were made. Gitleaks staged-diff scan passed. Port 8080 was safely
 restarted after confirming no pending chats/active runs; PID 186095.
 Owned preview tabs and temporary browser backends are closed. The requested
 8080 development server remains running. Ready to publish to draft PR #9.
+
+
+Home suggestions follow-up: replace separate cards with one rounded stock ItemGroup
+boundary and four stock Separator dividers. Five equal desktop sections use stock ghost
+Buttons with icon above title/description; smaller screens stack the same actions with
+icons beside the text. Add the Suggestions heading and a fifth bounded information-
+accuracy experiment prompt. Keep Agent's existing context-specific examples unchanged.
+Clicking only fills/focuses the Home composer; no paid request is sent.
+Verified frontend lint/build and Home keyless E2E 7/7, including the fifth suggestion,
+draft preservation, no submission, both themes and mobile/desktop layouts. Browser
+review confirmed 14px outer corners, four dividers, equal 20px action insets and no
+horizontal overflow at 390/1440px. Owned preview closed; port 8080 remains running.

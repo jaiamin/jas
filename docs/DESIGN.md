@@ -163,8 +163,11 @@ places three fifths of the composer within the backdrop and two fifths below its
 bottom edge; the opaque surface keeps the grid out of the text field. A stock
 `shadow-lg` gives the composer soft depth along its sides and bottom.
 Home has no context selector: its general prompt lets Agent answer or create a
-validated experiment proposal. Scope selection stays on Agent. Four experiment
-suggestions fill the draft without submitting. An explicit send creates one chat
+validated experiment proposal. Scope selection stays on Agent. Five experiment
+suggestions fill the draft without submitting. Under the Suggestions heading,
+they share one rounded ItemGroup border with Separator dividers: equal columns
+on wide screens, stacked rows on smaller screens. Stock ghost Buttons keep the
+whole section of each suggestion keyboard-accessible, with icon, title and description. An explicit send creates one chat
 and opens that saved conversation.
 A late response leaves subsequent navigation intact.
 
