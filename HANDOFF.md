@@ -876,3 +876,37 @@ Send-button inset refinement (2026-11-09):
 Verification: frontend lint/build and both responsive Home/Agent composer
 browser checks passed. Reviewed the phone capture for matching send-button
 right/bottom insets. Port 8080 remains healthy (HTTP 200).
+
+Living Home grid and narrow navigation (2026-11-09):
+Acceptance: replace the old ripple with one lightweight living scene; make
+activity richer and legible without overpowering the composer; preserve whole
+cells, the logo palette and motion preferences; fix the narrow navigation header;
+tighten only navigation-item gaps by 1px.
+- Add a pure seeded grid world with renewable resource islands, red/blue foragers,
+  fading paths, rest/encounters and bounded expanding harvest/encounter blooms.
+  Depleted patches send visitors to another destination. A fresh seed varies visits.
+- Raise density after the first review: up to 48 agents, eight islands and eight
+  simultaneous blooms. Cap opacity at 48%; trails persist with gradual decay.
+- Fit 18-unit whole cells, with at most 144 × 24 SVG rects and one grid path.
+  Advance every 700ms, update only changed attributes and blend over 650ms.
+  React does not render frames; no new dependency, API call, animation loop,
+  fallback scene or legacy ripple remains. Offscreen/hidden/reduced-motion states
+  stop the timer and hold the same world, then resume without catch-up work.
+- Add seven model tests for deterministic evolution, bounds/finite opacity,
+  tiny/maximum dimensions and sustained multicolor activity. Browser regression
+  verifies live evolution, reduced-motion stillness and offscreen pause/resume.
+- Reproduced the narrow menu bug at 280px: control center was 36px above brand.
+  Move the mobile close control into the existing brand row and use the shared
+  header height. Regression checks 280/320/390/700px and in-viewport bounds.
+  Keyboard order follows the new left-to-right row; update the keyboard test
+  from Shift+Tab to Tab for brand → close, preserving close/restore assertions.
+- Change only main navigation menus' item gap from 4px to 3px. Keep section-title
+  and footer spacing. All functional UI stays on the shared shadcn components.
+Verification: frontend lint, TypeScript build, production build and all 90 unit
+tests passed. All 26 Home/navigation/workspace browser checks passed; the final
+narrow-header regression and seven model tests passed again after strengthening
+the screenshot/opacity assertions. Reviewed desktop-dark and phone-light scenes
+and the final 280px navigation capture. Eight sampled updates averaged 0.44ms on
+desktop and 0.15ms on phone for world stepping plus SVG mutations (excluding
+browser paint). Impeccable detector and diff checks were clean. No backend
+changes or paid calls. Existing port 8080 remains available (HTTP 200).

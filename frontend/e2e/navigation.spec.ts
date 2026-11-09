@@ -1,5 +1,40 @@
 import { expect, test } from "@playwright/test";
 
+test("narrow navigation keeps the brand and collapse control on one row", async ({
+  page,
+}, testInfo) => {
+  for (const width of [280, 320, 390, 700]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Open menu", exact: true }).click();
+    const header = page.locator(
+      '[data-mobile="true"] [data-slot="sidebar-header"]',
+    );
+    const brand = await header
+      .getByRole("link", { name: "JAS home" })
+      .boundingBox();
+    const control = await header.getByRole("button").first().boundingBox();
+    expect(brand).not.toBeNull();
+    expect(control).not.toBeNull();
+    expect((control?.x ?? 0) + (control?.width ?? 0)).toBeLessThanOrEqual(
+      width,
+    );
+    expect(
+      Math.abs(
+        (brand?.y ?? 0) +
+          (brand?.height ?? 0) / 2 -
+          (control?.y ?? 0) -
+          (control?.height ?? 0) / 2,
+      ),
+    ).toBeLessThanOrEqual(1);
+    await page.screenshot({
+      path: testInfo.outputPath(`sidebar-${width}.png`),
+      animations: "disabled",
+    });
+    await page.keyboard.press("Escape");
+  }
+});
+
 test("JAS persists the workspace theme and navigation preference", async ({
   page,
 }) => {

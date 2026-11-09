@@ -1,60 +1,96 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createGridLife, type LifeCell } from "@/components/home-grid-life";
 
-const cellSize = 20;
-const colors = [
-  "var(--home-grid-blue)",
-  "var(--home-grid-purple)",
-  "var(--home-grid-red)",
-];
+const cellSize = 18;
+const tickMilliseconds = 700;
 
 export function HomeGrid() {
   const field = useRef<SVGSVGElement>(null);
+  const seed = useRef<number | null>(null);
   const [{ columns, rows }, setGrid] = useState({ columns: 60, rows: 18 });
   useEffect(() => {
     const svg = field.current;
     if (!svg) return;
-    let visible = true;
-    const updateVisibility = () => {
-      svg.dataset.paused = String(!visible || document.hidden);
-    };
-    const visibility = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      updateVisibility();
-    });
     const resize = new ResizeObserver(([entry]) => {
+      // Bound the decorative DOM, and fit complete cells without cropped edges.
       const columns = Math.max(
         1,
-        Math.floor(entry.contentRect.width / cellSize),
+        Math.min(144, Math.floor(entry.contentRect.width / cellSize)),
       );
-      const rows = Math.max(1, Math.floor(entry.contentRect.height / cellSize));
+      const rows = Math.max(
+        1,
+        Math.min(24, Math.floor(entry.contentRect.height / cellSize)),
+      );
       setGrid((current) =>
         current.columns === columns && current.rows === rows
           ? current
           : { columns, rows },
       );
     });
-    visibility.observe(svg);
     resize.observe(svg);
-    document.addEventListener("visibilitychange", updateVisibility);
-    updateVisibility();
-    return () => {
-      visibility.disconnect();
-      resize.disconnect();
-      document.removeEventListener("visibilitychange", updateVisibility);
-    };
+    return () => resize.disconnect();
   }, []);
 
-  // Fit complete rows and columns to the backdrop instead of cropping a fixed
-  // illustration. Fixed coordinate clusters keep the ripple stable on resize.
+  useEffect(() => {
+    const svg = field.current;
+    if (!svg) return;
+    seed.current ??= Math.floor(Math.random() * 4294967296);
+    const world = createGridLife(columns, rows, seed.current);
+    const rects = svg.querySelectorAll<SVGRectElement>(".home-grid-cell");
+    let previous = new Map<number, LifeCell>();
+    const paint = (cells: LifeCell[]) => {
+      const next = new Map(cells.map((cell) => [cell.index, cell]));
+      for (const index of previous.keys()) {
+        if (!next.has(index)) rects[index].style.opacity = "0";
+      }
+      for (const cell of cells) {
+        const before = previous.get(cell.index);
+        const rect = rects[cell.index];
+        if (before?.color !== cell.color)
+          rect.setAttribute("fill", `var(--home-grid-${cell.color})`);
+        if (before?.opacity !== cell.opacity)
+          rect.style.opacity = String(cell.opacity);
+      }
+      previous = next;
+    };
+    // Resize can reuse rects. Reset once; React never renders simulation frames.
+    for (const rect of rects) rect.style.opacity = "0";
+    paint(world.cells());
+    let timer: ReturnType<typeof setInterval> | undefined;
+    let visible = false;
+    const motion = matchMedia("(prefers-reduced-motion: reduce)");
+    const updateActivity = () => {
+      const paused = !visible || document.hidden || motion.matches;
+      svg.dataset.paused = String(paused);
+      if (paused && timer !== undefined) {
+        clearInterval(timer);
+        timer = undefined;
+      } else if (!paused && timer === undefined) {
+        timer = setInterval(() => paint(world.step()), tickMilliseconds);
+      }
+    };
+    const visibility = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      updateActivity();
+    });
+    visibility.observe(svg);
+    document.addEventListener("visibilitychange", updateActivity);
+    motion.addEventListener("change", updateActivity);
+    updateActivity();
+    return () => {
+      clearInterval(timer);
+      visibility.disconnect();
+      document.removeEventListener("visibilitychange", updateActivity);
+      motion.removeEventListener("change", updateActivity);
+    };
+  }, [columns, rows]);
+
   const cells = useMemo(
     () =>
-      Array.from({ length: columns * rows }, (_, index) => {
-        const x = index % columns;
-        const y = Math.floor(index / columns);
-        const hash = (x * 73 + y * 151 + x * y * 19) % 97;
-        const cluster = (Math.floor(x / 3) * 11 + Math.floor(y / 2) * 7) % 13;
-        return { x, y, hash, cluster };
-      }).filter(({ hash, cluster }) => cluster < 5 && hash % 3 !== 0),
+      Array.from({ length: columns * rows }, (_, index) => ({
+        x: (index % columns) * cellSize,
+        y: Math.floor(index / columns) * cellSize,
+      })),
     [columns, rows],
   );
 
@@ -67,18 +103,14 @@ export function HomeGrid() {
       viewBox={`0 0 ${columns * cellSize} ${rows * cellSize}`}
       preserveAspectRatio="none"
     >
-      {cells.map(({ x, y, hash }) => (
+      {cells.map(({ x, y }) => (
         <rect
           key={`${x}-${y}`}
-          x={x * cellSize}
-          y={y * cellSize}
+          x={x}
+          y={y}
           width={cellSize}
           height={cellSize}
-          fill={colors[Math.floor(hash / 3) % colors.length]}
           className="home-grid-cell"
-          style={{
-            animationDelay: `-${(x * 0.65 + y * 1.1 + (hash % 5) * 0.3) % 36}s`,
-          }}
         />
       ))}
       <path

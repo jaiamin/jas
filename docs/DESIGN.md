@@ -150,28 +150,35 @@ Agent viewport height uses the same token. Ordinary pages use a centered 1280px 
 width and 16px, 24px or 32px responsive gutters. Tables scroll within their own
 containers. The Agent page fills the remaining viewport, with an independently
 scrolling transcript and a composer below it; both use a 768px maximum width.
-The shared Home/Agent textarea starts at three rows with 15px text and 24px
+The shared Home/Agent textarea starts at three rows with 15px text and 23px
 line height (88px including padding), grows to 192px, then scrolls internally
 while keeping its action row visible.
 The Agent header pairs its name with the stock outlined Bot. No duplicate creation/browse
 buttons appear in the introduction. Its independent text-only conversation Sidebar appears at 1100px and above, with a Sheet
 below that breakpoint. Decisions and evidence stack below 1440px.
 
-Home uses a full-width composer section with a dense 20-unit pixel grid, the
-explicit decorative exception requested for this surface. Fixed cell clusters follow
-a slow 36-second diagonal ripple through the logo red (#ff5757), blue (#4d8dff),
-and their purple blend. Brand decoration colors live in the Home CSS scope;
-controls retain preset tokens. The SVG fits a whole number of rows and columns
-to the backdrop without cropping cells. Only internal grid lines are drawn; the
-existing header and section separators supply the perimeter without doubled edges.
-Cell fills meet every boundary directly; draw grid strokes over the fills without inset gaps.
+Home uses a full-width composer section with a living 18-unit pixel grid, the
+explicit decorative exception requested for this surface. A single local ecosystem
+replaces the old ripple: up to 48 red/blue foragers seek eight or fewer renewable
+resource islands, leave fading paths, and pause for purple encounters. Harvests
+and encounters seed at most eight expanding, fading cell blooms. Depleted patches
+send agents onward so activity travels across the field. A fresh seed varies each
+visit; no application data, model calls, packages or external requests are involved.
+Logo red (#ff5757), blue (#4d8dff), and their purple blend remain scoped to Home;
+controls retain preset tokens. Filled-cell opacity stays at or below 48%.
+The SVG fits whole rows and columns without cropped cells, capped at 144 × 24
+cells. Only internal grid lines are drawn; header and section separators provide
+the perimeter without doubled edges. Fills meet boundaries without inset gaps.
+Advance the world once every 700ms, with 650ms fill/opacity transitions. Only
+changed SVG attributes update; simulation frames do not rerender React. Stop the
+timer when offscreen, hidden or reduced motion is requested, holding this same
+world in place. There is one renderer and no retained ripple or alternate scene.
 A slight 3px backdrop blur and feathered surface tint sit directly behind the
 heading’s text span; the heading stays opaque and the remaining grid stays sharp.
 The tint uses 12% of the surface color. The blur mask falls continuously through
 100/80/35/0% opacity, with no opaque plateau or abrupt edge.
 It never captures input and has no visible
-pause control. Motion pauses offscreen or in hidden tabs; reduced motion shows
-a still three-color pattern.
+pause control.
 The Home composer has a 672px maximum width and 88px minimum text-entry height.
 Heading top spacing is 80px on mobile and 96px on desktop. A 3:2 grid split
 places three fifths of the composer within the backdrop and two fifths below its
@@ -362,3 +369,8 @@ pnpm dlx shadcn@latest apply --preset <code>
   when applying a preset.
 - **Don't** treat snapshot values as constraints on the next preset.
 - **Don't** display fabricated activity, private reasoning or unsupported empirical outcomes.
+
+Mobile navigation places the brand and close control in the same header row,
+using the shared header height; shrinking the browser must not stack them.
+Keyboard order follows the row from brand to close. Main navigation menus use
+3px gaps between items; section-title and footer spacing retain their prior values.

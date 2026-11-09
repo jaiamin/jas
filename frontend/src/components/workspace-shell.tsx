@@ -122,16 +122,7 @@ export default function WorkspaceShell() {
         <a href="#main">Skip to content</a>
       </Button>
       <Sidebar collapsible="icon">
-        <SidebarHeader
-          className={cn(
-            "border-b",
-            !isMobile &&
-              "h-(--workspace-header-height) shrink-0 justify-center py-1",
-          )}
-        >
-          {isMobile && (
-            <SidebarTrigger className="ml-auto" aria-label="Close menu" />
-          )}
+        <SidebarHeader className="h-(--workspace-header-height) shrink-0 justify-center border-b py-1">
           <SidebarMenu>
             <SidebarMenuItem className="relative flex h-7 items-center justify-between pr-0.5 pl-1.5">
               <Button
@@ -160,7 +151,9 @@ export default function WorkspaceShell() {
                   </span>
                 </Link>
               </Button>
-              {!isMobile && (
+              {isMobile ? (
+                <SidebarTrigger className="shrink-0" aria-label="Close menu" />
+              ) : (
                 <SidebarTrigger
                   aria-label={
                     state === "collapsed"
@@ -209,7 +202,7 @@ export default function WorkspaceShell() {
                   {group.label && (
                     <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
                   )}
-                  <SidebarMenu>
+                  <SidebarMenu className="gap-0.75">
                     {group.items.map((item) => (
                       <SidebarMenuItem key={item.to}>
                         <SidebarMenuButton

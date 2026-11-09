@@ -7,6 +7,44 @@ const settings = {
   assistant_model: "openai:gpt-6.1-sol",
 };
 
+test("the grid ecosystem evolves only while visible and motion is enabled", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 480 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const grid = page.locator(".home-grid");
+  const frame = () =>
+    grid
+      .locator("rect")
+      .evaluateAll((cells) =>
+        cells
+          .map(
+            (cell) =>
+              `${cell.getAttribute("fill")}:${cell.getAttribute("style")}`,
+          )
+          .join("|"),
+      );
+  await expect(grid).toHaveAttribute("data-paused", "true");
+  expect(await grid.locator("rect").count()).toBeLessThanOrEqual(3456);
+  const still = await frame();
+  await page.waitForTimeout(900);
+  expect(await frame()).toBe(still);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(grid).toHaveAttribute("data-paused", "false");
+  await expect.poll(frame).not.toBe(still);
+  await page
+    .getByRole("region", { name: "Recent experiments" })
+    .scrollIntoViewIfNeeded();
+  await expect(grid).toHaveAttribute("data-paused", "true");
+  const offscreen = await frame();
+  await page.waitForTimeout(900);
+  expect(await frame()).toBe(offscreen);
+  await grid.scrollIntoViewIfNeeded();
+  await expect(grid).toHaveAttribute("data-paused", "false");
+  await expect.poll(frame).not.toBe(offscreen);
+});
+
 test("Composer's manual editor link preserves the message without submitting", async ({
   page,
 }) => {
