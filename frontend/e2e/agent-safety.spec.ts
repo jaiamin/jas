@@ -41,9 +41,26 @@ for (const destination of ["experiments", "new chat"]) {
       });
     });
     await page.route("**/api/chats/late-chat", (route) =>
-      route.fulfill({ json: [] }),
+      route.fulfill({
+        json: [
+          {
+            id: "earlier-answer",
+            chat_id: "late-chat",
+            question: "Earlier question",
+            purpose: "general",
+            status: "complete",
+            study_id: null,
+            run_id: null,
+            output: { answer: "Earlier answer", citations: [], caveats: [] },
+            cutoffs: {},
+          },
+        ],
+      }),
     );
-    await page.goto("/agent");
+    const sourceChat = destination === "new chat" ? "late-chat" : "new";
+    await page.goto(
+      destination === "new chat" ? "/agent?chat=late-chat" : "/agent",
+    );
     const input = page.getByLabel("Message Agent", { exact: true });
     await input.fill("Original question");
     await page
@@ -64,7 +81,10 @@ for (const destination of ["experiments", "new chat"]) {
     release();
     await expect
       .poll(() =>
-        page.evaluate(() => sessionStorage.getItem("jas:agent-draft:new")),
+        page.evaluate(
+          (key) => sessionStorage.getItem(key),
+          `jas:agent-draft:${sourceChat}`,
+        ),
       )
       .toBeNull();
     await expect(page).toHaveURL(chosenURL);

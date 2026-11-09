@@ -1110,3 +1110,9 @@ Next: commit/push to PR #10 and observe latest-head CI.
 
 History shape follow-up: retain the stock outline Button corner radius rather
 than a full circle, matching New and the other controls.
+
+Base Agent action refinement: show New only for a selected saved chat, including
+its loading/error states. An unscoped/scoped new-chat view already creates a new
+conversation and keeps only History. Preserve the New flow from saved chats and
+late-response/draft safety coverage. Lint/build and all five affected browser
+tests passed; the user-facing app remains available on port 8080.

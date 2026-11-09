@@ -129,9 +129,9 @@ test("Agent centers a plain contextual composer without a history rail", async (
     .click();
   await expect(context).toContainText("Context selection experiment");
   await expect(input).toHaveValue("Compare the recorded strategies");
-  await page.getByRole("button", { name: "New chat", exact: true }).click();
-  await expect(input).toHaveValue("");
-  await expect(context).toContainText("No experiment");
+  await expect(
+    page.getByRole("button", { name: "New chat", exact: true }),
+  ).toHaveCount(0);
 });
 
 test("saved conversations resume after reload and new chats keep separate histories", async ({
@@ -233,6 +233,9 @@ test("saved conversations resume after reload and new chats keep separate histor
   await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "New chat", exact: true }).click();
   await expect(input).toHaveValue("");
+  await expect(
+    page.getByRole("button", { name: "New chat", exact: true }),
+  ).toHaveCount(0);
   await expect(
     page.getByText(
       "Repetitions create independent trials under the same seed.",

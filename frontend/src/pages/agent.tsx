@@ -101,13 +101,15 @@ export default function AgentPage() {
     <div className="flex h-full min-h-0 min-w-0 flex-col bg-muted/50">
       <header className="flex shrink-0 items-center justify-end gap-2 py-3 pl-4 pr-2.5 sm:pl-6">
         <AgentHistory />
-        <Button
-          aria-label="New chat"
-          onClick={() => navigate(`/agent?new=${crypto.randomUUID()}`)}
-        >
-          <Plus data-icon="inline-start" />
-          New
-        </Button>
+        {chatId && (
+          <Button
+            aria-label="New chat"
+            onClick={() => navigate(`/agent?new=${crypto.randomUUID()}`)}
+          >
+            <Plus data-icon="inline-start" />
+            New
+          </Button>
+        )}
       </header>
       <div className="min-h-0 min-w-0 flex-1">
         {chat.error ? (
