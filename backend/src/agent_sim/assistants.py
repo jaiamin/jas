@@ -24,7 +24,7 @@ from .diagnostics import log_failure
 from .domain import Design, Finding, Strict
 from .llm import LanguageModels, ProviderFailure, Usage, empty_usage, usage_record
 from .metrics import RunMetrics, aggregate_metrics, matched_effects
-from .planning import Planner, stream_partial
+from .planning import Planner, public_activity, stream_partial
 from .research import Research, event_dict
 from .simulation.environments import CATALOG
 from .validity import capabilities as environment_capabilities
@@ -338,7 +338,8 @@ class Assistants:
                 )
             with self.db.session.begin() as session:
                 saved = session.get_one(Analysis, key)
-                saved.output, saved.status = output, "complete"
+                saved.output = {**output, "activity": (saved.output or {}).get("activity", [])}
+                saved.status = "complete"
         except (Exception, asyncio.CancelledError) as error:
             if not isinstance(error, (ProviderFailure, asyncio.CancelledError)):
                 log_failure(f"Analysis {key} failed", error)
@@ -360,7 +361,12 @@ class Assistants:
 
     def _progress(self, key: str, stage: str, examined: Sequence[dict]) -> None:
         with self.db.session.begin() as session:
-            session.get_one(Analysis, key).output = {"stage": stage, "examined": examined}
+            row = session.get_one(Analysis, key)
+            row.output = {
+                "stage": stage,
+                "examined": examined,
+                "activity": public_activity(row.output, stage),
+            }
 
     def _partial(self, key: str, text: object) -> None:
         stream_partial(self.db, key, text)
@@ -432,7 +438,10 @@ class Assistants:
             with self.db.session.begin() as session:
                 saved = session.get_one(Analysis, row.id)
                 saved.purpose = "design"
-                saved.output = {"stage": "scoping"}
+                saved.output = {
+                    "stage": "scoping",
+                    "activity": public_activity(saved.output, "scoping"),
+                }
             return await Planner(self.db, self.research, self.models).run(
                 row.id, row.question, conversation
             )

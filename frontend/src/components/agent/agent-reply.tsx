@@ -69,8 +69,8 @@ export const AgentReply = memo(function AgentReply({
             className="mt-0.5 size-5 shrink-0 text-primary"
             aria-label="Assistant"
           />
-          {row.status !== "failed" && <ReplyActivity row={row} />}
         </MessageHeader>
+        <ReplyActivity row={row} />
         {row.status === "failed" ? (
           <Alert variant="error" title="Request stopped">
             <p>{row.error}</p>
@@ -160,7 +160,7 @@ export const AgentReply = memo(function AgentReply({
                 </DisclosureContent>
               </Disclosure>
             )}
-            <MessageFooter className="min-h-7 flex-wrap gap-2 px-0">
+            <MessageFooter className="-mt-1 -ml-1 min-h-6 flex-wrap gap-2 px-0">
               {complete && copyText && (
                 <Tooltip>
                   <TooltipTrigger asChild>

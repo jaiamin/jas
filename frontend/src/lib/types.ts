@@ -374,6 +374,7 @@ export interface Analysis {
   status: string;
   output: {
     stage?: string;
+    activity?: string[];
     partial?: string;
     planning?: {
       brief: {

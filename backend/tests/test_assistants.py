@@ -853,6 +853,7 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
                 "citations": [],
                 "caveats": [],
                 "examined": [],
+                "activity": ["answering", "writing"],
             }
         elif route == "proposal":
             assert row["purpose"] == "design" and row["status"] == "complete"
@@ -873,3 +874,32 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
 
     asyncio.run(exercise())
     assert len(planner_calls) == (1 if route == "proposal" else 0)
+
+
+@pytest.mark.parametrize("failed", [False, True])
+def test_public_activity_survives_completion_failure_and_reload(runtime, monkeypatch, failed):
+    db, llm, research, _ = runtime
+
+    async def generate(output, **kwargs):
+        kwargs["on_partial"]({"answer": "First draft"})
+        kwargs["on_partial"]({"answer": "Updated draft"})
+        if failed:
+            raise ValueError("Provider stopped")
+        return GeneralResponse(answer="Validated answer", citations=[], caveats=[])
+
+    monkeypatch.setattr(llm, "generate", generate)
+
+    async def exercise():
+        assistant = Assistants(db, research, llm)
+        result = assistant.send("Explain matched seeds", "general")
+        await assistant.tasks[result["id"]]
+        saved = assistant.get(result["id"])
+        assert saved["status"] == ("failed" if failed else "complete")
+        assert saved["output"]["activity"] == ["answering", "writing"]
+        assert "partial" not in saved["output"]
+        await assistant.close()
+        restored = Assistants(db, research, llm)
+        assert restored.get(result["id"])["output"]["activity"] == ["answering", "writing"]
+        await restored.close()
+
+    asyncio.run(exercise())

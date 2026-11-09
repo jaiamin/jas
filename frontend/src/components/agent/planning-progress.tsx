@@ -35,10 +35,10 @@ export function PlanningProgress({ plan }: { plan?: Analysis }) {
                   className="size-5 shrink-0 text-primary"
                   aria-label="Assistant"
                 />
-                <Trace>
-                  <AgentActivity stage="scoping" />
-                </Trace>
               </MessageHeader>
+              <Trace>
+                <AgentActivity stage="scoping" />
+              </Trace>
             </MessageContent>
           </Message>
         )}

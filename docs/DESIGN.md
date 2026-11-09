@@ -202,19 +202,29 @@ composer. Keep “What can we explore?” unchanged across selections. Empty spa
 content remains scrollable without translated or clipped headings. The plain Agent composer omits Home’s gray
 Card surround and manual-editor footer. Saved chats retain the streaming
 MessageScroller and bottom composer, with two initial textarea rows (Home/new chat keep three).
-Saved-chat headers show the first question capped at 100 characters, matching history;
-they stay centered on desktop, truncate safely on mobile, and never rename during
-streaming or follow-up turns. No extra title-generation request is made. The browser
+Saved-chat headers show the first question capped at 60 characters including an explicit
+ellipsis; the full question stays in the hover title. The header stays centered on
+desktop, truncates safely on mobile, and never renames during streaming or follow-up
+turns. History keeps its compact list title. No extra title-generation request is made. The browser
 title remains JAS. Loading the title uses a local skeleton only.
 
 Assistant replies use a blue Target with no repeated Agent label or response cost.
+The Target occupies its own compact header row; activity sits below it.
 One stock TraceCollapsible presents the current public stage and recorded scope,
 research sources, examined evidence and mechanical checks. It starts collapsed and
-closes on completion; users can reopen it. Never invent a task timeline from the
-latest stage. Keep the Target top-aligned when activity expands. Markdown renderers
+closes on completion; users can reopen it. Completed general replies label it
+“Activity,” without a completion announcement. The server appends public stage names
+on transitions and when writing begins, deduplicating consecutive repeats and
+preserving them through completion/failure. SSE and saved queries expose the same
+stages after reconnect/reload. Never retain private provider reasoning or draft
+prose as activity. A failed request marks its last observed stage as stopped. Markdown renderers
 remain stable between partial and validated output. Fenced code uses stock CodeBlock
 with per-block copy and on-demand Shiki languages; replies have a stock copy control
-below them, with reserved footer height during streaming. Preserve citations,
+below them, with its glyph aligned to the prose and a compact gap; reserve footer
+height during streaming. A 4px assistant-item inset keeps the copy hover surface inside
+the scroller item’s paint boundary. Leave at least 24px between the final reply footer
+and composer at the scroll end. Keep transcript top padding compact. Its 12px stock fade
+overlaps the composer top by 12px, avoiding a faded gap above the input. Preserve citations,
 limitations and captured evidence cutoffs.
 
 The generated protocol Card uses a title/question, one compact agents/conditions/runs

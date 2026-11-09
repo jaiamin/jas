@@ -107,6 +107,7 @@ export default function AgentPage() {
                   ...(update.purpose !== message.purpose ? {} : message.output),
                   partial: update.partial,
                   stage: update.stage,
+                  ...(update.activity ? { activity: update.activity } : {}),
                 },
               }
             : message,
@@ -117,7 +118,12 @@ export default function AgentPage() {
     stream.onerror = () => stream.close();
     return () => stream.close();
   }, [chatId, pending, client]);
-  const title = chat.data?.[0]?.question.slice(0, 100);
+  const question = chat.data?.[0]?.question;
+  const characters = Array.from(question ?? "");
+  const title =
+    characters.length > 60
+      ? `${characters.slice(0, 59).join("").trimEnd()}…`
+      : question;
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col bg-muted/50">
       <header className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 pl-4 pr-2.5 sm:grid-cols-[7.5rem_minmax(0,1fr)_7.5rem] sm:pl-2.5">
@@ -126,7 +132,10 @@ export default function AgentPage() {
           {chatId && !chat.data && !chat.error ? (
             <Skeleton className="h-4 w-40 max-w-full sm:mx-auto" />
           ) : title ? (
-            <h1 className="truncate text-sm font-medium" title={title}>
+            <h1
+              className="mx-auto max-w-sm truncate text-sm font-medium"
+              title={question}
+            >
               {title}
             </h1>
           ) : null}
@@ -272,7 +281,7 @@ function AgentConversation({
       }
       className={
         messages.length
-          ? "mx-auto w-full max-w-3xl shrink-0 p-4 sm:px-6 sm:pb-6"
+          ? "relative -mt-3 mx-auto w-full max-w-3xl shrink-0 px-4 pb-4 sm:px-6 sm:pb-6"
           : "w-full"
       }
     >
@@ -303,8 +312,11 @@ function AgentConversation({
           defaultScrollPosition="last-anchor"
         >
           <MessageScroller className="flex-1">
-            <MessageScrollerViewport aria-label="Agent conversation">
-              <MessageScrollerContent className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
+            <MessageScrollerViewport
+              aria-label="Agent conversation"
+              className="[--scroll-fade-size:0.75rem]"
+            >
+              <MessageScrollerContent className="mx-auto w-full max-w-3xl px-4 pt-4 pb-10 sm:px-6">
                 {messages.flatMap((row) => [
                   <MessageScrollerItem
                     key={`${row.id}-question`}
@@ -324,7 +336,11 @@ function AgentConversation({
                       </MessageContent>
                     </Message>
                   </MessageScrollerItem>,
-                  <MessageScrollerItem key={row.id} messageId={row.id}>
+                  <MessageScrollerItem
+                    key={row.id}
+                    messageId={row.id}
+                    className="pl-1"
+                  >
                     <AgentReply
                       row={row}
                       disabled={

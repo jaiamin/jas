@@ -190,7 +190,12 @@ class Planner:
         with self.db.session.begin() as session:
             row = session.get_one(Analysis, key)
             partial = (row.output or {}).get("partial") if stage == "reviewing" else None
-            row.output = {"stage": stage, **details, **({"partial": partial} if partial else {})}
+            row.output = {
+                "stage": stage,
+                "activity": public_activity(row.output, stage),
+                **details,
+                **({"partial": partial} if partial else {}),
+            }
 
     async def _call[T](
         self,
@@ -511,6 +516,14 @@ class Planner:
         )
 
 
+def public_activity(output: dict | None, stage: str) -> list[str]:
+    """Retain observed public stages, never provider reasoning or draft prose."""
+    activity = list((output or {}).get("activity", []))
+    if not activity or activity[-1] != stage:
+        activity.append(stage)
+    return activity
+
+
 def stream_partial(db: Database, key: str, text: object) -> None:
     """Publish draft prose only; protocol and citation validation still gate completion."""
     if not isinstance(text, str) or not text:
@@ -518,4 +531,8 @@ def stream_partial(db: Database, key: str, text: object) -> None:
     with db.session.begin() as session:
         row = session.get_one(Analysis, key)
         if row.status == "pending" and (row.output or {}).get("partial") != text:
-            row.output = {**(row.output or {}), "partial": text}
+            row.output = {
+                **(row.output or {}),
+                "partial": text,
+                "activity": public_activity(row.output, "writing"),
+            }

@@ -68,3 +68,30 @@ test("only completion replaces pending prose and publishes citation links", () =
   fireEvent.click(screen.getByRole("button", { name: "Try again" }));
   expect(onRetry).toHaveBeenCalledOnce();
 });
+
+test("completed replies retain their recorded public activity in a collapsed disclosure", () => {
+  render(
+    <MemoryRouter>
+      <TooltipProvider>
+        <AgentReply
+          row={{
+            ...row,
+            purpose: "general",
+            status: "complete",
+            output: {
+              answer: "Validated answer",
+              activity: ["answering", "writing"],
+            },
+          }}
+          disabled={false}
+          onRetry={() => {}}
+        />
+      </TooltipProvider>
+    </MemoryRouter>,
+  );
+  const activity = screen.getByRole("button", { name: "Activity" });
+  expect(activity).toHaveAttribute("aria-expanded", "false");
+  fireEvent.click(activity);
+  expect(screen.getByText("Thinking")).toBeVisible();
+  expect(screen.getByText("Writing")).toBeVisible();
+});

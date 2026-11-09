@@ -34,6 +34,7 @@ for (const theme of ["light", "dark"]) {
       run_id: null,
       output: {
         stage: "answering",
+        activity: ["answering"],
         partial: "",
         answer: "",
         citations: [],
@@ -57,6 +58,7 @@ for (const theme of ["light", "dark"]) {
     );
     await page.route("**/api/chats/stream-chat/events", async (route) => {
       await ready;
+      row.output.activity.push("writing");
       row.output.partial =
         "## Matched seeds\n\nUse the **same initial randomization** in each condition.\n\n1. Choose seeds.\n2. Run each condition.\n\n| Condition | Seed |\n| --- | --- |\n| Control | 7 |\n| Treatment | 7 |\n\n```python\nseeds = [7, 19, 42]\n```";
       await route.fulfill({
@@ -89,6 +91,32 @@ for (const theme of ["light", "dark"]) {
       page.locator('[data-slot="trace-line"][role="status"]'),
     ).toHaveText("Thinking");
     await expect(page.locator("[data-slot=spinner]")).toHaveCount(1);
+    const target = await page
+      .getByLabel("Assistant", { exact: true })
+      .boundingBox();
+    const thinking = await page
+      .getByRole("button", { name: "Thinking", exact: true })
+      .boundingBox();
+    expect(thinking && target && thinking.y >= target.y + target.height).toBe(
+      true,
+    );
+    expect(thinking?.x).toBeCloseTo(target?.x ?? 0, 0);
+    const viewport = await page
+      .getByRole("region", { name: "Agent conversation", exact: true })
+      .boundingBox();
+    const firstQuestion = await page
+      .locator('[data-slot="message"][data-align="end"]')
+      .first()
+      .boundingBox();
+    expect(
+      firstQuestion && viewport && firstQuestion.y - viewport.y,
+    ).toBeLessThanOrEqual(24);
+    const inputSurface = await composer
+      .locator('[data-slot="input-group"]')
+      .boundingBox();
+    expect(
+      viewport && inputSurface && viewport.y + viewport.height - inputSurface.y,
+    ).toBeCloseTo(12, 0);
     releaseStream();
     await expect(
       page.getByRole("heading", { name: "Matched seeds", exact: true }),
@@ -151,6 +179,28 @@ for (const theme of ["light", "dark"]) {
     await expect(
       page.getByRole("heading", { name: "Matched seeds", exact: true }),
     ).toBeVisible();
+    const activity = page.getByRole("button", {
+      name: "Activity",
+      exact: true,
+    });
+    await expect(activity).toBeVisible();
+    await expect(activity).toHaveAttribute("aria-expanded", "false");
+    await activity.click();
+    const recorded = page.locator('[aria-label="Recorded activity"]');
+    await expect(recorded).toContainText("Thinking");
+    await expect(recorded).toContainText("Writing");
+    await activity.click();
+    const copyIcon = await page
+      .getByTitle("Copy response", { exact: true })
+      .locator("svg")
+      .boundingBox();
+    const response = await page
+      .locator('[data-streaming="false"]')
+      .boundingBox();
+    expect(copyIcon?.x).toBeCloseTo((response?.x ?? 0) + 2, 0);
+    expect(
+      copyIcon && response && copyIcon.y - (response.y + response.height),
+    ).toBeLessThanOrEqual(14);
     await page
       .context()
       .grantPermissions(["clipboard-read", "clipboard-write"]);
@@ -162,9 +212,17 @@ for (const theme of ["light", "dark"]) {
       row.output.answer,
     );
     await expect(page.getByText("$12.34", { exact: true })).toHaveCount(0);
+    await page.screenshot({
+      path: testInfo.outputPath(`completed-${theme}.png`),
+      animations: "disabled",
+    });
     const completedBounds = await composer.boundingBox();
     expect(completedBounds?.y).toBeCloseTo(activeBounds?.y ?? 0, 0);
     await page.reload();
+    await expect(activity).toBeVisible();
+    await activity.click();
+    await expect(recorded).toContainText("Thinking");
+    await expect(recorded).toContainText("Writing");
     await expect(
       page.getByRole("heading", { name: "Matched seeds", exact: true }),
     ).toBeVisible();

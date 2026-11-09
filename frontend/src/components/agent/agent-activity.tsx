@@ -4,6 +4,7 @@ import { ExperimentCheck } from "@/components/experiment-check";
 import {
   BookOpen,
   Check,
+  CircleAlert,
   FileSearch,
   Layers2,
   LoaderCircle,
@@ -61,6 +62,7 @@ export function AgentActivity({ stage }: { stage?: string }) {
 export function ReplyActivity({ row }: { row: Analysis }) {
   const [expandedStatus, setExpandedStatus] = useState<string | null>(null);
   const planning = row.output?.planning;
+  const activity = row.output?.activity ?? [];
   const sources = planning?.sources ?? [];
   const examined = [
     ...new Map(
@@ -74,7 +76,8 @@ export function ReplyActivity({ row }: { row: Analysis }) {
     !!planning?.brief ||
     sources.length > 0 ||
     examined.length > 0 ||
-    !!planning?.preflight;
+    !!planning?.preflight ||
+    activity.length > 0;
   const pending = row.status === "pending";
   const stage =
     row.purpose === "design"
@@ -84,15 +87,19 @@ export function ReplyActivity({ row }: { row: Analysis }) {
         : (row.output?.stage ??
           (row.purpose === "general" ? "answering" : "investigating"));
   const title =
-    row.purpose === "design"
-      ? "Protocol reviewed"
-      : `Inspected ${examined.length} evidence range${examined.length === 1 ? "" : "s"}`;
+    row.status === "failed"
+      ? "Request stopped"
+      : row.purpose === "design"
+        ? "Protocol reviewed"
+        : examined.length
+          ? `Inspected ${examined.length} evidence range${examined.length === 1 ? "" : "s"}`
+          : "Activity";
   const summary = pending ? (
     <AgentActivity stage={stage} />
   ) : (
-    <TraceLine>
+    <TraceLine status={row.status === "failed" ? "error" : undefined}>
       <TraceIcon>
-        <Check />
+        {row.status === "failed" ? <CircleAlert /> : <Check />}
       </TraceIcon>
       <TraceTitle>{title}</TraceTitle>
     </TraceLine>
@@ -115,6 +122,37 @@ export function ReplyActivity({ row }: { row: Analysis }) {
         </TraceCollapsibleTrigger>
         <TraceCollapsibleContent>
           <div className="flex min-w-0 flex-col gap-4">
+            {activity.length > 0 && (
+              <Trace aria-label="Recorded activity">
+                {activity.map((stage, index) => {
+                  const info = stages[stage as keyof typeof stages];
+                  if (!info) return null;
+                  return (
+                    <TraceLine
+                      // biome-ignore lint/suspicious/noArrayIndexKey: Recorded stages are append-only and can repeat during revisions.
+                      key={index}
+                      status={
+                        row.status === "failed" && index === activity.length - 1
+                          ? "error"
+                          : undefined
+                      }
+                    >
+                      <TraceIcon>
+                        {row.status === "failed" &&
+                        index === activity.length - 1 ? (
+                          <CircleAlert />
+                        ) : pending && index === activity.length - 1 ? (
+                          <info.icon />
+                        ) : (
+                          <Check />
+                        )}
+                      </TraceIcon>
+                      <TraceTitle>{info.label}</TraceTitle>
+                    </TraceLine>
+                  );
+                })}
+              </Trace>
+            )}
             {planning?.brief && (
               <section className="flex flex-col gap-2" aria-label="Study scope">
                 <p className="font-medium text-foreground">Study scope</p>

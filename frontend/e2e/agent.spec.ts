@@ -875,3 +875,97 @@ test("saved transcript loading keeps history and New available without showing a
   ).toHaveCount(0);
   await expect(page).toHaveURL(/\/agent\?new=/);
 });
+
+for (const width of [320, 1440]) {
+  test(`long conversation titles indicate truncation and keep the full question available · ${width}`, async ({
+    page,
+  }) => {
+    const question =
+      "Explain how matched random seeds and repeated trials help compare cooperation across different resource levels, communication rules and agent memory settings.";
+    await page.setViewportSize({ width, height: 800 });
+    await page.route("**/api/chats/long-title", (route) =>
+      route.fulfill({
+        json: [
+          {
+            id: "long-answer",
+            chat_id: "long-title",
+            question,
+            purpose: "general",
+            status: "complete",
+            cutoffs: {},
+            study_id: null,
+            run_id: null,
+            output: {
+              answer: "Use matched conditions.",
+              activity: ["answering", "writing"],
+            },
+          },
+        ],
+      }),
+    );
+    await page.goto("/agent?chat=long-title");
+    const title = page.locator("main header h1");
+    await expect(title).toHaveText(
+      `${Array.from(question).slice(0, 59).join("").trimEnd()}…`,
+    );
+    await expect(title).toHaveAttribute("title", question);
+    await expect(title).toHaveCSS("text-overflow", "ellipsis");
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth > innerWidth,
+      ),
+    ).toBe(false);
+  });
+}
+
+test("last reply clears the composer and its copy hover stays inside the message", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route("**/api/chats/long-response", (route) =>
+    route.fulfill({
+      json: [
+        {
+          id: "long-response",
+          chat_id: "long-response",
+          question: "Explain this experiment",
+          purpose: "general",
+          status: "complete",
+          cutoffs: {},
+          study_id: null,
+          run_id: null,
+          output: {
+            answer: Array.from(
+              { length: 24 },
+              (_, index) =>
+                `Paragraph ${index + 1}: compare matched conditions using the recorded evidence.`,
+            ).join("\n\n"),
+            activity: ["answering", "writing"],
+          },
+        },
+      ],
+    }),
+  );
+  await page.goto("/agent?chat=long-response");
+  await page
+    .getByRole("button", { name: "Scroll to end", exact: true })
+    .click();
+  const copy = page.getByTitle("Copy response", { exact: true });
+  await expect(copy).toBeInViewport();
+  await copy.hover();
+  const button = await copy.boundingBox();
+  const item = await copy
+    .locator('xpath=ancestor::*[@data-slot="message-scroller-item"]')
+    .boundingBox();
+  expect(button && item && button.x >= item.x).toBe(true);
+  const footer = await copy
+    .locator('xpath=ancestor::*[@data-slot="message-footer"]')
+    .boundingBox();
+  const input = await page
+    .getByRole("form", { name: "Agent composer" })
+    .locator('[data-slot="input-group"]')
+    .boundingBox();
+  expect(
+    input && footer && input.y - footer.y - footer.height,
+  ).toBeGreaterThanOrEqual(24);
+});
