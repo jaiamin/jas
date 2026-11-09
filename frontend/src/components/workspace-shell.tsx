@@ -172,8 +172,12 @@ export default function WorkspaceShell() {
             <SidebarTrigger className="ml-auto" aria-label="Close menu" />
           )}
           <SidebarMenu>
-            <SidebarMenuItem className="flex items-center group-data-[collapsible=icon]:justify-center">
-              <Button variant="link" asChild className="h-auto w-fit gap-2 p-0">
+            <SidebarMenuItem className="flex items-center px-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+              <Button
+                variant="link"
+                asChild
+                className="h-auto w-fit gap-2 border-0 p-0 hover:no-underline active:not-aria-[haspopup]:translate-y-0"
+              >
                 <Link
                   to="/studies"
                   aria-label="JAS home"

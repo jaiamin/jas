@@ -71,7 +71,8 @@ colors and wordmark below. Preserve the supplied
 [`logo.svg`](../frontend/public/logo.svg). The top-left lowercase `jas` wordmark
 alone uses the original locally hosted Bricolage Grotesque subset at 22px/800,
 without a subtitle. All other interface text follows the preset font.
-The compact brand link covers only the logo and wordmark and has no hover fill.
+The compact brand link covers only the logo and wordmark, aligns with navigation
+icons, and has no hover fill, underline or movement on activation.
 The 20px logo stays centered and uncropped when navigation collapses.
 
 [`components.json`](../frontend/components.json) owns preset configuration;

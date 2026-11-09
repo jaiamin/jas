@@ -291,3 +291,10 @@ suite passed 76/76; it was not repeated for these focused refinements. No backen
 changes or paid calls. Port 8080 returns HTTP 200 and remains running in session
 13109; user is actively using its database and provider configuration. Do not reset
 data, replace credentials or stop the requested preview.
+
+Brand-link follow-up: aligned the expanded logo with navigation icons (both x=16px),
+removed the link underline and disabled the Button press translation only on this
+brand link. Logo and wordmark remain one compact home link, with no hover fill.
+Collapsed logo remains 20px and fully contained. Frontend lint/build passed; live
+browser verified hover decoration, alignment, zero movement while held active,
+home navigation and collapsed containment. Owned browser closed; 8080 stays live.
