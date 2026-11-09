@@ -17,9 +17,8 @@ export default function Runs() {
         search={filters.search}
         onSearchChange={filters.setSearch}
       />
-      {runs.error ? (
-        <ErrorState error={runs.error} onRetry={runs.refetch} />
-      ) : (
+      {runs.error && <ErrorState error={runs.error} onRetry={runs.refetch} />}
+      {(!runs.error || runs.data !== undefined) && (
         <RunTable runs={runs.data} filters={filters} selectable />
       )}
     </>

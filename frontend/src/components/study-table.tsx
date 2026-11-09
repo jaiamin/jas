@@ -18,6 +18,7 @@ import { RecordTableSkeletonRows } from "@/components/record-table-skeleton-rows
 import { Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   TableBody,
   TableCell,
@@ -33,9 +34,11 @@ export function StudyTable({
   studies,
   filters,
   environments,
+  environmentsError,
 }: {
   studies: StudySummary[] | undefined;
   environments: Environment[] | undefined;
+  environmentsError: boolean;
   filters: RecordFilters;
 }) {
   const favorites = useRecordFavorites("studies");
@@ -45,7 +48,8 @@ export function StudyTable({
   );
   const { search, status, scope, view, page, setStatus, setScope, setPage } =
     filters;
-  const loading = studies === undefined || environments === undefined;
+  const loading = studies === undefined;
+  const environmentsLoading = environments === undefined && !environmentsError;
   const filtered =
     studies?.filter(
       (s) =>
@@ -103,9 +107,9 @@ export function StudyTable({
         )}
       </div>
       <Separator />
-      {loading && (
+      {(loading || (environmentsLoading && visible.length > 0)) && (
         <div role="status" aria-label="Loading" className="sr-only">
-          Loading experiments…
+          {loading ? "Loading experiments…" : "Loading environment names…"}
         </div>
       )}
       <RecordTable selection>
@@ -133,11 +137,12 @@ export function StudyTable({
           </TableRow>
         </TableHeader>
         <TableBody
+          aria-busy={loading || (environmentsLoading && visible.length > 0)}
           aria-hidden={loading || undefined}
           className="[&_tr:last-child]:border-b"
         >
           {loading ? (
-            <RecordTableSkeletonRows columns={8} />
+            <RecordTableSkeletonRows kind="experiment" />
           ) : (
             visible.map((study) => (
               <TableRow
@@ -178,11 +183,15 @@ export function StudyTable({
                   />
                 </TableCell>
                 <TableCell>
-                  {
-                    environments?.find(
+                  {environmentsLoading ? (
+                    <Skeleton aria-hidden="true" className="h-4 w-32" />
+                  ) : environments === undefined ? (
+                    <span className="text-muted-foreground">Unavailable</span>
+                  ) : (
+                    environments.find(
                       (environment) => environment.key === study.environment,
                     )?.name
-                  }
+                  )}
                 </TableCell>
                 <TableCell>
                   <Status value={study.status} />

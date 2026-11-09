@@ -1,4 +1,4 @@
-import { act, fireEvent, screen } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { expect, test, vi } from "vitest";
 import { runDetail } from "@/test/fixtures";
@@ -50,4 +50,22 @@ test("an unavailable run list retries without losing comparison selection on ref
     "href",
     "/compare?runs=run,second",
   );
+  failing = true;
+  await act(() => client.refetchQueries({ queryKey: ["/runs"] }));
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "Run list unavailable",
+  );
+  expect(
+    screen.getByRole("checkbox", { name: /^Select Baseline,.*run$/ }),
+  ).toBe(first);
+  expect(first).toBeChecked();
+  expect(
+    screen.getByRole("link", { name: "Compare 2 runs" }),
+  ).toBeInTheDocument();
+  failing = false;
+  await act(() => client.refetchQueries({ queryKey: ["/runs"] }));
+  await waitFor(() =>
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument(),
+  );
+  expect(first).toBeChecked();
 });

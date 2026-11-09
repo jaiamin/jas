@@ -462,10 +462,18 @@ favorites as browser preferences under separate study/run keys, synchronize chan
 from other tabs, and preserve the previous state with a retryable alert if storage
 fails. Empty favorite views offer View all. Favorites follow record identity across
 revisions and are independent of run-comparison selection.
-Only data rows use skeletons while records/catalogue data load; render actual column
-labels, view/status controls, search and New immediately. Match skeleton column
-counts and row heights to the table, retain cached rows during refreshes, and use
-one accessible loading announcement. Stock Table row separators provide
+Only initial record fetches use full-row skeletons. Render list page structure eagerly
+so route-module loading does not substitute a whole-page/title skeleton. Column labels,
+view/status controls, search and New render immediately. Disable a scope filter only
+until its own options arrive: Environment depends on the catalogue; Experiment depends
+on runs. Loaded experiments remain usable while catalogue names load, with placeholders
+only in Environment cells. Empty lists do not wait for the catalogue. Stop placeholders
+on errors and show the retryable error; unresolved environment names say Unavailable.
+Match placeholder shapes to the icon/name, metadata, favorite and action cells and keep
+the same 45px row height. Hide decorative placeholders from assistive technology, mark
+the data body busy, and provide one loading announcement. Cached rows, selections and
+pagination remain mounted during refreshes and refresh failures; show the error alongside
+them rather than reverting to skeletons. Stock Table row separators provide
 one line per boundary, including below the final row; do not add a second divider around the table or pagination.
 The two pages share the filter-state contract and row-loading skeletons while retaining their
 own columns. Omit record totals below the tables and render pagination only when

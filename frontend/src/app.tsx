@@ -4,15 +4,14 @@ import { Empty } from "@/components/feedback";
 import { Button } from "@/components/ui/button";
 import { WorkspaceProvider } from "@/components/workspace-provider";
 import WorkspaceShell from "@/components/workspace-shell";
+import Experiments from "@/pages/experiments";
 import Home from "@/pages/home";
-
-const Experiments = lazy(() => import("@/pages/experiments"));
+import Runs from "@/pages/runs";
 
 const AgentPage = lazy(() => import("@/pages/agent"));
 const Editor = lazy(() => import("@/pages/editor"));
 const Study = lazy(() => import("@/pages/study"));
 const Run = lazy(() => import("@/pages/run"));
-const Runs = lazy(() => import("@/pages/runs"));
 const Environments = lazy(() => import("@/pages/environments"));
 const Settings = lazy(() => import("@/pages/settings"));
 const Compare = lazy(() => import("@/pages/compare"));

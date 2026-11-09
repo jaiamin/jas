@@ -163,11 +163,12 @@ export function RunTable({
           </TableRow>
         </TableHeader>
         <TableBody
+          aria-busy={loading}
           aria-hidden={loading || undefined}
           className="[&_tr:last-child]:border-b"
         >
           {loading ? (
-            <RecordTableSkeletonRows columns={11} />
+            <RecordTableSkeletonRows kind="run" />
           ) : (
             visible.map((run) => (
               <TableRow

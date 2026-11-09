@@ -462,81 +462,191 @@ for (const [path, endpoint, title, noun] of [
   ["/studies", "studies", "Experiments", "experiments"],
   ["/runs", "runs", "Runs", "runs"],
 ] as const) {
-  test(`${title} keeps its header usable while rows load and when empty`, async ({
+  for (const width of [390, 1280]) {
+    test(`${title} keeps its header usable while rows load and when empty · ${width}`, async ({
+      page,
+    }, testInfo) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.addInitScript(
+        (theme) => localStorage.setItem("jas-theme", theme),
+        width === 390 ? "dark" : "light",
+      );
+      let release = () => {};
+      const ready = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      await page.route(`**/api/${endpoint}`, async (route) => {
+        await ready;
+        await route.fulfill({ json: [] });
+      });
+      await page.goto(path);
+      const scope = page.getByRole("combobox", {
+        name: path === "/studies" ? "Filter environment" : "Filter experiment",
+        exact: true,
+      });
+      if (path === "/studies") await expect(scope).toBeEnabled();
+      else await expect(scope).toBeDisabled();
+      await expect(
+        page.getByRole("status", { name: "Loading", exact: true }),
+      ).toBeVisible();
+      const header = page.locator('[data-slot="record-list-heading"]');
+      const search = header.getByRole("textbox", { name: `Search ${noun}` });
+      await expect(
+        header.getByRole("heading", { name: title, exact: true }),
+      ).toBeVisible();
+      await expect(
+        header.getByRole("link", { name: "New experiment", exact: true }),
+      ).toBeVisible();
+      await expect(header.locator('[data-slot="skeleton"]')).toHaveCount(0);
+      const table = page.getByRole("table");
+      await expect(
+        table.getByRole("columnheader", { name: "Revision", exact: true }),
+      ).toBeVisible();
+      await expect(table.locator("thead [data-slot=skeleton]")).toHaveCount(0);
+      await expect(table.locator("tbody [data-slot=skeleton]")).toHaveCount(
+        path === "/studies" ? 27 : 33,
+      );
+      await expect(table.locator("tbody")).toHaveAttribute("aria-busy", "true");
+      await expect(table.locator("tbody")).toHaveAttribute(
+        "aria-hidden",
+        "true",
+      );
+      await expect(table.locator("tbody tr").first()).toHaveCSS(
+        "height",
+        "45px",
+      );
+      await expect(table.locator("tbody button, tbody a")).toHaveCount(0);
+      await expect(
+        page.getByRole("navigation", { name: /^(Experiment|Run) pages$/ }),
+      ).toHaveCount(0);
+      await page.screenshot({
+        path: testInfo.outputPath(`${noun}-loading.png`),
+      });
+      await expect(
+        page.getByRole("combobox", {
+          name:
+            path === "/studies"
+              ? "Filter experiment status"
+              : "Filter run status",
+        }),
+      ).toBeEnabled();
+      await expect(
+        page.getByRole("tablist", { name: `View ${noun}` }),
+      ).toBeVisible();
+      const labels = table.locator("thead");
+      const before = await labels.boundingBox();
+      await search.fill("Keep this query");
+      release();
+      await expect(
+        page.getByRole("status", { name: "Loading", exact: true }),
+      ).toHaveCount(0);
+      await expect(
+        page.getByText(`No ${noun} yet`, { exact: true }),
+      ).toBeVisible();
+      await expect(search).toHaveValue("Keep this query");
+      await expect(
+        page.getByRole("combobox", {
+          name:
+            path === "/studies" ? "Filter environment" : "Filter experiment",
+          exact: true,
+        }),
+      ).toBeEnabled();
+      await expect(table.locator('[data-slot="skeleton"]')).toHaveCount(0);
+      const after = await labels.boundingBox();
+      expect(after?.y).toBe(before?.y);
+      await expect(table.locator("tbody")).toHaveAttribute(
+        "aria-busy",
+        "false",
+      );
+    });
+  }
+}
+
+for (const empty of [false, true]) {
+  test(`Experiments only waits for missing environment cells, not loaded records · empty ${empty}`, async ({
     page,
-  }) => {
+    request,
+  }, testInfo) => {
+    const { study } = await createStudy(request);
+    const summaries = await (await request.get("/api/studies")).json();
+    const catalog: Catalog = await (await request.get("/api/catalog")).json();
+    await page.route("**/api/studies", (route) =>
+      route.fulfill({
+        json: empty
+          ? []
+          : summaries.filter((item: { id: string }) => item.id === study.id),
+      }),
+    );
     let release = () => {};
     const ready = new Promise<void>((resolve) => {
       release = resolve;
     });
-    await page.route(`**/api/${endpoint}`, async (route) => {
+    let fail = true;
+    await page.route("**/api/catalog", async (route) => {
       await ready;
-      await route.fulfill({ json: [] });
+      await route.fulfill(
+        fail
+          ? { status: 503, json: { detail: "Catalogue unavailable" } }
+          : { json: catalog },
+      );
     });
-    if (path === "/studies") {
-      await page.route("**/api/catalog", async (route) => {
-        await ready;
-        await route.continue();
+    await page.goto("/studies");
+    const table = page.getByRole("table");
+    const row = table.locator("tbody tr").first();
+    const scope = page.getByRole("combobox", {
+      name: "Filter environment",
+      exact: true,
+    });
+    await expect(scope).toBeDisabled();
+    if (empty) {
+      await expect(
+        page.getByText("No experiments yet", { exact: true }),
+      ).toBeVisible();
+      await expect(table.locator('[data-slot="skeleton"]')).toHaveCount(0);
+      await expect(
+        page.getByRole("status", { name: "Loading", exact: true }),
+      ).toHaveCount(0);
+    } else {
+      await expect(
+        row.getByRole("link", { name: study.design.title, exact: true }),
+      ).toBeVisible();
+      await expect(table.locator('[data-slot="skeleton"]')).toHaveCount(1);
+      await expect(
+        row.getByRole("cell").nth(2).locator('[data-slot="skeleton"]'),
+      ).toHaveCount(1);
+      await expect(row).toHaveCSS("height", "45px");
+      await expect(table.locator("tbody")).toHaveAttribute("aria-busy", "true");
+      await row.hover();
+      await row.getByRole("checkbox").check();
+      await page.screenshot({
+        path: testInfo.outputPath("environment-only-loading.png"),
       });
     }
-    await page.goto(path);
-    await expect(
-      page.getByRole("combobox", {
-        name: path === "/studies" ? "Filter environment" : "Filter experiment",
-        exact: true,
-      }),
-    ).toBeDisabled();
-    await expect(
-      page.getByRole("status", { name: "Loading", exact: true }),
-    ).toBeVisible();
-    const header = page.locator('[data-slot="record-list-heading"]');
-    const search = header.getByRole("textbox", { name: `Search ${noun}` });
-    await expect(
-      header.getByRole("heading", { name: title, exact: true }),
-    ).toBeVisible();
-    await expect(
-      header.getByRole("link", { name: "New experiment", exact: true }),
-    ).toBeVisible();
-    await expect(header.locator('[data-slot="skeleton"]')).toHaveCount(0);
-    const table = page.getByRole("table");
-    await expect(
-      table.getByRole("columnheader", { name: "Revision", exact: true }),
-    ).toBeVisible();
-    await expect(table.locator("thead [data-slot=skeleton]")).toHaveCount(0);
-    await expect(table.locator("tbody [data-slot=skeleton]")).toHaveCount(
-      path === "/studies" ? 24 : 33,
-    );
-    await expect(
-      page.getByRole("combobox", {
-        name:
-          path === "/studies"
-            ? "Filter experiment status"
-            : "Filter run status",
-      }),
-    ).toBeEnabled();
-    await expect(
-      page.getByRole("tablist", { name: `View ${noun}` }),
-    ).toBeVisible();
-    const labels = table.locator("thead");
-    const before = await labels.boundingBox();
-    await search.fill("Keep this query");
     release();
+    await expect(page.getByRole("alert")).toContainText(
+      "Catalogue unavailable",
+    );
+    await expect(table.locator('[data-slot="skeleton"]')).toHaveCount(0);
     await expect(
       page.getByRole("status", { name: "Loading", exact: true }),
     ).toHaveCount(0);
-    await expect(
-      page.getByText(`No ${noun} yet`, { exact: true }),
-    ).toBeVisible();
-    await expect(search).toHaveValue("Keep this query");
-    await expect(
-      page.getByRole("combobox", {
-        name: path === "/studies" ? "Filter environment" : "Filter experiment",
-        exact: true,
-      }),
-    ).toBeEnabled();
-    await expect(table.locator('[data-slot="skeleton"]')).toHaveCount(0);
-    const after = await labels.boundingBox();
-    expect(after?.y).toBe(before?.y);
+    if (!empty) {
+      await expect(row.getByRole("checkbox")).toBeChecked();
+      await expect(row.getByRole("cell").nth(2)).toHaveText("Unavailable");
+    }
+    fail = false;
+    await page.getByRole("button", { name: "Retry", exact: true }).click();
+    await expect(page.getByRole("alert")).toHaveCount(0);
+    await expect(scope).toBeEnabled();
+    if (!empty) {
+      await expect(row.getByRole("cell").nth(2)).toHaveText(
+        catalog.environments.find(
+          (environment) => environment.key === study.design.environment,
+        )?.name ?? "Missing catalogue environment",
+      );
+      await expect(row.getByRole("checkbox")).toBeChecked();
+      await expect(row).toHaveCSS("height", "45px");
+    }
   });
 }
 

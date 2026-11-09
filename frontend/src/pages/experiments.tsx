@@ -10,6 +10,7 @@ export default function Experiments() {
   const filters = useRecordFilters();
   const catalog = useApi<Catalog>("/catalog");
   const studies = useApi<StudySummary[]>("/studies", true);
+  const error = studies.error || catalog.error;
   return (
     <>
       <RecordListHeading
@@ -18,15 +19,17 @@ export default function Experiments() {
         search={filters.search}
         onSearchChange={filters.setSearch}
       />
-      {studies.error || catalog.error ? (
+      {error && (
         <ErrorState
-          error={(studies.error || catalog.error) as Error}
+          error={error}
           onRetry={() => Promise.all([studies.refetch(), catalog.refetch()])}
         />
-      ) : (
+      )}
+      {(!error || studies.data !== undefined) && (
         <StudyTable
           studies={studies.data}
           environments={catalog.data?.environments}
+          environmentsError={Boolean(catalog.error)}
           filters={filters}
         />
       )}
