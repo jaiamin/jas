@@ -31,7 +31,9 @@ subtle blue accent with a weaker hover state. Avoid redundant descriptive subtit
 Agent composer for questions or experiment design and four experiment ideas. Keep
 Home/Agent together above Workspace navigation; surface unfinished work and active
 runs conditionally, with full experiment/run lists in their existing destinations.
-The Home composer has a faint, reduced-motion-aware pixel-grid backdrop.
+The Home composer has a faint, reduced-motion-aware pixel-grid backdrop. Agent starts
+with a centered heading and plain composer, suggestions below, and a recent-chat
+popup beside New at the upper right. Keep history loading local to that popup.
 
 ## Working assumptions
 The initial audience is a single researcher using a local workspace. Shared accounts,

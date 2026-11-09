@@ -164,9 +164,22 @@ scrolling transcript and a composer below it; both use a 768px maximum width.
 The shared Home/Agent textarea starts at three rows with 15px text and 23px
 line height (88px including padding), grows to 192px, then scrolls internally
 while keeping its action row visible.
-The Agent header pairs its name with the stock outlined Bot. No duplicate creation/browse
-buttons appear in the introduction. Its independent text-only conversation Sidebar appears at 1100px and above, with a Sheet
-below that breakpoint. Decisions and evidence stack below 1440px.
+Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
+background surface. At the upper right, a 32px stock outline history button
+with circular corners sits beside the stock 32px New button. History uses a
+stock Popover and ScrollArea in every viewport, with local skeleton rows, empty
+state and retry; it fetches on open and keeps cached rows during refresh. Static
+new-chat content never waits for record queries. Context-option skeletons stay in
+the selector; scoped suggestion placeholders match question buttons. A saved chat
+uses transcript-shaped skeletons while its initial turns load, leaving History
+and New available. Downloading the lazy Agent module uses only a small spinner,
+not a page of fake database content. Long
+labels truncate inside the popup beside a stock chat-bubble icon and relative
+last-message time; hovering the time exposes the full local timestamp. There is no conversation rail or separate mobile
+history Sheet. New chats center the main heading, plain composer and suggestions
+in that order, without a subtitle. The plain Agent composer omits Home’s gray
+Card surround and manual-editor footer. Saved chats retain the streaming
+MessageScroller and bottom composer. Decisions and evidence stack below 1440px.
 
 Home uses a full-width composer section with a living 18-unit pixel grid, the
 explicit decorative exception requested for this surface. A single local ecosystem

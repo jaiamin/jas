@@ -240,7 +240,8 @@ test("chat history failures have a local retry", async ({ page }) => {
     ),
   );
   await page.goto("/agent");
-  const history = page.getByRole("complementary", { name: "Chat history" });
+  await page.getByRole("button", { name: "Chat history", exact: true }).click();
+  const history = page.getByRole("dialog", { name: "Recent chats" });
   await expect(history.getByRole("alert")).toContainText(
     "Could not load chats",
   );

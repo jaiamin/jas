@@ -27,6 +27,7 @@ for (const destination of ["experiments", "new chat"]) {
                 {
                   id: "late-chat",
                   title: "Original question",
+                  updated: new Date().toISOString(),
                   status: "pending",
                 },
               ]
@@ -69,11 +70,17 @@ for (const destination of ["experiments", "new chat"]) {
     await expect(page).toHaveURL(chosenURL);
     if (destination === "new chat") {
       await expect(input).toHaveValue("Keep this new draft");
+      await page
+        .getByRole("button", { name: "Chat history", exact: true })
+        .click();
       await expect(
         page.getByRole("navigation", { name: "Past chats" }),
       ).toContainText("Original question");
     } else {
       await page.getByRole("link", { name: "Agent", exact: true }).click();
+      await page
+        .getByRole("button", { name: "Chat history", exact: true })
+        .click();
       await expect(
         page.getByRole("navigation", { name: "Past chats" }),
       ).toContainText("Original question");
@@ -107,10 +114,16 @@ for (const path of ["/", "/agent"]) {
     await expect(input).toBeFocused();
     const chosenQuestion = await input.inputValue();
     const chosenURL = page.url();
-    await selectText(
-      page,
-      page.getByRole("link", { name: "start from scratch" }).locator("span"),
-    );
+    if (path === "/") {
+      await selectText(
+        page,
+        page.getByRole("link", { name: "start from scratch" }).locator("span"),
+      );
+    } else {
+      await expect(
+        page.getByRole("link", { name: "start from scratch" }),
+      ).toHaveCount(0);
+    }
     await expect(page).toHaveURL(chosenURL);
     await expect(input).toHaveValue(chosenQuestion);
     await expect(

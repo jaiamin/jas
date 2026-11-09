@@ -38,6 +38,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Spinner } from "@/components/ui/spinner";
 import { useApi } from "@/lib/api";
 import type { RunSummary } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -309,7 +310,17 @@ export default function WorkspaceShell() {
           )}
           tabIndex={-1}
         >
-          <Suspense fallback={<Loading />}>
+          <Suspense
+            fallback={
+              isAgent ? (
+                <div className="flex h-full items-center justify-center">
+                  <Spinner aria-label="Loading Agent" />
+                </div>
+              ) : (
+                <Loading />
+              )
+            }
+          >
             <PageBoundary key={location.pathname}>
               <Outlet />
             </PageBoundary>

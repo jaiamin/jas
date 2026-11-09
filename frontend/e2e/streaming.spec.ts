@@ -69,11 +69,11 @@ for (const theme of ["light", "dark"]) {
     const suggestions = await page
       .getByRole("region", { name: "Suggested questions" })
       .boundingBox();
-    expect(emptyBounds?.y).toBeGreaterThan(
+    expect(emptyBounds?.y).toBeLessThan(
       (page.viewportSize()?.height ?? 0) * 0.6,
     );
-    expect((suggestions?.y ?? 0) + (suggestions?.height ?? 0)).toBeLessThan(
-      emptyBounds?.y ?? 0,
+    expect(suggestions?.y).toBeGreaterThan(
+      (emptyBounds?.y ?? 0) + (emptyBounds?.height ?? 0),
     );
     await page
       .getByLabel("Message Agent", { exact: true })
@@ -105,7 +105,10 @@ for (const theme of ["light", "dark"]) {
       page.getByRole("button", { name: "Send message", exact: true }),
     ).toBeDisabled();
     const activeBounds = await composer.boundingBox();
-    expect(activeBounds?.y).toBeCloseTo(emptyBounds?.y ?? 0, -1);
+    expect(activeBounds?.y).toBeGreaterThan(
+      (page.viewportSize()?.height ?? 0) * 0.6,
+    );
+    await expect(composer).toBeInViewport();
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth > innerWidth,
@@ -135,6 +138,8 @@ for (const theme of ["light", "dark"]) {
     await expect(
       page.getByRole("heading", { name: "Matched seeds", exact: true }),
     ).toBeVisible();
+    const completedBounds = await composer.boundingBox();
+    expect(completedBounds?.y).toBeCloseTo(activeBounds?.y ?? 0, 0);
     await page.reload();
     await expect(
       page.getByRole("heading", { name: "Matched seeds", exact: true }),
@@ -261,7 +266,14 @@ for (const theme of ["light", "dark"]) {
     });
     await page.route("**/api/chats", (route) =>
       route.fulfill({
-        json: [{ id: row.chat_id, title: row.question, status: row.status }],
+        json: [
+          {
+            id: row.chat_id,
+            title: row.question,
+            updated: new Date().toISOString(),
+            status: row.status,
+          },
+        ],
       }),
     );
     await page.route("**/api/chats/planning-chat", (route) =>

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("Agent is one full page with an inner history rail and contextual composer", async ({
+test("Agent centers a plain contextual composer without a history rail", async ({
   page,
   request,
 }) => {
@@ -29,7 +29,34 @@ test("Agent is one full page with an inner history rail and contextual composer"
   ).toHaveCount(0);
   await expect(
     page.locator("main").getByRole("complementary", { name: "Chat history" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Chat history", exact: true }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "start from scratch" }),
+  ).toHaveCount(0);
+  await expect(
+    page
+      .getByRole("form", { name: "Agent composer" })
+      .locator('[data-slot="card"]'),
+  ).toHaveCount(0);
+  const headingBox = await page
+    .getByRole("heading", { name: "What can we explore?" })
+    .boundingBox();
+  const composerBox = await page
+    .getByRole("form", { name: "Agent composer" })
+    .boundingBox();
+  const ideasBox = await page
+    .getByRole("region", { name: "Suggested questions" })
+    .boundingBox();
+  expect(
+    headingBox &&
+      composerBox &&
+      ideasBox &&
+      headingBox.y + headingBox.height < composerBox.y &&
+      composerBox.y + composerBox.height < ideasBox.y,
+  ).toBe(true);
   await expect(
     page.getByRole("button", { name: "Open Agent workspace" }),
   ).toHaveCount(0);
@@ -129,6 +156,7 @@ test("saved conversations resume after reload and new chats keep separate histor
               {
                 id: "saved-chat",
                 title: "What is a matched seed?",
+                updated: new Date().toISOString(),
                 status: "complete",
               },
             ]
@@ -196,11 +224,13 @@ test("saved conversations resume after reload and new chats keep separate histor
   await expect(
     page.getByText("Each condition shares the same initial randomization."),
   ).toBeAttached();
+  await page.getByRole("button", { name: "Chat history", exact: true }).click();
   await expect(
     page
       .getByRole("navigation", { name: "Past chats" })
       .getByRole("link", { name: "What is a matched seed?" }),
   ).toHaveAttribute("aria-current", "page");
+  await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "New chat", exact: true }).click();
   await expect(input).toHaveValue("");
   await expect(
@@ -208,6 +238,7 @@ test("saved conversations resume after reload and new chats keep separate histor
       "Repetitions create independent trials under the same seed.",
     ),
   ).toHaveCount(0);
+  await page.getByRole("button", { name: "Chat history", exact: true }).click();
   await page
     .getByRole("navigation", { name: "Past chats" })
     .getByRole("link", { name: "What is a matched seed?" })
@@ -257,6 +288,7 @@ for (const theme of ["light", "dark"]) {
                 {
                   id: "evidence-chat",
                   title: "What changed after the first round?",
+                  updated: new Date().toISOString(),
                 },
               ]
             : [],
@@ -378,13 +410,12 @@ for (const theme of ["light", "dark"]) {
     ).toBe(true);
     if (theme === "dark") {
       await page
-        .getByRole("button", { name: "Conversations", exact: true })
+        .getByRole("button", { name: "Chat history", exact: true })
         .click();
       await page
-        .getByRole("dialog", { name: "Agent conversations" })
+        .getByRole("dialog", { name: "Recent chats" })
         .getByRole("link", {
-          name: "What changed after the first round?",
-          exact: true,
+          name: /What changed after the first round/,
         })
         .click();
       await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -416,7 +447,13 @@ test("creation stays in chat and hands a reviewed protocol to the editor", async
     if (route.request().method() !== "POST")
       return route.fulfill({
         json: message
-          ? [{ id: "proposal-chat", title: "Study cooperation" }]
+          ? [
+              {
+                id: "proposal-chat",
+                title: "Study cooperation",
+                updated: new Date().toISOString(),
+              },
+            ]
           : [],
       });
     submitted = route.request().postDataJSON();
@@ -507,37 +544,186 @@ test("submission errors keep the draft and missing providers disable sending", a
   ).toBeVisible();
 });
 
-test("large chat histories keep the conversation and composer within the viewport", async ({
+for (const width of [320, 1440]) {
+  test(`large chat histories stay inside the popup · ${width}`, async ({
+    page,
+  }) => {
+    await page.route("**/api/chats", (route) =>
+      route.fulfill({
+        json: Array.from({ length: 120 }, (_, index) => ({
+          id: `chat-${index}`,
+          updated: new Date().toISOString(),
+          title:
+            "A long experiment question about competing incentives and the evidence needed to distinguish strategies",
+          status: "complete",
+        })),
+      }),
+    );
+    await page.setViewportSize({ width, height: 600 });
+    await page.goto("/agent");
+    await expect(
+      page.getByRole("heading", { name: "What can we explore?" }),
+    ).toBeVisible();
+    await expect(
+      page.getByLabel("Message Agent", { exact: true }),
+    ).toBeInViewport();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await page
+      .getByRole("button", { name: "Chat history", exact: true })
+      .click();
+    const popup = page.getByRole("dialog", { name: "Recent chats" });
+    const history = popup.locator('[data-slot="scroll-area-viewport"]');
+    await expect(popup.getByRole("link")).toHaveCount(120);
+    expect(
+      await popup
+        .getByRole("link")
+        .first()
+        .evaluate((element) => element.getBoundingClientRect().width <= 320),
+    ).toBe(true);
+    expect(
+      await popup
+        .getByRole("link")
+        .first()
+        .locator("span")
+        .evaluate((element) => element.scrollWidth > element.clientWidth),
+    ).toBe(true);
+    const popupBox = await popup.boundingBox();
+    expect(
+      popupBox &&
+        popupBox.y >= 0 &&
+        popupBox.y + popupBox.height <= (page.viewportSize()?.height ?? 0),
+    ).toBe(true);
+    expect(
+      await history.evaluate(
+        (element) => element.scrollHeight > element.clientHeight,
+      ),
+    ).toBe(true);
+    await history.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    await expect(popup.getByRole("link").last()).toBeInViewport();
+    await page.keyboard.press("Escape");
+    await expect(popup).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: "Chat history", exact: true }),
+    ).toBeFocused();
+  });
+}
+
+test("history loads inside its popup while the new-chat composer stays editable", async ({
   page,
 }) => {
-  await page.route("**/api/chats", (route) =>
-    route.fulfill({
-      json: Array.from({ length: 120 }, (_, index) => ({
-        id: `chat-${index}`,
-        title:
-          "A long experiment question about competing incentives and the evidence needed to distinguish strategies",
-        status: "complete",
-      })),
-    }),
-  );
+  let release = () => {};
+  const ready = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  let historyRequests = 0;
+  await page.route("**/api/chats", async (route) => {
+    historyRequests++;
+    await ready;
+    await route.fulfill({ json: [] });
+  });
+  await page.goto("/agent");
+  const input = page.getByLabel("Message Agent", { exact: true });
+  await expect(input).toBeVisible();
+  expect(historyRequests).toBe(0);
+  const trigger = page.getByRole("button", {
+    name: "Chat history",
+    exact: true,
+  });
+  await trigger.click();
+  const popup = page.getByRole("dialog", { name: "Recent chats" });
+  await expect(
+    popup.getByRole("status", { name: "Loading chats" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("status", { name: "Loading conversation" }),
+  ).toHaveCount(0);
+  await expect(input).toBeEnabled();
+  await page.keyboard.press("Escape");
+  await input.fill("My unfinished question");
+  await trigger.click();
+  release();
+  await expect(popup.getByText("No chats yet", { exact: true })).toBeVisible();
+  await expect(input).toHaveValue("My unfinished question");
+  await page.keyboard.press("Escape");
+  await expect(popup).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+});
+
+test("base Agent renders immediately and only context options wait for the database", async ({
+  page,
+}) => {
+  let release = () => {};
+  const ready = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  for (const path of ["studies", "runs"]) {
+    await page.route(`**/api/${path}`, async (route) => {
+      await ready;
+      await route.fulfill({ json: [] });
+    });
+  }
   await page.goto("/agent");
   await expect(
     page.getByRole("heading", { name: "What can we explore?" }),
   ).toBeVisible();
+  const input = page.getByLabel("Message Agent", { exact: true });
+  await input.fill("A question before records finish loading");
   await expect(
-    page.getByLabel("Message Agent", { exact: true }),
-  ).toBeInViewport();
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
-  const history = page
-    .getByRole("complementary", { name: "Chat history" })
-    .locator('[data-slot="sidebar-content"]');
-  expect(
-    await history.evaluate(
-      (element) => element.scrollHeight > element.clientHeight,
-    ),
-  ).toBe(true);
+    page
+      .getByRole("region", { name: "Suggested questions" })
+      .getByRole("button"),
+  ).toHaveCount(4);
+  await expect(page.locator('[data-slot="skeleton"]')).toHaveCount(0);
+  await page.getByRole("combobox", { name: "Message context" }).click();
+  await expect(
+    page.getByRole("status", { name: "Loading experiments and runs" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("option", { name: "No experiment", exact: true }),
+  ).toBeVisible();
+  release();
+  await expect(
+    page.getByRole("status", { name: "Loading experiments and runs" }),
+  ).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  await expect(input).toHaveValue("A question before records finish loading");
+});
+
+test("saved transcript loading keeps history and New available without showing a fake conversation", async ({
+  page,
+}) => {
+  let release = () => {};
+  const ready = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/api/chats/loading-chat", async (route) => {
+    await ready;
+    await route.fulfill({ json: [] });
+  });
+  await page.goto("/agent?chat=loading-chat");
+  await expect(
+    page.getByRole("status", { name: "Loading conversation" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Chat history", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("form", { name: "Agent composer" })).toHaveCount(
+    0,
+  );
+  await page.getByRole("button", { name: "New chat", exact: true }).click();
+  release();
+  await expect(
+    page.getByRole("heading", { name: "What can we explore?" }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Message Agent", { exact: true })).toBeEnabled();
+  await expect(
+    page.getByRole("status", { name: "Loading conversation" }),
+  ).toHaveCount(0);
+  await expect(page).toHaveURL(/\/agent\?new=/);
 });

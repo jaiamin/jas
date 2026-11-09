@@ -1066,3 +1066,44 @@ composer hint 6.46:1 and placeholder 7.09:1; chart/card contrasts range 3.1–10
 Confirmed door-only fill and 14px toggle, with no overflow at the tested 390px
 mobile width. Review tab closed; port 8080 remains running. No paid calls,
 dependencies or user data changes. Publish to PR #10 and observe new-head CI.
+
+Agent layout simplification (2026-11-09):
+Acceptance:
+- Remove the permanent conversation rail/mobile Sheet and Agent-name toolbar.
+  Put a history icon and New action at the upper right; history opens a compact,
+  scrollable stock popover with loading/error/empty states confined to the popup.
+- Center a new-chat heading and plain composer, with suggestions below and no
+  subtitle. Omit Home's gray composer surround/manual-creation helper on Agent.
+- Preserve context selection, drafts, late-response navigation safety, message
+  streaming/scrolling, history resume and mobile/keyboard behavior.
+- Verify affected browser/unit/lint/build checks; update docs and existing PR #10.
+Decision: use stock Popover/ScrollArea and existing Button links for selectable
+history labels. Fetch history on open, retain cached rows during refresh, and keep
+history/New available while a selected transcript loads or fails.
+Implemented:
+- Removed the history rail and mobile Sheet, Agent-name toolbar and subtitle.
+  New chats center heading → plain shared composer → selectable suggestions;
+  saved chats preserve MessageScroller and the bottom composer. Home explicitly
+  opts into its existing gray Card/footer presentation.
+- Added stock Popover/ScrollArea sources, circular outline History and New at
+  32px. New's right edge aligns with the global header controls (10px inset).
+  Agent canvas uses muted/50 in both themes. No new packages or raw colors.
+- History fetches/polls only while open; cached rows remain on refresh errors.
+  Each row has a stock chat-bubble icon, truncated title, relative last-message
+  time with full timestamp tooltip, and a pending Spinner where applicable.
+  Reuse the minute clock and formatter. Constrain Radix's intrinsic content
+  wrapper so long labels truncate within the popup rather than expanding it.
+- Keep static new-chat content immediate. Initial saved-chat skeletons match
+  messages; history placeholders stay inside the popup. Context-option and
+  scoped-suggestion placeholders are local to their database-backed regions.
+  Fetch selected protocols alongside summaries. Lazy module loading uses a small
+  Spinner instead of generic page-content skeletons. Context Retry cannot submit.
+- Update browser/unit regressions and design/product documentation.
+Verification: lint/build and all 91 frontend unit tests passed. The full
+106-test browser suite passed before final loading/surface refinements; a focused
+41-test pass also passed on those final refinements. Live desktop dark and 320px
+light review confirms centered layout, white circular history surface, matching
+right edges, no horizontal overflow, and no skeletons for the static base view.
+Own browser review tab closed; the keyless test server shut down automatically.
+Port 8080 remains running. No user records or paid calls were changed.
+Next: commit/push to PR #10 and observe latest-head CI.

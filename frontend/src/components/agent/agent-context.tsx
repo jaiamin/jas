@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { RunSummary, StudySummary } from "@/lib/types";
 
 export function messageContext(row: {
@@ -46,12 +47,14 @@ export function AgentContext({
   studies,
   runs,
   disabled,
+  loading = false,
 }: {
   value: string;
   onChange: (value: string) => void;
   studies: StudySummary[];
   runs: RunSummary[];
   disabled?: boolean;
+  loading?: boolean;
 }) {
   const known =
     value === "general" ||
@@ -78,6 +81,16 @@ export function AgentContext({
             No experiment
           </SelectItem>
         </SelectGroup>
+        {loading && (
+          <div
+            role="status"
+            aria-label="Loading experiments and runs"
+            className="flex flex-col gap-2 p-2"
+          >
+            <Skeleton className="h-8" />
+            <Skeleton className="h-8" />
+          </div>
+        )}
         {!known && (
           <SelectGroup>
             <SelectItem value={value}>

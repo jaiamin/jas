@@ -158,20 +158,18 @@ test("Composer's manual editor link preserves the message without submitting", a
     if (request.url().endsWith("/api/chats") && request.method() === "POST")
       submissions++;
   });
-  for (const path of ["/", "/agent"]) {
-    await page.goto(path);
-    const input = page.getByLabel("Message Agent", { exact: true });
-    await input.fill("Compare cooperation with and without messages");
-    await page
-      .getByRole("form", { name: "Agent composer" })
-      .getByRole("link", { name: "start from scratch" })
-      .click();
-    await expect(page).toHaveURL(/\/new$/);
-    await page.goBack();
-    await expect(input).toHaveValue(
-      "Compare cooperation with and without messages",
-    );
-  }
+  await page.goto("/");
+  const input = page.getByLabel("Message Agent", { exact: true });
+  await input.fill("Compare cooperation with and without messages");
+  await page
+    .getByRole("form", { name: "Agent composer" })
+    .getByRole("link", { name: "start from scratch" })
+    .click();
+  await expect(page).toHaveURL(/\/new$/);
+  await page.goBack();
+  await expect(input).toHaveValue(
+    "Compare cooperation with and without messages",
+  );
   expect(submissions).toBe(0);
 });
 
@@ -191,7 +189,14 @@ test("Home submits once, opens the saved Agent conversation and never resubmits 
     if (route.request().method() !== "POST")
       return route.fulfill({
         json: submissions
-          ? [{ id: "home-chat", title: question, status: "complete" }]
+          ? [
+              {
+                id: "home-chat",
+                title: question,
+                updated: new Date().toISOString(),
+                status: "complete",
+              },
+            ]
           : [],
       });
     submissions++;
@@ -361,6 +366,7 @@ test("late Home responses keep the user's destination and leave the chat in hist
               {
                 id: "late-home-chat",
                 title: "A question sent from Home",
+                updated: new Date().toISOString(),
                 status: "pending",
               },
             ]
@@ -382,6 +388,7 @@ test("late Home responses keep the user's destination and leave the chat in hist
   release();
   await expect(page).toHaveTitle("JAS");
   await page.getByRole("link", { name: "Agent", exact: true }).click();
+  await page.getByRole("button", { name: "Chat history", exact: true }).click();
   await expect(
     page
       .getByRole("navigation", { name: "Past chats" })

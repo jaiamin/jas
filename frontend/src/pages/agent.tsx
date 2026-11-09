@@ -1,6 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { AgentComposer } from "@/components/agent/agent-composer";
 import {
   AgentContext,
@@ -12,14 +17,13 @@ import { AgentReply } from "@/components/agent/agent-reply";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
 import { Alert } from "@/components/feedback";
 import {
-  AgentIcon,
-  ArrowUpRight,
   BookOpen,
   FlaskConical,
   GitCompareArrows,
+  Plus,
   ScanLine,
 } from "@/components/icons";
-import { ErrorState, Loading } from "@/components/shared";
+import { ErrorState } from "@/components/shared";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,12 +39,14 @@ import {
   MessageScrollerProvider,
   MessageScrollerViewport,
 } from "@/components/ui/message-scroller";
+import { Skeleton } from "@/components/ui/skeleton";
 import { agentSuggestions } from "@/lib/agent-suggestions";
 import { api, useApi } from "@/lib/api";
 import { chatProgress } from "@/lib/chat-progress";
 import type { Analysis, Design, RunSummary, StudySummary } from "@/lib/types";
 
 export default function AgentPage() {
+  const navigate = useNavigate();
   const [params] = useSearchParams();
   const chatId = params.get("chat");
   const path = `/chats/${chatId}`;
@@ -92,8 +98,17 @@ export default function AgentPage() {
     return () => stream.close();
   }, [chatId, pending, client]);
   return (
-    <div className="flex h-full min-h-0 min-w-0 flex-col min-[1100px]:flex-row">
-      <AgentHistory />
+    <div className="flex h-full min-h-0 min-w-0 flex-col bg-muted/50">
+      <header className="flex shrink-0 items-center justify-end gap-2 py-3 pl-4 pr-2.5 sm:pl-6">
+        <AgentHistory />
+        <Button
+          aria-label="New chat"
+          onClick={() => navigate(`/agent?new=${crypto.randomUUID()}`)}
+        >
+          <Plus data-icon="inline-start" />
+          New
+        </Button>
+      </header>
       <div className="min-h-0 min-w-0 flex-1">
         {chat.error ? (
           <div className="flex flex-col gap-4 p-6">
@@ -103,7 +118,18 @@ export default function AgentPage() {
             </Button>
           </div>
         ) : chatId && !chat.data ? (
-          <Loading />
+          <div
+            role="status"
+            aria-label="Loading conversation"
+            className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-6"
+          >
+            <Skeleton className="ml-auto h-12 w-2/3" />
+            <div className="flex flex-col gap-3">
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+          </div>
         ) : (
           <AgentConversation
             key={chatId ?? params.get("new") ?? "new"}
@@ -111,6 +137,7 @@ export default function AgentPage() {
             messages={chat.data ?? []}
             studies={studies.data ?? []}
             runs={runs.data ?? []}
+            contextLoading={studies.isPending || runs.isPending}
             contextError={studies.error ?? runs.error}
             retryContexts={() =>
               Promise.all(
@@ -132,12 +159,14 @@ function AgentConversation({
   studies,
   runs,
   contextError,
+  contextLoading,
   retryContexts,
 }: {
   chatId: string | null;
   messages: Analysis[];
   studies: StudySummary[];
   runs: RunSummary[];
+  contextLoading: boolean;
   contextError: Error | null;
   retryContexts: () => unknown;
 }) {
@@ -187,41 +216,51 @@ function AgentConversation({
     (study) => context === `study:${study.id}`,
   );
   const selectedRun = runs.find((run) => context === `run:${run.id}`);
+  const composer = (
+    <AgentComposer
+      state={state}
+      contextControl={
+        <AgentContext
+          value={context}
+          onChange={changeContext}
+          studies={studies}
+          runs={runs}
+          loading={contextLoading}
+          disabled={state.send.isPending}
+        />
+      }
+      placeholder={
+        selectedStudy || selectedRun
+          ? "Ask about the selected evidence…"
+          : "Ask a question or describe an experiment…"
+      }
+      className={
+        messages.length
+          ? "mx-auto w-full max-w-3xl shrink-0 p-4 sm:px-6 sm:pb-6"
+          : "w-full"
+      }
+    >
+      {contextError && (
+        <Alert variant="error">
+          {contextError.message}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={retryContexts}
+          >
+            Retry
+          </Button>
+        </Alert>
+      )}
+    </AgentComposer>
+  );
   return (
     <section
       className="flex h-full min-h-0 flex-col"
       aria-label="Agent workspace"
       data-empty={!messages.length}
     >
-      <header className="flex shrink-0 items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 text-sm font-semibold">
-            <AgentIcon className="size-4 shrink-0" aria-hidden="true" />
-            Agent
-          </div>
-          {(selectedRun || selectedStudy) && (
-            <p className="mt-1 truncate text-xs text-muted-foreground">
-              {selectedRun
-                ? `${selectedRun.study_title} · ${selectedRun.condition} · seed ${selectedRun.seed} · ${selectedRun.turn} recorded decisions`
-                : `${selectedStudy?.title} · ${selectedStudy?.completed_runs} / ${selectedStudy?.run_count} runs complete`}
-            </p>
-          )}
-        </div>
-        {(selectedStudy || selectedRun) && (
-          <Button variant="outline" size="sm" asChild>
-            <Link
-              to={
-                selectedRun
-                  ? `/runs/${selectedRun.id}`
-                  : `/studies/${selectedStudy?.id}`
-              }
-            >
-              View {selectedRun ? "run" : "experiment"}
-              <ArrowUpRight data-icon="inline-end" />
-            </Link>
-          </Button>
-        )}
-      </header>
       {messages.length ? (
         <MessageScrollerProvider
           autoScroll={busy}
@@ -279,64 +318,37 @@ function AgentConversation({
         </MessageScrollerProvider>
       ) : (
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-8 sm:px-6">
-          <div className="mx-auto mt-auto w-full max-w-xl text-center [&_p]:mt-3 [&_p]:text-muted-foreground [&_p]:leading-relaxed">
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+          <div className="mx-auto my-auto flex w-full max-w-3xl shrink-0 flex-col gap-6">
+            <h1 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
               {context === "general"
                 ? "What can we explore?"
                 : "What does the evidence show?"}
             </h1>
-            <p>
-              {context === "general"
-                ? "Ask a question, design an experiment, or select an experiment or run to explore its evidence."
-                : "Separate what agents did from what they said. Compare outcomes, inspect decisions and choose your next test."}
-            </p>
+            {composer}
+            <AgentSuggestions
+              context={context}
+              contextLoading={contextLoading}
+              studies={studies}
+              runs={runs}
+              onChoose={chooseSuggestion}
+            />
           </div>
-          <AgentSuggestions
-            context={context}
-            studies={studies}
-            runs={runs}
-            onChoose={chooseSuggestion}
-          />
         </div>
       )}
-      <AgentComposer
-        state={state}
-        contextControl={
-          <AgentContext
-            value={context}
-            onChange={changeContext}
-            studies={studies}
-            runs={runs}
-            disabled={state.send.isPending}
-          />
-        }
-        placeholder={
-          selectedStudy || selectedRun
-            ? "Ask about the selected evidence…"
-            : "Ask a question or describe an experiment…"
-        }
-        className="mx-auto w-full max-w-3xl shrink-0 p-4 sm:px-6 sm:pb-6"
-      >
-        {contextError && (
-          <Alert variant="error">
-            {contextError.message}
-            <Button variant="outline" size="sm" onClick={retryContexts}>
-              Retry
-            </Button>
-          </Alert>
-        )}
-      </AgentComposer>
+      {messages.length > 0 && composer}
     </section>
   );
 }
 
 function AgentSuggestions({
   context,
+  contextLoading,
   studies,
   runs,
   onChoose,
 }: {
   context: string;
+  contextLoading: boolean;
   studies: StudySummary[];
   runs: RunSummary[];
   onChoose: (text: string) => void;
@@ -344,15 +356,27 @@ function AgentSuggestions({
   const [kind, id] = context.split(":");
   const study = studies.find((item) => kind === "study" && item.id === id);
   const run = runs.find((item) => kind === "run" && item.id === id);
+  const scoped = !!id && (kind === "study" || kind === "run");
   const path = kind === "run" ? `/runs/${id}` : `/studies/${id}`;
   const protocol = useQuery({
     queryKey: [path],
     queryFn: () => api<{ design: Design }>(path),
-    enabled: !!(study || run),
+    enabled: scoped,
   });
   if (protocol.error)
     return <ErrorState error={protocol.error} onRetry={protocol.refetch} />;
-  if ((study || run) && !protocol.data) return <Loading />;
+  if (scoped && (contextLoading || !protocol.data))
+    return (
+      <div
+        role="status"
+        aria-label="Loading suggested questions"
+        className="flex flex-wrap justify-center gap-2"
+      >
+        <Skeleton className="h-8 w-52 max-w-full" />
+        <Skeleton className="h-8 w-44 max-w-full" />
+        <Skeleton className="h-8 w-48 max-w-full" />
+      </div>
+    );
   const suggestions = agentSuggestions({
     context,
     study,
@@ -364,7 +388,7 @@ function AgentSuggestions({
   return (
     <section
       aria-label="Suggested questions"
-      className="mx-auto mt-6 mb-auto flex w-full max-w-xl flex-wrap justify-center gap-2"
+      className="mx-auto flex w-full flex-wrap justify-center gap-2"
     >
       {suggestions.map(({ title, prompt }, index) => {
         const Icon = [BookOpen, GitCompareArrows, ScanLine, FlaskConical][
@@ -373,6 +397,7 @@ function AgentSuggestions({
         return (
           <Button
             variant="outline"
+            className="h-auto min-h-8 max-w-full whitespace-normal text-left"
             key={title}
             onClick={() => onChoose(prompt)}
           >
