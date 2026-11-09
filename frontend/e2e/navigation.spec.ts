@@ -349,7 +349,7 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
     nav: 15,
     github: 16,
     theme: 16,
-    trigger: 15,
+    trigger: 14,
     left: 16,
     right: 16,
   });

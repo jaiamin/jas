@@ -1046,3 +1046,23 @@ Verification: lint/build and both affected navigation preference/compact-header
 browser tests passed. Live light/dark inspection confirms the body fill and
 door cutout match the selected navigation tokens. Review tab closed; port 8080
 remains running. Push to PR #10 and continue hosted CI verification.
+
+Dark readability and sidebar icon refinement (2026-11-09):
+- Replace the near-black palette with a clearly lighter graphite canvas/sidebar
+  (oklch 0.21, about #181818), raised cards/menus (0.245, about #202020), and
+  distinct muted/secondary surfaces (0.3, about #2e2e2e). Brighten muted text to
+  0.76, borders/inputs to 16%/20% white and focus rings to 0.65; sidebar border
+  and ring tokens inherit the shared roles. Preserve light mode and blue roles.
+- Lift dark chart gray steps to 0.87/0.77/0.69/0.61/0.53 so all five series
+  remain visible against raised chart surfaces. Keep existing line patterns.
+- Restore selected Home to door-only fill on the stock Lucide House export.
+  Delete the superseded House adapter/door overlay and its CSS.
+- Reduce the shared sidebar toggle glyph from 15px to 14px without changing
+  its 28px control target. Update geometry coverage and design documentation.
+Verification: lint/build, all 29 affected Home/navigation/surface browser tests,
+and both chart unit tests passed. Final component detector returned no findings.
+Live desktop/mobile dark inspection: sampled idea/time text contrast 6.76:1,
+composer hint 6.46:1 and placeholder 7.09:1; chart/card contrasts range 3.1–10.99:1.
+Confirmed door-only fill and 14px toggle, with no overflow at the tested 390px
+mobile width. Review tab closed; port 8080 remains running. No paid calls,
+dependencies or user data changes. Publish to PR #10 and observe new-head CI.

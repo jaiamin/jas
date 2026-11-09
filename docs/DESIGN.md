@@ -13,16 +13,16 @@ colors:
   light-accent-foreground: "oklch(0.424 0.199 265.638)"
   light-border: "oklch(0.922 0 0)"
   light-destructive: "oklch(0.577 0.245 27.325)"
-  dark-background: "oklch(0.145 0 0)"
+  dark-background: "oklch(0.21 0 0)"
   dark-foreground: "oklch(0.985 0 0)"
-  dark-card: "oklch(0.145 0 0)"
+  dark-card: "oklch(0.245 0 0)"
   dark-primary: "oklch(0.546 0.245 262.881)"
   dark-primary-foreground: "oklch(0.985 0 0)"
-  dark-muted: "oklch(0.205 0 0)"
-  dark-muted-foreground: "oklch(0.708 0 0)"
+  dark-muted: "oklch(0.3 0 0)"
+  dark-muted-foreground: "oklch(0.76 0 0)"
   dark-accent: "oklch(0.282 0.091 267.935)"
   dark-accent-foreground: "oklch(0.882 0.059 254.128)"
-  dark-border: "oklch(1 0 0 / 10%)"
+  dark-border: "oklch(1 0 0 / 16%)"
   dark-destructive: "oklch(0.704 0.191 22.216)"
   chart-1: "oklch(0.87 0 0)"
   chart-2: "oklch(0.556 0 0)"
@@ -88,12 +88,13 @@ responsive navigation and explicit workflow states.
 
 ## Colors
 
-Page, sidebar, card and overlay surfaces use pure white in light mode and deep
-neutral charcoal (oklch(0.145 0 0), approximately #0a0a0a) in dark mode. Dark muted
-and secondary surfaces use oklch(0.205 0 0), approximately #171717, for restrained
-separation on composer surrounds, skeletons and hover states. Keep text and border
-contrast through their paired tokens. These shared theme tokens apply to both
-navigation sidebars and every view.
+Light mode uses white surfaces. Dark mode uses a neutral graphite canvas and
+sidebar (oklch(0.21 0 0), approximately #181818), raised cards and menus
+(oklch(0.245 0 0), approximately #202020), and muted/secondary surfaces
+(oklch(0.3 0 0), approximately #2e2e2e). The composer surround, skeletons and hover
+states share the muted token. Muted text uses oklch(0.76 0 0); borders and inputs
+use 16% and 20% white respectively. Sidebar borders/rings inherit the shared
+border/ring tokens. Keep foreground/background pairs together in every view.
 Selection uses a subtle blue accent. Hover uses half-strength accent, while the
 selected item keeps its full accent on hover. Both are shared semantic tokens.
 Send and New experiment use the primary Button variant. Primary actions use a
@@ -106,6 +107,8 @@ items a pointer. Text entry keeps its text cursor; disabled controls are exclude
 Charts use the five chart tokens. Keep legend text in the foreground color so it
 remains readable independently of each series color. Labels and distinct line
 patterns identify series; status text and icons supplement color in tables.
+Dark chart tokens use neutral lightness steps 0.87, 0.77, 0.69, 0.61 and 0.53
+so the darkest series remains visible against raised chart surfaces.
 
 ## Typography
 
@@ -131,9 +134,9 @@ visible at the same vertical position in the collapsed rail, with equal side
 insets. The full-width footer divider and continuous divider under the top bars
 remain. Footer button
 heights stay 32px for Settings and 48px for the workspace menu in both states, so
-their vertical positions and padding do not change when labels disappear. Navigation glyphs and collapse control are 15px. Selected sidebar icons fill,
+their vertical positions and padding do not change when labels disappear. Navigation glyphs are 15px; the sidebar toggle glyph is 14px in its unchanged 28px target. Selected sidebar icons fill,
 with the requested exceptions: the stock Bot stays outlined, House fills only
-its body with an open door, Layers2 fills only its upper layer, Settings fills only its center circle,
+its door, Layers2 fills only its upper layer, Settings fills only its center circle,
 and FlaskConical fills only its liquid. The flask fill stays at the icon boundary;
 conversation rows are text-only. Do not invent accounts or organizations.
 Navigation becomes a Sheet on mobile.
@@ -315,7 +318,7 @@ that check succeeds.
 
 ## Elevation & Depth
 
-Use shared theme tokens for surfaces, including the requested white/charcoal
+Use shared theme tokens for surfaces, including the requested white/graphite
 colors. Keep the preset's borders, rings, shadows and motion. Cards and overlays
 retain their generated treatments except CardFooter uses the card surface token;
 app layout utilities introduce no custom effects or elevation tokens.
@@ -388,7 +391,7 @@ pnpm dlx shadcn@latest apply --preset <code>
    submit button must not dim an editable composer), and narrow lint annotations. Keep chart legend text readable and retain
    distinct line patterns.
    Retain 4px tab gaps and 3px sidebar-item gaps, the continuous header
-   divider, white/charcoal surface tokens, CardFooter card surface, subtle blue
+   divider, white/graphite surface tokens, CardFooter card surface, subtle blue
    selection with weaker hover, filled selected sidebar icons, blue primary
    actions, and dedicated wordmark font
    unless superseded. The wordmark retains the foreground color.
