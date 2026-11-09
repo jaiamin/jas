@@ -1,15 +1,34 @@
-import { History, SquarePen } from "lucide-react";
+import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Alert } from "@/components/feedback";
+import { History, MessageSquare, Plus } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectRoot,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCompact } from "@/hooks/use-compact";
 import { useApi } from "@/lib/api";
 import type { ChatSummary } from "@/lib/types";
 
@@ -18,84 +37,119 @@ export function AgentHistory() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const current = params.get("chat") ?? "";
-  return (
-    <aside className="agent-history" aria-label="Chat history">
-      <div className="agent-history-header">
-        <h2>Chats</h2>
-        <div className="mobile-chat-picker">
-          <SelectRoot
-            value={current}
-            onValueChange={(id) => navigate(`/agent?chat=${id}`)}
-            disabled={!chats.data?.length}
-          >
-            <SelectTrigger aria-label="Past chats">
-              <History aria-hidden="true" />
-              <SelectValue placeholder="Past chats">
-                {chats.data?.find((chat) => chat.id === current)?.title ??
-                  "Past chats"}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent position="popper" align="start">
-              <SelectGroup>
-                <SelectLabel>Past chats</SelectLabel>
-                {chats.data?.map((chat) => (
-                  <SelectItem key={chat.id} value={chat.id}>
-                    {chat.title}
-                  </SelectItem>
+  const compact = useCompact(1100);
+  const [open, setOpen] = useState(false);
+  function newChat() {
+    setOpen(false);
+    navigate(`/agent?new=${crypto.randomUUID()}`);
+  }
+  const content = (
+    <>
+      <SidebarHeader>
+        <Button variant="outline" onClick={newChat}>
+          <Plus data-icon="inline-start" />
+          New chat
+        </Button>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Conversations</SidebarGroupLabel>
+          {chats.error ? (
+            <Alert variant="error">
+              Could not load chats.
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => chats.refetch()}
+              >
+                Retry
+              </Button>
+            </Alert>
+          ) : !chats.data ? (
+            <div
+              className="flex flex-col gap-3 p-2"
+              role="status"
+              aria-label="Loading chats"
+            >
+              <Skeleton className="h-8" />
+              <Skeleton className="h-8" />
+              <Skeleton className="h-8" />
+            </div>
+          ) : !chats.data.length ? (
+            <Empty>
+              <EmptyHeader>
+                <EmptyTitle>No chats yet</EmptyTitle>
+                <EmptyDescription>
+                  Start a conversation to design an experiment or explore
+                  evidence.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <nav aria-label="Past chats">
+              <SidebarMenu>
+                {chats.data.map((chat) => (
+                  <SidebarMenuItem key={chat.id}>
+                    <SidebarMenuButton asChild isActive={current === chat.id}>
+                      <Link
+                        to={`/agent?chat=${chat.id}`}
+                        title={chat.title}
+                        aria-current={current === chat.id ? "page" : undefined}
+                        onClick={() => setOpen(false)}
+                      >
+                        <MessageSquare />
+                        <span>{chat.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                    {chat.status === "pending" && (
+                      <SidebarMenuBadge role="img" aria-label="In progress">
+                        …
+                      </SidebarMenuBadge>
+                    )}
+                  </SidebarMenuItem>
                 ))}
-              </SelectGroup>
-            </SelectContent>
-          </SelectRoot>
-        </div>
+              </SidebarMenu>
+            </nav>
+          )}
+        </SidebarGroup>
+      </SidebarContent>
+    </>
+  );
+  if (compact)
+    return (
+      <div className="flex shrink-0 items-center justify-between border-b px-4 py-2">
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="sm">
+              <History data-icon="inline-start" />
+              Conversations
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="flex flex-col gap-0">
+            <SheetHeader>
+              <SheetTitle>Agent conversations</SheetTitle>
+            </SheetHeader>
+            {content}
+          </SheetContent>
+        </Sheet>
         <Button
-          size="icon"
           variant="ghost"
+          size="icon-sm"
           aria-label="New chat"
-          title="New chat"
-          onClick={() => navigate(`/agent?new=${crypto.randomUUID()}`)}
+          onClick={newChat}
         >
-          <SquarePen aria-hidden="true" />
+          <Plus />
         </Button>
       </div>
-      {chats.error ? (
-        <div className="chat-history-note" role="alert">
-          Could not load chats.
-          <Button size="sm" variant="ghost" onClick={() => chats.refetch()}>
-            Retry
-          </Button>
-        </div>
-      ) : !chats.data ? (
-        <p className="chat-history-note" role="status">
-          Loading chats…
-        </p>
-      ) : !chats.data.length ? (
-        <p className="chat-history-note">No chats yet.</p>
-      ) : (
-        <nav aria-label="Past chats" className="chat-history-list">
-          <ul>
-            {chats.data.map((chat) => (
-              <li key={chat.id}>
-                <Button variant="ghost" asChild className="chat-history-link">
-                  <Link
-                    to={`/agent?chat=${chat.id}`}
-                    title={chat.title}
-                    aria-current={current === chat.id ? "page" : undefined}
-                  >
-                    <span>{chat.title}</span>
-                    {chat.status === "pending" && (
-                      <span
-                        className="chat-pending"
-                        role="img"
-                        aria-label="In progress"
-                      />
-                    )}
-                  </Link>
-                </Button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )}
-    </aside>
+    );
+  return (
+    <Sidebar
+      collapsible="none"
+      role="complementary"
+      className="w-56 shrink-0 border-r"
+      aria-label="Chat history"
+    >
+      {content}
+    </Sidebar>
   );
 }

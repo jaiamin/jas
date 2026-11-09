@@ -1,4 +1,3 @@
-import { ArrowUpRight, BookOpen, Check } from "lucide-react";
 import { memo } from "react";
 import { Link } from "react-router-dom";
 import { AgentActivity } from "@/components/agent/agent-activity";
@@ -10,8 +9,18 @@ import {
   DisclosureTrigger,
 } from "@/components/disclosure";
 import { ExperimentCheck } from "@/components/experiment-check";
+import { Alert } from "@/components/feedback";
+import { ArrowUpRight, BookOpen, Check } from "@/components/icons";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Alert } from "@/components/ui/data";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Message,
   MessageContent,
@@ -28,8 +37,8 @@ import {
   TraceLine,
   TraceTitle,
 } from "@/components/ui/trace";
+import { money } from "@/lib/format";
 import type { Analysis } from "@/lib/types";
-import { money } from "@/lib/utils";
 
 export const AgentReply = memo(function AgentReply({
   row,
@@ -51,10 +60,7 @@ export const AgentReply = memo(function AgentReply({
   return (
     <Message>
       <MessageContent>
-        <MessageHeader>
-          <img src="/logo.svg" width={18} height={18} alt="" />
-          Agent
-        </MessageHeader>
+        <MessageHeader>Agent</MessageHeader>
         {row.status === "failed" ? (
           <Alert variant="error" title="Request stopped">
             <p>{row.error}</p>
@@ -129,7 +135,7 @@ export const AgentReply = memo(function AgentReply({
               <>
                 <AgentMarkdown text={row.output?.answer ?? ""} />
                 {!!row.output?.citations?.length && (
-                  <div className="citation-list">
+                  <div className="my-3 flex flex-wrap items-center gap-2">
                     <span>Sources</span>
                     {row.output.citations.map((citation) => (
                       <Button
@@ -150,7 +156,7 @@ export const AgentReply = memo(function AgentReply({
                   </div>
                 )}
                 {!!row.output?.caveats?.length && (
-                  <Disclosure className="disclosure">
+                  <Disclosure className="min-w-0">
                     <DisclosureTrigger>
                       Limitations & uncertainty
                     </DisclosureTrigger>
@@ -195,38 +201,54 @@ function DesignReply({ row }: { row: Analysis }) {
   const design = row.output?.design;
   return (
     <>
+      {row.output?.planning && <PlanningActivity plan={row} />}
       <AgentMarkdown text={row.output?.explanation ?? ""} />
       {design && row.output?.supported ? (
-        <div className="agent-proposal">
-          <h2>{design.title}</h2>
-          <p>{design.hypothesis}</p>
-          <div className="proposal-facts">
-            <span>{design.profiles.length} agents</span>
-            <span>{design.conditions.length} conditions</span>
-            <span>
-              {design.conditions.length *
-                design.seeds.length *
-                design.repetitions}{" "}
-              independent runs
-            </span>
-            <span>{money(design.budget_usd)} ceiling</span>
-          </div>
-          {row.output?.planning?.preflight && (
-            <ExperimentCheck
-              report={{
-                ...row.output.planning.preflight,
-                original_question: row.question,
-                question_mapping: row.output.planning.brief.requirements,
-              }}
-            />
-          )}
-          <Button variant="outline" size="sm" asChild>
-            <Link to={`/new?plan=${row.id}`}>
-              Review protocol
-              <ArrowUpRight data-icon="inline-end" />
-            </Link>
-          </Button>
-        </div>
+        <Card className="my-4">
+          <CardHeader>
+            <CardTitle>
+              <h2>{design.title}</h2>
+            </CardTitle>
+            <CardDescription>{design.question}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="secondary">{design.profiles.length} agents</Badge>
+              <Badge variant="secondary">
+                {design.conditions.length} conditions
+              </Badge>
+              <Badge variant="secondary">
+                {design.conditions.length *
+                  design.seeds.length *
+                  design.repetitions}{" "}
+                independent runs
+              </Badge>
+              <Badge variant="outline">
+                {money(design.budget_usd)} ceiling
+              </Badge>
+            </div>
+            {row.output?.planning?.preflight && (
+              <ExperimentCheck
+                report={{
+                  ...row.output.planning.preflight,
+                  original_question: row.question,
+                  question_mapping: row.output.planning.brief.requirements,
+                }}
+              />
+            )}
+          </CardContent>
+          <CardFooter className="flex-wrap justify-between gap-3">
+            <p className="text-xs text-muted-foreground">
+              Ready for review. Nothing has run.
+            </p>
+            <Button size="sm" asChild>
+              <Link to={`/new?plan=${row.id}`}>
+                Review protocol
+                <ArrowUpRight data-icon="inline-end" />
+              </Link>
+            </Button>
+          </CardFooter>
+        </Card>
       ) : (
         <Button size="sm" variant="outline" asChild>
           <Link to="/environments">Browse environments</Link>

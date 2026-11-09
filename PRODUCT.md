@@ -18,10 +18,11 @@ Synthetic observations do not establish human validity, intent or model weight u
 Installed environment mechanics are code-backed; parameters are editable in protocols.
 
 ## Design direction
-User explicitly requests a modern Linear/Vercel approach: restrained, precise, easy to
-navigate and centered on useful work. Experiments and environments are core destinations;
-Agent should help design and interpret them rather than present an isolated generic chat.
-Preserve the supplied JAS logo. Support both themes, mobile and keyboard navigation.
+Use default stock shadcn components and support changing the complete preset, including
+fonts, colors and icons. Keep preset configuration and generated components authoritative;
+see [Design](docs/DESIGN.md) for the workflow and app icon alignment step. Experiments and
+environments remain core destinations; Agent helps design and interpret them. Preserve the
+supplied JAS logo as a brand asset. Support both themes, mobile and keyboard navigation.
 
 ## Working assumptions
 The initial audience is a single researcher using a local workspace. Shared accounts,

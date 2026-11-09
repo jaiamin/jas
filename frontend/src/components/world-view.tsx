@@ -1,7 +1,26 @@
-import { ArrowRight, Check, Circle, Clock3 } from "lucide-react";
+import { Empty } from "@/components/feedback";
+import { Check, Circle, Clock3 } from "@/components/icons";
 import { MechanismView } from "@/components/mechanism-view";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Empty, Table } from "@/components/ui/data";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Item, ItemContent, ItemTitle } from "@/components/ui/item";
+import { Progress } from "@/components/ui/progress";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import type { Event, Profile, RunDetail, State } from "@/lib/types";
 
 function isContributions(value: unknown): value is Record<string, number> {
@@ -31,48 +50,41 @@ export function WorldView({
     const tasks = state.tasks;
     if (!tasks) throw new Error("Coordination checkpoint is missing tasks");
     return (
-      <section className="task-board">
-        <div className="section-heading">
-          <div>
-            <h2>Shared project</h2>
-            <p>
-              {tasks.filter((t) => t.completed_by).length} of {tasks.length}{" "}
-              work packages complete
-            </p>
-          </div>
+      <section className="flex min-w-0 flex-col gap-4">
+        <div>
+          <h2 className="text-base font-semibold">Shared project</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {tasks.filter((t) => t.completed_by).length} of {tasks.length} work
+            packages complete
+          </p>
         </div>
-        <div className="task-grid">
-          {tasks.map((task) => (
-            <div
-              className="task-node"
-              data-complete={!!task.completed_by}
-              key={task.key}
-            >
-              <div className="task-node-title">
-                {task.completed_by ? <Check /> : <Circle />}
-                <h3>{task.name}</h3>
-                <span>
-                  {task.progress}/{task.effort}
-                </span>
-              </div>
-              <div
-                className="task-progress"
-                role="progressbar"
-                aria-valuemin={0}
-                aria-valuemax={task.effort}
-                aria-valuenow={task.progress}
-                aria-label={`${task.name} ${task.progress} of ${task.effort}`}
-              >
-                <span
-                  style={{ width: `${(task.progress / task.effort) * 100}%` }}
-                />
-              </div>
-              <div className="task-node-detail">
-                {task.dependencies.length ? (
-                  <span>After {task.dependencies.join(", ")}</span>
+        {tasks.map((task) => (
+          <Card size="sm" key={task.key}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                {task.completed_by ? (
+                  <Check className="size-4" />
                 ) : (
-                  <span>No prerequisites</span>
+                  <Circle className="size-4" />
                 )}
+                {task.name}
+              </CardTitle>
+              <CardDescription>
+                {task.dependencies.length
+                  ? `After ${task.dependencies.join(", ")}`
+                  : "No prerequisites"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              <Progress
+                max={task.effort}
+                value={task.progress}
+                aria-label={`${task.name} ${task.progress} of ${task.effort}`}
+              />
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs tabular-nums text-muted-foreground">
+                  {task.progress} / {task.effort}
+                </span>
                 {task.completed_by && (
                   <Button
                     variant="ghost"
@@ -85,25 +97,17 @@ export function WorldView({
                   </Button>
                 )}
               </div>
-            </div>
-          ))}
-        </div>
+            </CardContent>
+          </Card>
+        ))}
       </section>
     );
   }
   if (run.design.environment === "trust_exchange")
     return (
-      <section>
-        <div className="section-heading">
-          <div>
-            <h2>Exchange network</h2>
-            <p>
-              Directed transfers between participants. Edge weight reflects
-              credits sent.
-            </p>
-          </div>
-        </div>
-        <RelationshipGraph
+      <section className="flex min-w-0 flex-col gap-4">
+        <h2 className="text-base font-semibold">Exchange network</h2>
+        <InteractionTable
           profiles={profiles}
           events={events}
           onAgent={onAgent}
@@ -129,70 +133,76 @@ export function WorldView({
     ? previous.contributions
     : undefined;
   return (
-    <section className="commons-panel">
-      <div className="section-heading">
+    <section className="flex min-w-0 flex-col gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2>The shared pool</h2>
-          <p>
+          <h2 className="text-base font-semibold">The shared pool</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             {previous
               ? `Contributions from settled round ${previous.round}`
               : "Contributions appear after the first round settles."}
           </p>
         </div>
-        <span className="settlement-note">
+        <Badge variant="outline">
           <Clock3 />
           {Object.keys(state.pending).length} / {profiles.length} choices sealed
-        </span>
+        </Badge>
       </div>
-      <div className="commons-agents">
-        {profiles.map((profile, i) => (
-          <div className="commons-agent" key={profile.key}>
-            <Button
-              variant="ghost"
-              type="button"
-              className="agent-name h-auto p-0"
-              onClick={() => onAgent(profile.key)}
-            >
-              <span className="profile-avatar" data-series={i % 6}>
-                {profile.name.slice(0, 1)}
-              </span>
-              <span>
-                {profile.name}
-                <small>{profile.role}</small>
-              </span>
-            </Button>
-            <div className="contribution-track">
-              <span
-                data-series={i % 6}
-                style={{
-                  width: `${contributions ? ((contributions[profile.key] ?? 0) / run.parameters.endowment) * 100 : 0}%`,
-                }}
-              />
-            </div>
-            <span className="numeric contribution-value">
+      <div className="overflow-hidden rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Agent</TableHead>
+              <TableHead className="text-right">Contribution</TableHead>
+              <TableHead className="text-right">Total payoff</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {profiles.map((profile) => (
+              <TableRow key={profile.key}>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onAgent(profile.key)}
+                  >
+                    <Avatar size="sm">
+                      <AvatarFallback>
+                        {profile.name.slice(0, 1)}
+                      </AvatarFallback>
+                    </Avatar>
+                    {profile.name}
+                  </Button>
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {contributions
+                    ? `${contributions[profile.key]} / ${run.parameters.endowment}`
+                    : "—"}
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {state.balances[profile.key]?.toFixed(1)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <Item variant="muted">
+        <ItemContent>
+          <ItemTitle>
+            Total contribution{" "}
+            <span className="ml-auto tabular-nums">
               {contributions
-                ? `${contributions[profile.key]} / ${run.parameters.endowment}`
+                ? Object.values(contributions).reduce((a, b) => a + b, 0)
                 : "—"}
             </span>
-            <span className="balance-value numeric">
-              {state.balances[profile.key]?.toFixed(1)}
-              <small>total payoff</small>
-            </span>
-          </div>
-        ))}
-      </div>
-      <div className="pool-summary">
-        <span>Total contribution</span>
-        <strong>
-          {contributions
-            ? Object.values(contributions).reduce((a, b) => a + b, 0)
-            : "—"}
-        </strong>
-        <ArrowRight />
-        <span>× {run.parameters.multiplier}</span>
-        <ArrowRight />
-        <span>Shared equally across {profiles.length} agents</span>
-      </div>
+          </ItemTitle>
+          <p className="text-xs text-muted-foreground">
+            Multiplied by {run.parameters.multiplier}, shared equally across{" "}
+            {profiles.length} agents.
+          </p>
+        </ItemContent>
+      </Item>
     </section>
   );
 }
@@ -206,26 +216,24 @@ function AgentBalances({
   onAgent: (key: string) => void;
 }) {
   return (
-    <div className="balance-strip">
-      {profiles.map((profile, index) => (
-        <div key={profile.key}>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onAgent(profile.key)}
-          >
-            <span className="agent-dot" data-series={index % 6} />
-            {profile.name}
-          </Button>
-          <span className="numeric">
+    <div className="flex flex-wrap gap-2">
+      {profiles.map((profile) => (
+        <Button
+          key={profile.key}
+          variant="outline"
+          size="sm"
+          onClick={() => onAgent(profile.key)}
+        >
+          {profile.name}
+          <span className="tabular-nums">
             {state.balances[profile.key]?.toFixed(1)} credits
           </span>
-        </div>
+        </Button>
       ))}
     </div>
   );
 }
-export function RelationshipGraph({
+export function InteractionTable({
   profiles,
   events,
   onAgent,
@@ -261,95 +269,54 @@ export function RelationshipGraph({
       count: old.count + 1,
     });
   }
-  const points = profiles.map((p, i) => ({
-    ...p,
-    x: 280 + Math.cos((i / profiles.length) * Math.PI * 2 - Math.PI / 2) * 150,
-    y: 190 + Math.sin((i / profiles.length) * Math.PI * 2 - Math.PI / 2) * 145,
-  }));
   if (!edges.size) return <Empty title="No interactions yet" />;
   return (
-    <div className="relationship-graph">
-      <svg
-        viewBox="0 0 560 380"
-        role="img"
-        aria-label="Directed agent interaction network"
-      >
-        <defs>
-          <marker
-            id="arrowhead"
-            markerWidth="6"
-            markerHeight="6"
-            refX="18"
-            refY="3"
-            orient="auto"
-          >
-            <path d="M0,0 L6,3 L0,6" fill="var(--muted-foreground)" />
-          </marker>
-        </defs>
-        {[...edges].map(([key, edge]) => {
-          const a = points.find((p) => p.key === edge.source);
-          const b = points.find((p) => p.key === edge.target);
-          if (!a || !b) return null;
-          return (
-            <g key={key}>
-              <path
-                d={`M${a.x},${a.y} Q280,190 ${b.x},${b.y}`}
-                fill="none"
-                stroke="var(--chart-1)"
-                strokeOpacity={0.45}
-                strokeWidth={Math.min(5, 1 + Math.log1p(edge.amount) / 2)}
-                markerEnd="url(#arrowhead)"
-              />
-              <title>
-                {a.name} → {b.name}: {edge.amount} credits, {edge.count}{" "}
-                interactions
-              </title>
-            </g>
-          );
-        })}
-        {points.map((p, i) => (
-          <g key={p.key}>
-            <circle
-              cx={p.x}
-              cy={p.y}
-              r="22"
-              fill={`var(--series-${i % 6}-background)`}
-              stroke={`var(--chart-${(i % 6) + 1})`}
-              strokeWidth="1"
-            />
-            <text
-              x={p.x}
-              y={p.y + 5}
-              textAnchor="middle"
-              fill="var(--foreground)"
-              fontSize="14"
-            >
-              {p.name.slice(0, 1)}
-            </text>
-            <text
-              x={p.x}
-              y={p.y + 41}
-              textAnchor="middle"
-              fill="var(--foreground)"
-              fontSize="13"
-            >
-              {p.name}
-            </text>
-          </g>
-        ))}
-      </svg>
-      <div className="network-agent-links">
-        {profiles.map((p) => (
-          <Button
-            key={p.key}
-            variant="ghost"
-            size="sm"
-            onClick={() => onAgent(p.key)}
-          >
-            {p.name}
-          </Button>
-        ))}
-      </div>
+    <div className="min-w-0 overflow-hidden rounded-lg border">
+      <Table aria-label="Directed agent interactions">
+        <TableHeader>
+          <TableRow>
+            <TableHead>From → To</TableHead>
+            <TableHead className="text-right">Credits</TableHead>
+            <TableHead className="text-right">Interactions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {[...edges].map(([key, edge]) => {
+            const a = profiles.find((p) => p.key === edge.source);
+            const b = profiles.find((p) => p.key === edge.target);
+            if (!a || !b) return null;
+            return (
+              <TableRow key={key}>
+                <TableCell>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="link"
+                      size="sm"
+                      onClick={() => onAgent(a.key)}
+                    >
+                      {a.name}
+                    </Button>
+                    <span aria-hidden="true">→</span>
+                    <Button
+                      variant="link"
+                      size="sm"
+                      onClick={() => onAgent(b.key)}
+                    >
+                      {b.name}
+                    </Button>
+                  </div>
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {edge.amount}
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {edge.count}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
     </div>
   );
 }
@@ -363,48 +330,48 @@ export function RelationshipTable({
   const claims = events.filter((e) => e.kind === "claim");
   const commitments = events.filter((e) => e.kind === "commitment_resolved");
   return (
-    <div className="table-frame">
-      <Table className="table">
-        <thead>
-          <tr>
-            <th>Agent</th>
-            <th>False factual reports</th>
-            <th>Promises kept</th>
-            <th>Credits transferred</th>
-          </tr>
-        </thead>
-        <tbody>
+    <div className="min-w-0 overflow-hidden rounded-lg border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Agent</TableHead>
+            <TableHead>False factual reports</TableHead>
+            <TableHead>Promises kept</TableHead>
+            <TableHead>Credits transferred</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {profiles.map((profile) => {
             const reported = claims.filter((e) => e.actor === profile.key);
             const eligible = commitments.filter(
               (e) => e.actor === profile.key && e.data.eligible !== false,
             );
             return (
-              <tr key={profile.key}>
-                <td>{profile.name}</td>
-                <td className="numeric">
+              <TableRow key={profile.key}>
+                <TableCell>{profile.name}</TableCell>
+                <TableCell className="text-right tabular-nums">
                   {reported.length
                     ? `${reported.filter((e) => e.data.accurate === false).length} / ${reported.length}`
                     : "No reports"}
-                </td>
-                <td className="numeric">
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
                   {eligible.length
                     ? `${eligible.filter((e) => e.data.fulfilled).length} / ${eligible.length}`
                     : "No eligible promises"}
-                </td>
-                <td className="numeric">
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
                   {events
                     .filter(
                       (e) => e.kind === "transfer" && e.actor === profile.key,
                     )
                     .reduce((sum, e) => sum + Number(e.data.amount), 0)}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             );
           })}
-        </tbody>
+        </TableBody>
       </Table>
-      <div className="table-note">
+      <div className="p-4 text-xs leading-relaxed text-muted-foreground">
         Counts describe observable actions and opportunities. They do not
         establish deceptive intent, friendship, or private feelings.
       </div>

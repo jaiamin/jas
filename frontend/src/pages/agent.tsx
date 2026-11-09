@@ -1,12 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  ArrowUp,
-  ArrowUpRight,
-  BookOpen,
-  FlaskConical,
-  GitCompareArrows,
-  ScanLine,
-} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import {
@@ -16,10 +8,18 @@ import {
 } from "@/components/agent/agent-context";
 import { AgentHistory } from "@/components/agent/agent-history";
 import { AgentReply } from "@/components/agent/agent-reply";
+import { Alert } from "@/components/feedback";
+import {
+  ArrowUp,
+  ArrowUpRight,
+  BookOpen,
+  FlaskConical,
+  GitCompareArrows,
+  ScanLine,
+} from "@/components/icons";
 import { ErrorState, Loading } from "@/components/shared";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
-import { Alert } from "@/components/ui/data";
 import {
   InputGroup,
   InputGroupAddon,
@@ -106,11 +106,11 @@ export default function AgentPage() {
     return () => stream.close();
   }, [chatId, pending, client]);
   return (
-    <div className="agent-layout">
+    <div className="flex h-full min-h-0 min-w-0 flex-col min-[1100px]:flex-row">
       <AgentHistory />
-      <div className="agent-canvas">
+      <div className="min-h-0 min-w-0 flex-1">
         {chat.error ? (
-          <div className="agent-load-state">
+          <div className="flex flex-col gap-4 p-6">
             <ErrorState error={chat.error} onRetry={chat.refetch} />
             <Button asChild variant="outline">
               <Link to="/agent">Start a new chat</Link>
@@ -236,11 +236,11 @@ function AgentConversation({
   const selectedRun = runs.find((run) => context === `run:${run.id}`);
   return (
     <section
-      className="agent-workspace"
+      className="flex h-full min-h-0 flex-col"
       aria-label="Agent workspace"
       data-empty={!messages.length}
     >
-      <header className="agent-context-strip">
+      <header className="flex shrink-0 items-center justify-between gap-3 px-4 py-3 sm:px-6 [&>div]:min-w-0 [&_strong]:block [&_strong]:truncate [&_strong]:text-sm [&_span]:mt-1 [&_span]:block [&_span]:text-xs [&_span]:text-muted-foreground">
         <div>
           <strong>
             {context === "new"
@@ -279,9 +279,9 @@ function AgentConversation({
           autoScroll={busy}
           defaultScrollPosition="last-anchor"
         >
-          <MessageScroller>
+          <MessageScroller className="flex-1">
             <MessageScrollerViewport aria-label="Agent conversation">
-              <MessageScrollerContent className="research-thread">
+              <MessageScrollerContent className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
                 {messages.flatMap((row) => [
                   <MessageScrollerItem
                     key={`${row.id}-question`}
@@ -327,9 +327,9 @@ function AgentConversation({
           </MessageScroller>
         </MessageScrollerProvider>
       ) : (
-        <div className="agent-empty-content">
-          <div className="agent-welcome">
-            <h1>
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-8 sm:px-6">
+          <div className="mx-auto mt-auto w-full max-w-xl text-center [&_p]:mt-3 [&_p]:text-muted-foreground [&_p]:leading-relaxed">
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
               {context === "new"
                 ? "What would you like to test?"
                 : context === "general"
@@ -344,7 +344,7 @@ function AgentConversation({
                   : "Separate what agents did from what they said. Compare outcomes, inspect decisions and choose your next test."}
             </p>
             {context === "general" && (
-              <div className="agent-entry-actions">
+              <div className="mt-6 flex flex-wrap justify-center gap-2">
                 <Button asChild>
                   <Link to="/agent?context=new">
                     Design an experiment
@@ -369,13 +369,14 @@ function AgentConversation({
         </div>
       )}
       <form
-        className="assistant-form"
+        aria-label="Agent composer"
+        className="mx-auto w-full max-w-3xl shrink-0 p-4 sm:px-6 sm:pb-6"
         onSubmit={(event) => {
           event.preventDefault();
           submit();
         }}
       >
-        <div className="agent-composer-frame">
+        <div className="min-w-0">
           <InputGroup>
             <InputGroupTextarea
               ref={composer}
@@ -403,7 +404,10 @@ function AgentConversation({
                 }
               }}
             />
-            <InputGroupAddon align="block-end">
+            <InputGroupAddon
+              align="block-end"
+              className="justify-between gap-3"
+            >
               <AgentContext
                 value={context}
                 onChange={changeContext}
@@ -414,7 +418,6 @@ function AgentConversation({
               <Button
                 type="submit"
                 size="icon"
-                className="agent-send"
                 aria-label="Send message"
                 title="Send message (Enter)"
                 disabled={disabled || !question.trim()}
@@ -450,12 +453,12 @@ function AgentConversation({
           </Alert>
         )}
         {draftUnavailable && (
-          <p className="capability-note">
+          <p className="mt-3 text-xs leading-relaxed text-muted-foreground [&_a]:underline [&_a]:underline-offset-4">
             This browser could not keep your message draft.
           </p>
         )}
         {unavailable && (
-          <p className="capability-note">
+          <p className="mt-3 text-xs leading-relaxed text-muted-foreground [&_a]:underline [&_a]:underline-offset-4">
             {provider === "openai" ? "OpenAI" : "Anthropic"} is required for
             this context. <Link to="/settings">Configure a provider</Link>
             {context === "new" && (
@@ -504,19 +507,25 @@ function AgentSuggestions({
   });
   if (!suggestions.length) return null;
   return (
-    <div className="agent-suggestions">
+    <section
+      aria-label="Suggested questions"
+      className="mx-auto mt-6 mb-auto flex w-full max-w-xl flex-wrap justify-center gap-2"
+    >
       {suggestions.map(({ title, prompt }, index) => {
         const Icon = [BookOpen, GitCompareArrows, ScanLine, FlaskConical][
           index
         ];
         return (
-          <Button variant="ghost" key={title} onClick={() => onChoose(prompt)}>
-            <Icon aria-hidden="true" />
+          <Button
+            variant="outline"
+            key={title}
+            onClick={() => onChoose(prompt)}
+          >
+            <Icon data-icon="inline-start" aria-hidden="true" />
             <span>{title}</span>
-            <ArrowUpRight aria-hidden="true" />
           </Button>
         );
       })}
-    </div>
+    </section>
   );
 }

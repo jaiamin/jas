@@ -11,8 +11,8 @@ matched trials and inspect evidence. It measures model behavior, not human valid
 - `db.py`, `research.py`, `exports.py`: persistence, queries and evidence export.
   `api.py`/`routes.py` wire services; `assistants.py`/`planning.py` own Agent workflows.
 - `frontend/src/`: routed React/TypeScript app. Keep workflows in `components/editor`,
-  `components/agent` and `components/run`; reuse `components/ui`, theme tokens in
-  `index.css` and scoped `styles/`. TanStack Query owns remote state.
+  `components/agent` and `components/run`; compose stock `components/ui` with layout
+  utilities and preset tokens in `index.css`. TanStack Query owns remote state.
 - Tests: `backend/tests`, frontend colocated tests and `frontend/e2e`.
   `benchmarks/` evaluates through the real API.
 

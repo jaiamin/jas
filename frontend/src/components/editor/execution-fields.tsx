@@ -3,6 +3,7 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { OptionSelect as Select } from "@/components/option-select";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Field,
@@ -13,10 +14,9 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { label } from "@/lib/format";
 import type { Catalog, Design } from "@/lib/types";
-import { label } from "@/lib/utils";
 
 export function ExecutionFields({
   design,
@@ -38,9 +38,9 @@ export function ExecutionFields({
     (e) => e.key === design.environment,
   );
   return (
-    <section className="form-section" hidden={hidden}>
-      <h2>Run plan</h2>
-      <FieldGroup className="matrix-fields">
+    <section className="mb-6 flex flex-col gap-6" hidden={hidden}>
+      <h2 className="text-base font-semibold">Run plan</h2>
+      <FieldGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <Field>
           <FieldLabel htmlFor="rounds">Rounds per run</FieldLabel>
           <Input
@@ -68,14 +68,14 @@ export function ExecutionFields({
           />
         </Field>
       </FieldGroup>
-      <Disclosure className="disclosure">
+      <Disclosure className="min-w-0">
         <DisclosureTrigger>
           Replication · {design.seeds.length} seed
           {design.seeds.length !== 1 && "s"} × {design.repetitions} repetition
           {design.repetitions !== 1 && "s"}
         </DisclosureTrigger>
         <DisclosureContent>
-          <FieldGroup className="matrix-fields">
+          <FieldGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             {" "}
             <Field>
               <FieldLabel htmlFor="seeds">Matched seeds</FieldLabel>
@@ -119,12 +119,12 @@ export function ExecutionFields({
           </FieldGroup>
         </DisclosureContent>
       </Disclosure>
-      <Disclosure className="disclosure">
+      <Disclosure className="min-w-0">
         <DisclosureTrigger>
           Measurements · {design.measures.length} selected
         </DisclosureTrigger>
         <DisclosureContent>
-          <FieldSet className="measure-picker">
+          <FieldSet className="flex flex-wrap gap-4">
             <FieldLegend>Measurements</FieldLegend>
             {environment?.measures.map((key) => (
               <FieldLabel key={key} htmlFor={`measure-${key}`}>
@@ -146,7 +146,7 @@ export function ExecutionFields({
           </FieldSet>
         </DisclosureContent>
       </Disclosure>
-      <Disclosure className="disclosure">
+      <Disclosure className="min-w-0">
         <DisclosureTrigger>Model settings & limitations</DisclosureTrigger>
         <DisclosureContent>
           <FieldGroup>

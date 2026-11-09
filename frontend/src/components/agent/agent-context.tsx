@@ -1,10 +1,10 @@
-import { FlaskConical, Globe, Play, Plus } from "lucide-react";
+import { FlaskConical, Globe, Play, Plus } from "@/components/icons";
 import {
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectRoot,
+  Select as SelectRoot,
   SelectSeparator,
   SelectTrigger,
   SelectValue,
@@ -66,7 +66,7 @@ export function AgentContext({
   return (
     <SelectRoot value={value} onValueChange={onChange} disabled={disabled}>
       <SelectTrigger
-        className="agent-context-picker"
+        className="min-w-0 max-w-[calc(100%-3rem)]"
         aria-label="Message context"
       >
         <Icon aria-hidden="true" />
@@ -75,7 +75,7 @@ export function AgentContext({
       <SelectContent
         position="popper"
         align="start"
-        className="agent-context-menu"
+        className="w-[26rem] max-w-[calc(100vw-2rem)]"
       >
         <SelectGroup>
           <SelectItem value="general">
@@ -88,9 +88,11 @@ export function AgentContext({
           </SelectItem>
         </SelectGroup>
         {!known && (
-          <SelectItem value={value}>
-            {contextLabel(value, studies, runs)}
-          </SelectItem>
+          <SelectGroup>
+            <SelectItem value={value}>
+              {contextLabel(value, studies, runs)}
+            </SelectItem>
+          </SelectGroup>
         )}
         {studies.length > 0 && (
           <>
@@ -114,7 +116,7 @@ export function AgentContext({
               {runs.map((run) => (
                 <SelectItem key={run.id} value={`run:${run.id}`}>
                   <Play aria-hidden="true" />
-                  <span className="context-run-option">
+                  <span className="flex min-w-0 flex-col gap-1 [&_small]:text-muted-foreground">
                     <span>{run.study_title}</span>
                     <small>
                       Rev {run.revision} ·{" "}

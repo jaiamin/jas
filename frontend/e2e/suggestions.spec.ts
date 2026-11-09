@@ -24,7 +24,9 @@ test("four examples adapt to creation, saved treatments and a run without submit
       submitted++;
   });
   await page.goto("/agent");
-  const suggestions = page.locator(".agent-suggestions button");
+  const suggestions = page
+    .getByRole("region", { name: "Suggested questions" })
+    .getByRole("button");
   await expect(suggestions).toHaveCount(4);
   const context = page.getByRole("combobox", { name: "Message context" });
   const draft = page.getByLabel("Message Agent", { exact: true });

@@ -25,7 +25,7 @@ test("run controls advance, start, pause and suppress completed actions", async 
   });
   await page.goto(`/runs/${id}?turn=0`);
   await page.getByRole("button", { name: "Step", exact: true }).click();
-  await expect(page.locator(".run-facts")).toContainText(
+  await expect(page.getByLabel("Run progress")).toContainText(
     `1 / ${run.summary.total_turns}`,
   );
   await page.getByRole("button", { name: "Run", exact: true }).click();

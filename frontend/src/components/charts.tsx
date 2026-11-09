@@ -1,16 +1,13 @@
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import { Empty } from "@/components/feedback";
 import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { Empty } from "@/components/ui/data";
+  ChartContainer,
+  ChartLegend,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { label, metric } from "@/lib/format";
 import type { Measurement } from "@/lib/types";
-import { label, metric } from "@/lib/utils";
 
 export function roundSeries(measurements: Measurement[], key: string) {
   const groups = new Map<number, number[]>();
@@ -55,74 +52,91 @@ export function MetricChart({
       />
     );
   return (
-    <div
-      className="metric-chart"
+    <ChartContainer
+      config={Object.fromEntries(
+        series.map((s, index) => [
+          `series${index}`,
+          { label: s.name, color: `var(--chart-${(index % 5) + 1})` },
+        ]),
+      )}
+      className="h-64 w-full"
       role="img"
       aria-label={`${label(metricKey)} by round`}
     >
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={data}
-          margin={{ top: 14, right: 12, bottom: 12, left: 0 }}
-        >
-          <CartesianGrid vertical={false} stroke="var(--border)" />
-          <XAxis
-            dataKey="round"
-            tickLine={false}
-            axisLine={false}
-            tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
-            label={{
-              value: "Round",
-              position: "insideBottom",
-              offset: -10,
-              fill: "var(--muted-foreground)",
-              fontSize: 12,
-            }}
-          />
-          <YAxis
-            tickFormatter={(value) => metric(metricKey, Number(value))}
-            tickLine={false}
-            axisLine={false}
-            width={54}
-            tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
-            domain={
-              metricKey.includes("rate") || metricKey === "forecast_error"
-                ? [0, 1]
-                : ["auto", "auto"]
-            }
-          />
-          <Tooltip
-            contentStyle={{
-              background: "var(--popover)",
-              border: "1px solid var(--border)",
-              borderRadius: "var(--radius)",
-              color: "var(--foreground)",
-              fontSize: 12,
-            }}
-            formatter={(value) => metric(metricKey, Number(value))}
-            labelFormatter={(value) => `Round ${value}`}
-          />
-          {series.length > 1 && (
-            <Legend verticalAlign="top" align="right" iconType="plainline" />
-          )}
-          {series.map((s, index) => (
-            <Line
-              key={s.id}
-              name={s.name}
-              dataKey={`series${index}`}
-              stroke={`var(--chart-${(index % 6) + 1})`}
-              strokeWidth={2}
-              strokeDasharray={
-                ["0", "7 4", "2 4", "8 3 2 3", "12 4", "6 3 2 3 2 3"][index % 6]
+      <LineChart
+        data={data}
+        margin={{ top: 14, right: 12, bottom: 12, left: 0 }}
+      >
+        <CartesianGrid vertical={false} stroke="var(--border)" />
+        <XAxis
+          dataKey="round"
+          tickLine={false}
+          axisLine={false}
+          tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+          label={{
+            value: "Round",
+            position: "insideBottom",
+            offset: -10,
+            fill: "var(--muted-foreground)",
+            fontSize: 12,
+          }}
+        />
+        <YAxis
+          tickFormatter={(value) => metric(metricKey, Number(value))}
+          tickLine={false}
+          axisLine={false}
+          width={54}
+          tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+          domain={
+            metricKey.includes("rate") || metricKey === "forecast_error"
+              ? [0, 1]
+              : ["auto", "auto"]
+          }
+        />
+        <ChartTooltip
+          content={
+            <ChartTooltipContent
+              labelFormatter={(_, payload) =>
+                `Round ${payload[0]?.payload.round}`
               }
-              dot={data.length < 12 ? { r: 3, strokeWidth: 0 } : false}
-              activeDot={{ r: 4 }}
-              isAnimationActive={false}
-              connectNulls={false}
+              formatter={(value, name) => (
+                <>
+                  <span className="text-muted-foreground">{String(name)}</span>
+                  <span className="ml-auto tabular-nums">
+                    {metric(metricKey, Number(value))}
+                  </span>
+                </>
+              )}
             />
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+          }
+        />
+        {series.length > 1 && (
+          <ChartLegend
+            verticalAlign="top"
+            align="left"
+            iconType="plainline"
+            formatter={(value) => (
+              <span className="text-foreground">{value}</span>
+            )}
+          />
+        )}
+        {series.map((s, index) => (
+          <Line
+            key={s.id}
+            name={s.name}
+            dataKey={`series${index}`}
+            stroke={`var(--color-series${index})`}
+            strokeWidth={2}
+            strokeDasharray={
+              ["0", "7 4", "2 4", "8 3 2 3", "12 4", "6 3 2 3 2 3"][index % 6]
+            }
+            dot={data.length < 12 ? { r: 3, strokeWidth: 0 } : false}
+            activeDot={{ r: 4 }}
+            isAnimationActive={false}
+            connectNulls={false}
+          />
+        ))}
+      </LineChart>
+    </ChartContainer>
   );
 }

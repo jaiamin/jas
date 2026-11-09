@@ -1,4 +1,3 @@
-import { MessageSquare, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -6,10 +5,11 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { Alert } from "@/components/feedback";
+import { MessageSquare, Plus, Trash2 } from "@/components/icons";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { StudyTable } from "@/components/study-table";
 import { Button } from "@/components/ui/button";
-import { Alert } from "@/components/ui/data";
 import { useApi } from "@/lib/api";
 import { listDrafts, removeDraft } from "@/lib/drafts";
 import type { StudySummary } from "@/lib/types";
@@ -78,10 +78,10 @@ export default function Experiments() {
         </Alert>
       )}
       {drafts.items.length > 0 && (
-        <Disclosure className="disclosure drafts-section">
+        <Disclosure className="min-w-0 mb-6">
           <DisclosureTrigger>Drafts · {drafts.items.length}</DisclosureTrigger>
           <DisclosureContent>
-            <div className="draft-list">
+            <div className="flex flex-col gap-2">
               {drafts.items.map((draft) => (
                 <div key={draft.path}>
                   <Link to={draft.path}>

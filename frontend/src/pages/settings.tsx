@@ -1,14 +1,39 @@
-import { Check } from "lucide-react";
 import {
   Disclosure,
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { Check, Database, KeyRound } from "@/components/icons";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
-import { Badge, Table } from "@/components/ui/data";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useApi } from "@/lib/api";
+import { modelLabel, money } from "@/lib/format";
 import type { Settings } from "@/lib/types";
-import { modelLabel, money } from "@/lib/utils";
 
 export default function SettingsPage() {
   const settings = useApi<Settings>("/settings", true);
@@ -17,118 +42,173 @@ export default function SettingsPage() {
   if (!settings.data) return <Loading />;
   const s = settings.data;
   return (
-    <>
-      <PageHeading title="Settings" />
-      <div className="settings-layout">
-        <section>
-          <div className="section-heading">
-            <h2>Model providers</h2>
-          </div>
-          <div className="provider-list">
-            {Object.entries(s.providers).map(([provider, configured]) => (
-              <div key={provider}>
-                <strong>
-                  {provider === "openai" ? "OpenAI" : "Anthropic"}
-                </strong>
-                <Badge
-                  className={configured ? "status status-complete" : "status"}
-                >
-                  {configured && <Check />}
-                  {configured ? "Configured" : "Not configured"}
-                </Badge>
+    <div className="mx-auto max-w-4xl">
+      <PageHeading
+        title="Settings"
+        description="Providers, usage and storage for your local workspace."
+      />
+      <div className="flex flex-col gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Model providers</CardTitle>
+            <CardDescription>
+              Set provider keys in <code>.env</code> and restart JAS.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <ItemGroup>
+              {Object.entries(s.providers).map(([provider, configured]) => (
+                <Item key={provider} variant="outline">
+                  <ItemMedia variant="icon">
+                    <KeyRound />
+                  </ItemMedia>
+                  <ItemContent>
+                    <ItemTitle>
+                      {provider === "openai" ? "OpenAI" : "Anthropic"}
+                    </ItemTitle>
+                  </ItemContent>
+                  <ItemActions>
+                    <Badge variant="secondary">
+                      {configured && <Check />}
+                      {configured ? "Configured" : "Not configured"}
+                    </Badge>
+                  </ItemActions>
+                </Item>
+              ))}
+            </ItemGroup>
+            <dl className="grid gap-3 text-sm sm:grid-cols-2">
+              <div>
+                <dt className="text-muted-foreground">Protocol designer</dt>
+                <dd className="mt-1">{modelLabel(s.planner_model)}</dd>
               </div>
-            ))}
-          </div>
-          <p className="muted">
-            Set keys in <code>.env</code> and restart.
-          </p>
-          <div className="section-space">
-            <h2 title="Token estimates before credits, cache discounts or web search">
-              Model pricing
-            </h2>
-            <div className="table-frame">
-              <Table className="table">
-                <thead>
-                  <tr>
-                    <th>Model</th>
-                    <th>Input / 1M</th>
-                    <th>Output / 1M</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {s.models.map((m) => (
-                    <tr key={m.id}>
-                      <td>{modelLabel(m.id)}</td>
-                      <td className="numeric">{money(m.input_per_million)}</td>
-                      <td className="numeric">{money(m.output_per_million)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
+              <div>
+                <dt className="text-muted-foreground">Evidence assistant</dt>
+                <dd className="mt-1">{modelLabel(s.assistant_model)}</dd>
+              </div>
+            </dl>
+            <Disclosure>
+              <DisclosureTrigger>Model pricing</DisclosureTrigger>
+              <DisclosureContent className="pt-3">
+                <div className="overflow-hidden rounded-lg border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Model</TableHead>
+                        <TableHead className="text-right">Input / 1M</TableHead>
+                        <TableHead className="text-right">
+                          Output / 1M
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {s.models.map((m) => (
+                        <TableRow key={m.id}>
+                          <TableCell>{modelLabel(m.id)}</TableCell>
+                          <TableCell className="text-right text-right tabular-nums">
+                            {money(m.input_per_million)}
+                          </TableCell>
+                          <TableCell className="text-right text-right tabular-nums">
+                            {money(m.output_per_million)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                <p className="mt-3 text-xs text-muted-foreground">
+                  Token estimates before credits, cache discounts or web search.
+                </p>
+              </DisclosureContent>
+            </Disclosure>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Usage & budget</CardTitle>
+            <CardDescription>
+              Known charges and reserved allowances across the workspace.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-5">
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-wrap justify-between gap-2 text-sm">
+                <span>Committed cost</span>
+                <span className="tabular-nums">
+                  {money(s.charged_usd)} / {money(s.budget_usd)}
+                </span>
+              </div>
+              <Progress
+                aria-label="Workspace budget committed"
+                value={
+                  s.budget_usd > 0
+                    ? Math.min(100, (s.charged_usd / s.budget_usd) * 100)
+                    : 0
+                }
+              />
             </div>
-          </div>
-        </section>
-        <section>
-          <h2>Usage & storage</h2>
-          <dl className="key-values">
-            <div>
-              <dt>Protocol designer</dt>
-              <dd>{modelLabel(s.planner_model)}</dd>
-            </div>
-            <div>
-              <dt>Evidence assistant</dt>
-              <dd>{modelLabel(s.assistant_model)}</dd>
-            </div>
-          </dl>
-          <dl className="key-values">
-            <div>
-              <dt>Committed cost</dt>
-              <dd>
-                {money(s.charged_usd)} / {money(s.budget_usd)}
-              </dd>
-            </div>
-            <div>
-              <dt>Requests</dt>
-              <dd>{s.usage.requests}</dd>
-            </div>
-            <div>
-              <dt>Input / output tokens</dt>
-              <dd>
-                {s.usage.input_tokens.toLocaleString()} /{" "}
-                {s.usage.output_tokens.toLocaleString()}
-              </dd>
-            </div>
-            <div>
-              <dt>Storage</dt>
-              <dd>{s.storage}</dd>
-            </div>
-            <div>
-              <dt>Concurrent runs</dt>
-              <dd>{s.concurrent_runs}</dd>
-            </div>
-            <div>
-              <dt>Concurrent provider requests</dt>
-              <dd>{s.concurrent_requests}</dd>
-            </div>
-          </dl>
-          <Disclosure className="disclosure">
-            <DisclosureTrigger>Spending & deployment</DisclosureTrigger>
-            <DisclosureContent>
-              <p className="muted">
+            <dl className="grid gap-4 text-sm sm:grid-cols-3">
+              {[
+                ["Requests", s.usage.requests.toLocaleString()],
+                ["Input tokens", s.usage.input_tokens.toLocaleString()],
+                ["Output tokens", s.usage.output_tokens.toLocaleString()],
+              ].map(([name, value]) => (
+                <div key={name}>
+                  <dt className="text-muted-foreground">{name}</dt>
+                  <dd className="mt-1 tabular-nums">{value}</dd>
+                </div>
+              ))}
+            </dl>
+            <Disclosure>
+              <DisclosureTrigger>How spending is controlled</DisclosureTrigger>
+              <DisclosureContent className="pt-3 text-sm leading-relaxed text-muted-foreground">
                 Each request reserves its upper allowance before sending.
                 Unknown usage retains that reservation. Adjust{" "}
                 <code>JAS_BUDGET_USD</code> in <code>.env</code> for the
                 workspace ceiling.
-              </p>
-              <p className="muted">
-                Single-user local app. Data stays in the local database; model
-                requests send evidence to the selected provider. Public hosting
-                requires authentication.
-              </p>
-            </DisclosureContent>
-          </Disclosure>
-        </section>
+              </DisclosureContent>
+            </Disclosure>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Local workspace</CardTitle>
+            <CardDescription>
+              Single-user storage and execution.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <Item variant="muted">
+              <ItemMedia variant="icon">
+                <Database />
+              </ItemMedia>
+              <ItemContent className="min-w-0">
+                <ItemTitle>Storage</ItemTitle>
+                <p className="break-all font-mono text-xs text-muted-foreground">
+                  {s.storage}
+                </p>
+              </ItemContent>
+            </Item>
+            <dl className="grid gap-3 text-sm sm:grid-cols-2">
+              <div>
+                <dt className="text-muted-foreground">Concurrent runs</dt>
+                <dd className="mt-1">{s.concurrent_runs}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">
+                  Concurrent provider requests
+                </dt>
+                <dd className="mt-1">{s.concurrent_requests}</dd>
+              </div>
+            </dl>
+            <Separator />
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Data stays in the local database. Model requests send selected
+              evidence to the configured provider. Public hosting requires
+              authentication.
+            </p>
+          </CardContent>
+        </Card>
       </div>
-    </>
+    </div>
   );
 }

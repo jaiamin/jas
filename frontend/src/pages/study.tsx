@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowUpRight, Download, Pause, Play, Settings2 } from "lucide-react";
 import {
   Link,
   useLocation,
@@ -12,6 +11,15 @@ import {
   DisclosureTrigger,
 } from "@/components/disclosure";
 import { ExperimentCheck } from "@/components/experiment-check";
+import { Alert, Empty } from "@/components/feedback";
+import {
+  ArrowUpRight,
+  Download,
+  Pause,
+  Play,
+  Settings2,
+} from "@/components/icons";
+import { OptionSelect as Select } from "@/components/option-select";
 import { RunTable } from "@/components/run-table";
 import {
   ErrorState,
@@ -21,12 +29,18 @@ import {
   Status,
 } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { Alert, Empty, Table } from "@/components/ui/data";
-import { Select } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api, invalidateResources, useApi } from "@/lib/api";
+import { label, metric, money } from "@/lib/format";
 import type { StudyDetail } from "@/lib/types";
-import { label, metric, money } from "@/lib/utils";
 
 export default function Study() {
   const { id } = useParams();
@@ -108,7 +122,7 @@ export default function Study() {
           </Button>
         )}
       </PageHeading>
-      <div className="experiment-meta">
+      <div className="mb-6 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
         <Status value={experimentStatus()} />
         <span>{label(study.design.environment)}</span>
         <span>
@@ -149,18 +163,20 @@ export default function Study() {
           setParams({ ...Object.fromEntries(params), tab: v })
         }
       >
-        <TabsList variant="line">
+        <TabsList className="mb-4 max-w-full justify-start overflow-x-auto">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="runs">Runs</TabsTrigger>
           <TabsTrigger value="design">Protocol</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
           <ExperimentCheck report={study.preflight} />
-          <div className="study-overview">
+          <div className="flex min-w-0 flex-col gap-6">
             <section>
-              <div className="section-heading">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
                 <div>
-                  <h2>Condition comparison</h2>
+                  <h2 className="text-base font-semibold">
+                    Condition comparison
+                  </h2>
                 </div>
               </div>
               {!study.results.length ? (
@@ -180,42 +196,42 @@ export default function Study() {
                   )}
                 </Empty>
               ) : (
-                <div className="table-frame">
-                  <Table className="table results-table">
-                    <thead>
-                      <tr>
-                        <th>Measurement</th>
+                <div className="min-w-0 overflow-hidden rounded-lg border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Measurement</TableHead>
                         {study.design.conditions.map((c) => (
-                          <th key={c.key}>{c.name}</th>
+                          <TableHead key={c.key}>{c.name}</TableHead>
                         ))}
-                      </tr>
-                    </thead>
-                    <tbody>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {metrics.map((key) => (
-                        <tr key={key}>
-                          <td>{label(key)}</td>
+                        <TableRow key={key}>
+                          <TableCell>{label(key)}</TableCell>
                           {study.design.conditions.map((c) => {
                             const result = study.results.find(
                               (r) =>
                                 r.condition_key === c.key && r.metric === key,
                             );
                             return (
-                              <td key={c.key} className="numeric">
+                              <TableCell key={c.key} className="tabular-nums">
                                 {metric(key, result?.mean)}
-                                <span className="table-secondary">
+                                <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
                                   {result?.runs ?? 0} eligible runs ·{" "}
                                   {result?.seeds ?? 0} seeds
                                   {result?.interval &&
                                     ` · ${metric(key, result.interval[0])}–${metric(key, result.interval[1])}`}
                                 </span>
-                              </td>
+                              </TableCell>
                             );
                           })}
-                        </tr>
+                        </TableRow>
                       ))}
-                    </tbody>
+                    </TableBody>
                   </Table>
-                  <div className="table-note">
+                  <div className="p-4 text-xs leading-relaxed text-muted-foreground">
                     Ranges: 95% seed-level percentile bootstrap intervals,
                     available with ≥3 independent seeds. Repetitions are
                     averaged within seed; turns are not independent
@@ -224,11 +240,13 @@ export default function Study() {
                 </div>
               )}
             </section>
-            <Disclosure className="disclosure study-protocol-summary">
+            <Disclosure className="min-w-0 mt-2">
               <DisclosureTrigger>Question & protocol</DisclosureTrigger>
               <DisclosureContent>
-                <p className="protocol-question">{study.design.question}</p>
-                <dl className="key-values">
+                <p className="max-w-prose text-base leading-relaxed">
+                  {study.design.question}
+                </p>
+                <dl className="grid gap-3 text-sm [&>div]:grid [&>div]:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] [&>div]:gap-4 [&_dt]:text-muted-foreground [&_dd]:min-w-0 [&_dd]:break-words">
                   <div>
                     <dt>Hypothesis & analysis plan</dt>
                     <dd>{study.design.hypothesis || "Exploratory study"}</dd>
@@ -263,8 +281,8 @@ export default function Study() {
                   </div>
                 </dl>
                 {!!study.design.limitations.length && (
-                  <div className="limitations">
-                    <h3>Interpret with care</h3>
+                  <div className="max-w-prose text-sm leading-relaxed">
+                    <h3 className="text-sm font-medium">Interpret with care</h3>
                     <ul>
                       {study.design.limitations.map((item) => (
                         <li key={item}>{item}</li>
@@ -276,46 +294,46 @@ export default function Study() {
             </Disclosure>
           </div>
           {study.effects?.length > 0 && (
-            <Disclosure className="disclosure section-space">
+            <Disclosure className="min-w-0 mt-8">
               <DisclosureTrigger>Matched-seed effects</DisclosureTrigger>
               <DisclosureContent>
-                <div className="table-frame">
-                  <Table className="table">
-                    <thead>
-                      <tr>
-                        <th>Comparison</th>
-                        <th>Measurement</th>
-                        <th>Difference</th>
-                        <th>Independent seeds</th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                <div className="min-w-0 overflow-hidden rounded-lg border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Comparison</TableHead>
+                        <TableHead>Measurement</TableHead>
+                        <TableHead>Difference</TableHead>
+                        <TableHead>Independent seeds</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {study.effects.map((effect) => (
-                        <tr key={`${effect.condition}-${effect.metric}`}>
-                          <td>
+                        <TableRow key={`${effect.condition}-${effect.metric}`}>
+                          <TableCell>
                             {effect.condition} − {effect.baseline}
-                          </td>
-                          <td>{label(effect.metric)}</td>
-                          <td className="numeric">
+                          </TableCell>
+                          <TableCell>{label(effect.metric)}</TableCell>
+                          <TableCell className="text-right tabular-nums">
                             {effect.mean > 0 ? "+" : ""}
                             {metric(effect.metric, effect.mean)}
-                            <span className="table-secondary">
+                            <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
                               {effect.interval
                                 ? `${metric(effect.metric, effect.interval[0])}–${metric(effect.metric, effect.interval[1])} · 95% CI`
                                 : "Too few seeds for an interval"}
                             </span>
-                          </td>
-                          <td className="numeric">
+                          </TableCell>
+                          <TableCell className="text-right tabular-nums">
                             {effect.seeds}
-                            <span className="table-secondary">
+                            <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
                               {effect.pairs} matched run pairs
                             </span>
-                          </td>
-                        </tr>
+                          </TableCell>
+                        </TableRow>
                       ))}
-                    </tbody>
+                    </TableBody>
                   </Table>
-                  <div className="table-note">
+                  <div className="p-4 text-xs leading-relaxed text-muted-foreground">
                     Treatment minus the first condition. Repetitions are
                     averaged within each seed; intervals bootstrap independent
                     seeds. A difference is not proof of human behavior or
@@ -330,38 +348,42 @@ export default function Study() {
           <RunTable runs={study.runs} selectable />
         </TabsContent>
         <TabsContent value="design">
-          <div className="protocol-layout">
+          <div className="grid min-w-0 items-start gap-8 xl:grid-cols-2">
             <section>
-              <h2>Population</h2>
-              <div className="table-frame">
-                <Table className="table">
-                  <thead>
-                    <tr>
-                      <th>Agent</th>
-                      <th>Role</th>
-                      <th>Private goal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+              <h2 className="text-base font-semibold">Population</h2>
+              <div className="min-w-0 overflow-hidden rounded-lg border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Agent</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Private goal</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {study.design.profiles.map((p) => (
-                      <tr key={p.key}>
-                        <td>{p.name}</td>
-                        <td>{p.role}</td>
-                        <td className="wrapping-cell">{p.goal}</td>
-                      </tr>
+                      <TableRow key={p.key}>
+                        <TableCell>{p.name}</TableCell>
+                        <TableCell>{p.role}</TableCell>
+                        <TableCell className="min-w-48 max-w-prose whitespace-normal">
+                          {p.goal}
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
+                  </TableBody>
                 </Table>
               </div>
             </section>
             <section>
-              <h2>Immutable specification</h2>
+              <h2 className="text-base font-semibold">
+                Immutable specification
+              </h2>
               {study.plan_id && (
                 <Link to={`/new?plan=${study.plan_id}`}>
                   View protocol proposal
                 </Link>
               )}
-              <p className="muted">
+              <p className="text-muted-foreground">
                 Revision {study.revision} · SHA-256{" "}
                 <code>{study.sha256.slice(0, 16)}</code>
               </p>

@@ -64,9 +64,11 @@ for (const theme of ["light", "dark"]) {
       });
     });
     await page.goto("/agent");
-    const composer = page.locator(".assistant-form");
+    const composer = page.getByRole("form", { name: "Agent composer" });
     const emptyBounds = await composer.boundingBox();
-    const suggestions = await page.locator(".agent-suggestions").boundingBox();
+    const suggestions = await page
+      .getByRole("region", { name: "Suggested questions" })
+      .boundingBox();
     expect(emptyBounds?.y).toBeGreaterThan(
       (page.viewportSize()?.height ?? 0) * 0.6,
     );
@@ -79,16 +81,20 @@ for (const theme of ["light", "dark"]) {
     await page
       .getByRole("button", { name: "Send message", exact: true })
       .click();
-    await expect(page.getByRole("status")).toHaveText("Thinking");
-    await expect(page.locator(".agent-thinking i")).toHaveCount(3);
+    await expect(
+      page.locator('[data-slot="trace-line"][role="status"]'),
+    ).toHaveText("Thinking");
+    await expect(page.locator("[data-slot=spinner]")).toHaveCount(1);
     releaseStream();
     await expect(
       page.getByRole("heading", { name: "Matched seeds", exact: true }),
     ).toBeVisible();
-    await expect(page.getByRole("status")).toHaveText("Writing");
+    await expect(
+      page.locator('[data-slot="trace-line"][role="status"]'),
+    ).toHaveText("Writing");
     await expect(page.getByRole("table")).toContainText("Treatment");
-    await expect(page.locator(".agent-prose ol li")).toHaveCount(2);
-    await expect(page.locator(".agent-prose pre code")).toContainText(
+    await expect(page.locator("[data-slot=bubble] ol li")).toHaveCount(2);
+    await expect(page.locator("[data-slot=bubble] pre code")).toContainText(
       "seeds = [7, 19, 42]",
     );
     await expect(page.locator('[data-streaming="true"]')).toHaveAttribute(
@@ -112,7 +118,7 @@ for (const theme of ["light", "dark"]) {
     await page.emulateMedia({ reducedMotion: "reduce" });
     expect(
       await page
-        .locator(".agent-activity svg")
+        .locator("[data-slot=trace-line][role=status] svg")
         .evaluate((element) =>
           parseFloat(getComputedStyle(element).animationDuration),
         ),
@@ -123,7 +129,9 @@ for (const theme of ["light", "dark"]) {
       output: { ...row.output, partial: "", answer: row.output.partial },
     };
     await expect(page.locator('[data-streaming="true"]')).toHaveCount(0);
-    await expect(page.getByRole("status")).toHaveCount(0);
+    await expect(
+      page.locator('[data-slot="trace-line"][role="status"]'),
+    ).toHaveCount(0);
     await expect(
       page.getByRole("heading", { name: "Matched seeds", exact: true }),
     ).toBeVisible();
@@ -205,5 +213,107 @@ for (const malformed of ["invalid-json", "invalid-output"]) {
     ).toBeDisabled();
     expect(submissions).toBe(1);
     expect(errors).toEqual([]);
+  });
+}
+
+for (const theme of ["light", "dark"]) {
+  test(`Agent presents each planning stage and a reviewable proposal · ${theme}`, async ({
+    page,
+    request,
+  }, testInfo) => {
+    const catalog = await (await request.get("/api/catalog")).json();
+    const design = catalog.templates[0].design;
+    const row = {
+      id: "planning-answer",
+      chat_id: "planning-chat",
+      question: "Design a cooperation pilot",
+      purpose: "design",
+      status: "pending",
+      cutoffs: {},
+      study_id: null,
+      run_id: null,
+      output: {
+        stage: "scoping",
+        supported: true,
+        design,
+        explanation: "A controlled comparison with matched seeds.",
+        planning: {
+          brief: {
+            operationalization:
+              "Compare cooperation under two resource levels.",
+            size_rationale:
+              "Use matched seeds to compare the same starting conditions.",
+          },
+          sources: [
+            { url: "https://example.org/methods", title: "Methods reference" },
+          ],
+        },
+      },
+    };
+    await page.addInitScript(
+      (value) => localStorage.setItem("jas-theme", value),
+      theme,
+    );
+    await page.setViewportSize({
+      width: theme === "dark" ? 390 : 1440,
+      height: 900,
+    });
+    await page.route("**/api/chats", (route) =>
+      route.fulfill({
+        json: [{ id: row.chat_id, title: row.question, status: row.status }],
+      }),
+    );
+    await page.route("**/api/chats/planning-chat", (route) =>
+      route.fulfill({ json: [row] }),
+    );
+    await page.route("**/api/chats/planning-chat/events", (route) =>
+      route.abort(),
+    );
+    await page.goto("/agent?chat=planning-chat");
+    for (const [stage, label] of [
+      ["scoping", "Scoping the question"],
+      ["researching", "Researching methods"],
+      ["drafting", "Drafting the protocol"],
+      ["reviewing", "Reviewing the design"],
+      ["revising", "Refining the protocol"],
+    ]) {
+      row.output.stage = stage ?? "scoping";
+      await expect(
+        page.locator('[data-slot="trace-line"][role="status"]'),
+      ).toHaveText(label ?? "");
+    }
+    await page.getByRole("button", { name: "Study scope" }).click();
+    await expect(
+      page.getByText(row.output.planning.brief.operationalization),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "1 research sources" }).click();
+    await expect(
+      page.getByRole("link", { name: /Methods reference/ }),
+    ).toHaveAttribute("href", "https://example.org/methods");
+    await page.screenshot({
+      path: testInfo.outputPath(`planning-${theme}.png`),
+      animations: "disabled",
+    });
+    row.status = "complete";
+    await expect(
+      page.getByText("Protocol reviewed", { exact: true }),
+    ).toBeVisible();
+    const proposal = page
+      .locator('[data-slot="card"]')
+      .filter({ has: page.getByRole("heading", { name: design.title }) });
+    await expect(
+      proposal.getByRole("link", { name: "Review protocol" }),
+    ).toHaveAttribute("href", `/new?plan=${row.id}`);
+    await expect(proposal).toContainText("Ready for review. Nothing has run.");
+    await expect(page.getByRole("link", { name: "JAS home" })).toHaveCount(
+      theme === "dark" ? 0 : 1,
+    );
+    await expect(page.locator('main img[src="/logo.svg"]')).toHaveCount(0);
+    await page.getByRole("button", { name: "Study scope" }).click();
+    await page.getByRole("button", { name: "1 research sources" }).click();
+    await page.screenshot({
+      path: testInfo.outputPath(`proposal-${theme}.png`),
+      animations: "disabled",
+    });
   });
 }

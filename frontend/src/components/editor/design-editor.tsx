@@ -1,11 +1,4 @@
 import { useMutation } from "@tanstack/react-query";
-import {
-  ArrowRight,
-  Check,
-  Code2,
-  LoaderCircle,
-  MessageSquare,
-} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -18,6 +11,15 @@ import { ConditionFields } from "@/components/editor/condition-fields";
 import { ExecutionFields } from "@/components/editor/execution-fields";
 import { TaskFields } from "@/components/editor/task-fields";
 import { ExperimentCheck } from "@/components/experiment-check";
+import { Alert } from "@/components/feedback";
+import {
+  ArrowRight,
+  Check,
+  Code2,
+  LoaderCircle,
+  MessageSquare,
+} from "@/components/icons";
+import { OptionSelect as Select } from "@/components/option-select";
 import { PageHeading } from "@/components/shared";
 import {
   AlertDialog,
@@ -29,22 +31,29 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Alert } from "@/components/ui/data";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
+  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api";
 import { changeEnvironment } from "@/lib/design";
 import { type Draft, removeDraft, writeDraft } from "@/lib/drafts";
-
+import { money } from "@/lib/format";
 import type {
   Analysis,
   Catalog,
@@ -53,7 +62,6 @@ import type {
   ExperimentPreflight,
   SavedEnvironment,
 } from "@/lib/types";
-import { money } from "@/lib/utils";
 
 export function DesignEditor({
   initial,
@@ -225,7 +233,7 @@ export function DesignEditor({
         )}
         {draftStatus && (
           <span
-            className="draft-state"
+            className="text-xs text-muted-foreground"
             role="status"
             title="Saved in this browser"
           >
@@ -233,26 +241,8 @@ export function DesignEditor({
           </span>
         )}
       </PageHeading>
-      <div className="setup-actions">
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={busy}
-          onClick={() => {
-            setSetupNotice("");
-            saveEnvironment.mutate();
-          }}
-        >
-          {savedSetup.id
-            ? "Update custom environment"
-            : "Save custom environment"}
-        </Button>
-        <span className="muted">
-          Keep these rules, roles and conditions for another experiment.
-        </span>
-      </div>
       {setupNotice && (
-        <p role="status" className="muted">
+        <p role="status" className="text-muted-foreground">
           {setupNotice}
         </p>
       )}
@@ -260,7 +250,7 @@ export function DesignEditor({
         <Alert variant="error">{saveEnvironment.error.message}</Alert>
       )}
       {explanation && (
-        <Disclosure className="disclosure design-explanation">
+        <Disclosure className="min-w-0 mb-6">
           <DisclosureTrigger>Protocol notes</DisclosureTrigger>
           <DisclosureContent>
             <p>{explanation}</p>
@@ -277,7 +267,7 @@ export function DesignEditor({
                   ))}
                 </ul>
                 {planning.sources.length > 5 && (
-                  <Disclosure className="disclosure">
+                  <Disclosure className="min-w-0">
                     <DisclosureTrigger>
                       {planning.sources.length - 5} more sources
                     </DisclosureTrigger>
@@ -303,8 +293,8 @@ export function DesignEditor({
           </DisclosureContent>
         </Disclosure>
       )}
-      <div className="editor-layout">
-        <fieldset className="editor-main" disabled={busy}>
+      <div className="grid min-w-0 items-start gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
+        <FieldSet className="min-w-0" disabled={busy}>
           <Tabs
             value={mode === "json" ? "json" : step}
             onValueChange={(value) => {
@@ -315,17 +305,17 @@ export function DesignEditor({
               }
             }}
           >
-            <TabsList variant="line">
+            <TabsList className="mb-4 max-w-full justify-start overflow-x-auto">
               <TabsTrigger disabled={busy} value="question">
                 Question
               </TabsTrigger>
               <TabsTrigger disabled={busy} value="agents">
                 Agents{" "}
-                <span className="tab-count">{design.profiles.length}</span>
+                <Badge variant="secondary">{design.profiles.length}</Badge>
               </TabsTrigger>
               <TabsTrigger disabled={busy} value="conditions">
                 Conditions{" "}
-                <span className="tab-count">{design.conditions.length}</span>
+                <Badge variant="secondary">{design.conditions.length}</Badge>
               </TabsTrigger>
               <TabsTrigger disabled={busy} value="execution">
                 Execution
@@ -344,7 +334,7 @@ export function DesignEditor({
                   <Textarea
                     id="specification"
                     disabled={busy}
-                    className="specification-editor"
+                    className="min-h-96 font-mono"
                     spellCheck={false}
                     value={json}
                     onChange={(e) => setJson(e.target.value)}
@@ -357,8 +347,11 @@ export function DesignEditor({
               </FieldGroup>
             </TabsContent>
             <TabsContent value={step}>
-              <section className="form-section" hidden={step !== "question"}>
-                <h2>Research question</h2>
+              <section
+                className="mb-6 flex flex-col gap-6"
+                hidden={step !== "question"}
+              >
+                <h2 className="text-base font-semibold">Research question</h2>
                 <FieldGroup>
                   <Field>
                     <FieldLabel htmlFor="title">Experiment name</FieldLabel>
@@ -381,7 +374,7 @@ export function DesignEditor({
                       onChange={(e) => update("question", e.target.value)}
                     />
                   </Field>
-                  <Disclosure className="disclosure">
+                  <Disclosure className="min-w-0">
                     <DisclosureTrigger>
                       Hypothesis & analysis plan
                     </DisclosureTrigger>
@@ -421,13 +414,15 @@ export function DesignEditor({
                       {environment.description}
                     </FieldDescription>
                   </Field>
-                  <Disclosure className="disclosure">
+                  <Disclosure className="min-w-0">
                     <DisclosureTrigger>Scenario context</DisclosureTrigger>
                     <DisclosureContent>
                       <Field>
                         <FieldLabel htmlFor="context">
                           Scenario context{" "}
-                          <span className="optional">optional</span>
+                          <span className="text-muted-foreground">
+                            optional
+                          </span>
                         </FieldLabel>
                         <Textarea
                           id="context"
@@ -473,7 +468,7 @@ export function DesignEditor({
             </Alert>
           )}
           {mode === "visual" && step !== "execution" && (
-            <div className="editor-next">
+            <div className="mt-6 flex justify-end">
               <Button
                 variant="outline"
                 onClick={() =>
@@ -491,80 +486,112 @@ export function DesignEditor({
               </Button>
             </div>
           )}
-        </fieldset>
-        <aside className="design-summary">
-          <h2>Execution plan</h2>
-          <dl>
-            <div>
-              <dt>Environment</dt>
-              <dd>{environment.name}</dd>
+        </FieldSet>
+        <Card className="min-w-0 xl:sticky xl:top-6">
+          <CardHeader>
+            <CardTitle>Execution plan</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <dl className="grid gap-3 text-sm [&>div]:flex [&>div]:justify-between [&>div]:gap-4 [&_dt]:text-muted-foreground [&_dd]:text-right [&_dd]:tabular-nums">
+              <div>
+                <dt>Environment</dt>
+                <dd>{environment.name}</dd>
+              </div>
+              <div>
+                <dt>Agents per run</dt>
+                <dd>{design.profiles.length}</dd>
+              </div>
+              <div>
+                <dt>Conditions</dt>
+                <dd>{design.conditions.length}</dd>
+              </div>
+              <div>
+                <dt>Independent runs</dt>
+                <dd>{runCount}</dd>
+              </div>
+              <div>
+                <dt>Maximum decisions</dt>
+                <dd>
+                  {(
+                    runCount *
+                    design.rounds *
+                    design.profiles.length
+                  ).toLocaleString()}
+                </dd>
+              </div>
+              <div>
+                <dt>Spending ceiling</dt>
+                <dd>{money(design.budget_usd)}</dd>
+              </div>
+            </dl>
+            <Button
+              variant="outline"
+              disabled={busy}
+              onClick={() => check.mutate(snapshot)}
+            >
+              {check.isPending ? "Checking mechanics…" : "Check experiment"}
+            </Button>
+            {check.error && (
+              <Alert variant="error">{check.error.message}</Alert>
+            )}
+            {check.data && !currentCheck && (
+              <p className="text-muted-foreground" role="status">
+                Protocol changed. Check again for current findings.
+              </p>
+            )}
+            {currentCheck && <ExperimentCheck report={currentCheck} />}
+          </CardContent>
+          <CardContent className="flex flex-col gap-3">
+            {" "}
+            <div className="flex flex-col items-start gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={busy}
+                onClick={() => {
+                  setSetupNotice("");
+                  saveEnvironment.mutate();
+                }}
+              >
+                {savedSetup.id
+                  ? "Update custom environment"
+                  : "Save custom environment"}
+              </Button>
+              <span className="text-muted-foreground">
+                Keep these rules, roles and conditions for another experiment.
+              </span>
             </div>
-            <div>
-              <dt>Agents per run</dt>
-              <dd>{design.profiles.length}</dd>
-            </div>
-            <div>
-              <dt>Conditions</dt>
-              <dd>{design.conditions.length}</dd>
-            </div>
-            <div>
-              <dt>Independent runs</dt>
-              <dd>{runCount}</dd>
-            </div>
-            <div>
-              <dt>Maximum decisions</dt>
-              <dd>
-                {(
-                  runCount *
-                  design.rounds *
-                  design.profiles.length
-                ).toLocaleString()}
-              </dd>
-            </div>
-            <div>
-              <dt>Spending ceiling</dt>
-              <dd>{money(design.budget_usd)}</dd>
-            </div>
-          </dl>
-          <Button
-            variant="outline"
-            disabled={busy}
-            onClick={() => check.mutate(snapshot)}
-          >
-            {check.isPending ? "Checking mechanics…" : "Check experiment"}
-          </Button>
-          {check.error && <Alert variant="error">{check.error.message}</Alert>}
-          {check.data && !currentCheck && (
-            <p className="muted" role="status">
-              Protocol changed. Check again for current findings.
-            </p>
-          )}
-          {currentCheck && <ExperimentCheck report={currentCheck} />}
-          <div className="form-submit editor-save">
+            <Disclosure className="min-w-0">
+              <DisclosureTrigger>What stays fixed</DisclosureTrigger>
+              <DisclosureContent>
+                <p>
+                  Saving creates runs with this protocol. Tuning creates a new
+                  revision; earlier runs and evidence keep their original rules.
+                  Environment mechanics are defined by the installed adapter.
+                </p>
+              </DisclosureContent>
+            </Disclosure>
+          </CardContent>
+          <CardFooter className="flex-col items-stretch gap-3">
             <Button
               onClick={submit}
               disabled={busy || currentCheck?.status === "blocked"}
             >
               {save.isPending ? (
-                <LoaderCircle className="spin" data-icon="inline-start" />
+                <LoaderCircle
+                  className="animate-spin motion-reduce:animate-none"
+                  data-icon="inline-start"
+                />
               ) : (
                 <Check data-icon="inline-start" />
               )}
               {studyId ? "Save new revision" : "Create experiment"}
             </Button>
-            <span>Review now. Run when ready.</span>
-          </div>
-          <Disclosure className="disclosure">
-            <DisclosureTrigger>What stays fixed</DisclosureTrigger>
-            <DisclosureContent>
-              <p>
-                Saving creates runs with this protocol. Tuning creates a new
-                revision; earlier runs and evidence keep their original rules.
-                Environment mechanics are defined by the installed adapter.
-              </p>
-            </DisclosureContent>
-          </Disclosure>
-        </aside>
+            <span className="text-center text-xs text-muted-foreground">
+              Review now. Run when ready.
+            </span>
+          </CardFooter>
+        </Card>
       </div>
       <AlertDialog
         open={pendingEnvironment !== null}

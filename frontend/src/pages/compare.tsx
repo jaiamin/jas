@@ -2,13 +2,21 @@ import { useQueries } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { MetricChart } from "@/components/charts";
+import { Alert, Empty } from "@/components/feedback";
+import { OptionSelect as Select } from "@/components/option-select";
 import { ErrorState, Loading, PageHeading, Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { Alert, Empty, Table } from "@/components/ui/data";
-import { Select } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { api } from "@/lib/api";
+import { label, metric, money, runModelLabel } from "@/lib/format";
 import type { RunDetail } from "@/lib/types";
-import { label, metric, money, runModelLabel } from "@/lib/utils";
 
 export default function Compare() {
   const [params] = useSearchParams();
@@ -71,78 +79,83 @@ export default function Compare() {
           different meanings; inspect each protocol.
         </Alert>
       )}
-      <div className="comparison-layout">
+      <div className="flex min-w-0 flex-col gap-8">
         <section>
-          <div className="section-heading">
-            <h2>Recorded outcomes</h2>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
+            <h2 className="text-base font-semibold">Recorded outcomes</h2>
           </div>
-          <div className="table-frame">
-            <Table className="table">
-              <thead>
-                <tr>
-                  <th>Measurement</th>
+          <div className="min-w-0 overflow-hidden rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Measurement</TableHead>
                   {runs.map((r) => (
-                    <th key={r.summary.id}>
-                      <span className="table-secondary">
+                    <TableHead key={r.summary.id}>
+                      <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
                         {r.summary.study_title}
                       </span>
                       <Link to={`/runs/${r.summary.id}`}>
                         {r.summary.condition}
                       </Link>
-                      <span className="table-secondary">
+                      <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
                         Rev {r.summary.revision} · seed {r.summary.seed} · rep{" "}
                         {r.summary.repetition} · {r.summary.id.slice(0, 6)}
                       </span>
-                    </th>
+                    </TableHead>
                   ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Status</td>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell>Status</TableCell>
                   {runs.map((r) => (
-                    <td key={r.summary.id}>
+                    <TableCell key={r.summary.id}>
                       <Status value={r.summary.status} />
-                    </td>
+                    </TableCell>
                   ))}
-                </tr>
-                <tr>
-                  <td>Model</td>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Model</TableCell>
                   {runs.map((r) => (
-                    <td key={r.summary.id}>{runModelLabel(r.summary)}</td>
+                    <TableCell key={r.summary.id}>
+                      {runModelLabel(r.summary)}
+                    </TableCell>
                   ))}
-                </tr>
-                <tr>
-                  <td>Turns</td>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Turns</TableCell>
                   {runs.map((r) => (
-                    <td key={r.summary.id}>{r.summary.turn}</td>
+                    <TableCell key={r.summary.id}>{r.summary.turn}</TableCell>
                   ))}
-                </tr>
+                </TableRow>
                 {keys.map((key) => (
-                  <tr key={key}>
-                    <td>{label(key)}</td>
+                  <TableRow key={key}>
+                    <TableCell>{label(key)}</TableCell>
                     {runs.map((r) => (
-                      <td className="numeric" key={r.summary.id}>
+                      <TableCell
+                        className="text-right tabular-nums"
+                        key={r.summary.id}
+                      >
                         {metric(key, r.metrics[key])}
-                      </td>
+                      </TableCell>
                     ))}
-                  </tr>
+                  </TableRow>
                 ))}
-                <tr>
-                  <td>Cost</td>
+                <TableRow>
+                  <TableCell>Cost</TableCell>
                   {runs.map((r) => (
-                    <td key={r.summary.id}>
+                    <TableCell key={r.summary.id}>
                       {money(r.summary.usage.cost_usd)}
-                    </td>
+                    </TableCell>
                   ))}
-                </tr>
-              </tbody>
+                </TableRow>
+              </TableBody>
             </Table>
           </div>
         </section>
         <section>
-          <div className="section-heading">
-            <h2>History by round</h2>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
+            <h2 className="text-base font-semibold">History by round</h2>
             <Select
               label="Comparison measurement"
               value={metricKey}
@@ -160,7 +173,7 @@ export default function Compare() {
           />
         </section>
       </div>
-      <p className="comparison-note muted">
+      <p className="mt-6 text-sm text-muted-foreground">
         Different protocols may not support a causal comparison.
       </p>
     </>

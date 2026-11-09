@@ -1,89 +1,177 @@
-# Design system
+---
+name: JAS
+description: Stock shadcn components for a local agent experiment workspace.
+colors:
+  light-background: "oklch(1 0 0)"
+  light-foreground: "oklch(0.145 0 0)"
+  light-card: "oklch(1 0 0)"
+  light-primary: "oklch(0.205 0 0)"
+  light-primary-foreground: "oklch(0.985 0 0)"
+  light-muted: "oklch(0.97 0 0)"
+  light-muted-foreground: "oklch(0.556 0 0)"
+  light-border: "oklch(0.922 0 0)"
+  light-destructive: "oklch(0.577 0.245 27.325)"
+  dark-background: "oklch(0.145 0 0)"
+  dark-foreground: "oklch(0.985 0 0)"
+  dark-card: "oklch(0.205 0 0)"
+  dark-primary: "oklch(0.922 0 0)"
+  dark-primary-foreground: "oklch(0.205 0 0)"
+  dark-muted: "oklch(0.269 0 0)"
+  dark-muted-foreground: "oklch(0.708 0 0)"
+  dark-border: "oklch(1 0 0 / 10%)"
+  dark-destructive: "oklch(0.704 0.191 22.216)"
+  chart-1: "oklch(0.87 0 0)"
+  chart-2: "oklch(0.556 0 0)"
+  chart-3: "oklch(0.439 0 0)"
+  chart-4: "oklch(0.371 0 0)"
+  chart-5: "oklch(0.269 0 0)"
+typography:
+  headline:
+    fontFamily: '"Geist Variable", sans-serif'
+    fontSize: "1.5rem"
+    fontWeight: 600
+    lineHeight: 1.333333
+  title:
+    fontFamily: '"Geist Variable", sans-serif'
+    fontSize: "1rem"
+    fontWeight: 500
+    lineHeight: 1.375
+  body:
+    fontFamily: '"Geist Variable", sans-serif'
+    fontSize: "0.875rem"
+    lineHeight: 1.428571
+  label:
+    fontFamily: '"Geist Variable", sans-serif'
+    fontSize: "0.75rem"
+    lineHeight: 1.333333
+rounded:
+  sm: "6px"
+  md: "8px"
+  lg: "10px"
+  xl: "14px"
+spacing:
+  "2": "8px"
+  "3": "12px"
+  "4": "16px"
+  "6": "24px"
+  "8": "32px"
+---
 
-`frontend/src/index.css` owns the theme tokens. Shared controls live in
-`frontend/src/components/ui`; scoped layouts live in `frontend/src/styles`.
+# Design System: JAS
 
-## Visual language
+## Overview
 
-Use white and neutral work surfaces, graphite text and graphite primary actions and restrained blue for links, charts and focus. Borders and tonal steps separate records; reserve shadows
-for overlays, the composer and the fixed mobile save action. Avoid nested card frames.
-Status color always accompanies text/icons. Charts retain labels and distinct line
-patterns, mirrored in legends; hue never implies moral rank.
+JAS uses default stock shadcn components and preset styling. The current preset is
+`b2fA`: Nova, Radix, neutral, Geist and Lucide. Preserve the supplied
+[`logo.svg`](../frontend/public/logo.svg) as a brand asset; it does not define a
+separate palette, typeface or component style.
 
-Inter Variable supplies interface text; code and identifiers use monospace, measurements
-tabular figures. Prose is at most 75ch. The sidebar wordmark alone uses locally hosted
-Bricolage Grotesque at 22px/800 with -0.04em tracking. Its subset font and SIL license live
-in `frontend/public/fonts`. [Bricolage source](https://github.com/ateliertriay/bricolage).
+[`components.json`](../frontend/components.json) owns preset configuration;
+[`index.css`](../frontend/src/index.css) owns theme colors, chart colors, fonts and
+radius mappings. [`components/ui`](../frontend/src/components/ui) owns generated
+component styles. The frontmatter above is a snapshot of reused values, not a
+second token authority. Refresh it after changing presets. The ignored
+`.impeccable/design.json` records supplemental metadata without copying components.
 
-`frontend/public/logo.svg` is the master asset. Preserve its supplied geometry and
-red/blue details. The favicon uses the same paths with an 8-unit inset. Pair the 24px
-sidebar mark with lowercase `jas` and an 8px gap; collapsed navigation shows only the
-mark, revealing the expand control on hover/focus without losing keyboard focus.
+**Key characteristics:** stock controls, semantic theme tokens, compact data views,
+responsive navigation and explicit workflow states.
 
-## Layout and controls
+## Colors
 
-The shell has a 208px sidebar, 52px collapsed rail and 52px breadcrumb bar.
-Pages use 32px gutters, 48px bottom padding and a 1600px maximum width. Records share a
-heading/action row, one filter toolbar and a contained table region. Page tabs use the
-line variant; related local choices use the segmented variant.
+The neutral preset supplies white light surfaces and near-black dark surfaces.
+Primary actions use the primary/foreground pair; secondary surfaces, muted text,
+borders, focus and destructive states use their corresponding semantic tokens.
+Keep foreground/background pairs together when composing components.
 
-Use installed shadcn controls, visible Field/FieldGroup labels and Lucide line icons.
-Buttons are 36px standard, 32px small/icon and 40px large. Input groups own their rounded
-focus ring; avoid a second rectangular textarea outline. Follow the token corner scale.
+Charts use the five chart tokens. Keep legend text in the foreground color so it
+remains readable independently of each series color. Labels and distinct line
+patterns identify series; status text and icons supplement color in tables.
 
-Below 768px navigation becomes a titled modal Sheet. Editor/evidence columns stack at
-900px viewport width or 720px available workspace width; evidence focus/return follows
-the rendered layout. At 600px, gutters reduce to 16px, fields use 16px text and the save
-action stays reachable in a fixed bottom bar. Tables scroll within their container.
-Coarse-pointer targets are at least 44px. Check 390px, 834px, 1280px and 1440px in both themes.
+## Typography
 
-## Workflow contracts
+Geist Variable supplies interface text and headings. The shared type ramp uses
+small metadata, regular interface text, medium card titles and semibold page
+headings. Page headings can grow to 30px on wider screens. Code and identifiers
+use the default monospace utility; measurements use tabular figures. Font changes
+belong to the preset and its stylesheet, including the JAS wordmark text.
 
-| Surface | Contract |
-| --- | --- |
-| Navigation | Experiments, Environments, Runs; divider; Agent; Settings/theme in footer. Creation stays in page actions. |
-| Records | Stable identity, status, measurements and contained scroll; run selection survives filters and supports 2–4 comparisons. |
-| Editor | Question → Agents → Conditions → Execution, with JSON available and a persistent summary/save. Draft identity follows its source; server validation gates revisions. |
-| Experiment | Question and revision stay visible; Overview, Runs and Protocol preserve historical identity. Saving never executes. |
-| Run | Decisions first, then Environment, Interactions and Record. Shared turn rail, complete journal and adjacent/stacked evidence inspector. |
-| Agent | Full-page conversation, conversation toolbar and context selector; one Send action; reviewed proposals open in the editor. |
+## Layout
 
-Agent keeps an 800px conversation/composer measure. Conversation history is a compact
-horizontal toolbar above the transcript; selected evidence and its scope stay visible.
-The composer stays below the independently scrolling transcript. Before the first message,
-a left-aligned question and quiet suggested prompts explain the available work. Suggestions
-fill a draft without spending or inventing results. Use 24px internal gutters and 12px
-composer gutters on mobile.
+The stock Sidebar supplies workspace navigation: Experiments, Runs, Environments
+and Agent. Its footer opens the local workspace menu with Settings and appearance.
+Do not invent accounts or organizations. Navigation becomes a Sheet on mobile.
 
-The environment workbench pairs a vertical mechanics index with a precise contract: observation,
-enforcement, controls and measurement definitions. Below 700px the index scrolls horizontally.
-Custom environments reuse validated protocols in the workspace library, check rule versions
-before opening, and remain independent of immutable saved experiments. Edit/delete acts on
-the reusable record; saved experiments retain their rules and evidence. Resource composition
-exposes enforced mechanics explicitly and does not install generated code.
+The breadcrumb header is 56px high. Ordinary pages use a centered 1280px maximum
+width and 16px, 24px or 32px responsive gutters. Tables scroll within their own
+containers. The Agent page fills the remaining viewport, with an independently
+scrolling transcript and a composer below it; both use a 768px maximum width.
+Its independent conversation Sidebar appears at 1100px and above, with a Sheet
+below that breakpoint. Decisions and evidence stack below 1440px.
 
-Experiment/run headers link Ask Agent to the selected record. The editor's Generate with
-Agent carries the question and preserves the draft; reviewed proposals link Back to Agent.
-Context belongs to each submitted message. Retry keeps that message's original context,
-and changing context never relabels prior evidence. General answers exclude unselected run
-records. All assistant entry points use `/agent`.
+## Elevation & Depth
 
-Streaming prose is pending content until schema, citation and protocol checks complete.
-Activity reflects server stages; never fabricate progress or expose private model reasoning.
-Disconnecting restores persisted work through polling/reload without resubmitting it.
+Use the preset's surface colors, borders, rings, shadows and motion unchanged.
+Cards and overlays keep their generated treatments; app layout utilities arrange
+these components without introducing custom effects or elevation tokens.
 
-Keep the journal intact when inspecting an earlier turn. Evidence must match the selected
-turn while loading. Notes remain attached to their turn through live polling/navigation;
-a save must not clear newer edits. Distinguish observation, enforced consequence and model
-self-report. Never invent accounts, permissions or empirical outcomes.
+## Shapes
 
-## Accessibility and states
+The current preset starts from a 10px radius and derives the radius scale shown
+above. Buttons, inputs, cards and badges retain their stock shapes and size APIs.
+A future preset may change them; do not preserve current dimensions through
+visual overrides.
 
-Body/metadata/placeholders meet 4.5:1 contrast; large text meets 3:1. Focus is visible,
-disabled controls retain their shape, and text/icons supplement color. Preserve keyboard
-navigation, Sheet focus trap/Escape/return and reduced-motion activity.
+## Components
 
-Every query needs loading, empty, error and local retry states. Preserve successful sibling
-queries and unsaved drafts after failure. Browser-storage and provider availability failures
-remain explicit and recoverable. Protocol validation locks the submitted snapshot until
-its response. Confirm consequential changes with the installed dialog pattern.
+Compose installed components and documented variants. Buttons and inputs use the
+preset's compact defaults and focus/disabled/invalid states. Field supplies labels
+and validation context; Badge supplies statuses; Table supplies record lists.
+Skeleton, Spinner, Empty and Alert supply loading, empty and error states.
+
+Editors group fields in Accordions with an execution summary. Settings uses three
+Cards. Agent uses MessageScroller, Message, Bubble and Trace. Trace content shows
+public server stages, scope and sources, never private model reasoning. Completed
+protocol proposals appear in a Card for review before saving or running. Preserve
+draft identity, pending output, evidence scope and recoverable errors when
+changing presentation. Saving a protocol never executes it.
+
+### Applying a preset
+
+From the repository root:
+
+```sh
+cd frontend
+pnpm dlx shadcn@latest apply --preset <code>
+```
+
+1. Review generated components, dependencies, `components.json` and `index.css`.
+   Use the preset's fonts, colors, icons and component styles throughout the app.
+2. Align the stock reexports in `src/components/icons.ts` with the resulting
+   `components.json` `iconLibrary`, updating dependencies as needed. The CLI updates
+   generated UI imports; it does **not** migrate these semantic app reexports
+   automatically. The official `shadcn migrate icons` handles concrete icon imports,
+   not this reexport mapping. Keep stock icons without custom drawing or a runtime
+   icon resolver.
+3. Preserve nonvisual fixes if regeneration overwrites them: Progress bounds and
+   custom maximum, Slider thumb labels, Tabs orientation, Breadcrumb current-item
+   semantics, Chart style children and stable keys, valid Field/Item/InputGroup
+   roles, and narrow lint annotations. Keep chart legend text readable and retain
+   distinct line patterns.
+4. Keep app behavior outside regeneratable helpers: domain formatters live in
+   `src/lib/format.ts`; `src/lib/utils.ts` only exports `cn`. Workspace persistence
+   lives in `workspace-provider.tsx`; app breakpoints use `hooks/use-compact.ts`,
+   separate from the generated `hooks/use-mobile.ts`.
+5. Run frontend lint, unit tests, build and keyless browser tests with a distinct
+   `JAS_TEST_PORT`; see [Development](DEVELOPMENT.md). Check both themes, keyboard
+   focus, narrow layouts, conversation history and draft/proposal flows. Refresh
+   this snapshot from the resulting code.
+
+## Do's and Don'ts
+
+- **Do** use stock shadcn components, supported variants and semantic theme tokens.
+- **Do** use layout utilities to compose screens and preserve usable mobile states.
+- **Do** verify readable text, visible focus and non-color status/series cues in both themes.
+- **Do** keep loading, error, empty and retry states explicit without discarding drafts.
+- **Don't** add custom stylesheets, palettes, fonts, visual variants or copied component implementations.
+- **Don't** treat snapshot values as constraints on the next preset.
+- **Don't** display fabricated activity, private reasoning or unsupported empirical outcomes.

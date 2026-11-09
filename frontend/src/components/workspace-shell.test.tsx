@@ -2,6 +2,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, expect, test, vi } from "vitest";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { runDetail } from "@/test/fixtures";
 import { deferredResponse, renderWithQueries } from "@/test/queries";
 import WorkspaceShell from "./workspace-shell";
@@ -25,9 +26,11 @@ beforeEach(() => {
 function renderShell(path: string) {
   return renderWithQueries(
     <MemoryRouter initialEntries={[path]}>
-      <SidebarProvider>
-        <WorkspaceShell />
-      </SidebarProvider>
+      <TooltipProvider>
+        <SidebarProvider>
+          <WorkspaceShell />
+        </SidebarProvider>
+      </TooltipProvider>
     </MemoryRouter>,
   );
 }

@@ -5,7 +5,7 @@ test("Agent is one full page with an inner history rail and contextual composer"
   request,
 }) => {
   await page.goto("/studies");
-  const sidebar = page.locator('[data-slot="sidebar"]');
+  const sidebar = page.locator('[data-slot="sidebar"]').first();
   await expect(
     sidebar.getByRole("link", { name: "New experiment", exact: true }),
   ).toHaveCount(0);
@@ -35,7 +35,7 @@ test("Agent is one full page with an inner history rail and contextual composer"
   await expect(draft).toBeFocused();
   await draft.focus();
   await expect(draft).toHaveCSS("outline-style", "none");
-  await expect(page.locator('fieldset[data-slot="input-group"]')).toHaveCSS(
+  await expect(page.locator('[data-slot="input-group"]')).toHaveCSS(
     "box-shadow",
     /0px 0px 0px 3px/,
   );
@@ -264,6 +264,11 @@ for (const theme of ["light", "dark"]) {
     const context = page.getByRole("combobox", { name: "Message context" });
     await expect(context).toContainText(study.design.title);
     await context.click();
+    await expect
+      .poll(
+        async () => (await page.getByRole("listbox").boundingBox())?.width ?? 0,
+      )
+      .toBeGreaterThanOrEqual(theme === "dark" ? 340 : 400);
     const menu = await page.getByRole("listbox").boundingBox();
     expect(menu?.x).toBeGreaterThanOrEqual(0);
     expect(menu?.width).toBeGreaterThanOrEqual(theme === "dark" ? 340 : 400);
@@ -334,18 +339,17 @@ for (const theme of ["light", "dark"]) {
       ),
     ).toBe(true);
     if (theme === "dark") {
-      const picker = page.getByRole("combobox", {
-        name: "Past chats",
-        exact: true,
-      });
-      await expect(picker).toBeVisible();
-      await picker.click();
       await page
-        .getByRole("option", {
+        .getByRole("button", { name: "Conversations", exact: true })
+        .click();
+      await page
+        .getByRole("dialog", { name: "Agent conversations" })
+        .getByRole("link", {
           name: "What changed after the first round?",
           exact: true,
         })
         .click();
+      await expect(page.getByRole("dialog")).toHaveCount(0);
     }
   });
 }
@@ -490,13 +494,12 @@ test("large chat histories keep the conversation and composer within the viewpor
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
-  const history = page.getByRole("navigation", {
-    name: "Past chats",
-    exact: true,
-  });
+  const history = page
+    .getByRole("complementary", { name: "Chat history" })
+    .locator('[data-slot="sidebar-content"]');
   expect(
     await history.evaluate(
-      (element) => element.scrollWidth > element.clientWidth,
+      (element) => element.scrollHeight > element.clientHeight,
     ),
   ).toBe(true);
 });

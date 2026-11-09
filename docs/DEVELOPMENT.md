@@ -72,7 +72,9 @@ non-local URL; keep localhost entries for health checks. Restart after configura
 - `backend/src/agent_sim/`: API, protocols, execution and storage; `simulation/` owns rules.
 - `frontend/src/`: routed React app; `components/editor`, `components/agent` and
   `components/run` own their workflows; `components/ui` contains shared controls.
-- `frontend/src/index.css`: theme tokens; `styles/`: scoped layouts.
+- `frontend/src/index.css`: preset theme, font and chart tokens. App layouts compose
+  stock `components/ui`; app icons share `components/icons.ts`. See
+  [applying a preset](DESIGN.md#applying-a-preset), including icon-library changes.
 - `backend/tests`, `frontend/src/**/*.test.*`, `frontend/e2e`: regression tests.
 - `benchmarks/`: evaluation cases, rubric and runner, omitted from production images.
 

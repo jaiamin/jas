@@ -1,4 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
+import { MetricChart } from "@/components/charts";
+import { Alert, Empty } from "@/components/feedback";
 import {
   ChevronLeft,
   ChevronRight,
@@ -7,26 +11,24 @@ import {
   Play,
   Radio,
   SkipForward,
-} from "lucide-react";
-import { useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-import { MetricChart } from "@/components/charts";
+} from "@/components/icons";
+import { OptionSelect as Select } from "@/components/option-select";
 import { DecisionBrowser } from "@/components/run/decision-browser";
 import { RunRecord } from "@/components/run/run-record";
 import { ErrorState, Loading, PageHeading, Status } from "@/components/shared";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Alert, Badge, Empty } from "@/components/ui/data";
-import { Select } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  RelationshipGraph,
+  InteractionTable,
   RelationshipTable,
   WorldView,
 } from "@/components/world-view";
 import { api, invalidateResources, useApi } from "@/lib/api";
+import { label, money, runModelLabel } from "@/lib/format";
 import type { Evidence, RunDetail, State } from "@/lib/types";
-import { label, money, runModelLabel } from "@/lib/utils";
 
 export default function Run() {
   const { id } = useParams();
@@ -159,7 +161,10 @@ export default function Run() {
           </>
         )}
       </PageHeading>
-      <div className="run-facts">
+      <section
+        aria-label="Run progress"
+        className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground"
+      >
         <Status value={summary.status} />
         <span>
           Round{" "}
@@ -184,13 +189,13 @@ export default function Run() {
           </strong>
         </span>
         {active && run.next_actor && (
-          <span className="deciding-agent">
-            <span className="live-dot" />
+          <Badge variant="secondary">
+            <Spinner />
             {run.design.profiles.find((p) => p.key === run.next_actor)?.name} is
             deciding
-          </span>
+          </Badge>
         )}
-      </div>
+      </section>
       {run.execution_blocked && (
         <Alert title="Recorded rules">{run.execution_blocked}</Alert>
       )}
@@ -207,12 +212,12 @@ export default function Run() {
           </Button>
         </Alert>
       )}
-      <div className="turn-rail">
-        <div className="turn-label">
-          <span className={pinned ? "recorded-dot" : "live-dot"} />
+      <div className="mb-6 grid grid-cols-[1fr_auto] items-center gap-3 lg:grid-cols-[auto_minmax(0,1fr)_auto]">
+        <div className="flex items-center gap-2 text-sm whitespace-nowrap">
+          <Badge variant="outline">{pinned ? "Recorded" : "Latest"}</Badge>
           {pinned ? `Viewing turn ${turn}` : `Latest · turn ${turn}`}
         </div>
-        <div className="turn-scrubber">
+        <div className="col-span-full row-start-2 flex min-w-0 items-center gap-2 lg:col-auto lg:row-auto">
           <Button
             variant="ghost"
             size="icon"
@@ -247,7 +252,7 @@ export default function Run() {
             {active ? `Live · ${maxTurn}` : "Latest"}
           </Button>
         ) : (
-          <span className="turn-rail-note">
+          <span className="text-xs text-muted-foreground">
             {active ? "Following execution" : "Recorded evidence"}
           </span>
         )}
@@ -261,7 +266,7 @@ export default function Run() {
           )
         }
       >
-        <TabsList variant="line">
+        <TabsList className="mb-4 max-w-full justify-start overflow-x-auto">
           <TabsTrigger value="live">Environment</TabsTrigger>
           <TabsTrigger value="decisions">Decisions</TabsTrigger>
           <TabsTrigger value="relationships">Interactions</TabsTrigger>
@@ -273,16 +278,16 @@ export default function Run() {
           ) : pinned && !evidence.data ? (
             <Loading />
           ) : (
-            <div className="run-live-layout">
+            <div className="grid min-w-0 gap-8 xl:grid-cols-2">
               <WorldView
                 run={run}
                 state={state}
                 events={events}
                 onAgent={selectAgent}
               />
-              <section className="outcome-history">
-                <div className="section-heading">
-                  <h2>Outcome history</h2>
+              <section className="min-w-0">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
+                  <h2 className="text-base font-semibold">Outcome history</h2>
                   {metricKeys.length > 0 && (
                     <Select
                       label="History measurement"
@@ -307,16 +312,16 @@ export default function Run() {
                   ]}
                   metricKey={chosenMetric}
                 />
-                <p className="table-note">
+                <p className="p-4 text-xs leading-relaxed text-muted-foreground">
                   Recorded outcomes through turn {turn}. Each point summarizes
                   one round.
                 </p>
               </section>
             </div>
           )}
-          <section className="section-space">
-            <div className="section-heading">
-              <h2>Recent events</h2>
+          <section className="mt-8">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
+              <h2 className="text-base font-semibold">Recent events</h2>
             </div>
             {!events.length ? (
               <Empty
@@ -324,22 +329,24 @@ export default function Run() {
                 description="Start the run or step through one agent decision."
               />
             ) : (
-              <div className="event-feed">
+              <div className="flex flex-col divide-y">
                 {events
                   .slice(-12)
                   .toReversed()
                   .map((event) => (
-                    <div className="event-row" key={event.id}>
+                    <div
+                      className="flex flex-wrap items-center gap-3 py-3 text-sm"
+                      key={event.id}
+                    >
                       <Button
                         variant="link"
                         size="sm"
                         type="button"
-                        className="turn-link"
                         onClick={() => selectTurn(event.turn, true)}
                       >
                         Turn {event.turn}
                       </Button>
-                      <span className="event-agent">
+                      <span className="font-medium">
                         {run.design.profiles.find((p) => p.key === event.actor)
                           ?.name ?? "Environment"}
                       </span>
@@ -365,21 +372,21 @@ export default function Run() {
           />
         </TabsContent>
         <TabsContent value="relationships">
-          <div className="section-heading">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
             <div>
-              <h2>Interaction patterns</h2>
+              <h2 className="text-base font-semibold">Interaction patterns</h2>
               <p>Directed exchanges and direct messages through turn {turn}.</p>
             </div>
           </div>
-          <div className="interactions-layout">
-            <RelationshipGraph
+          <div className="grid min-w-0 items-start gap-8 xl:grid-cols-2">
+            <InteractionTable
               profiles={run.design.profiles}
               events={events}
               onAgent={selectAgent}
             />
-            <div>
-              <h2>Verifiable behavior</h2>
-              <p className="muted">
+            <div className="min-w-0">
+              <h2 className="text-base font-semibold">Verifiable behavior</h2>
+              <p className="text-muted-foreground">
                 Ground truth comes from the rules and the information each actor
                 received.
               </p>

@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { metric, money, runModelLabel } from "./utils";
+import { metric, money, runModelLabel } from "./format";
 
 test("cost estimates retain small charges while unavailable metrics stay absent", () => {
   expect(money(0.0012)).toBe("$0.0012");

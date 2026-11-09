@@ -22,7 +22,7 @@ export function ProfileOverridesEditor({
   onChange: (overrides: Profile[]) => void;
 }) {
   return (
-    <Disclosure className="disclosure">
+    <Disclosure className="min-w-0">
       <DisclosureTrigger>
         Roles & goals for this condition
         {overrides.length > 0 && ` · ${overrides.length} modified`}

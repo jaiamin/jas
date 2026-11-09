@@ -1,15 +1,11 @@
 import {
-  FlaskConical,
-  Layers2,
-  MessageCircle,
-  MessageSquare,
-  Moon,
-  PanelLeft,
-  Play,
-  SlidersHorizontal,
-  Sun,
-} from "lucide-react";
-import { Component, Fragment, Suspense, useEffect, useState } from "react";
+  Component,
+  Fragment,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Link,
   NavLink,
@@ -17,6 +13,9 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
+import { Empty } from "@/components/feedback";
+import { FlaskConical, Layers2, MessageSquare, Play } from "@/components/icons";
+import { LocalWorkspaceMenu } from "@/components/local-workspace-menu";
 import { Loading } from "@/components/shared";
 import {
   Breadcrumb,
@@ -27,7 +26,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Badge, Empty } from "@/components/ui/data";
 import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
@@ -38,6 +36,7 @@ import {
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
@@ -45,6 +44,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useApi } from "@/lib/api";
 import type { RunSummary, StudySummary } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 class PageBoundary extends Component<
   { children: React.ReactNode },
@@ -69,7 +69,13 @@ class PageBoundary extends Component<
 }
 
 export default function WorkspaceShell() {
-  const { setOpenMobile, state, isMobile, toggleSidebar } = useSidebar();
+  const { openMobile, setOpenMobile, state, isMobile } = useSidebar();
+  const menuTrigger = useRef<HTMLButtonElement>(null);
+  const wasOpenMobile = useRef(openMobile);
+  useEffect(() => {
+    if (wasOpenMobile.current && !openMobile) menuTrigger.current?.focus();
+    wasOpenMobile.current = openMobile;
+  }, [openMobile]);
   const [params] = useSearchParams();
   const [dark, setDark] = useState(() =>
     document.documentElement.classList.contains("dark"),
@@ -84,8 +90,8 @@ export default function WorkspaceShell() {
   const studies = useApi<StudySummary[]>("/studies", true);
   const links = [
     { to: "/studies", label: "Experiments", icon: FlaskConical },
-    { to: "/environments", label: "Environments", icon: Layers2 },
     { to: "/runs", label: "Runs", icon: Play },
+    { to: "/environments", label: "Environments", icon: Layers2 },
   ];
   function changeTheme() {
     const next = !dark;
@@ -152,172 +158,135 @@ export default function WorkspaceShell() {
   }, [pageTitle]);
   return (
     <>
-      <a href="#main" className="skip-link">
-        Skip to content
-      </a>
+      <Button
+        asChild
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50"
+      >
+        <a href="#main">Skip to content</a>
+      </Button>
       <Sidebar collapsible="icon">
         <SidebarHeader>
-          <Link
-            to="/studies"
-            className="brand brand-home"
-            hidden={state === "collapsed" && !isMobile}
-            aria-label="JAS home"
-            onClick={() => setOpenMobile(false)}
-          >
-            <img
-              className="brand-mark"
-              src="/logo.svg"
-              width={24}
-              height={24}
-              alt=""
-            />
-            <span className="brand-wordmark">jas</span>
-          </Link>
-          <Button
-            data-sidebar="trigger"
-            variant="ghost"
-            size="icon"
-            className={
-              state === "collapsed" && !isMobile
-                ? "brand brand-toggle"
-                : "sidebar-toggle"
-            }
-            aria-label={
-              isMobile
-                ? "Close menu"
-                : state === "collapsed"
-                  ? "Expand sidebar"
-                  : "Collapse sidebar"
-            }
-            title={
-              isMobile
-                ? "Close menu"
-                : `${state === "collapsed" ? "Expand" : "Collapse"} sidebar (Ctrl/⌘ B)`
-            }
-            onClick={toggleSidebar}
-          >
-            {state === "collapsed" && !isMobile && (
-              <img
-                className="brand-mark"
-                src="/logo.svg"
-                width={24}
-                height={24}
-                alt=""
-              />
-            )}
-            <PanelLeft
-              className={
-                state === "collapsed" && !isMobile
-                  ? "brand-toggle-icon"
-                  : undefined
-              }
-              aria-hidden="true"
-            />
-          </Button>
+          {isMobile && (
+            <SidebarTrigger className="ml-auto" aria-label="Close menu" />
+          )}
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                size="lg"
+                asChild
+                tooltip={
+                  !isMobile && state === "collapsed" ? "JAS home" : undefined
+                }
+              >
+                <Link
+                  to="/studies"
+                  aria-label="JAS home"
+                  onClick={() => setOpenMobile(false)}
+                >
+                  <img src="/logo.svg" width={28} height={28} alt="" />
+                  <div className="grid flex-1 gap-0.5 text-left">
+                    <span className="text-sm font-semibold">JAS</span>
+                    <span className="text-xs text-muted-foreground">
+                      Agent experiments
+                    </span>
+                  </div>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
+            <SidebarGroupLabel>Workspace</SidebarGroupLabel>
             <nav aria-label="Main navigation">
               <SidebarMenu>
                 {links.map((item) => (
                   <SidebarMenuItem key={item.to}>
-                    <SidebarMenuButton asChild tooltip={item.label}>
+                    <SidebarMenuButton
+                      asChild
+                      tooltip={
+                        !isMobile && state === "collapsed"
+                          ? item.label
+                          : undefined
+                      }
+                      isActive={
+                        location.pathname.startsWith(item.to) ||
+                        (item.to === "/studies" &&
+                          location.pathname === "/new") ||
+                        (item.to === "/runs" &&
+                          location.pathname === "/compare")
+                      }
+                    >
                       <NavLink
                         to={item.to}
-                        title={state === "collapsed" ? item.label : undefined}
                         onClick={() => setOpenMobile(false)}
                       >
                         <item.icon aria-hidden="true" />
                         <span>{item.label}</span>
-                        {item.to === "/runs" && active.length > 0 && (
-                          <Badge className="nav-count">{active.length}</Badge>
-                        )}
                       </NavLink>
                     </SidebarMenuButton>
+                    {item.to === "/runs" && active.length > 0 && (
+                      <SidebarMenuBadge>{active.length}</SidebarMenuBadge>
+                    )}
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
             </nav>
           </SidebarGroup>
-          <Separator className="sidebar-separator" />
           <SidebarGroup>
+            <SidebarGroupLabel>Assistant</SidebarGroupLabel>
             <SidebarMenu>
-              {[{ to: "/agent", label: "Agent", icon: MessageCircle }].map(
-                (item) => (
-                  <SidebarMenuItem key={item.to}>
-                    <SidebarMenuButton asChild tooltip={item.label}>
-                      <NavLink
-                        to={item.to}
-                        onClick={() => setOpenMobile(false)}
-                      >
-                        <item.icon aria-hidden="true" />
-                        <span>{item.label}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ),
-              )}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  tooltip={
+                    !isMobile && state === "collapsed" ? "Agent" : undefined
+                  }
+                  isActive={isAgent}
+                >
+                  <NavLink to="/agent" onClick={() => setOpenMobile(false)}>
+                    <MessageSquare />
+                    <span>Agent</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
-          {!!studies.data?.length && (
-            <SidebarGroup className="recent-navigation">
-              <SidebarGroupLabel>Recent</SidebarGroupLabel>
-              <SidebarMenu>
-                {studies.data.slice(0, 5).map((study) => (
-                  <SidebarMenuItem key={study.id}>
-                    <SidebarMenuButton asChild isActive={studyId === study.id}>
-                      <Link
-                        to={`/studies/${study.id}`}
-                        title={study.title}
-                        onClick={() => setOpenMobile(false)}
-                      >
-                        <span className="recent-mark" />
-                        <span>{study.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroup>
-          )}
         </SidebarContent>
         <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Settings">
-                <NavLink to="/settings" onClick={() => setOpenMobile(false)}>
-                  <SlidersHorizontal aria-hidden="true" />
-                  <span>Settings</span>
-                </NavLink>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-            onClick={changeTheme}
-          >
-            {dark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
-          </Button>
+          <LocalWorkspaceMenu dark={dark} onThemeChange={changeTheme} />
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset className="shell-body">
-        <header className="shell-header">
-          <div className="header-path">
-            {isMobile && <SidebarTrigger />}
-            <Breadcrumb>
-              <BreadcrumbList>
+      <SidebarInset className="min-w-0">
+        <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b px-4 sm:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            <SidebarTrigger
+              ref={menuTrigger}
+              aria-label={
+                isMobile
+                  ? "Open menu"
+                  : state === "collapsed"
+                    ? "Expand sidebar"
+                    : "Collapse sidebar"
+              }
+            />
+            <Separator orientation="vertical" className="h-4" />
+            <Breadcrumb className="min-w-0">
+              <BreadcrumbList className="flex-nowrap">
                 {crumbs.map((crumb, i) => (
                   <Fragment key={crumb.to ?? "current"}>
                     {i > 0 && <BreadcrumbSeparator />}
-                    <BreadcrumbItem title={crumb.label}>
+                    <BreadcrumbItem className="min-w-0" title={crumb.label}>
                       {crumb.to ? (
                         <BreadcrumbLink asChild>
-                          <Link to={crumb.to}>{crumb.label}</Link>
+                          <Link className="truncate" to={crumb.to}>
+                            {crumb.label}
+                          </Link>
                         </BreadcrumbLink>
                       ) : (
-                        <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                        <BreadcrumbPage className="truncate">
+                          {crumb.label}
+                        </BreadcrumbPage>
                       )}
                     </BreadcrumbItem>
                   </Fragment>
@@ -336,9 +305,14 @@ export default function WorkspaceShell() {
             </Button>
           )}
         </header>
-        <main
+        <div
           id="main"
-          className={isAgent ? "page page-agent" : "page"}
+          className={cn(
+            "min-w-0 w-full",
+            isAgent
+              ? "h-[calc(100svh-3.5rem)] min-h-0"
+              : "mx-auto max-w-7xl p-4 pb-10 sm:p-6 lg:p-8",
+          )}
           tabIndex={-1}
         >
           <Suspense fallback={<Loading />}>
@@ -346,7 +320,7 @@ export default function WorkspaceShell() {
               <Outlet />
             </PageBoundary>
           </Suspense>
-        </main>
+        </div>
       </SidebarInset>
     </>
   );

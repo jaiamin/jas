@@ -1,8 +1,8 @@
 import { lazy } from "react";
 import { Link, Navigate, Route, Routes } from "react-router-dom";
+import { Empty } from "@/components/feedback";
 import { Button } from "@/components/ui/button";
-import { Empty } from "@/components/ui/data";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { WorkspaceProvider } from "@/components/workspace-provider";
 import WorkspaceShell from "@/components/workspace-shell";
 import Experiments from "@/pages/experiments";
 
@@ -20,9 +20,9 @@ export default function App() {
     <Routes>
       <Route
         element={
-          <SidebarProvider>
+          <WorkspaceProvider>
             <WorkspaceShell />
-          </SidebarProvider>
+          </WorkspaceProvider>
         }
       >
         <Route index element={<Navigate to="/studies" replace />} />

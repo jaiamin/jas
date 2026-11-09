@@ -1,6 +1,6 @@
-import { BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AgentActivity } from "@/components/agent/agent-activity";
+import { BookOpen, Check } from "@/components/icons";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,8 +21,8 @@ import type { Analysis } from "@/lib/types";
 
 export function PlanningProgress({ plan }: { plan?: Analysis }) {
   return (
-    <section className="planning-state">
-      <div className="research-thread">
+    <section className="mx-auto max-w-3xl">
+      <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
         <Message align="end">
           <MessageContent>
             <MessageHeader>You</MessageHeader>
@@ -35,10 +35,7 @@ export function PlanningProgress({ plan }: { plan?: Analysis }) {
         </Message>
         <Message>
           <MessageContent>
-            <MessageHeader>
-              <img src="/logo.svg" width={18} height={18} alt="" />
-              Agent
-            </MessageHeader>
+            <MessageHeader>Agent</MessageHeader>
             <PlanningActivity plan={plan} />
           </MessageContent>
         </Message>
@@ -56,7 +53,16 @@ export function PlanningActivity({ plan }: { plan?: Analysis }) {
   const sources = plan?.output?.planning?.sources ?? [];
   return (
     <Trace>
-      <AgentActivity stage={plan?.output?.stage ?? "scoping"} />
+      {plan?.status === "complete" ? (
+        <TraceLine>
+          <TraceIcon>
+            <Check />
+          </TraceIcon>
+          <TraceTitle>Protocol reviewed</TraceTitle>
+        </TraceLine>
+      ) : (
+        <AgentActivity stage={plan?.output?.stage ?? "scoping"} />
+      )}
       {plan?.output?.planning?.brief && (
         <TraceCollapsible>
           <TraceCollapsibleTrigger>

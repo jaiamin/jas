@@ -65,10 +65,10 @@ test("cloned conditions keep independent nested resource schedules through savin
   await page
     .getByRole("button", { name: "Add condition", exact: true })
     .click();
-  const clone = page.locator(".condition-disclosure").nth(1);
-  await clone.locator(".condition-summary").click();
+  const clone = page.locator("[data-slot=accordion-item]:visible").nth(1);
+  await clone.locator("[data-slot=accordion-trigger]:visible").click();
   await clone.getByText(/^Resource changes during the run/).click();
-  const schedule = clone.locator(".disclosure").filter({
+  const schedule = clone.locator("[data-slot=collapsible]").filter({
     has: page.getByRole("button", {
       name: "Add resource change",
       exact: true,

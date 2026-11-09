@@ -187,8 +187,13 @@ for (const theme of ["light", "dark"]) {
     expect(new Set(patterns).size).toBe(4);
     const legend = page.locator(".recharts-legend-item");
     await expect(legend).toHaveCount(4);
+    const foreground = await page
+      .locator("body")
+      .evaluate((element) => getComputedStyle(element).color);
     for (let i = 0; i < 4; i++) {
-      await expect(legend.nth(i)).toContainText(`Condition ${i + 1}`);
+      await expect(
+        legend.nth(i).getByText(`Condition ${i + 1}`, { exact: false }),
+      ).toHaveCSS("color", foreground);
       await expect(legend.nth(i).locator("[stroke-dasharray]")).toHaveAttribute(
         "stroke-dasharray",
         patterns[i] ?? "",

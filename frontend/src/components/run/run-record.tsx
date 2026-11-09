@@ -1,17 +1,18 @@
 import { useMutation } from "@tanstack/react-query";
-import { Check } from "lucide-react";
 import {
   Disclosure,
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { Alert } from "@/components/feedback";
+import { Check } from "@/components/icons";
 import { RequestInspector } from "@/components/run/request-inspector";
 import { Json } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { Alert } from "@/components/ui/data";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/lib/api";
+import { label, money } from "@/lib/format";
 import type { RunDetail } from "@/lib/types";
-import { label, money } from "@/lib/utils";
 
 export function RunRecord({ run }: { run: RunDetail }) {
   const summary = run.summary;
@@ -21,10 +22,12 @@ export function RunRecord({ run }: { run: RunDetail }) {
   });
   return (
     <>
-      <div className="settings-layout">
-        <section>
-          <h2>Execution record</h2>
-          <dl className="key-values">
+      <Card>
+        <CardHeader>
+          <CardTitle>Execution record</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-5">
+          <dl className="grid gap-3 text-sm [&>div]:grid [&>div]:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] [&>div]:gap-4 [&_dt]:text-muted-foreground [&_dd]:min-w-0 [&_dd]:break-words">
             <div>
               <dt>Run ID</dt>
               <dd>
@@ -78,18 +81,20 @@ export function RunRecord({ run }: { run: RunDetail }) {
           {verify.error && (
             <Alert variant="error">{verify.error.message}</Alert>
           )}
-        </section>
-        <section>
-          <h2>Resolved condition</h2>
-          <Json value={run.parameters} />
-          <Disclosure className="disclosure">
+          <Disclosure>
+            <DisclosureTrigger>Resolved condition</DisclosureTrigger>
+            <DisclosureContent>
+              <Json value={run.parameters} />
+            </DisclosureContent>
+          </Disclosure>
+          <Disclosure className="min-w-0">
             <DisclosureTrigger>Full experiment specification</DisclosureTrigger>
             <DisclosureContent>
               <Json value={run.design} />
             </DisclosureContent>
           </Disclosure>
-        </section>
-      </div>
+        </CardContent>
+      </Card>
       <RequestInspector requests={run.requests} />
     </>
   );

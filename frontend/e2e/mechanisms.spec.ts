@@ -24,10 +24,9 @@ for (const theme of ["light", "dark"]) {
       );
       await page.goto(`/new?template=${environment}`);
       await page.getByRole("tab", { name: /^Conditions/ }).click();
-      await expect(page.locator(".condition-summary").first()).toHaveAttribute(
-        "aria-expanded",
-        "true",
-      );
+      await expect(
+        page.locator("[data-slot=accordion-trigger]:visible").first(),
+      ).toHaveAttribute("aria-expanded", "true");
       await expect(page.getByLabel(control).first()).toBeVisible();
       if (environment === "renewable_resource") {
         await page

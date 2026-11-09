@@ -247,7 +247,7 @@ test("chat history failures have a local retry", async ({ page }) => {
   failing = false;
   await history.getByRole("button", { name: "Retry", exact: true }).click();
   await expect(
-    history.getByText("No chats yet.", { exact: true }),
+    history.getByText("No chats yet", { exact: true }),
   ).toBeVisible();
 });
 

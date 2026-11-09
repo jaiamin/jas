@@ -1,5 +1,5 @@
-import { CircleAlert } from "lucide-react";
 import type * as React from "react";
+import { CircleAlert } from "@/components/icons";
 import {
   AlertDescription,
   Alert as AlertRoot,
@@ -12,10 +12,6 @@ import {
   Empty as EmptyRoot,
   EmptyTitle,
 } from "@/components/ui/empty";
-
-export { Badge } from "@/components/ui/badge";
-export { Skeleton } from "@/components/ui/skeleton";
-export { Table } from "@/components/ui/table";
 
 export function Alert({
   children,
@@ -30,7 +26,7 @@ export function Alert({
     <AlertRoot
       role={variant === "error" ? "alert" : "status"}
       variant={variant === "error" ? "destructive" : "default"}
-      className="alert"
+      className="my-4"
     >
       {variant === "error" && <CircleAlert aria-hidden="true" />}
       {title && <AlertTitle>{title}</AlertTitle>}
@@ -49,7 +45,7 @@ export function Empty({
   children?: React.ReactNode;
 }) {
   return (
-    <EmptyRoot className="empty">
+    <EmptyRoot>
       <EmptyHeader>
         <EmptyTitle>{title}</EmptyTitle>
         {description && <EmptyDescription>{description}</EmptyDescription>}

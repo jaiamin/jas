@@ -17,14 +17,14 @@ test("JAS persists the workspace theme and navigation preference", async ({
   await expect(
     page.locator('[data-slot="sidebar"][data-state="collapsed"]'),
   ).toBeVisible();
-  const wordmark = page.locator(".brand-wordmark");
-  await expect(wordmark).toHaveText("jas");
-  await expect(wordmark).toBeHidden();
+  const wordmark = page.getByRole("link", { name: "JAS home" });
+  await expect(wordmark).toBeVisible();
   await page
     .getByRole("button", { name: "Expand sidebar", exact: true })
     .click();
   await expect(wordmark).toBeVisible();
-  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  await page.getByRole("button", { name: /Local workspace/ }).click();
+  await page.getByRole("menuitemradio", { name: "Light", exact: true }).click();
   await page.reload();
   await expect(page.locator("html")).not.toHaveClass("dark");
   await expect(
@@ -39,7 +39,8 @@ test("browser titles follow navigation, history and saved experiment identity", 
 }) => {
   await page.goto("/");
   await expect(page).toHaveTitle("Experiments | JAS");
-  await page.getByRole("link", { name: "Settings", exact: true }).click();
+  await page.getByRole("button", { name: /Local workspace/ }).click();
+  await page.getByRole("menuitem", { name: "Settings", exact: true }).click();
   await expect(page).toHaveTitle("Settings | JAS");
   await page.getByRole("link", { name: "Environments", exact: true }).click();
   await expect(page).toHaveTitle("Environments | JAS");

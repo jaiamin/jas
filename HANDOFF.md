@@ -95,7 +95,7 @@ planner 206/240, participants 96/96, analysis 96/96; 302 backend/66 frontend/65 
 These are not new-source scores. New regressions belong in correctness/development tests.
 Public provider traces must omit reasoning/signatures. Never bypass secret scanning.
 
-## Current task: custom environment composition
+## Previous task: custom environment composition
 
 Branch `feat/environment-composition`, based on PR #7 at aa2aee0; never merge either PR.
 PR #7 is unwatched; do not relink/watch/list it. Draft PR: https://github.com/jaiamin/ass/pull/8 (base feat/experiment-validity). Code checkpoint cf7c8a1; linked in T3, unmerged.
@@ -196,3 +196,72 @@ and watch PR #7 checks; no new PR is needed.
 
 Sandbox tooling: system `/usr/bin/uv` aborts on 16 KiB pages. The ignored project-local
 `.tools/pr7-uv/bin/uv` (same version 0.13.7) successfully ran `sync --frozen`.
+
+
+## Current task: stock shadcn application redesign
+
+Branch: `t3/shadcn-app-redesign`. Pulled `origin/main` with `--ff-only`; already current.
+User explicitly requests replacing all custom visual components/styles with stock shadcn,
+minimal SaaS navigation (no recent experiments), improved layouts, preset-controlled icons, and neutral
+black dark mode. This supersedes the earlier custom visual direction. Preserve behavior,
+records, draft recovery, immutable revisions, spending controls, and privacy. No paid calls.
+
+Acceptance criteria and coverage:
+- [x] Upstream stock Radix shadcn components and neutral theme, no CSS overrides of primitives.
+- [x] Standard collapsible Sidebar: Workspace (Experiments, Runs, Environments), Agent,
+  Settings/theme footer. Responsive Sheet, keyboard access, breadcrumbs, active links.
+- [x] Experiments: empty/populated/search/filter/pagination/draft recovery; Runs and selection.
+- [x] Editor: question, profiles, conditions/mechanics/composition, execution, JSON,
+  proposal review, save summary, validation, drafts, saved environment actions.
+- [x] Experiment: overview/results/effects, revisions, runs, protocol, controls/export.
+- [x] Run: decisions/evidence/notes, environment/state, interactions, record/replay/export.
+- [x] Compare: compatible/incompatible data, chart, metrics, conditions, responsive tables.
+- [x] Environments: catalog/controls/measurement descriptions, custom library CRUD/confirmation.
+- [x] Agent: empty suggestions/context, history, composer, messages, activity/streaming,
+  errors/reconnect, citations, proposals. Use stock MessageScroller/Message/Bubble/Trace.
+- [x] Settings: provider configuration, pricing, usage/storage and spending information.
+- [x] Global loading/error/not-found, light/dark, mobile/desktop and keyboard states.
+- [x] Frontend lint, unit tests, build, complete keyless browser suite and visual review.
+- [x] Update design/product/development documentation.
+- [ ] Commit, scan, push task branch and create one draft PR; never merge.
+
+Decisions: keep Radix and Lucide, adopt current stock shadcn Nova/neutral; use Tailwind only
+for page layout and prose. Domain components compose stock controls. Do not fabricate a
+user account menu in a single-user local product. Keep existing logo as a brand asset.
+
+Implementation: all routed views compose current stock Nova/Radix/neutral/Geist/Lucide
+components. Removed seven custom stylesheets and unused font assets. Main navigation has
+no recent records; Local workspace footer exposes Settings/appearance. Agent history has
+its own responsive Sidebar/Sheet; MessageScroller/Message/Bubble/Trace handle chat and
+public stages, and completed proposals use Card. Simplified tables, editor, settings,
+world/evidence and chart layouts. No compatibility paths or backend changes.
+
+Preset: CLI `preset resolve --json` returns `b2fA`, no fallbacks. Full `apply --preset`
+confirmed against current official CLI/docs. Generated UI stays separate from app
+compositions, formatters (`lib/format.ts`) and workspace state. `lib/utils.ts` only
+exports cn. `components/icons.ts` is one stock app icon boundary: align its reexports
+with a new preset's iconLibrary; CLI does not automatically migrate these reexports.
+See docs/DESIGN.md for exact workflow and small nonvisual upstream accessibility fixes.
+
+Verification: frontend lint, 70/70 unit tests and production build passed. Fresh complete
+keyless Playwright suite on 8198 passed 76/76, including 17-view desktop/mobile light/dark
+matrix and public planning stages/proposal flow. Independent visual review found chart
+legend contrast; fixed with theme foreground labels while retaining dash patterns.
+Both targeted comparison browser checks passed, with explicit label-color regression;
+reviewer scored that sole finding resolved, disposition ship. Final lint/unit/build passed
+again after that fix. Detector returned []; source audit found no hand-built controls or
+icon drawings outside generated UI, no route-level raw color overrides, and no unused
+production modules or app icon exports. No paid providers tested or called.
+
+Captures and logs: ignored `.tools/shadcn-redesign/final-captures`, `final-review`,
+`e2e-final.txt`, `legend-final.txt`. Earlier diagnostic runs used a reused temporary DB;
+only the fresh successful suite above is the final full result. Test servers 8197/8198
+stopped. No owned browser tabs remain.
+
+User-requested app stays running on 0.0.0.0:8080: exec session 13109, PID 143037,
+`.venv/bin/jas --host 0.0.0.0 --port 8080`, default local `data/jas.sqlite3`.
+Port was free; this checkout had no existing database or .env. Health, current index,
+entry assets and main routes returned HTTP 200. Do not stop this requested preview.
+
+Next: secret scan, coherent commit, task branch push and one draft PR; link immediately
+in T3 after creating/pushing the PR. Never merge or main-push.
