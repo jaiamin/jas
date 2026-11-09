@@ -31,10 +31,45 @@ export function RecordSelectionCheckbox({
   return (
     <Checkbox
       className={cn(
-        "absolute top-1/2 left-2 -translate-y-1/2 after:-inset-x-1.5 data-[state=unchecked]:border-muted-foreground/60 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/record:opacity-100 [@media(hover:hover)]:focus-visible:opacity-100 [@media(hover:hover)]:data-[state=checked]:opacity-100",
+        "absolute top-1/2 left-2 -translate-y-1/2 after:-inset-x-1.5 data-[state=unchecked]:border-muted-foreground/60",
+        "[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/record:opacity-100 [@media(hover:hover)]:focus-visible:opacity-100 [@media(hover:hover)]:data-[state=checked]:opacity-100 [@media(hover:hover)]:data-[state=indeterminate]:opacity-100",
+        "[@media(hover:hover)]:disabled:opacity-0 [@media(hover:hover)]:group-hover/record:disabled:opacity-50",
         className,
       )}
       {...props}
+    />
+  );
+}
+
+/** Select the current page without disturbing selections outside its filter/page. */
+export function RecordSelectAllCheckbox({
+  ids,
+  selected,
+  onSelectionChange,
+  label,
+  disabled,
+}: {
+  ids: string[];
+  selected: string[];
+  onSelectionChange: (ids: string[]) => void;
+  label: string;
+  disabled: boolean;
+}) {
+  const count = ids.filter((id) => selected.includes(id)).length;
+  return (
+    <RecordSelectionCheckbox
+      aria-label={label}
+      disabled={disabled || ids.length === 0}
+      checked={
+        count === 0 ? false : count === ids.length ? true : "indeterminate"
+      }
+      onCheckedChange={(checked) =>
+        onSelectionChange(
+          checked === true
+            ? [...new Set([...selected, ...ids])]
+            : selected.filter((id) => !ids.includes(id)),
+        )
+      }
     />
   );
 }

@@ -10,6 +10,7 @@ import {
 } from "@/components/record-filters";
 import { RecordPagination } from "@/components/record-pagination";
 import {
+  RecordSelectAllCheckbox,
   RecordSelectionCheckbox,
   RecordTable,
 } from "@/components/record-table";
@@ -57,6 +58,7 @@ export function StudyTable({
     ) ?? [];
   const pageCount = Math.max(1, Math.ceil(filtered.length / 10));
   const current = Math.min(page, pageCount - 1);
+  const visible = filtered.slice(current * 10, (current + 1) * 10);
   return (
     <RecordListView filters={filters} favorites={favorites} noun="experiments">
       <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
@@ -108,8 +110,17 @@ export function StudyTable({
       )}
       <RecordTable selection>
         <TableHeader className="text-xs">
-          <TableRow>
-            <TableHead className="w-1/3">Name</TableHead>
+          <TableRow className="group/record">
+            <TableHead aria-label="Name" className="relative w-1/3">
+              <RecordSelectAllCheckbox
+                ids={visible.map((study) => study.id)}
+                selected={selected}
+                onSelectionChange={setSelected}
+                label="Select all experiments on this page"
+                disabled={loading}
+              />
+              Name
+            </TableHead>
             <TableHead className="w-24">Favorite</TableHead>
             <TableHead className="w-40">Environment</TableHead>
             <TableHead className="w-32">Status</TableHead>
@@ -128,7 +139,7 @@ export function StudyTable({
           {loading ? (
             <RecordTableSkeletonRows columns={8} />
           ) : (
-            filtered.slice(current * 10, (current + 1) * 10).map((study) => (
+            visible.map((study) => (
               <TableRow
                 key={study.id}
                 className="group/record"

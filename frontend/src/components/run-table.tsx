@@ -10,6 +10,7 @@ import {
 } from "@/components/record-filters";
 import { RecordPagination } from "@/components/record-pagination";
 import {
+  RecordSelectAllCheckbox,
   RecordSelectionCheckbox,
   RecordTable,
 } from "@/components/record-table";
@@ -59,7 +60,9 @@ export function RunTable({
       experiments.set(run.study_id, run.study_title);
   }
   const pages = Math.max(1, Math.ceil(filtered.length / 15));
+  const canCompare = selected.length >= 2 && selected.length <= 4;
   const current = Math.min(page, pages - 1);
+  const visible = filtered.slice(current * 15, (current + 1) * 15);
   return (
     <RecordListView filters={filters} favorites={favorites} noun="runs">
       <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
@@ -91,21 +94,32 @@ export function RunTable({
         {selectable && (
           <div className="ml-auto flex flex-wrap items-center gap-2">
             {selected.length > 0 && (
-              <Button variant="ghost" size="sm" onClick={() => setSelected([])}>
-                <X data-icon="inline-start" />
-                Clear selection
-              </Button>
+              <>
+                <span role="status" className="text-sm text-muted-foreground">
+                  {selected.length} selected
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelected([])}
+                >
+                  <X data-icon="inline-start" />
+                  Clear selection
+                </Button>
+              </>
             )}
             <Button
               variant="outline"
               size="sm"
-              asChild={selected.length >= 2}
-              disabled={selected.length < 2}
+              asChild={canCompare}
+              disabled={!canCompare}
             >
-              {selected.length >= 2 ? (
+              {canCompare ? (
                 <Link to={`/compare?runs=${selected.join(",")}`}>
                   Compare {selected.length} runs
                 </Link>
+              ) : selected.length > 4 ? (
+                "Compare up to 4 runs"
               ) : (
                 "Compare runs"
               )}
@@ -121,8 +135,19 @@ export function RunTable({
       )}
       <RecordTable selection={selectable}>
         <TableHeader className="text-xs">
-          <TableRow>
-            <TableHead>Name</TableHead>
+          <TableRow className="group/record">
+            <TableHead aria-label="Name" className="relative">
+              {selectable && (
+                <RecordSelectAllCheckbox
+                  ids={visible.map((run) => run.id)}
+                  selected={selected}
+                  onSelectionChange={setSelected}
+                  label="Select all runs on this page"
+                  disabled={loading}
+                />
+              )}
+              Name
+            </TableHead>
             <TableHead className="w-24">Favorite</TableHead>
             <TableHead>Experiment</TableHead>
             <TableHead>Status</TableHead>
@@ -144,7 +169,7 @@ export function RunTable({
           {loading ? (
             <RecordTableSkeletonRows columns={11} />
           ) : (
-            filtered.slice(current * 15, (current + 1) * 15).map((run) => (
+            visible.map((run) => (
               <TableRow
                 key={run.id}
                 className="group/record"
@@ -155,9 +180,6 @@ export function RunTable({
                     <RecordSelectionCheckbox
                       aria-label={`Select ${run.condition}, seed ${run.seed}, revision ${run.revision}, repetition ${run.repetition}, ${run.id.slice(0, 6)}`}
                       checked={selected.includes(run.id)}
-                      disabled={
-                        !selected.includes(run.id) && selected.length >= 4
-                      }
                       onCheckedChange={(checked) =>
                         setSelected((previous) =>
                           checked === true

@@ -50,13 +50,12 @@ export function RecordListHeading({
     >
       <div className="flex min-w-0 items-center gap-3">
         <Avatar
-          size="lg"
-          className="rounded-lg after:rounded-lg"
+          className="size-9 rounded-lg after:rounded-lg after:border-0"
           aria-hidden="true"
         >
           <AvatarFallback
             data-active="true"
-            className="rounded-lg [&>svg]:size-5 [&>svg:not([data-partial-fill])]:fill-current"
+            className="rounded-lg [&>svg]:size-4.5 [&>svg:not([data-partial-fill])]:fill-current"
           >
             <Icon />
           </AvatarFallback>

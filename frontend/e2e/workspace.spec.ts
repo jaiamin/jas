@@ -42,7 +42,7 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   ).toBeVisible();
   await page.goto(studyURL);
   await page.getByRole("tab", { name: "Runs", exact: true }).click();
-  const boxes = page.getByRole("checkbox");
+  const boxes = page.getByRole("table").locator("tbody").getByRole("checkbox");
   await boxes.nth(0).check();
   await boxes.nth(1).check();
   await page.getByRole("link", { name: "Compare 2 runs" }).click();

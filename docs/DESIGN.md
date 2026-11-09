@@ -434,7 +434,8 @@ EmptyDescription text rather than a title. Full record lists remain on their
 dedicated destinations.
 
 Experiments and Runs share one list heading: a muted rounded-square icon beside
-the title (filled Play or flask liquid, matching navigation), with search and a primary New action at the right (stacked below on
+the title (filled Play or flask liquid, matching navigation), using a borderless 36px
+background and an 18px glyph, with search and a primary New action at the right (stacked below on
 mobile). Keep the header inset, but let both tables reach the full content width
 without side gutters or an enclosing border. Inset the outer header/data cells and
 filter controls to match the page heading, including skeleton rows. Reserve a 32px
@@ -478,8 +479,13 @@ selections across filtering. Keep comparison and experiment-selection checkboxes
 gutter, without a separate selection column or layout shift. Unchecked boxes reveal on row
 hover or keyboard focus; selected boxes and touch-device boxes stay visible. Use a readable
 muted-foreground outline without changing the primary selected state. Bound the hit area to
-the gutter so it cannot intercept name links. Experiments shows its selection count and clear
-action only while needed. A final Actions column uses bordered stock ellipsis buttons and
+the gutter so it cannot intercept name links. A matching checkbox beside Name selects
+the current filtered page, preserving selections on other pages and outside the filter.
+The header checkbox follows the same hover/focus/touch behavior and stays visible for
+full or partial page selections; disable it while loading or when no rows match.
+Both lists show a selection count and clear action only while needed. Selection is
+independent of comparison: Compare accepts two through four runs and is disabled
+with an explicit limit above four selections. A final Actions column uses bordered stock ellipsis buttons and
 DropdownMenu. Experiments offers Open, Edit as new revision, Duplicate, Export evidence,
 and confirmed Delete. Copy drafts use a separate source identity and save a new experiment;
 editing preserves immutable revisions. Runs offers Inspect, Open exact parent revision, and

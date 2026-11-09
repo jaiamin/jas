@@ -2,6 +2,127 @@ import { expect, test } from "@playwright/test";
 import type { Catalog } from "../src/lib/types.js";
 import { createStudy } from "./helpers.js";
 
+for (const [path, noun, size] of [
+  ["/studies", "experiments", 10],
+  ["/runs", "runs", 15],
+] as const) {
+  for (const theme of ["light", "dark"]) {
+    test(`select all ${noun} stays aligned and respects pages and filters · ${theme}`, async ({
+      page,
+      request,
+    }, testInfo) => {
+      await page.setViewportSize({
+        width: theme === "dark" ? 390 : 1600,
+        height: 900,
+      });
+      await page.addInitScript(
+        (value) => localStorage.setItem("jas-theme", value),
+        theme,
+      );
+      const { study } = await createStudy(request);
+      const summary = (await (await request.get("/api/studies")).json()).find(
+        (item: { id: string }) => item.id === study.id,
+      );
+      const records = Array.from({ length: size + 1 }, (_, index) =>
+        path === "/studies"
+          ? { ...summary, id: `study-${index}`, title: `Record ${index + 1}` }
+          : {
+              ...study.runs[0],
+              id: `run-${index}`,
+              condition: `Record ${index + 1}`,
+            },
+      );
+      let release = () => {};
+      const ready = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      await page.route(`**/api${path}`, async (route) => {
+        await ready;
+        await route.fulfill({ json: records });
+      });
+      await page.goto(path);
+      const all = page.getByRole("checkbox", {
+        name: `Select all ${noun} on this page`,
+      });
+      await expect(all).toHaveCSS("opacity", "0");
+      await expect(all).toBeDisabled();
+      release();
+      await expect(all).toBeEnabled();
+      await page
+        .getByRole("columnheader", { name: "Name", exact: true })
+        .hover();
+      await expect(all).toHaveCSS("opacity", "1");
+      await page.mouse.move(0, 0);
+      await expect(all).toHaveCSS("opacity", "0");
+      await all.focus();
+      await expect(all).toHaveCSS("opacity", "1");
+      const table = page.getByRole("table");
+      const rows = table.locator("tbody").getByRole("checkbox");
+      const headerBox = await all.boundingBox();
+      const rowBox = await rows.first().boundingBox();
+      expect(headerBox?.x).toBe(rowBox?.x);
+      const headingBox = await page
+        .getByRole("columnheader", { name: "Name", exact: true })
+        .boundingBox();
+      expect(
+        headerBox &&
+          headingBox &&
+          Math.abs(
+            headerBox.y +
+              headerBox.height / 2 -
+              headingBox.y -
+              headingBox.height / 2,
+          ),
+      ).toBeLessThanOrEqual(1);
+      await expect(all).toHaveCSS("opacity", "1");
+      await all.click();
+      await expect(all).toBeChecked();
+      await expect(
+        table.locator('tbody [role="checkbox"][aria-checked="true"]'),
+      ).toHaveCount(size);
+      if (path === "/runs") {
+        await expect(
+          page.getByRole("button", { name: "Compare up to 4 runs" }),
+        ).toBeDisabled();
+      }
+      await rows.first().click();
+      await page.mouse.move(0, 0);
+      await expect(all).toHaveAttribute("aria-checked", "mixed");
+      await expect(all).toHaveCSS("opacity", "1");
+      await page.screenshot({
+        path: testInfo.outputPath(`select-all-${noun}-${theme}.png`),
+      });
+      await all.click();
+      const singular = path === "/studies" ? "experiment" : "run";
+      await page.getByRole("button", { name: `Next ${singular} page` }).click();
+      await expect(all).not.toBeChecked();
+      await all.click();
+      await expect(
+        page.getByRole("status").filter({ hasText: `${size + 1} selected` }),
+      ).toBeVisible();
+      const search = page.getByRole("textbox", { name: `Search ${noun}` });
+      await search.fill("Record 1");
+      await expect(all).toBeChecked();
+      const filteredCount = await rows.count();
+      await all.click();
+      await expect(
+        table.locator('tbody [role="checkbox"][aria-checked="true"]'),
+      ).toHaveCount(0);
+      await expect(
+        page
+          .getByRole("status")
+          .filter({ hasText: `${size + 1 - filteredCount} selected` }),
+      ).toBeVisible();
+      await search.fill("does not exist");
+      await expect(all).toBeDisabled();
+      await search.fill("");
+      await expect(all).toHaveAttribute("aria-checked", "mixed");
+      await page.getByRole("button", { name: "Clear selection" }).click();
+      await expect(all).not.toBeChecked();
+    });
+  }
+}
+
 for (const theme of ["light", "dark"]) {
   for (const width of [390, 1600]) {
     test(`record lists share a full-width header and searchable tables · ${theme} · ${width}`, async ({
@@ -53,6 +174,13 @@ for (const theme of ["light", "dark"]) {
         await expect(heading).toBeVisible();
         const icon = header.locator('[data-slot="avatar"]');
         await expect(icon).toBeVisible();
+        await expect(icon).toHaveCSS("width", "36px");
+        expect(
+          await icon.evaluate(
+            (element) => getComputedStyle(element, "::after").borderTopWidth,
+          ),
+        ).toBe("0px");
+        await expect(icon.locator("svg")).toHaveCSS("width", "18px");
         expect(
           await icon.evaluate((element) => {
             const style = getComputedStyle(element);
@@ -751,6 +879,10 @@ for (const path of ["/studies", "/runs"] as const) {
         await page.goto(path);
         const row = page.getByRole("table").locator("tbody tr").first();
         const checkbox = row.getByRole("checkbox");
+        const selectAll = page.getByRole("checkbox", {
+          name: `Select all ${path === "/studies" ? "experiments" : "runs"} on this page`,
+        });
+        await expect(selectAll).toHaveCSS("opacity", touch ? "1" : "0");
         const link = row.getByRole("link").first();
         await expect(checkbox).toHaveCSS("opacity", touch ? "1" : "0");
         const box = await checkbox.boundingBox();

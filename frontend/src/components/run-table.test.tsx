@@ -47,7 +47,7 @@ function RunTableFixture() {
   );
 }
 
-test("run comparison preserves selections through filtering and caps selection at four", () => {
+test("run selection survives filtering while comparison accepts only two to four runs", () => {
   render(<RunTableFixture />);
   expect(screen.getByRole("button", { name: "Compare runs" })).toBeDisabled();
   fireEvent.click(screen.getByLabelText(/^Select Condition 0, seed 0,/));
@@ -67,5 +67,44 @@ test("run comparison preserves selections through filtering and caps selection a
   });
   fireEvent.click(screen.getByLabelText(/^Select Condition 1, seed 1,/));
   fireEvent.click(screen.getByLabelText(/^Select Condition 2, seed 2,/));
-  expect(screen.getByLabelText(/^Select Condition 3, seed 3,/)).toBeDisabled();
+  fireEvent.click(screen.getByLabelText(/^Select Condition 3, seed 3,/));
+  expect(
+    screen.getByRole("button", { name: "Compare up to 4 runs" }),
+  ).toBeDisabled();
+  expect(
+    screen.getByRole("checkbox", { name: "Select all runs on this page" }),
+  ).toBeChecked();
+  fireEvent.click(screen.getByLabelText(/^Select Condition 3, seed 3,/));
+  expect(
+    screen.getByRole("checkbox", { name: "Select all runs on this page" }),
+  ).toHaveAttribute("aria-checked", "mixed");
+  expect(screen.getByRole("link", { name: "Compare 4 runs" })).toHaveAttribute(
+    "href",
+    "/compare?runs=run-0,run-4,run-1,run-2",
+  );
+});
+
+test("select all respects the current filter and preserves selections outside it", () => {
+  render(<RunTableFixture />);
+  fireEvent.click(screen.getByLabelText(/^Select Condition 0, seed 0,/));
+  fireEvent.change(screen.getByRole("textbox", { name: "Search runs" }), {
+    target: { value: "Other" },
+  });
+  const all = screen.getByRole("checkbox", {
+    name: "Select all runs on this page",
+  });
+  fireEvent.click(all);
+  expect(screen.getByRole("link", { name: "Compare 2 runs" })).toHaveAttribute(
+    "href",
+    "/compare?runs=run-0,run-4",
+  );
+  fireEvent.click(all);
+  expect(
+    screen.getByLabelText(/^Select Condition 4, seed 4,/),
+  ).not.toBeChecked();
+  fireEvent.change(screen.getByRole("textbox", { name: "Search runs" }), {
+    target: { value: "" },
+  });
+  expect(screen.getByLabelText(/^Select Condition 0, seed 0,/)).toBeChecked();
+  expect(all).toHaveAttribute("aria-checked", "mixed");
 });
