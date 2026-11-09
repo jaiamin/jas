@@ -223,7 +223,7 @@ Acceptance criteria and coverage:
 - [x] Global loading/error/not-found, light/dark, mobile/desktop and keyboard states.
 - [x] Frontend lint, unit tests, build, complete keyless browser suite and visual review.
 - [x] Update design/product/development documentation.
-- [ ] Commit, scan, push task branch and create one draft PR; never merge.
+- [x] Commit, secret scan, push task branch and create draft PR #9; unmerged.
 
 Decisions: keep Radix and Lucide, adopt current stock shadcn Nova/neutral; use Tailwind only
 for page layout and prose. Domain components compose stock controls. Do not fabricate a
@@ -263,5 +263,7 @@ User-requested app stays running on 0.0.0.0:8080: exec session 13109, PID 143037
 Port was free; this checkout had no existing database or .env. Health, current index,
 entry assets and main routes returned HTTP 200. Do not stop this requested preview.
 
-Next: secret scan, coherent commit, task branch push and one draft PR; link immediately
-in T3 after creating/pushing the PR. Never merge or main-push.
+Publication: implementation commit `2b9f67c`, task branch pushed, draft PR
+https://github.com/jaiamin/ass/pull/9 created and linked in T3. Staged diff and commit
+hook secret scans found no leaks. PR remains draft/unmerged; no merge or main push.
+No further implementation work remains. Keep the requested port 8080 app running.
