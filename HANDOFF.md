@@ -797,3 +797,13 @@ Composer spacing refinement (2026-11-09):
 Verification: frontend lint/build and all nine Home browser checks passed.
 Reviewed desktop-dark and phone-light captures for balanced padding, text
 wrapping and send-button placement. Requested 8080 service remains healthy.
+
+Composer spacing correction (2026-11-09):
+- Restore the original 8px top/bottom outer insets, retaining only the wider
+  16px side padding on both shared composers. Three-row textarea returns to
+  88px; growth cap, scrolling and focus appearance remain unchanged.
+- Recommend strengthening the existing gray border for light-mode separation,
+  rather than adding a second gray wrapper. No border/wrapper change made.
+Verification: frontend lint/build and six responsive Home/composer browser checks
+passed. Reviewed phone-light capture for restored vertical spacing and wider
+sides. Port 8080 had stopped; restarted the existing local app.
