@@ -150,7 +150,7 @@ Agent viewport height uses the same token. Ordinary pages use a centered 1280px 
 width and 16px, 24px or 32px responsive gutters. Tables scroll within their own
 containers. The Agent page fills the remaining viewport, with an independently
 scrolling transcript and a composer below it; both use a 768px maximum width.
-The shared Home/Agent textarea starts at three rows with 16px text and 24px
+The shared Home/Agent textarea starts at three rows with 15px text and 24px
 line height (88px including padding), grows to 192px, then scrolls internally
 while keeping its action row visible.
 The Agent header pairs its name with the stock outlined Bot. No duplicate creation/browse
@@ -176,7 +176,8 @@ The Home composer has a 672px maximum width and 88px minimum text-entry height.
 Heading top spacing is 80px on mobile and 96px on desktop. A 3:2 grid split
 places three fifths of the composer within the backdrop and two fifths below its
 bottom edge; the opaque surface keeps the grid out of the text field. A stock
-`shadow-lg` gives the composer soft depth along its sides and bottom.
+`shadow-xl` gives the composer a broader blended shadow along its sides and
+bottom, separating it from the animated grid.
 Every unscoped entry point uses the same server intent routing: Agent answers a
 question or creates a validated experiment proposal from the prompt, without a
 manual creation mode. Home has no selector. Agent has an optional experiment/run
@@ -208,22 +209,29 @@ on hover and while expanded. New remains available when collapsed; the heading d
 Show Drafts immediately above Recent experiments only when drafts exist or need
 recovery, with up to three most recently edited drafts. Both record lists use
 stock Items separated by horizontal rules, without a rule after the final item.
-Draft and recent experiment rows remain transparent on hover; preserve keyboard
-focus rings and link cursors. Both lists use the experiment icon and symmetric
+Draft and recent experiment rows use a subtle muted/50 hover background across
+the full row, including its action, with square corners. Preserve keyboard focus
+rings and link cursors. Both lists use 14px experiment and action icons; the
+left icon has a 7px inset matching the right icon within its unchanged 28px
+button target. Center the left icon with the single-line title, overriding
+ItemMedia’s multiline-description top alignment. Both lists use symmetric
 12px row padding; no extra gap follows the heading divider before the first row.
 Keep only 6px between the header row and its divider. List titles use regular
 weight beneath the medium-weight section headings.
 Home sections use 32px gaps and a slightly smaller bottom inset.
 The shared DraftList uses compact clickable Item xs rows with titles and
 last-edited times on the title row, immediately before the delete action with
-a shared 12px gap. Draft edit ages and recent experiment creation ages read
+a shared 10px gap in both record lists. Draft edit ages and recent experiment creation ages read
 Just now, minutes/hours ago or days ago; older entries show a short date (with
 year when needed). Update ages every minute while mounted and retain the exact
 timestamp in the native time tooltip, labeled Edited or Created respectively.
 Recent experiment rows show the icon, title and creation age, without status or
 run counts. A separate stock three-dot DropdownMenu shows the exact Created
 timestamp as non-actionable metadata. Keep the row link and menu trigger separate;
-use the same muted-foreground token for timestamps, trash and three-dot buttons.
+use the same foreground/60 color for timestamps, trash and three-dot buttons,
+slightly darker than the default muted gray in both themes.
+Action buttons stay transparent on hover and while their menu is open; only
+the full row receives the gray hover fill.
 The API exposes no experiment edit time.
 Delete stays visible for mouse, keyboard
 and touch users. Use Untitled experiment when

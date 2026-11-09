@@ -470,7 +470,7 @@ for (const width of [390, 1440])
         expect(hitArea.button).toBeLessThan(hitArea.heading);
       }
       await continueDraft.hover();
-      await expect(continueDraft).toHaveCSS(
+      await expect(continueDraft.locator("..")).not.toHaveCSS(
         "background-color",
         "rgba(0, 0, 0, 0)",
       );
@@ -478,10 +478,14 @@ for (const width of [390, 1440])
         .getByRole("link", { name: /^Experiment \d/ })
         .first();
       await firstExperiment.hover();
-      await expect(firstExperiment).toHaveCSS(
+      await expect(firstExperiment.locator("..")).not.toHaveCSS(
         "background-color",
         "rgba(0, 0, 0, 0)",
       );
+      await page.screenshot({
+        path: testInfo.outputPath(`home-record-hover-${theme}-${width}.png`),
+        fullPage: true,
+      });
       const suggestionSection = page.getByRole("region", {
         name: "Experiment suggestions",
       });
@@ -590,7 +594,7 @@ for (const width of [390, 1440]) {
       await input.fill("A short question");
       const initialHeight = (await input.boundingBox())?.height ?? 0;
       expect(initialHeight).toBe(88);
-      await expect(input).toHaveCSS("font-size", "16px");
+      await expect(input).toHaveCSS("font-size", "15px");
       await input.fill(
         Array.from({ length: 6 }, (_, i) => `Question line ${i + 1}`).join(
           "\n",

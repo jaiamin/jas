@@ -136,7 +136,7 @@ export default function Home() {
         </h1>
         <div className="relative col-start-1 row-start-2 row-end-4 min-w-0 px-4 sm:px-6">
           <AgentComposer
-            className="mx-auto w-full max-w-2xl [&_[data-slot=input-group]]:shadow-lg"
+            className="mx-auto w-full max-w-2xl [&_[data-slot=input-group]]:shadow-xl"
             state={state}
             placeholder="Ask a question or describe an experiment…"
           />
@@ -333,14 +333,17 @@ export default function Home() {
                 <ItemGroup className="has-data-[size=sm]:gap-0">
                   {recent.map((study, index) => (
                     <Fragment key={study.id}>
-                      <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex min-w-0 items-center gap-2.5 pl-1.75 transition-colors hover:bg-muted/50">
                         <Item
                           size="sm"
-                          className="min-w-0 flex-1 border-0 px-0 py-3 [a]:hover:bg-transparent"
+                          className="min-w-0 flex-1 rounded-none border-0 px-0 py-3 [a]:hover:bg-transparent"
                           asChild
                         >
                           <Link to={`/studies/${study.id}`}>
-                            <ItemMedia variant="icon">
+                            <ItemMedia
+                              variant="icon"
+                              className="group-has-data-[slot=item-description]/item:translate-y-0 group-has-data-[slot=item-description]/item:self-center [&_svg:not([class*='size-'])]:size-3.5"
+                            >
                               <FlaskConical />
                             </ItemMedia>
                             <ItemContent className="min-w-0 flex-row items-center gap-3">
@@ -349,7 +352,7 @@ export default function Home() {
                                   {study.title}
                                 </span>
                               </ItemTitle>
-                              <ItemDescription className="shrink-0 text-xs whitespace-nowrap">
+                              <ItemDescription className="shrink-0 text-xs text-foreground/60 whitespace-nowrap">
                                 <time
                                   dateTime={study.created}
                                   title={`Created ${new Date(study.created).toLocaleString()}`}
@@ -366,7 +369,7 @@ export default function Home() {
                               <Button
                                 variant="ghost"
                                 size="icon-sm"
-                                className="text-muted-foreground"
+                                className="text-foreground/60 hover:bg-transparent aria-expanded:bg-transparent dark:hover:bg-transparent [&_svg:not([class*='size-'])]:size-3.5"
                                 aria-label={`More options for ${study.title}`}
                               >
                                 <Ellipsis aria-hidden="true" />

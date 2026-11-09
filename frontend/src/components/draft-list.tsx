@@ -40,10 +40,10 @@ export function DraftList({
     <ItemGroup className="has-data-[size=xs]:gap-0">
       {drafts.map((draft, index) => (
         <Fragment key={draft.path}>
-          <div className="flex min-w-0 items-center gap-3">
+          <div className="flex min-w-0 items-center gap-2.5 pl-1.75 transition-colors hover:bg-muted/50">
             <Item
               size="xs"
-              className="min-w-0 flex-1 gap-2.5 border-0 px-0 py-3 [a]:hover:bg-transparent"
+              className="min-w-0 flex-1 gap-2.5 rounded-none border-0 px-0 py-3 [a]:hover:bg-transparent"
               asChild
             >
               <Link
@@ -51,7 +51,10 @@ export function DraftList({
                 title={draft.title || "Untitled experiment"}
                 aria-label={draft.title || "Untitled experiment"}
               >
-                <ItemMedia variant="icon">
+                <ItemMedia
+                  variant="icon"
+                  className="group-has-data-[slot=item-description]/item:translate-y-0 group-has-data-[slot=item-description]/item:self-center [&_svg:not([class*='size-'])]:size-3.5"
+                >
                   <FlaskConical aria-hidden="true" />
                 </ItemMedia>
                 <ItemContent className="min-w-0 flex-row items-center group-data-[size=xs]/item:gap-3">
@@ -61,7 +64,7 @@ export function DraftList({
                     </span>
                   </ItemTitle>
                   {Number.isFinite(Date.parse(draft.updated)) && (
-                    <ItemDescription className="shrink-0 whitespace-nowrap">
+                    <ItemDescription className="shrink-0 text-foreground/60 whitespace-nowrap">
                       <time
                         dateTime={draft.updated}
                         title={`Edited ${new Date(draft.updated).toLocaleString()}`}
@@ -103,7 +106,7 @@ function DeleteDraft({
         <Button
           variant="ghost"
           size="icon-sm"
-          className="text-muted-foreground"
+          className="text-foreground/60 hover:bg-transparent aria-expanded:bg-transparent dark:hover:bg-transparent [&_svg:not([class*='size-'])]:size-3.5"
           aria-label={`Delete ${title} draft`}
           title="Delete draft"
         >

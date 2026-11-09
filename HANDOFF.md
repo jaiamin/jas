@@ -667,3 +667,22 @@ Verification: frontend lint and production build passed. Final Home/draft E2E
 header navigation, collapsible behavior, responsive layouts and draft deletion.
 Reviewed final dark-desktop/light-phone captures. No backend/data/dependency
 changes or paid calls; requested app remains live on8080.
+
+
+Composer and record-row detail polish (2026-11-09):
+- Shared Home/Agent composer text is15px (previously16px), retaining24px line
+  height, three initial rows, growth, internal scrolling and shrink behavior.
+- Broaden Home composer depth with stock shadow-xl, blending the sides/bottom.
+- Draft and recent experiment rows have square, full-width muted/50 hover fill.
+  Trash/ellipsis buttons retain no individual hover or expanded background.
+- Reduce row experiment/trash/ellipsis glyphs to14px, retain28px button targets
+  and add a7px left inset matching the right glyph inset. Center the experiment
+  icon against its title by overriding ItemMedia's multiline-description offset.
+- Use the same foreground/60 color for timestamps and right actions, slightly
+  darker than the previous muted gray. Header hover and row navigation unchanged.
+- Tighten the shared timestamp-to-action gap from12px to10px in both lists.
+Verification: final frontend lint/build passed; Home/draft browser checks14/14
+passed after text, icon, color, hover and alignment changes. After the final
+shadow and timestamp-spacing adjustments, all four phone/desktop light/dark Home layout checks passed
+again. Reviewed final captures for side/bottom depth and row alignment. No new
+logic tests, dependencies, backend/data changes or paid calls. Port8080 stays live.
