@@ -20,7 +20,6 @@ import {
   Plus,
   ShieldCheck,
   Sprout,
-  Target,
 } from "@/components/icons";
 import { ErrorState, Loading, Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -50,21 +49,8 @@ import { listDrafts, removeDraft } from "@/lib/drafts";
 import { date, relativeTime } from "@/lib/format";
 import type { RunSummary, StudySummary } from "@/lib/types";
 
-const suggestions = [
-  ...agentSuggestions({ context: "new" }),
-  {
-    title: "Information & accuracy",
-    prompt:
-      "Design an information-decision experiment testing how signal accuracy affects decision accuracy. Vary only signal accuracy, keeping information visibility, rewards and other rules identical. Use matched seeds, a compact pilot and a $3 spending ceiling; distinguish recorded choices from inferred beliefs.",
-  },
-];
-const suggestionIcons = [
-  MessageSquare,
-  NotebookPen,
-  ShieldCheck,
-  Sprout,
-  Target,
-];
+const suggestions = agentSuggestions({ context: "new" });
+const suggestionIcons = [MessageSquare, NotebookPen, ShieldCheck, Sprout];
 const recordTriggerClassName =
   "border-0 px-0 hover:bg-transparent aria-expanded:bg-transparent aria-expanded:hover:bg-transparent dark:hover:bg-transparent dark:aria-expanded:hover:bg-transparent";
 const suggestionDescriptions = [
@@ -72,7 +58,6 @@ const suggestionDescriptions = [
   "Compare private notes with history-only memory.",
   "Explore how oversight changes sanction decisions.",
   "Study extraction as resource renewal changes.",
-  "Compare decisions under different signal accuracy.",
 ];
 
 export default function Home() {
@@ -148,14 +133,14 @@ export default function Home() {
           className="flex flex-col gap-3"
         >
           <h2 className="text-xs font-medium">Suggestions</h2>
-          <ItemGroup className="gap-0 overflow-hidden rounded-xl border xl:flex-row">
+          <ItemGroup className="grid grid-cols-1 gap-0 overflow-hidden rounded-xl border sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
             {suggestions.map(({ title, prompt }, index) => {
               const Icon = suggestionIcons[index];
               return (
                 <Fragment key={title}>
                   <Button
                     variant="ghost"
-                    className="h-auto w-full min-w-0 flex-1 items-start justify-start gap-3 rounded-none border-0 px-5 py-4 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-5 xl:flex-col"
+                    className="h-auto w-full min-w-0 items-start justify-start gap-3 rounded-none border-0 px-4 py-3 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-4"
                     disabled={state.send.isPending}
                     onClick={() => {
                       state.setQuestion(prompt);
@@ -167,23 +152,27 @@ export default function Home() {
                       data-icon="inline-start"
                       aria-hidden="true"
                     />
-                    <span className="flex min-w-0 flex-col gap-1.5">
-                      <span className="text-[0.9375rem] leading-4 font-semibold xl:min-h-[2lh]">
+                    <span className="flex min-w-0 flex-col gap-1">
+                      <span className="text-[0.9375rem] leading-5 font-semibold">
                         {title}
                       </span>
-                      <span className="text-[0.6875rem] leading-4 font-normal text-muted-foreground">
+                      <span className="text-xs leading-4 font-normal text-muted-foreground">
                         {suggestionDescriptions[index]}
                       </span>
                     </span>
                   </Button>
-                  {index < suggestions.length - 1 && (
-                    <>
-                      <Separator className="xl:hidden" />
-                      <Separator
-                        orientation="vertical"
-                        className="hidden xl:block"
-                      />
-                    </>
+                  {index === 1 ? (
+                    <Separator className="sm:col-span-3" />
+                  ) : (
+                    index < suggestions.length - 1 && (
+                      <>
+                        <Separator className="sm:hidden" />
+                        <Separator
+                          orientation="vertical"
+                          className="hidden sm:block"
+                        />
+                      </>
+                    )
                   )}
                 </Fragment>
               );

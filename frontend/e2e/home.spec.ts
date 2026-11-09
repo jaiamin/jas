@@ -78,13 +78,13 @@ test("Home submits once, opens the saved Agent conversation and never resubmits 
   const suggestions = page
     .getByRole("region", { name: "Experiment suggestions" })
     .getByRole("button");
-  await expect(suggestions).toHaveCount(5);
+  await expect(suggestions).toHaveCount(4);
   await expect(
     page.getByRole("heading", { name: "Suggestions", exact: true }),
   ).toBeVisible();
   await suggestions.last().click();
   await expect(page.getByLabel("Message Agent", { exact: true })).toHaveValue(
-    /Vary only signal accuracy/,
+    /Vary only regeneration/,
   );
   expect(submissions).toBe(0);
   await suggestions.first().click();
@@ -497,32 +497,34 @@ for (const width of [390, 1440])
           const bounds = group.getBoundingClientRect();
           const buttons = [...group.querySelectorAll("button")];
           const boxes = buttons.map((button) => button.getBoundingClientRect());
-          const horizontal = getComputedStyle(group).flexDirection === "row";
+          const twoColumns = boxes[0].top === boxes[1].top;
           const last = boxes.at(-1);
           if (!last) throw new Error("Suggestions are missing");
           return {
+            twoColumns,
             topGap: boxes[0].top - bounds.top,
             leftGap: boxes[0].left - bounds.left,
-            endGap: horizontal
-              ? bounds.right - last.right
-              : bounds.bottom - last.bottom,
-            gaps: boxes
-              .slice(1)
-              .map((box, index) =>
-                horizontal
-                  ? box.left - boxes[index].right
-                  : box.top - boxes[index].bottom,
-              ),
+            endGap: bounds.bottom - last.bottom,
+            gaps: twoColumns
+              ? [
+                  boxes[1].left - boxes[0].right,
+                  boxes[3].left - boxes[2].right,
+                  boxes[2].top - boxes[0].bottom,
+                ]
+              : boxes
+                  .slice(1)
+                  .map((box, index) => box.top - boxes[index].bottom),
             borders: buttons.map(
               (button) => getComputedStyle(button).borderTopWidth,
             ),
           };
         });
       expect(suggestionEdges.topGap).toBeCloseTo(1, 1);
+      expect(suggestionEdges.twoColumns).toBe(width >= 640);
       expect(suggestionEdges.leftGap).toBeCloseTo(1, 1);
       expect(suggestionEdges.endGap).toBeCloseTo(1, 1);
       for (const gap of suggestionEdges.gaps) expect(gap).toBeCloseTo(1, 1);
-      expect(suggestionEdges.borders).toEqual(Array(5).fill("0px"));
+      expect(suggestionEdges.borders).toEqual(Array(4).fill("0px"));
       await page.screenshot({
         path: testInfo.outputPath(`home-hover-${theme}-${width}.png`),
         fullPage: true,

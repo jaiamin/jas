@@ -686,3 +686,18 @@ passed after text, icon, color, hover and alignment changes. After the final
 shadow and timestamp-spacing adjustments, all four phone/desktop light/dark Home layout checks passed
 again. Reviewed final captures for side/bottom depth and row alignment. No new
 logic tests, dependencies, backend/data changes or paid calls. Port8080 stays live.
+
+
+Home Suggestions grid (2026-11-09):
+- Replace the five-column layout with the four shared experiment suggestions in
+  a compact2×2 grid above phone widths. Remove the Home-only fifth prompt.
+- Keep a single rounded stock ItemGroup border and stock Separator dividers.
+  Icons sit beside text;12px vertical padding makes each tile rectangular.
+- Remove the reserved second title line;15px semibold titles fit on one line
+  on desktop. Increase descriptions from11px to12px. Phone layouts stack rows.
+- Preserve fill-without-submit, focus, persisted input and exact chat submission.
+Verification: frontend lint/build and final Home browser suite9/9 passed. The
+first run exposed the test's old fifth-option prompt assertion; it now checks
+regeneration, the fourth remaining option. Geometry checks cover2×2 placement
+and flush hover/divider edges. Reviewed desktop-dark and phone-light captures.
+No dependencies, backend/data changes or paid calls. Port8080 stays live.

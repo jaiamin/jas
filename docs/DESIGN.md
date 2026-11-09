@@ -182,11 +182,12 @@ Every unscoped entry point uses the same server intent routing: Agent answers a
 question or creates a validated experiment proposal from the prompt, without a
 manual creation mode. Home has no selector. Agent has an optional experiment/run
 selector, defaulting to No experiment, solely for selecting existing evidence.
-Explicitly scoped links and resumed chats preserve the selected evidence identity. Five experiment
+Explicitly scoped links and resumed chats preserve the selected evidence identity. Four experiment
 suggestions fill the draft without submitting. Under the Suggestions heading,
 they share one rounded ItemGroup border with Separator dividers: aligned icons,
-15px two-line semibold title tracks and 11px descriptions in equal columns
-on wide screens, stacked rows on smaller screens. Stock ghost Buttons keep the
+15px semibold titles and 12px descriptions in a compact 2×2 grid, with horizontal
+icon/text layouts and 12px vertical padding. Titles stay on one line where space
+allows without a reserved second line. Stack rows on phone widths. Stock ghost Buttons keep the
 whole section of each suggestion keyboard-accessible, with icon, title and description.
 Buttons sit directly between dividers without transparent border insets, so the
 hover fill meets every edge and follows the group’s clipped outer corners. An explicit send creates one chat
