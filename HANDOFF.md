@@ -1170,3 +1170,9 @@ Context clear hover follow-up: keep the 12px glyph but match both controls' 32px
 hover surfaces and large radius. Add a 2px inter-control gap and 4px trailing
 picker padding. Live browser measurement confirms equal heights and exact center
 alignment; lint/build and both 320px/1440px composer regressions passed.
+
+Final clear-action preference supersedes the previous hover treatment: remove
+the clear button's hover background, use the stock small Button's 14px glyph in
+a 24px target, and remove the inter-control gap. Retain 4px picker trailing
+padding. Lint/build and both anchor regressions passed; live hover measurement
+confirms transparent background, 14px glyph and exact vertical centering.
