@@ -591,7 +591,7 @@ for (const width of [320, 1440]) {
       await popup
         .getByRole("link")
         .first()
-        .locator("span")
+        .locator(":scope > span")
         .evaluate((element) => element.scrollWidth > element.clientWidth),
     ).toBe(true);
     const popupBox = await popup.boundingBox();

@@ -1124,3 +1124,12 @@ are unchanged.
 Verification: lint/build and all five affected composer/streaming browser tests
 passed. Live geometry confirms the upward bias and normal scrolling at 320×400.
 Own review tab is closed; port 8080 remains available.
+
+Recent chats density refinement: reduce heading to the shared text-xs scale,
+add a close full-width Separator, use stock small Button rows (14px aligned
+icons) with regular-weight titles, and compact recency labels. Full timestamp
+tooltips and expanded accessible time labels preserve meaning. Home keeps its
+existing long relative-time style.
+Verification: lint/build, all 97 unit tests and five history browser regressions
+passed. Live desktop/mobile light/dark review confirms a full-width divider,
+regular title weight, centered 14px glyphs and no narrow-screen overflow.

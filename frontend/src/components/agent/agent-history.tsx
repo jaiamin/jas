@@ -13,6 +13,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { useNow } from "@/hooks/use-now";
@@ -47,11 +48,17 @@ export function AgentHistory() {
       <PopoverContent
         align="end"
         collisionPadding={16}
-        className="w-80 max-w-[calc(100vw-2rem)]"
+        className="w-80 max-w-[calc(100vw-2rem)] gap-1.5"
         aria-labelledby={titleId}
       >
-        <PopoverHeader>
-          <PopoverTitle id={titleId}>Recent chats</PopoverTitle>
+        <PopoverHeader className="-mx-2.5 gap-1.5">
+          <PopoverTitle
+            id={titleId}
+            className="px-2.5 text-xs text-muted-foreground"
+          >
+            Recent chats
+          </PopoverTitle>
+          <Separator />
         </PopoverHeader>
         {chats.error && (
           <Alert variant="error">
@@ -71,11 +78,11 @@ export function AgentHistory() {
             <div
               role="status"
               aria-label="Loading chats"
-              className="flex flex-col gap-2"
+              className="flex flex-col gap-1"
             >
-              <Skeleton className="h-8" />
-              <Skeleton className="h-8" />
-              <Skeleton className="h-8" />
+              <Skeleton className="h-7" />
+              <Skeleton className="h-7" />
+              <Skeleton className="h-7" />
             </div>
           )
         ) : chats.data.length ? (
@@ -84,6 +91,7 @@ export function AgentHistory() {
               {chats.data.map((chat) => (
                 <Button
                   key={chat.id}
+                  size="sm"
                   variant={current === chat.id ? "secondary" : "ghost"}
                   className="w-full justify-start"
                   asChild
@@ -98,7 +106,7 @@ export function AgentHistory() {
                       data-icon="inline-start"
                       aria-hidden="true"
                     />
-                    <span className="min-w-0 flex-1 truncate">
+                    <span className="min-w-0 flex-1 truncate font-normal">
                       {chat.title}
                     </span>
                     <time
@@ -106,7 +114,12 @@ export function AgentHistory() {
                       title={`Last message ${new Date(chat.updated).toLocaleString()}`}
                       className="shrink-0 text-xs font-normal text-muted-foreground"
                     >
-                      {relativeTime(chat.updated, now)}
+                      <span aria-hidden="true">
+                        {relativeTime(chat.updated, now, "compact")}
+                      </span>
+                      <span className="sr-only">
+                        Last message {relativeTime(chat.updated, now)}
+                      </span>
                     </time>
                     {chat.status === "pending" && (
                       <Spinner aria-label="In progress" />

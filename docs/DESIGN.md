@@ -176,7 +176,10 @@ uses transcript-shaped skeletons while its initial turns load, leaving History
 and New available. Downloading the lazy Agent module uses only a small spinner,
 not a page of fake database content. Long
 labels truncate inside the popup beside a stock chat-bubble icon and relative
-last-message time; hovering the time exposes the full local timestamp. There is no conversation rail or separate mobile
+last-message time (`now`, `5m`, `2h`, `3d`, then a calendar date). Hovering exposes
+the full local timestamp and the accessible label retains the expanded recency.
+The popup uses a small muted heading, full-width separator and compact stock
+small Button rows with regular-weight labels and aligned 14px chat glyphs. There is no conversation rail or separate mobile
 history Sheet. New chats group the main heading, plain composer and suggestions
 in that order, without a subtitle, slightly above center. Remaining vertical
 space splits 2:3 above/below the group and shrinks to zero on short screens;

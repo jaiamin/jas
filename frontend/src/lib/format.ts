@@ -20,26 +20,27 @@ const relativeTimeFormatter = new Intl.RelativeTimeFormat(undefined, {
   numeric: "auto",
 });
 
-export function relativeTime(value: string, now = Date.now()) {
+export function relativeTime(
+  value: string,
+  now = Date.now(),
+  style: "long" | "compact" = "long",
+) {
   const timestamp = Date.parse(value);
   if (!Number.isFinite(timestamp)) return "Unknown time";
   const elapsed = Math.max(0, now - timestamp);
-  if (elapsed < 60_000) return "Just now";
+  if (elapsed < 60_000) return style === "compact" ? "now" : "Just now";
   if (elapsed < 3_600_000)
-    return relativeTimeFormatter.format(
-      -Math.floor(elapsed / 60_000),
-      "minute",
-    );
+    return style === "compact"
+      ? `${Math.floor(elapsed / 60_000)}m`
+      : relativeTimeFormatter.format(-Math.floor(elapsed / 60_000), "minute");
   if (elapsed < 86_400_000)
-    return relativeTimeFormatter.format(
-      -Math.floor(elapsed / 3_600_000),
-      "hour",
-    );
+    return style === "compact"
+      ? `${Math.floor(elapsed / 3_600_000)}h`
+      : relativeTimeFormatter.format(-Math.floor(elapsed / 3_600_000), "hour");
   if (elapsed < 604_800_000)
-    return relativeTimeFormatter.format(
-      -Math.floor(elapsed / 86_400_000),
-      "day",
-    );
+    return style === "compact"
+      ? `${Math.floor(elapsed / 86_400_000)}d`
+      : relativeTimeFormatter.format(-Math.floor(elapsed / 86_400_000), "day");
   const edited = new Date(timestamp);
   return new Intl.DateTimeFormat(undefined, {
     month: "short",

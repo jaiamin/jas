@@ -48,7 +48,7 @@ test("history retry restores the active chat and exposes pending work", async ()
   expect(
     screen.getByRole("status", { name: "In progress" }),
   ).toBeInTheDocument();
-  expect(chat.querySelector("time")).toHaveTextContent("Just now");
+  expect(chat.querySelector("time")).toHaveTextContent("now");
   fireEvent.click(chat);
   expect(
     screen.queryByRole("dialog", { name: "Recent chats" }),
