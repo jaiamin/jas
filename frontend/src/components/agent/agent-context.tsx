@@ -2,6 +2,7 @@ import { cn } from "cn";
 import { useId, useRef } from "react";
 import { FlaskConical, Globe, Play, Plus, X } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { FieldSet } from "@/components/ui/field";
 import {
   SelectContent,
   SelectGroup,
@@ -72,13 +73,20 @@ export function AgentContext({
       ? Play
       : FlaskConical;
   return (
-    <div className="flex min-w-0 max-w-[calc(100%-3rem)] items-center">
+    <FieldSet
+      aria-label="Message context controls"
+      className={cn(
+        "min-w-0 max-w-[calc(100%-3rem)] flex-row items-center gap-0 rounded-lg",
+        selected && "gap-1 pr-1",
+        selected && !disabled && "hover:bg-muted",
+      )}
+    >
       <SelectRoot value={value} onValueChange={onChange} disabled={disabled}>
         <SelectTrigger
           ref={trigger}
           className={cn(
             "min-w-0 flex-1 border-0 px-1.5 shadow-none hover:bg-muted dark:bg-transparent dark:hover:bg-muted [&>svg:last-child]:hidden",
-            selected && "pr-1",
+            selected && "pr-0 hover:bg-transparent dark:hover:bg-transparent",
           )}
           aria-label="Message context"
           title={
@@ -197,6 +205,6 @@ export function AgentContext({
           <X aria-hidden="true" />
         </Button>
       )}
-    </div>
+    </FieldSet>
   );
 }

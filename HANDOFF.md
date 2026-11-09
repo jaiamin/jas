@@ -1176,3 +1176,11 @@ the clear button's hover background, use the stock small Button's 14px glyph in
 a 24px target, and remove the inter-control gap. Retain 4px picker trailing
 padding. Lint/build and both anchor regressions passed; live hover measurement
 confirms transparent background, 14px glyph and exact vertical centering.
+
+Selected context now groups the picker and clear action in one stock FieldSet
+with a shared muted hover surface. Both remain sibling buttons: selection opens
+the picker, × only clears. A 4px gap and 4px trailing group padding keep the clear
+action inside the surface with consistent spacing. Its glyph remains 14px.
+Lint/build and updated 320px/1440px regressions passed, checking group hover,
+right inset, vertical centers, draft preservation and stable composer geometry.
+Live browser review confirmed the same measurements. Preview tab closed.

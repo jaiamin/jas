@@ -28,6 +28,24 @@ for (const width of [320, 1440]) {
     ).toBeVisible();
     expect(await composer.boundingBox()).toEqual(initial);
     await expect(context).toHaveCSS("border-width", "0px");
+    const clear = page.getByRole("button", {
+      name: "Clear context",
+      exact: true,
+    });
+    await clear.hover();
+    const group = page.getByRole("group", { name: "Message context controls" });
+    const groupBox = await group.boundingBox();
+    const clearBox = await clear.boundingBox();
+    const triggerBox = await context.boundingBox();
+    expect(
+      groupBox &&
+        clearBox &&
+        groupBox.x + groupBox.width > clearBox.x + clearBox.width,
+    ).toBe(true);
+    expect(clearBox && triggerBox && clearBox.y + clearBox.height / 2).toBe(
+      triggerBox && triggerBox.y + triggerBox.height / 2,
+    );
+    await expect(group).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     await page
       .getByRole("button", { name: "Clear context", exact: true })
       .click();
