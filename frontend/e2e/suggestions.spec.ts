@@ -30,7 +30,7 @@ test("four examples adapt to creation, saved treatments and a run without submit
   await expect(suggestions).toHaveCount(4);
   const context = page.getByRole("combobox", { name: "Message context" });
   const draft = page.getByLabel("Message Agent", { exact: true });
-  await expect(context).toContainText("No experiment");
+  await expect(context).toContainText("Add context");
   await page
     .getByRole("button", {
       name: "Design a cooperation experiment",

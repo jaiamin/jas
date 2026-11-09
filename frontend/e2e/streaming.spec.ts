@@ -328,7 +328,7 @@ for (const theme of ["light", "dark"]) {
     row.status = "complete";
     await expect(
       page.getByRole("combobox", { name: "Message context" }),
-    ).toContainText("No experiment");
+    ).toContainText("Add context");
     await expect(
       page.getByText("Protocol reviewed", { exact: true }),
     ).toBeVisible();
@@ -397,7 +397,7 @@ test("retrying a failed automatic proposal keeps the planner purpose", async ({
   await page.goto("/agent?chat=failed-plan-chat");
   await expect(
     page.getByRole("combobox", { name: "Message context" }),
-  ).toContainText("No experiment");
+  ).toContainText("Add context");
   await page.getByRole("button", { name: "Try again", exact: true }).click();
   await expect(page.getByRole("alert").last()).toContainText(
     "Your message is kept above",

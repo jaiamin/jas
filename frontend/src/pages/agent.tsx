@@ -319,14 +319,14 @@ function AgentConversation({
           </MessageScroller>
         </MessageScrollerProvider>
       ) : (
-        <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,2fr)_auto_minmax(0,3fr)] overflow-y-auto px-4 py-8 sm:px-6">
+        <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)_auto_minmax(0,2fr)] overflow-y-auto px-4 py-8 sm:px-6">
           <div className="row-start-2 mx-auto flex w-full max-w-3xl flex-col gap-6">
             <h1 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl">
-              {context === "general"
-                ? "What can we explore?"
-                : "What does the evidence show?"}
+              What can we explore?
             </h1>
             {composer}
+          </div>
+          <div className="row-start-3 mx-auto w-full max-w-3xl pt-6">
             <AgentSuggestions
               context={context}
               contextLoading={contextLoading}

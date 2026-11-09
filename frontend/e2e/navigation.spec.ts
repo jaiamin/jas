@@ -199,7 +199,7 @@ test("Home is the entry point; AI creation stays available without a key", async
   await page.getByRole("link", { name: "Agent", exact: true }).click();
   await expect(
     page.getByRole("combobox", { name: "Message context" }),
-  ).toContainText("No experiment");
+  ).toContainText("Add context");
   await page
     .getByLabel("Message Agent")
     .fill("Does communication improve teamwork?");
@@ -234,7 +234,7 @@ test("Agent navigation preserves incomplete editor state and one recoverable dra
     .click();
   await expect(
     page.getByRole("combobox", { name: "Message context" }),
-  ).toContainText("No experiment");
+  ).toContainText("Add context");
   await expect(
     page.getByLabel("Message Agent", { exact: true }),
   ).not.toHaveValue("");
@@ -366,7 +366,7 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
   await expect(context).toHaveCSS("cursor", "pointer");
   await context.click();
   await expect(
-    page.getByRole("option", { name: "No experiment", exact: true }),
+    page.getByRole("option", { name: "Ask anything", exact: true }),
   ).toHaveCSS("cursor", "pointer");
   await page.keyboard.press("Escape");
   const previous = await page.locator("html").getAttribute("class");

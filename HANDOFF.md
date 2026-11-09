@@ -1145,3 +1145,23 @@ measurement confirms icons, labels and times share the exact vertical center.
 The heading/divider remain fixed above the scrollable list. Lint/build and three
 popup loading/mobile/desktop overflow browser checks passed. The preceding
 alignment change also passed its focused unit test and five history browser checks.
+
+Composer/context refinement: remove the resting selector border and redundant
+chevron. “Add context” opens the stock Select with grouped evidence and an
+explained “Ask anything” choice. Selected context uses the matching evidence
+icon and an adjacent stock icon-xs clear button; clearing keeps the unsent
+question and restores selector focus. Align the leading icon with the textarea
+at 14px, keep Send's 8px right/bottom inset and center footer controls. Popup
+height is capped at 20rem/available space; long names truncate without overflow.
+The heading stays “What can we explore?” for every context. A separate grid row
+for suggestions keeps the heading/composer position and size stable on changes.
+
+Verification: lint/build and all 97 unit tests passed. The affected browser run
+passed 38 of 39 cases; its one failure was duplicate test-created titles. After
+making those fixture titles unique, both desktop/mobile anchor tests passed;
+the final smaller clear button also passed both anchor tests plus local loading.
+Initial accessibility-label failures were fixed by separating the general option
+name from its accessible description. Live light/dark, 320px and desktop review
+confirmed aligned controls, zero resting selector border, a 12px clear glyph
+centered in a 24px target and no page overflow. Own preview tab closed; 8080
+continues serving the rebuilt app.

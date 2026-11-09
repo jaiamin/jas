@@ -186,8 +186,10 @@ skeletons are 26px tall with centered content; the hover surface extends 6px pas
 the content on each side. The heading and divider remain outside the scrolling
 list, which caps at 20rem or the available popup height. There is no conversation rail or separate mobile
 history Sheet. New chats group the main heading, plain composer and suggestions
-in that order, without a subtitle, slightly above center. Remaining vertical
-space splits 2:3 above/below the group and shrinks to zero on short screens;
+in that order, without a subtitle, slightly above center. The heading and composer
+occupy the middle grid row, with remaining space split 1:2 above/below them.
+Suggestions sit in the lower row so changing context cannot move or resize the
+composer. Keep “What can we explore?” unchanged across selections. Empty space shrinks to zero on short screens;
 content remains scrollable without translated or clipped headings. The plain Agent composer omits Home’s gray
 Card surround and manual-editor footer. Saved chats retain the streaming
 MessageScroller and bottom composer. Decisions and evidence stack below 1440px.
@@ -226,7 +228,15 @@ bottom, separating it from the animated grid.
 Every unscoped entry point uses the same server intent routing: Agent answers a
 question or creates a validated experiment proposal from the prompt, without a
 manual creation mode. Home has no selector. Agent has an optional experiment/run
-selector, defaulting to No experiment, solely for selecting existing evidence.
+selector, defaulting to a borderless “Add context” control, solely for selecting
+existing evidence. Keep one leading icon (plus, experiment or run), without a
+redundant chevron. Selected evidence has an adjacent stock icon-xs ghost × Button
+(24px target, 12px glyph) to clear it, without extra gap after the label;
+clearing preserves the draft and returns keyboard focus to the selector. The
+stock Select popup groups experiments/runs, caps at 20rem or available height,
+and offers “Ask anything” with an explanation that Agent can answer a question
+or plan a new experiment. Loading placeholders stay inside the popup; an empty
+list explains that saved experiments/runs will appear there.
 Explicitly scoped links and resumed chats preserve the selected evidence identity. Four experiment
 suggestions fill the draft without submitting. Under the Experiment ideas heading,
 they share one rounded ItemGroup border with Separator dividers: aligned illustrations,
@@ -257,11 +267,12 @@ bold link opening /new. Keep prose and link in one inline sentence with a normal
 space after “or” and matching text baselines. Underline only the link text at a 2px offset,
 and place the centered arrow 2px after it with a 2.25px stroke. Supporting text
 uses foreground/65 for legibility. Navigation preserves the unsent message and never sends it.
-Use 14px side insets for text and footer controls, retaining the original 8px
+Use 14px side insets for text and visible context icons, retaining the original 8px
 top and bottom insets and 23px text line height for a compact vertical rhythm. The textarea still starts
 with three lines, grows to its existing cap, then scrolls internally.
-The send button has an 8px right inset to match its bottom inset; keep the
-context control's left inset at 14px.
+The footer has 8px side insets. The context trigger adds 6px internally to align
+its icon with the text; Send retains matching 8px right and bottom insets. All
+footer controls share a vertical center, without a resting context border.
 
 The four decorative suggestion illustrations are explicitly approved exceptions
 to preset icons: [3dicons](https://3dicons.co/), Dynamic (the slight-angle view)

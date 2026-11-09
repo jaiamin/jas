@@ -1,5 +1,48 @@
 import { expect, test } from "@playwright/test";
 
+for (const width of [320, 1440]) {
+  test(`context selection keeps the composer anchored and clearable · ${width}`, async ({
+    page,
+    request,
+  }) => {
+    const catalog = await (await request.get("/api/catalog")).json();
+    const title = `Cooperation across changing resource constraints and communication rules (${width})`;
+    await request.post("/api/studies", {
+      data: { design: { ...catalog.templates[0].design, title } },
+    });
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto("/agent");
+    const context = page.getByRole("combobox", { name: "Message context" });
+    const input = page.getByLabel("Message Agent", { exact: true });
+    await input.fill("Keep this unsent question");
+    const composer = page.locator('[data-slot="input-group"]');
+    const initial = await composer.boundingBox();
+    await context.click();
+    await page.getByRole("option", { name: title, exact: true }).click();
+    await expect(
+      page.getByRole("region", { name: "Suggested questions" }),
+    ).toBeVisible();
+    await expect(context).toContainText(title);
+    await expect(
+      page.getByRole("heading", { name: "What can we explore?", exact: true }),
+    ).toBeVisible();
+    expect(await composer.boundingBox()).toEqual(initial);
+    await expect(context).toHaveCSS("border-width", "0px");
+    await page
+      .getByRole("button", { name: "Clear context", exact: true })
+      .click();
+    await expect(context).toContainText("Add context");
+    await expect(context).toBeFocused();
+    await expect(input).toHaveValue("Keep this unsent question");
+    expect(await composer.boundingBox()).toEqual(initial);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  });
+}
+
 test("Agent centers a plain contextual composer without a history rail", async ({
   page,
   request,
@@ -17,7 +60,7 @@ test("Agent centers a plain contextual composer without a history rail", async (
   const defaultContext = page.getByRole("combobox", {
     name: "Message context",
   });
-  await expect(defaultContext).toContainText("No experiment");
+  await expect(defaultContext).toContainText("Add context");
   await defaultContext.click();
   await expect(
     page.getByRole("option", { name: "New experiment", exact: true }),
@@ -115,19 +158,25 @@ test("Agent centers a plain contextual composer without a history rail", async (
     exact: true,
   });
   await input.fill("Compare the recorded strategies");
-  await context.click();
   await page
-    .getByRole("option", { name: "No experiment", exact: true })
+    .getByRole("button", { name: "Clear context", exact: true })
     .click();
+  await expect(context).toBeFocused();
+  await expect(page.getByRole("button", { name: "Clear context" })).toHaveCount(
+    0,
+  );
   await expect(input).toHaveValue("Compare the recorded strategies");
   await page.reload();
   await expect(input).toHaveValue("Compare the recorded strategies");
-  await expect(context).toContainText("No experiment");
+  await expect(context).toContainText("Add context");
   await context.click();
   await page
     .getByRole("option", { name: "Context selection experiment", exact: true })
     .click();
   await expect(context).toContainText("Context selection experiment");
+  await expect(
+    page.getByRole("heading", { name: "What can we explore?", exact: true }),
+  ).toBeVisible();
   await expect(input).toHaveValue("Compare the recorded strategies");
   await expect(
     page.getByRole("button", { name: "New chat", exact: true }),
@@ -193,7 +242,7 @@ test("saved conversations resume after reload and new chats keep separate histor
   await page.goto("/agent");
   await expect(
     page.getByRole("combobox", { name: "Message context" }),
-  ).toContainText("No experiment");
+  ).toContainText("Add context");
   const input = page.getByLabel("Message Agent", { exact: true });
   await input.fill("What is a matched seed?");
   await input.press("Shift+Enter");
@@ -386,7 +435,7 @@ for (const theme of ["light", "dark"]) {
     await expect(page.getByText("One run is descriptive.")).toBeVisible();
     await context.click();
     await page
-      .getByRole("option", { name: "No experiment", exact: true })
+      .getByRole("option", { name: "Ask anything", exact: true })
       .click();
     await page
       .getByLabel("Message Agent", { exact: true })
@@ -688,7 +737,7 @@ test("base Agent renders immediately and only context options wait for the datab
     page.getByRole("status", { name: "Loading experiments and runs" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("option", { name: "No experiment", exact: true }),
+    page.getByRole("option", { name: "Ask anything", exact: true }),
   ).toBeVisible();
   release();
   await expect(
