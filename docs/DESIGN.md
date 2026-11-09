@@ -181,7 +181,10 @@ the full local timestamp and the accessible label retains the expanded recency.
 The popup uses a small muted heading, full-width separator and compact stock
 small Button rows with regular-weight labels and muted 14px chat glyphs. Icons
 and times align with heading content edges, with a 6px icon-to-title gap; pending
-spinners precede the right-aligned time rather than displacing it. There is no conversation rail or separate mobile
+spinners precede the right-aligned time rather than displacing it. Rows and their
+skeletons are 26px tall with centered content; the hover surface extends 6px past
+the content on each side. The heading and divider remain outside the scrolling
+list, which caps at 20rem or the available popup height. There is no conversation rail or separate mobile
 history Sheet. New chats group the main heading, plain composer and suggestions
 in that order, without a subtitle, slightly above center. Remaining vertical
 space splits 2:3 above/below the group and shrinks to zero on short screens;

@@ -1138,3 +1138,10 @@ History row alignment: align icon/time edges with heading content by adjusting
 ScrollArea and shared Button layout insets, preserving a focus-ring gutter.
 Increase row gap from 4px to 6px, use muted-foreground on the 14px chat icon, and
 place the pending Spinner before the time so every timestamp shares a right edge.
+
+History spacing follow-up: extend row backgrounds 2px farther on each side without
+moving content, and reduce rows/loading skeletons from 28px to 26px. Browser
+measurement confirms icons, labels and times share the exact vertical center.
+The heading/divider remain fixed above the scrollable list. Lint/build and three
+popup loading/mobile/desktop overflow browser checks passed. The preceding
+alignment change also passed its focused unit test and five history browser checks.

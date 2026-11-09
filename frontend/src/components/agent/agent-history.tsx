@@ -80,20 +80,20 @@ export function AgentHistory() {
               aria-label="Loading chats"
               className="flex flex-col gap-1"
             >
-              <Skeleton className="h-7" />
-              <Skeleton className="h-7" />
-              <Skeleton className="h-7" />
+              <Skeleton className="h-6.5" />
+              <Skeleton className="h-6.5" />
+              <Skeleton className="h-6.5" />
             </div>
           )
         ) : chats.data.length ? (
-          <ScrollArea className="-mx-2 min-w-0 [&_[data-slot=scroll-area-viewport]>div]:block! [&_[data-slot=scroll-area-viewport]]:max-h-[min(20rem,calc(var(--radix-popover-content-available-height)-3.5rem))]">
+          <ScrollArea className="-mx-2.5 min-w-0 [&_[data-slot=scroll-area-viewport]>div]:block! [&_[data-slot=scroll-area-viewport]]:max-h-[min(20rem,calc(var(--radix-popover-content-available-height)-3.5rem))]">
             <nav aria-label="Past chats" className="flex flex-col gap-1 px-1">
               {chats.data.map((chat) => (
                 <Button
                   key={chat.id}
                   size="sm"
                   variant={current === chat.id ? "secondary" : "ghost"}
-                  className="w-full justify-start gap-1.5 border-0 px-1 has-data-[icon=inline-start]:pl-1"
+                  className="h-6.5 w-full justify-start gap-1.5 border-0 px-1.5 has-data-[icon=inline-start]:pl-1.5"
                   asChild
                 >
                   <Link
