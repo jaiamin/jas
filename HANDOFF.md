@@ -976,3 +976,12 @@ PR #9 was already merged; follow-up branch fix/frontend-review starts from the
 latest origin/main with the same implementation tree. Next: observe fresh hosted
 CI on the separate follow-up draft PR. App on port 8080 restarted and left running;
 review tabs and disposable container/volume are cleaned up after verification.
+
+Collapsed divider width follow-up (2026-11-09):
+- Reduce only the collapsed section separator's side insets from 16px to 12px,
+  widening the centered line from 15px to 23px. Keep its y=135 position, expanded
+  width and full-width footer divider unchanged.
+Verification: frontend lint/build and the compact-header/navigation browser
+regression passed. Browser measurement confirms x=12, width=23 and y=135 after
+collapse; footer y=695 unchanged and no horizontal overflow. Review tab closed;
+port 8080 remains running. Publish this small refinement to the existing PR #10.

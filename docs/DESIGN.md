@@ -121,7 +121,7 @@ footer has a direct Settings link beneath the full-width divider, followed by th
 local workspace menu with Settings and appearance. Its Avatar is 28px with the same subtle blue background/foreground token pair as
 sidebar selection in both themes, centered
 within the collapsed rail with the label and menu chevron hidden.
-A stock SidebarSeparator with 16px edge insets aligns with the navigation icons
+A stock SidebarSeparator with 16px expanded and 12px collapsed edge insets aligns with the navigation icons
 between primary and workspace groups. The separator above the local-workspace
 footer spans the full sidebar width. The navigation section separator stays
 visible at the same vertical position in the collapsed rail, with equal side

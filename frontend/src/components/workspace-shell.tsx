@@ -195,7 +195,9 @@ export default function WorkspaceShell() {
               { label: "Workspace", items: links },
             ].map((group, index) => (
               <Fragment key={group.label ?? "primary"}>
-                {index > 0 && <SidebarSeparator className="mx-4" />}
+                {index > 0 && (
+                  <SidebarSeparator className="mx-4 group-data-[collapsible=icon]:mx-3" />
+                )}
                 <SidebarGroup>
                   {group.label && (
                     <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
