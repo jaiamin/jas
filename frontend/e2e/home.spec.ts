@@ -364,9 +364,7 @@ for (const width of [390, 1440])
         await page
           .getByRole("button", { name: "Close menu", exact: true })
           .click();
-      await page
-        .getByRole("link", { name: "New experiment", exact: true })
-        .click();
+      await page.getByRole("link", { name: "New", exact: true }).click();
       await expect(page).toHaveURL(/\/new$/);
     });
   }

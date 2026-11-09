@@ -533,3 +533,18 @@ confirmed colored clusters, readable content, no overflow and actual offscreen
 animation pause. A navigation-disconnect Starlette log recurred without a test
 failure (already recorded above); no backend changes in this follow-up.
 Owned preview and temporary test server closed; requested port 8080 stays live.
+
+
+Home draft/empty-state refinement: fold the latest draft into Recent experiments
+as a compact unbordered stock Item xs row with regular text. Remove its icon,
+badge, timestamp and separate prominent section spacing. Keep the whole row a
+link to the exact saved draft path. No Home dismissal: draft deletion remains
+explicitly managed from Experiments. Keep unreadable/storage-error recovery.
+The Home creation action reads New; its primary styling and destination stay.
+Render the empty message through stock EmptyDescription (observed weight 400)
+instead of EmptyTitle. Removed unused icon/badge/formatter imports.
+Verified lint/build and Home keyless browser checks 7/7; reviewed populated
+1440px light and 390px dark captures and live empty-state typography. Navigation
+recovery, latest-draft identity and New destination still pass. The known
+Starlette navigation-disconnect log appeared without failures; no backend change.
+Owned preview/test service closed; requested port 8080 remains live.

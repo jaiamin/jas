@@ -177,8 +177,12 @@ A late response leaves subsequent navigation intact.
 
 Below suggestions, show up to three active runs only when underway, one latest
 local editor draft when present, and four experiments ordered by creation time.
-Keep the manual New experiment action available even in the empty state. Full
-record lists and draft management remain on their dedicated destinations.
+Keep the manual creation action, labeled New on Home, available in the empty
+state. The latest draft appears as a compact unbordered Continue draft row below
+the Recent experiments heading, without an icon, badge, date or Home dismissal.
+Draft management stays in Experiments. The empty message uses regular muted
+EmptyDescription text rather than a title. Full record lists remain on their
+dedicated destinations.
 
 ## Elevation & Depth
 

@@ -2,22 +2,21 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AgentComposer } from "@/components/agent/agent-composer";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
-import { Alert, Empty } from "@/components/feedback";
+import { Alert } from "@/components/feedback";
 import { HomeGrid } from "@/components/home-grid";
 import {
   ArrowUpRight,
   FlaskConical,
   GitCompareArrows,
   MessageSquare,
-  PenLine,
   Play,
   Plus,
   Radio,
   ScanLine,
 } from "@/components/icons";
 import { ErrorState, Loading, Status } from "@/components/shared";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Empty, EmptyDescription, EmptyHeader } from "@/components/ui/empty";
 import {
   Item,
   ItemActions,
@@ -31,7 +30,6 @@ import { Separator } from "@/components/ui/separator";
 import { agentSuggestions } from "@/lib/agent-suggestions";
 import { useApi } from "@/lib/api";
 import { listDrafts } from "@/lib/drafts";
-import { date } from "@/lib/format";
 import type { RunSummary, StudySummary } from "@/lib/types";
 
 const suggestions = [
@@ -207,46 +205,6 @@ export default function Home() {
             </ItemGroup>
           </section>
         )}
-        {(draft || drafts.error || drafts.unreadable.length > 0) && (
-          <section
-            aria-label="Continue working"
-            className="flex flex-col gap-3"
-          >
-            {draft && (
-              <Item variant="outline" asChild>
-                <Link to={draft.path}>
-                  <ItemMedia variant="icon">
-                    <PenLine />
-                  </ItemMedia>
-                  <ItemContent className="min-w-0">
-                    <ItemTitle className="max-w-full">
-                      <span className="truncate">
-                        {draft.title || "Untitled experiment"}
-                      </span>
-                    </ItemTitle>
-                    <ItemDescription>
-                      Continue draft
-                      {Number.isFinite(Date.parse(draft.updated))
-                        ? ` · Edited ${date(draft.updated)}`
-                        : ""}
-                    </ItemDescription>
-                  </ItemContent>
-                  <ItemActions>
-                    <Badge variant="outline">Draft</Badge>
-                  </ItemActions>
-                </Link>
-              </Item>
-            )}
-            {(drafts.error || drafts.unreadable.length > 0) && (
-              <Alert variant="error">
-                {drafts.error || "Some drafts could not be read."}{" "}
-                <Link to="/studies" className="underline underline-offset-4">
-                  Review drafts
-                </Link>
-              </Alert>
-            )}
-          </section>
-        )}
         <section
           aria-labelledby="recent-experiments-title"
           className="flex flex-col gap-3"
@@ -259,11 +217,40 @@ export default function Home() {
               <Button size="sm" asChild>
                 <Link to="/new">
                   <Plus data-icon="inline-start" />
-                  New experiment
+                  New
                 </Link>
               </Button>
             </div>
           </div>
+          {(draft || drafts.error || drafts.unreadable.length > 0) && (
+            <section
+              aria-label="Continue working"
+              className="flex flex-col gap-2"
+            >
+              {draft && (
+                <Item size="xs" asChild>
+                  <Link to={draft.path}>
+                    <ItemContent className="min-w-0">
+                      <ItemDescription className="flex min-w-0 items-baseline gap-2">
+                        <span className="shrink-0">Continue draft</span>
+                        <span className="truncate text-foreground">
+                          {draft.title || "Untitled experiment"}
+                        </span>
+                      </ItemDescription>
+                    </ItemContent>
+                  </Link>
+                </Item>
+              )}
+              {(drafts.error || drafts.unreadable.length > 0) && (
+                <Alert variant="error">
+                  {drafts.error || "Some drafts could not be read."}{" "}
+                  <Link to="/studies" className="underline underline-offset-4">
+                    Review drafts
+                  </Link>
+                </Alert>
+              )}
+            </section>
+          )}
           {studies.error ? (
             <ErrorState error={studies.error} onRetry={studies.refetch} />
           ) : !studies.data ? (
@@ -292,7 +279,13 @@ export default function Home() {
               ))}
             </ItemGroup>
           ) : (
-            <Empty title="Your experiments will appear here" />
+            <Empty>
+              <EmptyHeader>
+                <EmptyDescription>
+                  Your experiments will appear here
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
           )}
           {recent.length > 0 && (
             <Button className="self-end" variant="ghost" size="sm" asChild>
