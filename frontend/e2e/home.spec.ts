@@ -627,7 +627,7 @@ for (const width of [390, 1440]) {
       await expect.poll(appearance).toEqual(restingBorder);
       await input.fill("A short question");
       const initialHeight = (await input.boundingBox())?.height ?? 0;
-      expect(initialHeight).toBe(88);
+      expect(initialHeight).toBe(96);
       await expect(input).toHaveCSS("font-size", "15px");
       await input.fill(
         Array.from({ length: 6 }, (_, i) => `Question line ${i + 1}`).join(

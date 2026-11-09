@@ -204,6 +204,9 @@ A late response leaves subsequent navigation intact.
 The shared Home/Agent composer keeps its resting border and shadow when its
 textarea is focused; do not add an outer focus border or ring. Other form inputs
 retain the stock shadcn focus treatment.
+Use a consistent 16px outer inset: text starts 16px from the top and sides,
+and footer controls sit 16px from the sides and bottom. The textarea still starts
+with three lines, grows to its existing cap, then scrolls internally.
 
 The four decorative suggestion illustrations are explicitly approved exceptions
 to preset icons: [3dicons](https://3dicons.co/), Dynamic (the slight-angle view)

@@ -788,3 +788,12 @@ Oversight illustration refinement (2026-11-09):
 Verification: production build and four responsive light/dark browser checks
 passed. Reviewed desktop capture for the magnifying-glass artwork and alignment.
 Requested 8080 service remains healthy (HTTP 200).
+
+Composer spacing refinement (2026-11-09):
+- Balance both shared composers with 16px outer insets: textarea top/sides and
+  footer sides/bottom. Keep three default text lines, 15px text, the existing
+  growth cap and internal scrolling; the padded textarea now starts at 96px.
+- Update the existing browser height assertion and document the shared spacing.
+Verification: frontend lint/build and all nine Home browser checks passed.
+Reviewed desktop-dark and phone-light captures for balanced padding, text
+wrapping and send-button placement. Requested 8080 service remains healthy.
