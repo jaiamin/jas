@@ -195,7 +195,7 @@ question or creates a validated experiment proposal from the prompt, without a
 manual creation mode. Home has no selector. Agent has an optional experiment/run
 selector, defaulting to No experiment, solely for selecting existing evidence.
 Explicitly scoped links and resumed chats preserve the selected evidence identity. Four experiment
-suggestions fill the draft without submitting. Under the Suggestions heading,
+suggestions fill the draft without submitting. Under the Experiment ideas heading,
 they share one rounded ItemGroup border with Separator dividers: aligned illustrations,
 15px semibold titles with 19px line height and 13px descriptions with 18px line height in one row of
 four on wide screens. Descriptions use foreground/60, matching record timestamps.
@@ -248,11 +248,11 @@ to use the preset icon library.
 Below suggestions, show up to three active runs only when underway and four
 experiments ordered by creation time.
 Place the primary New action beside Recent experiments, including its empty
-state. When experiments exist, put the stock gray-outlined View all action
+state. Put the stock gray-outlined View all action
 immediately after New in the same header. Both actions remain available while
 the list is collapsed.
 Drafts and Recent experiments are initially expanded stock Collapsibles.
-Their 14px heading triggers are larger than the 12px Suggestions heading; each
+Their 14px heading triggers are larger than the 12px Experiment ideas heading; each
 has a full-width Separator below it and a chevron immediately after its text.
 Heading triggers, dividers and row content share the section’s horizontal edges;
 remove redundant horizontal Item/trigger padding and transparent row borders.
@@ -291,11 +291,11 @@ unnamed. Both Home and Experiments confirm deletion in a stock AlertDialog;
 failed storage writes retain the draft and show a recoverable dialog error.
 Home hides the section after its final draft is deleted. Offer View all drafts
 when more exist, opening and scrolling to the full draft list in Experiments.
-Keep creation actions out of the composer/Suggestions area. The empty message uses regular muted
+Keep creation actions out of the composer/Experiment ideas area. The empty message uses regular muted
 EmptyDescription text rather than a title. Full record lists remain on their
 dedicated destinations.
 
-Home renders its heading, animation, composer, Suggestions and creation/navigation
+Home renders its heading, animation, composer, Experiment ideas and creation/navigation
 buttons immediately. Drafts are read synchronously from local browser storage;
 omit their section when none exist, without a loading placeholder. Only the initial
 Recent experiments request uses row-sized stock Skeletons, with one accessible

@@ -124,10 +124,12 @@ export default function Home() {
       </section>
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pt-8 pb-6 sm:px-6 sm:pt-10 sm:pb-8">
         <section
-          aria-label="Experiment suggestions"
+          aria-labelledby="experiment-ideas-title"
           className="flex flex-col gap-3"
         >
-          <h2 className="text-xs font-medium">Suggestions</h2>
+          <h2 id="experiment-ideas-title" className="text-xs font-medium">
+            Experiment ideas
+          </h2>
           <ItemGroup className="gap-0 overflow-hidden rounded-xl border xl:flex-row">
             {suggestions.map(({ title, prompt }, index) => {
               return (

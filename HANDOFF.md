@@ -1002,3 +1002,9 @@ Verification: lint, TypeScript/build and all 12 Home browser tests passed. After
 the final placeholder inset/height refinement, the delayed-response regression
 passed again. Port 8080 remains healthy. Publish to existing PR #10 and observe
 fresh hosted CI; no dependencies, backend or preset changes.
+
+Home heading follow-up (2026-11-09):
+- Rename Suggestions to Experiment ideas and derive the section's accessible
+  name from its visible heading. Update browser locators and design documentation.
+Verification: frontend lint/build and all 17 Home/Agent-safety browser tests passed.
+Publish to existing PR #10; keep port 8080 running and monitor hosted checks.

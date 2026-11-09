@@ -65,7 +65,7 @@ test("Home keeps immediate content usable while only database rows show skeleton
     ).toBeVisible();
   }
   const suggestions = page
-    .getByRole("region", { name: "Experiment suggestions" })
+    .getByRole("region", { name: "Experiment ideas" })
     .getByRole("button");
   await expect(suggestions).toHaveCount(4);
   await suggestions.first().click();
@@ -244,11 +244,11 @@ test("Home submits once, opens the saved Agent conversation and never resubmits 
     "1",
   );
   const suggestions = page
-    .getByRole("region", { name: "Experiment suggestions" })
+    .getByRole("region", { name: "Experiment ideas" })
     .getByRole("button");
   await expect(suggestions).toHaveCount(4);
   await expect(
-    page.getByRole("heading", { name: "Suggestions", exact: true }),
+    page.getByRole("heading", { name: "Experiment ideas", exact: true }),
   ).toBeVisible();
   await suggestions.last().click();
   await expect(page.getByLabel("Message Agent", { exact: true })).toHaveValue(
@@ -548,7 +548,7 @@ for (const width of [390, 1440])
       ).toHaveAttribute("href", "/new");
       await expect(
         page
-          .getByRole("region", { name: "Experiment suggestions" })
+          .getByRole("region", { name: "Experiment ideas" })
           .getByRole("link"),
       ).toHaveCount(0);
       await expect(
@@ -656,7 +656,7 @@ for (const width of [390, 1440])
         fullPage: true,
       });
       const suggestionSection = page.getByRole("region", {
-        name: "Experiment suggestions",
+        name: "Experiment ideas",
       });
       const illustrations = suggestionSection.locator("img");
       await expect(illustrations).toHaveCount(4);

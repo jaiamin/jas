@@ -94,7 +94,7 @@ for (const path of ["/", "/agent"]) {
     const input = page.getByLabel("Message Agent", { exact: true });
     await input.fill("My unfinished research question");
     const suggestions = page.getByRole("region", {
-      name: path === "/" ? "Experiment suggestions" : "Suggested questions",
+      name: path === "/" ? "Experiment ideas" : "Suggested questions",
     });
     await expect(suggestions.getByRole("button")).toHaveCount(4);
     const first = suggestions.getByRole("button").first();
