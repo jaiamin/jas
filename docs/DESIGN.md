@@ -439,11 +439,32 @@ mobile). Keep the header inset, but let both tables reach the full content width
 without side gutters or an enclosing border. Inset the outer header/data cells and
 filter controls to match the page heading, including skeleton rows; this padding
 must not shorten the row dividers. Left-align headers and data, retain tabular
-numerals, and label the Experiments primary column Name. Stock Table row separators provide
-one line per boundary; do not add a second divider around the table or pagination.
+numerals, and label the Experiments primary column Name. Keep rows on one line:
+Environment and Revision have their own Experiments columns; Seed, Revision and
+Repetition have their own Runs columns. Do not stack metadata under record names.
+Use full catalogue environment names. Page titles use medium weight and record
+names regular weight. A compact star column with a visible Favorite heading follows
+each name. A stock TabsList above the status filter switches All/Favorites. Search
+and status filters apply within that view; Clear filters keeps the chosen view.
+Use a full-width Separator between the view control and status filters, and another
+between filters and the table. Keep both control rows compact. Store
+favorites as browser preferences under separate study/run keys, synchronize changes
+from other tabs, and preserve the previous state with a retryable alert if storage
+fails. Empty favorite views offer View all. Favorites follow record identity across
+revisions and are independent of run-comparison selection.
+Only data rows use skeletons while records/catalogue data load; render actual column
+labels, view/status controls, search and New immediately. Match skeleton column
+counts and row heights to the table, retain cached rows during refreshes, and use
+one accessible loading announcement. Stock Table row separators provide
+one line per boundary, including below the final row; do not add a second divider around the table or pagination.
 The two pages share the filter-state contract and row-loading skeletons while retaining their
 own columns. Omit total counts below the tables and render pagination only when
-there is more than one page. Runs link to their exact experiment revision and keep comparison
+there is more than one page. Compose shared stock Pagination/Buttons with Previous,
+numbered pages, bounded ellipses and Next; use real disabled buttons at either end,
+aria-current for the active page, and compact icon-only arrows on narrow screens.
+Reset to the first page when search, status or All/Favorites changes. Created dates
+use the normal data color in both tables; Runs includes its recorded creation time.
+Runs link to their exact experiment revision and keep comparison
 selections across filtering. Loading affects database rows only, leaving search,
 the heading and New available. Empty lists keep a single creation action in the
 heading. Embedded experiment runs use the same controlled table/search contract.

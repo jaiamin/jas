@@ -1,6 +1,5 @@
 import { Play } from "@/components/icons";
 import { RecordListHeading } from "@/components/record-list-heading";
-import { RecordTableLoading } from "@/components/record-table-loading";
 import { RunTable } from "@/components/run-table";
 import { ErrorState } from "@/components/shared";
 import { useRecordFilters } from "@/hooks/use-record-filters";
@@ -20,8 +19,6 @@ export default function Runs() {
       />
       {runs.error ? (
         <ErrorState error={runs.error} onRetry={runs.refetch} />
-      ) : !runs.data ? (
-        <RecordTableLoading columns={6} />
       ) : (
         <RunTable runs={runs.data} filters={filters} selectable />
       )}

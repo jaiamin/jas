@@ -6,15 +6,24 @@ export function useRecordFilters() {
     search: "",
     status: "all",
     page: 0,
+    view: "all" as "all" | "favorites",
   });
   return {
     ...filters,
+    setView: (view: "all" | "favorites") =>
+      setFilters((current) => ({ ...current, view, page: 0 })),
     setSearch: (search: string) =>
       setFilters((current) => ({ ...current, search, page: 0 })),
     setStatus: (status: string) =>
       setFilters((current) => ({ ...current, status, page: 0 })),
     setPage: (page: number) => setFilters((current) => ({ ...current, page })),
-    clear: () => setFilters({ search: "", status: "all", page: 0 }),
+    clear: () =>
+      setFilters((current) => ({
+        ...current,
+        search: "",
+        status: "all",
+        page: 0,
+      })),
   };
 }
 

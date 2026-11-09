@@ -50,6 +50,7 @@ export {
   ShieldCheck,
   SkipForward,
   Sprout,
+  Star,
   Sun,
   Target,
   Target as AgentIcon,
