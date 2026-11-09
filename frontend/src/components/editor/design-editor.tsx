@@ -405,8 +405,9 @@ export function DesignEditor({
                     </DisclosureContent>
                   </Disclosure>
                   <Field>
-                    <FieldLabel>Environment</FieldLabel>
+                    <FieldLabel htmlFor="environment">Environment</FieldLabel>
                     <Select
+                      id="environment"
                       label="Environment"
                       value={design.environment}
                       disabled={busy}

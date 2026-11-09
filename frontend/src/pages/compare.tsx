@@ -156,12 +156,14 @@ export default function Compare() {
         <section>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
             <h2 className="text-base font-semibold">History by round</h2>
-            <Select
-              label="Comparison measurement"
-              value={metricKey}
-              onValueChange={setSelected}
-              options={keys.map((key) => ({ value: key, label: label(key) }))}
-            />
+            {keys.length > 0 && (
+              <Select
+                label="Comparison measurement"
+                value={metricKey}
+                onValueChange={setSelected}
+                options={keys.map((key) => ({ value: key, label: label(key) }))}
+              />
+            )}
           </div>
           <MetricChart
             series={runs.map((r) => ({

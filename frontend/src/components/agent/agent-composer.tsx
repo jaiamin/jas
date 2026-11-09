@@ -118,7 +118,12 @@ export function AgentComposer({
       {settings.error && (
         <Alert variant="error">
           Could not check provider availability.{" "}
-          <Button variant="ghost" size="sm" onClick={() => settings.refetch()}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => settings.refetch()}
+          >
             Retry
           </Button>
         </Alert>

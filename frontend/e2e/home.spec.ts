@@ -25,6 +25,24 @@ test("the grid ecosystem evolves only while visible and motion is enabled", asyn
           )
           .join("|"),
       );
+  // Provider availability and fonts affect the hero height. Measure the settled
+  // keyless layout before checking motion; a resize legitimately rebuilds cells.
+  await expect(
+    page.getByRole("link", { name: "Configure a provider", exact: true }),
+  ).toBeVisible();
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  await expect
+    .poll(() =>
+      grid.evaluate((element) => {
+        const svg = element as SVGSVGElement;
+        const bounds = svg.getBoundingClientRect();
+        return Math.max(
+          Math.abs(svg.viewBox.baseVal.width - bounds.width),
+          Math.abs(svg.viewBox.baseVal.height - bounds.height),
+        );
+      }),
+    )
+    .toBeLessThan(18);
   await expect(grid).toHaveAttribute("data-paused", "true");
   expect(await grid.locator("rect").count()).toBeLessThanOrEqual(3456);
   const still = await frame();

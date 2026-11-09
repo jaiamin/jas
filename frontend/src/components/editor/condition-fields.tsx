@@ -135,8 +135,9 @@ export function ConditionFields({
                 </div>
                 <FieldGroup className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
                   <Field>
-                    <FieldLabel>Model</FieldLabel>
+                    <FieldLabel htmlFor={`model-${c.key}`}>Model</FieldLabel>
                     <Select
+                      id={`model-${c.key}`}
                       label={`Condition ${i + 1} model`}
                       value={c.model}
                       onValueChange={(v) =>
@@ -204,8 +205,11 @@ export function ConditionFields({
                     </Field>
                   )}
                   <Field>
-                    <FieldLabel>Retained memory</FieldLabel>
+                    <FieldLabel htmlFor={`memory-${c.key}`}>
+                      Retained memory
+                    </FieldLabel>
                     <Select
+                      id={`memory-${c.key}`}
                       label={`Condition ${i + 1} memory`}
                       value={c.parameters.memory}
                       onValueChange={(v) =>

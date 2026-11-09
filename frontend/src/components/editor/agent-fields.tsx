@@ -109,8 +109,11 @@ export function AgentFields({
                     />
                   </Field>
                   <Field>
-                    <FieldLabel>Model</FieldLabel>
+                    <FieldLabel htmlFor={`agent-${p.key}-model`}>
+                      Model
+                    </FieldLabel>
                     <Select
+                      id={`agent-${p.key}-model`}
                       label={`Model for ${p.name}`}
                       value={p.model ?? "inherit"}
                       onValueChange={(value) =>

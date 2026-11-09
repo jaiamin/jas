@@ -68,9 +68,12 @@ export function useAgentComposer({
       }
       client.invalidateQueries({ queryKey: ["/chats"] });
       client.invalidateQueries({ queryKey: [`/chats/${result.chat_id}`] });
-      onSent(result);
     },
   });
+  function chooseSuggestion(text: string) {
+    setQuestion(text);
+    composer.current?.focus();
+  }
   function submit() {
     if (
       question.trim() &&
@@ -81,13 +84,16 @@ export function useAgentComposer({
       settings.data
     ) {
       submitting.current = true;
-      send.mutate({ question, context });
+      // Per-call callbacks stop with their observer when this composer unmounts.
+      // Cache and draft settlement above still runs for the accepted request.
+      send.mutate({ question, context }, { onSuccess: onSent });
     }
   }
   return {
     question,
     setQuestion,
     composer,
+    chooseSuggestion,
     draftUnavailable,
     settings,
     plannerModel,

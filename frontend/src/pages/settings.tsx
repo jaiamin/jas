@@ -101,10 +101,10 @@ export default function SettingsPage() {
                       {s.models.map((m) => (
                         <TableRow key={m.id}>
                           <TableCell>{modelLabel(m.id)}</TableCell>
-                          <TableCell className="text-right text-right tabular-nums">
+                          <TableCell className="text-right tabular-nums">
                             {money(m.input_per_million)}
                           </TableCell>
-                          <TableCell className="text-right text-right tabular-nums">
+                          <TableCell className="text-right tabular-nums">
                             {money(m.output_per_million)}
                           </TableCell>
                         </TableRow>

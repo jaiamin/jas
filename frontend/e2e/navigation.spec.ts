@@ -308,6 +308,8 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
   const footer = page.locator('[data-slot="sidebar-footer"]');
   const avatar = footer.locator('[data-slot="avatar"]');
   const avatarBefore = await avatar.boundingBox();
+  const separators = page.locator('[data-slot="sidebar-separator"]');
+  const sectionLineBefore = await separators.first().boundingBox();
   const settingsBefore = await footer
     .getByRole("link", { name: "Settings", exact: true })
     .boundingBox();
@@ -319,9 +321,11 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
     exact: true,
   });
   await expect(expand).toHaveCSS("opacity", "0");
-  const separators = page.locator('[data-slot="sidebar-separator"]');
   await expect(separators).toHaveCount(2);
-  await expect(separators.first()).toBeHidden();
+  await expect(separators.first()).toBeVisible();
+  expect((await separators.first().boundingBox())?.y).toBe(
+    sectionLineBefore?.y,
+  );
   await expect(separators.last()).toBeVisible();
   await expect(footer.getByRole("button")).toHaveCSS("height", "48px");
   expect((await avatar.boundingBox())?.y).toBe(avatarBefore?.y);

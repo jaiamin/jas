@@ -134,6 +134,7 @@ export function CompositionFields({
                 Stock visibility
               </FieldLabel>
               <Select
+                id={`${id}-${index}-stock`}
                 label="Stock visibility"
                 value={r.stock_visibility}
                 options={[
@@ -153,6 +154,7 @@ export function CompositionFields({
                 Allocation visibility
               </FieldLabel>
               <Select
+                id={`${id}-${index}-allocation`}
                 label="Allocation visibility"
                 value={r.allocation_visibility}
                 options={[

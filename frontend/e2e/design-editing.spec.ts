@@ -108,3 +108,35 @@ test("cloned conditions keep independent nested resource schedules through savin
     { round: 4, endowment: 6 },
   ]);
 });
+
+test("editor select labels activate their associated controls", async ({
+  page,
+}) => {
+  await page.goto("/new?template=composed");
+  const environment = page.getByRole("combobox", {
+    name: "Environment",
+    exact: true,
+  });
+  await page.locator('label[for="environment"]').click();
+  await expect(page.getByRole("listbox")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(environment).toBeFocused();
+  await page.getByRole("tab", { name: /^Conditions/ }).click();
+  const labels = page.locator('[data-slot="field-label"][for]:visible');
+  await expect
+    .poll(() =>
+      labels.evaluateAll((labels) =>
+        labels.every((label) => (label as HTMLLabelElement).control !== null),
+      ),
+    )
+    .toBe(true);
+  const stock = page
+    .getByRole("combobox", { name: "Stock visibility", exact: true })
+    .first();
+  const id = await stock.getAttribute("id");
+  expect(id).toBeTruthy();
+  await page.locator(`label[for="${id}"]`).click();
+  await expect(page.getByRole("listbox")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(stock).toBeFocused();
+});

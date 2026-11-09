@@ -151,8 +151,11 @@ export function ExecutionFields({
         <DisclosureContent>
           <FieldGroup>
             <Field>
-              <FieldLabel>OpenAI reasoning effort</FieldLabel>
+              <FieldLabel htmlFor="reasoning-effort">
+                OpenAI reasoning effort
+              </FieldLabel>
               <Select
+                id="reasoning-effort"
                 label="OpenAI reasoning effort"
                 value={design.openai_reasoning_effort ?? "default"}
                 onValueChange={(v) =>

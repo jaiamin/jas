@@ -160,13 +160,17 @@ function AgentConversation({
         ? location.state.question
         : undefined,
     onSent: (result) => {
-      if (!chatId)
+      // Lazy navigation can leave this composer mounted after the URL changes.
+      if (
+        !chatId &&
+        window.location.pathname === location.pathname &&
+        window.location.search === location.search
+      )
         setParams({ chat: result.chat_id }, { replace: true, state: null });
     },
   });
   const {
-    setQuestion,
-    composer,
+    chooseSuggestion,
     settings,
     plannerModel,
     assistantModel,
@@ -291,10 +295,7 @@ function AgentConversation({
             context={context}
             studies={studies}
             runs={runs}
-            onChoose={(text) => {
-              setQuestion(text);
-              composer.current?.focus();
-            }}
+            onChoose={chooseSuggestion}
           />
         </div>
       )}

@@ -33,6 +33,11 @@ test("Agent is one full page with an inner history rail and contextual composer"
   await expect(
     page.getByRole("button", { name: "Open Agent workspace" }),
   ).toHaveCount(0);
+  const inputGroup = page.locator('[data-slot="input-group"]');
+  const restingStyle = await inputGroup.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { border: style.borderColor };
+  });
   await page
     .getByRole("button", {
       name: "How do matched seeds help comparisons?",
@@ -44,10 +49,16 @@ test("Agent is one full page with an inner history rail and contextual composer"
   await expect(draft).toBeFocused();
   await draft.focus();
   await expect(draft).toHaveCSS("outline-style", "none");
-  await expect(page.locator('[data-slot="input-group"]')).toHaveCSS(
-    "box-shadow",
-    /0px 0px 0px 3px/,
-  );
+  await expect
+    .poll(() =>
+      inputGroup.evaluate((element) =>
+        (getComputedStyle(element).boxShadow.match(/-?[\d.]+px/g) ?? []).every(
+          (length) => Number.parseFloat(length) === 0,
+        ),
+      ),
+    )
+    .toBe(true);
+  await expect(inputGroup).toHaveCSS("border-color", restingStyle.border);
   await expect(page.locator(".composer-note")).toHaveCount(0);
   const catalog = await (await request.get("/api/catalog")).json();
   const { id } = await (
@@ -64,7 +75,11 @@ test("Agent is one full page with an inner history rail and contextual composer"
   const run = study.runs[0];
   await page.goto(`/runs/${run.id}`);
   await page.getByRole("link", { name: "Ask Agent", exact: true }).click();
-  await expect(page).toHaveURL(new RegExp(`/agent\\?context=run%3A${run.id}`));
+  await expect(page).toHaveURL(
+    (url) =>
+      url.pathname === "/agent" &&
+      url.searchParams.get("context") === `run:${run.id}`,
+  );
   await expect(page.getByRole("dialog")).toHaveCount(0);
   const context = page.getByRole("combobox", { name: "Message context" });
   await expect(context).toContainText(run.id.slice(0, 6));

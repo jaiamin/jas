@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AgentComposer } from "@/components/agent/agent-composer";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
@@ -64,13 +64,6 @@ const suggestionDescriptions = [
 export default function Home() {
   const now = useNow();
   const navigate = useNavigate();
-  const mounted = useRef(true);
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
   const studies = useApi<StudySummary[]>("/studies", true);
   const runs = useApi<RunSummary[]>("/runs", true);
   const state = useAgentComposer({
@@ -78,7 +71,7 @@ export default function Home() {
     draftKey: "jas:agent-draft:home",
     onSent: (result) => {
       // A lazy destination may keep Home mounted while navigation is pending.
-      if (mounted.current && window.location.pathname === "/")
+      if (window.location.pathname === "/")
         navigate(`/agent?chat=${result.chat_id}`);
     },
   });
@@ -142,10 +135,7 @@ export default function Home() {
                     variant="ghost"
                     className="h-auto w-full min-w-0 flex-1 items-center justify-start gap-3 rounded-none border-0 p-4 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-4 xl:flex-col xl:items-start"
                     disabled={state.send.isPending}
-                    onClick={() => {
-                      state.setQuestion(prompt);
-                      state.composer.current?.focus();
-                    }}
+                    onClick={() => state.chooseSuggestion(prompt)}
                   >
                     <img
                       src={`/illustrations/suggestions/${suggestionIllustrations[index]}.webp`}

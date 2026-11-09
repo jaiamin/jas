@@ -123,8 +123,10 @@ sidebar selection in both themes, centered
 within the collapsed rail with the label and menu chevron hidden.
 A stock SidebarSeparator with 16px edge insets aligns with the navigation icons
 between primary and workspace groups. The separator above the local-workspace
-footer spans the full sidebar width. Only the navigation section separator hides in the collapsed rail. The full-width
-footer divider and continuous divider under the top bars remain. Footer button
+footer spans the full sidebar width. The navigation section separator stays
+visible at the same vertical position in the collapsed rail, with equal side
+insets. The full-width footer divider and continuous divider under the top bars
+remain. Footer button
 heights stay 32px for Settings and 48px for the workspace menu in both states, so
 their vertical positions and padding do not change when labels disappear. Navigation glyphs and collapse control are 15px. Selected sidebar icons fill,
 with the requested exceptions: the stock Bot stays outlined, House fills only
@@ -321,6 +323,26 @@ protocol proposals appear in a Card for review before saving or running. Preserv
 draft identity, pending output, evidence scope and recoverable errors when
 changing presentation. Saving a protocol never executes it.
 
+### Stock components and customizations
+
+This is a shadcn-based interface, not a byte-for-byte unmodified registry copy.
+`src/components/ui` owns the shared shadcn primitives, including the small
+accessibility and correctness patches listed below. Workflow components compose
+those primitives; they do not maintain a second set of controls. Button text is
+selectable app-wide, including plain labels and button-styled links. Explicit
+text spans and disabled native dragging make selection reliable; a shared capture
+handler blocks activation only for a pointer selection drag. Keep content prose selectable and preserve
+normal click/keyboard interaction. Layout and requested compact spacing live in
+those compositions, semantic theme tokens live
+in `src/index.css`, and app glyphs pass through `src/components/icons.tsx`.
+
+The deliberate visual exceptions are the JAS logo/wordmark, Home ecosystem and
+heading fade, CC0 3dicons suggestion images, partial selected navigation glyphs,
+black/white surfaces, blue selection, and composer sizing, backing and focus
+appearance. They are not all controlled by a preset. A preset changes the shared
+foundation; review these documented exceptions and the icon boundary rather than
+assuming the CLI can reconcile every app-specific choice automatically.
+
 ### Applying a preset
 
 From the repository root:
@@ -341,13 +363,13 @@ pnpm dlx shadcn@latest apply --preset <code>
    The GitHub brand mark is a CC0 Simple Icons asset, distinct from preset UI glyphs.
    Avoid a runtime icon resolver.
 3. Preserve nonvisual fixes if regeneration overwrites them: Progress bounds and
-   custom maximum, Slider thumb labels, Tabs orientation, Breadcrumb current-item
-   semantics, Chart style children and stable keys, valid Field/Item/InputGroup
+   custom maximum, selectable Button labels/link text and their drag guard, Slider
+   thumb labels, Tabs orientation, Breadcrumb current-item semantics, Chart style children and stable keys, valid Field/Item/InputGroup
    roles, SidebarSeparator horizontal width respecting its edge insets,
    InputGroup disabled styling scoped to its input control (a disabled
    submit button must not dim an editable composer), and narrow lint annotations. Keep chart legend text readable and retain
    distinct line patterns.
-   Retain the requested 4px gaps between tabs and sidebar items, continuous header
+   Retain 4px tab gaps and 3px sidebar-item gaps, the continuous header
    divider, pure white/black surface tokens, CardFooter card surface, subtle blue
    selection with weaker hover, filled selected sidebar icons, blue primary
    actions, and dedicated wordmark font

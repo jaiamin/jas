@@ -920,3 +920,59 @@ Verification: frontend lint/build and all four responsive Home layout browser
 checks passed (390/1440px, light/dark). Reviewed desktop light/dark and phone
 dark captures; computed mask matches the requested stops and no horizontal
 overflow. Closed the review browser; existing app on port 8080 remains running.
+
+Frontend end-to-end quality review (2026-11-09):
+Scope: current frontend implementation and browser flows, not only Playwright
+source. Preserve the approved stock-shadcn design and explicit Home/brand
+exceptions; fix confirmed correctness, accessibility, maintainability and test
+issues without speculative abstractions or a visual redesign.
+Acceptance:
+- Review navigation/Home, Agent, editor/environments, experiment/run/evidence,
+  comparison/settings, shared primitives and their end-to-end tests.
+- Fix reproducible issues with meaningful regression coverage; preserve drafts,
+  evidence identity and the rule that only explicit submissions start paid work.
+- Pass frontend lint, unit tests, build and full keyless browser suite; report
+  observed limitations and update the existing task PR.
+Progress:
+- Reviewed every routed area, editor/Agent/run workflows, state ownership and
+  shared shadcn boundaries; checked desktop/mobile screenshots in both themes.
+- Reproduced late Agent responses stealing navigation to Experiments or a fresh
+  chat. Keep cache/draft settlement in the mutation, scope navigation callbacks
+  to mounted observers and verify the originating URL during lazy transitions.
+  Preserve original chat history and any newer draft.
+- Per user steering, omit Undo suggestion entirely. Make Home/Agent suggestion
+  text selectable; make all shared Button labels selectable as requested. The
+  shared primitive wraps plain text, disables native link dragging and guards
+  pointer selection drags before actions/child links activate, preserving later
+  normal clicks and keyboard interaction. No extra control wrapper. Other prose,
+  tables, messages and record links already permit selection.
+- Keep the sidebar section divider visible at its expanded vertical position
+  when collapsed; retain the full-width footer line and add position coverage.
+- Explicitly mark provider Retry as a non-submit button. Associate editor Select
+  labels with unique triggers, hide the comparison selector when no outcomes
+  exist, remove duplicated classes and obsolete payload-tracing copy.
+- Add browser regressions for navigation, suggestion/confirmation text selection,
+  non-submitting Retry and label activation, plus a comparison empty-state unit regression.
+- Investigated failed hosted runs 42561954380 and 42562033241: stale composer
+  focus-ring expectation and a grid test capturing before keyless provider/font
+  layout settled. Assert the requested unchanged border/no added ring, parse the
+  context URL semantically, and await loaded whole-cell sizing before testing
+  reduced-motion stillness. Do not relax the pause/evolution assertions.
+- Document that the interface composes shadcn with deliberate brand/Home/composer
+  exceptions and small primitive fixes; explain CLI preset and icon-boundary
+  review. Correct the old sidebar-gap note.
+Verification: frontend lint, all 91 unit tests, TypeScript/production build, the
+full 101-test keyless browser suite, Ruff, ty, all 923 backend tests, Actionlint and
+production Docker build/smoke passed. After the final Button text-child refinement,
+all 17 Agent safety/draft/navigation browser tests passed again, including real
+selection drags on suggestions, ordinary actions, links and destructive dialog
+buttons. Selection never submits, navigates or deletes; normal clicks/keyboard
+activation remain functional. Reviewed desktop/mobile and both themes, including
+the collapsed divider (same y=135 before/after; footer y=695 unchanged).
+Local uv cannot start on this VM (unsupported jemalloc page size); backend checks
+ran successfully through the existing project .venv instead. No paid calls,
+backend changes, dependencies or preset changes. No Undo suggestion state remains.
+PR #9 was already merged; follow-up branch fix/frontend-review starts from the
+latest origin/main with the same implementation tree. Next: observe fresh hosted
+CI on the separate follow-up draft PR. App on port 8080 restarted and left running;
+review tabs and disposable container/volume are cleaned up after verification.

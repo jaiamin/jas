@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { templateDesign } from "./helpers.js";
+import { selectText, templateDesign } from "./helpers.js";
 
 for (const path of ["/", "/studies#drafts"]) {
   test(`draft deletion is confirmed, persistent and shared between lists · ${path}`, async ({
@@ -49,6 +49,16 @@ for (const path of ["/", "/studies#drafts"]) {
     await remove.click();
     const dialog = page.getByRole("alertdialog", { name: "Delete draft?" });
     await expect(dialog).toContainText("Draft to delete");
+    await selectText(
+      page,
+      dialog.getByRole("button", { name: "Delete draft", exact: true }),
+    );
+    await expect(dialog).toBeVisible();
+    expect(
+      await page.evaluate(() =>
+        localStorage.getItem("jas:draft:/new?template=commons"),
+      ),
+    ).not.toBeNull();
     await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
     await expect(draft).toBeVisible();
     await remove.click();
