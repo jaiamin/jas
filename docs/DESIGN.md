@@ -295,6 +295,16 @@ Keep creation actions out of the composer/Suggestions area. The empty message us
 EmptyDescription text rather than a title. Full record lists remain on their
 dedicated destinations.
 
+Home renders its heading, animation, composer, Suggestions and creation/navigation
+buttons immediately. Drafts are read synchronously from local browser storage;
+omit their section when none exist, without a loading placeholder. Only the initial
+Recent experiments request uses row-sized stock Skeletons, with one accessible
+loading status. Keep New and View all visible even while loading or empty. Cached
+rows remain visible during polling; an empty message appears only after a successful
+empty response. In progress appears only when active runs are known to exist. Keep
+the composer editable while provider availability loads, but disable Send until
+that check succeeds.
+
 ## Elevation & Depth
 
 Use shared theme tokens for surfaces, including the requested pure white/black

@@ -17,7 +17,7 @@ import {
   Play,
   Plus,
 } from "@/components/icons";
-import { ErrorState, Loading, Status } from "@/components/shared";
+import { ErrorState, Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -38,6 +38,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useNow } from "@/hooks/use-now";
 import { agentSuggestions } from "@/lib/agent-suggestions";
 import { useApi } from "@/lib/api";
@@ -295,11 +296,9 @@ export default function Home() {
                     New
                   </Link>
                 </Button>
-                {recent.length > 0 && (
-                  <Button variant="outline" size="sm" asChild>
-                    <Link to="/studies">View all</Link>
-                  </Button>
-                )}
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/studies">View all</Link>
+                </Button>
               </div>
             </div>
             <DisclosureContent className="flex flex-col">
@@ -307,7 +306,22 @@ export default function Home() {
               {studies.error ? (
                 <ErrorState error={studies.error} onRetry={studies.refetch} />
               ) : !studies.data ? (
-                <Loading />
+                <div role="status" aria-label="Loading recent experiments">
+                  {["first", "second", "third"].map((row, index) => (
+                    <Fragment key={row}>
+                      <div
+                        aria-hidden="true"
+                        className="flex h-11 items-center gap-2.5 px-1.75"
+                      >
+                        <Skeleton className="size-3.5 shrink-0" />
+                        <Skeleton className="h-4 w-2/5" />
+                        <Skeleton className="ml-auto h-3 w-14" />
+                        <Skeleton className="size-3.5 shrink-0" />
+                      </div>
+                      {index < 2 && <Separator />}
+                    </Fragment>
+                  ))}
+                </div>
               ) : recent.length ? (
                 <ItemGroup className="has-data-[size=sm]:gap-0">
                   {recent.map((study, index) => (

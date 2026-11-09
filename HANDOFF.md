@@ -985,3 +985,20 @@ Verification: frontend lint/build and the compact-header/navigation browser
 regression passed. Browser measurement confirms x=12, width=23 and y=135 after
 collapse; footer y=695 unchanged and no horizontal overflow. Review tab closed;
 port 8080 remains running. Publish this small refinement to the existing PR #10.
+
+Home loading follow-up (2026-11-09):
+- Drafts come from synchronous localStorage and need no skeleton. Render Home's
+  static content immediately; keep the composer editable while settings load,
+  with Send disabled until provider availability is known.
+- Replace the generic full-page Recent experiments loading placeholder with
+  three compact rows composed from stock Skeleton and Separator, exposed as one
+  accessible loading status. Keep New and View all visible during loading and
+  empty states so navigation does not pop into the header after the request.
+- Add a browser regression holding experiments/settings requests independently:
+  drafts, suggestions and navigation remain usable; only the database list has
+  skeletons; Send unlocks after settings without waiting on experiments; empty
+  results replace placeholders without shifting New; View all still navigates.
+Verification: lint, TypeScript/build and all 12 Home browser tests passed. After
+the final placeholder inset/height refinement, the delayed-response regression
+passed again. Port 8080 remains healthy. Publish to existing PR #10 and observe
+fresh hosted CI; no dependencies, backend or preset changes.

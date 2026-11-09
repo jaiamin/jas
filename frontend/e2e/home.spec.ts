@@ -7,6 +7,90 @@ const settings = {
   assistant_model: "openai:gpt-6.1-sol",
 };
 
+test("Home keeps immediate content usable while only database rows show skeletons", async ({
+  page,
+}) => {
+  let releaseStudies = () => {};
+  let releaseSettings = () => {};
+  const pendingStudies = new Promise<void>((resolve) => {
+    releaseStudies = resolve;
+  });
+  const pendingSettings = new Promise<void>((resolve) => {
+    releaseSettings = resolve;
+  });
+  await page.addInitScript(() => {
+    const path = "/new";
+    localStorage.setItem(
+      `jas:draft:${path}`,
+      JSON.stringify({
+        path,
+        title: "A local unfinished experiment",
+        updated: new Date().toISOString(),
+        design: {},
+        json: "{}",
+        mode: "json",
+      }),
+    );
+  });
+  await page.route("**/api/settings", async (route) => {
+    await pendingSettings;
+    await route.fulfill({ json: settings });
+  });
+  await page.route("**/api/studies", async (route) => {
+    await pendingStudies;
+    await route.fulfill({ json: [] });
+  });
+  await page.route("**/api/runs", (route) => route.fulfill({ json: [] }));
+  await page.goto("/");
+  const recent = page.getByRole("region", { name: "Recent experiments" });
+  const loading = recent.getByRole("status", {
+    name: "Loading recent experiments",
+  });
+  await expect(loading).toBeVisible();
+  const placeholders = loading.locator('[data-slot="skeleton"]');
+  expect(await placeholders.count()).toBeGreaterThan(0);
+  await expect(page.locator('[data-slot="skeleton"]')).toHaveCount(
+    await placeholders.count(),
+  );
+  await expect(
+    page
+      .getByRole("region", { name: "Drafts", exact: true })
+      .getByRole("link", {
+        name: "A local unfinished experiment",
+      }),
+  ).toBeVisible();
+  for (const label of ["New", "View all"]) {
+    await expect(
+      recent.getByRole("link", { name: label, exact: true }),
+    ).toBeVisible();
+  }
+  const suggestions = page
+    .getByRole("region", { name: "Experiment suggestions" })
+    .getByRole("button");
+  await expect(suggestions).toHaveCount(4);
+  await suggestions.first().click();
+  const input = page.getByLabel("Message Agent", { exact: true });
+  await expect(input).toHaveValue(/public messages/);
+  const send = page.getByRole("button", { name: "Send message" });
+  await expect(send).toBeDisabled();
+  const newPosition = await recent
+    .getByRole("link", { name: "New", exact: true })
+    .boundingBox();
+  releaseSettings();
+  await expect(send).toBeEnabled();
+  await expect(loading).toBeVisible();
+  releaseStudies();
+  await expect(loading).toHaveCount(0);
+  await expect(
+    recent.getByText("Your experiments will appear here"),
+  ).toBeVisible();
+  expect(
+    await recent.getByRole("link", { name: "New", exact: true }).boundingBox(),
+  ).toEqual(newPosition);
+  await recent.getByRole("link", { name: "View all", exact: true }).click();
+  await expect(page).toHaveURL(/\/studies$/);
+});
+
 test("the grid ecosystem evolves only while visible and motion is enabled", async ({
   page,
 }) => {
