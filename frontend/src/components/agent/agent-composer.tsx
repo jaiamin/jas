@@ -45,7 +45,7 @@ export function AgentComposer({
         submit();
       }}
     >
-      <Card className="gap-0 bg-muted p-2 shadow-xl">
+      <Card className="gap-0 bg-muted p-2 shadow-lg">
         <CardContent className="px-0">
           <div className="rounded-lg bg-background">
             <InputGroup className="has-[[data-slot=input-group-control]:focus-visible]:border-input has-[[data-slot=input-group-control]:focus-visible]:ring-0">
@@ -86,17 +86,24 @@ export function AgentComposer({
             </InputGroup>
           </div>
         </CardContent>
-        <CardFooter className="flex-wrap gap-x-1 gap-y-0 border-0 bg-transparent px-1 py-2 text-xs text-muted-foreground">
+        <CardFooter className="flex-wrap gap-x-1.5 gap-y-0 border-0 bg-transparent px-1 py-2 text-xs text-foreground/65">
           <span>Shape an experiment with Agent, or</span>
           <Button
             variant="link"
             size="xs"
-            className="h-auto px-0 font-semibold text-foreground has-data-[icon=inline-end]:pr-0"
+            className="h-auto gap-0.5 px-0 font-semibold text-foreground hover:no-underline has-data-[icon=inline-end]:pr-0"
             asChild
           >
             <Link to="/new">
-              start from scratch
-              <ArrowRight data-icon="inline-end" aria-hidden="true" />
+              <span className="underline underline-offset-4">
+                start from scratch
+              </span>
+              <ArrowRight
+                data-icon="inline-end"
+                className="self-center"
+                strokeWidth={2.25}
+                aria-hidden="true"
+              />
             </Link>
           </Button>
         </CardFooter>

@@ -846,3 +846,15 @@ streaming entry, three-row growth and responsive layout checks. Updated overlap/
 shadow measurements to target the new outer panel. Reviewed Home in phone-light
 and desktop-dark and Agent on phone: note/link wrapping, panel spacing and
 controls remain usable. Impeccable's mechanical detector reported no findings.
+
+Composer panel detail refinement (2026-11-09):
+- Tighten the outer panel shadow from stock shadow-xl to shadow-lg for a smaller
+  bottom footprint with soft side edges. Keep panel and inner composer spacing.
+- Darken footer prose to foreground/65; separate it from the manual-editor link
+  by 6px. Underline only link text, with its centered arrow 2px away and a slightly
+  thicker 2.25px stroke. Preserve keyboard focus and the existing /new navigation.
+- Port 8080 was already listening despite the completion notification; HTTP 200.
+Verification: frontend lint/build and seven responsive Home/composer browser
+checks passed, including manual-editor draft preservation and focus behavior.
+Reviewed final Home/Agent phone captures for the tighter shadow, darker note,
+link underline, spacing and arrow alignment.
