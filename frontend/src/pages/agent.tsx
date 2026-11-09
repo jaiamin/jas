@@ -1,16 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
-import {
-  AgentContext,
-  contextLabel,
-  messageContext,
-} from "@/components/agent/agent-context";
+import { AgentComposer } from "@/components/agent/agent-composer";
+import { contextLabel, messageContext } from "@/components/agent/agent-context";
 import { AgentHistory } from "@/components/agent/agent-history";
 import { AgentReply } from "@/components/agent/agent-reply";
+import { useAgentComposer } from "@/components/agent/use-agent-composer";
 import { Alert } from "@/components/feedback";
 import {
-  ArrowUp,
   ArrowUpRight,
   BookOpen,
   FlaskConical,
@@ -20,11 +17,6 @@ import {
 import { ErrorState, Loading } from "@/components/shared";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupTextarea,
-} from "@/components/ui/input-group";
 import {
   Message,
   MessageContent,
@@ -41,15 +33,7 @@ import {
 import { agentSuggestions } from "@/lib/agent-suggestions";
 import { api, useApi } from "@/lib/api";
 import { chatProgress } from "@/lib/chat-progress";
-import type {
-  Analysis,
-  Design,
-  RunSummary,
-  Settings,
-  StudySummary,
-} from "@/lib/types";
-
-type Submission = { question: string; context: string };
+import type { Analysis, Design, RunSummary, StudySummary } from "@/lib/types";
 
 export default function AgentPage() {
   const [params] = useSearchParams();
@@ -163,73 +147,36 @@ function AgentConversation({
       ? messageContext(messages[messages.length - 1])
       : "general");
   const draftKey = `jas:agent-draft:${chatId ?? params.get("new") ?? "new"}`;
-  const [question, setQuestion] = useState<string>(() => {
-    if (typeof location.state?.question === "string")
-      return location.state.question;
-    try {
-      return sessionStorage.getItem(draftKey) ?? "";
-    } catch {
-      return "";
-    }
-  });
-  const composer = useRef<HTMLTextAreaElement>(null);
-  const [draftUnavailable, setDraftUnavailable] = useState(false);
-  useEffect(() => {
-    try {
-      if (question) sessionStorage.setItem(draftKey, question);
-      else sessionStorage.removeItem(draftKey);
-      setDraftUnavailable(false);
-    } catch {
-      setDraftUnavailable(true);
-    }
-  }, [draftKey, question]);
-  const settings = useApi<Settings>("/settings");
-  const plannerModel = settings.data?.planner_model ?? "";
-  const assistantModel = settings.data?.assistant_model ?? "";
-  const provider = (context === "new" ? plannerModel : assistantModel).split(
-    ":",
-  )[0];
-  const unavailable = settings.data?.providers[provider] === false;
   const busy = messages.some((message) => message.status === "pending");
-  const client = useQueryClient();
-  const send = useMutation({
-    mutationFn: (submission: Submission) =>
-      api<{ id: string; chat_id: string }>("/chats", {
-        ...submission,
-        chat_id: chatId,
-      }),
-    onSuccess: (result, submitted) => {
-      setQuestion((current) => (current === submitted.question ? "" : current));
-      try {
-        if (sessionStorage.getItem(draftKey) === submitted.question)
-          sessionStorage.removeItem(draftKey);
-      } catch {
-        setDraftUnavailable(true);
-      }
-      client.invalidateQueries({ queryKey: ["/chats"] });
-      client.invalidateQueries({ queryKey: [`/chats/${result.chat_id}`] });
+  const state = useAgentComposer({
+    context,
+    chatId,
+    draftKey,
+    busy,
+    initialQuestion:
+      typeof location.state?.question === "string"
+        ? location.state.question
+        : undefined,
+    onSent: (result) => {
       if (!chatId)
         setParams({ chat: result.chat_id }, { replace: true, state: null });
     },
   });
-  function submit() {
-    if (
-      question.trim() &&
-      !busy &&
-      !send.isPending &&
-      !unavailable &&
-      settings.data
-    )
-      send.mutate({ question, context });
-  }
+  const {
+    setQuestion,
+    composer,
+    settings,
+    plannerModel,
+    assistantModel,
+    send,
+    blocked,
+  } = state;
   function changeContext(value: string) {
     const next = new URLSearchParams(params);
     next.set("context", value);
     setParams(next, { replace: true });
     send.reset();
   }
-  const blocked = busy || send.isPending || !settings.data;
-  const disabled = blocked || !!unavailable;
   const selectedStudy = studies.find(
     (study) => context === `study:${study.id}`,
   );
@@ -366,82 +313,21 @@ function AgentConversation({
           />
         </div>
       )}
-      <form
-        aria-label="Agent composer"
+      <AgentComposer
+        state={state}
+        context={context}
+        studies={studies}
+        runs={runs}
+        onContextChange={changeContext}
+        placeholder={
+          context === "new"
+            ? "What behavior do you want to investigate?"
+            : selectedStudy || selectedRun
+              ? "Ask about the selected evidence…"
+              : "Ask a research question…"
+        }
         className="mx-auto w-full max-w-3xl shrink-0 p-4 sm:px-6 sm:pb-6"
-        onSubmit={(event) => {
-          event.preventDefault();
-          submit();
-        }}
       >
-        <div className="min-w-0">
-          <InputGroup>
-            <InputGroupTextarea
-              ref={composer}
-              aria-label="Message Agent"
-              placeholder={
-                context === "new"
-                  ? "What behavior do you want to investigate?"
-                  : selectedStudy || selectedRun
-                    ? "Ask about the selected evidence…"
-                    : "Ask a research question…"
-              }
-              value={question}
-              onChange={(event) => setQuestion(event.target.value)}
-              maxLength={4000}
-              rows={3}
-              disabled={send.isPending}
-              onKeyDown={(event) => {
-                if (
-                  event.key === "Enter" &&
-                  !event.shiftKey &&
-                  !event.nativeEvent.isComposing
-                ) {
-                  event.preventDefault();
-                  submit();
-                }
-              }}
-            />
-            <InputGroupAddon
-              align="block-end"
-              className="justify-between gap-3"
-            >
-              <AgentContext
-                value={context}
-                onChange={changeContext}
-                studies={studies}
-                runs={runs}
-                disabled={send.isPending}
-              />
-              <Button
-                type="submit"
-                size="icon"
-                aria-label="Send message"
-                title="Send message (Enter)"
-                disabled={disabled || !question.trim()}
-              >
-                <ArrowUp aria-hidden="true" />
-              </Button>
-            </InputGroupAddon>
-          </InputGroup>
-        </div>
-        {send.error && (
-          <Alert variant="error">
-            {send.error.message} Your message is kept above.
-          </Alert>
-        )}
-        {settings.error && (
-          <Alert variant="error">
-            Could not check provider availability.{" "}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => settings.refetch()}
-            >
-              Retry
-            </Button>
-          </Alert>
-        )}
         {contextError && (
           <Alert variant="error">
             {contextError.message}
@@ -450,25 +336,7 @@ function AgentConversation({
             </Button>
           </Alert>
         )}
-        {draftUnavailable && (
-          <p className="mt-3 text-xs leading-relaxed text-muted-foreground [&_a]:underline [&_a]:underline-offset-4">
-            This browser could not keep your message draft.
-          </p>
-        )}
-        {unavailable && (
-          <p className="mt-3 text-xs leading-relaxed text-muted-foreground [&_a]:underline [&_a]:underline-offset-4">
-            {provider === "openai" ? "OpenAI" : "Anthropic"} is required for
-            this context. <Link to="/settings">Configure a provider</Link>
-            {context === "new" && (
-              <>
-                {" "}
-                or <Link to="/new">configure an experiment manually</Link>
-              </>
-            )}
-            .
-          </p>
-        )}
-      </form>
+      </AgentComposer>
     </section>
   );
 }

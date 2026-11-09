@@ -58,13 +58,14 @@
 :root {
   color-scheme: light;
   --radius: 0.625rem;
+  --workspace-header-height: 3.25rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --primary: oklch(0.546 0.245 262.881);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -83,7 +84,7 @@
   --chart-5: oklch(0.269 0 0);
   --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: var(--accent);
   --sidebar-accent-foreground: var(--accent-foreground);
@@ -99,8 +100,8 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  --primary: oklch(0.546 0.245 262.881);
+  --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
@@ -118,7 +119,7 @@
   --chart-5: oklch(0.269 0 0);
   --sidebar: oklch(0 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: var(--accent);
   --sidebar-accent-foreground: var(--accent-foreground);
@@ -143,4 +144,28 @@
 
 [hidden] {
   display: none;
+}
+
+/* Home's requested logo-inspired field; controls still use stock theme tokens. */
+.home-grid-cell {
+  opacity: 0.025;
+  animation: home-grid-fill 18s ease-in-out infinite;
+}
+
+@keyframes home-grid-fill {
+  0%,
+  30%,
+  100% {
+    opacity: 0.01;
+  }
+  55%,
+  70% {
+    opacity: 0.065;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-grid-cell {
+    animation: none;
+  }
 }

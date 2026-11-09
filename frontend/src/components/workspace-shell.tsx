@@ -14,7 +14,13 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { Empty } from "@/components/feedback";
-import { FlaskConical, Layers2, MessageSquare, Play } from "@/components/icons";
+import {
+  FlaskConical,
+  House,
+  Layers2,
+  MessageSquare,
+  Play,
+} from "@/components/icons";
 import { LocalWorkspaceMenu } from "@/components/local-workspace-menu";
 import { Loading } from "@/components/shared";
 import {
@@ -39,6 +45,7 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -82,12 +89,17 @@ export default function WorkspaceShell() {
   );
   const location = useLocation();
   const isAgent = location.pathname === "/agent";
+  const isHome = location.pathname === "/";
   const runs = useApi<RunSummary[]>("/runs", true);
   const active =
     runs.data?.filter((r) =>
       ["running", "queued", "pausing"].includes(r.status),
     ) ?? [];
   const studies = useApi<StudySummary[]>("/studies", true);
+  const primaryLinks = [
+    { to: "/", label: "Home", icon: House },
+    { to: "/agent", label: "Agent", icon: MessageSquare },
+  ];
   const links = [
     { to: "/studies", label: "Experiments", icon: FlaskConical },
     { to: "/runs", label: "Runs", icon: Play },
@@ -103,17 +115,18 @@ export default function WorkspaceShell() {
       /* Storage can be unavailable in private contexts. */
     }
   }
-  const section =
-    [
-      { prefix: "/new", label: "Experiment design" },
-      { prefix: "/studies", label: "Experiments" },
-      { prefix: "/runs", label: "Runs" },
-      { prefix: "/environments", label: "Environments" },
-      { prefix: "/settings", label: "Settings" },
-      { prefix: "/compare", label: "Compare runs" },
-      { prefix: "/agent", label: "Agent" },
-    ].find(({ prefix }) => location.pathname.startsWith(prefix))?.label ??
-    "Workspace";
+  const section = isHome
+    ? "Home"
+    : ([
+        { prefix: "/new", label: "Experiment design" },
+        { prefix: "/studies", label: "Experiments" },
+        { prefix: "/runs", label: "Runs" },
+        { prefix: "/environments", label: "Environments" },
+        { prefix: "/settings", label: "Settings" },
+        { prefix: "/compare", label: "Compare runs" },
+        { prefix: "/agent", label: "Agent" },
+      ].find(({ prefix }) => location.pathname.startsWith(prefix))?.label ??
+      "Workspace");
   const runId = location.pathname.match(/^\/runs\/([^/]+)$/)?.[1];
   const studyId = location.pathname.match(/^\/studies\/([^/]+)$/)?.[1];
   const selectedRun = runs.data?.find((r) => r.id === runId);
@@ -166,7 +179,11 @@ export default function WorkspaceShell() {
       </Button>
       <Sidebar collapsible="icon">
         <SidebarHeader
-          className={isMobile ? undefined : "h-14 justify-center py-1"}
+          className={cn(
+            "border-b",
+            !isMobile &&
+              "h-(--workspace-header-height) shrink-0 justify-center py-1",
+          )}
         >
           {isMobile && (
             <SidebarTrigger className="ml-auto" aria-label="Close menu" />
@@ -176,10 +193,10 @@ export default function WorkspaceShell() {
               <Button
                 variant="link"
                 asChild
-                className="h-auto w-fit gap-2 border-0 p-0 hover:no-underline active:not-aria-[haspopup]:translate-y-0"
+                className="h-auto w-fit gap-2 border-0 p-0 text-foreground hover:no-underline active:not-aria-[haspopup]:translate-y-0"
               >
                 <Link
-                  to="/studies"
+                  to="/"
                   aria-label="JAS home"
                   title="JAS home"
                   onClick={() => setOpenMobile(false)}
@@ -200,69 +217,64 @@ export default function WorkspaceShell() {
           </SidebarMenu>
         </SidebarHeader>
         <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Workspace</SidebarGroupLabel>
-            <nav aria-label="Main navigation">
-              <SidebarMenu>
-                {links.map((item) => (
-                  <SidebarMenuItem key={item.to}>
-                    <SidebarMenuButton
-                      asChild
-                      tooltip={
-                        !isMobile && state === "collapsed"
-                          ? item.label
-                          : undefined
-                      }
-                      isActive={
-                        location.pathname.startsWith(item.to) ||
-                        (item.to === "/studies" &&
-                          location.pathname === "/new") ||
-                        (item.to === "/runs" &&
-                          location.pathname === "/compare")
-                      }
-                    >
-                      <NavLink
-                        to={item.to}
-                        onClick={() => setOpenMobile(false)}
-                      >
-                        <item.icon aria-hidden="true" />
-                        <span>{item.label}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                    {item.to === "/runs" && active.length > 0 && (
-                      <SidebarMenuBadge>{active.length}</SidebarMenuBadge>
-                    )}
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </nav>
-          </SidebarGroup>
-          <SidebarGroup>
-            <SidebarGroupLabel>Assistant</SidebarGroupLabel>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  tooltip={
-                    !isMobile && state === "collapsed" ? "Agent" : undefined
-                  }
-                  isActive={isAgent}
-                >
-                  <NavLink to="/agent" onClick={() => setOpenMobile(false)}>
-                    <MessageSquare />
-                    <span>Agent</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
+          <nav aria-label="Main navigation">
+            {[
+              { label: null, items: primaryLinks },
+              { label: "Workspace", items: links },
+            ].map((group, index) => (
+              <Fragment key={group.label ?? "primary"}>
+                {index > 0 && <SidebarSeparator className="mx-4" />}
+                <SidebarGroup>
+                  {group.label && (
+                    <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+                  )}
+                  <SidebarMenu>
+                    {group.items.map((item) => (
+                      <SidebarMenuItem key={item.to}>
+                        <SidebarMenuButton
+                          asChild
+                          tooltip={
+                            !isMobile && state === "collapsed"
+                              ? item.label
+                              : undefined
+                          }
+                          isActive={
+                            location.pathname === item.to ||
+                            (item.to !== "/" &&
+                              location.pathname.startsWith(item.to)) ||
+                            (item.to === "/studies" &&
+                              location.pathname === "/new") ||
+                            (item.to === "/runs" &&
+                              location.pathname === "/compare")
+                          }
+                        >
+                          <NavLink
+                            to={item.to}
+                            end={item.to === "/"}
+                            onClick={() => setOpenMobile(false)}
+                          >
+                            <item.icon aria-hidden="true" />
+                            <span>{item.label}</span>
+                          </NavLink>
+                        </SidebarMenuButton>
+                        {item.to === "/runs" && active.length > 0 && (
+                          <SidebarMenuBadge>{active.length}</SidebarMenuBadge>
+                        )}
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroup>
+              </Fragment>
+            ))}
+          </nav>
         </SidebarContent>
+        <SidebarSeparator className="mx-0" />
         <SidebarFooter>
           <LocalWorkspaceMenu dark={dark} onThemeChange={changeTheme} />
         </SidebarFooter>
       </Sidebar>
       <SidebarInset className="min-w-0">
-        <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b pr-4 pl-3 sm:pr-6">
+        <header className="flex h-(--workspace-header-height) shrink-0 items-center justify-between gap-3 border-b pr-4 pl-3 sm:pr-6">
           <div className="flex min-w-0 items-center gap-3">
             <SidebarTrigger
               ref={menuTrigger}
@@ -317,8 +329,10 @@ export default function WorkspaceShell() {
           className={cn(
             "min-w-0 w-full",
             isAgent
-              ? "h-[calc(100svh-3.5rem)] min-h-0"
-              : "mx-auto max-w-7xl p-4 pb-10 sm:p-6 lg:p-8",
+              ? "h-[calc(100svh-var(--workspace-header-height))] min-h-0"
+              : isHome
+                ? "pb-10"
+                : "mx-auto max-w-7xl p-4 pb-10 sm:p-6 lg:p-8",
           )}
           tabIndex={-1}
         >

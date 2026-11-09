@@ -12,7 +12,7 @@ test("JAS persists the workspace theme and navigation preference", async ({
     }
   });
   await page.goto("/");
-  await expect(page).toHaveTitle("Experiments | JAS");
+  await expect(page).toHaveTitle("Home | JAS");
   await expect(page.locator("html")).toHaveClass("dark");
   await expect(
     page.locator('[data-slot="sidebar"][data-state="collapsed"]'),
@@ -38,7 +38,7 @@ test("browser titles follow navigation, history and saved experiment identity", 
   request,
 }) => {
   await page.goto("/");
-  await expect(page).toHaveTitle("Experiments | JAS");
+  await expect(page).toHaveTitle("Home | JAS");
   await page.getByRole("button", { name: /Local workspace/ }).click();
   await page.getByRole("menuitem", { name: "Settings", exact: true }).click();
   await expect(page).toHaveTitle("Settings | JAS");
@@ -68,7 +68,7 @@ test("browser titles follow navigation, history and saved experiment identity", 
   await expect(page).toHaveTitle(`${title} | JAS`);
 });
 
-test("experiments are the entry point; AI creation stays available without a key", async ({
+test("Home is the entry point; AI creation stays available without a key", async ({
   page,
 }) => {
   await page.goto("/unknown-workspace-view");
@@ -77,9 +77,12 @@ test("experiments are the entry point; AI creation stays available without a key
   ).toContainText("Workspace");
   await page.getByRole("link", { name: "Back to experiments" }).click();
   await page.goto("/");
-  await expect(page).toHaveURL(/\/studies$/);
+  await expect(page).toHaveURL(/\/$/);
   await expect(
-    page.getByRole("heading", { name: "Experiments", exact: true }),
+    page.getByRole("heading", {
+      name: "What would you like to test?",
+      exact: true,
+    }),
   ).toBeVisible();
   await page.getByRole("link", { name: "Agent", exact: true }).click();
   await page.getByRole("combobox", { name: "Message context" }).click();

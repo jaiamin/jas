@@ -20,7 +20,7 @@ test("a corrupt draft leaves valid drafts available with targeted recovery", asy
     );
     localStorage.setItem("jas:draft:/new?template=broken", "{unfinished");
   }, templateDesign(catalog));
-  await page.goto("/");
+  await page.goto("/studies");
   await expect(page.getByRole("alert")).toContainText(
     "Some drafts could not be read",
   );

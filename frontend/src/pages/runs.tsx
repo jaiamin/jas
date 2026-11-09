@@ -12,7 +12,7 @@ export default function Runs() {
   return (
     <>
       <PageHeading title="Runs">
-        <Button variant="outline" asChild>
+        <Button asChild>
           <Link to="/new">
             <Plus data-icon="inline-start" />
             New experiment

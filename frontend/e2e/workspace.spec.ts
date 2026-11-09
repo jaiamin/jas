@@ -245,7 +245,7 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   page,
 }) => {
   await page.goto("/new?template=commons");
-  await page.goto("/");
+  await page.goto("/studies");
   await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
   await page.goto("/new?template=commons");
   await page
@@ -262,7 +262,7 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   await expect(page.getByLabel("Complete JSON specification")).toHaveValue(
     '{"unfinished":',
   );
-  await page.goto("/");
+  await page.goto("/studies");
   await page.getByText(/^Drafts ·/).click();
   await page
     .getByRole("link", { name: "Recovered protocol", exact: true })
@@ -270,7 +270,7 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   await expect(page.getByLabel("Complete JSON specification")).toHaveValue(
     '{"unfinished":',
   );
-  await page.goto("/");
+  await page.goto("/studies");
   await page.getByText(/^Drafts ·/).click();
   await page
     .getByRole("button", { name: "Discard Recovered protocol draft" })
@@ -292,7 +292,7 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
   await expect(page.getByRole("heading", { name: design.title })).toBeVisible();
-  await page.goto("/");
+  await page.goto("/studies");
   await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
 });
 

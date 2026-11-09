@@ -309,3 +309,77 @@ and all four 16px navigation icons share the horizontal center x=24px. Browser
 verified alignment across 39 collapse/expansion animation frames; requery icons
 per frame because tooltip composition remounts navigation nodes on state changes.
 Lint/build passed. Browser closed and 8080 remains live.
+
+## Current task: Home and primary navigation
+
+Acceptance criteria:
+- [x] Home and Agent form an untitled group above Workspace; brand goes Home.
+- [x] Home reuses Agent composer, defaults to New experiment, submits once and opens
+      the resulting conversation. Suggestions fill the composer without spending.
+- [x] Four existing grounded experiment suggestions; manual New experiment action.
+- [x] Conditional latest draft, short recent experiment list and active runs only.
+- [x] Full-width subtle pixel grid behind composer; semantic tokens and reduced motion.
+- [x] Preserve draft recovery, provider/error states, mobile/keyboard navigation;
+      meaningful Home submission/recovery tests and existing Agent checks.
+- [x] Browser review both themes/phone/desktop, lint/unit/build/E2E, update PR #9.
+
+Design brief: a local researcher starts a controlled trial or resumes unfinished work.
+Composer is the focus, with stock Geist/shadcn typography and 4px spacing scale.
+Pure black/white surfaces, semantic blue accents, stock outlined controls; the
+only new decoration is a faint pixel-grid field echoing the supplied block logo.
+Domain: protocols, conditions, matched seeds, recorded decisions, proposals, drafts.
+Color world stays black/white/neutral/semantic blue, with existing logo brand colors.
+Avoid metric dashboards, duplicate run tables and fabricated activity. Reuse the
+same composer behavior; no navigation-state automatic paid submissions.
+
+Home implementation complete. Home and Agent are the untitled primary group above
+Workspace; the brand returns to Home. Shared AgentComposer/useAgentComposer own
+the same field/context/provider/submission/draft behavior for both surfaces. Home
+defaults to new experiments, stores selected context in the URL, persists message
+drafts separately and opens only the chat returned by its explicit submission.
+A synchronous submission guard blocks duplicate sends; late responses cannot
+override a newer destination, including during lazy-route transitions. Suggestions
+fill/focus the draft without sending. Show at most three active runs, the latest
+editor draft and four saved experiments; full management stays on existing pages.
+
+The requested decorative SVG grid uses semantic foreground color, sparse staggered
+CSS opacity animations, no timers and a static reduced-motion state. Composer has
+an opaque backing. Fixed upstream InputGroup disabled selectors to scope dimming
+to input controls, so a disabled Send button does not fade an editable composer.
+Latest user request makes shared primary actions blue with a light foreground in
+both themes. Send and all New experiment actions use primary Button; corrected
+Runs' outline variant. Brand retains foreground. Browser checked these actions on
+Home, Agent, Experiments and Runs in both themes; text contrast measured 5.03:1.
+
+Verification: lint/build, 70 unit tests and full keyless E2E suite passed 83/83.
+After the final composer/context fixes, Home+Agent E2E passed 14/14. After the blue
+theme request, Home E2E passed 7/7 plus the eight-route/theme primary-color checks.
+Reviewed final empty/populated Home screenshots in both themes on phone/desktop.
+No runtime/browser errors observed in app flows. A small final keyless run logged
+Starlette 'No response returned' during page teardown; all assertions passed, and
+no backend files changed. No paid calls. Owned browsers and test services closed;
+user's port 8080 service remains running. Do not reset its active database/settings.
+Artifacts: ignored .tools/shadcn-redesign/home-*-e2e.txt, home-final-unit.txt,
+home-blue-build.txt and frontend/test-results Home captures.
+
+Final header refinement: shared --workspace-header-height is now 52px (was 56px)
+for desktop brand and breadcrumb bars; Agent viewport calculation uses the same
+token. Added the sidebar brand-header bottom border to continue the main divider.
+Browser verified matching divider position/color, centered logo/trigger/separator,
+and stationary alignment with all five navigation icons across 76 animation
+frames in both themes. Mobile header is 52px without overflow. Final Agent/navigation
+E2E passed 12/12; build/lint passed. Captures: home-header-{light,dark}.png.
+
+Sidebar section refinements: stock separators now divide primary/workspace with
+16px edge insets matching icon left padding. The Local workspace/settings divider
+spans the full width, as requested. Fixed SidebarSeparator's upstream width class
+to data-horizontal:w-auto so its orientation rule respects margins rather than
+overflowing. Shared sidebar buttons/sub-buttons fill selected stock SVG icons;
+inactive icons remain outlined, including Agent history. Navigation/keyboard E2E
+passed 6/6; final lint/build and live expanded/collapsed separator/fill geometry
+checks passed. Insets measured 16/16px for sections and 0/0px for the footer in
+both states. Browser closed; app remains on 8080.
+
+Section-divider spacing verified: exactly 8px above and below the navigation-group
+separator in both expanded and collapsed states, using the stock group padding.
+No extra spacing override was needed. The footer divider remains full width.

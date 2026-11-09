@@ -27,6 +27,7 @@ export {
   GitCompareArrows,
   Globe,
   History,
+  House,
   KeyRound,
   Layers2,
   LoaderCircle,

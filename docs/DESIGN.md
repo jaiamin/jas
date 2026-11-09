@@ -5,7 +5,7 @@ colors:
   light-background: "oklch(1 0 0)"
   light-foreground: "oklch(0.145 0 0)"
   light-card: "oklch(1 0 0)"
-  light-primary: "oklch(0.205 0 0)"
+  light-primary: "oklch(0.546 0.245 262.881)"
   light-primary-foreground: "oklch(0.985 0 0)"
   light-muted: "oklch(0.97 0 0)"
   light-muted-foreground: "oklch(0.556 0 0)"
@@ -16,8 +16,8 @@ colors:
   dark-background: "oklch(0 0 0)"
   dark-foreground: "oklch(0.985 0 0)"
   dark-card: "oklch(0 0 0)"
-  dark-primary: "oklch(0.922 0 0)"
-  dark-primary-foreground: "oklch(0.205 0 0)"
+  dark-primary: "oklch(0.546 0.245 262.881)"
+  dark-primary-foreground: "oklch(0.985 0 0)"
   dark-muted: "oklch(0.269 0 0)"
   dark-muted-foreground: "oklch(0.708 0 0)"
   dark-accent: "oklch(0.282 0.091 267.935)"
@@ -66,8 +66,8 @@ spacing:
 ## Overview
 
 JAS uses default stock shadcn components and preset styling. The current preset is
-`b2fA`: Nova, Radix, neutral, Geist and Lucide, with the user-requested surface
-colors and wordmark below. Preserve the supplied
+`b2fA`: Nova, Radix, neutral, Geist and Lucide, with the user-requested surfaces,
+blue actions/selection and wordmark below. Preserve the supplied
 [`logo.svg`](../frontend/public/logo.svg). The top-left lowercase `jas` wordmark
 alone uses the original locally hosted Bricolage Grotesque subset at 22px/800,
 without a subtitle. All other interface text follows the preset font.
@@ -93,7 +93,8 @@ black in dark mode, as explicitly requested. These shared theme tokens apply to
 both navigation sidebars and every view.
 Selection uses a subtle blue accent. Hover uses half-strength accent, while the
 selected item keeps its full accent on hover. Both are shared semantic tokens.
-Primary actions use the primary/foreground pair; secondary surfaces, muted text,
+Send and New experiment use the primary Button variant. Primary actions use a
+shared blue primary token with a light foreground in both themes; secondary surfaces, muted text,
 borders, focus and destructive states use their corresponding semantic tokens.
 Keep foreground/background pairs together when composing components.
 
@@ -111,16 +112,35 @@ belong to the preset and its stylesheet, except the dedicated brand wordmark.
 
 ## Layout
 
-The stock Sidebar supplies workspace navigation: Experiments, Runs, Environments
-and Agent. Its footer opens the local workspace menu with Settings and appearance.
-Do not invent accounts or organizations. Navigation becomes a Sheet on mobile.
+The stock Sidebar starts with an untitled Home/Agent group above Workspace
+(Experiments, Runs, Environments). The compact brand link returns to Home. Its
+footer opens the local workspace menu with Settings and appearance.
+A stock SidebarSeparator with 16px edge insets aligns with the navigation icons
+between primary and workspace groups. The separator above the local-workspace
+footer spans the full sidebar width. Selected sidebar icons use the stock SVG
+fill; inactive icons remain outlined, including conversation history. Do not invent accounts or organizations.
+Navigation becomes a Sheet on mobile.
 
-The breadcrumb header is 56px high. Ordinary pages use a centered 1280px maximum
+The breadcrumb and desktop brand headers share `--workspace-header-height` (52px),
+with one continuous bottom divider. Agent viewport height uses the same token. Ordinary pages use a centered 1280px maximum
 width and 16px, 24px or 32px responsive gutters. Tables scroll within their own
 containers. The Agent page fills the remaining viewport, with an independently
 scrolling transcript and a composer below it; both use a 768px maximum width.
 Its independent conversation Sidebar appears at 1100px and above, with a Sheet
 below that breakpoint. Decisions and evidence stack below 1440px.
+
+Home uses a full-width composer section with a faint animated pixel grid, the
+explicit decorative exception requested for this surface. The grid follows the
+foreground token, never captures input, and remains static with reduced motion.
+The opaque composer surface keeps the grid out of the text field. Four existing
+experiment suggestions fill the draft without submitting. Home defaults to New
+experiment; an explicit send creates one chat and opens that saved conversation.
+A late response leaves subsequent navigation intact.
+
+Below suggestions, show up to three active runs only when underway, one latest
+local editor draft when present, and four experiments ordered by creation time.
+Keep the manual New experiment action available even in the empty state. Full
+record lists and draft management remain on their dedicated destinations.
 
 ## Elevation & Depth
 
@@ -170,11 +190,15 @@ pnpm dlx shadcn@latest apply --preset <code>
 3. Preserve nonvisual fixes if regeneration overwrites them: Progress bounds and
    custom maximum, Slider thumb labels, Tabs orientation, Breadcrumb current-item
    semantics, Chart style children and stable keys, valid Field/Item/InputGroup
-   roles, and narrow lint annotations. Keep chart legend text readable and retain
+   roles, SidebarSeparator horizontal width respecting its edge insets,
+   InputGroup disabled styling scoped to its input control (a disabled
+   submit button must not dim an editable composer), and narrow lint annotations. Keep chart legend text readable and retain
    distinct line patterns.
    Retain the requested 4px gaps between tabs and sidebar items, centered header
    divider, pure white/black surface tokens, CardFooter card surface, subtle blue
-   selection with weaker hover, and dedicated wordmark font unless superseded.
+   selection with weaker hover, filled selected sidebar icons, blue primary
+   actions, and dedicated wordmark font
+   unless superseded. The wordmark retains the foreground color.
 4. Keep app behavior outside regeneratable helpers: domain formatters live in
    `src/lib/format.ts`; `src/lib/utils.ts` only exports `cn`. Workspace persistence
    lives in `workspace-provider.tsx`; app breakpoints use `hooks/use-compact.ts`,
@@ -191,7 +215,7 @@ pnpm dlx shadcn@latest apply --preset <code>
 - **Do** verify readable text, visible focus and non-color status/series cues in both themes.
 - **Do** keep loading, error, empty and retry states explicit without discarding drafts.
 - **Don't** add custom stylesheets, visual variants or copied component implementations.
-  Keep the explicit surface, selection, spacing and wordmark exceptions above
+  Keep the explicit Home decoration, surface, selection, spacing and wordmark exceptions above
   when applying a preset.
 - **Don't** treat snapshot values as constraints on the next preset.
 - **Don't** display fabricated activity, private reasoning or unsupported empirical outcomes.

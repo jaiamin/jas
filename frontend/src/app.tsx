@@ -1,10 +1,12 @@
 import { lazy } from "react";
-import { Link, Navigate, Route, Routes } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import { Empty } from "@/components/feedback";
 import { Button } from "@/components/ui/button";
 import { WorkspaceProvider } from "@/components/workspace-provider";
 import WorkspaceShell from "@/components/workspace-shell";
-import Experiments from "@/pages/experiments";
+import Home from "@/pages/home";
+
+const Experiments = lazy(() => import("@/pages/experiments"));
 
 const AgentPage = lazy(() => import("@/pages/agent"));
 const Editor = lazy(() => import("@/pages/editor"));
@@ -25,7 +27,7 @@ export default function App() {
           </WorkspaceProvider>
         }
       >
-        <Route index element={<Navigate to="/studies" replace />} />
+        <Route index element={<Home />} />
         <Route path="studies" element={<Experiments />} />
         <Route path="agent" element={<AgentPage />} />
         <Route path="studies/:id" element={<Study />} />
