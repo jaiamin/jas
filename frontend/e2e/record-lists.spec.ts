@@ -336,7 +336,11 @@ for (const theme of ["light", "dark"]) {
           await cells.nth(0).evaluate((cell) => getComputedStyle(cell).color),
         );
         await expect(dateCell).not.toBeEmpty();
-        await expect(heading).toHaveCSS("font-weight", "500");
+        await expect(heading).toHaveCSS("font-weight", "600");
+        await expect(heading).toHaveCSS(
+          "font-size",
+          width < 640 ? "20px" : "22px",
+        );
         await expect(table.getByRole("row").last()).toHaveCSS(
           "border-bottom-width",
           "1px",

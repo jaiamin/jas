@@ -1307,3 +1307,6 @@ Verification: frontend lint, TypeScript/production build and all 105 unit tests 
 
 
 Checkbox/page-icon tone follow-up: soften shared Checkbox input outlines to 90% opacity and table checkbox outlines from muted-foreground/60 to /50; preserve blue checked/focus/error states and all reveal behavior. Record heading backgrounds use muted-foreground/10 for a slightly deeper neutral surface in both themes. Documented the shared Checkbox styling for preset regeneration. Frontend lint/type/build and eight desktop/mobile/light/dark list/hover/keyboard/touch browser checks passed. Reviewed final desktop light capture; updated assets served on 8080.
+
+
+List page title refinement: use 22px semibold Experiments/Runs headings on desktop (previously 24px medium), retaining 20px on mobile with the same semibold weight. Record names and column headings remain unchanged. Frontend lint/type/build and four desktop/mobile/light/dark list browser checks passed with explicit font size/weight assertions. Reviewed final desktop light capture. Rebuilt UI remains on 8080.

@@ -443,8 +443,8 @@ name gutter for selection on both lists (also on narrow screens); keep dividers 
 Left-align headers and data, retain tabular numerals, and label both primary columns Name. Keep rows on one line:
 Environment and Revision have their own Experiments columns; Seed, Revision and
 Repetition have their own Runs columns. Do not stack metadata under record names.
-Use full catalogue environment names. Page titles use medium weight and record
-names regular weight. Table column headings use the small text scale. Keep star
+Use full catalogue environment names. Page titles use semibold weight at 22px on desktop and 20px on mobile; record
+names use regular weight. Table column headings use the small text scale. Keep star
 glyphs aligned with their column heading while retaining the full icon-button target.
 Stars use a light 1.5px stroke and the normal data color, including when filled.
 A compact star column with a visible Favorite heading follows

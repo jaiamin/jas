@@ -60,7 +60,7 @@ export function RecordListHeading({
             <Icon />
           </AvatarFallback>
         </Avatar>
-        <h1 className="text-xl font-medium tracking-tight sm:text-2xl">
+        <h1 className="text-xl font-semibold tracking-tight sm:text-[1.375rem]">
           {title}
         </h1>
       </div>
