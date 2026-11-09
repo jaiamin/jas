@@ -1,5 +1,5 @@
 import { Fragment, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { CustomEnvironments } from "@/components/environments/custom-environments";
 import { EnvironmentDetails } from "@/components/environments/environment-details";
 import {
@@ -7,8 +7,8 @@ import {
   EnvironmentRowSkeleton,
 } from "@/components/environments/environment-row";
 import { Alert, Empty } from "@/components/feedback";
-import { Plus } from "@/components/icons";
-import { RecordSearch } from "@/components/record-list-heading";
+import { Layers2 } from "@/components/icons";
+import { RecordListHeading } from "@/components/record-list-heading";
 import { ErrorState } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { ItemGroup } from "@/components/ui/item";
@@ -52,33 +52,14 @@ export default function Environments() {
 
   return (
     <>
-      <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1
-          ref={heading}
-          tabIndex={-1}
-          className="text-xl font-semibold tracking-tight outline-none sm:text-[1.375rem]"
-        >
-          Environments
-        </h1>
-        <div className="flex min-w-0 items-center gap-2">
-          <div className="min-w-0 flex-1 sm:w-64 sm:flex-none">
-            <RecordSearch
-              label="Search environments"
-              value={search}
-              onChange={setSearch}
-            />
-          </div>
-          <Button asChild>
-            <Link
-              to="/new?template=composed&step=conditions"
-              aria-label="Create environment"
-            >
-              <Plus data-icon="inline-start" />
-              New
-            </Link>
-          </Button>
-        </div>
-      </header>
+      <RecordListHeading
+        title="Environments"
+        icon={Layers2}
+        search={search}
+        onSearchChange={setSearch}
+        headingRef={heading}
+        className="mb-6 px-0 py-0 sm:px-0 lg:px-0"
+      />
       <Tabs
         value={view}
         className="min-w-0 gap-0"

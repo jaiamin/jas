@@ -1,3 +1,4 @@
+import type { Ref } from "react";
 import { Link } from "react-router-dom";
 import { type AppIcon, Plus, Search } from "@/components/icons";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -7,6 +8,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { cn } from "@/lib/utils";
 
 export function RecordSearch({
   label,
@@ -36,16 +38,23 @@ export function RecordListHeading({
   icon: Icon,
   search,
   onSearchChange,
+  headingRef,
+  className,
 }: {
-  title: "Experiments" | "Runs";
+  title: "Experiments" | "Runs" | "Environments";
   icon: AppIcon;
   search: string;
   onSearchChange: (value: string) => void;
+  headingRef?: Ref<HTMLHeadingElement>;
+  className?: string;
 }) {
   return (
     <header
       data-slot="record-list-heading"
-      className="flex flex-col gap-4 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8"
+      className={cn(
+        "flex flex-col gap-4 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8",
+        className,
+      )}
     >
       <div className="flex min-w-0 items-center gap-3">
         <Avatar
@@ -59,7 +68,11 @@ export function RecordListHeading({
             <Icon />
           </AvatarFallback>
         </Avatar>
-        <h1 className="text-xl font-semibold tracking-tight sm:text-[1.375rem]">
+        <h1
+          ref={headingRef}
+          tabIndex={headingRef ? -1 : undefined}
+          className="text-xl font-semibold tracking-tight outline-none sm:text-[1.375rem]"
+        >
           {title}
         </h1>
       </div>
@@ -71,9 +84,20 @@ export function RecordListHeading({
             onChange={onSearchChange}
           />
         </div>
-        {title === "Experiments" && (
+        {title !== "Runs" && (
           <Button asChild>
-            <Link to="/new" aria-label="New experiment">
+            <Link
+              to={
+                title === "Environments"
+                  ? "/new?template=composed&step=conditions"
+                  : "/new"
+              }
+              aria-label={
+                title === "Environments"
+                  ? "Create environment"
+                  : "New experiment"
+              }
+            >
               <Plus data-icon="inline-start" />
               New
             </Link>

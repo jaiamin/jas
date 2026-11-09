@@ -645,8 +645,11 @@ Keyboard order follows the row from brand to close. Main navigation menus use
 
 ## Environments catalogue
 
-Environments uses one quiet list for choosing world rules. Preserve a compact
-heading, blank accessible search field, one blue New action and the neutral
+Environments uses one quiet list for choosing world rules. Use the shared
+RecordListHeading with the Layers2 page icon on the same muted rounded-square
+surface as Experiments and Runs: 36px surface, 18px glyph, 12px icon/title gap,
+20px mobile / 22px desktop title. Environment grid artwork in the list stays bare.
+Preserve a blank accessible search field, one blue New action and the neutral
 bordered Built-in / Custom tabs. New opens the composed-environment editor.
 A separator beneath the tabs continues directly into the list; do not add cards,
 repeat Details footers or leave an extra gap before the first row.

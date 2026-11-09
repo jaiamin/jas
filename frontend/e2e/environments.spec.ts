@@ -19,6 +19,28 @@ for (const theme of ["light", "dark"]) {
       await expect(page.getByRole("article")).toHaveCount(
         catalog.environments.length,
       );
+      const heading = page.getByRole("heading", {
+        name: "Environments",
+        exact: true,
+      });
+      await expect(heading).toHaveCSS(
+        "font-size",
+        width < 640 ? "20px" : "22px",
+      );
+      const titleIcon = page.locator(
+        '[data-slot="record-list-heading"] [data-slot="avatar"]',
+      );
+      await expect(titleIcon).toHaveCSS("width", "36px");
+      await expect(titleIcon.locator("svg")).toHaveCSS("width", "18px");
+      const iconBox = await titleIcon.boundingBox();
+      const titleBox = await heading.boundingBox();
+      expect(iconBox && titleBox).toBeTruthy();
+      if (iconBox && titleBox)
+        expect(
+          Math.abs(
+            iconBox.y + iconBox.height / 2 - titleBox.y - titleBox.height / 2,
+          ),
+        ).toBeLessThanOrEqual(1);
       await expect(page.getByRole("dialog")).toHaveCount(0);
       const marks = () =>
         page
