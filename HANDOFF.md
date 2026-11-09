@@ -829,3 +829,20 @@ Composer border refinement (2026-11-09):
 Verification: frontend lint/build and six responsive Home/composer browser
 checks passed, including focus appearance. Reviewed phone-light and desktop-dark
 captures for subtle border contrast and preserved spacing. Port 8080 HTTP 200.
+
+Gray composer backing and manual-editor link (2026-11-09):
+- Follow the supplied reference with a shared muted-gray shadcn Card, 8px outer
+  padding, and shadow-xl on the outer panel. Restore the stock inner input border
+  and retain the unchanged border on focus. Remove Home's inner-field shadow.
+- CardFooter says “Shape an experiment with Agent, or start from scratch →”. The
+  latter is a slightly bold link to /new; no promotional or unsupported claims.
+- Retain 14px horizontal/8px vertical inner spacing, three default rows, internal
+  growth/scrolling and Home's 60/40 overlap. Tokens follow presets in both themes.
+- Add browser coverage for the new manual-editor link from Home and Agent,
+  preserving unsent text across navigation without submitting a paid request.
+Verification: frontend lint/build and all ten Home browser checks passed,
+including the manual-editor navigation/draft regression and existing focus,
+streaming entry, three-row growth and responsive layout checks. Updated overlap/
+shadow measurements to target the new outer panel. Reviewed Home in phone-light
+and desktop-dark and Agent on phone: note/link wrapping, panel spacing and
+controls remain usable. Impeccable's mechanical detector reported no findings.

@@ -176,7 +176,7 @@ The Home composer has a 672px maximum width and 88px minimum text-entry height.
 Heading top spacing is 80px on mobile and 96px on desktop. A 3:2 grid split
 places three fifths of the composer within the backdrop and two fifths below its
 bottom edge; the opaque surface keeps the grid out of the text field. A stock
-`shadow-xl` gives the composer a broader blended shadow along its sides and
+`shadow-xl` gives the composer's gray backing Card a blended shadow along its sides and
 bottom, separating it from the animated grid.
 Every unscoped entry point uses the same server intent routing: Agent answers a
 question or creates a validated experiment proposal from the prompt, without a
@@ -204,8 +204,11 @@ A late response leaves subsequent navigation intact.
 The shared Home/Agent composer keeps its resting border and shadow when its
 textarea is focused; do not add an outer focus border or ring. Other form inputs
 retain the stock shadcn focus treatment.
-Its single border uses foreground/20 for subtle neutral separation in both
-themes, keeping Home's existing shadow without adding a second wrapper.
+Use a shared muted-gray Card backing with 8px padding, stock radius and an outer
+shadow-xl. The inner input keeps its stock input border and background surface;
+the shadow belongs to the backing, not the inner field. A compact CardFooter
+reads “Shape an experiment with Agent, or start from scratch →”, with a slightly
+bold link opening /new. Navigation preserves the unsent message and never sends it.
 Use 14px side insets for text and footer controls, retaining the original 8px
 top and bottom insets for a compact vertical rhythm. The textarea still starts
 with three lines, grows to its existing cap, then scrolls internally.

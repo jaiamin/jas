@@ -122,7 +122,7 @@ export default function Home() {
         </h1>
         <div className="relative col-start-1 row-start-2 row-end-4 min-w-0 px-4 sm:px-6">
           <AgentComposer
-            className="mx-auto w-full max-w-2xl [&_[data-slot=input-group]]:shadow-xl"
+            className="mx-auto w-full max-w-2xl"
             state={state}
             placeholder="Ask a question or describe an experiment…"
           />

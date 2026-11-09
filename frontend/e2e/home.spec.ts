@@ -7,6 +7,34 @@ const settings = {
   assistant_model: "openai:gpt-6.1-sol",
 };
 
+test("Composer's manual editor link preserves the message without submitting", async ({
+  page,
+}) => {
+  await page.route("**/api/settings", (route) =>
+    route.fulfill({ json: settings }),
+  );
+  let submissions = 0;
+  page.on("request", (request) => {
+    if (request.url().endsWith("/api/chats") && request.method() === "POST")
+      submissions++;
+  });
+  for (const path of ["/", "/agent"]) {
+    await page.goto(path);
+    const input = page.getByLabel("Message Agent", { exact: true });
+    await input.fill("Compare cooperation with and without messages");
+    await page
+      .getByRole("form", { name: "Agent composer" })
+      .getByRole("link", { name: "start from scratch" })
+      .click();
+    await expect(page).toHaveURL(/\/new$/);
+    await page.goBack();
+    await expect(input).toHaveValue(
+      "Compare cooperation with and without messages",
+    );
+  }
+  expect(submissions).toBe(0);
+});
+
 test("Home submits once, opens the saved Agent conversation and never resubmits on back or reload", async ({
   page,
 }) => {
@@ -287,7 +315,8 @@ for (const width of [390, 1440])
         page.getByRole("heading", { name: "What would you like to test?" }),
       ).toBeVisible();
       const geometry = await page
-        .locator('[data-slot="input-group"]')
+        .getByRole("form", { name: "Agent composer" })
+        .locator('[data-slot="card"]')
         .evaluate((box) => {
           const bounds = box.getBoundingClientRect();
           const backdrop = document
@@ -597,7 +626,7 @@ for (const width of [390, 1440])
 for (const width of [390, 1440]) {
   test(`Home and Agent composers grow, scroll internally and shrink again · ${width}`, async ({
     page,
-  }) => {
+  }, testInfo) => {
     await page.route("**/api/settings", (route) =>
       route.fulfill({ json: settings }),
     );
@@ -656,6 +685,12 @@ for (const width of [390, 1440]) {
       await expect
         .poll(async () => (await input.boundingBox())?.height ?? 0)
         .toBe(initialHeight);
+      if (path === "/agent") {
+        await page.screenshot({
+          path: testInfo.outputPath(`agent-composer-${width}.png`),
+          fullPage: true,
+        });
+      }
     }
   });
 }
