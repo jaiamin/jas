@@ -167,8 +167,10 @@ line height (88px including padding), grows to 192px, then scrolls internally
 while keeping its action row visible.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
 background surface. The new-chat heading has a decorative primary-colored Target
-at left (32px, 36px on larger screens). Its CSS ring pulse radiates outward twice
-and settles within 4.3 seconds; reduced motion shows the static outline. It never
+at left (32px, 36px on larger screens), with a 10px gap and a 1px optical lift.
+Its CSS rings pulse continuously on unequal 3.7/4.3/5.1-second cycles, keeping
+the rhythm varied. Motion pauses offscreen and in hidden tabs; reduced motion
+shows the static outline. It never
 signals loading or delays the composer. At the upper right, a 32px stock outline history button
 with the standard rounded corners sits beside the stock 32px New button when a
 saved conversation is selected. The base new-chat view shows only History. History uses a

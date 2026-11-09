@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   Link,
   useLocation,
@@ -322,13 +322,7 @@ function AgentConversation({
       ) : (
         <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)_auto_minmax(0,2fr)] overflow-y-auto px-4 py-8 sm:px-6">
           <div className="row-start-2 mx-auto flex w-full max-w-3xl flex-col gap-6">
-            <h1 className="flex items-center justify-center gap-3 text-center text-2xl font-semibold tracking-tight sm:text-3xl">
-              <AgentIcon
-                aria-hidden="true"
-                className="agent-heading-target size-8 shrink-0 text-primary sm:size-9"
-              />
-              <span>What can we explore?</span>
-            </h1>
+            <AgentWelcomeHeading />
             {composer}
           </div>
           <div className="row-start-3 mx-auto w-full max-w-3xl pt-6">
@@ -344,6 +338,41 @@ function AgentConversation({
       )}
       {messages.length > 0 && composer}
     </section>
+  );
+}
+
+function AgentWelcomeHeading() {
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    const element = heading.current;
+    if (!element) return;
+    let visible = false;
+    const updateActivity = () => {
+      element.dataset.motion =
+        visible && !document.hidden ? "running" : "paused";
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      updateActivity();
+    });
+    observer.observe(element);
+    document.addEventListener("visibilitychange", updateActivity);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", updateActivity);
+    };
+  }, []);
+  return (
+    <h1
+      ref={heading}
+      className="flex items-center justify-center gap-2.5 text-center text-2xl font-semibold tracking-tight sm:text-3xl"
+    >
+      <AgentIcon
+        aria-hidden="true"
+        className="agent-heading-target size-8 shrink-0 -translate-y-px text-primary sm:size-9"
+      />
+      <span>What can we explore?</span>
+    </h1>
   );
 }
 
