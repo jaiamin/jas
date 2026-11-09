@@ -53,7 +53,6 @@ test("four examples adapt to creation, saved treatments and a run without submit
   try {
     await expect(suggestions).toHaveCount(0);
     await expect(draft).toHaveValue(/Help me design an agent experiment/);
-    await draft.fill("");
     await expect(
       page.getByRole("status", { name: "Loading suggested questions" }),
     ).toBeVisible();
@@ -68,8 +67,7 @@ test("four examples adapt to creation, saved treatments and a run without submit
     .click();
   await expect(draft).toHaveValue(new RegExp(study.design.conditions[0].name));
   await expect(draft).toHaveValue(new RegExp(study.design.conditions[1].name));
-  await expect(suggestions).toHaveCount(0);
-  await draft.fill("");
+  await expect(suggestions).toHaveCount(4);
   await page.getByRole("button", { name: "Review setup", exact: true }).click();
   await expect(draft).toHaveValue(/Do public messages change contributions\?/);
   let failed = true;
@@ -104,7 +102,6 @@ test("four examples adapt to creation, saved treatments and a run without submit
     await expect(draft).toHaveValue(
       /Do public messages change contributions\?/,
     );
-    await draft.fill("");
     await expect(
       page.getByRole("status", { name: "Loading suggested questions" }),
     ).toBeVisible();
@@ -126,7 +123,7 @@ test("four examples adapt to creation, saved treatments and a run without submit
 });
 
 for (const width of [320, 1440]) {
-  test(`Agent shortcuts fade while drafting without moving the composer · ${width}`, async ({
+  test(`Agent shortcuts remain available while drafting without moving the composer · ${width}`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 800 });
@@ -149,11 +146,7 @@ for (const width of [320, 1440]) {
     ]);
     const bounds = await composer.boundingBox();
     await draft.fill("Check this idea");
-    await expect(suggestions).toHaveCount(0);
-    await expect(page.locator('[aria-label="Suggested questions"]')).toHaveCSS(
-      "opacity",
-      "0",
-    );
+    await expect(suggestions.getByRole("button")).toHaveCount(4);
     expect(await composer.boundingBox()).toEqual(bounds);
     await draft.fill("");
     await expect(suggestions.getByRole("button")).toHaveCount(4);
@@ -172,11 +165,11 @@ for (const width of [320, 1440]) {
     await shortcut.press("Enter");
     await expect(draft).toBeFocused();
     await expect(draft).toHaveValue(/Explain how JAS experiments work/);
-    await expect(suggestions).toHaveCount(0);
+    await expect(suggestions.getByRole("button")).toHaveCount(4);
     const text = await draft.inputValue();
     await page.reload();
     await expect(draft).toHaveValue(text);
-    await expect(suggestions).toHaveCount(0);
+    await expect(suggestions.getByRole("button")).toHaveCount(4);
     await draft.fill("");
     await expect(suggestions.getByRole("button")).toHaveCount(4);
     expect(

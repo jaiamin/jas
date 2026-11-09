@@ -29,6 +29,7 @@ for (const theme of ["light", "dark"]) {
       purpose: "general",
       status: "pending",
       cutoffs: {},
+      usage: { cost_usd: 12.34, partial: false },
       study_id: null,
       run_id: null,
       output: {
@@ -64,6 +65,9 @@ for (const theme of ["light", "dark"]) {
       });
     });
     await page.goto("/agent");
+    await expect(
+      page.getByLabel("Message Agent", { exact: true }),
+    ).toHaveAttribute("rows", "3");
     const composer = page.getByRole("form", { name: "Agent composer" });
     const emptyBounds = await composer.boundingBox();
     const suggestions = await page
@@ -104,6 +108,9 @@ for (const theme of ["light", "dark"]) {
     await expect(
       page.getByRole("button", { name: "Send message", exact: true }),
     ).toBeDisabled();
+    await expect(
+      page.getByLabel("Message Agent", { exact: true }),
+    ).toHaveAttribute("rows", "2");
     const activeBounds = await composer.boundingBox();
     expect(activeBounds?.y).toBeGreaterThan(
       (page.viewportSize()?.height ?? 0) * 0.6,
@@ -114,6 +121,12 @@ for (const theme of ["light", "dark"]) {
         () => document.documentElement.scrollWidth > innerWidth,
       ),
     ).toBe(false);
+    await expect(
+      page.getByRole("heading", { name: row.question, exact: true }),
+    ).toBeVisible();
+    await expect(page.getByTitle("Copy response", { exact: true })).toHaveCount(
+      0,
+    );
     await page.screenshot({
       path: testInfo.outputPath(`streaming-${theme}.png`),
       animations: "disabled",
@@ -138,6 +151,17 @@ for (const theme of ["light", "dark"]) {
     await expect(
       page.getByRole("heading", { name: "Matched seeds", exact: true }),
     ).toBeVisible();
+    await page
+      .context()
+      .grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.getByTitle("Copy response", { exact: true }).click();
+    await expect(
+      page.getByTitle("Copy response", { exact: true }),
+    ).toHaveAttribute("data-copied", "true");
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      row.output.answer,
+    );
+    await expect(page.getByText("$12.34", { exact: true })).toHaveCount(0);
     const completedBounds = await composer.boundingBox();
     expect(completedBounds?.y).toBeCloseTo(activeBounds?.y ?? 0, 0);
     await page.reload();
@@ -313,11 +337,10 @@ for (const theme of ["light", "dark"]) {
         page.locator('[data-slot="trace-line"][role="status"]'),
       ).toHaveText(label ?? "");
     }
-    await page.getByRole("button", { name: "Study scope" }).click();
+    await page.getByRole("button", { name: "Refining the protocol" }).click();
     await expect(
       page.getByText(row.output.planning.brief.operationalization),
     ).toBeVisible();
-    await page.getByRole("button", { name: "1 research sources" }).click();
     await expect(
       page.getByRole("link", { name: /Methods reference/ }),
     ).toHaveAttribute("href", "https://example.org/methods");
@@ -343,8 +366,13 @@ for (const theme of ["light", "dark"]) {
       theme === "dark" ? 0 : 1,
     );
     await expect(page.locator('main img[src="/logo.svg"]')).toHaveCount(0);
-    await page.getByRole("button", { name: "Study scope" }).click();
-    await page.getByRole("button", { name: "1 research sources" }).click();
+    const activity = page.getByRole("button", { name: "Protocol reviewed" });
+    await expect(activity).toHaveAttribute("aria-expanded", "false");
+    await activity.click();
+    await expect(
+      page.getByText(row.output.planning.brief.operationalization),
+    ).toBeVisible();
+    await activity.click();
     await page.screenshot({
       path: testInfo.outputPath(`proposal-${theme}.png`),
       animations: "disabled",

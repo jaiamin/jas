@@ -63,7 +63,7 @@ const suggestionIcons = {
 } satisfies Record<AgentSuggestion["action"], typeof BookOpen>;
 
 const suggestionClassName =
-  "mx-auto flex w-full flex-wrap justify-center gap-2 transition-opacity duration-150 data-[hidden=true]:opacity-0 motion-reduce:transition-none";
+  "mx-auto flex w-full flex-wrap justify-center gap-2";
 
 export default function AgentPage() {
   const navigate = useNavigate();
@@ -117,19 +117,32 @@ export default function AgentPage() {
     stream.onerror = () => stream.close();
     return () => stream.close();
   }, [chatId, pending, client]);
+  const title = chat.data?.[0]?.question.slice(0, 100);
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col bg-muted/50">
-      <header className="flex shrink-0 items-center justify-end gap-2 py-3 pl-4 pr-2.5 sm:pl-6">
-        <AgentHistory />
-        {chatId && (
-          <Button
-            aria-label="New chat"
-            onClick={() => navigate(`/agent?new=${crypto.randomUUID()}`)}
-          >
-            <Plus data-icon="inline-start" />
-            New
-          </Button>
-        )}
+      <header className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 pl-4 pr-2.5 sm:grid-cols-[7.5rem_minmax(0,1fr)_7.5rem] sm:pl-2.5">
+        <div aria-hidden="true" className="hidden sm:block" />
+        <div className="min-w-0 sm:text-center">
+          {chatId && !chat.data && !chat.error ? (
+            <Skeleton className="h-4 w-40 max-w-full sm:mx-auto" />
+          ) : title ? (
+            <h1 className="truncate text-sm font-medium" title={title}>
+              {title}
+            </h1>
+          ) : null}
+        </div>
+        <div className="flex items-center justify-end gap-2">
+          <AgentHistory />
+          {chatId && (
+            <Button
+              aria-label="New chat"
+              onClick={() => navigate(`/agent?new=${crypto.randomUUID()}`)}
+            >
+              <Plus data-icon="inline-start" />
+              New
+            </Button>
+          )}
+        </div>
       </header>
       <div className="min-h-0 min-w-0 flex-1">
         {chat.error ? (
@@ -241,6 +254,7 @@ function AgentConversation({
   const composer = (
     <AgentComposer
       state={state}
+      compact={messages.length > 0}
       contextControl={
         <AgentContext
           value={context}
@@ -346,7 +360,6 @@ function AgentConversation({
           </div>
           <div className="row-start-3 mx-auto w-full max-w-3xl pt-6">
             <AgentSuggestions
-              hidden={!!state.question.trim()}
               context={context}
               contextLoading={contextLoading}
               studies={studies}
@@ -362,14 +375,12 @@ function AgentConversation({
 }
 
 function AgentSuggestions({
-  hidden,
   context,
   contextLoading,
   studies,
   runs,
   onChoose,
 }: {
-  hidden: boolean;
   context: string;
   contextLoading: boolean;
   studies: StudySummary[];
@@ -393,9 +404,6 @@ function AgentSuggestions({
       <div
         role="status"
         aria-label="Loading suggested questions"
-        aria-hidden={hidden}
-        inert={hidden}
-        data-hidden={hidden}
         className={suggestionClassName}
       >
         <Skeleton className="h-8 w-40 max-w-full" />
@@ -413,13 +421,7 @@ function AgentSuggestions({
   });
   if (!suggestions.length) return null;
   return (
-    <section
-      aria-label="Suggested questions"
-      aria-hidden={hidden}
-      inert={hidden}
-      data-hidden={hidden}
-      className={suggestionClassName}
-    >
+    <section aria-label="Suggested questions" className={suggestionClassName}>
       {suggestions.map(({ title, prompt, action }) => {
         const Icon = suggestionIcons[action];
         return (

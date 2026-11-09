@@ -10,6 +10,7 @@ import {
   InputGroupAddon,
   InputGroupTextarea,
 } from "@/components/ui/input-group";
+import { cn } from "@/lib/utils";
 
 export function AgentComposer({
   state,
@@ -18,6 +19,7 @@ export function AgentComposer({
   className,
   variant = "plain",
   children,
+  compact = false,
 }: {
   state: ReturnType<typeof useAgentComposer>;
   contextControl?: ReactNode;
@@ -25,6 +27,7 @@ export function AgentComposer({
   className?: string;
   variant?: "plain" | "home";
   children?: ReactNode;
+  compact?: boolean;
 }) {
   const {
     question,
@@ -43,13 +46,16 @@ export function AgentComposer({
       <InputGroup className="has-[[data-slot=input-group-control]:focus-visible]:border-input has-[[data-slot=input-group-control]:focus-visible]:ring-0">
         <InputGroupTextarea
           ref={composer}
-          className="min-h-22 max-h-48 overflow-y-auto overscroll-contain px-3.5 text-[0.9375rem] leading-[1.4375rem] md:text-[0.9375rem]"
+          className={cn(
+            "max-h-48 overflow-y-auto overscroll-contain px-3.5 text-[0.9375rem] leading-[1.4375rem] md:text-[0.9375rem]",
+            compact ? "min-h-16" : "min-h-22",
+          )}
           aria-label="Message Agent"
           placeholder={placeholder}
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
           maxLength={4000}
-          rows={3}
+          rows={compact ? 2 : 3}
           disabled={send.isPending}
           onKeyDown={(event) => {
             if (

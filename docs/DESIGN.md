@@ -201,7 +201,28 @@ Suggestions sit in the lower row so changing context cannot move or resize the
 composer. Keep “What can we explore?” unchanged across selections. Empty space shrinks to zero on short screens;
 content remains scrollable without translated or clipped headings. The plain Agent composer omits Home’s gray
 Card surround and manual-editor footer. Saved chats retain the streaming
-MessageScroller and bottom composer. Decisions and evidence stack below 1440px.
+MessageScroller and bottom composer, with two initial textarea rows (Home/new chat keep three).
+Saved-chat headers show the first question capped at 100 characters, matching history;
+they stay centered on desktop, truncate safely on mobile, and never rename during
+streaming or follow-up turns. No extra title-generation request is made. The browser
+title remains JAS. Loading the title uses a local skeleton only.
+
+Assistant replies use a blue Target with no repeated Agent label or response cost.
+One stock TraceCollapsible presents the current public stage and recorded scope,
+research sources, examined evidence and mechanical checks. It starts collapsed and
+closes on completion; users can reopen it. Never invent a task timeline from the
+latest stage. Keep the Target top-aligned when activity expands. Markdown renderers
+remain stable between partial and validated output. Fenced code uses stock CodeBlock
+with per-block copy and on-demand Shiki languages; replies have a stock copy control
+below them, with reserved footer height during streaming. Preserve citations,
+limitations and captured evidence cutoffs.
+
+The generated protocol Card uses a title/question, one compact agents/conditions/runs
+line and a blue Review protocol action beside “Ready for review. Nothing has run.”
+Scope, sources and checks live in activity rather than competing with the card.
+The pending editor view shares the same reply component. Add context keeps visually
+balanced hover padding around its leading plus and trailing label.
+Decisions and evidence stack below 1440px.
 
 Home uses a full-width composer section with a living 18-unit pixel grid, the
 explicit decorative exception requested for this surface. A single local ecosystem
@@ -261,10 +282,9 @@ Design an experiment, Review a setup, Understand results and Learn the basics.
 Use action-specific Lucide icons, a consistent 32px height and one centered row
 where space permits, wrapping on smaller viewports. Selected experiments/runs
 offer concise setup/evidence actions without implying unrecorded results.
-Shortcuts fill and focus the draft without sending. While the draft contains
-non-whitespace text, fade them out over 150ms (immediate with reduced motion),
-retain their layout space and make them inert/hidden to assistive technology.
-Clearing restores them; resumed drafts start with shortcuts hidden. Four local
+Shortcuts fill and focus the draft without sending. Keep them visible and usable
+after selection, while drafting and when restoring an unsent draft. Selecting a
+different shortcut replaces the draft and returns focus to it. Four local
 skeletons match the shortcut layout; protocol errors/retry remain visible even
 while drafting. Home keeps four illustrated experiment suggestions that fill the
 draft without submitting. Under the Experiment ideas heading,
@@ -423,7 +443,7 @@ in `src/index.css`, and app glyphs pass through `src/components/icons.tsx`.
 
 The deliberate visual exceptions are the JAS logo/wordmark, Home ecosystem and
 heading fade, CC0 3dicons suggestion images, partial selected navigation glyphs,
-black/white surfaces, blue selection, and composer sizing, backing and focus
+white/graphite surfaces, blue selection, and composer sizing, backing and focus
 appearance. They are not all controlled by a preset. A preset changes the shared
 foundation; review these documented exceptions and the icon boundary rather than
 assuming the CLI can reconcile every app-specific choice automatically.
@@ -450,7 +470,8 @@ pnpm dlx shadcn@latest apply --preset <code>
 3. Preserve nonvisual fixes if regeneration overwrites them: Progress bounds and
    custom maximum, selectable Button labels/link text and their drag guard, Slider
    thumb labels, Tabs orientation, Breadcrumb current-item semantics, Chart style children and stable keys, valid Field/Item/InputGroup
-   roles, SidebarSeparator horizontal width respecting its edge insets,
+   roles, CodeBlock keyboard scrolling and source-position key annotations,
+   SidebarSeparator horizontal width respecting its edge insets,
    InputGroup disabled styling scoped to its input control (a disabled
    submit button must not dim an editable composer), and narrow lint annotations. Keep chart legend text readable and retain
    distinct line patterns.

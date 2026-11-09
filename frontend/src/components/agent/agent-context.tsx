@@ -104,6 +104,7 @@ export function AgentContext({
             disabled={disabled}
             className={cn(
               "min-w-0 shrink justify-start border-0 px-1.5 has-data-[icon=inline-start]:pl-1.5",
+              !selected && "pr-2",
               selected &&
                 "pr-0 hover:bg-transparent dark:hover:bg-transparent aria-expanded:bg-transparent",
             )}

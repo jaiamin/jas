@@ -33,7 +33,7 @@ for (const width of [320, 1440]) {
     await page.getByRole("option", { name: title, exact: true }).click();
     await expect(
       page.getByRole("region", { name: "Suggested questions" }),
-    ).toHaveCount(0);
+    ).toHaveCount(1);
     await expect(context).toContainText(title);
     await expect(
       page.getByRole("heading", { name: "What can we explore?", exact: true }),
@@ -345,6 +345,9 @@ test("saved conversations resume after reload and new chats keep separate histor
     page.getByText(
       "Repetitions create independent trials under the same seed.",
     ),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "What is a matched seed?", exact: true }),
   ).toBeVisible();
   expect(submitted[1]).toEqual({
     question: "How do repetitions help?",
@@ -820,7 +823,7 @@ test("base Agent renders immediately and only context options wait for the datab
   await input.fill("A question before records finish loading");
   await expect(
     page.getByRole("region", { name: "Suggested questions" }),
-  ).toHaveCount(0);
+  ).toHaveCount(1);
   await expect(page.locator('[data-slot="skeleton"]')).toHaveCount(0);
   await page.getByRole("combobox", { name: "Message context" }).click();
   await expect(

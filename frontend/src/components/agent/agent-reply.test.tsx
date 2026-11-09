@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { expect, test, vi } from "vitest";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import type { Analysis } from "@/lib/types";
 import { AgentReply } from "./agent-reply";
 
@@ -25,7 +26,9 @@ test("only completion replaces pending prose and publishes citation links", () =
   const onRetry = vi.fn();
   const view = render(
     <MemoryRouter>
-      <AgentReply row={row} disabled={false} onRetry={onRetry} />
+      <TooltipProvider>
+        <AgentReply row={row} disabled={false} onRetry={onRetry} />
+      </TooltipProvider>
     </MemoryRouter>,
   );
   expect(screen.getByText("Unvalidated draft")).toBeInTheDocument();
@@ -35,11 +38,13 @@ test("only completion replaces pending prose and publishes citation links", () =
   ).not.toBeInTheDocument();
   view.rerender(
     <MemoryRouter>
-      <AgentReply
-        row={{ ...row, status: "complete" }}
-        disabled={false}
-        onRetry={onRetry}
-      />
+      <TooltipProvider>
+        <AgentReply
+          row={{ ...row, status: "complete" }}
+          disabled={false}
+          onRetry={onRetry}
+        />
+      </TooltipProvider>
     </MemoryRouter>,
   );
   expect(screen.queryByText("Unvalidated draft")).not.toBeInTheDocument();
@@ -50,11 +55,13 @@ test("only completion replaces pending prose and publishes citation links", () =
   );
   view.rerender(
     <MemoryRouter>
-      <AgentReply
-        row={{ ...row, status: "failed", error: "Interrupted" }}
-        disabled={false}
-        onRetry={onRetry}
-      />
+      <TooltipProvider>
+        <AgentReply
+          row={{ ...row, status: "failed", error: "Interrupted" }}
+          disabled={false}
+          onRetry={onRetry}
+        />
+      </TooltipProvider>
     </MemoryRouter>,
   );
   expect(screen.queryByText("Unvalidated draft")).not.toBeInTheDocument();
