@@ -228,7 +228,9 @@ overlaps the composer top by 12px, avoiding a faded gap above the input. Preserv
 limitations and captured evidence cutoffs.
 
 The generated protocol Card uses a title/question, one compact agents/conditions/runs
-line and a blue Review protocol action beside “Ready for review. Nothing has run.”
+line and a blue Review protocol action followed by “Ready for review. Nothing has run.”
+Leave 16px extra space above and below the card. Its footer places the action first
+on desktop and stacks a full-width action above the safety note on mobile.
 Scope, sources and checks live in activity rather than competing with the card.
 The pending editor view shares the same reply component. Add context keeps visually
 balanced hover padding around its leading plus and trailing label.

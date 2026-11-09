@@ -89,8 +89,8 @@ export const AgentReply = memo(function AgentReply({
             {complete &&
               row.purpose === "design" &&
               (design && row.output?.supported ? (
-                <Card>
-                  <CardHeader>
+                <Card className="my-4">
+                  <CardHeader className="gap-2">
                     <CardTitle>
                       <h2>{design.title}</h2>
                     </CardTitle>
@@ -106,16 +106,16 @@ export const AgentReply = memo(function AgentReply({
                       runs
                     </p>
                   </CardContent>
-                  <CardFooter className="flex-wrap justify-between gap-3">
-                    <p className="text-xs text-muted-foreground">
-                      Ready for review. Nothing has run.
-                    </p>
-                    <Button size="sm" asChild>
+                  <CardFooter className="flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <Button asChild>
                       <Link to={`/new?plan=${row.id}`}>
                         Review protocol
                         <ArrowUpRight data-icon="inline-end" />
                       </Link>
                     </Button>
+                    <p className="text-center text-xs text-muted-foreground sm:text-left">
+                      Ready for review. Nothing has run.
+                    </p>
                   </CardFooter>
                 </Card>
               ) : (
