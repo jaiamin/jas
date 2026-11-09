@@ -642,3 +642,53 @@ Mobile navigation places the brand and close control in the same header row,
 using the shared header height; shrinking the browser must not stack them.
 Keyboard order follows the row from brand to close. Main navigation menus use
 3px gaps between items; section-title and footer spacing retain their prior values.
+
+## Environments catalogue
+
+Environments is a library for choosing world rules, separate from the Experiments
+table. Keep a compact title, blank accessible search field and one blue New action
+at the top; New opens the composed-environment editor. Neutral bordered Built-in /
+Custom tabs follow the record-list toggle geometry. A single separator introduces
+the selected collection. Do not add a subtitle, counts or a permanent empty custom
+section below the built-ins.
+
+Built-ins use responsive stock Cards: one column on phones, two at intermediate
+widths and three on wide screens. Each card contains its grid identity, full name,
+original catalogue description and a Details action. Text remains selectable.
+Place the resource-composition builder last so existing mechanics lead the scan.
+`EnvironmentMark` is small authored brand artwork composed inside stock
+Avatar/Fallback: fixed 9×9 grid patterns represent pooling, reciprocal transfers,
+task dependencies, authority, bargaining, signals, replenishment and composition.
+It draws only three SVG paths using muted foreground and primary tokens, without
+animation, generated images, network requests or runtime randomness. Preserve
+these marks when applying presets; their colors follow the new semantic tokens.
+They are separate from functional preset icons, which remain at the icon boundary.
+Always show the name alongside the decorative, aria-hidden artwork.
+
+Details open in a stock Sheet addressed by `?environment=<key>`. On phones it fills
+the width; on larger screens it is bounded to 32rem. Preserve the full original
+observations, enforced mechanics, controls, measure definitions and rule version.
+Keep the title/description and footer actions fixed, with the details scrolling
+between separators. Controls and measurements are collapsed accordions. The blue
+Configure experiment action opens the selected template; Design with Agent uses
+the shared Target icon and passes the same environment-specific design request.
+Opening details adds a browser-history entry; Back closes them. Escape/Close
+removes only the environment parameter and restores focus to the initiating action,
+or the page heading for a direct link. Invalid environment links have an explicit
+Browse environments recovery action.
+
+Custom owns its remote query and confirmed-delete mutation. Show reusable setups
+as compact stock Items with the environment mark, linked name and environment /
+revision metadata. A bordered ellipsis menu offers Edit and reuse and Delete;
+deletion requires AlertDialog confirmation, disables dismissal while pending, and
+retains the explanation that saved experiments preserve their rules and evidence.
+Do not repeat an edit button beside the linked name. The empty tab explains how to
+save a reusable setup without duplicating the header's New action.
+
+Only pending remote catalogue/custom content uses stock Skeletons. Static title,
+search, tabs and New remain mounted. Queries load independently; custom setups
+remain usable if the catalogue fails. Retain cached collections on refresh errors
+and show a retryable error alongside them. Search covers built-in names/descriptions
+or custom names/environments, resets on a tab change, and offers Clear search for
+no matches. Do not retain the old vertical catalogue navigation or duplicate the
+full mechanics documentation on the overview.

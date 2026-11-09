@@ -316,12 +316,12 @@ test("environment mechanics lead to editable reusable setups", async ({
   page,
 }, testInfo) => {
   await page.goto("/environments");
+  await page
+    .getByRole("button", { name: "Explore Team coordination", exact: true })
+    .click();
   await expect(
     page.getByRole("heading", { name: "What agents observe" }),
   ).toBeVisible();
-  await page
-    .getByRole("tab", { name: "Team coordination", exact: false })
-    .click();
   await page
     .getByRole("link", { name: "Configure experiment", exact: true })
     .click();
@@ -339,7 +339,7 @@ test("environment mechanics lead to editable reusable setups", async ({
   await expect(
     page.getByText("Custom environment saved.", { exact: false }),
   ).toBeVisible();
-  await page.goto("/environments");
+  await page.goto("/environments?view=custom");
   await page
     .getByRole("link", { name: "Supply-chain recovery", exact: true })
     .click();
@@ -356,7 +356,7 @@ test("environment mechanics lead to editable reusable setups", async ({
   await expect(
     page.getByText("Custom environment saved.", { exact: false }),
   ).toBeVisible();
-  await page.goto("/environments");
+  await page.goto("/environments?view=custom");
   await expect(
     page.getByRole("link", { name: "Revised recovery", exact: true }),
   ).toBeVisible();
@@ -365,8 +365,9 @@ test("environment mechanics lead to editable reusable setups", async ({
     .filter({
       has: page.getByRole("link", { name: "Revised recovery", exact: true }),
     })
-    .getByRole("button", { name: "Delete", exact: true })
+    .getByRole("button", { name: "Actions for Revised recovery", exact: true })
     .click();
+  await page.getByRole("menuitem", { name: "Delete", exact: true }).click();
   await expect(page.getByRole("alertdialog")).toContainText("Revised recovery");
   await page.screenshot({
     path: testInfo.outputPath("setup-removal.png"),
@@ -382,8 +383,9 @@ test("environment mechanics lead to editable reusable setups", async ({
     .filter({
       has: page.getByRole("link", { name: "Revised recovery", exact: true }),
     })
-    .getByRole("button", { name: "Delete", exact: true })
+    .getByRole("button", { name: "Actions for Revised recovery", exact: true })
     .click();
+  await page.getByRole("menuitem", { name: "Delete", exact: true }).click();
   await page
     .getByRole("button", { name: "Delete environment", exact: true })
     .click();

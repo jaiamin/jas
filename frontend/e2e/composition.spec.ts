@@ -80,7 +80,7 @@ for (const theme of ["light", "dark"]) {
         "Researcher view includes private inventories and consumption.",
       ),
     ).toBeVisible();
-    await page.goto("/environments");
+    await page.goto("/environments?view=custom");
     await page
       .locator("[data-slot=item-group]")
       .getByRole("link", { name: title, exact: true })
@@ -95,13 +95,19 @@ for (const theme of ["light", "dark"]) {
     await expect(
       page.getByText("Custom environment saved.", { exact: false }),
     ).toBeVisible();
-    await page.goto("/environments");
+    await page.goto("/environments?view=custom");
     const row = page
       .locator("[data-slot=item-group] > [data-slot=item]")
       .filter({
         has: page.getByRole("link", { name: `${title} updated`, exact: true }),
       });
-    await row.getByRole("button", { name: "Delete", exact: true }).click();
+    await row
+      .getByRole("button", {
+        name: `Actions for ${title} updated`,
+        exact: true,
+      })
+      .click();
+    await page.getByRole("menuitem", { name: "Delete", exact: true }).click();
     await expect(page.getByRole("alertdialog")).toContainText(
       "Saved experiments keep their own rules and evidence",
     );
