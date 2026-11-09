@@ -96,7 +96,7 @@ export default function Home() {
   return (
     <>
       <section
-        className="relative isolate grid grid-cols-1 grid-rows-[auto_1fr_1fr]"
+        className="relative isolate grid grid-cols-1 grid-rows-[auto_3fr_1fr]"
         aria-labelledby="home-title"
       >
         <div
@@ -107,7 +107,7 @@ export default function Home() {
         </div>
         <h1
           id="home-title"
-          className="relative col-start-1 row-start-1 mt-16 mb-6 px-4 text-center text-2xl font-semibold tracking-tight sm:mt-20 sm:px-6 sm:text-3xl"
+          className="relative col-start-1 row-start-1 mt-20 mb-6 px-4 text-center text-2xl font-semibold tracking-tight sm:mt-24 sm:px-6 sm:text-3xl"
         >
           What would you like to test?
         </h1>

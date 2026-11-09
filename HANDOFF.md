@@ -462,3 +462,7 @@ The requested follow-up adds 16px above the title at each breakpoint (64px mobil
 80px desktop), increasing backdrop height while preserving the 50/50 overlap.
 Validation: lint/build and Home keyless E2E 7/7 passed; browser measured the 136px
 composer split equally (68px/68px) at desktop and 390px, without overflow.
+
+Home overlap follow-up: use 3:1 tracks (¾ composer inside grid, ¼ below) and add
+another 16px above the title (80px mobile, 96px desktop). This increases the
+backdrop height by 50px relative to the previous 50/50 composition.

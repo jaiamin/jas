@@ -157,8 +157,8 @@ Home uses a full-width composer section with a faint animated pixel grid, the
 explicit decorative exception requested for this surface. The grid follows the
 foreground token, never captures input, and remains static with reduced motion.
 The Home composer has a 672px maximum width and 88px minimum text-entry height.
-Heading top spacing is 64px on mobile and 80px on desktop. Equal grid tracks
-place half the composer within the backdrop and half below its
+Heading top spacing is 80px on mobile and 96px on desktop. A 3:1 grid split
+places three quarters of the composer within the backdrop and one quarter below its
 bottom edge; the opaque surface keeps the grid out of the text field. Shared Agent
 composer controls and behavior remain unchanged. Four existing
 experiment suggestions fill the draft without submitting. Home defaults to New
