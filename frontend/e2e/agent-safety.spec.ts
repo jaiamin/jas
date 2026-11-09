@@ -119,7 +119,7 @@ for (const path of ["/", "/agent"]) {
     });
     await page.goto(path);
     const input = page.getByLabel("Message Agent", { exact: true });
-    await input.fill("My unfinished research question");
+    if (path === "/") await input.fill("My unfinished research question");
     const suggestions = page.getByRole("region", {
       name: path === "/" ? "Experiment ideas" : "Suggested questions",
     });
@@ -127,7 +127,9 @@ for (const path of ["/", "/agent"]) {
     const first = suggestions.getByRole("button").first();
     const text = first.locator("span").last();
     await selectText(page, text);
-    await expect(input).toHaveValue("My unfinished research question");
+    await expect(input).toHaveValue(
+      path === "/" ? "My unfinished research question" : "",
+    );
     await first.focus();
     await first.press("Enter");
     await expect(input).not.toHaveValue("My unfinished research question");

@@ -255,8 +255,19 @@ it and closes the popup. Keyboard search, selection and Escape retain stock
 behavior. Run rows show their experiment plus condition, seed and repetition;
 revision appears when greater than one. IDs stay in search/accessible identity
 and hover titles. Loading skeletons, no matches and no saved context stay local.
-Explicitly scoped links and resumed chats preserve the selected evidence identity. Four experiment
-suggestions fill the draft without submitting. Under the Experiment ideas heading,
+Explicitly scoped links and resumed chats preserve the selected evidence identity.
+Agent offers four compact stock outline Button shortcuts beneath the composer:
+Design an experiment, Review a setup, Understand results and Learn the basics.
+Use action-specific Lucide icons, a consistent 32px height and one centered row
+where space permits, wrapping on smaller viewports. Selected experiments/runs
+offer concise setup/evidence actions without implying unrecorded results.
+Shortcuts fill and focus the draft without sending. While the draft contains
+non-whitespace text, fade them out over 150ms (immediate with reduced motion),
+retain their layout space and make them inert/hidden to assistive technology.
+Clearing restores them; resumed drafts start with shortcuts hidden. Four local
+skeletons match the shortcut layout; protocol errors/retry remain visible even
+while drafting. Home keeps four illustrated experiment suggestions that fill the
+draft without submitting. Under the Experiment ideas heading,
 they share one rounded ItemGroup border with Separator dividers: aligned illustrations,
 15px semibold titles with 19px line height and 13px descriptions with 18px line height in one row of
 four on wide screens. Descriptions use foreground/60, matching record timestamps.

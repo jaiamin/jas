@@ -19,8 +19,10 @@ import { useAgentComposer } from "@/components/agent/use-agent-composer";
 import { Alert } from "@/components/feedback";
 import {
   BookOpen,
+  FileSearch,
   FlaskConical,
   GitCompareArrows,
+  PenLine,
   Plus,
   ScanLine,
 } from "@/components/icons";
@@ -41,10 +43,27 @@ import {
   MessageScrollerViewport,
 } from "@/components/ui/message-scroller";
 import { Skeleton } from "@/components/ui/skeleton";
-import { agentSuggestions } from "@/lib/agent-suggestions";
+import {
+  type AgentSuggestion,
+  agentSuggestions,
+} from "@/lib/agent-suggestions";
 import { api, useApi } from "@/lib/api";
 import { chatProgress } from "@/lib/chat-progress";
 import type { Analysis, Design, RunSummary, StudySummary } from "@/lib/types";
+
+const suggestionIcons = {
+  design: FlaskConical,
+  review: FileSearch,
+  compare: GitCompareArrows,
+  plan: PenLine,
+  measure: ScanLine,
+  summarize: ScanLine,
+  trace: ScanLine,
+  learn: BookOpen,
+} satisfies Record<AgentSuggestion["action"], typeof BookOpen>;
+
+const suggestionClassName =
+  "mx-auto flex w-full flex-wrap justify-center gap-2 transition-opacity duration-150 data-[hidden=true]:opacity-0 motion-reduce:transition-none";
 
 export default function AgentPage() {
   const navigate = useNavigate();
@@ -327,6 +346,7 @@ function AgentConversation({
           </div>
           <div className="row-start-3 mx-auto w-full max-w-3xl pt-6">
             <AgentSuggestions
+              hidden={!!state.question.trim()}
               context={context}
               contextLoading={contextLoading}
               studies={studies}
@@ -342,12 +362,14 @@ function AgentConversation({
 }
 
 function AgentSuggestions({
+  hidden,
   context,
   contextLoading,
   studies,
   runs,
   onChoose,
 }: {
+  hidden: boolean;
   context: string;
   contextLoading: boolean;
   studies: StudySummary[];
@@ -371,11 +393,15 @@ function AgentSuggestions({
       <div
         role="status"
         aria-label="Loading suggested questions"
-        className="flex flex-wrap justify-center gap-2"
+        aria-hidden={hidden}
+        inert={hidden}
+        data-hidden={hidden}
+        className={suggestionClassName}
       >
-        <Skeleton className="h-8 w-52 max-w-full" />
-        <Skeleton className="h-8 w-44 max-w-full" />
-        <Skeleton className="h-8 w-48 max-w-full" />
+        <Skeleton className="h-8 w-40 max-w-full" />
+        <Skeleton className="h-8 w-32 max-w-full" />
+        <Skeleton className="h-8 w-36 max-w-full" />
+        <Skeleton className="h-8 w-32 max-w-full" />
       </div>
     );
   const suggestions = agentSuggestions({
@@ -389,16 +415,17 @@ function AgentSuggestions({
   return (
     <section
       aria-label="Suggested questions"
-      className="mx-auto flex w-full flex-wrap justify-center gap-2"
+      aria-hidden={hidden}
+      inert={hidden}
+      data-hidden={hidden}
+      className={suggestionClassName}
     >
-      {suggestions.map(({ title, prompt }, index) => {
-        const Icon = [BookOpen, GitCompareArrows, ScanLine, FlaskConical][
-          index
-        ];
+      {suggestions.map(({ title, prompt, action }) => {
+        const Icon = suggestionIcons[action];
         return (
           <Button
             variant="outline"
-            className="h-auto min-h-8 max-w-full whitespace-normal text-left"
+            className="max-w-full"
             key={title}
             onClick={() => onChoose(prompt)}
           >

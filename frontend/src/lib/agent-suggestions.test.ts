@@ -71,8 +71,8 @@ test("evidence from another study or preserved revision cannot imply current res
       design,
       runs: [other],
     });
-    expect(suggestions[0].title).toBe("Review the setup");
-    expect(suggestions[1].title).toBe("Check the baseline");
+    expect(suggestions[0].title).toBe("Review setup");
+    expect(suggestions[1].title).toBe("Check baseline");
     expect(suggestions.at(-1)?.prompt).toContain(
       "No outcomes are recorded yet",
     );
@@ -88,7 +88,7 @@ test("partial failed runs get bounded evidence prompts with their exact identity
     repetition: 3,
   };
   const suggestions = agentSuggestions({ context: "run:run", run, design });
-  expect(suggestions[0].title).toBe("Assess the partial record");
+  expect(suggestions[0].title).toBe("Review partial record");
   expect(suggestions[0].prompt).toContain(
     "revision 1, condition “Historical control”, seed 7, repetition 3, recorded through turn 2",
   );
@@ -111,7 +111,7 @@ test("current in-progress evidence enables comparison without treating turns as 
     },
     runs: [{ ...runDetail.summary, revision: 2, turn: 1 }],
   });
-  expect(suggestions[0].title).toBe("Summarize the evidence");
+  expect(suggestions[0].title).toBe("Summarize evidence");
   expect(suggestions[1].prompt).toContain("independent runs and matched seeds");
   expect(suggestions[1].prompt).toContain(
     "Do not treat turns as independent replicates",

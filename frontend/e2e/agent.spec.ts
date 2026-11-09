@@ -33,7 +33,7 @@ for (const width of [320, 1440]) {
     await page.getByRole("option", { name: title, exact: true }).click();
     await expect(
       page.getByRole("region", { name: "Suggested questions" }),
-    ).toBeVisible();
+    ).toHaveCount(0);
     await expect(context).toContainText(title);
     await expect(
       page.getByRole("heading", { name: "What can we explore?", exact: true }),
@@ -109,7 +109,7 @@ test("Agent decoration respects motion preferences and stops offscreen", async (
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await expect.poll(playing).toBeGreaterThan(0);
   await page
-    .getByRole("button", { name: "Design a cooperation experiment" })
+    .getByRole("button", { name: "Learn the basics" })
     .scrollIntoViewIfNeeded();
   await expect(heading).not.toBeInViewport();
   await expect.poll(playing).toBe(0);
@@ -192,12 +192,12 @@ test("Agent centers a plain contextual composer without a history rail", async (
   });
   await page
     .getByRole("button", {
-      name: "How do matched seeds help comparisons?",
+      name: "Learn the basics",
       exact: true,
     })
     .click();
   const draft = page.getByLabel("Message Agent", { exact: true });
-  await expect(draft).toHaveValue("How do matched seeds help comparisons?");
+  await expect(draft).toHaveValue(/Explain how JAS experiments work/);
   await expect(draft).toBeFocused();
   await draft.focus();
   await expect(draft).toHaveCSS("outline-style", "none");
@@ -812,12 +812,15 @@ test("base Agent renders immediately and only context options wait for the datab
     page.getByRole("heading", { name: "What can we explore?" }),
   ).toBeVisible();
   const input = page.getByLabel("Message Agent", { exact: true });
-  await input.fill("A question before records finish loading");
   await expect(
     page
       .getByRole("region", { name: "Suggested questions" })
       .getByRole("button"),
   ).toHaveCount(4);
+  await input.fill("A question before records finish loading");
+  await expect(
+    page.getByRole("region", { name: "Suggested questions" }),
+  ).toHaveCount(0);
   await expect(page.locator('[data-slot="skeleton"]')).toHaveCount(0);
   await page.getByRole("combobox", { name: "Message context" }).click();
   await expect(
