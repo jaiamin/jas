@@ -1184,3 +1184,8 @@ action inside the surface with consistent spacing. Its glyph remains 14px.
 Lint/build and updated 320px/1440px regressions passed, checking group hover,
 right inset, vertical centers, draft preservation and stable composer geometry.
 Live browser review confirmed the same measurements. Preview tab closed.
+
+Final × polish: reduce the inter-control gap from 4px to 2px, retain the 14px
+glyph and 24px target, and explicitly use muted-foreground with foreground on
+hover. Live measurement confirms exact vertical alignment with the label.
+Lint/build and both responsive context regressions passed; preview tab closed.

@@ -77,7 +77,7 @@ export function AgentContext({
       aria-label="Message context controls"
       className={cn(
         "min-w-0 max-w-[calc(100%-3rem)] flex-row items-center gap-0 rounded-lg",
-        selected && "gap-1 pr-1",
+        selected && "gap-0.5 pr-1",
         selected && !disabled && "hover:bg-muted",
       )}
     >
@@ -193,7 +193,7 @@ export function AgentContext({
           type="button"
           variant="ghost"
           size="sm"
-          className="size-6 p-0 hover:bg-transparent dark:hover:bg-transparent"
+          className="size-6 p-0 text-muted-foreground hover:bg-transparent hover:text-foreground dark:hover:bg-transparent"
           aria-label="Clear context"
           title="Clear context"
           disabled={disabled}
