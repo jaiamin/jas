@@ -423,21 +423,27 @@ end of the divider; keep their visible icon size and hit area unchanged.
 The API exposes no experiment edit time.
 Delete stays visible for mouse, keyboard
 and touch users. Use Untitled experiment when
-unnamed. Both Home and Experiments confirm deletion in a stock AlertDialog;
+unnamed. Home confirms deletion in a stock AlertDialog;
 failed storage writes retain the draft and show a recoverable dialog error.
 Home hides the section after its final draft is deleted. Offer View all drafts
-when more exist, opening and scrolling to the full draft list in Experiments.
+when more exist, expanding the remaining drafts inline on Home, with Show fewer drafts
+to return to the compact list. Keep drafts off the Experiments page. Link unreadable
+drafts directly to their editor recovery screen.
 Keep creation actions out of the composer/Experiment ideas area. The empty message uses regular muted
 EmptyDescription text rather than a title. Full record lists remain on their
 dedicated destinations.
 
 Experiments and Runs share one list heading: a muted rounded-square icon beside
-the title, with search and a primary New action at the right (stacked below on
+the title (filled Play or flask liquid, matching navigation), with search and a primary New action at the right (stacked below on
 mobile). Keep the header inset, but let both tables reach the full content width
-without side gutters or an enclosing border. Stock Table row separators provide
+without side gutters or an enclosing border. Inset the outer header/data cells and
+filter controls to match the page heading, including skeleton rows; this padding
+must not shorten the row dividers. Left-align headers and data, retain tabular
+numerals, and label the Experiments primary column Name. Stock Table row separators provide
 one line per boundary; do not add a second divider around the table or pagination.
-The two pages share filter state and row-loading skeletons while retaining their
-own columns. Runs link to their exact experiment revision and keep comparison
+The two pages share the filter-state contract and row-loading skeletons while retaining their
+own columns. Omit total counts below the tables and render pagination only when
+there is more than one page. Runs link to their exact experiment revision and keep comparison
 selections across filtering. Loading affects database rows only, leaving search,
 the heading and New available. Empty lists keep a single creation action in the
 heading. Embedded experiment runs use the same controlled table/search contract.

@@ -13,6 +13,19 @@ for (const theme of ["light", "dark"]) {
         theme,
       );
       const { study } = await createStudy(request);
+      await page.addInitScript((design) => {
+        localStorage.setItem(
+          "jas:draft:/new",
+          JSON.stringify({
+            path: "/new",
+            title: "An unfinished draft",
+            updated: new Date().toISOString(),
+            design,
+            json: JSON.stringify(design),
+            mode: "visual",
+          }),
+        );
+      }, study.design);
       const summaries = await (await request.get("/api/studies")).json();
       await page.route("**/api/studies", (route) =>
         route.fulfill({
@@ -45,6 +58,14 @@ for (const theme of ["light", "dark"]) {
             return radius > 0 && radius < element.clientWidth / 2;
           }),
         ).toBe(true);
+        const filledIcon = icon.locator(
+          path === "/studies" ? "[data-liquid]" : "svg",
+        );
+        expect(
+          await filledIcon.evaluate(
+            (element) => getComputedStyle(element).fill,
+          ),
+        ).not.toBe("none");
         const search = header.getByRole("textbox", { name: `Search ${noun}` });
         await expect(search).toBeVisible();
         const create = header.getByRole("link", {
@@ -70,6 +91,44 @@ for (const theme of ["light", "dark"]) {
         });
         expect(geometry.left).toBe(0);
         expect(geometry.right).toBe(0);
+        const headerPadding = await header.evaluate((element) => {
+          const style = getComputedStyle(element);
+          return { left: style.paddingLeft, right: style.paddingRight };
+        });
+        const table = main.getByRole("table");
+        for (const row of [
+          table.getByRole("row").first(),
+          table.getByRole("row").nth(1),
+        ]) {
+          await expect(row.locator(":scope > :first-child")).toHaveCSS(
+            "padding-left",
+            headerPadding.left,
+          );
+          await expect(row.locator(":scope > :last-child")).toHaveCSS(
+            "padding-right",
+            headerPadding.right,
+          );
+        }
+        await expect(main.getByText(/^\d+ (?:experiments?|runs)$/)).toHaveCount(
+          0,
+        );
+        await expect(
+          main.getByRole("columnheader", {
+            name: path === "/studies" ? "Name" : "Run",
+            exact: true,
+          }),
+        ).toBeVisible();
+        for (const cell of await table.locator("th, td").all()) {
+          await expect(cell).toHaveCSS("text-align", /^(?:start|left)$/);
+        }
+        if (path === "/studies") {
+          await expect(
+            main.getByText("An unfinished draft", { exact: true }),
+          ).toHaveCount(0);
+          await expect(
+            main.getByRole("button", { name: /^Drafts/ }),
+          ).toHaveCount(0);
+        }
         expect(tableBounds?.x).toBeCloseTo(geometry.x, 0);
         expect(tableBounds?.width).toBeCloseTo(
           geometry.width - geometry.left - geometry.right,

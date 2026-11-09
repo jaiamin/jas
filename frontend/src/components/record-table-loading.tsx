@@ -1,6 +1,6 @@
+import { RecordTable } from "@/components/record-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -11,7 +11,7 @@ import {
 export function RecordTableLoading({ columns }: { columns: number }) {
   return (
     <div className="min-w-0 overflow-hidden" role="status" aria-label="Loading">
-      <Table aria-hidden="true">
+      <RecordTable aria-hidden="true">
         <TableHeader>
           <TableRow>
             {Array.from({ length: columns }, (_, column) => (
@@ -35,7 +35,7 @@ export function RecordTableLoading({ columns }: { columns: number }) {
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </RecordTable>
     </div>
   );
 }

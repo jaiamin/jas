@@ -263,7 +263,11 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
     '{"unfinished":',
   );
   await page.goto("/studies");
-  await page.getByText(/^Drafts ·/).click();
+  await expect(
+    page.getByRole("region", { name: "Drafts", exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
+  await page.goto("/");
   await page
     .getByRole("link", { name: "Recovered protocol", exact: true })
     .click();
@@ -271,7 +275,11 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
     '{"unfinished":',
   );
   await page.goto("/studies");
-  await page.getByText(/^Drafts ·/).click();
+  await expect(
+    page.getByRole("region", { name: "Drafts", exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
+  await page.goto("/");
   await page
     .getByRole("button", { name: "Delete Recovered protocol draft" })
     .click();
@@ -279,7 +287,9 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
     .getByRole("alertdialog")
     .getByRole("button", { name: "Delete draft", exact: true })
     .click();
-  await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
+  await expect(
+    page.getByRole("region", { name: "Drafts", exact: true }),
+  ).toHaveCount(0);
   await page.goto("/new?template=commons");
   await page.getByLabel("Experiment name", { exact: true }).fill("");
   await expect(page.getByRole("status")).toContainText("Draft saved");
@@ -296,8 +306,10 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
   await expect(page.getByRole("heading", { name: design.title })).toBeVisible();
-  await page.goto("/studies");
-  await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
+  await page.goto("/");
+  await expect(
+    page.getByRole("region", { name: "Drafts", exact: true }),
+  ).toHaveCount(0);
 });
 
 test("environment mechanics lead to editable reusable setups", async ({

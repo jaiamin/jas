@@ -54,7 +54,10 @@ export function RecordListHeading({
           className="rounded-lg after:rounded-lg"
           aria-hidden="true"
         >
-          <AvatarFallback className="rounded-lg [&>svg]:size-5">
+          <AvatarFallback
+            data-active="true"
+            className="rounded-lg [&>svg]:size-5 [&>svg:not([data-partial-fill])]:fill-current"
+          >
             <Icon />
           </AvatarFallback>
         </Avatar>

@@ -546,8 +546,8 @@ for (const width of [390, 1440])
         ],
       );
       await expect(
-        draftSection.getByRole("link", { name: "View all drafts" }),
-      ).toHaveAttribute("href", "/studies#drafts");
+        draftSection.getByRole("button", { name: "View all drafts" }),
+      ).toHaveAttribute("aria-expanded", "false");
       await expect(
         page
           .getByRole("region", { name: "Recent experiments" })
@@ -607,6 +607,9 @@ for (const width of [390, 1440])
       await draftToggle.click();
       await expect(continueDraft).toHaveCount(0);
       await expect(draftToggle).toHaveAttribute("aria-expanded", "false");
+      await expect(
+        draftSection.getByRole("button", { name: "View all drafts" }),
+      ).toHaveCount(0);
       await expect(draftSection.locator('[data-slot="separator"]')).toHaveCount(
         0,
       );
@@ -775,15 +778,25 @@ for (const width of [390, 1440])
         await page
           .getByRole("button", { name: "Close menu", exact: true })
           .click();
-      await draftSection.getByRole("link", { name: "View all drafts" }).click();
-      await expect(page).toHaveURL(/\/studies#drafts$/);
+      await draftSection
+        .getByRole("button", { name: "View all drafts" })
+        .click();
+      await expect(page).toHaveURL(/\/$/);
       await expect(
-        page.getByRole("button", { name: "Drafts · 5", exact: true }),
+        draftSection.getByRole("button", { name: "Show fewer drafts" }),
       ).toHaveAttribute("aria-expanded", "true");
       await expect(
-        page.getByRole("link", { name: "The oldest draft", exact: true }),
+        draftSection.getByRole("link", {
+          name: "The oldest draft",
+          exact: true,
+        }),
       ).toBeVisible();
-      await page.goBack();
+      await draftSection
+        .getByRole("button", { name: "Show fewer drafts" })
+        .click();
+      await expect(
+        draftSection.locator('[data-slot="item-title"]'),
+      ).toHaveCount(3);
       await continueDraft.click();
       await expect(page).toHaveURL(/\/new\?template=commons$/);
       await expect(

@@ -87,7 +87,9 @@ export default function Home() {
       };
     }
   });
-  const recentDrafts = drafts.items.slice(0, 3);
+  const [showAllDrafts, setShowAllDrafts] = useState(false);
+  const [draftsOpen, setDraftsOpen] = useState(true);
+  const recentDrafts = showAllDrafts ? drafts.items : drafts.items.slice(0, 3);
   const recent = [...(studies.data ?? [])]
     .sort((a, b) => b.created.localeCompare(a.created))
     .slice(0, 4);
@@ -220,7 +222,11 @@ export default function Home() {
             aria-labelledby="drafts-title"
             className="flex flex-col gap-3"
           >
-            <Disclosure defaultOpen className="flex flex-col gap-1.5">
+            <Disclosure
+              open={draftsOpen}
+              onOpenChange={setDraftsOpen}
+              className="flex flex-col gap-1.5"
+            >
               <div className="flex items-center justify-between gap-3">
                 <h2
                   id="drafts-title"
@@ -234,12 +240,14 @@ export default function Home() {
                     Drafts
                   </DisclosureTrigger>
                 </h2>
-                {drafts.items.length > recentDrafts.length && (
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link to="/studies#drafts">
-                      View all drafts
-                      <ArrowUpRight data-icon="inline-end" />
-                    </Link>
+                {draftsOpen && drafts.items.length > 3 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-expanded={showAllDrafts}
+                    onClick={() => setShowAllDrafts((current) => !current)}
+                  >
+                    {showAllDrafts ? "Show fewer drafts" : "View all drafts"}
                   </Button>
                 )}
               </div>
@@ -248,12 +256,15 @@ export default function Home() {
                 {(drafts.error || drafts.unreadable.length > 0) && (
                   <Alert variant="error">
                     {drafts.error || "Some drafts could not be read."}{" "}
-                    <Link
-                      to="/studies"
-                      className="underline underline-offset-4"
-                    >
-                      Review drafts
-                    </Link>
+                    {drafts.unreadable.map((path) => (
+                      <Link
+                        key={path}
+                        to={path}
+                        className="block underline underline-offset-4"
+                      >
+                        Review unreadable draft · {path}
+                      </Link>
+                    ))}
                   </Alert>
                 )}
                 {recentDrafts.length > 0 && (

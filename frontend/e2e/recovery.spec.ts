@@ -6,7 +6,8 @@ test("a corrupt draft leaves valid drafts available with targeted recovery", asy
   request,
 }) => {
   const catalog = await (await request.get("/api/catalog")).json();
-  await page.addInitScript((design) => {
+  await page.goto("/");
+  await page.evaluate((design) => {
     localStorage.setItem(
       "jas:draft:/new?template=commons",
       JSON.stringify({
@@ -20,20 +21,27 @@ test("a corrupt draft leaves valid drafts available with targeted recovery", asy
     );
     localStorage.setItem("jas:draft:/new?template=broken", "{unfinished");
   }, templateDesign(catalog));
-  await page.goto("/studies");
+  await page.reload();
   await expect(page.getByRole("alert")).toContainText(
     "Some drafts could not be read",
   );
-  await page.getByText(/^Drafts ·/).click();
   await expect(
     page.getByRole("link", { name: "Preserved draft", exact: true }),
   ).toBeVisible();
   await page
-    .getByRole("button", {
-      name: "Discard unreadable draft · /new?template=broken",
+    .getByRole("link", {
+      name: "Review unreadable draft · /new?template=broken",
       exact: true,
     })
     .click();
+  await expect(page).toHaveURL(/\/new\?template=broken$/);
+  await page
+    .getByRole("button", { name: "Discard unreadable draft", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Discard unreadable draft", exact: true }),
+  ).toHaveCount(0);
+  await page.goto("/");
   await expect(page.getByRole("alert")).toHaveCount(0);
   await expect(
     page.getByRole("link", { name: "Preserved draft", exact: true }),

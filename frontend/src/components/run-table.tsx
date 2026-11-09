@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import { Empty } from "@/components/feedback";
 import { ChevronLeft, ChevronRight, X } from "@/components/icons";
 import { OptionSelect as Select } from "@/components/option-select";
+import { RecordTable } from "@/components/record-table";
 import { Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -48,7 +48,7 @@ export function RunTable({
     );
   return (
     <div className="min-w-0 overflow-hidden">
-      <div className="flex flex-wrap items-center gap-3 p-3">
+      <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
         <Select
           label="Filter run status"
           value={status}
@@ -92,7 +92,7 @@ export function RunTable({
           </div>
         )}
       </div>
-      <Table>
+      <RecordTable>
         <TableHeader>
           <TableRow>
             {selectable && (
@@ -104,9 +104,9 @@ export function RunTable({
             <TableHead>Experiment</TableHead>
             <TableHead>Status</TableHead>
 
-            <TableHead className="text-right">Progress</TableHead>
+            <TableHead>Progress</TableHead>
 
-            <TableHead className="text-right">Cost</TableHead>
+            <TableHead>Cost</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -158,18 +158,18 @@ export function RunTable({
                 <Status value={run.status} />
               </TableCell>
 
-              <TableCell className="text-right tabular-nums whitespace-nowrap">
+              <TableCell className="tabular-nums whitespace-nowrap">
                 {run.turn} / {run.total_turns} turns
               </TableCell>
 
-              <TableCell className="text-right tabular-nums">
+              <TableCell className="tabular-nums">
                 {money(run.usage.cost_usd)}
                 {run.usage.partial && "*"}
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </RecordTable>
       {!filtered.length && (
         <Empty
           title="No matching runs"
@@ -180,39 +180,33 @@ export function RunTable({
           </Button>
         </Empty>
       )}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm text-muted-foreground">
-        <span>
-          {filtered.length} runs
-          {selected.length > 0 && ` · ${selected.length} selected`}
-        </span>
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
-          {pages > 1 && (
+      {pages > 1 && (
+        <div className="flex items-center justify-end px-4 py-3 text-sm text-muted-foreground sm:px-6 lg:px-8">
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
             <span>
               {current + 1} / {pages}
             </span>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Previous run page"
-            hidden={pages === 1}
-            disabled={!current}
-            onClick={() => setPage(current - 1)}
-          >
-            <ChevronLeft />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Next run page"
-            hidden={pages === 1}
-            disabled={current + 1 >= pages}
-            onClick={() => setPage(current + 1)}
-          >
-            <ChevronRight />
-          </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Previous run page"
+              disabled={!current}
+              onClick={() => setPage(current - 1)}
+            >
+              <ChevronLeft />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Next run page"
+              disabled={current + 1 >= pages}
+              onClick={() => setPage(current + 1)}
+            >
+              <ChevronRight />
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

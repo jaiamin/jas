@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 import { Empty } from "@/components/feedback";
 import { ChevronLeft, ChevronRight, ExperimentIcon } from "@/components/icons";
 import { OptionSelect as Select } from "@/components/option-select";
+import { RecordTable } from "@/components/record-table";
 import { Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -41,7 +41,7 @@ export function StudyTable({
     );
   return (
     <div className="min-w-0 overflow-hidden">
-      <div className="flex flex-wrap items-center gap-3 p-3">
+      <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
         <Select
           label="Filter experiment status"
           value={status}
@@ -60,15 +60,15 @@ export function StudyTable({
           }))}
         />
       </div>
-      <Table>
+      <RecordTable>
         <TableHeader>
           <TableRow>
-            <TableHead>Experiment</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead className="w-1/2">Name</TableHead>
+            <TableHead className="w-36">Status</TableHead>
 
-            <TableHead className="text-right">Runs</TableHead>
+            <TableHead className="w-24">Runs</TableHead>
 
-            <TableHead>Created</TableHead>
+            <TableHead className="w-48">Created</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -94,7 +94,7 @@ export function StudyTable({
               <TableCell>
                 <Status value={study.status} />
               </TableCell>
-              <TableCell className="text-right tabular-nums">
+              <TableCell className="tabular-nums">
                 {study.completed_runs} / {study.run_count}
               </TableCell>
 
@@ -104,7 +104,7 @@ export function StudyTable({
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </RecordTable>
       {!filtered.length && (
         <Empty title="No matching experiments">
           <Button variant="outline" onClick={filters.clear}>
@@ -113,38 +113,33 @@ export function StudyTable({
         </Empty>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm text-muted-foreground">
-        <span>
-          {filtered.length} experiment{filtered.length !== 1 && "s"}
-        </span>
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
-          {pageCount > 1 && (
+      {pageCount > 1 && (
+        <div className="flex items-center justify-end px-4 py-3 text-sm text-muted-foreground sm:px-6 lg:px-8">
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
             <span>
               {current + 1} / {pageCount}
             </span>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Previous experiment page"
-            hidden={pageCount === 1}
-            disabled={current === 0}
-            onClick={() => setPage(current - 1)}
-          >
-            <ChevronLeft />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Next experiment page"
-            hidden={pageCount === 1}
-            disabled={current + 1 >= pageCount}
-            onClick={() => setPage(current + 1)}
-          >
-            <ChevronRight />
-          </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Previous experiment page"
+              disabled={current === 0}
+              onClick={() => setPage(current - 1)}
+            >
+              <ChevronLeft />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Next experiment page"
+              disabled={current + 1 >= pageCount}
+              onClick={() => setPage(current + 1)}
+            >
+              <ChevronRight />
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
