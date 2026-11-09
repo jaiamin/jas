@@ -204,6 +204,8 @@ A late response leaves subsequent navigation intact.
 The shared Home/Agent composer keeps its resting border and shadow when its
 textarea is focused; do not add an outer focus border or ring. Other form inputs
 retain the stock shadcn focus treatment.
+Its single border uses foreground/20 for subtle neutral separation in both
+themes, keeping Home's existing shadow without adding a second wrapper.
 Use 14px side insets for text and footer controls, retaining the original 8px
 top and bottom insets for a compact vertical rhythm. The textarea still starts
 with three lines, grows to its existing cap, then scrolls internally.

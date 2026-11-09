@@ -820,3 +820,12 @@ Composer side inset refinement (2026-11-09):
 Verification: frontend lint/build and six responsive Home/composer browser
 checks passed. Reviewed desktop capture for tighter title leading and composer
 spacing.
+
+Composer border refinement (2026-11-09):
+- Give the shared composer a slightly stronger neutral border using the preset's
+  foreground token at 20% opacity. Keep the same border on focus, without a ring.
+- Preserve Home's existing shadow, 14px side/8px vertical insets and single surface.
+  No extra gray wrapper, new token or component changes.
+Verification: frontend lint/build and six responsive Home/composer browser
+checks passed, including focus appearance. Reviewed phone-light and desktop-dark
+captures for subtle border contrast and preserved spacing. Port 8080 HTTP 200.

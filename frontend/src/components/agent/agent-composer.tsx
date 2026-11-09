@@ -45,7 +45,7 @@ export function AgentComposer({
       }}
     >
       <div className="rounded-lg bg-background">
-        <InputGroup className="has-[[data-slot=input-group-control]:focus-visible]:border-input has-[[data-slot=input-group-control]:focus-visible]:ring-0">
+        <InputGroup className="border-foreground/20 has-[[data-slot=input-group-control]:focus-visible]:border-foreground/20 has-[[data-slot=input-group-control]:focus-visible]:ring-0">
           <InputGroupTextarea
             ref={composer}
             className="min-h-22 max-h-48 overflow-y-auto overscroll-contain px-3.5 text-[0.9375rem] leading-6 md:text-[0.9375rem]"
