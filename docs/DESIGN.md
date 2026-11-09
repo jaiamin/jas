@@ -649,8 +649,10 @@ Environments uses one quiet list for choosing world rules. Use the shared
 RecordListHeading with the Layers2 page icon on the same muted rounded-square
 surface as Experiments and Runs: 36px surface, 18px glyph, 12px icon/title gap,
 20px mobile / 22px desktop title. Environment grid artwork in the list stays bare.
-Preserve a blank accessible search field, one blue New action and the neutral
-bordered Built-in / Custom tabs. New opens the composed-environment editor.
+Preserve a blank accessible search field and the neutral bordered Built-in / Custom
+tabs. Omit New here: its experiment-editor destination is misleading for a catalogue.
+Experiments keeps its New action; environment-specific configuration remains available
+in each detail panel, including the composed-resource builder.
 A separator beneath the tabs continues directly into the list; do not add cards,
 repeat Details footers or leave an extra gap before the first row.
 
@@ -694,3 +696,7 @@ for related content, optional linked rows and aligned separators;
 [Atlassian spacing](https://atlassian.design/foundations/spacing/) for a consistent
 scale and the relationship between internal text spacing and inter-item spacing.
 These guide composition; stock shadcn primitives and JAS tokens remain authoritative.
+
+The Environments heading marks the shared Layers2 glyph with `data-partial-fill="layers"`,
+reusing the sidebar selection rule to fill only its top layer. Keep the lower
+layer as an outline.

@@ -55,6 +55,7 @@ export default function Environments() {
       <RecordListHeading
         title="Environments"
         icon={Layers2}
+        partialFill="layers"
         search={search}
         onSearchChange={setSearch}
         headingRef={heading}

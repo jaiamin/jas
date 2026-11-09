@@ -36,6 +36,7 @@ export function RecordSearch({
 export function RecordListHeading({
   title,
   icon: Icon,
+  partialFill,
   search,
   onSearchChange,
   headingRef,
@@ -43,6 +44,7 @@ export function RecordListHeading({
 }: {
   title: "Experiments" | "Runs" | "Environments";
   icon: AppIcon;
+  partialFill?: "layers";
   search: string;
   onSearchChange: (value: string) => void;
   headingRef?: Ref<HTMLHeadingElement>;
@@ -65,7 +67,7 @@ export function RecordListHeading({
             data-active="true"
             className="rounded-lg bg-muted-foreground/15 [&>svg]:size-4.5 [&>svg:not([data-partial-fill])]:fill-current"
           >
-            <Icon />
+            <Icon data-partial-fill={partialFill} />
           </AvatarFallback>
         </Avatar>
         <h1
@@ -84,20 +86,9 @@ export function RecordListHeading({
             onChange={onSearchChange}
           />
         </div>
-        {title !== "Runs" && (
+        {title === "Experiments" && (
           <Button asChild>
-            <Link
-              to={
-                title === "Environments"
-                  ? "/new?template=composed&step=conditions"
-                  : "/new"
-              }
-              aria-label={
-                title === "Environments"
-                  ? "Create environment"
-                  : "New experiment"
-              }
-            >
+            <Link to="/new" aria-label="New experiment">
               <Plus data-icon="inline-start" />
               New
             </Link>

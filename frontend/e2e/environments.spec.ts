@@ -32,6 +32,14 @@ for (const theme of ["light", "dark"]) {
       );
       await expect(titleIcon).toHaveCSS("width", "36px");
       await expect(titleIcon.locator("svg")).toHaveCSS("width", "18px");
+      await expect(titleIcon.locator("svg > path").first()).not.toHaveCSS(
+        "fill",
+        "none",
+      );
+      await expect(titleIcon.locator("svg > path").last()).toHaveCSS(
+        "fill",
+        "none",
+      );
       const iconBox = await titleIcon.boundingBox();
       const titleBox = await heading.boundingBox();
       expect(iconBox && titleBox).toBeTruthy();
@@ -196,8 +204,8 @@ for (const theme of ["light", "dark"]) {
       await expect(page).toHaveURL(/view=custom/);
       await expect(page.getByRole("article")).toHaveCount(0);
       await expect(
-        page.getByRole("link", { name: "Create environment", exact: true }),
-      ).toHaveAttribute("href", "/new?template=composed&step=conditions");
+        page.locator('[data-slot="record-list-heading"]').getByRole("link"),
+      ).toHaveCount(0);
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth > innerWidth,
@@ -245,7 +253,7 @@ test("environment data loads independently and errors retain cached content", as
       .boundingBox();
     await expect(page.locator("header [data-slot=skeleton]")).toHaveCount(0);
     await expect(
-      page.getByRole("link", { name: "Create environment", exact: true }),
+      page.getByRole("textbox", { name: "Search environments", exact: true }),
     ).toBeVisible();
     await page.getByRole("tab", { name: "Custom", exact: true }).click();
     await expect(
