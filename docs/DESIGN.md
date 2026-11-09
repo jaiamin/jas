@@ -167,7 +167,7 @@ line height (88px including padding), grows to 192px, then scrolls internally
 while keeping its action row visible.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
 background surface. The new-chat heading has a decorative primary-colored Target
-at left (32px, 36px on larger screens), with a 10px gap and a 1px optical lift.
+at left (32px, 36px on larger screens), with a 10px gap and centered alignment.
 Its CSS rings pulse continuously on unequal 3.7/4.3/5.1-second cycles, keeping
 the rhythm varied. Motion pauses offscreen and in hidden tabs; reduced motion
 shows the static outline. It never

@@ -369,7 +369,7 @@ function AgentWelcomeHeading() {
     >
       <AgentIcon
         aria-hidden="true"
-        className="agent-heading-target size-8 shrink-0 -translate-y-px text-primary sm:size-9"
+        className="agent-heading-target size-8 shrink-0 text-primary sm:size-9"
       />
       <span>What can we explore?</span>
     </h1>
