@@ -303,3 +303,9 @@ Collapse-position follow-up: removed collapsed-only brand centering/padding so t
 logo stays at x=16px, y=18px throughout sidebar collapse and expansion. Live browser
 sampled 39 animation frames across both transitions with zero logo movement.
 Frontend lint/build passed. Browser closed; port 8080 remains running.
+
+Icon-center alignment follow-up: adjusted the brand inset by 2px so its 20px logo
+and all four 16px navigation icons share the horizontal center x=24px. Browser
+verified alignment across 39 collapse/expansion animation frames; requery icons
+per frame because tooltip composition remounts navigation nodes on state changes.
+Lint/build passed. Browser closed and 8080 remains live.
