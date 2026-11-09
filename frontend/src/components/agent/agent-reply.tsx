@@ -99,7 +99,7 @@ export const AgentReply = memo(function AgentReply({
                   <CardContent>
                     <dl
                       aria-label="Protocol summary"
-                      className="grid grid-cols-3 gap-4"
+                      className="flex flex-wrap gap-x-6 gap-y-3"
                     >
                       <div className="flex flex-col gap-1">
                         <dt className="text-xs text-muted-foreground">

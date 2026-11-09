@@ -227,8 +227,9 @@ and composer at the scroll end. Keep transcript top padding compact. Its 12px st
 overlaps the composer top by 12px, avoiding a faded gap above the input. Preserve citations,
 limitations and captured evidence cutoffs.
 
-The generated protocol Card uses a title/question, a compact three-column definition
-list (Agents, Conditions, Planned runs) with muted labels and clear numeric values,
+The generated protocol Card uses a title/question, a compact content-width definition
+list (Agents, Conditions, Planned runs), using 24px horizontal gaps, muted labels
+and clear numeric values,
 and a blue Review protocol action followed by “Ready for review. Nothing has run.”
 Leave 16px extra space above and below the card and a 1px horizontal inset so its
 stock ring remains inside the message’s paint boundary. Use 12px vertical footer
