@@ -858,3 +858,13 @@ Verification: frontend lint/build and seven responsive Home/composer browser
 checks passed, including manual-editor draft preservation and focus behavior.
 Reviewed final Home/Agent phone captures for the tighter shadow, darker note,
 link underline, spacing and arrow alignment.
+
+Composer footer baseline and line spacing refinement (2026-11-09):
+- Put the footer prose and link in one inline paragraph with a normal word space
+  after “or”. Remove the link's transparent border and align its inline baseline
+  with the surrounding text; shorten the text underline offset from 4px to 2px.
+- Tighten composer text line height from 24px to 23px on both pages, preserving
+  15px type, padding, 88px minimum/three default rows and the existing height cap.
+Verification: frontend lint/build and seven responsive Home/composer browser
+checks passed. Reviewed the Agent phone capture for inline footer alignment,
+normal word spacing and the closer underline. Port 8080 remains healthy.

@@ -51,7 +51,7 @@ export function AgentComposer({
             <InputGroup className="has-[[data-slot=input-group-control]:focus-visible]:border-input has-[[data-slot=input-group-control]:focus-visible]:ring-0">
               <InputGroupTextarea
                 ref={composer}
-                className="min-h-22 max-h-48 overflow-y-auto overscroll-contain px-3.5 text-[0.9375rem] leading-6 md:text-[0.9375rem]"
+                className="min-h-22 max-h-48 overflow-y-auto overscroll-contain px-3.5 text-[0.9375rem] leading-[1.4375rem] md:text-[0.9375rem]"
                 aria-label="Message Agent"
                 placeholder={placeholder}
                 value={question}
@@ -86,26 +86,28 @@ export function AgentComposer({
             </InputGroup>
           </div>
         </CardContent>
-        <CardFooter className="flex-wrap gap-x-1.5 gap-y-0 border-0 bg-transparent px-1 py-2 text-xs text-foreground/65">
-          <span>Shape an experiment with Agent, or</span>
-          <Button
-            variant="link"
-            size="xs"
-            className="h-auto gap-0.5 px-0 font-semibold text-foreground hover:no-underline has-data-[icon=inline-end]:pr-0"
-            asChild
-          >
-            <Link to="/new">
-              <span className="underline underline-offset-4">
-                start from scratch
-              </span>
-              <ArrowRight
-                data-icon="inline-end"
-                className="self-center"
-                strokeWidth={2.25}
-                aria-hidden="true"
-              />
-            </Link>
-          </Button>
+        <CardFooter className="border-0 bg-transparent px-1 py-2 text-xs text-foreground/65">
+          <p>
+            Shape an experiment with Agent, or{" "}
+            <Button
+              variant="link"
+              size="xs"
+              className="h-auto gap-0.5 border-0 p-0 align-baseline font-semibold text-foreground hover:no-underline has-data-[icon=inline-end]:pr-0"
+              asChild
+            >
+              <Link to="/new">
+                <span className="underline underline-offset-2">
+                  start from scratch
+                </span>
+                <ArrowRight
+                  data-icon="inline-end"
+                  className="self-center"
+                  strokeWidth={2.25}
+                  aria-hidden="true"
+                />
+              </Link>
+            </Button>
+          </p>
         </CardFooter>
       </Card>
       {send.error && (

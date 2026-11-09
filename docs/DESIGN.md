@@ -208,11 +208,12 @@ Use a shared muted-gray Card backing with 8px padding, stock radius and an outer
 shadow-lg. The inner input keeps its stock input border and background surface;
 the shadow belongs to the backing, not the inner field. A compact CardFooter
 reads “Shape an experiment with Agent, or start from scratch →”, with a slightly
-bold link opening /new. Keep a 6px gap after “or”, underline only the link text,
+bold link opening /new. Keep prose and link in one inline sentence with a normal
+space after “or” and matching text baselines. Underline only the link text at a 2px offset,
 and place the centered arrow 2px after it with a 2.25px stroke. Supporting text
 uses foreground/65 for legibility. Navigation preserves the unsent message and never sends it.
 Use 14px side insets for text and footer controls, retaining the original 8px
-top and bottom insets for a compact vertical rhythm. The textarea still starts
+top and bottom insets and 23px text line height for a compact vertical rhythm. The textarea still starts
 with three lines, grows to its existing cap, then scrolls internally.
 
 The four decorative suggestion illustrations are explicitly approved exceptions
