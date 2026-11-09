@@ -682,8 +682,8 @@ for (const [path, noun, size] of [
       const next = pagination.getByRole("button", {
         name: `Next ${noun} page`,
       });
-      await expect(previous).toHaveCSS("column-gap", "4px");
-      await expect(next).toHaveCSS("column-gap", "4px");
+      await expect(previous).toHaveCSS("column-gap", "0px");
+      await expect(next).toHaveCSS("column-gap", "0px");
       await expect(previous).toBeDisabled();
       await expect(
         pagination.getByRole("button", {

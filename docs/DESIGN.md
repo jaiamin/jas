@@ -472,6 +472,7 @@ own columns. Omit total counts below the tables and render pagination only when
 there is more than one page. Compose shared stock Pagination/Buttons with Previous,
 numbered pages, bounded ellipses and Next; use real disabled buttons at either end,
 aria-current for the active page, and compact icon-only arrows on narrow screens.
+Previous/Next place chevrons beside their labels without an added flex gap.
 Reset to the first page when search, scope, status or All/Favorites changes. Created dates
 use the normal data color in both tables; Runs includes its recorded creation time.
 Runs link to their exact experiment revision and keep comparison

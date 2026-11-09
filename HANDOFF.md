@@ -1310,3 +1310,6 @@ Checkbox/page-icon tone follow-up: soften shared Checkbox input outlines to 90% 
 
 
 List page title refinement: use 22px semibold Experiments/Runs headings on desktop (previously 24px medium), retaining 20px on mobile with the same semibold weight. Record names and column headings remain unchanged. Frontend lint/type/build and four desktop/mobile/light/dark list browser checks passed with explicit font size/weight assertions. Reviewed final desktop light capture. Rebuilt UI remains on 8080.
+
+
+Pagination spacing follow-up: remove the remaining 4px flex gap between Previous/Next labels and chevrons in shared RecordPagination. Preserve stock icon sizes, button hit areas and compact mobile controls. Frontend lint/type/build and all four desktop/mobile experiment/run pagination browser flows passed, including exact zero-gap assertions, navigation and filter reset. Reviewed desktop pagination capture; rebuilt UI remains on 8080.
