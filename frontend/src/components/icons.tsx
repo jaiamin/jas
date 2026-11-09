@@ -5,6 +5,7 @@ import { FlaskConical as FlaskIcon } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 
 export {
+  ArrowDown,
   ArrowLeft,
   ArrowRight,
   ArrowUp,

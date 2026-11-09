@@ -33,22 +33,37 @@ export function useRecordFavorites(kind: FavoriteKind) {
     window.addEventListener("storage", sync);
     return () => window.removeEventListener("storage", sync);
   }, [kind]);
+  function save(ids: readonly string[], favorite?: boolean) {
+    try {
+      for (const id of ids) {
+        const key = `jas:favorite:${kind}:${id}`;
+        if (favorite ?? localStorage.getItem(key) === null)
+          localStorage.setItem(key, "true");
+        else localStorage.removeItem(key);
+      }
+      setState(readFavoriteState(kind));
+    } catch {
+      // A batch can fail after some writes. Reflect the persisted subset and
+      // retain an actionable error rather than claiming the whole batch saved.
+      setState((current) => {
+        let ids = current.ids;
+        try {
+          ids = readFavorites(kind);
+        } catch {
+          // Keep the known state if storage itself has become unreadable.
+        }
+        return {
+          ...current,
+          ids,
+          error: "The favorite could not be saved. Try again.",
+        };
+      });
+    }
+  }
   return {
     ...state,
     retry: () => setState(readFavoriteState(kind)),
-    toggle: (id: string) => {
-      try {
-        const key = `jas:favorite:${kind}:${id}`;
-        if (localStorage.getItem(key) === null)
-          localStorage.setItem(key, "true");
-        else localStorage.removeItem(key);
-        setState(readFavoriteState(kind));
-      } catch {
-        setState((current) => ({
-          ...current,
-          error: "The favorite could not be saved. Try again.",
-        }));
-      }
-    },
+    toggle: (id: string) => save([id]),
+    setMany: (ids: readonly string[], favorite: boolean) => save(ids, favorite),
   };
 }

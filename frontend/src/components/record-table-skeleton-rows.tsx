@@ -10,7 +10,7 @@ export function RecordTableSkeletonRows({
 }) {
   const widths =
     kind === "experiment"
-      ? ["w-40", "size-4", "w-32", "w-16", "w-6", "w-10", "w-32", "size-6"]
+      ? ["w-40", "size-4", "w-32", "w-16", "w-10", "w-24", "size-6"]
       : [
           "w-36",
           "size-4",
@@ -37,8 +37,8 @@ export function RecordTableSkeletonRows({
           )}
         >
           <div className="flex h-7 items-center gap-2">
-            {kind === "experiment" && column === 0 && (
-              <Skeleton className="size-4 shrink-0" />
+            {kind === "experiment" && column === 2 && (
+              <Skeleton className="size-7 shrink-0 rounded-md" />
             )}
             <Skeleton className={cn("h-4 max-w-full", width)} />
           </div>

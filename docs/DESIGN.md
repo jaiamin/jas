@@ -451,9 +451,23 @@ without side gutters or an enclosing border. Inset the outer header/data cells a
 filter controls to match the page heading, including skeleton rows. Reserve a 32px
 name gutter for selection on both lists (also on narrow screens); keep dividers full-width.
 Left-align headers and data, retain tabular numerals, and label both primary columns Name. Keep rows on one line:
-Environment and Revision have their own Experiments columns; Seed, Revision and
+Experiments uses Name, Favorite, Environment, Status, Runs and Created, plus row
+actions. Revision history stays inside the experiment; omit its list column.
+Seed, Revision and
 Repetition have their own Runs columns. Do not stack metadata under record names.
-Use full catalogue environment names. Page titles use semibold weight at 22px on desktop and 20px on mobile; record
+Use full catalogue environment names. In Experiments, place each environment's
+stable grid avatar beside its name, and remove the generic flask from record names.
+`EnvironmentAvatar` composes stock Avatar/Fallback with lightweight authored 7×7
+SVG brand artwork: pool, exchange, coordination steps, institution, negotiation,
+signal, regeneration and modular composition. The geometry is fixed per environment,
+never randomized during render; only three paths are drawn. Structure uses semantic
+muted foreground and focal cells use primary, so presets update both themes without
+asset regeneration. This approved brand artwork is separate from functional preset
+icons. Always retain the full text name and hide the decorative mark from assistive
+technology. Names open the experiment, environment labels open the matching catalogue
+definition, and run counts open its Runs tab. Show the research question in the name's
+native title without another text row.
+Page titles use semibold weight at 22px on desktop and 20px on mobile; record
 names use regular weight. Table column headings use the small text scale. Keep star
 glyphs aligned with their column heading while retaining the full icon-button target.
 Stars use a light 1.5px stroke and the normal data color, including when filled.
@@ -463,6 +477,12 @@ input-color border, 28px overall height matching the filters, and 10px horizonta
 padding inside each item. Selected items use the page background and foreground
 through local semantic accent aliases, keeping this toggle neutral in both themes. Search,
 status and scope apply within that view; Clear filters keeps the chosen view.
+Experiment search includes environment names as well as titles and questions.
+Offer Clear filters inline while matching filtered results are visible; empty
+results retain their existing clear action. Name and Created column buttons sort
+the experiments, with `aria-sort` on the active column. Start newest first, use
+numeric name ordering, preserve the chosen order during refreshes and filtering,
+and return to the first page when the order changes. Do not add a separate sort toolbar.
 Experiments filters by Environment; Runs filters by Experiment, with searchable full labels
 from the catalogue or loaded run identities. Each stock ButtonGroup joins a medium-weight
 filter name to its regular-weight selected value/chevron with one dividing border (Environment | All,
@@ -497,7 +517,9 @@ page-change announcements. Use the same compact layout on desktop and mobile,
 accessible button names, and real disabled buttons at either end. Omit numbered
 page buttons, ellipses, first/last controls and page-size selectors.
 Reset to the first page when search, scope, status or All/Favorites changes. Created dates
-use the normal data color in both tables; Runs includes its recorded creation time.
+use the normal data color in both tables; Experiments uses the Home relative-age
+formatter and minute refresh with an exact timestamp in the native tooltip and
+machine-readable `time`; Runs includes its recorded creation time.
 Runs link to their exact experiment revision and keep comparison
 selections across filtering. Keep comparison and experiment-selection checkboxes in the name
 gutter, without a separate selection column or layout shift. Unchecked boxes reveal on row
@@ -510,7 +532,11 @@ full or partial page selections; disable it while loading or when no rows match.
 Both lists show a compact 28px stock ButtonGroup only while rows are selected:
 a muted count joined to an outline clear icon button with a Clear selection tooltip
 and accessible name. Clearing returns focus to the header checkbox. Keep Compare
-beside it on Runs. Selection is
+beside it on Runs. Experiments adds Favorite/Unfavorite beside the selection count,
+setting an explicit state across selected rows even when some are filtered out.
+Repeated bulk favorite actions are idempotent. On partial storage failure, reflect
+the persisted subset, show the error and allow retry; do not silently report full success.
+Selection is
 independent of comparison: Compare accepts two through four runs and is disabled
 with an explicit limit above four selections. A final Actions column uses bordered stock ellipsis buttons and
 DropdownMenu. Experiments offers Open, Edit as new revision, Duplicate, Export evidence,
