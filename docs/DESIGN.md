@@ -175,8 +175,9 @@ ring contraction and a brief center highlight. Its primary blue mixes 15%
 foreground for readable detail in either theme. Native browser animations finish
 within two seconds; each scan then rests for a varied 2.4–4.4 seconds. Motion and
 its scheduler stop offscreen/in hidden tabs; reduced motion shows the static
-outline. The animation is isolated in AgentWelcomeHeading and never
-signals loading or delays the composer. At the upper right, a 32px stock outline history button
+outline. AgentTarget owns the shared animation and cleanup. Its welcome instance
+is decorative and never delays the composer; pending replies reuse the motion
+until they complete or stop. At the upper right, a 32px stock outline history button
 with the standard rounded corners sits beside the stock 32px New button when a
 saved conversation is selected. The base new-chat view shows only History. History uses a
 stock Popover and ScrollArea in every viewport, with local skeleton rows, empty
