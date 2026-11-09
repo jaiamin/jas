@@ -3,60 +3,35 @@ import { Link } from "react-router-dom";
 import { AgentMarkdown } from "@/components/agent/agent-markdown";
 import { ExperimentCheckDetails } from "@/components/experiment-check";
 import {
-  type AppIcon,
-  BookOpen,
-  Check,
-  CircleAlert,
-  FileSearch,
-  Layers2,
-  LoaderCircle,
-  PenLine,
-  ScanLine,
-} from "@/components/icons";
-import { Spinner } from "@/components/ui/spinner";
-import {
   Trace,
   TraceCollapsible,
   TraceCollapsibleContent,
   TraceCollapsibleTrigger,
   TraceDescription,
-  TraceIcon,
   TraceLine,
   TraceTitle,
 } from "@/components/ui/trace";
 import type { Analysis } from "@/lib/types";
 
 const stages = {
-  answering: { label: "Thinking", icon: LoaderCircle },
-  writing: { label: "Writing", icon: PenLine },
-  indexing: { label: "Indexing the experiment", icon: Layers2 },
-  investigating: { label: "Investigating the evidence", icon: FileSearch },
-  reading: { label: "Reading recorded turns", icon: BookOpen },
-  calculating: { label: "Calculating payoffs", icon: ScanLine },
-  scoping: { label: "Scoping the question", icon: LoaderCircle },
-  researching: { label: "Researching methods", icon: FileSearch },
-  drafting: { label: "Drafting the protocol", icon: PenLine },
-  checking: { label: "Checking mechanics", icon: ScanLine },
-  reviewing: { label: "Reviewing the design", icon: ScanLine },
-  revising: { label: "Refining the protocol", icon: PenLine },
+  answering: "Thinking",
+  writing: "Writing",
+  indexing: "Indexing the experiment",
+  investigating: "Investigating the evidence",
+  reading: "Reading recorded turns",
+  calculating: "Calculating payoffs",
+  scoping: "Scoping the question",
+  researching: "Researching methods",
+  drafting: "Drafting the protocol",
+  checking: "Checking mechanics",
+  reviewing: "Reviewing the design",
+  revising: "Refining the protocol",
 };
 
 export function AgentActivity({ stage }: { stage?: string }) {
-  const { label, icon: Icon } =
-    stages[stage as keyof typeof stages] ?? stages.answering;
+  const label = stages[stage as keyof typeof stages] ?? stages.answering;
   return (
     <TraceLine status="running" role="status">
-      <TraceIcon>
-        {Icon === LoaderCircle ? (
-          <Spinner
-            role="presentation"
-            aria-hidden="true"
-            className="motion-reduce:animate-none"
-          />
-        ) : (
-          <Icon aria-hidden="true" />
-        )}
-      </TraceIcon>
       <TraceTitle>{label}</TraceTitle>
     </TraceLine>
   );
@@ -64,12 +39,10 @@ export function AgentActivity({ stage }: { stage?: string }) {
 
 function ActivityDetail({
   title,
-  icon: Icon,
   description,
   children,
 }: {
   title: string;
-  icon: AppIcon;
   description?: string;
   children: ReactNode;
 }) {
@@ -77,9 +50,6 @@ function ActivityDetail({
     <TraceCollapsible>
       <TraceCollapsibleTrigger aria-label={title}>
         <TraceLine>
-          <TraceIcon>
-            <Icon />
-          </TraceIcon>
           <TraceTitle>{title}</TraceTitle>
           {description && <TraceDescription>{description}</TraceDescription>}
         </TraceLine>
@@ -91,7 +61,7 @@ function ActivityDetail({
 
 /** Show recorded work and public outputs, never private model reasoning. */
 export function ReplyActivity({ row }: { row: Analysis }) {
-  const [expanded, setExpanded] = useState<boolean>();
+  const [expanded, setExpanded] = useState(false);
   const planning = row.output?.planning;
   const activity = row.output?.activity ?? [];
   const sources = planning?.sources ?? [];
@@ -142,33 +112,17 @@ export function ReplyActivity({ row }: { row: Analysis }) {
     <AgentActivity stage={stage} />
   ) : (
     <TraceLine status={row.status === "failed" ? "error" : undefined}>
-      <TraceIcon>
-        {row.status === "failed" ? <CircleAlert /> : <Check />}
-      </TraceIcon>
       <TraceTitle>{title}</TraceTitle>
     </TraceLine>
   );
-  // Open once when live work arrives; completion must not hide what the user is reading.
-  if (
-    expanded === undefined &&
-    pending &&
-    (activity.length > 1 ||
-      !!planning?.brief ||
-      !!planning?.preflight ||
-      sources.length > 0 ||
-      examined.length > 0 ||
-      !!draftNotes)
-  ) {
-    setExpanded(true);
-  }
   if (!hasDetails) return pending ? <Trace>{summary}</Trace> : null;
   return (
     <Trace>
-      <TraceCollapsible open={expanded ?? false} onOpenChange={setExpanded}>
+      <TraceCollapsible open={expanded} onOpenChange={setExpanded}>
         <TraceCollapsibleTrigger
           aria-label={
             pending
-              ? (stages[stage as keyof typeof stages] ?? stages.answering).label
+              ? (stages[stage as keyof typeof stages] ?? stages.answering)
               : title
           }
         >
@@ -179,8 +133,8 @@ export function ReplyActivity({ row }: { row: Analysis }) {
             {activity.length > 0 && (
               <Trace aria-label="Recorded activity">
                 {activity.map((recordedStage, index) => {
-                  const info = stages[recordedStage as keyof typeof stages];
-                  if (!info) return null;
+                  const label = stages[recordedStage as keyof typeof stages];
+                  if (!label) return null;
                   const last = index === activity.length - 1;
                   const stopped = row.status === "failed" && last;
                   const running = pending && last;
@@ -192,26 +146,14 @@ export function ReplyActivity({ row }: { row: Analysis }) {
                         stopped ? "error" : running ? "running" : undefined
                       }
                     >
-                      <TraceIcon>
-                        {stopped ? (
-                          <CircleAlert />
-                        ) : running ? (
-                          <Spinner
-                            role="presentation"
-                            className="motion-reduce:animate-none"
-                          />
-                        ) : (
-                          <Check />
-                        )}
-                      </TraceIcon>
-                      <TraceTitle>{info.label}</TraceTitle>
+                      <TraceTitle>{label}</TraceTitle>
                     </TraceLine>
                   );
                 })}
               </Trace>
             )}
             {planning?.brief && (
-              <ActivityDetail title="Study scope" icon={Layers2}>
+              <ActivityDetail title="Study scope">
                 <div className="flex flex-col gap-2">
                   <p>{planning.brief.operationalization}</p>
                   <p>{planning.brief.size_rationale}</p>
@@ -221,7 +163,6 @@ export function ReplyActivity({ row }: { row: Analysis }) {
             {!!sources.length && (
               <ActivityDetail
                 title="Research sources"
-                icon={FileSearch}
                 description={String(sources.length)}
               >
                 <Trace>
@@ -233,9 +174,6 @@ export function ReplyActivity({ row }: { row: Analysis }) {
                       rel="noreferrer"
                     >
                       <TraceLine>
-                        <TraceIcon>
-                          <BookOpen />
-                        </TraceIcon>
                         <TraceTitle title={source.title}>
                           {source.title}
                           <span className="sr-only"> (opens in a new tab)</span>
@@ -249,7 +187,6 @@ export function ReplyActivity({ row }: { row: Analysis }) {
             {!!examined.length && (
               <ActivityDetail
                 title="Inspected evidence"
-                icon={BookOpen}
                 description={String(examined.length)}
               >
                 <Trace>
@@ -259,9 +196,6 @@ export function ReplyActivity({ row }: { row: Analysis }) {
                       to={`/runs/${range.run_id}?turn=${range.start}&tab=decisions`}
                     >
                       <TraceLine>
-                        <TraceIcon>
-                          <BookOpen />
-                        </TraceIcon>
                         <TraceTitle>
                           Turns {range.start}–{range.end}
                         </TraceTitle>
@@ -277,7 +211,6 @@ export function ReplyActivity({ row }: { row: Analysis }) {
             {planning?.preflight && (
               <ActivityDetail
                 title="Mechanical checks"
-                icon={ScanLine}
                 description={
                   planning.preflight.status === "blocked"
                     ? "Blocked"
@@ -301,7 +234,7 @@ export function ReplyActivity({ row }: { row: Analysis }) {
               </ActivityDetail>
             )}
             {corrections.length > 0 && (
-              <ActivityDetail title="Review feedback" icon={ScanLine}>
+              <ActivityDetail title="Review feedback">
                 <ol className="flex list-decimal flex-col gap-2 pl-4">
                   {corrections.map((review, index) => (
                     // biome-ignore lint/suspicious/noArrayIndexKey: Review attempts are append-only and can contain repeated findings.
@@ -311,15 +244,12 @@ export function ReplyActivity({ row }: { row: Analysis }) {
               </ActivityDetail>
             )}
             {draftNotes && (
-              <ActivityDetail
-                title="Draft notes (before checks)"
-                icon={PenLine}
-              >
+              <ActivityDetail title="Draft notes (before checks)">
                 <AgentMarkdown text={draftNotes} />
               </ActivityDetail>
             )}
             {limitations.length > 0 && (
-              <ActivityDetail title="Protocol limitations" icon={CircleAlert}>
+              <ActivityDetail title="Protocol limitations">
                 <ul className="flex list-disc flex-col gap-2 pl-4">
                   {limitations.map((limitation) => (
                     <li key={limitation}>{limitation}</li>

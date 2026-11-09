@@ -205,23 +205,23 @@
   }
 }
 
-/* The heading owns a scan/focus/rest timeline; the stock Target stays stationary. */
-.agent-heading-target {
+/* Shared welcome/working scan timeline; the stock Target stays stationary. */
+.agent-target {
   color: color-mix(in oklab, var(--primary) 85%, var(--foreground));
 }
-.agent-heading-target > circle:first-child {
+.agent-target > circle:first-child {
   opacity: 0.55;
 }
-.agent-heading-target > circle:nth-child(2) {
+.agent-target > circle:nth-child(2) {
   opacity: 0.75;
   transform-box: fill-box;
   transform-origin: center;
 }
-.agent-heading-target > circle:nth-child(3) {
+.agent-target > circle:nth-child(3) {
   fill: currentColor;
   fill-opacity: 0;
 }
-.agent-heading-target > [data-target-scan] {
+.agent-target > [data-target-scan] {
   opacity: 0;
   transform-origin: center;
   transform: rotate(-90deg);

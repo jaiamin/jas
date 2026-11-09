@@ -2,13 +2,14 @@ import { memo } from "react";
 import { Link } from "react-router-dom";
 import { ReplyActivity } from "@/components/agent/agent-activity";
 import { AgentMarkdown } from "@/components/agent/agent-markdown";
+import { AgentTarget } from "@/components/agent/agent-target";
 import {
   Disclosure,
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
 import { Alert } from "@/components/feedback";
-import { AgentIcon, ArrowUpRight } from "@/components/icons";
+import { ArrowUpRight } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -75,12 +76,13 @@ export const AgentReply = memo(function AgentReply({
     <Message>
       <MessageContent>
         <MessageHeader className="min-h-6 items-start gap-2 px-0">
-          <AgentIcon
-            className="mt-0.5 size-5 shrink-0 text-primary"
+          <AgentTarget
+            animated={pending}
+            className="size-5"
             aria-label="Assistant"
           />
+          <ReplyActivity row={row} />
         </MessageHeader>
-        <ReplyActivity row={row} />
         {messageText && (
           <AgentMarkdown
             text={messageText}

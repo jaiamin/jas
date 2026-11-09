@@ -211,10 +211,13 @@ turns. History keeps its compact list title. No extra title-generation request i
 title remains JAS. Loading the title uses a local skeleton only.
 
 Assistant replies use a blue Target with no repeated Agent label or response cost.
-The Target occupies its own compact header row; activity sits below it.
+The Target and text-only activity dropdown share one aligned header row. Activity
+stages and details have no decorative icons or completion checkmarks. While pending,
+the Target reuses the welcome scan/focus/rest animation; completion or failure
+settles it to the regular blue Lucide Target.
 One stock TraceCollapsible presents the current public stage and recorded scope,
-research sources, examined evidence and mechanical checks. It opens during substantive
-recorded work and respects manual collapse. Live activity stays open across completion
+research sources, examined evidence and mechanical checks. It starts closed and opens only on request.
+Live activity opened by the user stays open across completion
 or failure so it never hides content being read; saved replies start collapsed.
 Recorded steps show their running/stopped state. Scope, sources, inspected evidence,
 mechanical checks, review feedback, public draft notes and limitations use compact
@@ -478,7 +481,7 @@ those compositions, semantic theme tokens live
 in `src/index.css`, and app glyphs pass through `src/components/icons.tsx`.
 
 The deliberate visual exceptions are the JAS logo/wordmark, Home ecosystem and
-heading fade, CC0 3dicons suggestion images, partial selected navigation glyphs,
+heading fade, the shared Target scan/focus/rest animation, CC0 3dicons suggestion images, partial selected navigation glyphs,
 white/graphite surfaces, blue selection, and composer sizing, backing and focus
 appearance. They are not all controlled by a preset. A preset changes the shared
 foundation; review these documented exceptions and the icon boundary rather than

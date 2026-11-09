@@ -91,17 +91,36 @@ for (const theme of ["light", "dark"]) {
     await expect(
       page.locator('[data-slot="trace-line"][role="status"]'),
     ).toHaveText("Thinking");
-    await expect(page.locator("[data-slot=spinner]")).toHaveCount(1);
+    await expect(page.locator("[data-slot=spinner]")).toHaveCount(0);
+    const assistantTarget = page.getByLabel("Assistant", { exact: true });
+    await expect(assistantTarget).toHaveAttribute(
+      "data-agent-state",
+      "working",
+    );
+    const playing = () =>
+      assistantTarget.evaluate(
+        (element) =>
+          element
+            .getAnimations({ subtree: true })
+            .filter((animation) => animation.playState === "running").length,
+      );
+    await expect.poll(playing).toBeGreaterThan(0);
     const target = await page
       .getByLabel("Assistant", { exact: true })
       .boundingBox();
     const thinking = await page
       .getByRole("button", { name: "Thinking", exact: true })
       .boundingBox();
-    expect(thinking && target && thinking.y >= target.y + target.height).toBe(
+    expect(thinking && target && thinking.x > target.x + target.width).toBe(
       true,
     );
-    expect(thinking?.x).toBeCloseTo(target?.x ?? 0, 0);
+    expect(
+      thinking &&
+        target &&
+        Math.abs(
+          thinking.y + thinking.height / 2 - target.y - target.height / 2,
+        ),
+    ).toBeLessThanOrEqual(1);
     const viewport = await page
       .getByRole("region", { name: "Agent conversation", exact: true })
       .boundingBox();
@@ -161,13 +180,7 @@ for (const theme of ["light", "dark"]) {
       animations: "disabled",
     });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    expect(
-      await page
-        .locator("[data-slot=trace-line][role=status] svg")
-        .evaluate((element) =>
-          parseFloat(getComputedStyle(element).animationDuration),
-        ),
-    ).toBeLessThanOrEqual(0.01);
+    await expect.poll(playing).toBe(0);
     row = {
       ...row,
       status: "complete",
@@ -185,10 +198,19 @@ for (const theme of ["light", "dark"]) {
       exact: true,
     });
     await expect(activity).toBeVisible();
-    await expect(activity).toHaveAttribute("aria-expanded", "true");
+    await expect(assistantTarget).toHaveAttribute("data-agent-state", "idle");
+    await expect(assistantTarget.locator("[data-target-scan]")).toHaveCount(0);
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    expect(await playing()).toBe(0);
+    await expect(
+      page.locator('[data-slot="message-header"] .lucide-check'),
+    ).toHaveCount(0);
+    await expect(activity).toHaveAttribute("aria-expanded", "false");
+    await activity.click();
     const recorded = page.locator('[aria-label="Recorded activity"]');
     await expect(recorded).toContainText("Thinking");
     await expect(recorded).toContainText("Writing");
+    await expect(recorded.locator("svg")).toHaveCount(0);
     await activity.click();
     const copyIcon = await page
       .getByTitle("Copy response", { exact: true })
@@ -414,13 +436,19 @@ for (const theme of ["light", "dark"]) {
       await expect(
         page.locator('[data-slot="trace-line"][role="status"]'),
       ).toHaveText(label ?? "");
+      await expect(
+        page.getByRole("button", { name: label, exact: true }),
+      ).toHaveAttribute("aria-expanded", "false");
       expect(
         await acknowledgement?.evaluate((element) => element.isConnected),
       ).toBe(true);
     }
     await expect(
       page.getByRole("button", { name: "Refining the protocol", exact: true }),
-    ).toHaveAttribute("aria-expanded", "true");
+    ).toHaveAttribute("aria-expanded", "false");
+    await page
+      .getByRole("button", { name: "Refining the protocol", exact: true })
+      .click();
     await page
       .getByRole("button", { name: "Study scope", exact: true })
       .click();

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { AgentActivity } from "@/components/agent/agent-activity";
 import { AgentReply } from "@/components/agent/agent-reply";
-import { AgentIcon } from "@/components/icons";
+import { AgentTarget } from "@/components/agent/agent-target";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,14 +31,15 @@ export function PlanningProgress({ plan }: { plan?: Analysis }) {
           <Message>
             <MessageContent>
               <MessageHeader className="min-h-6 gap-2 px-0">
-                <AgentIcon
-                  className="size-5 shrink-0 text-primary"
+                <AgentTarget
+                  animated
+                  className="size-5"
                   aria-label="Assistant"
                 />
+                <Trace>
+                  <AgentActivity stage="scoping" />
+                </Trace>
               </MessageHeader>
-              <Trace>
-                <AgentActivity stage="scoping" />
-              </Trace>
             </MessageContent>
           </Message>
         )}

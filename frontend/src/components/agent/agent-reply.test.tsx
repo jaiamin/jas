@@ -1,10 +1,30 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { expect, test, vi } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { Analysis } from "@/lib/types";
 import { design } from "@/test/fixtures";
 import { AgentReply } from "./agent-reply";
+
+// jsdom has no media/visibility APIs; real animation is exercised in browser tests.
+beforeEach(() => {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => ({
+      matches: true,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })),
+  );
+  vi.stubGlobal(
+    "IntersectionObserver",
+    class {
+      observe = vi.fn();
+      disconnect = vi.fn();
+    },
+  );
+});
+afterEach(() => vi.unstubAllGlobals());
 
 const row: Analysis = {
   id: "answer",
@@ -184,6 +204,12 @@ test("live activity stays open when the reply finishes so its content remains re
     </MemoryRouter>
   );
   const view = render(reply(pending));
+  const activity = screen.getByRole("button", { name: "Checking mechanics" });
+  expect(activity).toHaveAttribute("aria-expanded", "false");
+  expect(
+    screen.queryByRole("button", { name: "Study scope" }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(activity);
   fireEvent.click(screen.getByRole("button", { name: "Study scope" }));
   expect(
     screen.getByText("Compare cooperation under two resource levels."),
