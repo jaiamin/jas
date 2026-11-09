@@ -184,23 +184,38 @@ manual creation mode. Home has no selector. Agent has an optional experiment/run
 selector, defaulting to No experiment, solely for selecting existing evidence.
 Explicitly scoped links and resumed chats preserve the selected evidence identity. Four experiment
 suggestions fill the draft without submitting. Under the Suggestions heading,
-they share one rounded ItemGroup border with Separator dividers: aligned icons,
+they share one rounded ItemGroup border with Separator dividers: aligned illustrations,
 15px semibold titles and 13px descriptions with 18px line height in one row of
 four on wide screens. Descriptions use foreground/60, matching record timestamps.
 Spell out “and” in suggestion titles rather than using ampersands.
 Use concrete experiment questions covering communication/cooperation, memory/
 reciprocity, oversight/sanctions and resource survival. Descriptions name the
 intervention and measured comparison, without implying outcomes are guaranteed.
-Place icons above the text in columns, with a consistent 6px gap between each
+Place illustrations above the text in columns, with a consistent 6px gap between each
 title and description and no reserved title height. Keep descriptions to one
 short sentence explaining the comparison.
-Use 16px padding on all sides. On narrower screens, stack rows with icons to the
+Use 16px padding on all sides. On narrower screens, stack rows with illustrations to the
 left of their titles. Stock ghost Buttons keep the
-whole section of each suggestion keyboard-accessible, with icon, title and description.
+whole section of each suggestion keyboard-accessible, with illustration, title and description.
 Buttons sit directly between dividers without transparent border insets, so the
 hover fill meets every edge and follows the group’s clipped outer corners. An explicit send creates one chat
 and opens that saved conversation.
 A late response leaves subsequent navigation intact.
+
+The four decorative suggestion illustrations are explicitly approved exceptions
+to preset icons: [3dicons](https://3dicons.co/), Dynamic (the slight-angle view)
+for the chat bubble, notebook and leaf, and Front for the shield. All use
+regular Color, shown in a 40px box. Trim transparent margins and preserve aspect
+ratios; align visible artwork with the text's left edge in columns and center it
+vertically beside the text on narrow screens. Sources are [Chat Bubble](https://3dicons.co/icons/eec43d-chat-bubble),
+[Notebook](https://3dicons.co/icons/628100-notebook), [Shield](https://3dicons.co/icons/b91186-shield)
+and [Leaf](https://3dicons.co/icons/2c84d9-leaf). The free collections use CC0;
+the supplied license accompanies the local files in
+`frontend/public/illustrations/suggestions/LICENSE.txt`. Transparent WebP
+exports with a 120px longest edge provide 3× resolution without a package or external image requests.
+Empty alt text keeps them decorative; button text provides the accessible name.
+These images remain fixed when applying presets; functional UI icons continue
+to use the preset icon library.
 
 Below suggestions, show up to three active runs only when underway and four
 experiments ordered by creation time.

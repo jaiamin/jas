@@ -489,6 +489,20 @@ for (const width of [390, 1440])
       const suggestionSection = page.getByRole("region", {
         name: "Experiment suggestions",
       });
+      const illustrations = suggestionSection.locator("img");
+      await expect(illustrations).toHaveCount(4);
+      await expect
+        .poll(() =>
+          illustrations.evaluateAll((images) =>
+            images.every(
+              (image) =>
+                image instanceof HTMLImageElement &&
+                image.complete &&
+                image.naturalWidth > 0,
+            ),
+          ),
+        )
+        .toBe(true);
       const firstSuggestion = suggestionSection.getByRole("button").first();
       await firstSuggestion.hover();
       const suggestionEdges = await suggestionSection

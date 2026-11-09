@@ -14,12 +14,8 @@ import {
   ArrowUpRight,
   Ellipsis,
   FlaskConical,
-  MessageSquare,
-  NotebookPen,
   Play,
   Plus,
-  ShieldCheck,
-  Sprout,
 } from "@/components/icons";
 import { ErrorState, Loading, Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -50,7 +46,12 @@ import { date, relativeTime } from "@/lib/format";
 import type { RunSummary, StudySummary } from "@/lib/types";
 
 const suggestions = agentSuggestions({ context: "new" });
-const suggestionIcons = [MessageSquare, NotebookPen, ShieldCheck, Sprout];
+const suggestionIllustrations = [
+  "communication",
+  "memory",
+  "oversight",
+  "resources",
+];
 const recordTriggerClassName =
   "border-0 px-0 hover:bg-transparent aria-expanded:bg-transparent aria-expanded:hover:bg-transparent dark:hover:bg-transparent dark:aria-expanded:hover:bg-transparent";
 const suggestionDescriptions = [
@@ -135,20 +136,23 @@ export default function Home() {
           <h2 className="text-xs font-medium">Suggestions</h2>
           <ItemGroup className="gap-0 overflow-hidden rounded-xl border xl:flex-row">
             {suggestions.map(({ title, prompt }, index) => {
-              const Icon = suggestionIcons[index];
               return (
                 <Fragment key={title}>
                   <Button
                     variant="ghost"
-                    className="h-auto w-full min-w-0 flex-1 items-start justify-start gap-3 rounded-none border-0 p-4 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-4 xl:flex-col"
+                    className="h-auto w-full min-w-0 flex-1 items-center justify-start gap-3 rounded-none border-0 p-4 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-4 xl:flex-col xl:items-start"
                     disabled={state.send.isPending}
                     onClick={() => {
                       state.setQuestion(prompt);
                       state.composer.current?.focus();
                     }}
                   >
-                    <Icon
-                      className="size-5"
+                    <img
+                      src={`/illustrations/suggestions/${suggestionIllustrations[index]}.webp`}
+                      alt=""
+                      width={40}
+                      height={40}
+                      className="size-10 shrink-0 object-contain object-left"
                       data-icon="inline-start"
                       aria-hidden="true"
                     />

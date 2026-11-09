@@ -734,3 +734,25 @@ Verification: final frontend lint/build and Home browser suite 9/9 passed.
 Reviewed dark-desktop and light-phone captures for readability, wrapping,
 spacing and hover/divider coverage. No dependencies, backend/data changes or
 paid calls. Requested port 8080 remains running in session 91029.
+
+
+Approved 3D suggestion illustrations (2026-11-09):
+- Replace the four Home suggestion Lucide glyphs with local 3dicons chat bubble,
+  notebook, shield and leaf illustrations. Final user choice is Dynamic (the
+  slight-angle view) for chat bubble/notebook/leaf, Front for shield, and regular
+  Color material for all four.
+- Download free CC0 source PNGs through the normal icon download API. Preview
+  thumbnails flatten transparency, so use RGBA downloads instead. Trim transparent
+  margins, preserve aspect ratio and export WebP with a 120px longest edge at
+  quality 0.9. Reserve 40px boxes to prevent layout shifts; left-align artwork
+  with text on desktop and vertically center it beside text on narrow screens.
+- The four optimized images total 18,128 bytes. No dependency or external runtime
+  requests; empty alt text keeps artwork decorative.
+- Include the supplied CC0 notice beside assets and record source links/variants
+  in DESIGN.md. These are explicitly approved preset-independent decorations;
+  functional UI glyphs remain controlled by the shadcn preset boundary.
+Verification: frontend lint/build and Home browser suite 9/9 passed, including
+all four local image loads, prompt filling/submission and responsive light/dark
+layouts. Reviewed final desktop-dark and phone-light captures for the requested
+views, transparent backgrounds and artwork/text alignment.
+No backend/data changes or paid calls. Requested port 8080 stays live.
