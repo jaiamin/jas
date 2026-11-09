@@ -453,3 +453,12 @@ navigation browser checks passed 21/21 after the constant-title/partial-fill cha
 final footer/navigation checks passed 7/7. Browser inspected both themes: Layers2
 upper path alone and Settings center circle alone fill, with other paths unfilled.
 Port 8080 serves the final build; owned browser and keyless test services closed.
+
+Home composer placement refinement: reduce maximum width from 768px to 672px,
+raise Home-only textarea minimum height from 64px to 88px, and use equal grid
+tracks so the composer straddles the decorative backdrop’s lower edge. Keep
+responsive gutters, suggestions below, opaque input surface and shared behavior.
+The requested follow-up adds 16px above the title at each breakpoint (64px mobile,
+80px desktop), increasing backdrop height while preserving the 50/50 overlap.
+Validation: lint/build and Home keyless E2E 7/7 passed; browser measured the 136px
+composer split equally (68px/68px) at desktop and 390px, without overflow.

@@ -96,18 +96,24 @@ export default function Home() {
   return (
     <>
       <section
-        className="relative isolate overflow-hidden border-b px-4 py-12 sm:px-6 sm:py-16"
+        className="relative isolate grid grid-cols-1 grid-rows-[auto_1fr_1fr]"
         aria-labelledby="home-title"
       >
-        <HomeGrid />
-        <div className="relative mx-auto flex w-full max-w-3xl flex-col gap-6">
-          <h1
-            id="home-title"
-            className="text-center text-2xl font-semibold tracking-tight sm:text-3xl"
-          >
-            What would you like to test?
-          </h1>
+        <div
+          aria-hidden="true"
+          className="relative col-start-1 row-start-1 row-end-3 overflow-hidden border-b"
+        >
+          <HomeGrid />
+        </div>
+        <h1
+          id="home-title"
+          className="relative col-start-1 row-start-1 mt-16 mb-6 px-4 text-center text-2xl font-semibold tracking-tight sm:mt-20 sm:px-6 sm:text-3xl"
+        >
+          What would you like to test?
+        </h1>
+        <div className="relative col-start-1 row-start-2 row-end-4 min-w-0 px-4 sm:px-6">
           <AgentComposer
+            className="mx-auto w-full max-w-2xl [&_textarea]:min-h-22"
             state={state}
             context={context}
             studies={studies.data ?? []}

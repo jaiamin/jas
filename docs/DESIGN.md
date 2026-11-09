@@ -156,7 +156,11 @@ below that breakpoint. Decisions and evidence stack below 1440px.
 Home uses a full-width composer section with a faint animated pixel grid, the
 explicit decorative exception requested for this surface. The grid follows the
 foreground token, never captures input, and remains static with reduced motion.
-The opaque composer surface keeps the grid out of the text field. Four existing
+The Home composer has a 672px maximum width and 88px minimum text-entry height.
+Heading top spacing is 64px on mobile and 80px on desktop. Equal grid tracks
+place half the composer within the backdrop and half below its
+bottom edge; the opaque surface keeps the grid out of the text field. Shared Agent
+composer controls and behavior remain unchanged. Four existing
 experiment suggestions fill the draft without submitting. Home defaults to New
 experiment; an explicit send creates one chat and opens that saved conversation.
 A late response leaves subsequent navigation intact.
