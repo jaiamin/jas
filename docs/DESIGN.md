@@ -179,7 +179,9 @@ labels truncate inside the popup beside a stock chat-bubble icon and relative
 last-message time (`now`, `5m`, `2h`, `3d`, then a calendar date). Hovering exposes
 the full local timestamp and the accessible label retains the expanded recency.
 The popup uses a small muted heading, full-width separator and compact stock
-small Button rows with regular-weight labels and aligned 14px chat glyphs. There is no conversation rail or separate mobile
+small Button rows with regular-weight labels and muted 14px chat glyphs. Icons
+and times align with heading content edges, with a 6px icon-to-title gap; pending
+spinners precede the right-aligned time rather than displacing it. There is no conversation rail or separate mobile
 history Sheet. New chats group the main heading, plain composer and suggestions
 in that order, without a subtitle, slightly above center. Remaining vertical
 space splits 2:3 above/below the group and shrinks to zero on short screens;

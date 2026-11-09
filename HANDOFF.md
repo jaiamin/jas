@@ -1133,3 +1133,8 @@ existing long relative-time style.
 Verification: lint/build, all 97 unit tests and five history browser regressions
 passed. Live desktop/mobile light/dark review confirms a full-width divider,
 regular title weight, centered 14px glyphs and no narrow-screen overflow.
+
+History row alignment: align icon/time edges with heading content by adjusting
+ScrollArea and shared Button layout insets, preserving a focus-ring gutter.
+Increase row gap from 4px to 6px, use muted-foreground on the 14px chat icon, and
+place the pending Spinner before the time so every timestamp shares a right edge.

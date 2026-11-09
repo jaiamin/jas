@@ -86,14 +86,14 @@ export function AgentHistory() {
             </div>
           )
         ) : chats.data.length ? (
-          <ScrollArea className="-mx-1 min-w-0 [&_[data-slot=scroll-area-viewport]>div]:block! [&_[data-slot=scroll-area-viewport]]:max-h-[min(20rem,calc(var(--radix-popover-content-available-height)-3.5rem))]">
+          <ScrollArea className="-mx-2 min-w-0 [&_[data-slot=scroll-area-viewport]>div]:block! [&_[data-slot=scroll-area-viewport]]:max-h-[min(20rem,calc(var(--radix-popover-content-available-height)-3.5rem))]">
             <nav aria-label="Past chats" className="flex flex-col gap-1 px-1">
               {chats.data.map((chat) => (
                 <Button
                   key={chat.id}
                   size="sm"
                   variant={current === chat.id ? "secondary" : "ghost"}
-                  className="w-full justify-start"
+                  className="w-full justify-start gap-1.5 border-0 px-1 has-data-[icon=inline-start]:pl-1"
                   asChild
                 >
                   <Link
@@ -105,10 +105,14 @@ export function AgentHistory() {
                     <MessageSquare
                       data-icon="inline-start"
                       aria-hidden="true"
+                      className="text-muted-foreground"
                     />
                     <span className="min-w-0 flex-1 truncate font-normal">
                       {chat.title}
                     </span>
+                    {chat.status === "pending" && (
+                      <Spinner aria-label="In progress" />
+                    )}
                     <time
                       dateTime={chat.updated}
                       title={`Last message ${new Date(chat.updated).toLocaleString()}`}
@@ -121,9 +125,6 @@ export function AgentHistory() {
                         Last message {relativeTime(chat.updated, now)}
                       </span>
                     </time>
-                    {chat.status === "pending" && (
-                      <Spinner aria-label="In progress" />
-                    )}
                   </Link>
                 </Button>
               ))}
