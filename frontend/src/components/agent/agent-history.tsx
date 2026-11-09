@@ -38,7 +38,6 @@ export function AgentHistory() {
         <Button
           variant="outline"
           size="icon"
-          className="rounded-full"
           aria-label="Chat history"
           title="Chat history"
         >

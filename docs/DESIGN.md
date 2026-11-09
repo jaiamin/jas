@@ -166,7 +166,7 @@ line height (88px including padding), grows to 192px, then scrolls internally
 while keeping its action row visible.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
 background surface. At the upper right, a 32px stock outline history button
-with circular corners sits beside the stock 32px New button. History uses a
+with the standard rounded corners sits beside the stock 32px New button. History uses a
 stock Popover and ScrollArea in every viewport, with local skeleton rows, empty
 state and retry; it fetches on open and keeps cached rows during refresh. Static
 new-chat content never waits for record queries. Context-option skeletons stay in

@@ -1085,7 +1085,7 @@ Implemented:
   New chats center heading → plain shared composer → selectable suggestions;
   saved chats preserve MessageScroller and the bottom composer. Home explicitly
   opts into its existing gray Card/footer presentation.
-- Added stock Popover/ScrollArea sources, circular outline History and New at
+- Added stock Popover/ScrollArea sources, standard outline History and New at
   32px. New's right edge aligns with the global header controls (10px inset).
   Agent canvas uses muted/50 in both themes. No new packages or raw colors.
 - History fetches/polls only while open; cached rows remain on refresh errors.
@@ -1102,8 +1102,11 @@ Implemented:
 Verification: lint/build and all 91 frontend unit tests passed. The full
 106-test browser suite passed before final loading/surface refinements; a focused
 41-test pass also passed on those final refinements. Live desktop dark and 320px
-light review confirms centered layout, white circular history surface, matching
+light review confirms centered layout, white history-button surface, matching
 right edges, no horizontal overflow, and no skeletons for the static base view.
 Own browser review tab closed; the keyless test server shut down automatically.
 Port 8080 remains running. No user records or paid calls were changed.
 Next: commit/push to PR #10 and observe latest-head CI.
+
+History shape follow-up: retain the stock outline Button corner radius rather
+than a full circle, matching New and the other controls.
