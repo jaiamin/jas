@@ -31,7 +31,7 @@ export function RecordSelectionCheckbox({
   return (
     <Checkbox
       className={cn(
-        "absolute top-1/2 left-2 -translate-y-1/2 after:-inset-x-1.5 data-[state=unchecked]:border-muted-foreground/60",
+        "absolute top-1/2 left-2 -translate-y-1/2 after:-inset-x-1.5 data-[state=unchecked]:border-muted-foreground/50",
         "[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/record:opacity-100 [@media(hover:hover)]:focus-visible:opacity-100 [@media(hover:hover)]:data-[state=checked]:opacity-100 [@media(hover:hover)]:data-[state=indeterminate]:opacity-100",
         "[@media(hover:hover)]:disabled:opacity-0 [@media(hover:hover)]:group-hover/record:disabled:opacity-50",
         className,

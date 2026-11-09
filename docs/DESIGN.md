@@ -435,7 +435,7 @@ dedicated destinations.
 
 Experiments and Runs share one list heading: a muted rounded-square icon beside
 the title (filled Play or flask liquid, matching navigation), using a borderless 36px
-background and an 18px glyph, with search and a primary New action at the right (stacked below on
+background (`muted-foreground/10`) and an 18px glyph, with search and a primary New action at the right (stacked below on
 mobile). Keep the header inset, but let both tables reach the full content width
 without side gutters or an enclosing border. Inset the outer header/data cells and
 filter controls to match the page heading, including skeleton rows. Reserve a 32px
@@ -478,7 +478,7 @@ Runs link to their exact experiment revision and keep comparison
 selections across filtering. Keep comparison and experiment-selection checkboxes in the name
 gutter, without a separate selection column or layout shift. Unchecked boxes reveal on row
 hover or keyboard focus; selected boxes and touch-device boxes stay visible. Use a readable
-muted-foreground outline without changing the primary selected state. Bound the hit area to
+muted-foreground/50 outline without changing the primary selected state. Bound the hit area to
 the gutter so it cannot intercept name links. A matching checkbox beside Name selects
 the current filtered page, preserving selections on other pages and outside the filter.
 The header checkbox follows the same hover/focus/touch behavior and stays visible for
@@ -540,7 +540,9 @@ changing presentation. Saving a protocol never executes it.
 
 This is a shadcn-based interface, not a byte-for-byte unmodified registry copy.
 `src/components/ui` owns the shared shadcn primitives, including the small
-accessibility and correctness patches listed below. Workflow components compose
+accessibility and correctness patches listed below. Checkbox outlines use 90% of
+the preset input color for a subtly softer edge; record selection uses the
+shared stronger outline documented above. Workflow components compose
 those primitives; they do not maintain a second set of controls. Button text is
 selectable app-wide, including plain labels and button-styled links. Explicit
 text spans and disabled native dragging make selection reliable; a shared capture
@@ -576,7 +578,7 @@ pnpm dlx shadcn@latest apply --preset <code>
    The GitHub brand mark is a CC0 Simple Icons asset, distinct from preset UI glyphs.
    Avoid a runtime icon resolver.
 3. Preserve nonvisual fixes if regeneration overwrites them: Progress bounds and
-   custom maximum, selectable Button labels/link text and their drag guard, Slider
+   custom maximum, selectable Button labels/link text and their drag guard, softer Checkbox outline, Slider
    thumb labels, Tabs orientation, Breadcrumb current-item semantics, Chart style children and stable keys, valid Field/Item/InputGroup
    roles, CodeBlock keyboard scrolling and source-position key annotations,
    SidebarSeparator horizontal width respecting its edge insets,
