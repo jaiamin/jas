@@ -68,6 +68,27 @@ The supervisor's plain post-shutdown bind check failed on the recently closed
 TCP port; a separate listener check and reuse-address bind passed. That helper
 failure is retained and does not change the browser result.
 
+## Experiment overview hierarchy
+
+The default Overview now leads with results, an active-run state or the honest
+"No results yet" state. Full comparison, uncertainty, effort and exposure remain
+available in a stock, initially closed **Comparison & evidence** disclosure.
+The main Run/Pause action stays in the heading. This is an intentional usability
+refinement, not a red→green bug claim.
+
+At unchanged source
+`43d7dac4b94a890bf7d838001e6596dea5f7e2b84969717734b479fbe6999582`,
+all 118 frontend units/33 files, lint228, forced TypeScript and clean Vite build
+pass. Four uncertainty browser cases cover390/1440px and both themes, including
+keyboard access, missingness, effects, export and immutable revisions. Two
+reference-policy and three exposure browser cases pass with their original
+behavior assertions retained. Manual default-view inspection passes at1440px
+light and390px dark: the primary action and empty state are visible, disclosures
+start closed, no console errors or mobile document overflow are observed.
+These use a fresh keyless workspace; no provider calls occurred. The owned
+tab/server18228 are closed, port reuse is verified and flock is released.
+Records are `current/study-overview-*`.
+
 ## Remaining review
 
 - Browser verification of the remaining ticket workflows and both app themes.
