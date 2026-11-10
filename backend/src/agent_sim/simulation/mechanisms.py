@@ -60,6 +60,17 @@ class Mechanism[StateT: Checkpoint](World[StateT]):
 class Institution(Mechanism[InstitutionCheckpoint]):
     version = "4.1.0"
 
+    def exposure_paths(self, event: dict, observation: Observation) -> list[list[str | int]]:
+        paths = super().exposure_paths(event, observation)
+        if event["kind"] == "sanction":
+            paths.extend(
+                ["sanctions", index]
+                for index, record in enumerate(observation["sanctions"])
+                if all(record[key] == event[key] for key in ("actor", "target", "round"))
+                and record["amount"] == event["data"]["amount"]
+            )
+        return paths
+
     def initial_state(self) -> InstitutionCheckpoint:
         return {**self.common_state()}
 

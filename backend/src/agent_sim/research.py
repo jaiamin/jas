@@ -25,6 +25,7 @@ from .db import (
 )
 from .domain import Design, Treatment
 from .environment_library import EnvironmentLibrary
+from .exposure import exposure_report
 from .llm import PRICES, LanguageModels, Usage, empty_usage
 from .metrics import aggregate_metrics
 from .participants import activation_record, operation_record
@@ -626,6 +627,69 @@ class Research:
             "relationships": self.relationships(events),
         }
 
+    def capture_exposure(self, cutoffs: dict[str, int]) -> dict:
+        # Called synchronously with analysis acceptance. Persist the values and
+        # exact membership, not a query that can see later settlement or resumes.
+        return {
+            rid: self.exposure(rid)
+            if self.configuration(rid)[0].turn == cutoff
+            else self.exposure(rid, cutoff)
+            for rid, cutoff in cutoffs.items()
+        }
+
+    def exposure(self, run_id: str, through_turn: int | None = None) -> dict:
+        run, design, condition = self.configuration(run_id)
+        cutoff = run.turn if through_turn is None else through_turn
+        if cutoff < 0 or cutoff > run.turn:
+            raise ValueError("Exposure cutoff is outside recorded evidence")
+        # Explicit historical turn cutoffs exclude later activations, including
+        # observations made after the last event at that boundary. Current capture
+        # also retains uncommitted attempts, with exact frozen membership.
+        attempt_cutoff = cutoff + (1 if through_turn is None else 0)
+        with self.db.session() as session:
+            revision = session.scalars(
+                select(Revision)
+                .join(Condition, Condition.revision_id == Revision.id)
+                .where(Condition.id == run.condition_id)
+            ).one()
+            activations = session.scalars(
+                select(ParticipantActivation)
+                .where(
+                    ParticipantActivation.run_id == run_id,
+                    ParticipantActivation.turn <= attempt_cutoff,
+                )
+                .order_by(ParticipantActivation.created, ParticipantActivation.id)
+            ).all()
+            ids = [a.id for a in activations]
+            calls = session.scalars(
+                select(ProviderCall)
+                .where(ProviderCall.activation_id.in_(ids))
+                .order_by(ProviderCall.created, ProviderCall.id)
+            ).all()
+            events = session.scalars(
+                select(RecordedEvent)
+                .where(RecordedEvent.run_id == run_id, RecordedEvent.turn <= cutoff)
+                .order_by(RecordedEvent.id)
+            ).all()
+            operations: dict[str, list[int]] = {key: [] for key in ids}
+            for operation in session.scalars(
+                select(ParticipantOperation)
+                .where(ParticipantOperation.activation_id.in_(ids))
+                .order_by(ParticipantOperation.number)
+            ):
+                operations[operation.activation_id].append(operation.number)
+        return exposure_report(
+            run,
+            design,
+            condition,
+            revision,
+            activations,
+            calls,
+            events,
+            operations,
+            through_turn=cutoff,
+        )
+
     def activations(self, run_id: str) -> list[dict]:
         with self.db.session() as session:
             rows = session.scalars(
@@ -711,11 +775,7 @@ class Research:
         for measure in measures:
             if measure.turn <= cutoffs[measure.run_id]:
                 values[measure.run_id].append((measure.key, measure.value))
-        attempted = {
-            rid
-            for rid, turn in activations
-            if turn <= cutoffs[rid] + 1
-        }
+        attempted = {rid for rid, turn in activations if turn <= cutoffs[rid] + 1}
         groups: dict[str, list[ComparisonRun]] = defaultdict(list)
         revisions = {}
         for run, condition, revision in rows:

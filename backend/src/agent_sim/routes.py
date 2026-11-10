@@ -281,6 +281,17 @@ async def control_study(study_id: str, body: StudyControl, *, engine: EngineDep)
     return {"ok": True}
 
 
+@router.get("/api/studies/{study_id}/exposure")
+async def study_exposure(
+    study_id: str, revision: int | None = None, *, research: ResearchDep
+) -> dict[str, Any]:
+    detail = research.study(study_id, revision)
+    return {
+        "revision": detail["revision"],
+        "runs": [research.exposure(run["id"]) for run in detail["runs"]],
+    }
+
+
 @router.get("/api/studies/{study_id}/export")
 async def download_study(study_id: str, *, research: ResearchDep) -> JSONResponse:
     return JSONResponse(
@@ -297,6 +308,13 @@ async def runs(study_id: str | None = None, *, research: ResearchDep) -> list[Ru
 @router.get("/api/runs/{run_id}")
 async def get_run(run_id: str, *, research: ResearchDep) -> dict[str, Any]:
     return research.run(run_id)
+
+
+@router.get("/api/runs/{run_id}/exposure")
+async def get_exposure(
+    run_id: str, through_turn: int | None = None, *, research: ResearchDep
+) -> dict[str, Any]:
+    return research.exposure(run_id, through_turn)
 
 
 @router.get("/api/requests/{call_id}")

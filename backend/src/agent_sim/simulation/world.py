@@ -198,6 +198,21 @@ class World[StateT: Checkpoint](ABC):
     def schema_rules(self, observation: Observation) -> DecisionRules:
         return self.decision_rules
 
+    def exposure_paths(self, event: dict, observation: Observation) -> list[list[str | int]]:
+        """Locate a recorded event in this actor's projection, without adding information.
+
+        Producers for other Worlds can supply paths into their own observation shape.
+        This is provenance for researcher inspection, never a participant tool or a
+        claim that an available observation has reached a model.
+        """
+        safe = {key: event[key] for key in ("round", "kind", "actor", "target", "text")}
+        return [
+            [field, index]
+            for field in ("public_history", "your_experiences")
+            for index, item in enumerate(observation[field])
+            if all(item.get(key) == value for key, value in safe.items())
+        ]
+
     def decision_schema(self, observation: Observation) -> type[Decision]:
         grouped: dict[tuple[str, int, int], list[str]] = {}
         for action in observation["legal_actions"]:
