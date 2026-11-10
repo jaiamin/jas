@@ -49,6 +49,9 @@ fresh workspace running on port 8080 for manual testing.
   cases and default-view desktop-light/mobile-dark inspection pass. Full combined
   workflow review remains open.
 - [ ] Complete end-to-end code review, relevant checks and meaningful benchmarks.
+  The analysis cutoff race has observed HTTP red→green; a separate in-flight
+  capture preservation case and99 affected cases/Ruff/ty pass. Combined-source
+  review and measurements remain open.
 - [ ] Summarize final evidence, remove obsolete records and start port 8080.
 
 Operational constraints: preserve protected original clipboard/configuration
