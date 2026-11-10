@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { MetricChart } from "@/components/charts";
 import { Alert, Empty } from "@/components/feedback";
@@ -35,6 +35,7 @@ export default function Run() {
   const { id } = useParams();
   const [params, setParams] = useSearchParams();
   const [selectedMetric, setSelectedMetric] = useState("");
+  const [playbackEnd, setPlaybackEnd] = useState<number | null>(null);
   const [focusRequest, setFocusRequest] = useState(0);
   const [annotationDrafts, setAnnotationDrafts] = useState<
     Record<string, string>
@@ -57,6 +58,40 @@ export default function Run() {
     queryFn: () => api<Evidence>(`/runs/${id}/turns/${turn}`),
     enabled: !!query.data && (pinned || tab === "decisions"),
   });
+  const playing = playbackEnd !== null && turn < playbackEnd;
+  useEffect(() => {
+    if (!playing) return;
+    if (document.hidden || evidence.error || query.error) {
+      setPlaybackEnd(null);
+      return;
+    }
+    const pauseWhenHidden = () => {
+      if (document.hidden) setPlaybackEnd(null);
+    };
+    document.addEventListener("visibilitychange", pauseWhenHidden);
+    const timer = evidence.data
+      ? window.setTimeout(
+          () =>
+            setParams(
+              { ...Object.fromEntries(params), turn: String(turn + 1) },
+              { replace: true },
+            ),
+          900,
+        )
+      : undefined;
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("visibilitychange", pauseWhenHidden);
+    };
+  }, [
+    playing,
+    turn,
+    evidence.data,
+    evidence.error,
+    query.error,
+    params,
+    setParams,
+  ]);
   const control = useMutation({
     mutationFn: (action: string) => api(`/runs/${id}/control`, { action }),
     onSuccess: () =>
@@ -83,6 +118,7 @@ export default function Run() {
     ? selectedMetric
     : (metricKeys[0] ?? "contribution_rate");
   function selectTurn(value: number, decision = false) {
+    setPlaybackEnd(null);
     if (decision) setFocusRequest((request) => request + 1);
     setParams(
       {
@@ -94,6 +130,7 @@ export default function Run() {
     );
   }
   function selectAgent(key: string) {
+    setPlaybackEnd(null);
     const last = run.turns.findLast((t) => t.actor === key && t.number <= turn);
     setFocusRequest((request) => request + 1);
     setParams(
@@ -107,6 +144,7 @@ export default function Run() {
     );
   }
   function live() {
+    setPlaybackEnd(null);
     const next = new URLSearchParams(params);
     next.delete("turn");
     setParams(next, { replace: true });
@@ -228,6 +266,27 @@ export default function Run() {
           {pinned ? `Viewing turn ${turn}` : `Latest · turn ${turn}`}
         </div>
         <div className="col-span-full row-start-2 flex min-w-0 items-center gap-2 lg:col-auto lg:row-auto">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={!maxTurn}
+            aria-pressed={playing}
+            title="Watch saved turns without running agents"
+            onClick={() => {
+              if (playing) setPlaybackEnd(null);
+              else {
+                selectTurn(turn >= maxTurn ? 0 : turn);
+                setPlaybackEnd(maxTurn);
+              }
+            }}
+          >
+            {playing ? (
+              <Pause data-icon="inline-start" />
+            ) : (
+              <Play data-icon="inline-start" />
+            )}
+            {playing ? "Pause recording" : "Play recording"}
+          </Button>
           <Button
             variant="ghost"
             size="icon"

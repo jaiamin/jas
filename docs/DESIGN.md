@@ -581,6 +581,16 @@ protocol proposals appear in a Card for review before saving or running. Preserv
 draft identity, pending output, evidence scope and recoverable errors when
 changing presentation. Saving a protocol never executes it.
 
+### Run recordings
+
+Keep one stock **Play recording / Pause recording** button beside the saved-turn
+slider. It watches committed turns through the boundary selected when Play was
+clicked; it never executes agents or follows newly committed turns. From Latest,
+start at turn0. Load each checkpoint before advancing. Manual turn/actor selection,
+Latest, page hiding, errors and record navigation stop playback. Run/Step/Pause
+execution actions remain in the page heading. Playback starts only on an explicit
+click and uses the same Environment, Decisions and Interactions views.
+
 ### Experiment editor
 
 Use the compact page-heading geometry shared by record lists: a 36px muted,

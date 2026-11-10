@@ -358,6 +358,34 @@ benchmark outcome is claimed here.
 
 ## Remaining review
 
+### Saved-turn playback — implemented, browser gate pending
+
+Add one compact **Play recording / Pause recording** control beside the existing
+saved-turn slider. It only selects already committed evidence, makes no control
+POST and never follows newly completed turns beyond the boundary captured when
+Play was clicked. Starting at the latest turn begins at0. Pause, manual turn or
+actor selection, returning to Latest, hidden-page state and record navigation
+stop playback. Wait for each checkpoint to load before advancing; failures must
+leave it inspectable. Keep run execution's separate Run/Step/Pause controls and
+the stock tokens/components. This is a requested UX refinement, not a claimed
+existing defect. The first actual-shell observation failed at the missing
+Play recording control, sourcef4300bee (`current/recording-red-01`). Before the
+implementation, source inspection also corrected the test's GET assertion to
+inspect fetch's actual options argument and made its simulated newly committed
+turn survive polling. Neither changes the playback oracle. Browser verification
+joins the final combined pass; no green is claimed yet.
+
+The focused feature check passes at0dd4e6c4. Strengthened actual-shell coverage
+then passes all4 Run tests at030b2fc7: it holds the first checkpoint pending,
+checks play/pause/manual selection/new-turn isolation/page hiding/navigation,
+and verifies every fetch is GET with no control request. Forced TypeScript
+passes at that source. The first Biome invocation retained two formatting
+diagnostics; the stock formatter corrected them. At final implementation source
+cab1848d,14 affected Run/Experiment/shell cases, Biome and forced TypeScript pass.
+The Impeccable source scan reported no regex findings but explicitly skipped
+element/contrast rules for TSX; it is not a rendered visual verdict. Browser
+qualification remains open before the feature is complete.
+
 - Browser verification of the remaining ticket workflows and both app themes.
 - Independent integration reviews for T12, T17 and T18.
 - Full Agent, manual experiment, browsing and interaction-viewing usability pass

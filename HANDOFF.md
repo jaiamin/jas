@@ -1,4 +1,20 @@
-# ROOT continuation — final benchmark preparation (2026-11-10)
+# ROOT continuation — saved-turn playback prepared (2026-11-10)
+
+One stock Play recording/Pause recording button now watches saved turns only,
+without executing agents. Its actual-shell intended missing-feature red preceded
+implementation;14 affected Run/Experiment/shell cases, Biome and forced types
+pass at cab1848d. Pending checkpoint/page-hide/manual selection/navigation and
+new-turn isolation are covered; every request in the new flow is GET. The first
+format diagnostics and test-source corrections are retained. Source regex scan
+has no findings but skipped rendered-element rules. Browser qualification stays
+open for the final combined pass. The benchmark v2 manifest is committed7bfffcda
+and remains UNRUN. T17's build checkpoint1a43f175 includes46d48d5e; its next
+released owner-only private metadata cleanup may enable ONE bounded browser
+pass at the unchanged402653184 entry. T18's separate participant/judge Researcher
+usage red→green is observed; same bounded completion continues. Both tickets
+remain unaccepted. ROOT owns tracked writing;8080 remains unstarted.
+
+# Historical ROOT benchmark preparation (2026-11-10)
 
 Accepted ROOT46d48d5e includes the four reported correctness repairs and the
 explicit Markdown image-link repair. The frozen platform benchmark v2 adds a
