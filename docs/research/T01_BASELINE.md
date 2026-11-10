@@ -128,8 +128,9 @@ credited as baseline capability. Inspect later as prior art; do not apply/drop i
 
 ## Observed evidence
 
-Implementation and final baseline/check evidence are recorded below after the
-source checkpoints are committed. Live requests and actual spend: **zero**.
+Live requests and actual spend: **zero**. Production backend/frontend, lockfiles,
+workflow files and historical benchmark suites/scores are byte-unchanged from
+`b02536c`. No product defect needed a change in this baseline ticket.
 
 - On clean `b02536c`: inherited backend **931 passed** (48.78s), frontend
   **106 passed / 29 files**, frontend lint and production frontend build passed.
@@ -159,3 +160,59 @@ source checkpoints are committed. Live requests and actual spend: **zero**.
   skipped or flaky tests (338.46s). It ran against the unchanged production
   backend/frontend with `JAS_TEST_PORT=18112`; Playwright shut down its server.
   Log with JSON results: `setup/browser.log`.
+
+Final backend/static verification at clean `5d9ecf916f707dff960d3f668a13002c5e8aad50`:
+`uv run pytest --junitxml=data/research-baseline/setup/final-backend.xml -q`
+passed **935 tests** in 40.54s; `uv run ruff check backend benchmarks .github/scripts`
+and `uv run ty check` passed. These used the project-local uv workaround above.
+`git diff --check` passed. Commit secret scanning passed at each checkpoint.
+There were **no observed pre-existing product/test failures**. The initial uv
+failure is environmental; runner/test-oracle failures are new T01 development
+failures, not inherited product failures. No checks were disabled or weakened.
+
+Coverage comes from the new real API cases plus inherited tests: design
+validation/preflight/save/revisions (`test_api.py`, `workspace.spec.ts`), run
+step/start/pause and in-flight lifecycle (`test_execution.py`, `test_lifecycle.py`,
+`execution.spec.ts`), inspection/export/replay (`test_api.py`, `test_exports.py`,
+`inspection.spec.ts`), and unfinished drafts/disconnect/reconnect without
+resubmission (`drafts.spec.ts`, `recovery.spec.ts`, `streaming.spec.ts`,
+`test_streaming.py`). Browser tests mix real record/draft operations with
+controlled HTTP responses for provider-driven UI states; the API baseline uses
+real engine/accounting/settlement with only the provider replaced. Neither
+proves paid-provider operation, live model behavior or generated-code isolation.
+
+The source-stamped baseline at `data/research-baseline/qualified-before/` is:
+
+| Identity | Value |
+| --- | --- |
+| Source HEAD | `5d9ecf916f707dff960d3f668a13002c5e8aad50` (clean) |
+| Full input tree SHA-256 | `d80ee9fec1000a26c99d70b790dde5392fc243eb9878bdd9bc9567ed0d007a6a` |
+| Source archive SHA-256 | `ca35deae0bd4284bfa1777769985e12b49008b66c8dde5760d3dd605efc39bd5` |
+| Production backend SHA-256 | `eaf2fc9d5e92a3a2c95ebbd9178dc5656d8f282196570ca278871d2d08f28b62` |
+| DEVELOPMENT v1 case SHA-256 | `6e4f138cf31d32b8a5e28e348edbccc2e9b1308b62f8b274d39cf0f24ba33a6e` |
+| Harness code SHA-256 | `b6438d9fa3390d05f4f3c5583aa1e0e6f2095d1db653060257cdc817138a5826` |
+
+All six attempts pass: four installed-workflow witnesses complete, two known
+gaps stop at the expected schema rejection. Five runs produce **22 recorded
+turns/requests**, 2,200 synthetic input and 1,100 synthetic output tokens;
+synthetic ledger charge **$0.000770**, actual spending **$0**. There are **98 HTTP
+operations** in this attempt (poll counts can vary with scheduling). Model labels
+and harness are explicit; provider availability is false and source stability
+is true. No failed provider requests or unknown usage occurred in this qualified
+attempt; fault-injection tests separately exercise their retention.
+
+## Acceptance and artifact handoff
+
+The final comparison reruns this same frozen harness/case/runtime after recording
+the report, expecting no changed product behavior. It is a reproducibility/null
+comparison for T01, not a feature or intelligence improvement claim. The earlier
+`data/research-baseline/before/` run at `d95892f` is also retained, but its runner
+digest predates failure-retention hardening; do not compare it as if it shared
+the qualified harness identity.
+
+Preserve the entire ignored `data/research-baseline/` directory, especially the
+qualified before/after archives/exports/ledgers, `comparison.json`, `setup/`
+logs/XML and raw failed attempts. The stash itself remains separately in Git.
+Port 18112 refused connections after Playwright completion; no owned service or
+browser session remains. No issue was edited/closed, branch pushed or PR opened.
+The parent still owns integration acceptance and the one integration draft PR.

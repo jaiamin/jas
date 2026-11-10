@@ -1,16 +1,19 @@
 # T01 implementation checkpoint
 
 Branch `t3/t01-research-baseline`, starting at integration `b02536c`.
-T01 only; no product changes, paid requests, stash application or subagents.
+T01 only; no production code changes, paid requests, stash application or subagents.
 Read [baseline report/procedure](docs/research/T01_BASELINE.md) and
-[progress](docs/RESEARCH_HARNESS_PROGRESS.md). Fresh DEVELOPMENT fixtures and a
-keyless real-API evidence/comparison runner are implemented; three focused TDD
-checks pass. Inherited backend 931 tests and frontend 106 tests/lint/build pass.
-Full keyless browser suite on owned port 18112 is running; final committed-source
-baseline pair, final checks and integration-tip merge remain. Preserve raw
-attempts in ignored `data/research-baseline/`, including initial runner failures.
-The system uv fails on 16 KiB pages; use project-local `.tools/uv/bin/uv` (0.13.7).
-No other ticket status or GitHub issue was changed.
+[progress](docs/RESEARCH_HARNESS_PROGRESS.md). Fresh DEVELOPMENT v1 cases and a
+keyless real-API evidence/comparison runner are committed. Four TDD checks pass;
+inherited/final backend 931/935 tests, frontend 106 tests/lint/build and all 165
+owned keyless Chromium tests pass. Qualified baseline at source `5d9ecf9`:
+six passing cases, five runs, 22 scripted requests, 98 HTTP operations, zero live
+calls. Preserve raw attempts, exact source archives and check logs under ignored
+`data/research-baseline/` before worktree disposal. System uv fails on 16 KiB
+pages; project-local `.tools/uv/bin/uv` 0.13.7 works with unchanged locks.
+Latest integration-tip merge was already up to date at `b02536c`; parent owns
+acceptance/merger/draft PR. No other ticket status or GitHub issue was changed.
+Final before/after comparison is recorded in the report and raw artifacts.
 
 # JAS handoff
 
