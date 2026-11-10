@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "split": "DEVELOPMENT",
+  "evidence": "Deterministic mechanics only; no participant intelligence or held-out claim.",
+  "cases": [
+    {
+      "id": "neutral-commons-matched",
+      "environment": "commons",
+      "seeds": [103, 307],
+      "repetitions": 2,
+      "multiplier": 1,
+      "conditions": ["direct", "capable", "keep", "half"],
+      "expected": "All 16 runs complete. Four matched pairs per contrast, two observed seed clusters. Direct/capable/keep contribute zero; half contributes half. Equal terminal mean balances at multiplier one. No confidence interval."
+    },
+    {
+      "id": "neutral-simple-control-difference",
+      "environment": "commons",
+      "seeds": [419],
+      "repetitions": 1,
+      "multiplier": 2,
+      "conditions": ["direct", "capable", "keep", "half"],
+      "expected": "All four runs complete. Half-contribution control has larger terminal balance than zero-contribution model stand-ins; richer harness has no required gain. One fixed seed does not establish independent support."
+    },
+    {
+      "id": "neutral-private-signal",
+      "environment": "information_cascade",
+      "seeds": [521, 631],
+      "repetitions": 1,
+      "conditions": ["direct", "capable", "signal"],
+      "expected": "All six runs complete. Every action chooses that actor's recorded private signal, never researcher truth. Actions/observations replay without requests. Two matched pairs per contrast; all differences are zero."
+    },
+    {
+      "id": "neutral-missing-work",
+      "environment": "commons",
+      "seeds": [743, 853],
+      "repetitions": 1,
+      "multiplier": 1,
+      "conditions": ["direct", "limited", "keep"],
+      "missing": true,
+      "expected": "Seed 743: direct/keep complete, limited observes then fails at request limit without fallback. Seed 853: direct pauses after one decision, keep completes, limited stays ready. Keep versus direct has one of two matched pairs; limited has none. Failed, interrupted, ready and unmatched cells remain. Failed request effort is retained."
+    }
+  ]
+}
