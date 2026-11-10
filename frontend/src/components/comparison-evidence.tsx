@@ -108,6 +108,10 @@ export function ComparisonEvidence({ report }: { report: ComparisonReport }) {
             <p>{comparison.uncertainty_reason}</p>
             <p>{comparison.selection_assumption}</p>
             <p>
+              Attempted counts recorded execution, including failure before a
+              provider request. It does not count requests or cost.
+            </p>
+            <p>
               Revision {comparison.revision} · comparison v{comparison.version}{" "}
               · design{" "}
               <code className="break-all">{comparison.design_sha256}</code>

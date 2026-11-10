@@ -173,4 +173,19 @@ Second checkpoint (including accepted T05 tip
   A discovery glob `test_accounting*` did not exist (exit 2); used existing
   `test_llm.py` and lifecycle coverage. All failed attempts remain archived.
 
-Integration of accepted T04/schema v5 and final checks remain in progress.
+Integration checkpoint includes T04 integration tip
+`48600d2982516210e6a4e28528d2e1c6f1fd155e`. Retained schema 5, setup format v2,
+activation journals, model/request links, and T05 research activity alongside T06
+snapshots. Chose current export 6 and updated its API/participant/browser callers;
+T04 historical evidence stays untouched. Merge conflicts were limited to shared
+imports, export versions, frozen-baseline assertions and current-contract docs.
+
+- New paused-after-unsent-failure oracle first failed as expected: disposition
+  alone lost the attempt after Pause. The merged current contract now uses T04's
+  durable activation membership. Pausing ready B invents no attempt; pausing
+  failed A retains one, independent of requests/cost. Public API red → green,
+  **89 focused tests passed**, including T04 participant and inherited baseline.
+- Pre-merge checkpoint: 54 API/baseline/new tests and ty passed. Ruff found two
+  newly long lines; wrapped them and reran successfully. Both logs retained.
+
+Final combined-source verification and service cleanup remain in progress.

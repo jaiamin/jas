@@ -400,3 +400,11 @@ def test_execution_failure_before_provider_sending_is_attempted_without_spend(
     exported = client.get(f"/api/studies/{sid}/export").json()
     assert exported["analyses"][0]["output"]["comparisons"] == analysis["output"]["comparisons"]
     assert client.get(f"/api/runs/{runs['a', 7, 1]}").json()["summary"]["usage"]["requests"] == 0
+    # Pausing retains A's attempted execution; pausing ready B invents no attempt.
+    for rid in runs.values():
+        assert client.post(f"/api/runs/{rid}/control", json={"action": "pause"}).status_code == 200
+    paused = client.get(f"/api/studies/{sid}").json()
+    assert [
+        (c["attempted"], c["interrupted"])
+        for c in paused["comparison"]["conditions"]
+    ] == [(1, 1), (0, 1)]

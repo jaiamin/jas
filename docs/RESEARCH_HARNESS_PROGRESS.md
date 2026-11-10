@@ -59,7 +59,7 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Integrated | `bf3b76e` |
 | T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Integrated and accepted | `77f6014`, `c546c85` |
 | T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | In progress in isolated worktree | — |
-| T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Complete; awaiting fresh merger | — |
+| T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Fresh integration verification in progress | — |
 | T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Integrated and accepted | `a4ab9ee` |
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | In progress | `t3/t06-uncertainty`; [evidence](research/T06_UNCERTAINTY.md) |
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Ready | — |
@@ -137,9 +137,9 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. Fresh-merge completed T04/#15 onto accepted T05; preserve its ignored evidence
-   before cleanup. T03/#14 and T06/#17 are in progress in isolated worktrees;
-   T07/#18 remains Ready. T01/T02/T05 are accepted.
+1. Complete fresh T04/#15 integration verification on the accepted T05 tip.
+   Its source evidence has been preserved and hash-verified. T03/#14 and T06/#17
+   are in progress in isolated worktrees; T07/#18 remains Ready.
 2. Review and merge each accepted slice sequentially, then refresh/link draft
    PR #32; qualification failure gates generated execution, not trusted worlds.
 3. Preserve source-stamped inherited and new-behavior evidence for each slice;
@@ -222,3 +222,30 @@ owned keyless server shut down and port 18216 is closed. No paid calls,
 publication, tracker changes or security/credential changes occurred. T04
 remains unmerged and needs its own fresh merger; T03/#14 and T06/#17 are in
 progress in isolated worktrees.
+
+## T04 integration — verification in progress
+
+Fresh merger scope: source `6a6c000ac87a44212f3da681dbd31497f9640982` onto
+integration `39491def73da7334164ca6d98896eaa03a2e5bf5`. No product-code merge
+conflict occurred. The progress conflict preserves accepted T02 fixes, T05
+acceptance and T03/T06 in progress. The source worktree remains intact.
+
+- [x] Read exact T04 acceptance, applicable ADRs and actual implementation.
+- [x] Preserve all 2,329 ignored source artifacts (71,129,333 bytes), including
+  all `data/t04/` and `.tools/t04-*`, without overwrites. Every source/destination
+  SHA-256 matches; source HEAD/status/bytes remained stable.
+- [x] Run the unchanged T01 baseline from a clean tracked-source clone of the
+  accepted tip: six cases pass. The unrelated root `pbcopy` was excluded unread.
+- [ ] Check combined policy/accounting/lifecycle/World/privacy/replay/export and
+  T05 Researcher regressions, frontend units/lint/build and shared browser flows.
+- [ ] Verify the actual v5 contract and all direct-action parity fields while
+  retaining the frozen oracle's four v4 failures and terminal failed flags.
+- [ ] Record immutable fresh evidence, acceptance, limits and final handoff.
+
+Preserved source: `.tools/research-harness/evidence/T04/`; per-file verification
+is `T04-copy-verification.json`, canonical manifest SHA-256
+`df26099a7e31ee5efff8bd79027b9e22cdf67da2009a85216f2749c84e19d558`.
+Fresh evidence stays separate in `T04-integration/`. No paid calls, source
+worktree disposal, stash operations, push or tracker/PR changes are authorized.
+Live competence and held-out acceptance remain unverified; T08/T09 are out of
+scope for this merge.

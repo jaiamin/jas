@@ -13,6 +13,8 @@ from .db import (
     Condition,
     Database,
     Measurement,
+    ParticipantActivation,
+    ParticipantOperation,
     ProviderCall,
     RecordedEvent,
     Revision,
@@ -25,6 +27,7 @@ from .domain import Design, Treatment
 from .environment_library import EnvironmentLibrary
 from .llm import PRICES, LanguageModels, Usage, empty_usage
 from .metrics import aggregate_metrics
+from .participants import activation_record, operation_record
 from .simulation.environments import CATALOG, create_world
 from .validity import Requirement, factorial_issues, preflight, require_valid, requirement_issues
 
@@ -278,7 +281,7 @@ class Research:
             session.execute(
                 update(ProviderCall)
                 .where(calls)
-                .values(request_payload=None, response_payload=None)
+                .values(request_payload=None, response_payload=None, activation_id=None)
             )
             session.execute(
                 update(ProviderCall).where(ProviderCall.study_id == study_id).values(study_id=None)
@@ -294,6 +297,17 @@ class Research:
             session.execute(delete(Analysis).where(Analysis.id.in_(analysis_ids)))
             for record in (Annotation, Measurement, RecordedEvent, Turn, Agent):
                 session.execute(delete(record).where(record.run_id.in_(run_ids)))
+            activation_ids = select(ParticipantActivation.id).where(
+                ParticipantActivation.run_id.in_(run_ids)
+            )
+            session.execute(
+                delete(ParticipantOperation).where(
+                    ParticipantOperation.activation_id.in_(activation_ids)
+                )
+            )
+            session.execute(
+                delete(ParticipantActivation).where(ParticipantActivation.run_id.in_(run_ids))
+            )
             session.execute(delete(Run).where(Run.id.in_(run_ids)))
             revisions = select(Revision.id).where(Revision.study_id == study_id)
             session.execute(delete(Condition).where(Condition.revision_id.in_(revisions)))
@@ -454,6 +468,14 @@ class Research:
             ).all()
         selected_ids = {run.id for run in self.operational_runs(study_id, revision.number)}
         summaries = self.runs(study_id, run_ids=selected_ids)
+        with self.db.session() as session:
+            attempted = set(
+                session.scalars(
+                    select(ParticipantActivation.run_id)
+                    .where(ParticipantActivation.run_id.in_(selected_ids))
+                    .distinct()
+                )
+            )
         completed = [run for run in summaries if run["status"] == "complete"]
         metrics = self.metrics_many({run["id"] for run in completed})
         comparison = compare_runs(
@@ -466,7 +488,7 @@ class Research:
                     status=run["status"],
                     through_turn=run["turn"],
                     attempted=run["turn"] > 0
-                    or run["usage"]["requests"] > 0
+                    or run["id"] in attempted
                     or run["status"] == "failed",
                     metrics=metrics.get(run["id"], {}),
                     error=run["error"],
@@ -550,6 +572,8 @@ class Research:
             "summary": self.run_summary(run, design, condition, revision),
             "design": design.model_dump(),
             "parameters": condition.parameters.model_dump(),
+            "harness": condition.harness.model_dump(),
+            "activations": self.activations(run_id),
             "next_actor": create_world(
                 design, condition.parameters, run.seed, run.checkpoint
             ).actor()
@@ -562,6 +586,7 @@ class Research:
             "requests": [
                 {
                     "id": c.id,
+                    "activation_id": c.activation_id,
                     "turn": c.turn,
                     "status": c.status,
                     "error": c.error,
@@ -600,6 +625,23 @@ class Research:
             "metrics": self.metrics(run_id),
             "relationships": self.relationships(events),
         }
+
+    def activations(self, run_id: str) -> list[dict]:
+        with self.db.session() as session:
+            rows = session.scalars(
+                select(ParticipantActivation)
+                .where(ParticipantActivation.run_id == run_id)
+                .order_by(ParticipantActivation.created, ParticipantActivation.id)
+            ).all()
+            journals: dict[str, list[dict]] = {row.id: [] for row in rows}
+            if rows:
+                for op in session.scalars(
+                    select(ParticipantOperation)
+                    .where(ParticipantOperation.activation_id.in_(journals))
+                    .order_by(ParticipantOperation.number)
+                ):
+                    journals[op.activation_id].append(operation_record(op))
+            return [activation_record(row, journals[row.id]) for row in rows]
 
     def evidence(self, run_id: str, number: int) -> dict:
         run, design, condition = self.configuration(run_id)
@@ -660,9 +702,9 @@ class Research:
             measures = session.scalars(
                 select(Measurement).where(Measurement.run_id.in_(cutoffs)).order_by(Measurement.id)
             ).all()
-            calls = session.execute(
-                select(ProviderCall.run_id, ProviderCall.turn).where(
-                    ProviderCall.run_id.in_(cutoffs), ProviderCall.purpose == "decision"
+            activations = session.execute(
+                select(ParticipantActivation.run_id, ParticipantActivation.turn).where(
+                    ParticipantActivation.run_id.in_(cutoffs)
                 )
             ).all()
         values: dict[str, list[tuple[str, float | None]]] = defaultdict(list)
@@ -671,8 +713,8 @@ class Research:
                 values[measure.run_id].append((measure.key, measure.value))
         attempted = {
             rid
-            for rid, turn in calls
-            if rid is not None and turn is not None and turn <= cutoffs[rid] + 1
+            for rid, turn in activations
+            if turn <= cutoffs[rid] + 1
         }
         groups: dict[str, list[ComparisonRun]] = defaultdict(list)
         revisions = {}

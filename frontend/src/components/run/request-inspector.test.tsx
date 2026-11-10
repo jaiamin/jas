@@ -24,6 +24,7 @@ test("request retry stays selected when an older request finishes late", async (
   );
   const requests: RequestSummary[] = ["first", "second"].map((id, turn) => ({
     id,
+    activation_id: null,
     turn,
     status: "failed",
     error: null,

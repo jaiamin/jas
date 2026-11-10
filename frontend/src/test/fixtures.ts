@@ -58,6 +58,13 @@ export const design: Design = {
       name: "Baseline",
       description: "",
       model: "openai:gpt-6-luna",
+      harness: {
+        kind: "direct_action",
+        version: "1.0.0",
+        max_requests: 1,
+        max_tool_operations: 0,
+        tools: [],
+      },
       parameters: {
         ...parameters,
         institution: { ...parameters.institution, authorities: ["a", "b"] },
@@ -147,6 +154,14 @@ export const runDetail: RunDetail = {
   },
   design,
   parameters,
+  harness: {
+    kind: "direct_action",
+    version: "1.0.0",
+    max_requests: 1,
+    max_tool_operations: 0,
+    tools: [],
+  },
+  activations: [],
   state,
   turns: [],
   events: [],

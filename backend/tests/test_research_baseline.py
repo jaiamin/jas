@@ -9,22 +9,32 @@ from benchmarks import research_baseline
 from benchmarks.research_baseline import run_baseline
 
 
+def assert_current_workflow_with_frozen_v4_oracle(attempts):
+    # Keep T01's case/harness bytes unchanged across the paired comparison.
+    # T04/T06 version the export contract; every other check must pass.
+    for row in attempts:
+        failures = {key for key, passed in row["checks"].items() if not passed}
+        if "export-v4" in row["checks"]:
+            assert failures == {"export-v4"}
+            assert row["passed"] is False
+        else:
+            assert failures == set() and row["passed"] is True
+
+
 def test_keyless_baseline_retains_real_api_evidence_and_operation_counts(tmp_path):
     output = tmp_path / "baseline"
     report = run_baseline(output)
     assert report["evidence_kind"] == "deterministic-api-correctness"
     assert report["live_requests"] == 0
     assert len(report["attempts"]) == 6
-    # The frozen T01 oracle intentionally requires export v4; preserve that failure.
-    assert [row["passed"] for row in report["attempts"]] == [False, False, False, False, True, True]
-    for row in report["attempts"][:4]:
-        assert row["checks"]["export-v4"] is False
-        assert all(value for key, value in row["checks"].items() if key != "export-v4")
+    assert_current_workflow_with_frozen_v4_oracle(report["attempts"])
     simple = report["attempts"][0]
     assert simple["stop_reason"] == "check-failure"
+    assert all(run["status"] == "complete" for run in simple["run_stops"])
     assert simple["usage"]["requests"] == 2
     exported = json.loads((output / simple["export"]).read_text())
     assert exported["version"] == 6
+    assert len(exported["activations"]) == 2
     assert len(exported["runs"][0]["evidence"]) == 3
     rejected = report["attempts"][-1]
     assert rejected["stop_reason"] == "expected-schema-rejection"
@@ -115,9 +125,7 @@ def test_api_transport_failure_keeps_attempt_and_continues_other_cases(tmp_path,
     assert first["stop_reason"] == "error"
     assert first["usage"]["requests"] is None
     assert first["usage"]["partial"] is True
-    for row in report["attempts"][1:]:
-        assert all(value for key, value in row["checks"].items() if key != "export-v4")
-        assert row["passed"] == row["checks"].get("export-v4", True)
+    assert_current_workflow_with_frozen_v4_oracle(report["attempts"][1:])
     operations = [
         json.loads(line) for line in (output / "operations.jsonl").read_text().splitlines()
     ]
