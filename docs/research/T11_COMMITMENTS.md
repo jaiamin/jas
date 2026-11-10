@@ -16,10 +16,10 @@ Starting HEAD and published accepted base:
 - [x] Public HTTP red/green: edit/review/save/run/evidence/export and source-pinned
   reuse; independent accounting, frozen cutoffs and read-only analysis witnesses.
 - [x] Existing UI configuration/review/trajectory path, keyboard/mobile/browser18126.
-- [ ] Appropriate backend/static/frontend/build/browser regressions; unchanged T01
+- [x] Appropriate backend/static/frontend/build/browser regressions; unchanged T01
   four intentional export-v4 failures/exit1 separately from current-contract and
   five-run/22-turn/22-request behavior/input/accounting parity.
-- [ ] Merge only latest documented accepted integration; coherent normal-hook
+- [x] Merge only latest documented accepted integration; coherent normal-hook
   commits, exact source inventory/archive/diff, complete ignored evidence manifest,
   closed owned services and clean handoff. No publication or paid calls.
 
@@ -254,4 +254,58 @@ remain; contracts/callers/fixtures advance together; private grants and pending
 state remain checkpointed. Spec: four voluntary roles, feasible alternatives,
 declared windows, independent effects, later responses and explicit nulls are
 present. The deterministic tests do not establish intention, betrayal, live
-competence or generalization. Final parity/source custody/clean handoff follow.
+competence or generalization. Final parity/source custody are recorded below.
+
+## Frozen T01 and final handoff
+
+T01 runner/cases/scores remain byte-identical to the protected accepted source.
+Before and after runners each retain the four intentional export-v4 failures
+and exit1; the frozen comparator also exits1, with no regressions/improvements.
+The separate accepted-T10-attributed positive audit passes: five runs/22 turns/
+22 complete bounded requests (settings/schema/input content equal),98 identical
+HTTP operations after verified relational identity mapping, and identical
+consequences/accounting/effort. All1,777 export/report differences are classified;
+zero unexplained. Changes include explicit new null commitment parameters,
+DB8→9/export9→10, independently verified identities/source pins/timing and
+unchanged microdollar accounting. Current catalog/schema auditing proves the old
+ten templates/mechanics unchanged after the declared null projection, their
+library6 hashes recomputed, the exact new schema fields/bounds and unchanged
+Sol/Luna model assignments. The corrected frozen change record is
+`data/t11/parity/catalog-schema-audit-v2.json`.
+
+Parity's first invocation lacked PYTHONPATH and is retained. The catalog audit
+first assumed the new environment was appended, then omitted the declared
+library-format schema delta; both failed attempts remain. A subsequent change
+froze copied difference records before projection, preserving the first output
+as well. These are DEVELOPMENT audit/oracle corrections, never changes to the
+historical runner or a held-out score. The final held-out tasks were unused.
+
+Executable/UI checkpoint is `8aad5464fb484c98fa9954a9116067a70249c9de`;
+later changes are handoff documentation only. Final source qualification compares
+every backend/config input to the1,494-pass inventory and every executable/test/
+build input to the82-browser/static/frontend/production inventory. Exact final
+HEAD, clean status, source key/archive hash, and accepted-base ancestry are in
+`data/t11/source-qualification.json`. The latest documented accepted checkpoint
+is `f9e87c2b0cae14ca862ba2a051b2b95dffc3f78d`, already an ancestor; an explicit
+merge reports up to date. The inspected provisional integration tip `8ffccef`
+still documents T13 as unaccepted and was not merged. Starting published base
+remains `eb9c29a9490480a241489ec353abea3f64baa15a`.
+
+All closed own source/output archives and raw log hashes were independently
+reverified: the preliminary pass covered54 source archives,1,147 packed archives
+and2,154 raw members. The complete final inventory/checksum are
+`data/t11/MANIFEST.json` and `MANIFEST.sha256`, with final verification records
+beside them. Every substantive attempt has command/exit/raw-output hash/source
+identity; all nonzero attempts remain. The first19 captures have a before-source
+inventory only; later qualifying jobs record matching before/after inventories.
+Initial read-only discovery and tool traces remain in the session/discovery
+notes. No past evidence is rewritten as fresh success.
+
+Normal hooks/Gitleaks passed coherent checkpoints. Owned preview tab/service and
+port18126 are closed; owned production resources are removed. Ignored evidence,
+source archives, private dependencies and all failed attempts stay in this
+assigned checkout for root custody. No other agents' files/resources, protected
+root data, stash or clipboard were altered. No descendants/extra checkout,
+push/PR/issues/watch, paid/live calls, reset/migration/alias/fallback or host/
+security changes. **Actual spending $0. T11 is implementation-complete and
+unaccepted; a later fresh root merger alone decides acceptance.**

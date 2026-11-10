@@ -51,6 +51,34 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### T11 isolated implementation ready for fresh review (2026-11-10)
+
+T11/#22 implementation is complete and **unaccepted** in assigned
+`t3-95376a5f`, branch `t3/t11-public-experiment-path`, base `eb9c29a`;
+executable/UI checkpoint `8aad546`. Read [T11 report](research/T11_COMMITMENTS.md).
+Four voluntary participants have executable typed promises, real entrusted ACLs,
+alternative choices, deadlines, independent private effects and inspectable
+later responses. UI review/run/evidence/export/replay is integrated; no desired
+betrayer/intent judge/T12/parallel engine. Atomic DB9/export10/library6 rejects
+old data; capture1/comparison1/tool2.0/direct1.0 remain.
+
+Observed whole backend1,494 pass; final Ruff/ty/frontend lint,115 units/32 files,
+forced clean/new-empty54-file build parity,82 distinct browser flows and actual
+non-root production/containment/T11 smoke pass. Optional whole-tree formatting
+retains six independently proven inherited differences. Frozen T01 still has
+four export-v4 failures/exit1; separate parity proves five runs/22 turns/22
+identical bounded requests,98 operations and identical consequences/effort/
+accounting,1,777 classified differences/zero unexplained. All failures/source
+archives/maps/manifests are retained in ignored `data/t11/`; exact final clean
+source qualification is recorded there. Mocks remain correctness evidence.
+
+Merged only documented accepted `f9e87c2` (already ancestor); excluded provisional
+T13 tips, last inspected `8ffccef`. Owned browser/services/production resources
+closed. Root-authorized immutable pnpm reuse leaves24,681 store files and lock
+unchanged, private generated state verified. Spending$0; no live/held-out work,
+publication, other-agent modifications or issue closure. Fresh root merger owns
+acceptance; earlier acceptance remains limited to its documented scopes.
+
 ### Root coordination — T13 custody verified; next frontier (2026-11-10)
 
 T01–T10, T15 and T19 are accepted at `f9e87c2`; root rehashed all1,286 fresh
@@ -573,7 +601,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Integrated and accepted after cutoff receipt repair | `9750caf`, `de5556b`; [evidence](research/T08_PARTICIPANT_CONTEXT.md) |
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Integrated and accepted after fresh review repairs | `c357a3b`, `4ed18af`, `84867cc`; [report](research/T09_ARTIFACT_WORLD.md) |
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Accepted after fresh Standards/Spec review and T19 integration repairs | No-ff `02879c3`; repair `7aec3f5`; DB8/export9/library5 |
-| T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Ready; root chooses launch | — |
+| T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Implementation complete; fresh root review required | `8aad546`; isolated DB9/export10/library6; deterministic evidence only |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Ready; root chooses launch | — |
 | T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Complete but unaccepted; queued for separate fresh review after ownership return | Unaccepted root-provided `75766ba`; not reviewed here |
 | T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Waiting on T13 | — |
