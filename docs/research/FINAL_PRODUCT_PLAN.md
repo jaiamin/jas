@@ -38,6 +38,8 @@ fresh workspace running on port 8080 for manual testing.
 - [x] Recover storage from ROOT's closed historical output; release bounded child work.
 - [x] Reproduce/fix mobile composer CI failure; 10 repeated cases, all three
   suggestions cases, lint and forced TypeScript passed. Published at `a4ed8743`.
+- [x] Reproduce and fix run/experiment control state crossing record navigation;
+  118 units, lint/types/clean build and two keyless browser checks passed.
 - [ ] Complete remaining ticket graph with staged, measured resource allowances.
 - [ ] Review and refine the full UI/UX using `docs/DESIGN.md` and browser evidence.
 - [ ] Complete end-to-end code review, relevant checks and meaningful benchmarks.

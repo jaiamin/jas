@@ -58,6 +58,7 @@ export default function Run() {
     enabled: !!query.data && (pinned || tab === "decisions"),
   });
   const control = useMutation({
+    mutationKey: ["run-control", id],
     mutationFn: (action: string) => api(`/runs/${id}/control`, { action }),
     onSuccess: () =>
       invalidateResources(client, [
