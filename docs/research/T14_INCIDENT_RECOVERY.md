@@ -1,8 +1,14 @@
 # T14 protected-selection incident recovery
 
-Status: targeted redaction complete; independent closure pending, acceptance
-withheld. ROOT resumed sole tracked writing
-from the reviewer at `08700e9265ca0805d264d98cde83587b8e516e61`.
+Current status: independent recovery closure passed; **T14 accepted locally only
+for finite deterministic DEVELOPMENT scope**. Current Standards and Spec both
+PASS; the original R1 Standards FAIL remains unchanged. See the separate
+[closure report](T14_RECOVERY_CLOSURE.md). No publication or final milestone claim.
+
+ROOT resumed sole tracked writing from the original reviewer at
+`08700e9265ca0805d264d98cde83587b8e516e61`, completed the disposition below and
+handed sole writing to a new independent closure reviewer at
+`73537d9f878f90d1bb34ad423f9faa14e0dee6ee`.
 
 The independent reviewer passed the bounded product Spec review but failed the
 protected-selection protocol in `contract-711`. Three snapshot-producing unit
@@ -75,8 +81,27 @@ no original adverse record was removed, and no paid/live/held-out work occurred.
 The historical review's Standards FAIL and Spec PASS remain in their original
 report and seal. A new closure review must assess current recovery separately.
 
-Next: fresh independent current-state closure review and explicit acceptance
-decision. T12 has one renewed offline setup/bounded backend release under the
-shared lock; T17's next generation-green remains held until setup releases.
-Both remain on the last published accepted application frontier; no provisional
-T14 merge is released.
+The new reviewer independently verified all1,320 preserved archive members and
+their full TarInfo/PAX metadata, current container/source-map identities, all48
+untouched files and exact57-file affected membership with no duplicate/stage or
+remaining prohibited member/digest entry. The six complete generated source
+records match the preserved whole-record proof; this anchors non-source fields
+to that proof rather than claiming a separate unavailable pre-redaction copy.
+Scoped nested-container headers were checked before payload hashes. All823
+original safe-index entries,1,489 original custody hardlinks, seven custody seal
+entries,130 original attempts/46 nonzero/79 maps, historical review records,
+ROOT proofs/maps, runtime/build/frozen inputs and stash were reverified.
+
+New evidence/index/seal lives under
+`.tools/research-harness/maintenance/T14-independent-closure-20261110/`, separately
+identifying redacted containers. Original review/closure/qualification remain
+immutable historical evidence and retain their FAIL/withheld verdict. The new
+closure ran no product suite/build/image/browser or paid/live/held-out work.
+Two overstrict/schema-assuming verifier attempts and all helper versions remain
+retained. TDD/capture/classifier and production-attribution limits remain explicit
+in the closure report; DB11/export12/library7 and no alias/migration/reset stand.
+
+Next: ROOT receives sole tracked writing through the explicit final handback and
+coordinates any publication/frontier release. T12/T17 remain separately staged
+by ROOT on the last published accepted target until ROOT updates that decision;
+this review neither merges nor qualifies their provisional source.

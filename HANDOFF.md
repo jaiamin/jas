@@ -1,4 +1,71 @@
-# ROOT T14 targeted recovery complete; closure review pending (2026-11-10)
+# T14 independent recovery closure accepted locally (2026-11-10)
+
+Current personal **Standards PASS / Spec PASS**, with zero unresolved current
+findings; acceptance is ONLY finite deterministic T14/#25 DEVELOPMENT scope.
+The original R1 review-protocol **Standards FAIL remains FAIL**. Its original
+report, qualification, safe index and closure seals remain immutable; this is a
+new assessment of the remedied current state, not a clean-history claim.
+See [independent closure](docs/research/T14_RECOVERY_CLOSURE.md) and
+[recovery](docs/research/T14_INCIDENT_RECOVERY.md).
+
+New reviewer started clean at73537d9f878f90d1bb34ad423f9faa14e0dee6ee and froze
+oracles at a440e765b4cb83ed71f00f15d70624d0e860c88c before own audit outputs.
+No descendant/helper delegation, install, service/browser/Docker start, paid/
+provider/live/held-out work, push, publication, issue/PR mutation or watch.
+No executable bytes changed. Exact T14 merge463f14f2 retains b304029e as its
+second parent; application repair23de5e48 remains the qualified runtime.
+DB11/export12/library7 stand; no alias, migration, reset or provisional T12/T17.
+
+Own stdlib verifier independently matched1,320 safe archive members/full TarInfo/
+PAX, all48 untouched files/hash/size/mode/integer-ns, all six whole-record source
+proofs,440-entry source maps and redacted current container identities. Exact57
+regular generated files remain without stage/unredacted duplicate or prohibited
+member/digest entry. All3 headers preceded safe payload reads; original protected
+clipboard and real/synthetic configuration payloads were never read/hashed/copied.
+The old contract711 opaque boundary below is historical; ROOT's narrow disposition
+permits only current confirmed sanitized generated files. No original tainted
+whole-container identity was newly computed or claimed.
+
+Names/headers covered890 regular review files/15 archive containers with nesting
+and1,489 custody files/159 containers; zero prohibited members.172 pytest pointer
+symlinks were excluded, not followed. All823 original safe-index files,1,481
+custody-index entries/seven seal entries/1,489 actual immutable hardlinks,
+130 original attempts/46 nonzero/79 maps,105 historical review attempts/13
+nonzero and separately sealed final audit remain. ROOT's nine recovery proofs
+and three recent maps match. All required safe files were present; zero restores
+or repacks. Stashf771128ba1c9295262a4073df40cc25647b1370f is preserved.
+
+All383 distinct qualification inputs match current tracked bytes/size/mode;
+438 original source members match. Exact recorded JUnit cases independently
+recomputed:5 HTTP,63 lifecycle,61 analysis,715 contracts,13 library. These are
+the ORIGINAL reviewer's executions, not new product tests. Original5 investigation
++4 composer browser, static/types/clean build and non-root44-backend/53-asset
+production keep original attribution.116 frontend units/33 files and lint remain
+inherited implementer checks. The separate in-image artifact Engine witness and
+host admitted Engine scope stay distinct. Frozen T01 remains four v4 failures/
+failed flags/exit1; current-contract parity stays separate:5 runs/22 turns/
+22 literal requests,770 scripted microdollars/2200in/1100out, actual0. No scores
+were rerun or rebaselined. All earlier TDD/capture/classifier/live/held-out limits,
+ROOT's broad-repack ENOSPC/complete rollback and historical R1 remain disclosed.
+
+New evidence is under
+`.tools/research-harness/maintenance/T14-independent-closure-20261110/`;
+`sealed/` is the new final index/seal/completion, separate from original closure.
+Two verifier failures are retained with source versions: overstrict pytest-pointer
+rejection and a null-archive schema assumption for early static/type stamps.
+Corrected audits passed without upgrading stamps into pre-output archives.
+Final bookends bind final documentary HEAD, normal hooks/Gitleaks, clean tracked
+state, unchanged custody/index/proofs/stash, ports and released flock. Audits use
+the unchanged134217728 floor, <=4MiB new-output forecast and release between jobs.
+No original custody/index/seal or inherited helper was written/executed.
+
+Sole tracked writing returns to ROOT only with this reviewer's explicit final
+message. ROOT may coordinate T12/T17's existing releases and later publication;
+the last PUBLISHED accepted target remains2ad967f325ad2fb4c2d842323944dd01c69f07ef
+until ROOT acts. Sibling source/caches/environments, bootstrap uv and every prior
+restoration map remain untouched. Earlier history and restoration pointers follow.
+
+# Earlier ROOT T14 targeted recovery; closure review pending (2026-11-10)
 
 ROOT resumed sole tracked writing at08700e9265ca0805d264d98cde83587b8e516e61.
 T14 remains unaccepted and unpublished. The narrowly scoped disposition,

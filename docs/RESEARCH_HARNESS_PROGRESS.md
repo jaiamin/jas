@@ -51,6 +51,38 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### T14 independent recovery closure accepted locally (2026-11-10)
+
+NEW personal current **Standards PASS / Spec PASS**, zero unresolved current
+findings, accepts only finite deterministic T14/#25 DEVELOPMENT scope. Historical
+R1 Standards FAIL and the original withheld review/qualification/index/seals
+remain unchanged. See [closure](research/T14_RECOVERY_CLOSURE.md) and
+[recovery](research/T14_INCIDENT_RECOVERY.md); no clean-history or final milestone
+claim. Sole tracked writing returns only with the explicit final handback.
+
+Independent recovery audits match all1,320 preserved members/full TarInfo/PAX,
+48 untouched files, six complete source-record proofs, recomputed source maps
+and explicitly redacted current container identities. Exact57-file affected
+membership has no prohibited member/digest entry or stage/unredacted duplicate.
+Header inspection includes nested captures; protected original and synthetic
+configuration payloads remain opaque. All823 original safe-index entries,
+1,489 immutable custody hardlinks/seven seal entries, original130 attempts/
+46 nonzero/79 maps, historical reviewer attempts and ROOT proofs/maps/stash
+remain. Zero restoration/repack was needed; all verifier failures are retained.
+
+All383 distinct qualification inputs and438 original source members match.
+Exact recorded JUnit outcomes recompute to5 independent HTTP,63/61/715 segmented
+backend and13 library cases. No application suites/builds/browser/images were
+rerun: unchanged original reviewer results retain attribution, with116 frontend
+units/33 files and lint explicitly inherited. Non-root44-backend/53-asset image,
+in-image artifact Engine and host admitted worker scopes remain distinct.
+Frozen T01 keeps four export-v4 failures/failed flags/exit1; positive parity is
+separate. Preserve all TDD/capture/classifier and ENOSPC/rollback disclosures.
+DB11/export12/library7 stand without aliases/migration/reset. No paid/provider/
+live/held-out or publication activity; live competence, validity and final gates
+remain open. T12/T17 provisional work is excluded; ROOT coordinates staged
+releases against the last published accepted target until publication changes it.
+
 ### T14 targeted incident recovery; independent closure pending (2026-11-10)
 
 The fresh product review passed bounded Spec checks and repaired three lifecycle
@@ -914,7 +946,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Accepted for documented deterministic scope after independent recovery review | Exact source `4aac5a9`; accepted frontier`8df6c59`; introduced DB9/export10/library6; [review](research/T11_RECOVERY_REVIEW.md) |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Fresh isolated source-only preparation active | From accepted `29af3413`; no setup/check/capture allocation yet |
 | T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Accepted for deterministic scope; live competence unassessed | Exact no-ff `5af3fbb`; scoping repair `5e86dfa`; [report](research/T13_INTEGRATION_REVIEW.md) |
-| T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Complete and preserved; fresh merger next; unaccepted | Clean `b304029e`; final seal/source/custody verified; no paid allocation |
+| T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Accepted locally: finite deterministic DEVELOPMENT | Exact `b304029e` merge + `23de5e48` repairs; independent recovery closure PASS; historical R1 FAIL retained; DB11/export12/library7; no paid/live/held-out claim or publication |
 | T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Integrated and accepted after fresh review repair | `fa1c825`, `6e1a7c8`; [report](research/T15_BASELINES.md) |
 | T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Accepted for finite deterministic DEVELOPMENT scope | Exact no-ff`40ef0e59`/second parent`475bfc73`; repair`55d1a8c`; separate Standards/Spec pass; [review](research/T16_INTEGRATION_REVIEW.md); DB10/export11/library7 |
 | T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | First API red observed; bounded backend TDD active; unaccepted | Setup02/import/retained setup01 and405/201 red records verified; frontend/production remain staged |
