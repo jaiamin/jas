@@ -51,6 +51,18 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### Root verification and next frontier (2026-11-10)
+
+Root reverified all931 files/196 directories/79,724,933 bytes in T13's final
+index, SHA256 `177feaed8f3a63075a8c11426b89506775feb470b56a0328ad7c4a07c86170fa`,
+and its authorized protected-copy remediation records and scrubbed archive hash.
+Historical handling limitations remain explicit. Accepted frontier `32a1247`
+contains T01–T10/T13/T15/T19. Publish this checkpoint, then give a fresh T11
+reviewer sole integration writing ownership. T16 continues its unfinished
+implementation; T12/T14/T18 are Ready, with T14 scheduling constrained by disk
+headroom. Completed T01/T08 owners are reclaiming only disposable dependencies.
+No product change, new product test or paid call occurred in this coordination.
+
 ### T13 fresh integration accepted — bounded qualification complete (2026-11-10)
 
 Exact source `75766ba` is merged without fast-forward at `5af3fbb`; repair

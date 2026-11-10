@@ -1,3 +1,30 @@
+# Root coordination — T13 verified; T11 review next (2026-11-10)
+
+Accepted frontier is `32a1247e286ee2d58ee105d5aeb7640222a619e2`:
+**T01–T10, T13, T15 and T19 accepted for their deterministic scopes**.
+Root independently verified all 931 files / 196 directories / 79,724,933 bytes
+in T13's final index, SHA256
+`177feaed8f3a63075a8c11426b89506775feb470b56a0328ad7c4a07c86170fa`.
+Authorized redaction records and the scrubbed archive hash match; the historical
+indirect protected-file capture remains disclosed. Root did not access the
+original protected file or execute evidence helpers. Receipt:
+`.tools/research-harness/maintenance/t13-root-verification.json`.
+
+Publish the accepted checkpoint to draft PR32 and link immediately. Assign a
+fresh shared-checkout T11 integration reviewer; root stops tracked edits once
+that reviewer starts. T11 exact source remains `4aac5a9`, with complete immutable
+hardlinked custody already verified. T16's original implementer continues its
+unfinished admission guard, unaccepted and unpolled. T12/T14/T18 are Ready;
+defer another dependency checkout until storage supports it. T17 waits on T16.
+The completed T01/T08 owners are removing only their five disposable dependency,
+build and cache directories, preserving source/evidence/processes. Shared disk
+was about90MiB free before that cleanup. Continue bounded jobs under the shared
+flock; preserve all evidence/compression maps, stash and unread `pbcopy`.
+
+No new product tests or paid calls for this coordination step. Sol remains
+$0.611632/55 requests, $9.388368 remaining; Luna unallocated. Live competence,
+held-out generalization and final whole-branch review remain outstanding.
+
 # T13 fresh integration accepted — completion returns sole ownership to root (2026-11-10)
 
 **T01–T10, T13, T15 and T19 are accepted for their documented deterministic
