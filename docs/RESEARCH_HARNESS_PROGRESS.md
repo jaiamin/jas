@@ -1,5 +1,14 @@
 # Research harness implementation progress
 
+T17 continuation: normal-manager private Python setup/import proof and first
+API405/201 red are now observed, retained and followed by bounded backend
+red/green slices for immutable external finite contracts and actual-worker
+full-domain artifact checks. Three tests pass; no World/generation qualification
+yet. Rejected setup01, host-guard failure and all source identities remain.
+See [the T17 plan](research/T17_EXTENSION_GENERATION.md). Root explicitly allows
+accepted29af3413 docs-only merge; provisional T14 stays excluded. Frontend,
+browser/services/production/live/paid/held-out work remains unreleased.
+
 Status: **active**. The user invoked `implement-spec` after reviewing the
 20-ticket breakdown. This authorizes implementation of that graph; previously
 accepted product and testing-seam decisions are not reopened.
@@ -50,6 +59,25 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
   disposable worktrees/services are cleaned up.
 
 ## Task graph and checkpoints
+
+### T17 source-only preparation; no observed red or implementation (2026-11-10)
+
+Assigned fresh isolated branch `t3/sol-generation-admission` starts at accepted
+`b0446d9`; latest root-documented accepted `375877c0a4de6baba092a8fadfcb13db64d9b08d`
+is docs-only beyond it and not yet merged here. The tracked
+[T17 plan](research/T17_EXTENSION_GENERATION.md) freezes the first new DEVELOPMENT
+permit/refund/reissue semantics, complete120-input oracle plus four invalid
+integers, actor privacy, no-mint conservation, terminal/horizon and restore/replay
+expectations before candidate outputs. Root concurs with this narrow discriminator;
+an independently authored external exhaustive table is a declared prerequisite,
+not evidence of natural-language understanding or universal generation.
+
+Exactly one inert public contract POST/GET test is authored and unrun. No
+production implementation precedes observed red; no generated candidate exists.
+Setup/check/capture/service/browser/Docker remain explicitly held for T14's final
+production window. Cache coordination is not a setup grant. Current contracts
+remain DB10/export11/library7; T17 is unaccepted. There is no paid/provider/held-out
+work or publication, and no new intelligence/benchmark/containment claim.
 
 ### Root verifies accepted T16 and advances the ready frontier (2026-11-10)
 

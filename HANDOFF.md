@@ -1,3 +1,70 @@
+# T17 bounded backend continuation (2026-11-10)
+
+Setup02 passed after root's new headroom evidence: free278,548,480→274,673,664;
+normal frozen uv hardlink sync reused the explicitly coordinated T14 cache into
+this checkout's distinct `.venv`. Private sys.prefix and agent_sim import proof
+both pass. Rejected setup01 remains immutable. Root explicitly supersedes the
+accepted merge target with `29af3413c12c8b14f24bc0faae39933fe56e344d` (docs only).
+
+First actual API RED:405 vs201, source `19dd8c70ecb49ba2f3abec76fd340a48338d4c4b347cc77c5d7ee2ff655bf13d`.
+Inert immutable contract API then passes. Full-domain permission/resource
+validation red/green and real qualified-worker artifact comparison red/green
+pass (three current tests). A constant artifact passes its own examples and
+fails the external120+4 oracle; the independently scripted permit WAT passes248
+fresh instances. This is DEVELOPMENT correctness, not generated/live competence
+or World admission. No production World or Researcher generation is implemented.
+
+Own `.tools/t17/evidence/` retains every command, source-stamped receipt and
+failure; bounded outputs5,361,800 bytes, latest free238,645,248. Shared exclusive
+lock and unchanged134,217,728-byte ordinary floor apply to each bounded job.
+No frontend/service/browser/production/live/paid/held-out grant. Next: actual
+finite World/admission public lifecycle, then bounded Sol generation/proposal
+orchestration. Read the plan for exact sequencing limitations and failures.
+
+# T17 earlier source-only preparation — superseded by continuation above
+
+Continuation: root released Python setup/first red and bounded backend work,
+but the sole under-lock setup preflight rejects125:264,867,840 free is below
+268,435,456. Uv never ran; no `.venv`, cache consumer, snapshot or product check.
+Receipt `.tools/t17/evidence/attempts/python-setup-01/` and own immutable
+`record_v1.py` retain that attempt. Lock released; dependent setup/red is held
+pending new concrete headroom evidence, without lowering floors or blind retry.
+Latest accepted tip is now `d276b70a80656094862c304385baedd3752c3ec7`; it remains
+unmerged here, and provisional T14 is excluded. Frontend/browser/services/production
+remain unreleased. The earlier source-stage record below retains its attribution.
+
+T17/#28 only, assigned checkout `t3-8fed193f`, now automatically named
+`t3/sol-generation-admission`. Starting clean accepted
+`b0446d9ea54b2e49fe93fc6d7a2bcdea6341af7b`; latest root-documented published
+accepted tip is `375877c0a4de6baba092a8fadfcb13db64d9b08d`, with only this
+file/PROGRESS changed since the starting base. No merge yet; no production edit.
+
+Read [the tracked T17 plan](docs/research/T17_EXTENSION_GENERATION.md). Root
+concurs with the first new DEVELOPMENT discriminator: a revocable single-use
+permit with escrow refund/reissue, absent from inspected accepted mechanics.
+Full120-input literal table, four invalid integers, no-mint conservation, ACLs,
+terminal/horizon and restore/replay expectations precede any candidate output.
+The immutable independently authored external table is a supported-profile
+prerequisite, not proof of understanding natural-language intent. One inert API
+red is authored in `test_extension_generation.py` but **has not run**. No
+implementation before observed red. Second variation waits on the first loop.
+
+Root has NOT released setup/check/capture/service/browser/Docker/provider work.
+Acknowledged normal frozen owner-cache uv hardlink reuse into a DISTINCT own
+environment is not a grant. T14's268,435,456-byte production window has priority;
+T17 initial setup/check forecast remains225–245MB including the unchanged shared
+134,217,728-byte floor and bounded output. No cache consumer, dependency install,
+snapshot, check, service or browser has started. No paid/held-out/publication work.
+Continue source review if useful, then await root's concrete resource release.
+Port18129 remains reserved for the later owned disposable lifecycle only.
+
+Preparation/tool truncations, the corrected metadata-send argument, blocked
+official documentation and rejected documentation patch remain attributed in the
+T17 plan/transcript; none is product evidence. Current accepted contracts remain
+DB10/export11/library7/capture1/comparison1/tool2.0/direct1.0. T17 is UNACCEPTED.
+Preserve all prior history/maps/stash/custody and unread root `pbcopy`; inherited
+ignored helpers are data only. Historical root checkpoint follows unchanged.
+
 # Root coordination — T16 independently verified; frontier advances (2026-11-10)
 
 Root has received sole shared-checkout writing back and independently verified

@@ -24,6 +24,7 @@ from .extensions import (
     Extensions,
 )
 from .llm import LanguageModels
+from .finite_contract import FiniteArtifactCheck, FiniteContract, ReviewedFiniteContract
 from .research import Research, RunSummary
 from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, get_environment
 from .templates import templates
@@ -72,6 +73,44 @@ async def extension_service(request: Request) -> Extensions:
 
 
 ExtensionsDep = Annotated[Extensions, Depends(extension_service)]
+
+
+@router.post("/api/extensions/contracts", status_code=201)
+async def freeze_finite_contract(
+    body: FiniteContract, *, extensions: ExtensionsDep
+) -> ReviewedFiniteContract:
+    return await asyncio.to_thread(extensions.freeze_contract, body)
+
+
+@router.get("/api/extensions/contracts")
+async def finite_contracts(*, extensions: ExtensionsDep) -> list[ReviewedFiniteContract]:
+    return await asyncio.to_thread(extensions.contracts)
+
+
+@router.get("/api/extensions/contracts/{key}")
+async def finite_contract(key: str, *, extensions: ExtensionsDep) -> ReviewedFiniteContract:
+    return await asyncio.to_thread(extensions.contract, key)
+
+
+class CheckFiniteArtifact(Strict):
+    review_id: str = Field(pattern=r"^[a-f0-9]{16}$")
+
+
+@router.post("/api/extensions/contracts/{key}/checks", status_code=201)
+async def check_finite_artifact(
+    key: str, body: CheckFiniteArtifact, *, extensions: ExtensionsDep
+) -> FiniteArtifactCheck:
+    return await asyncio.to_thread(extensions.check_finite_artifact, key, body.review_id)
+
+
+@router.get("/api/extensions/finite-checks")
+async def finite_checks(*, extensions: ExtensionsDep) -> list[FiniteArtifactCheck]:
+    return await asyncio.to_thread(extensions.finite_checks)
+
+
+@router.get("/api/extensions/finite-checks/{key}")
+async def finite_check(key: str, *, extensions: ExtensionsDep) -> FiniteArtifactCheck:
+    return await asyncio.to_thread(extensions.finite_check, key)
 
 
 @router.get("/api/extensions/runtime")

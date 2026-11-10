@@ -27,6 +27,9 @@ from .extension_profile import (
     validate_package,
 )
 from .extension_sandbox import WORKER, execute
+from .finite_contract import (
+    FiniteArtifactCheck, FiniteContract, ReviewedFiniteContract, contract_inputs, contract_outputs,
+)
 
 CASES = Path(__file__).with_name("extension_qualification.json")
 
@@ -118,6 +121,106 @@ class Extensions:
         )
         self.lock = RLock()
         self.runtime = ExtensionRuntime()
+
+    def freeze_contract(self, specification: FiniteContract) -> ReviewedFiniteContract:
+        with self.lock:
+            record = ReviewedFiniteContract(
+                id=uid(), created=now(), specification=specification.model_copy(deep=True),
+                sha256=digest(specification.model_dump()),
+            )
+            path = self.root / "contracts" / f"{record.id}.json"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            temporary = path.with_suffix(".tmp")
+            try:
+                with temporary.open("x") as stream:
+                    stream.write(record.model_dump_json())
+                temporary.replace(path)
+            finally:
+                temporary.unlink(missing_ok=True)
+            return record
+
+    def contract(self, key: str) -> ReviewedFiniteContract:
+        if not re.fullmatch(r"[a-f0-9]{16}", key):
+            raise NoResultFound()
+        try:
+            record = ReviewedFiniteContract.model_validate_json(
+                (self.root / "contracts" / f"{key}.json").read_text()
+            )
+        except FileNotFoundError:
+            raise NoResultFound() from None
+        if record.id != key or record.sha256 != digest(record.specification.model_dump()):
+            raise ValueError("Invalid independent finite contract identity or content hash")
+        return record
+
+    def contracts(self) -> list[ReviewedFiniteContract]:
+        with self.lock:
+            return sorted(
+                (self.contract(p.stem) for p in (self.root / "contracts").glob("*.json")),
+                key=lambda r: r.created, reverse=True,
+            )
+
+    def check_finite_artifact(self, key: str, review_id: str) -> FiniteArtifactCheck:
+        with self.lock:
+            contract, review = self.contract(key), self.get(review_id)
+            inputs, oracle = contract_inputs(contract.specification), contract_outputs(
+                contract.specification
+            )
+            result: dict = {"code": "blocked"}
+            detail = "Candidate validation and current containment qualification are required."
+            try:
+                self.require_qualified()
+                if review.admission != "needs_world_review":
+                    raise ValueError("Blocked or rejected candidate cannot pass independent checks")
+                result = execute(review.candidate.source, inputs)
+                if result["code"] in {"worker_failed", "worker_unavailable"} or not result["cleaned"]:
+                    self.runtime = ExtensionRuntime(status="failed", detail="Finite worker failed.")
+                detail = (
+                    "External exhaustive table and four invalid encodings checked twice from fresh "
+                    "instances. This does not establish natural-language understanding or admit a "
+                    "World. Candidate prose/examples/self-tests cannot change this oracle."
+                )
+            except ValueError as error:
+                detail = str(error)
+            observed = result.get("outputs", [])
+            record = FiniteArtifactCheck(
+                id=uid(), created=now(), contract=contract, review_id=review.id,
+                candidate_sha256=review.candidate_sha256, runtime=self.runtime.model_dump(),
+                code=result["code"], inputs=inputs, expected=oracle, observed=observed,
+                passed=(result["code"] == "ok" and result.get("cleaned", False)
+                        and observed == oracle),
+                wasm_sha256=result.get("wasm_sha256"), detail=detail, sha256="",
+            )
+            record.sha256 = digest(record.model_dump(exclude={"sha256"}))
+            path = self.root / "finite-checks" / f"{record.id}.json"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            temporary = path.with_suffix(".tmp")
+            try:
+                with temporary.open("x") as stream:
+                    stream.write(record.model_dump_json())
+                temporary.replace(path)
+            finally:
+                temporary.unlink(missing_ok=True)
+            return record
+
+    def finite_check(self, key: str) -> FiniteArtifactCheck:
+        if not re.fullmatch(r"[a-f0-9]{16}", key):
+            raise NoResultFound()
+        try:
+            record = FiniteArtifactCheck.model_validate_json(
+                (self.root / "finite-checks" / f"{key}.json").read_text()
+            )
+        except FileNotFoundError:
+            raise NoResultFound() from None
+        if record.id != key or record.sha256 != digest(record.model_dump(exclude={"sha256"})):
+            raise ValueError("Invalid finite artifact check identity or content hash")
+        return record
+
+    def finite_checks(self) -> list[FiniteArtifactCheck]:
+        with self.lock:
+            return sorted(
+                (self.finite_check(p.stem) for p in (self.root / "finite-checks").glob("*.json")),
+                key=lambda r: r.created, reverse=True,
+            )
 
     def get(self, key: str) -> ExtensionReview:
         if not re.fullmatch(r"[a-f0-9]{16}", key):
