@@ -1,4 +1,49 @@
-# T12 implementation complete; UNACCEPTED (2026-11-10)
+# T12 independent integration review — ACCEPTED within DEVELOPMENT (2026-11-10)
+
+Fresh reviewer normally merged exact376b01bce978fc8562ad22cecc9d502b98250df8
+at66b3b4607c9e921b8b6d48a06f6ed2d43b526461, parents
+eb759dec3d78595ba2f0d7ad089b267c95a462bc and376b01bc. Starting ROOT was
+670ab3ee73b025ea0695ce941d219be980819a95; both histories are preserved.
+No descendants/extra checkout/publication. DB12/export13/library8 remains the
+single contract; no provisional T17/T18 source, reset, dependency or provider.
+
+Personal Standards and Spec both PASS after one independently demonstrated P2
+repair. Delivered workflow mail and settled handoffs were omitted by the public
+relationship summary and Interactions view. Actual public HTTP/UI reds preceded
+the minimal two-filter fix; checkpoint19fcb464c56dbc20fd04e38a28cc6d774b695c79
+passes normal hooks/Gitleaks. The HTTP regression,7 affected UI cases, Ruff/ty,
+frontend lint/forced types/isolated build and fresh desktop/light/mobile/dark
+browser cutoff/actor/replay inspection pass. No open implementation finding.
+
+Read [the independent review](docs/research/T12_INTEGRATION_REVIEW.md) and
+[exact42-job receipts](docs/research/T12_INTEGRATION_RECEIPTS.json) for all
+sources/attempts, inherited versus newly executed checks and bounded limits.
+Own additional qualification includes10 literal World/HTTP cases, three actual
+tool/input cases,21 affected frontend units, independently audited fresh current
+contract5runs/22turns/22requests/770 synthetic microdollars, and separate two-life
+native keyless409/reopen/export/replay. Inherited native03 stays inherited;
+implementer native01/02 remain FAILED. Frozen original T01 CURRENT remains
+FAILED exit1/four export-v4 checks/four false terminal flags; no retired BEFORE,
+comparator, reconstructed parity or zero-regression claim.
+
+Own18229/native/browser services and tabs are closed, PIDs reaped, port reuse
+bind succeeds and shared lock is released between jobs. Audit retained31,932,255
+bytes below96MiB; no compaction/removal. Opaque ROOT clipboard payload was never
+read/hashed/copied/captured/changed/deleted; protected stash remains
+f771128ba1c9295262a4073df40cc25647b1370f. The reviewer did not mutate other
+owners' environments/source/processes/caches/evidence. Separately authorized
+T12-owner disposable-dependency cleanup has no active or queued review dependency;
+all independent checks used ROOT's distinct tools. Final closure docs commit
+and tracked-clean/stash/ancestry/port/lock recheck precede explicit final writing
+handback to ROOT. No push, PR/issue/watch or parent-issue closure was performed.
+
+This accepts finite deterministic T12 DEVELOPMENT implementation only. Live/
+paid/held-out/generalization, Docker/non-root production, T17/T18, T20 and the
+whole-product/port8080 gates remain separate and open. ROOT owns the next frontier
+and the single draft PR32. Historical implementer handoffs below are superseded
+by this independent verdict, with their original failures/source limits retained.
+
+# Historical T12 implementation complete; UNACCEPTED (2026-11-10)
 
 Same `t3-190f8b94` / `t3/institutional-workflow`. Qualified code checkpoint
 **5a8b5b78687d25b258b4acd6855a9fb1981c2616** includes normal exact accepted

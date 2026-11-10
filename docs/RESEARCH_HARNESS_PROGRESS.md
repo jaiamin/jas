@@ -1,6 +1,28 @@
 # Research harness implementation progress
 
-T12 implementation complete, UNACCEPTED (2026-11-10): qualified code5a8b5b78,
+T12 independent integration review ACCEPTED for bounded deterministic DEVELOPMENT
+(2026-11-10). Normal exact376b01bc merge66b3b460 preserves ROOT670ab3ee and the
+implementation history. Personal Standards and Spec PASS after independently
+observed interaction omission R1: actual HTTP/UI red→minimal filter repair→green
+at19fcb464c56dbc20fd04e38a28cc6d774b695c79. DB12/export13/library8; no T17/T18
+application source or reset. New literal World/HTTP/privacy/accounting/reopen/
+replay, fresh current-contract5run/22turn qualification, affected static/unit/build,
+independent native and real-API browser checks pass at their exact indexed sources.
+R1's fresh browser verifies0/1/2/3 directed edges at cutoffs6/12/24/30, actor
+inspection and30-turn zero-call replay. See [independent review](research/T12_INTEGRATION_REVIEW.md)
+and [exact attempt receipts](research/T12_INTEGRATION_RECEIPTS.json).
+
+Frozen T01 CURRENT remains FAILED exit1 with four export-v4 failures/four false
+flags; no retired BEFORE/comparator/parity/zero-regression claim. Implementer
+native01/02 remain FAILED; native03 stays inherited alongside the separately
+observed independent native pass. Own18229/services/tabs are closed, port released,
+PIDs reaped and lock released between bounded jobs. No paid/live/held-out/
+external-provider/install/container/publication/issue/watch work. Protected stash and opaque payload
+are preserved. ROOT receives sole tracked writing at final clean closure handback.
+T17/T18/T20 and final competence/production/product gates remain open.
+
+Historical implementer handoff — T12 implementation complete, UNACCEPTED
+(2026-11-10): qualified code5a8b5b78,
 normal exact0527e737 merge atde49947c, DB12/export13/library8. Native03 PASS:
 both deliberate-15 shutdowns with lifespan completion/no worker/listener/reaped
 PIDs; second-lifetime reopen/export equality/zero-request replay and distinct
@@ -1107,7 +1129,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Integrated and accepted after fresh review repairs | `c357a3b`, `4ed18af`, `84867cc`; [report](research/T09_ARTIFACT_WORLD.md) |
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Accepted after fresh Standards/Spec review and T19 integration repairs | No-ff `02879c3`; repair `7aec3f5`; DB8/export9/library5 |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Accepted for documented deterministic scope after independent recovery review | Exact source `4aac5a9`; accepted frontier`8df6c59`; introduced DB9/export10/library6; [review](research/T11_RECOVERY_REVIEW.md) |
-| T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Incomplete/unaccepted; renewed setup passed, backend TDD in progress | `t3/institutional-workflow` at29af3413; first HTTP red retained, individual work/handoff/delegation/mail slices passed; remaining gates open |
+| T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Accepted for bounded deterministic DEVELOPMENT after fresh independent review and R1 repair | Exact376b01bc normally merged66b3b460; repair19fcb464. [Independent review](research/T12_INTEGRATION_REVIEW.md); live/held-out/production/final-product gates remain open. No issue closure. |
 | T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Accepted for deterministic scope; live competence unassessed | Exact no-ff `5af3fbb`; scoping repair `5e86dfa`; [report](research/T13_INTEGRATION_REVIEW.md) |
 | T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Accepted locally: finite deterministic DEVELOPMENT | Exact `b304029e` merge + `23de5e48` repairs; independent recovery closure PASS; historical R1 FAIL retained; DB11/export12/library7; no paid/live/held-out claim or publication |
 | T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Integrated and accepted after fresh review repair | `fa1c825`, `6e1a7c8`; [report](research/T15_BASELINES.md) |
