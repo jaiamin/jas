@@ -337,15 +337,9 @@ class Assistants:
         self, cutoffs: dict[str, int], snapshot: dict | None, key: str, lens: LensKey | None
     ) -> dict:
         comparisons = (
-            snapshot["comparisons"]
-            if snapshot
-            else self.research.capture_comparisons(cutoffs)
+            snapshot["comparisons"] if snapshot else self.research.capture_comparisons(cutoffs)
         )
-        exposure = (
-            snapshot["exposure"]
-            if snapshot
-            else self.research.capture_exposure(cutoffs)
-        )
+        exposure = snapshot["exposure"] if snapshot else self.research.capture_exposure(cutoffs)
         index = (
             snapshot["evidence_index"]
             if snapshot
@@ -842,9 +836,8 @@ class Assistants:
                             else {}
                         ),
                         **(
-                            {"coordination_outcome": state.get("outcome")}
-                            if design.environment
-                            in {"distributed_coordination", "reliance_commitments"}
+                            {"workflow_outcome": state.get("outcome")}
+                            if design.environment == "institutional_workflow"
                             else {}
                         ),
                         **(
@@ -871,7 +864,32 @@ class Assistants:
                             "artifact_workspace",
                             "distributed_coordination",
                             "reliance_commitments",
+                            "institutional_workflow",
                         }
+                        else {}
+                    ),
+                    **(
+                        {
+                            "workflow_state": {
+                                **{
+                                    name: state[name]
+                                    for name in (
+                                        "logical_time",
+                                        "phase_actors",
+                                        "withdrawn",
+                                        "resource_stock",
+                                        "resource_spent",
+                                        "work",
+                                        "work_history",
+                                        "read_grants",
+                                        "pending_deliveries",
+                                        "outcome",
+                                    )
+                                },
+                                "pending_proposals": len(state["pending_actions"]),
+                            }
+                        }
+                        if design.environment == "institutional_workflow"
                         else {}
                     ),
                     **(

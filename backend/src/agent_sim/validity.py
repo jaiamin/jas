@@ -37,7 +37,10 @@ CAPABILITIES = {
     "institutional_workflow": {
         "versioned_artifacts": "Owned work appends authorized immutable artifact versions.",
         "finite_stock": "Work starts atomically consume their declared shared material cost.",
-        "task_dependencies": "Work starts require accepted prerequisite handoffs.",
+        "task_dependencies": "Exclusive claims/delegation, delayed artifact work and selected "
+        "recipient acceptance enforce prerequisite handoffs; prose cannot edit procedures.",
+        "messaging": "Explicit sender/recipient routes deliver mail after declared logical "
+        "delay; no ambient broadcast or synthetic signals.",
     },
     "reliance_commitments": {
         "versioned_artifacts": "Actor-authorized artifacts and voluntary read-access entrusting.",
@@ -176,6 +179,7 @@ class Requirement(Strict):
 def capabilities(environment: str) -> dict[str, str]:
     available = {**COMMON, **CAPABILITIES[environment]}
     if environment in {
+        "institutional_workflow",
         "artifact_workspace",
         "sealed_relay",
         "distributed_coordination",
@@ -183,7 +187,12 @@ def capabilities(environment: str) -> dict[str, str]:
     }:
         for key in (
             ("signal_disclosure",)
-            if environment in {"distributed_coordination", "reliance_commitments"}
+            if environment
+            in {
+                "institutional_workflow",
+                "distributed_coordination",
+                "reliance_commitments",
+            }
             else ("messaging", "signal_disclosure")
         ):
             available.pop(key)

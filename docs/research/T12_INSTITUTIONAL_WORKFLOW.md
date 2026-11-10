@@ -1,6 +1,76 @@
 # T12: institutional workflow with atomic work and resource effects
 
-## Current boundary: execution HOLD; merge source resolved, unverified
+## Current boundary: exact accepted merge complete; backend TDD released
+
+HEAD **20ed804a83c24c156d531a88d52ea71cdd12f34f** normally merges exact accepted
+**e76ef124e01274f9b8ddccfa343c51351149c0ee** with normal Gitleaks PASS. No
+provisional T17. Combined **DB12/export13/library8** is now the sole contract;
+both schema11 intermediates/library7 reject explicitly. Merge Ruff and ty pass;
+source-qualified World regression job passes30/deselects6, not a full suite.
+
+Renewed concrete release is backend only: shared flock/floor134,217,728 plus full
+forecast; jobs at most16MiB, own retained outputs at most64MiB. No grouped
+unknown-size SQLite jobs. Bytecode off and indirect tracked/protected/symlink/
+descendant capture guard always active. Only closed own output compaction with
+exact independently verified restoration maps, additional peak at most8MiB.
+Frontend/browser/runtime/new setup/providers/paid/live/held-out remain held.
+
+The next literal exposure oracle is fixed before its implementation: in five
+phases/30 direct requests, Alder claims at0, starts intake at1, hands v2 to Cedar
+at3, Cedar accepts at4; Elm sends Fern mail at0/delay2. Cedar must have exactly
+one recipient-authorized handoff opportunity confirmed in its actual next input;
+only Alder/Cedar are eligible. Alder's performed content and Fern's delivered mail
+must resolve to real request receipts, exclude the sealed marker, replay exactly
+30 turns with zero calls and preserve usage. `workflow-exposure-red` observed1
+failure because Cedar had zero handoff opportunities; source stable,1,182,955
+incremental bytes within4MiB. Repair only after that RED.
+
+ROOT historical raw/custody/maps are retired after user-authorized compact report
+and deletion. ROOT explicitly retired the inherited historical BEFORE→AFTER raw
+parity/comparator requirement; this is a policy retirement, never a passing
+comparison. Exact published policy fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd was
+read from committed Git source and is the next normal merge target. No surviving
+reference is authorized and none may be searched for or reconstructed. Own T12
+raw attempts/source objects/verified archives/maps/environment remain. Preserve
+frozen T01 files/scores unchanged; record actual CURRENT exit/checks and fresh
+independently literal5-run/22-turn/22-request current-contract qualification.
+The inherited parity criterion below is superseded by this replacement, not
+silently marked passed. Frontend/live/held-out gates remain open and held.
+
+Observed backend slices after merge: work/handoff/mail input provenance red→green;
+compacted and unknown pure-read input negatives each pass; cutoff lens red→first
+repair failure (mail counters)→green; copied sequential probe/discovery red→green.
+Pause/repeated-start/reopening, zero-send budget denial and killed-process restart
+each pass. Every attempt source-stable within forecast, no full-suite claim.
+
+## Historical boundary: execution HOLD; merge source resolved, unverified
+
+Next DEVELOPMENT research oracle (fixed before implementation): the two-phase
+tracer has12 turns, intakev2/batch17 due3 still in_progress,19 writes remaining,
+materials4/spent3,0 accepted and3 unfinished items. A read-only behavior lens must
+retain the cutoff's full work/artifact state and report exact calculations for
+remaining4,spent3,accepted0,unfinished3,writes1. Financial utility and solo artifact
+success remain unavailable. Reanalysis in the communication lens keeps identical
+facts/hash/cutoff even after later run progress; analysis uses Sol, decisions Luna,
+and source evidence/participant usage do not change because of analysis.
+
+Next copied-probe/discovery oracle: with sequential timing on a pristine source,
+eight hypothetical steps are Alder claim, five waits, Alder start, Birch wait.
+The copy reaches logical8 with intake ready/due8, materials4/spent3 and v2. The
+real source remains turn0/materials7/v1, with zero participant calls. The probe
+must label its absent terminal workflow outcome separately from solo submission
+or financial balances. Discovery must not advertise scalar synthetic-signal
+disclosure for this ACL/artifact World. Three Sol analysis requests are accounted
+independently from the unchanged participant ledger. No source cutoff is widened.
+
+Lifecycle DEVELOPMENT oracle: hold actual request12 of the phased tracer in
+flight, repeat start controls, then pause. Exactly12 responses settle12 turns;
+the barrier appends intakev2 once, debits3 once, leaves4/19 writes and logical2/
+due3. Pause/reopening the same database/replay issue zero extra calls and preserve
+the complete checkpoint, evidence prefix and420 synthetic microdollars. A later
+explicit single step alone sends request13, leaving the sealed-phase stock/time
+unchanged. A separate budget1-microdollar API run sends zero calls, retains zero
+activations' settled work and the exact initial World; no fallback is allowed.
 
 Root's measured continuity update reports shared space below134,217,728 and
 explicitly holds **all checks/captures/hooks/commits/setup/compaction**. Only

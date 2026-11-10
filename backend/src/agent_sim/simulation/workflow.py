@@ -236,6 +236,40 @@ class InstitutionalWorkflow(ArtifactWorkspace):
             forecast=(type(None), ...),
         )
 
+    def exposure_paths(self, event: dict, observation: Observation) -> list[list[str | int]]:
+        row = event["data"]
+        paths: list[list[str | int]] = []
+        if observation["last_result"] == row:
+            paths.append(["last_result"])
+        if event["kind"] in {"message_queued", "message_delivered"}:
+            field = "outbox" if event["kind"] == "message_queued" else "inbox"
+            paths.extend(
+                [field, i] for i, mail in enumerate(observation[field]) if mail["id"] == row["id"]
+            )
+        if event["kind"] in {"perform_work", "read_artifact"}:
+            kind = "write_artifact" if event["kind"] == "perform_work" else "read_artifact"
+            paths.extend(
+                ["artifact_history", i]
+                for i, item in enumerate(observation["artifact_history"])
+                if item["kind"] == kind
+                and all(item.get(k) == row.get(k) for k in ("operation", "round", "actor"))
+            )
+        for i, work in enumerate(observation["workflow"]["work"]):
+            if work["key"] != row.get("request", {}).get("work", row.get("work")):
+                continue
+            root: list[str | int] = ["workflow", "work", i]
+            if event["kind"] in {"handoff_work", "accept_handoff"}:
+                if work["handoff"] == row["handoff"]:
+                    paths.append([*root, "handoff"])
+            elif event["kind"] in {"claim_work", "delegate_work"}:
+                owner = row.get("recipient", event["actor"])
+                if work["owner"] == owner:
+                    paths.append([*root, "owner"])
+            elif event["kind"] == "work_ready":
+                if work.get("ready_at") == row["logical_time"]:
+                    paths.append([*root, "ready_at"])
+        return paths
+
     def validate_work(self, actor: str, decision: Decision) -> None:
         action = decision.action
         if isinstance(action, SendMessage):
@@ -427,6 +461,14 @@ class InstitutionalWorkflow(ArtifactWorkspace):
                 Event(
                     kind=row["kind"],
                     actor=participant,
+                    target=(
+                        action.recipient
+                        if row["kind"] in {"handoff_work", "delegate_work"}
+                        and isinstance(action, HandoffWork | DelegateWork)
+                        else s["work"][action.work]["owner"]
+                        if isinstance(action, AcceptHandoff) and row["kind"] == "accept_handoff"
+                        else None
+                    ),
                     visibility="private",
                     text=f"Workflow operation {row['kind']} settled.",
                     data=row,

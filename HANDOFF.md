@@ -1,4 +1,43 @@
-# T12 execution HOLD; accepted-frontier merge source resolved (2026-11-10)
+# T12 active backend release; exact accepted merge complete (2026-11-10)
+
+Branch `t3/institutional-workflow`, HEAD **20ed804a83c24c156d531a88d52ea71cdd12f34f**,
+normally merges exact accepted **e76ef124e01274f9b8ddccfa343c51351149c0ee**.
+Normal Gitleaks passed. Combined contract **DB12/export13/library8** rejects both
+incompatible schema11 intermediates and library7; no provisional T17 merged.
+Merge Ruff/ty passed; bounded World regressions passed30, deselected6. Those are
+source-attributed affected checks, not full backend qualification or acceptance.
+
+Root released bounded backend TDD/static/types: shared checks.lock, floor134,217,728
+plus projected peak, each job at most16MiB and own retained outputs at most64MiB.
+No grouped unknown-size SQLite jobs. Bytecode off; every indirect source capture
+uses tracked-only/protected/symlink/descendant preflight and the invocation wrapper.
+Only CLOSED own outputs may be losslessly compacted with independently verified
+maps and at most8MiB additional peak. Frontend/browser/runtime/install/provider/
+paid/live/held-out stages remain held;18130 is reserved only. No descendants.
+
+New HTTP work/handoff/mail receipt slice observed RED then GREEN, including
+30-turn zero-call replay. Separate compacted-read and unknown-input negatives
+pass. Cutoff workflow lens observed RED, first repair failed on missing mail
+counters (retained), then GREEN; exact materials4/spent3/accepted0/unfinished3,
+immutable source and frozen reanalysis after later progress. Discovery/sequential
+copied probe observed RED then GREEN. Pause/repeated-start/reopen, zero-send
+budget denial and actual killed-process restart checks pass individually.
+Ruff style failures are retained; final static/types/regressions remain open.
+
+ROOT explicitly retired historical BEFORE→AFTER parity and any comparator needing
+deleted BEFORE. Its published policy at exact accepted **fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd**
+was read from committed Git source. Next checkpoint normally merges that exact
+target. Replacement gate preserves frozen T01 bytes/scores, records its actual
+CURRENT result, and freezes fresh full current-contract5-run/22-turn/22-request
+literal oracles before outputs. No historical parity or zero-regression claim.
+No historical reference search or reconstruction. T12 remains incomplete.
+
+User retired ROOT historical raw evidence/custody/maps after ROOT's compact report;
+do not restore or claim them retained. Own T12 attempts, source objects, environment,
+archives and restoration maps remain preserved. Earlier failed overrun126/pytest1,
+91 pass/two failures remains FAILED; compaction03 floor125 remains rejected.
+
+# Historical T12 execution HOLD; accepted-frontier merge source resolved (2026-11-10)
 
 Own coherent checkpoint **1aa7798a11aed36ef5f88e197dc6faec93ca49e8** was committed
 with the normal Gitleaks hook (no findings). Branch `t3/institutional-workflow`

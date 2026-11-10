@@ -1,5 +1,13 @@
 # Research harness implementation progress
 
+T12 current implementer boundary (2026-11-10): normal exact accepted e76ef124 merge
+is **20ed804a83c24c156d531a88d52ea71cdd12f34f**, normal Gitleaks PASS, combined
+DB12/export13/library8. Ruff/ty and bounded World30-pass/6-deselected checks passed.
+New HTTP handoff exposure test observed RED; backend TDD continues under shared
+flock/floor134,217,728 plus projected peak,16MiB/job and64MiB own retained cap.
+Frontend/browser/runtime/providers remain held; no provisional T17. ROOT historical
+raw/custody/maps are user-retired; own T12 evidence remains. T12 incomplete/unaccepted.
+
 Status: **active**. The user invoked `implement-spec` after reviewing the
 20-ticket breakdown. This authorizes implementation of that graph; previously
 accepted product and testing-seam decisions are not reopened.

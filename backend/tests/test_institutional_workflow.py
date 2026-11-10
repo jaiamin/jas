@@ -3,6 +3,11 @@
 import asyncio
 import itertools
 import json
+import os
+import subprocess
+import sys
+import time
+from threading import Event
 
 import pytest
 from agent_sim.api import create_app
@@ -14,6 +19,19 @@ from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
 from backend.tests.test_artifact_workspace import decision, save, wait_finished
+from backend.tests.test_claim_support import (
+    claim_client as claim_client,
+)
+from backend.tests.test_claim_support import (
+    finish as finish_analysis,
+)
+from backend.tests.test_claim_support import (
+    run as run_control,
+)
+from backend.tests.test_claim_support import (
+    source as participant_source,
+)
+from backend.tests.test_researcher_tools import scripted
 
 ACTORS = ["alder", "birch", "cedar", "dune", "elm", "fern"]
 
@@ -961,3 +979,560 @@ def test_workflow_sources_rebind_all_six_roles_pin_revisions_and_reject_prior_co
         )
         assert rejected.status_code == 422
         assert client.get("/api/settings").json()["usage"]["requests"] == 0
+
+
+def test_work_handoff_and_delayed_mail_have_recipient_scoped_actual_input_receipts(
+    tmp_path, monkeypatch
+):
+    selected = {
+        (0, "alder"): {"kind": "claim_work", "work": "intake"},
+        (0, "elm"): {"kind": "send_message", "recipient": "fern", "text": "optional audit"},
+        (1, "alder"): {
+            "kind": "perform_work",
+            "work": "intake",
+            "expected_version": 1,
+            "content": {"batch": 17},
+            "sources": [],
+        },
+        (3, "alder"): {
+            "kind": "handoff_work",
+            "work": "intake",
+            "recipient": "cedar",
+            "version": 2,
+        },
+        (4, "cedar"): {"kind": "accept_handoff", "work": "intake", "version": 2},
+    }
+
+    async def respond(messages, info):
+        observation = json.loads(messages[-1].parts[0].content)
+        action = selected.get(
+            (observation["logical_time"], observation["you"]["key"]), {"kind": "wait_workflow"}
+        )
+        return ModelResponse(
+            parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+            usage=RequestUsage(input_tokens=100, output_tokens=50),
+        )
+
+    value = protocol()
+    value["rounds"] = 5
+    app = create_app(f"sqlite:///{tmp_path}/receipts.sqlite3", static_dir=tmp_path / "static")
+    monkeypatch.setattr(app.state.models, "model", lambda _: FunctionModel(function=respond))
+    with TestClient(app, base_url="http://localhost") as client:
+        _, rid = save(client, value)
+        client.post(f"/api/runs/{rid}/control", json={"action": "start"})
+        run = wait_finished(client, rid)
+        assert run["summary"]["status"] == "complete", run
+        assert run["state"]["work"]["intake"]["status"] == "accepted"
+        exposure = client.get(f"/api/runs/{rid}/exposure").json()
+        rows = exposure["opportunities"]
+        received = [r for r in rows if r["kind"] == "handoff_work" and r["participant"] == "cedar"]
+        assert len(received) == 1 and received[0]["included"] is True
+        assert {r["participant"] for r in rows if r["kind"] == "handoff_work"} == {"alder", "cedar"}
+        starts = [r for r in rows if r["kind"] == "perform_work"]
+        assert len(starts) == 1 and starts[0]["included"] is True
+        mail = [r for r in rows if r["kind"] == "message_delivered" and r["participant"] == "fern"]
+        assert len(mail) == 1 and mail[0]["included"] is True
+        for row in [received[0], starts[0], mail[0]]:
+            assert row["inputs"]
+            for receipt in row["inputs"]:
+                request = client.get(receipt["source"]["href"]).json()["request"]
+                assert "sealed-development-431" not in json.dumps(request)
+        before = client.get("/api/settings").json()["usage"]
+        replay = client.post(f"/api/runs/{rid}/verify")
+        assert replay.status_code == 200, replay.text
+        assert replay.json()["verified_turns"] == 30 and replay.json()["model_requests"] == 0
+        assert client.get("/api/settings").json()["usage"] == before
+
+
+@pytest.mark.parametrize("delivery", ["compacted", "unknown"])
+def test_workflow_tool_read_needs_bounded_content_and_a_provider_receipt(
+    tmp_path, monkeypatch, delivery
+):
+    prompts = []
+
+    async def respond(messages, info):
+        payload = json.loads(messages[-1].parts[0].content)
+        prompts.append(payload)
+        if len(prompts) == 2 and delivery == "unknown":
+            raise TimeoutError("DEVELOPMENT missing workflow input receipt")
+        read = not payload["operations"]
+        return ModelResponse(
+            parts=[
+                ToolCallPart(
+                    info.output_tools[0].name,
+                    {
+                        "operation": "read_artifact" if read else "decide",
+                        "read": {"kind": "read_artifact", "artifact": "intake_record", "version": 1}
+                        if read
+                        else None,
+                        "decision": None if read else decision({"kind": "wait_workflow"}),
+                    },
+                )
+            ],
+            usage=RequestUsage(input_tokens=100, output_tokens=50),
+        )
+
+    value = protocol()
+    value["conditions"][0]["harness"] = {
+        "kind": "tool_using",
+        "tools": ["read_artifact"],
+        "max_requests": 2,
+        "max_tool_operations": 1,
+        "max_context_chars": 4000,
+    }
+    if delivery == "compacted":
+        value["conditions"][0]["parameters"]["artifacts"]["objects"][0]["content"].update(
+            {f"detail_{i}": "x" * 900 for i in range(5)}
+        )
+    app = create_app(f"sqlite:///{tmp_path}/delivery.sqlite3", static_dir=tmp_path / "static")
+    monkeypatch.setattr(app.state.models, "model", lambda _: FunctionModel(function=respond))
+    with TestClient(app, base_url="http://localhost") as client:
+        _, rid = save(client, value)
+        initial = client.get(f"/api/runs/{rid}").json()["state"]
+        client.post(f"/api/runs/{rid}/control", json={"action": "step"})
+        run = wait_finished(client, rid)
+        assert len(prompts) == len(run["requests"]) == 2
+        assert run["summary"]["status"] == ("failed" if delivery == "unknown" else "paused")
+        assert run["state"]["artifacts"] == initial["artifacts"]
+        assert (
+            run["state"]["resource_stock"],
+            run["state"]["resource_spent"],
+            run["state"]["logical_time"],
+        ) == (7, 0, 0)
+        exposure = client.get(f"/api/runs/{rid}/exposure").json()
+        reads = [row for row in exposure["opportunities"] if row["kind"] == "read_artifact"]
+        assert len(reads) == 1
+        assert reads[0]["included"] is (None if delivery == "unknown" else False)
+        if delivery == "compacted":
+            assert reads[0]["inputs"] == []
+            assert "receipt" in prompts[1]["operations"][0]
+        else:
+            assert len(reads[0]["inputs"]) == 1
+            assert reads[0]["inputs"][0]["delivery"] == "unknown"
+            assert run["requests"][1]["status"] == "unknown"
+        assert "sealed-development-431" not in json.dumps(prompts)
+        before = client.get("/api/settings").json()["usage"]
+        verified = client.post(f"/api/runs/{rid}/verify").json()
+        assert verified["verified_reads"] == 1 and verified["model_requests"] == 0
+        assert client.get("/api/settings").json()["usage"] == before
+
+
+def test_research_lens_freezes_actual_work_materials_and_unfinished_outcomes(claim_client):
+    client, controls, seen = claim_client
+    value = protocol()
+    controls["artifact_actions"] = iter(
+        [
+            {"kind": "claim_work", "work": "intake"},
+            *[{"kind": "wait_workflow"}] * 5,
+            {
+                "kind": "perform_work",
+                "work": "intake",
+                "expected_version": 1,
+                "content": {"batch": 17},
+                "sources": [],
+            },
+            *[{"kind": "wait_workflow"}] * 12,
+        ]
+    )
+    study, rid = save(client, value)
+    for _ in range(12):
+        assert run_control(client, rid, "step")["status"] == "paused"
+    controls["claims"] = lambda _prompt, selected: [
+        {
+            "kind": "calculation",
+            "text": label,
+            "calculation_id": f"run:{selected}:{metric}",
+            "value": number,
+            "scope": "captured_run",
+        }
+        for label, metric, number in [
+            ("Four material units remain", "workflow_materials_remaining", 4),
+            ("Three material units were spent", "workflow_materials_spent", 3),
+            ("Zero handoffs accepted", "workflow_accepted", 0),
+            ("Three work items unfinished", "workflow_unfinished", 3),
+            ("One immutable write retained", "artifact_writes", 1),
+            ("No financial utility", "total_utility", 0),
+            ("No solo submission success", "artifact_success", 0),
+        ]
+    ]
+    before = participant_source(client.get(f"/api/studies/{study['id']}/export").json())
+    first = finish_analysis(
+        client,
+        client.post(
+            "/api/chats",
+            json={
+                "question": "Inspect actual work, materials and unfinished handoffs.",
+                "context": f"run:{rid}",
+            },
+        ),
+    )
+    assert first["status"] == "complete", first
+    lens = first["output"]["lens"]
+    fact = lens["facts"][0]
+    assert fact["through_turn"] == 12
+    assert fact["workflow_state"]["resource_stock"] == 4
+    assert fact["workflow_state"]["resource_spent"] == 3
+    assert fact["workflow_state"]["logical_time"] == 2
+    assert fact["workflow_state"]["work"]["intake"]["status"] == "in_progress"
+    assert fact["workflow_state"]["work"]["intake"]["due_at"] == 3
+    assert fact["artifact_state"]["writes_remaining"] == 19
+    assert fact["artifact_state"]["artifacts"]["intake_record"]["versions"][1]["content"] == {
+        "batch": 17
+    }
+    assert [c["status"] for c in first["output"]["support"]["claims"]] == [
+        "checked",
+        "checked",
+        "checked",
+        "checked",
+        "checked",
+        "unavailable",
+        "unavailable",
+    ]
+    account = lens["account"][0]["text"]
+    assert "materials remaining 4" in account and "spent 3" in account
+    assert "accepted 0/3" in account and "unfinished 3" in account
+    assert participant_source(client.get(f"/api/studies/{study['id']}/export").json()) == before
+    for _ in range(6):
+        assert run_control(client, rid, "step")["status"] == "paused"
+    advanced = participant_source(client.get(f"/api/studies/{study['id']}/export").json())
+    second = finish_analysis(
+        client,
+        client.post(
+            "/api/chats",
+            json={
+                "question": "Reinspect only the original unfinished cutoff.",
+                "context": f"run:{rid}",
+                "chat_id": first["chat_id"],
+                "source_analysis_id": first["id"],
+                "lens": "communication",
+            },
+        ),
+    )
+    assert second["status"] == "complete", second
+    assert second["cutoffs"] == {rid: 12}
+    assert second["output"]["lens"]["facts"] == lens["facts"]
+    assert second["output"]["lens"]["inputs_sha256"] == lens["inputs_sha256"]
+    assert participant_source(client.get(f"/api/studies/{study['id']}/export").json()) == advanced
+    record = client.get(f"/api/runs/{rid}").json()
+    assert {r["model"] for r in record["requests"] if r["purpose"] == "decision"} == {
+        "openai:gpt-6-luna"
+    }
+    assert {r["model"] for r in record["requests"] if r["purpose"] == "analysis"} == {
+        "openai:gpt-6.1-sol"
+    }
+    assert any("workflow_state" in p["index"]["runs"][0] for p in seen if "index" in p)
+
+
+def test_researcher_discovers_and_probes_sequential_work_without_changing_source(
+    claim_client, monkeypatch
+):
+    client, _, _ = claim_client
+    value = protocol()
+    value["conditions"][0]["parameters"]["workflow"]["timing"] = "sequential"
+    study, rid = save(client, value)
+    before = participant_source(client.get(f"/api/studies/{study['id']}/export").json())
+
+    def respond(prompt):
+        operations = prompt["research"]["operations"]
+        if not operations:
+            return {
+                "answer": None,
+                "requests": [
+                    {"kind": "capabilities", "environment": "institutional_workflow"},
+                ],
+            }
+        if len(operations) == 1:
+            return {
+                "answer": None,
+                "requests": [
+                    {
+                        "kind": "probe",
+                        "source": {"kind": "run", "run_id": rid, "turn": 0},
+                        "steps": [
+                            {"actor": "alder", "action": {"kind": "claim_work", "work": "intake"}},
+                            *[
+                                {"actor": a, "action": {"kind": "wait_workflow"}}
+                                for a in ACTORS[1:]
+                            ],
+                            {
+                                "actor": "alder",
+                                "action": {
+                                    "kind": "perform_work",
+                                    "work": "intake",
+                                    "expected_version": 1,
+                                    "content": {"batch": 17},
+                                    "sources": [],
+                                },
+                            },
+                            {"actor": "birch", "action": {"kind": "wait_workflow"}},
+                        ],
+                    }
+                ],
+            }
+        return {
+            "requests": [],
+            "answer": {
+                "answer": "The copied actions spent three units; the source is unchanged.",
+                "citations": [],
+                "caveats": ["Hypothetical mechanics, not participant behavior."],
+            },
+        }
+
+    scripted(client, monkeypatch, respond)
+    final = finish_analysis(
+        client,
+        client.post(
+            "/api/chats",
+            json={
+                "question": "Inspect and probe the declared work mechanics on a copy.",
+                "context": f"run:{rid}",
+            },
+        ),
+    )
+    assert final["status"] == "complete", final
+    operations = final["output"]["research"]["operations"]
+    assert [o["status"] for o in operations] == ["complete", "complete"]
+    capabilities = operations[0]["data"]["environments"][0]["capabilities"]
+    assert {
+        "versioned_artifacts",
+        "finite_stock",
+        "task_dependencies",
+        "messaging",
+    } <= capabilities.keys()
+    assert "signal_disclosure" not in capabilities
+    assert "artifact_verification" not in capabilities
+    copied = operations[1]["data"]
+    assert copied["hypothetical"] is True and copied["participant_calls"] == 0
+    assert len(copied["steps"]) == 8
+    observed = copied["next_observation"]
+    assert observed["logical_time"] == 8
+    assert (observed["workflow"]["resource_stock"], observed["workflow"]["resource_spent"]) == (
+        4,
+        3,
+    )
+    intake = next(w for w in observed["workflow"]["work"] if w["key"] == "intake")
+    assert intake["status"] == "ready" and intake["due_at"] == 8
+    assert intake["artifact_version"] == 2
+    assert copied["outcome"]["workflow_outcome"] is None
+    assert copied["outcome"]["balances"] is None
+    assert participant_source(client.get(f"/api/studies/{study['id']}/export").json()) == before
+    assert client.get(f"/api/runs/{rid}").json()["summary"]["turn"] == 0
+    assert final["usage"]["requests"] == 3
+    assert client.post(f"/api/runs/{rid}/verify").json()["model_requests"] == 0
+
+
+def test_pause_duplicate_controls_and_restart_keep_one_atomic_work_settlement(
+    tmp_path, monkeypatch
+):
+    entered, release = Event(), Event()
+    calls = 0
+
+    async def respond(messages, info):
+        nonlocal calls
+        calls += 1
+        if calls == 12:
+            entered.set()
+            assert await asyncio.to_thread(release.wait, 5)
+        observed = json.loads(messages[-1].parts[0].content)
+        selected = {
+            (0, "alder"): {"kind": "claim_work", "work": "intake"},
+            (1, "alder"): {
+                "kind": "perform_work",
+                "work": "intake",
+                "expected_version": 1,
+                "content": {"batch": 17},
+                "sources": [],
+            },
+        }
+        action = selected.get(
+            (observed["logical_time"], observed["you"]["key"]), {"kind": "wait_workflow"}
+        )
+        return ModelResponse(
+            parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+            usage=RequestUsage(input_tokens=100, output_tokens=50),
+        )
+
+    database = f"sqlite:///{tmp_path}/pause.sqlite3"
+    app = create_app(database, static_dir=tmp_path / "static")
+    monkeypatch.setattr(app.state.models, "model", lambda _: FunctionModel(function=respond))
+    try:
+        with TestClient(app, base_url="http://localhost") as client:
+            _, rid = save(client, protocol())
+            assert (
+                client.post(f"/api/runs/{rid}/control", json={"action": "start"}).status_code == 200
+            )
+            assert entered.wait(5)
+            for _ in range(2):
+                assert (
+                    client.post(f"/api/runs/{rid}/control", json={"action": "start"}).status_code
+                    == 200
+                )
+            assert calls == 12
+            assert (
+                client.post(f"/api/runs/{rid}/control", json={"action": "pause"}).status_code == 200
+            )
+            release.set()
+            paused = wait_finished(client, rid)
+            assert paused["summary"]["status"] == "paused" and paused["summary"]["turn"] == 12
+            state = paused["state"]
+            assert (
+                state["resource_stock"],
+                state["resource_spent"],
+                state["writes_remaining"],
+                state["logical_time"],
+            ) == (4, 3, 19, 2)
+            assert state["work"]["intake"]["due_at"] == 3
+            assert len(state["artifacts"]["intake_record"]["versions"]) == 2
+            prefix = [client.get(f"/api/runs/{rid}/turns/{n}").json() for n in range(13)]
+            usage = client.get("/api/settings").json()["usage"]
+            assert usage["requests"] == 12 and usage["cost_usd"] == 0.000420
+    finally:
+        release.set()
+
+    restarted = create_app(database, static_dir=tmp_path / "static")
+
+    def forbidden(_):
+        pytest.fail("Reopening or replaying cannot sample a participant")
+
+    monkeypatch.setattr(restarted.state.models, "model", forbidden)
+    with TestClient(restarted, base_url="http://localhost") as client:
+        restored = client.get(f"/api/runs/{rid}").json()
+        assert restored["state"] == state and restored["summary"]["status"] == "paused"
+        assert client.post(f"/api/runs/{rid}/verify").json()["verified_turns"] == 12
+        assert calls == 12 and client.get("/api/settings").json()["usage"] == usage
+        monkeypatch.setattr(
+            restarted.state.models, "model", lambda _: FunctionModel(function=respond)
+        )
+        assert run_control(client, rid, "step")["turn"] == 13
+        later = client.get(f"/api/runs/{rid}").json()["state"]
+        assert (later["resource_stock"], later["resource_spent"], later["logical_time"]) == (
+            4,
+            3,
+            2,
+        )
+        assert [client.get(f"/api/runs/{rid}/turns/{n}").json() for n in range(13)] == prefix
+        assert calls == 13
+
+
+def test_workflow_budget_rejection_sends_nothing_and_leaves_world_unchanged(tmp_path, monkeypatch):
+    app = create_app(
+        f"sqlite:///{tmp_path}/budget.sqlite3", budget_usd=0.000001, static_dir=tmp_path / "static"
+    )
+
+    async def forbidden(_messages, _info):
+        pytest.fail("Atomic budget denial must occur before sending a provider request")
+
+    monkeypatch.setattr(app.state.models, "model", lambda _: FunctionModel(function=forbidden))
+    with TestClient(app, base_url="http://localhost") as client:
+        _, rid = save(client, protocol())
+        initial = client.get(f"/api/runs/{rid}").json()["state"]
+        result = run_control(client, rid)
+        assert result["status"] == "failed" and result["turn"] == 0
+        assert "No request was sent" in result["error"]
+        after = client.get(f"/api/runs/{rid}").json()
+        assert after["state"] == initial and after["requests"] == []
+        assert client.get("/api/settings").json()["usage"]["requests"] == 0
+        assert client.post(f"/api/runs/{rid}/verify").json()["model_requests"] == 0
+
+
+def test_process_restart_retains_pending_work_and_unknown_request_without_spending(
+    tmp_path, monkeypatch
+):
+    source = tmp_path / "protocol.json"
+    source.write_text(json.dumps(protocol()))
+    ready = tmp_path / "ready.json"
+    database = f"sqlite:///{tmp_path}/restart.sqlite3"
+    script = r"""
+import asyncio, json, sys, time
+from pathlib import Path
+from agent_sim.api import create_app
+from fastapi.testclient import TestClient
+from pydantic_ai import models
+from pydantic_ai.models.function import FunctionModel
+from pydantic_ai.messages import ModelResponse, ToolCallPart
+from pydantic_ai.usage import RequestUsage
+models.ALLOW_MODEL_REQUESTS = False
+app = create_app(sys.argv[1], static_dir=Path(sys.argv[2]).parent / "static")
+calls = 0
+async def respond(messages, info):
+    global calls
+    calls += 1
+    if calls == 13:
+        Path(sys.argv[3]).write_text(json.dumps({"run_id": rid, "study_id": sid}))
+        await asyncio.Event().wait()
+    observation = json.loads(messages[-1].parts[0].content)
+    action = {"kind": "wait_workflow"}
+    if observation["you"]["key"] == "alder":
+        if observation["logical_time"] == 0:
+            action = {"kind": "claim_work", "work": "intake"}
+        elif observation["logical_time"] == 1:
+            action = {"kind": "perform_work", "work": "intake", "expected_version": 1,
+                      "content": {"batch": 17}, "sources": []}
+    return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, {
+        "action": action, "rationale": "DEVELOPMENT restart witness",
+        "memory": "", "forecast": None,
+    })], usage=RequestUsage(input_tokens=100, output_tokens=50))
+app.state.models.models["openai:gpt-6-luna"] = FunctionModel(function=respond)
+with TestClient(app, base_url="http://localhost") as client:
+    value = json.loads(Path(sys.argv[2]).read_text())
+    created = client.post("/api/studies", json={"design": value})
+    assert created.status_code == 201, created.text
+    sid = created.json()["id"]
+    rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+    assert client.post(f"/api/runs/{rid}/control", json={"action": "start"}).status_code == 200
+    while True:
+        time.sleep(0.05)
+"""
+    with (tmp_path / "child.log").open("w") as log:
+        process = subprocess.Popen(
+            [sys.executable, "-B", "-c", script, database, str(source), str(ready)],
+            stdout=log,
+            stderr=subprocess.STDOUT,
+            env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1", "PYDANTIC_AI_NO_BANNER": "1"},
+        )
+        try:
+            deadline = time.monotonic() + 10
+            while not ready.exists() and process.poll() is None and time.monotonic() < deadline:
+                time.sleep(0.01)
+            assert ready.exists(), (
+                "Owned process never reached its thirteenth request; retain child.log"
+            )
+        finally:
+            if process.poll() is None:
+                process.kill()
+            process.wait(timeout=5)
+    ids = json.loads(ready.read_text())
+    rid = ids["run_id"]
+    restarted = create_app(database, static_dir=tmp_path / "static")
+
+    def forbidden(_):
+        pytest.fail("Crash recovery and replay must never send a request")
+
+    monkeypatch.setattr(restarted.state.models, "model", forbidden)
+    with TestClient(restarted, base_url="http://localhost") as client:
+        run = client.get(f"/api/runs/{rid}").json()
+        assert run["summary"]["status"] == "paused" and run["summary"]["turn"] == 12
+        state = run["state"]
+        assert (
+            state["resource_stock"],
+            state["resource_spent"],
+            state["logical_time"],
+            state["writes_remaining"],
+        ) == (4, 3, 2, 19)
+        assert state["work"]["intake"]["due_at"] == 3
+        assert state["work"]["intake"]["status"] == "in_progress"
+        assert [v["content"] for v in state["artifacts"]["intake_record"]["versions"]] == [
+            {"batch": 0},
+            {"batch": 17},
+        ]
+        assert [r["status"] for r in run["requests"]] == [*["complete"] * 12, "unknown"]
+        assert run["activations"][-1]["stop_reason"] == "server_restart"
+        assert (
+            run["summary"]["usage"]["requests"] == 13 and run["summary"]["usage"]["partial"] is True
+        )
+        exported = client.get(f"/api/studies/{ids['study_id']}/export").json()
+        assert exported["requests"][-1]["cost_usd"] > 0
+        usage = client.get("/api/settings").json()["usage"]
+        assert client.post(f"/api/runs/{rid}/verify").json()["verified_turns"] == 12
+        assert client.get("/api/settings").json()["usage"] == usage
+        assert client.get(f"/api/studies/{ids['study_id']}/export").json() == exported
