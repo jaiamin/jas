@@ -1,3 +1,29 @@
+# Latest boundary — Git objects preserved; production headroom restored (2026-11-10)
+
+Root completed bounded project Git storage maintenance under shared flock. All
+18,027 BEFORE object IDs, including unreachable objects, remain; all references,
+HEAD, protected stash and root index are identical. Three original packs and four
+new incremental packs were verified. Only redundant loose storage already in
+verified packs was removed; no Git gc/prune, ref/reflog expiry, worktree pruning,
+source snapshot or history rewrite. Object storage recovered55,390,208 shared net
+bytes; final measurement280,485,888. Root released flock and the temporary
+staging/commit hold. Exact before/after inventories and proof:
+`.tools/research-harness/maintenance/git-object-packing-20261110T145854Z/result.json`.
+Official Git docs GET403 is retained; installed2.47.3 command help supplied options.
+
+T14 has priority for final-source production under unchanged268,435,456-byte
+preflight; no new environment consumer or checkout may consume this window.
+Its post-merge DEVELOPMENT report observes63 lifecycle+61 analysis/admitted-world
++715 contract cases in segmented jobs,116 frontend units/static/clean build and
+five real HTTP browser cases. Those are implementer-reported, unaccepted checks;
+root adds no product execution or fresh acceptance. Worker/cancellation/export
+service repairs and unavailable-utility preservation require fresh integration
+review after completion. T17 preparation reached its useful boundary with four
+staged files and one unrun API red; implementation remains incomplete/held. Resume
+that same implementer after concrete normal-manager setup/test release. T12/T18
+remain Ready and unassigned; T20 waits. All prior maps and dependency-state notes
+below stay applicable. No paid/live/held-out work or new allocation.
+
 # Latest resource boundary — T14 production headroom has priority (2026-11-10)
 
 Original T11 owner removed only its confirmed disposable `.tools/bin/uv` and

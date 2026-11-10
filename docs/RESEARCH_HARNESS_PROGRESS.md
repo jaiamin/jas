@@ -51,6 +51,17 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### Production headroom restored without changing Git history (2026-11-10)
+
+Verified bounded incremental object packing recovered55,390,208 shared net bytes;
+all18,027 object IDs, references, root index, HEAD and protected stash remain.
+No source/custody, history or reflog pruning occurred. Final280,485,888-byte
+measurement supports T14's unchanged256MiB production preflight; preserve that
+window before T17 setup/T12 checkout. T17's four-file preparation and unrun API
+regression are incomplete implementation, not review readiness. No new product
+check or paid/live/held-out claim is added by root maintenance. HANDOFF links the
+exact preservation/floor/pack verification evidence.
+
 ### Published T16 and resource-aware frontier coordination (2026-11-10)
 
 Accepted T16/root verification is published as `b0446d9`; PR32's checklist,
