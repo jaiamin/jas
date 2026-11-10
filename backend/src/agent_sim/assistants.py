@@ -9,7 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 
 from .config import setting
-from .claim_support import LensKey, assess, capture_lens
+from .claim_support import LensKey, apply_lens, assess, capture_lens
 from .db import (
     Analysis,
     Condition,
@@ -245,6 +245,7 @@ class Assistants:
         run_id: str | None = None,
         chat_id: str | None = None,
         lens: LensKey | None = None,
+        source_analysis_id: str | None = None,
     ) -> str:
         loop = asyncio.get_running_loop()
         if self.closing:
@@ -255,7 +256,7 @@ class Assistants:
             raise ValueError("Unscoped requests cannot select a study or run")
         if purpose == "analysis" and bool(study_id) == bool(run_id):
             raise ValueError("Choose exactly one run or study for analysis")
-        if lens is not None and purpose != "analysis":
+        if (lens is not None or source_analysis_id is not None) and purpose != "analysis":
             raise ValueError("Choose recorded evidence before applying an analysis lens")
         question = question.strip()
         if not question or len(question) > 4000:
@@ -272,11 +273,25 @@ class Assistants:
             cutoffs = {run_id: run.turn}
         elif study_id:
             cutoffs = {r.id: r.turn for r in self.research.operational_runs(study_id)}
-        comparisons = self.research.capture_comparisons(cutoffs) if purpose == "analysis" else None
         key = uid()
-        exposure = self.research.capture_exposure(cutoffs) if comparisons is not None else None
-        index = self._evidence_index(cutoffs, comparisons, exposure, key) if comparisons is not None else None
-        lens = capture_lens(self.research, cutoffs, comparisons, exposure, lens or "behavior") if comparisons is not None else None
+        snapshot = None
+        if source_analysis_id is not None:
+            with self.db.session() as session:
+                source = session.get(Analysis, source_analysis_id)
+                if source is None or source.chat_id != chat_id or source.study_id != study_id or source.run_id != run_id:
+                    raise ValueError("Analysis source is unavailable in this conversation and scope")
+                if source.status == "pending" or not (source.output or {}).get("lens"):
+                    raise ValueError("Analysis source has no frozen lens inputs")
+                snapshot, cutoffs = source.output, source.cutoffs
+        comparisons = (snapshot["comparisons"] if snapshot else
+                       self.research.capture_comparisons(cutoffs) if purpose == "analysis" else None)
+        exposure = (snapshot["exposure"] if snapshot else
+                    self.research.capture_exposure(cutoffs) if comparisons is not None else None)
+        index = (snapshot["evidence_index"] if snapshot else
+                 self._evidence_index(cutoffs, comparisons, exposure, key) if comparisons is not None else None)
+        snapshot_lens = (apply_lens(snapshot["lens"], lens or "behavior") if snapshot else
+                         capture_lens(self.research, cutoffs, comparisons, exposure,
+                                      lens or "behavior", index=index) if index is not None else None)
         with self.db.session.begin() as session:
             chat_id = chat_id or uid()
             if session.scalar(
@@ -295,7 +310,8 @@ class Assistants:
                     "comparisons": comparisons,
                     "exposure": exposure,
                     "evidence_index": index,
-                    "lens": lens,
+                    "lens": snapshot_lens,
+                    "source_analysis_id": source_analysis_id,
                 }
                 if comparisons is not None
                 else None,
@@ -379,6 +395,7 @@ class Assistants:
 
     def send(
         self, question: str, context: str, chat_id: str | None = None, lens: LensKey | None = None,
+        source_analysis_id: str | None = None,
     ) -> dict:
         if chat_id:
             self.chat(chat_id)
@@ -390,7 +407,8 @@ class Assistants:
         else:
             raise ValueError("Choose General, New experiment, an experiment, or a run")
         chat_id = chat_id or uid()
-        key = self.start(question, purpose=purpose, chat_id=chat_id, lens=lens, **scope)
+        key = self.start(question, purpose=purpose, chat_id=chat_id, lens=lens,
+                         source_analysis_id=source_analysis_id, **scope)
         return {"id": key, "chat_id": chat_id}
 
     async def _execute(self, key: str) -> None:
@@ -464,7 +482,7 @@ class Assistants:
                 **{
                     k: v
                     for k, v in (row.output or {}).items()
-                    if k in {"comparisons", "research", "exposure", "evidence_index", "lens"}
+                    if k in {"comparisons", "research", "exposure", "evidence_index", "lens", "source_analysis_id"}
                 },
                 "stage": stage,
                 "examined": examined,
@@ -576,7 +594,7 @@ class Assistants:
             return await Planner(self.db, self.research, self.models).run(
                 row.id, row.question, conversation
             )
-        return {**answer.model_dump(exclude={"propose_experiment", "requests"}), "examined": []}
+        return {**answer.model_dump(exclude={"propose_experiment", "requests", "claims"}), "examined": []}
 
     def _research_progress(self, key: str, tools: ResearchTools, stage: str | None) -> None:
         with self.db.session.begin() as session:
@@ -708,6 +726,7 @@ class Assistants:
                         [event_dict(e) for e in events],
                     ),
                     "recorded_rule_version": state["rule_version"],
+                    "state_hash": last_turn.state_hash if last_turn else None,
                     "execution_usage": decision_usage,
                     "experiment_budget_ceiling_usd": design.budget_usd,
                     "rules_at_last_observed_turn": last_turn.observation["rules"]
@@ -880,7 +899,9 @@ class Assistants:
             (current.output or {}).get("exposure"),
             key,
         )
-        lens = (current.output or {}).get("lens") or capture_lens(self.research, cutoffs, comparisons)
+        lens = (current.output or {}).get("lens") or capture_lens(
+            self.research, cutoffs, comparisons, index=index,
+        )
         index = {**index, "lens": {
             **{k: v for k, v in lens.items() if k not in {"facts", "calculations"}},
             "calculations": [{k: v for k, v in c.items() if k != "inputs"}
@@ -949,6 +970,7 @@ class Assistants:
                     "lens": lens,
                     "evidence_index": {k: v for k, v in index.items() if k != "lens"},
                     "support": assess(answer, lens),
+                    "source_analysis_id": (current.output or {}).get("source_analysis_id"),
                 }
             assert isinstance(result, (Investigation, EvidenceInvestigation))
             if not result.requests:

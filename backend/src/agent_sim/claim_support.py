@@ -29,14 +29,16 @@ LENSES = {
 def capture_lens(
     research: Research, cutoffs: dict[str, int], comparisons: dict | None = None,
     exposure: dict | None = None, key: LensKey = "behavior",
+    *, index: dict,
 ) -> dict:
     """Retain the literal World inputs rather than trusting analyst arithmetic."""
     facts, calculations, coverage = [], [], []
     comparisons = comparisons if comparisons is not None else research.capture_comparisons(cutoffs)
     exposure = exposure if exposure is not None else research.capture_exposure(cutoffs)
+    indexed = {row["run_id"]: row for row in index["runs"]}
     for rid, cutoff in cutoffs.items():
-        evidence = research.evidence(rid, cutoff)
-        balances = evidence["checkpoint"]["balances"]
+        recorded = indexed[rid]
+        balances = recorded["outcome"]["balances"]
         with research.db.session() as session:
             measurements = session.scalars(select(Measurement).where(
                 Measurement.run_id == rid, Measurement.turn <= cutoff,
@@ -53,10 +55,10 @@ def capture_lens(
         fact = {
             "run_id": rid,
             "through_turn": cutoff,
-            "state_hash": evidence["state_hash"],
+            "state_hash": recorded["state_hash"],
             "balances": balances,
             "measurements": raw_measurements,
-            "rule_version": evidence["checkpoint"]["rule_version"],
+            "rule_version": recorded["recorded_rule_version"],
             "turns": [{"turn": t.number, "actor": t.actor, "action": t.decision["action"],
                        "state_hash": t.state_hash} for t in turns],
             "events": [event_dict(e) for e in events],
@@ -120,7 +122,7 @@ def capture_lens(
                 for r in exposure[rid]["summary"] if r["kind"] == "message"),
             "unknown_requests": exposure[rid]["delivery"]["unknown_requests"],
             "opportunities": counters,
-            "truncation": {"run_continues": not evidence["checkpoint"]["done"],
+            "truncation": {"run_continues": not recorded["completed_at_cutoff"],
                 "unrecorded_history": "Unavailable: a lens cannot reconstruct omitted history, "
                 "attention, private beliefs or uncaptured artifact versions.",
                 "observation_windows": [{"turn": t.number,
@@ -181,6 +183,12 @@ def capture_lens(
             "Observed fixed seed clusters do not establish independent population support; "
             "T06 uncertainty withholding, selection assumptions and bounds apply."],
     }
+
+
+def apply_lens(frozen: dict, key: LensKey) -> dict:
+    if frozen.get("version") != VERSION:
+        raise ValueError("Unsupported analysis lens version; no conversion is available")
+    return {**frozen, "key": key, **LENSES[key]}
 
 
 def assess(answer: Finding, lens: dict) -> dict:
