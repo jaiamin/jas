@@ -282,51 +282,52 @@ export function ConditionFields({
                     </FieldLabel>
                   )}
                 </div>
-                {c.parameters.communication && (
-                  <FieldSet className="col-span-full flex flex-wrap gap-4">
-                    <FieldLegend>Communication channels</FieldLegend>
-                    {(["messages", "reports", "promises"] as const)
-                      .filter(
-                        (channel) =>
-                          channel !== "promises" ||
-                          ["commons", "trust_exchange"].includes(
-                            design.environment,
-                          ),
-                      )
-                      .map((channel) => (
-                        <FieldLabel
-                          key={channel}
-                          htmlFor={`channel-${c.key}-${channel}`}
-                        >
-                          <Checkbox
-                            id={`channel-${c.key}-${channel}`}
-                            checked={c.parameters.communication_channels.includes(
-                              channel,
-                            )}
-                            onCheckedChange={(checked) =>
-                              parameter(
-                                i,
-                                "communication_channels",
-                                checked === true
-                                  ? [
-                                      ...c.parameters.communication_channels,
-                                      channel,
-                                    ]
-                                  : c.parameters.communication_channels.filter(
-                                      (key) => key !== channel,
-                                    ),
-                              )
-                            }
-                          />
-                          {channel === "reports"
-                            ? "Factual reports"
-                            : channel === "promises"
-                              ? "Promises"
-                              : "Messages"}
-                        </FieldLabel>
-                      ))}
-                  </FieldSet>
-                )}
+                {environment.parameters.includes("communication_channels") &&
+                  c.parameters.communication && (
+                    <FieldSet className="col-span-full flex flex-wrap gap-4">
+                      <FieldLegend>Communication channels</FieldLegend>
+                      {(["messages", "reports", "promises"] as const)
+                        .filter(
+                          (channel) =>
+                            channel !== "promises" ||
+                            ["commons", "trust_exchange"].includes(
+                              design.environment,
+                            ),
+                        )
+                        .map((channel) => (
+                          <FieldLabel
+                            key={channel}
+                            htmlFor={`channel-${c.key}-${channel}`}
+                          >
+                            <Checkbox
+                              id={`channel-${c.key}-${channel}`}
+                              checked={c.parameters.communication_channels.includes(
+                                channel,
+                              )}
+                              onCheckedChange={(checked) =>
+                                parameter(
+                                  i,
+                                  "communication_channels",
+                                  checked === true
+                                    ? [
+                                        ...c.parameters.communication_channels,
+                                        channel,
+                                      ]
+                                    : c.parameters.communication_channels.filter(
+                                        (key) => key !== channel,
+                                      ),
+                                )
+                              }
+                            />
+                            {channel === "reports"
+                              ? "Factual reports"
+                              : channel === "promises"
+                                ? "Promises"
+                                : "Messages"}
+                          </FieldLabel>
+                        ))}
+                    </FieldSet>
+                  )}
                 <MechanismFields
                   environment={design.environment}
                   parameters={c.parameters}

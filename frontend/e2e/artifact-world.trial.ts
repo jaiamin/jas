@@ -7,6 +7,9 @@ test("solo artifact configuration preserves its draft and immutable saved rules"
   await page.goto("/new?template=artifact_workspace");
   await page.getByRole("tab", { name: "Conditions", exact: true }).click();
   await expect(
+    page.getByRole("group", { name: "Communication channels", exact: true }),
+  ).toHaveCount(0);
+  await expect(
     page.getByLabel("Maximum artifact writes", { exact: true }),
   ).toHaveValue("3");
   await page.getByLabel("Maximum artifact writes", { exact: true }).fill("2");
