@@ -15,12 +15,34 @@ continues its released bounded verification envelope with shared flock/128MiB
 floor. Root coordinates each new dependency setup against measured extra peaks.
 
 Root reclaimed only its disposable pypdf tooling/generated54-file frontend build
-and its now-closed `.venv` after T16 returned ownership. **Root `.venv` and
-`frontend/dist` are absent**; root uv bootstrap and frontend/node_modules remain.
+and its now-closed `.venv` after T16 returned ownership. **Root `.venv`, `frontend/node_modules` and
+`frontend/dist` are absent**; the working root uv bootstrap remains.
 Recreate root Python dependencies via normal frozen manager/cache coordination
 before later tests; verify editable imports resolve to this checkout. Other
 owners' environments/caches are unchanged. `.venv` cleanup receipt observed
 55,877,632 net bytes recovered and194,084,864 bytes available, shared/unreserved.
+
+Root's174 closed public research-download responses now resolve via
+`.tools/research-harness/maintenance/closed-root-research-20261110T144922Z/mapping.jsonl`,
+SHA256 `15c14908709d1f806e88f5a910984f72eea6c9fc3c29593dcc15fbbacfd70847`.
+Actual restoration verified exact bytes/size/mode/integer-ns for each before raw
+relocation. Source helpers, PDFs, notes and custody/indexes were excluded. The
+research data's logical bytes remain intact; restore needed raw paths through the
+map before reading. Observed recovery35,495,936 bytes; root frontend dependency
+cleanup separately recovered29,044,736 bytes, leaving232,783,872 shared/unreserved.
+Original T11 owner is reclaiming only two verified disposable tool installs; no
+recovery result is assumed yet. Docker cache is a separate filesystem and was
+not pruned. Receipts are in ignored maintenance storage-frontier.json.
+
+T17 froze an independently authored120-input revocable permit/refund oracle and
+one unrun inert contract API regression. This is a narrow declared finite-synthesis
+prerequisite, not independent proof of natural-language intent or universal worlds.
+Model candidate code/prose/self-tests cannot author or relax its admission oracle.
+Its initial setup/check forecast225–245MB and T14 production268,435,456-byte
+preflight remain held until measured headroom; preserve T14's acknowledged normal
+uv-cache reuse into distinct environments under flock, with checkout import proof.
+No new consumer/install/check grant has been issued. T12 source-only launch waits
+for the operational cleanup slot; T18 remains Ready. All paid/held-out work held.
 
 Five returned CLOSED root T11 browser/witness outputs now resolve losslessly via
 `.tools/research-harness/maintenance/closed-root-t11-browser-20261110T143738Z/mapping.jsonl`,

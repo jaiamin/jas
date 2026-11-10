@@ -60,7 +60,8 @@ source planning/oracles; T12's isolated source-only launch is next and T18 remai
 Ready. No new dependency-cache consumer or heavy setup is authorized yet.
 Root reclaimed its own disposable tooling/build/closed Python environment and
 losslessly compacted five returned closed T11 outputs; HANDOFF records the new
-map and absent root `.venv`/`frontend/dist`. Existing bootstrap, owner caches,
+maps and absent root `.venv`/`frontend/node_modules`/`frontend/dist`. The existing
+bootstrap, owner caches,
 source/custody/indexes and all older maps stay intact. This step ran no product
 test or paid call; live/held-out gates remain open.
 
