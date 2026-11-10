@@ -24,8 +24,9 @@ Normal model participants stay Luna; app Researcher/planner/assistant stay Sol.
 Accepted T03/T04/T05/T06/T07/T08 semantics and T02 admission gate are protected.
 
 Observed checks: all **1,116 backend cases** pass on `832ae46`; after the narrow
-ledger-charge reporting repair, **120 affected tests** and Ruff/ty pass on
-`1480414`. Combined lint, **111 frontend tests**, TypeScript/build pass; frontend
+ledger-charge reporting repair, **120 affected tests** and Ruff/ty/lint pass on
+clean `f2ec318`. Earlier working-source runs are precisely attributed in the
+report and final manifest. Combined **111 frontend tests**, TypeScript/build pass; frontend
 sources are unchanged thereafter. Shared browser shards report **46 pass / one
 ENOSPC failure**, **54 pass**, **40 pass**, **41 pass**; the latter two use final
 runtime source. Final accepted-base checks pass **two flagged-flow repeats**, **two

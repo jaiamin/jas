@@ -170,8 +170,9 @@ source-stability result in `check.json`. Passing checks used empty provider keys
 | Check | Observed result and source | Evidence |
 | --- | --- | --- |
 | Complete combined backend | **1,116 pass**, 14 sequential partitions, clean `832ae46`, before the later narrow charge-total repair | `combined-backend-index/index.json`, `combined-backend-01/` through `14/` |
-| After charge repair | Ruff/ty and **120 affected tests pass** on clean `1480414`; reference/privacy, accounting, harness, exposure and uncertainty | `green-effort-charge-parity/` |
-| Combined frontend/static | Ruff/ty/lint, **111 frontend tests / 30 files**, TypeScript and production build pass on `832ae46`; frontend files unchanged thereafter | `combined-static/` |
+| After charge repair | **120 affected tests pass on clean `f2ec318`** after accepted-base merge; final Ruff/ty/lint also pass | `final-source-affected-tests/`, `final-source-ruff/`, `final-source-types/`, `final-source-frontend-lint/` |
+| Earlier repaired working source | Ruff/ty and **120 affected tests pass** with recorded HEAD `832ae46` plus the stamped working repair; executable files exactly match the subsequent `1480414` commit | `green-effort-charge-parity/` |
+| Combined frontend/static | Ruff/ty/lint, **111 frontend tests / 30 files**, TypeScript and production build pass with recorded HEAD `0457e9a` plus the stamped typed-fixture correction; executable files match subsequent `832ae46`, frontend unchanged thereafter | `combined-static/` |
 | Shared browser shards | Shard 1: **46 pass / 1 ENOSPC failure**; shard 2: **54 pass**, both before accepted T07 merge. Shards 3/4: **40 / 41 pass** on charge-repaired `1480414` | `inherited-browser-shard-1/` through `4/` |
 | Final shared diagnostic | Both previously flagged flows pass after accepted-base merge `82a7e88`, including dark/mobile editor ENOSPC case | `final-browser-resource-repeat/` |
 | Final reference browser | **2 pass**, desktop/light and phone/dark, actual public workflow and zero-call controls, on `82a7e88` | `post-frontier-reference-browser/` |
@@ -193,7 +194,8 @@ and no generated messages, correctly yielding 0/0 exposure. Enabling the flag
 passes all five unchanged tests; no product/test expectation was altered.
 `exposure-invocation-diagnosis.json` preserves the independent trace check.
 A read-only diagnostic's wrong `arguments` key and a refused reused output label
-are separately recorded; existing evidence was not overwritten.
+are separately recorded, as is a preclosure metadata helper's syntax error before
+its body executed; existing evidence was not overwritten.
 
 ### Neutral development comparisons
 
