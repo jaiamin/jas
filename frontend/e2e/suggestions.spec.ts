@@ -144,6 +144,9 @@ for (const width of [320, 1440]) {
       "Understand results",
       "Learn the basics",
     ]);
+    await expect(
+      page.getByRole("link", { name: "Configure a provider", exact: true }),
+    ).toBeVisible();
     const bounds = await composer.boundingBox();
     await draft.fill("Check this idea");
     await expect(suggestions.getByRole("button")).toHaveCount(4);
