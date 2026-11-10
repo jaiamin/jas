@@ -1,3 +1,14 @@
+# T16 final frontier qualification — backend composite green (2026-11-10)
+
+Accepted32a1247 remains merged, T11 absent. Nine final backend segments execute
+1,423 cases/45 files:1,421 pass/two old T13 library-format assertions fail. Only
+three current-contract literals are reconciled; all8 integration cases and Ruff/ty
+then pass, application bytes unchanged. Preserve composite attribution and the
+original failures. Next park inactive own verified tooling, rebuild combined
+frontend and actual production; final browser/frozen-positive parity/custody remain.
+T16 DB9/export10/library6 are provisional, not accepted. No paid calls, held-out,
+publication, extra checkout or descendants.
+
 # T16 continuation — accepted T13 merged, final qualification pending (2026-11-10)
 
 Only documented accepted32a1247 was merged at6dca092; T11 is still absent.

@@ -324,3 +324,17 @@ and verifies exact source modes. V2's outer captures had pre-read selection proo
 but inner baseline test snapshots lacked enforced descendant exclusions; final
 recursive member audit will separately verify their actual bytes/selection. This
 historical gap is retained, never presented as retroactive pre-read proof.
+
+### Final accepted-frontier qualification (in progress)
+
+The nine bounded backend segments at clean `ef3c186` / source
+`381c6cb34c97dd31b058798b8f211d7cc1e9bab2f7619dc168af55972899fcab`
+execute1,423 distinct cases/45 files:1,421 pass and two accepted-T13 integration
+assertions retain their older library5 literals. Reconcile only those two format
+assertions and the subsequent export9 assertion to the genuine combined
+library6/export10 contract. The full eight-case integration module then passes
+at source`68897aae044d32d200c59650d10b793ae6a36c2983a7fc9c0f67fe24e40d992f`;
+Ruff/ty pass there too. This yields composite1,423 distinct passing cases, with
+the original two failures retained. Application bytes are unchanged by this
+test-only repair; frontend/build/browser/production and frozen parity still
+require final combined qualification. No historical runner/case/score changes.
