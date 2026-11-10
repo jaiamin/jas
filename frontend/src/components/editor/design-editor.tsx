@@ -102,28 +102,36 @@ export function DesignEditor({
   const [step, setStep] = useState(initialStep);
   const [formVersion, setFormVersion] = useState(0);
   const [draftStatus, setDraftStatus] = useState(draft ? "Draft saved" : "");
-  const lastSnapshot = useRef(JSON.stringify({ design, json, mode }));
+  // The library editing target survives changes that clear scientific provenance.
+  const [savedSetup, setSavedSetup] = useState<Draft["environmentEdit"]>(
+    () =>
+      draft?.environmentEdit ??
+      (initial.environment_source &&
+      /^[a-f0-9]{16}$/.test(initial.environment_source.id)
+        ? {
+            id: initial.environment_source.id,
+            revision: initial.environment_source.revision,
+          }
+        : setupId && setupRevision !== undefined
+          ? { id: setupId, revision: setupRevision }
+          : undefined),
+  );
+  const lastSnapshot = useRef(
+    JSON.stringify({ design, json, mode, savedSetup }),
+  );
   useEffect(() => {
-    const snapshot = JSON.stringify({ design, json, mode });
+    const snapshot = JSON.stringify({ design, json, mode, savedSetup });
     if (snapshot === lastSnapshot.current) return;
     try {
-      writeDraft(draftPath, design, json, mode);
+      writeDraft(draftPath, design, json, mode, savedSetup);
       lastSnapshot.current = snapshot;
       setDraftStatus("Draft saved");
     } catch {
       setDraftStatus("Draft could not be saved in this browser");
     }
-  }, [design, json, mode, draftPath]);
+  }, [design, json, mode, draftPath, savedSetup]);
   const [error, setError] = useState("");
   const [setupNotice, setSetupNotice] = useState("");
-  const [savedSetup, setSavedSetup] = useState({
-    id:
-      initial.environment_source &&
-      /^[a-f0-9]{16}$/.test(initial.environment_source.id)
-        ? initial.environment_source.id
-        : setupId,
-    revision: initial.environment_source?.revision ?? setupRevision,
-  });
   const [pendingEnvironment, setPendingEnvironment] =
     useState<EnvironmentId | null>(null);
   const navigate = useNavigate();
@@ -166,10 +174,10 @@ export function DesignEditor({
         "/design/environment",
         { design: validated },
       );
-      const updating = !asNew && savedSetup.id;
+      const updating = !asNew && savedSetup;
       const record = await api<SavedEnvironment>(
-        updating ? `/environments/${savedSetup.id}` : "/environments",
-        { definition, revision: updating ? savedSetup.revision : null },
+        updating ? `/environments/${updating.id}` : "/environments",
+        { definition, revision: updating ? updating.revision : null },
         updating ? "PUT" : "POST",
       );
       return { record, validated };
@@ -309,11 +317,11 @@ export function DesignEditor({
                   saveEnvironment.mutate(false);
                 }}
               >
-                {savedSetup.id
+                {savedSetup?.id
                   ? "Update custom environment"
                   : "Save custom environment"}
               </DropdownMenuItem>
-              {savedSetup.id && (
+              {savedSetup?.id && (
                 <DropdownMenuItem
                   disabled={busy}
                   onSelect={() => {

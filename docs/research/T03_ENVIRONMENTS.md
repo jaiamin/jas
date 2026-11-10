@@ -111,3 +111,23 @@ extraction collapses harness-only differences into one mechanics example.
 Remaining: final clean-source before/after comparison, full backend/frontend/browser
 checks, the inherited two-policy browser trial, rendered-capture review, manifest,
 latest integration ancestry check and service shutdown verification.
+
+Final draft review found an additional public-workflow regression: after changing
+world and reloading, an unchanged custom record returned 409, or a record first
+saved from a template lost its update action. `tdd-05-red-corrected/` reproduces
+both. Browser drafts now retain a separate library editing ID/revision; changing
+world still clears scientific source provenance. `tdd-05-green-corrected/` passes
+all 12 reuse/workspace cases, including both reload variants and stale/deleted
+source recovery. The first test attempt used an incorrect template identifier;
+its failures remain in `tdd-05-red/`. A TypeScript narrowing failure and the
+premature browser run against the previous build also remain; only the corrected,
+successfully rebuilt run is credited as green. No checks were disabled.
+
+At clean `d9fbb6a`: all 1,006 backend tests and 108 frontend tests passed, as did
+the production build, actual non-root production smoke and containment qualification.
+Full browser run: 175 passed, one outdated title expectation failed. The current
+reuse contract deliberately initializes a neutral experiment title; that oracle
+is now explicit and passes in the 12-case rerun. Desktop/light and phone/dark
+captures were inspected. Ruff/frontend lint pass; normal `uv run ty check` passes
+after removing the check wrapper's injected `PYTHONPATH` (the failed wrapper
+attempt and diagnostics remain). Backend inputs are unchanged by the draft fix.

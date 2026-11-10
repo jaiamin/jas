@@ -1,5 +1,73 @@
 import { expect, test } from "@playwright/test";
 
+for (const origin of ["library", "newly-saved"]) {
+  test(`environment editing survives a world change and draft reload · ${origin}`, async ({
+    page,
+    request,
+  }) => {
+    await page.goto("/new?template=trust_exchange");
+    await page
+      .getByLabel("Experiment name", { exact: true })
+      .fill(`World change ${origin}`);
+    await page
+      .getByRole("button", { name: "Experiment options", exact: true })
+      .click();
+    const saved = page.waitForResponse(
+      (response) =>
+        response.url().endsWith("/api/environments") &&
+        response.request().method() === "POST",
+    );
+    await page
+      .getByRole("menuitem", { name: "Save custom environment", exact: true })
+      .click();
+    const source = await (await saved).json();
+    await expect(
+      page.getByText("Custom environment saved.", { exact: false }),
+    ).toBeVisible();
+    if (origin === "library") await page.goto(`/new?setup=${source.id}`);
+    await page
+      .getByLabel("Research question", { exact: true })
+      .fill(`Keep this question ${origin}`);
+    await page
+      .getByRole("combobox", { name: "Environment", exact: true })
+      .click();
+    await page
+      .getByRole("option", { name: "Shared commons", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Change environment", exact: true })
+      .click();
+    await expect(page.getByText("Draft saved", { exact: true })).toBeVisible();
+    await page.reload();
+    await expect(
+      page.getByRole("combobox", { name: "Environment", exact: true }),
+    ).toHaveText("Shared commons");
+    await expect(
+      page.getByLabel("Research question", { exact: true }),
+    ).toHaveValue(`Keep this question ${origin}`);
+    await page
+      .getByRole("button", { name: "Experiment options", exact: true })
+      .click();
+    const update = page.getByRole("menuitem", {
+      name: "Update custom environment",
+      exact: true,
+    });
+    await expect(update).toBeVisible();
+    const updated = page.waitForResponse(
+      (response) =>
+        response.url().endsWith(`/api/environments/${source.id}`) &&
+        response.request().method() === "PUT",
+    );
+    await update.click();
+    expect((await updated).status()).toBe(200);
+    const current = await (
+      await request.get(`/api/environments/${source.id}`)
+    ).json();
+    expect(current.revision).toBe(2);
+    expect(current.definition.environment).toBe("commons");
+  });
+}
+
 for (const theme of ["light", "dark"]) {
   test(`reuse mechanics preserves independent experiments and stale drafts · ${theme}`, async ({
     page,
