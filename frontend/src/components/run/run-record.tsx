@@ -4,6 +4,7 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { ExposureInspection } from "@/components/exposure-inspection";
 import { Alert } from "@/components/feedback";
 import { Check } from "@/components/icons";
 import { ActivationInspector } from "@/components/run/activation-inspector";
@@ -114,6 +115,7 @@ export function RunRecord({ run }: { run: RunDetail }) {
           </Disclosure>
         </CardContent>
       </Card>
+      <ExposureInspection path={`/runs/${summary.id}/exposure`} />
       <ActivationInspector activations={run.activations} />
       <RequestInspector requests={run.requests} />
     </>

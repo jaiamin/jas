@@ -1,3 +1,107 @@
+# T07 fresh integration checkpoint — accepted (2026-11-10)
+
+T07/#18 is accepted after fresh sole-writer Standards/Spec review, with no
+descendants. No-ff merge `a92105fd2300de97e8668400a2174019e3f96788` joins assigned
+integration `e2d42c9fa81ac3b9ce2f440f0ef480e0bb76444d` and exact clean source
+`e7800d3a400fc133a7b6a0204d5e03ed4d8bb79e`. Accepted T08 `9750caf` and cutoff
+repair `de5556b` remain ancestors. Read the
+[fresh acceptance report](docs/research/T07_EXPOSURE.md#fresh-integration-acceptance-2026-11-10).
+Exact final acceptance HEAD/hook result and postcommit frozen-manifest/source
+recheck are recorded separately under
+`.tools/research-harness/evidence/T07-integration/acceptance-checkpoint/`.
+
+Current contracts: **DB 6 / export 7 / exposure capture 1 / comparison 1 /
+library v3 / tool-using 2.0.0 / direct-action 1.0.0**. Models remain Sol for
+Researcher/planner/assistant and Luna for model participants. No migrations,
+aliases, reset, World-rule change or T09/T15/T19 speculative implementation.
+
+Two demonstrated integration defects were repaired at
+`d5568c1b8a60577ac275408c3800abe537d63b9f`: missing actual T08 investigation /
+retrieval delivery, and false delivery from unabridged local observations after
+context compaction omitted them. Bindings now use exact authorized content in
+each final bounded, separately reserved request and its own confirmed/unknown
+receipt. Plans, receipt references, verification metadata and local results do
+not independently establish original World delivery. Accepted T08 context/cutoff
+implementation stays byte-identical. Current fixture commits `0d1bb29` and
+`777a609` exercise supported capability fields and real T08 source paths; the
+combined browser poll accommodates its six intentional one-second pauses.
+
+Fresh checks: **1,094 full combined backend** at clean tracked-only `d5568c1`
+(inventory SHA-256 `4593eccb0bd2ec72bea71742cc15af6b48831a816643770d836287210f2225c7`),
+**108 affected tests**, **377 independent API/World checks**, **111 frontend
+units**, Ruff/ty/lint/TypeScript/build pass. **61 distinct browser flows + one
+passing repeat** pass on 18218: 5 actual-policy/exposure, 2 T08 pause/restore,
+3 actual T08+exposure (including repeated loading), 52 shared workflows.
+Screenshots were inspected, Impeccable returns `[]`, and the shared preview tab
+was closed. Five T08 neutral cases / 47 scripted requests and five inherited T04
+cases pass. Post-backend changes are the two browser fixtures, then acceptance
+prose. Child 1,038-backend/182-browser successes remain inherited; no fresh full
+182-browser or production image is claimed. Production smoke is inherited from
+accepted T03/6c290df; deployment/runtime packaging, dependencies and workflows
+remain unchanged.
+
+Frozen T01 retains **exit 1**, four export-v4 failures and four failed terminal
+flags; comparison has no regressions/improvements. Positive **DB6/export7/
+capture1/harness2/comparison1/libraryv3** checks and exact **22-turn / five-run**
+behavior/accounting parity pass. All **885 differences** are classified, zero
+unexplained; 98→97 HTTP operations reflect polling, canonical mutations match.
+Synthetic accounting remains 22 requests, 2,200 input / 1,100 output tokens and
+$0.000770; actual spend $0. All 30 benchmark files, T06 frozen comparisons,
+T03 pinned reuse, Sol fixes/tests `0ea4064`/`a874f7c`, copied probes and T02 gate
+remain protected. Counts are not attention/belief/intent or independent sample
+sizes; exposure conditioning is not automatic causal identification.
+
+Complete ignored source `data/t07/` was preserved before merge, without
+overwrites, under `.tools/research-harness/evidence/T07/`: **2,164 files /
+251,316,466 bytes / 176 symlinks**. All 2,161 indexed files / 250,415,161 bytes
+verify, child manifest SHA-256
+`05790f34953d8b841c3ab66b17e8c466d863f61245dbb7beea69661f2e192841`.
+Complete canonical inventory SHA-256
+`94c1edfd1d132b8d93bcf287a24e95b80f40b60e4b358e2a7dbdb28fced627f8`.
+All 499 compression mappings and decompressed hashes/sizes reverify. Source
+HEAD/index/status and complete source/copy inventory are unchanged; checkout
+`/home/agent/.t3/worktrees/workspace/t3-8e1a5746` stays intact. Two known synthetic
+pytest `.env` fixtures were handled opaquely only after checking their tracked
+generator. No contents were printed/committed.
+
+Fresh `T07-integration/verification-manifest.json`: **1,659 files / 93,761,566
+bytes / 263 symlinks / 51 main check records**, **11 nonzero attempts**;
+canonical SHA-256
+`513ccf5f40434015168907be783f40c045064fc572c7bafa861f2acc39c94001`, file SHA-256
+`b0d3a0b83a67b17037f0c539d086eb600febdd9e4557fbe41387e476195667f3`.
+It excludes itself, clean-clone Git metadata and later acceptance checkpoint
+records. All raw results, source/case identities and failures remain. Fresh
+closed outputs alone have **822 verified gzip mappings / 294,764,108 bytes saved**;
+no frozen child/prior evidence was compressed again or removed.
+
+Prior evidence remains **24,393 files / 2,055,181,108 bytes / 1,119 symlinks**,
+canonical `e5e63dddd364f94d2a4ce64fadd4cd2c9823d6f8c756a8570007a4bb72ef5444`.
+All **1,745 Sol artifacts** and stash `f771128ba1c9295262a4073df40cc25647b1370f`
+verify unchanged. Full Sol digests are in the report. Root `pbcopy` was never
+read/copied/archived; clean captures exclude it and real configuration.
+
+Retain the original merge conflict, 18-case red/oracle correction, corrected
+10-fail/8-pass red, invalid 8,000-character fixture and 17-pass/1-fail first green,
+valid 4,000-character compaction red (false 2 vs expected 0), initial ty/build/
+focused Ruff failures and two combined-browser timing failures. Two manifest-
+helper and two captured-contract-helper failures are separately retained under
+`acceptance-checkpoint/`, with corrected successes. No oracle was weakened or
+failed terminal flag relabeled. Earlier child v1/v2/v3 freeze corrections retain
+their actual chronology. Shared space reached about 106 MiB free during checks;
+no new ENOSPC or host/security/storage maintenance. Final free-space measurement
+is in closure records. Live/held-out/generalization gates remain unverified.
+
+All five owned Playwright services and the shared preview tab are closed;
+**18218 is closed**. No manual services, descendants, paid calls, publication,
+PR/issue edits/watches/closure, cleanup or other-agent changes. Review spend $0;
+global Sol remains **$0.611632 / 55 requests**, **$9.388368 remaining**, no paid
+Luna. T09/T15 remain running on 18120/18121, **unpolled and untouched**.
+
+**T19 is Ready. T10 still waits for accepted T09. Root resumes sole shared
+checkout ownership for publication and the new frontier at
+https://github.com/jaiamin/ass/pull/32.** Hosted checks/reviews were not queried.
+The T08 and child handoffs below are preserved historical checkpoints.
+
 # T08 fresh integration checkpoint — accepted (2026-11-10)
 
 T08/#19 is accepted after independent sole-writer review. No-ff merge
@@ -99,6 +203,45 @@ latest accepted integration before handoff. Root publishes before launching the
 new review/implementation batch, then performs no tracked edits while T07 owns
 integration. Current free space at handoff publication is about 831 MiB; T07's
 source evidence is about 250 MB. Keep evidence lossless and services bounded.
+
+# T07 implementation handoff (historical child report, 2026-11-10)
+
+T07/#18 is implemented on `t3/research-exposure-capture`; acceptance is pending
+parent fresh review. Read [T07 acceptance and evidence](docs/research/T07_EXPOSURE.md).
+Final product checks use clean `3749ce4f807a64cde5fb06557f2198ba49b89443`;
+closure-only merge `b2aeecc020f2b82ff7bf8a70de4a56c603eb367b` includes latest
+accepted integration `6b7ad09248f915320bdaf1aa4d2ba10d5e6d0789`. The observed
+`9750cafea48120ceec11530ed11a214661a374b3` T08 merge is provisional and excluded;
+its handoff still says not accepted. Final docs/HEAD, executable-input parity
+and source identities are in ignored `data/t07/closure.json` and `manifest.json`.
+
+Current contract: DB **6** / export **7** / exposure **1** / comparison **1** /
+library **v3**. Run Record and experiment Overview expose source-linked assignment,
+configuration, opportunities, available observations, actual inputs and confirmed
+receipts with eligible/included denominators. Analysis acceptance freezes values
+and membership. Local tool reads, unavailable capture, unknown/unsent delivery and
+confirmed input remain distinct; participant recipients/memory stay independent
+of privileged research inspection. No T10/T19 implementation or World-rule change.
+
+Fresh checks: **1,038 backend**, **111 frontend**, **182 full browser** and **5
+actual-policy/exposure browser** flows pass, plus Ruff/ty/lint/TypeScript/build.
+Frozen T01 retains exit 1/four export-v4 failures and terminal flags. Positive
+schema6/export7 checks and exact 22-turn/five-run parity pass; all 1,058 differences
+are classified, zero unclassified. Retain 68 stable-source check wrappers and all
+29 nonzero attempts, including red tracers, oracle corrections, source-link bugs
+and the 175-pass/seven-ENOSPC browser attempt; unchanged rerun passes all 182.
+
+Preserve **all ignored `data/t07/`** before any worktree cleanup: immutable manifest,
+source archives, before/after, raw attempts/inputs/operations, case IDs, exports,
+SQLite workspaces and inspected screenshots. Lossless compression preserves 499
+synthetic JSON files with both raw and gzip digests in `compression-index.jsonl`.
+No evidence content was discarded. Full report distinguishes fresh from inherited
+production/CI/live claims and records tuned Sol-development limits. No live or
+held-out competence is established. Port **18118** and owned browser services are
+closed. No descendants, extra checkout, publication, paid calls, other-worktree/
+process changes, stash/pbcopy access or security changes. Ticket spend **$0**;
+inherited Sol $0.611632/55 requests, $9.388368 remaining, no active allocation.
+Root owns fresh acceptance/publication; T07 does not close any tracker issue.
 
 # T08 integration review assignment (historical, 2026-11-10)
 

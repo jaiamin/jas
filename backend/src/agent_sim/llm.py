@@ -141,6 +141,7 @@ class LanguageModels:
         openai_reasoning_effort: Literal["low", "medium", "high"] | None = None,
         web_search: bool = False,
         on_partial: Callable[[dict], None] | None = None,
+        input_evidence: dict | None = None,
     ) -> T:
         if model not in PRICES:
             raise ProviderFailure("This model has no reviewed price configuration.")
@@ -187,6 +188,7 @@ class LanguageModels:
                         "model_name": model_object.model_name,
                         "system": model_object.system,
                     },
+                    **({"input_evidence": input_evidence} if input_evidence is not None else {}),
                 },
                 reserved=reserved,
                 charged=reserved,

@@ -643,7 +643,7 @@ def _preflight(specification: str) -> dict:
     }
 
 
-def exposure(environment: str, actions: list[dict], events: list[dict]) -> dict:
+def realized_opportunities(environment: str, actions: list[dict], events: list[dict]) -> dict:
     counts = Counter(a["kind"] for a in actions)
     warnings = []
     if environment == "institution":

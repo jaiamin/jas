@@ -60,7 +60,7 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v6.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v7.
 Schema v6 and library format `jas-environment-v3` accept only the current contract.
 Older databases/library records receive explicit errors; no data is converted or reset.
 Use a separate fresh workspace path for the new contract and preserve existing evidence.
@@ -90,7 +90,7 @@ policies to **tool-using harness 2.0.0**. Direct action remains 1.0.0. Unsupport
 tool-using 1.0.0 designs are explicitly rejected: preserve their source/data/exports
 for inspection with that contract; no migration, compatibility reader or automatic
 reset is performed. T08 adds no database schema change; the accepted T03 integration
-uses schema 6, and study exports remain v6.
+uses schema 6. T07 advances study exports to v7 with exposure capture v1.
 New runs must pin the current harness. Each capability can be explicitly disabled;
 there is no substitute policy. The same activation request/operation budgets apply.
 
@@ -119,7 +119,7 @@ JAS_TEST_PORT=18121 pnpm --dir frontend exec playwright test --config playwright
 Use distinct attempt/output paths. The scripted conditions themselves construct no
 provider and send zero requests. Compare actual effort as well as configured
 envelopes; no confidence interval or independent support is inferred from these
-small fixed-seed examples. DB6/export6/comparison1/library-v3 and the existing
+small fixed-seed examples. DB6/export7/comparison1/library-v3 and the existing
 direct/tool harness versions remain current. See [T15 evidence](research/T15_BASELINES.md)
 for source-stamped attempts, unchanged frozen T01 failures and positive parity checks.
 

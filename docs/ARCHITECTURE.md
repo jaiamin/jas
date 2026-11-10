@@ -225,7 +225,7 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v6 (`jas-study`)
+Every Analysis has an indexed conversation identity. Study export v7 (`jas-study`)
 includes every revision and its runs, actual recorded rule versions, exact turn evidence
 and provider traces; it batches
 journal queries.
@@ -293,8 +293,9 @@ append-only operation journal records reads/results, rejected operations, propos
 pauses and settled turn hashes. Requests link to the activation, including failed
 or unknown calls with no committed turn. Effort counts inference attempts, including
 refused reservations; sent requests and charges remain separate ledger records.
-The saved activation observation is its permitted World snapshot; actual model
-deliveries are the provider prompts and executed read results. A turn, its final settlement operation
+The saved activation observation is its permitted World snapshot. Local operation
+results reach model input only when included in a later sent prompt; provider
+responses confirm receipt. A turn, its final settlement operation
 and activation completion commit atomically. Pause finishes the in-flight request:
 final decisions commit; otherwise the authorized transcript and consumed limits
 are retained for explicit resume. Restart pauses runs without requests and marks
@@ -379,7 +380,7 @@ the experiment adapts those examples. Editing/deleting a reusable environment ne
 or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
 12 recent definitions as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
-call or run. Schema/export v6 and library v3 reject incompatible versions explicitly; there is
+call or run. Database schema 6, export 7 and library v3 reject incompatible versions explicitly; there is
 no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 ### Failure-aware comparisons (T06)
@@ -412,8 +413,8 @@ Analysis submissions synchronously freeze cutoffs, dispositions, terminal metric
 eligibility, revision/hash and calculations before the server task runs. Progress,
 reconnect, failure and export preserve that snapshot across later run completion or
 new revisions. Analysis reads do not append participant evidence or provider calls.
-Study export v6 includes this versioned comparison contract and persisted analysis
-snapshots, changing v4/v5 consumer expectations. T06 changes no database columns and
+Study export v7 includes this versioned comparison contract and persisted analysis
+snapshots, changing earlier consumer expectations. T06 changes no database columns and
 requires no data reset; historical evidence is never backfilled with invented states.
 
 T15 adds self-versioned participant configurations and effort captures to comparison1
@@ -427,3 +428,41 @@ Analysis freezes this evidence at submission alongside outcomes. Old frozen capt
 without effort remain explicitly uncaptured; they are never backfilled. Request
 limits apply per activation and output limits per request. Different envelopes are
 experimental factors, not evidence of a compute-matched comparison.
+
+## Treatment exposure inspection
+
+`exposure.py` records a version-1 additive capture in participant activation identity
+and candidate input bindings in each reserved request. `World.exposure_paths` locates
+recorded events within an already authorized actor observation; Institution adds its
+sanction-record paths. Recipient checks precede producer lookup. Producers supply
+provenance, never extra participant input or authoritative interpretations.
+
+The public run/experiment exposure endpoints separate immutable assignment and
+configuration, recipient-record opportunities, available observations, candidate
+prompt/schema inputs and confirmed receipt. A persisted tool read is local until a
+later actual prompt includes it. A recorded provider response confirms input even
+if output validation fails; absent receipts leave delivery unknown. Refused requests
+without reservations remain unsent. Historical activations without capture have
+unavailable coverage, with null exposure counts rather than inferred zeros.
+Input source paths identify the recorded schema or JSON prompt; prompt suffixes
+select within its decoded JSON text. Whole inputs have no empty-key suffix.
+Tool-using 2.0 bindings inspect the final bounded prompt, not the unabridged
+operation journal. Investigation facets and retrieved observation sources bind
+only their actually included content to the current activation's permitted paths.
+Compacted receipts, self-authored plans, source references and verification
+metadata do not deliver original World content. Full-observation counts concern
+complete snapshots; retrieved fragments and investigation facets instead retain
+their rule, choice and event bindings. Direct action remains 1.0.0.
+
+Cutoffs restrict settled events and explicit historical activations. Current capture
+also retains unfinished boundary attempts. Analysis acceptance freezes the complete
+values and activation/operation/request membership, including then-current receipt
+status; later turns, resumes, settlement or revisions cannot rewrite that artifact.
+Researcher prompts receive compact frozen summaries linked to the persisted analysis
+artifact. Inspection/export/replay remain
+read-only. Exposure-conditioned descriptions are post-treatment selections, not
+automatic causal effects; inclusion establishes no attention, belief or intent.
+
+Export v7 includes the exposure chain and frozen analysis artifacts. Database schema
+6 and all World rule versions are unchanged: additive JSON provenance does not alter
+world settlement, prompts or checkpoint replay. No migration or reset is performed.

@@ -48,6 +48,16 @@ source pins separate from participant/study factors; preserve T06 frozen capture
 T08 actor authorization/corrected cutoffs, T04 settlement, T05 probes, T02 disabled
 generated admission and both live-discovery fixes. T09 and T07 are separate work.
 
+Final integration decision: the latest documented accepted checkpoint became
+`32fa9fc9aa5080a87458ea22756478dbe8b4eda3` (T07 acceptance) during this task.
+Merge that exact accepted checkpoint, never its provisional predecessors alone.
+It advances export6 to export7 for actual T07 exposure provenance; T15 adds no
+further contract bump, adapter, migration or reset. DB6/capture1/comparison1/
+library-v3/tool-using2.0.0/direct-action1.0.0 remain current. Retain both T07 input
+bindings and the scripted provider-construction guard. Researcher exposure metadata
+does not enter reference-policy inputs. T07 confirms model-request delivery;
+zero model delivery for a script is separate from its executed reference receipt.
+
 Evidence: ignored `data/t15/`, unique per-attempt scratch directories, exact commands,
 exits, source archives/digests, raw outputs and failures. Local uv 0.13.7 avoids the
 system uv page-size crash. Dependencies are project-local; checks run sequentially
