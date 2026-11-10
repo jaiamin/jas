@@ -826,6 +826,7 @@ class Research:
     def participant_effort(self, through_turns: dict[str, int]) -> dict[str, dict]:
         """Capture all recorded attempts/charges, independently of terminal eligibility."""
         result = {run_id: empty_effort() for run_id in through_turns}
+        charges = dict.fromkeys(through_turns, 0)
         with self.db.session() as session:
             activations = session.scalars(
                 select(ParticipantActivation).where(ParticipantActivation.run_id.in_(through_turns))
@@ -866,11 +867,13 @@ class Research:
             usage["requests"] += 1
             usage["input_tokens"] += call.input_tokens
             usage["output_tokens"] += call.output_tokens
-            usage["cost_usd"] += call.charged / 1_000_000
+            charges[allowed[call.activation_id].run_id] += call.charged
             usage["partial"] |= call.status in {"pending", "unknown"}
             effort["reasoning_tokens"] += call.reasoning_tokens
             statuses = effort["request_statuses"]
             statuses[call.status] = statuses.get(call.status, 0) + 1
+        for run_id, charged in charges.items():
+            result[run_id]["usage"]["cost_usd"] = charged / 1_000_000
         return result
 
     def metrics_many(self, run_ids: set[str]) -> dict[str, dict[str, float]]:

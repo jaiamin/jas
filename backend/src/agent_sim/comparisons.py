@@ -3,6 +3,7 @@
 import statistics
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+from decimal import Decimal
 
 from .domain import Design
 
@@ -89,7 +90,7 @@ def total_effort(records: list[dict]) -> dict:
     for effort in records:
         for key in EFFORT_COUNTS:
             result[key] += effort[key]
-        for key in ("requests", "input_tokens", "output_tokens", "cost_usd"):
+        for key in ("requests", "input_tokens", "output_tokens"):
             result["usage"][key] += effort["usage"][key]
         result["usage"]["partial"] |= effort["usage"]["partial"]
         for key in ("stop_reasons", "request_statuses"):
@@ -97,6 +98,11 @@ def total_effort(records: list[dict]) -> dict:
         for source in effort["implementation_sources"]:
             if source not in result["implementation_sources"]:
                 result["implementation_sources"].append(source)
+    # Each run converts integer ledger microdollars once; preserve those decimal
+    # amounts while combining runs rather than accumulating binary float error.
+    result["usage"]["cost_usd"] = float(
+        sum((Decimal(str(e["usage"]["cost_usd"])) for e in records), Decimal(0))
+    )
     return result
 
 

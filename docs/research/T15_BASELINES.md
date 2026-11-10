@@ -120,6 +120,18 @@ requests, $9.388368 remaining; Luna needs a separate concrete allowance.
   corrected by validating the template before reading its environment.
   Combined-source Ruff/ty/lint, 111 frontend tests and production build pass in
   `combined-static/`. Fresh combined backend/browser/baselines follow separately.
+- Combined clean `832ae46` passed all 1,116 backend cases in 14 bounded sequential
+  partitions. All four neutral DEVELOPMENT cases passed their predeclared checks;
+  the same v2 cases/runner reject only the unsupported scripted harness at accepted
+  application `32fa9fc`. Actual trial runs retain failures/incomplete states.
+- Independent frozen audit first assumed initial `decision=null`; both archived
+  public envelopes actually contain `{}`. The corrected helper retained this
+  format mistake, then found a real reporting defect: per-call USD float addition
+  diverged from canonical integer-ledger totals. A new public-API red reproduced it.
+  Run charges now sum integer microdollars before conversion; condition aggregates
+  preserve those decimal amounts. Settlement is unchanged. Ruff/ty and 120 affected
+  accounting/reference/harness/exposure/uncertainty cases pass after the repair.
+  Retain both failed audit helpers and the red test; rerun final comparisons.
 
 ## Final results and limits
 

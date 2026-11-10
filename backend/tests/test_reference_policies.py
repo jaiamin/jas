@@ -185,7 +185,9 @@ def test_matched_results_retain_factors_actual_work_and_larger_envelopes(harness
             client.post(f"/api/runs/{run['id']}/control", json={"action": "start"}).status_code
             == 200
         )
-        assert wait_finished(client, run["id"])["summary"]["status"] == "complete"
+        record = wait_finished(client, run["id"])
+        assert record["summary"]["status"] == "complete"
+        assert record["effort"]["usage"] == record["summary"]["usage"]
     study = client.get(f"/api/studies/{study['id']}").json()
     conditions = {c["condition_key"]: c for c in study["comparison"]["conditions"]}
     direct, capable, keep = (conditions[k] for k in ["direct", "capable", "keep"])
@@ -371,6 +373,7 @@ def test_missing_cells_keep_failed_work_and_frozen_effort_after_retry(
     limited = next(r for r in later["comparison"]["conditions"] if r["condition_key"] == "limited")
     assert limited["effort"]["activations"] == 3
     assert limited["effort"]["stop_reasons"] == {"request_limit": 1, "decision_committed": 2}
+    assert limited["effort"]["usage"] == client.get(f"/api/runs/{rid}").json()["summary"]["usage"]
     assert client.get(f"/api/analyses/{aid}").json()["output"]["comparisons"] == frozen
     exported = client.get(f"/api/studies/{study['id']}/export").json()
     assert (
