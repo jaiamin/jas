@@ -1,5 +1,171 @@
 # T19 evidence-supported findings and read-only lenses
 
+## Fresh integration acceptance (2026-11-10)
+
+T19/#30 is accepted for **explicit structured calculations and read-only lenses**.
+Fresh sole-writer Standards and Spec reviews were performed separately in the
+assigned integration checkout; no descendant or additional checkout was used.
+Clean exact source `1d8d9774a9dccb2e32f8171da7264185040c44c1`, including accepted
+`12b35c9`, was merged into `14e8af9` through no-ff
+`7e8647fe22660146b794da31889694b520d19e99`. Only HANDOFF/progress prose conflicted;
+both histories and the original conflict records remain. Qualified application
+code is `716a44b55afb9a6867680caa223da8a08294f1f3`; `d448ea5` corrects only a new
+browser test's navigation. Final exact HEAD/hooks/source records follow under
+`T19-integration/acceptance-checkpoint/`. Root resumes checkout ownership.
+
+### Standards finding and repair
+
+Run request summaries/details lacked purpose, analysis identity and actual model.
+After accepted T15 non-model controls, separately billed analysis could therefore
+look like participant sampling in the run's aggregate usage. The public HTTP red
+first proves unchanged participant state/effort, then fails on missing `purpose`.
+Repair `716a44b` adds existing ledger `purpose`, `analysis_id` and `model` to request
+inspection, identifies Analysis/Participant work and actual model, and explains
+aggregate usage in Record. It changes reporting, not participant accounting.
+The retained green and desktop/phone browser cases show four scripted decisions,
+zero participant requests, null participant model, and separately settled Sol
+analysis calls. Analysis and reanalysis each own their reservations/settlements.
+
+Current contracts remain **DB7/export8/capture1/comparison1/library4/tool2.0/
+direct1.0**, plus additive lens/support1 and request inspection metadata. No
+incompatible semantics, adapter, migration or reset was introduced. T15 actual
+controls/ablations/effort and artifact-read repair `6e1a7c8`, T09 artifact ACL/
+exposure/replay/library (`4ed18af`, `84867cc`), T07 `d5568c1`, T08 `de5556b`/
+capability delivery, and T03/T05/T06 invariants remain covered. Sol remains the
+app Researcher/planner/assistant; model participants remain Luna, with no fallback.
+No remaining concrete Standards defect was identified in this review.
+
+### Spec review and independent support limits
+
+Fresh expectations were retained before outputs. An odd-endowment public-API
+witness uses two participants, three rounds, endowment7 and multiplier2: keep
+controls finish at21 each/42 total; half3 controls finish at30 each/60 total.
+The half-minus-keep rate is +3/7 with two observed seed pairs. **181 checks**
+cover invented600, reversed arms, absent message exposure, wrong scope, foreign
+calculations/citations/retrieval, honest inconclusive answers and read-only
+source/participant accounting. Valid inspected citations cannot rescue a wrong
+structured value. World rules and recorded inputs supply facts; model/World prose
+never supplies authority, permissions, truth, causal inference or intent.
+
+Eleven fresh developmental semantic examples retain expected assessments and
+observed disagreement. A correct60 beside a false-zero sentence or collusion
+story checks only the structured number; wording remains **unassessed**.
+Supported and unsupported paraphrases both receive abstention. Explicit causal/
+intent assertions are unsupported; an honest inconclusive response remains
+`needs_review`. This is scoped assessment, not semantic accuracy, model competence,
+held-out generalization, live reliability or a universal truth oracle. No output,
+UI badge, citation, matching number, model agreement or self-written test certifies
+an answer as a whole.
+
+A separate **37-check** witness captures cutoff1 with participant turn2 in-flight,
+observes separate positive analysis reservations, then settles/continues to six
+turns and creates a new revision. Exact-scope same-chat reanalysis retains frozen
+inputs and excludes later conversation/context beyond the old cutoff. Source
+turns/events/checkpoints/artifacts/participant journals, ledger and effort stay
+unchanged by analysis. Original bounded observation windows remain inspectable;
+missing historical exposure/observation fields stay unavailable/null, not zero or
+reconstructed history. Cross-chat/run access is rejected. Lens requirements,
+inputs/formulas/scope/membership/source links, coverage, missingness, unfinished
+opportunities and T06 uncertainty are inspectable in existing Agent/run/export
+surfaces. No remaining concrete Spec defect was identified within this scope.
+
+The relocated child retained-input oracle freshly reproduces **571 calculations/
+33 analyses**, with no DB/provider calls or semantic certifications. Six accepted
+T06 finite comparison scenarios and **160 accepted T09 artifact checks** were also
+freshly executed through attributed relocated helpers. These are reused oracles;
+the new literal and semantic expectations above are independently specified.
+
+### Observed qualification and inherited evidence
+
+Fresh combined qualification covers **1,238 distinct passing backend tests across
+40 files**, Ruff, ty, frontend lint, **112 frontend units**, forced TypeScript,
+and a new empty-directory build byte-identical to the normal build (**55 files**).
+Stored source inventories prove relevant files from the early working-source
+checks equal the qualified application. Backend coverage is segmented: earlier
+ENOSPC setup errors and a packaging-helper failure remain; no uninterrupted full
+backend run is claimed. Browser qualification: **212 passing executions / 204 distinct configured flows across33 files**,
+including all7 T19 flows,11 harness/exposure/artifact,2 context and2 reference flows
+on18222; complete general-browser membership is covered across bounded runs. No uninterrupted full
+browser pass is claimed. Desktop/light and phone/dark screenshots were actually
+inspected; new accounting navigation is keyboard accessible and the page has no
+horizontal overflow. Completed Impeccable scan over all changed TSX returns `[]`.
+An owned keyless shared preview additionally inspected contradiction44 versus60,
+its formula/balances/source link, and separate Sol Analysis work beside non-model
+scripted activations. Manual provider controls were disabled; automatic fixtures
+exercised reanalysis. The tab/service closed; actual manual service exit -15
+(SIGTERM) is retained, not counted as a successful check.
+
+The implementer's 345 backend/112 frontend/63 browser counts are inherited only.
+Accepted T09 production smoke (`84867cc`) is inherited, not rerun; the closure
+audit verifies runtime/dependency/container/workflow inputs remain identical.
+No fresh production-container claim is made.
+
+### Frozen T01 and evidence custody
+
+The unchanged T01 runner/cases/scores freshly retain **exit1/four export-v4 failures/
+four failed terminal flags**. Its comparator also exits1, with zero regressions/
+improvements. Before is explicitly retained accepted T15 evidence at `6e1a7c8`,
+not rerun. The separate positive current-contract audit verifies **five runs/
+22 turns/22 requests**, exact behavior/checkpoints/events/metrics/prompts/schema/
+settings/input bindings and integer-microdollar accounting, HTTP98→98.
+All **1,747 differences** are classified:260 clocks/latencies,488 record identities,
+831 identity-bearing references,44 activation membership keys,66 verified additive
+request work/model/analysis fields,58 source-inventory changes. Zero unexplained.
+All32 pre-existing benchmark files are unchanged; only the T19 DEVELOPMENT cases
+are added. The frozen suite is not all-green.
+
+Initial and closure streaming custody independently match **3,244 complete files/
+3,242 child-indexed files,672 literal links,2,447 gzip originals,69 source archives/
+25,750 members**, and all30 inherited nonzero attempts were inspected. Manifest:
+`eb64fef96962f010929f21358d4ba78ce713e6c6b4b43408f7578a14ddd3f04a`.
+This is hardlinked immutable custody, **not independent physical copies**; neither
+source nor preserved evidence was written, no link followed, and source stayed
+clean at the exact assigned HEAD. Fresh commands/exits/source inventories, raw
+failures, archives/member proofs, lossless mappings and final verification manifest
+are under `.tools/research-harness/evidence/T19-integration/`. Its manifest excludes
+itself/checksum and explicitly separate later acceptance checkpoints.
+
+All review errors remain: custody-helper `link`/`symlink` spelling; initial fixture
+harness mismatch; genuine missing work metadata red; ty path configuration; test
+formatting; build/test ENOSPC; missing scratch-directory packing; historical export
+shape in an overly broad retained-input scan; new browser test's unsupported tab
+URL; interrupted broad browser run before disk exhaustion; two detector invocation/
+path errors; a browser-coverage helper initially omitted describe titles and
+collided with its command-record filename (complete inputs retained, first derived
+map explicitly regenerated, corrected204 distinct flows); retrospective read/setup errors. No test was weakened. Twenty fresh
+fixture outputs initially used the default T07 cases path; only this session's
+private new directories were relocated with byte proofs, then future outputs were
+explicitly confined here. Existing T07 evidence was not changed. Two early metadata
+commands retain HEAD/raw logs without standalone source snapshots; all product
+qualification has exact source inventories. See attempt classifications for scope.
+
+Own generated TypeScript/Vite/build caches are private and recomputation was
+forced; closure verifies **1,645 private mutable cache/build/bytecode files**.
+All12 runtime/dependency/container/workflow inputs match accepted T09. Prior T19 initial
+shared mutable-cache outside effects remain **unassessed**. This review does not
+resolve them or alter other environments. Only closed own fresh outputs were
+packed after complete byte/mode/link verification; prior maintenance gzip maps and
+immutable hardlinked evidence remain untouched. Services/browser owned by this
+review are closed at handoff. Protected Sol/stash/`pbcopy` were not inspected or modified; frozen T01 inputs
+were unchanged. Task paid spend0; global Sol remains $0.611632/55 known requests,
+$9.388368 remaining; no Luna allowance, paid allocation or publication.
+
+T10 is complete but **unaccepted**, queued for separate fresh review after this
+ownership return; no T10 source/evidence was inspected/copied/reviewed/merged here.
+Root-supplied identity: `04e30a5087640fc2f32c803029481a46eafffce0`,
+`t3/t10-distributed-information`, checkout `t3-9cbd6ed6`; provisional DB8/export9/
+library5 are excluded. Report `docs/research/T10_COORDINATION.md`; pointers
+`data/t10/evidence-manifest.json`, `qualification/final.json` and
+`.tools/t10-resource-cleanup.json` in that checkout. Root reports all1,846 indexed
+files/108,372,210 bytes verified, manifest
+`25fca245891c77dc8c3292711c1057e4299a411bb0249db1ecc74fc666908629` unchanged.
+Its implementer removed only its own dependencies/build/test caches, recovering
+224,002,048 bytes. Inherited tests are1,305 distinct observed passing after53
+repairs, not an uninterrupted final full-suite pass. T13 remains separate on18124.
+Root owns subsequent review/publication. Hosted checks/reviews were not queried.
+
+## Historical implementation record — source-specific, before fresh acceptance
+
 T19/#30 is implemented on `t3/research-claim-support` and awaits independent root
 review. Final qualified source/test checkpoint: `eee988599f4f604639d6c1a0ec2dd27e9c98952e`;
 following handoff commits change documentation only. This is **not integrated or

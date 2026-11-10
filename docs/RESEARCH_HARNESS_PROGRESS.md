@@ -55,6 +55,72 @@ Statuses reflect accepted integration work, not automatic GitHub closure. Issues
 remain open until the tracker resolves them through draft PR #32. No
 default-branch merge, auto-merge or history rewrite is authorized.
 
+### T19 fresh integration accepted; ownership returns to root (2026-11-10)
+
+**T01–T09, T15 and T19 are accepted.** Exact clean T19 `1d8d977` was merged
+into `14e8af9` through no-ff `7e8647f`. Separate fresh Standards/Spec reviews
+repaired one concrete reporting defect at `716a44b`: run request inspection now
+identifies purpose, analysis and actual model, keeping separately billed Sol
+analysis distinguishable from T15 scripted participants. `d448ea5` fixes only
+new-test Record-tab navigation. Final exact HEAD/hooks/source are retained under
+`T19-integration/acceptance-checkpoint/`. See [fresh T19 acceptance](research/T19_CLAIM_SUPPORT.md#fresh-integration-acceptance-2026-11-10).
+
+Acceptance is narrow: explicit structured calculations only; prose always
+unassessed and causal/intent unsupported. Eleven fresh semantic examples retain
+abstention/disagreement, including correct numbers beside false or intent-laden
+prose. Independent181 adversarial/read-only/accounting checks and37 in-flight/
+frozen/history-gap checks pass. Participants' turns/events/checkpoints/artifacts/
+journals/ledger/effort remain unchanged by analysis; each analysis reserves and
+settles independently. Lens inputs/formulas/scope/membership/source links,
+missingness and uncertainty remain inspectable. No semantic truth oracle, live
+competence or held-out/generalization result is claimed.
+
+Observed combined qualification: **1,238 distinct passing backend tests/40 files**,
+Ruff/ty/lint, **112 frontend units**, forced TypeScript and55-file byte-identical
+empty-directory/normal builds, **212 passing browser executions/204 distinct flows**
+on18222, actual light/desktop and dark/phone inspection, plus keyless shared preview.
+Coverage is segmented; all ENOSPC/setup/packaging/test-navigation/interruption/helper
+attempts remain. No uninterrupted full-backend/browser pass is claimed. Fresh
+attributed reexecutions:571 calculations/33 analyses, six T06 comparison scenarios,
+160 T09 artifact checks. Child counts are inherited. Accepted T09 production smoke
+is inherited;12 unchanged runtime inputs were verified. Own1,645 generated mutable
+cache/build/bytecode files are private; forced checks do not resolve earlier T19
+outside-cache effects, which remain unassessed.
+
+Frozen T01 stays **exit1/four export-v4 failures/four failed flags**, zero
+regressions/improvements. Separately, retained accepted T15 before versus fresh
+current-contract after proves **five-run/22-turn/22-request** parity, HTTP98→98,
+1,747 classified differences and zero unexplained; all32 prior benchmark files
+unchanged. DB7/export8/capture1/comparison1/library4/tool2.0/direct1.0 plus additive
+lens/support1 remain; no migration/reset/adapter. Accepted T15 pure artifact reads,
+T09 DB/library/ACL/exposure/replay, T07/T08 and T03/T05/T06 remain covered.
+
+Both streaming custody checks match3,244 files/672 literal links/2,447 gzip
+originals/69 source archives/25,750 members; all30 inherited nonzero attempts were
+inspected. Child manifest SHA256
+`eb64fef96962f010929f21358d4ba78ce713e6c6b4b43408f7578a14ddd3f04a`.
+Preservation is immutable hardlinked custody, not independent physical copies;
+never mutate either tree or follow links. Final fresh manifest, complete archive
+member proofs, lossless own-output mappings and failures are under
+`.tools/research-harness/evidence/T19-integration/`; later acceptance checkpoints
+are explicitly separate. Prior maintenance maps remain. Owned browser/service
+and18222 are closed; manual SIGTERM exit-15 is retained. No paid/external mutation.
+
+**T10 is complete, unaccepted, awaiting a separate fresh review after this return.**
+Root-supplied only: clean `04e30a5087640fc2f32c803029481a46eafffce0`,
+`t3/t10-distributed-information`, checkout `t3-9cbd6ed6`; provisional DB8/export9/
+library5 excluded. Report `docs/research/T10_COORDINATION.md`,
+`data/t10/evidence-manifest.json`, `qualification/final.json`; cleanup pointer
+`/home/agent/.t3/worktrees/workspace/t3-9cbd6ed6/.tools/t10-resource-cleanup.json`.
+Root verified1,846 indexed files/108,372,210 bytes; manifest
+`25fca245891c77dc8c3292711c1057e4299a411bb0249db1ecc74fc666908629` unchanged.
+Own-dependency/build/test-cache cleanup recovered224,002,048 bytes. Inherited
+T10 tests:1,305 distinct observed passing after53 repairs, no uninterrupted final
+suite claim. T10 source/evidence was not inspected/copied/reviewed/merged here.
+T13 remains independent on18124; T16/T18 remain Ready. Sol remains
+$0.611632/55 known requests, $9.388368 remaining; no new allocation or Luna allowance.
+No push/PR/issue/watch/hosted-state query/stash/`pbcopy` operation occurred.
+
 ### Root coordination — T13 implementation and fresh T19 review assigned (2026-11-10)
 
 T01–T09 and T15 are accepted at `d55f270` (qualified code `6e1a7c8`). Root
@@ -379,7 +445,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Accepted after combined-contract review repairs | `a92105f`, `d5568c1` |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Integrated and accepted after cutoff receipt repair | `9750caf`, `de5556b`; [evidence](research/T08_PARTICIPANT_CONTEXT.md) |
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Integrated and accepted after fresh review repairs | `c357a3b`, `4ed18af`, `84867cc`; [report](research/T09_ARTIFACT_WORLD.md) |
-| T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Assigned to fresh isolated implementation (18123) | — |
+| T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Complete; queued for separate fresh review | Unaccepted `04e30a5`; provisional DB8/export9/library5 |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Waiting | — |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Waiting | — |
 | T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Assigned to fresh isolated implementation (18124) | — |
@@ -388,7 +454,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Ready; root chooses launch | — |
 | T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | Waiting | — |
 | T18 | [#29](https://github.com/jaiamin/ass/issues/29) Inspect a declared fallible adjudication and replay its consequences | T09 | Ready; root chooses launch | — |
-| T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Complete; evidence preserved; assigned to fresh integration review (18222) | Not integrated; source `1d8d977` |
+| T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Accepted: structured calculations; prose unassessed | No-ff `7e8647f`; reporting repair `716a44b`; tests `d448ea5` |
 | T20 | [#31](https://github.com/jaiamin/ass/issues/31) Demonstrate the small-population generalization milestone | T11, T12, T14, T15, T17, T18, T19 | Waiting | — |
 
 ## Preserved drafts and spending
@@ -457,22 +523,20 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. Publish accepted T15 and this coordination checkpoint to draft PR #32; link
-   immediately. Launch fresh T13 implementation in the assigned isolated
-   checkout (18124) before handing shared writing ownership to fresh T19 review
-   (18222). T10 continues independently on 18123; do not poll running tasks.
-2. Fresh T19 review must reconcile exact source `1d8d977` with accepted T15
-   controls/effort and T09 artifact exposure/replay. Reverify complete preserved
-   evidence, independent claim calculations, unsupported prose/intent status,
-   frozen cutoffs and read-only reanalysis. Keep generated caches private and
-   force recomputation; earlier outside-cache effects stay unassessed. Only
-   root publishes, and no issue closes before the tracker resolves the work.
-3. T16/T18 remain Ready; T11/T12 wait on accepted T10, T14 on T13, T17 on
-   T13/T16. Retain source worktrees, immutable hardlinked evidence, gzip mappings,
-   actual frozen failures and exact source/case attribution. Keep checks bounded
-   and archive closed outputs with member verification. Live/held-out gates stay
-   unverified; Sol is $0.611632/55 requests with $9.388368 remaining and no active
-   allocation; Luna remains unallocated.
+1. Root resumes the shared checkout after T19 final closure. Review T10 separately
+   from clean `04e30a5` with fresh Standards/Spec acceptance before copying/merging
+   its provisional DB8/export9/library5. Root-supplied custody/cleanup pointers
+   are above; this T19 review did not inspect or accept T10. Publication decisions
+   for draft PR32 remain with root; hosted checks/reviews were unqueried here.
+2. T13 continues independently on18124; T16/T18 remain Ready. T11/T12 wait on
+   accepted T10, T14 on T13, T17 on T13/T16. Do not poll or alter others' running
+   tasks. No issue closes before the tracker resolves accepted work.
+3. Preserve source worktrees, immutable hardlinked evidence and all compression
+   maps. T19 earlier outside-cache effects remain unassessed. Keep checks bounded,
+   generated caches private, and pack only closed own outputs with byte/member
+   verification. Frozen T01 failures remain; live/held-out gates are unverified.
+   Sol is $0.611632/55 requests with $9.388368 remaining, no active allocation;
+   Luna remains unallocated. Stash and unread `pbcopy` stay protected.
 
 ## T02 integration — accepted after review fixes
 
