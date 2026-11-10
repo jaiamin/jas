@@ -32,6 +32,19 @@ for (const theme of ["light", "dark"]) {
         page.getByRole("heading", { name: design.title }),
       ).toBeVisible();
       await expect(
+        page.getByText("No results yet", { exact: true }),
+      ).toBeVisible();
+      const evidence = page.getByRole("button", {
+        name: "Comparison & evidence",
+        exact: true,
+      });
+      await expect(evidence).toHaveAttribute("aria-expanded", "false");
+      await expect(
+        page.getByRole("columnheader", { name: "Complete / planned" }),
+      ).toHaveCount(0);
+      await evidence.focus();
+      await evidence.press("Enter");
+      await expect(
         page.getByRole("columnheader", { name: "Complete / planned" }),
       ).toBeVisible();
       await expect(
@@ -104,6 +117,9 @@ for (const theme of ["light", "dark"]) {
       await expect(
         page.getByRole("heading", { name: design.title }),
       ).toBeVisible();
+      await page
+        .getByRole("button", { name: "Comparison & evidence", exact: true })
+        .click();
       await page
         .getByRole("button", { name: "Sample & uncertainty", exact: true })
         .click();

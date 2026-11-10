@@ -680,16 +680,15 @@ class Research:
         }
 
     def capture_exposure(self, cutoffs: dict[str, int]) -> dict:
-        # Called synchronously with analysis acceptance. Persist the values and
-        # exact membership, not a query that can see later settlement or resumes.
+        # Analysis capture runs off the API loop: the Engine can advance while
+        # these reads run, so always carry the accepted turn into the reader.
         return {
-            rid: self.exposure(rid)
-            if self.configuration(rid)[0].turn == cutoff
-            else self.exposure(rid, cutoff)
-            for rid, cutoff in cutoffs.items()
+            rid: self.exposure(rid, cutoff, include_pending=True) for rid, cutoff in cutoffs.items()
         }
 
-    def exposure(self, run_id: str, through_turn: int | None = None) -> dict:
+    def exposure(
+        self, run_id: str, through_turn: int | None = None, *, include_pending: bool = False
+    ) -> dict:
         run, design, condition = self.configuration(run_id)
         cutoff = run.turn if through_turn is None else through_turn
         if cutoff < 0 or cutoff > run.turn:
@@ -697,7 +696,7 @@ class Research:
         # Explicit historical turn cutoffs exclude later activations, including
         # observations made after the last event at that boundary. Current capture
         # also retains uncommitted attempts, with exact frozen membership.
-        attempt_cutoff = cutoff + (1 if through_turn is None else 0)
+        attempt_cutoff = cutoff + (through_turn is None or (include_pending and cutoff == run.turn))
         with self.db.session() as session:
             revision = session.scalars(
                 select(Revision)

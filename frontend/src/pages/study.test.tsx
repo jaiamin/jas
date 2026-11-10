@@ -262,6 +262,13 @@ test("planned sample and lack of independent support remain inspectable without 
     ),
   );
   renderStudy();
+  const details = await screen.findByRole("button", {
+    name: "Comparison & evidence",
+  });
+  expect(details).toHaveAttribute("aria-expanded", "false");
+  expect(screen.getByText("No results yet")).toBeInTheDocument();
+  expect(screen.queryByText("Complete / planned")).not.toBeInTheDocument();
+  fireEvent.click(details);
   expect(await screen.findByText("Complete / planned")).toBeInTheDocument();
   expect(screen.getByText("0 / 2")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Sample & uncertainty" }));

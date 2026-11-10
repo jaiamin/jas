@@ -179,6 +179,9 @@ for (const { theme, width } of [
     expect(failed.status).toBe("failed");
     await page.reload();
     await page
+      .getByRole("button", { name: "Comparison & evidence", exact: true })
+      .click();
+    await page
       .getByRole("button", {
         name: "Participant configuration & effort",
         exact: true,
