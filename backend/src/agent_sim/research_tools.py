@@ -404,7 +404,7 @@ class ResearchTools:
                 ),
                 **(
                     {"coordination_outcome": final.get("outcome")}
-                    if design.environment == "distributed_coordination"
+                    if design.environment in {"distributed_coordination", "reliance_commitments"}
                     else {}
                 ),
             },

@@ -9,7 +9,44 @@ export type EnvironmentId =
   | "renewable_resource"
   | "composed"
   | "artifact_workspace"
-  | "distributed_coordination";
+  | "distributed_coordination"
+  | "reliance_commitments";
+
+export interface CommitmentOpportunity {
+  key: string;
+  promisor: string;
+  recipient: string;
+  artifact: string;
+  alternative: string;
+  opens_at: number;
+  deadline: number;
+  fulfilled_value: number;
+  unfulfilled_value: number;
+}
+
+export interface CommitmentRules {
+  opportunities: CommitmentOpportunity[];
+}
+
+export interface CommitmentRecord {
+  key: string;
+  promisor: string;
+  recipient: string;
+  promised_at: number;
+  relied_at: number | null;
+  feasible_at_promise: boolean;
+  opportunities: number[];
+  fulfilled_at: number | null;
+  status:
+    | "pending"
+    | "fulfilled"
+    | "breached"
+    | "infeasible"
+    | "absent_opportunity"
+    | "unresolved";
+  eligible: boolean;
+  resolved_at: number | null;
+}
 
 export interface DistributedRules {
   timing: "sequential" | "phased_simultaneous";
@@ -36,7 +73,10 @@ export interface CoordinationOutcome {
   choices: Record<string, string | null>;
   payoffs: Record<string, number>;
   matched: boolean;
-  reason: "choices_complete" | "horizon";
+  reason: "choices_complete" | "horizon" | "stopped";
+  choice_values?: Record<string, number>;
+  reliance_effects?: Record<string, number>;
+  commitments?: Record<string, string>;
 }
 
 export interface ArtifactObject {
@@ -82,6 +122,10 @@ export type CoordinationAction =
   | { kind: "choose_alternative"; alternative: string }
   | { kind: "send_message"; recipient: string; text: string }
   | { kind: "wait_coordination" };
+export type CommitmentAction = {
+  kind: "make_commitment" | "rely_on_commitment";
+  opportunity: string;
+};
 export interface ResourcePrimitive {
   key: string;
   name: string;
@@ -103,7 +147,7 @@ export interface CompositionRules {
   controllers_first: boolean;
 }
 export interface SavedEnvironment {
-  format: "jas-environment-v5";
+  format: "jas-environment-v6";
   id: string;
   revision: number;
   updated: string;
@@ -154,6 +198,7 @@ export interface Parameters {
   composition: CompositionRules | null;
   artifacts: ArtifactRules | null;
   coordination: DistributedRules | null;
+  commitments: CommitmentRules | null;
   resource_schedule: { round: number; endowment: number }[];
 }
 export interface Profile {
@@ -473,7 +518,11 @@ export interface ControlledAction {
   report: number | null;
   promise: number | null;
 }
-export type Action = ControlledAction | ArtifactAction | CoordinationAction;
+export type Action =
+  | ControlledAction
+  | ArtifactAction
+  | CoordinationAction
+  | CommitmentAction;
 export interface Decision {
   action: Action;
   rationale: string;
@@ -552,6 +601,11 @@ export interface State {
     | null;
   logical_time?: number;
   choices?: Record<string, string | null>;
+  commitments?: Record<string, CommitmentRecord>;
+  choice_times?: Record<string, number>;
+  read_grants?: Record<string, string[]>;
+  reliance_effects?: Record<string, number>;
+  withdrawn?: string[];
   pending_actions?: Record<string, unknown>;
   pending_deliveries?: AddressedMessage[];
   inboxes?: Record<string, AddressedMessage[]>;

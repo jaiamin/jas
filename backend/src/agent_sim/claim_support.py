@@ -106,6 +106,11 @@ def capture_lens(
                 if "coordination_state" in recorded
                 else {}
             ),
+            **(
+                {"reliance_state": recorded["reliance_state"]}
+                if "reliance_state" in recorded
+                else {}
+            ),
             "measurements": raw_measurements,
             "rule_version": recorded["recorded_rule_version"],
             "turns": [
@@ -173,7 +178,7 @@ def capture_lens(
                 )
         if coordination := fact.get("coordination_state"):
             outcome = coordination["outcome"]
-            for name, value, formula in (
+            choice_calculations = (
                 (
                     "coordination_value",
                     sum(outcome["payoffs"].values()) if outcome is not None else None,
@@ -184,7 +189,32 @@ def capture_lens(
                     int(outcome["matched"]) if outcome is not None else None,
                     "1 if all three terminal choices match, else 0; null before termination",
                 ),
-            ):
+            )
+            if reliance := fact.get("reliance_state"):
+                eligible = [r for r in reliance["commitments"].values() if r["eligible"]]
+                choice_calculations = (
+                    (
+                        "reliance_value",
+                        sum(outcome["payoffs"].values()) if outcome else None,
+                        "sum(terminal choice_values + settled recipient reliance "
+                        "effects); null before termination",
+                    ),
+                    (
+                        "reliance_fulfillment",
+                        sum(r["status"] == "fulfilled" for r in eligible) / len(eligible)
+                        if eligible
+                        else None,
+                        "fulfilled / due relied promises with feasible and actual "
+                        "opportunities; null without eligibility",
+                    ),
+                    (
+                        "reliance_effect_total",
+                        sum(reliance["reliance_effects"].values()),
+                        "sum(recipient effects settled by captured cutoff); unresolved "
+                        "deadlines settle nothing",
+                    ),
+                )
+            for name, value, formula in choice_calculations:
                 calculations.append(
                     {
                         "id": f"run:{rid}:{name}",
@@ -202,7 +232,7 @@ def capture_lens(
                     }
                 )
         claims = [e for e in events if e.kind == "claim" and e.data.get("eligible")]
-        resolutions = [e for e in events if e.kind == "commitment_resolved"]
+        resolutions = [e for e in events if e.kind in {"commitment_resolved", "reliance_resolved"}]
         counters = {
             "decisions": len(turns),
             "messages": sum(e.kind in {"message", "message_queued"} for e in events),
@@ -218,7 +248,12 @@ def capture_lens(
             "false_reports": sum(e.data["reported"] != e.data["known_truth"] for e in claims),
             "feasible_commitments": sum(bool(e.data.get("eligible")) for e in resolutions),
             "feasible_commitment_breaches": sum(
-                bool(e.data.get("eligible")) and e.data["actual"] < e.data["amount"]
+                bool(e.data.get("eligible"))
+                and (
+                    e.data["status"] == "breached"
+                    if e.kind == "reliance_resolved"
+                    else e.data["actual"] < e.data["amount"]
+                )
                 for e in resolutions
             ),
         }
@@ -238,9 +273,11 @@ def capture_lens(
                         "mailbox arrival does not establish model input",
                         "reports": "count(events.kind == claim and data.eligible)",
                         "false_reports": "count(eligible claims where reported != known_truth)",
-                        "feasible_commitments": "count(commitment_resolved where data.eligible)",
-                        "feasible_commitment_breaches": "count(eligible commitment_resolved "
-                        "where actual < amount)",
+                        "feasible_commitments": "count(commitment_resolved or "
+                        "reliance_resolved where data.eligible)",
+                        "feasible_commitment_breaches": "count(eligible resolutions "
+                        "where actual < amount "
+                        "or typed reliance status is breached)",
                     }[name],
                     "inputs": {"fact_run_id": rid, "through_turn": cutoff},
                     "sources": [fact["snapshot_source"]],
@@ -427,6 +464,17 @@ def apply_lens(frozen: dict, key: LensKey) -> dict:
                     f"{messages['messages_delivered']} delivered to mailboxes. "
                     "Queued mail and mailbox arrival alone do not establish model input."
                 )
+        elif reliance := fact.get("reliance_state"):
+            value = values[f"run:{rid}:reliance_value"]
+            text = (
+                f"{row['recorded_turns']} recorded proposals; "
+                f"{len(reliance['commitments'])} explicit promises; "
+                f"{row['opportunities']['feasible_commitment_breaches']} eligible "
+                "deadline breaches; "
+                f"declared value {value if value is not None else 'pending'}. "
+                "Recipient effects are independent. Financial balances unavailable; "
+                "intent and betrayal unassessed."
+            )
         elif coordination:
             value = values[f"run:{rid}:coordination_value"]
             text = (

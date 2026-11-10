@@ -146,6 +146,51 @@ publication, push, PR/issue/watch or security/credential change. Root owns draft
 PR32 publication. Sole shared-checkout writing ownership returns to root only with
 the reviewer's explicit final completion message after the recorded closure checks.
 
+# T11 isolated implementation complete — fresh root review required (2026-11-10)
+
+T11/#22 only, implemented directly without descendants in assigned
+`t3-95376a5f`, branch `t3/t11-public-experiment-path`, from published accepted
+`eb9c29a9490480a241489ec353abea3f64baa15a`. Executable/UI checkpoint
+`8aad5464fb484c98fa9954a9116067a70249c9de`; subsequent handoff changes are docs
+only. T11 remains **unaccepted**. Read [the durable plan/report](docs/research/T11_COMMITMENTS.md).
+
+Four voluntary actors can make typed promises, independently entrust actual
+artifact read access and choose real alternatives. The existing World/artifact/
+logical-time seams record windows, feasibility, actual opportunities, recipient
+effects and later addressed responses. Review/editor/run/evidence/source links
+are usable. Infeasible/absent/unrelied/unresolved/null outcomes remain explicit;
+prose grants no facts/permissions and breach does not establish intent/betrayal.
+Atomic current contract: **DB9/export10/library6**; capture1/comparison1/tool2.0/
+direct1.0 unchanged. No migration/alias/reset/parallel engine/T12/semantic judge.
+
+Fresh observed: whole backend1,494 pass; final Ruff lint/ty, frontend lint,
+115 units/32 files; forced clean compiler/new-empty-directory build54 files
+identical;82 distinct browser flows all pass on18126; manual light/mobile-dark
+inspection and exact source navigation; actual UID10001 production smoke,
+containment and independent keyless T11 save/inspect/export/replay/rejection.
+An optional whole-tree formatter retains six differences proven identical to
+accepted-base formatting. Final qualifying sources have matching before/after
+inventories. No live intelligence or generalization result is claimed.
+
+Frozen T01 retains four export-v4 failures/exit1 and comparator exit1, no
+regressions/improvements. Separate positive current-contract/parity audit proves
+five runs/22 turns/22 identical bounded requests,98 HTTP operations and identical
+behavior/effort/accounting;1,777 differences classified/zero unexplained.
+All failures, source inventories/tars/diffs and closed synthetic raw-hash maps
+remain in ignored `data/t11/`, sealed by `MANIFEST.json`/`MANIFEST.sha256`.
+`source-qualification.json` identifies exact final clean HEAD/archive and tested
+input equivalence. The first19 early captures are before-only; later final
+qualification is stricter. Prior accepted T01–T10/T15/T19 scope remains inherited.
+
+Latest DOCUMENTED ACCEPTED `f9e87c2` is already an ancestor; explicit merge is
+up to date. Provisional T13 tips, last inspected `8ffccef`, are not merged.
+Root-authorized pnpm frozen guest-store reuse succeeded with555 reused/zero
+package archives downloaded. All24,681 store files and frozen lock are unchanged;
+114 generated files have private single-link inodes. ENOSPC/metadata failures
+and private-cache provenance remain. Shared lock released between bounded jobs.
+Owned tabs/services/production resources closed; port18126 closed. Actual spend
+**$0**. No publication or issue changes; later fresh root merger alone accepts.
+
 # Root coordination — T10 accepted; T13 review and T11 next (2026-11-10)
 
 Accepted integration is `f9e87c2b0cae14ca862ba2a051b2b95dffc3f78d`:

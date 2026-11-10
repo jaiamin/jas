@@ -27,7 +27,7 @@ def test_current_schema_reopens_without_changing_usage_or_conversations(tmp_path
     reopened.close()
 
 
-@pytest.mark.parametrize("version", [1, 2, 3, 4, 5, 6, 7, 99])
+@pytest.mark.parametrize("version", [1, 2, 3, 4, 5, 6, 7, 8, 99])
 def test_incompatible_schema_is_rejected_without_migration(tmp_path, version):
     url = f"sqlite:///{tmp_path}/workspace.sqlite3"
     db = Database(url)

@@ -16,6 +16,7 @@ from .composed import Composed
 from .decisions import DecisionRules
 from .distributed import DistributedCoordination
 from .mechanisms import Bargaining, Information, Institution, RenewableResource
+from .reliance import RelianceCommitments
 from .world import World
 
 
@@ -474,6 +475,11 @@ class EnvironmentDefinition:
 
 
 MEASURE_DESCRIPTIONS = {
+    "reliance_fulfillment": "Fulfilled / due relied promises with feasible and actual "
+    "opportunities; "
+    "null without eligible promises. Breach never establishes deception or betrayal.",
+    "reliance_value": "Terminal sum of local choice values, optional agreement bonus and "
+    "independent recipient reliance effects; not financial balances.",
     "coordination_match": "One terminal 0/1: all three chose the same alternative; "
     "abstention/horizon is unmatched. This is not a required cooperative outcome.",
     "coordination_value": "Terminal sum of declared local choice values and any all-match "
@@ -526,6 +532,22 @@ MEASURE_DESCRIPTIONS = {
 
 
 CATALOG = {
+    "reliance_commitments": EnvironmentDefinition(
+        "reliance_commitments",
+        "Reliance and commitments",
+        "Four voluntary participants, entrusted access, deadlines and recipient consequences.",
+        RelianceCommitments,
+        "reliance_fulfillment",
+        (
+            "artifacts",
+            "coordination",
+            "commitments",
+            "communication",
+            "communication_channels",
+            "memory",
+        ),
+        ("reliance_fulfillment", "reliance_value"),
+    ),
     "distributed_coordination": EnvironmentDefinition(
         "distributed_coordination",
         "Distributed information",

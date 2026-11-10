@@ -33,7 +33,7 @@ def test_keyless_baseline_retains_real_api_evidence_and_operation_counts(tmp_pat
     assert all(run["status"] == "complete" for run in simple["run_stops"])
     assert simple["usage"]["requests"] == 2
     exported = json.loads((output / simple["export"]).read_text())
-    assert exported["version"] == 9
+    assert exported["version"] == 10
     assert len(exported["activations"]) == 2
     assert len(exported["runs"][0]["evidence"]) == 3
     rejected = report["attempts"][-1]

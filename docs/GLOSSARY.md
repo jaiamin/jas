@@ -17,6 +17,9 @@
 | Event | A consequence enforced and recorded by environment rules. |
 | Claim | A checkable statement about a specified fact, compared with available ground truth. |
 | Commitment | An explicit promise whose deadline and fulfillment are observable. |
+| Voluntary reliance | A recorded recipient choice to accept a promise's declared consequences; in the reliance World it also grants the promisor read access to a named recipient-owned artifact for that run. This is an action, not a claim about belief. |
+| Fulfillment opportunity | A committed decision boundary at which the promisor could still choose the promised alternative within its declared logical-time window. Availability does not establish model attention or intent. |
+| Eligible commitment breach | A due, relied promise with feasible and actual fulfillment opportunities whose promised alternative was not chosen in time. Infeasible, absent-opportunity and unresolved cases remain distinct; breach does not establish deliberate deception or betrayal. |
 | Relationship | A directed history of interaction and measured reciprocity; not proof of emotion. |
 | Memory | An agent's retained experiences or self-authored notes. |
 | Metric | A versioned calculation with scope, units and eligibility denominator. |

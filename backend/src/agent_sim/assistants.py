@@ -831,12 +831,14 @@ class Assistants:
                         ),
                         **(
                             {"coordination_outcome": state.get("outcome")}
-                            if design.environment == "distributed_coordination"
+                            if design.environment
+                            in {"distributed_coordination", "reliance_commitments"}
                             else {}
                         ),
                         **(
                             {"coordination_outcome": state.get("outcome")}
-                            if design.environment == "distributed_coordination"
+                            if design.environment
+                            in {"distributed_coordination", "reliance_commitments"}
                             else {}
                         ),
                     },
@@ -852,7 +854,28 @@ class Assistants:
                                 )
                             }
                         }
-                        if design.environment in {"artifact_workspace", "distributed_coordination"}
+                        if design.environment
+                        in {
+                            "artifact_workspace",
+                            "distributed_coordination",
+                            "reliance_commitments",
+                        }
+                        else {}
+                    ),
+                    **(
+                        {
+                            "reliance_state": {
+                                name: state[name]
+                                for name in (
+                                    "commitments",
+                                    "choice_times",
+                                    "read_grants",
+                                    "reliance_effects",
+                                    "commitment_history",
+                                )
+                            }
+                        }
+                        if design.environment == "reliance_commitments"
                         else {}
                     ),
                     **(
@@ -866,7 +889,8 @@ class Assistants:
                                 "pending_deliveries": len(state["pending_deliveries"]),
                             }
                         }
-                        if design.environment == "distributed_coordination"
+                        if design.environment
+                        in {"distributed_coordination", "reliance_commitments"}
                         else {}
                     ),
                 }

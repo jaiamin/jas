@@ -128,7 +128,9 @@ class DistributedCoordination(ArtifactWorkspace):
         base = super().decision_schema(observation)
         annotation = base.model_fields["action"].annotation
         assert annotation is not None
-        variants: list[type] = [cast(type, annotation), choose, WaitCoordination]
+        variants: list[type] = [cast(type, annotation), WaitCoordination]
+        if any(a["kind"] == "choose_alternative" for a in observation["legal_actions"]):
+            variants.insert(1, choose)
         recipients = next(
             (a["targets"] for a in observation["legal_actions"] if a["kind"] == "send_message"), []
         )
@@ -199,6 +201,33 @@ class DistributedCoordination(ArtifactWorkspace):
         ]
         return events
 
+    def settle_commitment_action(self, actor: str, decision: Decision) -> Event | None:
+        return None
+
+    def settle_commitments(self, actors: list[str], events: list[Event]) -> list[Event]:
+        return []
+
+    def active_actors(self) -> list[str]:
+        return [a for a in self.coordination.turn_order if a not in self.checkpoint["choices"]]
+
+    def finished(self, barrier: bool) -> bool:
+        return (
+            len(self.checkpoint["choices"]) == 3
+            or barrier
+            and self.state["round"] >= self.design.rounds
+        )
+
+    def finish(self, choices: dict, matched: bool, payoffs: dict) -> tuple[dict, list[Measure]]:
+        return {
+            "choices": choices,
+            "matched": matched,
+            "payoffs": payoffs,
+            "reason": "choices_complete" if len(self.checkpoint["choices"]) == 3 else "horizon",
+        }, [
+            Measure(key="coordination_match", value=float(matched), denominator=1),
+            Measure(key="coordination_value", value=sum(payoffs.values()), denominator=1),
+        ]
+
     def step(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
         s = self.checkpoint
         if s["done"] or actor not in s["phase_actors"] or actor in s["pending_actions"]:
@@ -244,7 +273,10 @@ class DistributedCoordination(ArtifactWorkspace):
         for participant in settle:
             proposal = Decision.model_validate(s["pending_actions"][participant])
             action = proposal.action
-            if isinstance(action, ChooseAlternative | StopArtifact):
+            special = self.settle_commitment_action(participant, proposal)
+            if special is not None:
+                event = special
+            elif isinstance(action, ChooseAlternative | StopArtifact):
                 selected = action.alternative if isinstance(action, ChooseAlternative) else None
                 s["choices"][participant] = selected
                 event = Event(
@@ -350,9 +382,10 @@ class DistributedCoordination(ArtifactWorkspace):
             events.append(event)
         s["logical_time"] += 1
         events.extend(self.deliver())
+        events.extend(self.settle_commitments(settle, events))
         self.remember(events)
         measures = []
-        if len(s["choices"]) == 3 or barrier and s["round"] >= self.design.rounds:
+        if self.finished(barrier):
             s["done"] = True
             choices = {a: s["choices"].get(a) for a in self.ids}
             matched = len(set(choices.values())) == 1 and None not in choices.values()
@@ -364,16 +397,7 @@ class DistributedCoordination(ArtifactWorkspace):
                 else 0
                 for a, choice in choices.items()
             }
-            s["outcome"] = {
-                "choices": choices,
-                "matched": matched,
-                "payoffs": payoffs,
-                "reason": "choices_complete" if len(s["choices"]) == 3 else "horizon",
-            }
-            measures = [
-                Measure(key="coordination_match", value=float(matched), denominator=1),
-                Measure(key="coordination_value", value=sum(payoffs.values()), denominator=1),
-            ]
+            s["outcome"], measures = self.finish(choices, matched, payoffs)
             events.append(
                 Event(
                     kind="coordination_outcome",
@@ -388,6 +412,6 @@ class DistributedCoordination(ArtifactWorkspace):
             s["round"] += 1
             s["pending_actions"] = {}
             s["pending_reads"] = {}
-            s["phase_actors"] = [a for a in self.coordination.turn_order if a not in s["choices"]]
+            s["phase_actors"] = self.active_actors()
             self.new_round()
         return events, measures

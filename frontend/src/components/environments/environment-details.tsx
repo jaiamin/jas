@@ -21,6 +21,12 @@ import type { Environment, EnvironmentId } from "@/lib/types";
 
 const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
   {
+    reliance_commitments: {
+      observes:
+        "Four participants have local values, actor-scoped evidence, private commitment opportunities and addressed mail. Only a voluntary recipient can entrust its declared artifact's read access to the promisor.",
+      enforces:
+        "Typed promises and reliance, declared opening/deadline windows, final alternative choices and independent recipient effects. Feasibility, actual opportunities, unresolved deadlines and null outcomes remain explicit. A mechanical breach does not establish deception or betrayal.",
+    },
     distributed_coordination: {
       observes:
         "An explicit directory and topology, actor-scoped evidence, shared draft versions and addressed inbox. The shared-information control opens evidence readers; private value content requires an authorized read.",

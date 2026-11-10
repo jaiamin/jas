@@ -48,7 +48,11 @@ export function WorldView({
   onAgent: (key: string) => void;
 }) {
   const profiles = run.design.profiles;
-  if (run.design.environment === "distributed_coordination")
+  if (
+    ["distributed_coordination", "reliance_commitments"].includes(
+      run.design.environment,
+    )
+  )
     return <CoordinationView run={run} state={state} events={events} />;
   if (run.design.environment === "artifact_workspace")
     return <ArtifactView run={run} state={state} />;

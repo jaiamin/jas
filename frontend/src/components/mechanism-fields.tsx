@@ -1,4 +1,5 @@
 import { ArtifactFields } from "@/components/artifact-fields";
+import { CommitmentFields } from "@/components/commitment-fields";
 import { CompositionFields } from "@/components/composition-fields";
 import { DistributedFields } from "@/components/distributed-fields";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -199,12 +200,18 @@ export function MechanismFields({
 }) {
   const config = mechanismFields(environment, parameters, onChange);
   if (
-    ["artifact_workspace", "distributed_coordination"].includes(environment) &&
+    [
+      "artifact_workspace",
+      "distributed_coordination",
+      "reliance_commitments",
+    ].includes(environment) &&
     parameters.artifacts
   ) {
     return (
       <div className="flex min-w-0 flex-col gap-6">
-        {environment === "distributed_coordination" &&
+        {["distributed_coordination", "reliance_commitments"].includes(
+          environment,
+        ) &&
           parameters.coordination && (
             <DistributedFields
               rules={parameters.coordination}
@@ -213,6 +220,16 @@ export function MechanismFields({
               onChange={(coordination) => onChange({ coordination })}
             />
           )}
+        {parameters.commitments && parameters.coordination && (
+          <CommitmentFields
+            rules={parameters.commitments}
+            coordination={parameters.coordination}
+            artifacts={parameters.artifacts}
+            profiles={profiles}
+            id={id}
+            onChange={(commitments) => onChange({ commitments })}
+          />
+        )}
         <ArtifactFields
           rules={parameters.artifacts}
           profiles={profiles}

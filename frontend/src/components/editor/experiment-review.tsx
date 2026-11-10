@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { CommitmentAssumptions } from "@/components/commitment-fields";
 import {
   Disclosure,
   DisclosureContent,
@@ -168,6 +169,11 @@ export function ExperimentReview({
                 {condition.parameters.coordination && (
                   <CoordinationAssumptions
                     rules={condition.parameters.coordination}
+                  />
+                )}
+                {condition.parameters.commitments && (
+                  <CommitmentAssumptions
+                    rules={condition.parameters.commitments}
                   />
                 )}
                 {condition.harness.kind === "tool_using" && (

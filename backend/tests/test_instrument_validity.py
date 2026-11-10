@@ -48,7 +48,11 @@ def test_observation_deep_isolation_and_terminal_guard(template):
     world.state["experiences"][actor] = [{"text": "private-experience"}]
     before, parameters = world.snapshot(), params.model_dump()
     obs = world.observe(actor)
-    if design.environment in {"artifact_workspace", "distributed_coordination"}:
+    if design.environment in {
+        "artifact_workspace",
+        "distributed_coordination",
+        "reliance_commitments",
+    }:
         assert obs["public_history"] == []
         from agent_sim.domain import ReadArtifact
 

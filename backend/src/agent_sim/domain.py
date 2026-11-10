@@ -22,6 +22,7 @@ EnvironmentId = Literal[
     "composed",
     "artifact_workspace",
     "distributed_coordination",
+    "reliance_commitments",
 ]
 
 
@@ -208,13 +209,29 @@ class MessageRoute(Strict):
 
 class DistributedRules(Strict):
     timing: Literal["sequential", "phased_simultaneous"]
-    turn_order: list[ArtifactKey] = Field(min_length=3, max_length=3)
-    conflict_order: list[ArtifactKey] = Field(min_length=3, max_length=3)
-    routes: list[MessageRoute] = Field(max_length=6)
+    turn_order: list[ArtifactKey] = Field(min_length=3, max_length=4)
+    conflict_order: list[ArtifactKey] = Field(min_length=3, max_length=4)
+    routes: list[MessageRoute] = Field(max_length=12)
     delivery_delay: int = Field(ge=1, le=12)
     alternatives: list[ArtifactKey] = Field(min_length=2, max_length=6)
-    information: dict[ArtifactKey, ArtifactKey] = Field(min_length=3, max_length=3)
+    information: dict[ArtifactKey, ArtifactKey] = Field(min_length=3, max_length=4)
     match_bonus: int = Field(ge=0, le=100)
+
+
+class CommitmentOpportunity(Strict):
+    key: ArtifactKey
+    promisor: ArtifactKey
+    recipient: ArtifactKey
+    artifact: ArtifactKey
+    alternative: ArtifactKey
+    opens_at: int = Field(ge=0, le=1200)
+    deadline: int = Field(ge=1, le=1200)
+    fulfilled_value: int = Field(ge=-100, le=100)
+    unfulfilled_value: int = Field(ge=-100, le=100)
+
+
+class CommitmentRules(Strict):
+    opportunities: list[CommitmentOpportunity] = Field(min_length=1, max_length=12)
 
 
 class MechanicsParameters(Strict):
@@ -258,6 +275,7 @@ class MechanicsParameters(Strict):
     composition: CompositionRules | None = None
     artifacts: ArtifactRules | None = None
     coordination: DistributedRules | None = None
+    commitments: CommitmentRules | None = None
     resource_schedule: list[ResourceChange] = Field(default_factory=list, max_length=12)
 
 
@@ -368,7 +386,7 @@ class EnvironmentMechanics(Strict):
 
 
 class SavedEnvironment(Strict):
-    format: Literal["jas-environment-v5"] = "jas-environment-v5"
+    format: Literal["jas-environment-v6"] = "jas-environment-v6"
     id: str
     revision: int = Field(ge=1)
     updated: str
@@ -430,7 +448,11 @@ class Design(DesignSpec):
                 raise ValueError(f"{label} identifiers must be unique")
         for condition in self.conditions:
             artifacts = condition.parameters.artifacts
-            if self.environment in {"artifact_workspace", "distributed_coordination"}:
+            if self.environment in {
+                "artifact_workspace",
+                "distributed_coordination",
+                "reliance_commitments",
+            }:
                 if artifacts is None:
                     raise ValueError("Artifact workspace requires explicit artifact mechanics")
                 references = {
@@ -445,23 +467,25 @@ class Design(DesignSpec):
             elif artifacts is not None:
                 raise ValueError("Artifact mechanics require the artifact workspace")
             if (
-                self.environment not in {"artifact_workspace", "distributed_coordination"}
+                self.environment
+                not in {"artifact_workspace", "distributed_coordination", "reliance_commitments"}
                 and "read_artifact" in condition.harness.tools
             ):
                 raise ValueError("Artifact read tools require the artifact workspace")
             coordination = condition.parameters.coordination
-            if self.environment == "distributed_coordination":
+            if self.environment in {"distributed_coordination", "reliance_commitments"}:
                 ids = {p.key for p in self.profiles}
-                if len(ids) != 3 or coordination is None or artifacts is None:
+                count = 4 if self.environment == "reliance_commitments" else 3
+                if len(ids) != count or coordination is None or artifacts is None:
                     raise ValueError(
-                        "Distributed coordination requires three participants and rules"
+                        f"{self.environment} requires exactly {count} participants and rules"
                     )
                 if any(
-                    len(set(order)) != 3 or set(order) != ids
+                    len(order) != count or set(order) != ids
                     for order in (coordination.turn_order, coordination.conflict_order)
                 ):
                     raise ValueError(
-                        "Turn and conflict orders must each list all three participants"
+                        "Turn and conflict orders must each list all participants exactly once"
                     )
                 routes = [(route.sender, route.recipient) for route in coordination.routes]
                 if len(set(routes)) != len(routes) or any(
@@ -472,7 +496,7 @@ class Design(DesignSpec):
                     raise ValueError("Coordination alternatives must be unique")
                 if (
                     set(coordination.information) != ids
-                    or len(set(coordination.information.values())) != 3
+                    or len(set(coordination.information.values())) != count
                 ):
                     raise ValueError("Each participant requires a distinct value artifact")
                 objects = {obj.key: obj for obj in artifacts.objects}
@@ -497,11 +521,36 @@ class Design(DesignSpec):
                     )
             elif coordination is not None:
                 raise ValueError("Distributed rules require distributed coordination")
+            commitments = condition.parameters.commitments
+            if self.environment == "reliance_commitments":
+                if commitments is None or artifacts is None or coordination is None:
+                    raise ValueError("Reliance requires explicit commitment opportunities")
+                if len({o.key for o in commitments.opportunities}) != len(
+                    commitments.opportunities
+                ):
+                    raise ValueError("Commitment opportunity keys must be unique")
+                objects = {o.key: o for o in artifacts.objects}
+                for opportunity in commitments.opportunities:
+                    obj = objects.get(opportunity.artifact)
+                    if (
+                        opportunity.promisor not in ids
+                        or opportunity.recipient not in ids
+                        or opportunity.promisor == opportunity.recipient
+                        or opportunity.alternative not in coordination.alternatives
+                        or obj is None
+                        or obj.owner != opportunity.recipient
+                        or opportunity.promisor in obj.readers
+                        or opportunity.artifact in coordination.information.values()
+                    ):
+                        raise ValueError(
+                            "Commitments require distinct parties, a declared alternative "
+                            "and recipient-owned evidence not already readable by the promisor"
+                        )
+            elif commitments is not None:
+                raise ValueError("Commitment rules require reliance_commitments")
             if condition.harness.kind == "scripted":
                 required_world = (
-                    "information"
-                    if condition.harness.policy == "private_signal_v1"
-                    else "commons"
+                    "information" if condition.harness.policy == "private_signal_v1" else "commons"
                 )
                 if self.environment != required_world:
                     raise ValueError(
@@ -641,11 +690,29 @@ class SendMessage(Strict):
     text: str = Field(min_length=1, max_length=1000)
 
 
+class MakeCommitment(Strict):
+    kind: Literal["make_commitment"]
+    opportunity: ArtifactKey
+
+
+class RelyOnCommitment(Strict):
+    kind: Literal["rely_on_commitment"]
+    opportunity: ArtifactKey
+
+
 ArtifactAction = Annotated[
     ReadArtifact | WriteArtifact | CheckArtifacts | SubmitArtifacts | StopArtifact,
     Field(discriminator="kind"),
 ]
-ActionRequest = Action | ArtifactAction | ChooseAlternative | WaitCoordination | SendMessage
+ActionRequest = (
+    Action
+    | ArtifactAction
+    | ChooseAlternative
+    | WaitCoordination
+    | SendMessage
+    | MakeCommitment
+    | RelyOnCommitment
+)
 
 
 class Decision(Strict):

@@ -4,6 +4,17 @@ import type { EnvironmentId } from "@/lib/types";
 // authority, negotiation, private signals, replenishment and modular resources.
 // 0 = quiet grid; 1 = structure; 2 = the mechanism's focal cells.
 const grids: Record<EnvironmentId, readonly string[]> = {
+  reliance_commitments: [
+    "111000111",
+    "121111121",
+    "111010111",
+    "010010010",
+    "011222110",
+    "010010010",
+    "111010111",
+    "121111121",
+    "111000111",
+  ],
   distributed_coordination: [
     "111000111",
     "121111121",
