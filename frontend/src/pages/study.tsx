@@ -56,7 +56,6 @@ export default function Study() {
   const query = useApi<StudyDetail>(path, true);
   const client = useQueryClient();
   const control = useMutation({
-    mutationKey: ["study-control", id],
     mutationFn: (action: string) => api(`/studies/${id}/control`, { action }),
     onSuccess: () =>
       invalidateResources(client, [

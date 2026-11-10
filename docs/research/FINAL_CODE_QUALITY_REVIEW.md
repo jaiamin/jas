@@ -20,42 +20,53 @@ private observations, explicit spending and one current contract remain binding.
 The historical raw evidence was retired with user authorization; use the fresh
 current-contract qualification gate in the compact report.
 
-## Observed defect and repair
+## Navigation audit correction
 
-**Run and experiment controls carried state across record navigation.** Start a
-control request on one record, then navigate to another record while the request
-is pending. The second record's Run button becomes disabled. A late error can
-also appear on the wrong record. Independent rendered-UI tests reproduced the
-disabled button for both routes before repair.
+**The first diagnosis overstated a product defect.** Isolated Run and Experiment
+tests reproduced pending controls carrying into a second record, but omitted the
+actual workspace shell. `WorkspaceShell` already keys its content and error
+boundary by `location.pathname`, remounting each record page. That existing
+behavior isolates controls and late errors in the application.
 
-Give each existing TanStack mutation a key containing its record identity.
-The installed version and upstream source document that a changed mutation key
-detaches the observer from the previous request; the original request continues
-and retains its original callbacks. No new component, state mirror or wrapper
-is needed. Observation drafts keep their existing ownership and lifetime.
+Commit `dd48bf31` added two redundant mutation keys on the strength of those
+incomplete fixtures. They are removed. The two new tests now render through the
+actual `WorkspaceProvider` and `WorkspaceShell` route, retain delayed requests
+and late-error assertions, and check the existing protection without a product
+repair. The isolated failures remain recorded as test results; they are not
+whole-app red→green evidence.
 
-The focused run, experiment and observation tests passed 9 cases. The first
-run-test attempt failed because its browser-environment fixture lacked
-ResizeObserver; the corrected fixture then exposed the genuine product red.
-An initial TypeScript check rejected an unsupported test-query option; removing
-that option preserves the same accessible-name assertion and the next forced
-check passed. Both failures remain in the current compact records.
-The final lint also caught whitespace left by that test-only type correction;
-normal formatting and the subsequent full lint passed. It changed no assertions
-or application bytes after the unit/build/browser checks.
+The initial run fixture also lacked ResizeObserver. A later TypeScript check
+rejected an unsupported test-query option, and lint caught its whitespace.
+Those failures remain recorded with the corrected diagnosis.
 
 Current records: `.tools/research-harness/current/control-*`,
 `record-control-navigation-*` and `experiment-control-navigation-*`. These are
 fresh source-stamped checks, not historical before/after evidence.
 
-All 118 frontend units across 33 files, lint over 228 files, forced TypeScript
-and an empty-output-directory Vite build passed. The keyless browser check used
+Before this correction, all 118 frontend units across 33 files, lint over 228
+files, forced TypeScript and an empty-output-directory Vite build passed. These
+results apply to the redundant-key source. The keyless browser check used
 fresh API-created records, delayed control responses and client-side history
 navigation. Both the 390px run and 1440px experiment views retained enabled
 controls on the second record and excluded the first record's late error. Both
 used the app's explicit dark setting; changing the browser's preferred theme
 did not replace that saved setting. No console errors or document-width overflow
-were observed. The owned tab/service are closed and the lock released.
+were observed. This browser result did not establish a pre-existing defect:
+the original shell already supplied the tested isolation. The owned tab/service
+are closed and the lock released.
+
+Corrected-source qualification passes 13 focused Run/Experiment/shell tests,
+lint over 228 files, forced TypeScript and a fresh empty-output-directory Vite
+build. Each check recorded unchanged source
+`2eff28ca345239dedc5f09b9c4ca6a43acc5d73560546df19a573faa2d39a6a7`.
+Rendered checks pass at 390px/light for Run and 1440px/dark for Experiment:
+the first control is held pending, client-side navigation opens the second
+record with enabled controls, and the old late error stays absent. No console
+errors or document overflow were observed. These verify existing shell behavior.
+Records are `current/control-shell-*`. The owned tab and server are closed.
+The supervisor's plain post-shutdown bind check failed on the recently closed
+TCP port; a separate listener check and reuse-address bind passed. That helper
+failure is retained and does not change the browser result.
 
 ## Remaining review
 
