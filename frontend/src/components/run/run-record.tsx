@@ -61,7 +61,7 @@ export function RunRecord({ run }: { run: RunDetail }) {
               </dd>
             </div>
             <div>
-              <dt>Usage</dt>
+              <dt>Run usage</dt>
               <dd>
                 {summary.usage.input_tokens.toLocaleString()} input /{" "}
                 {summary.usage.output_tokens.toLocaleString()} output tokens
@@ -84,6 +84,12 @@ export function RunRecord({ run }: { run: RunDetail }) {
               </dd>
             </div>
           </dl>
+          {run.requests.some((call) => call.analysis_id) && (
+            <p className="text-sm text-muted-foreground">
+              Run usage includes separately billed analysis. Participant effort
+              below excludes analysis requests.
+            </p>
+          )}
           <p className="text-sm leading-relaxed text-muted-foreground">
             The turn slider plays saved evidence. Verify reapplies recorded
             actions locally to check consequences. After a server restart, saved

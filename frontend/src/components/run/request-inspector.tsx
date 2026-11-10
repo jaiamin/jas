@@ -43,6 +43,7 @@ export function RequestInspector({
           <TableHeader>
             <TableRow>
               <TableHead>Request</TableHead>
+              <TableHead>Work</TableHead>
               <TableHead>Turn</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Tokens in / out</TableHead>
@@ -64,6 +65,21 @@ export function RequestInspector({
                   >
                     {call.id.slice(0, 8)}
                   </Button>
+                </TableCell>
+                <TableCell>
+                  {call.analysis_id ? (
+                    <a
+                      className="underline underline-offset-4"
+                      href={`/api/analyses/${call.analysis_id}`}
+                    >
+                      Analysis {call.analysis_id.slice(0, 5)}
+                    </a>
+                  ) : (
+                    "Participant"
+                  )}
+                  <span className="block text-xs text-muted-foreground">
+                    {call.model.replace("openai:", "")}
+                  </span>
                 </TableCell>
                 <TableCell>{call.turn ?? "—"}</TableCell>
                 <TableCell>
@@ -97,6 +113,10 @@ export function RequestInspector({
               <h3 className="text-sm font-medium">
                 Request {request.data.id.slice(0, 8)}
               </h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {request.data.analysis_id ? "Analysis" : "Participant"} ·{" "}
+                {request.data.model} · {request.data.purpose}
+              </p>
               {request.data.activation_id && (
                 <p className="mt-1 break-all text-xs text-muted-foreground">
                   Participant activation {request.data.activation_id}

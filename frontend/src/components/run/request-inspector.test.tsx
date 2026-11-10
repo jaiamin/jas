@@ -16,6 +16,9 @@ test("request retry stays selected when an older request finishes late", async (
           ? Response.json({ detail: "Trace unavailable" }, { status: 503 })
           : Response.json({
               id: "second",
+              model: "openai:gpt-6-luna",
+              purpose: "decision",
+              analysis_id: null,
               request: null,
               response: { result: "Selected response" },
             }),
@@ -25,6 +28,9 @@ test("request retry stays selected when an older request finishes late", async (
   const requests: RequestSummary[] = ["first", "second"].map((id, turn) => ({
     id,
     activation_id: null,
+    analysis_id: null,
+    purpose: "decision",
+    model: "openai:gpt-6-luna",
     turn,
     status: "failed",
     error: null,

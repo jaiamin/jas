@@ -145,6 +145,93 @@ test("only completion replaces pending prose and publishes citation links", () =
   expect(onRetry).toHaveBeenCalledOnce();
 });
 
+test("findings expose contradictory assertions without certifying their wording", () => {
+  const reanalyze = vi.fn();
+  render(
+    <MemoryRouter>
+      <TooltipProvider>
+        <AgentReply
+          row={{
+            ...row,
+            status: "complete",
+            output: {
+              answer: "The total was 440.",
+              lens: {
+                version: 1,
+                key: "behavior",
+                name: "Recorded behavior",
+                inputs_sha256: "hash",
+                requirements: ["cutoff_checkpoint"],
+                limitations: ["One fixed seed."],
+                account: [
+                  {
+                    run_id: "run",
+                    turn: 3,
+                    text: "3 recorded decisions; cumulative utility 44.",
+                  },
+                ],
+                calculations: [
+                  {
+                    id: "run:run:total_utility",
+                    label: "Recorded total utility",
+                    value: 44,
+                    scope: "captured_run",
+                    formula: "sum(balances.values())",
+                    inputs: { balances: { alex: 22, morgan: 22 } },
+                    sources: [],
+                    assumptions: [],
+                  },
+                ],
+                coverage: {
+                  planned_cells: 1,
+                  failed_cells: 0,
+                  nonterminal_cells: 0,
+                  not_captured_cells: 0,
+                  runs: [],
+                },
+              },
+              support: {
+                version: 1,
+                status: "contradicted",
+                prose_status: "unassessed",
+                limitation: "Wording requires review.",
+                claims: [
+                  {
+                    kind: "calculation",
+                    text: "The total was 440.",
+                    calculation_id: "run:run:total_utility",
+                    value: 440,
+                    computed: 44,
+                    status: "contradicted",
+                    scope: "captured_run",
+                    reason: "Only the value is checked.",
+                  },
+                ],
+              },
+            },
+          }}
+          disabled={false}
+          onRetry={() => {}}
+          onReanalyze={reanalyze}
+        />
+      </TooltipProvider>
+    </MemoryRouter>,
+  );
+  expect(
+    screen.getByText("3 recorded decisions; cumulative utility 44."),
+  ).toBeVisible();
+  expect(screen.getByText("Wording unassessed")).toBeVisible();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Evidence & claim status" }),
+  );
+  expect(screen.getByText("Contradicted")).toBeVisible();
+  expect(screen.getByText("Claimed 440 · computed 44")).toBeVisible();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Reanalyze communication" }),
+  );
+  expect(reanalyze).toHaveBeenCalledWith("communication");
+});
+
 test("completed replies retain their recorded public activity in a collapsed disclosure", () => {
   render(
     <MemoryRouter>

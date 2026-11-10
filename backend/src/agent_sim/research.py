@@ -598,6 +598,9 @@ class Research:
                 {
                     "id": c.id,
                     "activation_id": c.activation_id,
+                    "analysis_id": c.analysis_id,
+                    "purpose": c.purpose,
+                    "model": c.model,
                     "turn": c.turn,
                     "status": c.status,
                     "error": c.error,
