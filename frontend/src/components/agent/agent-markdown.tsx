@@ -68,6 +68,19 @@ const components: Components = {
       {children}
     </a>
   ),
+  img: ({ alt, src }) =>
+    src ? (
+      <a
+        href={src}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline underline-offset-4"
+      >
+        {alt ? `Open image: ${alt}` : "Open image"}
+      </a>
+    ) : (
+      alt
+    ),
   pre: ({ children }) => {
     const child = Children.toArray(children)[0];
     if (!isValidElement<{ children?: ReactNode; className?: string }>(child))

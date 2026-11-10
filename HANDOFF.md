@@ -186,6 +186,20 @@ is incomplete and UNACCEPTED pending a NEW fresh integration reviewer.
 <!-- Accepted ROOT370 documentary history, preserved without reinterpretation. -->
 # ROOT continuation — reported correctness defects repaired (2026-11-10)
 
+ROOT370f835b is pushed/linked;115922ed adds the committed compact report for
+closed successful scratch retirement. A further observed Markdown image red
+now has a minimal explicit-link repair staged:5 focused and16 affected Agent
+component cases, Biome/forcedTS/isolated Vite, detector and real-shell browser
+desktop/light/phone/dark PASS. No passive image requests or provider calls;
+Uvicorn exited-15/port18231 reusable/flock released. Preview window.close did not
+close its host tab; it is detached to about:blank, not claimed physically closed.
+Details/source/failed browser preflight are in FINAL_CODE_QUALITY_REVIEW.md.
+The five documented closed-success scratch archives were retired metadata-only
+after compact report115922ed; raw logs/results/failed archive08 and active UI/
+child evidence remain. Latest shared free~394MB is unreserved. Both implementers'
+short resource hold is released after this coherent UI checkpoint. No new stage
+or spending grant is implied.
+
 ROOT owns sole tracked writing, based on accepted40c32ff6 with T12 and current
 DB12/export13/library8. All four reported defects independently reproduced before
 their repairs: shared artifact exposure, tool-harness Researcher usage, commitment
