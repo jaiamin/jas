@@ -27,6 +27,52 @@ five-run/22-turn current-contract parity and complete evidence custody verificat
 All live/held-out intelligence and validity gates remain unverified; T13 is not yet
 accepted. Production smoke is inherited because runtime/container inputs are unchanged.
 
+# Root coordination — T19 accepted; T10 review and T16 assigned (2026-11-10)
+
+Accepted integration is `81f92a7b1718539cc47797bc1a301138df5b3ce4`:
+**T01–T09, T15 and T19 accepted**. Root rehashed all 816 fresh T19 manifest
+entries; qualified application `716a44b` and browser navigation `d448ea5` remain
+unchanged. Publish this checkpoint to draft PR #32 and link immediately. T13
+continues independently on 18124. Assign isolated T16/#27 implementation on
+18125 before handing sole integration writing ownership to fresh T10/#21 review
+on 18223. T18 stays Ready; T11/T12 wait on accepted T10, T14 on T13, T17 on
+T13/T16. Do not merge PRs or close issues prematurely.
+
+Complete T10 source evidence is preserved at
+`.tools/research-harness/evidence/T10/`, with sibling `T10-copy-verification.json`
+and `T10-cleanup-record.json`. All **1,846 indexed files / 108,372,210 bytes**,
+manifest/checksum (**1,848 complete files**, no links), modes/mtimes and stable
+source verify. Manifest SHA-256:
+`25fca245891c77dc8c3292711c1057e4299a411bb0249db1ecc74fc666908629`.
+This is immutable hardlinked custody, not independent physical copies; never
+write either source/preserved tree. Source is clean `04e30a5` on
+`t3/t10-distributed-information`, checkout `t3-9cbd6ed6`. Its provisional
+DB8/export9/library5 require fresh reconciliation with accepted T19 analysis,
+cutoffs and separate billing; they are not yet accepted. Child backend coverage
+combines a 1,252-pass/53-fail full run with passing repairs and dedicated tests
+(1,305 distinct observed passing), not an uninterrupted final full-suite pass.
+
+T09/T19 completed implementers removed only their five disposable local dependency/
+build/cache directories, preserving HEAD/status/evidence manifests. Records are
+copied and hash-verified under
+`.tools/research-harness/maintenance/completed-dependency-cleanups-20261110T0823/`.
+Root's `maintenance/closed-metadata-20261110T082131Z/verification.json` maps 38
+private closed JSON files (78,381,365 → 12,909,067 bytes) to verified gzip copies
+and shares seven identical immutable Git-object paths in completed root test
+clones. Git object bytes/modes/owners stay equal; original mtimes are retained
+in the map, with inode metadata changed by deduplication. No active cache/source,
+T01/Sol evidence, stash or unread `pbcopy` was changed. Keep every historical
+compression map. Free space after this maintenance was 371,757,056 bytes and
+varies with T13. Serialize large tests/builds via
+`flock -x /home/agent/.t3/worktrees/workspace/t3-fdf9bdeb/.tools/research-harness/checks.lock <command>`;
+release between bounded checks and pack closed own outputs. This is development
+resource coordination only. Keep mutable caches private.
+
+Root made no product changes/tests or paid calls. Sol remains $0.611632/55 known
+requests, $9.388368 remaining, no active allocation; Luna remains unallocated.
+Prose support, earlier outside-cache effects and live/held-out generalization
+remain unassessed/unverified as specified in the acceptance report below.
+
 # T19 fresh integration accepted — ownership returns to root (2026-11-10)
 
 **T01–T09, T15 and T19 are accepted. Root resumes sole shared-checkout ownership.**
@@ -1082,8 +1128,8 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01–T09 and T15 accepted; T10 running; T13 assigned next;
-T19 complete with preserved evidence, assigned to fresh review; draft PR #32.**
+**Current checkpoint: T01–T09, T15 and T19 accepted; T13 running; T10 complete,
+preserved and assigned to fresh review; T16 assigned next; draft PR #32.**
 
 Fresh Sol DEVELOPMENT is complete for this checkpoint: read
 `docs/research/SOL_DEVELOPMENT.md`. The frozen original eight-case pair,
@@ -1181,12 +1227,12 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: T01–T09 and T15 are accepted at `d55f270`, including T15
-effort repair `6e1a7c8`, T09 `4ed18af`/`84867cc`, T07 `d5568c1` and T08 `de5556b`.
-T10 runs independently/unpolled; T13 is assigned next in isolation; completed
-T19 is preserved and assigned to a separate fresh sole-writer review. T16/T18
-are Ready; T11/T12 wait on T10, T14 on T13 and T17 on T13/T16. Current evidence
-and immutable storage mappings are at the top. No paid calls are allocated.
+Current frontier: T01–T09, T15 and T19 are accepted at `81f92a7`, including T19
+billing repair `716a44b`, T15 `6e1a7c8`, T09 `4ed18af`/`84867cc`, T07 `d5568c1`
+and T08 `de5556b`. T13 runs independently/unpolled; completed T10 is preserved
+and assigned to separate fresh sole-writer review; T16 is assigned next in
+isolation. T18 is Ready; T11/T12 wait on T10, T14 on T13 and T17 on T13/T16.
+Current evidence/storage maps are at the top. No paid calls are allocated.
 Draft PR #32 is the single integration PR and
 was linked immediately. Refresh/link it on each push. Do not merge to main or
 close issues as if unverified work were complete. The default-branch PR merge

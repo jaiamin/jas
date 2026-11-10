@@ -55,6 +55,37 @@ Statuses reflect accepted integration work, not automatic GitHub closure. Issues
 remain open until the tracker resolves them through draft PR #32. No
 default-branch merge, auto-merge or history rewrite is authorized.
 
+### Root coordination — fresh T10 review and T16 implementation assigned (2026-11-10)
+
+T01–T09, T15 and T19 are accepted at `81f92a7`; root reverified all 816 fresh
+T19 manifest entries. Publish this checkpoint, launch isolated T16/#27 on 18125,
+then hand sole shared-checkout writing ownership to fresh T10/#21 review on
+18223. T13 remains running/unpolled on 18124. T18 is Ready; dependencies below
+remain unchanged. No paid allocation or new root product tests/changes.
+
+Complete T10 evidence is preserved under `.tools/research-harness/evidence/T10/`
+with sibling copy proof and cleanup record: **1,848 complete regular files**,
+all **1,846 child-indexed hashes / 108,372,210 bytes**, modes/mtimes and stable
+source verify. Manifest SHA-256:
+`25fca245891c77dc8c3292711c1057e4299a411bb0249db1ecc74fc666908629`.
+Custody is immutable hardlinked storage, not independent physical copies. Source
+`04e30a5` and provisional DB8/export9/library5 remain unaccepted until fresh
+review, including T19 calculations/cutoffs/billing integration. Preserve the
+child's initial full-run failures and subsequent passing repairs with exact
+source attribution; do not claim uninterrupted final full-backend success.
+
+Storage remains constrained. Completed T09/T19 workers removed only their own
+disposable dependencies/build caches, preserving source/evidence. Root packed
+38 private closed JSON files with raw-hash proofs and shared seven identical
+immutable test-clone Git objects; bytes/modes/owners remain, original mtimes
+are retained in the maintenance map. Records are under ignored maintenance
+`completed-dependency-cleanups-20261110T0823/` and
+`closed-metadata-20261110T082131Z/`. Prior logical paths resolve through these
+maps. Free space was 371,757,056 bytes after maintenance. Serialize large
+checks/builds using the shared `.tools/research-harness/checks.lock` with flock,
+release between bounded checks and pack closed own outputs. Mutable caches stay
+private; immutable evidence stays unwritten. Sol/T01/stash/`pbcopy` untouched.
+
 ### T19 fresh integration accepted; ownership returns to root (2026-11-10)
 
 **T01–T09, T15 and T19 are accepted.** Exact clean T19 `1d8d977` was merged
@@ -445,13 +476,13 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Accepted after combined-contract review repairs | `a92105f`, `d5568c1` |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Integrated and accepted after cutoff receipt repair | `9750caf`, `de5556b`; [evidence](research/T08_PARTICIPANT_CONTEXT.md) |
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Integrated and accepted after fresh review repairs | `c357a3b`, `4ed18af`, `84867cc`; [report](research/T09_ARTIFACT_WORLD.md) |
-| T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Complete; queued for separate fresh review | Unaccepted `04e30a5`; provisional DB8/export9/library5 |
+| T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Complete and preserved; assigned to fresh integration review (18223) | Unaccepted `04e30a5`; provisional DB8/export9/library5 |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Waiting | — |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Waiting | — |
 | T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Assigned to fresh isolated implementation (18124) | — |
 | T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Waiting on T13 | — |
 | T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Integrated and accepted after fresh review repair | `fa1c825`, `6e1a7c8`; [report](research/T15_BASELINES.md) |
-| T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Ready; root chooses launch | — |
+| T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Assigned to fresh isolated implementation (18125) | — |
 | T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | Waiting | — |
 | T18 | [#29](https://github.com/jaiamin/ass/issues/29) Inspect a declared fallible adjudication and replay its consequences | T09 | Ready; root chooses launch | — |
 | T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Accepted: structured calculations; prose unassessed | No-ff `7e8647f`; reporting repair `716a44b`; tests `d448ea5` |
@@ -523,20 +554,19 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. Root resumes the shared checkout after T19 final closure. Review T10 separately
-   from clean `04e30a5` with fresh Standards/Spec acceptance before copying/merging
-   its provisional DB8/export9/library5. Root-supplied custody/cleanup pointers
-   are above; this T19 review did not inspect or accept T10. Publication decisions
-   for draft PR32 remain with root; hosted checks/reviews were unqueried here.
-2. T13 continues independently on18124; T16/T18 remain Ready. T11/T12 wait on
-   accepted T10, T14 on T13, T17 on T13/T16. Do not poll or alter others' running
-   tasks. No issue closes before the tracker resolves accepted work.
-3. Preserve source worktrees, immutable hardlinked evidence and all compression
-   maps. T19 earlier outside-cache effects remain unassessed. Keep checks bounded,
-   generated caches private, and pack only closed own outputs with byte/member
-   verification. Frozen T01 failures remain; live/held-out gates are unverified.
-   Sol is $0.611632/55 requests with $9.388368 remaining, no active allocation;
-   Luna remains unallocated. Stash and unread `pbcopy` stay protected.
+1. Publish accepted T19 and this coordination checkpoint to draft PR32, link
+   immediately, then launch isolated T16 implementation (18125) before fresh
+   sole-writer T10 review (18223). T10 source/custody is preserved; its proposed
+   DB8/export9/library5 must reconcile accepted T19 calculations and billing.
+2. T13 continues independently on18124; T18 remains Ready. T11/T12 wait on
+   accepted T10, T14 on T13, T17 on T13/T16. Do not poll running tasks or change
+   other environments. Root owns publication; no issue closes prematurely.
+3. Preserve immutable hardlinked evidence and all compression maps. Serialize
+   large checks with the shared flock file and archive closed own outputs before
+   proceeding. Earlier outside-cache effects and prose support stay unassessed;
+   frozen failures/live/held-out limits remain. Sol is $0.611632/55 requests,
+   $9.388368 remaining, no active allocation; Luna remains unallocated. Stash
+   and unread `pbcopy` stay protected.
 
 ## T02 integration — accepted after review fixes
 
