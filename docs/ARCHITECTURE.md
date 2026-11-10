@@ -419,11 +419,13 @@ retains the original frozen index/inputs/cutoffs and records its own requests an
 usage. Later same-chat answers outside those cutoffs are excluded from its context.
 It cannot run participants, amend World evidence or resettle old requests.
 Coverage retains bounded observation window sizes; missing historical fields and
-unknown delivery stay null/unavailable. Applying a different lens changes its
+unknown delivery stay null/unavailable. Artifact Worlds retain exact contents, versions,
+source references, write allowance, history and outcome. Utility is unavailable where
+no balances exist; success remains null before termination. Applying a different lens changes its
 requirements/account without rewriting the source analysis. Unsupported lens
 versions are rejected without conversion; historical analyses without a lens
-remain unassessed and cannot supply lens inputs. Database6/export7/capture1/
-comparison1/libraryv3 and harness contracts retain their existing meanings;
+remain unassessed and cannot supply lens inputs. Database7/export8/capture1/
+comparison1/libraryv4 and harness contracts retain their existing meanings;
 this additive versioned analysis JSON requires no migration or reset.
 
 Agent replies lead with a deterministic source-linked account, then expose claim

@@ -57,30 +57,34 @@ default-branch merge, auto-merge or history rewrite is authorized.
 
 ### T19 isolated implementation — awaiting independent review (2026-11-10)
 
-Branch `t3/research-claim-support` implements T19/#30 only from accepted
-`59e20935c17bd8ea0c44f712790ffeeb38ebb83b`; executable source `e0c61b2`.
-Read [the claim-support report](research/T19_CLAIM_SUPPORT.md). Two read-only
-lenses freeze required evidence and expose reproducible exact assertions,
-coverage, missingness and uncertainty through the existing Agent workflow.
-Reanalysis retains the same frozen sources and separately accounts each request.
-Generated prose stays unassessed; causal/intent claims cannot pass, and correct
-adjacent numbers do not certify a story. Eleven fresh independent DEVELOPMENT
-candidates retain rationales and disagreements, without a live competence claim.
+Branch `t3/research-claim-support` implements T19/#30 only, assigned at `59e2093`,
+with documented accepted T09/`12b35c9` merged at `6567dc8`. Qualified checkpoint
+`eee9885`; following changes are handoff prose. Read [the claim-support report](research/T19_CLAIM_SUPPORT.md).
+Two read-only lenses freeze evidence/membership/cutoffs, preserve T06 uncertainty
+and T07/T08 exact delivery/privacy, and expose reproducible assertions through the
+existing Agent. Reanalysis is frozen/read-only with separate request accounting.
+Artifact versions/history/sources are retained; missing utility/outcomes stay null.
+All prose stays unassessed, including correct numbers attached to false stories.
+Eleven independent DEVELOPMENT semantic candidates retain disagreement/qualification;
+no live competence, universal semantic oracle or held-out result is claimed.
 
-Final bounded checks:304 affected backend tests (26 T19),112 frontend units,
-Ruff/ty/lint/types/build,47 inherited+4 new browser cases on18122 pass. Offline
-retained-input reproduction checks503 calculations/29 analyses. Frozen T01
-retains exit1/four intentional export-v4 failures and terminal flags;22-turn/
-five-run parity and positive current-contract checks pass, with all1,637 raw
-differences classified and none unexplained. Existing30 benchmark files/stash
-remain unchanged. Production smoke is explicitly inherited.
+Combined bounded qualification: 345 distinct affected backend tests (28 T19), 112
+frontend units, Ruff/ty/lint/types/build; 63 browser flows on 18122 (47 inherited,
+11 harness/exposure/artifact, 5 T19). Offline reproduction:571 calculations / 33 analyses,
+0 DB/provider calls. Frozen T01 still exits1/four export-v4 failures/four failed
+terminal flags; positive DB7/export8/library4 and22-turn/five-run behavioral/
+accounting parity pass. All 1,874 raw differences are classified, 0 unexplained.
+All 30 inherited benchmark files/stash remain unchanged. Production smoke is inherited
+from accepted T09/`84867cc`. Exact source attribution/all failures are retained.
 
-Current contracts DB6/export7/capture1/comparison1/libraryv3/tool2/direct1;
-additive lens/support1. No migration/reset, paid calls or generated execution.
-Latest documented accepted59e2093 is included; newer T09 review tip84867cc is
-unaccepted and excluded. No other child source/worktree/process was touched.
-Complete ignored `data/t19/` and its manifests must be preserved. Root owns
-fresh acceptance/publication; T19 is **not integrated or accepted** here.
+Current DB7/export8/capture1/comparison1/libraryv4/tool2/direct1 plus lens/support1;
+no migration/reset/paid calls/generated admission. Latest documented accepted `12b35c9`
+is included; later local parent review-source merges are excluded. No other task's
+checkout/evidence/port/process was inspected. Initial hardlinked mutable-cache setup
+may have affected shared cache inodes; only own caches were detached/verified, with
+outside effects unassessed. Preserve complete ignored `data/t19/` and its verified
+source/check/compression manifests. Root owns acceptance/publication; T19 remains
+**not integrated or accepted**.
 
 ### T09 fresh integration review — accepted (2026-11-10)
 
@@ -273,7 +277,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Ready; root chooses launch | — |
 | T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | Waiting | — |
 | T18 | [#29](https://github.com/jaiamin/ass/issues/29) Inspect a declared fallible adjudication and replay its consequences | T09 | Ready; root chooses launch | — |
-| T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Implemented; awaiting independent root review | `e0c61b2`; [evidence](research/T19_CLAIM_SUPPORT.md) |
+| T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Implemented; awaiting independent root review | `eee9885`; accepted `12b35c9` included; [evidence](research/T19_CLAIM_SUPPORT.md) |
 | T20 | [#31](https://github.com/jaiamin/ass/issues/31) Demonstrate the small-population generalization milestone | T11, T12, T14, T15, T17, T18, T19 | Waiting | — |
 
 ## Preserved drafts and spending
