@@ -330,7 +330,7 @@ the experiment adapts those examples. Editing/deleting a reusable environment ne
 or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
 12 recent definitions as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
-call or run. Database schema6, export7 and libraryv3 reject incompatible versions explicitly; there is
+call or run. Database schema 6, export 7 and library v3 reject incompatible versions explicitly; there is
 no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 ### Failure-aware comparisons (T06)
@@ -382,12 +382,15 @@ later actual prompt includes it. A recorded provider response confirms input eve
 if output validation fails; absent receipts leave delivery unknown. Refused requests
 without reservations remain unsent. Historical activations without capture have
 unavailable coverage, with null exposure counts rather than inferred zeros.
+Input source paths identify the recorded schema or JSON prompt; prompt suffixes
+select within its decoded JSON text. Whole inputs have no empty-key suffix.
 
 Cutoffs restrict settled events and explicit historical activations. Current capture
 also retains unfinished boundary attempts. Analysis acceptance freezes the complete
 values and activation/operation/request membership, including then-current receipt
 status; later turns, resumes, settlement or revisions cannot rewrite that artifact.
-Researcher prompts receive compact frozen summaries. Inspection/export/replay remain
+Researcher prompts receive compact frozen summaries linked to the persisted analysis
+artifact. Inspection/export/replay remain
 read-only. Exposure-conditioned descriptions are post-treatment selections, not
 automatic causal effects; inclusion establishes no attention, belief or intent.
 

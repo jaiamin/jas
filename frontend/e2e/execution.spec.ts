@@ -57,16 +57,19 @@ test("study control follows active runs, including pausing, and preserves old re
 }) => {
   const { study } = await createStudy(request);
   const actions: string[] = [];
-  await page.route(`**/api/studies/${study.id}**`, (route) => {
-    if (route.request().url().endsWith("/control")) {
-      const { action } = route.request().postDataJSON();
-      actions.push(action);
-      for (const run of study.runs)
-        run.status = action === "start" ? "running" : "pausing";
-      return route.fulfill({ json: {} });
-    }
-    return route.fulfill({ json: study });
-  });
+  await page.route(
+    new RegExp(`/api/studies/${study.id}(?:/control)?(?:\\?.*)?$`),
+    (route) => {
+      if (route.request().url().endsWith("/control")) {
+        const { action } = route.request().postDataJSON();
+        actions.push(action);
+        for (const run of study.runs)
+          run.status = action === "start" ? "running" : "pausing";
+        return route.fulfill({ json: {} });
+      }
+      return route.fulfill({ json: study });
+    },
+  );
   await page.goto(`/studies/${study.id}`);
   await page
     .getByRole("button", { name: "Run experiment", exact: true })

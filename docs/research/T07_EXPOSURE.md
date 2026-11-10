@@ -80,3 +80,12 @@ settlement. Frozen v3 uses two rounds, seed0, actor/target/observer order and
 remain intact. No World settlement changed. Two initial import mistakes, a progress
 update dropping the new frozen artifact, a too-small invalid design budget fixture,
 and static/type failures are retained and repaired without weakening checks.
+
+Post-merge self-review: the full combined backend passes 1,037 tests at `67cd8c3`;
+all 111 frontend tests, lint and production build pass. Two new source-resolution
+red/green checks repair a mutable Researcher source link and a whole-input
+empty-key suffix. Twenty exposure cases now pass, including public/private source
+resolution. The inherited full browser run passes181/182; its remaining broad
+study mock intercepted the new exposure endpoint. Narrowing it preserves all
+assertions and all three execution flows pass. The first mobile policy timeout
+remains retained; the unchanged five-flow harness rerun passes.

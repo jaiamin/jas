@@ -583,6 +583,7 @@ class Assistants:
         cutoffs: dict[str, int],
         comparisons: dict | None = None,
         exposure: dict | None = None,
+        analysis_id: str | None = None,
     ) -> dict:
         index, protocols, conditions = [], {}, {}
         comparisons = (
@@ -740,7 +741,17 @@ class Assistants:
                         "interpretation",
                     )
                 }
-                | {"source": f"/api/runs/{rid}/exposure"}
+                | {
+                    "source": {
+                        "href": f"/api/analyses/{analysis_id}",
+                        "pointer": f"/output/exposure/{rid}",
+                    }
+                    if analysis_id is not None
+                    else {
+                        "href": f"/api/runs/{rid}/exposure?through_turn={report['through_turn']}",
+                        "pointer": "",
+                    }
+                }
                 for rid, report in (
                     exposure
                     if exposure is not None
@@ -850,7 +861,11 @@ class Assistants:
         tools = ResearchTools(current, self.research)
         self._research_progress(key, tools, "indexing")
         index = await asyncio.to_thread(
-            self._evidence_index, cutoffs, comparisons, (current.output or {}).get("exposure")
+            self._evidence_index,
+            cutoffs,
+            comparisons,
+            (current.output or {}).get("exposure"),
+            key,
         )
         investigation = (
             Investigation

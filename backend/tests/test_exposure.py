@@ -1,6 +1,8 @@
 """Independent T07 DEVELOPMENT witnesses at the public workflow/provider seam."""
 
+import hashlib
 import json
+import os
 import time
 from pathlib import Path
 from uuid import uuid4
@@ -13,6 +15,20 @@ from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
 PRIVATE = "actor-to-target-disclosure-731"
+FROZEN_EXPECTED_SHA256 = "f67d29314fb6c48b90aab383b58930b1b4ecdc5b46664be903b0017059ad4eb2"
+
+
+def case_identity(case_id):
+    return {
+        "case_id": case_id,
+        "case_version": "t07-development-v3",
+        "spend_usd": 0,
+        "frozen_expected_sha256": FROZEN_EXPECTED_SHA256,
+        "test_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "source_head": os.getenv("JAS_T07_SOURCE_HEAD"),
+        "source_tree_sha256": os.getenv("JAS_T07_SOURCE_TREE_SHA256"),
+        "check": os.getenv("JAS_T07_CHECK"),
+    }
 
 
 def choice(actor, *, disclose=True, public=False):
@@ -56,7 +72,7 @@ def exposure_client(tmp_path, monkeypatch, request):
         return ModelResponse(
             parts=[ToolCallPart(info.output_tools[0].name, output)],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
-            model_name="t07-development-v2",
+            model_name="t07-development-v3",
         )
 
     app = create_app(f"sqlite:///{tmp_path}/exposure.sqlite3", static_dir=tmp_path / "static")
@@ -94,14 +110,7 @@ def exposure_client(tmp_path, monkeypatch, request):
             (output / "provider.json").write_text(json.dumps(seen, indent=2))
             (output / "identity.json").write_text(
                 json.dumps(
-                    {
-                        "case_id": case_id,
-                        "case_version": "t07-development-v3",
-                        "spend_usd": 0,
-                        "frozen_expected_sha256": __import__("hashlib")
-                        .sha256(Path("data/t07/expected-v3.json").read_bytes())
-                        .hexdigest(),
-                    },
+                    case_identity(case_id),
                     indent=2,
                 )
             )
@@ -356,6 +365,13 @@ def test_analysis_freezes_input_membership_before_later_observation_and_new_revi
     assert completed["status"] == "complete", completed
     assert completed["output"]["exposure"][rid] == frozen
     assert prompts[0]["index"]["exposure"][rid]["summary"] == frozen["summary"]
+    # The source must resolve to the accepted snapshot even after later delivery.
+    frozen_source = prompts[0]["index"]["exposure"][rid]["source"]
+    assert frozen_source == {
+        "href": f"/api/analyses/{aid}",
+        "pointer": f"/output/exposure/{rid}",
+    }
+    assert client.get(frozen_source["href"]).json()["output"]["exposure"][rid] == frozen
     exported = client.get(f"/api/studies/{sid}/export").json()
     analysis = next(a for a in exported["analyses"] if a["id"] == aid)
     assert analysis["output"]["exposure"][rid] == frozen
@@ -477,10 +493,12 @@ def test_missing_historical_capture_is_unavailable_instead_of_measured_zero(
     assert exposure["membership"]["activations"] == [run["activations"][0]["id"]]
 
 
+@pytest.mark.parametrize("public", [False, True])
 def test_current_inspection_and_export_share_source_linked_exposure_without_mutation(
-    exposure_client, design
+    exposure_client, design, public
 ):
-    client, _, _ = exposure_client
+    client, _, controls = exposure_client
+    controls["public"] = public
     sid, rid = save(client, protocol(design))
     before = settle(client, rid, "start")
     exposure = report(client, rid)
@@ -492,6 +510,36 @@ def test_current_inspection_and_export_share_source_linked_exposure_without_muta
     assert exported["exposure"] == [exposure]
     assert exported["runs"][0]["record"] == before
     assert client.get(f"/api/runs/{rid}").json() == before
+    assert counts(exposure, "message")["eligible_participants"] == (3 if public else 2)
+    assert counts(exposure, "message")["exposed_participants"] == (3 if public else 2)
+    assignment = client.get(exposure["assignment"]["source"]["href"]).json()
+    assert assignment["sha256"] == exposure["assignment"]["design_sha256"]
+    for opportunity in exposure["opportunities"]:
+        for source in opportunity["available"]:
+            record = client.get(source["href"]).json()
+            activation_id = source["pointer"].split("id=", 1)[1].split("/", 1)[0]
+            activation = next(a for a in record["activations"] if a["id"] == activation_id)
+            assert activation["actor"] == opportunity["participant"]
+            if opportunity["kind"] == "message":
+                assert PRIVATE in json.dumps(activation["observation"])
+        for item in opportunity["inputs"]:
+            source = item["source"]
+            raw = client.get(source["href"]).json()
+            assert raw["id"] in exposure["membership"]["requests"]
+            assert raw["response"] and item["delivery"] == "confirmed"
+            _, request_key, surface, *path = source["pointer"].split("/")
+            assert request_key == "request" and surface in {"prompt", "schema"}
+            value = (
+                json.loads(raw["request"][surface])
+                if surface == "prompt"
+                else raw["request"][surface]
+            )
+            # Prompt suffixes select within the recorded JSON text; an empty
+            # suffix selects the whole input, never an invented empty-key field.
+            for key in path:
+                value = value[int(key)] if isinstance(value, list) else value[key]
+            if opportunity["kind"] == "message":
+                assert PRIVATE in json.dumps(value)
     assert "post-treatment" in " ".join(exposure["interpretation"])
     assert "attention, belief or intent" in " ".join(exposure["interpretation"])
     assert client.get(f"/api/runs/{rid}/exposure?through_turn=7").status_code == 422
@@ -528,6 +576,7 @@ def test_read_result_is_not_included_until_sent_after_pause_and_restore(
     app = create_app(url, static_dir=tmp_path / "static")
     monkeypatch.setattr(app.state.models, "model", lambda _: provider)
     with TestClient(app, base_url="http://localhost") as client:
+        assert client.portal is not None
         sid, rid = save(client, protocol(design, kind="tool_using"))
         for _ in range(3):
             settle(client, rid)
@@ -567,7 +616,7 @@ def test_read_result_is_not_included_until_sent_after_pause_and_restore(
         (path / "restore.json").write_text(
             json.dumps(
                 {
-                    "case_id": "pause-restore-v3",
+                    **case_identity("pause-restore-v3"),
                     "before": frozen,
                     "after": after,
                     "prompts": prompts,

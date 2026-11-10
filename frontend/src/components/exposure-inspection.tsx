@@ -136,7 +136,9 @@ export function ExposureInspection({ path }: { path: string }) {
               {report.delivery.unsent_attempts} inference attempts without a
               sent request. Eligible counts follow recipients, including
               authors; memory and later turns can prevent inclusion. These are
-              not independent sample sizes.
+              not independent sample sizes. Cutoffs count committed turns;
+              membership also retains unfinished attempts at the next decision
+              boundary.
             </p>
             <Disclosure className="min-w-0">
               <DisclosureTrigger>Assigned configuration</DisclosureTrigger>

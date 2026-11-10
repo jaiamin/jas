@@ -96,6 +96,9 @@ for (const { theme, width } of [
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
+    await exposure.screenshot({
+      path: testInfo.outputPath(`exposure-region-${theme}.png`),
+    });
     await page.screenshot({
       path: testInfo.outputPath(`exposure-${theme}.png`),
       fullPage: true,

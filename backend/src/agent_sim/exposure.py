@@ -215,10 +215,10 @@ def exposure_report(
                             "request_status": call.status,
                             "source": {
                                 "href": f"/api/requests/{call.id}",
-                                "pointer": "/request/"
-                                + binding["surface"]
-                                + "/"
-                                + "/".join(str(part) for part in binding["path"]),
+                                "pointer": "/".join(
+                                    ["", "request", binding["surface"]]
+                                    + [str(part) for part in binding["path"]]
+                                ),
                                 "label": f"Turn {call.turn} · {binding['surface']} · {call.id[:8]}",
                             },
                         }
