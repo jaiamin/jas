@@ -891,3 +891,131 @@ The minimal version repair passes all16 same CC cases in
 peak, released lock). Whole backend/benchmarks/GitHub-script Ruff and global ty
 pass in separate `combined-static-01`/`combined-types-01` jobs. These establish
 the version boundary, not a full combined-source behavioral qualification.
+
+Normal exact40c32ff6 merge completed at5250765e (parents41ba330b/40c32ff6),
+normal Gitleaks PASS. UI01 original987d829c reached real WorkspaceShell/Study
+and the intended missing Fallible adjudication region in `ui01-red-01`, before
+any product UI edit. Its receipt records entry538722304/min536911872,1,810,432
+observed shared peak and released lock. Initial minimal review/evidence display
+then passed all declaration/no-POST assertions but stopped at Runs navigation:
+`ui01-green-01` used click alone while existing Radix tabs activate on primary
+mousedown. This is a test browser-event omission, not another product defect or
+a green result. Amendment UI01a supplies primary mousedown and removes invalid
+ByRoleOptions `exact` keys (string names are already exact). Every semantic
+oracle, literal wrong explanation and exactly-one-POST expectation is unchanged;
+original blob and adverse logs/JUnit remain retained.
+
+`ui01-green-02` passes the amended actual-shell flow: declaration/prices/limits
+before exactly one explicit POST, navigation into turn2, wrong raw explanation
+separate from submission success/hard-facts pass, Sol41/19/272µ distinct from
+Luna. Entry504438784/min504250368,188416 observed shared peak, lock released.
+No provider was available or invoked.
+
+Freeze UI02 before its output: on the existing Run Record tab, the row whose
+request ID iscccccccccccccccc and model is Sol must say Adjudication, never
+Participant. Its41/19 tokens and272µ stay separate from exactly two Luna
+Participant rows101/37/29µ each. Run usage must explain that adjudication is
+separately billed and excluded from participant effort. Inspecting the tab
+sends no control POST. This is literal accounting presentation, not a live
+accuracy or independent ledger claim (the backend tests supply that oracle).
+
+UI02 first output `ui02-red-01` reaches the Record table and fails genuinely:
+the Sol judge row reads Participant (41/19,$0.0003). The minimal repair labels
+purpose=adjudication in both the table and selected-request evidence, including
+requests owned by an analysis, and explains its exclusion from participant effort.
+
+UI02 green passes both shell cases in `ui02-green-01`; no control POST from
+inspection. Freeze UI03 before output: direct opening of a resumable judged Run
+must keep Run/Step disabled until the exact pinned study revision's explicit
+adjudication declaration and prices arrive. If that preflight omits the condition's
+judge, controls stay disabled with an honest missing-declaration message; no
+default judge is synthesized from participant identity or an undeclared price.
+An arriving matching declaration visibly exposes Sol/config/scope/prices before
+controls enable; reading it never posts control or makes provider calls. This
+extends the same existing Run view, with no additional confirmation dashboard.
+
+`ui03-red-01` observes the intended product gap: direct resumable Run's control
+was enabled before any pinned declaration/price read. The minimal repair reads
+only that immutable study revision, requires matching explicit configuration and
+scope, shows its preflight prices/limits and blocks new execution while missing.
+Pause stays available for active work. No backend schema/API change or provider
+default is added. UI03's accidentally repeated unsupported ByRoleOptions `exact`
+key is removed as a fixture type correction, with its original attempt retained.
+
+UI03 green passes3 shell cases in `ui03-green-01`. Freeze UI04 negative/safety
+expectations before adding/running them: an absent, configuration-mismatched,
+scope-mismatched or blocked pinned preflight keeps Run/Step disabled; a failed
+declaration GET also keeps controls disabled with its loading failure. Missing
+declarations never synthesize a judge. An active run can still Pause even if the
+declaration is missing, preserving cancellation. A recorded abstain remains raw
+fallible prose and enforces only the separately recorded submission failure;
+HTML-looking explanation text creates no DOM image/script or control request.
+Unknown judge usage shows its actual reservation/status, never complete/zero cost
+or Participant work. Each fixture remains independent literal display evidence;
+it cannot establish live judgment accuracy or replace the backend denial/ledger
+and cancellation oracles.
+
+`ui04-safety-01` has8 passes and2 failures. Blocked preflight still displayed
+the matched declaration instead of denial: genuine UI gate red, minimally
+repaired by requiring nonblocked preflight as well as identical scope/config.
+The other failure is a formatting oracle error: existing currency formatting
+uses at most4 decimals and prints the literal10000µ reservation as$0.01, not
+$0.0100. UI04a corrects only that display expectation, preserving the amount,
+unknown-status/no-zero-cost rule and the adverse attempt. No product rounding
+or ledger behavior changes.
+
+UI04a passes all10 feature/safety cases. `ui-affected-01` passes36 distinct
+cases across8files, including shell remount/navigation, editor drafts, Study/Run
+cutoffs, annotations and request late-response isolation. Biome affects10files
+and passes separately; forced `tsc -b --force` passes separately. No build,
+browser, service or provider was run. These are unit/static results only.
+
+Combined backend qualification uses newly named jobs against current source;
+the prior373-case manifest remains immutable and historical to its source.
+V4 SHA256 is bb4e14ca093661b52deab89b68268e25d0e613f6665731eaa68bf4ba9b575813.
+The snapshot guard adds only this explicit tracked fixture path to its existing
+invocation-local protected/symlink-safe selection before T01 payload reads.
+Original T01 source/scoring and all v1–v3 literal reference bytes stay unchanged.
+
+`combined-references-01` independently reproduces all four reference versions,
+original T01 bytes/scoring, first tracer and exact accepted ancestry. Before any
+queued combined tests, own queue attempt `compact-combined-0` failed to spawn:
+it mistakenly placed --stage after the positional label, so the recorder tried
+to execute the literal --stage. No compactor or test child ran. The original
+initial receipt/empty log and explicit closure addendum are retained unqualified.
+The selection was also unnecessary because the queue passed a relative path
+to metadata accounting, inadvertently counting own setup metadata as evidence;
+the recorder's absolute-path accounting was correct. The original queue source
+is retained, then options/order and absolute HERE are repaired. The Python
+process exited and closed its flock descriptor; the next acquisition supplies
+independent release proof. No install or cache mutation/retry occurred.
+
+Combined feature43 and fresh matrix7 pass, including v4 full5/22/22 and both
+snapshot guards. `combined-engine-ledger-final-01` passes37 and fails one newly
+included T12 template member: its inherited generic test expects the12-turn
+horizon, but unchanged conftest literally returns stop for every artifact actor.
+The builtin workflow has six actors; explicit stop withdraws one, and all six
+withdrawn terminates after six requests/210µ with exact replay. Distributed and
+reliance templates already have the same per-population stop expectations. This
+is an inherited fixture expectation omission exposed by template expansion, not
+a product failure. Before a corrected run, freeze the literal six-stop result;
+keep every replay/request/integer-charge assertion. Conftest and production
+behavior remain unchanged. Current smoke/e2e assertions also follow CC's14/v9
+envelope; they are source-prepared only while runtime/browser stages stay held.
+
+The amended engine/ledger group passes38 cases. Artifact lifecycle passes3,
+first participant segment passes18. Second participant segment retains18 passes
+and one failure: its newly included workflow fixture omitted required read=null
+from the typed tool reply, producing a recorded provider schema error. No product
+claim follows. ROOT independently corrected both generic workflow fixture omissions
+in newly published exact370f835b45bdc7172de5c719aae1ffa1e185b3f5; that supersedes
+40c32ff6 as the next normal merge target. The queue stopped at this actual failure;
+never-started exposure/remaining jobs stay unrun. These partial results belong
+to pre370f source and will not be relabeled final qualification.
+
+ROOT370f also repairs authorized shared artifact/workflow exposure/cutoff grants,
+participant_operation execution accounting, immutable assignment citations after
+reads, reliance cadence/withdrawal and concurrent active-export read snapshots.
+Reliance rule1.0.1 rejects older checkpoints. Its rootDB12/export13/library8 and
+T18's combined13/14/9 must remain distinct; preserve combined versions and all
+accepted repairs during normal merge, then newly qualify affected behavior.

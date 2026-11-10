@@ -90,6 +90,12 @@ export function RunRecord({ run }: { run: RunDetail }) {
               below excludes analysis requests.
             </p>
           )}
+          {run.requests.some((call) => call.purpose === "adjudication") && (
+            <p className="text-sm text-muted-foreground">
+              Run usage includes separately billed adjudication. Participant
+              effort below excludes adjudication requests.
+            </p>
+          )}
           <p className="text-sm leading-relaxed text-muted-foreground">
             The turn slider plays saved evidence. Verify reapplies recorded
             actions locally to check consequences. After a server restart, saved

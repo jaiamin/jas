@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import { useSearchParams } from "react-router-dom";
+import { AdjudicationEvidence } from "@/components/adjudication";
 import {
   Disclosure,
   DisclosureContent,
@@ -34,7 +35,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { label } from "@/lib/format";
-import type { Evidence, RunDetail } from "@/lib/types";
+import type { Evidence, RecordedAdjudication, RunDetail } from "@/lib/types";
 
 export function DecisionBrowser({
   run,
@@ -287,13 +288,29 @@ export function DecisionBrowser({
                   Rationale and memory are model self-reports. They do not
                   expose its internal reasoning.
                 </p>
+                {evidence.data.events
+                  .filter((event) => event.kind === "adjudication")
+                  .map((event) => (
+                    <AdjudicationEvidence
+                      key={event.id}
+                      record={event.data as unknown as RecordedAdjudication}
+                      request={run.requests.find(
+                        (call) => call.id === event.data.request_id,
+                      )}
+                    />
+                  ))}
                 {[
                   [
                     "Exact observation before the decision",
                     evidence.data.observation,
                   ],
                   ["Typed decision", evidence.data.decision],
-                  ["Consequences & verified facts", evidence.data.events],
+                  [
+                    "Consequences & verified facts",
+                    evidence.data.events.filter(
+                      (event) => event.kind !== "adjudication",
+                    ),
+                  ],
                   [
                     `Complete state after turn ${turn}`,
                     evidence.data.checkpoint,

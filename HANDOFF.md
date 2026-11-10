@@ -1,4 +1,25 @@
-# T18 F1 passed; accepted T12 integration in progress (2026-11-10)
+# T18 bounded UI qualified; new accepted ROOT merge next (2026-11-10)
+
+Frozen actual-shell UI01 red preceded all product UI edits. UI01–04 now pass10
+feature/safety cases;8file affected suite passes36, affected10file Biome and
+forced TypeScript pass separately. Study declares Sol/config/scope/prices; Run
+direct entry gates new work on exact pinned matching preflight, preserving Pause.
+Raw fallible ruling stays separate from enforced submission fact; Sol billing
+is labeled adjudication and excluded from participant effort. Original oracle,
+fixture omissions and all adverse attempts remain in the T18 report/own receipts.
+Build/browser/service18131/production/provider/paid/live/held-out remain held.
+
+Exact40c32ff6 merged normally at5250765e, Gitleaks PASS. Combined13/14/9 boundary
+passes16 cases; independently amended v4 matrix7 and feature43 pass, engine/
+ledger38 after disclosed inherited horizon-oracle omission. Partial further
+regressions stopped on the other inherited workflow tool fixture's omitted
+read=null. ROOT independently fixes both in newly accepted exact370f835b,
+which must merge normally next. Its exposure/accounting/citation/reliance1.0.1/
+active-export repairs require new affected source attribution; preserve accepted
+T12 interactions and combined contract versions. Prior passes are not final-source
+qualification. T18 remains incomplete/unaccepted; live accuracy unverified.
+
+# Historical T18 F1 and T12 integration boundary
 
 Same assigned checkout/branch, one writer, no descendants. F1 ran once normally:
 policy618 PASS,555 reused/added,0 downloaded, Node24.22.2/pnpm12.18.0 and own

@@ -27,6 +27,7 @@ SELECT = (
     "backend/tests/fixtures/t18-current-contract.json",
     "backend/tests/fixtures/t18-current-contract-v2.json",
     "backend/tests/fixtures/t18-current-contract-v3.json",
+    "backend/tests/fixtures/t18-current-contract-v4.json",
     "pyproject.toml",
     "uv.lock",
 )

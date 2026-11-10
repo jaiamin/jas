@@ -29,6 +29,9 @@ def test_complete_all_adapters_and_exact_replay(runtime, template):
         "artifact_workspace": 1,
         "distributed_coordination": 3,
         "reliance_commitments": 4,
+        # The literal provider fixture stops each of the six workflow actors;
+        # all withdrawal terminates before the two-round horizon.
+        "institutional_workflow": 6,
     }.get(design.environment, design.turn_count)
     assert record["summary"]["turn"] == expected
     assert engine.replay(run_id)["verified_turns"] == expected

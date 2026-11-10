@@ -38,15 +38,15 @@ verify derived analyses against the recorded evidence.
 
 Custom environments are stored beside the SQLite workspace in `<database-stem>.environments/`.
 Back up that directory with the database. Browser-only reusable setups have been removed;
-there is no legacy importer. Format `jas-environment-v8` contains `definition` (version 1,
+there is no legacy importer. Format `jas-environment-v9` contains `definition` (version 1,
 world/rule version, name/description and configuration examples), plus ID, optimistic revision,
 updated timestamp and definition hash. Examples contain mechanics parameters, optional tasks
 and unbound roles. Create/update accept `{definition, revision}`; selection and extraction use
 `POST /api/design/use-environment` and `POST /api/design/environment`.
-Unsupported library/definition/rule versions and content hashes fail explicitly. Database schema 12 and export 13 reject incompatible workspaces; no conversion, deletion or automatic reset occurs. Preserve
+Unsupported library/definition/rule versions and content hashes fail explicitly. Database schema 13 and export 14 reject incompatible workspaces; no conversion, deletion or automatic reset occurs. Preserve
 older data separately if starting a fresh workspace. Existing controlled-world rules themselves are unchanged.
 
-## Artifact investigation, rules 1.0.0
+## Artifact investigation, rules 2.0.0
 
 Reusable artifact mechanics describe objects, structured initial contents, owner and
 read/write ACL roles, a finite write allowance and content/source requirements.
@@ -60,9 +60,11 @@ Immutable evidence fields are the reference for deterministic checks. Each accep
 write appends a version with exact source/version references and expected-version
 conflict checking. Read, write, check, submit and stop remain executable permissions;
 role names and model claims grant none. Sources and content are bounded data, never
-code. Submission is an enforced content/source result, not a model judgment. A
+code. Undeclared submission is an enforced content/source result. An explicitly
+declared, versioned fallible pickup-note adjudicator can affect only submission
+status after hard-fact and ACL validation; its explanation is not an enforced fact. A
 recorded citation alone is not proof of reading; inspect delivered read receipts.
-Generated execution and fallible adjudication are separate tickets. Three-person
+Generated execution uses separate admission and execution contracts. Three-person
 coordination has its own installed World below. The historical unknown identifier `artifact` is not an alias.
 
 ## Distributed information, rules 1.0.0

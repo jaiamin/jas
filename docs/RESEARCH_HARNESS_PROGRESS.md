@@ -1,5 +1,15 @@
 # Research harness implementation progress
 
+T18 bounded UI10feature/safety and36affected units,10file Biome and forced types
+PASS after recorded actual-shell reds; original semantic oracle/adverse attempts
+retained. Exact40c32ff6 normally merged5250765e. CombinedDB13/export14/library9
+passes16 boundary cases, v4 fresh matrix7, feature43 and engine/ledger38 at that
+pre370f source. Further queue stopped on inherited workflow read=null fixture
+omission. ROOT's exact370f835b independently corrects both generic fixtures plus
+exposure/accounting/citation/reliance1.0.1/active-export; normal merge and current
+affected qualification are next. No held build/browser/service/provider work.
+T18 incomplete/unaccepted; live judgment accuracy unverified.
+
 T18 F1 passed once normally at41ba330b: policy618 PASS,555 reused/added,
 downloaded0, own Node/React/TanStack proof; entry828833792/min629493760 and lock
 released. Exact accepted40c32ff6 normal merge is in progress, preserving T12's

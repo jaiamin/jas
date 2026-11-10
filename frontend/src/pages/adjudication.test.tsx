@@ -1,5 +1,5 @@
 /**
- * T18 UI01 DEVELOPMENT tracer. SOURCE-ONLY; unrun until ROOT releases setup/red.
+ * T18 UI01 DEVELOPMENT tracer. Original semantic oracle frozen at 987d829c.
  * Literal response fixtures test display, not live judgment accuracy or World rules.
  * The approved real public-HTTP backend tests independently establish consequences.
  */
@@ -9,7 +9,7 @@ import { expect, test, vi } from "vitest";
 import { WorkspaceProvider } from "@/components/workspace-provider";
 import WorkspaceShell from "@/components/workspace-shell";
 import { design, parameters, runDetail } from "@/test/fixtures";
-import { renderWithQueries } from "@/test/queries";
+import { deferredResponse, renderWithQueries } from "@/test/queries";
 import Run from "./run";
 import Study from "./study";
 
@@ -53,7 +53,12 @@ const artifactParameters = {
       },
     ],
     requirements: [
-      { artifact: "report", field: "desk", source: "pickup", source_field: "desk" },
+      {
+        artifact: "report",
+        field: "desk",
+        source: "pickup",
+        source_field: "desk",
+      },
       {
         artifact: "report",
         field: "closes_at",
@@ -101,7 +106,11 @@ const recorded = {
     artifact_version: 2,
     content: work,
     evidence: [
-      { artifact: "pickup", version: 1, content: { desk: "west", closes_at: 17 } },
+      {
+        artifact: "pickup",
+        version: 1,
+        content: { desk: "west", closes_at: 17 },
+      },
     ],
   },
   ruling: {
@@ -367,8 +376,7 @@ test("the actual shell declares judge scope and prices before Run and separates 
         state_hash: "fixture-checkpoint",
         events: [rulingEvent],
       });
-    if (path === "/api/runs/judged-run/annotations")
-      return Response.json([]);
+    if (path === "/api/runs/judged-run/annotations") return Response.json([]);
     throw new Error(`Unexpected UI fixture HTTP request: ${path}`);
   });
   vi.stubGlobal("fetch", fetcher);
@@ -423,11 +431,14 @@ test("the actual shell declares judge scope and prices before Run and separates 
   expect(
     await screen.findByText(/1\s*\/\s*1 runs complete/),
   ).toBeInTheDocument();
-  fireEvent.click(screen.getByRole("tab", { name: "Runs", exact: true }));
+  // Radix tabs activate on primary mousedown; click alone omits that browser event.
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Runs" }), {
+    button: 0,
+    ctrlKey: false,
+  });
   fireEvent.click(
     await screen.findByRole("link", {
       name: "Declared fallible judgment",
-      exact: true,
     }),
   );
   expect(
@@ -446,11 +457,227 @@ test("the actual shell declares judge scope and prices before Run and separates 
   const enforced = screen.getByRole("region", { name: "Enforced consequence" });
   expect(enforced).toHaveTextContent(/submission.*success/i);
   expect(enforced).toHaveTextContent(/hard facts.*passed/i);
-  expect(enforced).not.toHaveTextContent("The book is guaranteed to be held tomorrow.");
+  expect(enforced).not.toHaveTextContent(
+    "The book is guaranteed to be held tomorrow.",
+  );
   expect(
     within(raw).queryByText("openai:gpt-6-luna", { exact: true }),
   ).not.toBeInTheDocument();
   expect(
     fetcher.mock.calls.filter(([, options]) => options?.method === "POST"),
   ).toHaveLength(1);
+});
+
+function renderRecordedRun(
+  run = completedRun,
+  studyResponse?: Promise<Response>,
+) {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => ({
+      matches: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })),
+  );
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      observe = vi.fn();
+      unobserve = vi.fn();
+      disconnect = vi.fn();
+    },
+  );
+  const fetcher = vi.fn(async (path: string) => {
+    if (path === "/api/runs") return Response.json([]);
+    if (path === "/api/runs/judged-run") return Response.json(run);
+    if (path === "/api/studies/judged-study?revision=1" && studyResponse)
+      return studyResponse;
+    if (path === "/api/runs/judged-run/annotations") return Response.json([]);
+    if (path === "/api/runs/judged-run/turns/2")
+      return Response.json({
+        number: 2,
+        round: 2,
+        actor: "author",
+        observation: {},
+        decision,
+        checkpoint: run.state,
+        state_hash: "fixture-checkpoint",
+        events: run.events,
+      });
+    throw new Error(`Unexpected UI fixture HTTP request: ${path}`);
+  });
+  vi.stubGlobal("fetch", fetcher);
+  renderWithQueries(
+    <MemoryRouter initialEntries={["/runs/judged-run"]}>
+      <Routes>
+        <Route
+          element={
+            <WorkspaceProvider>
+              <WorkspaceShell />
+            </WorkspaceProvider>
+          }
+        >
+          <Route path="/runs/:id" element={<Run />} />
+        </Route>
+      </Routes>
+    </MemoryRouter>,
+  );
+  return fetcher;
+}
+
+test("Run Record bills Sol adjudication separately from Luna participant effort", async () => {
+  const fetcher = renderRecordedRun();
+  await screen.findByRole("heading", { name: "Turn 2 evidence" });
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Record" }), {
+    button: 0,
+    ctrlKey: false,
+  });
+  const judge = await screen.findByRole("row", { name: /cccccccc/ });
+  expect(judge).toHaveTextContent("Adjudication");
+  expect(judge).not.toHaveTextContent("Participant");
+  expect(judge).toHaveTextContent("gpt-6.1-sol");
+  expect(judge).toHaveTextContent("41 / 19");
+  expect(judge).toHaveTextContent("$0.0003");
+  expect(
+    screen
+      .getAllByRole("row")
+      .filter((row) => row.textContent?.includes("Participant")),
+  ).toHaveLength(2);
+  expect(
+    screen.getByText(/Run usage includes separately billed adjudication/),
+  ).toHaveTextContent(/participant effort.*excludes adjudication/i);
+  expect(fetcher.mock.calls.every(([path]) => !path.endsWith("/control"))).toBe(
+    true,
+  );
+});
+
+test("a resumable Run waits for its pinned explicit adjudicator declaration and prices", async () => {
+  const response = deferredResponse();
+  const fetcher = renderRecordedRun(
+    {
+      ...completedRun,
+      summary: { ...completedRun.summary, status: "paused" },
+    },
+    response.promise,
+  );
+  await screen.findByRole("heading", { name: "Turn 2 evidence" });
+  expect(screen.getByRole("button", { name: "Run" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Step" })).toBeDisabled();
+  response.resolve(Response.json({ preflight }));
+  const declaration = await screen.findByRole("region", {
+    name: "Fallible adjudication",
+  });
+  expect(declaration).toHaveTextContent("openai:gpt-6.1-sol");
+  expect(declaration).toHaveTextContent("$2.00 / million input");
+  expect(declaration).toHaveTextContent("$10.00 / million output");
+  expect(screen.getByRole("button", { name: "Run" })).toBeEnabled();
+  expect(screen.getByRole("button", { name: "Step" })).toBeEnabled();
+  expect(fetcher.mock.calls.every(([path]) => !path.endsWith("/control"))).toBe(
+    true,
+  );
+});
+
+for (const missing of [
+  "absent",
+  "configuration",
+  "scope",
+  "blocked",
+  "unavailable",
+]) {
+  test(`a ${missing} pinned declaration never enables judged execution`, async () => {
+    const declaration = structuredClone(preflight);
+    if (missing === "absent") declaration.adjudications = [];
+    if (missing === "configuration")
+      declaration.adjudications[0].adjudicator.response_tokens = 1024;
+    if (missing === "scope")
+      declaration.adjudications[0].scope.artifact = "other-report";
+    if (missing === "blocked") declaration.status = "blocked";
+    const response =
+      missing === "unavailable"
+        ? Response.json({ detail: "Declaration unavailable" }, { status: 500 })
+        : Response.json({ preflight: declaration });
+    const fetcher = renderRecordedRun(
+      {
+        ...completedRun,
+        summary: { ...completedRun.summary, status: "paused" },
+      },
+      Promise.resolve(response),
+    );
+    await screen.findByText(
+      missing === "unavailable"
+        ? "The pinned adjudicator declaration could not be loaded."
+        : /The pinned revision .*Run and Step remain unavailable/,
+    );
+    expect(screen.getByRole("button", { name: "Run" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Step" })).toBeDisabled();
+    expect(
+      screen.queryByRole("region", { name: "Fallible adjudication" }),
+    ).not.toBeInTheDocument();
+    expect(
+      fetcher.mock.calls.every(([path]) => !path.endsWith("/control")),
+    ).toBe(true);
+  });
+}
+
+test("missing declaration never prevents pausing already active work", async () => {
+  renderRecordedRun(
+    {
+      ...completedRun,
+      summary: { ...completedRun.summary, status: "running" },
+    },
+    Promise.resolve(
+      Response.json({ preflight: { ...preflight, adjudications: [] } }),
+    ),
+  );
+  await screen.findByText(
+    /The pinned revision .*Run and Step remain unavailable/,
+  );
+  expect(screen.getByRole("button", { name: "Pause" })).toBeEnabled();
+  expect(screen.getByRole("button", { name: "Step" })).toBeDisabled();
+});
+
+test("abstention, untrusted explanation and unknown judge usage cannot become enforced success", async () => {
+  const explanation =
+    '<img src=x onerror="inventParticipantResponse()"> No supported decision.';
+  const altered = {
+    ...recorded,
+    ruling: { ...recorded.ruling, verdict: "abstain", explanation },
+    consequence: { ...recorded.consequence, submission_status: "failure" },
+  };
+  const fetcher = renderRecordedRun({
+    ...completedRun,
+    events: [{ ...rulingEvent, data: altered }],
+    state: {
+      ...checkpoint,
+      adjudications: [altered],
+      outcome: { ...checkpoint.outcome, status: "failure" },
+    },
+    requests: completedRun.requests.map((call) =>
+      call.purpose === "adjudication"
+        ? {
+            ...call,
+            status: "unknown",
+            input_tokens: 0,
+            output_tokens: 0,
+            cost_usd: 0.01,
+          }
+        : call,
+    ),
+  });
+  const raw = await screen.findByRole("region", {
+    name: "Recorded fallible judgment",
+  });
+  expect(raw).toHaveTextContent("abstain");
+  expect(raw).toHaveTextContent(explanation);
+  expect(raw.querySelector("img, script")).toBeNull();
+  expect(raw).toHaveTextContent("$0.01");
+  expect(raw).toHaveTextContent("unknown · includes reservation");
+  const enforced = screen.getByRole("region", { name: "Enforced consequence" });
+  expect(enforced).toHaveTextContent("Submission status: failure");
+  expect(enforced).not.toHaveTextContent("success");
+  expect(enforced).not.toHaveTextContent(explanation);
+  expect(fetcher.mock.calls.every(([path]) => !path.endsWith("/control"))).toBe(
+    true,
+  );
 });

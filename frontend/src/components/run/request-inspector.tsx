@@ -19,6 +19,14 @@ import {
 import { api } from "@/lib/api";
 import { money } from "@/lib/format";
 import type { RequestEvidence, RunDetail } from "@/lib/types";
+
+function requestWork(call: { purpose: string; analysis_id: string | null }) {
+  return call.purpose === "adjudication"
+    ? "Adjudication"
+    : call.analysis_id
+      ? "Analysis"
+      : "Participant";
+}
 export function RequestInspector({
   requests,
 }: {
@@ -72,10 +80,11 @@ export function RequestInspector({
                       className="underline underline-offset-4"
                       href={`/api/analyses/${call.analysis_id}`}
                     >
-                      Analysis {call.analysis_id.slice(0, 5)}
+                      {requestWork(call)} · analysis{" "}
+                      {call.analysis_id.slice(0, 5)}
                     </a>
                   ) : (
-                    "Participant"
+                    requestWork(call)
                   )}
                   <span className="block text-xs text-muted-foreground">
                     {call.model.replace("openai:", "")}
@@ -114,8 +123,8 @@ export function RequestInspector({
                 Request {request.data.id.slice(0, 8)}
               </h3>
               <p className="mt-1 text-xs text-muted-foreground">
-                {request.data.analysis_id ? "Analysis" : "Participant"} ·{" "}
-                {request.data.model} · {request.data.purpose}
+                {requestWork(request.data)} · {request.data.model} ·{" "}
+                {request.data.purpose}
               </p>
               {request.data.activation_id && (
                 <p className="mt-1 break-all text-xs text-muted-foreground">
