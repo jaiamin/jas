@@ -319,7 +319,13 @@ export function InteractionTable({
       !event.actor ||
       !event.target ||
       !profiles.some((p) => p.key === event.target) ||
-      !["transfer", "message"].includes(event.kind)
+      ![
+        "transfer",
+        "message",
+        "message_delivered",
+        "handoff_work",
+        "accept_handoff",
+      ].includes(event.kind)
     )
       continue;
     const key = `${event.actor}:${event.target}`;

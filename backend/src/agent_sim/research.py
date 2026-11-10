@@ -948,7 +948,16 @@ class Research:
                 not event.actor
                 or not event.target
                 or event.kind
-                not in ("transfer", "resource_transfer", "message", "claim", "commitment_resolved")
+                not in (
+                    "transfer",
+                    "resource_transfer",
+                    "message",
+                    "claim",
+                    "commitment_resolved",
+                    "message_delivered",
+                    "handoff_work",
+                    "accept_handoff",
+                )
             ):
                 continue
             row = pairs.setdefault(

@@ -145,6 +145,42 @@ test("relationships aggregate directed transfers and exclude ineligible promises
   ).toBeInTheDocument();
 });
 
+test("workflow interactions count delivered messages and settled handoffs, with actor inspection", () => {
+  const onAgent = vi.fn();
+  const queued = event("message_queued", "a", "b", {});
+  const rejected = event("workflow_conflict", "b", "a", {});
+  const { rerender } = render(
+    <InteractionTable
+      profiles={runDetail.design.profiles}
+      events={[queued, rejected]}
+      onAgent={onAgent}
+    />,
+  );
+  expect(screen.getByText("No interactions yet")).toBeInTheDocument();
+  rerender(
+    <InteractionTable
+      profiles={runDetail.design.profiles}
+      events={[
+        queued,
+        rejected,
+        event("message_delivered", "a", "b", {}),
+        event("handoff_work", "a", "b", {}),
+        event("accept_handoff", "b", "a", {}),
+      ]}
+      onAgent={onAgent}
+    />,
+  );
+  const table = screen.getByRole("table", {
+    name: "Directed agent interactions",
+  });
+  const sent = within(table).getByRole("row", { name: "Alice Bob 0 2" });
+  expect(
+    within(table).getByRole("row", { name: "Bob Alice 0 1" }),
+  ).toBeInTheDocument();
+  fireEvent.click(within(sent).getByRole("button", { name: "Bob" }));
+  expect(onAgent).toHaveBeenCalledWith("b");
+});
+
 test("institutional work shows real materials, owned delay and blocked dependencies without tables", () => {
   const onAgent = vi.fn();
   render(

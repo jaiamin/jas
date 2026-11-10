@@ -127,3 +127,23 @@ unreserved; it is not a reservation or a future preflight pass.
 - [ ] Record source-stamped verdict, inherited/new evidence, attempts and limits.
 - [ ] Commit through normal hooks; close own browser/services/locks and return
   clean tracked state plus explicit sole tracked writing handback to ROOT.
+
+## R1 — independently observed interaction omission; repair oracle frozen
+
+The first independent browser inspection recorded delivered Casey→Taylor mail,
+Morgan→Sam handoff and Sam→Morgan acceptance, but Interactions displayed
+“No interactions yet” and the public run response had `relationships: []`.
+Both the backend summary and frontend table have event-kind allowlists that omit
+workflow directed settlements. This is a P2 integration defect in inspectability.
+The first browser/service is closed before source changes.
+
+Before red/repair outputs, freeze the new public HTTP regression: the independent
+six-actor protocol sends b→f at logical0 with delay2 while a claims draft;
+a starts draft at1 (cost4, duration3), hands draft-v2 to c at4, and c accepts at5.
+After turn6, queued mail contributes no edge. After turn12, exactly b→f has one
+interaction. After turn36, exactly b→f, a→c and c→a each have one interaction,
+zero credits, zero claims/promises/false reports. Replay adds zero requests.
+The UI regression first renders only queued/failed proposals (empty), then
+delivered a→b mail, a→b handoff and b→a acceptance; it must show two directed
+rows (a→b count2, b→a count1), zero credits, and working actor inspection controls.
+No participant prose, queued delivery or rejected attempt counts as settlement.
