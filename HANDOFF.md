@@ -1,3 +1,14 @@
+# ROOT T17 integration under review (2026-11-10)
+
+ROOT is normally integrating exact1a43f175 into the current branch for independent
+review; this is NOT an acceptance verdict. The sole merge conflict is HANDOFF;
+marker bytes/all three Git stages have verified gzip custody in
+current/t17-merge-custody-01. Both histories below remain. Application combines
+T17 DB14/export16/library9/definition2/research2/generationv2 with ROOT's recording
+UX and benchmark preparation. T18 is still separate. The independent origin-
+publication and active-generation-export probes are frozen in T17_INTEGRATION_REVIEW;
+no outcome or repair is claimed yet. Original pbcopy/stash stay protected.
+
 # ROOT continuation — saved-turn playback prepared (2026-11-10)
 
 One stock Play recording/Pause recording button now watches saved turns only,
@@ -33,6 +44,220 @@ data/evidence removal and8080 remain open. The original pbcopy and protected sta
 remain untouched. Earlier attributions and retired-evidence limitations below
 remain binding.
 
+
+# T17 accepted ROOT46 build boundary (2026-11-10)
+
+Normal merge74a87c03a91ed83ee4f6d15b77db2d27ebc29e43 includes exact accepted
+46d48d5e615eb22920219df26d42249ca2e5c0e0, without conflict, after normal
+checkpointa31ae751. Both hooks/Gitleaks pass. Current DB14/export16/library9/
+definition2/research2/generationv2, reliance1.0.1 and accepted T12 interactions
+remain, without alias/migration/reset or provisional sibling source.
+
+At sourcef1c3999cc734cc618d1b5d4f4bdec244d5550014087ff72b7aa2d1f707abe875:
+65 affected frontend units/10 files, lint243, forced types and ONE isolated
+normal-manager build PASS. Fresh own assets are in .tools/t17/frontend-evidence/
+attempts/root46-isolated-build-01/dist. Backend inputs equal the qualified75-case/
+literal5/22/22/Ruff sourceeacc1f0b and globalty source7aa35a00; only frontend/docs
+changed. Frozen T01 CURRENT retains four export-v4 failures/false flags/exit1;
+there is no retired historical comparison. Earlier74-case source remains e19ee690.
+
+Frontend7.75MB/16MiB, backend64.89MB/64MiB before final documentary inventory.
+The independent source/case/restoration/build manifest is recorded in
+.tools/t17/evidence/attempts/root46-boundary-audit-01/summary.json; its open
+attempt and later checkpoint are explicit additions, not a ticket closure seal.
+All failed attempts/maps remain. No own service/browser/container/lock is active.
+T17 is INCOMPLETE/UNACCEPTED; actual browser/public lifecycle and fresh non-root
+production plus NEW independent integration review remain pending. Proposed
+browser: existing build/headless shell/private deps,18129/own DB,<=8MiB new
+evidence within frontend16MiB,256MiB peak+floor, entry402653184. No install,
+provider/live/paid/held-out work or publication; browser/services remain HELD.
+
+# T17 accepted ROOT370 integration boundary (2026-11-10)
+
+Exact accepted370f835b45bdc7172de5c719aae1ffa1e185b3f5 was normally merged
+at4de116d990f01cc1984cf163471e02e1ca2c8c6c after checkpoint4ed2f589. Only
+HANDOFF conflicted; every stage
+and marker-bearing source is retained, and both histories below are preserved.
+Accepted exposure/participant-usage/provenance/read-snapshot corrections and
+reliance1.0.1 combine without changing DB14/export16/library9/definition2.
+T12 delivered-message/handoff/acceptance interaction repairs remain intact.
+No incompatible checkpoint, schema or library alias/migration/reset is added.
+At exacteacc1f0bf64399157ef08436ff508ecebff55238bbdfe367c7375c13d48ac852,
+75 affected cases pass across four jobs; full prescribed Ruff passes. Earlier74
+backend/60 frontend passes retain exacte19ee690 attribution. Frozen T01 CURRENT
+still has exactly four export-v4 failures/false flags/exit1; independent literal
+5/22/22 passes. Globalty passes at source7aa35a00; only documentary changes
+separate its backend inputs from eacc1f0b. ROOT lifted the temporary hold and
+approved exact46d48d5e for the next normal merge; no active own job/flock. Current64MiB
+backend/16MiB frontend evidence limits and all build/browser/production holds
+remain. This is source integration, not T17 acceptance or live competence.
+
+Next: normal documentary checkpoint and exact46d48d5e Markdown repair merge,
+then affected shell/renderer units/lint/forcedtypes. Only after those gates and
+evidence-room proof, one distinct existing-env build is released (entry268435456,
+128MiB peak, frontend16MiB total). Browser/services/production remain HELD.
+
+# T17 combined backend/UI UNIT boundary (2026-11-10)
+
+Normal mergecb379ee5 includes exact accepted40c32ff60593ee195cd4df21289448e385a95f03;
+all25 conflicts/stages and both histories are retained. CurrentDB14/export16/
+library9/definition2/research2/generation-eventv2 reject incompatible intermediate
+meanings, without alias/migration/reset. Accepted T12 interactions/directed-count
+tests and the independent finite mechanisms remain. One genuine combined-source
+critique input-limit RED was minimally repaired by omitting a repeated universal
+schema for an already validated complete proposal; allowance/oracles unchanged.
+
+At exacte19ee6900c63e9f109e926183579cb86a3769529a5d2fc42ed1dc1a3f6171331:
+74 unique segmented backend cases and60 affected frontend units pass, plus full
+prescribed Ruff/global ty,243-file frontend lint and forced TypeScript. Frozen
+unchanged T01 CURRENT retains exactly four export-v4 failures/four false flags/
+exit1. Fresh literal5/22/22 matrix/full inputs/checkpoints/privacy/cutoffs/ledger/
+zero-call replay passes; no retired historical comparison. Initial post-merge
+5pass/1fail and every earlier failure/source remain. Later edits are documentary.
+
+Complete stage inventory3044 files/60,476,214 bytes plus110 symlink metadata
+entries: .tools/t17/evidence/attempts/combined-boundary-audit-01/summary.json,
+inventory SHA03471265...; audit/current checkpoint are explicit later additions.
+All148 own closed-DB logical paths have retained actual hash/size/mode/integer-ns
+restoration proofs, with stored bytes reverified. Backend56.8MB/64MiB,
+frontend4.4MB/16MiB after audit; no cache/other-owner/source-custody modification.
+Shared floor/lock unchanged and released per job. Private imports resolve here.
+
+T17 remains INCOMPLETE/UNACCEPTED. No service/browser/container/new setup/live/
+paid/held-out/publication. Next separately proposed build/browser release: existing
+private deps/headless shell, own18129/build/DB,<=32MiB new evidence,256MiB peak+
+134217728 floor, entry402653184. Actual public keyless generation→review/save→
+separate participant execution/replay and390/1440/theme/keyboard/reconnect checks
+remain held. Fresh non-root production needs a later separate release; NEW fresh
+integration review remains required. See docs/research/T17_EXTENSION_GENERATION.md.
+
+# T17 accepted-frontier source integration (2026-11-10)
+
+Normal unit checkpoint29ab2796 passes hooks/Gitleaks. Exact accepted40c32ff6
+normal merge is being reconciled, with all25 conflicts/base/ours/theirs retained
+and byte-restored (manifest e18a3c66...). Combined currentDB14/export16/library9
+rejects incompatible T12/T17 intermediary meanings, no alias/migration/reset.
+T12 accepted interaction repair/tests and T17 finite/generation semantics both
+remain. T12 acceptance is inherited finite DEVELOPMENT only. Pre-merge34 affected
+units/lint/globaltypes qualify0cb4411c only; merged source is not qualified yet.
+Backend retained57.7MB/64MiB before final merge capture: remeasure/forecast each
+bounded job. Unit-stage closed inventory c0d17891... is retained; subsequent
+conflict/checkpoint/merge receipts are later additions. No services/browser or
+provider/paid/held-out/new setup/build/production. T17 incomplete/UNACCEPTED.
+
+# T17 generation-authoring UNIT boundary (2026-11-10)
+
+At source0cb4411c...,34 affected tests/5 files, affected11-file lint
+and global forced TypeScript PASS. Explicit independent-contract freeze and
+bounded generation authority are separate from ordinary Send and participant
+execution. Test-first repairs cover stale frozen selection, per-chat/unfinished
+drafts (current browserv2 rejectsv1), incompatible profile/stale runtime and
+public allowance/attempt/source inspection. First-pass isolation/reconnect
+properties and every environment/authoring/type failure stay distinctly recorded
+in docs/research/T17_EXTENSION_GENERATION.md; no assertion/oracle relaxation.
+Backend56.1MB/64MiB, frontend3.4MB/16MiB; lock released. No new setup, provider,
+service/browser, build, production or paid/held-out work. Exact accepted40c32ff6
+is next normal merge, combinedDB14/export16/library9, not yet qualified here.
+Separate build/browser proposal: no setup, <=32MiB outputs,256MiB peak+floor,
+entry402653184, own18129/build/DB/existing headless shell. Held pending release.
+T17 incomplete/UNACCEPTED; a NEW fresh integration reviewer remains required.
+
+Stage-boundary normal checkpoint generation-ui-environment-checkpoint-01 also
+retains an exclusive-flock45s acquisition timeout (exit1): no recorder, source
+capture, commit or Gitleaks hook starts. No retry/bypass; earlier timeout is
+unchanged. Corrected unrun test, immutable contract and diagnostic docs remain
+staged at HEADb6b605cd. No owned active job or flock. Proposed next functional
+observation remains distinct red02 after a concrete release; no product red yet.
+
+# T17 generation UI environment boundary (2026-11-10)
+
+T17 generation authorization red01 is an ENVIRONMENT/AUTHORING FAILURE, not
+an intended product red: real AgentTarget needs IntersectionObserver, omitted
+from the jsdom setup. One failed/1.82s at exact source2f621226..., no product
+implementation or dependent checks, no retry. Failure/source/log retained. Only
+that browser API stub is source-corrected and independently frozen UNRUN; all
+literal assertions, reviewed JSON/oracle/authority/limits are unchanged. See T17
+plan for corrected test SHA and one-red02 proposal under unchanged268435456
+entry/4MiB-job/16MiB stage. Flock released, no owned active job/service/browser;
+providers/paid/held-out/build/production remain held. T17 incomplete/UNACCEPTED.
+
+Generation-UI spec checkpoint01: exclusive flock -x -w45 timed out (exit1)
+before recorder/commit/hook/source capture; no retry. Source-frozen test/spec
+remain staged at HEADb6b605cd, while the completed finite-inspection checkpoint
+and exact accepted670ab3ee merge are committed. No owned active job or lock.
+The next boundary needs the normal spec checkpoint and separately released UI
+intended RED; no generation UI implementation/check/browser/service is implied.
+
+# T17 generation UI source freeze (2026-11-10)
+
+T17 finite inspection is checkpointed309ce7f1 (normal Gitleaks PASS). Exact
+accepted670ab3ee merged normally without conflict asb6b605cd; no sibling merge.
+Qualified UI source remainsf5a1888f (actual-shell focused1 PASS, affected11-file
+lint and forced TypeScript PASS); backend dispatch03 passes as an existing T14
+property at0c025fbd, with wrap-only Ruff/globalty at70adfc59. These are segmented
+qualification, not fresh checks of the merged/full source. Backend/frontend
+all failures and source identities remain in the T17 plan; T01 CURRENT retains
+four export-v4 failures/false flags/exit1, with no historical parity claim.
+
+The explicit contract-authoring/generation authorization UI contract v1 is now
+source-frozen, with ONE UNRUN actual-shell HTTP-dispatch test and complete
+synthetic boundary fixtures. Test SHA c442a60e..., fixture4fe723a1..., contract
+e7110f38...; independently reviewed co-signature fixture remains eef4d9c9....
+No generation UI implementation or test output. Next requested slot: one focused
+RED, existing private env,268435456 under-lock entry (134217728 floor+128MiB
+peak), <=4MiB outputs inside frontend16MiB. Green/lint/forcedtypes are proposed
+as separate jobs; browser/build/services/production/providers/paid/held-out stay
+held. Draft/ordinary-send/current-runtime/late-response safety slices remain
+explicit next steps, not speculative implementation. T17 incomplete/UNACCEPTED;
+NEW fresh integration review is still required after completion.
+
+# T17 finite-inspection checkpoint (2026-11-10)
+
+T17 finite review passes through actual WorkspaceShell; affected11-file lint
+and global forced TypeScript pass at f5a1888f. Genuine red02 remains distinct
+from fixture-authoring red01 and retained static diagnostics. Actual-worker
+HTTP/Engine dispatch witness03 passes1 at0c025fbd as an existing property of
+accepted T14; no Engine repair. Backend assertion-wrap Ruff/global ty pass at
+70adfc59; all failures/source receipts remain in the T17 plan. Own evidence
+48.2MB backend/0.6MB frontend, below64MiB/16MiB envelopes; shared flock released.
+Next normal checkpoint/exact accepted670ab3ee merge and independently frozen
+contract-authoring/explicit generation UI intended red proposal. No generation UI
+implementation ahead of observed red; browser/build/service/production/providers/
+paid/held-out held. Current combinedDB13/export15/library8/definition2/research2/
+generationv2; no provisional sibling merge. T17 incomplete and UNACCEPTED.
+
+# T17 corrected-frontier continuation (2026-11-10)
+
+Current backend boundary: exact accepted eaa47bb3 merged normally as a0f00253;
+14 T17/API cases pass on merged source d9f60710. Fresh independent literal
+5-run/22-turn/22-request current-contract qualification passes at f49a8d8d:
+complete bounded inputs/schemas, consequences/checkpoint hashes, cutoff1 privacy,
+restart without sampling and zero-call replay;28231 reserved/770 scripted charged
+microdollars. Frozen T01 CURRENT at the same source retains exactly four
+export-v4 failures/false flags and exit1, all other checks passing. Turn0 test
+envelope failure remains; no product repair or historical parity claim.
+Own-only closed DB compaction retains51 actual byte/metadata restoration proofs
+and mapping c0640877...; evidence now24.1MB. First symlink-selection rejection is
+retained. Next normal checkpoint/merge exact newly accepted0527e737, then affected
+cutoff/matrix/executable/artifact/version/static checks. Frontend/services/browser/
+production/providers remain held; T17 incomplete and UNACCEPTED.
+
+Same assigned T17 implementer, clean checkpoint2c272803; no extra checkout or
+descendants. Completed abrupt/graceful generation interruption witnesses and
+whole backend Ruff/global types have separate retained source identities in
+the [T17 plan](docs/research/T17_EXTENSION_GENERATION.md). Next normal checkpoint
+and exact accepted eaa47bb32c5c5c436586b5a49915aaf5eb25be56 merge, then bounded
+final-source backend regressions, frozen T01 CURRENT and independently specified
+current-contract5/22/22 qualification. No historical parity claim. Root's corrected
+navigation review withdraws its earlier product red/green diagnosis. Current
+T17 contracts DB13/export15/library8/definition2/research2/generationv2; own
+evidence remains under64MiB,16MiB maximum forecast per job, shared floor/lock
+unchanged. Frontend/services/browser/production/providers remain held; source
+preparation forecast450–650MiB peak/32MiB evidence was reported. Implementation
+is incomplete and UNACCEPTED pending a NEW fresh integration reviewer.
+
+<!-- Accepted T12 documentary history, retained at exact40c32ff6. -->
+<!-- Accepted ROOT370 documentary history, preserved without reinterpretation. -->
 # Historical ROOT correctness checkpoint (2026-11-10)
 
 ROOT370f835b is pushed/linked;115922ed adds the committed compact report for
@@ -552,6 +777,161 @@ full-input/action/checkpoint/privacy/replay/integer-ledger qualification and
 affected regressions. No historical zero-regression/improvement claim is possible
 without the deleted input. This policy applies to remaining tickets/reviews/T20.
 
+# T17 backend checkpoint boundary (2026-11-10)
+
+Two distinct independently specified DEVELOPMENT mechanisms now have real
+scripted generation/worker/admission and World/Engine/private-projection/replay
+witnesses at the separately recorded T17-plan sources. Explicit wrong WAT +
+linked repair and all costs are retained/exported as current export15, with
+generation/eventv2, DB13/library8/definition2/research-operation2 unchanged.
+Export intended red and failed first fix are retained. Current request-ceiling/
+unknown-usage cases pass2/10.58s at637fe2...; affected Ruff/global ty pass at an
+earlier separately recorded source. No final-source runtime/static claim yet.
+Next normal checkpoint then exact accepted fdfb5f7a merge; no provisionalT12.
+Backend restart/cancellation, final-source regressions/current-contract matrix
+and all UI/browser/production work remain incomplete. UI/services/production/
+actual providers/paid/held-out are held; no active service. Own evidence28.2MB
+under64MiB envelope, lock released between jobs. T17 remains UNACCEPTED.
+
+# T17 earlier second DEVELOPMENT generation boundary (2026-11-10)
+
+Exact accepted e76ef124 merged normally as1458a3e3. Both affected generation
+workflows now pass2/16.05s at source73c99778439f6a82e9264952a7b03c46d067bc4054a6a1e91afea5edd027f9d9.
+Second immutable180+4 contract eef4... rejected an actual wrong WAT; intended
+missing-receipt red is retained, followed by explicit generation/eventv2 receipts
+and linked repair, eight separately settled scripted Sol requests/two attempts.
+No participants sampled. Next separately frozen World witness has8MiB forecast;
+backend second slice remains released under64MiB retained outputs. Frontend/
+services/browser/production/provider/paid/held-out remain held. No active lock/job.
+
+ROOT docs-only accepted fdfb5f7a is required before completion. Its compact-policy
+replacement is fresh current-contract qualification, never historical parity;
+deleted historical references must not be searched/restored/reconstructed. Own
+active evidence remains. See the durable T17 plan for exact attempts/sources and
+pending World/Engine/privacy/replay/static/UI/production qualification. Incomplete
+and UNACCEPTED; fresh integration review still required.
+
+# T17 earlier accepted-frontier source integration (2026-11-10)
+
+Own normal-hook checkpointf8d94d3dac0760352cdb380d81ad47420e87d0d0 passed
+secret scanning. Normal merge of exact accepted published
+e76ef124e01274f9b8ddccfa343c51351149c0ee is being resolved, with all18 conflicts
+and both fixed parents documented in the T17 plan. T14 current closure PASS is
+accepted; historical R1 FAIL remains. No provisional T12 source is included.
+Combined source is DB13/export14/library8/definition2/research-operation2, with
+incompatible intermediate meanings explicitly rejected. Accepted async Engine/
+Assistants startup and complete save/export offloads remain; the old Engine
+dispatch source finding is superseded, without a redundant repair.
+
+Root approved the unchanged second external180+4 contract, SHA256
+eef4d9c9c7f23e3079d8ff140284be3792dd31496dc86e30c5cef477766a4407,
+before any second candidate/test output. Root's new headroom release permits
+normal-hook merge completion and ONE existing-generation integration check
+(4MiB forecast). Only after a pass may the separate frozen second backend slice
+proceed, within revised64MiB outputs/per-job<=16MiB and unchanged134217728 floor.
+Old generation-green source9742aa... remains exactly1 old-source pass. Frontend/
+services/browser/production/providers/paid/held-out remain held; T17 is incomplete.
+
+User-authorized root historical evidence retirement supersedes earlier retention
+instructions only for root's deleted closed evidence/sol-development/dataT07/T02.
+Those raw/custody paths/maps are retired; do not restore or claim retained proof.
+T17's active evidence/environment/caches are intact; no other-owner deletion here.
+Root owns final minimalist UX/whole-code review/fresh data/port8080 completion.
+
+# T17 earlier bounded backend continuation (2026-11-10)
+
+Latest: root's single released `generation-green-01` passes1 test in8.05s on
+unchanged source9742aa243e6c9c8f9fdc3069e6e5bdde71806272927ea1c28ea8a57bab0830a7.
+Actual Pydantic AI scripted-Sol orchestration emits WAT, reaches real qualified
+worker/external finite admission/library/planner and returns a pending supported
+proposal. Six requests reserve/settle separately; saving adds zero requests and
+participants are unsampled. This is DEVELOPMENT orchestration, not live competence.
+Earlier finite World/Engine/refund/ACL/restoration green and API422/202 red remain.
+Root again holds ALL NEW captures/checks/heavy jobs after that one check. Bytecode
+disabled; under-lock free147,189,760→144,564,224. Post-result metadata observed
+free142,880,768 and10,805,900 evidence bytes/736 files; flock released.
+See [plan continuation](docs/research/T17_EXTENSION_GENERATION.md) for every
+attempt/source/limitation. Combined proposed source now uses DB12/export13,
+library8/definition2/research2, explicitly rejecting prior/intermediate contracts.
+Broader/static/frontend/production qualification remains held. No live provider/paid
+or held-out work. Accepted2ad967f docs-only may supersede the earlier29af merge;
+it remains unmerged and provisional T14 remains excluded.
+
+Source-only second DEVELOPMENT contract now specifies an irrevocable co-signature
+escrow with return to the initiator for release, pre-sign refund/veto and distinct
+stop/horizon consequences. Its literal180+4 domain, privacy and restore/replay
+oracles are in the T17 plan and
+`backend/tests/fixtures/t17_cosigned_escrow_contract.json`. Parent contract review
+and a new resource slot are pending; no second candidate/WAT/test output exists.
+Do not repair Engine start dispatch before its later independent public-API red.
+
+Setup02 passed after root's new headroom evidence: free278,548,480→274,673,664;
+normal frozen uv hardlink sync reused the explicitly coordinated T14 cache into
+this checkout's distinct `.venv`. Private sys.prefix and agent_sim import proof
+both pass. Rejected setup01 remains immutable. Root explicitly supersedes the
+accepted merge target with `29af3413c12c8b14f24bc0faae39933fe56e344d` (docs only).
+
+First actual API RED:405 vs201, source `19dd8c70ecb49ba2f3abec76fd340a48338d4c4b347cc77c5d7ee2ff655bf13d`.
+Inert immutable contract API then passes. Full-domain permission/resource
+validation red/green and real qualified-worker artifact comparison red/green
+pass (three current tests). A constant artifact passes its own examples and
+fails the external120+4 oracle; the independently scripted permit WAT passes248
+fresh instances. This is DEVELOPMENT correctness, not generated/live competence
+or World admission. No production World or Researcher generation is implemented.
+
+Own `.tools/t17/evidence/` retains every command, source-stamped receipt and
+failure; bounded outputs5,361,800 bytes, latest free238,645,248. Shared exclusive
+lock and unchanged134,217,728-byte ordinary floor apply to each bounded job.
+No frontend/service/browser/production/live/paid/held-out grant. Next: actual
+finite World/admission public lifecycle, then bounded Sol generation/proposal
+orchestration. Read the plan for exact sequencing limitations and failures.
+
+# T17 earlier source-only preparation — superseded by continuation above
+
+Continuation: root released Python setup/first red and bounded backend work,
+but the sole under-lock setup preflight rejects125:264,867,840 free is below
+268,435,456. Uv never ran; no `.venv`, cache consumer, snapshot or product check.
+Receipt `.tools/t17/evidence/attempts/python-setup-01/` and own immutable
+`record_v1.py` retain that attempt. Lock released; dependent setup/red is held
+pending new concrete headroom evidence, without lowering floors or blind retry.
+Latest accepted tip is now `d276b70a80656094862c304385baedd3752c3ec7`; it remains
+unmerged here, and provisional T14 is excluded. Frontend/browser/services/production
+remain unreleased. The earlier source-stage record below retains its attribution.
+
+T17/#28 only, assigned checkout `t3-8fed193f`, now automatically named
+`t3/sol-generation-admission`. Starting clean accepted
+`b0446d9ea54b2e49fe93fc6d7a2bcdea6341af7b`; latest root-documented published
+accepted tip is `375877c0a4de6baba092a8fadfcb13db64d9b08d`, with only this
+file/PROGRESS changed since the starting base. No merge yet; no production edit.
+
+Read [the tracked T17 plan](docs/research/T17_EXTENSION_GENERATION.md). Root
+concurs with the first new DEVELOPMENT discriminator: a revocable single-use
+permit with escrow refund/reissue, absent from inspected accepted mechanics.
+Full120-input literal table, four invalid integers, no-mint conservation, ACLs,
+terminal/horizon and restore/replay expectations precede any candidate output.
+The immutable independently authored external table is a supported-profile
+prerequisite, not proof of understanding natural-language intent. One inert API
+red is authored in `test_extension_generation.py` but **has not run**. No
+implementation before observed red. Second variation waits on the first loop.
+
+Root has NOT released setup/check/capture/service/browser/Docker/provider work.
+Acknowledged normal frozen owner-cache uv hardlink reuse into a DISTINCT own
+environment is not a grant. T14's268,435,456-byte production window has priority;
+T17 initial setup/check forecast remains225–245MB including the unchanged shared
+134,217,728-byte floor and bounded output. No cache consumer, dependency install,
+snapshot, check, service or browser has started. No paid/held-out/publication work.
+Continue source review if useful, then await root's concrete resource release.
+Port18129 remains reserved for the later owned disposable lifecycle only.
+
+Preparation/tool truncations, the corrected metadata-send argument, blocked
+official documentation and rejected documentation patch remain attributed in the
+T17 plan/transcript; none is product evidence. Current accepted contracts remain
+DB10/export11/library7/capture1/comparison1/tool2.0/direct1.0. T17 is UNACCEPTED.
+Preserve all prior history/maps/stash/custody and unread root `pbcopy`; inherited
+ignored helpers are data only. Historical root checkpoint follows unchanged.
+# Latest boundary — T14 production verified; T17 Python stage released (2026-11-10)
+
+<!-- Accepted T12 documentary history, retained at exact40c32ff6. -->
 <!-- End imported documentary continuity. -->
 
 

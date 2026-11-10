@@ -22,6 +22,7 @@ EnvironmentId = Literal[
     "composed",
     "artifact_workspace",
     "sealed_relay",
+    "reviewed_finite",
     "distributed_coordination",
     "reliance_commitments",
     "institutional_workflow",
@@ -56,6 +57,30 @@ class ExtensionPackage(Strict):
     checks: list[AdmissionCheck]
     verification: dict
     sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+
+
+class FiniteExtensionPackage(Strict):
+    format: Literal["jas-reviewed-finite-package-v1"] = "jas-reviewed-finite-package-v1"
+    version: Literal["1.0.0"] = "1.0.0"
+    profile: Literal["reviewed-finite-v1"] = "reviewed-finite-v1"
+    name: str = Field(min_length=1, max_length=120)
+    provenance: str = Field(min_length=1, max_length=2000)
+    source: str = Field(min_length=1, max_length=65536)
+    source_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    wasm_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    profile_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    contract: dict
+    review_id: str
+    artifact_check_id: str
+    admission_id: str
+    created: str
+    containment: dict
+    checks: list[AdmissionCheck]
+    verification: dict
+    sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+
+
+type ExecutablePackage = ExtensionPackage | FiniteExtensionPackage
 
 
 class Profile(Strict):
@@ -242,6 +267,23 @@ class RelayRules(Strict):
         return self
 
 
+class FiniteRules(Strict):
+    bindings: dict[ArtifactKey, ArtifactKey] = Field(min_length=1, max_length=12)
+    private: dict[ArtifactKey, dict[ArtifactKey, Annotated[str, Field(max_length=120)]]] = Field(
+        default_factory=dict, max_length=12
+    )
+
+    @model_validator(mode="after")
+    def private_scopes(self) -> Self:
+        if (
+            len(set(self.bindings.values())) != len(self.bindings)
+            or not set(self.private) <= set(self.bindings.values())
+            or any(len(fields) > 8 for fields in self.private.values())
+        ):
+            raise ValueError("Finite roles require distinct actors and bounded actor-private facts")
+        return self
+
+
 class MessageRoute(Strict):
     sender: ArtifactKey
     recipient: ArtifactKey
@@ -335,6 +377,7 @@ class MechanicsParameters(Strict):
     composition: CompositionRules | None = None
     artifacts: ArtifactRules | None = None
     relay: RelayRules | None = None
+    finite: FiniteRules | None = None
     coordination: DistributedRules | None = None
     commitments: CommitmentRules | None = None
     workflow: WorkflowRules | None = None
@@ -433,13 +476,13 @@ class EnvironmentConfiguration(Strict):
 
 
 class EnvironmentMechanics(Strict):
-    version: Literal[1] = 1
+    version: Literal[2] = 2
     name: str = Field(min_length=1, max_length=100)
     description: str = Field(default="", max_length=2000)
     environment: EnvironmentId
     rule_version: str = Field(min_length=1, max_length=40)
     examples: list[EnvironmentConfiguration] = Field(min_length=1, max_length=6)
-    extension: ExtensionPackage | None = None
+    extension: Annotated[ExecutablePackage, Field(discriminator="profile")] | None = None
 
     @model_validator(mode="after")
     def unique_examples(self) -> Self:
@@ -449,7 +492,7 @@ class EnvironmentMechanics(Strict):
 
 
 class SavedEnvironment(Strict):
-    format: Literal["jas-environment-v8"] = "jas-environment-v8"
+    format: Literal["jas-environment-v9"] = "jas-environment-v9"
     id: str
     revision: int = Field(ge=1)
     updated: str
@@ -510,6 +553,38 @@ class Design(DesignSpec):
             if len(set(values)) != len(values):
                 raise ValueError(f"{label} identifiers must be unique")
         for condition in self.conditions:
+            finite = condition.parameters.finite
+            if self.environment == "reviewed_finite":
+                from .finite_profile import validate_package as validate_finite_package
+
+                source = self.environment_source
+                if (
+                    not source
+                    or source.definition.environment != self.environment
+                    or not isinstance(source.definition.extension, FiniteExtensionPackage)
+                ):
+                    raise ValueError(
+                        "Finite World requires an independently admitted pinned package"
+                    )
+                contract = validate_finite_package(source.definition.extension).specification
+                if (
+                    finite is None
+                    or set(finite.bindings) != set(contract.roles)
+                    or set(finite.bindings.values()) != {p.key for p in self.profiles}
+                ):
+                    raise ValueError("Bind each reviewed finite role to one distinct participant")
+                defaults = MechanicsParameters().model_dump()
+                if self.tasks or any(
+                    value != defaults[key]
+                    for key, value in condition.parameters.model_dump(
+                        exclude={"finite", "memory"}
+                    ).items()
+                ):
+                    raise ValueError(
+                        "Finite World does not support rich or inactive extra mechanics"
+                    )
+            elif finite is not None:
+                raise ValueError("Finite mechanics require the reviewed finite environment")
             relay = condition.parameters.relay
             if self.environment == "sealed_relay":
                 if (
@@ -822,6 +897,11 @@ class RelayAction(Strict):
     operation: Literal["lodge", "release", "wait", "stop"]
 
 
+class FiniteAction(Strict):
+    kind: Literal["finite"] = "finite"
+    operation: str = Field(pattern=r"^[a-z][a-z0-9_]{0,31}$")
+
+
 class ChooseAlternative(Strict):
     kind: Literal["choose_alternative"]
     alternative: ArtifactKey
@@ -891,6 +971,7 @@ ActionRequest = (
     Action
     | ArtifactAction
     | RelayAction
+    | FiniteAction
     | ChooseAlternative
     | WaitCoordination
     | SendMessage

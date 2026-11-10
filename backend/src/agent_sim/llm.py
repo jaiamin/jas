@@ -27,6 +27,7 @@ from sqlalchemy import func, select, update
 from .config import setting
 from .db import Analysis, Database, InvestigationRecord, ProviderCall, Run, Study, Workspace
 from .diagnostics import log_failure
+from .finite_contract import GenerationAuthorization
 from .investigation_limits import InvestigationStopped, wait_ready
 
 T = TypeVar("T")
@@ -158,10 +159,21 @@ class LanguageModels:
             raise ProviderFailure("This model has no reviewed price configuration.")
         if web_search and (model != "openai:gpt-6.1-sol" or output is not str):
             raise ValueError("Web research requires GPT-6.1 Sol text output")
+        allowance = None
+        if analysis_id:
+            with self.db.session() as session:
+                analysis = session.get_one(Analysis, analysis_id)
+                if analysis.generation is not None:
+                    allowance = GenerationAuthorization.model_validate(
+                        analysis.generation["authorization"]
+                    )
+                    if model != "openai:gpt-6.1-sol":
+                        raise ProviderFailure("Extension allowance authorizes only GPT-6.1 Sol.")
+                    max_tokens = min(max_tokens, allowance.max_output_tokens)
         schema = TypeAdapter(output).json_schema()
         model_object = self.model(model)
         input_bound = len((prompt + instructions + json.dumps(schema)).encode()) + 4096
-        if input_bound > 180_000:
+        if input_bound > (allowance.max_input_bytes if allowance else 180_000):
             raise ProviderFailure("Evidence exceeds this request's input limit; narrow the scope.")
         timeout = 180 if purpose == "design" else 90
         settings: OpenAIResponsesModelSettings = {"max_tokens": max_tokens, "timeout": timeout}
@@ -333,6 +345,33 @@ class LanguageModels:
                 is None
             ):
                 raise ProviderFailure("Study spending ceiling reached. No request was sent.")
+            if call.analysis_id:
+                analysis = session.get_one(Analysis, call.analysis_id)
+                if analysis.generation is not None:
+                    allowance = GenerationAuthorization.model_validate(
+                        analysis.generation["authorization"]
+                    )
+                    if (
+                        session.execute(
+                            update(Analysis)
+                            .where(
+                                Analysis.id == call.analysis_id,
+                                Analysis.generation_requests < allowance.max_requests,
+                                Analysis.generation_charged + call.reserved
+                                <= math.floor(allowance.budget_usd * 1_000_000),
+                            )
+                            .values(
+                                generation_requests=Analysis.generation_requests + 1,
+                                generation_charged=Analysis.generation_charged + call.reserved,
+                            )
+                            .returning(Analysis.id)
+                        ).scalar_one_or_none()
+                        is None
+                    ):
+                        raise ProviderFailure(
+                            "Extension question request/spending allowance reached. "
+                            "No request was sent."
+                        )
             session.add(call)
             session.flush()
 
@@ -400,6 +439,18 @@ class LanguageModels:
                     .where(Study.id == call.study_id)
                     .values(charged=Study.charged + charged - call.reserved)
                 )
+            if call.analysis_id:
+                analysis = session.get_one(Analysis, call.analysis_id)
+                if analysis.generation is not None:
+                    session.execute(
+                        update(Analysis)
+                        .where(
+                            Analysis.id == call.analysis_id,
+                        )
+                        .values(
+                            generation_charged=Analysis.generation_charged + charged - call.reserved
+                        )
+                    )
 
     async def close(self) -> None:
         for model in self.models.values():

@@ -65,7 +65,7 @@ def test_scripted_condition_runs_without_a_provider_and_exports_real_work(refere
     assert turn["decision"]["action"]["amount"] == 5
     assert client.post(f"/api/runs/{run_id}/verify").json()["verified_turns"] == 1
     exported = client.get(f"/api/studies/{study['id']}/export").json()
-    assert exported["version"] == 13
+    assert exported["version"] == 16
     assert exported["requests"] == []
     assert exported["activations"] == run["activations"]
     assert exported["exposure"][0]["delivery"] == {

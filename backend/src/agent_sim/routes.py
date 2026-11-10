@@ -22,6 +22,13 @@ from .extensions import (
     ExtensionReview,
     ExtensionRuntime,
     Extensions,
+    FiniteAdmission,
+)
+from .finite_contract import (
+    FiniteArtifactCheck,
+    FiniteContract,
+    GenerationAuthorization,
+    ReviewedFiniteContract,
 )
 from .investigations import InvestigationAuthorization, Investigations
 from .llm import LanguageModels
@@ -120,6 +127,101 @@ async def extension_service(request: Request) -> Extensions:
 
 
 ExtensionsDep = Annotated[Extensions, Depends(extension_service)]
+
+
+@router.post("/api/extensions/contracts", status_code=201)
+async def freeze_finite_contract(
+    body: FiniteContract, *, extensions: ExtensionsDep
+) -> ReviewedFiniteContract:
+    return await asyncio.to_thread(extensions.freeze_contract, body)
+
+
+@router.get("/api/extensions/contracts")
+async def finite_contracts(*, extensions: ExtensionsDep) -> list[ReviewedFiniteContract]:
+    return await asyncio.to_thread(extensions.contracts)
+
+
+@router.get("/api/extensions/contracts/{key}")
+async def finite_contract(key: str, *, extensions: ExtensionsDep) -> ReviewedFiniteContract:
+    return await asyncio.to_thread(extensions.contract, key)
+
+
+class CheckFiniteArtifact(Strict):
+    review_id: str = Field(pattern=r"^[a-f0-9]{16}$")
+
+
+@router.post("/api/extensions/contracts/{key}/checks", status_code=201)
+async def check_finite_artifact(
+    key: str, body: CheckFiniteArtifact, *, extensions: ExtensionsDep
+) -> FiniteArtifactCheck:
+    return await asyncio.to_thread(extensions.check_finite_artifact, key, body.review_id)
+
+
+@router.get("/api/extensions/finite-checks")
+async def finite_checks(*, extensions: ExtensionsDep) -> list[FiniteArtifactCheck]:
+    return await asyncio.to_thread(extensions.finite_checks)
+
+
+@router.get("/api/extensions/finite-checks/{key}")
+async def finite_check(key: str, *, extensions: ExtensionsDep) -> FiniteArtifactCheck:
+    return await asyncio.to_thread(extensions.finite_check, key)
+
+
+@router.post("/api/extensions/finite-checks/{key}/admit", status_code=201)
+async def admit_finite(key: str, *, extensions: ExtensionsDep) -> FiniteAdmission:
+    return await asyncio.to_thread(extensions.admit_finite, key)
+
+
+@router.get("/api/extensions/finite-admissions")
+async def finite_admissions(*, extensions: ExtensionsDep) -> list[FiniteAdmission]:
+    return await asyncio.to_thread(extensions.finite_admissions)
+
+
+@router.get("/api/extensions/finite-admissions/{key}")
+async def finite_admission(key: str, *, extensions: ExtensionsDep) -> FiniteAdmission:
+    return await asyncio.to_thread(extensions.finite_admission, key)
+
+
+@router.get("/api/extensions/generations")
+async def extension_generations(*, extensions: ExtensionsDep) -> list[dict]:
+    return await asyncio.to_thread(extensions.generations.list)
+
+
+@router.get("/api/extensions/generations/{key}")
+async def extension_generation(key: str, *, extensions: ExtensionsDep) -> dict:
+    return await asyncio.to_thread(extensions.generations.get, key)
+
+
+@router.get("/api/extensions/profile")
+async def extension_profile() -> dict:
+    return {
+        "profile": "reviewed-finite-v1",
+        "prerequisite": "Independently user-authored, reviewed, frozen exhaustive finite table.",
+        "interpretation": "Conformance to an external finite table, "
+        "not independently understood intent.",
+        "finite_input_limit": 256,
+        "invalid_inputs": [-1, "domain_size", 2147483647, -2147483648],
+        "supported": [
+            "deterministic role/state/credit transitions",
+            "conserved resource/escrow",
+            "static actor-private facts",
+            "fixed role order",
+            "terminal or bounded horizon",
+        ],
+        "unsupported": [
+            "dynamic information policy",
+            "richer world semantics",
+            "host imports",
+            "external systems",
+            "native code",
+            "arbitrary programs",
+        ],
+        "candidate_self_tests_admit": False,
+        "requires_current_runtime": True,
+        "requires_separate_participant_execution": True,
+        "contract_schema": FiniteContract.model_json_schema(),
+        "authorization_schema": GenerationAuthorization.model_json_schema(),
+    }
 
 
 @router.get("/api/extensions/runtime")
@@ -221,6 +323,7 @@ class ChatMessage(Strict):
     chat_id: str | None = None
     lens: Literal["behavior", "communication"] | None = None
     source_analysis_id: str | None = Field(default=None, min_length=1, max_length=80)
+    generation: GenerationAuthorization | None = None
 
 
 class Note(Strict):
@@ -251,7 +354,7 @@ async def catalog(*, models: LanguageModelsDep, research: ResearchDep) -> dict[s
         (
             source
             for source in research.environments.list()
-            if source.definition.environment == "sealed_relay"
+            if source.definition.environment in {"sealed_relay", "reviewed_finite"}
         ),
         None,
     )
@@ -545,8 +648,37 @@ async def chat_events(chat_id: str, *, assistants: AssistantsDep) -> StreamingRe
 @router.post("/api/chats", status_code=202)
 async def send_chat(body: ChatMessage, *, assistants: AssistantsDep) -> dict:
     return await assistants.send(
-        body.question, body.context, body.chat_id, body.lens, body.source_analysis_id
+        body.question,
+        body.context,
+        body.chat_id,
+        body.lens,
+        body.source_analysis_id,
+        body.generation,
     )
+
+
+@router.get("/api/analyses/{key}/requests")
+async def analysis_requests(key: str, *, assistants: AssistantsDep, db: DatabaseDep) -> list[dict]:
+    assistants.get(key)
+    with db.session() as session:
+        return [
+            {
+                "id": call.id,
+                "model": call.model,
+                "purpose": call.purpose,
+                "status": call.status,
+                "reserved": call.reserved,
+                "charged": call.charged,
+                "error": call.error,
+                "input_tokens": call.input_tokens,
+                "output_tokens": call.output_tokens,
+            }
+            for call in session.scalars(
+                select(ProviderCall)
+                .where(ProviderCall.analysis_id == key)
+                .order_by(ProviderCall.created, ProviderCall.id)
+            )
+        ]
 
 
 @web_router.get("/{path:path}", include_in_schema=False)

@@ -15,6 +15,7 @@ import {
 import { AgentHistory } from "@/components/agent/agent-history";
 import { AgentReply } from "@/components/agent/agent-reply";
 import { AgentWelcomeHeading } from "@/components/agent/agent-welcome-heading";
+import { GenerationAuthorization } from "@/components/agent/generation-authorization";
 import { InvestigationAuthorization } from "@/components/agent/investigation-authorization";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
 import { Alert } from "@/components/feedback";
@@ -280,6 +281,17 @@ function AgentConversation({
             loading={contextLoading}
             disabled={state.send.isPending}
           />
+          {(context === "general" || context === "new") && (
+            <GenerationAuthorization
+              question={state.question}
+              draftKey={draftKey}
+              disabled={state.blocked}
+              pending={send.isPending}
+              error={send.error}
+              settings={settings.data}
+              onGenerate={state.generate}
+            />
+          )}
           {(context === "general" || context === "new") && (
             <InvestigationAuthorization
               question={state.question}

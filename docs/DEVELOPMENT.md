@@ -60,18 +60,23 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v13.
-Schema v12 and library format `jas-environment-v8` accept only the current contract.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v16.
+Schema14 and library format `jas-environment-v9`/definition2 accept only the current contract.
 Older databases/library records receive explicit errors; no data is converted or reset.
 Use a separate fresh workspace path for the new contract and preserve existing evidence.
 T11 introduced typed commitment mechanics as DB9/export10/library6. T16 integration
 adds admitted packages as DB10/export11/library7. T14 adds durable investigation
-authorization and nested request ownership as DB11/export12/library7.
-Capture1/comparison1/tool2.0/direct1.0 remain current;
-controlled-world mechanics and solo artifact submission behavior are unchanged.
-T12 combines typed institutional work rules and accepted investigation ownership
-as DB12/export13/library8. Both distinct schema11 intermediates are rejected. This is a
-task-branch contract pending integration acceptance; no workspace reset is performed.
+authorization and nested request ownership as DB11/export12/library7. Accepted
+T12 added typed institutional workflow as DB12/export13/library8. The current
+T17 combined contract is DB14/export16/library9/definition2/research-operation2,
+retaining those rules plus externally reviewed finite packages, generation
+allowances and per-question request/candidate/charge counters. T12 DB12/export13/
+library8 and T17-only DB13/export15/library8 have incompatible meanings and are
+rejected, as are earlier T17-only DB11/12/export12/13 contracts. No aliases,
+migration or workspace reset is performed. Capture1/comparison1/tool2.0/direct1.0
+and the installed controlled/solo rules retain their meanings. T17's new combined
+source remains subject to its own qualification; the accepted T12 review is linked
+in [architecture](ARCHITECTURE.md).
 
 T12's keyless browser witnesses use the opt-in DEVELOPMENT-only workflow provider,
 fresh owned data and the already installed headless shell. Set `JAS_TEST_PORT`,
@@ -82,8 +87,8 @@ editor draft/save recovery, actual contention/pause/handoff/replay, and tool fai
 with explicit recovery. They do not establish live participant competence.
 
 The current schema retains T04's durable participant activations and per-request
-links alongside T03's pinned environment sources. Old schema 4/5/6/7/8/9/10/11 databases and
-v1/v2/v3/v4/v5/v6/v7 environment files are explicitly rejected; preserve them separately. No
+links alongside T03's pinned environment sources. Old schema1–13 databases and
+v1–v8 environment files/definition1 are explicitly rejected; preserve them separately. No
 compatibility reader or automatic reset is provided. Reusable mechanics exclude
 participant harness settings; each experiment pins those separately.
 
@@ -121,10 +126,9 @@ contract to database schema 7, export 8 and environment-library v4 for typed art
 and complete versioned work/checkpoints. T10 advances these to DB8/export9/library5 for distributed coordination. T11 introduced DB9/export10/library6; T16 integration advances
 the contract to DB10/export11/library7
 for immutable admitted executable packages and sealed-relay checkpoints/actions.
-T14 advances the combined contract to DB11/export12/library7 for durable bounded
-investigations and nested request accounting.
-T12's task branch advances the combined contract to DB12/export13/library8 for
-institutional workflow mechanics. Its combined-source qualification is pending.
+T14 introduced DB11/export12/library7 for durable bounded investigations and nested
+request accounting. Current T17 combined semantics are DB14/export16/library9/
+definition2/research-operation2; no incompatible intermediate format is accepted.
 See [extension admission](EXTENSIONS.md); preserve older workspaces without resetting them.
 New runs must pin the current harness. Each capability can be explicitly disabled;
 there is no substitute policy. The same activation request/operation budgets apply.

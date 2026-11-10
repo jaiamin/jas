@@ -42,7 +42,7 @@ class SealedRelay(World[RelayCheckpoint]):
     @property
     def package(self) -> ExtensionPackage:
         source = self.design.environment_source
-        if source is None or source.definition.extension is None:
+        if source is None or not isinstance(source.definition.extension, ExtensionPackage):
             raise ValueError("Independent extension admission is required")
         validate_package(source.definition.extension)
         return source.definition.extension

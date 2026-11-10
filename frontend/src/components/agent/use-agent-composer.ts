@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { api, useApi } from "@/lib/api";
 import type {
   AnalysisLensKey,
+  GenerationAuthorization,
   InvestigationAllowance,
   Settings,
 } from "@/lib/types";
@@ -13,6 +14,7 @@ type Submission = {
   lens?: AnalysisLensKey;
   source_analysis_id?: string;
   investigation?: InvestigationAllowance;
+  generation?: GenerationAuthorization;
 };
 type ChatCreated = { id: string; chat_id: string };
 
@@ -88,23 +90,31 @@ export function useAgentComposer({
     setQuestion(text);
     composer.current?.focus();
   }
-  function submit(investigation?: InvestigationAllowance) {
+  function dispatch(authority: {
+    investigation?: InvestigationAllowance;
+    generation?: GenerationAuthorization;
+  }) {
     if (
       question.trim() &&
       !busy &&
       !send.isPending &&
       !submitting.current &&
-      !(investigation ? investigationUnavailable : unavailable) &&
+      !(authority.investigation || authority.generation
+        ? investigationUnavailable
+        : unavailable) &&
       settings.data
     ) {
       submitting.current = true;
       // Per-call callbacks stop with their observer when this composer unmounts.
       // Cache and draft settlement above still runs for the accepted request.
-      send.mutate(
-        { question, context, ...(investigation ? { investigation } : {}) },
-        { onSuccess: onSent },
-      );
+      send.mutate({ question, context, ...authority }, { onSuccess: onSent });
     }
+  }
+  function submit(investigation?: InvestigationAllowance) {
+    dispatch(investigation ? { investigation } : {});
+  }
+  function generate(generation: GenerationAuthorization) {
+    dispatch({ generation });
   }
   return {
     question,
@@ -120,6 +130,7 @@ export function useAgentComposer({
     investigationUnavailable,
     send,
     submit,
+    generate,
     blocked: busy || send.isPending || !settings.data,
     disabled: busy || send.isPending || !settings.data || !!unavailable,
     investigationDisabled:

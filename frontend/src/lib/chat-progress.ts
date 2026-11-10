@@ -18,7 +18,7 @@ function object(value: unknown): value is Record<string, unknown> {
 function researchActivity(value: unknown): value is ResearchActivity {
   if (
     !object(value) ||
-    value.version !== 1 ||
+    value.version !== 2 ||
     !object(value.scope) ||
     typeof value.scope.chat_id !== "string" ||
     typeof value.scope.before !== "string" ||
@@ -39,7 +39,7 @@ function researchActivity(value: unknown): value is ResearchActivity {
       typeof operation.id === "string" &&
       typeof operation.summary === "string" &&
       object(operation.request) &&
-      ["capabilities", "context", "probe"].includes(
+      ["capabilities", "context", "probe", "generate_extension"].includes(
         String(operation.request.kind),
       ) &&
       ["pending", "complete", "rejected", "failed"].includes(
@@ -50,7 +50,17 @@ function researchActivity(value: unknown): value is ResearchActivity {
       operation.sources.every(
         (source: unknown) =>
           object(source) &&
-          ["builtin", "analysis", "run"].includes(String(source.kind)) &&
+          [
+            "builtin",
+            "environment",
+            "analysis",
+            "run",
+            "finite_contract",
+            "extension_generation",
+            "extension_review",
+            "finite_check",
+            "finite_admission",
+          ].includes(String(source.kind)) &&
           typeof source.id === "string" &&
           typeof source.hash === "string" &&
           (source.turn === undefined ||

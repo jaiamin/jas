@@ -102,7 +102,7 @@ class Research:
     def review_design(self, design: Design, plan_id: str | None = None) -> dict:
         """Authorize an untrusted draft before any executable preflight witness."""
         self.validate_design(design)
-        if design.environment == "sealed_relay":
+        if design.environment in {"sealed_relay", "reviewed_finite"}:
             source = design.environment_source
             if source is None or source.definition.extension is None:
                 raise ValueError("Independent extension admission is required")
@@ -616,7 +616,7 @@ class Research:
                 "Saved rules differ from this engine. Inspect evidence or save a new revision; "
                 "this run cannot resume or replay here."
             )
-        elif design.environment == "sealed_relay":
+        elif design.environment in {"sealed_relay", "reviewed_finite"}:
             assert design.environment_source and design.environment_source.definition.extension
             try:
                 self.extensions.check_runtime(design.environment_source.definition.extension)

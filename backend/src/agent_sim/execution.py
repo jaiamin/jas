@@ -175,7 +175,7 @@ class Engine:
                         return
                     # A final response commits even when Pause arrived while awaiting it.
                     try:
-                        if design.environment == "sealed_relay":
+                        if design.environment in {"sealed_relay", "reviewed_finite"}:
                             events, measures = await asyncio.to_thread(world.step, actor, decision)
                         else:
                             events, measures = world.step(actor, decision)
@@ -337,7 +337,7 @@ class Engine:
 
     def replay(self, run_id: str) -> dict:
         run, design, condition = self.research.configuration(run_id)
-        if design.environment == "sealed_relay":
+        if design.environment in {"sealed_relay", "reviewed_finite"}:
             assert design.environment_source and design.environment_source.definition.extension
             # Even an empty replay needs the matching current runtime. The trusted
             # revision carries its admission; original sidecars are not required.
@@ -357,6 +357,7 @@ class Engine:
                 "institutional_workflow",
                 "artifact_workspace",
                 "sealed_relay",
+                "reviewed_finite",
                 "distributed_coordination",
                 "reliance_commitments",
             }
@@ -408,6 +409,7 @@ class Engine:
             "institutional_workflow",
             "artifact_workspace",
             "sealed_relay",
+            "reviewed_finite",
             "distributed_coordination",
             "reliance_commitments",
         }:

@@ -10,6 +10,7 @@ export type EnvironmentId =
   | "composed"
   | "artifact_workspace"
   | "sealed_relay"
+  | "reviewed_finite"
   | "distributed_coordination"
   | "reliance_commitments"
   | "institutional_workflow";
@@ -206,7 +207,7 @@ export interface CompositionRules {
   controllers_first: boolean;
 }
 export interface SavedEnvironment {
-  format: "jas-environment-v8";
+  format: "jas-environment-v9";
   id: string;
   revision: number;
   updated: string;
@@ -214,12 +215,12 @@ export interface SavedEnvironment {
   definition: EnvironmentMechanics;
 }
 export interface EnvironmentMechanics {
-  version: 1;
+  version: 2;
   name: string;
   description: string;
   environment: EnvironmentId;
   rule_version: string;
-  extension: ExtensionPackage | null;
+  extension: ExecutablePackage | null;
   examples: {
     key: string;
     name: string;
@@ -258,6 +259,7 @@ export interface Parameters {
   composition: CompositionRules | null;
   artifacts: ArtifactRules | null;
   relay: { submitter: string; reviewer: string; docket: string } | null;
+  finite: FiniteRules | null;
   coordination: DistributedRules | null;
   commitments: CommitmentRules | null;
   workflow: WorkflowRules | null;
@@ -800,13 +802,22 @@ export interface ChatSummary {
 export interface ResearchArtifact {
   id: string;
   request: {
-    kind: "capabilities" | "context" | "probe";
+    kind: "capabilities" | "context" | "probe" | "generate_extension";
     [key: string]: unknown;
   };
   status: "pending" | "complete" | "rejected" | "failed";
   summary: string;
   sources: {
-    kind: "builtin" | "environment" | "analysis" | "run";
+    kind:
+      | "builtin"
+      | "environment"
+      | "analysis"
+      | "run"
+      | "finite_contract"
+      | "extension_generation"
+      | "extension_review"
+      | "finite_check"
+      | "finite_admission";
     id: string;
     hash: string;
     turn?: number;
@@ -815,7 +826,7 @@ export interface ResearchArtifact {
 }
 
 export interface ResearchActivity {
-  version: 1;
+  version: 2;
   scope: {
     chat_id: string;
     before: string;
@@ -900,6 +911,13 @@ export interface ClaimSupport {
 export interface Analysis {
   chat_id?: string | null;
   usage?: Usage | null;
+  generation?: {
+    authorization: GenerationAuthorization;
+    contract: ReviewedFiniteContract;
+    requests: number;
+    candidates: number;
+    charged_usd: number;
+  } | null;
   id: string;
   purpose: string;
   question: string;
@@ -1149,6 +1167,72 @@ export interface ExtensionAdmission {
   limitations: string[];
   cases: { input: number; expected: number; observed: number }[];
 }
+
+export interface FiniteRules {
+  bindings: Record<string, string>;
+  private: Record<string, Record<string, string>>;
+}
+
+export interface FiniteContract {
+  format: "jas-finite-contract-v1";
+  name: string;
+  provenance: string;
+  requirements: string;
+  roles: string[];
+  states: {
+    key: string;
+    escrow: number;
+    status: "running" | "success" | "failure";
+  }[];
+  operations: { key: string; roles: string[] }[];
+  initial_state: number;
+  initial_credits: number;
+  total_resource: number;
+  max_credits: number;
+  table: number[];
+}
+
+export interface ReviewedFiniteContract {
+  format: "jas-reviewed-finite-contract-v1";
+  id: string;
+  created: string;
+  specification: FiniteContract;
+  sha256: string;
+}
+
+export interface GenerationAuthorization {
+  contract_id: string;
+  max_candidates: number;
+  max_requests: number;
+  max_output_tokens: number;
+  max_input_bytes: number;
+  budget_usd: number;
+}
+
+export interface FiniteExtensionProfile {
+  profile: "reviewed-finite-v1";
+  prerequisite: string;
+  interpretation: string;
+  finite_input_limit: number;
+  invalid_inputs: (number | string)[];
+  supported: string[];
+  unsupported: string[];
+  candidate_self_tests_admit: false;
+  requires_current_runtime: true;
+  requires_separate_participant_execution: true;
+  contract_schema: Record<string, unknown>;
+  authorization_schema: Record<string, unknown>;
+}
+
+export interface FiniteExtensionPackage
+  extends Omit<ExtensionPackage, "format" | "profile" | "capabilities"> {
+  format: "jas-reviewed-finite-package-v1";
+  profile: "reviewed-finite-v1";
+  contract: ReviewedFiniteContract;
+  artifact_check_id: string;
+}
+
+export type ExecutablePackage = ExtensionPackage | FiniteExtensionPackage;
 
 export interface ExposureSource {
   href: string;

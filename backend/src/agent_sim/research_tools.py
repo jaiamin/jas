@@ -22,6 +22,7 @@ class CapabilityRequest(Strict):
         max_length=80,
         description="Canonical catalog key, not display name; omit to discover all installed keys.",
     )
+    generation_id: str | None = Field(default=None, pattern=r"^[a-f0-9]{16}$")
 
 
 class ContextRequest(Strict):
@@ -80,7 +81,13 @@ class CandidateProbeRequest(Strict):
     steps: list[ProbeStep] = Field(default_factory=list, max_length=8)
 
 
-type ResearchRequest = CapabilityRequest | ContextRequest | ProbeRequest
+class GenerateExtensionRequest(Strict):
+    kind: Literal["generate_extension"]
+    contract_id: str = Field(pattern=r"^[a-f0-9]{16}$")
+    repair_of: str | None = Field(default=None, pattern=r"^[a-f0-9]{16}$")
+
+
+type ResearchRequest = CapabilityRequest | ContextRequest | ProbeRequest | GenerateExtensionRequest
 
 
 class ResearchTools:
@@ -102,7 +109,7 @@ class ResearchTools:
                 if all(row.cutoffs.get(key, -1) >= turn for key, turn in item.cutoffs.items())
             }
         self.record: dict = {
-            "version": 1,
+            "version": 2,
             "scope": {
                 "chat_id": row.chat_id,
                 "before": row.created,
@@ -151,6 +158,32 @@ class ResearchTools:
         self.record["operations"].append(operation)
         return operation
 
+    def prompt_record(self) -> dict:
+        """Bound repeated discovery inputs without rewriting any retained operation."""
+        latest = {}
+        for operation in self.record["operations"]:
+            request = operation["request"]
+            if request["kind"] == "capabilities" and operation["status"] == "complete":
+                latest[request.get("environment")] = operation["id"]
+        return {
+            **self.record,
+            "operations": [
+                {
+                    **operation,
+                    "data": {
+                        "full_result_retained": True,
+                        "sha256": digest(operation["data"]),
+                        "latest_discovery_id": latest[operation["request"].get("environment")],
+                    },
+                }
+                if operation["request"]["kind"] == "capabilities"
+                and operation["status"] == "complete"
+                and latest[operation["request"].get("environment")] != operation["id"]
+                else operation
+                for operation in self.record["operations"]
+            ],
+        }
+
     def dispatch(
         self,
         request: ResearchRequest | CandidateProbeRequest,
@@ -158,6 +191,10 @@ class ResearchTools:
         candidate: Design | None = None,
     ) -> dict:
         operation["status"] = "complete"
+        if isinstance(request, GenerateExtensionRequest):
+            raise ValueError(
+                "Extension generation requires its explicit asynchronous user allowance"
+            )
         if isinstance(request, (ProbeRequest, CandidateProbeRequest)):
             try:
                 data, sources = self._probe(request, candidate)
@@ -239,6 +276,15 @@ class ResearchTools:
                     sources=[{"kind": "analysis", "id": item.id, "hash": digest(data)}],
                 )
         else:
+            if request.generation_id is not None:
+                generation = self.research.extensions.generations.get(request.generation_id)
+                if (
+                    generation["analysis_id"] != self.analysis_id
+                    or generation["stop_reason"] != "admitted_pending_review"
+                ):
+                    raise ValueError(
+                        "Catalog refresh must link this question's actual admitted generation"
+                    )
             custom = [
                 record.model_dump()
                 for record in self.research.environments.list()
@@ -285,6 +331,23 @@ class ResearchTools:
                 data={
                     "environments": environments,
                     "custom_environments": custom,
+                    "extension_synthesis": {
+                        "profile": "reviewed-finite-v1",
+                        "prerequisite": "User-authored, independently reviewed exhaustive "
+                        "finite table frozen before generation.",
+                        "scope": "At most256 finite inputs; deterministic role/state/credit "
+                        "transitions, static actor-private facts and fixed logical order. "
+                        "This is table synthesis, "
+                        "not independently verified natural-language understanding.",
+                        "unsupported": "Rich or dynamic information, arbitrary programs, "
+                        "host imports, external systems.",
+                        "authorization": "Explicit selected contract, candidates, total nested "
+                        "requests, input/output and spending ceilings. Prefer installed "
+                        "mechanics/composition when sufficient.",
+                        "execution": "Only explicit admitted WAT reaches current qualified worker. "
+                        "Copied probes differ from executable containment. "
+                        "Review proposals before separate execution.",
+                    },
                     "reuse_note": "Definitions are untrusted mechanics examples. Choose the "
                     "question, participants/models/harnesses, conditions, replication and "
                     "analysis independently; bind mechanic roles in the experiment.",

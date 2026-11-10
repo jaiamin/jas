@@ -15,6 +15,7 @@ from .domain import (
     Design,
     EnvironmentConfiguration,
     EnvironmentMechanics,
+    FiniteExtensionPackage,
     MechanicsParameters,
     Parameters,
     Profile,
@@ -77,10 +78,35 @@ def bind_artifacts(parameters: dict, bindings: dict[str, str]) -> None:
 
 
 def validate_definition(definition: EnvironmentMechanics) -> None:
+    if definition.environment == "reviewed_finite":
+        from .finite_profile import validate_package as validate_finite_package
+
+        if not isinstance(definition.extension, FiniteExtensionPackage):
+            raise ValueError("Reviewed finite World requires its independently admitted package")
+        contract = validate_finite_package(definition.extension).specification
+        defaults = MechanicsParameters().model_dump()
+        for example in definition.examples:
+            rules = example.parameters.finite
+            if (
+                rules is None
+                or set(rules.bindings) != set(contract.roles)
+                or set(rules.bindings.values()) != set(example.roles)
+                or len(example.roles) != len(contract.roles)
+                or example.tasks
+                or any(
+                    value != defaults[key]
+                    for key, value in example.parameters.model_dump(exclude={"finite"}).items()
+                )
+            ):
+                raise ValueError("Finite examples require exact explicit roles and finite controls")
+        if definition.rule_version != "1.0.0":
+            raise ValueError("Unsupported reviewed finite rule version")
+        return
     if definition.environment == "sealed_relay":
+        from .domain import ExtensionPackage
         from .extension_profile import validate_package
 
-        if definition.extension is None:
+        if not isinstance(definition.extension, ExtensionPackage):
             raise ValueError("Sealed relay requires an independently admitted package")
         validate_package(definition.extension)
         defaults = MechanicsParameters().model_dump()
@@ -192,6 +218,8 @@ def definition_from_design(design: Design) -> EnvironmentMechanics:
         references.update(artifact_roles(parameters))
         if parameters.get("relay"):
             references.update([parameters["relay"]["submitter"], parameters["relay"]["reviewer"]])
+        if parameters.get("finite"):
+            references.update(parameters["finite"]["bindings"].values())
         bindings = {
             profile.key: f"role_{index}"
             for index, profile in enumerate(
@@ -208,6 +236,13 @@ def definition_from_design(design: Design) -> EnvironmentMechanics:
         if parameters.get("relay"):
             for field in ("submitter", "reviewer"):
                 parameters["relay"][field] = bindings[parameters["relay"][field]]
+        if parameters.get("finite"):
+            parameters["finite"]["bindings"] = {
+                role: bindings[actor] for role, actor in parameters["finite"]["bindings"].items()
+            }
+            parameters["finite"]["private"] = {
+                bindings[actor]: fields for actor, fields in parameters["finite"]["private"].items()
+            }
         content = {
             "parameters": parameters,
             "roles": list(bindings.values()),
@@ -229,7 +264,7 @@ def definition_from_design(design: Design) -> EnvironmentMechanics:
         rule_version=installed.world.version,
         examples=examples,
         extension=design.environment_source.definition.extension
-        if design.environment_source and design.environment == "sealed_relay"
+        if design.environment_source and design.environment in {"sealed_relay", "reviewed_finite"}
         else None,
     )
     validate_definition(definition)
@@ -272,6 +307,7 @@ def use_environment(
                 "artifact_workspace",
                 "distributed_coordination",
                 "reliance_commitments",
+                "reviewed_finite",
                 "institutional_workflow",
             }
             else 2
@@ -317,6 +353,13 @@ def use_environment(
     if parameters.get("relay"):
         for field in ("submitter", "reviewer"):
             parameters["relay"][field] = bindings[parameters["relay"][field]]
+    if parameters.get("finite"):
+        parameters["finite"]["bindings"] = {
+            role: bindings[actor] for role, actor in parameters["finite"]["bindings"].items()
+        }
+        parameters["finite"]["private"] = {
+            bindings[actor]: fields for actor, fields in parameters["finite"]["private"].items()
+        }
     payload.update(
         environment=source.definition.environment,
         environment_source=source.model_dump(),
@@ -361,8 +404,8 @@ class EnvironmentLibrary:
             payload = json.loads(self._path(key).read_text())
         except FileNotFoundError:
             raise NoResultFound() from None
-        if not isinstance(payload, dict) or payload.get("format") != "jas-environment-v8":
-            raise ValueError("Unsupported custom environment format; expected jas-environment-v8")
+        if not isinstance(payload, dict) or payload.get("format") != "jas-environment-v9":
+            raise ValueError("Unsupported custom environment format; expected jas-environment-v9")
         record = SavedEnvironment.model_validate(payload)
         if record.id != key or record.sha256 != digest(record.definition.model_dump()):
             raise ValueError("Custom environment has an invalid identity or content hash")

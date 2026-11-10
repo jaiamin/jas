@@ -6,6 +6,7 @@ import {
   DisclosureTrigger,
 } from "@/components/disclosure";
 import { CoordinationAssumptions } from "@/components/distributed-fields";
+import { FiniteMechanics } from "@/components/editor/finite-mechanics";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { WorkflowAssumptions } from "@/components/workflow-fields";
@@ -56,6 +57,7 @@ export function ExperimentReview({
   );
   const runCount =
     design.conditions.length * design.seeds.length * design.repetitions;
+  const extension = design.environment_source?.definition.extension;
   return (
     <section
       aria-label="Experiment review"
@@ -86,28 +88,29 @@ export function ExperimentReview({
                 Based on a pinned mechanics example. This experiment keeps its
                 own configured rules.
               </p>
-              {design.environment_source.definition.extension && (
-                <details className="text-sm">
-                  <summary>Admitted extension and independent checks</summary>
-                  <p className="mt-3 break-all">
-                    Package v
-                    {design.environment_source.definition.extension.version} ·
-                    SHA-256{" "}
-                    {design.environment_source.definition.extension.sha256}
-                  </p>
-                  <p className="mt-3">
-                    {design.environment_source.definition.extension.capabilities.join(
-                      " · ",
+              {extension && (
+                <Disclosure>
+                  <DisclosureTrigger>
+                    {extension.profile === "reviewed-finite-v1"
+                      ? "Generated mechanics and checks"
+                      : "Admitted extension and independent checks"}
+                  </DisclosureTrigger>
+                  <DisclosureContent className="flex min-w-0 flex-col gap-3 pt-3">
+                    <p className="mt-3 break-all">
+                      Package v{extension.version} · SHA-256 {extension.sha256}
+                    </p>
+                    {extension.profile === "reviewed-finite-v1" ? (
+                      <FiniteMechanics extension={extension} />
+                    ) : (
+                      <p>{extension.capabilities.join(" · ")}</p>
                     )}
-                  </p>
-                  <ul className="mt-3 flex flex-col gap-2">
-                    {design.environment_source.definition.extension.checks.map(
-                      (check) => (
+                    <ul className="mt-3 flex flex-col gap-2">
+                      {extension.checks.map((check) => (
                         <li key={check.stage}>{check.detail}</li>
-                      ),
-                    )}
-                  </ul>
-                </details>
+                      ))}
+                    </ul>
+                  </DisclosureContent>
+                </Disclosure>
               )}
             </section>
           )}
@@ -176,6 +179,24 @@ export function ExperimentReview({
                     {condition.parameters.relay.submitter} · Reviewer{" "}
                     {condition.parameters.relay.reviewer} · Three action credits
                   </p>
+                )}
+                {condition.parameters.finite && (
+                  <div className="mt-2 flex flex-col gap-1">
+                    <p>
+                      {Object.entries(condition.parameters.finite.bindings)
+                        .map(([role, actor]) => `${role} → ${actor}`)
+                        .join("; ")}
+                    </p>
+                    {Object.entries(
+                      condition.parameters.finite.private,
+                    ).flatMap(([actor, fields]) =>
+                      Object.entries(fields).map(([field, value]) => (
+                        <p key={`${actor}-${field}`}>
+                          {actor} · {field}: {value}
+                        </p>
+                      )),
+                    )}
+                  </div>
                 )}
                 {condition.parameters.artifacts && (
                   <div className="mt-2 flex flex-col gap-1">

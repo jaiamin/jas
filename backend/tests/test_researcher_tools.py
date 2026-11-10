@@ -90,7 +90,7 @@ def test_general_question_discovers_implemented_mechanics_without_creating_a_stu
     assert final["status"] == "complete", final
     assert final["purpose"] == "general"
     research = final["output"]["research"]
-    assert research["version"] == 1 and research["stop_reason"] == "answered"
+    assert research["version"] == 2 and research["stop_reason"] == "answered"
     operation = research["operations"][0]
     assert operation["status"] == "complete"
     assert operation["sources"][0]["kind"] == "builtin"

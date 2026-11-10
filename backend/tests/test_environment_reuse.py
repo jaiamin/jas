@@ -16,7 +16,7 @@ from fastapi.testclient import TestClient
 
 def mechanics():
     return {
-        "version": 1,
+        "version": 2,
         "name": "Allocated finite stock",
         "description": "A controller distributes a private stock with consumption needs.",
         "environment": "composed",
@@ -64,7 +64,7 @@ def test_environment_record_is_reusable_mechanics_not_an_experiment(tmp_path):
         response = client.post("/api/environments", json={"definition": mechanics()})
         assert response.status_code == 201, response.text
         saved = response.json()
-        assert saved["format"] == "jas-environment-v8"
+        assert saved["format"] == "jas-environment-v9"
         assert set(saved) == {"format", "id", "revision", "updated", "sha256", "definition"}
         assert saved["definition"]["environment"] == "composed"
         example = saved["definition"]["examples"][0]
@@ -176,7 +176,7 @@ def test_two_questions_and_populations_reuse_pinned_mechanics_without_importing_
             retained = client.get(f"/api/studies/{study['id']}").json()
             assert retained["design"] == study["design"]
             exported = client.get(f"/api/studies/{study['id']}/export").json()
-            assert exported["version"] == 13
+            assert exported["version"] == 16
             assert exported["revisions"][0]["design"]["environment_source"] == saved
             assert exported["rule_versions"] == ["1.0.0"]
             for request in exported["requests"]:
@@ -231,6 +231,7 @@ def test_catalog_and_editor_extract_examples_without_study_commitments(tmp_path)
 @pytest.mark.parametrize(
     "change, message",
     [
+        ({"version": 1}, "version"),
         ({"version": 99}, "version"),
         ({"rule_version": "999.0.0"}, "Unsupported environment rule version"),
         ({"question": "Study commitment"}, "Extra inputs"),

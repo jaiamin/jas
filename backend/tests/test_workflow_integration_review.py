@@ -440,7 +440,7 @@ def test_review_public_engine_restores_coupled_pending_work_and_integer_ledger(
             assert client.get(f"/api/runs/{rid}").json()["state"] == state
             assert client.get("/api/settings").json()["usage"] == usage
             export = client.get(f"/api/studies/{sid}/export").json()
-            assert export["version"] == 13 and len(export["requests"]) == 12
+            assert export["version"] == 16 and len(export["requests"]) == 12
         reopened = create_app(database, static_dir=tmp_path / "assets")
         monkeypatch.setattr(reopened.state.models, "model", lambda _: provider)
         with TestClient(reopened, base_url="http://localhost") as client:
