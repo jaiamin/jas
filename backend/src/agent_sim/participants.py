@@ -26,6 +26,7 @@ from .participant_context import (
     artifact_source,
     bounded_prompt,
 )
+from .reference_policies import reference_decision
 from .simulation.checkpoints import Observation
 from .simulation.world import World
 
@@ -187,7 +188,8 @@ class Activation:
                 saved.status, saved.stop_reason, saved.updated = "running", None, now()
                 self.row = saved
             else:
-                adapter = models.model(self.model)
+                scripted = self.harness.kind == "scripted"
+                adapter = None if scripted else models.model(self.model)
                 prior_events = session.scalars(
                     select(RecordedEvent)
                     .where(RecordedEvent.run_id == run.id, RecordedEvent.turn <= run.turn)
@@ -201,13 +203,33 @@ class Activation:
                     observation=observation,
                     checkpoint_hash=digest(run.checkpoint),
                     identity={
-                        "model": self.model,
-                        "provider": self.model.split(":", 1)[0],
+                        "participant_kind": "non_model_control"
+                        if scripted
+                        else "model_participant",
+                        "model": None if scripted else self.model,
+                        "provider": None if scripted else self.model.split(":", 1)[0],
                         "provider_adapter": (
                             f"{type(adapter).__module__}.{type(adapter).__qualname__}"
+                            if adapter is not None
+                            else None
                         ),
-                        "provider_model_name": adapter.model_name,
-                        "provider_system": adapter.system,
+                        "provider_model_name": adapter.model_name if adapter is not None else None,
+                        "provider_system": adapter.system if adapter is not None else None,
+                        **(
+                            {
+                                "configured_model": self.model,
+                                "configured_inference": {
+                                    "response_tokens": design.response_tokens,
+                                    "openai_reasoning_effort": design.openai_reasoning_effort,
+                                },
+                                "reference_implementation_sha256": hashlib.sha256(
+                                    Path(__file__).with_name("reference_policies.py").read_bytes()
+                                ).hexdigest(),
+                                "information_access": "actor_observation_and_legal_schema",
+                            }
+                            if scripted
+                            else {}
+                        ),
                         "versions": {
                             name: version(name)
                             for name in [
@@ -231,8 +253,10 @@ class Activation:
                             else {}
                         ),
                         "harness": self.harness.model_dump(),
-                        "response_tokens": design.response_tokens,
-                        "openai_reasoning_effort": design.openai_reasoning_effort,
+                        "response_tokens": None if scripted else design.response_tokens,
+                        "openai_reasoning_effort": None
+                        if scripted
+                        else design.openai_reasoning_effort,
                         "memory": condition.parameters.memory,
                         "profile": profile.model_dump(),
                         "environment": design.environment,
@@ -273,6 +297,8 @@ class Activation:
         *,
         artifact_reads: list[dict] | None = None,
     ) -> OutputT:
+        if self.harness.kind == "scripted":
+            raise ValueError("A non-model control cannot request model inference")
         if self.row.requests >= self.harness.max_requests:
             raise EffortLimit("request_limit")
         self.row.requests += 1
@@ -306,6 +332,35 @@ class Activation:
 
     async def decide(self, paused: Callable[[], bool]) -> Decision | None:
         try:
+            if self.harness.kind == "scripted":
+                observation = cast(Observation, self.row.observation)
+                schema = self.world.decision_schema(observation)
+                try:
+                    decision = reference_decision(self.harness.policy, observation, schema)
+                except ValueError:
+                    self.append(
+                        "reference",
+                        {"policy": self.harness.policy},
+                        "Reference policy could not propose a legal action.",
+                        "rejected",
+                    )
+                    raise
+                self.append(
+                    "reference",
+                    {"policy": self.harness.policy},
+                    {
+                        "information_access": "actor_observation_and_legal_schema",
+                        "observation_sha256": digest(observation),
+                        "legal_schema_sha256": digest(schema.model_json_schema()),
+                        "source": {
+                            "activation_id": self.row.id,
+                            "field": "observation",
+                            "cutoff": {"turn": self.run.turn, "round": self.row.round},
+                        },
+                    },
+                )
+                self.append("decide", decision.model_dump(), None)
+                return decision
             policy = DirectAction if self.harness.kind == "direct_action" else ToolUsing
             return await policy.decide(self, paused)
         except asyncio.CancelledError:

@@ -618,6 +618,17 @@ checks, with no privileged outcome prediction. The existing model-request inspec
 retains every inference, including unknown usage. Keep the default journal and
 current appearance, semantic tokens, mobile layout and keyboard disclosures.
 
+Scripted control is an explicit non-model harness choice with a concrete reference
+policy selector. Disable its unused model selector and identify zero provider work
+on Review, run Record and comparisons. Tool-using's Apply ablation menu edits the
+visible, saved configuration: disable retained memory, disable tools/capabilities,
+or limit inference to one request. These remain editable declarations; exhausting
+a limit can fail without a final action. Results disclose complete participant
+factors, per-activation/per-request envelopes, measured work across all attempts,
+stop reasons and recorded sources beside T06 matching/missingness/uncertainty.
+Selected-run comparisons link to exact-revision Results for the planned matrix;
+the selected runs alone do not establish independent support.
+
 Keep section content mounted when inactive so input DOM and disclosures retain
 their state. Validated JSON resets the affected uncontrolled fields to the new
 specification. Initialize the form only after loading and validating the current

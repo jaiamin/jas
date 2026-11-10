@@ -185,7 +185,15 @@ export interface ToolUsingHarness extends HarnessLimits {
   max_context_chars: number;
   max_memory_items: number;
 }
-export type ParticipantHarness = DirectActionHarness | ToolUsingHarness;
+export interface ScriptedHarness extends HarnessLimits {
+  kind: "scripted";
+  version: "1.0.0";
+  policy: "commons_keep_v1" | "commons_half_v1" | "private_signal_v1";
+}
+export type ParticipantHarness =
+  | DirectActionHarness
+  | ToolUsingHarness
+  | ScriptedHarness;
 export interface Treatment {
   key: string;
   name: string;
@@ -248,7 +256,7 @@ export interface RunSummary {
   condition: string;
   condition_key: string;
   environment: EnvironmentId;
-  model: ModelId;
+  model: ModelId | null;
   models: ModelId[];
   status: string;
   turn: number;
@@ -320,9 +328,24 @@ export interface Comparison {
   dependence: string;
   uncertainty_reason: string;
   selection_assumption: string;
+  effort_scope?: string;
   conditions: {
     condition_key: string;
     condition: string;
+    participant?: {
+      version: 1;
+      kind: "model_participant" | "non_model_control";
+      models: ModelId[];
+      configured_models: ModelId[];
+      harness: ParticipantHarness;
+      memory: Parameters["memory"];
+      profiles: Profile[];
+      inference: {
+        response_tokens: number;
+        openai_reasoning_effort: Design["openai_reasoning_effort"];
+      } | null;
+    };
+    effort?: ParticipantEffort & { captured_runs: number };
     planned: number;
     attempted: number;
     complete: number;
@@ -345,7 +368,23 @@ export interface Comparison {
     attempted: boolean;
     reason: string;
     metrics: Record<string, number>;
+    effort?: ParticipantEffort | null;
   }[];
+}
+export interface ParticipantEffort {
+  version: 1;
+  activations: number;
+  inference_attempts: number;
+  tool_attempts: number;
+  tool_operations: number;
+  scripted_attempts: number;
+  scripted_decisions: number;
+  committed_decisions: number;
+  reasoning_tokens: number;
+  usage: Usage;
+  stop_reasons: Record<string, number>;
+  request_statuses: Record<string, number>;
+  implementation_sources: Record<string, unknown>[];
 }
 export interface ComparisonReport {
   comparison: Comparison;
@@ -567,6 +606,7 @@ export interface RunDetail {
   parameters: Parameters;
   harness: ParticipantHarness;
   activations: ParticipantActivation[];
+  effort?: ParticipantEffort;
   state: State;
   turns: Turn[];
   events: Event[];
@@ -596,7 +636,7 @@ export interface ParticipantActivation {
   checkpoint_hash: string;
   observation: Record<string, unknown>;
   identity: {
-    model: ModelId;
+    model: ModelId | null;
     harness: ParticipantHarness;
     [key: string]: unknown;
   };

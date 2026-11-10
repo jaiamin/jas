@@ -121,6 +121,23 @@ Use a new output path for each trial. These external-provider stand-ins make no
 paid calls and do not establish intelligence. Keep `data/t08/` evidence; see the
 [T08 acceptance report](research/T08_PARTICIPANT_CONTEXT.md).
 
+T15 adds actual scripted controls (harness 1.0.0), independent of model identity,
+plus declared memory/tool/request ablations. Model conditions remain Luna. The
+neutral DEVELOPMENT cases allow null contrasts, request-limit failure and a
+simpler-policy win; external-provider stand-ins test mechanics only:
+
+```sh
+uv run python -m benchmarks.reference_policy_trial --output data/t15/development-UNIQUE
+JAS_TEST_PORT=18121 pnpm --dir frontend exec playwright test --config playwright.reference.config.ts
+```
+
+Use distinct attempt/output paths. The scripted conditions themselves construct no
+provider and send zero requests. Compare actual effort as well as configured
+envelopes; no confidence interval or independent support is inferred from these
+small fixed-seed examples. DB6/export7/comparison1/library-v3 and the existing
+direct/tool harness versions remain current. See [T15 evidence](research/T15_BASELINES.md)
+for source-stamped attempts, unchanged frozen T01 failures and positive parity checks.
+
 `JAS_ALLOWED_HOSTS` lists accepted hostnames/IPs without ports (comma-separated).
 Defaults: `localhost,127.0.0.1,[::1]`. Add the explicit LAN/proxy host before using a
 non-local URL; keep localhost entries for health checks. Restart after configuration changes.

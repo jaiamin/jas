@@ -116,12 +116,24 @@ export function ExperimentReview({
             >
               <dt className="min-w-0 break-words">{condition.name}</dt>
               <dd className="text-muted-foreground">
-                {modelLabel(condition.model)}
+                {condition.harness.kind === "scripted"
+                  ? "Non-model control"
+                  : modelLabel(condition.model)}
                 <span className="block">
                   {condition.harness.kind === "direct_action"
                     ? "Direct action"
-                    : "Tool using"}{" "}
+                    : condition.harness.kind === "scripted"
+                      ? "Scripted control"
+                      : "Tool using"}{" "}
                   · v{condition.harness.version}
+                </span>
+                {condition.harness.kind === "scripted" && (
+                  <span className="block">
+                    {condition.harness.policy} · actor-authorized input only
+                  </span>
+                )}
+                <span className="block">
+                  Memory: {condition.parameters.memory}
                 </span>
                 <span className="block">
                   {condition.harness.max_requests} requests ·{" "}

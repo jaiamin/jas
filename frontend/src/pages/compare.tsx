@@ -2,9 +2,20 @@ import { useQueries } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { MetricChart } from "@/components/charts";
+import {
+  Disclosure,
+  DisclosureContent,
+  DisclosureTrigger,
+} from "@/components/disclosure";
 import { Alert, Empty } from "@/components/feedback";
 import { OptionSelect as Select } from "@/components/option-select";
-import { ErrorState, Loading, PageHeading, Status } from "@/components/shared";
+import {
+  ErrorState,
+  Json,
+  Loading,
+  PageHeading,
+  Status,
+} from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -128,6 +139,55 @@ export default function Compare() {
                     <TableCell key={r.summary.id}>{r.summary.turn}</TableCell>
                   ))}
                 </TableRow>
+                {[
+                  {
+                    name: "Participant harness",
+                    value: (r: RunDetail) =>
+                      `${label(r.harness.kind)} v${r.harness.version}${r.harness.kind === "scripted" ? ` · ${r.harness.policy}` : ""}`,
+                  },
+                  {
+                    name: "Retained memory",
+                    value: (r: RunDetail) => r.parameters.memory,
+                  },
+                  {
+                    name: "Per-activation limits",
+                    value: (r: RunDetail) =>
+                      `${r.harness.max_requests} requests · ${r.harness.max_tool_operations} operations`,
+                  },
+                  {
+                    name: "Per-request output limit",
+                    value: (r: RunDetail) =>
+                      r.harness.kind === "scripted"
+                        ? "No model inference"
+                        : `${r.design.response_tokens} tokens · reasoning effort: ${r.design.openai_reasoning_effort ?? "provider default"}`,
+                  },
+                  {
+                    name: "Inference attempts / requests",
+                    value: (r: RunDetail) =>
+                      r.effort
+                        ? `${r.effort.inference_attempts} / ${r.effort.usage.requests}`
+                        : "Not captured",
+                  },
+                  {
+                    name: "Tool operations / attempts",
+                    value: (r: RunDetail) =>
+                      r.effort
+                        ? `${r.effort.tool_operations} / ${r.effort.tool_attempts}`
+                        : "Not captured",
+                  },
+                  {
+                    name: "Input / output tokens",
+                    value: (r: RunDetail) =>
+                      `${r.summary.usage.input_tokens} / ${r.summary.usage.output_tokens}${r.summary.usage.partial ? " · partial" : ""}`,
+                  },
+                ].map(({ name, value }) => (
+                  <TableRow key={name}>
+                    <TableCell>{name}</TableCell>
+                    {runs.map((r) => (
+                      <TableCell key={r.summary.id}>{value(r)}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
                 {keys.map((key) => (
                   <TableRow key={key}>
                     <TableCell>{label(key)}</TableCell>
@@ -146,12 +206,53 @@ export default function Compare() {
                   {runs.map((r) => (
                     <TableCell key={r.summary.id}>
                       {money(r.summary.usage.cost_usd)}
+                      {r.summary.usage.partial &&
+                        " · includes unknown/pending charges"}
                     </TableCell>
                   ))}
                 </TableRow>
               </TableBody>
             </Table>
           </div>
+          <p className="mt-3 text-sm text-muted-foreground">
+            Selected runs only. Effort includes failed attempts; differing
+            envelopes are not compute matched. For planned support, matching,
+            missingness and uncertainty, open the experiment's Results.
+          </p>
+          {runs.map((r) => (
+            <Disclosure key={r.summary.id} className="mt-3">
+              <DisclosureTrigger>
+                Participant configuration · {r.summary.condition} ·{" "}
+                {r.summary.id.slice(0, 6)}
+              </DisclosureTrigger>
+              <DisclosureContent className="flex min-w-0 flex-col gap-3 pt-3">
+                <Link
+                  className="text-link"
+                  to={`/studies/${r.summary.study_id}?revision=${r.summary.revision}`}
+                >
+                  Experiment results · revision {r.summary.revision}
+                </Link>
+                <Json
+                  value={{
+                    condition: r.design.conditions.find(
+                      (c) => c.key === r.summary.condition_key,
+                    ),
+                    profiles: r.design.profiles,
+                    response_tokens: r.design.response_tokens,
+                    openai_reasoning_effort: r.design.openai_reasoning_effort,
+                    effort: r.effort,
+                    recorded_identities: r.activations.map((a) => ({
+                      id: a.id,
+                      actor: a.actor,
+                      status: a.status,
+                      stop_reason: a.stop_reason,
+                      identity: a.identity,
+                    })),
+                  }}
+                />
+              </DisclosureContent>
+            </Disclosure>
+          ))}
         </section>
         <section>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
