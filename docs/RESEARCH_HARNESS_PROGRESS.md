@@ -32,7 +32,8 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Acceptance gates
 
-- [ ] Existing workflow baseline is reproducible, with retained failures.
+- [x] Existing workflow baseline is reproducible, with retained failures (T01
+  ticket-branch evidence; integration acceptance remains with the parent).
 - [ ] Authoritative worlds, privacy, copied probes, exact replay and generated
   execution isolation independently pass the required checks.
 - [ ] Both participant harnesses and discretionary planning, retrieval,
@@ -55,7 +56,7 @@ merge, auto-merge or history rewrite is authorized.
 
 | Ticket | Issue and behavior | Blocked by | Status | Integrated commit |
 | --- | --- | --- | --- | --- |
-| T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Queued | — |
+| T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Verified in ticket branch; pending integration acceptance | — |
 | T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Waiting | — |
 | T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Waiting | — |
 | T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Waiting | — |
@@ -78,6 +79,16 @@ merge, auto-merge or history rewrite is authorized.
 
 ## Preserved drafts and spending
 
+T01 evidence: [baseline report and inherited comparison procedure](research/T01_BASELINE.md).
+Ticket branch `t3/t01-research-baseline` adds only development fixtures, keyless
+evaluation/test tooling and documentation. Product source remains at `b02536c`.
+The real API baseline has six passing cases and 22 scripted provider responses;
+935 backend tests, 106 frontend tests, frontend lint/build and all 165 keyless
+browser tests pass. Runtime setup and initial new-runner failures are retained
+and classified in the report. No paid trial or live competence claim is made.
+Raw source archives, attempt/operation ledgers, exports and check logs are under
+ignored `data/research-baseline/`; preserve them before disposing of this worktree.
+
 The incomplete pre-spec changes to the assistant and research tools are preserved
 in local Git stash `f771128ba1c9295262a4073df40cc25647b1370f` (including the
 untracked research-tools file). They are excluded from the baseline and have
@@ -93,7 +104,7 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. Implement and verify T01/#12 from the committed baseline.
+1. Review and accept T01/#12 using its committed source and retained evidence.
 2. Merge its accepted checkpoint and open the integration draft PR.
 3. Start the newly ready frontier, respecting runtime qualification before
    generated-code execution and one writer per branch.
