@@ -20,9 +20,17 @@ test("candidate review qualifies the real runtime and retains the submitted draf
   await expect(page.getByLabel("Candidate specification")).toHaveValue(
     JSON.stringify(safe),
   );
+  const qualification = page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/api/extensions/qualify") &&
+      response.request().method() === "POST",
+  );
   await page
     .getByRole("button", { name: "Check containment", exact: true })
     .click();
+  const qualified = await qualification;
+  expect(qualified.ok()).toBe(true);
+  expect((await qualified.json()).status).toBe("qualified");
   await expect(
     page.getByText("Containment qualified", { exact: true }),
   ).toBeVisible();
