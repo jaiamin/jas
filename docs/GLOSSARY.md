@@ -20,7 +20,7 @@
 | Relationship | A directed history of interaction and measured reciprocity; not proof of emotion. |
 | Memory | An agent's retained experiences or self-authored notes. |
 | Metric | A versioned calculation with scope, units and eligibility denominator. |
-| Finding | An interpretation supported by cited evidence and stated uncertainty. |
+| Finding | A reviewable interpretation with cited evidence, stated uncertainty and an explicit support status. |
 | Adaptation | A change in behavior across experience; does not imply model weight updates. |
 | Replay | Reapplying recorded actions to verify deterministic state transitions without model calls. |
 | Permission | An enforced action affordance, distinct from a profile's role label. |
@@ -72,6 +72,18 @@ An explicit versioned executable artifact submitted for containment and behavior
 review. A successful example check does not admit it as a runnable environment.
 
 ## Evidence and validity
+
+**Analysis lens**:
+A declared way of examining the same frozen evidence, with explicit requirements,
+coverage and limits. Applying a lens changes the interpretation, not the recorded run.
+
+**Calculation assertion**:
+A proposed numerical value for a specified calculation and evidence scope.
+Checking that value does not establish the meaning or support of accompanying prose.
+
+**Semantic annotation**:
+An interpretation of recorded behavior whose meaning or support may remain unresolved.
+It is distinct from an authoritative World fact or an exact calculation.
 
 **Research validity**:
 The extent to which an experiment's design, execution and evidence justify a

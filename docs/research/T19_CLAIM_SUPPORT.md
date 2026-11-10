@@ -9,18 +9,18 @@ calls, publication, tracker changes or changes to other tasks.
 
 ## Acceptance and next steps
 
-- [ ] Freeze fresh DEVELOPMENT expectations and capture clean tracked-only before evidence.
-- [ ] Recompute exact assertions against retained cutoff inputs, including totals,
+- [x] Freeze fresh DEVELOPMENT expectations and capture clean tracked-only before evidence.
+- [x] Recompute exact assertions against retained cutoff inputs, including totals,
   contrast direction and support/membership; inspected citations alone cannot pass them.
-- [ ] Versioned behavior/communication lenses declare requirements, coverage,
+- [x] Versioned behavior/communication lenses declare requirements, coverage,
   missingness, opportunity, truncation and uncertainty; capture synchronously.
-- [ ] Separate World records, calculations, semantic annotations and generated
+- [x] Separate World records, calculations, semantic annotations and generated
   wording. No causal, intent or arbitrary semantic claim gets automatic validity.
-- [ ] Preserve frozen records across settlement/resume/revisions and demonstrate
+- [x] Preserve frozen records across settlement/resume/revisions and demonstrate
   read-only source/privacy/replay/participant accounting with independent oracles.
-- [ ] Use existing Agent/run/export surfaces, concise accounts, stock disclosures,
+- [x] Use existing Agent/run/export surfaces, concise accounts, stock disclosures,
   evidence links, accessible reanalysis, drafts and record identity.
-- [ ] Run vertical public-HTTP red/green checks, inherited affected checks,
+- [x] Run vertical public-HTTP red/green checks, inherited affected checks,
   static/frontend/build/browser on 18122 and source-stamped before/after comparisons.
 - [ ] Retain all attempts and complete ignored `data/t19/` with source/case/check
   manifests, gzip/raw digests and decompression checks. Merge only the latest
@@ -90,12 +90,12 @@ they do not generate the expected assessments. No protected benchmark changes.
 
 ## Evidence and limits
 
-Raw artifacts: ignored `data/t19/`. Actual checks and disagreements will be
-recorded here after observation. Paid allocation $0; global Sol remains
+Raw artifacts: ignored `data/t19/`. Observed checks and disagreements are below.
+Paid allocation $0; global Sol remains
 $0.611632 / 55 known-usage requests, no paid Luna. No live competence,
 held-out generalization or universal semantic verification claim is possible.
 
-Next: capture before baseline; implement first numeric contradiction slice.
+Implementation is reviewable; independent root review/acceptance remains required.
 
 Fresh explicit semantic statements are frozen in
 `benchmarks/claim-support-development-cases.json` before evaluating those candidates.
@@ -114,3 +114,185 @@ Thus episodic observations retain public-history lengths **0,0,1,1** and
 experience lengths **0,0,2,2**. Memory `none` has explicit empty windows, so
 both are **0,0,0,0**. Removing a field from a known synthetic historical fixture
 means unavailable/null, never an inferred empty window.
+
+## Observed implementation and findings
+
+Executable checkpoint `e0c61b29fc93815fa12a2a5c4fee297b6763f43a` implements
+installed behavior/communication lenses and optional structured assertions in the
+existing Researcher loop. Raw World facts, exact calculation inputs/results,
+semantic annotations and generated answer text have separate fields. Lens/support
+v1 is additive analysis JSON; current DB6/export7/capture1/comparison1/libraryv3,
+tool-using2.0.0/direct-action1.0.0 contracts keep their meanings. No World,
+participant policy, probe, provider adapter, runtime/dependency or workflow change.
+Historical records without a lens remain unassessed; incompatible lens versions
+are rejected without conversion, migration or reset.
+
+The synchronous capture includes literal cutoff balances/state hashes/rule
+versions, settled actions/events, versioned measurements, T06 planned matrix and
+T07 activation/operation/request membership. Totals and comparisons are recomputed
+from that evidence. Retained comparison inputs preserve direction, observed pairs,
+seed clusters, missing pairs, planned-sample sensitivity bounds, selection
+assumptions and withheld population uncertainty. The model receives at most 96
+calculation summaries with an explicit omission count; full inputs stay in the
+downloadable record. Requests remain bounded by the existing four-call workflow.
+
+An inspected citation did not validate **440** against **44**. A reversed **-1**
+contrast did not validate against **+1**. Equal arms produced descriptive **0**
+without an equivalence/population claim. A failed second arm retained one observed
+pair and bounds **[0,0.5]**; claiming two observed pairs was contradicted. A correct
+number under another scope was unsupported; an unselected run's calculation ID
+was unavailable. Absent captured message input computed **0**, while historical
+capture gaps and in-flight unknown receipts stayed unavailable/null. Four false
+reports and two feasible commitment breaches were checked separately; neither
+established intentional deception. The combined utility in that witness was **42**.
+
+Reanalysis requires the same chat and exact run/study scope, reuses the original
+frozen evidence and creates a new analysis with its own accounting. A boundary
+captured at turn1 and an in-flight unknown receipt stayed frozen through later
+turn4 settlement/resume and a new revision. Later same-chat answers outside the
+old cutoff were excluded after a real regression exposed that leak. Independent
+public exports show unchanged source revisions, checkpoints/hashes, turns/events,
+activation journals and participant requests/usage before versus after analysis
+or reanalysis. Each scripted analysis's two actual Researcher requests has a
+separate reserved/settled ledger record and analysis ID. No participant was called
+by applying a lens; foreign-chat sources were rejected before starting work.
+
+Agent replies lead with a short deterministic behavioral account and actual
+run/turn link. Stock badges/disclosures expose wording status, contradictory
+numbers, retained calculation inputs, requirements, coverage and missingness.
+Frozen evidence can be downloaded and reanalyzed through the existing mutation.
+The accurate/adversarial browser cases preserve drafts, keyboard reanalysis,
+reload identity and participant accounting on desktop/light and phone/dark.
+Existing trace/history links are sufficient for these current examples; no
+unrecorded spatial data or new technical dashboard is introduced.
+
+## Semantic assessment and disagreements
+
+Eleven exact DEVELOPMENT statements and independent rationales were frozen at
+`cf6b4ac` before evaluation in
+`benchmarks/claim-support-development-cases.json`. The final observed assessments
+are retained in `20261110T063219881311Z-final-analysis-ledger/cases/independent-assessments.jsonl.gz`.
+No app output supplied the expected facts or interpretation rationale.
+
+| Independent assessment | Observed app assessment | Remaining limit |
+| --- | --- | --- |
+| Accurate literal total44 | Structured value checked; wording unassessed | Arithmetic does not certify the entire statement |
+| Invented total440 with inspected citation | Contradicted, computed44 | Citation scope alone cannot support the number |
+| Accurate paraphrase “a fifth” | Annotation unassessed | A supported paraphrase still needs semantic review |
+| “Generous throughout” | Unassessed | No declared generosity criterion |
+| Communication caused cooperation | Unsupported | No causal identification |
+| Deliberate deception | Unsupported | No established intent |
+| “Kept others in the dark… engineered compliance” | Unassessed | Relabeling does not create missing evidence |
+| Correct44 “proving intentional deception” | Value checked; whole wording unassessed | The unsupported story is deliberately not certified |
+| Honest inconclusive account | No exact assertions; wording unassessed | Appropriate abstention remains reviewable |
+| Free prose inventing440, no assertion | No exact checks; wording unassessed | The app does not decisively detect arbitrary prose falsehood |
+| Instruction to certify and run participants | Unassessed; sources unchanged | Untrusted text gives no facts or authorization |
+
+These are deterministic candidate/gating checks, not live semantic reliability,
+model competence or held-out generalization. There is no measured semantic
+accuracy score. The system deliberately abstains on both a supported paraphrase
+and unsupported paraphrases. A keyword rule, schema, citation, model agreement or
+correct adjacent number never confers a passed prose validity assessment.
+
+## Verification observed at clean executable source
+
+All attempts use distinct timestamped directories, exact argv/exits/logs and
+tracked-only source archives/hash maps. No captured check changed source during
+execution. Fresh final checks at `e0c61b2`:
+
+- **87** analysis/claims/chat/Researcher/streaming/accounting backend tests,
+  including **26 T19 cases**; **85** exposure/context/privacy/uncertainty tests;
+  **132** API/research/export/execution/lifecycle/validity/reuse/planning tests.
+  These are **304 distinct affected tests**, not a newly claimed full backend run.
+- Ruff over backend/benchmarks/scripts, ty, frontend lint, **112 frontend unit
+  tests**, TypeScript/production frontend build pass.
+- **47 inherited browser workflows** pass on18122. **Four T19 workflows** pass
+  on final source, after an earlier successful four-case run at `2b2eedd`.
+  Actual HTTP analyses use deterministic external providers; no live model is used.
+- Independent public export oracles cover read-only source/accounting; a separate
+  offline retained-input audit reproduces **503 calculations / 29 analyses**,
+  including T06 comparisons, without database reads or provider requests. That
+  reproducibility check is distinct from the literal worked World oracles.
+- Desktop/light disclosure and phone/dark captures were inspected; the shared
+  preview has no console errors. Impeccable detector returns `[]`. Both owned
+  preview tabs and the owned manual server are closed; automated servers shut
+  themselves down. Manual closure retains its actual **-15 SIGTERM** result.
+
+Production smoke remains **inherited from accepted T03/6c290df**: runtime,
+container, dependencies and workflow inputs are unchanged. No fresh full backend,
+full browser, container/production or hosted CI result is claimed.
+
+## Frozen before/after comparison
+
+Before: clean `198bb2c`, `20261110T061023051362Z-baseline-before/`.
+After: clean `e0c61b2`, `20261110T063502791199Z-baseline-after/`.
+The unchanged T01 runner/cases/runtime/harness retain **exit1**, the four
+`export-v4` failures and four failed terminal flags. The actual frozen comparison
+also exits1, with **no regressions or improvements**; it is not all-green.
+
+`20261110T063728180692Z-baseline-parity-current-activation/comparison/` contains
+the corrected independent audit, all raw differences and the frozen command.
+Positive DB6/export7/capture1/comparison1/direct1 checks pass, alongside inherited
+libraryv3/tool2 checks. Exact **22-turn / five-run** behavior, decisions,
+observations, World checkpoints/hashes, metrics, provider inputs/outputs and
+accounting match after explicit identity/time normalization. Synthetic usage is
+**22 requests / 2,200 input / 1,100 output tokens / $0.000770**; actual spend **$0**.
+HTTP counts are **98→98**, with matching mutations. Every one of **1,637** raw
+request/export differences is classified: **1,381** generated identifiers or
+references, **242** timestamps and **14** measured provider latencies; zero
+unexplained. Normalization never discards World outcomes or accounting values.
+The exact comparison helper and all failed helper attempts are retained.
+
+All **30** inherited benchmark files match the accepted base byte-for-byte,
+including historical/researcher-development/held-out inputs and T01 cases/runner.
+Stash ref remains `f771128ba1c9295262a4073df40cc25647b1370f`. External protected
+Sol artifacts were not opened, copied or modified; this task does not claim a new
+hash audit of those1,745 files. Source changes leave T03 pinned mechanics,
+T05 copied probes/live-discovery repairs and T07/T08 participant seams intact.
+
+## Retained failures, correction history and handoff
+
+Preserve every attempt, not just final green results. Early fixture failures used
+`operation` instead of the established `action` control field, read status from
+the wrong response level, and omitted a streaming FunctionModel callback. The
+total/schema and reversed-contrast reds were real missing behavior. Coverage
+development retained a missing communication lens, an unavailable failed-run
+citation and an “Unavailable” capitalization oracle correction. Inherited tests
+caught a Finding subclass/schema-identity break, duplicate evidence fetching and
+an extra general-answer field; the existing interfaces were restored. A scope
+test adopted the established422 rejection status. Later evidence revealed and
+fixed future-conversation leakage and incorrect history-window keys/null handling.
+The original UI red, static long-line/type errors and local missing dependency/
+test-import-path setup failures remain retained.
+
+The first parity helper mishandled provider tool-call ID prefixes; its next
+attempt exposed unclassified latency. A later helper incorrectly expected
+activation status `complete` instead of the execution contract's `committed` /
+`decision_committed`; the corrected audit verifies that contract. None required
+changing the frozen runner, expected World outcomes or adverse assertions.
+The initial shared-preview navigation occurred before its server existed and
+returned `ERR_CONNECTION_REFUSED`; later real rendering succeeded. Small artifact
+reader/metadata query failures are recorded separately; they are not product reds.
+
+The last inspected integration tip `84867cc` explicitly documents T09 as still
+under fresh review. It is excluded. The latest documented accepted checkpoint is
+`59e20935c17bd8ea0c44f712790ffeeb38ebb83b`; the required merge command reports
+**Already up to date**, with no conflicts or future child source included. This
+branch remains an implementation handoff, **not integrated or accepted**. Root
+must perform independent review and owns draftPR32/publication.
+
+Raw evidence is entirely under ignored `data/t19/`; retain it losslessly. Closed
+task-owned files alone are gzip-compressed with raw/compressed digests, sizes and
+full decompression checks. Unique scratch paths preserve failed evidence. The
+final `artifact-manifest.json` and `.sha256` index physical files, symlinks,
+source/case/check identities, all nonzero attempts and compression mappings;
+they exclude only their own self-referential entries. No external evidence,
+installed dependency tree, other worktree, real `.env`, clipboard, host mount,
+credential/security setting or valuable data was changed. Shared space was
+constrained (about82MiB at one observed point), without a task ENOSPC failure.
+
+Next: finish the complete evidence inventory/closure record and commit this
+handoff, then root independently reviews. Paid allocation/spend is **$0**;
+global Sol stays **$0.611632 / 55 known requests**, **$9.388368 remaining**, no
+paid Luna. No push, PR/issue operation, watch, descendant, extra checkout,
+live/held-out trial or generated execution admission occurred.

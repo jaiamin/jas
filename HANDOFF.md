@@ -1,3 +1,65 @@
+# T19 isolated implementation — pending independent root review (2026-11-10)
+
+Assigned checkout `/home/agent/.t3/worktrees/workspace/t3-95af26a2`, branch
+`t3/research-claim-support`, accepted base
+`59e20935c17bd8ea0c44f712790ffeeb38ebb83b`. Executable checkpoint
+`e0c61b29fc93815fa12a2a5c4fee297b6763f43a`; later commits record handoff/evidence.
+Read [T19 claim support](docs/research/T19_CLAIM_SUPPORT.md) before reviewing.
+This is **implemented, not integrated or accepted**; root owns independent
+review and draftPR32 publication. No push or PR/issue/watch operation was made.
+
+Two installed read-only lenses use the existing bounded Researcher workflow.
+Cutoffs, World facts, versioned measurement inputs, T06 comparisons and T07
+membership/receipt status freeze synchronously. Exact assertions expose totals,
+direction, support and missingness; false totals/reversed contrasts/invented
+pairs/absent exposure are rejected. Wording stays unassessed, including a correct
+number attached to an unsupported story. False reports, feasible breaches and
+intent remain distinct. Reanalysis retains the source snapshot in the same
+chat/scope and has its own per-request accounting. Agent replies expose a concise
+behavioral account, source links and stock evidence/coverage disclosures.
+
+Fresh final checks: **304 distinct affected backend tests**, including **26 T19
+cases**; Ruff/ty/lint/**112 frontend units**/TypeScript/build; **47 inherited +
+4 T19 browser workflows** on18122 pass. Earlier four-case browser run also passed.
+An offline audit reproduces **503 calculations / 29 analyses** from retained
+inputs without DB/provider access. Eleven independently specified DEVELOPMENT
+semantic candidates retain expected rationales, disagreements and abstentions;
+this is not live semantic reliability or a prose validity pass.
+
+Frozen T01 before/after/actual comparison retain **exit1**, four export-v4 failures
+and four failed terminal flags, no regressions/improvements. Positive current
+contracts and exact **22-turn / five-run** behavior/accounting parity pass.
+All **1,637** raw request/export differences are classified (1,381 identifiers,
+242 timestamps,14 latency), zero unexplained; HTTP98→98. Synthetic accounting:
+22 requests,2,200 input/1,100 output,$0.000770; actual spend$0. All30 inherited
+benchmark files and stash ref `f771128ba1c9295262a4073df40cc25647b1370f` verify
+unchanged. External Sol artifacts were untouched, without a new hash-audit claim.
+
+Current contracts remain DB6/export7/capture1/comparison1/libraryv3/tool2.0.0/
+direct1.0.0, additive lens/support1. Models remain Sol Researcher/planner/assistant
+and Luna participants. World rules, paid admission, probes, participant seams,
+dependencies, runtime and workflows are unchanged. Production smoke is inherited
+from accepted T03/6c290df; no fresh production/full-suite/hosted result is claimed.
+
+Last inspected integration tip `84867cc` still marks T09 under review and is
+excluded. Required merge of latest documented accepted `59e2093` reports
+Already up to date. No unaccepted child branch is included. T09/T15 worktrees,
+18120/18121 and processes were neither polled nor touched; only integration
+acceptance metadata was inspected. No descendants or extra checkout were used.
+
+Preserve complete ignored `data/t19/`, including source archives, case/provider/
+HTTP/export evidence, databases, screenshots and every failure. Closed task-owned
+files alone are losslessly compressed with raw/gzip digests and decompression
+checks. `artifact-manifest.json`/`.sha256` index closure evidence. Report retains
+fixture/setup/oracle errors, real red/green fixes, baseline helper failures and
+manual server's intentional -15 closure. Both owned preview tabs and all owned
+servers are closed; closure records independently check18122 only.
+
+Next: complete evidence inventory/closure and commit handoff; root performs fresh
+review/acceptance. Paid allocation/spend$0; global Sol remains$0.611632/55 requests,
+$9.388368 remaining, no paid Luna. No real.env/clipboard access, external
+evidence cleanup, security/mount change, data reset or live/held-out claim.
+
 # T07 fresh integration checkpoint — accepted (2026-11-10)
 
 T07/#18 is accepted after fresh sole-writer Standards/Spec review, with no
