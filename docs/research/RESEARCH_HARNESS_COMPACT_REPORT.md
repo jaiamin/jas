@@ -111,6 +111,42 @@ No source history, active child data/environment, shared cache or protected
 original was changed. This supersedes older statements that all raw records
 remain locally retained. Further results will use compact current records.
 
+## Qualification after historical evidence retirement
+
+ROOT explicitly retires the inherited requirement to compare new runs against
+the deleted five-run/22-turn historical raw BEFORE. A frozen comparator that
+requires that deleted input must not be fed a reconstructed or synthetic
+"retained" reference. No historical raw reference is designated for active
+implementers, and they must not search another owner's records or restore
+retired snapshots to satisfy this gate. This change follows the user's explicit
+deletion request; it is not a passing comparison or a revised historical score.
+
+Replacement qualification for the remaining implementation and integration work:
+
+1. Preserve the committed original T01 cases, runner and scores. Execute the
+   frozen runner on current source only with invocation-local safe Git selection
+   that excludes protected names and symlink descendants before payload reads.
+   Record the observed exit/checks and whether the four historically recorded
+   export-v4 failures recur. Do not claim a historical before/after comparison,
+   zero regressions or improvements from a missing reference.
+2. Freeze independent literal current-contract expectations before outputs, then
+   qualify the five-run/22-turn/22-request public workflow matrix where its
+   committed fixture remains applicable. Check complete bounded inputs, actions,
+   consequences, evidence/privacy/cutoffs, checkpoint restoration and exact
+   per-request and aggregate integer reservation/settlement ledgers. Replay must
+   use zero provider calls. Expectations come from committed cases/specifications
+   and explicit rules, not candidate outputs. Call this **fresh current-contract
+   qualification**, not parity with deleted historical records. A fixture that
+   is no longer applicable requires an explicit coverage replacement before use.
+3. Keep affected regressions and independent new-feature positives, negatives,
+   lifecycle and accounting checks. Record current source/case identities and
+   all actual failures. Live/paid/held-out gates remain distinct and unpassed
+   until their own required evidence exists.
+
+This gate applies to T12, T17, T18, their fresh integration reviews and the final
+milestone. It does not authorize changing frozen scores, concealing current
+failures or presenting a new execution as historical evidence.
+
 Actual historical Sol spend was $0.611632 over 55 requests, leaving $9.388368 of
 the $10 allowance. Luna has no allocated paid allowance. No new paid work is
 authorized by this cleanup. Finite deterministic checks do not establish live,

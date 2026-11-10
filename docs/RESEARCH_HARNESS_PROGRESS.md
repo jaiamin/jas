@@ -63,6 +63,13 @@ source remains published `e76ef124`; current contracts DB11/export12/library7.
 T12/T17 remain incomplete in their own worktrees; T18/T20 and final gates are open.
 Storage recovery precedes new checks; the ordinary134217728-byte floor stands.
 
+The deleted historical BEFORE comparison is explicitly retired. Its replacement
+is independently frozen fresh current-contract workflow qualification, exact
+privacy/replay/accounting checks, affected regressions and an unchanged frozen
+T01 current execution with protected-excluded selection and honest failures.
+See the compact report's post-cleanup gate. No reconstructed retained reference,
+historical zero-regression claim or silent frozen-score change is authorized.
+
 ### T14 independent recovery closure accepted locally (2026-11-10)
 
 NEW personal current **Standards PASS / Spec PASS**, zero unresolved current
