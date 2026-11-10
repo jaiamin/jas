@@ -171,11 +171,14 @@ parameters and measurements. `World` owns common turn bookkeeping. Concrete worl
 checkpoint initialization, legal-action schema capabilities and derived environment measures;
 `decisions.py` builds schemas from those capabilities without selecting environments.
 `checkpoints.py` declares shared observations/actions and each world's state. Snapshots
-contain only that world's state. Institution uses rule version 4.1.0; composition, artifact investigation and distributed coordination use 1.0.0;
+contain only that world's state. Institution uses rule version 4.1.0; composition,
+artifact investigation, distributed coordination and reliance commitments use 1.0.0;
 the other controlled worlds use 4.0.0. Incompatible
 checkpoints fail explicitly. `environments.py` contains the catalog and three games;
 `mechanisms.py` implements four fixed worlds; `composed.py` interprets resource compositions;
-`artifacts.py` owns artifact investigation; `distributed.py` reuses its ACL/version seam for three-person choice tasks.
+`artifacts.py` owns artifact investigation; `distributed.py` reuses its ACL/version
+seam for three-person choice tasks. `reliance.py` adds four-person voluntary
+commitments through the same settlement, artifact and logical-time seams.
 
 Profiles describe goals; parameterized permissions enforce action affordances. Per-turn
 schemas constrain requests, and world rules validate transitions again before committing.

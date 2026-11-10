@@ -265,6 +265,7 @@ export function ConditionFields({
                   artifacts={[
                     "artifact_workspace",
                     "distributed_coordination",
+                    "reliance_commitments",
                   ].includes(design.environment)}
                   environment={design.environment}
                   onAblation={(choice) => {

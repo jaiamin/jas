@@ -11,6 +11,13 @@ import {
 import { Input } from "@/components/ui/input";
 import type { DistributedRules, Profile } from "@/lib/types";
 
+function permutations(keys: string[]): string[][] {
+  if (keys.length === 0) return [[]];
+  return keys.flatMap((key) =>
+    permutations(keys.filter((k) => k !== key)).map((rest) => [key, ...rest]),
+  );
+}
+
 export function CoordinationAssumptions({
   rules,
 }: {
@@ -54,24 +61,14 @@ export function DistributedFields({
   id: string;
   onChange: (rules: DistributedRules) => void;
 }) {
-  const orders =
-    profiles.length === 3
-      ? profiles.flatMap((a) =>
-          profiles
-            .filter((b) => b.key !== a.key)
-            .map((b) => [
-              a.key,
-              b.key,
-              profiles.find((c) => c.key !== a.key && c.key !== b.key)?.key ??
-                "",
-            ]),
-        )
-      : [rules.turn_order];
+  const orders = [3, 4].includes(profiles.length)
+    ? permutations(profiles.map((p) => p.key))
+    : [rules.turn_order];
   return (
     <FieldSet className="min-w-0">
       <FieldLegend>Coordination and delivery</FieldLegend>
       <FieldDescription>
-        Three participants have independent choices and local values. Shared
+        Participants have independent choices and local values. Shared
         information is controlled by evidence readers below. Structural
         alternative and information bindings are editable in the specification.
       </FieldDescription>

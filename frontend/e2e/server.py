@@ -76,6 +76,60 @@ def deterministic_participants(app):
 
     async def respond(messages, info):
         prompt = json.loads(messages[-1].parts[0].content)
+        if os.getenv("JAS_TEST_RELIANCE") == "1" and "commitment_opportunities" in prompt:
+            actor, now = prompt["you"]["key"], prompt["logical_time"]
+            opportunities = prompt["commitment_opportunities"]
+            legal = {a["kind"]: a for a in prompt["legal_actions"]}
+            action = {"kind": "wait_coordination"}
+            if now == 0 and "make_commitment" in legal:
+                action = {
+                    "kind": "make_commitment",
+                    "opportunity": legal["make_commitment"]["targets"][0],
+                }
+            elif now == 1 and "rely_on_commitment" in legal:
+                action = {
+                    "kind": "rely_on_commitment",
+                    "opportunity": legal["rely_on_commitment"]["targets"][0],
+                }
+            elif now == 2:
+                action = {
+                    "kind": "choose_alternative",
+                    "alternative": "share" if actor in {"iris", "nova"} else "keep",
+                }
+            elif (
+                now == 3
+                and actor == "iris"
+                and any(
+                    o["promise"] and o["promise"]["relied_at"] is not None for o in opportunities
+                )
+            ):
+                action = {"kind": "read_artifact", "artifact": "sealed_moss", "version": 1}
+            elif now == 4 and actor == "moss":
+                action = {
+                    "kind": "send_message",
+                    "recipient": "nova",
+                    "text": "t11-private-later-response",
+                }
+            elif now == 5 and actor == "nova":
+                action = {
+                    "kind": "send_message",
+                    "recipient": "vale",
+                    "text": "t11-private-after-consequence",
+                }
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        info.output_tools[0].name,
+                        {
+                            "action": action,
+                            "memory": "",
+                            "rationale": "T11 keyless development proposal; no intent inference.",
+                            "forecast": None,
+                        },
+                    )
+                ],
+                usage=RequestUsage(input_tokens=100, output_tokens=50),
+            )
         if os.getenv("JAS_TEST_COORDINATION") == "1" and "coordination" in prompt:
             actor = prompt["you"]["key"]
             action = {"kind": "wait_coordination"}

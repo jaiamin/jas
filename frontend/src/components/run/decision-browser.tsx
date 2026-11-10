@@ -155,6 +155,11 @@ export function DecisionBrowser({
                         t.action.target &&
                         ` → ${t.action.target}`}
                       {"artifact" in t.action && ` · ${t.action.artifact}`}
+                      {"opportunity" in t.action &&
+                        ` · ${t.action.opportunity}`}
+                      {"alternative" in t.action &&
+                        ` · ${t.action.alternative}`}
+                      {"recipient" in t.action && ` → ${t.action.recipient}`}
                     </strong>
                     <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground line-clamp-2 min-w-40 max-w-72 whitespace-normal">
                       {t.rationale}

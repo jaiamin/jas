@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArtifactView } from "@/components/artifact-view";
+import { CommitmentAssumptions } from "@/components/commitment-fields";
+import { CommitmentTrajectory } from "@/components/commitment-trajectory";
 import {
   Disclosure,
   DisclosureContent,
@@ -16,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Event, RunDetail, State } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 export function CoordinationView({
   run,
@@ -36,7 +39,12 @@ export function CoordinationView({
     ...(state.pending_deliveries ?? []),
   ];
   return (
-    <section className="flex min-w-0 flex-col gap-5">
+    <section
+      className={cn(
+        "flex min-w-0 flex-col gap-5",
+        run.parameters.commitments && "xl:col-span-2",
+      )}
+    >
       <div className="flex flex-col gap-2">
         <h2 className="text-base font-semibold">Coordination trajectory</h2>
         <p className="text-sm text-muted-foreground">
@@ -48,7 +56,7 @@ export function CoordinationView({
         {outcome && (
           <p className="text-sm font-medium">
             {outcome.matched
-              ? "All three chose the same alternative"
+              ? `All ${run.design.profiles.length} chose the same alternative`
               : "Choices differ or include abstention"}
           </p>
         )}
@@ -59,6 +67,12 @@ export function CoordinationView({
             <TableRow>
               <TableHead>Participant</TableHead>
               <TableHead>Settled choice</TableHead>
+              {run.parameters.commitments && (
+                <>
+                  <TableHead className="text-right">Choice value</TableHead>
+                  <TableHead className="text-right">Reliance effect</TableHead>
+                </>
+              )}
               <TableHead className="text-right">Value</TableHead>
             </TableRow>
           </TableHeader>
@@ -73,6 +87,16 @@ export function CoordinationView({
                       ? (state.choices[p.key] ?? "Abstained")
                       : "Pending"}
                 </TableCell>
+                {run.parameters.commitments && (
+                  <>
+                    <TableCell className="text-right tabular-nums">
+                      {outcome?.choice_values?.[p.key] ?? "Pending"}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {state.reliance_effects?.[p.key] ?? "Not recorded"}
+                    </TableCell>
+                  </>
+                )}
                 <TableCell className="text-right tabular-nums">
                   {outcome?.payoffs[p.key] ?? "Pending"}
                 </TableCell>
@@ -80,7 +104,9 @@ export function CoordinationView({
             ))}
             {outcome && (
               <TableRow>
-                <TableCell colSpan={2}>Total declared value</TableCell>
+                <TableCell colSpan={run.parameters.commitments ? 4 : 2}>
+                  Total declared value
+                </TableCell>
                 <TableCell className="text-right tabular-nums">
                   {Object.values(outcome.payoffs).reduce((a, b) => a + b, 0)}
                 </TableCell>
@@ -89,12 +115,16 @@ export function CoordinationView({
           </TableBody>
         </Table>
       </section>
+      <CommitmentTrajectory run={run} state={state} events={events} />
       <Disclosure>
         <DisclosureTrigger>
           Timing, topology and directory assumptions
         </DisclosureTrigger>
         <DisclosureContent className="pt-3">
           <CoordinationAssumptions rules={rules} />
+          {run.parameters.commitments && (
+            <CommitmentAssumptions rules={run.parameters.commitments} />
+          )}
         </DisclosureContent>
       </Disclosure>
       <section
@@ -140,13 +170,16 @@ export function CoordinationView({
         <DisclosureTrigger>Settlements and conflicts</DisclosureTrigger>
         <DisclosureContent className="flex flex-col gap-3 pt-3">
           {events
-            .filter((e) =>
-              [
-                "artifact_conflict",
-                "message_queued",
-                "message_delivered",
-                "alternative_chosen",
-              ].includes(e.kind),
+            .filter(
+              (e) =>
+                [
+                  "artifact_conflict",
+                  "message_queued",
+                  "message_delivered",
+                  "alternative_chosen",
+                ].includes(e.kind) ||
+                e.kind.startsWith("commitment_") ||
+                e.kind.startsWith("reliance_"),
             )
             .map((e) => (
               <div key={e.id} className="flex flex-col gap-1 text-sm">

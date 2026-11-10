@@ -54,7 +54,11 @@ export function AgentFields({
           size="sm"
           disabled={
             design.profiles.length >=
-            (design.environment === "distributed_coordination" ? 3 : 12)
+            (design.environment === "reliance_commitments"
+              ? 4
+              : design.environment === "distributed_coordination"
+                ? 3
+                : 12)
           }
           onClick={() => {
             let n = design.profiles.length + 1;
@@ -178,7 +182,10 @@ export function AgentFields({
                   disabled={
                     design.profiles.length <=
                       minimumParticipants(design.environment) ||
-                    (design.environment === "distributed_coordination" &&
+                    ([
+                      "distributed_coordination",
+                      "reliance_commitments",
+                    ].includes(design.environment) &&
                       design.conditions.some((condition) =>
                         Object.hasOwn(
                           condition.parameters.coordination?.information ?? {},

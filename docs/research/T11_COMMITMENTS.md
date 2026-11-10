@@ -15,7 +15,7 @@ Starting HEAD and published accepted base:
   real artifact ACLs and pure-read effort through exact replay and restoration.
 - [x] Public HTTP red/green: edit/review/save/run/evidence/export and source-pinned
   reuse; independent accounting, frozen cutoffs and read-only analysis witnesses.
-- [ ] Existing UI configuration/review/trajectory path, keyboard/mobile/browser18126.
+- [x] Existing UI configuration/review/trajectory path, keyboard/mobile/browser18126.
 - [ ] Appropriate backend/static/frontend/build/browser regressions; unchanged T01
   four intentional export-v4 failures/exit1 separately from current-contract and
   five-run/22-turn/22-request behavior/input/accounting parity.
@@ -48,8 +48,8 @@ Historical T01 and held-out tasks are protected; source custody trees are read-o
 
 ## Progress and next steps
 
-2026-11-10: Ancestry/instructions/spec/dependencies and accepted T09/T10/T15/T19
-boundaries inspected. No implementation or observed qualification yet. Prior
+2026-11-10 initial freeze: ancestry/instructions/spec/dependencies and accepted
+T09/T10/T15/T19 boundaries inspected before implementation or qualification. Prior
 accepted checks remain inherited, with no claim of fresh success. Spending $0.
 
 ## Frozen independent DEVELOPMENT rubric v1 (before outputs)
@@ -95,6 +95,18 @@ These are mechanical questions, not intelligence scores. No held-out task is use
    deadlines and ACL controls, retained drafts, keyboard and narrow viewport.
    Current contract rejection and T01 parity are separate from the frozen
    historical runner's four intentional export-v4 failures/exit1.
+
+Browser DEVELOPMENT worked example frozen before browser outputs: the public
+four-role template has share/keep values Iris(1,7), Moss(2,6), Vale(3,5),
+Nova(4,4). A keyless provider boundary supplies voluntary typed proposals,
+not a live intelligence result: each promises at t0, each independently relies
+at t1, then Iris/Nova choose share and Moss/Vale keep at t2. Edit promise_1
+to deadline4/fulfilled effect13 and promise_3 otherwise effect-11. Literal final
+values are Iris10/Moss19/Vale0/Nova-7, total22. Inspect a newly authorized read
+and later addressed responses after deadlines. Seven phases mean 28 turns and
+28 direct requests; replay adds zero. A two-phase horizon leaves all four
+promises unresolved with zero effects. With promises disabled, no commitment or
+read grant may appear; zero eligible promises must remain a null rate.
 
 Implementation choice: add a concrete `reliance_commitments` world that extends
 the existing distributed timing/artifact class through narrow settlement hooks.
@@ -145,7 +157,7 @@ The first full backend attempt retained 54 failures/1,440 passes: catalog-wide
 fixtures still assumed ten environments, three bound actors, and the old
 artifact tool schema. All five distinct fixture assumptions were updated for
 the fourth actor/new artifact World; the affected catalog regressions then
-passed **757 tests**. A final whole-suite run remains required.
+passed **757 tests**. The complete rerun is recorded below.
 
 The complete rerun then passed **1,494 tests / 0 failures** at source key
 `05207ddab00544b3406892c00619dfbb792dfa29ba81c21d013587428e372eb9`;
@@ -159,8 +171,8 @@ space fell from 379,551,744 to 133,496,832 bytes before the phase. Its failed
 receipt/source qualification is retained. Removing only this checkout's
 disposable pnpm download cache recovered 107,180,032 bytes. An offline retry
 failed explicitly on absent registry metadata. The private partially populated
-package store is retained; an operational request for about 250 MiB additional
-headroom is pending. No other agent's resources/evidence were changed.
+package store was retained while requesting about 250 MiB additional headroom.
+No other agent's resources/evidence were changed.
 
 Root subsequently authorized pnpm-managed immutable guest-store reuse with
 offline/frozen-store and private metadata/state. The failed private dependency
@@ -169,9 +181,8 @@ recovery stopped on `ERR_PNPM_NO_OFFLINE_META` for `@babel/helper-plugin-utils`;
 all 24,681 guest-store files retained identical content hashes/modes/mtimes and
 the frozen lockfile stayed at SHA256
 `6097048683788686d8dde275af047a6acc7b10a5e0e37a8f1408fb681f085f58`.
-No fetch, force, skipped checks or store-write relaxation was attempted. Private
-metadata-cache recovery is now the operational request; normal source work and
-backend qualification continue.
+No fetch, force, skipped checks or store-write relaxation was attempted at that
+stage. The authorized metadata recovery and its outcome are recorded below.
 
 Retained failures include discovery ENOSPC, a canceled own queued check (143),
 test-oracle purpose/replay-key/endpoint mistakes and a missing temporary parent,
@@ -181,3 +192,66 @@ execution. None is counted as a green check. Closed own synthetic directories
 are losslessly packed only after verification, with member/raw-hash maps; no
 other-agent files/evidence/caches are changed. Official Pydantic docs returned
 HTTP403; existing project patterns and installed package contracts are used.
+
+## Public UI and regression qualification (2026-11-10)
+
+The existing editor now configures the four parties, entrusted object, real
+alternative, opening/deadline and independent recipient effects. Switching a
+solo draft retains its investigator and adds only the missing neutral roles;
+existing T10 three-role behavior remains. Review shows the protocol and ACLs.
+Researcher inspection shows settled choices, separate choice/reliance values,
+eligibility, actual decision times, unresolved/null results, read grants, private
+mail and source links to exact turn evidence. No participant prose installs a
+fact, permission or desired outcome.
+
+Browser18126: **82 distinct flows all passed** at source key
+`95a2d933c5855298d34f2562c67e63e8d88daa950f4ea32462719627586b3ff8`:
+five T11; 50 existing editor/catalog/reuse/mechanism/inspection/recovery/comparison;
+five T10; 11 artifact/exposure/harness; two private-context; two reference-policy;
+seven claim-support/accounting. No retries were used in these qualifying jobs.
+The earlier T11 browser attempt retained four fixture/oracle failures (ambiguous
+message locator and a null measurement asserted in aggregate metrics), followed
+by five passes. Manual browser inspection found a desktop choice-table clipping
+problem; a narrow full-width layout fix and another five-flow pass qualify it.
+Light1280/mobile390-dark screenshots were inspected. Keyboard editing, retained
+reload drafts, source-link navigation, export10 and call-free replay pass.
+The frozen worked example produced exactly Iris10/Moss19/Vale0/Nova-7, total22,
+with28 turns/28 requests. Two-phase deadlines remained unresolved; disabling
+promises removed actual commitments/grants and retained null eligibility.
+
+Final observed Ruff lint, ty, frontend lint and **115 tests/32 files passed**.
+A forced clean compiler plus a new empty build directory produced54 files
+identical in bytes/modes to the browser-qualified build. The Impeccable detector
+ran once over changed UI targets with no findings. An extra whole-tree Ruff
+format check failed on six pre-existing formatting differences; an independent
+accepted-base audit proves all six formatting deltas identical. Required lint
+is green; no checks, files or formatting rules were weakened.
+
+The actual Dockerfile built successfully. The non-root production smoke passed
+health/SPA/assets/keyless state and the accepted real containment/cleanup checks.
+An independent T11 production API smoke validated/saved/inspected/exported the
+four-role template, verified zero-turn replay and rejected library5 with zero
+requests. Its owned container, volume and image were stopped/removed. Build and
+runtime logs are retained. All qualification is deterministic DEVELOPMENT;
+synthetic costs are not actual spending or live intelligence evidence.
+
+Root's explicit storage decision authorized pnpm-managed immutable guest-store
+reuse, then one bounded metadata-enabled retry against public npm. It succeeded:
+555 packages reused, zero package archives downloaded. Private metadata/state
+were used; no configurations/caches were copied. All24,681 guest-store content
+and index files retained identical bytes/modes/mtimes and the frozen lock hash
+above. After forced checks,114 generated files had private single-link inodes;
+store verification remained unchanged. The closed private metadata download
+cache alone was reclaimed with provenance/hashes retained. All ENOSPC and
+missing-metadata attempts remain. Large installs/checks/builds held the shared
+flock separately; closed own synthetic outputs alone were packed with verified
+member/raw-hash maps. The large browser WAL temporarily reduced headroom, then
+normal owned-server shutdown recovered it. No other-agent resources changed.
+
+Self-review was performed in this thread, as the assignment prohibits descendants.
+Standards: existing World/artifact/timing/provider seams and stock UI controls
+remain; contracts/callers/fixtures advance together; private grants and pending
+state remain checkpointed. Spec: four voluntary roles, feasible alternatives,
+declared windows, independent effects, later responses and explicit nulls are
+present. The deterministic tests do not establish intention, betrayal, live
+competence or generalization. Final parity/source custody/clean handoff follow.

@@ -602,12 +602,17 @@ export function DesignEditor({
             <AlertDialogDescription>
               Measurements will reset. Tasks and resource schedules that do not
               apply will be removed.
-              {pendingEnvironment === "distributed_coordination" && (
+              {(pendingEnvironment === "distributed_coordination" ||
+                pendingEnvironment === "reliance_commitments") && (
                 <>
                   {" "}
-                  This task binds the first three agents to local evidence and
-                  adds neutral agents if needed. Existing agents are retained;
-                  remove any extra unbound agents before saving.
+                  This task binds the first{" "}
+                  {pendingEnvironment === "reliance_commitments"
+                    ? "four"
+                    : "three"}{" "}
+                  agents to local evidence and adds neutral agents if needed.
+                  Existing agents are retained; remove any extra unbound agents
+                  before saving.
                 </>
               )}
             </AlertDialogDescription>

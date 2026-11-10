@@ -1,5 +1,6 @@
 import type {
   ArtifactRules,
+  CommitmentRules,
   Design,
   DistributedRules,
   Environment,
@@ -113,8 +114,11 @@ export function changeEnvironment(
   environment: Environment,
 ): Design {
   const profiles = [...design.profiles];
-  if (environment.key === "distributed_coordination") {
-    while (profiles.length < 3) {
+  const reliance = environment.key === "reliance_commitments";
+  const distributed =
+    environment.key === "distributed_coordination" || reliance;
+  if (distributed) {
+    while (profiles.length < (reliance ? 4 : 3)) {
       let n = profiles.length + 1;
       while (profiles.some((profile) => profile.key === `agent-${n}`)) n++;
       profiles.push({
@@ -126,7 +130,7 @@ export function changeEnvironment(
       });
     }
   }
-  const coordination = distributedMechanics({ ...design, profiles });
+  const coordination = distributedMechanics({ ...design, profiles }, reliance);
   return {
     ...design,
     profiles,
@@ -140,24 +144,23 @@ export function changeEnvironment(
         ...condition.harness,
         tools: condition.harness.tools.filter(
           (tool) =>
-            ["artifact_workspace", "distributed_coordination"].includes(
-              environment.key,
-            ) || tool !== "read_artifact",
+            [
+              "artifact_workspace",
+              "distributed_coordination",
+              "reliance_commitments",
+            ].includes(environment.key) || tool !== "read_artifact",
         ),
       },
       parameters: {
         ...condition.parameters,
-        artifacts:
-          environment.key === "distributed_coordination"
-            ? coordination.artifacts
-            : environment.key === "artifact_workspace"
-              ? (condition.parameters.artifacts ??
-                newArtifactRules(design.profiles[0].key))
-              : null,
-        coordination:
-          environment.key === "distributed_coordination"
-            ? coordination.coordination
+        artifacts: distributed
+          ? coordination.artifacts
+          : environment.key === "artifact_workspace"
+            ? (condition.parameters.artifacts ??
+              newArtifactRules(design.profiles[0].key))
             : null,
+        coordination: distributed ? coordination.coordination : null,
+        commitments: reliance ? coordination.commitments : null,
         composition:
           environment.key === "composed"
             ? (condition.parameters.composition ?? {
@@ -176,6 +179,7 @@ export function changeEnvironment(
 }
 
 export function minimumParticipants(environment: Design["environment"]) {
+  if (environment === "reliance_commitments") return 4;
   if (environment === "distributed_coordination") return 3;
   return ["commons", "trust_exchange", "institution", "bargaining"].includes(
     environment,
@@ -184,12 +188,18 @@ export function minimumParticipants(environment: Design["environment"]) {
     : 1;
 }
 
-function distributedMechanics(design: Design): {
+function distributedMechanics(
+  design: Design,
+  reliance = false,
+): {
   artifacts: ArtifactRules;
   coordination: DistributedRules;
+  commitments: CommitmentRules | null;
 } {
-  const keys = design.profiles.slice(0, 3).map((p) => p.key);
-  const alternatives = ["cedar", "quartz", "reed"];
+  const keys = design.profiles.slice(0, reliance ? 4 : 3).map((p) => p.key);
+  const alternatives = reliance
+    ? ["share", "keep"]
+    : ["cedar", "quartz", "reed"];
   return {
     artifacts: {
       write_limit: 4,
@@ -201,18 +211,31 @@ function distributedMechanics(design: Design): {
           owner: null,
           readers: [key],
           writers: [],
-          content: Object.fromEntries(
-            alternatives.map((a, i) => [a, i === index ? 9 : 0]),
-          ),
+          content: reliance
+            ? { share: index + 1, keep: 7 - index }
+            : Object.fromEntries(
+                alternatives.map((a, i) => [a, i === index ? 9 : 0]),
+              ),
         })),
-        {
-          key: "draft",
-          name: "Shared draft",
-          owner: null,
-          readers: keys,
-          writers: keys,
-          content: { proposal: "undecided" },
-        },
+        ...(reliance
+          ? keys.map((key, index) => ({
+              key: `sealed_${index + 1}`,
+              name: `Evidence owned by ${key}`,
+              owner: key,
+              readers: [],
+              writers: [],
+              content: { reading: 17 + index },
+            }))
+          : [
+              {
+                key: "draft",
+                name: "Shared draft",
+                owner: null,
+                readers: keys,
+                writers: keys,
+                content: { proposal: "undecided" },
+              },
+            ]),
       ],
     },
     coordination: {
@@ -224,13 +247,28 @@ function distributedMechanics(design: Design): {
       information: Object.fromEntries(
         keys.map((key, i) => [key, `values_${i + 1}`]),
       ),
-      match_bonus: 3,
+      match_bonus: reliance ? 0 : 3,
       routes: keys.flatMap((sender) =>
         keys
           .filter((recipient) => recipient !== sender)
           .map((recipient) => ({ sender, recipient })),
       ),
     },
+    commitments: reliance
+      ? {
+          opportunities: keys.map((key, index) => ({
+            key: `promise_${index + 1}`,
+            promisor: key,
+            recipient: keys[(index + 1) % 4],
+            artifact: `sealed_${((index + 1) % 4) + 1}`,
+            alternative: "share",
+            opens_at: 2,
+            deadline: 5,
+            fulfilled_value: 9,
+            unfulfilled_value: -5,
+          })),
+        }
+      : null,
   };
 }
 

@@ -80,6 +80,9 @@ export function ArtifactView({ run, state }: { run: RunDetail; state: State }) {
                 readers: {obj.readers.map(name).join(", ") || "none"} · writers:{" "}
                 {obj.writers.map(name).join(", ") || "none"}. Owners can read
                 and write.
+                {state.read_grants?.[obj.key]?.length
+                  ? ` Additional read grants: ${state.read_grants[obj.key].map(name).join(", ")}.`
+                  : ""}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex min-w-0 flex-col gap-3">
