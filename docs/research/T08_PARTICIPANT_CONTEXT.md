@@ -7,6 +7,11 @@ checkout confirmed; clean branch and integration ancestry verified before work.
 Only T08 is authorized. No paid allocation, publication, schema reset, T09 world
 contract, T15 reference policies, descendants or additional checkout creation.
 
+**Integration status: accepted after independent review on 2026-11-10.** The
+child observations below retain their original source attribution. The final
+fresh integration acceptance, repair, failures and evidence identities follow
+at the end of this report.
+
 ## Acceptance and progress
 
 - [x] Read exact ticket/spec, progress, glossary, ADRs 0001/0002, architecture,
@@ -152,7 +157,7 @@ case/harness/runtime/effort, exact old/current application sources, all five
 outcomes and **47 scripted requests / zero paid requests**. All five inherited
 T04 cases also pass on the combined source. Raw failures remain unchanged.
 
-## Final qualification and handoff
+## Child final qualification and handoff (historical)
 
 Executable/test checkpoint `80966eecb8b20a121038a2fc48052dc8cf215bb6`
 includes the one-line current-contract fixture repair. All six T08 acceptance
@@ -233,3 +238,150 @@ The regression also retrieves the permitted prior plan by its real source ID,
 checks its own round/source identity, export receipts, all nine requests and replay.
 All **65** participant/access/accounting/restore tests pass after repair, as do
 Ruff and ty. Fresh final-source comparison/browser qualification follows below.
+
+## Fresh integration acceptance (2026-11-10)
+
+T08/#19 is accepted at no-ff merge
+`9750cafea48120ceec11530ed11a214661a374b3`, with parents
+`6b7ad09248f915320bdaf1aa4d2ba10d5e6d0789` and clean source
+`b2ac25c9c0efe07dd3309a158051a04870f51261`. The receipt repair is
+`de5556b3da67a8d276ee8fb6d098760911dd03b2`. The final acceptance commit changes
+only documentation; its exact HEAD, tracked source inventory, hook result and
+manifest recheck are recorded separately in
+`.tools/research-harness/evidence/T08-integration/acceptance-checkpoint/`.
+This avoids embedding a commit's own hash in its tracked contents.
+
+The independent review exercised the public workflow API, World projection/schema
+and provider/accounting seams, without descendants. Planning, memory retrieval,
+investigation and verification are actual replaceable participant capabilities;
+participants can decide immediately, omit operations or use them within declared
+effort. Explicitly disabled capabilities reject use without fallback. All four
+unused operation payloads are rejected. Actor-authored plans are intentional
+private self-reports: even a literally quoted false plan gains no World authority.
+
+Across all four memory modes, permitted prior evidence retains real source IDs,
+hashes and bounded cutoffs. Real foreign actor/run artifact IDs receive the same
+denial as missing IDs through retrieval, planning and verification. Hidden
+contents/counts do not alter actor observations or legal schemas. Independent
+checks cover contents, counts, schema, errors, metadata and restored context;
+pause/restart, receipt restoration, request settlement and exact replay are also
+covered by the affected backend and browser checks. No researcher truth access
+or provider reasoning is introduced.
+
+Verification's accepted scope is deliberately narrow: it checks the actor's legal
+action schema and literal quotes in accessible serialized sources. It neither
+predicts consequences nor establishes semantic truth or entailment. Earlier
+retrieval filters constrain the current permitted observation and latest permitted
+plan; they do not reconstruct an older observation. The repaired receipts now
+state that distinction honestly. These limits satisfy the ticket's accessible
+verification requirement without claiming a general truth oracle.
+
+| Fresh observed check | Result and source attribution |
+| --- | --- |
+| Backend before repair | Initial complete run: **915 passed, 2 failed, 133 setup errors**, exit **1**, with observed `ENOSPC` in all 135 affected identities. The exact **135** cases subsequently passed on unchanged source. This was not one all-green complete run. |
+| Backend after repair | **65 passed**, including the new public-API cutoff regression, permitted prior-plan retrieval, receipts, nine requests and replay. Across checkpoints, **1,051 unique cases** were observed passing; no final full-suite rerun is claimed. |
+| Independent API/World audit | **377 checks** across 16 finite scenarios pass after repair, including discretionary/disabled capabilities, memory/privacy, unused payload rejection, foreign IDs, request-detail/export parity and unsupported contracts. |
+| Static/frontend | Ruff and ty pass before and after repair. Frontend lint, **109 unit tests**, TypeScript and production build pass at the merge; all frontend inputs remain identical after the backend-only repair. |
+| Browser, port 18219 | **56 distinct flows** pass at the merge: two real capability flows, two actual inherited-policy flows and 52 shared flows across nine files. The two capability flows pass again after repair. T03 reuse, T06 uncertainty, Researcher tools, workspace/drafts/recovery, execution, inspection and streaming are covered. Zero skipped/flaky/unexpected; desktop/light and phone/dark screenshots were visually inspected. |
+| Neutral DEVELOPMENT | All **five cases / 47 scripted requests / 11 comparison checks** pass before and after repair, including the intentional failed/unknown request. All five inherited T04 cases also pass at the merge. Scripts establish mechanics, not intelligence. |
+| Protected contracts/workflows | DB **6**, export **6**, comparison **1**, library **v3**, tool-using **2.0.0**, direct-action **1.0.0** positively checked. Unsupported harness versions fail explicitly; current callers are updated. No DB bump, migration, alias or reset. |
+
+One product finding was repaired: earlier-turn retrieval receipts reported the
+current round, e.g. `{turn: 0, round: 2}`. Two retained red regressions establish
+the defect; the minimal fix reports `round: null` for earlier filters and exposes
+the actual `observation_cutoff` separately. No source permission, selection or
+World rule changed. Four independent review-helper setup/oracle failures are
+retained with their exact script versions and corrected expectations: threaded
+in-memory fixture setup, output-directory collision, public-summary versus full
+request shape, and aggregate-history item count. They are verifier failures,
+not additional product repairs. The child's worker timeouts and build exit **137**
+remain preserved; their precise kill cause is unknown.
+
+The storage failure is retained in `backend/`; its successful bounded retry is
+`backend-retry/`, with exact identities in `backend-coverage-union.json`.
+Parent maintenance records, not a reviewer cleanup, document removal of obsolete
+unused Chromium/headless-shell 1228, ffmpeg1011 and cached pip/Context7 downloads.
+`maintenance/guest-cache-T08-20261110T050023095910Z/verification.json` records
+**1,174,781,952 bytes free**, following **1,215,180,800** in its preceding record,
+and a passing real **1 MiB write+fsync** probe. Current Chromium **1254** executables
+still reported their versions. The earlier Docker-builder prune removed 527.3 MB
+of unused cache without freeing guest bytes; no further Docker prune followed.
+Both maintenance directories and exact record hashes are indexed by
+`parent-storage-maintenance.json`. Space is shared and changes: the parent's later
+coordination notification reported about **1,024,098,304 bytes** free, not a new
+maintenance verification. No checkout, installed dependency, retained evidence,
+database, stash, configuration or other agent's work was removed by this review.
+
+The unchanged frozen T01 capture and comparisons still exit **1**, retain all four
+intentional `export-v4` failures and failed terminal flags, and show zero new
+regressions/improvements against the child's T08-before checkpoint. They are not
+all green. Captures execute from clean tracked-only source clones, excluding root
+`pbcopy` unread. Independently, the current-contract audit establishes exact
+behavioral/accounting and request/export parity for **all 22 direct-action turns /
+five runs**, including World evidence/checkpoints/actions, prompts/schemas/settings,
+normalized outputs and activation/request links. The final audit classifies all
+**509 differences: 387 export + 122 report**, with **zero unexplained**. The first
+audit's 513 differences remain retained; varying record/time identities explain
+the count variation. See `contract-and-parity-postrepair.json`.
+
+All 28 pre-existing benchmark files were audited: only the expected T04
+current-contract trial caller differs. Historical T01 runner/cases, all benchmark
+case identities and published scores are unchanged. T03 mechanics remain separate
+from study/model/harness/memory commitments, with source pinning and draft reuse.
+T06 frozen membership, missingness and uncertainty, T04/T05 accounting/copied probes
+and both live-discovery fixes/tests (`0ea4064`, `a874f7c`) remain protected. No
+runtime/container/dependency/lockfile/workflow change warrants a fresh production
+smoke. Actual non-root production smoke, containment and reuse are explicitly
+**inherited from accepted T03/6c290df**, not freshly observed here. Pydantic AI
+defaults remain `openai:gpt-6.1-sol` for researcher/planner/assistant and
+`openai:gpt-6-luna` for participants. No T09, T15, adjudication or generated
+execution implementation is added.
+
+### Complete preservation and immutable evidence
+
+Complete source `data/t08/` was preserved before merging, without overwrites, to
+`.tools/research-harness/evidence/T08/`: **1,521 regular files / 300,819,177 bytes /
+332 symlinks**. Stable source HEAD/index/status and every source/copy hash were
+reverified at closure. The source checkout remains intact.
+
+| Evidence identity | SHA-256 |
+| --- | --- |
+| Complete preserved T08 canonical inventory | `82ac8198e042bad28c9c5980840567a226c77ed3953e28c2f9491a1d750c141c` |
+| Child `artifact-manifest.json` file, 574 indexed files / 58 checks | `3347faa7a0adb6c2ffd5e17d914b3ce5fafa67f578a5fb38cf4201686e94eefa` |
+| Child indexed canonical inventory | `2787630d0b788d6bc804eefb93a5439ea167f461ec52f8e5f10e3318850314b5` |
+| Fresh `preservation.json` file | `1287602a579f46b46f1fc8c97c5814e4ba255900885e2bf0adb9ea51e5ddb056` |
+| Fresh frozen canonical inventory | `ab33f4829f0830213e3a3c4759cab57cf5f34ee8da8bc72ed95e41dadca93122` |
+| Fresh `verification-manifest.json` file | `7748adb2dd28c7d7960bae1530a011a815678032a7722a35855cdd0da86b3aad` |
+| Prior evidence canonical inventory | `ab0fb550f0cb7eb177e8ad004cf2ab413bfffb7b1b66ae2fc8af6e9eca980b48` |
+| Sol canonical inventory, all 1,745 indexed files | `809deca0dc521829b6f18840daf926c0620e6f176a610bfd51f3926fcfa45d90` |
+| Sol final manifest file | `286209af7b340d1c38766b4a2ed008a4a791d867bb3f6e195f5500ed5769d4c8` |
+
+Fresh evidence is separate under `T08-integration/`. Its immutable
+`verification-manifest.json` covers **1,411 files / 128,559,266 bytes / 32 symlinks**
+and **37 check records**, with exact commands/exits, source/case/helper identities,
+archives, logs, JUnit, exports, comparisons and screenshots. Later final-commit
+records extend a separate `acceptance-checkpoint/manifest.json`; the frozen
+manifest is never overwritten. Prior T01–T06/Sol evidence was inventoried before
+and after: **21,440 files / 1,624,456,744 bytes / 755 symlinks**, unchanged.
+
+Retention caveat: standard pytest retention automatically rotated newly generated
+scratch roots `pytest-0/1` before the fresh manifest freeze. All attempt logs,
+source/helper snapshots, JUnit, exports, comparisons and screenshots remain;
+not every fresh temporary fixture database remains. There was no manual evidence
+cleanup. Complete original child evidence, including its failed attempts, is intact.
+Four known source synthetic configuration fixtures were hash/copied opaquely only
+after verifying their tracked generator; contents were never displayed/committed.
+No real configuration/credentials, root `pbcopy` or preserved stash were accessed.
+
+All services/browser contexts started by the four Playwright invocations closed;
+port **18219** is verified closed. No manual browser/service was started. No push,
+PR/issue edit, paid request or Luna call occurred; review spend is **$0**. Global
+Sol remains **$0.611632 / 55 known-usage requests**, **$9.388368 remaining**, with
+no active allocation. Live competence, held-out and generalization gates stay
+unverified. Parent retains publication and frontier ownership.
+
+T08 acceptance makes **T15 Ready**, without launching it. Per the parent's later
+coordination update, **T07 is complete awaiting fresh integration review**, source
+`e7800d3a400fc133a7b6a0204d5e03ed4d8bb79e`; its implementation was not inspected
+or merged here. **T09 remains running and unpolled**. T19 still waits for accepted
+T07. The final HANDOFF records the parent-supplied T07 pointers for the next merger.

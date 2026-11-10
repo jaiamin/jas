@@ -1,4 +1,99 @@
-# T08 integration review handoff (2026-11-10)
+# T08 fresh integration checkpoint — accepted (2026-11-10)
+
+T08/#19 is accepted after independent sole-writer review. No-ff merge
+`9750cafea48120ceec11530ed11a214661a374b3` joins integration
+`6b7ad09248f915320bdaf1aa4d2ba10d5e6d0789` and clean source
+`b2ac25c9c0efe07dd3309a158051a04870f51261`. One concrete receipt metadata defect
+was repaired with public-API red/green evidence in
+`de5556b3da67a8d276ee8fb6d098760911dd03b2`: earlier retrieval filters report a
+null round and a separate actual `observation_cutoff`, without claiming a
+reconstructed past observation. Source permissions/selection and World rules
+are unchanged. Read the [fresh acceptance report](docs/research/T08_PARTICIPANT_CONTEXT.md#fresh-integration-acceptance-2026-11-10).
+The final commit changes only acceptance documentation; exact final HEAD, hook
+result, tracked-only source inventory and frozen-manifest recheck are separately
+recorded in `.tools/research-harness/evidence/T08-integration/acceptance-checkpoint/`.
+
+Current contracts: **DB 6 / export 6 / comparison 1 / library v3 / tool-using
+2.0.0 / direct-action 1.0.0**. Unsupported versions fail explicitly; no DB bump,
+migration, alias or reset. Discretionary/disabled capabilities, all memory modes,
+permitted prior evidence, foreign actor/run denial, metadata/count/schema privacy,
+self-authored plan nonauthority, unused payload rejection, restore/receipts,
+request accounting and exact replay were independently exercised. Verification
+is limited to actor-accessible legal schemas and literal source quotes, without
+consequence prediction or semantic truth. Live competence remains unverified.
+
+Fresh observations: backend initial run **915 passed / 2 failed / 133 errors**,
+exit **1**, due to observed `ENOSPC`; exact **135** affected cases passed on
+unchanged-source retry. After repair **65** affected cases pass, including the new
+regression. Across checkpoints **1,051 unique tests** passed; no single final
+full-suite success is claimed. **377 independent API/World checks**, **109 frontend
+tests**, Ruff/ty/lint/TypeScript/build, **56 distinct browser flows + 2 post-repair
+repeats**, five neutral cases/**47 scripted requests / 11 comparison checks** and
+five inherited T04 cases pass. Frontend/shared workflows predate only the small
+backend receipt fix; exact attribution is retained. Production smoke is inherited
+from accepted T03/6c290df, justified by unchanged deployment/runtime inputs.
+
+Frozen T01 remains unchanged with **exit 1**, four intentional export-v4 failures
+and failed terminal flags; comparison to child-before shows zero new regressions/
+improvements. Positive current-contract behavior/accounting and request/export
+parity establish all **22 direct-action turns / five runs**. All **509 differences
+(387 export / 122 report)** are classified, zero unexplained. Captures ran from
+clean tracked-only source excluding unread `pbcopy`. Historical benchmark inputs,
+case identities and scores, T03/T06 behavior, T04/T05 accounting/probes and both
+live-discovery fixes/tests remain protected. No T09/T15 implementation was added.
+
+Complete source `data/t08/` is preserved before merging, without overwrites, under
+`.tools/research-harness/evidence/T08/`: **1,521 files / 300,819,177 bytes /
+332 symlinks**, canonical SHA-256
+`82ac8198e042bad28c9c5980840567a226c77ed3953e28c2f9491a1d750c141c`.
+Child manifest **574 files / 58 checks**, file SHA-256
+`3347faa7a0adb6c2ffd5e17d914b3ce5fafa67f578a5fb38cf4201686e94eefa`.
+Stable source/index/status and complete source/copy hashes were reverified; source
+checkout `/home/agent/.t3/worktrees/workspace/t3-3c0cc3a1` remains intact.
+Fresh `T08-integration/verification-manifest.json` covers **1,411 files /
+128,559,266 bytes / 32 symlinks / 37 check records**, canonical SHA-256
+`ab33f4829f0830213e3a3c4759cab57cf5f34ee8da8bc72ed95e41dadca93122`, file SHA-256
+`7748adb2dd28c7d7960bae1530a011a815678032a7722a35855cdd0da86b3aad`.
+Never overwrite it; later checkpoints use their own manifest. All prior evidence
+is unchanged: **21,440 files / 1,624,456,744 bytes / 755 symlinks**, canonical
+`ab0fb550f0cb7eb177e8ad004cf2ab413bfffb7b1b66ae2fc8af6e9eca980b48`.
+All **1,745 indexed Sol artifacts** and final manifest remain verified unchanged;
+their exact digests are in the report and `prior-evidence-final-closure.json`.
+
+Retain every failed attempt: ENOSPC, both cutoff red tests, review-helper failures,
+child worker timeouts/build exit 137 (precise kill cause unknown), frozen failures.
+Standard pytest automatically rotated fresh scratch roots `pytest-0/1`; all logs,
+source/helper snapshots, JUnit, exports/comparisons/screenshots and complete child
+evidence remain. No manual evidence cleanup. Parent storage-maintenance records
+are under `.tools/research-harness/maintenance/`, hashed in
+`parent-storage-maintenance.json`: final verification **1,174,781,952 bytes free**,
+preceding **1,215,180,800**, 1 MiB write+fsync passed; Chromium1254 retained.
+Shared space changes (later parent notice: about 1,024,098,304 bytes). No evidence,
+dependencies, source checkouts or other agents' work were removed by this review.
+
+Owned browser/services from four Playwright invocations are closed; **18219 is
+closed**. No manual service/browser, descendants, paid requests, Luna calls,
+publication or other-agent file/process changes. Sol remains **$0.611632 /
+55 known-usage requests**, **$9.388368 remaining**, no active allocation. Preserve
+stash `f771128ba1c9295262a4073df40cc25647b1370f`; root `pbcopy` remains unread/
+uncopied/unarchived. Real configuration/credentials were not inspected. Known
+synthetic fixtures were handled only as authorized opaque hashes/copies.
+
+**Root resumes sole shared-checkout ownership after this handoff. T15 is Ready;
+root owns its launch. T07 is complete awaiting a separate fresh integration
+review; T09 remains running and unpolled. T19 waits for accepted T07.** Parent
+supplied T07 pointers only: clean `t3/research-exposure-capture`, HEAD
+`e7800d3a400fc133a7b6a0204d5e03ed4d8bb79e`, checkout
+`/home/agent/.t3/worktrees/workspace/t3-8e1a5746`, based on accepted `6b7ad09`
+and excluding provisional T08. Report `docs/research/T07_EXPOSURE.md`;
+`data/t07/` has **2,161 indexed files**, manifest SHA-256
+`05790f34953d8b841c3ab66b17e8c466d863f61245dbb7beea69661f2e192841`.
+This merger did not inspect, preserve or merge T07, or poll T09. Root owns draft
+https://github.com/jaiamin/ass/pull/32, publication and subsequent frontier work.
+No hosted checks/reviews state was queried; local acceptance is documented here.
+Live/held-out/generalization gates remain open.
+
+# T08 integration review assignment (historical, 2026-11-10)
 
 T01–T06 are accepted. T08 is implemented, queued for a fresh sole-writer merger;
 T07 and T09 continue in isolated worktrees and must not be polled. T15 remains
@@ -16,7 +111,7 @@ own 18118/18120. No paid allocation; Sol spend remains $0.611632/55 requests,
 $9.388368 remaining. Root owns publication to draft PR #32. Preserve prior
 evidence/stash and never read/copy the unrelated untracked `pbcopy`.
 
-# T08 implementation handoff — ready for fresh integration review (2026-11-10)
+# T08 implementation handoff — ready for fresh integration review (historical, 2026-11-10)
 
 Branch `t3/participant-context-capabilities`, assigned checkout `t3-3c0cc3a1`.
 Executable/test checkpoint `80966eecb8b20a121038a2fc48052dc8cf215bb6`;
@@ -328,8 +423,8 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01/T02/T03/T04/T05/T06 accepted; T07/T09 running;
-T08 complete, queued for fresh integration review; draft PR #32.**
+**Current checkpoint: T01/T02/T03/T04/T05/T06/T08 accepted; T07 complete awaiting
+fresh integration review; T09 running; T15 Ready; draft PR #32.**
 
 Fresh Sol DEVELOPMENT is complete for this checkpoint: read
 `docs/research/SOL_DEVELOPMENT.md`. The frozen original eight-case pair,
@@ -427,14 +522,15 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: T03/#14 is accepted at `6c290df`, and T09/#20 is assigned to a
-fresh isolated implementer, based on the accepted T03/T06 integration. Its
-dedicated browser port is 18120; report `docs/research/T09_ARTIFACT_WORLD.md`,
-raw evidence `data/t09/`. It must merge the latest accepted integration before
-handoff. No paid calls are allocated. T07/T09 remain running; do not poll them.
-T08 is complete on `b2ac25c`, queued for fresh integration review.
-T07/#18 and T08/#19 remain running in isolated worktrees and were not polled.
-T15 waits for completed T08, T19 for T07 and T14 for T13.
+Current frontier: T08/#19 is accepted at merge `9750caf` plus receipt repair
+`de5556b`; T15 is Ready for a parent-owned launch. T07/#18 is complete on
+parent-reported `e7800d3`, awaiting a separate fresh integration review after this
+handoff (exact source/evidence pointers above). T19 waits for accepted T07 and
+T14 for T13. T09/#20 remains assigned to its isolated implementer, based on the
+accepted T03/T06 integration, with browser port 18120 and report
+`docs/research/T09_ARTIFACT_WORLD.md`, raw evidence `data/t09/`. It must merge the
+latest accepted integration before handoff. No paid calls are allocated. This
+T08 merger did not review T07 or poll/change T09.
 Draft PR #32 is the single integration PR and
 was linked immediately. Refresh/link it on each push. Do not merge to main or
 close issues as if unverified work were complete. The default-branch PR merge
