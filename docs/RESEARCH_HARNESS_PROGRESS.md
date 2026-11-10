@@ -118,7 +118,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Integrated and accepted | `48600d2` |
 | T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Integrated and accepted | `a4ab9ee` |
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Integrated and accepted | `aaf3a15`; [evidence](research/T06_UNCERTAINTY.md) |
-| T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Complete awaiting fresh integration review | —; parent-reported source `e7800d3` |
+| T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Complete; assigned to fresh integration review | —; source `e7800d3` |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Integrated and accepted after cutoff receipt repair | `9750caf`, `de5556b`; [evidence](research/T08_PARTICIPANT_CONTEXT.md) |
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | In progress in isolated worktree | — |
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Waiting | — |
@@ -126,7 +126,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Waiting | — |
 | T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Waiting | — |
 | T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Waiting on T13 | — |
-| T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Ready; parent owns launch | — |
+| T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Assigned to fresh isolated implementer | — |
 | T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Waiting | — |
 | T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | Waiting | — |
 | T18 | [#29](https://github.com/jaiamin/ass/issues/29) Inspect a declared fallible adjudication and replay its consequences | T09 | Waiting | — |
@@ -200,8 +200,9 @@ those trials run, the live milestone remains unverified.
 ## Next actions
 
 1. T01/T02/T03/T04/T05/T06/T08 are accepted with preserved evidence. Parent
-   resumes sole shared-checkout ownership after this handoff. T15 is Ready;
-   only parent launches its implementation. T09/#20 remains running on 18120,
+   resumes sole shared-checkout ownership for publication, then assigns T07 to
+   a fresh sole-writer review on 18218 and T15 to a fresh isolated implementer
+   on 18121. T09/#20 remains running on 18120,
    unpolled. T19 waits for accepted T07; T14 waits for T13.
 2. Parent queues a separate fresh T07 merger from clean
    `t3/research-exposure-capture` at `e7800d3a400fc133a7b6a0204d5e03ed4d8bb79e`,

@@ -79,9 +79,9 @@ stash `f771128ba1c9295262a4073df40cc25647b1370f`; root `pbcopy` remains unread/
 uncopied/unarchived. Real configuration/credentials were not inspected. Known
 synthetic fixtures were handled only as authorized opaque hashes/copies.
 
-**Root resumes sole shared-checkout ownership after this handoff. T15 is Ready;
-root owns its launch. T07 is complete awaiting a separate fresh integration
-review; T09 remains running and unpolled. T19 waits for accepted T07.** Parent
+**Root resumes sole shared-checkout ownership for publication, then assigns T07
+to a fresh sole-writer review on 18218 and T15 to a fresh isolated implementer
+on 18121. T09 remains running and unpolled. T19 waits for accepted T07.** Parent
 supplied T07 pointers only: clean `t3/research-exposure-capture`, HEAD
 `e7800d3a400fc133a7b6a0204d5e03ed4d8bb79e`, checkout
 `/home/agent/.t3/worktrees/workspace/t3-8e1a5746`, based on accepted `6b7ad09`
@@ -92,6 +92,13 @@ This merger did not inspect, preserve or merge T07, or poll T09. Root owns draft
 https://github.com/jaiamin/ass/pull/32, publication and subsequent frontier work.
 No hosted checks/reviews state was queried; local acceptance is documented here.
 Live/held-out/generalization gates remain open.
+
+T15 uses accepted T06/T08 as its base; report
+`docs/research/T15_BASELINES.md`, raw evidence `data/t15/`. It must merge the
+latest accepted integration before handoff. Root publishes before launching the
+new review/implementation batch, then performs no tracked edits while T07 owns
+integration. Current free space at handoff publication is about 831 MiB; T07's
+source evidence is about 250 MB. Keep evidence lossless and services bounded.
 
 # T08 integration review assignment (historical, 2026-11-10)
 
@@ -423,8 +430,9 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01/T02/T03/T04/T05/T06/T08 accepted; T07 complete awaiting
-fresh integration review; T09 running; T15 Ready; draft PR #32.**
+**Current checkpoint: T01/T02/T03/T04/T05/T06/T08 accepted; T07 assigned to fresh
+integration review; T09 running; T15 assigned to isolated implementation;
+draft PR #32.**
 
 Fresh Sol DEVELOPMENT is complete for this checkpoint: read
 `docs/research/SOL_DEVELOPMENT.md`. The frozen original eight-case pair,
@@ -523,9 +531,9 @@ task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
 Current frontier: T08/#19 is accepted at merge `9750caf` plus receipt repair
-`de5556b`; T15 is Ready for a parent-owned launch. T07/#18 is complete on
-parent-reported `e7800d3`, awaiting a separate fresh integration review after this
-handoff (exact source/evidence pointers above). T19 waits for accepted T07 and
+`de5556b`; T15 is assigned to a fresh isolated implementer. T07/#18 is complete
+on `e7800d3`, assigned to a separate fresh integration review after publication
+(exact source/evidence pointers above). T19 waits for accepted T07 and
 T14 for T13. T09/#20 remains assigned to its isolated implementer, based on the
 accepted T03/T06 integration, with browser port 18120 and report
 `docs/research/T09_ARTIFACT_WORLD.md`, raw evidence `data/t09/`. It must merge the
