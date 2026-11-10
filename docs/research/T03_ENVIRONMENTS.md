@@ -95,3 +95,19 @@ researcher operations and both tickets' documentation/handoffs, while keeping
 T03's v3 library and v6 schema/export contract. Current API/policy/browser export
 assertions require v6; old v1/v2 library files and schema 4/5 remain explicit
 rejections. No aliases, conversion or data-reset code was introduced.
+
+Merge checkpoint: `15eebc25724bd7ba4b5fe2c3ad33d39183528f04`.
+All **110** integrated API/library/export/database/baseline/participant/Researcher
+checks pass (`integrated-focused-01/`). One final integration seam was exercised
+with a fourth red/green slice: the Researcher's real capabilities operation lacked
+reusable definitions. It now returns the same built-in/custom mechanics snapshots
+and source hashes, capped at 12 custom records, with independent study commitments
+explicit. The activity view links custom sources to the existing reuse workflow.
+`tdd-04-red/` retains the absent-discovery failure; `tdd-04-green/` passes all 24
+Researcher/reuse checks. A supplemental API case proves applying mechanics
+preserves each arm's direct/tool harness, model assignment and memory, and that
+extraction collapses harness-only differences into one mechanics example.
+
+Remaining: final clean-source before/after comparison, full backend/frontend/browser
+checks, the inherited two-policy browser trial, rendered-capture review, manifest,
+latest integration ancestry check and service shutdown verification.

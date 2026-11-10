@@ -352,3 +352,45 @@ def test_atomic_library_failure_and_competing_updates_preserve_a_complete_record
         assert winner["revision"] == 2
         assert winner["definition"]["name"] in {"First contender", "Second contender"}
         assert client.get(url).json() == winner
+
+
+def test_reusing_mechanics_preserves_each_conditions_participant_harness_and_memory(tmp_path):
+    with TestClient(
+        create_app(f"sqlite:///{tmp_path}/workspace.sqlite3"), base_url="http://localhost"
+    ) as client:
+        source = client.post("/api/environments", json={"definition": mechanics()}).json()
+        design = commons_template().model_dump()
+        design["conditions"][0]["harness"] = {"kind": "direct_action", "version": "1.0.0"}
+        design["conditions"][1]["harness"] = {
+            "kind": "tool_using",
+            "version": "1.0.0",
+            "max_requests": 2,
+            "max_tool_operations": 1,
+            "tools": ["rules"],
+        }
+        design["conditions"][0]["parameters"]["memory"] = "none"
+        design["conditions"][1]["parameters"]["memory"] = "notes"
+        design["profiles"][0]["model"] = "openai:gpt-6-luna"
+        original = client.post("/api/design/validate", json={"design": design}).json()
+        response = client.post(
+            "/api/design/use-environment",
+            json={
+                "design": original,
+                "source": source,
+                "example": "scarce",
+                "bindings": {"controller": design["profiles"][0]["key"]},
+            },
+        )
+        assert response.status_code == 200, response.text
+        reused = response.json()
+        assert reused["profiles"] == original["profiles"]
+        for before, after in zip(original["conditions"], reused["conditions"], strict=True):
+            assert after["harness"] == before["harness"]
+            assert after["model"] == before["model"]
+            assert after["parameters"]["memory"] == before["parameters"]["memory"]
+        extracted = client.post("/api/design/environment", json={"design": reused})
+        assert extracted.status_code == 200, extracted.text
+        assert len(extracted.json()["examples"]) == 1
+        assert "harness" not in json.dumps(extracted.json())
+        assert "openai:" not in json.dumps(extracted.json())
+        assert client.get("/api/settings").json()["usage"]["requests"] == 0

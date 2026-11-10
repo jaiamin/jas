@@ -432,7 +432,7 @@ export interface ResearchArtifact {
   status: "pending" | "complete" | "rejected" | "failed";
   summary: string;
   sources: {
-    kind: "builtin" | "analysis" | "run";
+    kind: "builtin" | "environment" | "analysis" | "run";
     id: string;
     hash: string;
     turn?: number;

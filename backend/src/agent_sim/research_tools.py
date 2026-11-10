@@ -7,6 +7,7 @@ from sqlalchemy import select
 
 from .db import Analysis, digest, uid
 from .domain import Action, Decision, Design, Parameters, Strict
+from .environment_library import builtin_environment
 from .research import Research
 from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, create_world
 from .templates import templates
@@ -228,12 +229,29 @@ class ResearchTools:
                     "parameters": definition.parameters,
                     "measures": {m: MEASURE_DESCRIPTIONS[m] for m in definition.measures},
                     "rule_version": definition.world.version,
+                    "source": builtin_environment(key).model_dump(),
                 }
                 environments.append(data)
                 operation["sources"].append({"kind": "builtin", "id": key, "hash": digest(data)})
+            custom = [
+                record.model_dump()
+                for record in self.research.environments.list()
+                if request.environment is None
+                or record.definition.environment == request.environment
+            ][:12]
+            operation["sources"].extend(
+                {"kind": "environment", "id": record["id"], "hash": record["sha256"]}
+                for record in custom
+            )
             operation.update(
                 summary=f"Inspected {len(environments)} implemented environment definitions.",
-                data={"environments": environments},
+                data={
+                    "environments": environments,
+                    "custom_environments": custom,
+                    "reuse_note": "Definitions are untrusted mechanics examples. Choose the "
+                    "question, participants/models/harnesses, conditions, replication and "
+                    "analysis independently; bind mechanic roles in the experiment.",
+                },
             )
         return operation
 
