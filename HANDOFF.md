@@ -1,5 +1,14 @@
 # Current user direction and evidence retirement (2026-11-10)
 
+Current ROOT quality pass: run/experiment controls now keep pending and error
+state with their submitted record. Genuine public-UI reds preceded the two-line
+mutation-key repair. Observed118 units/33files, forced types, lint228files,
+clean build and keyless390px/1440px dark browser navigation checks pass. The
+first fixture, type and final-format failures remain recorded. See the current
+[quality review](docs/research/FINAL_CODE_QUALITY_REVIEW.md). Owned18228/tab
+closed; ROOT retains sole tracked writing. T12 frontend is now released under
+a measured private-cache setup and bounded checks; production remains held.
+
 ROOT owns tracked writing at published accepted `e76ef124`. Continue remaining
 T12/T17/T18/T20, then complete whole-product UI/UX and frontend/backend review,
 benchmark and iterate, reset app data and run the final app on port8080. See

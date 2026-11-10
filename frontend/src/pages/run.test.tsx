@@ -5,6 +5,58 @@ import { exposureReport, runDetail } from "@/test/fixtures";
 import { deferredResponse, renderWithQueries } from "@/test/queries";
 import Run from "./run";
 
+test("an in-flight run control does not disable or report an error on another run", async () => {
+  const control = deferredResponse();
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      observe = vi.fn();
+      unobserve = vi.fn();
+      disconnect = vi.fn();
+    },
+  );
+  vi.stubGlobal(
+    "fetch",
+    vi.fn((path: string) =>
+      path.endsWith("/control")
+        ? control.promise
+        : path.endsWith("/exposure")
+          ? Promise.resolve(Response.json(exposureReport))
+          : Promise.resolve(
+              Response.json({
+                ...runDetail,
+                summary: {
+                  ...runDetail.summary,
+                  id: path.endsWith("/second") ? "second" : "run",
+                },
+              }),
+            ),
+    ),
+  );
+  renderWithQueries(
+    <MemoryRouter initialEntries={["/runs/run?tab=settings"]}>
+      <Link to="/runs/second?tab=settings">Other run</Link>
+      <Routes>
+        <Route path="/runs/:id" element={<Run />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+  fireEvent.click(await screen.findByRole("button", { name: "Run" }));
+  fireEvent.click(screen.getByRole("link", { name: "Other run" }));
+  expect(
+    await screen.findByText("second", { selector: "code" }),
+  ).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Run" })).toBeEnabled();
+  await act(async () => {
+    control.resolve(
+      Response.json({ detail: "First run is unavailable" }, { status: 503 }),
+    );
+  });
+  expect(
+    screen.queryByText(/First run is unavailable/),
+  ).not.toBeInTheDocument();
+});
+
 for (const late of [false, true]) {
   test(`replay confirmation belongs to its run when completion is ${late ? "late" : "already visible"}`, async () => {
     const verification = deferredResponse();
