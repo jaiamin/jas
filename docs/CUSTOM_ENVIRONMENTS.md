@@ -37,18 +37,16 @@ to participants. A written formula does not install a new automatically computed
 verify derived analyses against the recorded evidence.
 
 Custom environments are stored beside the SQLite workspace in `<database-stem>.environments/`.
-Back up that directory with the database. Browser-only reusable setups have been removed;
-there is no legacy importer. Format `jas-environment-v10` contains `definition` (version2,
+Back up that directory with the database. Format `jas-environment-v10` contains `definition` (version2,
 world/rule version, name/description and configuration examples), plus ID, optimistic revision,
 updated timestamp and definition hash. Examples contain mechanics parameters, optional tasks
 and unbound roles. Create/update accept `{definition, revision}`; selection and extraction use
 `POST /api/design/use-environment` and `POST /api/design/environment`.
 Unsupported library/definition/rule versions and content hashes fail explicitly.
-The combined current database schema15 and export17 retain T14 investigation
-ownership, accepted T12 workflow and T17 finite packages/generation allowances.
-Prior libraryv7/v8, definition1, DB11/12/13 and export12/13/15 are incompatible; no alias, conversion,
-deletion or automatic reset occurs. Preserve
-older data separately if starting a fresh workspace. Existing controlled-world rules themselves are unchanged.
+Database schema15 and export18 retain investigation ownership, workflow rules,
+finite packages and generation allowances. Other persisted versions reject
+explicitly. Preserve incompatible data separately when starting a fresh workspace;
+see the [storage contract](ARCHITECTURE.md#storage).
 
 The `reviewed_finite` backend profile additionally requires an actual immutable
 external contract, explicit role bindings, static actor-private facts and a
@@ -76,7 +74,7 @@ declared, versioned fallible pickup-note adjudicator can affect only submission
 status after hard-fact and ACL validation; its explanation is not an enforced fact. A
 recorded citation alone is not proof of reading; inspect delivered read receipts.
 Generated execution uses separate admission and execution contracts. Three-person
-coordination has its own installed World below. The historical unknown identifier `artifact` is not an alias.
+coordination has its own installed World below.
 
 ## Distributed information, rules 1.0.0
 

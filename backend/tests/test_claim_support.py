@@ -163,7 +163,7 @@ def claim_client(tmp_path, monkeypatch, request):
                             "source": os.getenv("JAS_T19_SOURCE"),
                             "head": os.getenv("JAS_T19_SOURCE_HEAD"),
                             "paid_requests": 0,
-                            "expected": "docs/research/T19_CLAIM_SUPPORT.md",
+                            "expected": "docs/EXPERIMENT_VALIDITY.md",
                         },
                         indent=2,
                     )

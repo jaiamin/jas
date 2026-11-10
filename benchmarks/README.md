@@ -5,6 +5,11 @@ environment validity, participant execution and observable behavior. There are 1
 and 10 held-out families across seven rule-based worlds. This is a diagnostic benchmark;
 passing it does not establish human realism, intent or useful scientific insight.
 
+This frozen suite predates the expanded artifact, workflow and generated-mechanic
+catalog. Its protocol describes the benchmark's declared conditions, not the
+current application's full capabilities. Use the
+[current validity guide](../docs/EXPERIMENT_VALIDITY.md) for authoring new experiments.
+
 | Read or reuse | Entry point |
 | --- | --- |
 | Scenario definitions and frozen requests | [families.json](families.json), [quality-cases.jsonl](quality-cases.jsonl) |
@@ -72,7 +77,8 @@ qualitative usefulness still needs independent review. Failures stay in the deno
 
 Outputs contain attempts, observable provider calls, source snapshots, hashes, costs and
 summaries. All generated files belong in ignored `data/quality/`, outside this directory.
-Replay and summarize participant exports without credentials or model calls:
+Replay and summarize exports whose rule versions match the executing source,
+without credentials or model calls:
 
 ```sh
 uv run python -m benchmarks.replay data/quality/participants/attempts.jsonl.gz
@@ -91,8 +97,9 @@ families needs a new reviewed split and a new declaration before opening its res
 Only the compact [report](results/REPORT.md), [score history](results/score-history.json),
 [cost audit](results/aggregate-cost.json) and [limitations](results/LIMITATIONS.md) are kept
 here. Full historical traces, source bundles and one-off commands are recoverable at the
-immutable evidence commit; see the report's archive/replay instructions. Saved decisions
-replay exactly with their matching rules; fresh model responses are stochastic.
+immutable evidence commit; see the report's archive/replay instructions. Historical
+exports need their matching archived source; the current app rejects incompatible
+rules instead of loading an old engine. Fresh model responses are stochastic.
 
 ## Later planner development checks
 

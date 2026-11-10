@@ -147,7 +147,7 @@ Work counters are durable and bounded separately. Pause commits an in-flight fin
 decision; explicit resume continues from the committed cursor. Restart restores
 paused parents and retains accounting without automatic spending. The
 [product review](research/FINAL_PRODUCT_REVIEW.md) records lifecycle/UI qualification
-and its limits; the [T14 report](research/T14_INVESTIGATIONS.md) retains the earlier
+and its limits; the [compact history](research/RESEARCH_HARNESS_COMPACT_REPORT.md) summarizes earlier
 development history.
 
 The parent result reports recorded complete/failed/missing run counts and exact
@@ -386,7 +386,7 @@ relay transitions and executable create/revise validation run off the API event
 loop. Candidate self-tests grant no authority.
 This sealed profile alone supplies no general generation or adjudication. Finite
 qualification makes no claim about arbitrary-program correctness or intelligence.
-See [the contract](EXTENSIONS.md) and [T16 evidence](research/T16_EXTENSION_ADMISSION.md).
+See [the contract](EXTENSIONS.md) and [development history](research/RESEARCH_HARNESS_COMPACT_REPORT.md).
 
 T17 adds the separate `reviewed-finite-v1` backend profile. Its prerequisite is an
 independently user-authored exhaustive external table, operation-role permissions,
@@ -462,11 +462,10 @@ probes expose choice outcomes without creating financial results or changing a r
 Replay validates observations, settlements, measurements, checkpoints and actual
 read/rejection receipts using recorded proposals, without model sampling.
 
-T10 introduced atomic DB8/export9/libraryv5 because the typed mechanics/default parameter
-changes canonical serialized designs, mechanics hashes and legal schemas. Capture1,
-comparison1, tool-using 2.0.0 and direct-action 1.0.0 retain their meanings. No old-data
-alias, migration or reset is performed. This World adds neither a general distributed
-runtime nor the commitment/institution workflows of T11/T12.
+Coordination rules, parameters and legal schemas are pinned by the current
+contract. Capture1, comparison1, tool-using2.0.0 and direct-action1.0.0 retain
+their meanings. This World provides finite choices and deliveries; reliance
+commitments and institutional workflows are separate mechanisms.
 
 ## Voluntary reliance and observable commitments
 
@@ -503,12 +502,11 @@ externally reviewed finite generation and declared fallible adjudication.
 Incompatible persisted meanings are rejected without a compatibility reader,
 migration or reset. Capture1/comparison1/tool2.0/direct1.0 remain current.
 
-## Institutional workflow (T12 accepted finite DEVELOPMENT)
+## Institutional workflow
 
-The [independent T12 integration review](research/T12_INTEGRATION_REVIEW.md) accepts
-its deterministic DEVELOPMENT scope, including delivered-message/handoff/acceptance
-interaction inspection. The [final review](research/FINAL_PRODUCT_REVIEW.md)
-records combined-source browser/runtime qualification and its limits.
+Delivered messages, handoffs and acceptance remain inspectable alongside work.
+The [product review](research/FINAL_PRODUCT_REVIEW.md) records current
+qualification and its limits.
 
 `institutional_workflow` extends the existing artifact World for6–12 participants.
 Typed work items bind one artifact to declared workers, material cost, duration,
@@ -524,21 +522,16 @@ editing and prose execution are unsupported.
 
 Sequential decisions advance one tick; phased proposals retain one committed
 snapshot, including checkpointed reads, until the declared priority settlement.
-Addressed mail shares T10's concrete queue/delivery operations. Provider latency
+Addressed mail uses explicit queue/delivery operations. Provider latency
 does not advance time or decide priority. Stop withdraws only its actor; complete
 handoffs, all withdrawal or horizon produce explicit terminal records. Future
 work/mail remain pending at a horizon. Material stock/spent are distinct from
 write allowance and financial utility. Work content and resource consequences
 remain ordinary World checkpoints/events; there is no second engine.
 
-The task branch has source-scoped backend, exposure/research, accounting/lifecycle
-and current-contract qualification, plus frontend units/build and separate keyless
-editor/handoff/failure browser witnesses. Fresh keyless native-runtime qualification
-passes export/reopen/zero-call replay and distinct local World restoration. It is
-not non-root-container or live-competence qualification. Independent integration
-review accepted its finite DEVELOPMENT scope; see the
-[integration review](research/T12_INTEGRATION_REVIEW.md).
-See the [T12 plan](research/T12_INSTITUTIONAL_WORKFLOW.md).
+The [custom-environment guide](CUSTOM_ENVIRONMENTS.md) describes authoring and
+reuse. Deterministic rule checks, rendered workflows and live model competence
+remain separate forms of qualification.
 
 ### Playback, consequence replay, restoration and sampling
 
@@ -603,13 +596,13 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v17 (`jas-study`)
+Every Analysis has an indexed conversation identity. Study export v18 (`jas-study`)
 includes investigation authorization, decisions and attempts, every revision and its
 runs, actual recorded rule versions, exact turn evidence and provider traces; it batches
 journal queries. It also retains the linked question's complete immutable generation
 attempts (including failures and repairs), external contracts/checks/admission/source,
 generation authorization/counters and exact integer reserved/charged request ledgers.
-Exports1–15 are historical contracts, not accepted as the current export meaning.
+Incompatible contracts are rejected without reinterpretation or migration.
 Participant harnesses (`participants.py`; direct action 1.0.0, tool using 2.0.0) are condition factors,
 independent of provider/model assignments and World. Direct action preserves the
 single structured-decision request and its observation. Tool using owns a bounded
@@ -754,7 +747,7 @@ Agent replies lead with a deterministic source-linked account, then expose claim
 status, calculation inputs, coverage/missingness and frozen-evidence download in
 stock disclosures. Reanalysis uses the existing TanStack mutation and preserves
 drafts/record identity. General explanation, planning and copied-probe workflows
-retain their existing response shapes. See the [T19 report](research/T19_CLAIM_SUPPORT.md)
+retain their existing response shapes. See the [compact history](research/RESEARCH_HARNESS_COMPACT_REPORT.md)
 for independent DEVELOPMENT examples, retained disagreements and operating limits.
 
 The investigator receives cutoff-scoped opportunity counts, actual balances, decision usage
@@ -816,7 +809,7 @@ parameter-specific capability checks, preflight and critique. Library CRUD never
 call or run. Database schema15, export18 and libraryv10 reject incompatible versions explicitly; there is
 no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
-### Failure-aware comparisons (T06)
+### Failure-aware comparisons
 
 Study results enumerate the immutable revision's entire planned condition × seed ×
 repetition matrix. Comparison v1 retains current dispositions, attempted/complete/
@@ -846,9 +839,8 @@ Analysis submissions synchronously freeze cutoffs, dispositions, terminal metric
 eligibility, revision/hash and calculations before the server task runs. Progress,
 reconnect, failure and export preserve that snapshot across later run completion or
 new revisions. Analysis reads do not append participant evidence or provider calls.
-Study export v17 includes this versioned comparison contract and persisted analysis
-snapshots, changing earlier consumer expectations. T06 changes no database columns and
-requires no data reset; historical evidence is never backfilled with invented states.
+Study export v18 includes this versioned comparison contract and persisted analysis
+snapshots. Historical evidence is never backfilled with invented states.
 
 T15 adds self-versioned participant configurations and effort captures to comparison1
 and run detail without changing matching or inference. They retain harness/capability
@@ -896,14 +888,9 @@ artifact. Inspection/export/replay remain
 read-only. Exposure-conditioned descriptions are post-treatment selections, not
 automatic causal effects; inclusion establishes no attention, belief or intent.
 
-Exposure capture v1 was introduced in export v7; current export v17 retains the
-exposure chain and frozen analysis artifacts alongside artifact work. T09 advances
-the database to schema 7; T10 extends the typed mechanics contract to schema 8;
-T11 adds typed commitments in schema 9; T16 advances it to schema 10 for pinned
-executable packages; T14 advances it to schema11 for investigation ownership;
-The combined schema15/export18/library10 retains T12 typed institutional workflow
-alongside T17 external finite generation authorization and per-question
-request/candidate/charge counters. Intermediate T12 and T17 schemas
-are rejected explicitly and are not reinterpreted as the combined schema.
+Current export v18 retains exposure capture v1, its complete chain and frozen
+analysis artifacts. Database15/export18/library10 includes institutional work,
+external finite generation authorization and per-question request/candidate/charge
+counters. Incompatible persisted meanings reject explicitly.
 Exposure provenance alone does not alter controlled-world
 settlement, prompts or checkpoint replay. No migration or reset is performed.

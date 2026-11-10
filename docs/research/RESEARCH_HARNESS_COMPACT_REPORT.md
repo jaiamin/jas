@@ -26,8 +26,7 @@ These are historical source-scoped observations, not final-source suite counts.
 The original T14 Standards review failed because indirect baseline capture selected
 prohibited files. Recovery removed6 generated archive members/77733 bytes and12
 digest entries while preserving1320 unaffected members and48 other files. Current
-recovery closure passed; historical R1 remains FAIL. See
-[T14 recovery closure](T14_RECOVERY_CLOSURE.md). No protected original is removed
+recovery closure passed; historical R1 remains FAIL. Its original closure remains in Git history at the source checkpoint below. No protected original is removed
 by general retirement, and no deleted raw copy is claimed retained.
 
 Frozen T01 repeatedly exits1 for four export-v4 checks and four false terminal
@@ -86,3 +85,54 @@ requests, checkpoint prefixes, events/privacy/cutoffs, exact integer reserves an
 settlement, reopen and zero-call replay. Final current5/22/22 qualifies that gate,
 separately from the unchanged failing T01. No new historical comparator, live
 sampling, paid call, public hosting or general scientific-validity claim follows.
+
+
+## Consolidated development record
+
+Superseded planning surveys, per-ticket implementation/review reports and source
+inventory dumps were consolidated during the user-requested cleanup. Their exact
+last contents remain in Git at `885f38468c775454fb5c3a8070942828e60eaa61`;
+this summary does not claim deleted working-tree files are still available.
+Current requirements remain in the [accepted specification](../RESEARCH_HARNESS_SPEC.md),
+methods and primary references in [Research](../RESEARCH.md), and executable
+contracts in [Architecture](../ARCHITECTURE.md). The independently authored
+[current-contract arithmetic oracle](T12_CURRENT_CONTRACT_ORACLE.md) is retained.
+
+| Delivered area | Original issues | Bounded outcome |
+| --- | --- | --- |
+| Baseline, containment, reusable worlds | [T01–T03, #12–14](https://github.com/jaiamin/ass/issues/12) | Current contracts reject incompatible records; executable candidates need real containment and independent admission. |
+| Participant/researcher tools and evidence | [T04–T08, #15–19](https://github.com/jaiamin/ass/issues/15) | Actor-scoped tools, request accounting, source-linked context, failure-aware comparisons and actual-input exposure. |
+| Artifact, coordination and reliance worlds | [T09–T11, #20–22](https://github.com/jaiamin/ass/issues/20) | Versioned work, private deliveries, logical-time settlement and feasible commitment opportunities. |
+| Institutional workflows | [T12, #23](https://github.com/jaiamin/ass/issues/23) | Six–twelve participant rules, resources, dependencies and delivered handoff/mail inspection. |
+| Research design and investigations | [T13–T15, #24–26](https://github.com/jaiamin/ass/issues/24) | Pending reviewable proposals, explicit bounded autonomous work and declared reference policies. |
+| Admission and generated mechanics | [T16–T17, #27–28](https://github.com/jaiamin/ass/issues/27) | Frozen external finite contracts, retained wrong artifacts, linked repairs, full request receipts and crash recovery. |
+| Adjudication and claim support | [T18–T19, #29–30](https://github.com/jaiamin/ass/issues/29) | Declared judge authority/prices, separate raw/enforced results and cutoff-scoped independently checkable claims. |
+| Live generalization milestone | [T20, #31](https://github.com/jaiamin/ass/issues/31) | Open. No deterministic test or scripted provider substitutes for this gate. |
+
+T20 still requires independently frozen cases/rubrics and sampling rationale;
+varied solo, three-person, four-person and six–twelve-person live studies;
+a genuinely absent held-out mechanic passing external privacy/replay checks;
+separate world, researcher, participant, validity and runtime assessments;
+all attempts/costs/failures; and separately authorized participant spending.
+The historical Sol ceiling was $10. This cleanup authorizes no provider calls,
+new evaluation spending or tuning/rescoring of held-out outcomes.
+
+Earlier Luna planner development scored54/60,46/60,59/60 and60/60 on the same
+small development diagnostic across four checkpoints; the total five-batch cost
+was$0.815804. The strict intermediate mapper regressed on supported questions.
+These are historical development outcomes, not current Sol or held-out results.
+Two later six-response analysis diagnostics cost$0.035939 and$0.013842; a
+condition-label reversal remained despite correct aggregate arithmetic. Source
+citations and fluent output were not treated as proof of semantic correctness.
+Model weights were not trained by these application changes.
+
+The merge-readiness repair at `885f3846` closes finite admission's containment
+revocation gap, including scratch allocation/teardown exceptions. Before repair,
+three worker/cleanup cases and two actual lifecycle-exception cases failed.
+A complete backend attempt then exposed49 invalid workflow-fixture cases with
+1782 other passes. Correcting only that fixture retained all cases; the final
+uninterrupted run passed1831/1831 in568.25s. Frontend169 units,182 uninterrupted
+default browser cases and20 opt-in trials passed. One earlier backend run and
+one browser run were deliberately interrupted for source repair and disk/trace
+headroom. Their partial passes are not added to the final counts. Current
+verification and diagnostic limits remain source-attributed in the repair record.

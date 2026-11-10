@@ -32,7 +32,7 @@ time. A failed or unsupported check remains visible in immutable admission histo
 Candidate prose and self-tests cannot alter the checks. Finite checks establish
 mechanics; they do not certify arbitrary programs, intelligence or research validity.
 
-The separate T17 backend `reviewed-finite-v1` path requires an **independently
+The separate `reviewed-finite-v1` path requires an **independently
 user-authored, reviewed, exhaustive external transition table frozen before
 generation**. It supports at most256 encoded inputs, explicit role permissions,
 conserved available/escrow/spent resources, terminal states and static actor-private
@@ -59,10 +59,9 @@ prior unversioned/v1 events are rejected explicitly. A resulting experiment rema
 human review and separately authorized participant execution; discussion and saving
 never sample participants. Copied probes are distinct from executable containment.
 
-The [integration review](research/T17_INTEGRATION_REVIEW.md) and
-[product review](research/FINAL_PRODUCT_REVIEW.md) record deterministic generation,
-repair, export, World/Engine/replay and rendered UI qualification at their stated
-sources. Current merge gates are tracked in
+The [product review](research/FINAL_PRODUCT_REVIEW.md) records deterministic generation,
+repair, export, World/Engine/replay and rendered UI qualification with source
+attribution. Current merge gates are tracked in
 [merge-readiness repairs](research/MERGE_READINESS_FIXES.md). Live Sol competence
 and held-out generation remain unverified.
 
@@ -116,8 +115,9 @@ limits, explicit timeout/termination, empty credential environment and cleanup.
 It is an explicit local action, never a candidate-supplied result or environment
 flag. It resets on restart. Runtime/case fingerprints identify the proof; worker
 failure or changed source revokes validation permission. Failed checks remain
-visible. Actual development and production evidence is recorded separately in
-[the T02 report](research/T02_CONTAINMENT.md), not inferred from CLI availability.
+visible. Development history is summarized in the
+[compact report](research/RESEARCH_HARNESS_COMPACT_REPORT.md). Current qualification
+must be observed in the running process; CLI availability is not proof.
 
 ## Public workflow and storage
 

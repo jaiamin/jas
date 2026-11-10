@@ -11,6 +11,9 @@ The final verdict and source-attributed checks are in
 
 | Finding | Observable failure and final behavior |
 | --- | --- |
+| Admission containment | Worker/cleanup failures left qualification enabled. Admission now revokes it, including scratch allocation/teardown exceptions, and retains failed records until explicit fresh qualification. |
+| Navigation disconnects | A disconnected asset request became a middleware server error. The same origin/header guard now forwards ASGI messages directly, preserving ordinary response and disconnect lifecycles. |
+| Last-reply spacing | A late provider notice shrank the viewport after scrolling ended. Initial question anchoring now precedes following viewport changes; manual upward scrolling remains independent. |
 | Shared artifact exposure | Authorized teammates' observed content was filtered before delivery checks. Actual observations now count, with private/cutoff negatives retained. |
 | Tool participant usage | Researcher execution totals counted only decision calls. Participant-operation requests now count; adjudication remains a separate component and analysis calls stay excluded. |
 | Impossible commitment classification | A promise window between scheduled actor turns was treated as feasible. Feasibility now uses future scheduled slots and the exclusive deadline; rule1.0.1 rejects earlier checkpoints. |
@@ -55,31 +58,33 @@ Immutable revisions, append-only evidence and atomically reserved provider costs
 remain the core boundaries. Native/production checks enforce non-root execution,
 keyless qualification and process-local executable containment authority.
 
-## Corrections and verification limits
+## Cleanup and verification
 
-The initial navigation diagnosis used isolated page fixtures and overstated a
-product bug. The actual keyed WorkspaceShell already isolated pending controls;
-redundant mutation keys were removed and real-shell/browser checks verify that
-existing protection. The composer geometry test initially sampled before its
-async provider notice; it now waits for the actual notice before the same exact
-geometry assertions. Repeated320/1440px observations pass without a product repair.
+The user-requested cleanup removes49 superseded planning/research/report files,
+an unused breadcrumb module and an unused compact-screen hook. Application and
+test imports, static dynamic-import targets, configuration references and literal
+symbol references were checked before module deletion. No computed dynamic
+imports were found. Test setup/helpers remain in use and are retained. A Python
+source/reference scan found no unreferenced top-level or private helper candidates;
+that scan alone is not a proof that every Python branch is necessary.
 
-All169 frontend units, lint, forced TypeScript and build pass. All182 unique
-default browser cases have passing observations across the full181-pass/1-fail
-run and16 focused passes after a stale11-versus12 catalogue assertion correction.
-Dedicated rendered phone/desktop and light/dark checks cover the combined flows;
-settled phone/dark axe reports0 violations/0 incomplete. The final six-file
-Impeccable scan reports0 findings but cannot establish rendered TSX contrast.
-Desloppify is not installed; no scanner health score is claimed.
+Current guides link to one compact historical summary. Stale export numbers,
+old readable-rule guidance, obsolete hook instructions and completed-task holds
+were removed. The accepted specification, current arithmetic oracle, benchmark
+cases/declarations/results and functional regressions remain intact. No provider,
+automatic action, browser error state or meaningful defensive check was removed.
 
-Selected final backend100 cases pass, plus a separate13-case generation
-group with overlap and source attribution. Full Ruff and global ty pass. Fresh non-root image and native
-restart/requalification pass. Numerical measurements include every v2 attempt;
-concurrent run-read p95 remains slightly slower than the original, while health
-responsiveness and memory improve. This is a shared-VM finite sample.
+The complete repair qualification passes1831 backend tests,169 frontend units,
+182 default browser cases and20 affected opt-in trials, with lint/types/build.
+Cleanup-specific checks and exact source/bundle attribution are recorded in the
+[verification record](MERGE_READINESS_VERIFICATION.json). Hosted CI must qualify
+the published cleanup revision before merge readiness.
+The final follow-up passes51 API/lifecycle cases,169 units,51 affected browser
+cases and eight controlled scrolling repetitions, with static checks/build.
+Independent Standards and Spec reviews pass; two remaining stale export labels
+found by review were corrected. Current guides have116 valid local links/anchors.
 
-Frozen T01 is unchanged and remains FAIL/exit1 for exactly four export-v4 checks.
-Fresh5/22/22 current-contract qualification is separate. Recorder/helper/test
-failures and output overruns remain in the compact manifest; retired raw records
-are not claimed available. No uninterrupted full backend suite or live/held-out
-model evaluation is claimed.
+No live/held-out model evaluation or fresh numerical runtime benchmark was run
+by cleanup. Frozen T01's four export-v4 failures and prior adverse attempts remain
+in the compact history. No scanner health score or exhaustive dead-code claim
+is made; Desloppify was not installed for this pass.

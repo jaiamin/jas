@@ -87,6 +87,46 @@ def test_validation_and_origin_guard_do_not_spend(client, design):
     assert client.get("/api/analyses/missing").status_code == 404
 
 
+def test_disconnected_asset_request_does_not_become_a_server_error(client, tmp_path):
+    assets = tmp_path / "static" / "assets"
+    assets.mkdir(parents=True)
+    (assets / "example.js").write_text("export default 1;")
+    sent = []
+
+    async def disconnected():
+        return {"type": "http.disconnect"}
+
+    async def send(message):
+        sent.append(message)
+
+    client.portal.call(
+        client.app,
+        {
+            "type": "http",
+            "asgi": {"version": "3.0", "spec_version": "2.3"},
+            "http_version": "1.1",
+            "method": "GET",
+            "scheme": "http",
+            "path": "/assets/example.js",
+            "raw_path": b"/assets/example.js",
+            "query_string": b"",
+            "headers": [(b"host", b"localhost")],
+            "server": ("localhost", 80),
+            "client": ("127.0.0.1", 1234),
+            "root_path": "",
+        },
+        disconnected,
+        send,
+    )
+    assert not any(row.get("status", 200) >= 500 for row in sent)
+    response = client.get("/assets/example.js")
+    assert response.status_code == 200
+    assert response.text == "export default 1;"
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    assert response.headers["Referrer-Policy"] == "same-origin"
+    assert client.get("/api/settings").json()["usage"]["requests"] == 0
+
+
 def test_untrusted_host_cannot_read_or_write_with_a_matching_origin(client, design):
     headers = {"Host": "attacker.example:8080", "Origin": "http://attacker.example:8080"}
     assert client.get("/api/studies", headers=headers).status_code == 400

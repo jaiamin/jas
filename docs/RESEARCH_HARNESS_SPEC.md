@@ -1,10 +1,16 @@
 # Evidence-led researcher and participant harnesses for JAS
 
+Accepted product requirements. The Problem Statement records the original design
+motivation; current implementation and verification are documented in
+[Architecture](ARCHITECTURE.md) and the
+[product review](research/FINAL_PRODUCT_REVIEW.md). Live evaluation gates remain
+requirements until independently demonstrated.
+
 ## Problem Statement
 
 JAS users want to ask meaningful questions about model-agent behavior, create
 experiments that faithfully implement those questions, and inspect what agents
-actually did. The current workflow is limited by fixed environments and action
+actually did. The original workflow was limited by fixed environments and action
 shapes, experiment-shaped environment records, a narrow research workflow and
 participants that make one structured decision per model request. Making the
 researcher more articulate would leave substantial limitations in participant

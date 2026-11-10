@@ -121,9 +121,9 @@ JAS_TEST_PORT=18119 pnpm --dir frontend exec playwright test --config playwright
 
 Use a new output path for each trial. These external-provider stand-ins make no
 paid calls and do not establish intelligence. See the
-[T08 acceptance report](research/T08_PARTICIPANT_CONTEXT.md).
+[compact development history](research/RESEARCH_HARNESS_COMPACT_REPORT.md).
 
-T15 adds actual scripted controls (harness 1.0.0), independent of model identity,
+Scripted controls (harness 1.0.0) are independent of model identity,
 plus declared memory/tool/request ablations. Model conditions remain Luna. The
 neutral DEVELOPMENT cases allow null contrasts, request-limit failure and a
 simpler-policy win; external-provider stand-ins test mechanics only:
@@ -137,8 +137,8 @@ Use distinct attempt/output paths. The scripted conditions themselves construct 
 provider and send zero requests. Compare actual effort as well as configured
 envelopes; no confidence interval or independent support is inferred from these
 small fixed-seed examples. These runners use the current contracts documented
-above. See [T15 evidence](research/T15_BASELINES.md)
-for source-stamped attempts, unchanged frozen T01 failures and positive parity checks.
+above. The [compact history](research/RESEARCH_HARNESS_COMPACT_REPORT.md)
+summarizes earlier source-scoped outcomes and unchanged frozen T01 failures.
 
 `JAS_ALLOWED_HOSTS` lists accepted hostnames/IPs without ports (comma-separated).
 Defaults: `localhost,127.0.0.1,[::1]`. Add the explicit LAN/proxy host before using a
@@ -196,7 +196,7 @@ JAS_TEST_PORT=18120 pnpm --dir frontend exec playwright test --config playwright
 The dedicated trial uses only an opt-in external-provider stand-in. Success, wrong
 submission, stale-write rejection/recovery, both harnesses and mobile/draft behavior
 are development mechanics checks. They do not establish live intelligence or
-held-out generalization. See [T09 evidence](research/T09_ARTIFACT_WORLD.md).
+held-out generalization. See the [compact history](research/RESEARCH_HARNESS_COMPACT_REPORT.md).
 
 
 T16's finite extension browser trial runs with an explicit keyless provider stand-in

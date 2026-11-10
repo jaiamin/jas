@@ -1,7 +1,8 @@
-"""T18 DEVELOPMENT tracer, SOURCE-ONLY and unrun until ROOT releases its stage.
+"""Public-HTTP DEVELOPMENT regression for declared fallible adjudication.
 
 The scripted Sol identity is not live adjudicator authorization or an accuracy
-measurement. Literal oracles were frozen in T18_FALLIBLE_ADJUDICATION.md first.
+measurement. Literal oracles were frozen before implementation; their development
+record is summarized in docs/research/RESEARCH_HARNESS_COMPACT_REPORT.md.
 Only the external provider boundary is replaced; workflow assertions use HTTP.
 """
 

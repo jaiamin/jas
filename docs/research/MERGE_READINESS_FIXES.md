@@ -4,6 +4,10 @@
 The user authorized fixing the independent review findings and all further
 failures exposed by complete verification. No merge or paid evaluation is authorized.
 
+This records the repair published at `885f3846`. The later unused-code and
+documentation cleanup is attributed separately in the
+[verification record](MERGE_READINESS_VERIFICATION.json).
+
 ## Acceptance
 
 - [x] Finite admission revokes containment qualification on worker failure or
@@ -57,8 +61,8 @@ other worktrees to make checks pass.
   caused by the provider notice arriving after coordinate measurement. The test
   now awaits that visible notice before dragging;30 repeated observations passed.
   This is a test readiness correction, not a claimed product interface repair.
-- Complete final-source verification and publication remain pending. Frozen T01
-  and independent contract oracles have not changed.
+- Frozen T01 and independent contract oracles were preserved throughout the
+  repair. Complete local verification is recorded below.
 - The complete second backend attempt finished in548.36s:1782 passed/49 failed.
   All failures were the generic validity helper renaming bound workflow actors
   without updating orders/routes/permissions, or choosing an invalid two-person
@@ -91,7 +95,7 @@ other worktrees to make checks pass.
 ## Final local qualification
 
 The final uninterrupted backend run passes1831/1831 cases in568.25s, with no
-skips. All current backend/browser/trial inputs share source digest
+skips. The repair's backend/browser/trial inputs share source digest
 `6045438b42c1be0fe751b61411218baa4f46a44a9ce3b9e904379c8e23f92d14`.
 Frontend lint/169 units/forced types/build used identical frontend inputs;
 independent recomputation proves their sole source difference was the corrected
@@ -114,3 +118,31 @@ accuracy. The frozen T01 historical export-v4 failures remain disclosed; no
 benchmark source was retuned and no old-contract reader was added. Numerical
 runtime benchmarks retain their earlier source attribution and were not rerun
 by these containment/test integration repairs. No PR merge is authorized here.
+
+## Cleanup and hosted-CI follow-up
+
+The cleanup removes49 superseded documents after compact reporting, an unused
+breadcrumb module and an unused compact-screen hook. No application imports or
+test/configuration references use those modules. Current guides, comments and
+links are reconciled; accepted requirements, benchmark cases/oracles and current
+user data remain intact. The documentation index replaces the retired task index.
+The first cleanup build exactly matched the54 served assets.
+
+Hosted run42919797313 passes backend/container/workflows but fails one default
+browser case: a late provider notice shrinks the transcript by31px after the
+scroll target is calculated, leaving the footer3.25px behind the composer.
+Original repeated observations fail1/12; frame samples exclude font changes and
+show the stopped scroll target. A controlled late-notice regression reproduces
+the same gap. Always following initially changed the question anchor and was
+rejected; both immediate/deferred-following failed/interrupted checks remain
+recorded. The newest reply now renders eagerly so the native initial anchor uses
+its actual height. Native following handles later viewport changes, while manual
+upward scrolling keeps its position; older replies retain deferred rendering.
+
+Focused navigation checks also reproduce the earlier middleware traceback.
+A disconnected real asset request fails with `No response returned` before the
+repair. The same origin/header middleware now forwards ASGI messages directly;
+it does not catch/suppress application exceptions. All42 public API cases pass,
+including disconnect, host/origin, response-header and zero-spending checks.
+Final cleanup source/checks and adverse attempts are attributed separately in
+the verification record. Hosted CI must pass the published follow-up source.

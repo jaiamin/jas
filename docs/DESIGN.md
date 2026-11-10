@@ -252,6 +252,10 @@ the scroller item’s paint boundary. Leave at least 24px between the final repl
 and composer at the scroll end. Keep transcript top padding compact. Its 12px stock fade
 overlaps the composer top by 12px, avoiding a faded gap above the input. Preserve citations,
 limitations and captured evidence cutoffs.
+Measure the newest reply eagerly so the initial question anchor uses its real
+height. At the end, follow viewport changes such as provider notices and composer
+growth; scrolling upward keeps the reader's position instead of pulling them
+back to the newest reply. Older messages keep deferred rendering.
 
 Supported proposals show a short summary written by the existing review call after
 mechanical checks, using 1–3 sentences (at most 600 characters). Draft explanations
@@ -715,7 +719,7 @@ pnpm dlx shadcn@latest apply --preset <code>
    Avoid a runtime icon resolver.
 3. Preserve nonvisual fixes if regeneration overwrites them: Progress bounds and
    custom maximum, selectable Button labels/link text and their drag guard, softer Checkbox outline, Slider
-   thumb labels, Tabs orientation, Breadcrumb current-item semantics, Chart style children and stable keys, valid Field/Item/InputGroup
+   thumb labels, Tabs orientation, Chart style children and stable keys, valid Field/Item/InputGroup
    roles, CodeBlock keyboard scrolling and source-position key annotations,
    SidebarSeparator horizontal width respecting its edge insets,
    InputGroup disabled styling scoped to its input control (a disabled
@@ -728,8 +732,8 @@ pnpm dlx shadcn@latest apply --preset <code>
    unless superseded. The wordmark retains the foreground color.
 4. Keep app behavior outside regeneratable helpers: domain formatters live in
    `src/lib/format.ts`; `src/lib/utils.ts` only exports `cn`. Workspace persistence
-   lives in `workspace-provider.tsx`; app breakpoints use `hooks/use-compact.ts`,
-   separate from the generated `hooks/use-mobile.ts`.
+   lives in `workspace-provider.tsx`; sidebar breakpoint state uses
+   `hooks/use-mobile.ts`. Responsive app layouts use the shared CSS breakpoints.
 5. Run frontend lint, unit tests, build and keyless browser tests with a distinct
    `JAS_TEST_PORT`; see [Development](DEVELOPMENT.md). Check both themes, keyboard
    focus, narrow layouts, conversation history and draft/proposal flows. Refresh

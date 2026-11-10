@@ -337,17 +337,14 @@ function AgentConversation({
       data-empty={!messages.length}
     >
       {messages.length ? (
-        <MessageScrollerProvider
-          autoScroll={busy}
-          defaultScrollPosition="last-anchor"
-        >
+        <MessageScrollerProvider autoScroll defaultScrollPosition="last-anchor">
           <MessageScroller className="flex-1">
             <MessageScrollerViewport
               aria-label="Agent conversation"
               className="[--scroll-fade-size:0.75rem]"
             >
               <MessageScrollerContent className="mx-auto w-full max-w-3xl px-4 pt-4 pb-10 sm:px-6">
-                {messages.flatMap((row) => [
+                {messages.flatMap((row, index) => [
                   <MessageScrollerItem
                     key={`${row.id}-question`}
                     messageId={`${row.id}-question`}
@@ -370,7 +367,11 @@ function AgentConversation({
                     key={row.id}
                     messageId={row.id}
                     id={row.id}
-                    className="pl-1"
+                    className={
+                      index === messages.length - 1
+                        ? "pl-1 [content-visibility:visible]"
+                        : "pl-1"
+                    }
                   >
                     <AgentReply
                       row={row}

@@ -7,9 +7,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import NoResultFound
-from starlette.middleware.base import RequestResponseEndpoint
+from starlette.datastructures import Headers, MutableHeaders
 from starlette.middleware.trustedhost import TrustedHostMiddleware
-from starlette.responses import Response
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from .assistants import Assistants
 from .config import setting
@@ -27,16 +27,33 @@ class ErrorResponse(Strict):
     detail: str | list[dict[str, Any]]
 
 
-async def same_origin(request: Request, call_next: RequestResponseEndpoint) -> Response:
-    origin = request.headers.get("origin")
-    if request.method not in ("GET", "HEAD", "OPTIONS") and origin:
-        allowed = {request.headers.get("host"), "localhost:5173", "127.0.0.1:5173"}
-        if urlparse(origin).netloc not in allowed:
-            return JSONResponse({"detail": "Cross-origin writes are not allowed"}, status_code=403)
-    response = await call_next(request)
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["Referrer-Policy"] = "same-origin"
-    return response
+class SameOriginMiddleware:
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        async def secure_send(message: Message) -> None:
+            if message["type"] == "http.response.start":
+                headers = MutableHeaders(scope=message)
+                headers["X-Content-Type-Options"] = "nosniff"
+                headers["Referrer-Policy"] = "same-origin"
+            await send(message)
+
+        headers = Headers(scope=scope)
+        origin = headers.get("origin")
+        if scope["method"] not in ("GET", "HEAD", "OPTIONS") and origin:
+            allowed = {headers.get("host"), "localhost:5173", "127.0.0.1:5173"}
+            if urlparse(origin).netloc not in allowed:
+                response = JSONResponse(
+                    {"detail": "Cross-origin writes are not allowed"}, status_code=403
+                )
+                await response(scope, receive, secure_send)
+                return
+        await self.app(scope, receive, secure_send)
 
 
 async def invalid(_request: Request, error: Exception) -> JSONResponse:
@@ -103,7 +120,7 @@ def create_app(
     app.add_middleware(GZipMiddleware, minimum_size=1000)
 
     app.state.frontend = Path(static_dir or setting("STATIC_DIR", "frontend/dist")).resolve()
-    app.middleware("http")(same_origin)
+    app.add_middleware(SameOriginMiddleware)
     app.add_middleware(
         TrustedHostMiddleware,
         allowed_hosts=[

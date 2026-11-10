@@ -18,5 +18,5 @@ Manual setup, saved evidence and replay work without keys.
 Work in progress. Single-user local app without authentication. Experiments measure
 model behavior under stated rules, not validated human predictions.
 
-[Development](docs/DEVELOPMENT.md) · [Architecture](docs/ARCHITECTURE.md) ·
+[Docs](docs/README.md) · [Development](docs/DEVELOPMENT.md) · [Architecture](docs/ARCHITECTURE.md) ·
 [Research](docs/RESEARCH.md) · [Benchmarks](benchmarks/README.md) · [MIT License](LICENSE)
