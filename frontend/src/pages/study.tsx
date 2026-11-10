@@ -186,15 +186,9 @@ export default function Study() {
             <section>
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
                 <div>
-                  <h2 className="text-base font-semibold">
-                    Condition comparison
-                  </h2>
+                  <h2 className="text-base font-semibold">Results</h2>
                 </div>
               </div>
-              <ComparisonEvidence report={study} />
-              <ExposureInspection
-                path={`/studies/${id}/exposure?revision=${study.revision}`}
-              />
               {!study.results.some((r) => r.runs > 0) ? (
                 <Empty
                   title={active ? "Runs in progress" : "No results yet"}
@@ -255,6 +249,15 @@ export default function Study() {
                 </div>
               )}
             </section>
+            <Disclosure className="min-w-0">
+              <DisclosureTrigger>Comparison &amp; evidence</DisclosureTrigger>
+              <DisclosureContent className="flex min-w-0 flex-col gap-6 pt-3">
+                <ComparisonEvidence report={study} />
+                <ExposureInspection
+                  path={`/studies/${id}/exposure?revision=${study.revision}`}
+                />
+              </DisclosureContent>
+            </Disclosure>
             <Disclosure className="min-w-0 mt-2">
               <DisclosureTrigger>Question & protocol</DisclosureTrigger>
               <DisclosureContent>

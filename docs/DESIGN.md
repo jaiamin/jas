@@ -806,6 +806,13 @@ buttons and separators; retain mobile/theme/keyboard behavior.
 
 ### Treatment exposure
 
+Experiment Overview leads with results or the current run state. Keep the full
+planned comparison, participant effort, missingness, uncertainty and treatment
+exposure inside the stock **Comparison & evidence** disclosure. It starts closed
+so an unrun experiment does not lead with empty statistical tables. Retain all
+counts, limitations and immutable source links when opened; do not summarize an
+absent outcome as zero. The main Run/Pause action stays visible in the heading.
+
 Run Record and experiment Overview compose a compact disclosure for assigned
 configuration, eligible recipients, available observations and confirmed input.
 Use the existing Table, Disclosure, Alert/Empty/Skeleton and semantic tokens;

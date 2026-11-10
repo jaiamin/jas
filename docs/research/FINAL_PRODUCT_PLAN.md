@@ -44,6 +44,10 @@ fresh workspace running on port 8080 for manual testing.
   checks pass. The isolated-page failures were not whole-app defect evidence.
 - [ ] Complete remaining ticket graph with staged, measured resource allowances.
 - [ ] Review and refine the full UI/UX using `docs/DESIGN.md` and browser evidence.
+  Experiment Overview now leads with results/progress and keeps complete evidence
+  in one closed disclosure.118 units, lint/types/clean build, nine affected browser
+  cases and default-view desktop-light/mobile-dark inspection pass. Full combined
+  workflow review remains open.
 - [ ] Complete end-to-end code review, relevant checks and meaningful benchmarks.
 - [ ] Summarize final evidence, remove obsolete records and start port 8080.
 

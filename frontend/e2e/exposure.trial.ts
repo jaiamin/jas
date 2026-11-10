@@ -153,6 +153,9 @@ for (const { theme, width } of [
       (await (await request.get(`/api/runs/${rid}`)).json()).summary.usage,
     ).toEqual(record.summary.usage);
     await page.goto(`/studies/${sid}`);
+    await page
+      .getByRole("button", { name: "Comparison & evidence", exact: true })
+      .click();
     await expect(
       page.getByRole("region", { name: "Treatment exposure" }),
     ).toContainText("Assignment-based record");
