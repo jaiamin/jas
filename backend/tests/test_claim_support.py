@@ -96,7 +96,7 @@ def save(client, design):
 
 
 def run(client, rid, operation="start"):
-    response = client.post(f"/api/runs/{rid}/control", json={"operation": operation})
+    response = client.post(f"/api/runs/{rid}/control", json={"action": operation})
     assert response.status_code == 200, response.text
 
     async def settled():
