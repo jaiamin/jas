@@ -544,6 +544,7 @@ export interface Analysis {
       full_turn: boolean;
     }[];
     comparisons?: Record<string, ComparisonReport>;
+    exposure?: Record<string, ExposureReport>;
   } | null;
   error: string | null;
   cutoffs: Record<string, number>;
@@ -615,4 +616,62 @@ export interface ExtensionReview {
     detail: string;
   }[];
   outputs: number[];
+}
+
+export interface ExposureSource {
+  href: string;
+  pointer: string;
+  label: string;
+}
+export interface ExposureCount {
+  kind: string;
+  eligible_participants: number;
+  exposed_participants: number | null;
+  confirmed_participants: number;
+  eligible_opportunities: number;
+  exposed_opportunities: number | null;
+  confirmed_opportunities: number;
+  unknown_opportunities: number;
+}
+export interface ExposureReport {
+  version: number;
+  run_id: string;
+  through_turn: number;
+  capture: "complete" | "partial" | "unavailable";
+  delivery: {
+    confirmed_requests: number;
+    unknown_requests: number;
+    unsent_attempts: number;
+  };
+  membership: {
+    activations: string[];
+    requests: string[];
+    operations: Record<string, number[]>;
+  };
+  assignment: {
+    condition_key: string;
+    condition_name: string;
+    revision: number;
+    design_sha256: string;
+    configuration: Record<string, unknown>;
+    source: ExposureSource;
+  };
+  summary: ExposureCount[];
+  opportunities: {
+    id: string;
+    kind: string;
+    participant: string;
+    source: ExposureSource;
+    available: ExposureSource[];
+    included: boolean | null;
+    capture_unavailable: boolean;
+    inputs: {
+      activation_id: string;
+      operation: number | null;
+      delivery: "confirmed" | "unknown";
+      request_status: string;
+      source: ExposureSource;
+    }[];
+  }[];
+  interpretation: string[];
 }

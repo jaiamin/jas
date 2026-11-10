@@ -1,6 +1,7 @@
 import type {
   Catalog,
   Design,
+  ExposureReport,
   Parameters,
   RunDetail,
   State,
@@ -168,4 +169,28 @@ export const runDetail: RunDetail = {
   measurements: [],
   metrics: {},
   relationships: [],
+};
+
+export const exposureReport: ExposureReport = {
+  version: 1,
+  run_id: "run",
+  through_turn: 0,
+  capture: "complete",
+  delivery: { confirmed_requests: 0, unknown_requests: 0, unsent_attempts: 0 },
+  membership: { activations: [], requests: [], operations: {} },
+  assignment: {
+    condition_key: "baseline",
+    condition_name: "Baseline",
+    revision: 1,
+    design_sha256: "fixture",
+    configuration: {},
+    source: {
+      href: "/api/studies/study?revision=1",
+      pointer: "/design",
+      label: "Revision 1",
+    },
+  },
+  summary: [],
+  opportunities: [],
+  interpretation: [],
 };

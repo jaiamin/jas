@@ -64,7 +64,15 @@ function renderStudy(path = "/studies/study") {
 test("mixed-run updates preserve status precedence and the appropriate execution control", async () => {
   vi.stubGlobal(
     "fetch",
-    vi.fn(() => Promise.resolve(Response.json(snapshot(["failed", "queued"])))),
+    vi.fn((path: string) =>
+      Promise.resolve(
+        Response.json(
+          path.includes("/exposure")
+            ? { runs: [] }
+            : snapshot(["failed", "queued"]),
+        ),
+      ),
+    ),
   );
   const view = renderStudy();
   expect(
@@ -86,7 +94,10 @@ test("mixed-run updates preserve status precedence and the appropriate execution
       view.client.setQueryData(["/studies/study"], snapshot([...statuses]));
     });
     expect(
-      await screen.findByText(expected, { exact: true }),
+      await screen.findByText(expected, {
+        exact: true,
+        selector: '[data-slot="badge"]',
+      }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Run experiment" }),
@@ -112,11 +123,13 @@ test("mixed-run updates preserve status precedence and the appropriate execution
 test("a failed pause retains the active state and its retry control", async () => {
   vi.stubGlobal(
     "fetch",
-    vi.fn((_path: string, options: RequestInit) =>
+    vi.fn((path: string, options: RequestInit) =>
       Promise.resolve(
-        options.method === "POST"
-          ? Response.json({ detail: "Control unavailable" }, { status: 503 })
-          : Response.json(snapshot(["pausing", "failed"])),
+        path.includes("/exposure")
+          ? Response.json({ runs: [] })
+          : options.method === "POST"
+            ? Response.json({ detail: "Control unavailable" }, { status: 503 })
+            : Response.json(snapshot(["pausing", "failed"])),
       ),
     ),
   );
@@ -169,7 +182,11 @@ test("planned sample and lack of independent support remain inspectable without 
   };
   vi.stubGlobal(
     "fetch",
-    vi.fn(() => Promise.resolve(Response.json(missing))),
+    vi.fn((path: string) =>
+      Promise.resolve(
+        Response.json(path.includes("/exposure") ? { runs: [] } : missing),
+      ),
+    ),
   );
   renderStudy();
   expect(await screen.findByText("Complete / planned")).toBeInTheDocument();

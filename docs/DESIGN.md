@@ -770,3 +770,16 @@ experiment execution stays disabled. Keep public checks and pinned artifact
 provenance inspectable, errors recoverable, drafts intact, and late responses
 from changing the selected review or navigation. Compose existing stock fields,
 buttons and separators; retain mobile/theme/keyboard behavior.
+
+### Treatment exposure
+
+Run Record and experiment Overview compose a compact disclosure for assigned
+configuration, eligible recipients, available observations and confirmed input.
+Use the existing Table, Disclosure, Alert/Empty/Skeleton and semantic tokens;
+keep counts labeled included/eligible with unknown capture distinct from zero.
+Source links open immutable revision, turn and model-request evidence. Detailed
+observations, candidate input bindings and cutoff membership stay behind keyboard
+operable disclosures. Retain cached evidence and a local retry on refresh errors;
+polling cannot replace another selected record. Phone tables scroll internally.
+Inclusion is not attention/belief/intent, and exposure-conditioned filtering is
+post-treatment selection rather than an automatic causal estimate.

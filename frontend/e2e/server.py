@@ -34,6 +34,10 @@ def deterministic_participants(app):
             "rationale": "Deterministic legal contribution.",
             "forecast": None,
         }
+        if os.getenv("JAS_TEST_EXPOSURE") == "1":
+            actor = prompt.get("actor", prompt.get("you", {}).get("key"))
+            if actor == "alex" and prompt["round"] == 1:
+                final["action"].update(target="morgan", message="t07-private-disclosure")
         if "operations" in prompt:
             operation = ["observe", "rules", "legal_options", "decide"][len(prompt["operations"])]
             output = {"operation": operation, "decision": final if operation == "decide" else None}
