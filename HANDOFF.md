@@ -1647,14 +1647,16 @@ Branch `t3/participant-policies` (prepared as `t3/19c753ac`). Implementation
 checkpoint `3acf3c160fb398c8996e71f6065bf1d4b970a201`; cancellation regression
 `602c597`. Merge `86e57f99cdd4a9d02e6ebdfef120fb2510c9d2ca` includes integration
 `8f83a36bc0428abda418b93557f689657ce030ae`; only handoff/progress prose conflicted.
+Final conflict-free merge `3f3cf5c72eda10a346a6bc4ff44c1c3a7ce6c148` also includes
+integration `c546c857348cb433163d52f99efc07f790a17288`; T04 code is unchanged.
 Read `docs/research/T04_PARTICIPANT_HARNESSES.md` for acceptance, decisions,
 actual red/green evidence, complete source/case hashes and limitations.
 Both real policies run through existing per-request accounting on all installed
 worlds. Schema/export 5 and reusable setup format v2 explicitly reject older
 contracts; no migration/reset. Default models and world rules are preserved.
-On merged source: 980 backend tests, 106 frontend tests, lint/type/build and
+On final merged source: 981 backend tests, 106 frontend tests, lint/type/build and
 production smoke pass. The pre-merge inherited browser suite passed 165 tests;
-merged-source two-policy flows passed 2 cases and affected T02 flows passed 3.
+final merged-source two-policy flows passed 2 cases and affected T02 flows passed 5.
 Frozen T01 comparisons retain only four intentional v4-export oracle failures;
 all 22 direct-action decisions/checkpoints/metrics/usage match the baseline.
 All five fresh DEVELOPMENT cases pass, including expected failures/unknown usage.
