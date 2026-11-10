@@ -1150,3 +1150,121 @@ any frontend setup/check/browser/service work. Production and actual provider,
 paid and held-out work remain held. No final-source runtime claim follows from
 the earlier full Ruff/global type passes. One initial append patch missed its
 context and applied no changes; the corrected patch preserves that attempt.
+
+Exact accepted eaa47bb3 normal merge completed as
+`a0f00253f474d832da8d80d13e2d4d32a71f8055`; no conflicts occurred. Both fixed parents remain
+in history; no provisional sibling or moving ref entered. Hooks/Gitleaks pass.
+`final-backend-01` passes14/82.01s, exact source before=after
+`d9f607106407125b01d3f47f78a8f11b566381aea043163410e9f7e75ee9ae44`.
+This bounded group covers the three T17 generation/World/Engine suites and the
+ordinary API lifecycle/export. Footprint41,535,389 bytes before receipt;
+free1292476416, shared lock released. Current backend contracts remain unchanged.
+No frontend or production qualification follows from this backend group.
+
+## Fresh current-contract literal qualification freeze
+
+The independent pre-output oracle is
+`backend/tests/fixtures/t17_current_contract_v2.json`, SHA256
+`47d740d7b9745910eee63e6e0b23e1b9086c7de13f5c5c73657bd1b22242d7fd`.
+Its first unrun authoring specification `t17_current_contract.json`, SHA256
+`cefdbedd5bb61110270054f4b34d53524ea743ac47e11260459cc4f44f72f39c`, remains
+immutable as history. Before application output, source inspection corrected only
+literal JSON numeric representation (float balances) and added complete checkpoint
+hashes in the separately identified v2. No candidate, prior raw evidence or
+application output supplied either oracle. Own authoring source uses no app,
+provider, Pydantic or historical evidence imports; it expands explicit worked
+rows. Seed orders/signals were independently calculated with standard-library
+PRNG labels, then frozen as literals. This is an external DEVELOPMENT contract,
+not natural-language-understanding, historical parity or live competence.
+
+The five installed-world runs retain the four applicable committed case inputs:
+bargaining2 turns (b offers5 of14, a accepts; balances a5/b9); information3+3
+turns (seed61 truth0, order b/a/c, exact0 signals; private versus all3 disclosed,
+all balances7); commons8 turns (orders d/a/c/b then a/c/d/b; first2+promise3,
+then a0/others3; balances a18.5/others15.5,4 eligible/3 fulfilled); institution6
+turns (a allocates4 to b/retains8, then d/c/b/e/f work; balances a8/b6/others2,
+shared output10, only a has permission despite all Authority role labels).
+Complete observations, manually authored complete legal schemas, instructions,
+settings, price bounds, every decision, event/measurement, checkpoint/hash and
+per-request integer reservation are literal fixture data, frozen before outputs.
+Dynamic database IDs are explicitly bound only after their corresponding complete
+facts match; no unexplained behavior or private payload is normalized away.
+
+Expected totals are5 runs/22 turns/22 separately settled Luna-identity requests,
+2200 input/1100 output tokens, **770 scripted microdollars charged and28231
+reserved**. Every request is100/50 tokens and35 charged microdollars; output cap512,
+reasoninglow, no web search, timeout90. Restart after all five first turns must
+preserve exact checkpoints/first evidence, pause every run and construct no
+providers. Exposure cutoff1 must remain byte-equal after later turns. Every
+literal checkpoint must restore, terminal steps deny atomically, and exact replay
+constructs zero providers and preserves the complete exports/usage.
+
+Original T01's solo/artifact gap labels are explicitly historical schema-only
+fixtures, not current unsupported-capability claims. Current replacements are the
+committed actual artifact solo read/write/check/submit lifecycle; two-owner
+competing-writer version/resource checks; atomic rejected mutations; and private
+writer-source projections in all four memory modes. Their exact test identities
+are in the new fixture. These are additional affected regressions, separately
+counted from the5/22/22 matrix. No inherited historical comparator is invoked.
+Frozen original T01 runner/cases/scores stay unchanged; its CURRENT invocation
+will retain its actual export-v4 flags/failures/exit and invocation-local safe
+Git snapshot selection. Forecast8MiB for the fresh matrix, then8MiB for the
+separate frozen T01 run; unchanged floor/flock/64MiB envelope. No broad aggregate
+pytest or unguarded indirect source snapshot is allowed.
+
+`current-contract-01` retains exit1/0.30s, exact unchanged source
+`ce1eacef39aee0779a0379533896d4fbea43412767c0ca9477d5857b76104c08`.
+No provider response occurred. The new test incorrectly expected the initial
+uncommitted turn0 API envelope's state_hash to be populated; that established
+API field is null before a Turn exists. The literal initial checkpoint/hash is
+unchanged. Correct the test to require null for that field AND independently
+hash the complete returned initial checkpoint against the same frozen literal
+hash. No product defect or red/green is claimed, and no oracle is relaxed.
+Next current-contract-02 is the same8MiB bounded witness with this envelope fix;
+every first failure/source remains. Free1159430144/footprint42,047,841 bytes
+before receipt; lock released. No test or source fixture is deleted.
+
+`current-contract-02` passes1/0.96s at exact unchanged source
+`f49a8d8d200160d09cbe7ec0510e18ab068b7862dce59947fc1c036559443559`.
+All literal complete inputs, consequences/checkpoint hashes, restored projections,
+cutoff1 snapshots,22 request records,28231 reserved/770 charged microdollars and
+zero-call exact replay pass. Frozen T01 CURRENT at that same source records
+exit1, six attempts and exactly four failures: export-v4 in each of the first
+four cases, passed=false/check-failure retained. Both old gap cases still pass
+only their original schema-rejection checks. Every other T01 check passes,
+source_unchanged=true; no comparator or historical parity claim is made. Its
+actual invocation-local Git shim preflight is retained in indirect-git.jsonl;
+only protected-excluded cached names were supplied to the unchanged snapshot.
+
+Before the next accepted merge, own closed-output packing was necessary to
+preserve the64MiB envelope. `closed-db-pack-01` rejects a pytest-generated symlink
+descendant before any database payload read/removal. New own v2 packer explicitly
+excludes unselected symlink/protected descendants without following them. It then
+packs51 completed own test databases,26,550,272 logical bytes, with an ACTUAL
+restore of every file and exact SHA/size/mode/integer-ns atime+mtime comparison
+before each original raw name is removed. No archive, source/custody hardlink,
+helper or other owner's payload is modified. Logical maps retain all51 identities.
+Map `maintenance/closed-t17-db-02/mapping.jsonl` SHA256
+`c06408772c4e07bb32b7457853d499f51e5baf871609f9143f8a8f25cc5d608a`;
+all actual restorations passed. Evidence footprint48,161,350→23,923,527 bytes
+(before final receipt); free1134845952→1158709248. Both pack attempts/source
+identities and the first unchanged helper remain. Lock released between jobs.
+
+`current-contract-format-01` formats only the new matrix test; the immutable
+JSON oracles are excluded. This deliberately changes source identity and is not
+a runtime pass. Next coherent checkpoint and exact accepted
+`0527e737d93786d0f5579d5a13827c472cf370fa` merge each forecast4MiB. Read the
+incoming FINAL_CODE_QUALITY_REVIEW and actual backend diff: it propagates accepted
+analysis cutoffs into exposure reads while preserving current pending capture.
+Its two public concurrency tests and Results-first Overview are accepted ROOT
+work, inherited at their recorded source until freshly checked here. Current
+T17 combined contracts remainDB13/export15/library8/definition2/research2/
+generationv2; no provisional sibling or moving ref may enter.
+
+After that merge, separately qualify the new matrix plus the two incoming public
+cutoff witnesses, the unchanged original T01 CURRENT runner, and the explicitly
+named artifact/installed executable/version-rejection regressions. Each job
+forecasts at most16MiB and preserves all failures. Fresh full Ruff/global types
+are separate4MiB jobs. Repeating only affected checks after this actual accepted
+backend change is intentional; no aggregate historical snapshot/comparator job.
+Frontend/services/browser/production/providers/paid/held-out remain held.

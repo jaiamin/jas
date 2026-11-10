@@ -1,5 +1,19 @@
 # T17 corrected-frontier continuation (2026-11-10)
 
+Current backend boundary: exact accepted eaa47bb3 merged normally as a0f00253;
+14 T17/API cases pass on merged source d9f60710. Fresh independent literal
+5-run/22-turn/22-request current-contract qualification passes at f49a8d8d:
+complete bounded inputs/schemas, consequences/checkpoint hashes, cutoff1 privacy,
+restart without sampling and zero-call replay;28231 reserved/770 scripted charged
+microdollars. Frozen T01 CURRENT at the same source retains exactly four
+export-v4 failures/false flags and exit1, all other checks passing. Turn0 test
+envelope failure remains; no product repair or historical parity claim.
+Own-only closed DB compaction retains51 actual byte/metadata restoration proofs
+and mapping c0640877...; evidence now24.1MB. First symlink-selection rejection is
+retained. Next normal checkpoint/merge exact newly accepted0527e737, then affected
+cutoff/matrix/executable/artifact/version/static checks. Frontend/services/browser/
+production/providers remain held; T17 incomplete and UNACCEPTED.
+
 Same assigned T17 implementer, clean checkpoint2c272803; no extra checkout or
 descendants. Completed abrupt/graceful generation interruption witnesses and
 whole backend Ruff/global types have separate retained source identities in

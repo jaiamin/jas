@@ -1,5 +1,14 @@
 # Research harness implementation progress
 
+T17 current: normal accepted eaa47bb3 merge;14 feature/API checks pass. Fresh
+literal current-contract5/22/22 matrix passes,28231 reserved/770 scripted charged
+microdollars, full inputs/checkpoint/cutoff/restart/zero-call replay. Frozen T01
+CURRENT retains its four export-v4 failures/false flags/exit1; no historical
+comparison. Own51 closed DBs packed only after actual SHA/size/mode/integer-ns
+restorations; complete map c0640877... and rejected first pack retained. Next
+checkpoint/exact accepted0527e737 normal merge and affected final-source checks;
+64MiB envelope/134217728 floor/shared flock unchanged. Frontend/production held.
+
 T17 continuation: clean2c272803, abrupt/graceful interruption and full Ruff/global
 types observed at their separately retained sources. Next exact accepted eaa47bb3
 normal merge (corrected shell-inclusive navigation review; no product repair
