@@ -59,12 +59,12 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Integrated | `bf3b76e` |
 | T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Integrated and accepted | `77f6014`, `c546c85` |
 | T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | In progress in isolated worktree | — |
-| T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Fresh integration verification in progress | — |
+| T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Integrated and accepted | `48600d2` |
 | T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Integrated and accepted | `a4ab9ee` |
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | In progress in isolated worktree | — |
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Ready | — |
-| T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Waiting | — |
-| T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Waiting | — |
+| T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Ready | — |
+| T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Waiting on T03 | — |
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Waiting | — |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Waiting | — |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Waiting | — |
@@ -88,8 +88,8 @@ tests plus lint/types/build. The pre-merge full browser suite passed 169 tests.
 The identical inherited six-case comparison has no regressions/failures and
 unchanged 22 scripted requests. Read [T05 evidence](research/T05_RESEARCHER.md);
 preserve ignored `data/t05/` before cleanup. No paid calls, live competence claim,
-publication or tracker changes. Parent acceptance/fresh integration review is
-still pending; other ticket statuses and milestone gates are unchanged.
+publication or tracker changes. These ticket-branch observations are inherited;
+the fresh T05 integration acceptance is recorded below.
 
 T01 evidence: [baseline report and inherited comparison procedure](research/T01_BASELINE.md).
 Source `d5527c0b4cb57cb63f8d39cb74d335396042e711` on
@@ -137,9 +137,9 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. Complete fresh T04/#15 integration verification on the accepted T05 tip.
-   Its source evidence has been preserved and hash-verified. T03/#14 and T06/#17
-   are in progress in isolated worktrees; T07/#18 remains Ready.
+1. T04/#15 is accepted on the T05 tip; its complete source and fresh evidence are
+   preserved and verified. T08/#19 is now Ready, alongside T07/#18. T09/#20 still
+   waits on T03/#14; T03/#14 and T06/#17 are in progress in isolated worktrees.
 2. Review and merge each accepted slice sequentially, then refresh/link draft
    PR #32; qualification failure gates generated execution, not trusted worlds.
 3. Preserve source-stamped inherited and new-behavior evidence for each slice;
@@ -219,16 +219,18 @@ baseline database/exports, comparison and acceptance records are in sibling
 `T05-integration/`. The source worktree remains intact. The unrelated root
 `pbcopy` was never read/copied/archived; the stash is unchanged. Playwright's
 owned keyless server shut down and port 18216 is closed. No paid calls,
-publication, tracker changes or security/credential changes occurred. T04
-remains unmerged and needs its own fresh merger; T03/#14 and T06/#17 are in
-progress in isolated worktrees.
+publication, tracker changes or security/credential changes occurred. At that
+checkpoint T04 remained unmerged; its later acceptance is recorded below.
 
-## T04 integration — verification in progress
+## T04 integration — accepted
 
 Fresh merger scope: source `6a6c000ac87a44212f3da681dbd31497f9640982` onto
-integration `39491def73da7334164ca6d98896eaa03a2e5bf5`. No product-code merge
-conflict occurred. The progress conflict preserves accepted T02 fixes, T05
-acceptance and T03/T06 in progress. The source worktree remains intact.
+integration `39491def73da7334164ca6d98896eaa03a2e5bf5`, with no-ff merge
+`48600d2982516210e6a4e28528d2e1c6f1fd155e`. No product-code conflict or repair
+was required. The progress conflict preserves accepted T02 fixes, T05 acceptance
+and T03/T06 in progress. The source worktree remains intact. Read the
+[T04 report](research/T04_PARTICIPANT_HARNESSES.md) for independent review and
+exact source/archive/case identities.
 
 - [x] Read exact T04 acceptance, applicable ADRs and actual implementation.
 - [x] Preserve all 2,329 ignored source artifacts (71,129,333 bytes), including
@@ -236,16 +238,40 @@ acceptance and T03/T06 in progress. The source worktree remains intact.
   SHA-256 matches; source HEAD/status/bytes remained stable.
 - [x] Run the unchanged T01 baseline from a clean tracked-source clone of the
   accepted tip: six cases pass. The unrelated root `pbcopy` was excluded unread.
-- [ ] Check combined policy/accounting/lifecycle/World/privacy/replay/export and
-  T05 Researcher regressions, frontend units/lint/build and shared browser flows.
-- [ ] Verify the actual v5 contract and all direct-action parity fields while
+- [x] Check combined policy/accounting/lifecycle/World/privacy/replay/export and
+  T05 Researcher regressions: all 995 backend and 108 frontend tests pass, as do
+  Ruff/ty/lint/build, 27 shared browser flows and two actual policy flows.
+- [x] Verify the actual v5 contract and all direct-action parity fields while
   retaining the frozen oracle's four v4 failures and terminal failed flags.
-- [ ] Record immutable fresh evidence, acceptance, limits and final handoff.
+- [x] Record immutable fresh evidence, acceptance, limits and final handoff.
+
+The complete independent comparison verifies all 22 direct-action turns and
+retains every export/report difference with zero unexplained differences. Frozen
+T01 after/comparison exits remain 1 with four `export-v4` failures; positive v5
+checks and schema-4/setup-v1 rejection checks pass. All five T04 DEVELOPMENT
+cases match the child's checks and usage (30 scripted requests). No historical
+terminal flags or scores were relabeled.
+
+Retained browser attempt: 25 passed and two planning-stage timing failures under
+concurrent checks. Both original cases passed twice in isolation without edits;
+the sequential 27-flow shared run then passed. Traces and hypothesis/timing
+records remain available. The two policy flows passed separately in desktop/light
+and phone/dark; their rendered records were inspected. No test or timeout was
+weakened. The merger's final 29 distinct flows are affected coverage, not a fresh
+full-browser-suite claim. Production smoke is explicitly inherited from qualified
+child source `3f3cf5c`; unchanged runtime/containment/config/locks/smoke identities
+are verified in fresh evidence.
 
 Preserved source: `.tools/research-harness/evidence/T04/`; per-file verification
 is `T04-copy-verification.json`, canonical manifest SHA-256
 `df26099a7e31ee5efff8bd79027b9e22cdf67da2009a85216f2749c84e19d558`.
-Fresh evidence stays separate in `T04-integration/`. No paid calls, source
-worktree disposal, stash operations, push or tracker/PR changes are authorized.
-Live competence and held-out acceptance remain unverified; T08/T09 are out of
-scope for this merge.
+Every copied source/destination hash, all 2,328 child-indexed hashes and source
+HEAD/status/stability were reverified. Fresh evidence stays separate in
+`T04-integration/`; its immutable verification manifest indexes 853 files,
+23,326,665 bytes, canonical SHA-256
+`906110e27fe08f4813b7369ef0e2b74d2793400748e0caf102a7e86f53d0a9ce`.
+Final commit/archive records have a separate checkpoint manifest. Keep both
+ignored directories. Browser port 18215 and the owned preview are closed.
+No paid calls, source-worktree disposal, stash operations, push, tracker/PR or
+host/security/credential changes occurred. Live competence and held-out acceptance
+remain unverified; spend remains $0. T08 is Ready; T09 still waits on T03.
