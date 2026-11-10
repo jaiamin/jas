@@ -1,5 +1,104 @@
 # T10: three-participant distributed-information coordination
 
+## Fresh integration acceptance (2026-11-10)
+
+**Accepted for the bounded deterministic T10 scope after independent Standards
+and Spec review.** Sole-writer review started at
+`8158fccc01382b61d9efd3589d975119a6e7b8e2`. Exact clean source
+`04e30a5087640fc2f32c803029481a46eafffce0` was merged without fast-forward at
+`02879c3c8b4dd51645953eb89741de8806f57c83`; integration repair `7aec3f5`
+reconciles accepted T19. Current contracts are **DB8 / export9 / library5**,
+with capture1/comparison1/tool2.0/direct1.0 unchanged. No migration, adapter,
+alias or reset. [Fresh review](T10_INTEGRATION_REVIEW.md) records decisions,
+observed qualification and remaining limits separately from the source history.
+
+The review found two concrete integration defects: the behavior lens formatted
+undefined financial utility and lacked coordination choice calculations; the
+communication lens did not distinguish queued from delivered mail. Independent
+HTTP failing cases and their exact inputs are retained. Repairs capture settled
+choice value/match honestly, withhold financial balances and pre-settlement
+calculations, and count queue/delivery separately. Pending proposals and future
+mail do not establish observation. Same-chat frozen reanalysis remains cutoff-
+scoped and read-only, with separately billed Sol Analysis versus Luna Participant
+requests and accepted `716a44b` request identity preserved. Prose stays unassessed;
+causal and intent claims remain unsupported.
+
+Fresh oracles permute actor IDs, values and alternatives: `zeta-4`, `alpha-8`,
+`nu-2`; ink/salt/clay values (4,-8,2), (-7,5,0), (3,1,-6), bonus 2. All ink
+settles 6/-5/5, all salt -6/7/3, independent choices 4/5/-6 and all abstain/wait 0/0/0.
+Both timing modes, partial phases, cutoffs1/3/6/7/9 and all36 priority/completion
+permutations pass. A further48 World witnesses challenge clockwise,
+counterclockwise, complete and empty topologies, reversed route/recipient order,
+six completion permutations, atomic denied routes, logical delay2, actor-private
+mail metadata, restoration and call-free replay. World observations alone are not
+provider receipts; actual bounded-input inclusion/receipt is checked separately.
+
+Fresh combined qualification observed:
+
+- **1,389 passed / 0 failed / 0 errors / 0 skipped** in one complete backend run,
+  source key `f00ca5a3bdc78fcb898161ff8e8c423f678acbcd3103f5a22fa93f9d0d840fdc`.
+  The final executable/test inputs are identical; later differences are docs only.
+  This fresh result does not rewrite the child's **1,252 pass/53 fail** attempt
+  or its later **1,305 distinct observed passing** composite. All53 originals,
+  repair attribution and limits remain in immutable source custody.
+- 126 targeted cases (including55 fresh integration cases), final Ruff and type
+  checks, frontend lint, **112 units/30 files**, forced TypeScript and production
+  build pass. A previously absent build directory produces54 byte/mode-identical
+  files; mutable outputs have one link. Earlier T19 outside-cache effects remain
+  unassessed.
+- **78 distinct configured browser flows** across16 affected files have observed
+  passes on18223:93 executions,85 passes/eight retained fixture/workspace failures.
+  Matching fixtures and a fresh zero-call workspace resolve those failures without
+  product/assertion changes. This is a composite, not an uninterrupted green
+  browser suite. Public edit/review/run/export, solo-to-three draft retention,
+  private channels, pinned reuse, recovery, mobile/dark and keyboard behavior pass.
+  Manual coordination analysis shows choice value24 with financial utility null;
+  its fixture claim44 is unavailable. Existing appearance is retained.
+- Fresh production smoke and real containment pass as UID10001 without mounts,
+  using the exact `7aec3f5` production image. Actual new-process CLI restoration
+  retains two pending proposals without sampling; explicit continuation, private
+  logical delivery, append-only evidence prefixes and zero-call replay/restoration
+  pass. A separate failure witness retains one unknown provider call and one
+  pending proposal, with9 committed turns/10 requests, no silent retry, and zero
+  new requests on restoration/replay. Owned containers/images, services and tabs
+  are closed;18223 is closed.
+
+Frozen T01 runner/cases/scores remain unchanged: six cases, four export-v4
+failures, four failed terminal flags, runner and comparator **exit1**, no
+regressions/improvements. Separate current-contract API checks prove DB8,
+export9, library5, explicit v4-source rejection and immutable source-pinned reuse.
+Against explicitly attributed accepted T19 before evidence at `716a44b`, the
+fresh parity audit verifies **five runs /22 turns /22 identical complete bounded
+request payloads**, identical consequences/effort/accounting and all98 HTTP
+operations. **2,046 raw differences / zero unexplained** include clocks/identities,
+explicit null defaults, independently recomputed design/library hashes, contract
+versions and tracked source attribution. No behavioral difference is discarded.
+
+All fresh commands/exits, keyed tracked-source archives/diffs, helper versions,
+cases, failures and byte/member proofs live under ignored
+`.tools/research-harness/evidence/T10-integration/`. Resolve packed logical paths
+through `*.tar.index.json` and `source-archives-*.tar.json`; no second expanded
+source checkout is needed. `review-summary-final/` enumerates every observed
+browser execution, all18 fresh nonzero check attempts and the53 inherited
+failures. Initial/final streaming custody checks verify **1,848 regular files**,
+**1,846 indexed /108,372,210 bytes**,706 archives, three nested source archives
+and13 ZIPs. Immutable hardlinked custody is **not independent physical copies**.
+Source/preserved bytes, modes and mtimes remain unchanged; source manifest SHA256
+`25fca245891c77dc8c3292711c1057e4299a411bb0249db1ecc74fc666908629`.
+The fresh evidence manifest/checksum and final closure audit identify the exact
+handed-back HEAD and ownership. Normal hooks/Gitleaks apply to the closure commit.
+
+There were no paid calls, live/held-out evaluations or desirable social outcome
+claims. Sol remains Researcher/planner/assistant; Luna remains the model
+participant, with no fallback. T03/T05/T06, T07 `d5568c1`, T08 `de5556b`, T09
+`4ed18af`/`84867cc`, T15 `6e1a7c8` and T19 `716a44b` remain protected.
+T11/T12/T13/T16/T18 were not implemented here. Root reports T13 complete but
+unaccepted, queued for a separate fresh reviewer after this ownership return;
+T16 remains independent. No publication, stash operation or protected `pbcopy`
+inspection occurred.
+
+## Original source implementation record
+
 Ticket [#21](https://github.com/jaiamin/ass/issues/21). Implementation in the
 assigned isolated checkout on `t3/t10-distributed-information`; starting HEAD and
 published accepted base: `5ef3abf5eb714aa2d9e619ddffa189ab9ae6b3f2`.

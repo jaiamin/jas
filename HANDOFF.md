@@ -1,3 +1,86 @@
+# T10 fresh integration accepted — sole ownership returns to root (2026-11-10)
+
+**T01–T10, T15 and T19 accepted for their documented deterministic scopes.**
+Fresh reviewer worked alone in assigned `t3-fdf9bdeb`, starting from published
+`8158fccc01382b61d9efd3589d975119a6e7b8e2`. Exact clean source
+`04e30a5087640fc2f32c803029481a46eafffce0` was merged without fast-forward at
+`02879c3c8b4dd51645953eb89741de8806f57c83` (second parent is the exact source).
+Repair `7aec3f5d7e1b48633c2cd874e8d01c3e0d5dbb2a` reconciles accepted T19.
+The final documentation-only closure commit's exact HEAD/status, hooks and source
+equivalence are recorded in ignored `T10-integration/closure-audit-final/` and
+the fresh evidence manifest/checksum. Root resumes sole shared-checkout writing
+after this handoff. No descendants, extra checkout, push, PR/issue/watch, paid
+allocation, reset, stash operation or protected `pbcopy` inspection.
+
+Separate Standards/Spec review found and repaired undefined-financial-utility and
+queue/delivery lens integration defects. Coordination gets honest settled choice
+value/match; financial balances/calculations remain unavailable, solo artifact
+success is absent and pending proposals/mail never imply observed input. Preserve
+same-chat exact-scope frozen reanalysis, read-only source/participant evidence and
+separately billed Sol Analysis versus Luna Participant work (`716a44b`). All
+current contracts reconcile atomically: **DB8/export9/library5**, with capture1,
+comparison1/tool2.0/direct1.0 unchanged; no migration, alias, adapter or reset.
+Sol app roles/Luna model participants and no fallback remain. Prose is unassessed;
+causal/intent support unavailable; no desirable social outcome was invented.
+
+Fresh observed qualification: one complete backend **1,389 pass/0 fail/error/skip**
+at key `f00ca5a3bdc78fcb898161ff8e8c423f678acbcd3103f5a22fa93f9d0d840fdc`;
+final executable/test/build inputs are identical, later changes docs only.
+126 targeted, final Ruff/ty, frontend lint,112 units/30 files and forced/new-empty-
+directory builds pass,54 build files equal in bytes/modes. Browser on18223:
+**78 distinct configured flows across16 files** have observed passes;93 executions,
+85 passes/eight retained fixture/workspace failures. This is composite browser
+qualification, not an uninterrupted all-green suite. Public edit/review/run/export,
+solo-to-three retained draft, private channels, pinned reuse, recovery and mobile/
+keyboard behavior pass with existing appearance. Fresh actual non-root production
+smoke/containment, new-process CLI pending-phase restoration, logical mail timing,
+append-only prefixes and call-free replay/restart pass. Unknown usage remains
+recorded without silent retry. All owned tabs/services/images/containers are
+closed and18223 is closed. Dependencies/cache outputs stay project-local/private;
+earlier T19 outside-cache effects remain unassessed.
+
+Independent oracles include permuted actors/values/alternatives and negative/
+alternative/abstention/horizon outcomes in both timing modes,36 declared-priority/
+completion permutations,48 topology/route-order/completion witnesses, frozen
+cutoffs1/3/6/7/9, write/version/budget contention, bounded private input/receipts,
+pending work, rejected actions, unknown calls, pause/restoration and zero-call
+replay. Frozen T01 runner/cases/scores remain untouched: four export-v4 failures,
+four failed terminal flags, runner/comparator exit1. Separate DB8/export9/library5
+positive/rejection/pinned-reuse checks pass. Accepted-T19-attributed parity proves
+five runs/22 turns/22 identical complete bounded inputs,98 HTTP operations and
+identical consequences/effort/accounting;2,046 differences classified/zero
+unexplained. All53 inherited full-suite failures and later repairs remain; child's
+1,305 distinct passing is inherited composite evidence, not rewritten green.
+
+Fresh raw evidence: `.tools/research-harness/evidence/T10-integration/`; commands,
+exits, all18 fresh nonzero attempts, keyed tracked sources/diffs, cases, helpers,
+JUnit, browser reports/screenshots, production and failures are retained. Resolve
+closed logical paths through `*.tar.index.json` and `source-archives-*.tar.json`.
+Initial/final streaming custody verifies **1,848 files**, **1,846 indexed /
+108,372,210 bytes**,706 archives/16,331 members, three nested source archives and
+13 ZIPs. Source and preserved files retain bytes/modes/mtimes and share all1,848
+inodes: **immutable hardlinked custody, not independent physical copies**. Source
+manifest SHA256 `25fca245891c77dc8c3292711c1057e4299a411bb0249db1ecc74fc666908629`.
+No source/preserved data or prior/root maintenance maps were written.
+Reports: `docs/research/T10_COORDINATION.md`, `T10_INTEGRATION_REVIEW.md` and
+`docs/RESEARCH_HARNESS_PROGRESS.md`. Normal closure hooks/Gitleaks are recorded.
+
+**T13 is complete but unaccepted and queued for a separate fresh reviewer after
+this ownership return. Do not merge/review it as part of T10.** Root provided
+exact clean `75766baaf204a3ffdf21d11ec5dcf147c4cd7bf4` on
+`t3/implement-t13-researcher-designs`, checkout
+`/home/agent/.t3/worktrees/workspace/t3-34d9f5cd`; includes accepted `8158fcc`,
+excludes provisional T10. Report `docs/research/T13_RESEARCHER_DESIGNS.md`.
+Preserve all `data/t13/`,1,145-entry manifest SHA256
+`526ea658d82c30ed1ad64b24256a1798d5cac6faf1deae08e3d4d59a48a1624a` and
+`closure.json` check/archive details. Its services/dependencies are reported
+closed/removed; root reports read-only evidence verification during this review. This reviewer
+did not inspect, merge or modify T13. T16 remains independent on18125, untouched;
+T18 Ready; T11/T12 now Ready for root scheduling, T14 waits for accepted T13,
+T17 for accepted T13/T16. Sol prior spend remains $0.611632/55 requests,
+$9.388368 remaining; no allocation, no Luna. Stash
+`f771128ba1c9295262a4073df40cc25647b1370f` remains untouched, `pbcopy` unread.
+
 # Root coordination — T19 accepted; T10 review and T16 assigned (2026-11-10)
 
 Accepted integration is `81f92a7b1718539cc47797bc1a301138df5b3ce4`:
