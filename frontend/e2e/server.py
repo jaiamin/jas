@@ -196,21 +196,37 @@ def deterministic_researcher(app):
                 if communication
                 else f"Combined recorded utility was {value}; this is one fixed run."
             )
+            claims = [
+                {
+                    "kind": "calculation",
+                    "text": text,
+                    "calculation_id": f"run:{rid}:{metric}",
+                    "value": value,
+                    "scope": "captured_run",
+                }
+            ]
+            if not communication and "artifact_outcome" in prompt["index"]["runs"][0]["outcome"]:
+                text = "One artifact write was retained. A claimed financial zero needs checking."
+                claims = [
+                    {
+                        "kind": "calculation",
+                        "text": label,
+                        "calculation_id": f"run:{rid}:{name}",
+                        "value": number,
+                        "scope": "captured_run",
+                    }
+                    for label, name, number in (
+                        ("One retained write", "artifact_writes", 1),
+                        ("Claimed financial zero", "total_utility", 0),
+                    )
+                ]
             payload = {
                 "requests": [],
                 "answer": {
                     "answer": text,
                     "citations": [{"run_id": rid, "turn": 1}],
                     "caveats": ["No independent population or intent inference is established."],
-                    "claims": [
-                        {
-                            "kind": "calculation",
-                            "text": text,
-                            "calculation_id": f"run:{rid}:{metric}",
-                            "value": value,
-                            "scope": "captured_run",
-                        }
-                    ],
+                    "claims": claims,
                 },
             }
         return ModelResponse(
