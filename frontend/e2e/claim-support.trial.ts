@@ -249,7 +249,7 @@ test("artifact findings retain versions without inventing financial outcomes", a
   ).toBeVisible();
   await evidence
     .getByRole("button", {
-      name: "Calculation inputs · Recorded artifact writes",
+      name: "Calculation inputs · Artifact writes",
       exact: true,
     })
     .click();
