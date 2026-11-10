@@ -145,7 +145,7 @@ class ChatMessage(Strict):
     context: str = "general"
     chat_id: str | None = None
     lens: Literal["behavior", "communication"] | None = None
-    source_analysis_id: str | None = None
+    source_analysis_id: str | None = Field(default=None, min_length=1, max_length=80)
 
 
 class Note(Strict):

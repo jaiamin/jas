@@ -525,7 +525,13 @@ class Assistants:
                     Analysis.run_id == row.run_id,
                     Analysis.purpose == row.purpose,
                 )
-            previous = session.scalars(query.order_by(Analysis.created.desc()).limit(3)).all()
+            previous = session.scalars(
+                query.order_by(Analysis.created.desc()).limit(50 if row.purpose == "analysis" else 3)
+            ).all()
+            if row.purpose == "analysis":
+                previous = [item for item in previous if all(
+                    current.cutoffs.get(rid, -1) >= cutoff for rid, cutoff in item.cutoffs.items()
+                )][:3]
             return [
                 {
                     "question": item.question,

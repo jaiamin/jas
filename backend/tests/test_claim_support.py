@@ -172,7 +172,7 @@ def test_inspected_citation_cannot_validate_invented_total(claim_client, design)
 def test_condition_contrast_is_recomputed_in_declared_direction(
     claim_client, design, asserted, expected,
 ):
-    client, controls, seen = claim_client
+    client, controls, _ = claim_client
     value = design.model_dump()
     value.update(rounds=1, seeds=[7], profiles=value["profiles"][:2])
     first = value["conditions"][0]
