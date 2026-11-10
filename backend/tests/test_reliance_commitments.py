@@ -143,6 +143,92 @@ def retain(name, **value):
         path.write_text(json.dumps(value, indent=2) + "\n")
 
 
+@pytest.mark.parametrize(
+    "opens_at,deadline,slots,opportunities",
+    [
+        pytest.param(5, 6, [0, 4], [], id="gap"),
+        pytest.param(4, 5, [0, 4], [4], id="next-slot"),
+        pytest.param(5, 8, [0, 4], [], id="exclusive-later-slot"),
+        pytest.param(8, 9, [0, 4, 8], [8], id="later-slot"),
+        pytest.param(0, 4, [0], [], id="exclusive-first-slot"),
+    ],
+)
+def test_commitment_requires_an_aligned_fulfillment_slot(opens_at, deadline, slots, opportunities):
+    value = protocol("sequential")
+    window = value["conditions"][0]["parameters"]["commitments"]["opportunities"][0]
+    window.update(opens_at=opens_at, deadline=deadline)
+    design = Design.model_validate(value)
+    parameters = design.conditions[0].parameters
+    world = create_world(design, parameters, 41)
+    actions, actual_slots = [], []
+    while world.snapshot()["logical_time"] < deadline:
+        tick, actor = world.snapshot()["logical_time"], world.actor()
+        assert actor is not None
+        if actor == "oak-7":
+            actual_slots.append(tick)
+        action = (
+            decide("make_commitment", opportunity="alpha")
+            if tick == 0
+            else decide("rely_on_commitment", opportunity="alpha")
+            if tick == 1
+            else decide()
+        )
+        actions.append((actor, action))
+        world.step(actor, action)
+        checkpoint = json.loads(json.dumps(world.snapshot()))
+        world = create_world(design, parameters, 41, checkpoint)
+        assert world.snapshot() == checkpoint
+    state = world.snapshot()
+    assert actual_slots == slots
+    row = state["commitments"]["alpha"]
+    assert row["status"] == ("breached" if opportunities else "infeasible")
+    assert row["feasible_at_promise"] is bool(opportunities)
+    assert row["opportunities"] == opportunities
+    assert row["eligible"] is bool(opportunities)
+    assert state["reliance_effects"] == {"oak-7": 0, "fen-2": -7, "ash-9": 0, "bay-4": 0}
+    replay = create_world(design, parameters, 41)
+    for actor, action in actions:
+        replay.step(actor, action)
+    assert replay.snapshot() == state
+
+
+@pytest.mark.parametrize("fulfill", [False, True])
+def test_actual_fulfillment_slot_overrides_a_schedule_changed_by_withdrawal(fulfill):
+    value = protocol("sequential")
+    value["conditions"][0]["parameters"]["commitments"]["opportunities"][0].update(
+        opens_at=7, deadline=8
+    )
+    design = Design.model_validate(value)
+    parameters = design.conditions[0].parameters
+    world = create_world(design, parameters, 41)
+    sequence = [
+        ("oak-7", decide("make_commitment", opportunity="alpha")),
+        ("fen-2", decide("rely_on_commitment", opportunity="alpha")),
+        ("ash-9", decide("stop")),
+        ("bay-4", decide("stop")),
+        ("oak-7", decide()),
+        ("fen-2", decide("stop")),
+        ("oak-7", decide()),
+        ("oak-7", decide("choose_alternative", alternative="share") if fulfill else decide()),
+    ]
+    for tick, (actor, action) in enumerate(sequence):
+        assert world.actor() == actor
+        assert world.snapshot()["logical_time"] == tick
+        world.step(actor, action)
+        world = create_world(design, parameters, 41, json.loads(json.dumps(world.snapshot())))
+    state = world.snapshot()
+    row = state["commitments"]["alpha"]
+    assert row["feasible_at_promise"] is False
+    assert row["opportunities"] == [7]
+    assert row["status"] == ("fulfilled" if fulfill else "breached")
+    assert row["eligible"] is True
+    assert state["reliance_effects"]["fen-2"] == (13 if fulfill else -7)
+    replay = create_world(design, parameters, 41)
+    for actor, action in sequence:
+        replay.step(actor, action)
+    assert replay.snapshot() == state
+
+
 def test_voluntary_reliance_has_independent_recipient_consequences_and_later_responses():
     design = Design.model_validate(protocol())
     world = create_world(design, design.conditions[0].parameters, 41)

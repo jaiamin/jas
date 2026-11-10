@@ -1019,3 +1019,13 @@ reads, reliance cadence/withdrawal and concurrent active-export read snapshots.
 Reliance rule1.0.1 rejects older checkpoints. Its rootDB12/export13/library8 and
 T18's combined13/14/9 must remain distinct; preserve combined versions and all
 accepted repairs during normal merge, then newly qualify affected behavior.
+
+UI checkpointeda4056c was committed normally with Gitleaks PASS. Normal370f merge
+retains two conflicts: HANDOFF's independent histories and the identical six-stop
+expectation with T18's explanatory comment. Both resolve without removing either
+history or the accepted fixture repair. DB read_snapshot/export and all five
+accepted repair paths merge intact; combined versions remain13/14/9. Whole Ruff,
+globalty and a four-case real-HTTP/engine merge slice pass before the merge commit,
+including original T18 tracer and both workflow generic fixtures. No provisional
+sibling enters ancestry. All upcoming root370f-prefixed jobs freshly hash source;
+pre370f results remain at their actual boundary.

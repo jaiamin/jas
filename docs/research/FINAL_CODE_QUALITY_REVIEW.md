@@ -3,7 +3,8 @@
 This review is in progress. It accompanies the user's request to finish JAS,
 simplify its interface, review frontend and backend, benchmark actual behavior,
 and leave a fresh workspace running on port 8080. The accepted application base
-is `fdfb5f7a`; T12, T17 and T18 remain separate, unaccepted implementations.
+is `40c32ff6`, including independently accepted bounded T12. T17 and T18 remain
+separate, unaccepted implementations; their live and final-product gates stay open.
 
 ## Method and scope
 
@@ -137,6 +138,160 @@ was2.23/2.99ms. Replay took1.33/7.58ms; export10.39/19.08ms. Peak server RSS was
 samples in a shared VM; no latency target or concurrency capacity is inferred.
 Raw samples and cleanup/source receipts are in
 `current/runtime-baseline-01/`. Repeat the same workload on final combined source.
+
+## Active-run export consistency — oracle frozen before first output
+
+The public HTTP seam will request export after one committed Commons turn. A
+scheduling barrier delays the real initial-evidence reader after export has read
+its turn rows; a separately authorized public Step commits turn2 before that
+reader continues. No Engine, database or returned evidence is substituted.
+The export may choose either observed turn boundary, but its study/run summaries,
+state, evidence, activations, exposure and per-request ledger must agree with
+that one boundary. The real run must still reach2 with exactly2 requests,
+200/100 tokens and70 synthetic microdollars, and replay must add0 calls.
+First execution failed at the intended invariant: the run record reported2,
+while evidence contained only0/1. A connection-bound read transaction now scopes
+export assembly, with its session factory held in a context local to that call;
+ordinary concurrent writers retain their own sessions. The same HTTP case passes.
+SQLite's explicit BEGIN and SQLAlchemy's rollback-only session join behavior
+follow the [SQLite dialect](https://docs.sqlalchemy.org/en/20/dialects/sqlite.html)
+and [Session API](https://docs.sqlalchemy.org/en/20/orm/session_api.html)
+documentation (both official GET200). No schema/export meaning changes.
+
+Before its first output, a separate preservation case is frozen: export begins
+while the second participant request is pending, then the actual response settles
+before assembly finishes. The captured summary/state/requests, pending status and
+reserved cost must remain exactly those observed before capture; the real run
+reaches2/70 synthetic microdollars and a later export sees the new boundary.
+Its first execution preserved all captured state/requests but failed a test's
+binary floating-point sum equality (0.0030009999999999998 versus0.003001).
+The same cost oracle is now expressed in integer microdollars, matching the
+ledger contract; no production change followed that test-authoring failure.
+This is not another claimed repair. Broader snapshot behavior remains unqualified
+until the affected checks pass.
+
+The user also reported four separate suspected issues: shared artifact exposure,
+tool-harness execution usage, infeasible commitment classification and assignment
+provenance after an artifact read. All four independently reproduced at the actual
+public/World seams and were repaired after their intended failures, as recorded
+below. They do not establish a complete-product verdict.
+
+The first new oracle strengthens the existing public artifact-tool delivery case:
+before starting its real Engine activation, freeze the literal immutable
+revision1 source and assignment. After a successful pure read and actual bounded
+provider input, the complete assignment must remain equal, and its source must
+still resolve to that revision's design hash. The artifact-read opportunity must
+keep its separate operation/result citation. This test precedes any provenance
+repair; compacted and unknown-delivery variants use the same invariant.
+The intended public red was observed at `current/artifact-provenance-red-03`:
+the assignment source became `/activations/.../operations/number=1/result`
+while the design hash stayed unchanged. Naming the revision citation separately
+from per-read citations repairs the report assembly without changing stored data.
+All three real delivery/compaction/unknown variants pass at source
+`a654eda08d7c3e79e38a48bf6cf22c0c74346ec3087809a9184dcf58a05e04bf`.
+The distinct read opportunity still links to its actual operation. The earlier
+two preflights exited125 before pytest while reserving T18's setup headroom;
+neither is counted as a product red.
+
+Next independent public oracle, frozen before output: one real tool-harness
+activation performs observe/rules/legal-options/decide with four separately
+settled Luna requests,400/200 tokens and140 synthetic microdollars. A Researcher
+question must receive those exact execution totals in its provider-bound index.
+A second question must still see four participant requests, excluding both
+Researcher analyses. Its own analysis ledger remains separately accounted.
+This reproduced zero execution requests/tokens/cost despite the real four-request
+ledger. The participant-purpose filter now includes both `decision` and
+`participant_operation`. The same public case passes at
+`f23d82ce304c1fceb0f8a12b8c1e727f0aed16fa9ff9365aa4bdbb985dfecbc2`:
+two separate Researcher questions each see4/400/200/140µ while workspace accounting
+records all six actual requests and replay adds none.
+
+The next independent World oracle uses four declared sequential actors, all
+waiting after an initial promise at0 and recipient reliance at1. The promisor's
+only subsequent slots are4 and8. Window[5,6) must resolve infeasible, with no
+fulfillment opportunity and no eligible breach. Literal controls freeze
+[4,5)→opportunity4, [5,8)→infeasible, [8,9)→opportunity8, and the exclusive
+boundary[0,4)→infeasible. Classification must survive JSON checkpoint restoration
+and exact action replay. Existing withdrawal and early-horizon cases remain
+separate controls. This precedes any reliance-rule edit.
+The [5,6) witness reproduced `absent_opportunity` with actual slots0/4. Checking
+the bounded declared cadence repairs it; the five literal slot cases and five
+inherited null/withdrawal controls pass at676bd667. Rule1.0.1 explicitly rejects
+1.0.0 checkpoints for replay/resume.
+
+A preservation oracle is frozen before its output: for window[7,8), reliance at1
+followed by withdrawals at2/3/5 changes actual promisor slots to0/4/6/7. Although
+the promise-time schedule forecast was infeasible, the real opportunity at7 must
+govern settlement: a share fulfills, a wait breaches, and either is eligible after
+reliance. Both remain distinct from the original fixed-schedule impossible case.
+Both preservation variants failed on the first repair: actual opportunity7 was
+recorded but a wait stayed infeasible and fulfillment stayed ineligible. Settlement
+now treats actual slots as stronger evidence than the initial schedule forecast.
+The original five literal cases, both changed-cadence variants, five existing
+null/withdrawal cases and early-horizon control pass13 cases at1c37d094. The
+initial repair failures remain retained, rather than described as another
+pre-existing product defect. Rule1.0.1 contains the complete correction.
+
+The next public HTTP oracle freezes a three-actor phased coordination run. One
+actor writes the shared artifact in phase1; all three actual phase2 prompts
+contain its literal content in their authorized artifact history. Exposure must
+report three eligible and three confirmed recipients, while the phase1 cutoff
+has zero delivered recipients. ACL-restricted and memory-none variants retain
+respectively two and one delivered recipients, and private local-value artifacts
+must stay outside teammates' input. Exact replay must add no requests.
+All three cases reproduced the undercount (including the separate no-memory
+eligibility denominator). Capture now asks each World to locate content in the
+already authorized actor projection. Report eligibility includes explicit shared
+artifact ACLs and exact cutoff-scoped read grants, while actual input bindings and
+provider response receipts still establish delivery. All three cases pass at
+63af529c, including frozen cutoffs, export equality and zero-call replay.
+
+Before its first output, an additional public preservation case freezes a private
+artifact write at tick1, a promise at4 and recipient reliance/read grant at5. The
+newly authorized promisor's actual tick8 prompt must receive the old write, while
+the two outsiders do not. Historical cutoff5 retains only the original owner as
+eligible; cutoff6 adds the grantee but only the owner's actual input; cutoff9
+confirms both. This qualifies grants and their cutoff query, not a second defect.
+That grant case passes atc861f705. End-to-end producer review found the analogous
+shared workflow-metadata path, so a further public oracle is frozen: a claims
+draft work in phase1; a/b/c/d are its declared workers/handoff recipients and all
+four phase2 prompts contain owner=a. e/f have no draft-work projection. Claim
+exposure must have four eligible/confirmed recipients after12 turns, with no
+delivered inputs at cutoff6, unchanged resource8/spent0 and zero-call replay.
+This checks the same visibility defect outside shared artifact contents.
+
+The workflow case reproduced one recipient instead of four at48a9a696. Eligibility
+now includes declared work participants for claim/delegation/readiness/handoff
+metadata; the actual authorized projection and bounded input still determine
+delivery. That workflow case, the cutoff-grant preservation case and the three
+shared-artifact variants pass5 cases at5a7f4642. Ruff then formatted only the new
+event-kind set; whole backend/benchmarks/scripts Ruff and globalty pass at60c85fa5.
+
+## Affected correctness qualification
+
+The following jobs ran without provider-network access or paid requests. Their
+source hashes and full commands are in their separate `current/<job>/result.json`.
+No unchanged suite is counted twice in the figures below.
+
+| Job | Observed result | Attribution |
+| --- | --- | --- |
+| `quality-reliance-01` | 58 pass | Full reliance suite at60c85fa5; rule1.0.1, exact restoration/replay, schedule and withdrawal controls. |
+| `quality-ledger-harness-01` | 54 pass,1 fail,8 deselected | Test fixture omitted required nullable artifact-read field for workflow; no product repair. |
+| `quality-ledger-harness-02` | 55 pass,8 deselected | Scripted responses follow the actual declared schema. Participant/Researcher cutoff accounting, unknown usage, cancellation, restart and privacy controls pass at2b004c8e. |
+| `quality-persistence-01` | 39 pass,1 fail | DB, export and Engine controls pass; stale workflow expected12 turns despite the explicit six-participant stop policy. |
+| `quality-workflow-and-export-01` | 45 pass | Full claim-support and independent workflow suites plus corrected literal six-turn adapter case at1456579e. Includes both concurrent-export witnesses and pending-reservation preservation. |
+| `quality-artifact-exposure-01` | 13 pass | Earlier56a0190e source before the workflow-metadata extension; provenance, ACLs, grants, delivery and replay. |
+| `quality-exposure-privacy-01` | 21 pass | Earlier56a0190e privacy/message/sanction/memory/cutoff/unknown/cancellation/export controls. Its resource forecast overrun is separately disclosed in the compact report. |
+| `workflow-shared-owner-green-01` | 5 pass,9 deselected | Latest targeted shared-artifact/grant/workflow coverage, unchanged5a7f4642. |
+
+The two generic test corrections change neither production behavior nor their
+accounting/identity/replay assertions. The missing-read response is generated from
+the public provider-tool schema rather than an environment-name allowlist. The
+six-turn expectation is the independent literal population/stop-policy result.
+Earlier failures, including initial resource preflights and the first schedule
+repair's preservation failures, remain failures. Final normal hooks and source
+closure follow these checks. Frontend/complete-product, remaining ticket and final
+runtime/benchmark gates are still open.
 
 ## Remaining review
 

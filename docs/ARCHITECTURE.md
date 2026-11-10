@@ -225,6 +225,13 @@ request. A compacted receipt does not deliver that result; a missing provider
 response leaves delivery unknown. Local reads, plans and task success alone do not
 establish investigation or input inclusion. Artifact replay also validates denied
 read receipts against their request, harness allowance and unchanged checkpoint.
+Shared-write eligibility follows artifact owner/read ACLs and exact cutoff-scoped
+grants. Shared workflow metadata follows its declared workers/handoff recipients.
+Private messages and reads keep their addressed recipients. Each actual source
+binding must still locate content in the actor's authorized observation and in
+the bounded request; eligibility alone never establishes delivery. Assignment
+citations always resolve to the immutable design revision, separately from read
+operation citations.
 
 The `simulation/` package owns world rules, state and action schemas. A world initializes
 seeded state, selects an actor, constructs its observation, validates/applies actions,
@@ -242,6 +249,14 @@ checkpoints fail explicitly. `environments.py` contains the catalog and three ga
 `artifacts.py` owns artifact investigation; `distributed.py` reuses its ACL/version
 seam for three-person choice tasks. `reliance.py` adds four-person voluntary
 commitments through the same settlement, artifact and logical-time seams.
+Reliance rule1.0.1 checks promise feasibility against the currently scheduled
+future decision slots, including the exclusive deadline. Earlier rule1.0.0
+checkpoints require their original engine for replay/resume; no conversion is
+performed. This rule fix itself does not advance persistence formats; the combined
+T12/T18 contract remains DB13/export14/library9.
+The promise-time forecast assumes the current schedule; later withdrawals can
+change that cadence. A recorded actual fulfillment opportunity establishes
+feasibility for settlement even when the original schedule forecast was false.
 
 Profiles describe goals; parameterized permissions enforce action affordances. Per-turn
 schemas constrain requests, and world rules validate transitions again before committing.

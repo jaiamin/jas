@@ -95,6 +95,51 @@ port18131 is unopened.
 The post-retirement policy was read at `fdfb5f7a` and is included in the exact
 accepted ROOT merge above. No deleted BEFORE reference is used.
 
+# Accepted ROOT370f source narrative (preserved at its source)
+
+# ROOT continuation — reported correctness defects repaired (2026-11-10)
+
+ROOT owns sole tracked writing, based on accepted40c32ff6 with T12 and current
+DB12/export13/library8. All four reported defects independently reproduced before
+their repairs: shared artifact exposure, tool-harness Researcher usage, commitment
+slot feasibility and immutable assignment provenance. The separately observed
+active-export snapshot race is also repaired. Reliance rules advance to1.0.1;
+the database/export/library contracts do not change. No compatibility adapter,
+migration, provider retry or new spending is introduced.
+
+Focused reds/greens, the first repair's withdrawal-schedule preservation failure
+and correction, privacy/cutoff controls, and static attempts are attributed in
+`docs/research/FINAL_CODE_QUALITY_REVIEW.md`. Current qualification includes58
+reliance,55 harness/assistant,39 persistence/execution,45 claim/workflow/export
+cases and the five newest shared-input cases. Earlier13 artifact and21 exposure
+cases retain their exact source attribution. Two generic workflow test fixtures
+were stale: a missing required nullable read field and a twelve-turn expectation
+for the explicit six-actor stop policy. Those original failures remain retained;
+only test responses/expectations changed. Ruff/globalty passed before those final
+test-only corrections and are rechecked for the checkpoint.
+
+Authorized historical-retirement02 removed exactly the eight documented ROOT
+targets, metadata-only, no protected payload reads/symlink following, with unchanged
+HEAD/index/stash. Shared free741,888,000→810,737,664. Closed successful audit scratch
+from `analysis-capture-claims-01/runtime` was losslessly compacted:31 SQLite files,
+21,893,120 original bytes→2,092,622 archive, independently verified exact member
+hash/size/mode map before removing originals. Shared free806,236,160→826,011,648.
+Logs/results/non-SQLite/current review evidence and shared caches remain intact.
+
+SAME T18's one normal frozen-store frontend setup passed. Exact40c32ff6 was
+normally merged at5250765e with genuine combinedDB13/export14/library9, focused16
+backend cases and static/types passing. Ten current shell feature/safety units,
+affected lint and forced TypeScript pass; remaining bounded combined backend
+qualification is within its existing release. Prior373 backend cases remain
+pre-T12 attribution. T17's released bounded authorization-unit stage continues
+separately. Both remain incomplete/unaccepted and must normally include ROOT's
+new exact checkpoint before completion, preserving its repairs and avoiding
+provisional sibling source. Build/browser/services/production/providers remain
+separately staged. Final independent reviews, minimalist UI polish, final
+benchmarks, obsolete compatibility/data/evidence cleanup and8080 remain open.
+No paid/live/held-out work newly authorized. Original opaque pbcopy and
+stashf771128ba1c9295262a4073df40cc25647b1370f remain protected.
+
 # T12 independent integration review — ACCEPTED within DEVELOPMENT (2026-11-10)
 
 Fresh reviewer normally merged exact376b01bce978fc8562ad22cecc9d502b98250df8
@@ -463,6 +508,32 @@ any implementation, then proceed one meaningful vertical slice at a time.
 <!-- Incoming accepted ROOT documentary continuity, exact fdfb5f7a. -->
 
 # Current user direction and evidence retirement (2026-11-10)
+
+ROOT owns tracked writing again at published40c32ff6. Fresh T12 integration is
+accepted for bounded DEVELOPMENT: Standards PASS/Spec PASS after19fcb464 fixes
+missing delivered-mail/handoff/acceptance interaction edges. DB12/export13/
+library8. Review/source/attempt limits are in T12_INTEGRATION_REVIEW.md; no final
+product/live/production acceptance. T17 must merge this exact accepted frontier
+at its coherent boundary; combined expectedDB14/export16/library9 if its current
+provisional meanings stand. T18 backend373 cases are reported, UI/setup held.
+
+Uncommitted ROOT audit repair: actual export capture red reportedturn2 with only
+turn0/1 evidence. A context-local connection-bound read transaction passes that
+same HTTP witness. Pending-settlement preservation passes after a test-only
+binary-float equality failure was corrected to integer microdollars. Affected
+regressions/static, documentation and normal commit remain pending. Sources/
+attempts live under current/export-snapshot-*. User's four new reported concerns
+(shared-artifact exposure, tool usage index, commitment feasibility and artifact
+assignment provenance) await independent vertical validation/fixes. Do not call
+them confirmed from source suspicion alone.
+
+T12 completed-owner dependency cleanup02 succeeds;01 stays failed on unreadable
+daemon links. Exact dockerd/containerd identity plus empty running-container list
+provide ROOT's narrow disposition; no universal visibility claim. Dependencies/
+private cache were removed, dist/evidence preserved, expected shared nlinks
+reconciled; final reported766296064 free. T18 still needs815792128 setup entry.
+The compact report now specifies an additional exact closed-ROOT historical
+retirement, before any payload-free deletion, to recover remaining headroom.
 
 ROOT's first repeatable native HTTP runtime benchmark passes on accepted0527e737
 plus the staged helper at1c44e1f9 source. Declared2/12 non-model Commons

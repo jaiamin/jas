@@ -291,7 +291,7 @@ class Activation:
                         "profile": profile.model_dump(),
                         "environment": design.environment,
                         "rule_version": world.version,
-                        "exposure": available_inputs(world, observation, actor, prior_events),
+                        "exposure": available_inputs(world, observation, prior_events),
                     },
                 )
                 session.add(self.row)
