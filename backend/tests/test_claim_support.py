@@ -14,7 +14,7 @@ import pytest
 from agent_sim.api import create_app
 from fastapi.testclient import TestClient
 from pydantic_ai.messages import ModelResponse, ToolCallPart
-from pydantic_ai.models.function import FunctionModel
+from pydantic_ai.models.function import DeltaToolCall, FunctionModel
 from pydantic_ai.usage import RequestUsage
 
 
@@ -55,8 +55,16 @@ def claim_client(tmp_path, monkeypatch, request):
             usage=RequestUsage(input_tokens=100, output_tokens=50), model_name="t19-development-v1",
         )
 
+    async def stream(messages, info):
+        response = await respond(messages, info)
+        part = response.parts[0]
+        assert isinstance(part, ToolCallPart)
+        yield {0: DeltaToolCall(name=part.tool_name, json_args=json.dumps(part.args))}
+
     app = create_app(f"sqlite:///{tmp_path}/claims.sqlite3", static_dir=tmp_path / "static")
-    monkeypatch.setattr(app.state.models, "model", lambda _: FunctionModel(function=respond))
+    monkeypatch.setattr(app.state.models, "model", lambda _: FunctionModel(
+        function=respond, stream_function=stream,
+    ))
     with TestClient(app, base_url="http://localhost") as client:
         transport = client.request
 
