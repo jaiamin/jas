@@ -435,6 +435,35 @@ export interface ChatSummary {
   context: string;
   status: string;
 }
+export interface ResearchArtifact {
+  id: string;
+  request: {
+    kind: "capabilities" | "context" | "probe";
+    [key: string]: unknown;
+  };
+  status: "pending" | "complete" | "rejected" | "failed";
+  summary: string;
+  sources: {
+    kind: "builtin" | "analysis" | "run";
+    id: string;
+    hash: string;
+    turn?: number;
+  }[];
+  data: Record<string, unknown> | null;
+}
+
+export interface ResearchActivity {
+  version: 1;
+  scope: {
+    chat_id: string;
+    before: string;
+    cutoffs: Record<string, number>;
+    context_limit: number;
+  };
+  operations: ResearchArtifact[];
+  stop_reason: string | null;
+}
+
 export interface Analysis {
   chat_id?: string | null;
   usage?: Usage | null;
@@ -445,6 +474,7 @@ export interface Analysis {
   output: {
     stage?: string;
     activity?: string[];
+    research?: ResearchActivity;
     partial?: string;
     planning?: {
       brief: {

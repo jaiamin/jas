@@ -109,6 +109,7 @@ export default function AgentPage() {
                   introduction: update.introduction,
                   stage: update.stage,
                   ...(update.activity ? { activity: update.activity } : {}),
+                  ...(update.research ? { research: update.research } : {}),
                 },
               }
             : message,
@@ -340,6 +341,7 @@ function AgentConversation({
                   <MessageScrollerItem
                     key={row.id}
                     messageId={row.id}
+                    id={row.id}
                     className="pl-1"
                   >
                     <AgentReply
