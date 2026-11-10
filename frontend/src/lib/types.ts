@@ -7,7 +7,48 @@ export type EnvironmentId =
   | "bargaining"
   | "information"
   | "renewable_resource"
-  | "composed";
+  | "composed"
+  | "artifact_workspace";
+
+export interface ArtifactObject {
+  key: string;
+  name: string;
+  owner: string | null;
+  readers: string[];
+  writers: string[];
+  content: Record<string, string | number>;
+}
+export interface ArtifactRules {
+  objects: ArtifactObject[];
+  write_limit: number;
+  requirements: {
+    artifact: string;
+    field: string;
+    source: string;
+    source_field: string;
+  }[];
+}
+export interface ArtifactReference {
+  artifact: string;
+  version: number;
+}
+export interface ArtifactVersion {
+  version: number;
+  content: Record<string, string | number>;
+  sources: ArtifactReference[];
+  author: string | null;
+  operation: number;
+}
+export type ArtifactAction =
+  | { kind: "read_artifact"; artifact: string; version: number | null }
+  | {
+      kind: "write_artifact";
+      artifact: string;
+      expected_version: number;
+      content: ArtifactObject["content"];
+      sources: ArtifactReference[];
+    }
+  | { kind: "check_artifacts" | "submit_artifacts" | "stop" };
 export interface ResourcePrimitive {
   key: string;
   name: string;
@@ -29,7 +70,7 @@ export interface CompositionRules {
   controllers_first: boolean;
 }
 export interface SavedEnvironment {
-  format: "jas-environment-v3";
+  format: "jas-environment-v4";
   id: string;
   revision: number;
   updated: string;
@@ -78,6 +119,7 @@ export interface Parameters {
     extraction_limit: number;
   };
   composition: CompositionRules | null;
+  artifacts: ArtifactRules | null;
   resource_schedule: { round: number; endowment: number }[];
 }
 export interface Profile {
@@ -96,7 +138,7 @@ export interface ParticipantCapabilities {
 interface HarnessLimits {
   max_requests: number;
   max_tool_operations: number;
-  tools: ("observe" | "rules" | "legal_options")[];
+  tools: ("observe" | "rules" | "legal_options" | "read_artifact")[];
 }
 export interface DirectActionHarness extends HarnessLimits {
   kind: "direct_action";
@@ -336,14 +378,29 @@ export interface Catalog {
   templates: { id: string; design: Design }[];
   design_schema: Record<string, unknown>;
 }
-export interface Action {
-  kind: string;
+export interface ControlledAction {
+  kind:
+    | "contribute"
+    | "send"
+    | "return"
+    | "work"
+    | "wait"
+    | "allocate"
+    | "sanction"
+    | "appeal"
+    | "offer"
+    | "accept"
+    | "reject"
+    | "exit"
+    | "choose"
+    | "extract";
   amount: number;
   target: string;
   message: string;
   report: number | null;
   promise: number | null;
 }
+export type Action = ControlledAction | ArtifactAction;
 export interface Decision {
   action: Action;
   rationale: string;
@@ -397,13 +454,26 @@ export interface State {
   round: number;
   position: number;
   done: boolean;
-  balances: Record<string, number>;
+  balances?: Record<string, number>;
   pending?: Record<string, Action>;
   history: Record<string, unknown>[];
   notes: Record<string, string>;
   experiences: Record<string, unknown[]>;
   promises?: Record<string, unknown>;
-  signals: Record<string, number>;
+  signals?: Record<string, number>;
+  artifacts?: Record<
+    string,
+    Omit<ArtifactObject, "content"> & { versions: ArtifactVersion[] }
+  >;
+  writes_remaining?: number;
+  artifact_history?: Record<string, unknown>[];
+  last_results?: Record<string, Record<string, unknown>>;
+  outcome?: {
+    status: "success" | "failure" | "stopped" | "horizon";
+    actor: string;
+    operation: number;
+    result: Record<string, unknown>;
+  } | null;
   relations?: Record<string, { amount: number; count: number }>;
   tasks?: Task[];
 }

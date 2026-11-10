@@ -74,6 +74,12 @@ export function RunRecord({ run }: { run: RunDetail }) {
               <dd>{run.design.response_tokens} tokens including reasoning</dd>
             </div>
           </dl>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            The turn slider plays saved evidence. Verify reapplies recorded
+            actions locally to check consequences. After a server restart, saved
+            work is restored and active runs pause. Run or Step explicitly
+            requests new model sampling and may spend budget.
+          </p>
           <Button
             variant="outline"
             disabled={verify.isPending}

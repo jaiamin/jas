@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { removeProfile } from "@/lib/design";
+import { minimumParticipants, removeProfile } from "@/lib/design";
 import { modelLabel } from "@/lib/format";
 import type { Catalog, Design, ModelId, Profile } from "@/lib/types";
 
@@ -172,7 +172,10 @@ export function AgentFields({
                   className="self-start"
                   size="sm"
                   aria-label={`Remove ${p.name}`}
-                  disabled={design.profiles.length <= 2}
+                  disabled={
+                    design.profiles.length <=
+                    minimumParticipants(design.environment)
+                  }
                   onClick={() => onChange(removeProfile(design, p.key))}
                 >
                   <Trash2 data-icon="inline-start" />

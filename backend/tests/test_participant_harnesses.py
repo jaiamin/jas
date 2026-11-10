@@ -133,7 +133,7 @@ def test_two_policies_run_real_operations_with_individual_accounting(harness_cli
     for run_id in [direct_id, tool_id]:
         assert client.post(f"/api/runs/{run_id}/verify").json()["verified_turns"] == 1
     exported = client.get(f"/api/studies/{study['id']}/export").json()
-    assert exported["version"] == 7
+    assert exported["version"] == 8
     assert len(exported["activations"]) == 2
     assert len(exported["requests"]) == 5
 
@@ -641,6 +641,8 @@ def test_tool_policy_runs_existing_worlds_and_keeps_profile_model_assignment_ind
             "operation": "decide" if read else "observe",
             "decision": decision_for(read[0]["result"]) if read else None,
         }
+        if template["id"] == "artifact_workspace":
+            output["read"] = None
         return ModelResponse(
             parts=[ToolCallPart(info.output_tools[0].name, output)],
             usage=RequestUsage(input_tokens=100, output_tokens=50),

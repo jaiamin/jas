@@ -210,7 +210,7 @@ export function MechanismView({
                       : (last?.kind.replaceAll("_", " ") ?? "—")}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
-                    {state.balances[profile.key]?.toFixed(2)}
+                    {state.balances?.[profile.key]?.toFixed(2)}
                   </TableCell>
                 </TableRow>
               );

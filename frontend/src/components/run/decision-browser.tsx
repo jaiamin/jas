@@ -146,10 +146,15 @@ export function DecisionBrowser({
                   <TableCell>
                     <strong className="font-medium">
                       {label(t.action.kind)}
-                      {["contribute", "send", "return"].includes(
-                        t.action.kind,
-                      ) && ` ${t.action.amount}`}
-                      {t.action.target && ` → ${t.action.target}`}
+                      {"amount" in t.action &&
+                        ["contribute", "send", "return"].includes(
+                          t.action.kind,
+                        ) &&
+                        ` ${t.action.amount}`}
+                      {"target" in t.action &&
+                        t.action.target &&
+                        ` → ${t.action.target}`}
+                      {"artifact" in t.action && ` · ${t.action.artifact}`}
                     </strong>
                     <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground line-clamp-2 min-w-40 max-w-72 whitespace-normal">
                       {t.rationale}
@@ -252,7 +257,9 @@ export function DecisionBrowser({
                     <dt>Action</dt>
                     <dd>
                       {label(evidence.data.decision.action?.kind ?? "")}
-                      {evidence.data.decision.action?.target &&
+                      {evidence.data.decision.action &&
+                        "target" in evidence.data.decision.action &&
+                        evidence.data.decision.action.target &&
                         ` → ${evidence.data.decision.action.target}`}
                     </dd>
                   </div>
@@ -260,12 +267,14 @@ export function DecisionBrowser({
                     <dt>Private note</dt>
                     <dd>{evidence.data.decision.memory || "No note"}</dd>
                   </div>
-                  {evidence.data.decision.action?.message && (
-                    <div>
-                      <dt>Message</dt>
-                      <dd>{evidence.data.decision.action.message}</dd>
-                    </div>
-                  )}
+                  {evidence.data.decision.action &&
+                    "message" in evidence.data.decision.action &&
+                    evidence.data.decision.action.message && (
+                      <div>
+                        <dt>Message</dt>
+                        <dd>{evidence.data.decision.action.message}</dd>
+                      </div>
+                    )}
                 </dl>
                 <p className="my-4 text-xs leading-relaxed text-muted-foreground">
                   Rationale and memory are model self-reports. They do not

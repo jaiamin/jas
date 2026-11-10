@@ -16,7 +16,7 @@ from .db import (
     now,
 )
 from .diagnostics import log_failure
-from .domain import Decision
+from .domain import Decision, ReadArtifact
 from .llm import LanguageModels, ProviderFailure
 from .participants import Activation
 from .participants import operations as activation_record_operations
@@ -132,7 +132,7 @@ class Engine:
                     try:
                         events, measures = world.step(actor, decision)
                     except ValueError as error:
-                        activation.append("reject", {}, str(error), "rejected")
+                        activation.append("reject", decision.model_dump(), str(error), "rejected")
                         activation.finish("failed", "world_rejected", str(error))
                         raise
                     checkpoint = world.snapshot()
@@ -277,13 +277,86 @@ class Engine:
             turns = session.scalars(
                 select(Turn).where(Turn.run_id == run_id).order_by(Turn.number)
             ).all()
+        checkpoints = {0: world.snapshot()}
+        artifact_record = (
+            self.research.run(run_id) if design.environment == "artifact_workspace" else None
+        )
+        checked_events = checked_measures = 0
         for turn in turns:
             if world.actor() != turn.actor:
                 raise ValueError(f"Actor mismatch at turn {turn.number}")
-            world.step(turn.actor, Decision.model_validate(turn.decision))
-            if digest(world.snapshot()) != turn.state_hash:
+            observed = world.observe(turn.actor)
+            observed["you"] = next(p.model_dump() for p in design.profiles if p.key == turn.actor)
+            if observed != turn.observation:
+                raise ValueError(f"Observation mismatch at turn {turn.number}")
+            events, measures = world.step(turn.actor, Decision.model_validate(turn.decision))
+            if artifact_record is not None:
+                recorded_events = [
+                    {
+                        key: event[key]
+                        for key in ("kind", "actor", "target", "visibility", "text", "data")
+                    }
+                    for event in artifact_record["events"]
+                    if event["turn"] == turn.number and event["round"] == turn.round
+                ]
+                recorded_measures = [
+                    {key: measure[key] for key in ("key", "value", "denominator", "agent")}
+                    for measure in artifact_record["measurements"]
+                    if measure["turn"] == turn.number
+                    and measure["round"] == turn.round
+                    and measure["version"] == 1
+                ]
+                if recorded_events != [event.model_dump() for event in events]:
+                    raise ValueError(f"Artifact consequence mismatch at turn {turn.number}")
+                if recorded_measures != [measure.model_dump() for measure in measures]:
+                    raise ValueError(f"Artifact measurement mismatch at turn {turn.number}")
+                checked_events += len(recorded_events)
+                checked_measures += len(recorded_measures)
+            if digest(world.snapshot()) != turn.state_hash or world.snapshot() != turn.checkpoint:
                 raise ValueError(f"State mismatch at turn {turn.number}")
-        return {"verified_turns": len(turns), "model_requests": 0, "rule_version": world.version}
+            checkpoints[turn.number] = world.snapshot()
+        if len(turns) != run.turn or world.snapshot() != run.checkpoint:
+            raise ValueError("Run checkpoint does not match recorded consequences")
+        if artifact_record is not None and (
+            checked_events != len(artifact_record["events"])
+            or checked_measures != len(artifact_record["measurements"])
+        ):
+            raise ValueError("Artifact consequences contain unrecorded turn references")
+        result = {"verified_turns": len(turns), "model_requests": 0, "rule_version": world.version}
+        if design.environment == "artifact_workspace":
+            reads = rejections = 0
+            for activation in self.research.activations(run_id):
+                prior = checkpoints.get(activation["turn"] - 1)
+                if prior is None or digest(prior) != activation["checkpoint_hash"]:
+                    raise ValueError("Activation checkpoint mismatch")
+                restored = create_world(design, condition.parameters, run.seed, prior)
+                actor = activation["actor"]
+                if restored.actor() != actor:
+                    raise ValueError("Activation actor mismatch")
+                observed = restored.observe(actor)
+                observed["you"] = next(p.model_dump() for p in design.profiles if p.key == actor)
+                if observed != activation["observation"]:
+                    raise ValueError("Activation observation mismatch")
+                for operation in activation["operations"]:
+                    if operation["kind"] == "read_artifact" and operation["status"] == "complete":
+                        actual = restored.read(
+                            actor, ReadArtifact.model_validate(operation["request"]["read"])
+                        )
+                        if actual != operation["result"]:
+                            raise ValueError("Artifact read receipt mismatch")
+                        reads += 1
+                    elif operation["kind"] == "reject" and operation["status"] == "rejected":
+                        try:
+                            restored.step(actor, Decision.model_validate(operation["request"]))
+                        except ValueError as error:
+                            if str(error) != operation["result"] or restored.snapshot() != prior:
+                                raise ValueError("Artifact rejection receipt mismatch") from error
+                        else:
+                            raise ValueError("Recorded artifact rejection was not rejected")
+                        rejections += 1
+            result["verified_reads"] = reads
+            result["verified_rejections"] = rejections
+        return result
 
     async def close(self) -> None:
         self.closing = True

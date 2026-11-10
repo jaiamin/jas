@@ -28,7 +28,7 @@ A review has one of three admission statuses:
 `execution_enabled` are always false. Supplied examples can be wrong or weak;
 passing them is neither independent semantic admission nor intelligence evidence.
 Existing installed environments, model assignments, accounting and replay are
-unchanged. Experiment revisions and study export v7 do not acquire candidates.
+unchanged. Experiment revisions and study export v8 do not acquire candidates.
 
 ## Containment boundary
 

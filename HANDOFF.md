@@ -2323,3 +2323,39 @@ do not have separate full dirty-source archives. No paid/live competence claim.
 Owned browser servers/container/image tag are stopped/removed, preview closed,
 port 18115 closed. No pushes, PR/issue changes or stash operations. Parent owns
 fresh merger review and the single integration draft PR #32.
+
+### T09 artifact world — implementation complete, pending fresh root review
+
+Assigned checkout `/home/agent/.t3/worktrees/workspace/t3-872f635b`, branch
+`t3/implement-t09-artifact-world`, confirmed base `c2a7d5a`. Application checkpoint
+`fe0ba04a87c2450b260dfa2232c1f505b69e2310`; merge `145f1a4` includes latest
+accepted integration `59e20935c17bd8ea0c44f712790ffeeb38ebb83b`. These final
+merges change only accepted-review/frontier documentation; closure checks actual
+code/test/build hashes.
+Read [the T09 report](docs/research/T09_ARTIFACT_WORLD.md) for decisions, worked
+oracles, retained failures and limits. Contract: **DB7/export8/comparison1/library4**.
+
+Solo authorized evidence, persistent versions, atomic rejected writes, finite work
+allowance, checks, submit/stop, both harnesses, copied probes, full source snapshots,
+editor/review/history/export and call-free replay/restoration are implemented.
+1,176 backend and 111 frontend tests, Ruff/ty/lint/build pass. All 182 inherited
+browser cases have passing results across the completed run and focused recovery:
+the full run itself retains one ENOSPC screenshot failure and exits 1; all four
+Researcher variants then pass unchanged. Eleven artifact/harness/exposure flows,
+two context flows and two capability-exposure flows pass. Actual final non-root
+production smoke, all 26 containment checks and phone/dark inspection pass.
+
+Frozen T01 after/comparison retain four intentional export-v4 failures/failed
+flags and exit1. Positive current-contract audit verifies exact controlled
+behavior/accounting for 22 turns/five runs/22 stand-in requests; all 1,220 raw JSON
+differences and 47 keyed catalog differences are classified, none unexplained.
+Preserve **the entire ignored `data/t09/`**, including all four verified archives
+and their member indexes, failed attempts, source snapshots, databases and captures.
+`artifact-manifest.json`/`.sha256` and `checks/final-closure.json` identify the final
+handoff. Early slices1–6 lack full per-attempt dirty-source archives; this is explicit.
+
+Owned browsers/services and production container/volume/image tags are closed or
+removed; port18120 is closed. No paid calls, real credential/clipboard access,
+stash operations, other-worktree changes, pushes or publication. T09 spend $0;
+no live/held-out claim, general generated execution, T10 timing or T18 adjudication.
+Root owns fresh acceptance and publication; this handoff does not accept T09.

@@ -1,4 +1,5 @@
 import type {
+  ArtifactRules,
   Design,
   Environment,
   ParticipantHarness,
@@ -64,6 +65,17 @@ export function removeProfile(design: Design, key: string): Design {
             (authority) => authority !== key,
           ),
         },
+        artifacts: condition.parameters.artifacts
+          ? {
+              ...condition.parameters.artifacts,
+              objects: condition.parameters.artifacts.objects.map((obj) => ({
+                ...obj,
+                owner: obj.owner === key ? null : obj.owner,
+                readers: obj.readers.filter((reader) => reader !== key),
+                writers: obj.writers.filter((writer) => writer !== key),
+              })),
+            }
+          : null,
       },
     })),
   };
@@ -95,8 +107,21 @@ export function changeEnvironment(
     tasks: environment.key === "coordination" ? design.tasks : [],
     conditions: design.conditions.map((condition) => ({
       ...condition,
+      harness: {
+        ...condition.harness,
+        tools: condition.harness.tools.filter(
+          (tool) =>
+            environment.key === "artifact_workspace" ||
+            tool !== "read_artifact",
+        ),
+      },
       parameters: {
         ...condition.parameters,
+        artifacts:
+          environment.key === "artifact_workspace"
+            ? (condition.parameters.artifacts ??
+              newArtifactRules(design.profiles[0].key))
+            : null,
         composition:
           environment.key === "composed"
             ? (condition.parameters.composition ?? {
@@ -111,6 +136,46 @@ export function changeEnvironment(
           : [],
       },
     })),
+  };
+}
+
+export function minimumParticipants(environment: Design["environment"]) {
+  return ["commons", "trust_exchange", "institution", "bargaining"].includes(
+    environment,
+  )
+    ? 2
+    : 1;
+}
+
+export function newArtifactRules(owner: string): ArtifactRules {
+  return {
+    write_limit: 3,
+    objects: [
+      {
+        key: "measurement",
+        name: "Measurement",
+        owner: null,
+        readers: [owner],
+        writers: [],
+        content: { reading: 17 },
+      },
+      {
+        key: "report",
+        name: "Report",
+        owner,
+        readers: [],
+        writers: [],
+        content: { reading: 0 },
+      },
+    ],
+    requirements: [
+      {
+        artifact: "report",
+        field: "reading",
+        source: "measurement",
+        source_field: "reading",
+      },
+    ],
   };
 }
 

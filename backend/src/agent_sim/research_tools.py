@@ -6,7 +6,7 @@ from pydantic import Field
 from sqlalchemy import select
 
 from .db import Analysis, digest, uid
-from .domain import Action, Decision, Design, Parameters, Strict
+from .domain import ActionRequest, Decision, Design, Parameters, Strict
 from .environment_library import builtin_environment
 from .research import Research
 from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, create_world
@@ -55,7 +55,7 @@ class RunSource(Strict):
 
 class ProbeStep(Strict):
     actor: str = Field(max_length=80)
-    action: Action
+    action: ActionRequest
 
 
 class ProbeRequest(Strict):
@@ -362,7 +362,15 @@ class ResearchTools:
             final_checkpoint_hash=digest(final),
             next_actor=next_actor,
             next_observation=world.observe(next_actor) if next_actor else None,
-            outcome={"balances": final["balances"], "done": final["done"]},
+            outcome={
+                "balances": final.get("balances"),
+                "done": final["done"],
+                **(
+                    {"artifact_outcome": final.get("outcome")}
+                    if design.environment == "artifact_workspace"
+                    else {}
+                ),
+            },
         )
         assert digest(initial) == data["source_checkpoint_hash"]
         if state is not None and digest(state) != data["source_checkpoint_hash"]:
