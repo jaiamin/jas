@@ -58,10 +58,10 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | --- | --- | --- | --- | --- |
 | T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Integrated | `bf3b76e` |
 | T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Integrated and accepted | `77f6014`, `c546c85` |
-| T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Ready | — |
+| T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | In progress in isolated worktree | — |
 | T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Complete; fresh merger after T05 | — |
-| T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Complete; fresh merger next | — |
-| T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Ready | — |
+| T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Integration verification in progress | — |
+| T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | In progress in isolated worktree | — |
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Ready | — |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Waiting | — |
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Waiting | — |
@@ -78,6 +78,18 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | T20 | [#31](https://github.com/jaiamin/ass/issues/31) Demonstrate the small-population generalization milestone | T11, T12, T14, T15, T17, T18, T19 | Waiting | — |
 
 ## Preserved drafts and spending
+
+T05 ticket handoff: `t3/researcher-probes`, implementation `504d756`, tested
+combined source `5b70116` including latest integration `8f83a36`. Real bounded
+catalog/context/copied-world operations reach answers, planner handoff and
+durable streamed activity. The controlled development replay is 14 red → 14
+green; merged checks pass 961 backend, 108 frontend and 14 affected browser
+tests plus lint/types/build. The pre-merge full browser suite passed 169 tests.
+The identical inherited six-case comparison has no regressions/failures and
+unchanged 22 scripted requests. Read [T05 evidence](research/T05_RESEARCHER.md);
+preserve ignored `data/t05/` before cleanup. No paid calls, live competence claim,
+publication or tracker changes. Parent acceptance/fresh integration review is
+still pending; other ticket statuses and milestone gates are unchanged.
 
 T01 evidence: [baseline report and inherited comparison procedure](research/T01_BASELINE.md).
 Source `d5527c0b4cb57cb63f8d39cb74d335396042e711` on
@@ -125,9 +137,9 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. Fresh-merge completed T05/#16, then T04/#15; preserve ignored evidence before
-   cleanup. Start T03/#14 next. T06/#17 and T07/#18 remain Ready for available
-   slots. T02 review is accepted.
+1. Finish T05/#16 integration verification, then fresh-merge completed T04/#15;
+   preserve ignored evidence before cleanup. T03/#14 and T06/#17 are in progress
+   in isolated worktrees; T07/#18 remains Ready. T02 review is accepted.
 2. Review and merge each accepted slice sequentially, then refresh/link draft
    PR #32; qualification failure gates generated execution, not trusted worlds.
 3. Preserve source-stamped inherited and new-behavior evidence for each slice;
