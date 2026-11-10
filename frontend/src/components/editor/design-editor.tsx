@@ -151,10 +151,34 @@ export function DesignEditor({
       navigate(`/studies/${result.id}`, { state: { notice } });
     },
   });
-  const environment = catalog.environments.find(
-    (e) => e.key === design.environment,
-  );
-  if (!environment) throw new Error("Unknown environment in protocol");
+  // A saved revision owns its relay package even after library deletion. This
+  // metadata keeps its controls available; the API still checks actual admission.
+  const editorCatalog: Catalog =
+    design.environment === "sealed_relay" &&
+    design.environment_source &&
+    !catalog.environments.some((item) => item.key === "sealed_relay")
+      ? {
+          ...catalog,
+          environments: [
+            ...catalog.environments,
+            {
+              key: "sealed_relay",
+              name: "Pinned admitted sealed relay",
+              description:
+                "Finite two-participant relay with a pinned package.",
+              primary_metric: "relay_success",
+              parameters: ["relay", "memory"],
+              measures: ["relay_success"],
+              measure_definitions: {
+                relay_success:
+                  "Whether the relay was released before termination.",
+              },
+              rule_version: design.environment_source.definition.rule_version,
+              source: design.environment_source,
+            },
+          ],
+        }
+      : catalog;
   const validate = useMutation({
     mutationFn: (specification: unknown) =>
       api<Design>("/design/validate", { design: specification }),
@@ -196,13 +220,15 @@ export function DesignEditor({
     mutationFn: ({
       example,
       bindings,
+      source = design.environment_source,
     }: {
       example: string;
       bindings: Record<string, string>;
+      source?: SavedEnvironment | null;
     }) =>
       api<Design>("/design/use-environment", {
         design,
-        source: design.environment_source,
+        source,
         example,
         bindings,
       }),
@@ -344,6 +370,7 @@ export function DesignEditor({
       {saveEnvironment.error && (
         <Alert variant="error">{saveEnvironment.error.message}</Alert>
       )}
+      {reuse.error && <Alert variant="error">{reuse.error.message}</Alert>}
       <Tabs
         value={activeSection}
         onValueChange={(value) => {
@@ -365,9 +392,13 @@ export function DesignEditor({
             >
               <QuestionFields
                 design={design}
-                catalog={catalog}
+                catalog={editorCatalog}
                 onChange={setDesign}
-                onEnvironmentChange={setPendingEnvironment}
+                onEnvironmentChange={(value) => {
+                  // Finish the select's Enter activation before moving focus to
+                  // the dialog, where its default click would otherwise cancel.
+                  requestAnimationFrame(() => setPendingEnvironment(value));
+                }}
                 disabled={busy}
               />
             </TabsContent>
@@ -399,12 +430,9 @@ export function DesignEditor({
                     }
                   />
                 )}
-                {reuse.error && (
-                  <Alert variant="error">{reuse.error.message}</Alert>
-                )}
                 <ConditionFields
                   design={design}
-                  catalog={catalog}
+                  catalog={editorCatalog}
                   onChange={setDesign}
                 />
                 <TaskFields
@@ -422,7 +450,7 @@ export function DesignEditor({
               <ExecutionFields
                 key={formVersion}
                 design={design}
-                catalog={catalog}
+                catalog={editorCatalog}
                 onChange={setDesign}
               />
             </TabsContent>
@@ -433,7 +461,7 @@ export function DesignEditor({
             >
               <ExperimentReview
                 design={design}
-                catalog={catalog}
+                catalog={editorCatalog}
                 onEdit={setStep}
               />
               {explanation && (
@@ -610,6 +638,14 @@ export function DesignEditor({
             <AlertDialogDescription>
               Measurements will reset. Tasks and resource schedules that do not
               apply will be removed.
+              {pendingEnvironment === "sealed_relay" && (
+                <>
+                  {" "}
+                  This relay requires exactly two existing agents. The selected
+                  example binds its roles to those agents in order; review the
+                  bindings in Conditions before saving.
+                </>
+              )}
               {(pendingEnvironment === "distributed_coordination" ||
                 pendingEnvironment === "reliance_commitments") && (
                 <>
@@ -636,7 +672,19 @@ export function DesignEditor({
                   (item) => item.key === value,
                 );
                 if (!env) return;
-                setDesign((design) => changeEnvironment(design, env));
+                if (value === "sealed_relay") {
+                  const example = env.source.definition.examples[0];
+                  reuse.mutate({
+                    source: env.source,
+                    example: example.key,
+                    bindings: Object.fromEntries(
+                      example.roles.map((role, index) => [
+                        role,
+                        design.profiles[index]?.key ?? "",
+                      ]),
+                    ),
+                  });
+                } else setDesign((design) => changeEnvironment(design, env));
                 setPendingEnvironment(null);
               }}
             >

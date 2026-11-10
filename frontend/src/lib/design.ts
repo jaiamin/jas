@@ -183,6 +183,7 @@ export function changeEnvironment(
 }
 
 export function minimumParticipants(environment: Design["environment"]) {
+  if (environment === "sealed_relay") return 2;
   if (environment === "reliance_commitments") return 4;
   if (environment === "distributed_coordination") return 3;
   return ["commons", "trust_exchange", "institution", "bargaining"].includes(

@@ -283,10 +283,15 @@ Only the bounded worker compiles WAT; no stored prose or source runs in the app.
 Containment qualification plus independent exhaustive finite inputs and literal World
 privacy/resource/stop/checkpoint/replay witnesses precede admission. Revisions pin
 exact source/compiled hashes, package/capability versions and full check provenance.
-Library changes cannot affect them. Every actual execution and replay requires the
-same qualified runtime; restart or failure revokes it, without affecting inspection.
+Library changes cannot affect them. New drafts, saves, revisions and candidate or
+proposal probes require the actual matching admission before any worker use.
+Already admitted revision pins retain their package after original admission
+sidecar loss. Every actual execution and replay, including a zero-turn replay,
+requires the matching current qualified runtime; restart or failure revokes it,
+without affecting inspection.
 The normal Engine retains one writer and commits in-flight final responses on Pause;
-relay transitions run off the API event loop. Candidate self-tests grant no authority.
+relay transitions and executable create/revise validation run off the API event
+loop. Candidate self-tests grant no authority.
 Other semantics, imports, generation and adjudication remain unsupported. Finite
 qualification makes no claim about arbitrary-program correctness or intelligence.
 See [the contract](EXTENSIONS.md) and [T16 evidence](research/T16_EXTENSION_ADMISSION.md).
@@ -626,7 +631,7 @@ continues to settle its own consequences independently of model prose.
 
 `EnvironmentLibrary` owns reusable custom setups as versioned JSON records in a sibling
 `<database-stem>.environments` directory. An in-memory workspace uses a temporary library.
-The v6 library contract stores an `EnvironmentMechanics` definition and named configuration
+The v7 library contract stores an `EnvironmentMechanics` definition and named configuration
 examples, independently of questions, participant/model/harness assignments, condition arms,
 replication and analysis. Examples declare unbound mechanic roles; experiment authors bind
 those roles to their own participants. Memory remains an experiment/harness choice.
@@ -648,7 +653,7 @@ the experiment adapts those examples. Editing/deleting a reusable environment ne
 or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
 12 recent definitions as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
-call or run. Database schema 9, export 10 and library v6 reject incompatible versions explicitly; there is
+call or run. Database schema 10, export 11 and library v7 reject incompatible versions explicitly; there is
 no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 ### Failure-aware comparisons (T06)
@@ -681,7 +686,7 @@ Analysis submissions synchronously freeze cutoffs, dispositions, terminal metric
 eligibility, revision/hash and calculations before the server task runs. Progress,
 reconnect, failure and export preserve that snapshot across later run completion or
 new revisions. Analysis reads do not append participant evidence or provider calls.
-Study export v10 includes this versioned comparison contract and persisted analysis
+Study export v11 includes this versioned comparison contract and persisted analysis
 snapshots, changing earlier consumer expectations. T06 changes no database columns and
 requires no data reset; historical evidence is never backfilled with invented states.
 
@@ -731,7 +736,9 @@ artifact. Inspection/export/replay remain
 read-only. Exposure-conditioned descriptions are post-treatment selections, not
 automatic causal effects; inclusion establishes no attention, belief or intent.
 
-Exposure capture v1 was introduced in export v7; current export v10 retains the
+Exposure capture v1 was introduced in export v7; current export v11 retains the
 exposure chain and frozen analysis artifacts alongside artifact work. T09 advances
-the database to schema 7; T10 extends the typed mechanics contract to schema 8; T16 advances it to schema 9 for pinned executable packages. Exposure provenance alone does not alter controlled-world
+the database to schema 7; T10 extends the typed mechanics contract to schema 8;
+T11 adds typed commitments in schema 9; T16 advances it to schema 10 for pinned
+executable packages. Exposure provenance alone does not alter controlled-world
 settlement, prompts or checkpoint replay. No migration or reset is performed.

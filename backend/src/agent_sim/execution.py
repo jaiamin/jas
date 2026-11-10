@@ -276,6 +276,11 @@ class Engine:
 
     def replay(self, run_id: str) -> dict:
         run, design, condition = self.research.configuration(run_id)
+        if design.environment == "sealed_relay":
+            assert design.environment_source and design.environment_source.definition.extension
+            # Even an empty replay needs the matching current runtime. The trusted
+            # revision carries its admission; original sidecars are not required.
+            self.research.extensions.check_runtime(design.environment_source.definition.extension)
         world = self.research.world(design, condition.parameters, run.seed)
         if run.checkpoint["rule_version"] != world.version:
             raise ValueError("This saved run requires a different environment rule version")

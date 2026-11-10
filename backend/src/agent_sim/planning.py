@@ -452,7 +452,15 @@ class Planner:
 
         planning = {"sources": [], "reviews": []}
         user_text = " ".join(
-            " ".join([question, *(str(turn.get("question", "")) for turn in conversation)])
+            " ".join(
+                [
+                    question,
+                    *(str(turn.get("question", "")) for turn in conversation),
+                    # Validate quotations against actual captured user questions,
+                    # even after the recent full-proposal prompt window moves on.
+                    *(previous.question for previous in tools.previous.values()),
+                ]
+            )
             .casefold()
             .split()
         )

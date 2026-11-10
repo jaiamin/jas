@@ -235,13 +235,24 @@ class ResearchTools:
                     data=data,
                     sources=[{"kind": "analysis", "id": item.id, "hash": digest(data)}],
                 )
-        elif request.environment is not None and request.environment not in CATALOG:
-            operation.update(
-                status="rejected",
-                summary="This environment is not implemented in the trusted catalog.",
-                data=None,
-            )
         else:
+            custom = [
+                record.model_dump()
+                for record in self.research.environments.list()
+                if request.environment is None
+                or record.definition.environment == request.environment
+            ][:12]
+            if (
+                request.environment is not None
+                and request.environment not in CATALOG
+                and not custom
+            ):
+                operation.update(
+                    status="rejected",
+                    summary="This environment is not implemented in the trusted catalog.",
+                    data=None,
+                )
+                return operation
             environments = []
             for key, definition in CATALOG.items():
                 if request.environment is not None and key != request.environment:
@@ -261,18 +272,13 @@ class ResearchTools:
                 }
                 environments.append(data)
                 operation["sources"].append({"kind": "builtin", "id": key, "hash": digest(data)})
-            custom = [
-                record.model_dump()
-                for record in self.research.environments.list()
-                if request.environment is None
-                or record.definition.environment == request.environment
-            ][:12]
             operation["sources"].extend(
                 {"kind": "environment", "id": record["id"], "hash": record["sha256"]}
                 for record in custom
             )
             operation.update(
-                summary=f"Inspected {len(environments)} implemented environment definitions.",
+                summary=f"Inspected {len(environments)} installed and {len(custom)} saved "
+                "environment definitions.",
                 data={
                     "environments": environments,
                     "custom_environments": custom,
