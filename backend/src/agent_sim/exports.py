@@ -65,7 +65,7 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
     }
     return {
         "format": "jas-study",
-        "version": 4,
+        "version": 6,
         "rule_versions": sorted({run.checkpoint["rule_version"] for run in runs}),
         "study": detail,
         "annotations": [

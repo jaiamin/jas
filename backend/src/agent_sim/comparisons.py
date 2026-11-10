@@ -27,6 +27,17 @@ BOUNDED_ENDPOINTS = {
     "extraction_rate",
     "collapse_rate",
 }
+DISPOSITIONS = {
+    "complete": "Terminal run captured",
+    "ready": "Not attempted",
+    "paused": "Interrupted or paused before completion",
+    "failed": "Run failed before completion",
+    "queued": "Run is still in progress at capture",
+    "running": "Run is still in progress at capture",
+    "pausing": "Run is still in progress at capture",
+    "cutoff": "Historical nonterminal cutoff; run disposition at that time was not captured",
+    "not_captured": "Planned cell is outside the captured scope or has no run record",
+}
 
 
 @dataclass(frozen=True)
@@ -53,7 +64,12 @@ def sensitivity(metric: str, arms: list[list[dict]], design: Design) -> dict:
         for arm in arms
         for cell in arm
     )
-    if metric not in BOUNDED_ENDPOINTS or undefined:
+    observed = all(
+        cell["status"] == "complete" and metric in cell["metrics"]
+        for arm in arms
+        for cell in arm
+    )
+    if not observed and (metric not in BOUNDED_ENDPOINTS or undefined):
         return {
             "status": "not_identified",
             "bounds": None,
@@ -82,8 +98,12 @@ def sensitivity(metric: str, arms: list[list[dict]], design: Design) -> dict:
     return {
         "status": "bounded" if missing else "observed",
         "bounds": bounds,
-        "reason": "Possible planned-sample values under enforced [0, 1] endpoint bounds; "
-        "equal planned repetitions within seed and equal planned seeds. "
+        "reason": (
+            "All planned endpoint values observed; exact finite planned-sample value. "
+            if observed
+            else "Possible planned-sample values under enforced [0, 1] endpoint bounds; "
+        )
+        + "Equal planned repetitions within seed and equal planned seeds. "
         "These are worst-case sensitivity bounds, not a confidence interval or imputed outcomes.",
     }
 
@@ -97,21 +117,7 @@ def compare_runs(runs: list[ComparisonRun], design: Design) -> dict:
             for repetition in range(1, design.repetitions + 1):
                 run = records.get((condition.key, seed, repetition))
                 status = run.status if run else "not_captured"
-                reason = (
-                    run.error
-                    if run and run.error
-                    else "Terminal run captured"
-                    if status == "complete"
-                    else "Not attempted"
-                    if status == "ready"
-                    else "Interrupted or paused before completion"
-                    if status == "paused"
-                    else "Run failed before completion"
-                    if status == "failed"
-                    else "Run is still in progress at capture"
-                    if status in {"queued", "running", "pausing"}
-                    else "Planned cell is outside the captured scope or has no run record"
-                )
+                reason = run.error if run and run.error else DISPOSITIONS[status]
                 cell = {
                     "run_id": run.run_id if run else None,
                     "condition_key": condition.key,

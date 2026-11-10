@@ -131,4 +131,46 @@ Observed first checkpoint (all keyless, starting integration ancestry unchanged)
 Exploratory glob `docs/EXPORT*` did not exist (exit 2); used DEVELOPMENT.md and
 exports.py instead. One patch missed a formatter-changed function signature and
 made no edit; reapplied at a stable nearby assertion. No failed attempt was
-discarded. Implementation/browser/integration verification remains in progress.
+discarded.
+
+Second checkpoint (including accepted T05 tip
+`39491def73da7334164ca6d98896eaa03a2e5bf5` at merge `684d161`):
+
+- T05-focused backend: 52 passed; full backend: **970 passed** (113.55 s).
+  Frontend lint, **109 tests / 29 files**, TypeScript and production build passed.
+- The new real-API browser flow passed at light/dark and 390/1440 widths:
+  keyboard disclosure, planned counts, missing pairs/bounds, actual export
+  download, immutable old revision and zero requests. The full inherited browser
+  suite then passed **178 tests** (414.66 s), including those four cases. Source
+  stayed unchanged throughout every recorded check. Screenshots and downloads
+  remain in `browser-new-artifacts/` and `browser-inherited-artifacts/`.
+- Shared preview navigation timed out and its snapshot returned “No preview
+  automation host”; after these two failures the installed agent-browser
+  inspected the task's read-only summary/detail successfully. That session was
+  closed; the owned shared preview tab was also closed. Errors and manual
+  screenshots/logs remain under `setup/`.
+- Export contract red required a version bump for changed comparison semantics.
+  T06 chooses **v6**, reserving T04's concurrent v5 activation contract. The first
+  green attempt exposed inherited baseline assertions still requiring successful
+  v4 reports; fixed only current tests, never the frozen runner/cases. The full
+  backend pass includes those repairs.
+- Frozen T01 after run (`after-pre-t04/`) executed all six cases. Four workflow
+  cases fail **only** its historical `export-v4` assertion; the two expected
+  schema-rejection cases pass. Its comparison exits 1 for those four contract
+  flags and resulting `passed` flags. All other workflow, privacy, replay and
+  accounting checks pass, with unchanged synthetic request usage. Preserve this
+  intentional difference; it is not a fresh all-green baseline score.
+- Independent review oracle `complete-payoff-v1` froze A=20, B=40, difference=20
+  before execution. It exposed wrongly withholding an exact finite sample value
+  when no missing outcomes exist. Script red and durable API red → green retained;
+  the complete new API set then passed 9 cases. Population intervals remain
+  withheld. Only missing outcomes require an enforced range.
+- Independent one-microdollar-ceiling case exposed attempted=0 for a failed
+  reservation with no sent request. First test attempt incorrectly searched for
+  “budget” instead of the existing “spending ceiling” message; corrected the
+  expectation, observed intended red, then green. Study and failed analysis/export
+  now retain an execution attempt without inventing a provider request or cost.
+  A discovery glob `test_accounting*` did not exist (exit 2); used existing
+  `test_llm.py` and lifecycle coverage. All failed attempts remain archived.
+
+Integration of accepted T04/schema v5 and final checks remain in progress.

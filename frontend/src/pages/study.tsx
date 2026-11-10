@@ -231,11 +231,9 @@ export default function Study() {
                               <TableCell key={c.key} className="tabular-nums">
                                 {metric(key, result?.mean)}
                                 <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
-                                  {result?.runs ?? 0} / {result?.planned ?? 0}{" "}
-                                  planned runs · {result?.seeds ?? 0} seed
-                                  clusters
-                                  {result?.interval &&
-                                    ` · ${metric(key, result.interval[0])}–${metric(key, result.interval[1])}`}
+                                  {result?.runs ?? 0} eligible /{" "}
+                                  {result?.planned ?? 0} planned runs ·{" "}
+                                  {result?.seeds ?? 0} seed clusters
                                 </span>
                               </TableCell>
                             );

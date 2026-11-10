@@ -465,7 +465,9 @@ class Research:
                     repetition=run["repetition"],
                     status=run["status"],
                     through_turn=run["turn"],
-                    attempted=run["turn"] > 0 or run["usage"]["requests"] > 0,
+                    attempted=run["turn"] > 0
+                    or run["usage"]["requests"] > 0
+                    or run["status"] == "failed",
                     metrics=metrics.get(run["id"], {}),
                     error=run["error"],
                 )
@@ -691,7 +693,7 @@ class Research:
                     repetition=run.repetition,
                     status=status,
                     through_turn=cutoff,
-                    attempted=cutoff > 0 or run.id in attempted,
+                    attempted=cutoff > 0 or run.id in attempted or status == "failed",
                     metrics=aggregate_metrics(values[run.id]) if terminal else {},
                     error=run.error if run.turn == cutoff else None,
                 )

@@ -225,7 +225,7 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v4 (`jas-study`)
+Every Analysis has an indexed conversation identity. Study export v6 (`jas-study`)
 includes every revision and its runs, actual recorded rule versions, exact turn evidence
 and provider traces; it batches
 journal queries.
@@ -244,7 +244,7 @@ checkpoint. Frozen held-out model families are opened only at the declared final
 the report preserves failures, costs and remaining uncertainty. See [protocol](../benchmarks/protocol.md).
 
 The investigator's computed index includes cutoff-scoped opportunity counts, actual
-balances/utility, measurement counts and matched-seed effects for completed runs. These
+balances/utility, measurement counts and failure-aware matched-seed effects. These
 aggregates cover the captured scope; inspected turns support qualitative examples. Repeated
 identical evidence requests are deduplicated, and the fourth call has an answer-only schema.
 The Agent still validates every citation against an inspected range and frozen cutoff.
@@ -252,7 +252,7 @@ The Agent still validates every citation against an inspected range and frozen c
 ## Analysis calculations
 
 The investigator receives cutoff-scoped opportunity counts, actual balances, decision usage
-and completed-run matched effects. Conditions group by immutable revision even when their
+and failure-aware matched effects. Conditions group by immutable revision even when their
 private profiles differ. Shared experiment ceilings are distinct from measured execution cost.
 
 For immediate commons counterfactuals, a bounded `commons_payoffs` request evaluates supplied
@@ -297,3 +297,34 @@ or pending experiment rules, run checkpoints, exports or evidence. The planner r
 12 recent compatible setups as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
 call or run. See [custom environments](CUSTOM_ENVIRONMENTS.md) for mechanics and limitations.
+
+### Failure-aware comparisons (T06)
+
+Study results enumerate the immutable revision's entire planned condition × seed ×
+repetition matrix. Comparison v1 retains current dispositions, attempted/complete/
+failed/interrupted/excluded/unmatched counts and cell reasons; undefined metric
+eligibility has a separate exclusion. Observed means use terminal, eligible outcomes;
+contrasts use matched terminal pairs, averaging repetitions within seed and then
+weighting observed seed clusters equally. Counts overlap and never create independent
+support from interacting participants or repeated decisions. Nonbaseline conditions
+match only the first condition; the baseline can be unmatched in multiple contrasts.
+
+Protocols currently declare no sampling/randomization basis for population inference.
+Confidence intervals are therefore withheld for every seed count. Observed clusters
+are reported; independent support remains unestablished. For endpoints defined in
+every terminal run with enforced [0,1] values, deterministic worst-case bounds cover
+the *planned* equally weighted seed/repetition sample, using observed unmatched arms
+where available. These are sensitivity bounds, not imputation or confidence intervals.
+Conditional/undefined or unsupported-range metrics retain an explicit lack of
+identification when outcomes are missing. Fully observed endpoints have exact
+finite planned-sample values even without a missing-value range. Selected means
+require outcome-independent completion/eligibility
+to generalize beyond their observed support.
+
+Analysis submissions synchronously freeze cutoffs, dispositions, terminal metric
+eligibility, revision/hash and calculations before the server task runs. Progress,
+reconnect, failure and export preserve that snapshot across later run completion or
+new revisions. Analysis reads do not append participant evidence or provider calls.
+Study export v6 includes this versioned comparison contract and persisted analysis
+snapshots, changing v4/v5 consumer expectations. T06 changes no database columns and
+requires no data reset; historical evidence is never backfilled with invented states.

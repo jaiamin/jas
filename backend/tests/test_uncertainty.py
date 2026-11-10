@@ -17,7 +17,11 @@ from pydantic_ai.usage import RequestUsage
 
 @pytest.fixture
 def client(tmp_path, monkeypatch, request):
-    app = create_app(f"sqlite:///{tmp_path}/uncertainty.sqlite3", static_dir=tmp_path / "static")
+    app = create_app(
+        f"sqlite:///{tmp_path}/uncertainty.sqlite3",
+        static_dir=tmp_path / "static",
+        budget_usd=getattr(request, "param", None),
+    )
     operations = []
     with TestClient(app, base_url="http://localhost") as client:
         send = client.request
@@ -159,6 +163,7 @@ def test_missing_arm_preserves_matrix_and_bounds_without_inventing_outcomes(
     assert failed["status"] == "failed" and failed["reason"]
     assert failed["metrics"] == {}
     exported = client.get(f"/api/studies/{sid}/export").json()
+    assert exported["version"] == 6
     assert exported["study"]["comparison"] == comparison
     assert exported["study"]["sha256"] == study["sha256"]
     for rid, record in before.items():
@@ -340,3 +345,58 @@ def test_unmatched_counts_follow_planned_baseline_contrasts_not_unplanned_pairs(
         ("c", 0),
     ]
     assert len(report["comparison"]["cells"]) == 3
+
+
+def test_fully_observed_payoff_identifies_planned_sample_without_population_interval(
+    client, design, monkeypatch
+):
+    # Two agents retain 10 each in A; in B both contribute 10 and receive 20.
+    sid, runs = save(client, design, seeds=(7,))
+    execute(client, monkeypatch, runs["a", 7, 1], 0)
+    execute(client, monkeypatch, runs["b", 7, 1], 10)
+    study = client.get(f"/api/studies/{sid}").json()
+    a = result(study, "a", "group_payoff")
+    b = result(study, "b", "group_payoff")
+    effect = next(e for e in study["effects"] if e["metric"] == "group_payoff")
+    assert (a["mean"], b["mean"], effect["mean"]) == (20, 40, 20)
+    for record, bounds in ((a, [20, 20]), (b, [40, 40]), (effect, [20, 20])):
+        assert record["sensitivity"]["status"] == "observed"
+        assert record["sensitivity"]["bounds"] == bounds
+        assert record["interval"] is None
+    assert study["comparison"]["independent_support"] is None
+
+
+@pytest.mark.parametrize("client", [0.000001], indirect=True)
+def test_execution_failure_before_provider_sending_is_attempted_without_spend(
+    client, design, monkeypatch
+):
+    sid, runs = save(client, design, seeds=(7,))
+    execute(client, monkeypatch, runs["a", 7, 1])
+    run = client.get(f"/api/runs/{runs['a', 7, 1]}").json()
+    assert run["summary"]["status"] == "failed"
+    assert "No request was sent" in run["summary"]["error"]
+    assert (run["summary"]["turn"], run["summary"]["usage"]["requests"]) == (0, 0)
+    study = client.get(f"/api/studies/{sid}").json()
+    assert [
+        (c["planned"], c["attempted"], c["failed"], c["ready"])
+        for c in study["comparison"]["conditions"]
+    ] == [(1, 1, 1, 0), (1, 0, 0, 1)]
+    assert study["usage"]["cost_usd"] == 0
+    posted = client.post(
+        "/api/chats",
+        json={"question": "Compare without omitting failures", "context": f"study:{sid}"},
+    )
+    assert posted.status_code == 202, posted.text
+    aid = posted.json()["id"]
+
+    async def finished():
+        await client.app.state.assistants.tasks[aid]
+
+    client.portal.call(finished)
+    analysis = client.get(f"/api/analyses/{aid}").json()
+    assert analysis["status"] == "failed"
+    snapshot = next(iter(analysis["output"]["comparisons"].values()))
+    assert snapshot["comparison"]["conditions"][0]["attempted"] == 1
+    exported = client.get(f"/api/studies/{sid}/export").json()
+    assert exported["analyses"][0]["output"]["comparisons"] == analysis["output"]["comparisons"]
+    assert client.get(f"/api/runs/{runs['a', 7, 1]}").json()["summary"]["usage"]["requests"] == 0
