@@ -293,6 +293,49 @@ repair's preservation failures, remain failures. Final normal hooks and source
 closure follow these checks. Frontend/complete-product, remaining ticket and final
 runtime/benchmark gates are still open.
 
+## Untrusted Markdown image navigation — frozen oracle before output
+
+The installed react-markdown10.1.0 official README documents the `components`
+mapping, `img` src/alt props and default URL filtering. JAS currently overrides
+links but uses the default image renderer. Before any image-renderer repair, two
+literal public component cases require that a generated remote tracking URL and
+a same-origin API URL create no image/iframe/object/embed. Each must instead be
+an explicitly named, keyboard-operable image link that opens separately with
+noopener/noreferrer. Raw HTML and executable-URL filtering must remain intact.
+This is a source concern until its first actual failing observation; a DOM test
+does not itself establish browser-network behavior. Browser verification follows
+the focused component result using an intercepted remote URL with zero real
+external requests.
+
+Both intended cases failed at27ccad9b because ordinary Markdown produced an img
+with the literal URL. The minimal component override makes images explicit links
+while retaining the library's URL filtering. All5 component cases pass at0229a115,
+including javascript/data URL negatives. Affected Biome, forced TypeScript and
+an isolated empty-output Vite build pass at the same source; the broader Agent
+component selection passes16 cases/5 files atc6d734d6. Impeccable's mechanical
+detector returns no findings for the two changed files.
+
+The first browser entry stopped125 before execution at398,831,616<402,653,184.
+After documented scratch retirement, the distinct second entry admitted at
+402,731,008 bytes and passed with source unchangedc6d734d6. It served a clearly
+labeled, seeded Analysis row through the real keyless HTTP app and WorkspaceShell;
+it is not generated model output or a competence witness. Desktop/light inspection
+at1280 and1440 and phone/dark at390 show the expected links with no document
+overflow or console errors. Native keyboard Tab moves between the links with a
+visible focus outline. Full browser resource entries and the server log contain
+zero requests for either the remote image URL or same-origin audit-image path;
+the conversation has no img/iframe/object/embed. The SQLite provider ledger has
+zero rows. Both links preserve the frozen target/rel attributes and ordinary
+references remain usable. No external image was clicked or requested.
+
+The owned Uvicorn process exited-15 with completed lifespan and reusable18231;
+the shared lock is released. The preview host ignored window.close and exposes
+no close tool, so its owned tab was navigated to about:blank to detach polling.
+The report claims server closure, not physical closure of that host tab. Current
+records are `current/markdown-*` and browser-proof.json; screenshots are referenced
+by their original browser-tool paths. These checks qualify this small renderer
+change; the combined T17/T18 and final UI/runtime/benchmark gates remain open.
+
 ## Remaining review
 
 - Browser verification of the remaining ticket workflows and both app themes.
