@@ -722,6 +722,19 @@ class Research:
                 .where(RecordedEvent.run_id == run_id, RecordedEvent.turn <= cutoff)
                 .order_by(RecordedEvent.id)
             ).all()
+            read_grants: dict[str, list[str]] = {}
+            if cutoff and design.environment in {"reliance_commitments", "institutional_workflow"}:
+                grants = session.execute(
+                    select(Turn.checkpoint["read_grants"]).where(
+                        Turn.run_id == run_id, Turn.number == cutoff
+                    )
+                ).scalar_one()
+                if design.environment == "reliance_commitments":
+                    read_grants = grants
+                else:
+                    for actor, artifacts in grants.items():
+                        for artifact in artifacts:
+                            read_grants.setdefault(artifact, []).append(actor)
             operations: dict[str, list[int]] = {key: [] for key in ids}
             artifact_reads = []
             for operation in session.scalars(
@@ -742,6 +755,7 @@ class Research:
             events,
             operations,
             through_turn=cutoff,
+            read_grants=read_grants,
             artifact_reads=artifact_reads,
         )
 

@@ -9,7 +9,7 @@ from agent_sim.api import create_app
 from agent_sim.templates import templates
 from fastapi.testclient import TestClient
 from pydantic_ai.messages import ModelResponse, ToolCallPart
-from pydantic_ai.models.function import FunctionModel
+from pydantic_ai.models.function import DeltaToolCall, FunctionModel
 from pydantic_ai.usage import RequestUsage
 
 
@@ -136,6 +136,67 @@ def test_two_policies_run_real_operations_with_individual_accounting(harness_cli
     assert exported["version"] == 13
     assert len(exported["activations"]) == 2
     assert len(exported["requests"]) == 5
+
+
+def test_researcher_indexes_tool_requests_separately_from_its_own_analysis(
+    harness_client, design, monkeypatch
+):
+    client, _ = harness_client
+    _, rid = save(client, protocol(design))
+    participant = step(client, rid)
+    expected = {
+        "requests": 4,
+        "input_tokens": 400,
+        "output_tokens": 200,
+        "cost_usd": 0.00014,
+        "partial": False,
+    }
+    assert participant["summary"]["usage"] == expected
+    indexes = []
+
+    async def analyze(messages, info):
+        payload = json.loads(messages[-1].parts[0].content)
+        indexes.append(payload["index"])
+        yield {
+            0: DeltaToolCall(
+                name=info.output_tools[0].name,
+                json_args=json.dumps(
+                    {
+                        "requests": [],
+                        "answer": {
+                            "answer": "Recorded participant usage is distinct from analysis usage.",
+                            "citations": [],
+                            "caveats": ["Scripted requests establish accounting only."],
+                            "claims": [],
+                        },
+                    }
+                ),
+            )
+        }
+
+    provider = FunctionModel(stream_function=analyze)
+    monkeypatch.setattr(client.app.state.models, "model", lambda _: provider)
+
+    async def finished(analysis_id):
+        await client.app.state.assistants.tasks[analysis_id]
+
+    for question in ["Inspect participant spending.", "Inspect it again after analysis."]:
+        submitted = client.post("/api/chats", json={"question": question, "context": f"run:{rid}"})
+        assert submitted.status_code == 202, submitted.text
+        analysis_id = submitted.json()["id"]
+
+        client.portal.call(finished, analysis_id)
+        result = client.get(f"/api/analyses/{analysis_id}").json()
+        assert result["status"] == "complete", result
+        assert result["usage"]["requests"] == 1
+        assert indexes[-1]["runs"][0]["through_turn"] == 1
+        assert indexes[-1]["runs"][0]["execution_usage"] == expected
+        assert result["output"]["evidence_index"]["runs"][0]["execution_usage"] == expected
+    assert len(indexes) == 2
+    usage = client.get("/api/settings").json()["usage"]
+    assert usage["requests"] == 6
+    assert client.post(f"/api/runs/{rid}/verify").json()["model_requests"] == 0
+    assert client.get("/api/settings").json()["usage"] == usage
 
 
 @pytest.mark.parametrize(
@@ -643,11 +704,7 @@ def test_tool_policy_runs_existing_worlds_and_keeps_profile_model_assignment_ind
             "operation": "decide" if read else "observe",
             "decision": decision_for(read[0]["result"]) if read else None,
         }
-        if template["id"] in {
-            "artifact_workspace",
-            "distributed_coordination",
-            "reliance_commitments",
-        }:
+        if "read" in info.output_tools[0].parameters_json_schema["properties"]:
             output["read"] = None
         return ModelResponse(
             parts=[ToolCallPart(info.output_tools[0].name, output)],

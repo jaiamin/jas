@@ -451,6 +451,122 @@ def test_analysis_acceptance_keeps_its_cutoff_when_a_step_commits_during_capture
     assert saved["output"]["exposure"][rid] == frozen
 
 
+def test_export_stays_coherent_when_a_step_commits_during_capture(
+    claim_client, design, monkeypatch
+):
+    client, _, _ = claim_client
+    sid, rid = save(client, design)
+    assert run(client, rid, "step")["turn"] == 1
+    entered, release = Event(), Event()
+    evidence = client.app.state.research.evidence
+
+    def scheduled_evidence(run_id, number):
+        # Delay the real reader after export has selected its recorded turns.
+        if run_id == rid and number == 0 and not entered.is_set():
+            entered.set()
+            assert release.wait(10)
+        return evidence(run_id, number)
+
+    monkeypatch.setattr(client.app.state.research, "evidence", scheduled_evidence)
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        pending = executor.submit(client.get, f"/api/studies/{sid}/export")
+        try:
+            assert entered.wait(5)
+            assert run(client, rid, "step")["turn"] == 2
+        finally:
+            release.set()
+        response = pending.result(timeout=10)
+
+    assert response.status_code == 200, response.text
+    exported = response.json()
+    captured = next(row for row in exported["runs"] if row["record"]["summary"]["id"] == rid)
+    record = captured["record"]
+    cutoff = record["summary"]["turn"]
+    assert cutoff in (1, 2)
+    assert [row["number"] for row in captured["evidence"]] == list(range(cutoff + 1))
+    assert record["state"] == captured["evidence"][-1]["checkpoint"]
+    assert next(row for row in exported["study"]["runs"] if row["id"] == rid)["turn"] == cutoff
+    assert len(record["turns"]) == cutoff
+    assert len(record["activations"]) == cutoff
+    assert len([row for row in exported["requests"] if row["run_id"] == rid]) == cutoff
+    assert (
+        next(row for row in exported["exposure"] if row["run_id"] == rid)["through_turn"] == cutoff
+    )
+    current = client.get(f"/api/runs/{rid}").json()
+    assert current["summary"]["turn"] == 2
+    assert current["summary"]["usage"] == {
+        "requests": 2,
+        "input_tokens": 200,
+        "output_tokens": 100,
+        "cost_usd": 0.00007,
+        "partial": False,
+    }
+    assert client.post(f"/api/runs/{rid}/verify").json()["verified_turns"] == 2
+    assert client.get(f"/api/runs/{rid}").json()["summary"]["usage"] == current["summary"]["usage"]
+    fresh = client.get(f"/api/studies/{sid}/export").json()["runs"][0]
+    assert fresh["record"]["summary"]["turn"] == 2
+    assert [row["number"] for row in fresh["evidence"]] == [0, 1, 2]
+
+
+def test_export_retains_pending_reservation_when_it_settles_during_capture(
+    claim_client, design, monkeypatch
+):
+    client, controls, _ = claim_client
+    sid, rid = save(client, design)
+    assert run(client, rid, "step")["turn"] == 1
+    controls.update(participant_gate=Event(), participant_entered=Event())
+    assert client.post(f"/api/runs/{rid}/control", json={"action": "step"}).status_code == 200
+    entered, release = Event(), Event()
+    evidence = client.app.state.research.evidence
+
+    def scheduled_evidence(run_id, number):
+        if run_id == rid and number == 0 and not entered.is_set():
+            entered.set()
+            assert release.wait(10)
+        return evidence(run_id, number)
+
+    monkeypatch.setattr(client.app.state.research, "evidence", scheduled_evidence)
+    try:
+        assert controls["participant_entered"].wait(5)
+        before = client.get(f"/api/runs/{rid}").json()
+        assert before["summary"]["turn"] == 1
+        assert before["summary"]["usage"]["requests"] == 2
+        assert before["summary"]["usage"]["partial"] is True
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            pending = executor.submit(client.get, f"/api/studies/{sid}/export")
+            try:
+                assert entered.wait(5)
+                controls["participant_gate"].set()
+
+                async def settled():
+                    await client.app.state.engine.executions[rid].task
+
+                client.portal.call(settled)
+            finally:
+                release.set()
+            response = pending.result(timeout=10)
+    finally:
+        controls["participant_gate"].set()
+        release.set()
+
+    assert response.status_code == 200, response.text
+    exported = response.json()
+    captured = exported["runs"][0]
+    assert captured["record"]["summary"] == before["summary"]
+    assert captured["record"]["state"] == before["state"]
+    assert captured["record"]["requests"] == before["requests"]
+    assert [row["number"] for row in captured["evidence"]] == [0, 1]
+    assert len(exported["requests"]) == 2
+    assert [row["status"] for row in exported["requests"]].count("pending") == 1
+    assert sum(round(row["cost_usd"] * 1_000_000) for row in exported["requests"]) == round(
+        before["summary"]["usage"]["cost_usd"] * 1_000_000
+    )
+    current = client.get(f"/api/runs/{rid}").json()
+    assert current["summary"]["turn"] == 2
+    assert current["summary"]["usage"]["cost_usd"] == 0.00007
+    assert current["summary"]["usage"]["partial"] is False
+
+
 def test_analysis_capture_retains_an_inflight_input_at_its_current_turn(claim_client, design):
     client, controls, _ = claim_client
     sid, rid = save(client, design)

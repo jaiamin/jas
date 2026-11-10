@@ -111,6 +111,56 @@ No source history, active child data/environment, shared cache or protected
 original was changed. This supersedes older statements that all raw records
 remain locally retained. Further results will use compact current records.
 
+An additional bounded ROOT retirement is authorized after T12's independent
+closure: regenerated `data/t07` exposure-test output and these historical
+maintenance directories: `closed-root-compression-20261110T110638Z`,
+`closed-root-research-20261110T144922Z`,
+`closed-root-t11-recovery-20261110T131943Z`,
+`closed-root-t11-browser-20261110T143738Z`,
+`closed-root-tree-responses-20261110T151900Z`,
+`closed-root-check-outputs-20261110T153600Z` and
+`closed-maintenance-metadata-20261110`. They contain closed historical ROOT
+output/restoration material whose outcomes are already summarized here and in
+the committed review reports. Their old restoration links become historical.
+Current T12-review evidence, ongoing audit records, child evidence, dependencies,
+shared caches, source history and protected originals stay outside this stage.
+Removal selects names/metadata only, follows no symlink and reads no payload.
+The separate `current/historical-retirement-02` receipt records successful
+metadata-only removal of all eight targets: shared free741,888,000 to810,737,664
+bytes, with unchanged HEAD/index/stash. This is shared, unreserved space.
+
+To preserve current audit evidence while releasing setup headroom, ROOT may
+losslessly compact only closed SQLite scratch beneath
+`current/analysis-capture-claims-01/runtime`. Keep the job's raw result/logs,
+source records and non-SQLite files; exclude protected names and symlink
+descendants before reads. Archive members require exact SHA256/size/mode maps
+and independent streamed readback before duplicate originals are removed.
+This separate `current/closed-audit-sqlite-01` operation has an8MiB added-peak
+limit and the unchanged134,217,728-byte floor. It completed successfully:31
+SQLite members,21,893,120 original bytes,2,092,622-byte archive; independent
+member readback passed before originals were removed. Shared free806,236,160
+to826,011,648. It retires no current proof.
+
+The same verified SQLite-only compaction is also authorized for the closed
+successful `current/analysis-capture-exposure-01/runtime` job, separately recorded
+under `current/closed-audit-sqlite-02`. Preserve its JSON delivery evidence, logs
+and all non-SQLite files. The unchanged8MiB peak/floor and independent member
+verification apply. A tiny provenance-test preflight preserved T18's815,792,128
+setup threshold and rejected125 before running pytest at809,668,608 free; no
+product outcome or automatic retry follows from that resource rejection.
+
+The closed `current/quality-exposure-privacy-01` regression passed21 cases, but
+its retained34,046,438 logical/34,246,656 allocated bytes exceeded ROOT's32MiB
+forecast (by492,006/692,224 bytes respectively). This is a resource-forecast miss,
+separate from pytest exit0; no full resource-boundary PASS is claimed. Future
+equivalent raw-output jobs require48MiB peak or smaller slices. Bookend shared
+free539,910,144→504,442,880 remained above the ordinary floor. ROOT may losslessly
+compact only that closed job's `runtime` and `http` regular files, under8MiB
+added peak with protected/symlink exclusions before reads, exact member hash/
+size/mode map and independent streamed verification before removing originals.
+Keep its original preflight/result/output log raw and record the correction
+separately in `current/closed-audit-output-03`.
+
 ## Qualification after historical evidence retirement
 
 ROOT explicitly retires the inherited requirement to compare new runs against

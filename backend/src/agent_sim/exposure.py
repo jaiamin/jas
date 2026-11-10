@@ -45,20 +45,52 @@ def event_source(event: RecordedEvent, run_id: str) -> dict:
     }
 
 
+def _event_recipients(
+    event: RecordedEvent, design: Design, condition: Treatment, read_grants: dict[str, list[str]]
+) -> set[str]:
+    if event.visibility == "researcher":
+        return set()
+    if event.visibility == "public":
+        return {profile.key for profile in design.profiles}
+    recipients = {key for key in (event.actor, event.target) if key is not None}
+    artifacts = condition.parameters.artifacts
+    if artifacts is not None and event.kind in {"write_artifact", "perform_work"}:
+        artifact = next(
+            (obj for obj in artifacts.objects if obj.key == event.data["artifact"]), None
+        )
+        if artifact is not None:
+            recipients.update(artifact.readers)
+            if artifact.owner is not None:
+                recipients.add(artifact.owner)
+            recipients.update(read_grants.get(artifact.key, []))
+    workflow = condition.parameters.workflow
+    if workflow is not None and event.kind in {
+        "claim_work",
+        "delegate_work",
+        "work_ready",
+        "handoff_work",
+        "accept_handoff",
+    }:
+        key = event.data.get("request", {}).get("work", event.data.get("work"))
+        work = next((work for work in workflow.work_items if work.key == key), None)
+        if work is not None:
+            recipients.update(work.workers)
+            recipients.update(work.handoff_to)
+    return recipients
+
+
 def available_inputs(
-    world: World, observation: Observation, actor: str, events: Sequence[RecordedEvent]
+    world: World, observation: Observation, events: Sequence[RecordedEvent]
 ) -> dict:
     items: list[dict] = [
         {"key": key, "paths": [[field]], "sha256": digest(dict(observation)[field])}
         for key, field in [("rules", "rules"), ("choices", "legal_actions")]
     ]
     items.append({"key": "observation", "paths": [[]], "sha256": digest(observation)})
-    # Recipient enforcement precedes even producer lookup. The producer can only
-    # identify content already in the actor projection; it cannot disclose a source.
+    # The producer only locates content already in this actor's authorized projection.
+    # A private write can be shared with readers beyond the event's actor/target.
     for event in events:
-        if event.visibility == "researcher" or (
-            event.visibility == "private" and actor not in (event.actor, event.target)
-        ):
+        if event.visibility == "researcher":
             continue
         paths = world.exposure_paths(
             {
@@ -195,9 +227,10 @@ def exposure_report(
     operations: dict[str, list[int]],
     *,
     through_turn: int,
+    read_grants: dict[str, list[str]],
     artifact_reads: Sequence[ParticipantOperation] = (),
 ) -> dict:
-    source = {
+    assignment_source = {
         "href": f"/api/studies/{run.study_id}?revision={revision.number}",
         "pointer": "/design",
         "label": f"Revision {revision.number} · {revision.sha256[:12]}",
@@ -212,17 +245,16 @@ def exposure_report(
                     "kind": kind,
                     "participant": profile.key,
                     "after_turn": -1,
-                    "source": source,
+                    "source": assignment_source,
                     "available": [],
                     "inputs": [],
                     "included": False,
                 }
             )
     for event in events:
-        if event.visibility == "researcher":
-            continue
+        recipients = _event_recipients(event, design, condition, read_grants)
         for profile in design.profiles:
-            if event.visibility == "private" and profile.key not in (event.actor, event.target):
+            if profile.key not in recipients:
                 continue
             opportunities.append(
                 {
@@ -381,7 +413,7 @@ def exposure_report(
             "condition_name": condition.name,
             "revision": revision.number,
             "design_sha256": revision.sha256,
-            "source": source,
+            "source": assignment_source,
             "configuration": condition.model_dump(),
         },
         "summary": summary,
