@@ -965,3 +965,26 @@ Next coherent normal-hook checkpoint and normal merge of exact published accepte
 and retired-reference policy. Forecast4MiB for each bounded Git job; source capture
 uses the same protected-excluded tracked selection and source deduplication.
 No publication, moving-ref/provisional merge, install, service or provider grant.
+
+Normal-hook checkpoint is `27782530c0319932599a5be87669b4d2d786c7d9`;
+Gitleaks passes, source before=after
+`dd80daa1b6cd6508b2ae42d37852e3a1677c34dcbc45f866a4de392807531aa3`.
+`accepted-merge-02` normally merges exact approved
+`fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd`, retaining exit1 and exactly two
+documentary conflicts: `HANDOFF.md` and `docs/RESEARCH_HARNESS_PROGRESS.md`.
+Its command is source-anchored to that checkpoint rather than snapshotting an
+unmerged index. Own `retain_conflicts_v1.py` then preflights exact tracked-only
+two-file selection with invocation-local untracked`*` exclusion and protected/
+symlink/descendant guards before payload reads; it retains both complete conflicted
+documents, indexed stages, fixed parents, bytes/SHA/mode/integer-ns and verified
+gzip restoration plus combined diffSHA
+`ff314ea729caf19b57076b2a7734b373dbc9bfaa5763a2eb6ac820e5d87f4e83`.
+Receipt/source members are in own `merge-conflicts-02`; no inherited helper runs.
+
+Resolution preserves BOTH documentary histories, with ROOT's current retirement
+policy and final-product direction before the older preparation sections. Incoming
+files beyond those conflicts are the final-product plan, compact report and the
+accepted composer test's visible-notice wait; no application frontier or T12 code
+enters this merge. No prior failed test/history is reclassified or deleted.
+Both conflicts and both fixed parents remain independently reconstructable.
+Normal-hook merge completion has a separate4MiB preflight/source receipt.

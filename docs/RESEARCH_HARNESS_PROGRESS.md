@@ -110,6 +110,25 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### Final product request and historical evidence retirement (2026-11-10)
+
+The user requests completion plus a minimalist full-product UX pass, frontend/
+backend quality audit, benchmarks, obsolete-data removal and final service on
+port8080. See [the final plan](research/FINAL_PRODUCT_PLAN.md). Historical raw
+research evidence may be removed after [its compact report](research/RESEARCH_HARNESS_COMPACT_REPORT.md),
+as explicitly confirmed by the user. Former local artifact references below
+become historical, not a claim of retained independent verification. Accepted
+source remains published `e76ef124`; current contracts DB11/export12/library7.
+T12/T17 remain incomplete in their own worktrees; T18/T20 and final gates are open.
+Storage recovery precedes new checks; the ordinary134217728-byte floor stands.
+
+The deleted historical BEFORE comparison is explicitly retired. Its replacement
+is independently frozen fresh current-contract workflow qualification, exact
+privacy/replay/accounting checks, affected regressions and an unchanged frozen
+T01 current execution with protected-excluded selection and honest failures.
+See the compact report's post-cleanup gate. No reconstructed retained reference,
+historical zero-regression claim or silent frozen-score change is authorized.
+
 ### T17 source-only preparation; no observed red or implementation (2026-11-10)
 
 Assigned fresh isolated branch `t3/sol-generation-admission` starts at accepted
@@ -128,6 +147,7 @@ Setup/check/capture/service/browser/Docker remain explicitly held for T14's fina
 production window. Cache coordination is not a setup grant. Current contracts
 remain DB10/export11/library7; T17 is unaccepted. There is no paid/provider/held-out
 work or publication, and no new intelligence/benchmark/containment claim.
+
 
 ### T14 independent recovery closure accepted locally (2026-11-10)
 
