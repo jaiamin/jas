@@ -94,7 +94,33 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
 **Current checkpoint: T01/T02/T04/T05 accepted; T08 Ready; T09 waits on T03;
-T03/T06 in progress in isolated worktrees; draft PR #32.**
+T03 running; T06 complete awaiting fresh merger; draft PR #32.**
+
+Fresh Sol DEVELOPMENT is complete for this checkpoint: read
+`docs/research/SOL_DEVELOPMENT.md`. The frozen original eight-case pair,
+failed first repetition and two-case second-repair repetition consumed
+55 known-usage Sol requests / **$0.611632**; **$9.388368 remains** of $10.
+All paid phases are closed. No Luna, web or other paid calls ran.
+Live trials found display-name lookup and invented full-configuration failures;
+both failed probe cases are preserved. Root reproduced/fixed the lookup boundary
+at `0ea4064`, then supplied public template parameters with a second API
+red/green regression; 62 affected backend tests and Ruff/ty pass. Both affected
+live probes passed on `a874f7c`: settled split 11/6, invalid offer 18 rejected
+atomically. Independent finite oracles verify those receipts and all closed
+ledgers. No other agent has a paid allocation. Sources, ledgers and receipts
+are in ignored `.tools/research-harness/sol-development/`; preserve its final
+manifest and all prior failures. These are tuned, single-attempt development
+findings, not reliability or held-out/participant validation.
+Earlier zero-spending checkpoints describe their own past observations only.
+
+T06/#17 is complete on `t3/t06-uncertainty`, HEAD
+`20c7b020b88f64e153f8138adf59be7691b34f12`, including integration `350359f`.
+Fresh-merge after the root's live-driven repairs; preserve all ignored `data/t06/`
+from `/home/agent/.t3/worktrees/workspace/t3-df8b9bde` before cleanup. The report
+and 684-file final manifest index evidence. It intentionally advances export to
+v6 and retains four historical export-v4 oracle failures. Reported: 1,005 backend,
+109 frontend, 105 affected post-acceptance backend, 44 shared plus two harness
+browser checks, static/build passed. These are inherited, not root observations.
 
 T02 source `07d6d9fa681bd5ce79777c480e0798b5d6fa6137` was integrated with
 no-ff merge `77f6014981754adefc954af51e06f9326ab95893`. The fresh merger
@@ -166,8 +192,8 @@ task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
 Current frontier: T08/#19 is now Ready alongside T07/#18; T09/#20 still waits on
-T03/#14. T03/#14 and T06/#17 are in progress in isolated worktrees; merge each
-only after its own fresh review and evidence preservation.
+T03/#14. T03/#14 runs in its isolated worktree; T06/#17 awaits its fresh merger.
+Start T08 when the root's live-driven repair checkpoint is handed off.
 Draft PR #32 is the single integration PR and
 was linked immediately. Refresh/link it on each push. Do not merge to main or
 close issues as if unverified work were complete. The default-branch PR merge
@@ -178,8 +204,8 @@ and independent behavior checks, and records source/case-stamped before/after
 development evidence. Repeat relevant harness development benchmarks, retain
 failures and keep fresh held-out validation separate from tuning. Initial
 scope stays 1–12. No implementation checks or paid calls ran during publication.
-The session-wide $10 Sol allowance remains unused; implementers stay keyless
-without a specific coordinated allocation. Luna live trials need their own
+The session-wide $10 Sol allowance has $0.611632 charged so far; implementers
+stay keyless without a specific coordinated allocation. Luna live trials need their own
 explicit allowance after a concrete manifest/estimate is prepared.
 
 **Previous checkpoint: to-spec publication complete.**

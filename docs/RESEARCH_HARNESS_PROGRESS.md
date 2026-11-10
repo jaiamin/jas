@@ -61,7 +61,7 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Implemented; integration sync and verification in progress | — |
 | T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Integrated and accepted | `48600d2` |
 | T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Integrated and accepted | `a4ab9ee` |
-| T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | In progress in isolated worktree | — |
+| T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Complete; awaiting fresh merger | — |
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Ready | — |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Ready | — |
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Waiting on T03 | — |
@@ -129,7 +129,13 @@ not been represented as implemented capabilities. Do not drop the stash or
 apply it wholesale over newer work; inspect it only when the relevant ticket
 needs prior art.
 
-Fresh paid calls so far: **none**. The session-wide Sol benchmark cap is **$10**.
+Fresh Sol development charges so far: **$0.611632**, 55 known-usage requests.
+The session-wide Sol cap is **$10**. The frozen eight-case comparison exposed
+real discovery/probe-configuration failures; both are retained and repaired with
+API red/green evidence. Both affected live probes passed their finite outcome
+checks on the second repair. All paid phases are closed; **$9.388368 remains**.
+See [live development](research/SOL_DEVELOPMENT.md) for sources, all retained
+failures, narrow successes and limits. No other paid work is allocated.
 Implementer agents must remain keyless unless given a specific coordinated trial
 allocation. Luna participant trials need an explicit separate allowance; prepare
 the concrete manifest and estimate after deterministic qualification. Until
@@ -139,7 +145,7 @@ those trials run, the live milestone remains unverified.
 
 1. T04/#15 is accepted on the T05 tip; its complete source and fresh evidence are
    preserved and verified. T08/#19 is now Ready, alongside T07/#18. T09/#20 still
-   waits on T03/#14; T03/#14 and T06/#17 are in progress in isolated worktrees.
+   waits on T03/#14; T03/#14 is in progress and T06/#17 awaits fresh integration.
 2. Review and merge each accepted slice sequentially, then refresh/link draft
    PR #32; qualification failure gates generated execution, not trusted worlds.
 3. Preserve source-stamped inherited and new-behavior evidence for each slice;

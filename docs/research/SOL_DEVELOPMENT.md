@@ -1,7 +1,7 @@
 # Sol Researcher development comparison
 
-Status: first comparison complete; discovery repair verified deterministically;
-same-case live development repetition pending.
+Status: initial comparison, failed first repetition and successful targeted
+second-repair repetition complete. Broader reliability and held-out gates remain open.
 This is development evidence, not held-out validation or an intelligence score.
 
 Compare accepted pre-T05 `c546c857348cb433163d52f99efc07f790a17288` with
@@ -85,3 +85,72 @@ Allocate at most **$0.75** for a clearly labeled same-case development repetitio
 of the committed discovery repair. It is informed by these failures, so it is
 not fresh held-out evidence. The original two source results remain unchanged.
 The combined maximum allocation is now $2.25; no other paid work is allocated.
+
+## First repair repetition
+
+Archived `0ea40640fef9f2304c872afe31f444944899930d` completed all eight cases
+with **20 Sol requests / $0.220016**, no unknown usage, retries, external tools,
+saved studies or participant calls. Session charges now total **$0.537462**.
+Returned model names in the original pair are exactly `gpt-6.1-sol`.
+
+The canonical-key repair prevented the incorrect missing-world conclusion,
+but both required bargaining probes **still failed**. Sol had to invent a full
+parameter object from field descriptions and supplied a non-null composed-world
+resource block to bargaining. The independently validated configuration was
+correctly rejected. It reported this failure instead of inventing a probe result.
+Other case outcomes are retained separately; their completion is not used to
+cancel these mechanism failures. Evidence is in the ignored `repair/` directory.
+
+The next repair supplies actual public template parameters in capability results,
+with instructions to copy that example and change only requested factors.
+This preserves full validation and the existing configuration contract. An API
+regression verifies that the example produces the requested 17-credit copied
+world without mutating the catalog's 20-credit example. It changed from one
+failed to one passed; all **62 affected backend tests**, Ruff and ty passed.
+
+Allocate at most **$0.75** to repeat only the two affected probe cases on that
+committed repair. The maximum allocated across four phases is $3, within the
+$10 authorization. This repetition is tuned development evidence; the six
+unaffected cases will not be rerun without a reason.
+
+## Configuration repair: observed targeted result
+
+Both affected cases completed on archived
+`a874f7c9e42259c8ccae2ca9e7784fbeb12d9c54` with **eight Sol requests /
+$0.074170**. The independent finite-check script recomputed the accepted split:
+Alex offers 6 of 17, Morgan accepts, balances become **11/6**, the negotiation
+ends, and the source hash remains the same across the isolated probes. The
+over-budget offer of 18 is actually attempted and rejected with zero accepted
+steps, zero balances, the same actor/pie/phase and identical initial/final
+checkpoint hashes. Sol's final explanations agree with those outcomes and
+identify them as hypothetical mechanics rather than participant behavior.
+The catalog example remains 20 credits. No source run exists in this template
+case; it is not presented as an independent before/after audit of external data.
+
+All four closed ledgers contain **55 known-usage Sol requests**, charged
+**$0.611632 total**, leaving **$9.388368** of the session's $10 allowance.
+No other paid allocation remains active. Returned model names are Sol, no
+external tools or Luna requests were sent, and direct read-only database checks
+confirm zero saved studies and runs in every phase. Original failures remain
+intact. `accounting-and-probe-audit.json` and its independent `audit.py` record
+the exact finite checks. `structural-audit.json` also verifies all three generated
+proposals' counts, models, sole discount contrast and outside options, with no
+foreign-label disclosure. Its initial helper-signature error is retained;
+the corrected audit compares actual parameter values independently.
+
+Raw evidence, four source archives, exact per-phase runner copies, protocol,
+receipts, closed ledgers, all failed attempts and runtime identities are in
+ignored `.tools/research-harness/sol-development/`, indexed by its
+`manifest-final.json`. The shared root's unrelated `pbcopy` and `.env` were never
+archived; only tracked source was exported. No services remain running. The
+application changes are small discovery-interface repairs; participant policies,
+world rules, current UI and historical suites are unchanged by these repairs.
+The manifest indexes **1,745 files / 28,228,835 bytes**, excluding generated
+Python caches and itself; canonical SHA-256 is
+`809deca0dc521829b6f18840daf926c0620e6f176a610bfd51f3926fcfa45d90`.
+
+No aggregate intelligence score is claimed. This is one original live observation
+per case plus explicitly tuned repetitions, with unblinded semantic review and
+independent deterministic oracles. It demonstrates working tool use for the two
+repaired cases; it does not estimate reliability, establish participant quality,
+complete claim-validity requirements or satisfy the held-out extension milestone.
