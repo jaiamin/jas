@@ -256,6 +256,13 @@ export function ReplyActivity({ row }: { row: Analysis }) {
               {planning?.brief && (
                 <ActivityDetail title="Study scope">
                   <div className="flex flex-col gap-2">
+                    {planning.brief.intent && (
+                      <p>
+                        {planning.brief.intent === "exploratory"
+                          ? "Exploratory design"
+                          : "Confirmatory design"}
+                      </p>
+                    )}
                     <p>{planning.brief.operationalization}</p>
                     <p>{planning.brief.size_rationale}</p>
                   </div>

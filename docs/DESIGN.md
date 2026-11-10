@@ -263,6 +263,17 @@ node mounted while switching from the streamed acknowledgement to that introduct
 Unsupported requests keep their direct capability explanation. No extra summary request
 or model-generated intermediate reasoning is needed.
 
+Study scope in Activity and Protocol notes in Review show declared exploratory/confirmatory
+intent, operationalization and the population/opportunity/replication/capture rationale.
+Exploration may describe trajectories and failed or unverified work without inventing a primary
+scalar endpoint. The existing hypothesis/analysis field remains optional for exploration;
+confirmatory outcomes and comparisons are declared before trials. Material clarification and
+clearly narrower supported alternatives stay in the same conversation, without a substitute
+protocol. Discovery and copied candidate probes are retained as real research operations;
+their outcomes describe mechanics, never participant intelligence. The proposal Card remains
+unavailable until validation and critique complete. Review/edit/check/save uses the existing
+draft identity and reconnect behavior; saving creates ready runs without participant requests.
+
 The generated protocol Card uses a title/question, a compact content-width definition
 list (Agents, Conditions, Planned runs), using 24px horizontal gaps, muted labels
 and clear numeric values,

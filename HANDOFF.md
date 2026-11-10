@@ -111,6 +111,55 @@ T18 Ready; T11/T12 now Ready for root scheduling, T14 waits for accepted T13,
 T17 for accepted T13/T16. Sol prior spend remains $0.611632/55 requests,
 $9.388368 remaining; no allocation, no Luna. Stash
 `f771128ba1c9295262a4073df40cc25647b1370f` remains untouched, `pbcopy` unread.
+# T13 isolated implementation — ready for fresh merger review (2026-11-10)
+
+Assigned checkout `/home/agent/.t3/worktrees/workspace/t3-34d9f5cd`, branch
+`t3/implement-t13-researcher-designs`, accepted base `14e8af90513d5e7ffa394daec31bcfd6d2730845`
+(qualified inherited product `6e1a7c8`). No descendants or extra checkout. T19
+acceptance landed during qualification: merge `d2943e6` includes exact accepted
+`81f92a7b1718539cc47797bc1a301138df5b3ce4`, preserving its claim/lens/billing repairs.
+Merge `89c0ee5` also includes latest documented published accepted frontier
+`8158fccc01382b61d9efd3589d975119a6e7b8e2` (coordination docs only).
+T10 remains unaccepted and excluded; T16 is independently assigned.
+
+Durable acceptance/decisions/report: `docs/research/T13_RESEARCHER_DESIGNS.md`.
+Ignored complete attempts, exact source archives/diffs and compressed synthetic
+outputs: `data/t13/`. Fresh frozen DEVELOPMENT questions/rubrics were committed
+before output in `d0e3d61`; historical T01 and held-out tasks remain unchanged.
+
+Implemented through the existing public question/proposal/review/edit/check/save
+path: solo exploration, declared intent, material clarification/narrower alternatives,
+real discovery and exact copied candidate probes, immutable discovered/prior source
+pins and explicit limits. No participant sampling from save; no T10/T14 implementation.
+Current contracts and Sol/Luna roles remain unchanged. No paid calls or publication.
+
+Observed before the accepted T19 merge: all 1,225 backend tests in 40 bounded
+sequential file checks; 111 frontend units; Ruff/ty/lint/build; 60 inherited browser
+flows plus two real keyless T13 flows
+at 18124, including pending/reload, edits and zero participant calls on save. Preview
+phone/dark and desktop/light inspections completed; owned manual service/tab closed.
+Combined source `cbd2eb25e8574632e5b224e7c7baf0673a016b7f0259df4fea5eac06bd3ea0cc`
+passes all 29 postmerge checks: 254 affected backend tests/17 files, 112 frontend
+tests, static/build and 35 browser executions, including accepted T19 claim/billing.
+Latest frontier/final report changes are documentation only; exact final-byte
+qualification and clean branch/HEAD are in `data/t13/final-source-qualification.json`.
+Frozen T01 runner/comparator each exit1 with exactly four intentional export-v4
+failures/four failed flags, zero regressions/improvements. Independent positive
+current-contract parity verifies five runs/22 turns/22 requests, HTTP98→98 and
+all1,830 raw differences classified, none unexplained. Synthetic accounting only;
+actual spend $0. Earlier failed/helper/merge attempts remain preserved.
+
+Complete evidence custody: `data/t13/check-index.json`, `closure.json`,
+`evidence-manifest.json` and `.sha256`; retain the whole ignored tree including
+archives, member proofs, source snapshots and failures. Final helper sources are
+versioned in `data/t13/harness/`. Port18124/services/preview closed. No publication.
+Later fresh merger owns acceptance; all live/held-out intelligence and validity
+gates remain unverified. Production smoke is inherited from accepted T09 because
+runtime/container inputs are unchanged. Large new checks must use the shared
+`flock` command below; keep mutable caches private and pack only closed own output.
+After qualification, own disposable `.venv`, `frontend/node_modules` and
+`frontend/dist` are removed; `data/t13/owned-generated-cleanup.json` records the
+boundaries and unchanged Git state. All evidence/source remains intact.
 
 # Root coordination — T19 accepted; T10 review and T16 assigned (2026-11-10)
 

@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "split": "DEVELOPMENT",
+  "ticket": "T13",
+  "assessment": "Frozen before outputs. Scripted-provider tests establish workflow and mechanical/provenance fidelity, never live design competence. Rubrics are independent task expectations; do not grade prompt wording.",
+  "cases": [
+    {
+      "id": "folio_explore",
+      "question": "Design an exploratory one-agent study of how a records assistant investigates conflicting authorized folios, revises a persistent report, and decides when to submit or stop. Keep unsuccessful and unverified work; do not invent a primary scalar endpoint.",
+      "intent": "exploratory",
+      "rubric": ["one actual participant", "artifact_workspace with persistent source-linked report", "exact authorized content and ACLs", "no hypothesis or scalar endpoint required", "finite opportunities to read, revise, check and submit", "replication counts trajectories rather than turns", "real discovery and copied candidate probe", "save sends no participant requests"]
+    },
+    {
+      "id": "archive_confirm",
+      "question": "Propose a confirmatory one-agent comparison of direct-action and tool-using records assistants correcting an archived total from authorized evidence. Use two fresh samples per configured seed and freeze the evidence/check rule and outcome definition before any trials.",
+      "intent": "confirmatory",
+      "rubric": ["two explicit harness arms", "same artifact content and ACLs across arms", "Luna in both arms", "outcome/check definition declared before trials", "copied probe includes exact configured content", "two repetitions per seed", "no claimed independent agents or powered inference"]
+    },
+    {
+      "id": "private_delta",
+      "question": "Design a solo pilot in which only the investigator may read the sealed amber ledger. A public report must record the corrected total, with source references. Explain what evidence would establish actual reading rather than a lucky correct answer.",
+      "intent": "exploratory",
+      "rubric": ["one investigator with enforced ACL", "private evidence absent from public history", "persistent report and source references", "local reads versus actual provider input delivery distinguished", "independent World check", "no extra participant to satisfy planner"]
+    },
+    {
+      "id": "simple_exchange",
+      "question": "Create a short two-agent pilot of offers and binding acceptance over a 19-credit pie, at discount 1. One condition and one seed are sufficient; describe outcomes without claiming population inference.",
+      "intent": "exploratory",
+      "rubric": ["bargaining retained", "two participants", "19-credit pie and discount 1", "one condition/seed", "no artifact-world substitution", "pending review before save"]
+    },
+    {
+      "id": "unsupported_network",
+      "question": "Create an experiment where a lone assistant browses the live internet, executes downloaded Python, and updates a persistent report. If this is unavailable, offer a supported narrower study without silently executing it.",
+      "intent": "exploratory",
+      "rubric": ["unsupported with no executable substitute", "missing external browse/arbitrary execution explicitly stated", "constructive preloaded-evidence alternative", "no extension generation/admission", "no participant calls"]
+    },
+    {
+      "id": "unsupported_coordination",
+      "question": "Design three-agent distributed-information work with simultaneous claims on one report, delayed private messages, and enforced conflict resolution independent of API response order.",
+      "intent": "exploratory",
+      "rubric": ["does not advertise unaccepted T10 timing/delivery", "honest gap", "supported solo/sequential alternative clearly narrower", "no pretend three-agent scheduler"]
+    },
+    {
+      "id": "material_ambiguity",
+      "question": "Design a study of whether an assistant can correct the report using the sealed source. I have not decided whether the assistant is allowed to read that source.",
+      "intent": "clarification",
+      "rubric": ["one material permission question", "no mandatory endpoint question", "no invented ACL or saved study", "follow-up stays in same conversation"]
+    },
+    {
+      "id": "general_explanation",
+      "question": "What is the difference between saving an artifact-world protocol, replaying recorded consequences, and sampling a new participant response?",
+      "intent": "general",
+      "rubric": ["useful ordinary answer", "real capability result if used", "no design/proposal required", "no record save or sampling"]
+    }
+  ]
+}
