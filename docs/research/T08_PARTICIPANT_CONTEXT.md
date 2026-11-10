@@ -215,3 +215,21 @@ to other agents' processes/worktrees.
 
 Observed actual paid spend: **$0**. Live competence and held-out gates remain
 unverified. Root's unrelated `pbcopy` and preserved stash are outside task scope.
+
+## Fresh integration review — cutoff repair checkpoint
+
+Sole-writer review merged clean source `b2ac25c` into `6b7ad09` with no-ff
+merge `9750cafea48120ceec11530ed11a214661a374b3`. The two conflicts were
+progress/handoff text only. Complete source evidence was preserved before merge.
+
+Independent review found one metadata defect: an earlier retrieval turn cutoff
+was paired with the current observation's round. For example, turn 0 requested
+in round 2 was reported as `{turn: 0, round: 2}` despite no reconstructed
+historical observation. `red-past-cutoff/` and the stronger explicit-turn-zero
+`red-past-cutoff-explicit/` retain failing public-API regressions. The minimal
+repair reports a null round for earlier filters and separately retains the actual
+`observation_cutoff`. Source selection, permissions and World effects are unchanged.
+The regression also retrieves the permitted prior plan by its real source ID,
+checks its own round/source identity, export receipts, all nine requests and replay.
+All **65** participant/access/accounting/restore tests pass after repair, as do
+Ruff and ty. Fresh final-source comparison/browser qualification follows below.

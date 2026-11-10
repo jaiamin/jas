@@ -54,6 +54,32 @@ Statuses reflect accepted integration work, not automatic GitHub closure. Issues
 remain open until the tracker resolves them through draft PR #32. No
 default-branch merge, auto-merge or history rewrite is authorized.
 
+### T08 fresh integration review plan (2026-11-10)
+
+Assigned sole-writer review starts at `6b7ad09`, source clean `b2ac25c`.
+No-ff merge `9750caf` resolves only progress/handoff text. T07/T09 remain
+running and unpolled; no publication, paid allocation or evidence cleanup.
+
+- [x] Preserve the complete ignored source evidence before merging: 1,521
+  files / 300,819,177 bytes and 332 symlinks, all source/destination hashes
+  equal with stable source HEAD/index/status. All 574 child-indexed files verify.
+- [x] Read the approved ticket/spec/seams, glossary/ADRs and architecture/design;
+  merge source with `--no-ff` and retain both documentary handoffs.
+- [ ] Independently review public capabilities, memory modes/cutoffs/privacy,
+  World authority, disabled/unused operations and restore/accounting/replay.
+- [ ] Fresh shared-source backend/static/frontend/build and affected browser
+  checks on 18219, plus unchanged frozen oracle and positive current-contract/
+  22-turn/five-run request/export parity and neutral DEVELOPMENT comparisons.
+- [ ] Record concrete findings/repairs, observed versus inherited evidence,
+  immutable manifests and closed services; accept T08 only when checks support it.
+
+Evidence: `.tools/research-harness/evidence/T08/` (complete preserved source),
+`T08-integration/` (fresh commands/identities/results). Canonical complete copy
+inventory SHA-256 `82ac8198e042bad28c9c5980840567a226c77ed3953e28c2f9491a1d750c141c`.
+The four known test-generated configuration fixtures were copied opaquely only
+after verifying their tracked generator; no contents were printed/committed.
+Root `pbcopy`, real configuration/credentials and preserved stash remain untouched.
+
 | Ticket | Issue and behavior | Blocked by | Status | Integrated commit |
 | --- | --- | --- | --- | --- |
 | T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Integrated | `bf3b76e` |

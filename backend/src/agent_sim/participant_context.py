@@ -143,7 +143,9 @@ class ActorSources:
         ]
         limit = min(query.limit, context.max_memory_items)
         return {
-            "cutoff": {"turn": cutoff, "round": context.round},
+            # Earlier turn filters do not reconstruct a historical observation/round.
+            "cutoff": {"turn": cutoff, "round": context.round if cutoff == context.turn else None},
+            "observation_cutoff": context.cutoff,
             "items": matches[:limit],
             "returned": len(matches[:limit]),
             "has_more": len(matches) > limit,
