@@ -1,5 +1,14 @@
 # Research harness implementation progress
 
+T12 current boundary (2026-11-10): F2 passes125 units/33 files, lint233, forced
+TypeScript, clean Vite, Ruff/ty and separate editor/handoff/failure browser cases
+on own18130, light/mobile and dark/desktop. Initial browser HTTP201 fixture failure
+is retained without product-red attribution. Exact accepted8329cfc7 is the next
+normal merge target. ONE native-runtime smoke is released after the observed
+TypeScript/ty PASS; prepared source is unrun. Incomplete/unaccepted; no Docker,
+provider/paid/held-out/publication/descendants. Own services/browser/lock closed.
+Older boundaries below are chronology; see the current T12 plan.
+
 T12 frontend source checkpoint (2026-11-10): F1 passed once, F2 released;
 workflow editor/view, population identity and tool-read slices each observed RED
 before GREEN. Lint231 files/forced TypeScript/29 affected units pass at source

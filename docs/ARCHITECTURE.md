@@ -446,9 +446,11 @@ work/mail remain pending at a horizon. Material stock/spent are distinct from
 write allowance and financial utility. Work content and resource consequences
 remain ordinary World checkpoints/events; there is no second engine.
 
-The current task branch has only pre-merge backend slice qualifications; combined
-source checks, remaining exposure/research integration and UI qualification are
-open. See the [T12 plan](research/T12_INSTITUTIONAL_WORKFLOW.md). DB12/export13/
+The task branch has source-scoped backend, exposure/research, accounting/lifecycle
+and current-contract qualification, plus frontend units/build and separate keyless
+editor/handoff/failure browser witnesses. Production/runtime qualification and
+independent integration review remain open; no live competence is claimed.
+See the [T12 plan](research/T12_INSTITUTIONAL_WORKFLOW.md). DB12/export13/
 library8 combine this typed mechanics contract with accepted T14 investigation
 ownership; both distinct schema11 intermediates are rejected without conversion.
 

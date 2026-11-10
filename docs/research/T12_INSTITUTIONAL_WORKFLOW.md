@@ -1,6 +1,43 @@
 # T12: institutional workflow with atomic work and resource effects
 
-## Current boundary: frontend source checkpoint; browser qualification outstanding
+## Current boundary: F2 qualified; native-runtime smoke released, unrun
+
+Same incomplete/unaccepted implementation. F2 passes125 units/33 files, lint233,
+forced TypeScript (including the workflow browser config), clean Vite, Ruff/ty
+and three separate keyless browser witnesses. Editor/mobile/light preserves draft
+cost/duration across reload, pending/503 save locking and cancelled environment
+changes. Actual desktop/dark workflow reaches30 requests,420 microdollars at
+the12-turn in-flight pause and1050 at30, one claim conflict, delayed selected
+handoff and horizon with two unfinished items; playback/replay send zero calls.
+Tool failure/mobile/light retains v1/materials before explicit retry; the retry
+settles v2/cost3 exactly once. Initial browser HTTP200-versus201 fixture failure
+is retained without a product-red claim.
+
+Normal eaa47bb3 merge is694c6cdc. Next final target is exact
+8329cfc7883053620b7dafcc6de351a9bf30ee25; no provisional siblings. All46 backend
+source files at b17fb03d189d87fde604a727a7a7af60441aa03365886ba25f205f6fb3f62a7e
+equal the qualified ada1b8f2 manifest. Units/browser source is61a020b6; exact full
+identities are in receipts. This attributes prior checks; no full backend rerun.
+
+ROOT released ONE native-runtime smoke after final TypeScript/ty PASS (observed).
+Prepared `.github/scripts/t12_native_smoke.py` is unrun. Before output, freeze:
+fresh keyless API is empty; library8 source pins/save/export13 survive reopen;
+zero-budget Step leaves turn0, full checkpoint and usage/requests0 unchanged;
+public replay verifies0 turns without models. Separately, actual installed World
+decisions claim prepare at0, start v1→v2/batch17 at1, hand off to declared member3
+at3 and accept at4. At2 stock4/spent3/writes5/due3; JSON restoration and every
+subsequent checkpoint/replay match. At5 horizon accepts prepare only and leaves
+release/audit unfinished. This local World witness does not claim HTTP participant
+progress without a provider. Preserve all30 checkpoints and both server logs.
+
+One native job on own18130 needs ordinary134,217,728+128MiB transient entry floor,
+<=16MiB outputs within96MiB retained cap. Existing env/built assets only; exact
+asset manifest, source receipt, fresh own SQLite, two sequential server lifetimes
+and teardown. No Docker/install/real providers/non-root-container/live-competence
+claim. Current retained~50.4MB; no own active resource. Next coherent checkpoint,
+exact accepted merge, affected build/checks, native smoke, personal review/report.
+
+## Historical boundary: frontend source checkpoint; browser qualification outstanding
 
 F1 passed once and F2 is released. The workflow view/editor, participant population
 and authorized artifact-read controls passed separate observed-red-first slices.
@@ -75,6 +112,45 @@ retired and cannot be claimed retained. Historical sections below are chronology
 this current boundary and published retirement policy supersede their old grants.
 
 ## F1 observed setup and F2 UI oracle (before UI output)
+
+### Frozen keyless browser witnesses (before browser outputs)
+
+Accepted eaa47bb32c5c5c436586b5a49915aaf5eb25be56 is normally merged at
+694c6cdcad22bc3c1f8d84d1424a53001ad054de. The redundant-key diagnosis is
+retracted in ROOT's review; no T12 product-red claim relies on it. Prior clean
+build applies to the earlier dd48 merge; rebuild the combined source for browsers.
+
+Use the installed six-role workflow example, one condition, seed431, five rounds,
+seven materials, six writes and phased timing. Freeze conflict priority Morgan,
+Alex,Sam,Jordan,Casey,Taylor. The DEVELOPMENT stand-in is test-only: at time0 Alex
+and Morgan both claim prepare; Casey sends Taylor private text. Morgan wins.
+At time1 Morgan starts prepare v1→v2 with content batch17, cost3/duration2.
+At time2 all wait. At time3 Morgan hands v2 to Sam. At time4 Sam accepts.
+All other decisions wait. A delay at time1/Taylor allows an actual in-flight pause.
+
+Literal boundaries: turn12 pauses at logical2,stock4/spent3/writes5, prepare
+in_progress/due3, release blocked, exactly12 requests/1200 input/600 output/
+420 synthetic microdollars. Reload/playback/verification send zero requests.
+At18 prepare ready; at24 v2 awaits Sam, without an acceptance label; at30 it is
+accepted at4 and horizon ends with release/audit unfinished. Exactly30 requests,
+3000/1500 tokens/1050 synthetic microdollars, one claim conflict, one write and
+one selected handoff. Addressed mail delivered at2 stays closed until explicit
+researcher inspection. Replay must preserve the complete state and usage.
+
+Separate editor case: narrow/light controls preserve edited materials9/cost4/
+duration3 across reload; the first intercepted503 save retains the exact draft,
+locks duplicate submission while pending, then a real API retry saves without
+sampling. Check disclosure keyboard focus, dark/desktop and light/mobile renders,
+document width, page errors, loading/error/reconnect/cancel where these surfaces
+change. The separate tool-using failure case starts with stale expected_version2:
+failure retains prior seven turns,stock7/spent0/v1, explicit retry then settles v2
+once. Every proposal remains opt-in deterministic DEVELOPMENT test code.
+
+Each browser job is one case with fresh own18130 SQLite/data/output. Forecast
+16MiB retained (measured54-turn HTTP case retained2,216,229 bytes; allowance adds
+browser screenshots/trace and WAL); transient128MiB plus ordinary floor. All source
+selection uses the existing protected-excluded tracked-only guard. Existing
+headless shell path is explicit, no download. Production remains held.
 
 F1 attempt01 passed normally at checkpoint **e6d155fc129871c37da98b2ad0bdf718608377d0**.
 Entry1,678,868,480; immediately-before-sync1,678,426,112; after-sync1,480,257,536

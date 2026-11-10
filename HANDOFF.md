@@ -1,4 +1,30 @@
-# T12 frontend source checkpoint; browser qualification outstanding (2026-11-10)
+# T12 frontend qualified; native-runtime stage released (2026-11-10)
+
+Same incomplete/unaccepted T12. Latest accepted eaa47bb3 was normally merged at
+694c6cdc; ROOT now supersedes it with exact8329cfc7883053620b7dafcc6de351a9bf30ee25.
+F1 passed once. F2 passed125 units/33 files, lint233, forced TypeScript (including
+workflow browser config), clean Vite, backend Ruff/ty and three separate keyless
+browser cases: mobile/light editor draft/save error/cancel, desktop/dark actual
+contention/pause/handoff/horizon/replay, mobile/light tool failure/recovery.
+The initial browser fixture's expected200 versus declared201 is retained as a test
+failure, without product-red attribution. All prior failures remain retained.
+
+Frontend browser/units source61a020b66c954898d3b79e15457791180c7d889a1deda0018556ae9303792629;
+forced types/ty sourceb17fb03d189d87fde604a727a7a7af60441aa03365886ba25f205f6fb3f62a7e.
+All46 backend source files match the earlier qualified ada1b8f2 manifest exactly;
+this is attribution, not a new full backend execution. Current96MiB cap retains
+~50.4MB. Own18130/browser/lock are closed. No provider/paid/held-out work.
+
+Next: coherent normal-hook checkpoint, exact8329cfc7 merge preserving histories,
+affected checks/build, then ONE newly released native-runtime smoke under ordinary
+floor+128MiB peak/16MiB output. Prepared unrun script is
+`.github/scripts/t12_native_smoke.py`; it uses actual public API plus model-free
+World/restoration/replay, fresh own SQLite and built assets, zero budget/provider
+requests, one server at a time on18130. Restart/teardown are explicit. No Docker,
+non-root-container or live-competence claim. Finish personal Standards/Spec and
+durable report before returning ownership to ROOT's fresh independent merger.
+
+# Historical T12 frontend source checkpoint; browser qualification outstanding (2026-11-10)
 
 Same incomplete/unaccepted T12 implementer. F1 passed once; F2 is released.
 The narrow workflow editor/view now renders actual materials, owned delayed work,

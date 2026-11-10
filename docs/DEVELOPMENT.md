@@ -73,6 +73,14 @@ T12 combines typed institutional work rules and accepted investigation ownership
 as DB12/export13/library8. Both distinct schema11 intermediates are rejected. This is a
 task-branch contract pending integration acceptance; no workspace reset is performed.
 
+T12's keyless browser witnesses use the opt-in DEVELOPMENT-only workflow provider,
+fresh owned data and the already installed headless shell. Set `JAS_TEST_PORT`,
+`JAS_TEST_DATA_DIR`, `PLAYWRIGHT_BROWSERS_PATH`, `T12_BROWSER_EXECUTABLE` and
+`T12_BROWSER_OUTPUT`, then run `pnpm --dir frontend exec playwright test --config
+playwright.workflow.config.ts -g '<one case name>'`. The cases separately cover
+editor draft/save recovery, actual contention/pause/handoff/replay, and tool failure
+with explicit recovery. They do not establish live participant competence.
+
 The current schema retains T04's durable participant activations and per-request
 links alongside T03's pinned environment sources. Old schema 4/5/6/7/8/9/10/11 databases and
 v1/v2/v3/v4/v5/v6/v7 environment files are explicitly rejected; preserve them separately. No
