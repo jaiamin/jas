@@ -1,3 +1,21 @@
+# T08 integration review handoff (2026-11-10)
+
+T01–T06 are accepted. T08 is implemented, queued for a fresh sole-writer merger;
+T07 and T09 continue in isolated worktrees and must not be polled. T15 remains
+blocked until T08 is accepted. Current DB/export contracts remain 6/6.
+
+T08 source: clean `t3/participant-context-capabilities`, HEAD
+`b2ac25c9c0efe07dd3309a158051a04870f51261`, worktree
+`/home/agent/.t3/worktrees/workspace/t3-3c0cc3a1`, including accepted integration
+`c2a7d5af53c8f2bd183731285936afac5076d632`. Read
+`docs/research/T08_PARTICIPANT_CONTEXT.md`. Preserve/hash-verify all ignored
+`data/t08/`; child manifest indexes 574 files / 58 checks, manifest SHA-256
+`3347faa7a0adb6c2ffd5e17d914b3ce5fafa67f578a5fb38cf4201686e94eefa`.
+Keep source and failed attempts intact. Fresh review uses port 18219; T07/T09
+own 18118/18120. No paid allocation; Sol spend remains $0.611632/55 requests,
+$9.388368 remaining. Root owns publication to draft PR #32. Preserve prior
+evidence/stash and never read/copy the unrelated untracked `pbcopy`.
+
 # T03 integration checkpoint — accepted (2026-11-10)
 
 T03/#14 is accepted at no-ff merge
@@ -273,8 +291,8 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01/T02/T03/T04/T05/T06 accepted; T07/T08 running;
-T09 assigned to a fresh isolated implementer; draft PR #32.**
+**Current checkpoint: T01/T02/T03/T04/T05/T06 accepted; T07/T09 running;
+T08 complete, queued for fresh integration review; draft PR #32.**
 
 Fresh Sol DEVELOPMENT is complete for this checkpoint: read
 `docs/research/SOL_DEVELOPMENT.md`. The frozen original eight-case pair,
@@ -376,7 +394,8 @@ Current frontier: T03/#14 is accepted at `6c290df`, and T09/#20 is assigned to a
 fresh isolated implementer, based on the accepted T03/T06 integration. Its
 dedicated browser port is 18120; report `docs/research/T09_ARTIFACT_WORLD.md`,
 raw evidence `data/t09/`. It must merge the latest accepted integration before
-handoff. No paid calls are allocated. T07/T08 remain running; do not poll them.
+handoff. No paid calls are allocated. T07/T09 remain running; do not poll them.
+T08 is complete on `b2ac25c`, queued for fresh integration review.
 T07/#18 and T08/#19 remain running in isolated worktrees and were not polled.
 T15 waits for completed T08, T19 for T07 and T14 for T13.
 Draft PR #32 is the single integration PR and
