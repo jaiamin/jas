@@ -23,6 +23,13 @@ failure. After one explicit scripted stop, frozen turn-zero reanalysis must
 retain the original checkpoint/hash, outcome null and cutoff0, with one unchanged
 participant request and two separately settled requests per analysis.
 
+The first intended turn-zero red passed. Review then confirmed that the public
+API intentionally returns hash null at turn0; the initial hash-availability
+assumption above was wrong. No product repair is claimed. The strengthened
+case explicitly expects that null and independently fixes initial contents at
+measurement17/report0/sealed91, one version each, allowance3 and empty history.
+It preserves the unfinished outcome through a later explicit stop and reanalysis.
+
 Ticket: T19 / #30. Implementation in `t3/research-claim-support`, assigned clean
 base `59e20935c17bd8ea0c44f712790ffeeb38ebb83b` on accepted
 `integration/research-harness`. This includes T07 merge `a92105f` and repair

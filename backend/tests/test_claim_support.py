@@ -58,9 +58,7 @@ def claim_client(tmp_path, monkeypatch, request):
                     "requests": [],
                     "answer": {
                         "answer": controls["answer"],
-                        "citations": [
-                            {"run_id": rid, "turn": controls.get("citation_turn", 1)}
-                        ],
+                        "citations": [{"run_id": rid, "turn": controls.get("citation_turn", 1)}],
                         "caveats": ["One fixed seed does not establish independent support."],
                         "claims": controls["claims"](prompt, rid)
                         if "claims" in controls
@@ -861,9 +859,18 @@ def test_initial_artifact_lens_retains_checkpoint_and_unfinished_outcome(claim_c
     )
     assert final["status"] == "complete", final
     fact = final["output"]["lens"]["facts"][0]
-    assert fact["state_hash"] == initial["state_hash"]
+    assert fact["state_hash"] is initial["state_hash"] is None
     assert fact["through_turn"] == 0 and fact["turns"] == []
-    assert fact["artifact_state"]["outcome"] is None
+    state = fact["artifact_state"]
+    assert state["outcome"] is None and state["artifact_history"] == []
+    assert state["writes_remaining"] == 3
+    assert {
+        key: [v["content"] for v in obj["versions"]] for key, obj in state["artifacts"].items()
+    } == {
+        "measurement": [{"reading": 17}],
+        "report": [{"reading": 0}],
+        "sealed": [{"reading": 91}],
+    }
     assert [c["status"] for c in final["output"]["support"]["claims"]] == [
         "checked",
         "unavailable",
