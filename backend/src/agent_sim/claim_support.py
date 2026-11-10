@@ -209,8 +209,12 @@ def capture_lens(
                     "observation_windows": [
                         {
                             "turn": t.number,
-                            "history_records": len(t.observation.get("history", [])),
-                            "experience_records": len(t.observation.get("experiences", [])),
+                            "history_records": len(t.observation["public_history"])
+                            if "public_history" in t.observation
+                            else None,
+                            "experience_records": len(t.observation["your_experiences"])
+                            if "your_experiences" in t.observation
+                            else None,
                         }
                         for t in turns
                     ],
