@@ -51,6 +51,17 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### Root verifies accepted T11 and advances the frontier (2026-11-10)
+
+Root reverified every156 file/35 directory/20,111,779-byte entry in the final
+T11 review index, SHA256
+`888c95b4af12dbb69976ed71a2c8ffea127ee5cb6da925af172bac87411cd176`.
+Accepted `77da422` includes T01–T11/T13/T15/T19. Publish the checkpoint, start
+T14 in an isolated worktree at that accepted base, and hand sole shared writing
+to a fresh T16 integration reviewer. T12/T18 are Ready; T17 waits for accepted
+T16. Storage uses bounded sequential heavy jobs and private mutable outputs.
+No fresh product test, paid call or live/held-out claim is added by coordination.
+
 ### T11 independent recovery review accepted (2026-11-10)
 
 Fresh Standards and Spec review each have zero unresolved findings. Exact T11

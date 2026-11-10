@@ -1,3 +1,26 @@
+# Root coordination — T11 verified; T14 implementation and T16 review next (2026-11-10)
+
+Root independently reverified all156 files/35 directories/20,111,779 bytes in
+accepted T11 review index SHA256
+`888c95b4af12dbb69976ed71a2c8ffea127ee5cb6da925af172bac87411cd176`,
+including hashes/modes/mtimes without following links or executing helpers.
+Receipt: `.tools/research-harness/maintenance/t11-acceptance-root-verification.json`.
+Accepted source frontier is `77da422`: T01–T11/T13/T15/T19, DB9/export10/library6.
+Publish this checkpoint, immediately link PR32, then create T14's isolated TDD
+implementation before assigning sole shared writing to a fresh T16 reviewer.
+T14 uses the published accepted base; both merge only documented accepted work.
+T16 exact source is `475bfc73`, with complete immutable custody/proof already
+verified. T12/T18 remain Ready; T17 waits for accepted T16. T20 remains blocked.
+
+About281MiB shared space was free at root verification. Keep bounded heavy jobs
+under the shared flock, use existing tooling/package-manager content reuse,
+retain private mutable dependencies/output and verify closed-output compression.
+Resume only the original T07 owner's unfinished disposable-tool cleanup; its
+previous failure remains retained. Do not lower existing job preflights.
+No new product test or paid call occurred in this coordination step. Historical
+Sol remains$0.611632/55 requests, $9.388368 remaining; Luna unallocated.
+All live/held-out gates remain open; preserve stash, maps and unread `pbcopy`.
+
 # T11 recovery review accepted — final completion returns writing to root (2026-11-10)
 
 **T01–T11, T13, T15 and T19 are accepted for their documented deterministic
