@@ -816,9 +816,16 @@ class Assistants:
                         Counter(measure.key for measure in measures if measure.value is not None)
                     ),
                     "outcome": {
-                        "balances": state["balances"],
-                        "total_utility": sum(state["balances"].values()),
+                        "balances": state.get("balances"),
+                        "total_utility": sum(state["balances"].values())
+                        if "balances" in state
+                        else None,
                         "remaining_stock": state.get("stock"),
+                        **(
+                            {"artifact_outcome": state.get("outcome")}
+                            if design.environment == "artifact_workspace"
+                            else {}
+                        ),
                     },
                 }
             )

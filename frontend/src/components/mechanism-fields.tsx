@@ -1,3 +1,4 @@
+import { ArtifactFields } from "@/components/artifact-fields";
 import { CompositionFields } from "@/components/composition-fields";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -196,6 +197,16 @@ export function MechanismFields({
   onChange: (patch: Partial<Parameters>) => void;
 }) {
   const config = mechanismFields(environment, parameters, onChange);
+  if (environment === "artifact_workspace" && parameters.artifacts) {
+    return (
+      <ArtifactFields
+        rules={parameters.artifacts}
+        profiles={profiles}
+        id={id}
+        onChange={(artifacts) => onChange({ artifacts })}
+      />
+    );
+  }
   if (environment === "composed" && parameters.composition) {
     return (
       <CompositionFields

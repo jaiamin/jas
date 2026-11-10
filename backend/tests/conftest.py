@@ -28,6 +28,13 @@ def design():
 
 
 def decision_for(observation: dict) -> dict:
+    if "artifacts" in observation:
+        return {
+            "action": {"kind": "stop"},
+            "memory": "",
+            "rationale": "Explicit stop witness.",
+            "forecast": None,
+        }
     legal = observation["legal_actions"][0]
     target = legal.get("targets", [""])[0]
     if legal["kind"] == "work" and "tasks" in observation:

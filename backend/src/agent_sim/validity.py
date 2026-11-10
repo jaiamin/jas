@@ -10,7 +10,7 @@ from typing import Literal
 
 from pydantic import Field, field_validator
 
-from .domain import Action, Decision, Design, Strict, Treatment
+from .domain import Action, Decision, Design, StopArtifact, Strict, Treatment
 from .simulation.checkpoints import Observation
 from .simulation.environments import CATALOG, create_world
 from .simulation.world import World
@@ -25,6 +25,12 @@ COMMON = {
     "repeated_interaction": "Finite repeated model decisions, not calibrated human prediction.",
 }
 CAPABILITIES = {
+    "artifact_workspace": {
+        "versioned_artifacts": "Actor-authorized evidence reads and versioned work "
+        "with optimistic writes.",
+        "artifact_verification": "Executable content/source checks, explicit submit/stop "
+        "and bounded writes; no model adjudicator.",
+    },
     "commons": {
         "contributions": "Sealed contributions to a multiplied shared fund; fresh round budgets.",
         "capacity_shocks": "Scheduled per-round credit capacity changes, not physical needs.",
@@ -81,6 +87,8 @@ class Requirement(Strict):
         "exclude behavioral outcome labels.",
     )
     capability: Literal[
+        "versioned_artifacts",
+        "artifact_verification",
         "allocation_budget",
         "allocation_power",
         "binding_negotiation",
@@ -132,7 +140,11 @@ class Requirement(Strict):
 
 
 def capabilities(environment: str) -> dict[str, str]:
-    return {**COMMON, **CAPABILITIES[environment]}
+    available = {**COMMON, **CAPABILITIES[environment]}
+    if environment == "artifact_workspace":
+        for key in ("messaging", "signal_disclosure"):
+            available.pop(key)
+    return available
 
 
 def requirement_issues(
@@ -262,6 +274,13 @@ def factorial_issues(grid: dict) -> list[dict]:
 
 def _instrument(world: World, actor: str, observation: Observation, variant: int) -> Decision:
     """Legal diagnostic choices only. Never used by participant execution."""
+    if "artifacts" in observation:
+        return Decision(
+            action=StopArtifact(kind="stop"),
+            rationale="Preflight stop witness.",
+            memory="",
+            forecast=None,
+        )
     options = observation["legal_actions"]
     option = options[0] if variant < 2 else options[-1]
     kind = option["kind"]
@@ -340,7 +359,7 @@ def _trace(design: Design, condition: Treatment, variant: int) -> dict:
                     {
                         "events": [e.model_dump() for e in events],
                         "measures": [m.model_dump() for m in measures],
-                        "balances": world.state["balances"],
+                        "balances": world.state.get("balances"),
                     },
                     sort_keys=True,
                 ).encode()
@@ -526,7 +545,9 @@ def _preflight(specification: str) -> dict:
             )
     baseline = design.conditions[0]
     # Endowment also sets incidental synthetic signal ranges in these worlds.
-    active = set(CATALOG[design.environment].parameters) | {"private_signal", "endowment"}
+    active = set(CATALOG[design.environment].parameters)
+    if design.environment != "artifact_workspace":
+        active |= {"private_signal", "endowment"}
     for c in design.conditions[1:]:
         changes = _differences(baseline.parameters.model_dump(), c.parameters.model_dump())
         assignment_changed = (

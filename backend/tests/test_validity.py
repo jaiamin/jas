@@ -36,6 +36,11 @@ def protocol(environment, agents=6, rounds=4):
         if condition.parameters.composition:
             for resource in condition.parameters.composition.resources:
                 resource.controllers = ["p0"]
+        if condition.parameters.artifacts:
+            for obj in condition.parameters.artifacts.objects:
+                obj.owner = "p0" if obj.owner else None
+                obj.readers = ["p0"] if obj.readers else []
+                obj.writers = ["p0"] if obj.writers else []
     return Design.model_validate(design.model_dump())
 
 
@@ -59,6 +64,11 @@ def test_simple_and_complex_protocols(environment, memory, channel_index, rounds
         params["resource"].update(initial_stock=5, regeneration=0.1)
     baseline = Parameters.model_validate(params)
     treatment = baseline.model_copy(update={"communication": True})
+    if environment == "artifact_workspace":
+        # Artifact worlds have no messaging; vary their actual work allowance.
+        treatment = baseline.model_copy(deep=True)
+        assert treatment.artifacts is not None
+        treatment.artifacts.write_limit += 1
     design.conditions = [
         Treatment(key="off", name="Communication off", parameters=baseline),
         Treatment(key="on", name="Communication on", parameters=treatment),

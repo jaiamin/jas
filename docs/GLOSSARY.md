@@ -27,7 +27,7 @@
 | Oversight | A seeded procedural check that can reverse an unjustified sanction. |
 | Appeal | An agent action requesting deterministic review of a recorded sanction. |
 | Outside option | The payoff each negotiator receives on exit or exhausted negotiation. |
-| Private evidence | A signal sampled from a declared likelihood given researcher-known truth. |
+| Private evidence | Information visible only to authorized participants, including world-generated signals or artifact versions. |
 | Resource stock | Persistent shared inventory, distinct from a fresh per-round endowment. |
 | Benchmark case | A versioned question, split, expected mechanics and explicit assessment criteria. |
 
@@ -122,3 +122,35 @@ It is distinct from a participant's actions in a recorded experimental run.
 **Authoritative world state**:
 The state established by accepted world transitions. An agent's statement or an
 analyst's explanation is not itself an established world fact.
+
+## Artifact work and execution modes
+
+**World artifact**:
+A persistent object with authorized readers/writers and inspectable content versions.
+It is distinct from a participant's private plan or an analyst's interpretation.
+
+**Artifact version**:
+An immutable content revision with its author, source references and recorded origin.
+
+**Source reference**:
+A link to a specific artifact version used in work. A reference alone does not
+establish that a participant read it or that a prose claim is true.
+
+**Submission outcome**:
+The terminal result of the world's declared checks on submitted work, independent
+of the participant's claimed success.
+
+**Trace playback**:
+Viewing saved observations, decisions and consequences without executing them.
+
+**Consequence replay**:
+Reapplying recorded actions to verify deterministic consequences and authorized
+read receipts, without new model sampling.
+
+**Process restoration**:
+Recovering committed work and unfinished attempt records after a server restart.
+It does not itself resume participant sampling.
+
+**New model sampling**:
+An explicitly requested inference that may spend budget and produce a new proposal.
+It is distinct from playback, replay and restoration.

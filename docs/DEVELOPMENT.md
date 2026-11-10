@@ -60,14 +60,14 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v7.
-Schema v6 and library format `jas-environment-v3` accept only the current contract.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v8.
+Schema v7 and library format `jas-environment-v4` accept only the current contract.
 Older databases/library records receive explicit errors; no data is converted or reset.
 Use a separate fresh workspace path for the new contract and preserve existing evidence.
 
 The current schema retains T04's durable participant activations and per-request
-links alongside T03's pinned environment sources. Old schema 4/5 databases and
-v1/v2 environment files are explicitly rejected; preserve them separately. No
+links alongside T03's pinned environment sources. Old schema 4/5/6 databases and
+v1/v2/v3 environment files are explicitly rejected; preserve them separately. No
 compatibility reader or automatic reset is provided. Reusable mechanics exclude
 participant harness settings; each experiment pins those separately.
 
@@ -89,8 +89,10 @@ T08 adds selectable planning, retrieval, investigation and accessible verificati
 policies to **tool-using harness 2.0.0**. Direct action remains 1.0.0. Unsupported
 tool-using 1.0.0 designs are explicitly rejected: preserve their source/data/exports
 for inspection with that contract; no migration, compatibility reader or automatic
-reset is performed. T08 adds no database schema change; the accepted T03 integration
-uses schema 6. T07 advances study exports to v7 with exposure capture v1.
+reset is performed. T08 itself added no database schema change; T07 added exposure
+capture v1 in export v7. T09 advances the combined current
+contract to database schema 7, export 8 and environment-library v4 for typed artifact operations
+and complete versioned work/checkpoints.
 New runs must pin the current harness. Each capability can be explicitly disabled;
 there is no substitute policy. The same activation request/operation budgets apply.
 
@@ -144,3 +146,22 @@ from Environments → Candidates or `POST /api/extensions/qualify`; every restar
 requires fresh qualification. The production smoke also qualifies the actual
 non-root image and exercises candidate denial/limits. See [extensions](EXTENSIONS.md)
 for the narrow contract, threat model, limits and review storage.
+
+## Artifact investigation development checks
+
+The installed `artifact_workspace` template has one investigator, permitted evidence,
+writable work and a sealed object. Configure initial contents, access and write limits
+in Conditions; edit structural references in the protocol JSON. The run's Environment
+view shows versions/source links and enforced submission outcomes. The recorded-turn
+slider is playback; Verify reapplies consequences/authorized read receipts with no
+model requests. Restart restores and pauses; Run or Step explicitly samples again.
+
+```sh
+uv run pytest backend/tests/test_artifact_workspace.py backend/tests/test_artifact_lifecycle.py
+JAS_TEST_PORT=18120 pnpm --dir frontend exec playwright test --config playwright.harness.config.ts artifact-world.trial.ts
+```
+
+The dedicated trial uses only an opt-in external-provider stand-in. Success, wrong
+submission, stale-write rejection/recovery, both harnesses and mobile/draft behavior
+are development mechanics checks. They do not establish live intelligence or
+held-out generalization. See [T09 evidence](research/T09_ARTIFACT_WORLD.md).

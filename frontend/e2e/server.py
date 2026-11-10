@@ -20,8 +20,68 @@ def deterministic_participants(app):
 
     models.ALLOW_MODEL_REQUESTS = False
 
+    stale_attempts: set[str] = set()
+
+    def artifact_response(prompt):
+        if "operations" in prompt:
+            reads = prompt["operations"]
+            if not reads:
+                return {"operation": "observe", "read": None, "decision": None}
+            observation = reads[0]["result"]
+        else:
+            observation = prompt
+        history = observation["artifact_history"]
+        index = len(history)
+        goal = observation["you"]["goal"]
+        if (
+            "operations" in prompt
+            and index == 1
+            and not any(op["kind"] == "read_artifact" for op in reads)
+        ):
+            return {
+                "operation": "read_artifact",
+                "read": {"kind": "read_artifact", "artifact": "measurement", "version": 1},
+                "decision": None,
+            }
+        if index == 0:
+            action = {"kind": "read_artifact", "artifact": "measurement", "version": 1}
+        elif index == 1:
+            action = {
+                "kind": "write_artifact",
+                "artifact": "report",
+                "expected_version": 1,
+                "content": observation["last_result"]["content"],
+                "sources": [{"artifact": "measurement", "version": 1}],
+            }
+            if "[t09-browser-failure-" in goal:
+                action["content"] = {"reading": -4}
+            if "[t09-browser-recover-" in goal and goal not in stale_attempts:
+                stale_attempts.add(goal)
+                action["expected_version"] = 2
+        elif index == 2:
+            action = {"kind": "check_artifacts"}
+        else:
+            action = {"kind": "submit_artifacts"}
+        final = {
+            "action": action,
+            "memory": "",
+            "rationale": "T09 keyless development fixture.",
+            "forecast": None,
+        }
+        return (
+            {"operation": "decide", "read": None, "decision": final}
+            if "operations" in prompt
+            else final
+        )
+
     async def respond(messages, info):
         prompt = json.loads(messages[-1].parts[0].content)
+        if "artifacts" in prompt or "read_artifact" in prompt.get("limits", {}).get("tools", []):
+            return ModelResponse(
+                parts=[ToolCallPart(info.output_tools[0].name, artifact_response(prompt))],
+                usage=RequestUsage(input_tokens=100, output_tokens=50),
+                model_name="t09-browser-deterministic-v1",
+            )
         final = {
             "action": {
                 "kind": "contribute",

@@ -7,7 +7,7 @@ remain ordered. Only explicit user actions create paid work. Restart pauses inte
 ## Storage
 
 SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. Startup creates
-schema v6 for fresh workspaces and rejects incompatible schemas. Local transactions
+schema v7 for fresh workspaces and rejects incompatible schemas. Local transactions
 commit each turn's input, decision, consequences, metrics and checkpoint together.
 
 | Record | Purpose / invariant |
@@ -154,6 +154,15 @@ witnesses, not participant observations or evidence of Researcher competence.
 
 ## Environment seam
 
+Artifact exposure binds actual content, separately from a participant's descriptive
+memory of an operation. Direct-action inputs identify the delivered last result or
+authorized artifact history. Pure artifact-tool reads retain an operation-scoped
+opportunity and bind its exact result only when present in a subsequent bounded
+request. A compacted receipt does not deliver that result; a missing provider
+response leaves delivery unknown. Local reads, plans and task success alone do not
+establish investigation or input inclusion. Artifact replay also validates denied
+read receipts against their request, harness allowance and unchanged checkpoint.
+
 The `simulation/` package owns world rules, state and action schemas. A world initializes
 seeded state, selects an actor, constructs its observation, validates/applies actions,
 emits events/measurements and snapshots/restores state. It knows nothing about providers,
@@ -162,9 +171,11 @@ parameters and measurements. `World` owns common turn bookkeeping. Concrete worl
 checkpoint initialization, legal-action schema capabilities and derived environment measures;
 `decisions.py` builds schemas from those capabilities without selecting environments.
 `checkpoints.py` declares shared observations/actions and each world's state. Snapshots
-contain only that world's state. Institution uses rule version 4.1.0, composition uses 1.0.0, and the other worlds use 4.0.0. Incompatible
+contain only that world's state. Institution uses rule version 4.1.0; composition and artifact investigation use 1.0.0;
+the other controlled worlds use 4.0.0. Incompatible
 checkpoints fail explicitly. `environments.py` contains the catalog and three games;
-`mechanisms.py` implements four fixed worlds; `composed.py` interprets resource compositions.
+`mechanisms.py` implements four fixed worlds; `composed.py` interprets resource compositions;
+`artifacts.py` owns the artifact investigation rules.
 
 Profiles describe goals; parameterized permissions enforce action affordances. Per-turn
 schemas constrain requests, and world rules validate transitions again before committing.
@@ -180,6 +191,74 @@ Adding an environment requires these explicit integration points:
 4. Add the frontend identifier/state presentation and supported editing controls.
 5. Test action constraints, privacy, deterministic restore, completion and exact replay.
    Increment the world rule version whenever persisted behavior changes.
+
+## Persistent artifact investigation
+
+`artifact_workspace` is a concrete installed World, with 1–12 participants and no
+invented partner. Commons, trust exchange, institutions and bargaining retain
+their own minimum of two (and their existing pairing/dyad constraints).
+Conditions configure 2–12 objects, explicit owner/read/write access, structured
+initial content, a shared finite write allowance and content/source requirements.
+An owner may read/write; additional writers must also be readers. Source evidence
+for requirements is immutable. Profile names, roles and document prose grant no
+access and never establish task success.
+
+The decision contract is the existing controlled action or one typed artifact
+operation: `read_artifact`, `write_artifact`, `check_artifacts`, `submit_artifacts`
+or `stop`. Reads select an authorized version. Writes replace content at an exact
+`expected_version`, validate every referenced source before mutation, append a
+version and consume a write. A conflict, invalid source or denied operation changes
+no content, allowance, note or history. Versions retain author, source references
+and committed operation identity. Structured fields accept bounded strings or
+integers; they are never executed or semantically adjudicated.
+
+Checks require access to every relevant work/evidence object. They compare each
+required work field's value and type to immutable evidence v1 and require its
+source reference. Feedback is pass/fail, not hidden truth. Submit ends with success
+or failure; stop and the round horizon end unsuccessfully. `artifact_success` is
+one terminal 0/1 measure, not a financial payoff. Artifact checkpoints have no
+balances or synthetic signals; Researcher indexes/probes report absent financial
+outcomes as null. A citation alone does not prove evidence seeking: recorded reads
+establish what was actually delivered.
+
+Both participant harnesses can choose artifact actions. Tool using can additionally
+perform authorized pure `read_artifact` operations within its independent request
+and operation limits. These reads have real receipts and no world turn. Current
+T08 capabilities continue to consume only actor-projected observations; plans stay
+self-reports. Schemas enumerate authorized targets; history, source metadata and
+restored views are projected independently for each actor. Researcher inspection
+and export deliberately expose the full recorded workspace, with that scope named
+in the UI. Schema-level invalid proposals stay in provider response/error records;
+validated proposals, World rejections and settlements stay in activation journals.
+
+The editor reuses stock controls for write limits, initial contents and access;
+structural object/requirement edits also use the existing JSON editor. The review
+shows requirements and ACLs; the run view links versions and terminal results to
+recorded turns. Reusable mechanics extract/rebind ACL roles and retain complete
+immutable source snapshots, independently of population, model, harness and memory.
+DB 7, export 8, comparison 1 and `jas-environment-v4` are the current contract.
+Older database/library versions fail explicitly; preserve them with their source.
+No migration, compatibility reader or reset is performed. Controlled-world rules
+remain unchanged; generated execution/admission and model adjudication remain out
+of this World.
+
+### Playback, consequence replay, restoration and sampling
+
+The recorded-turn slider plays saved evidence without executing an action.
+Verify reapplies recorded decisions from the seeded initial state, checking actors,
+delivered observations, complete checkpoints and the final persisted state. Artifact
+Verify also recomputes successful tool reads at each activation's exact checkpoint
+and checks its actor/observation identity, World rejection receipts, events and
+terminal measurements. It does not rerun capabilities, resample
+participants or make provider requests; `verified_reads` counts checked pure reads and `verified_rejections` counts
+checked World rejections (not schema/provider failures).
+
+Process restoration loads committed checkpoints, keeps deliberately paused tool
+receipts/consumed limits, and pauses active runs. Interrupted attempts remain
+inspectable; unsettled reservations retain unknown usage. Restoration never calls
+a model. Run or Step explicitly requests new sampling; Pause settles an in-flight
+final action or retains an in-flight read for explicit continuation. Rejected work
+stays failed until a new explicit action; there is no substitute or silent retry.
 
 ## Trust and epistemics
 
@@ -225,7 +304,7 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v7 (`jas-study`)
+Every Analysis has an indexed conversation identity. Study export v8 (`jas-study`)
 includes every revision and its runs, actual recorded rule versions, exact turn evidence
 and provider traces; it batches
 journal queries.
@@ -388,7 +467,7 @@ continues to settle its own consequences independently of model prose.
 
 `EnvironmentLibrary` owns reusable custom setups as versioned JSON records in a sibling
 `<database-stem>.environments` directory. An in-memory workspace uses a temporary library.
-The v3 library contract stores an `EnvironmentMechanics` definition and named configuration
+The v4 library contract stores an `EnvironmentMechanics` definition and named configuration
 examples, independently of questions, participant/model/harness assignments, condition arms,
 replication and analysis. Examples declare unbound mechanic roles; experiment authors bind
 those roles to their own participants. Memory remains an experiment/harness choice.
@@ -410,7 +489,7 @@ the experiment adapts those examples. Editing/deleting a reusable environment ne
 or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
 12 recent definitions as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
-call or run. Database schema 6, export 7 and library v3 reject incompatible versions explicitly; there is
+call or run. Database schema 7, export 8 and library v4 reject incompatible versions explicitly; there is
 no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 ### Failure-aware comparisons (T06)
@@ -443,7 +522,7 @@ Analysis submissions synchronously freeze cutoffs, dispositions, terminal metric
 eligibility, revision/hash and calculations before the server task runs. Progress,
 reconnect, failure and export preserve that snapshot across later run completion or
 new revisions. Analysis reads do not append participant evidence or provider calls.
-Study export v7 includes this versioned comparison contract and persisted analysis
+Study export v8 includes this versioned comparison contract and persisted analysis
 snapshots, changing earlier consumer expectations. T06 changes no database columns and
 requires no data reset; historical evidence is never backfilled with invented states.
 
@@ -481,6 +560,7 @@ artifact. Inspection/export/replay remain
 read-only. Exposure-conditioned descriptions are post-treatment selections, not
 automatic causal effects; inclusion establishes no attention, belief or intent.
 
-Export v7 includes the exposure chain and frozen analysis artifacts. Database schema
-6 and all World rule versions are unchanged: additive JSON provenance does not alter
-world settlement, prompts or checkpoint replay. No migration or reset is performed.
+Exposure capture v1 was introduced in export v7; current export v8 retains the
+exposure chain and frozen analysis artifacts alongside artifact work. T09 advances
+the database to schema 7; exposure provenance alone does not alter controlled-world
+settlement, prompts or checkpoint replay. No migration or reset is performed.

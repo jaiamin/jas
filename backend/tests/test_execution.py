@@ -24,7 +24,9 @@ def test_complete_all_adapters_and_exact_replay(runtime, template):
     asyncio.run(run())
     record = research.run(run_id)
     assert record["summary"]["status"] == "complete", record["summary"]["error"]
-    expected = 2 if design.environment == "bargaining" else design.turn_count
+    expected = {"bargaining": 2, "artifact_workspace": 1}.get(
+        design.environment, design.turn_count
+    )
     assert record["summary"]["turn"] == expected
     assert engine.replay(run_id)["verified_turns"] == expected
     assert llm.usage(run_id=run_id)["requests"] == expected

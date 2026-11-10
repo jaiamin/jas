@@ -4,7 +4,7 @@ import copy
 import json
 
 import pytest
-from agent_sim.domain import Decision, Design
+from agent_sim.domain import Action, Decision, Design
 from agent_sim.simulation.environments import create_world
 from agent_sim.templates import templates
 
@@ -48,10 +48,18 @@ def test_observation_deep_isolation_and_terminal_guard(template):
     world.state["experiences"][actor] = [{"text": "private-experience"}]
     before, parameters = world.snapshot(), params.model_dump()
     obs = world.observe(actor)
-    obs["public_history"][0]["nested"]["value"] = "corrupt"
+    if design.environment == "artifact_workspace":
+        assert obs["public_history"] == []
+        from agent_sim.domain import ReadArtifact
+
+        read = world.read(actor, ReadArtifact(kind="read_artifact", artifact="measurement"))
+        read["content"]["reading"] = "corrupt"
+    else:
+        obs["public_history"][0]["nested"]["value"] = "corrupt"
     obs["your_experiences"][0]["text"] = "corrupt"
     obs["communication_channels"].clear()
-    obs["public_signals"].clear()
+    if "public_signals" in obs:
+        obs["public_signals"].clear()
     assert world.snapshot() == before and params.model_dump() == parameters
     world.state["done"] = True
     before = world.snapshot()
@@ -96,6 +104,7 @@ def test_false_reports_commitments_and_shocks_have_independent_denominators():
         obs = world.observe(actor)
         obs["you"] = next(p.model_dump() for p in design.profiles if p.key == actor)
         decision = scripted(dict(obs), True)
+        assert isinstance(decision.action, Action)
         decision.action.report = 1 if obs["your_private_signal"] == 0 else 0
         decision.action.promise = 8 if obs["round"] == 2 else None
         events, measures = world.step(actor, decision)

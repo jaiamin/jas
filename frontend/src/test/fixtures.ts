@@ -31,6 +31,7 @@ export const parameters: Parameters = {
     extraction_limit: 10,
   },
   composition: null,
+  artifacts: null,
   resource_schedule: [],
 };
 
@@ -112,7 +113,7 @@ export const catalog: Catalog = {
   environments: [
     {
       source: {
-        format: "jas-environment-v3",
+        format: "jas-environment-v4",
         id: "builtin:institution",
         revision: 1,
         updated: "4.0.0",
