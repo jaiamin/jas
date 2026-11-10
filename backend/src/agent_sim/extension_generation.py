@@ -73,6 +73,56 @@ class ExtensionGeneration:
             == attempt
         ]
 
+    def recover(self) -> None:
+        """Close lost server tasks after Engine has retained unknown reservations."""
+        journal = self.extensions.generations
+        for attempt in journal.list():
+            if attempt["stop_reason"] != "in_progress":
+                continue
+            recorded = {item["id"] for item in attempt["requests"]}
+            for receipt in self.request_receipts(attempt["analysis_id"], attempt["id"]):
+                if receipt["id"] not in recorded:
+                    journal.append(attempt["id"], "request", receipt)
+            journal.append(
+                attempt["id"],
+                "stopped",
+                {
+                    "stop_reason": "interrupted",
+                    "error": "ServerStopped",
+                },
+            )
+            closed = journal.get(attempt["id"])
+            with self.db.session.begin() as session:
+                row = session.get_one(Analysis, attempt["analysis_id"])
+                output = row.output or {}
+                record = output.get("research")
+                if record is None:
+                    continue
+                operations = []
+                for operation in record["operations"]:
+                    if operation["id"] == attempt["operation_id"]:
+                        operation = {
+                            **operation,
+                            "status": "failed",
+                            "summary": "Generation interrupted by server restart; no retry.",
+                            "data": {
+                                **(operation["data"] or {}),
+                                "id": attempt["id"],
+                                "stop_reason": "interrupted",
+                                "contract_id": attempt["contract"]["id"],
+                                "repair_of": attempt["repair_of"],
+                            },
+                            "sources": [
+                                {**source, "hash": closed["sha256"]}
+                                if source["kind"] == "extension_generation"
+                                and source["id"] == attempt["id"]
+                                else source
+                                for source in operation["sources"]
+                            ],
+                        }
+                    operations.append(operation)
+                row.output = {**output, "research": {**record, "operations": operations}}
+
     async def run(self, key, request, operation, tools, progress: Callable) -> None:
         with self.db.session() as session:
             row = session.get_one(Analysis, key)

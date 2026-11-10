@@ -988,3 +988,127 @@ accepted composer test's visible-notice wait; no application frontier or T12 cod
 enters this merge. No prior failed test/history is reclassified or deleted.
 Both conflicts and both fixed parents remain independently reconstructable.
 Normal-hook merge completion has a separate4MiB preflight/source receipt.
+
+Exact completed merge is `dae7a73eb45850a61ba3656ef4566bda49ba6441`, fixed parents
+27782530... and fdfb5f7a... . Normal hooks/Gitleaks pass; source before=after
+`4419ea2c168768bb7f7ae84f631efaee3a54bf36819c8853d3c1ffa22db918d5`.
+Footprint29,183,879 bytes before receipt/free1451352064, lock released.
+ROOT subsequently published accepted `dd48bf31` (only Run/Study identity-scoped
+mutation keys, independent UI tests and docs; no backend/persisted frontier
+change). That exact commit, never a moving ref or provisional sibling, is the
+next required final-boundary normal merge after the coherent slice below.
+
+Next `generation-restart-red-01` freezes an actual abrupt-exit public workflow
+witness. Own tracked `fixtures/t17_generation_crash.py` uses a keyless Sol
+FunctionModel, no socket server, freezes the same approved external contract,
+settles one General request then leaves one actual reserved generator blocked
+before any candidate output. Its own process calls os._exit only after retaining
+public request/journal IDs and pending status. Parent restart must construct zero
+providers, keep exactly2 requests/1 candidate, mark the reserved request unknown
+with zero reported tokens/charged=reserved>0, and append only its receipt plus an
+interrupted stop to the original unmodified journal prefix. Public question
+operation data/source hash must identify that final stop. No study, candidate or
+execution source may be invented. A second restart must leave all records and
+integer charges byte-for-byte unchanged and still make zero calls.
+
+First intended missing-property red is journal stop_reason still in_progress
+after its server-owned task was lost. No recovery implementation precedes that
+observation. This is a bounded backend TestClient subprocess lifecycle check,
+not a released service/production stage or actual provider request. Forecast8MiB,
+unchanged shared floor/flock and64MiB output envelope; retain child source/stdout/
+stderr/control receipt and every failure. The initial test insertion was moved
+out of the first test's body before freezing/running; no first-test assertions or
+external oracle were removed or changed.
+
+`generation-restart-red-01` observes intended **in_progress != interrupted**,
+exit1/6.76s, exact unchanged source
+`422d207653fd25f44bb6a13623536ce15dee518b59bc2d0fed54dec4946ca89a`.
+The real abrupt child exit, pending reservation, restart Analysis failure and
+unknown charged=reserved request all passed before the journal stop assertion.
+Own child stdout/stderr/control data and source are retained. No participant,
+candidate output or actual provider call occurred. Free1436012544→1434472448;
+footprint29,949,487 bytes before receipt, lock released.
+
+Only after red, startup recovery appends the already defined v2 request/stopped
+events for lost in-progress generation tasks after Engine's existing unknown-
+reservation recovery, and updates that question's interrupted public operation
+data/source hash. It neither retries nor changes counters/charges or closed
+attempts. Existing v2 event/state meanings and all persisted version numbers
+remain; this is an actual new terminal event, not reinterpretation/migration of
+prior formats. v1/unversioned journals still reject explicitly. The initial
+controlled crash point is before candidate output; other interruption windows
+and graceful cancellation are still distinct unqualified cases. Next
+`generation-restart-green-01` runs only this frozen restart witness,8MiB forecast.
+
+`generation-restart-green-01` passes1 (four deselected)/6.76s at exact source
+`cad3ea7b38e3a78be276e30b3bb35fe0fb37f19cc32d7c64a0f6a7794080f62b`.
+Unknown reservation, interrupted journal/public operation and second-restart
+idempotence all hold with zero provider construction/calls. Footprint30,728,363
+bytes before receipt; free1421578240, lock released. The observed repair covers
+the declared crash-before-candidate window; other file/DB recovery windows remain
+unqualified, without an atomic cross-store durability claim.
+
+Next `generation-shutdown-01` freezes the graceful-shutdown variation alongside
+the existing abrupt case. The same blocked real generator is cancelled by normal
+TestClient/server close, retains unknown usage/full reservation and original
+CancelledError, closes the attempt interrupted without sampling, and preserves
+all records across two restarts. Graceful Analysis error is literally `Request
+interrupted.`; abrupt remains `Server stopped. Request was not automatically
+retried.`. No product change precedes this existing-property observation.
+Forecast8MiB within64MiB, same floor/flock; this is backend subprocess testing,
+not services/browser/production/provider authorization. Latest exact accepted
+merge target is `dd48bf31792ea9132e81ddff3fcc6e429041e011` for the next boundary.
+
+`generation-shutdown-01` passes2 (four deselected)/13.46s, exact unchanged source
+`d601f1b459ecd4f1243217fbf57e9a789e88611eba23e6a3314b4f7d4d2ceaae`.
+Both normal cancellation and abrupt restart retain the original prefix, unknown
+reserved cost and zero new calls across repeated restart. Next final-source
+regression also explicitly asserts the literal request error (`CancelledError`
+versus the recorded server-stop message); those expectations are frozen here
+before that output, not inferred from a generated candidate. Footprint31,993,006
+bytes before receipt/free1404334080, lock released. No new source archives beyond
+safe deduplicated tracked manifests, no source resets or other-owner changes.
+
+Next4MiB formatting/static/type jobs cover the added recovery/fixture/tests,
+then normal checkpoint and exact dd48bf31792ea9132e81ddff3fcc6e429041e011 merge.
+Separately forecast16MiB for one affected finite/generation/Engine/API regression
+job on combined final backend source; never an aggregate pytest invocation.
+Frozen T01 current execution and independent5-run/22-turn current-contract
+qualification still require their own guarded source/oracle preparation and
+staged check release. Unsupported legacy gap labels are schema-only historical
+fixtures, not current capability claims; applicable artifact-workspace coverage
+must explicitly replace them before new current-contract qualification.
+
+`backend-format-03` deliberately reformats recovery/test/fixture sources;
+`backend-style-05` broadens static coverage to the prescribed backend/benchmarks/
+workflow-script paths and retains9 diagnostics (7 in earlier T17 finite additions
+to extensions.py,2 remaining new test strings). All are import/line wrapping;
+manual adjacent-string splits preserve exact runtime values. Global
+`backend-types-04` passes at source77497547... before those formatting-only fixes.
+The narrower earlier Ruff pass was explicitly affected-file scope, not a whole-
+backend pass. Next bounded import fix and full Ruff/type checks each forecast4MiB.
+Footprint32,600,697 bytes before type receipt, lock released; no runtime claim
+at any formatting/static-only source.
+
+`backend-imports-03` fixes the one remaining finite-admission import order.
+Full `backend-style-06` (`backend benchmarks .github/scripts`) and global
+`backend-types-05` both pass at exact unchanged source
+`d0173edb5d71b416b1c6e8e71d6530b89abc256c946353ba82f5a8da8c1abf90`.
+Footprint33,210,392 bytes before type receipt/free1367957504, lock released.
+
+ROOT corrected its earlier navigation diagnosis and published exact accepted
+`eaa47bb32c5c5c436586b5a49915aaf5eb25be56`, now the required normal-merge target.
+Read `docs/research/FINAL_CODE_QUALITY_REVIEW.md` at that tip: real WorkspaceShell
+already remounts record pages; dd48's two mutation keys were redundant and have
+been removed. Isolated fixture failures are not a product red/green. The corrected
+shell-inclusive tests/browsers are inherited at their recorded source; no T17
+frontend qualification is claimed. Incoming paths are only HANDOFF/review/final
+plan and Run/Study tests; no provisional sibling or backend/persisted change.
+
+ROOT explicitly releases final-source affected backend/static, frozen original
+T01 CURRENT execution and independently literal current-contract5/22/22 matrix
+within the existing64MiB retained/16MiB-per-job envelope. Each still needs its own
+realistic preflight/guard/oracle before execution. Frontend/setup/services/browser/
+production/providers remain held. Historical parity is still retired. Next normal
+checkpoint/merge jobs forecast4MiB each, then the separately forecast16MiB affected
+regression job. Source fixtures and both external contract meanings stay fixed.

@@ -43,13 +43,13 @@ from .finite_contract import (
 from .finite_profile import (
     STAGES as FINITE_STAGES,
 )
-from .generation_store import GenerationStore
 from .finite_profile import (
     profile_hash as finite_profile_hash,
 )
 from .finite_profile import (
     validate_package as validate_finite_package,
 )
+from .generation_store import GenerationStore
 
 CASES = Path(__file__).with_name("extension_qualification.json")
 
@@ -139,10 +139,14 @@ class FiniteAdmission(Strict):
     limitations: list[str] = Field(
         default_factory=lambda: [
             "External exhaustive finite transition table is a prerequisite, not understood intent.",
-            "Supports bounded deterministic role/state/credit transitions and static actor-private facts.",
-            "Richer worlds, dynamic information, imports, native code and external systems unsupported.",
-            "Copied probe isolation differs from qualified executable containment; current runtime required.",
-            "Participant trials require separate explicit user execution; no live competence established.",
+            "Supports bounded deterministic role/state/credit transitions "
+            "and static actor-private facts.",
+            "Richer worlds, dynamic information, imports, native code "
+            "and external systems unsupported.",
+            "Copied probe isolation differs from qualified executable containment; "
+            "current runtime required.",
+            "Participant trials require separate explicit user execution; "
+            "no live competence established.",
         ]
     )
 
@@ -313,8 +317,9 @@ class Extensions:
                         [
                             "Current credential-free/import-free bounded worker is qualified.",
                             "Actual artifact matched the immutable external full domain twice.",
-                            "External table consequences, role guards, resource conservation, private "
-                            "projections and exact World checkpoint/event/measurement restoration/replay.",
+                            "External table consequences, role guards, resource conservation, "
+                            "private projections and exact World checkpoint/event/measurement "
+                            "restoration/replay.",
                         ],
                         strict=True,
                     )

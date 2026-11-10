@@ -275,6 +275,7 @@ class Assistants:
                 row.status = "failed"
                 row.error = "Server stopped. Request was not automatically retried."
                 row.output = stopped_research(row.output, "server_stopped")
+        ExtensionGeneration(db, research, models).recover()
 
     async def start(
         self,

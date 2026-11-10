@@ -7,6 +7,8 @@ not produced by this stand-in. No held-out or paid/live competence claim follows
 import asyncio
 import hashlib
 import json
+import subprocess
+import sys
 import threading
 from pathlib import Path
 
@@ -215,6 +217,7 @@ def test_authorized_question_generates_actual_wat_then_returns_pending_reviewed_
         assert client.get("/api/extensions/generations").json() == [attempt]
         assert all(source["hash"] for source in generated["sources"])
         assert client.get("/api/studies").json() == []
+
         calls = client.get(f"/api/analyses/{row['id']}/requests").json()
         assert len(calls) == 6
         assert all(
@@ -535,9 +538,12 @@ def test_generation_request_ceiling_and_unknown_usage_keep_failure_without_retry
     tmp_path, monkeypatch, request_limit
 ):
     """Independent failure expectations; no executable candidate is returned here."""
-    external = Path(__file__).with_name("fixtures").joinpath(
-        "t17_cosigned_escrow_contract.json"
-    ).read_bytes()
+    external = (
+        Path(__file__)
+        .with_name("fixtures")
+        .joinpath("t17_cosigned_escrow_contract.json")
+        .read_bytes()
+    )
     assert hashlib.sha256(external).hexdigest() == (
         "eef4d9c9c7f23e3079d8ff140284be3792dd31496dc86e30c5cef477766a4407"
     )
@@ -558,27 +564,55 @@ def test_generation_request_ceiling_and_unknown_usage_keep_failure_without_retry
         async def stream(messages, info):
             prompt = json.loads(messages[-1].parts[0].content)
             assert not prompt["research"]["operations"]
-            yield {0: DeltaToolCall(name=info.output_tools[0].name, json_args=json.dumps({
-                "answer": "Inspect installed mechanics before authorized finite generation.",
-                "citations": [], "caveats": [], "propose_experiment": False,
-                "requests": [{"kind": "capabilities"}, {
-                    "kind": "generate_extension", "contract_id": contract["id"],
-                }],
-            }))}
+            yield {
+                0: DeltaToolCall(
+                    name=info.output_tools[0].name,
+                    json_args=json.dumps(
+                        {
+                            "answer": "Inspect installed mechanics "
+                            "before authorized finite generation.",
+                            "citations": [],
+                            "caveats": [],
+                            "propose_experiment": False,
+                            "requests": [
+                                {"kind": "capabilities"},
+                                {
+                                    "kind": "generate_extension",
+                                    "contract_id": contract["id"],
+                                },
+                            ],
+                        }
+                    ),
+                )
+            }
 
         def provider(name):
             assert name == "openai:gpt-6.1-sol", f"Unexpected model substitution {name}"
             return FunctionModel(function=respond, stream_function=stream)
 
         monkeypatch.setattr(app.state.models, "model", provider)
-        row = finish(client, client.post("/api/chats", json={
-            "question": "Generate the independently specified co-signature escrow.",
-            "generation": {"contract_id": contract["id"], "max_candidates": 2,
-                           "max_requests": request_limit, "max_output_tokens": 16384,
-                           "max_input_bytes": 180000, "budget_usd": 3.0},
-        }))
+        row = finish(
+            client,
+            client.post(
+                "/api/chats",
+                json={
+                    "question": "Generate the independently specified co-signature escrow.",
+                    "generation": {
+                        "contract_id": contract["id"],
+                        "max_candidates": 2,
+                        "max_requests": request_limit,
+                        "max_output_tokens": 16384,
+                        "max_input_bytes": 180000,
+                        "budget_usd": 3.0,
+                    },
+                },
+            ),
+        )
         assert row["status"] == "failed"
-        assert (row["generation"]["requests"], row["generation"]["candidates"]) == (request_limit, 1)
+        assert (row["generation"]["requests"], row["generation"]["candidates"]) == (
+            request_limit,
+            1,
+        )
         calls = client.get(f"/api/analyses/{row['id']}/requests").json()
         assert len(calls) == request_limit and calls[0]["status"] == "complete"
         assert all(c["model"] == "openai:gpt-6.1-sol" for c in calls)
@@ -587,7 +621,9 @@ def test_generation_request_ceiling_and_unknown_usage_keep_failure_without_retry
         attempt = attempts[0]
         assert attempt["stop_reason"] == "provider_failure"
         assert attempt["candidate"] is None and attempt["review"] is None
-        assert attempt["check"] is None and attempt["admission"] is None and attempt["source"] is None
+        assert (
+            attempt["check"] is None and attempt["admission"] is None and attempt["source"] is None
+        )
         if request_limit == 1:
             assert sent == [] and attempt["requests"] == []
             assert "allowance reached" in row["error"]
@@ -604,5 +640,90 @@ def test_generation_request_ceiling_and_unknown_usage_keep_failure_without_retry
             assert attempt["requests"][0]["error"] == "RuntimeError"
             assert row["usage"]["partial"] is True
             assert "RuntimeError" in row["error"]
-        assert round(row["generation"]["charged_usd"] * 1_000_000) == sum(c["charged"] for c in calls)
+        assert round(row["generation"]["charged_usd"] * 1_000_000) == sum(
+            c["charged"] for c in calls
+        )
         assert client.get("/api/studies").json() == []
+
+
+@pytest.mark.parametrize("shutdown", ["abrupt", "graceful"])
+def test_restart_closes_unfinished_generation_and_retains_unknown_reservation(
+    tmp_path, monkeypatch, shutdown
+):
+    """A real abrupt process exit must not leave public generation activity running."""
+    from agent_sim.llm import LanguageModels
+
+    database = tmp_path / "interrupted.sqlite3"
+    receipt = tmp_path / "crash-receipt.json"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-B",
+            str(Path(__file__).with_name("fixtures") / "t17_generation_crash.py"),
+            str(database),
+            str(receipt),
+            shutdown,
+        ],
+        capture_output=True,
+        text=True,
+        timeout=35,
+    )
+    tmp_path.joinpath("child-stdout.log").write_text(result.stdout)
+    tmp_path.joinpath("child-stderr.log").write_text(result.stderr)
+    assert result.returncode == 0, result.stdout + result.stderr
+    before = json.loads(receipt.read_text())
+    key = before["analysis_id"]
+
+    def no_provider(_self, _name):
+        raise AssertionError("Restart must construct no provider or sample again")
+
+    monkeypatch.setattr(LanguageModels, "model", no_provider)
+    with TestClient(create_app(f"sqlite:///{database}"), base_url="http://localhost") as client:
+        row = client.get(f"/api/analyses/{key}").json()
+        assert row["status"] == "failed"
+        assert row["error"] == (
+            "Server stopped. Request was not automatically retried."
+            if shutdown == "abrupt"
+            else "Request interrupted."
+        )
+        calls = client.get(f"/api/analyses/{key}/requests").json()
+        assert len(calls) == 2 and (
+            row["generation"]["requests"],
+            row["generation"]["candidates"],
+        ) == (2, 1)
+        request = calls[1]
+        assert request["id"] == before["calls"][1]["id"]
+        assert request["status"] == "unknown" and request["charged"] == request["reserved"] > 0
+        assert request["error"] == (
+            "Server stopped; reserved cost retained." if shutdown == "abrupt" else "CancelledError"
+        )
+        assert request["charged"] == before["calls"][1]["charged"]
+        assert (request["input_tokens"], request["output_tokens"]) == (0, 0)
+        attempt = client.get(f"/api/extensions/generations/{before['attempt']['id']}").json()
+        # Intended RED: the server task is gone but this public journal is still in_progress.
+        assert attempt["stop_reason"] == "interrupted"
+        assert attempt["events"][: len(before["attempt"]["events"])] == before["attempt"]["events"]
+        assert len(attempt["events"]) == len(before["attempt"]["events"]) + 2
+        assert len(attempt["requests"]) == 1
+        assert attempt["requests"][0]["id"] == request["id"]
+        assert attempt["requests"][0]["status"] == "unknown"
+        assert attempt["requests"][0]["charged"] == request["reserved"]
+        assert attempt["candidate"] is None and attempt["source"] is None
+        operation = next(
+            op
+            for op in row["output"]["research"]["operations"]
+            if op["request"]["kind"] == "generate_extension"
+        )
+        assert operation["status"] == "failed" and operation["data"]["stop_reason"] == "interrupted"
+        source = next(s for s in operation["sources"] if s["kind"] == "extension_generation")
+        assert source["hash"] == attempt["sha256"]
+        assert row["usage"]["partial"] and row["usage"]["requests"] == 2
+        assert round(row["generation"]["charged_usd"] * 1_000_000) == sum(
+            c["charged"] for c in calls
+        )
+        assert client.get("/api/studies").json() == []
+        usage = client.get("/api/settings").json()["usage"]
+    with TestClient(create_app(f"sqlite:///{database}"), base_url="http://localhost") as client:
+        assert client.get(f"/api/extensions/generations/{attempt['id']}").json() == attempt
+        assert client.get(f"/api/analyses/{key}/requests").json() == calls
+        assert client.get("/api/settings").json()["usage"] == usage
