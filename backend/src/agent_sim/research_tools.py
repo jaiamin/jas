@@ -299,7 +299,10 @@ class ResearchTools:
                 {"kind": "run", "id": source.run_id, "turn": source.turn, "hash": digest(state)}
             ]
         design = Design.model_validate(design.model_dump()).resolve(condition)
-        self.research.validate_design(design)
+        if isinstance(source, ProposalSource):
+            self.research.review_design(design)
+        else:
+            self.research.validate_design(design)
         # World copies the JSON checkpoint. Never use an Engine, save, or provider here.
         world = self.research.world(design, condition.parameters, seed, state)
         initial = world.snapshot()

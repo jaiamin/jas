@@ -80,6 +80,26 @@ this frozen specification, never copied candidate self-tests.
 - [ ] Coherent scanned commits, raw member-verified source archives/inventories,
       failures retained, clean branch and closed owned services/browser18125.
 
+Continuation at7383c13 records the public admission-ordering red before repair:
+`admission-guard-red` exits1; a nonexistent admission ID returns200 and six actual
+isolated worker calls during draft preflight. Draft review now checks the real
+admission before any executable witness, including create/revise, planner review
+and probes of untrusted proposals. Existing immutable revisions retain their
+self-contained package/runtime checks, including after review-sidecar loss.
+The writer/saving transaction remains on its existing owning loop. No World,
+worker, capability, package, rule or version semantics change in this repair.
+The next same-eight-case green exits0 (60.38s), including sidecar-loss execution
+and replay. Ruff/ty also pass. Subsequent assertions add genuine sidecar-loss
+draft/create/revise rejection, and the production smoke exercises these same
+HTTP boundaries in the actual non-root server; these await final qualification.
+
+New captures use ignored `safe_check.py` v2: tracked-only regular source paths,
+protected clipboard/environment/credential path rejection and a durable selection
+proof **before source content reads**, explicit tracked diffs and member-byte
+verification. Older source captures remain unchanged and lack this pre-read
+proof; their later archive-member audits are separately attributed. No protected
+clipboard file or unrelated untracked artifact is selected or read.
+
 ## Decisions and progress
 
 Initial accepted contracts DB7/export8/capture1/comparison1/library4/tool2.0/direct1.0.

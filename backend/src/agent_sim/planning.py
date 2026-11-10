@@ -12,7 +12,7 @@ from .llm import LanguageModels
 from .research import Research
 from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, create_world
 from .templates import templates
-from .validity import Requirement, factorial_issues, preflight, requirement_issues
+from .validity import Requirement, factorial_issues, requirement_issues
 from .validity import capabilities as environment_capabilities
 
 PLANNING = """Design empirical studies of model-controlled agents, not claims of human prediction.
@@ -476,7 +476,7 @@ class Planner:
                         raise ValueError(
                             "Required constructs are not implemented: " + " ".join(problems)
                         )
-                    check = await asyncio.to_thread(preflight, design)
+                    check = await asyncio.to_thread(self.research.review_design, design)
                     if brief.factorial:
                         check["issues"].extend(factorial_issues(check["condition_grid"]))
                         if any(i["severity"] == "error" for i in check["issues"]):

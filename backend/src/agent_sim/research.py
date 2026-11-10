@@ -99,7 +99,19 @@ class Research:
     def world(self, design: Design, parameters, seed: int, state: dict | None = None):
         return create_world(design, parameters, seed, state, runner=self.extensions.transition)
 
+    def review_design(self, design: Design, plan_id: str | None = None) -> dict:
+        """Authorize an untrusted draft before any executable preflight witness."""
+        self.validate_design(design)
+        if design.environment == "sealed_relay":
+            source = design.environment_source
+            if source is None or source.definition.extension is None:
+                raise ValueError("Independent extension admission is required")
+            self.extensions.check_package(source.definition.extension)
+        return self.preflight(design, plan_id)
+
     def preflight(self, design: Design, plan_id: str | None = None) -> dict:
+        # Persisted revisions carry their exact package and provenance. Their checks
+        # must remain possible after loss of the original review/admission sidecars.
         result = preflight(design, runner=self.extensions.transition)
         result["question_mapping"] = []
         result["original_question"] = None
@@ -164,13 +176,7 @@ class Research:
     def save_design(
         self, design: Design, *, study_id: str | None = None, plan_id: str | None = None
     ) -> str:
-        self.validate_design(design)
-        if design.environment == "sealed_relay":
-            source = design.environment_source
-            if source is None or source.definition.extension is None:
-                raise ValueError("Independent extension admission is required")
-            self.extensions.check_package(source.definition.extension)
-        require_valid(self.preflight(design, plan_id))
+        require_valid(self.review_design(design, plan_id))
         payload = design.model_dump()
         with self.db.session.begin() as session:
             if plan_id:

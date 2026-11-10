@@ -1,4 +1,17 @@
-# T16 implementation checkpoint — admission regression pending (2026-11-10)
+# T16 implementation checkpoint — admission guard repaired (2026-11-10)
+
+Continuation observes the public red at7383c13: forged draft preflight returns200
+and six real isolated worker calls. `review_design` now requires actual admission
+before any untrusted draft witness (routes, planner and proposal probes), while
+pinned revisions retain self-contained runtime checks. Same-eight-workflow green
+passes, including pinned start/evidence/export/replay after sidecar loss; Ruff/ty
+pass. Genuine lost-sidecar draft/create/revise assertions and actual production
+HTTP guard witnesses are added for final qualification. Source captures now use
+tracked-only pre-read selection proofs; older captures retain their historical
+preselection gap. Own verified Python restored under shared flock; about190MiB
+remains shared at this point. Next merge only accepted eb9c29a, then final static/
+backend/browser/actual production/frozen-positive parity and custody closure.
+The existing evidence and older qualification paragraphs below remain historical.
 
 T16/#27 owns `t3/t16-extension-admission` in assigned `t3-653eb2ec`, port18125.
 No descendants/extra checkout/publication/paid calls/reset/security changes.

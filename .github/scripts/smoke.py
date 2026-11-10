@@ -3,11 +3,16 @@
 import json
 import os
 import re
+from pathlib import Path
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
+from agent_sim.config import setting
+from agent_sim.db import digest
 from agent_sim.domain import Decision, Design
 from agent_sim.extensions import Extensions
 from agent_sim.simulation.environments import create_world
+from sqlalchemy.engine import make_url
 
 
 def get(path: str) -> str:
@@ -162,6 +167,43 @@ assert (
     exported["revisions"][0]["design"]["environment_source"]["definition"]["extension"] == package
 )
 assert len(exported["runs"]) == 1 and not exported["requests"]
+
+# An internally coherent manifest cannot authorize a new draft. This exercises
+# the actual non-root server, independently of the in-process public worker spy.
+forged = json.loads(json.dumps(design))
+forged_source = forged["environment_source"]
+forged_package = forged_source["definition"]["extension"]
+forged_package["admission_id"] = "0" * 16
+forged_package["sha256"] = digest(
+    {key: value for key, value in forged_package.items() if key != "sha256"}
+)
+forged_source["sha256"] = digest(forged_source["definition"])
+
+
+def rejected_draft(path: str, draft: dict) -> None:
+    try:
+        post(path, {"design": draft})
+    except HTTPError as error:
+        assert error.code == 404, (path, error.code)
+    else:
+        raise AssertionError(f"Unadmitted draft was accepted: {path}")
+
+
+for endpoint in ("/api/design/preflight", "/api/studies", f"/api/studies/{sid}/revisions"):
+    rejected_draft(endpoint, forged)
+# Remove only these two synthetic sidecars; the already pinned revision retains
+# its own exact package. New drafts/saves still require the actual admission.
+database_path = make_url(setting("DATABASE_URL", "sqlite:///data/jas.sqlite3")).database
+assert database_path and database_path != ":memory:"
+sidecars = Path(database_path).with_suffix(".extensions")
+for relative in (f"{relay_review['id']}.json", f"admissions/{admitted['id']}.json"):
+    (sidecars / relative).unlink()
+for endpoint in ("/api/design/preflight", "/api/studies", f"/api/studies/{sid}/revisions"):
+    rejected_draft(endpoint, design)
+assert json.loads(get(f"/api/studies/{sid}/export")) == exported
+assert len(json.loads(get(f"/api/studies/{sid}"))["runs"]) == 1
+assert json.loads(get("/api/settings"))["usage"]["requests"] == 0
+print("Production admission guard passed: forged/lost admission rejected; pinned revision intact")
 
 # Independent literal World/restore/replay witness inside this real non-root image.
 # The full Engine/provider workflow is tested separately with explicit stand-ins;

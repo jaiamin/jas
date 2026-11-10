@@ -116,6 +116,12 @@ def test_admitted_package_runs_through_normal_revision_evidence_and_replay(tmp_p
         assert client.get("/api/extensions/reviews").json() == []
         assert client.get("/api/extensions/admissions").json() == []
         assert client.post("/api/environments", json={"definition": definition}).status_code == 404
+        for endpoint in (
+            "/api/design/preflight",
+            "/api/studies",
+            f"/api/studies/{sid}/revisions",
+        ):
+            assert client.post(endpoint, json={"design": design}).status_code == 404
         pending_export = client.get(f"/api/studies/{sid}/export").json()
         assert (
             pending_export["revisions"][0]["design"]["environment_source"]["definition"][
