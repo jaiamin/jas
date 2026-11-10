@@ -116,6 +116,21 @@ export function ExperimentReview({
               <dt className="min-w-0 break-words">{condition.name}</dt>
               <dd className="text-muted-foreground">
                 {modelLabel(condition.model)}
+                <span className="block">
+                  {condition.harness.kind === "direct_action"
+                    ? "Direct action"
+                    : "Tool using"}{" "}
+                  · v{condition.harness.version}
+                </span>
+                <span className="block">
+                  {condition.harness.max_requests} requests ·{" "}
+                  {condition.harness.max_tool_operations} reads per activation
+                </span>
+                {condition.harness.tools.length > 0 && (
+                  <span className="block">
+                    {condition.harness.tools.join(", ")}
+                  </span>
+                )}
               </dd>
             </div>
           ))}
@@ -161,9 +176,11 @@ export function ExperimentReview({
         </dl>
       </ReviewSection>
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Creating an experiment saves its protocol and planned runs. Model calls
-        begin only when you choose to run it. Earlier revisions keep their
-        original rules and evidence.
+        Private goals, roles and condition profile overrides are declared study
+        factors. Harness selection does not prescribe a social outcome. Creating
+        an experiment saves its protocol and planned runs. Model calls begin
+        only when you choose to run it. Earlier revisions keep their original
+        rules and evidence.
       </p>
     </section>
   );

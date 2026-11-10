@@ -4,6 +4,7 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { HarnessFields } from "@/components/editor/harness-fields";
 import { ProfileOverridesEditor } from "@/components/editor/profile-overrides-editor";
 import { ResourceScheduleEditor } from "@/components/editor/resource-schedule-editor";
 import { Plus, Trash2 } from "@/components/icons";
@@ -248,6 +249,12 @@ export function ConditionFields({
                     />
                   </Field>
                 </FieldGroup>
+                <HarnessFields
+                  id={c.key}
+                  index={i}
+                  value={c.harness}
+                  onChange={(harness) => condition(i, { harness })}
+                />
                 <div className="flex flex-wrap gap-5">
                   <FieldLabel htmlFor={`communication-${c.key}`}>
                     <Checkbox

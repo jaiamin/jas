@@ -1,6 +1,47 @@
 import { expect, test } from "vitest";
 import { chatProgress } from "./chat-progress";
 
+test("live events retain public operation results and reject malformed artifacts", () => {
+  const research = {
+    version: 1,
+    scope: {
+      chat_id: "chat",
+      before: "2026-11-10",
+      cutoffs: {},
+      context_limit: 50,
+    },
+    operations: [
+      {
+        id: "probe",
+        request: { kind: "probe" },
+        status: "complete",
+        summary: "Hypothetical acceptance.",
+        sources: [],
+        data: { balances: [5, 9] },
+      },
+    ],
+    stop_reason: "answered",
+  };
+  const event = (value: unknown) =>
+    JSON.stringify({
+      id: "current",
+      purpose: "general",
+      status: "pending",
+      output: { research: value },
+    });
+  expect(chatProgress(event(research), "current")?.research).toEqual(research);
+  for (const malformed of [
+    null,
+    [],
+    { ...research, version: 2 },
+    { ...research, operations: [{}] },
+    { ...research, scope: { cutoffs: [] } },
+    { ...research, stop_reason: {} },
+  ]) {
+    expect(chatProgress(event(malformed), "current")).toBeNull();
+  }
+});
+
 test("chat events expose only the current message's live progress", () => {
   expect(
     chatProgress(

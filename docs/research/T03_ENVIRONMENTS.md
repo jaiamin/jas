@@ -86,3 +86,12 @@ Current API/export tests positively assert v6; baseline tests explicitly retain
 the v4 failures and require every other check to pass. No frozen case/harness
 bytes were edited. Final paired reports will retain the failures rather than
 silently changing their oracle.
+
+Implementation checkpoint: `121a9595a7334872a6aae9a9772401814e3a9902`.
+The accepted integration merge includes `48600d2982516210e6a4e28528d2e1c6f1fd155e`
+(T04) and `39491def73da7334164ca6d98896eaa03a2e5bf5` (T05 acceptance).
+Resolution preserves both harness implementations, activation accounting/evidence,
+researcher operations and both tickets' documentation/handoffs, while keeping
+T03's v3 library and v6 schema/export contract. Current API/policy/browser export
+assertions require v6; old v1/v2 library files and schema 4/5 remain explicit
+rejections. No aliases, conversion or data-reset code was introduced.

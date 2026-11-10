@@ -1,3 +1,25 @@
+# T05 integration checkpoint
+
+T05/#16 is accepted at no-ff merge
+`a4ab9ee07f32ff7c5bb9014d4cfd0a495226dc3e` from ticket HEAD
+`14101d005d4a46ac13362350d086817cca8ec064`, preserving the latest T02 fixes.
+Read [T05's report](docs/research/T05_RESEARCHER.md) and
+[progress](docs/RESEARCH_HARNESS_PROGRESS.md). The fresh merger observed 196
+backend, 108 frontend and 16 affected browser tests plus Ruff/ty/lint/build
+passing. A clean-clone T01 baseline passed six cases with 22 scripted participant
+requests and no regressions/failures. No live competence or held-out acceptance.
+
+All 262 actual ignored T05 source artifacts (37,716,120 bytes), including the
+child manifest itself, are verified and preserved under
+`.tools/research-harness/evidence/T05/`; verification digest:
+`41a3fd1f0c6cc4138deff04285f8b8509a35e69bd4416700adb3bb286bf9866d`.
+Fresh source archives/logs/raw results are in sibling `T05-integration/`.
+The child worktree remains intact. Browser port 18216 is closed. The unrelated
+untracked `pbcopy` was never read/copied/archived, and the stash remains intact.
+No paid calls, pushes, PR/tracker edits, security changes or unrelated-service
+changes. Next: fresh-merge T04; T03/#14 and T06/#17 are in progress in isolated
+worktrees. T04 remains unmerged.
+
 # T01 integration checkpoint
 
 Baseline integrated on `integration/research-harness` with no-ff merge
@@ -30,8 +52,8 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01/T02 accepted; T04/T05 complete awaiting fresh mergers;
-draft PR #32; T03 next.**
+**Current checkpoint: T01/T02/T05 accepted; T04 complete awaiting fresh merger;
+T03/T06 in progress in isolated worktrees; draft PR #32.**
 
 T02 source `07d6d9fa681bd5ce79777c480e0798b5d6fa6137` was integrated with
 no-ff merge `77f6014981754adefc954af51e06f9326ab95893`. The fresh merger
@@ -64,14 +86,13 @@ removed and ports 18213/18313 closed. T02 is accepted for its narrow import-free
 Wasm contract; experiment/world admission stays disabled until T16. See
 `docs/research/T02_CONTAINMENT.md` for source identities and limitations.
 
-T05/#16 completed on `t3/researcher-probes` at
-`14101d005d4a46ac13362350d086817cca8ec064`, including integration `8f83a36`.
-Preserve all 261 ignored `data/t05/` files from
-`/home/agent/.t3/worktrees/workspace/t3-4f00062b` before cleanup; its manifest and
-`docs/research/T05_RESEARCHER.md` index the evidence. Reported: 961 backend,
-108 frontend, 14 affected browser tests passed; pre-merge full browser 169
-passed, lint/type/build and unchanged baseline passed. Controlled API cases
-improved from 14 failed to 14 passed. This is deterministic evidence only.
+T05/#16 source `14101d005d4a46ac13362350d086817cca8ec064` is integrated and
+accepted at `a4ab9ee07f32ff7c5bb9014d4cfd0a495226dc3e`. The fresh checks and
+preserved evidence are indexed in the current T05 checkpoint above and
+`docs/research/T05_RESEARCHER.md`. The reported 261 child artifacts plus their
+manifest (262 files total) are all preserved and verified; keep both ignored
+T05 evidence directories. Full child suites and production smoke remain
+attributed to their observed source; no paid/live validation is claimed.
 
 T04/#15 completed on `t3/participant-policies` at
 `6a6c000ac87a44212f3da681dbd31497f9640982`, including `c546c85`.
@@ -81,7 +102,7 @@ cleanup. See `docs/research/T04_PARTICIPANT_HARNESSES.md`. Reported: 981 backend
 checks, static/build/production checks passed. Four expected export-v4 baseline
 failures are retained under the intentional v5 contract; independently inspect
 those and the exact direct-action parity evidence before acceptance. Fresh-merge
-T05 first, then T04 onto the resulting tip. Neither establishes live competence.
+T04 onto the accepted T05 tip. Neither establishes live competence.
 
 The user explicitly invoked implement-spec after the reviewed breakdown. Treat
 that as authorization to implement the accepted task graph; do not repeat
@@ -105,8 +126,9 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: fresh-merge T05/#16, then T04/#15; start T03/#14 in a fresh
-isolated worktree. T06/#17 and T07/#18 remain Ready. Draft PR #32 is the single integration PR and
+Current frontier: fresh-merge completed T04/#15 onto the accepted T05 tip.
+T03/#14 and T06/#17 are in progress in isolated worktrees; T07/#18 remains Ready.
+Draft PR #32 is the single integration PR and
 was linked immediately. Refresh/link it on each push. Do not merge to main or
 close issues as if unverified work were complete. The default-branch PR merge
 itself is not authorized.
@@ -1677,3 +1699,30 @@ flows pass; inherited/final verification and latest integration reconciliation
 are in progress. All runtime data/dependencies/builds are local to this checkout;
 owned browser port is 18114. Actual spend $0.
 
+
+
+### T04 participant harness implementation — ready for integration review
+Branch `t3/participant-policies` (prepared as `t3/19c753ac`). Implementation
+checkpoint `3acf3c160fb398c8996e71f6065bf1d4b970a201`; cancellation regression
+`602c597`. Merge `86e57f99cdd4a9d02e6ebdfef120fb2510c9d2ca` includes integration
+`8f83a36bc0428abda418b93557f689657ce030ae`; only handoff/progress prose conflicted.
+Final conflict-free merge `3f3cf5c72eda10a346a6bc4ff44c1c3a7ce6c148` also includes
+integration `c546c857348cb433163d52f99efc07f790a17288`; T04 code is unchanged.
+Read `docs/research/T04_PARTICIPANT_HARNESSES.md` for acceptance, decisions,
+actual red/green evidence, complete source/case hashes and limitations.
+Both real policies run through existing per-request accounting on all installed
+worlds. Schema/export 5 and reusable setup format v2 explicitly reject older
+contracts; no migration/reset. Default models and world rules are preserved.
+On final merged source: 981 backend tests, 106 frontend tests, lint/type/build and
+production smoke pass. The pre-merge inherited browser suite passed 165 tests;
+final merged-source two-policy flows passed 2 cases and affected T02 flows passed 5.
+Frozen T01 comparisons retain only four intentional v4-export oracle failures;
+all 22 direct-action decisions/checkpoints/metrics/usage match the baseline.
+All five fresh DEVELOPMENT cases pass, including expected failures/unknown usage.
+Preserve all ignored `data/t04/` and `.tools/t04-*` artifacts before cleanup;
+`checks.json` and `artifact-manifest.json` index the evidence. Before/after and
+development evaluations have full source archives; early incremental TDD logs
+do not have separate full dirty-source archives. No paid/live competence claim.
+Owned browser servers/container/image tag are stopped/removed, preview closed,
+port 18115 closed. No pushes, PR/issue changes or stash operations. Parent owns
+fresh merger review and the single integration draft PR #32.

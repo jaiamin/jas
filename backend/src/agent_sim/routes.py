@@ -335,6 +335,7 @@ async def request_evidence(call_id: str, *, db: DatabaseDep) -> dict[str, Any]:
         return {
             "id": call.id,
             "run_id": call.run_id,
+            "activation_id": call.activation_id,
             "turn": call.turn,
             "request": call.request_payload,
             "response": call.response_payload,

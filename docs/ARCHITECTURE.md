@@ -117,6 +117,41 @@ the composer checks the configured assistant provider for ordinary messages.
 The automatic handoff uses the configured planner provider and reports its failures;
 explicit retries of failed proposals keep their design purpose and planner provider.
 
+The Researcher can dispatch `capabilities`, `context` and `probe` operations through
+the same general-answer or scoped-investigation loop. There are at most three
+batches of four operations and one answer-only final request (four separately
+reserved/settled Researcher requests); the existing planner has its own bounded
+handoff. Identical operations reuse their retained result. Ordinary answers need
+no operation or protocol. Provider errors stop without a retry or substitution.
+
+`Analysis.output.research` is a version-1 additive artifact envelope containing
+the chat, capture time, selected run cutoffs, operation IDs, requests, public
+results, source IDs/content hashes and terminal reason. Existing saved analyses
+remain valid; no database, world-rule or study-export version changes or resets
+are required. Pending operations are persisted before dispatch. Failures,
+interruption and restart retain completed artifacts and mark unfinished work
+stopped. Streaming snapshots, polling and reload share these same records; the
+Activity disclosure exposes results and sources without provider reasoning.
+
+Context retrieval considers at most 50 earlier terminal turns in the same chat
+and exact study/run scope, whose cutoffs fit the current capture. Its initial
+index lists 12 compact records; question search returns up to eight matches, and
+explicit retrieval reads a selected proposal or operation artifact. It never
+searches unselected conversations or runs. Retrieved prose is untrusted data.
+The planner receives dispatched results as `research_operations` alongside the
+unchanged original question and independently validates its proposal.
+
+Probes accept only installed trusted templates (optionally configured), eligible
+prior proposal conditions or selected recorded run checkpoints within the frozen
+cutoff. World constructors copy checkpoint JSON, and each of at most eight
+explicit hypothetical actions settles on a fresh candidate through the normal
+legal decision schema and World rules. Rejected actions leave that probe state
+unchanged. Results include actor-projected observations, legal schemas, events,
+measurements and checkpoint hashes; they do not append source evidence, save a
+study, access an Engine or contact participants. Generated code and autonomous
+participant rollouts are unavailable. Hypothetical consequences are mechanism
+witnesses, not participant observations or evidence of Researcher competence.
+
 ## Environment seam
 
 The `simulation/` package owns world rules, state and action schemas. A world initializes
@@ -190,10 +225,33 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v4 (`jas-study`)
+Every Analysis has an indexed conversation identity. Study export v5 (`jas-study`)
 includes every revision and its runs, actual recorded rule versions, exact turn evidence
 and provider traces; it batches
 journal queries.
+Participant harnesses (`participants.py`, version 1.0.0) are condition factors,
+independent of provider/model assignments and World. Direct action preserves the
+single structured-decision request and its observation. Tool using owns a bounded
+application loop: each inference uses `LanguageModels.generate` once with its own
+atomic reservation/settlement. Only the active actor's observation, rules and legal
+options can be read; no operation accepts an actor or state selector. World.step
+independently validates the final decision. Reads never advance logical time.
+
+Participant activations are durable attempts, separate from committed turns.
+They pin model/provider adapter and package versions, harness/source digest,
+inference settings, profile, memory mode and per-activation limits. Their
+append-only operation journal records reads/results, rejected operations, proposals,
+pauses and settled turn hashes. Requests link to the activation, including failed
+or unknown calls with no committed turn. Effort counts inference attempts, including
+refused reservations; sent requests and charges remain separate ledger records.
+The saved activation observation is its permitted World snapshot; actual model
+deliveries are the provider prompts and executed read results. A turn, its final settlement operation
+and activation completion commit atomically. Pause finishes the in-flight request:
+final decisions commit; otherwise the authorized transcript and consumed limits
+are retained for explicit resume. Restart pauses runs without requests and marks
+unfinished in-flight attempts interrupted; it never resubmits unknown requests.
+Explicitly paused sessions retain their remaining effort. Failed/interrupted
+attempts remain inspectable when a user explicitly starts another activation.
 Full checkpoints favor auditability over storage efficiency. This is appropriate for small
 local studies; large deployments need retention/compaction and paginated evidence APIs.
 

@@ -43,6 +43,61 @@ const row: Analysis = {
   run_id: "run",
 };
 
+test("activity exposes hypothetical operation sources, results and the stop reason", () => {
+  render(
+    <MemoryRouter>
+      <TooltipProvider>
+        <AgentReply
+          row={{
+            ...row,
+            purpose: "general",
+            status: "complete",
+            output: {
+              answer: "The hypothetical split is five and nine.",
+              activity: ["probing", "writing"],
+              research: {
+                version: 1,
+                scope: {
+                  chat_id: "chat",
+                  before: "2026-11-10",
+                  cutoffs: { run: 1 },
+                  context_limit: 50,
+                },
+                stop_reason: "request_limit",
+                operations: [
+                  {
+                    id: "artifact",
+                    request: { kind: "probe" },
+                    status: "complete",
+                    summary: "A copied world accepted the offer.",
+                    sources: [
+                      { kind: "run", id: "run", turn: 1, hash: "source-hash" },
+                    ],
+                    data: { hypothetical: true, outcome: { balances: [5, 9] } },
+                  },
+                ],
+              },
+            },
+          }}
+          disabled={false}
+          onRetry={() => {}}
+        />
+      </TooltipProvider>
+    </MemoryRouter>,
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Activity" }));
+  expect(screen.getByText("Request limit reached")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "World probe" }));
+  expect(
+    screen.getByText("A copied world accepted the offer."),
+  ).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: /Source turn 1/ })).toHaveAttribute(
+    "href",
+    "/runs/run?turn=1&tab=decisions",
+  );
+  expect(screen.getByText(/"hypothetical": true/)).toBeInTheDocument();
+});
+
 test("only completion replaces pending prose and publishes citation links", () => {
   const onRetry = vi.fn();
   const view = render(

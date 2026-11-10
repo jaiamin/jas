@@ -866,6 +866,17 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
                 "caveats": [],
                 "examined": [],
                 "activity": ["answering", "writing"],
+                "research": {
+                    "version": 1,
+                    "scope": {
+                        "chat_id": "intent-chat",
+                        "before": row["created"],
+                        "cutoffs": {},
+                        "context_limit": 50,
+                    },
+                    "operations": [],
+                    "stop_reason": "answered",
+                },
             }
         elif route == "proposal":
             assert row["purpose"] == "design" and row["status"] == "complete"

@@ -65,6 +65,26 @@ Schema v6 and library format `jas-environment-v3` accept only the current contra
 Older databases/library records receive explicit errors; no data is converted or reset.
 Use a separate fresh workspace path for the new contract and preserve existing evidence.
 
+The current schema retains T04's durable participant activations and per-request
+links alongside T03's pinned environment sources. Old schema 4/5 databases and
+v1/v2 environment files are explicitly rejected; preserve them separately. No
+compatibility reader or automatic reset is provided. Reusable mechanics exclude
+participant harness settings; each experiment pins those separately.
+
+The dedicated participant-policy browser trial installs a deterministic external
+provider in the test server only. It exercises real configuration, immutable
+revision saves, execution, accounting, inspection and replay in both themes:
+
+```sh
+JAS_TEST_PORT=18115 pnpm --dir frontend test:harness
+uv run python -m benchmarks.participant_harness_trial --output data/t04/development
+```
+
+The ordinary `test:e2e` server keeps providers unavailable for its inherited
+keyless regressions. Neither test server loads `.env` or permits paid requests.
+The trial runner retains source/case/harness hashes, all attempts and complete
+exports. Its scripted choices establish mechanics, not participant intelligence.
+
 `JAS_ALLOWED_HOSTS` lists accepted hostnames/IPs without ports (comma-separated).
 Defaults: `localhost,127.0.0.1,[::1]`. Add the explicit LAN/proxy host before using a
 non-local URL; keep localhost entries for health checks. Restart after configuration changes.

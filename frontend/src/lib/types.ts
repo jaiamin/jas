@@ -87,11 +87,19 @@ export interface Profile {
   role: string;
   model: ModelId | null;
 }
+export interface ParticipantHarness {
+  kind: "direct_action" | "tool_using";
+  version: "1.0.0";
+  max_requests: number;
+  max_tool_operations: number;
+  tools: ("observe" | "rules" | "legal_options")[];
+}
 export interface Treatment {
   key: string;
   name: string;
   description: string;
   model: ModelId;
+  harness: ParticipantHarness;
   parameters: Parameters;
   profile_overrides: Profile[];
 }
@@ -184,6 +192,7 @@ export interface ExperimentPreflight {
     baseline: string;
     condition: string;
     changed_parameters: string[];
+    changed_harness: string[];
     agent_assignment_changed: boolean;
     witnesses: {
       instrument: number;
@@ -332,6 +341,7 @@ export interface Relationship {
 }
 export interface RequestSummary {
   id: string;
+  activation_id: string | null;
   turn: number | null;
   status: string;
   error: string | null;
@@ -342,6 +352,7 @@ export interface RequestSummary {
 }
 export interface RequestEvidence {
   id: string;
+  activation_id: string | null;
   run_id: string;
   turn: number | null;
   request: unknown;
@@ -356,12 +367,43 @@ export interface RunDetail {
   summary: RunSummary;
   design: Design;
   parameters: Parameters;
+  harness: ParticipantHarness;
+  activations: ParticipantActivation[];
   state: State;
   turns: Turn[];
   events: Event[];
   measurements: Measurement[];
   metrics: Record<string, number | null>;
   relationships: Relationship[];
+}
+export interface ParticipantOperation {
+  number: number;
+  kind: string;
+  status: string;
+  request: unknown;
+  result: unknown;
+  created: string;
+}
+export interface ParticipantActivation {
+  id: string;
+  run_id: string;
+  turn: number;
+  round: number;
+  actor: string;
+  created: string;
+  updated: string;
+  status: string;
+  stop_reason: string | null;
+  error: string | null;
+  checkpoint_hash: string;
+  observation: Record<string, unknown>;
+  identity: {
+    model: ModelId;
+    harness: ParticipantHarness;
+    [key: string]: unknown;
+  };
+  requests: number;
+  operations: ParticipantOperation[];
 }
 export interface Evidence {
   number: number;
@@ -381,6 +423,35 @@ export interface ChatSummary {
   context: string;
   status: string;
 }
+export interface ResearchArtifact {
+  id: string;
+  request: {
+    kind: "capabilities" | "context" | "probe";
+    [key: string]: unknown;
+  };
+  status: "pending" | "complete" | "rejected" | "failed";
+  summary: string;
+  sources: {
+    kind: "builtin" | "analysis" | "run";
+    id: string;
+    hash: string;
+    turn?: number;
+  }[];
+  data: Record<string, unknown> | null;
+}
+
+export interface ResearchActivity {
+  version: 1;
+  scope: {
+    chat_id: string;
+    before: string;
+    cutoffs: Record<string, number>;
+    context_limit: number;
+  };
+  operations: ResearchArtifact[];
+  stop_reason: string | null;
+}
+
 export interface Analysis {
   chat_id?: string | null;
   usage?: Usage | null;
@@ -391,6 +462,7 @@ export interface Analysis {
   output: {
     stage?: string;
     activity?: string[];
+    research?: ResearchActivity;
     partial?: string;
     planning?: {
       brief: {
