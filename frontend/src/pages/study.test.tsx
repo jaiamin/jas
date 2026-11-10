@@ -1,6 +1,8 @@
 import { act, fireEvent, screen } from "@testing-library/react";
 import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
 import { expect, test, vi } from "vitest";
+import { WorkspaceProvider } from "@/components/workspace-provider";
+import WorkspaceShell from "@/components/workspace-shell";
 import type { StudyDetail } from "@/lib/types";
 import { design, runDetail } from "@/test/fixtures";
 import { deferredResponse, renderWithQueries } from "@/test/queries";
@@ -64,32 +66,50 @@ function renderStudy(path = "/studies/study") {
 test("an in-flight experiment control belongs to the experiment that submitted it", async () => {
   const control = deferredResponse();
   vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => ({
+      matches: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })),
+  );
+  vi.stubGlobal(
     "fetch",
     vi.fn((path: string) =>
-      path.endsWith("/control")
-        ? control.promise
-        : Promise.resolve(
-            Response.json(
-              path.includes("/exposure")
-                ? { runs: [] }
-                : {
-                    ...snapshot(["ready"]),
-                    design: {
-                      ...design,
-                      title: path.endsWith("/second")
-                        ? "Second experiment"
-                        : design.title,
+      path === "/api/runs"
+        ? Promise.resolve(Response.json([]))
+        : path.endsWith("/control")
+          ? control.promise
+          : Promise.resolve(
+              Response.json(
+                path.includes("/exposure")
+                  ? { runs: [] }
+                  : {
+                      ...snapshot(["ready"]),
+                      design: {
+                        ...design,
+                        title: path.endsWith("/second")
+                          ? "Second experiment"
+                          : design.title,
+                      },
                     },
-                  },
+              ),
             ),
-          ),
     ),
   );
   renderWithQueries(
     <MemoryRouter initialEntries={["/studies/study"]}>
       <Link to="/studies/second">Other experiment</Link>
       <Routes>
-        <Route path="/studies/:id" element={<Study />} />
+        <Route
+          element={
+            <WorkspaceProvider>
+              <WorkspaceShell />
+            </WorkspaceProvider>
+          }
+        >
+          <Route path="/studies/:id" element={<Study />} />
+        </Route>
       </Routes>
     </MemoryRouter>,
   );

@@ -1,12 +1,22 @@
 import { act, fireEvent, screen } from "@testing-library/react";
 import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
 import { expect, test, vi } from "vitest";
+import { WorkspaceProvider } from "@/components/workspace-provider";
+import WorkspaceShell from "@/components/workspace-shell";
 import { exposureReport, runDetail } from "@/test/fixtures";
 import { deferredResponse, renderWithQueries } from "@/test/queries";
 import Run from "./run";
 
 test("an in-flight run control does not disable or report an error on another run", async () => {
   const control = deferredResponse();
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => ({
+      matches: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })),
+  );
   vi.stubGlobal(
     "ResizeObserver",
     class {
@@ -18,26 +28,36 @@ test("an in-flight run control does not disable or report an error on another ru
   vi.stubGlobal(
     "fetch",
     vi.fn((path: string) =>
-      path.endsWith("/control")
-        ? control.promise
-        : path.endsWith("/exposure")
-          ? Promise.resolve(Response.json(exposureReport))
-          : Promise.resolve(
-              Response.json({
-                ...runDetail,
-                summary: {
-                  ...runDetail.summary,
-                  id: path.endsWith("/second") ? "second" : "run",
-                },
-              }),
-            ),
+      path === "/api/runs"
+        ? Promise.resolve(Response.json([]))
+        : path.endsWith("/control")
+          ? control.promise
+          : path.endsWith("/exposure")
+            ? Promise.resolve(Response.json(exposureReport))
+            : Promise.resolve(
+                Response.json({
+                  ...runDetail,
+                  summary: {
+                    ...runDetail.summary,
+                    id: path.endsWith("/second") ? "second" : "run",
+                  },
+                }),
+              ),
     ),
   );
   renderWithQueries(
     <MemoryRouter initialEntries={["/runs/run?tab=settings"]}>
       <Link to="/runs/second?tab=settings">Other run</Link>
       <Routes>
-        <Route path="/runs/:id" element={<Run />} />
+        <Route
+          element={
+            <WorkspaceProvider>
+              <WorkspaceShell />
+            </WorkspaceProvider>
+          }
+        >
+          <Route path="/runs/:id" element={<Run />} />
+        </Route>
       </Routes>
     </MemoryRouter>,
   );
