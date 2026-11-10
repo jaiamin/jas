@@ -33,6 +33,7 @@ export const parameters: Parameters = {
   composition: null,
   artifacts: null,
   relay: null,
+  finite: null,
   coordination: null,
   commitments: null,
   resource_schedule: [],

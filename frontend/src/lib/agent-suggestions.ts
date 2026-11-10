@@ -20,6 +20,8 @@ export interface AgentSuggestion {
 }
 
 const evidenceQuestions: Record<EnvironmentId, string> = {
+  reviewed_finite:
+    "Inspect the frozen external contract, actual finite transitions, actor permissions, credits and escrow, stopping and exact replay. Keep private facts scoped and do not infer intent or general generation competence.",
   reliance_commitments:
     "Trace voluntary promises, reliance, actual access grants, feasible alternatives and declared deadlines. Inspect recipient consequences and later responses, retaining infeasible, absent-opportunity and null outcomes without inferring intent.",
   sealed_relay:

@@ -10,6 +10,7 @@ export type EnvironmentId =
   | "composed"
   | "artifact_workspace"
   | "sealed_relay"
+  | "reviewed_finite"
   | "distributed_coordination"
   | "reliance_commitments";
 
@@ -161,7 +162,7 @@ export interface EnvironmentMechanics {
   description: string;
   environment: EnvironmentId;
   rule_version: string;
-  extension: ExtensionPackage | null;
+  extension: ExecutablePackage | null;
   examples: {
     key: string;
     name: string;
@@ -200,6 +201,7 @@ export interface Parameters {
   composition: CompositionRules | null;
   artifacts: ArtifactRules | null;
   relay: { submitter: string; reviewer: string; docket: string } | null;
+  finite: FiniteRules | null;
   coordination: DistributedRules | null;
   commitments: CommitmentRules | null;
   resource_schedule: { round: number; endowment: number }[];
@@ -1093,6 +1095,48 @@ export interface ExtensionAdmission {
   limitations: string[];
   cases: { input: number; expected: number; observed: number }[];
 }
+
+export interface FiniteRules {
+  bindings: Record<string, string>;
+  private: Record<string, Record<string, string>>;
+}
+
+export interface FiniteContract {
+  format: "jas-finite-contract-v1";
+  name: string;
+  provenance: string;
+  requirements: string;
+  roles: string[];
+  states: {
+    key: string;
+    escrow: number;
+    status: "running" | "success" | "failure";
+  }[];
+  operations: { key: string; roles: string[] }[];
+  initial_state: number;
+  initial_credits: number;
+  total_resource: number;
+  max_credits: number;
+  table: number[];
+}
+
+export interface ReviewedFiniteContract {
+  format: "jas-reviewed-finite-contract-v1";
+  id: string;
+  created: string;
+  specification: FiniteContract;
+  sha256: string;
+}
+
+export interface FiniteExtensionPackage
+  extends Omit<ExtensionPackage, "format" | "profile" | "capabilities"> {
+  format: "jas-reviewed-finite-package-v1";
+  profile: "reviewed-finite-v1";
+  contract: ReviewedFiniteContract;
+  artifact_check_id: string;
+}
+
+export type ExecutablePackage = ExtensionPackage | FiniteExtensionPackage;
 
 export interface ExposureSource {
   href: string;

@@ -1,6 +1,7 @@
 # T17 / #28: bounded, independently specified finite extension synthesis
 
-Status: **bounded backend TDD in progress; no frontend/production qualification**.
+Status: **backend and finite-review slices qualified separately; generation UI and
+final browser/production qualification incomplete**.
 Implementation remains UNACCEPTED until a new fresh integration reviewer accepts it.
 This ticket neither opens nor examines the final held-out extension task.
 
@@ -1268,3 +1269,233 @@ forecasts at most16MiB and preserves all failures. Fresh full Ruff/global types
 are separate4MiB jobs. Repeating only affected checks after this actual accepted
 backend change is intentional; no aggregate historical snapshot/comparator job.
 Frontend/services/browser/production/providers/paid/held-out remain held.
+
+## Accepted0527 backend boundary and first frontend release
+
+Normal merge `064ff88a62f5c3e3749d8f1ae96503582a8c457e` includes the exact accepted
+ROOT `0527e737d93786d0f5579d5a13827c472cf370fa`, with both parents and no conflicts.
+Normal hooks/Gitleaks passed. No moving ref or provisional sibling entered.
+Combined tracked source is
+`dcba4f3f3feb0a7ab25b61306f6994b3e24684ca61695b06b92c17ae8a22470e`.
+At that exact unchanged source, `current-contract-combined-01` passes3/1.30s
+(fresh literal5/22/22 plus both accepted public cutoff witnesses), full prescribed
+Ruff and global ty pass, and `artifact-contract-regression-01` passes31/0.83s.
+
+Continuation recorder v5 was newly authored after reading prior ignored helpers
+as data only. It retains exact protected-excluded cached Git selection with
+invocation-local untracked`*` exclusion, index/ancestor/descendant preflight before
+source opens and deduplicated verified source blobs. Its per-invocation Git shim
+also limits the frozen runner's indirect snapshot and status to that safe set.
+No protected configuration or clipboard payload is read, hashed or copied.
+
+`frozen-t01-combined-01` observes actual exit1 at the same unchanged source:
+six attempts, exactly the four original export-v4 failures, passed=false and
+check-failure; every other original check passes. The old solo/artifact gap rows
+remain only their original expected schema rejections; the separately observed
+artifact regressions replace those current unsupported-coverage claims. No
+historical comparator, reference reconstruction or improvement claim occurs.
+`accepted-extension-regression-01` passes16/103.85s at the same unchanged source,
+covering the accepted T16 public admission/library/revision/worker/pause/privacy/
+restoration/replay and integration suites. Retained backend evidence45,182,361
+bytes before its receipt, free1,095,364,608, lock released. Every prior failure,
+source and own closed-database restoration map remains retained.
+
+ROOT now releases F1: ONE normal pnpm12.18 frozen OFFLINE hardlink installation
+into this checkout's distinct frontend/node_modules, coordinated immutable manager
+store `/home/agent/.local/share/pnpm/store`, private `.tools/t17/pnpm-cache` only.
+No package additions/downloads, fallback/retry, manual dependency links/copies or
+store cleanup. Under-lock entry must be at least815,792,128 bytes (unchanged
+134,217,728 floor plus650MiB forecast). Dependency footprint and shared before/
+after free space are measured separately from a16MiB frontend evidence envelope.
+On success only, F2a permits ONE intended pending-finite-proposal UI red through
+the actual WorkspaceProvider/WorkspaceShell, at least268,435,456 entry and at most
+4MiB new outputs. No UI implementation precedes that observed red. Subsequent
+bounded source repair is permitted; further frontend checks/build/browser/services/
+production remain held pending a concrete green/browser forecast. Actual provider,
+paid and final held-out work remain held.
+
+F2a's independent expectations: a pending `reviewed_finite` proposal must render
+through the real shell without throwing; show its external-contract prerequisite
+and finite/richer-semantics limits, the literal co-signature states/operation-role
+permissions/refund conservation/terminal-horizon rules, static actor-private
+projection policy, participant model/harness and explicit execution/spend limits.
+Candidate prose/self-tests do not establish admission; saving/reviewing must not
+send `/control`, participant requests, generation or implicit execution. Existing
+stock disclosure and form controls/tokens remain the design authority. The current
+review blindly calls `.capabilities.join` on the finite package (which has no such
+field), so the first intended red should establish the real pending-review failure
+before repair. No browser, types/build or production claim follows from a unit red.
+
+F1 `frontend-setup-01` retains exit1: normal pnpm12.18.0 frozen OFFLINE hardlink
+install is refused by the supply-chain policy's missing offline metadata for
+`@babel/helper-create-class-features-plugin`. Entry1,078,235,136 exceeded the
+815,792,128 threshold; exit free1,077,678,080 (decrease557,056). No node_modules
+was installed, private cache has no payload files, source before=after
+`4f3ad27f62769b36ba74b4331a288602ea18185dfee57ad9968602d948c91886`.
+Frontend evidence44,444 bytes before receipt. The lock is released, no retry or
+policy bypass/fallback occurs, and dependent F2a is NOT executed. ROOT received
+the concrete missing-metadata boundary for normal-manager cache coordination.
+
+While that dependent stage is held, one remaining backend existing-property
+dispatch witness is frozen before output in `backend/tests/test_finite_dispatch.py`.
+Accepted T14 already offloads startup; no dispatch repair is made. A scheduling
+barrier at the actual external `extensions.execute` boundary holds first Engine
+start while a concurrent public settings GET must complete with zero participant
+requests. Releasing it calls the REAL contained worker, not synthetic results.
+Startup must check all180+4 external inputs twice, then actual single inputs
+24/55/86 settle offer/sign/release to state3,credits1,escrow0,spent1. Worker calls
+must run outside the API thread; exactly3 Luna-identity requests settle300/150
+tokens and105 synthetic microdollars, counterparty input excludes the docket,
+revision pins stay immutable and replay makes zero model calls with unchanged
+export and usage. This is a green-on-first-observation qualification if it passes,
+never invented red/green. Existing backend envelope permits one8MiB forecast
+under unchanged floor/flock; frontend/services/production/provider holds remain.
+
+`finite-dispatch-01` retains exit1/8.30s, unchanged source
+`c7449272f8ced0609d86cccd8ebf9219dffe6e625ba43ba183f8e510b223014a`.
+The actual blocked worker, concurrent HTTP response, zero requests while blocked,
+API/worker thread separation and subsequent completion all passed. The test then
+incorrectly expected exhaustive admission inputs at Engine startup. Source review
+explains the first observed input24: saved revisions call `Research.preflight`,
+whose three copied trajectories choose legal-option indices0/1/2. They do NOT
+repeat `check_package`'s admission enumeration (already checked before the barrier
+by cosigned_design). This is a test-authoring failure, not a product dispatch red.
+No independent fixture is altered. Revised independently worked pre-output
+expectation is calls24/55/86 (offer/sign/release),28/23 (wait/stop),29 (stop),
+then actual participant24/55/86. Both specifications/source identities remain.
+No unexplained behavior is normalized. Corrected observation is a separate job,
+not an automatic retry; no product change is justified by this failure.
+
+The separate metadata-enabled F1 `frontend-setup-02` passes: normal pnpm12.18.0
+with frozen-store/frozen-lockfile/hardlink imports reuses555 packages, downloads0
+package payloads, and passes618 policy entries after authorized public-registry
+metadata retrieval. Source before=after
+`57c8deafe81c5e83c5ecae81a009cc6363942625b77a24baec6b903e86103e11`;
+the committed lock and store top-entry device/inode/mode/integer-ns mtime stay
+unchanged. This is not a separate content audit of the shared store. Entry free
+1,060,556,800→862,007,296 (198,549,504 decrease); distinct modules27,053 files /
+372,755,008 logical bytes, private metadata599 files /176,781,363 logical bytes.
+Frontend evidence91,620 bytes before receipt; lock released. No policy/settings
+change, manual dependency copying, package addition or other-owner cache write.
+
+Released F2a `finite-proposal-red-01` retains exit1 at unchanged source
+`3638881d0c2fa05c1f325410733418dd43c2269241c9f833c9b1ce9e106d3cac`.
+It renders the real WorkspaceProvider/WorkspaceShell but stops BEFORE the intended
+finite-package review failure: the synthetic API DTO mistakenly had zero required
+configuration examples, so EnvironmentExamples reads undefined.key. This is a
+fixture-authoring error, not a product red. The reviewed independent contract and
+all semantic assertions remain unchanged. Correct only the fixture by supplying
+the real contract's explicit consent example, role bindings/static private fact
+and empty tasks. No product implementation is justified or made ahead of a new
+observed intended red. The ONE released check slot is consumed; ROOT receives
+this boundary and a separately proposed corrected focused red. Entry850,018,304
+→847,880,192, frontend evidence170,127 bytes before receipt; lock released.
+
+ROOT separately released corrected F2a `finite-proposal-red-02`. It observes the
+intended product failure, exit1 at unchanged source
+`a420811835f8f1025ccc8ea30f8189aee29ade95836be0b2a73965214d7e1f8c`:
+the real shell's ExperimentReview calls `.capabilities.join` on the finite
+package, where that sealed-relay field does not exist. The real PageBoundary
+renders its load-failure state. This second result, unlike red01, demonstrates
+the pending finite-proposal review defect. Corrected source/fixture was frozen
+before output; the external oracle and semantic assertions were unchanged.
+Entry845,332,480→845,119,488,76,327 new evidence bytes before receipt. The exact
+268,435,456 entry /134,217,728 floor+128MiB peak /4MiB output limits passed;
+frontend cumulative248,073 before receipt, lock released.
+
+Only after that red, bounded source repair adds the actual current finite package
+and parameter types, discriminates the profile in review and shows the immutable
+external table/source, state/operation-role permissions, conservation, terminal/
+horizon policy, static actor-private policy and explicit per-condition bindings/
+facts in stock disclosures/tables. Existing model/harness/effort/run/spend controls
+and explicit save-versus-run copy remain. The view displays source as inert text;
+it never executes or admits it. A UI DTO is expressly synthetic, not a backend
+admission witness. It also omits inherited memory from its mechanics-only example
+to match that public schema; the fixed semantic assertions and independent
+contract are unchanged. This is a presentation/type repair, with no persisted
+meaning or version change. No generation controls are implemented ahead of their
+own intended red. No green, frontend type/build or browser pass is yet claimed.
+
+Next proposal is ONE same focused finite-proposal green, existing normal-manager
+environment/private metadata, >=268,435,456 under-lock entry (unchanged floor+
+128MiB peak), <=4MiB new outputs within frontend16MiB. Further lint/forced types
+need separate bounded jobs; no broad unit suite is proposed before this outcome.
+Later browser forecast, after the remaining explicit-generation UI slices, is a
+separate <=32MiB output stage /256MiB incremental disk peak plus unchanged floor
+(402,653,184 entry), own built output/DB, port18129 and existing headless shell
+only. It must cover actual keyless HTTP authorization/generation/admission/pending
+review/save/explicit-run/replay,390/1440 sizes, both themes, keyboard/navigation/
+reconnect without resubmitting. That forecast is not a service/browser/build/
+production or provider grant; those remain held. Runtime production still needs
+its own fresh non-root qualification and footprint proposal.
+
+`finite-dispatch-02` retains exit1/8.35s, source unchanged
+`a420811835f8f1025ccc8ea30f8189aee29ade95836be0b2a73965214d7e1f8c`.
+Its second copied trajectory reaches input35, while the new assertion had23.
+This was a second test-authoring arithmetic mistake: unlike T16's relay wait,
+the independently frozen co-signature table's literal input28 returns2 and
+therefore preserves two credits; the counterparty's stop then encodes35. The
+reviewed table and all product rules remain unchanged. Independently corrected
+pre-output sequence is24/55/86,28/35,29,then24/55/86. Both failed attempts and
+their exact source/specification history remain retained; no product defect or
+red/green is claimed. Next distinct existing-property observation03 forecasts8MiB
+within the original backend64MiB envelope, not frontend release consumption.
+
+
+## Finite review and actual-worker boundary closed (2026-11-10)
+
+`finite-dispatch-03` passes1/9.66s at exact unchanged source
+`0c025fbdf0e2214835173f453dc502ca23ed01d92b29db69b3e8838744bdf2b0`.
+The scheduling barrier enters the actual contained worker, a concurrent settings
+GET completes with zero participant requests while it waits, and all real worker
+calls remain outside the API thread. Releasing it preserves the independently
+specified copied/actual trajectories24/55/86,28/35,29,24/55/86; three separately
+settled Luna-identity requests total300 input/150 output/105 synthetic
+microdollars. Final state3/credit1/escrow0/spent1, counterparty-private exclusion,
+revision/export immutability and zero-call replay pass. Accepted T14 already
+provided the async startup property. Neither dispatch authoring failure is a
+product red; no redundant Engine repair was made.
+
+`finite-proposal-green-01` passes the same focused actual-shell inspection after
+the genuine red02. Red01 remains an independent fixture-authoring failure and is
+not relabeled. Initial affected lint01 retains six formatting/import diagnostics;
+initial forced types01 retains five errors: missing generation operation title,
+three reviewed_finite exhaustive mapping entries and stale research-operation1
+fixture. Routine current-contract types/mappings and whitespace fix these without
+an alias, assertion change or persisted semantic change. Format01 deliberately
+mutates five of11 declared files; it is not a runtime check. At exact source
+`f5a1888f6edb29cf00939dd88eee4a7d592beb001e070b80330d47c214dc8702`,
+affected lint02 passes11 files, global forced TypeScript02 passes and the same
+focused actual-shell `finite-proposal-formatted-01` passes1/572ms. No generation
+controls, broad frontend suite, build or browser pass is claimed.
+
+The dispatch style01 retains Ruff E501 at line107. A wrapped assertion alone
+repairs it. A newly authored continuation recorder's style02 fails its metadata
+preflight on existing pytest *current symlinks before any source capture or check;
+no target is read. That recorder is retained unchanged. Distinct style03 separates
+metadata counting (does not follow links) from strict source snapshot rejection
+and passes affected Ruff; global ty01 also passes. Both qualify source
+`70adfc59f34e5eea57e226ee948865dfb28869d05f3f7e5f7029f3d72eba717e`,
+which differs from the frontend-qualified source only by the Python test wrap.
+Each capture uses exact cached-only Git discovery with invocation-local untracked
+'*' exclusions and protected/symlink rejection before payload opens. No inherited
+ignored helper is executed in this continuation.
+
+The normal-manager frontend setup02 result remains555 reused/added, zero package
+payload downloads and618 policy entries passing, with distinct modules and private
+metadata. The failed offline setup01 remains unchanged. No install, cache cleanup
+or shared-store mutation occurred in this continuation. Backend evidence after
+these two static jobs is48,118,043 bytes including the last receipt; frontend
+is597,163 bytes. Last measured free751,665,152; flock released after each job.
+Historical raw ROOT references stay retired; own closed-DB restoration map
+c0640877... and all active source/attempt/case identities remain. Scripted costs
+are correctness witnesses, not paid spend or live competence.
+
+Next: normal-hook checkpoint of this coherent finite-inspection/dispatch witness,
+normal merge of exact authorized accepted
+`670ab3ee73b025ea0695ce941d219be980819a95` (benchmark/docs only since0527),
+then freeze/propose one explicit contract-authoring/generation-authorization UI
+intended red at the actual WorkspaceShell + AgentPage HTTP boundary. The new UI
+slice cannot execute or be implemented before its own release/observed intended
+red. Browser/build/services/production/providers/paid/held-out work remain held.
+T17 is incomplete and UNACCEPTED pending a NEW fresh integration reviewer.

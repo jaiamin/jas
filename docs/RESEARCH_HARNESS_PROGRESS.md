@@ -1,3 +1,16 @@
+T17 finite review passes through actual WorkspaceShell; affected11-file lint
+and global forced TypeScript pass at f5a1888f. Genuine red02 remains distinct
+from fixture-authoring red01 and retained static diagnostics. Actual-worker
+HTTP/Engine dispatch witness03 passes1 at0c025fbd as an existing property of
+accepted T14; no Engine repair. Backend assertion-wrap Ruff/global ty pass at
+70adfc59; all failures/source receipts remain in the T17 plan. Own evidence
+48.2MB backend/0.6MB frontend, below64MiB/16MiB envelopes; shared flock released.
+Next normal checkpoint/exact accepted670ab3ee merge and independently frozen
+contract-authoring/explicit generation UI intended red proposal. No generation UI
+implementation ahead of observed red; browser/build/service/production/providers/
+paid/held-out held. Current combinedDB13/export15/library8/definition2/research2/
+generationv2; no provisional sibling merge. T17 incomplete and UNACCEPTED.
+
 # Research harness implementation progress
 
 T17 current: normal accepted eaa47bb3 merge;14 feature/API checks pass. Fresh

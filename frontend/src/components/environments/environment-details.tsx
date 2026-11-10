@@ -21,6 +21,12 @@ import type { Environment, EnvironmentId } from "@/lib/types";
 
 const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
   {
+    reviewed_finite: {
+      observes:
+        "The independently reviewed finite contract, current state, credits and escrow, permitted operations and the actor's own static private facts. Other actors' private fields stay outside observations and memory.",
+      enforces:
+        "An external exhaustive transition table is required before generation. Admitted import-free artifacts propose bounded transitions; World permissions, resource conservation, terminal states and the horizon settle consequences. This narrow profile does not establish natural-language understanding or implement richer dynamic information policies.",
+    },
     reliance_commitments: {
       observes:
         "Four participants have local values, actor-scoped evidence, private commitment opportunities and addressed mail. Only a voluntary recipient can entrust its declared artifact's read access to the promisor.",

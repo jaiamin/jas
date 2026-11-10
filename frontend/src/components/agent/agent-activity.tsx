@@ -36,6 +36,7 @@ const operationTitles = {
   capabilities: "Implemented mechanics",
   context: "Research context",
   probe: "World probe",
+  generate_extension: "Generate checked mechanics",
 };
 const stopReasons: Record<string, string> = {
   answered: "Answer complete",

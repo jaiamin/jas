@@ -36,7 +36,7 @@ for (const theme of ["light", "dark"]) {
           stage: "probing",
           activity: ["answering", "probing"],
           research: {
-            version: 1,
+            version: 2,
             scope: {
               chat_id: "probe-chat",
               before: "2026-11-10T00:00:00Z",
