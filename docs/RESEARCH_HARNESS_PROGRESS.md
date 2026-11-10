@@ -58,7 +58,7 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | --- | --- | --- | --- | --- |
 | T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Integrated | `bf3b76e` |
 | T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Integrated and accepted | `77f6014`, `c546c85` |
-| T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Implemented; integration sync and verification in progress | — |
+| T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Implemented; ready for fresh integration review | — |
 | T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Integrated and accepted | `48600d2` |
 | T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Integrated and accepted | `a4ab9ee` |
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Complete; awaiting fresh merger | — |
@@ -281,3 +281,25 @@ ignored directories. Browser port 18215 and the owned preview are closed.
 No paid calls, source-worktree disposal, stash operations, push, tracker/PR or
 host/security/credential changes occurred. Live competence and held-out acceptance
 remain unverified; spend remains $0. T08 is Ready; T09 still waits on T03.
+
+
+## T03 implementation — ready for fresh integration review
+
+Ticket branch `t3/add-reusable-environments`, executable checkpoint `a0a0d08`,
+includes latest accepted integration `ff1567453cc119824bb4b3c03ceee1d73acdb9fe`.
+Library v3 separates mechanics/examples and unbound roles from study commitments;
+schema/export v6 pins complete sources. Public API witnesses use two questions
+and populations, retain independent rules after library deletion, and replay.
+Draft editing identity survives World changes/reload without changing provenance.
+No later worlds/harnesses, adapters, resets, paid calls or publication.
+
+Fresh latest-source checks: 1,008 backend, 8 affected browser, 2 actual policy
+flows, Ruff/ty and production smoke/containment pass. Full 178-browser suite,
+108 frontend tests, lint/types/build passed at `4c5a745`; all frontend inputs
+are hash-identical at the later merge. Frozen T01 retains only four intentional
+v4-export oracle failures and terminal flags under v6; all 22 recorded turns
+and usage match exactly. Failures remain explicit. Read
+[T03 report](research/T03_ENVIRONMENTS.md) and preserve all ignored `data/t03/`;
+`manifest.json` indexes source/case-stamped evidence and raw failures. Port 18114
+is closed and owned containers/image tags are removed. T03 spend $0. Parent owns
+fresh acceptance and preservation; this does not mark T03 integrated or T09 ready.

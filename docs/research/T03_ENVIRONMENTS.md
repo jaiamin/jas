@@ -1,133 +1,189 @@
 # T03 reusable environments
 
-Ticket: #14. Branch: `t3/add-reusable-environments`. Starting integration:
-`b7e5b1540ff9ccf63761a482a4288eed1ad8be4a`. Implementer only: no delegation,
-publication, issue edits, paid requests, data resets or changes to other worktrees.
+Ticket: [#14](https://github.com/jaiamin/ass/issues/14). Implemented on
+`t3/add-reusable-environments` in the assigned isolated worktree. Ready for a
+fresh integration review; this report does not claim parent acceptance.
 
-## Acceptance and plan
+## Acceptance
 
-- [ ] Store reusable mechanics and named configuration examples independently
-  of questions, populations/models/harnesses, conditions, replication and analysis.
-- [ ] Preserve optimistic revisions, atomic saves, validation and immutable
-  experiment snapshots across library edits/deletion.
-- [ ] Update discovery, planner context, editor/review, drafts and export together;
-  reject unsupported versions explicitly without conversion or reset code.
-- [ ] Public API witness: two different questions/populations share the same
-  versioned mechanics, retain their own study commitments, run/replay independently.
-- [ ] Independent permission/privacy checks and keyless desktop/light and
-  phone/dark reuse lifecycles pass alongside relevant inherited regressions.
-- [ ] Merge the latest accepted integration tip, resolve current-contract callers,
-  commit coherent checkpoints, preserve evidence and stop owned services.
+- [x] Store mechanics and named configuration examples independently of questions,
+  populations/models/harnesses, conditions, replication and analysis.
+- [x] Preserve optimistic revisions, atomic writes, validation and immutable
+  experiment rules through library updates/deletion.
+- [x] Keep catalog/Researcher/planner discovery, validation, editor/review, drafts
+  and exports coherent; reject unsupported versions without adapters or resets.
+- [x] Demonstrate two questions/populations sharing versioned mechanics, retaining
+  independent study commitments and source-pinned rules, with execution/replay.
+- [x] Verify independent permissions/privacy and keyless desktop/light and
+  phone/dark reuse, draft recovery, accounting, lifecycle and export regressions.
+- [x] Merge the latest accepted integration, commit with scanning/hooks, retain
+  complete evidence and stop owned services. No push, PR or tracker changes.
 
-Approved seams: the public workflow HTTP API; the existing World interface for
-independent rules/privacy/replay invariants; existing provider/accounting tests
-for inherited settlement/lifecycle coverage. These were approved in the spec and
-the task; no additional testing seam is introduced.
+Approved seams: public workflow HTTP API and browser workflow; the World
+interface supplies independent rules/privacy/replay invariants. Existing
+provider/accounting tests supplement settlement/lifecycle coverage. These are
+already authorized by the task/spec; no additional seam or approval was needed.
 
-## Decisions
+## Contract and decisions
 
-- An environment definition names an installed world/rule version and provides
-  mechanical configuration examples. Examples declare unbound mechanic roles;
-  each experiment supplies the actual participant bindings. Examples exclude
-  memory/harness/model choices and researcher prose/commitments.
-- Complete source definitions, revisions and content hashes are embedded in
-  experiment designs as provenance. The experiment's concrete parameters remain
-  authoritative and independently editable; source examples are not live links.
-- Explicit experiment templates remain distinct from reusable environment
-  definitions. Library reuse starts a neutral experiment with one baseline arm,
-  rather than copying the source experiment's question or lineup.
-- The new library format will be v3 (T04's pending experiment-shaped format is
-  v2). Schema/export v6 reserves a distinct current contract after T04's v5;
-  accepted integration will be merged before handoff. Existing world behavior
-  and rule versions do not change. No existing data is converted or deleted.
-- T09 owns solo/artifact worlds. Existing 2–12 participant constraints remain.
-  Researcher: Pydantic AI `openai:gpt-6.1-sol`; model participants:
-  `openai:gpt-6-luna`. All evaluation here is keyless, actual spend **$0**.
+The library contract is `jas-environment-v3`; mechanics definitions are version 1.
+Schema/export **6** follows accepted T04's v5. Definitions name an installed
+world/rule version and contain named mechanical examples with unbound roles.
+They exclude questions, actual populations/model assignments, participant
+harnesses, memory choices, condition arms, replication and analysis commitments.
+Extraction deduplicates identical mechanical setups, including harness-only
+contrasts. Explicit experiment templates remain distinct from reusable sources.
 
-## Progress and evidence
+`/api/design/environment` extracts mechanics; `/api/design/use-environment`
+applies an example with explicit participant bindings while preserving the
+study's other commitments. Without an existing design it starts a neutral
+experiment. Catalog entries and Researcher capability results expose complete
+built-in/custom source snapshots; custom discovery is bounded to 12 records.
+Accepted integration's separate template-probe configuration remains available.
 
-Initial clean source verified on Linux in the assigned worktree; integration
-and HEAD both equal the starting commit. Local uv 0.13.7 installed under ignored
-`.tools/uv` using the documented page-size workaround; frozen Python and frontend
-dependency installs passed without lockfile changes.
+Immutable revisions embed the full `environment_source`, source revision and
+content hash. Concrete experiment parameters remain authoritative and editable;
+source examples establish provenance rather than live links. Library changes
+cannot rewrite old or pending runs. Optimistic update/delete and atomic file
+replacement remain enforced. Unsupported database schemas 4/5, library formats
+v1/v2, definition versions and world-rule versions fail explicitly. No aliases,
+conversions, data resets or World rule changes were introduced.
 
-Before behavior changes: `data/t03/before/` retains the complete source archive,
-case/harness/runtime manifests, all API operations, designs and exports for the
-unchanged T01 DEVELOPMENT v1 suite. Six cases passed; 22 scripted requests,
-98 HTTP operations, source stable, actual spend $0. Separate source-stamped
-before-check archives/logs are in `before-backend/`, `before-frontend/`,
-`before-build/` and `before-browser/`. Setup/doc lookup logs are in `setup/`.
+Editor reuse exposes examples/bindings and source review through existing stock
+components/tokens. Browser drafts separately retain the library editing ID and
+revision: changing world clears scientific provenance while retaining the
+optimistic editing target across reload. Stale/deleted source drafts recover
+without fetching a mutable replacement. Save-as-new remains explicit.
 
-Next: vertical API red/green slices, UI reuse/draft behavior, independent
-invariants, current-integration reconciliation, final paired evidence and checks.
-All failed attempts will remain in ignored `data/t03/`; a final manifest will
-index commands, exits, source/case hashes and artifact digests.
+T09 owns solo/artifact worlds; current 2–12 constraints remain. No later World or
+harness is implemented here. Researcher remains Pydantic AI
+`openai:gpt-6.1-sol`; model participants remain `openai:gpt-6-luna`.
+This T03 task made **zero paid requests; actual spend $0**. Synthetic provider
+usage in keyless tests is accounting evidence, not spending. Other accepted
+integration reports retain their own sources, allowances and observed results.
 
-Checkpoint progress: API red/green slices 01 (definition storage), 02 (two
-independent experiments and immutable sources), 03 (extraction/catalog/neutral
-selection) passed. `backend-focused-03/` passes 63 current API/library/export/DB/
-baseline checks; `environment-invariants-01/` passes eight new cases, including
-two populations executing 16 scripted turns with exact replay after library
-deletion, hidden-stock/schema parity, role permissions, failed storage and racing
-optimistic edits. No model requests are sent to paid providers.
+## Checkpoints and red/green evidence
 
-`ui-01-red/` fails specifically on the obsolete full-design save payload;
-`ui-01-green/` passes both desktop/light and phone/dark lifecycles. The expanded
-`browser-affected-01/` records 18 passes, four intentional template-to-mechanics
-link expectation failures, and one mobile test-level timeout. Trace inspection
-shows navigation/fill delays consumed its cumulative 30 seconds before the stale
-update click; that long lifecycle now has a 60-second budget. Assertions remain
-unchanged. The URL expectations now require the explicit environment selection.
-All failed reports/traces remain. An incomplete independent-action fixture was
-also repaired to reach actual World permission checks; no production rules changed.
+| Slice | Retained evidence under `data/t03/` | Result |
+| --- | --- | --- |
+| Mechanics-only library | `tdd-01-red/`, `tdd-01-green/` | New public contract fails before implementation, passes afterward |
+| Two independent experiments and immutable source | `tdd-02-red/`, `tdd-02-green/` | Different questions, populations/seeds and independent source-pinned rules |
+| Extraction/catalog/neutral reuse | `tdd-03-red/`, `tdd-03-green/` | Built-in/custom sources use one contract without importing a study |
+| Researcher discovery | `tdd-04-red/`, `tdd-04-green/` | Real capabilities operation returns reusable definitions and hashes; 24 focused checks pass |
+| Browser draft identity after World switch | `tdd-05-red-corrected/`, `tdd-05-green-corrected/` | Reproduced 409 and lost update action; corrected rebuilt run passes all 12 reuse/workspace cases |
 
-The unchanged T01 runner's `export-v4` oracle intentionally fails under v6.
-Current API/export tests positively assert v6; baseline tests explicitly retain
-the v4 failures and require every other check to pass. No frozen case/harness
-bytes were edited. Final paired reports will retain the failures rather than
-silently changing their oracle.
+Independent API/World cases retain two populations executing **16 scripted
+turns**, exact replay after library deletion, hidden-stock/schema parity,
+role-based permissions independent of profile prose, rejected-action atomicity,
+failed storage and competing optimistic edits. Applying mechanics preserves each
+condition's model, direct/tool harness and memory. Full exports and owned test
+workspaces remain in `final-backend-workspaces-03/` and earlier archives.
 
-Implementation checkpoint: `121a9595a7334872a6aae9a9772401814e3a9902`.
-The accepted integration merge includes `48600d2982516210e6a4e28528d2e1c6f1fd155e`
-(T04) and `39491def73da7334164ca6d98896eaa03a2e5bf5` (T05 acceptance).
-Resolution preserves both harness implementations, activation accounting/evidence,
-researcher operations and both tickets' documentation/handoffs, while keeping
-T03's v3 library and v6 schema/export contract. Current API/policy/browser export
-assertions require v6; old v1/v2 library files and schema 4/5 remain explicit
-rejections. No aliases, conversion or data-reset code was introduced.
+Implementation checkpoints: `121a959` mechanics, `d9fbb6a` discovery, `33277c5`
+draft identity. Accepted integration merges: `15eebc2`, `4c5a745`, `a0a0d08`.
+Final executable checkpoint: **`a0a0d08d17c060f4ce84177d95139ebec6890c15`**,
+including latest observed integration
+**`ff1567453cc119824bb4b3c03ceee1d73acdb9fe`**. Both independent discovery tests
+were retained when merging; the later copied-probe fix merged cleanly. No
+unaccepted branch was merged. The final documentation commit changes only this
+report, progress and handoff; `final-source/source.json` records its exact HEAD
+and verifies executable/test inputs are unchanged.
 
-Merge checkpoint: `15eebc25724bd7ba4b5fe2c3ad33d39183528f04`.
-All **110** integrated API/library/export/database/baseline/participant/Researcher
-checks pass (`integrated-focused-01/`). One final integration seam was exercised
-with a fourth red/green slice: the Researcher's real capabilities operation lacked
-reusable definitions. It now returns the same built-in/custom mechanics snapshots
-and source hashes, capped at 12 custom records, with independent study commitments
-explicit. The activity view links custom sources to the existing reuse workflow.
-`tdd-04-red/` retains the absent-discovery failure; `tdd-04-green/` passes all 24
-Researcher/reuse checks. A supplemental API case proves applying mechanics
-preserves each arm's direct/tool harness, model assignment and memory, and that
-extraction collapses harness-only differences into one mechanics example.
+## Before/after identities
 
-Remaining: final clean-source before/after comparison, full backend/frontend/browser
-checks, the inherited two-policy browser trial, rendered-capture review, manifest,
-latest integration ancestry check and service shutdown verification.
+Both sources are clean, source-stable and use the unchanged T01 DEVELOPMENT v1
+cases, FunctionModel harness, runtime and low-effort envelope.
 
-Final draft review found an additional public-workflow regression: after changing
-world and reloading, an unchanged custom record returned 409, or a record first
-saved from a template lost its update action. `tdd-05-red-corrected/` reproduces
-both. Browser drafts now retain a separate library editing ID/revision; changing
-world still clears scientific source provenance. `tdd-05-green-corrected/` passes
-all 12 reuse/workspace cases, including both reload variants and stale/deleted
-source recovery. The first test attempt used an incorrect template identifier;
-its failures remain in `tdd-05-red/`. A TypeScript narrowing failure and the
-premature browser run against the previous build also remain; only the corrected,
-successfully rebuilt run is credited as green. No checks were disabled.
+| Identity | Before | Latest after |
+| --- | --- | --- |
+| HEAD | `b7e5b1540ff9ccf63761a482a4288eed1ad8be4a` | `a0a0d08d17c060f4ce84177d95139ebec6890c15` |
+| Input tree SHA-256 | `a3b25f2ae4c3fec059d513408d513ad33ce62cbd6a41f0cc542290230d852c81` | `20bbcdb86d6aa955665d503ad924680fc01c4b887f13e1e38830fa2df7339194` |
+| Source archive SHA-256 | `00f1f19ba177b541b74722c689a2ea25a51aaefafd0affefdfe1d3bcc0482289` | `3422084313b5a25322ac03493bf059387595f7c420e946ab214cfd5f87f88d4d` |
+| Backend SHA-256 | `0b9328212b8584788a16af3b03c17b50f4a0535066d238aef590ca15ad867de2` | `44ee51eb145003d57a52f81a4c80bda490b9a0d0565c09eba288a398d1b8d405` |
 
-At clean `d9fbb6a`: all 1,006 backend tests and 108 frontend tests passed, as did
-the production build, actual non-root production smoke and containment qualification.
-Full browser run: 175 passed, one outdated title expectation failed. The current
-reuse contract deliberately initializes a neutral experiment title; that oracle
-is now explicit and passes in the 12-case rerun. Desktop/light and phone/dark
-captures were inspected. Ruff/frontend lint pass; normal `uv run ty check` passes
-after removing the check wrapper's injected `PYTHONPATH` (the failed wrapper
-attempt and diagnostics remain). Backend inputs are unchanged by the draft fix.
+Case SHA-256: `6e4f138cf31d32b8a5e28e348edbccc2e9b1308b62f8b274d39cf0f24ba33a6e`.
+Frozen harness SHA-256:
+`b6438d9fa3390d05f4f3c5583aa1e0e6f2095d1db653060257cdc817138a5826`.
+Raw paired runs: `before/`, `after/`, `after-final/`, `after-latest/`.
+
+The frozen v4 export oracle intentionally fails four `export-v4` checks and the
+four consequent terminal `passed` flags under v6. After/comparison commands
+retain exit **1**; no other check regresses, and per-case usage matches. Current
+API/export/browser checks positively require v6. No historical case, harness or
+score was edited. `direct-action-parity-latest.json` independently verifies all
+**22 recorded turns**: observations, decisions, checkpoints/hashes, final states,
+metrics, behavioral events and usage match. Event database IDs are explicitly
+excluded from the behavioral event comparison. The comparison is deterministic
+regression evidence, not a competence gain or fresh held-out evaluation.
+
+## Observed verification and inherited attribution
+
+Before source `b7e5b154`: **948 backend**, **106 frontend**, production frontend
+build and **7 affected browser** checks pass, in `before-*` archives/logs.
+The six frozen API cases pass with 22 scripted requests and 98 HTTP operations.
+
+Fresh latest-source observations at clean `a0a0d08`:
+
+- **1,008 backend tests pass** in 103.10s (`final-backend-03/`, XML and preserved
+  test workspaces). This includes inherited accounting, cancellation, pause,
+  restart, lifecycle, private observations, replay, library and export checks.
+- **8 affected browser checks pass** (`final-affected-browser-01/`), covering
+  Researcher persistence and both reuse/draft lifecycles.
+- **2 real participant-policy browser flows pass**, desktop/light and phone/dark
+  (`inherited-policy-browser-01/`). These are fresh runs of inherited T04 flows
+  with deterministic provider responses, current v6 exports and exact replay.
+- Ruff and normal `uv run ty check` pass (`final-ruff-03/`, `final-ty-04/`).
+- Final image build/non-root production smoke, actual containment qualification
+  and two-question/two-population reuse/export smoke pass (`production-build-03/`,
+  `production-smoke-03/`). Production sends no model requests.
+
+At clean `4c5a745`: **all 178 browser tests pass** in 6.5 minutes, with no
+unexpected, skipped or flaky cases (`final-browser-02/`); **108 frontend tests**,
+frontend lint and TypeScript/production build pass (`final-frontend-03/`,
+`final-lint-02/`, `final-build-04/`). All frontend source/test/config/lock inputs
+and served assets are identical in `a0a0d08`; `frontend-input-parity.json` and
+`final-build-inputs.json` record every hash. The full 178-test run and frontend
+results are attributed to `4c5a745`, not represented as fresh executions at the
+later merge. Latest-source affected browser/policy runs supplement them.
+Desktop/light and phone/dark final reuse and policy captures were inspected.
+
+Earlier full checks at `d9fbb6a` (1,006 backend/108 frontend) and `4c5a745`
+(1,007 backend) remain separately attributed. Historical T01/T04/T05 reports and
+production qualifications remain historical; they are not relabeled as this
+slice's fresh evidence. No hosted CI was run or claimed. No workflow, shell
+script, dependency, runtime, mount, credential or security configuration changed.
+Project-local uv 0.13.7 under `.tools/uv` avoids the system uv page-size crash;
+frozen dependency installs pass without lockfile changes or global installs.
+
+## Retained failures, artifacts and limits
+
+Every attempt remains under ignored `data/t03/`. Non-green development attempts
+include the expected API/UI tracer failures; two old frozen-oracle test
+expectations (`backend-focused-01/`); an incomplete independent Action fixture
+(`backend-focused-02/`); four changed template/mechanics URL oracles and a mobile
+cumulative timeout (`browser-affected-01/`); one neutral-experiment-title oracle
+(`final-browser-01/`, 175 passes); the initial wrong template key in `tdd-05-red/`;
+a TypeScript narrowing error (`final-build-02/`); and the premature browser run
+against the previous build (`tdd-05-green/`). The mobile trace showed time spent
+before the update click; its long lifecycle uses 60 seconds with the same
+behavioral assertions. `browser-affected-01/` also changed source during the run
+and is diagnostic only. Clean final runs supersede it. A wrapper-injected
+PYTHONPATH changed ty import resolution (`final-ty-01/`); the standard command
+passes after removing that injection. No checks were weakened or disabled.
+
+`data/t03/manifest.json` indexes exact commands/exits, source/case identities,
+archive/log hashes, browser reports, failure notes and every artifact digest.
+Source archives, API operations, exports, SQLite workspaces, provider evidence,
+XML/JSON, failed traces, inspected captures and ignored utility scripts are all
+retained. `final-source/` captures the final clean handoff source and product-input
+parity. **Preserve the entire ignored directory before any future cleanup**;
+ignored paths alone are not external durable storage. Parent owns fresh merger
+review, artifact preservation and any later publication.
+
+All three owned production containers and image tags are stopped/removed;
+Playwright shut down its owned browser backends. Port **18114 is closed**
+(`cleanup.json`). No preview session was opened. No stash or `pbcopy` was read,
+changed or copied; no other worktree was modified or cleaned. No paid calls,
+resets, publication, tracker actions or later-ticket implementation occurred.
+Live provider behavior, Researcher/participant competence, held-out acceptance,
+solo/artifact worlds and broader milestone claims remain unverified. **T03 spend $0**.

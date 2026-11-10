@@ -1751,20 +1751,32 @@ failures, with identical cases/harness/runtime and 22 scripted responses each.
 No paid calls or stash changes. Both production containers and owned browser
 backends are stopped. Preserve the complete ignored `data/t02/` directory;
 `checks.json` indexes evidence. No host/security/credential configuration changed.
-# T03 implementation handoff (active)
+# T03 implementation handoff — ready for fresh integration review
 
-Assigned worktree `/home/agent/.t3/worktrees/workspace/t3-6cea71e7`, branch
-`t3/add-reusable-environments`. Read `docs/research/T03_ENVIRONMENTS.md` for
-acceptance, decisions and evidence. Implement T03/#14 only; no delegates,
-publication, paid calls, stash access, worktree cleanup or changes to `pbcopy`.
-Library v3 separates mechanics/configuration examples and unbound roles from
-study commitments; schema/export v6 pin complete sources in immutable revisions.
-Before evidence and every red/green/failure attempt remain under ignored
-`data/t03/`. API reuse/privacy/atomic checks and desktop/light + phone/dark reuse
-flows pass; inherited/final verification and latest integration reconciliation
-are in progress. All runtime data/dependencies/builds are local to this checkout;
-owned browser port is 18114. Actual spend $0.
+Worktree `/home/agent/.t3/worktrees/workspace/t3-6cea71e7`, branch
+`t3/add-reusable-environments`. Read `docs/research/T03_ENVIRONMENTS.md`.
+Executable checkpoint `a0a0d08d17c060f4ce84177d95139ebec6890c15` includes accepted
+integration `ff1567453cc119824bb4b3c03ceee1d73acdb9fe`; later changes only record
+evidence. Current contract: library v3, definition v1, schema/export v6, unchanged
+World rules. Complete sources pin immutable experiments; mechanics reuse excludes
+questions/populations/harnesses/memory/research commitments. Browser drafts keep
+library editing identity separately through World changes/reload.
 
+Fresh latest-source verification: 1,008 backend, 8 affected browser and 2 actual
+policy flows; Ruff/ty and actual non-root production smoke/containment/reuse pass.
+Full 178 browser and 108 frontend/lint/types/build checks passed at `4c5a745`;
+frontend inputs are hash-identical at the latest merge. Frozen T01 after/comparison
+exit 1 only for four intentional v4-export oracles and terminal flags under v6.
+Independent parity verifies all 22 recorded turns and usage. Full raw failures,
+archives, exports, workspaces, traces and captures remain in ignored `data/t03/`;
+`manifest.json` and `final-source/` identify final source/evidence. Preserve the
+whole directory before future cleanup; parent owns fresh integration acceptance.
+
+Port 18114 closed; owned browser backends, three production containers and image
+tags stopped/removed. No paid calls, stash/pbcopy access, other-worktree edits,
+cleanup, push, PR/issue changes, resets or security changes. T03 spend **$0**.
+No live/held-out competence claim or T09 solo-world implementation. The prepared
+worktree remains intact for sequential handoff.
 
 
 ### T04 participant harness implementation — ready for integration review
