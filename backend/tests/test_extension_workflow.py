@@ -501,6 +501,28 @@ def test_cosigned_escrow_retains_external_failure_receipt_before_explicit_repair
         calls = client.get(f"/api/analyses/{key}/requests").json()
         assert len(calls) == 8 and all(c["status"] == "complete" for c in calls)
         assert sum(c["charged"] for c in calls if c["purpose"] == "extension_generation") == 1400
+        requests = [client.get(f"/api/requests/{call['id']}").json()["request"] for call in calls]
+        for request in requests:
+            assert (
+                len(
+                    (request["prompt"] + request["instructions"] + json.dumps(request["schema"]))
+                    .encode()
+                )
+                + 4096
+                <= 180000
+            )
+        reviewed = next(
+            data
+            for request in requests
+            if "candidate" in (data := json.loads(request["prompt"])) and "preflight" in data
+        )
+        assert reviewed["candidate"]["design"] == row["output"]["design"]
+        assert reviewed["preflight"] == row["output"]["planning"]["preflight"]
+        assert reviewed["brief"]["requirements"][0]["source"] == "irrevocable co-signature escrow"
+        assert any(
+            repaired["source"] in operation.get("data", {}).get("custom_environments", [])
+            for operation in reviewed["research_operations"]["operations"]
+        )
         usage = client.get("/api/settings").json()["usage"]
         saved = client.post(
             "/api/studies", json={"design": row["output"]["design"], "plan_id": key}

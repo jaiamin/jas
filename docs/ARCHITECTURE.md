@@ -490,10 +490,12 @@ and current-contract qualification, plus frontend units/build and separate keyle
 editor/handoff/failure browser witnesses. Fresh keyless native-runtime qualification
 passes export/reopen/zero-call replay and distinct local World restoration. It is
 not non-root-container or live-competence qualification. Independent integration
-review remains open; see the [implementation report](research/T12_IMPLEMENTATION_REPORT.md).
-See the [T12 plan](research/T12_INSTITUTIONAL_WORKFLOW.md). DB12/export13/
-library9 combine this typed mechanics contract with accepted T14 investigation
-ownership; both distinct schema11 intermediates are rejected without conversion.
+review accepted its finite DEVELOPMENT scope; see the
+[integration review](research/T12_INTEGRATION_REVIEW.md).
+See the [T12 plan](research/T12_INSTITUTIONAL_WORKFLOW.md). T12 introduced
+DB12/export13/library8. The current DB14/export16/library9 combines that typed
+mechanics contract with T14 investigation ownership and T17 finite generation.
+The incompatible intermediate contracts are rejected without conversion.
 
 ### Playback, consequence replay, restoration and sampling
 
@@ -520,7 +522,8 @@ them. Researcher analysis can inspect complete recorded state, but its tools are
 scoped to selected run cutoffs. Recorded prose is evidence, never tool instructions. Rationale
 is self-report, not a faithful transcript of internal reasoning. Recorded/model prose is never
 evaluated as code. Explicit versioned Wasm candidates have a separate import-free, locally
-qualified validation worker and immutable reviews; they cannot run as experiment worlds.
+qualified validation worker and immutable reviews. Only independently admitted,
+version-pinned packages can run as experiment worlds through the supported profiles.
 See [candidate review and containment](EXTENSIONS.md). The local app is for trusted networks;
 it is not an authenticated hosted SaaS.
 Host validation defaults to localhost and loopback addresses; additional LAN/proxy hostnames
@@ -563,7 +566,7 @@ runs, actual recorded rule versions, exact turn evidence and provider traces; it
 journal queries. It also retains the linked question's complete immutable generation
 attempts (including failures and repairs), external contracts/checks/admission/source,
 generation authorization/counters and exact integer reserved/charged request ledgers.
-Exports1–14 are historical contracts, not accepted as the current export meaning.
+Exports1–15 are historical contracts, not accepted as the current export meaning.
 Participant harnesses (`participants.py`; direct action 1.0.0, tool using 2.0.0) are condition factors,
 independent of provider/model assignments and World. Direct action preserves the
 single structured-decision request and its observation. Tool using owns a bounded

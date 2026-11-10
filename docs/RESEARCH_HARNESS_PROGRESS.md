@@ -1,3 +1,26 @@
+# T17 combined backend/UI UNIT boundary (2026-11-10)
+
+Exact accepted40c32ff6 is normally merged ascb379ee5,25 retained conflicts/stages,
+both histories preserved; currentDB14/export16/library9 explicitly rejects prior
+incompatible meanings. Genuine combined-catalog critique input-limit RED is
+repaired without raising allowances or changing the independent external oracle.
+At exacte19ee690...:74 unique segmented backend/60 affected frontend units,
+Ruff/global ty/frontend lint243/forced types PASS. Frozen original T01 CURRENT
+retains four export-v4 failures/false flags/exit1; separate literal5/22/22 full
+input/evidence/checkpoint/privacy/cutoff/integer-ledger/zero-call replay passes.
+No retired historical BEFORE/comparator, provider/live/held-out or production claim.
+
+Stage inventory03471265... covers3044 files/60,476,214 bytes and110 link metadata
+entries; current audit/checkpoint excluded as later additions. All148 packed own
+closed DBs retain actual hash/size/mode/integer-ns restoration proofs; stored bytes
+reverified. Backend56.8MB/64MiB, frontend4.4MB/16MiB; ordinaryfloor134217728/
+shared lock unchanged, released per job; no new setup/cache/other-owner changes.
+T17 incomplete/UNACCEPTED. Separate build/browser proposal remains held: existing
+private deps/headless shell,18129/own DB/build,<=32MiB new evidence,256MiB peak+
+floor, entry402653184. Actual public lifecycle/390–1440/theme/keyboard/reconnect,
+fresh non-root production and NEW independent integration review remain pending.
+Read docs/research/T17_EXTENSION_GENERATION.md for all sources/results/limits.
+
 # T17 accepted-frontier source integration (2026-11-10)
 
 Normal unit checkpoint29ab2796 passes hooks/Gitleaks. Exact accepted40c32ff6

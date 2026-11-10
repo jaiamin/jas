@@ -1,3 +1,37 @@
+# T17 combined backend/UI UNIT boundary (2026-11-10)
+
+Normal mergecb379ee5 includes exact accepted40c32ff60593ee195cd4df21289448e385a95f03;
+all25 conflicts/stages and both histories are retained. CurrentDB14/export16/
+library9/definition2/research2/generation-eventv2 reject incompatible intermediate
+meanings, without alias/migration/reset. Accepted T12 interactions/directed-count
+tests and the independent finite mechanisms remain. One genuine combined-source
+critique input-limit RED was minimally repaired by omitting a repeated universal
+schema for an already validated complete proposal; allowance/oracles unchanged.
+
+At exacte19ee6900c63e9f109e926183579cb86a3769529a5d2fc42ed1dc1a3f6171331:
+74 unique segmented backend cases and60 affected frontend units pass, plus full
+prescribed Ruff/global ty,243-file frontend lint and forced TypeScript. Frozen
+unchanged T01 CURRENT retains exactly four export-v4 failures/four false flags/
+exit1. Fresh literal5/22/22 matrix/full inputs/checkpoints/privacy/cutoffs/ledger/
+zero-call replay passes; no retired historical comparison. Initial post-merge
+5pass/1fail and every earlier failure/source remain. Later edits are documentary.
+
+Complete stage inventory3044 files/60,476,214 bytes plus110 symlink metadata
+entries: .tools/t17/evidence/attempts/combined-boundary-audit-01/summary.json,
+inventory SHA03471265...; audit/current checkpoint are explicit later additions.
+All148 own closed-DB logical paths have retained actual hash/size/mode/integer-ns
+restoration proofs, with stored bytes reverified. Backend56.8MB/64MiB,
+frontend4.4MB/16MiB after audit; no cache/other-owner/source-custody modification.
+Shared floor/lock unchanged and released per job. Private imports resolve here.
+
+T17 remains INCOMPLETE/UNACCEPTED. No service/browser/container/new setup/live/
+paid/held-out/publication. Next separately proposed build/browser release: existing
+private deps/headless shell, own18129/build/DB,<=32MiB new evidence,256MiB peak+
+134217728 floor, entry402653184. Actual public keyless generation→review/save→
+separate participant execution/replay and390/1440/theme/keyboard/reconnect checks
+remain held. Fresh non-root production needs a later separate release; NEW fresh
+integration review remains required. See docs/research/T17_EXTENSION_GENERATION.md.
+
 # T17 accepted-frontier source integration (2026-11-10)
 
 Normal unit checkpoint29ab2796 passes hooks/Gitleaks. Exact accepted40c32ff6

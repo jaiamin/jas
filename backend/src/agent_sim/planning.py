@@ -329,6 +329,16 @@ class Planner:
         if output is Candidate:
             # Candidate's typed output already supplies the complete design schema.
             omitted.add("design_schema")
+        candidate = data.get("candidate")
+        if (
+            output is DesignReview
+            and isinstance(candidate, dict)
+            and candidate.get("design") is not None
+        ):
+            # Review the complete validated protocol and its actual checks. Repeating
+            # the universal schema can exhaust the allowance after catalog growth.
+            # A declined candidate still needs that schema to assess its claimed gap.
+            omitted.add("design_schema")
         data = {name: value for name, value in data.items() if name not in omitted}
         with self.db.session() as session:
             row = session.get_one(Analysis, key)

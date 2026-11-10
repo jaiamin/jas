@@ -1,7 +1,7 @@
 # T17 / #28: bounded, independently specified finite extension synthesis
 
-Status: **backend and finite-review slices qualified separately; generation UI and
-final browser/production qualification incomplete**.
+Status: **backend and generation UI UNIT slices qualified at their recorded sources;
+accepted T12 merge needs affected qualification; browser/production incomplete**.
 Implementation remains UNACCEPTED until a new fresh integration reviewer accepts it.
 This ticket neither opens nor examines the final held-out extension task.
 
@@ -61,23 +61,23 @@ port18129 is held until services are released.
 - [x] Use actual bounded Sol artifact generation and actual worker validation /
       independent admission in the existing question/proposal workflow, with
       scripted Sol identity only; live competence remains unverified.
-- [ ] Retain every candidate version, generation/check/repair operation, source,
+- [x] Retain every candidate version, generation/check/repair operation, source,
       cost, failure, public activity and stop reason. No silent retry/substitution.
-- [ ] Reject self-admission, invented/unavailable contract provenance, resource
+- [x] Reject self-admission, invented/unavailable contract provenance, resource
       minting, weakened ACLs, unsupported/richer semantics and unqualified runtime.
-- [ ] Produce a pending, validated editable proposal with actual admitted source;
+- [x] Produce a pending, validated editable proposal with actual admitted source;
       inspect mechanics/information policy/harness/limits before explicit execution.
       Discussion and saving never sample participants.
-- [ ] Prove new consequences/ACL/resource/stopping/restoration/replay through the
+- [x] Prove new consequences/ACL/resource/stopping/restoration/replay through the
       real public lifecycle with keyless scripted Sol/Luna stand-ins, keeping
       each request's reservation, settlement, unknown usage and primary errors.
-- [ ] Preserve one Engine/database, one writer/run, server ownership, pause,
+- [x] Preserve one Engine/database, one writer/run, server ownership, pause,
       restart without sampling, immutable revisions and append-only evidence.
-- [ ] Version every changed persisted meaning and all affected callers/tests/docs;
+- [x] Version every changed persisted meaning and all affected callers/tests/docs;
       explicitly reject prior contracts, with no alias/migration/reset.
 - [ ] Qualify appropriate backend/static/frontend/browser and fresh non-root
       production containment/admission/Engine/replay on exact final source.
-- [ ] Preserve frozen T01 runner/cases/scores, run it on CURRENT source with safe
+- [x] Preserve frozen T01 runner/cases/scores, run it on CURRENT source with safe
       selection and record actual failures/flags/exit. Independently freeze fresh
       current-contract full-input/effect/privacy/checkpoint/cutoff/replay/integer-
       ledger qualification. Historical raw BEFORE/comparison is explicitly retired
@@ -1952,3 +1952,167 @@ observations require separately recorded sources. New backend retained room is
 about9MiB before final merge source capture, so remeasure/forecast each bounded job
 instead of assuming the prior16MiB-perjob ceiling grants additional cumulative
 space. Browser/build/services/production/providers/paid/held-out remain held.
+
+### Post-merge continuation qualification plan
+
+Clean normal merge checkpoint is `cb379ee518128ab9fe66ce91353e6e6d51ed9908`,
+parents29ab2796/40c32ff6, with accepted starting ancestor b0446d9 retained. No
+unmerged paths remain. The normal merge hook passed Gitleaks; no new combined
+source test pass is inherited from that commit. A documentary reconciliation
+corrects the T12 paragraph's mixed historical/current versions and acceptance,
+the current export rejection range through15, and the admitted-package wording.
+Neither external JSON oracle nor any World consequence changes.
+
+Retain the original unit-stage results and every failed attempt. Next bounded
+jobs use a newly authored recorder, not an inherited ignored helper, with exact
+invocation-local cached Git selection/untracked '*' exclusion, pre-open protected
+name/index/ancestor/descendant checks and an invocation-local Git wrapper for any
+indirect benchmark snapshot. Bytecode stays disabled. Existing private deps only;
+no provider request is permitted. Source identities are deduplicated by content.
+
+Planned independent gates: full backend Ruff and global ty (separate jobs,
+4MiB disk/output forecasts); actual scripted-Sol generation/failure-repair and
+finite worker/World/Engine/lifecycle (segmented<=8MiB jobs); inherited T12
+delivered-mail/handoff/acceptance directed-count regression with unchanged literal
+rows; incompatible DB12/13/library8 rejection and current export16 assertions;
+fresh literal current-contract5/22/22 plus cutoff witnesses (8MiB); unchanged
+frozen T01 CURRENT (8MiB, expected adverse export-v4 checks preserved). These
+reuse the frozen external tables/full-input fixtures; no generated output
+authors the oracle and no historical BEFORE/comparator is reconstructed.
+
+Remeasure the remaining64MiB allowance before each job. Own CLOSED generated
+test databases may need separately retained lossless compaction with actual
+byte/SHA/size/mode/integer-ns restoration before raw removal; sources/custody and
+other owners stay untouched. A per-job forecast is not extra cumulative space.
+Final affected actual-shell units/lint/forced types remain within frontend16MiB,
+>=268435456 entry and<=4MiB per job. Existing stock UI and both mechanics paths
+must survive the accepted source integration. Browser/build/services/production
+remain held until a separate concrete release; the prior402653184/32MiB browser
+proposal remains a forecast only. Implementation is incomplete/UNACCEPTED.
+
+Post-merge `combined-sol-workflow-01` retains5 PASS/1 FAIL at exact unchanged
+sourcec5e1b986a6e3d6df364e7fac87389f6404b738068413aa1826513b3be7e4a4dd.
+Both actual co-signature artifacts/independent checks completed, but the final
+critique refused its180000-byte input allowance. Two separately retained narrow
+read-only diagnostics of the closed synthetic DB confirm the public error,
+stage=reviewing, no review issues, and individually settled prior requests.
+The scoping/candidate input bounds were161658/167519; the repeated universal
+design schema alone was32904 bytes. No contract mismatch, failed admission,
+provider retry or participant sample explains this failure. It is a genuine
+combined-catalog input regression, not an intended historical failure.
+
+Minimal repair: omit the repeated universal design schema only when critiquing
+an already domain-validated nonnull complete protocol. The complete candidate,
+original question/brief, actual preflight and source-linked operation evidence
+remain supplied. Unsupported/null candidates retain the full schema to review
+claimed capability gaps. The typed candidate-output schema remains unchanged,
+as do every request ceiling/ledger, external contract, authority and persisted
+meaning. No fallback, alias or wider input allowance. The same public workflow
+test additionally checks every complete bounded input<=180000 and that the
+review actually receives the exact complete final design/preflight, original
+literal requirement and admitted immutable source. Freeze this repair before
+one focused green (8MiB output/16MiB peak); retain the original failed six-case
+job and diagnostic receipts. Later affected checks must qualify this new source.
+
+## Accepted T12 combined-source backend/UI UNIT boundary (2026-11-10)
+
+Exact accepted40c32ff60593ee195cd4df21289448e385a95f03 is a normal second
+parent of cb379ee518128ab9fe66ce91353e6e6d51ed9908. The25 conflict/stage
+restorations and both parents/histories remain retained. Current contracts are
+DB14/export16/library9/definition2/research-operation2/generation-eventv2,
+workflow1.0.0; no incompatible intermediate meaning is aliased or migrated.
+Accepted T12 remains a separate rich World. Inspection confirms its material
+debit occurs at performed work with no refund/revoke/veto operation; it does
+not install either reviewed reversible-escrow contract. The independent permit
+and co-signature oracles and their immutable provenance remain unchanged.
+
+Post-merge critique input RED is retained separately from earlier UI authoring
+or environment failures. The minimal schema repetition repair passes the same
+actual public co-signature workflow, including the added complete-input/evidence
+guards. All final affected checks below share exact unchanged source
+`e19ee6900c63e9f109e926183579cb86a3769529a5d2fc42ed1dc1a3f6171331`.
+Subsequent edits are documentary only and require final source attribution;
+no whole-repository backend/browser/production result is implied.
+
+| Attempt | Observed result |
+| --- | --- |
+| `combined-sol-workflow-01` | FAIL1;5 PASS,1 critique input-limit regression, original sourcec5e1b986... |
+| `combined-sol-diagnosis-01/02` | PASS; narrow read-only closed synthetic DB diagnosis, no application execution |
+| `combined-sol-repair-green-01` | PASS1; failed artifact/receipt retained, explicit repair,8 separately settled Sol-identity requests, pending proposal, complete linked export16 |
+| `combined-final-ruff-01`, `combined-final-ty-01` | PASS; full prescribed Ruff/global ty |
+| `combined-finite-worlds-engine-01` | PASS9; both independent tables, real containment/admission, permit/refund/co-signature ACL/resource/horizon/restore, actual Engine/replay and first-generation proposal |
+| `combined-workflow-version-regression-01` | PASS29; accepted T12 finite witnesses/directed delivered-mail/handoff/acceptance counts, materials/privacy/restore, source rebinding and DB1–13/library1–8 rejection |
+| `combined-current-contract-01` | PASS3; literal5 runs/22 turns/22 requests, full inputs/actions/checkpoints/privacy/cutoffs/reopen/zero-call replay,28231 reserved/770 synthetic microdollars; both accepted cutoff witnesses |
+| `combined-accepted-t16-regression-01` | PASS16; accepted actual-worker admission/revision/privacy/pause/one-writer/restart/unknown usage/library guards |
+| `combined-artifact-settlement-regression-01` | PASS16; current solo/artifact gap replacements, atomic version/resource denial/private-source projections, generation ceilings/unknown usage/restart without retry |
+| `combined-frozen-t01-current-01` | actual child/recorder exit1; exactly4 original export-v4 failures/four false flags, both historical schema-only negative rows pass |
+| `combined-ui-affected-unit-01` | PASS60/9 files; actual-shell authoring/finite-proposal cases plus isolated reply/workflow/design/progress regressions |
+| `combined-ui-lint-01`, `combined-ui-types-01` | PASS;243-file frontend lint and forced global TypeScript; no bundler/build |
+| `combined-boundary-audit-01` | PASS; independently reconciles74 unique backend cases, all source identities/adverse flags,493 safe regular original-runner archive headers, complete owned closed-output inventory and148 packed-DB byte proofs |
+
+Frozen T01 preserves its original runner/cases relative to946afbc; every other
+original check passes, with source_unchanged=true,98 HTTP operations and22
+scripted requests. No retired BEFORE, historical comparator, score change,
+reconstructed parity or historical improvement claim. The two old gap labels
+describe only their frozen schema-rejection checks; the separate actual solo/
+artifact positives above supply the required current coverage replacement.
+All scripted ledger values are accounting witnesses, not paid spend/intelligence.
+Public scripted Sol orchestration and actual worker/World correctness do not
+establish live synthesis, independent intent understanding or held-out competence.
+
+Each job acquired/released the shared exclusive flock. Backend entry retained
+134217728 plus the realistic4–16MiB disk forecast; frontend entry268435456
+retained the same floor plus128MiB. No preflight rejection/retry/floor reduction,
+new setup/cache consumer, other-owner change or executable inherited helper.
+Every direct/indirect snapshot uses its own exact cached-only Git selection,
+untracked '*' exclusion, protected-name/index/ancestor/descendant preflight and
+invocation-local Git wrapper. The frozen source archive independently contains
+only493 permitted regular members. No clipboard/configuration payload was read,
+hashed or captured. New helpers were authored here; existing helpers stayed data.
+
+Four bounded compactions selected only own CLOSED regular single-link generated
+test databases. They ACTUALLY restored bytes/SHA/size/mode/integer-ns atime+mtime
+before raw removal, preserving all failed/successful attempts and logical paths.
+New map identities:42 files203ae61e...;16 files17646515...;23 files64587715...;
+16 files6cefcbba.... The previous51-file mapc0640877... is unchanged. The audit
+rechecks all148 stored byte hashes and original restore receipts; it does not
+claim a second actual filesystem restore. No source/custody hardlink is modified.
+All prior adverse setup/merge/authoring/type/lock attempts remain unchanged.
+
+The complete owned CLOSED inventory is
+`.tools/t17/evidence/attempts/combined-boundary-audit-01/closed-output-inventory.jsonl`,
+SHA256`03471265464ef1269c3c5ef5c99b8116a8625edf9be6a45e231fa51f895f5ab5`:
+3044 regular files/60,476,214 payload bytes plus110 symlink metadata entries;
+no link target is read/followed. Private pnpm cache and that open audit attempt
+are explicit exclusions. Its receipt/current documentary checkpoint are later
+additions, not silently folded into the immutable inventory. This is a stage
+inventory, not the final ticket closure seal. Full exact map hashes, qualifiers,
+private sys.prefix/import proof and exclusions are in adjacent summary.json.
+The audit observes backend56,769,782 bytes after receipt of64MiB and frontend
+4,434,075 of16MiB; shared free523,218,944 before later documentary work is
+unreserved. Private venv import resolves to this checkout. No cache/store/other
+owner was modified. No service/browser/container was started in this continuation.
+
+Next gate requires a separate concrete release: existing private normal-manager
+dependencies only, own frontend build and isolated DB, port18129, retained
+headless shell with PLAYWRIGHT_BROWSERS_PATH=/home/agent/.cache/ms-playwright;
+no new dependency or browser download. Forecast<=32MiB NEW retained evidence,
+256MiB incremental disk peak plus134217728 floor (under-lock entry402653184).
+Join the actual keyless scripted Sol/Luna HTTP path to the UI: author/freeze,
+explicit allowance, failed/repair/admit, pending review/edit/save without sampling,
+separate participant execution/evidence/replay;390/1440, both themes, keyboard/
+focus, drafts/navigation/late responses and reconnect without resubmitting.
+An actual non-root production containment/admission/Engine/replay smoke needs its
+own later footprint/release. Browser/build/services/production/providers/paid/
+held-out remain HELD. T17 is INCOMPLETE and UNACCEPTED; a NEW fresh integration
+reviewer still owns acceptance. No descendants, extra checkout or publication.
+
+Checkpoint recorder `combined-normal-checkpoint-01` stopped before staging,
+commit or hooks with exit126: its attribution assertion expected four changed
+documents, but ARCHITECTURE was already included in qualified sourcee19ee690.
+The exact current source24e9c3a1 differs only in HANDOFF, PROGRESS and this plan;
+all application/test bytes match. The failed recorder/source/diagnosis remain.
+Distinct checkpoint02 corrects only that documented path assertion, preserving
+every code/test equality check and normal hooks. Its unchanged134217728 floor,
+4MiB disk peak and2MiB output forecast fit the remaining64MiB backend envelope;
+no functional check, browser/service/build or production release is inferred.
