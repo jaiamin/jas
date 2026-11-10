@@ -1,4 +1,56 @@
-# T17 accepted ROOT46 isolated build boundary (2026-11-10)
+# T17 distinct documentary closure02 (2026-11-10)
+
+One new docs-only checkpoint is released with300-second bounded flock acquisition,
+unchanged134217728 floor and<=8MiB peak/output. Compact annex:
+docs/research/T17_DOCUMENTARY_CLOSURE.md. Exact result/head/source equality/build/
+final evidence annex and normal Gitleaks/clean tracked state are recorded under
+own docs-handback-checkpoint-02; receipts, not this preparation, establish success.
+App/tests/benchmarks stay fixed1a43f175; no ROOT review merge or product change.
+Browser01 stays FAILED and409 unreached; all maintenance/resource failures remain.
+ROOT owns separate fixes/final browser qualification; writing returns after closure.
+No new runtime check, browser/service/setup/provider/production/publication.
+T17 remains UNACCEPTED. Earlier documentary blocker/history is preserved below.
+
+# T17 documentary handback; browser attempt FAIL (historical)
+
+Docs checkpoint01 subsequently timed out45 seconds on shared flock, exit1,
+before acquiring it. No staging/hook/commit ran; no retry. HEAD89deee0c remains,
+with these three closure documents uncommitted. Final annex/checkpoint seal
+is outstanding; no clean-branch or new hook-PASS claim. No own resource is active.
+
+Exact accepted46d48d5e is included; product/test inputs remain equal to ROOT's
+fixed integration source1a43f175. No product change or publication in this phase.
+Distinct private generated pnpm metadata cleanup02 PASSES (599 files), preserving
+failed01, all setup/evidence/env/modules/build/shared-store resources. Shared free
+immediately before removal277,753,856→456,126,464; delta178,372,608 is unreserved.
+
+ONE keyless browser slot admitted at434,122,752/402,653,184 entry under shared
+flock. Source2b26b054 unchanged; only documents differ from qualifiedf1c3999c.
+Actual HTTP freeze201, disabled Sol/runtime authorization, draft/navigation/reload/
+edit invalidation, ordinary Enter no submission, synthetic pending-proposal
+inspection and1440/light/390/dark/mobile keyboard/overflow were observed.
+Overall attempt FAIL: recorder digest serialization assertion stopped before the
+planned keyless409 POST. No retry or product repair; that rejection is unobserved.
+Seeded proposal is UI DTO only, never generated/qualified/admitted/executed.
+Usage/charged0; no study/run, only synthetic chat. Own tab closed, server-15 with
+lifespan complete,18129 reusable, flock released. New output1,563,060 before receipt;
+frontend9,532,417 bytes before receipt; backend66,523,671, within64MiB.
+
+Complete closed selection3673 files/76,367,891 bytes plus129 symlink metadata;
+inventorySHA cc5d05d43512a5ba54e2ea376c3c03e8e63b5ad62a28e96df6921ac150fae032
+under own documentary-closure-01. Initial prior-row classifier FAIL is retained;
+read-only amendment proves3516 prior regular payloads and129 link metadata unchanged.
+189-file/11-map actual restoration proofs are retained with original attribution;
+closure/checkpoint additions use a separate annex. No retired historical comparison.
+
+Existing source-attributed75 backend/65 affected UI/Ruff/ty/lint/types/build and
+fresh literal5/22/22 remain; frozen T01 CURRENT keeps four failures/false flags/
+exit1. T17 INCOMPLETE/UNACCEPTED: production HELD, full browser lifecycle unqualified,
+NEW ROOT integration review required. Personal Standards/Spec records these limits;
+normal-hook docs checkpoint remains blocked as above. Writing returns to ROOT;
+no live/paid/held-out work or inferred retry.
+
+# T17 accepted ROOT46 isolated build boundary (2026-11-10; historical)
 
 Normal merge74a87c03 includes exact accepted46d48d5e, no conflict, hooks PASS.
 Current combined contracts remain DB14/export16/library9, reliance1.0.1/T12
