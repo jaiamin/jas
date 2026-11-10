@@ -20,7 +20,7 @@ application, publication, T08 planning/memory or T09 world work is authorized.
   unknown usage, one writer, pause/restart, privacy and exact replay.
 - [x] Configure/review both policies and inspect actual operations using existing
   UI patterns. Demonstrate both through deterministic public API/browser flows.
-- [ ] Run inherited/new checks, retain red/green evidence and a same-input
+- [x] Run inherited/new checks, retain red/green evidence and a same-input
   before/after comparison; merge latest integration, commit, stop owned services.
 
 Approved seams: public workflow HTTP API primarily; independent World and
@@ -94,4 +94,88 @@ check its atomic commit. The first browser run stopped after 24 passes without
 a terminal result (`browser-inherited.log`); retain it as incomplete, not a
 passed suite. A separate final run is in progress. Review copy formatting
 failed lint once and was repaired; both logs are retained.
-Next: immutable-source paired comparison, final checks and integration merge.
+The completed runs and source attribution follow below; intermediate development
+logs are retained as development history, not substituted for archived-source
+evaluation evidence.
+
+## Final source and comparison
+
+Implementation checkpoint: `3acf3c160fb398c8996e71f6065bf1d4b970a201`.
+`602c597` adds the auxiliary-capacity cancellation regression. Merge
+`86e57f99cdd4a9d02e6ebdfef120fb2510c9d2ca` includes integration checkpoint
+`8f83a36bc0428abda418b93557f689657ce030ae`. Conflicts were limited to
+HANDOFF/progress prose; both ticket handoffs and integration's other statuses
+were preserved. Routes, shared types and architecture/UI/development docs merged
+without code conflicts. Subsequent report-only changes do not alter executable inputs.
+
+| Archived source | HEAD | Full tree SHA-256 | Source archive SHA-256 |
+| --- | --- | --- | --- |
+| `data/t04/before/` | `7d16d8a4f1aa041a840681468cc7b645918b5fc3` | `feb91d03dfef864bfe4952236dd4b5c8b50af6950c6ec9d97813083713bbdb65` | `b8fb8bb067e5ba905adb44953e372f920ecd0bf908119e14a25622e80e61e8f1` |
+| `data/t04/after/` | `3acf3c160fb398c8996e71f6065bf1d4b970a201` | `c65fae17d3a93353cab8ec862ad4a9ee8863bc94f5c5f589fddfd371c6dbd152` | `79f0cf7104b6711ea343411e382bed7fcf4c251218d0db03af7fd2f57f426f25` |
+| `data/t04/after-integration/` | `86e57f99cdd4a9d02e6ebdfef120fb2510c9d2ca` | `58086b77ba007daf6bb69551c4cf68aec571d6bc7603eb3c43051857cdc7436f` | `304c0314b782451d6acdca3b00fe77dc06b43bfc30fb036adc23d7495b0262e1` |
+
+All three evaluated sources were clean and source-stable. The unchanged T01
+DEVELOPMENT v1 case digest is
+`6e4f138cf31d32b8a5e28e348edbccc2e9b1308b62f8b274d39cf0f24ba33a6e`;
+the identical scripted harness digest is
+`b6438d9fa3390d05f4f3c5583aa1e0e6f2095d1db653060257cdc817138a5826`.
+Both after comparisons exit **1**, intentionally retaining four `export-v4`
+failures and their terminal `passed` flags. Every other check passes. The five
+completed runs retain identical observations, decisions, complete checkpoints,
+state hashes, final state, metrics and usage across all **22 turns**; see
+`direct-action-parity-integrated.json` and its retained verification script.
+Each baseline has 22 requests, 2,200/1,100 synthetic tokens and a $0.000770
+synthetic charge. HTTP counts 104 → 105 reflect read-only polling. No competence
+gain is claimed from the identical behavior or changed contract.
+
+The fresh five-case DEVELOPMENT trial at `data/t04/development-integrated/`
+uses that same clean merged source and passes every expected outcome. Case digest:
+`ba1938bfa0bce148a6ea01d785cc3cb1cb6f4a95454510d4c7431fc3f88100e1`;
+trial harness digest:
+`8609cf4a711724ed47a0eec1f645c3c74108a4c96ff72a8fd1e375996639973b`.
+Its 30 requests include the retained forbidden-operation and unknown-usage
+failures: 2,900/1,450 known synthetic tokens, $0.002377 synthetic charged/reserved
+cost, partial usage true. The matched policies independently settle 12 credits
+each; the memory-none two-round variant settles 24 each. `development-attempt1/`
+and `development-final/` retain earlier dirty/clean source archives respectively;
+they are not silently replaced by the integrated result. Actual spend is **$0**.
+
+## Observed final checks and handoff
+
+- Merged source `86e57f9`: frozen dependency sync, Ruff, ty, **980 backend tests**,
+  frontend lint, **106 unit tests** and production frontend build pass. Logs/XML:
+  `data/t04/integration-*`. Pre-merge full backend checks separately passed 964
+  then 967 tests; the final suite includes all 32 policy cases and T02's tests.
+- The full inherited Chromium suite passes **165 tests**, zero skipped,
+  unexpected or flaky cases (`browser-final.json`, `browser-final-exit.json`,
+  `browser-final-results/`). This run used the final pre-merge product/UI; the
+  source was committed during the run and later edits were tests/docs only.
+  It is not claimed as a fresh full 168-test merged-source run.
+- On the clean merged source, **2 actual two-policy browser flows** pass in
+  desktop/light and phone/dark: configure, review, save a new immutable revision,
+  run each policy, inspect real operations/accounting and verify exact replay.
+  `policy-browser-final*` retains reports and screenshots. The **3 T02 browser
+  flows** affected by the shared integration surfaces also pass separately
+  (`integration-extensions-browser*`). Both owned servers shut down normally.
+- Reviewed rendered light/desktop and dark/phone policy records; no document
+  overflow. The Impeccable detector returns an empty findings list for the changed
+  T04 UI (`impeccable-detector-final.json`). Existing primitives/tokens/appearance
+  remain the basis; no styling dependency was added.
+- A fresh production image builds and the existing smoke passes as non-root
+  with explicit empty provider keys, including actual containment qualification,
+  denial, limits and cleanup. Logs: `production-build.log`, `production-smoke.log`,
+  `production-server.log`; exact container/image IDs are retained separately.
+  The owned container and task image tag were removed, with no host ports or
+  user-data mounts. Port 18115 refuses connections; the owned preview was closed.
+- Commit secret-scanning hooks, explicit staged Gitleaks and `git diff --check`
+  pass. No pushes, PR changes, issue changes, paid calls, stash operations,
+  data resets or other-ticket status edits were performed.
+
+Preserve the entire ignored `data/t04/` directory and `.tools/t04-*` setup logs.
+`checks.json` indexes commands/results and log hashes; `artifact-manifest.json`
+indexes raw artifacts. The compact tracked record is this report. All keyless
+T04 acceptance criteria are met and the branch is ready for the parent's fresh
+integration review. Live model competence, paid-provider behavior and held-out
+validation remain **unverified and unauthorized**; T08/T09 capabilities are absent
+by scope. Early incremental red/green logs do not have separate complete dirty
+source archives; the reported before/after/development evaluations do.

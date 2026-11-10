@@ -1642,12 +1642,26 @@ No paid calls or stash changes. Both production containers and owned browser
 backends are stopped. Preserve the complete ignored `data/t02/` directory;
 `checks.json` indexes evidence. No host/security/credential configuration changed.
 
-### T04 participant harness implementation (active)
-Prepared ticket branch t3/19c753ac at integration 7d16d8a. Scope/acceptance,
-decisions, observed red/green cycles and artifact pointers are maintained in
-docs/research/T04_PARTICIPANT_HARNESSES.md. The unchanged clean baseline is in
-data/t04/before/; new deterministic evidence is in data/t04/development-attempt1/.
-Both real policy UI flows passed on JAS_TEST_PORT=18115, with no paid calls.
-Only T04 progress is changed. No pushes/PR/issue changes or stash operations.
-Next: final inherited checks and source-stamped comparison, review, integration
-merge check, coherent commits and service cleanup.
+### T04 participant harness implementation — ready for integration review
+Branch `t3/participant-policies` (prepared as `t3/19c753ac`). Implementation
+checkpoint `3acf3c160fb398c8996e71f6065bf1d4b970a201`; cancellation regression
+`602c597`. Merge `86e57f99cdd4a9d02e6ebdfef120fb2510c9d2ca` includes integration
+`8f83a36bc0428abda418b93557f689657ce030ae`; only handoff/progress prose conflicted.
+Read `docs/research/T04_PARTICIPANT_HARNESSES.md` for acceptance, decisions,
+actual red/green evidence, complete source/case hashes and limitations.
+Both real policies run through existing per-request accounting on all installed
+worlds. Schema/export 5 and reusable setup format v2 explicitly reject older
+contracts; no migration/reset. Default models and world rules are preserved.
+On merged source: 980 backend tests, 106 frontend tests, lint/type/build and
+production smoke pass. The pre-merge inherited browser suite passed 165 tests;
+merged-source two-policy flows passed 2 cases and affected T02 flows passed 3.
+Frozen T01 comparisons retain only four intentional v4-export oracle failures;
+all 22 direct-action decisions/checkpoints/metrics/usage match the baseline.
+All five fresh DEVELOPMENT cases pass, including expected failures/unknown usage.
+Preserve all ignored `data/t04/` and `.tools/t04-*` artifacts before cleanup;
+`checks.json` and `artifact-manifest.json` index the evidence. Before/after and
+development evaluations have full source archives; early incremental TDD logs
+do not have separate full dirty-source archives. No paid/live competence claim.
+Owned browser servers/container/image tag are stopped/removed, preview closed,
+port 18115 closed. No pushes, PR/issue changes or stash operations. Parent owns
+fresh merger review and the single integration draft PR #32.
