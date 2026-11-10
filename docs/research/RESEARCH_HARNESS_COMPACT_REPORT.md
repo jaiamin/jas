@@ -196,6 +196,15 @@ The focused image-link component cases, lint, forced TypeScript and isolated
 build pass, while its browser gate remains open. Remaining tickets and final
 product/benchmark8080 gates are separate.
 
+`current/historical-retirement-03` then removed exactly those five closed-success
+scratch archive directories:15 regular files/16,654,336 allocated bytes, with
+zero payload reads or symlink traversal and unchanged HEAD/index/stash. Actual
+shared free386,330,624→403,001,344 bytes. Their restoration maps are retired;
+raw check logs/results and failed-test archive08 are still retained. The renewed
+Markdown browser entry402,731,008 then passed; its own active evidence is outside
+the retirement, and its final shared free was394,436,608. No cache, dependency,
+other-owner data or protected original was touched.
+
 ROOT explicitly retires the inherited requirement to compare new runs against
 the deleted five-run/22-turn historical raw BEFORE. A frozen comparator that
 requires that deleted input must not be fed a reconstructed or synthetic

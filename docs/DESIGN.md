@@ -659,6 +659,11 @@ and [React state structure](https://react.dev/learn/choosing-the-state-structure
 
 ### Stock components and customizations
 
+Model-authored Markdown images render as explicit **Open image** links, with the
+image description when supplied. Opening one uses a separate tab without opener
+or referrer access. Prose never initiates an image request; executable URLs remain
+filtered. Keep the same selectable, keyboard-accessible link style as citations.
+
 This is a shadcn-based interface, not a byte-for-byte unmodified registry copy.
 `src/components/ui` owns the shared shadcn primitives, including the small
 accessibility and correctness patches listed below. Checkbox outlines use 90% of
