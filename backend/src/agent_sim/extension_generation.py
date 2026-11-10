@@ -77,20 +77,21 @@ class ExtensionGeneration:
         """Close lost server tasks after Engine has retained unknown reservations."""
         journal = self.extensions.generations
         for attempt in journal.list():
-            if attempt["stop_reason"] != "in_progress":
+            if attempt["stop_reason"] not in {"in_progress", "interrupted"}:
                 continue
-            recorded = {item["id"] for item in attempt["requests"]}
-            for receipt in self.request_receipts(attempt["analysis_id"], attempt["id"]):
-                if receipt["id"] not in recorded:
-                    journal.append(attempt["id"], "request", receipt)
-            journal.append(
-                attempt["id"],
-                "stopped",
-                {
-                    "stop_reason": "interrupted",
-                    "error": "ServerStopped",
-                },
-            )
+            if attempt["stop_reason"] == "in_progress":
+                recorded = {item["id"] for item in attempt["requests"]}
+                for receipt in self.request_receipts(attempt["analysis_id"], attempt["id"]):
+                    if receipt["id"] not in recorded:
+                        journal.append(attempt["id"], "request", receipt)
+                journal.append(
+                    attempt["id"],
+                    "stopped",
+                    {
+                        "stop_reason": "interrupted",
+                        "error": "ServerStopped",
+                    },
+                )
             closed = journal.get(attempt["id"])
             with self.db.session.begin() as session:
                 row = session.get_one(Analysis, attempt["analysis_id"])

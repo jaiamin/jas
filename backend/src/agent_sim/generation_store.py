@@ -20,8 +20,10 @@ class GenerationStore:
     def start(self, metadata: dict) -> str:
         with self.lock:
             key = uid()
-            (self.root / key).mkdir(parents=True, exist_ok=False)
-            self.append(key, "started", metadata)
+            directory = self.root / f".pending-{key}"
+            directory.mkdir(parents=True, exist_ok=False)
+            self._write_event(directory, [], "started", metadata)
+            directory.rename(self.root / key)
             return key
 
     def _events(self, key: str) -> list[dict]:
@@ -48,23 +50,27 @@ class GenerationStore:
             events = self._events(key)
             if any(event["kind"] == "stopped" for event in events):
                 raise ValueError("A closed generation attempt cannot receive more events")
-            payload = {
-                "format": EVENT_FORMAT,
-                "sequence": len(events),
-                "created": now(),
-                "kind": kind,
-                "data": data,
-                "previous": events[-1]["sha256"] if events else None,
-            }
-            payload["sha256"] = digest(payload)
-            path = self.root / key / f"{len(events):04}.json"
-            temporary = path.with_suffix(".tmp")
-            try:
-                with temporary.open("x") as stream:
-                    json.dump(payload, stream)
-                temporary.replace(path)
-            finally:
-                temporary.unlink(missing_ok=True)
+            self._write_event(self.root / key, events, kind, data)
+
+    @staticmethod
+    def _write_event(directory: Path, events: list[dict], kind: str, data: dict) -> None:
+        payload = {
+            "format": EVENT_FORMAT,
+            "sequence": len(events),
+            "created": now(),
+            "kind": kind,
+            "data": data,
+            "previous": events[-1]["sha256"] if events else None,
+        }
+        payload["sha256"] = digest(payload)
+        path = directory / f"{len(events):04}.json"
+        temporary = directory / f".{path.stem}-{uid()}.tmp"
+        try:
+            with temporary.open("x") as stream:
+                json.dump(payload, stream)
+            temporary.replace(path)
+        finally:
+            temporary.unlink(missing_ok=True)
 
     def get(self, key: str) -> dict:
         with self.lock:
@@ -98,7 +104,11 @@ class GenerationStore:
     def list(self) -> list[dict]:
         with self.lock:
             return sorted(
-                (self.get(p.name) for p in self.root.glob("*") if p.is_dir()),
+                (
+                    self.get(p.name)
+                    for p in self.root.glob("*")
+                    if p.is_dir() and not re.fullmatch(r"\.pending-[a-f0-9]{16}", p.name)
+                ),
                 key=lambda r: r["created"],
                 reverse=True,
             )
