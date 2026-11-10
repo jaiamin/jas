@@ -1,4 +1,87 @@
-# T17 private metadata cleanup stopped before removal (2026-11-10)
+# T17 distinct documentary closure02 (2026-11-10)
+
+Read docs/research/T17_DOCUMENTARY_CLOSURE.md for compact source/build/evidence
+attribution and all adverse outcomes. ROOT released one distinct normal docs-only
+checkpoint with300-second finite flock acquisition,134217728 floor and<=8MiB
+peak/output; this supersedes only the documentary blocker below. Exact commit,
+normal Gitleaks outcome, clean tracked state and final evidence annex are recorded
+in .tools/t17/frontend-evidence/attempts/docs-handback-checkpoint-02/. Receipts
+are authoritative for whether the checkpoint completed; no success is inferred
+before them. Application/test/benchmark inputs stay fixed1a43f175, accepted46d48d5e
+already included. No moving review merge, browser retry or product repair.
+Browser01 remains FAILED with409 unreached; prior raw evidence/maps remain.
+ROOT owns independent repairs/final combined qualification and receives writing
+after this docs-only checkpoint. T17 remains UNACCEPTED; no production/provider/
+live/paid/held-out/publication work or new services. Historical boundaries follow.
+
+# T17 documentary handback after keyless browser attempt (historical)
+
+Normal docs checkpoint attempt01 then timed out waiting45 seconds for shared
+flock (exit1). It never acquired the lock: no inner preflight, hook, staging or
+commit ran. HEAD remains89deee0cbf5d463cbbcf7c866271862cbffd7ab3; these three
+documents are uncommitted. No automatic retry. The closed-selection manifest
+below is retained, but its final annex/checkpoint seal remains outstanding;
+do not call the branch clean or claim normal hooks passed in this phase.
+No own job, service, browser or lock remains. ROOT retains sole integration writing.
+
+ROOT owns independent integration/review fixes at exact application checkpoint
+1a43f175073b8364bad5e2ac9b586323aba873e8. This continuation changes documents
+only; application/test inputs remain equal. Accepted46d48d5e is included through
+normal merge74a87c03. No newer/provisional source was merged or published here.
+Current DB14/export16/library9/definition2/research2/generationv2, reliance1.0.1
+and accepted T12 interactions remain. T17 is INCOMPLETE/UNACCEPTED.
+
+Distinct private-cache cleanup02 PASSES after freezing all599 files/36 directories
+of exact .tools/t17/pnpm-cache/pnpm. No payload reads/hashes, symlink traversal,
+tracked/protected/hardlinked files or active descriptors. Shared free immediately
+before removal277,753,856→456,126,464 (+178,372,608 bytes, shared/unreserved,
+no exclusive-overlay claim). Failed01 and all setup receipts remain unchanged;
+store/env/modules/build/source/evidence were preserved. No pnpm/setup was rerun.
+
+ONE browser job admitted at434,122,752 under the unchanged402,653,184 entry,
+shared flock and256MiB incremental forecast. Frozen scenario SHA94ab1374427673366
+cee29c639fc9cdb2dbcf41e719fe4e6b226826c8e781adb; browser source
+2b26b054da819f9bdb7ccfdeb46bfdbf5e59ddeede9e7c93921b5e7b4633e591 is unchanged
+before/after and differs from qualified f1c3999c only in documents. Real keyless
+HTTP/UI freezing returned201/immutable ID/hash. Disabled Sol/runtime authority,
+ordinary Enter/no mutation, draft/frozen identity navigation/reload, edit invalidation,
+synthetic pending-proposal rules/ACL/privacy/harness/limits,1440/light and390/dark,
+mobile focus/Tab/ShiftTab/Escape/overflow were observed. The synthetic proposal
+is a seeded display DTO with invalid placeholder WAT, never generated/admitted.
+
+Overall browser attempt is FAIL: the newly authored HTTP recorder asserted a
+compact-separator digest, while production digest uses default JSON separators.
+It stopped before its one planned keyless409 POST; that witness is UNOBSERVED.
+No retry, product repair, successful generation authorization, actual browser
+admission/execution/replay or pending-task reconnect claim. The traceback was
+transcribed exactly from the tool result; the original invocation did not redirect
+it. Preserve that provenance limitation. Final public usage0/charged0, no study/run,
+only the labeled synthetic chat. Tab close succeeded; post-close status has no tab.
+Server exit-15/lifespan complete/18129 reusable; flock released. Free after366,768,128;
+new job output1,563,060 bytes before final receipt, frontend9,532,417 before it.
+
+Closed own evidence inventory3673 regular files/76,367,891 bytes plus129 link
+metadata entries: .tools/t17/frontend-evidence/attempts/documentary-closure-01/
+closed-owned-evidence.jsonl SHA
+cc5d05d43512a5ba54e2ea376c3c03e8e63b5ad62a28e96df6921ac150fae032.
+Its initial prior-index comparison FAIL (symlink row treated as regular) is retained;
+read-only amendment uses the prior declared row kinds, without regenerating the
+manifest or following links. All3516 prior regular payloads/modes and129 link
+metadata entries match. All11 own maps and prior189-file actual restoration proof
+remain byte-identical; no ROOT-retired raw or fresh restoration claim. Open closure
+and later checkpoint receipts need the explicitly separate final annex.
+
+Personal Standards/Spec: source/custody/oracle and current-contract discipline
+remain; observed checks are source-attributed75 backend/65 affected frontend,
+Ruff/ty/lint/types/build, with failed one-shot browser separately reported. Frozen
+T01 CURRENT keeps four export-v4 failures/false flags/exit1; independent literal
+5/22/22 passes. No historical parity/live/held-out claim. Fresh production remains
+HELD and NEW independent integration acceptance is required. No descendants,
+other-owner/cache edits, reset, publication or paid calls. Return own writing to
+ROOT; the normal-hook docs checkpoint is blocked as recorded above. Do not repair
+ROOT's review findings or infer another check/capture slot from this handback.
+
+# T17 private metadata cleanup stopped before removal (2026-11-10; historical)
 
 The ONE released cleanup01 retains exit125; no metadata/package file was removed.
 Its recorder allowed v12/metadata but rejected ten v12/metadata-full filenames,

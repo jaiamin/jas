@@ -1,7 +1,7 @@
 # T17 / #28: bounded, independently specified finite extension synthesis
 
-Status: **backend and generation UI UNIT slices qualified at their recorded sources;
-accepted T12 merge needs affected qualification; browser/production incomplete**.
+Status: **backend, affected UI/static/types/build qualified at their recorded
+sources; one keyless browser attempt failed in its recorder; production held**.
 Implementation remains UNACCEPTED until a new fresh integration reviewer accepts it.
 This ticket neither opens nor examines the final held-out extension task.
 
@@ -2313,3 +2313,186 @@ fresh non-root production remain unrun; T17 INCOMPLETE/UNACCEPTED. Personal
 Standards/Spec: no production source changes in this maintenance phase; the
 existing bounded checks/build are retained, and missing browser/production/fresh
 integration gates remain explicit. No live competence/held-out claim or publication.
+
+## Documentary handback after cleanup02 and ONE browser attempt (2026-11-10)
+
+This section supersedes the previous maintenance status while preserving all
+attempts. ROOT has begun independent source integration at fixed
+`1a43f175073b8364bad5e2ac9b586323aba873e8` and owns review fixes. The later
+`89deee0cbf5d463cbbcf7c866271862cbffd7ab3` checkpoint and this handback change
+documents only. No further application repair or provisional merge was delegated.
+Normal accepted ROOT merge `74a87c03a91ed83ee4f6d15b77db2d27ebc29e43` retains
+exact `46d48d5e615eb22920219df26d42249ca2e5c0e0`. Original base is accepted
+`b0446d9ea54b2e49fe93fc6d7a2bcdea6341af7b` in this same prepared checkout.
+
+### Released maintenance outcome
+
+Distinct `private-pnpm-cleanup-02` freezes the complete599-file/36-directory,
+176,781,363-logical-byte inventory of exact `.tools/t17/pnpm-cache/pnpm`,
+including the ten `v12/metadata-full` paths omitted by failed01. It verifies
+owned regular single-link metadata, protected/tracked/symlink exclusions and
+no open descriptors (`lsof +D` exit1, empty output). No package/cache payload
+is read or hashed. Removal succeeds; immediately before deletion shared free
+277,753,856 becomes456,126,464 bytes, observed net+178,372,608. This is native
+shared/unreserved measurement, without an exclusive allocation or isolated
+overlay claim. F1 receipts, failed01, env/modules/build/source/evidence/shared
+store/T14 cache remain. No pnpm, install, cache consumer or browser retry follows.
+
+### Frozen browser scope and actual result
+
+The sole browser attempt `keyless-browser-01` entered at434,122,752 bytes under
+the unchanged402,653,184 threshold (ordinary134,217,728 floor plus256MiB peak),
+with exclusive shared flock throughout. The frozen scenario SHA256 is
+`94ab1374427673366cee29c639fc9cdb2dbcf41e719fe4e6b226826c8e781adb`.
+It serves the actual app and prior qualified build/private env on18129 with a
+fresh own SQLite and bytecode disabled. Both providers are honestly unavailable;
+runtime is blocked and is never implicitly qualified. No provider/model/network
+substitute is installed. Source before/after is exactly
+`2b26b054da819f9bdb7ccfdeb46bfdbf5e59ddeede9e7c93921b5e7b4633e591`;
+application/test/build bytes match qualified `f1c3999c` with only documentary
+differences. Private `sys.prefix` and `agent_sim.__file__` proofs are retained.
+
+The review proposal is explicitly **synthetic UI DTO data**, seeded directly
+before service startup as `synthetic-plan17`/`synthetic-chat17`. Its placeholder
+WAT always denies and its repeated-one source hashes are deliberately not an
+admitted artifact. Synthetic seed SHA256
+`58d392c077c44d35e918f0b9558184b986c116b27f9fd8c602be818ac37cfe8c`
+and all fixture bytes precede outputs. The unchanged external co-signature JSON
+and UI contract retain SHA256 `eef4d9c9...` and `e7110f38...`. No generation,
+worker containment/admission or competence follows from displaying that DTO.
+
+Observed through the real shell/HTTP/browser:
+
+- Authoring the literal question and independent JSON makes no mutation. ONE
+  freeze returns201 and actual immutable ID `4fa5b46493424d53`/SHA256
+  `944315ebe4f5eeb37c75b26f3d57a4ec21c301ffe32b437c0c4f9192a4bfbd95`.
+  The full external-table prerequisite,256-input bound, unsupported rich/dynamic
+  semantics, separate execution, copied-probe/current-containment distinction,
+  explicit default allowance1/6/1024/32000/$0.25 and honest Sol/runtime blockers
+  are visible. Authorization remains disabled; nothing samples participants.
+- Ordinary Enter sends no request and retains the question. Settings navigation,
+  return and same-URL reload restore question/JSON/limits/frozen identity with
+  GETs, without resubmission. Whitespace editing invalidates the frozen selection
+  without changing contract semantics; the edited JSON survives another reload.
+- The seeded chat reaches Review protocol and the actual editor via public GETs.
+  Disclosure shows exact independent requirements, sign/counterparty and
+  release/initiator ACLs, two-unit conservation, terminal/horizon/no implicit
+  refund, static private projection, bindings/private docket, direct-action1.0.0,
+  one request/zero tool operations, four rounds/$1 ceiling and save-versus-run.
+  No study is saved or executed.
+- CSS1440×900/light and390×844/dark are observed, with three retained tool PNGs
+  (426,180 bytes total; tool raster sizes are recorded separately). Mobile
+  document width390, finite tables343, dialog358 and authorization326 fit their
+  containers; the dialog scroll reaches the disabled action. Tab/ShiftTab show
+  visible focus; Escape plus explicit close-transition wait restores focus to
+  New mechanics. No page error boundary is observed. The earlier immediate
+  desktop close read saw an animation still present and is retained as such;
+  it does not establish failed closure or focus restoration on its own.
+
+The **overall attempt FAILS** before its separately declared keyless409 HTTP
+request. New `browser_api_17.py` asserted that the frozen hash used compact JSON
+separators. Actual `db.digest` uses `json.dumps(..., sort_keys=True,
+allow_nan=False)` with default separators. Semantic frozen-contract equality had
+passed, then this recorder assertion exited1 before sending POST `/api/chats`.
+The original script/request/failure and exact tool traceback transcription remain;
+the invocation itself did not redirect stderr, a retained capture limitation.
+No corrected invocation, automatic retry, product repair or overall browser PASS
+is claimed. The planned409 rejection, successful UI authorization, actual browser
+generation/admission/participant execution/replay and pending-task SSE reconnect
+are **unobserved** in this slot; earlier backend/unit witnesses remain distinct.
+
+Teardown public reads show zero requests/charged dollars, no studies/runs and
+only the labeled synthetic chat. `t3_preview_close` succeeds and subsequent
+status has no tab. Server SIGTERM exit-15 has complete lifespan shutdown, reaped
+process and18129 reusable; flock released. End shared free366,768,128, no exclusive
+recovery claim. New browser output1,563,060 bytes before its receipt; frontend
+9,532,417 before that receipt. Backend remains66,523,671/67,108,864 bytes.
+
+### Closed evidence, personal review and next owner
+
+`frontend-evidence/attempts/documentary-closure-01/closed-owned-evidence.jsonl`
+selects all closed owned regular output, source helpers and retained failures:
+3673 files/76,367,891 payload bytes, plus129 symlinks as metadata only. SHA256
+`cc5d05d43512a5ba54e2ea376c3c03e8e63b5ad62a28e96df6921ac150fae032`.
+Metadata/protected/link exclusions precede payload reads; `O_NOATIME` avoids
+metadata changes to source/custody hardlinks. No archive or source is compacted,
+removed or regenerated. The initial comparison stops with a retained KeyError
+because the prior mixed inventory includes declared symlink rows. The separate
+read-only amendment compares regular rows with regular rows and link metadata
+with link metadata, keeping the initial FAIL. It proves all3516 prior regular
+payload/size/mode and129 link metadata entries unchanged without following targets.
+All11 own compaction maps and the prior189-file actual bytes/SHA/size/mode/
+integer-ns restoration proof remain byte-identical; proof SHA256
+`bb16ffad7b3d3682ff816a00ecdf953cac71f7238f3f4bb59f2a3415d1a67cb9`.
+This reuses the recorded actual restorations, not a fresh restore or a claim
+that ROOT-retired historical raw remains. The explicitly open closure directory,
+later helper/checkpoint receipts and final manifest annex are later additions,
+not silently included in the closed-selection digest.
+
+Personal **Standards** source review preserves the repo's one-current-contract,
+stock control/token/TanStack/draft identity, private projection and accounting
+rules. No new application change occurs here. Guarded source attribution confirms
+the existing75 unique backend cases/Ruff, globalty,65 affected UI cases/lint/forced
+types/build still identify their recorded exact source inputs. Those are bounded
+segments, not an uninterrupted global suite. The two maintenance-recorder failures
+remain adverse outcomes and do not authorize product repairs.
+
+Personal **Spec** review retains actual bounded scripted-Sol generation, explicit
+artifact/independent oracle/admission and two distinct finite DEVELOPMENT backend
+discriminators. It does not turn a finite transition-table prerequisite into
+independent natural-language understanding or general rich-World synthesis.
+Frozen original T01 CURRENT keeps four export-v4 failures/four false flags/exit1;
+independent literal5/22/22 current-contract qualification passes, without retired
+historical parity/reference reconstruction. Browser observations above are
+strictly narrower and their overall attempt fails. Fresh non-root production
+containment/admission/Engine/replay remains HELD, full browser lifecycle unqualified,
+and a NEW independent integration reviewer must decide acceptance.
+
+This is an **INCOMPLETE/UNACCEPTED documentary handback** with hooks unrun;
+ROOT owns the next integration/review work at fixed1a43f175. No descendants,
+extra checkout, other-owner mutation, compatibility fallback/migration/reset,
+paid/provider/live/held-out task, publication or PR/issue/watch operation here.
+Own services/browser/lock are closed. Further verification needs its separately
+coordinated stage; do not infer a retry or production grant from this handback.
+
+### Normal checkpoint blocked; exact handback state
+
+`docs-handback-checkpoint-01` waits the unchanged45 seconds for the shared
+exclusive flock and exits1 without acquisition. Its outer lock/source receipts
+are retained. No inner preflight, safe-source capture, Git staging, normal hook
+or commit begins. Do not characterize this as hook failure or hook PASS. No
+automatic retry or hook bypass follows; it is a shared-resource blocker.
+Current HEAD remains `89deee0cbf5d463cbbcf7c866271862cbffd7ab3` on
+`t3/sol-generation-admission`; only HANDOFF, this plan and RESEARCH_HARNESS_PROGRESS
+are uncommitted. Product source remains fixed1a43f175/equal to the qualified
+application inputs already identified above. ROOT's separate checkout is untouched.
+
+The3673-file closed-selection inventory and read-only comparison amendment are
+retained. Its open closure directory, later amendment/checkpoint helper and
+timeout receipts are explicit later additions; **the final annex/seal remains
+outstanding**, and no complete final self-inclusive manifest or clean branch is
+claimed. No more check/capture/hook job is started after this refusal. The owned
+browser/server/port are already closed/reusable, no own flock/job remains, and
+writing returns to ROOT. Further normal checkpoint/final annex, browser lifecycle,
+production and acceptance require their coordinated continuation; this handback
+does not authorize another attempt or declare T17 complete.
+
+### Distinct documentary closure02 release
+
+ROOT subsequently released one docs-only checkpoint with a finite300-second
+flock bound, unchanged134217728 floor and<=8MiB peak/output. This explicitly
+supersedes the prior documentary hold; Browser01 remains FAILED and is never
+retried. The compact [closure annex](T17_DOCUMENTARY_CLOSURE.md) links exact
+source/build attribution, observed UI/unreached409 and complete base-plus-addition
+evidence indexing. Own `docs-handback-checkpoint-02/result.json`, lock receipt
+and final-annex/sidecar record actual outcome/head/clean state; their existence
+and contents establish completion, not this pre-checkpoint preparation.
+
+Only these three closure documents and that annex may change. App/test/benchmark
+code remains byte-identical to fixed1a43f175; ROOT's separately reported three
+actual-process journal-window repairs and15 generation/current-contract/Ruff/ty
+qualification at7125822b (checkpointb9c992db) are neither merged nor claimed here.
+No old helper is executed, evidence/map/build/env/cache is removed, or new
+runtime/browser/provider/production check run. Normal Git/Gitleaks and tiny
+closure metadata verification are the only released operations. Writing returns
+to ROOT after this distinct normal checkpoint; implementation remains UNACCEPTED.
