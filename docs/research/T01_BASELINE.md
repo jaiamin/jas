@@ -210,9 +210,25 @@ comparison for T01, not a feature or intelligence improvement claim. The earlier
 digest predates failure-retention hardening; do not compare it as if it shared
 the qualified harness identity.
 
+Observed after source: clean `95873472db96bdb225c9466e182e0279180fca7f`, full tree
+`645b4181f9907607ee52e4f00177c67544baf8a26bd345a4d3a12696c00ef30b`, archive
+`20c20601e9b4b2819ad0a0f92ff4d9e0f5ddb63e00d23c6d59bc22ffe465fe49`.
+`qualified-after/` again has six passing attempts and 22 scripted requests;
+97 HTTP operations differ from 98 only by read-only polling. Production backend,
+case, harness, runtime, per-case usage and stop outcomes match. The comparison
+command exited **0**: **no regressions, improvements or before/after failures**.
+Both source-stability checks pass; only report/handoff/progress documents differ
+between the two committed sources. The final evidence-only documentation commit
+does not change executable inputs. `checks.json` records broader check commands,
+exits, source attribution and log digests. Qualified controlled failure exports
+are preserved in `setup/provider-failure-qualified/` and `setup/disconnect-qualified/`.
+
 Preserve the entire ignored `data/research-baseline/` directory, especially the
 qualified before/after archives/exports/ledgers, `comparison.json`, `setup/`
 logs/XML and raw failed attempts. The stash itself remains separately in Git.
 Port 18112 refused connections after Playwright completion; no owned service or
 browser session remains. No issue was edited/closed, branch pushed or PR opened.
 The parent still owns integration acceptance and the one integration draft PR.
+T01's keyless acceptance criteria are met; live competence, held-out validation
+and later-ticket capabilities remain explicitly unverified. Latest integration
+merge check: `b02536c` is already an ancestor; no remote integration ref exists.
