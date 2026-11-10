@@ -97,10 +97,26 @@ PR/issue edits/watches/closure, cleanup or other-agent changes. Review spend $0;
 global Sol remains **$0.611632 / 55 requests**, **$9.388368 remaining**, no paid
 Luna. T09/T15 remain running on 18120/18121, **unpolled and untouched**.
 
-**T19 is Ready. T10 still waits for accepted T09. Root resumes sole shared
-checkout ownership for publication and the new frontier at
+**T19 is Ready, now assigned by root to a fresh isolated implementer. T10 still
+waits for accepted T09. Root resumes sole shared checkout ownership for
+publication and the new frontier at
 https://github.com/jaiamin/ass/pull/32.** Hosted checks/reviews were not queried.
 The T08 and child handoffs below are preserved historical checkpoints.
+
+T19 report: `docs/research/T19_CLAIM_SUPPORT.md`; raw evidence `data/t19/`,
+dedicated browser port 18122. It starts from accepted T06/T07/T08 and must merge
+the latest documented accepted integration before handoff. T09/T15 remain
+running on 18120/18121 and are not polled. No paid allocation.
+
+Root storage maintenance after the review is recorded under
+`.tools/research-harness/maintenance/package-caches-T07-20261110T060312090551Z/`.
+Only disposable npm tarballs, pnpm metadata/unreferenced packages and uv-pruned
+cache entries were removed. Installed dependency trees, current browsers,
+source checkouts, databases and retained evidence were preserved. Backend
+imports, Ruff/ty/TypeScript/Playwright executables and a 1 MiB write+fsync pass.
+The postcheck measured 840,929,280 bytes free; shared space changes continuously.
+A disposable reflink probe failed with unsupported operation; no evidence used
+reflinks or was replaced. Keep closed new evidence lossless and checks bounded.
 
 # T08 fresh integration checkpoint — accepted (2026-11-10)
 
@@ -573,9 +589,8 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01/T02/T03/T04/T05/T06/T08 accepted; T07 assigned to fresh
-integration review; T09 running; T15 assigned to isolated implementation;
-draft PR #32.**
+**Current checkpoint: T01–T08 accepted; T09/T15 running; T19 assigned to fresh
+isolated implementation; draft PR #32.**
 
 Fresh Sol DEVELOPMENT is complete for this checkpoint: read
 `docs/research/SOL_DEVELOPMENT.md`. The frozen original eight-case pair,
@@ -673,15 +688,14 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: T08/#19 is accepted at merge `9750caf` plus receipt repair
-`de5556b`; T15 is assigned to a fresh isolated implementer. T07/#18 is complete
-on `e7800d3`, assigned to a separate fresh integration review after publication
-(exact source/evidence pointers above). T19 waits for accepted T07 and
-T14 for T13. T09/#20 remains assigned to its isolated implementer, based on the
+Current frontier: T07/#18 is accepted at merge `a92105f` plus exposure repair
+`d5568c1`; T08's merge `9750caf` and cutoff repair `de5556b` remain intact.
+T19 is assigned to a fresh isolated implementer; T09/T15 remain running and
+unpolled. T10 waits for accepted T09 and T14 for T13. T09/#20 remains assigned
+to its isolated implementer, based on the
 accepted T03/T06 integration, with browser port 18120 and report
 `docs/research/T09_ARTIFACT_WORLD.md`, raw evidence `data/t09/`. It must merge the
-latest accepted integration before handoff. No paid calls are allocated. This
-T08 merger did not review T07 or poll/change T09.
+latest documented accepted integration before handoff. No paid calls are allocated.
 Draft PR #32 is the single integration PR and
 was linked immediately. Refresh/link it on each push. Do not merge to main or
 close issues as if unverified work were complete. The default-branch PR merge

@@ -190,7 +190,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Waiting | — |
 | T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | Waiting | — |
 | T18 | [#29](https://github.com/jaiamin/ass/issues/29) Inspect a declared fallible adjudication and replay its consequences | T09 | Waiting | — |
-| T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Ready | — |
+| T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Assigned to fresh isolated implementer | — |
 | T20 | [#31](https://github.com/jaiamin/ass/issues/31) Demonstrate the small-population generalization milestone | T11, T12, T14, T15, T17, T18, T19 | Waiting | — |
 
 ## Preserved drafts and spending
@@ -261,10 +261,11 @@ those trials run, the live milestone remains unverified.
 
 1. T01/T02/T03/T04/T05/T06/T07/T08 are accepted with preserved evidence. Root
    resumes sole shared-checkout ownership for publication and the new frontier.
-   **T19 is Ready**; T10 still waits on accepted T09, and T14 on accepted T13.
+   T19 is assigned to a fresh isolated implementer on accepted T06/T07/T08,
+   browser port 18122; T10 still waits on accepted T09, and T14 on accepted T13.
 2. T09/#20 and T15/#26 continue in isolated checkouts on 18120/18121, running and
-   unpolled. This T07 review did not inspect or change either task. No new
-   implementation was launched from the shared review checkout.
+   unpolled. T07 review did not inspect or change either task; root owns the
+   subsequent T19 launch after publication.
 3. Root owns publication to https://github.com/jaiamin/ass/pull/32. The T07 merger
    made coherent local acceptance commits only; no hosted state, tracker edits,
    watches or cleanup. Retain all source worktrees, immutable manifests, failed
