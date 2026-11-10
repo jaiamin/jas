@@ -163,6 +163,39 @@ separately in `current/closed-audit-output-03`.
 
 ## Qualification after historical evidence retirement
 
+### Final summary of closed ROOT correctness scratch (370f835b)
+
+The four user-reported defects and active-export consistency race reproduced
+before their fixes, now committed at370f835b. The tracked
+`FINAL_CODE_QUALITY_REVIEW.md` records each literal oracle, failed attempt,
+repair and source attribution. Qualification included58 reliance cases,55
+participant/assistant cases,39 persistence/Engine controls,45 claim/workflow/export
+cases and5 latest shared-input cases; earlier13 artifact and21 exposure cases
+retain their distinct source attribution. Whole Ruff/globalty passed and normal
+Gitleaks found no leaks. Actual provider spending was zero. Reliance rules are
+1.0.1; DB12/export13/library8 is unchanged. Two generic workflow fixture failures
+and the first cadence repair's preservation failures remain failures.
+
+This is the final compact report for the closed successful scratch in
+`current/closed-audit-sqlite-01`, `closed-audit-sqlite-02`,
+`closed-audit-output-04`, `closed-audit-output-06` and `closed-audit-output-07`.
+Their member hashes/modes/sizes were independently verified before prior
+lossless compaction. Under the user's historical-evidence cleanup instruction,
+these five ROOT-owned archive/map/receipt directories may now be retired using
+metadata-only, symlink-safe deletion. Their former restoration links become
+historical; no retained exact database restoration claim follows. Raw check
+logs/results, failed-test archive08, the new Markdown/UI records, child evidence,
+dependencies/caches, source and the protected originals stay outside this scope.
+
+Separate archive attempts04/06/07/08 passed. Attempt05 stopped125 on an absent
+`runtime` directory before any payload reads/archive/removal; metadata showed
+the older snapshot tests used `pytest`, and distinct06 used those exact paths.
+The first Markdown browser preflight stopped125 at398,831,616 bytes, below its
+unchanged402,653,184-byte entry; no service or browser-inspection command started.
+The focused image-link component cases, lint, forced TypeScript and isolated
+build pass, while its browser gate remains open. Remaining tickets and final
+product/benchmark8080 gates are separate.
+
 ROOT explicitly retires the inherited requirement to compare new runs against
 the deleted five-run/22-turn historical raw BEFORE. A frozen comparator that
 requires that deleted input must not be fed a reconstructed or synthetic
