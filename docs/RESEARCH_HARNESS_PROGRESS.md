@@ -57,7 +57,7 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | Ticket | Issue and behavior | Blocked by | Status | Integrated commit |
 | --- | --- | --- | --- | --- |
 | T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Integrated | `bf3b76e` |
-| T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Queued | — |
+| T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Review ready | — |
 | T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Ready | — |
 | T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Queued | — |
 | T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Queued | — |
@@ -131,3 +131,15 @@ those trials run, the live milestone remains unverified.
    PR #32; qualification failure gates generated execution, not trusted worlds.
 3. Preserve source-stamped inherited and new-behavior evidence for each slice;
    keep live and held-out gates unverified until their required trials run.
+
+## T02 implementation evidence (awaiting integration)
+
+The assigned ticket branch `t3/candidate-containment-review` implements immutable
+candidate reviews and the environment review UI. Import-free Wasm containment
+passed all 26 independent development checks in both development and the actual
+non-root production image, including the actual four-second worker deadline.
+Experiment execution remains disabled pending T16 world admission. See the
+[T02 evidence report](research/T02_CONTAINMENT.md) for source identities, retained
+failures/repairs, paired keyless baseline, observed checks and ignored artifacts.
+Implementation source is `74daeeb`; the browser response-wait repair is `b28f5b3`.
+No paid calls, tracker changes, pushes or new PRs. Other ticket statuses are unchanged.

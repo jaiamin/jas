@@ -1582,3 +1582,32 @@ Additional fixes: pointer-gated Tailwind utilities did not suppress native brows
 Observed final verification: frontend lint, TypeScript/production build, all 106 unit tests and the full 165-test browser suite passed (5.8 minutes). Coverage includes every section/environment, mobile/desktop and both themes, exact tab/menu geometry, stable mobile skeleton layout, added-agent focus, resource renaming, local drafts, JSON recovery, mutation locks, creation/immutable revision/duplicate/custom setup workflows, keyboard/pointer focus, record selection, fixed headers and Agent streaming. Earlier failures were the cached-null draft bug (fixed) and outdated revision-save test navigation (updated for Review); the final full run is clean. A separate repeated streaming run passed all six cases before its measurement was made atomic. No paid model calls or user-data mutations. Reviewed final captures and live 8080 pointer behavior; owned preview closed and disposable browser backend exited. Port 8080 remains healthy with rebuilt assets. Generated primitives and dependencies unchanged by this task; layout uses stock components and semantic tokens, with the pointer policy in the shared base stylesheet. Next: commit/push, immediately link PR #10, refresh its description and monitor the new hosted CI run. Previous head fe347f7 had passing backend/container/workflow jobs and the frontend measurement failure described above.
 ### Agent response width correction (complete)
 Hosted CI for editor commit 52736ec passed all five checks; monitoring was stopped before the next request. User reported unused right-side space in Agent replies. Reproduced with a live mocked conversation: a 716px transcript column contained only 617.5px of prose, leaving 97.5px at the right. The existing streaming browser flow also failed the new width assertion before the fix (362px unused for its shorter content). Remove the nested prose cap and compose the ghost Bubble/BubbleContent at full width in AgentMarkdown; leave generated primitives, the outer chat column, user bubbles and presets unchanged. The live rebuilt reply now has equal 1px border insets and fills 714px of the 716px column. Assert full-width geometry during streaming and after completion in the existing desktop/light and mobile/dark flow. Frontend lint, TypeScript/production build, all 106 unit tests and all 24 Agent/streaming browser tests passed. Reviewed live 8080 rendering; health is HTTP 200, owned preview closed and disposable test backend exited. No paid calls, dependencies, backend changes or user-data mutations. Commit/push to existing PR #10 and link immediately; hosted CI for this follow-up has not yet been observed.
+
+### T02 candidate review and containment — ready for integration review
+
+Assigned worktree: `/home/agent/.t3/worktrees/workspace/t3-c37e5b27`.
+Branch: `t3/candidate-containment-review` (automatic rename of prepared branch).
+Read `docs/research/T02_CONTAINMENT.md` and `docs/EXTENSIONS.md` first. Product
+source `74daeeb43b24ba7236edfb2211e96e38b17e4c0b`; `b28f5b3` repairs only the
+browser test's response wait. Subsequent commits record evidence/progress only.
+Initial/latest integration tip `7d16d8a4f1aa041a840681468cc7b645918b5fc3` is included;
+repeat merge/ancestry check before handoff. No pushes or issue/PR changes.
+
+Deliverable: versioned explicit Wasm candidates, immutable review/activity and
+source hash, real locally qualified import-free worker, environment Candidates
+UI with retained drafts/history and visibly disabled unqualified validation.
+Both development and actual non-root production passed all 26 containment cases.
+Failed namespace alternative, initial short-deadline qualification, exact red
+source/timing, repaired test-oracle/browser timing and startup-readiness failures
+are retained. A passed candidate still needs T16 world admission and is never
+runnable. No native/Python sandbox or live intelligence claim.
+
+Verification: 946 full backend tests passed at `5146f62`; 12 affected backend
+checks passed after actual-deadline repair. Ruff/ty, frontend lint/build and 106
+unit tests passed. All 168 browser flows passed; the 3 candidate flows passed
+again after waiting for the actual qualification response. Final production
+build/smoke passed. Frozen T01 before/after comparison has no regressions or
+failures, with identical cases/harness/runtime and 22 scripted responses each.
+No paid calls or stash changes. Both production containers and owned browser
+backends are stopped. Preserve the complete ignored `data/t02/` directory;
+`checks.json` indexes evidence. No host/security/credential configuration changed.

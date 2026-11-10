@@ -6,6 +6,7 @@ import {
   EnvironmentRow,
   EnvironmentRowSkeleton,
 } from "@/components/environments/environment-row";
+import { ExtensionCandidates } from "@/components/environments/extension-candidates";
 import { Alert, Empty } from "@/components/feedback";
 import { Layers2 } from "@/components/icons";
 import { RecordListHeading } from "@/components/record-list-heading";
@@ -26,7 +27,11 @@ export default function Environments() {
   const detailTrigger = useRef<HTMLAnchorElement | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const catalog = useApi<Catalog>("/catalog");
-  const view = params.get("view") === "custom" ? "custom" : "built-in";
+  const requestedView = params.get("view");
+  const view =
+    requestedView === "custom" || requestedView === "candidates"
+      ? requestedView
+      : "built-in";
   const environments = catalog.data?.environments ?? [];
   const selected = environments.find(
     (env) => env.key === params.get("environment"),
@@ -69,7 +74,8 @@ export default function Environments() {
           setParams((previous) => {
             const next = new URLSearchParams(previous);
             next.delete("environment");
-            if (value === "custom") next.set("view", "custom");
+            next.delete("review");
+            if (value !== "built-in") next.set("view", value);
             else next.delete("view");
             return next;
           });
@@ -85,6 +91,9 @@ export default function Environments() {
             </TabsTrigger>
             <TabsTrigger value="custom" className="h-full px-2.5 py-0">
               Custom
+            </TabsTrigger>
+            <TabsTrigger value="candidates" className="h-full px-2.5 py-0">
+              Candidates
             </TabsTrigger>
           </TabsList>
           <Separator />
@@ -146,6 +155,12 @@ export default function Environments() {
               </Button>
             </Alert>
           )}
+        </TabsContent>
+        <TabsContent value="candidates" className="min-w-0">
+          <ExtensionCandidates
+            search={search}
+            selectedId={params.get("review")}
+          />
         </TabsContent>
         <TabsContent value="custom" className="min-w-0">
           <CustomEnvironments
