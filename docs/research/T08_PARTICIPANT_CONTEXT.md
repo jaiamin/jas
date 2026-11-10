@@ -13,13 +13,13 @@ contract, T15 reference policies, descendants or additional checkout creation.
   design, T04 implementation/report, T01 procedure and Sol failure report.
 - [ ] Preserve clean source/case-stamped T01 before evidence and independent
   neutral DEVELOPMENT cases under ignored `data/t08/`.
-- [ ] Red/green at the approved public workflow API seam: replaceable planning,
+- [x] Red/green at the approved public workflow API seam: replaceable planning,
   authorized memory retrieval, investigation and accessible verification.
-- [ ] Discretionary operations with declared budgets, direct-action reference,
+- [x] Discretionary operations with declared budgets, direct-action reference,
   explicit disabled capabilities, no fallback and independently enforced actions.
-- [ ] Intentional actor-authored artifacts, bounded source-linked context,
+- [x] Intentional actor-authored artifacts, bounded source-linked context,
   cutoffs, privacy across contents/metadata/errors/tools and all memory modes.
-- [ ] Pause/restored context and receipts consistent with checkpoints; one
+- [x] Pause/restored context and receipts consistent with checkpoints; one
   writer, in-flight commits, restart, exact replay and per-inference accounting.
 - [ ] Existing configuration/review/inspection UI exposes real capabilities and
   receipts; keyless desktop/light and phone/dark browser verification.
@@ -71,11 +71,38 @@ prefix matching the actor's own authorized note. Both failed attempts remain in
 `access-regressions/` and `access-and-restoration/`; the corrected query is distinct
 from permitted own-note content. A failed patch application changed no file.
 
-Checkpoint: 56 participant API/accounting/lifecycle tests pass, including 24 new
-T08 cases; frontend TypeScript/production build passes. UI configuration now
-exposes actual policy selectors and context/retrieval limits. Next: independent
-World/privacy invariants, neutral development comparison, browser flows and
-accepted integration merge. These checkpoint checks are not final acceptance.
+First checkpoint `a108c7d` passed 56 participant API/accounting/lifecycle tests.
+Merge `e3a01f4` includes accepted integration `aaf3a15` (T06, export v6), with no
+product conflict. T06 updated the shared current-export assertions. The complete
+combined backend suite passed **1,037 tests**; **109 frontend tests**, Ruff, ty,
+frontend lint and production build passed. Two later real foreign-artifact-ID
+denial cases pass separately; no product repair was needed for them.
+
+The first dedicated browser trial passed two flows (desktop/light, phone/dark),
+including real capability configuration, pause during inference, reload/resume,
+same activation/remaining effort, receipts and exact replay. That first run served
+the pre-T06 frontend build, so it is not final merged-build evidence. The current
+merged frontend has since built successfully; final browser captures and shared
+regressions are pending. Configuration was visually inspected. The detector
+returned no findings for the four changed UI components.
+
+Five independent neutral DEVELOPMENT cases pass in `development-attempt1/raw/`:
+credit retention (2 actors, 2 rounds), private measurement choice (3 actors),
+immediate choice with disabled capabilities, inaccessible source and controlled
+unknown auxiliary usage. All attempts, failures, requests and exports are retained.
+The archived initial application's same-case comparison rejects the new v2
+capability configuration before inference; all five failed attempts are retained in
+`development-before/`. Final same-harness versions will also retain complete
+validation-error bodies. No script result establishes model competence.
+
+`red-unused-payload/` exposed a real gap: an extra plan alongside decide was
+silently ignored. `green-unused-payload/` confirms rejection without a committed
+action or fallback (62 focused tests passed). A second failed patch application
+changed no source. All red/green, test-oracle errors and setup/static failures stay
+under `data/t08/`; none are overwritten or silently relabeled.
+
+Next: clean committed-source final comparisons, merged-build browser verification,
+positive v6/direct-action parity audit, final integration-tip check and manifest.
 
 Observed actual paid spend: **$0**. Live competence and held-out gates remain
 unverified. Root's unrelated `pbcopy` and preserved stash are outside task scope.

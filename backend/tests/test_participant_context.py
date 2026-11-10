@@ -252,6 +252,18 @@ def test_participant_may_decide_immediately_with_all_capabilities_disabled(conte
     assert [o["kind"] for o in run["activations"][0]["operations"]] == ["decide", "settle"]
 
 
+def test_unexecuted_payload_cannot_silently_bypass_a_disabled_capability(context_client, design):
+    client, responses, _ = context_client
+    responses.append(
+        finish() | {"plan": {"text": "This must not be silently ignored.", "source_ids": []}}
+    )
+    _, run_id = save(client, protocol(design, capabilities={"planning": "disabled"}))
+    run = step(client, run_id)
+    assert run["summary"]["turn"] == 0
+    assert run["activations"][0]["operations"][0]["status"] == "rejected"
+    assert len(run["requests"]) == 1
+
+
 @pytest.mark.parametrize(
     "payload",
     [
@@ -386,3 +398,28 @@ def test_paused_plan_receipts_restore_with_world_cutoff_and_remaining_effort(
         assert deliveries[1]["retained_artifacts"] == []
         assert "requests_remaining" in deliveries[1] and deliveries[1]["requests_remaining"] == 2
         assert client.post(f"/api/runs/{run_id}/verify").json()["verified_turns"] == 1
+
+
+@pytest.mark.parametrize("scope", ["another_actor", "another_run"])
+def test_real_foreign_artifact_ids_are_denied_like_missing_ids(context_client, design, scope):
+    client, responses, prompts = context_client
+    responses.extend(
+        [request("plan", plan={"text": "EXISTING-PRIVATE-ARTIFACT", "source_ids": []}), finish()]
+    )
+    value = protocol(design, max_requests=2)
+    value["rounds"] = 2
+    _, source_run = save(client, value)
+    initial = step(client, source_run)
+    source_id = initial["activations"][0]["operations"][0]["result"]["artifact"]["id"]
+    if scope == "another_actor":
+        target_run = source_run
+    else:
+        _, target_run = save(client, value)
+    before = client.get(f"/api/runs/{target_run}").json()
+    responses.append(request("retrieve", retrieval={"source_ids": [source_id]}))
+    run = step(client, target_run)
+    assert run["summary"]["turn"] == before["summary"]["turn"]
+    assert run["state"] == before["state"]
+    assert run["summary"]["error"] == "Invalid actor capability request"
+    assert run["activations"][-1]["operations"][0]["result"] == "Invalid actor capability request."
+    assert "EXISTING-PRIVATE-ARTIFACT" not in json.dumps(prompts[-1])

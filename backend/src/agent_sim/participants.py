@@ -391,6 +391,19 @@ class ToolUsing:
             )
             request = result.model_dump()
             kind = request["operation"]
+            payload_field = {
+                "plan": "plan",
+                "retrieve": "retrieval",
+                "investigate": "investigation",
+                "verify": "verification",
+                "decide": "decision",
+            }.get(kind)
+            if any(
+                request.get(field) is not None and field != payload_field
+                for field in ["decision", "plan", "retrieval", "investigation", "verification"]
+            ):
+                activation.append(kind, request, "Unexpected operation payload.", "rejected")
+                raise ValueError("Unexpected operation payload")
             if kind == "decide":
                 if request["decision"] is None:
                     activation.append(kind, request, "A final decision is required.", "rejected")

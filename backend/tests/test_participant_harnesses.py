@@ -341,6 +341,7 @@ def test_review_counts_harness_as_a_declared_factor_independent_of_model_and_wor
     "harness",
     [
         {"kind": "tool_using", "version": "0.9.0"},
+        {"kind": "tool_using", "version": "1.0.0"},
         {"kind": "tool_using", "max_requests": 9},
         {"kind": "tool_using", "max_tool_operations": 13},
         {"kind": "tool_using", "tools": ["observe", "observe"]},
