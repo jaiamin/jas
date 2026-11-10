@@ -253,7 +253,10 @@ export function ConditionFields({
                   id={c.key}
                   index={i}
                   value={c.harness}
-                  artifacts={design.environment === "artifact_workspace"}
+                  artifacts={[
+                    "artifact_workspace",
+                    "distributed_coordination",
+                  ].includes(design.environment)}
                   onChange={(harness) => condition(i, { harness })}
                 />
                 <div className="flex flex-wrap gap-5">

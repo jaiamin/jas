@@ -4,6 +4,17 @@ import type { EnvironmentId } from "@/lib/types";
 // authority, negotiation, private signals, replenishment and modular resources.
 // 0 = quiet grid; 1 = structure; 2 = the mechanism's focal cells.
 const grids: Record<EnvironmentId, readonly string[]> = {
+  distributed_coordination: [
+    "111000111",
+    "121111121",
+    "111010111",
+    "000010000",
+    "000010000",
+    "000111000",
+    "000121000",
+    "000111000",
+    "000000000",
+  ],
   artifact_workspace: [
     "111111000",
     "100001000",

@@ -21,6 +21,12 @@ import type { Environment, EnvironmentId } from "@/lib/types";
 
 const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
   {
+    distributed_coordination: {
+      observes:
+        "An explicit directory and topology, actor-scoped evidence, shared draft versions and addressed inbox. The shared-information control opens evidence readers; private value content requires an authorized read.",
+      enforces:
+        "Independent final alternatives or abstention, local values and a declared all-match bonus. Sequential or phased settlement, stable conflict priority and delayed logical-time mail are explicit factors. Provider completion speed grants no World priority.",
+    },
     artifact_workspace: {
       observes:
         "Permitted document identities, versions, write allowance and actual read/check results. Contents require an authorized read; private sources stay scoped to their readers.",

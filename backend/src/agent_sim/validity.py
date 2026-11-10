@@ -25,6 +25,11 @@ COMMON = {
     "repeated_interaction": "Finite repeated model decisions, not calibrated human prediction.",
 }
 CAPABILITIES = {
+    "distributed_coordination": {
+        "versioned_artifacts": "Actor-authorized local evidence and versioned shared drafts.",
+        "distributed_information": "Three individually valued alternatives, configurable ACL "
+        "sharing, addressed logical-time messages and declared sequential/phased settlement.",
+    },
     "artifact_workspace": {
         "versioned_artifacts": "Actor-authorized evidence reads and versioned work "
         "with optimistic writes.",
@@ -88,6 +93,7 @@ class Requirement(Strict):
     )
     capability: Literal[
         "versioned_artifacts",
+        "distributed_information",
         "artifact_verification",
         "allocation_budget",
         "allocation_power",
@@ -141,8 +147,12 @@ class Requirement(Strict):
 
 def capabilities(environment: str) -> dict[str, str]:
     available = {**COMMON, **CAPABILITIES[environment]}
-    if environment == "artifact_workspace":
-        for key in ("messaging", "signal_disclosure"):
+    if environment in {"artifact_workspace", "distributed_coordination"}:
+        for key in (
+            ("messaging", "signal_disclosure")
+            if environment == "artifact_workspace"
+            else ("signal_disclosure",)
+        ):
             available.pop(key)
     return available
 
@@ -546,7 +556,7 @@ def _preflight(specification: str) -> dict:
     baseline = design.conditions[0]
     # Endowment also sets incidental synthetic signal ranges in these worlds.
     active = set(CATALOG[design.environment].parameters)
-    if design.environment != "artifact_workspace":
+    if design.environment not in {"artifact_workspace", "distributed_coordination"}:
         active |= {"private_signal", "endowment"}
     for c in design.conditions[1:]:
         changes = _differences(baseline.parameters.model_dump(), c.parameters.model_dump())

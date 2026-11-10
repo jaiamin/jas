@@ -714,6 +714,11 @@ class Assistants:
                             if design.environment == "artifact_workspace"
                             else {}
                         ),
+                        **(
+                            {"coordination_outcome": state.get("outcome")}
+                            if design.environment == "distributed_coordination"
+                            else {}
+                        ),
                     },
                 }
             )

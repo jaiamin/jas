@@ -20,6 +20,8 @@ export interface AgentSuggestion {
 }
 
 const evidenceQuestions: Record<EnvironmentId, string> = {
+  distributed_coordination:
+    "Trace local evidence, addressed delivery, phase conflicts and independent alternatives. Compare shared information and preserve unmatched or abstaining outcomes.",
   artifact_workspace:
     "Inspect authorized evidence, edit versioned work and decide when to submit or stop.",
   composed:

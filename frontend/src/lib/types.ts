@@ -8,7 +8,36 @@ export type EnvironmentId =
   | "information"
   | "renewable_resource"
   | "composed"
-  | "artifact_workspace";
+  | "artifact_workspace"
+  | "distributed_coordination";
+
+export interface DistributedRules {
+  timing: "sequential" | "phased_simultaneous";
+  turn_order: string[];
+  conflict_order: string[];
+  routes: { sender: string; recipient: string }[];
+  delivery_delay: number;
+  alternatives: string[];
+  information: Record<string, string>;
+  match_bonus: number;
+}
+
+export interface AddressedMessage {
+  id: string;
+  sender: string;
+  recipient: string;
+  text: string;
+  sent_at: number;
+  due_at: number;
+  delivered_at: number | null;
+}
+
+export interface CoordinationOutcome {
+  choices: Record<string, string | null>;
+  payoffs: Record<string, number>;
+  matched: boolean;
+  reason: "choices_complete" | "horizon";
+}
 
 export interface ArtifactObject {
   key: string;
@@ -49,6 +78,10 @@ export type ArtifactAction =
       sources: ArtifactReference[];
     }
   | { kind: "check_artifacts" | "submit_artifacts" | "stop" };
+export type CoordinationAction =
+  | { kind: "choose_alternative"; alternative: string }
+  | { kind: "send_message"; recipient: string; text: string }
+  | { kind: "wait_coordination" };
 export interface ResourcePrimitive {
   key: string;
   name: string;
@@ -70,7 +103,7 @@ export interface CompositionRules {
   controllers_first: boolean;
 }
 export interface SavedEnvironment {
-  format: "jas-environment-v4";
+  format: "jas-environment-v5";
   id: string;
   revision: number;
   updated: string;
@@ -120,6 +153,7 @@ export interface Parameters {
   };
   composition: CompositionRules | null;
   artifacts: ArtifactRules | null;
+  coordination: DistributedRules | null;
   resource_schedule: { round: number; endowment: number }[];
 }
 export interface Profile {
@@ -400,7 +434,7 @@ export interface ControlledAction {
   report: number | null;
   promise: number | null;
 }
-export type Action = ControlledAction | ArtifactAction;
+export type Action = ControlledAction | ArtifactAction | CoordinationAction;
 export interface Decision {
   action: Action;
   rationale: string;
@@ -468,12 +502,20 @@ export interface State {
   writes_remaining?: number;
   artifact_history?: Record<string, unknown>[];
   last_results?: Record<string, Record<string, unknown>>;
-  outcome?: {
-    status: "success" | "failure" | "stopped" | "horizon";
-    actor: string;
-    operation: number;
-    result: Record<string, unknown>;
-  } | null;
+  outcome?:
+    | {
+        status: "success" | "failure" | "stopped" | "horizon";
+        actor: string;
+        operation: number;
+        result: Record<string, unknown>;
+      }
+    | CoordinationOutcome
+    | null;
+  logical_time?: number;
+  choices?: Record<string, string | null>;
+  pending_actions?: Record<string, unknown>;
+  pending_deliveries?: AddressedMessage[];
+  inboxes?: Record<string, AddressedMessage[]>;
   relations?: Record<string, { amount: number; count: number }>;
   tasks?: Task[];
 }

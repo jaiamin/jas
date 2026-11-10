@@ -128,6 +128,21 @@ establish that a participant read it or that a prose claim is true.
 The terminal result of the world's declared checks on submitted work, independent
 of the participant's claimed success.
 
+**Coordination choice**:
+A participant's final selection among declared alternatives, with consequences
+determined by local values and any declared agreement bonus. Agreement is optional.
+
+**Logical time**:
+The World's declared progress in settled interactions, independent of model latency.
+
+**Phased simultaneity**:
+An interaction in which all active participants decide from one committed phase
+and their proposals settle together according to declared conflict rules.
+
+**Addressed delivery**:
+A communication made available to its permitted recipient at its declared logical
+time. Being queued or available alone does not confirm model input.
+
 **Trace playback**:
 Viewing saved observations, decisions and consequences without executing them.
 

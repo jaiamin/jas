@@ -60,16 +60,29 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v8.
-Schema v7 and library format `jas-environment-v4` accept only the current contract.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v9.
+Schema v8 and library format `jas-environment-v5` accept only the current contract.
 Older databases/library records receive explicit errors; no data is converted or reset.
 Use a separate fresh workspace path for the new contract and preserve existing evidence.
+T10 versions typed distributed mechanics and their canonical hashes atomically as
+DB8/export9/libraryv5. Capture1/comparison1/tool2.0/direct1.0 remain current;
+controlled-world mechanics and solo artifact submission behavior are unchanged.
 
 The current schema retains T04's durable participant activations and per-request
-links alongside T03's pinned environment sources. Old schema 4/5/6 databases and
-v1/v2/v3 environment files are explicitly rejected; preserve them separately. No
+links alongside T03's pinned environment sources. Old schema 4/5/6/7 databases and
+v1/v2/v3/v4 environment files are explicitly rejected; preserve them separately. No
 compatibility reader or automatic reset is provided. Reusable mechanics exclude
 participant harness settings; each experiment pins those separately.
+
+The keyless T10 browser trial uses an opt-in deterministic test provider and an
+isolated temporary database. Use a private dependency tree/cache and distinct port:
+
+```sh
+JAS_TEST_PORT=18123 pnpm --dir frontend exec playwright test --config playwright.coordination.config.ts
+uv run pytest backend/tests/test_distributed_coordination.py
+```
+
+These checks establish mechanics, UI, input accounting and replay, not live intelligence.
 
 The dedicated participant-policy browser trial installs a deterministic external
 provider in the test server only. It exercises real configuration, immutable
