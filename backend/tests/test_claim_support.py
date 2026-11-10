@@ -24,7 +24,9 @@ from pydantic_ai.usage import RequestUsage
 @pytest.fixture
 def claim_client(tmp_path, monkeypatch, request):
     controls: dict[str, Any] = {
-        "amount": 2, "answer": "The recorded total utility is 440.", "value": 440,
+        "amount": 2,
+        "answer": "The recorded total utility is 440.",
+        "value": 440,
     }
     seen, operations = [], []
 
@@ -65,6 +67,9 @@ def claim_client(tmp_path, monkeypatch, request):
                     },
                 }
         else:
+            if gate := controls.get("participant_gate"):
+                controls["participant_entered"].set()
+                assert await asyncio.to_thread(gate.wait, 10)
             if controls.get("failure"):
                 raise TimeoutError("Controlled failed DEVELOPMENT participant request")
             payload = {
@@ -227,12 +232,17 @@ def test_inspected_citation_cannot_validate_invented_total(claim_client, design)
     assert final["usage"]["requests"] == 2
 
 
-@pytest.mark.parametrize("asserted,expected", [(-1, "contradicted"), (1, "checked")])
+@pytest.mark.parametrize(
+    "amount,asserted,expected,computed",
+    [(10, -1, "contradicted", 1), (10, 1, "checked", 1), (0, 0, "checked", 0)],
+)
 def test_condition_contrast_is_recomputed_in_declared_direction(
     claim_client,
     design,
+    amount,
     asserted,
     expected,
+    computed,
 ):
     client, controls, _ = claim_client
     value = design.model_dump()
@@ -243,7 +253,7 @@ def test_condition_contrast_is_recomputed_in_declared_direction(
     sid = client.post("/api/studies", json={"design": value}).json()["id"]
     study = client.get(f"/api/studies/{sid}").json()
     for record in study["runs"]:
-        controls["amount"] = 10 if record["condition_key"] == "treatment" else 0
+        controls["amount"] = amount if record["condition_key"] == "treatment" else 0
         assert run(client, record["id"])["status"] == "complete"
 
     def claims(prompt, _rid):
@@ -271,7 +281,7 @@ def test_condition_contrast_is_recomputed_in_declared_direction(
     )
     assert final["status"] == "complete", final
     result = final["output"]["support"]["claims"][0]
-    assert result["status"] == expected and result["computed"] == 1
+    assert result["status"] == expected and result["computed"] == computed
     calculation = next(
         c for c in final["output"]["lens"]["calculations"] if c["id"] == result["calculation_id"]
     )
@@ -590,3 +600,83 @@ def test_missing_historical_input_capture_is_unavailable_not_zero(claim_client, 
     assert final["status"] == "complete", final
     assert final["output"]["support"]["claims"][0]["status"] == "unavailable"
     assert final["output"]["lens"]["coverage"]["runs"][0]["exposure_capture"] == "unavailable"
+
+
+@pytest.mark.parametrize(
+    "scope,foreign,expected",
+    [("planned_sample", False, "unsupported"), ("captured_run", True, "unavailable")],
+)
+def test_correct_number_cannot_authorize_another_scope_or_unselected_source(
+    claim_client, design, scope, foreign, expected
+):
+    client, controls, _ = claim_client
+    _, rid = save(client, design)
+    run(client, rid)
+    _, other = save(client, design)
+    run(client, other)
+    controls["claims"] = lambda _prompt, selected: [
+        {
+            "kind": "calculation",
+            "text": "Claiming a different evidence scope with the same number.",
+            "calculation_id": f"run:{other if foreign else selected}:total_utility",
+            "value": 44,
+            "scope": scope,
+        }
+    ]
+    final = finish(
+        client,
+        client.post(
+            "/api/chats",
+            json={"question": "Check the selected evidence only.", "context": f"run:{rid}"},
+        ),
+    )
+    assert final["status"] == "complete", final
+    assert final["output"]["support"]["claims"][0]["status"] == expected
+    assert final["output"]["support"]["prose_status"] == "unassessed"
+    assert {r["run_id"] for r in final["output"]["lens"]["facts"]} == {rid}
+
+
+def test_inflight_receipt_stays_unknown_in_frozen_lens_after_settlement(claim_client, design):
+    client, controls, _ = claim_client
+    sid, rid = save(client, design)
+    assert run(client, rid, "step")["turn"] == 1
+    controls.update(participant_gate=Event(), participant_entered=Event())
+    assert client.post(f"/api/runs/{rid}/control", json={"action": "step"}).status_code == 200
+    assert controls["participant_entered"].wait(5)
+    submitted = client.post(
+        "/api/chats",
+        json={"question": "Retain this in-flight evidence boundary.", "context": f"run:{rid}"},
+    )
+    assert submitted.status_code == 202, submitted.text
+    captured = client.get(f"/api/analyses/{submitted.json()['id']}").json()["output"]
+    assert captured["lens"]["cutoffs"] == {rid: 1}
+    assert captured["lens"]["coverage"]["runs"][0]["unknown_requests"] == 1
+    controls.pop("participant_gate").set()
+
+    async def settled():
+        await client.app.state.engine.executions[rid].task
+
+    client.portal.call(settled)
+    assert run(client, rid)["turn"] == 4
+    first = finish(client, submitted)
+    assert first["output"]["lens"] == captured["lens"]
+    assert first["output"]["exposure"] == captured["exposure"]
+    before = source(client.get(f"/api/studies/{sid}/export").json())
+    second = finish(
+        client,
+        client.post(
+            "/api/chats",
+            json={
+                "question": "Reinspect the same unknown boundary.",
+                "context": f"run:{rid}",
+                "chat_id": first["chat_id"],
+                "source_analysis_id": first["id"],
+                "lens": "communication",
+            },
+        ),
+    )
+    assert second["status"] == "complete", second
+    assert second["output"]["lens"]["coverage"]["runs"][0]["unknown_requests"] == 1
+    assert second["output"]["exposure"] == captured["exposure"]
+    assert source(client.get(f"/api/studies/{sid}/export").json()) == before
+    assert first["usage"]["requests"] == second["usage"]["requests"] == 2
