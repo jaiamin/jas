@@ -2273,3 +2273,43 @@ no service/browser starts without ROOT's explicit staged release. Fresh non-root
 production containment/admission/Engine/replay still needs its own later release.
 No paid/live/held-out qualification, reset, publication, descendants or additional
 checkout. T17 remains INCOMPLETE/UNACCEPTED and requires a NEW integration reviewer.
+
+## Single private-cache cleanup attempt stopped (2026-11-10)
+
+ROOT released ONE owner-only deletion of exact .tools/t17/pnpm-cache/pnpm, under
+the shared lock/134217728 floor and<=4MiB peak/receipts, with no package payload
+reads/hashes and no retry. It conditionally released ONE browser job only after
+successful cleanup and entry>=402653184; no new build/setup or production grant.
+Before mutation, read exact F1 frontend-setup-02 receipt and its inert recorder.
+The helper's current SHA matches ddb131af... in that receipt; exact private XDG
+assignment, frozen normal-manager command, shared-store identity and successful
+599-file/176,781,363-byte metadata footprint agree. Node_modules manager metadata
+does not refer to the private cache. No inherited helper was executed.
+
+`private-pnpm-cleanup-01` stops exit125 before deletion. Its newly authored guard
+incorrectly assumes every registry metadata file lives under v12/metadata/;
+ten pre-existing filenames instead live under v12/metadata-full/. The separate
+read-only diagnosis observes the same599 files/176,781,363 bytes, matching UID,
+no symlink or hardlinked regular file; it does not read/hash any cache payload.
+This is a maintenance recorder assumption, not a product red or proof of an
+unsafe owner. Open-reference/lsof validation was not reached, so no claim that
+it passed. No removal/cleanup retry/browser preflight/service was attempted.
+
+Native shared/unreserved statvfs299,880,448→299,716,608 during the failed attempt
+(-163840, including new receipts/shared activity), with no recovery claim or
+isolated-overlay attribution. Target/cache/env/modules/build/source/Git/shared
+pnpm store/T14 uv cache and all historical proof remain. The shared lock is
+released and no own job/service/browser is active. All new receipts, safe Git
+metadata selection, exact cleanup source and diagnosis remain under own
+frontend-evidence/attempts/private-pnpm-cleanup-01. Previous manifest explicitly
+predates these new additions. No current application/test/source-oracle meaning
+changed; prior checks retain their exact qualified source attribution.
+
+Concrete next action requires a NEW explicit cleanup attempt: include the
+observed metadata-full namespace in the metadata-only selection, retain01, then
+independently repeat ownership/hardlink/reference/floor checks before deleting
+only the authorized target. No retry is inferred here. Conditional browser and
+fresh non-root production remain unrun; T17 INCOMPLETE/UNACCEPTED. Personal
+Standards/Spec: no production source changes in this maintenance phase; the
+existing bounded checks/build are retained, and missing browser/production/fresh
+integration gates remain explicit. No live competence/held-out claim or publication.

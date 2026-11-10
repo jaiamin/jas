@@ -1,3 +1,17 @@
+# T17 private metadata cleanup stopped before removal (2026-11-10)
+
+The ONE released cleanup01 retains exit125; no metadata/package file was removed.
+Its recorder allowed v12/metadata but rejected ten v12/metadata-full filenames,
+before the open-reference check or deletion. Read-only diagnosis matches exact
+F1 receipt/helper and599 files/176,781,363 bytes, owned regular single-link files,
+no symlinks; package/cache payloads remain unread/unhashed. Exact private target
+.tools/t17/pnpm-cache/pnpm is intact; shared store/env/modules/build/evidence are
+untouched. No retry or conditional browser preflight/service occurred. Lock released.
+The guard needs an explicitly distinct corrected cleanup slot before the browser
+condition can be satisfied. See private-pnpm-cleanup-01 receipts/diagnosis in own
+frontend evidence. Prior qualifications/source attribution remain; T17 incomplete/
+UNACCEPTED, production held. No descendants, publication or live/paid/held-out work.
+
 # T17 accepted ROOT46 build boundary (2026-11-10)
 
 Normal merge74a87c03a91ed83ee4f6d15b77db2d27ebc29e43 includes exact accepted
