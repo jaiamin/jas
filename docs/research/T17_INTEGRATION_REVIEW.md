@@ -20,7 +20,11 @@ static/types/build and earlier generation/World witnesses remain attributed to
 their recorded sources. Frozen T01 CURRENT retains its actual four export-v4
 failures/exit1. Fresh current-contract5/22/22 qualification replaces the retired
 historical BEFORE comparison; no reconstructed parity claim is permitted.
-The implementer's browser gate is separately released and still pending here.
+The implementer's browser01 is FAILED on its recorder's mismatched JSON digest
+assumption, before the planned409 request. Its observed draft restoration,
+disabled authorization, pending-proposal inspection and mobile keyboard/overflow
+checks remain separate observations. Zero provider requests; all owned resources
+closed. ROOT will finish a distinct final combined-source browser qualification.
 
 ## Independent lifecycle probes frozen before output
 
@@ -80,3 +84,33 @@ current/t17-recovery-commit-red-01: the journal was interrupted but the analysis
 operation still reported in_progress. Recovery now also reconciles already
 interrupted attempts, leaving their closed event sequence untouched. This is
 idempotent reconciliation across the two stores, not an atomic cross-store commit.
+
+## Independent backend result
+
+Normal checkpointb9c992db8318b3e470abaf0a5222ea3b163961a5 retains the three
+observed reds and their minimal repairs. At exact source
+7125822be34da9bacb94b13f0e50b1a6d4b06b15e578167ddb04faf818bbc30a:
+
+- All15 generation/workflow/current-contract cases PASS in73.30s. This includes
+  the three actual-process crash boundaries, a public pending-generation
+  provenance/scope/export preservation case, existing failed/repair attempt
+  exports, request/unknown-usage ceilings and abrupt/graceful cancellation.
+- Fresh independent current-contract matrix:5 runs,22 turns,22 fully serialized
+  participant requests,2200 input/1100 output tokens,770 synthetic microdollars,
+  all checkpoint prefixes, cutoffs, exposure, reopen and zero-call replay.
+- Whole prescribed backend/benchmarks/scripts Ruff and global ty PASS. Initial
+  two long-string diagnostics and a fixture method-signature diagnostic remain
+  retained; no production semantics changed in those corrections.
+- The normal commit's source before/after is the same tested7125822b; Gitleaks PASS.
+
+Standards and Spec backend review pass after these repairs. Scope/authority,
+isolated real-worker admission, independent literal oracles, private projections,
+complete immutable pins and per-request reservations were traced end to end.
+The accepted Engine already offloads executable preflight; no redundant dispatch
+repair was made. There is no supported active-generation/study-export race, and
+the public preservation test confirms its rejection boundary instead.
+
+Ticket acceptance remains withheld until final combined UI/browser and runtime
+qualification. Frozen T01's four historical export-v4 failures remain failures;
+this fresh matrix is not historical parity. Live competence, general semantic
+understanding, held-out extension success and power-loss durability are unverified.

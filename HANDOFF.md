@@ -1,3 +1,25 @@
+# ROOT independent T17 backend review boundary (2026-11-10)
+
+Normal checkpointb9c992db contains the journal publication/temporary-file/recovery
+reconciliation repairs, each after an independent actual-process red.15 final
+backend generation/current-contract cases, whole Ruff/globalty and Gitleaks PASS
+at source7125822be34da9bacb94b13f0e50b1a6d4b06b15e578167ddb04faf818bbc30a.
+Fresh5/22/22 includes full requests/checkpoints/cutoffs/privacy/770 synthetic
+microdollars/reopen/zero-call replay. See T17_INTEGRATION_REVIEW.md.
+
+T17 is integrated under review, not accepted. Its browser01 FAILED on recorder
+JSON hash assumption before409; zero providers/resources closed. SAME implementer
+has one docs-only closure slot; ROOT owns all product fixes and final combined
+browser/runtime review. No child browser retry is authorized. T18 remains separate
+and is finishing its existing segmented checks/one conditional build; owner-only
+private policy-metadata cleanup is released to recover headroom. No provider,
+production or held-out scope is extended.8080 is still unstarted.
+
+Current DB14/export16/library9/definition2/research2/generationv2. ROOT owns sole
+tracked writing; protected pbcopy and stash remain untouched. Benchmark v2 and
+saved-turn playback browser verification await final combined source. Histories
+below are retained until compact final reporting/authorized evidence retirement.
+
 # ROOT T17 integration under review (2026-11-10)
 
 ROOT is normally integrating exact1a43f175 into the current branch for independent
