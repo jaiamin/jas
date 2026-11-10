@@ -8,7 +8,7 @@ const checksum = "1".repeat(64);
 const contract = externalContract as FiniteContract;
 const { memory: _memory, ...mechanicalParameters } = parameters;
 export const finiteSource = {
-  format: "jas-environment-v8" as const,
+  format: "jas-environment-v9" as const,
   id: "1111111111111111",
   revision: 1,
   updated: "2026-11-10T00:00:00Z",

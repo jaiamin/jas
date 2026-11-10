@@ -67,7 +67,7 @@ export function AgentFields({
             while (design.profiles.some((p) => p.key === `agent-${n}`)) n++;
             addedInput.current = `agent-agent-${n}-name`;
             setOpen((open) => [...open, `agent-${n}`]);
-            update("profiles", [
+            const profiles: Profile[] = [
               ...design.profiles,
               {
                 key: `agent-${n}`,
@@ -76,7 +76,30 @@ export function AgentFields({
                 model: null,
                 goal: "Pursue your goals under the environment's rules.",
               },
-            ]);
+            ];
+            onChange({
+              ...design,
+              profiles,
+              conditions: design.conditions.map((condition) => ({
+                ...condition,
+                parameters: {
+                  ...condition.parameters,
+                  workflow: condition.parameters.workflow
+                    ? {
+                        ...condition.parameters.workflow,
+                        turn_order: [
+                          ...condition.parameters.workflow.turn_order,
+                          `agent-${n}`,
+                        ],
+                        conflict_order: [
+                          ...condition.parameters.workflow.conflict_order,
+                          `agent-${n}`,
+                        ],
+                      }
+                    : null,
+                },
+              })),
+            });
           }}
         >
           <Plus data-icon="inline-start" />
@@ -193,7 +216,14 @@ export function AgentFields({
                           condition.parameters.coordination?.information ?? {},
                           p.key,
                         ),
-                      ))
+                      )) ||
+                    design.conditions.some((condition) =>
+                      condition.parameters.workflow?.work_items.some(
+                        (work) =>
+                          work.workers.includes(p.key) ||
+                          work.handoff_to.includes(p.key),
+                      ),
+                    )
                   }
                   onClick={() => onChange(removeProfile(design, p.key))}
                 >

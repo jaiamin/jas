@@ -38,15 +38,15 @@ verify derived analyses against the recorded evidence.
 
 Custom environments are stored beside the SQLite workspace in `<database-stem>.environments/`.
 Back up that directory with the database. Browser-only reusable setups have been removed;
-there is no legacy importer. Format `jas-environment-v8` contains `definition` (version2,
+there is no legacy importer. Format `jas-environment-v9` contains `definition` (version2,
 world/rule version, name/description and configuration examples), plus ID, optimistic revision,
 updated timestamp and definition hash. Examples contain mechanics parameters, optional tasks
 and unbound roles. Create/update accept `{definition, revision}`; selection and extraction use
 `POST /api/design/use-environment` and `POST /api/design/environment`.
 Unsupported library/definition/rule versions and content hashes fail explicitly.
-The combined current database schema13 and export15 retain T14 investigation
-ownership plus T17 finite packages/generation allowances. Prior libraryv7,
-definition1, DB11/12 and export12/13 are incompatible; no alias, conversion,
+The combined current database schema14 and export16 retain T14 investigation
+ownership, accepted T12 workflow and T17 finite packages/generation allowances.
+Prior libraryv7/v8, definition1, DB11/12/13 and export12/13/15 are incompatible; no alias, conversion,
 deletion or automatic reset occurs. Preserve
 older data separately if starting a fresh workspace. Existing controlled-world rules themselves are unchanged.
 

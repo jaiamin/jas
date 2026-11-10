@@ -7,7 +7,7 @@ remain ordered. Only explicit user actions create paid work. Restart pauses inte
 ## Storage
 
 SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. Startup creates
-schema13 for fresh workspaces and rejects incompatible schemas. Local transactions
+schema14 for fresh workspaces and rejects incompatible schemas. Local transactions
 commit each turn's input, decision, consequences, metrics and checkpoint together.
 
 | Record | Purpose / invariant |
@@ -204,7 +204,7 @@ participants, roles, conditions, opportunity-based horizon/stopping, replication
 Material clarification keeps the same conversation without an executable proposal. Unsupported
 questions retain their original text and may offer explicitly narrower installed alternatives.
 These planning additions are research artifacts. The combined current contract is
-DB13/export15/capture1/comparison1/library8/tool2.0/direct1.0. Installed
+DB14/export16/capture1/comparison1/library9/tool2.0/direct1.0. Installed
 three-participant distributed coordination includes phase/conflict rules and logical addressed
 mail; solo artifact investigation remains sequential. A decline whose direct requirements and
 population have an installed example witness receives a bounded, recorded scoping recheck.
@@ -306,7 +306,7 @@ structural object/requirement edits also use the existing JSON editor. The revie
 shows requirements and ACLs; the run view links versions and terminal results to
 recorded turns. Reusable mechanics extract/rebind ACL roles and retain complete
 immutable source snapshots, independently of population, model, harness and memory.
-DB13, export15, comparison1 and `jas-environment-v8`/definition2 are the current contract.
+DB14, export16, comparison1 and `jas-environment-v9`/definition2 are the current contract.
 Older database/library versions fail explicitly; preserve them with their source.
 No migration, compatibility reader or reset is performed. Controlled-world rules
 remain unchanged; generated execution/admission and model adjudication remain out
@@ -446,15 +446,54 @@ Frozen analysis lenses recompute nonfinancial reliance value/eligibility while
 financial utility remains null; Sol analysis is separately billed from Luna work.
 
 T11 introduced DB9/export10/library6 for typed commitment parameters. The current
-combined contract is DB13/export15/library8/definition2 for those mechanics,
+combined contract is DB14/export16/library9/definition2 for those mechanics,
 T16 admitted packages, T14 durable investigation authorization/nested request
-ownership and T17 externally reviewed finite packages/generation authorization,
-including canonical designs/mechanics hashes. Earlier T17-only DB11/12 and
-export12/13 have different meanings from this combined contract. Older persisted formats
+ownership, accepted T12 institutional workflow and T17 externally reviewed finite
+packages/generation authorization,
+including canonical designs/mechanics hashes. Accepted T12 DB12/export13/library8
+and T17-only DB13/export15/library8 have incompatible intermediate meanings;
+earlier T17-only DB11/12 and export12/13 are also incompatible. Older persisted formats
 are explicitly rejected with no compatibility reader, migration or reset.
 T10's three-participant rule version and all controlled/solo consequences remain
-unchanged. Capture1/comparison1/tool2.0/direct1.0 remain current. This adds no
+unchanged. Capture1/comparison1/tool2.0/direct1.0 remain current. T11 itself adds no
 institution, parallel engine, semantic judge or inferred intent mechanism.
+
+## Institutional workflow (T12 accepted finite DEVELOPMENT)
+
+The [independent T12 integration review](research/T12_INTEGRATION_REVIEW.md) accepts
+its deterministic DEVELOPMENT scope, including delivered-message/handoff/acceptance
+interaction inspection. T17 combined-source and final-product qualification remain separate.
+
+`institutional_workflow` extends the existing artifact World for6–12 participants.
+Typed work items bind one artifact to declared workers, material cost, duration,
+dependencies and handoff recipients. Claiming establishes one owner. An owned
+start validates the current artifact version, every source ACL/version, accepted
+dependency handoffs, write allowance and full shared material cost before any
+mutation. A settled start appends the immutable artifact version, debits materials
+and schedules readiness at the same actor/logical-time boundary. Delayed readiness
+does not write or charge again. A selected completed-version handoff grants its
+declared recipient run-scoped read access; only that recipient can accept it.
+Delegating unstarted work changes ownership and later start affordances. Procedure
+editing and prose execution are unsupported.
+
+Sequential decisions advance one tick; phased proposals retain one committed
+snapshot, including checkpointed reads, until the declared priority settlement.
+Addressed mail shares T10's concrete queue/delivery operations. Provider latency
+does not advance time or decide priority. Stop withdraws only its actor; complete
+handoffs, all withdrawal or horizon produce explicit terminal records. Future
+work/mail remain pending at a horizon. Material stock/spent are distinct from
+write allowance and financial utility. Work content and resource consequences
+remain ordinary World checkpoints/events; there is no second engine.
+
+The task branch has source-scoped backend, exposure/research, accounting/lifecycle
+and current-contract qualification, plus frontend units/build and separate keyless
+editor/handoff/failure browser witnesses. Fresh keyless native-runtime qualification
+passes export/reopen/zero-call replay and distinct local World restoration. It is
+not non-root-container or live-competence qualification. Independent integration
+review remains open; see the [implementation report](research/T12_IMPLEMENTATION_REPORT.md).
+See the [T12 plan](research/T12_INSTITUTIONAL_WORKFLOW.md). DB12/export13/
+library9 combine this typed mechanics contract with accepted T14 investigation
+ownership; both distinct schema11 intermediates are rejected without conversion.
 
 ### Playback, consequence replay, restoration and sampling
 
@@ -518,7 +557,7 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v15 (`jas-study`)
+Every Analysis has an indexed conversation identity. Study export v16 (`jas-study`)
 includes investigation authorization, decisions and attempts, every revision and its
 runs, actual recorded rule versions, exact turn evidence and provider traces; it batches
 journal queries. It also retains the linked question's complete immutable generation
@@ -661,8 +700,8 @@ receipt establishes inclusion; pending proposals and queued mail cannot supply i
 Applying a different lens changes its
 requirements/account without rewriting the source analysis. Unsupported lens
 versions are rejected without conversion; historical analyses without a lens
-remain unassessed and cannot supply lens inputs. Database13/export15/capture1/
-comparison1/libraryv8 and harness contracts retain the analysis lens meanings;
+remain unassessed and cannot supply lens inputs. Database14/export16/capture1/
+comparison1/libraryv9 and harness contracts retain the analysis lens meanings;
 the combined persistence change provides no migration or reset.
 
 Agent replies lead with a deterministic source-linked account, then expose claim
@@ -706,7 +745,7 @@ continues to settle its own consequences independently of model prose.
 
 `EnvironmentLibrary` owns reusable custom setups as versioned JSON records in a sibling
 `<database-stem>.environments` directory. An in-memory workspace uses a temporary library.
-The v8 library contract stores a version2 `EnvironmentMechanics` definition and named configuration
+The v9 library contract stores a version2 `EnvironmentMechanics` definition and named configuration
 examples, independently of questions, participant/model/harness assignments, condition arms,
 replication and analysis. Examples declare unbound mechanic roles; experiment authors bind
 those roles to their own participants. Memory remains an experiment/harness choice.
@@ -728,7 +767,7 @@ the experiment adapts those examples. Editing/deleting a reusable environment ne
 or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
 12 recent definitions as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
-call or run. Database schema13, export15 and libraryv8 reject incompatible versions explicitly; there is
+call or run. Database schema14, export16 and libraryv9 reject incompatible versions explicitly; there is
 no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 ### Failure-aware comparisons (T06)
@@ -761,7 +800,7 @@ Analysis submissions synchronously freeze cutoffs, dispositions, terminal metric
 eligibility, revision/hash and calculations before the server task runs. Progress,
 reconnect, failure and export preserve that snapshot across later run completion or
 new revisions. Analysis reads do not append participant evidence or provider calls.
-Study export v15 includes this versioned comparison contract and persisted analysis
+Study export v16 includes this versioned comparison contract and persisted analysis
 snapshots, changing earlier consumer expectations. T06 changes no database columns and
 requires no data reset; historical evidence is never backfilled with invented states.
 
@@ -811,13 +850,14 @@ artifact. Inspection/export/replay remain
 read-only. Exposure-conditioned descriptions are post-treatment selections, not
 automatic causal effects; inclusion establishes no attention, belief or intent.
 
-Exposure capture v1 was introduced in export v7; current export v15 retains the
+Exposure capture v1 was introduced in export v7; current export v16 retains the
 exposure chain and frozen analysis artifacts alongside artifact work. T09 advances
 the database to schema 7; T10 extends the typed mechanics contract to schema 8;
 T11 adds typed commitments in schema 9; T16 advances it to schema 10 for pinned
 executable packages; T14 advances it to schema11 for investigation ownership;
-T17's combined schema13 also retains external finite generation authorization
-and per-question request/candidate/charge counters. Intermediate T17-only schemas
+The combined schema14/export16/library9 retains T12 typed institutional workflow
+alongside T17 external finite generation authorization and per-question
+request/candidate/charge counters. Intermediate T12 and T17 schemas
 are rejected explicitly and are not reinterpreted as the combined schema.
 Exposure provenance alone does not alter controlled-world
 settlement, prompts or checkpoint replay. No migration or reset is performed.

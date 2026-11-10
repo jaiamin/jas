@@ -835,3 +835,14 @@ or unchosen outcomes named explicitly. Keep settlements, conflicts and artifact
 versions source-linked behind disclosures. Preserve internal table scrolling,
 keyboard controls and phone/light/dark behavior. Agreement is optional; the UI
 must not turn the agreement measure into a success label.
+
+### Institutional workflow
+
+Reuse Conditions/Review and run Environment/Record. Materials, logical time,
+owned work, blocked prerequisites and the selected handoff recipient lead the
+readable work list. Accepted means an actual recorded recipient acceptance.
+Dependencies/permissions/timing, artifact versions/access, private addressed mail
+and source-linked settlements use stock disclosures. Label researcher inspection;
+mailbox arrival does not confirm participant input. Keep ordinary tables and
+spatial diagrams out of the default work view. Material cost/duration edits retain
+draft/save locking; population edits preserve bound workers and complete orders.

@@ -1903,3 +1903,52 @@ The34 tests comprise the actual-shell generation/finite workflow cases plus
 seven existing isolated AgentReply regression units; those7 do not exercise the
 shell. The passed lint/global types and these cases qualify their exact0cb4411c
 source, with later documentary-only changes separately source-stamped.
+
+## Exact accepted T12 integration, source preparation (2026-11-10)
+
+Normal unit-stage checkpoint `29ab2796` passed Gitleaks (117523 staged bytes,
+no findings). The previous two lock timeouts are not rewritten as successes.
+Read the full accepted T12 review at exact published
+`40c32ff60593ee195cd4df21289448e385a95f03`: personally recorded Standards/Spec
+PASS after genuine interaction omission reds and minimal repair19fcb464;
+merge66b3b460 retains376b01bc. This acceptance is inherited finite DEVELOPMENT,
+not a new T17 check, production/live or final-product acceptance.
+
+The exact normal `git merge --no-ff --no-commit 40c32ff6...` produces25 conflicts.
+Original `accepted-t12-merge-01` receipt retains recorder126: its AFTER capture
+correctly rejects unmerged index stages before any payload opens. Git's conflict
+log is retained, but this recorder did not separately retain its child's exit
+before replacing the recorder exit; no actual independent child-exit number is
+claimed from that receipt. No safe check was bypassed. A distinct fresh conflict
+retainer preflights exact cached-only/protected-excluded names, all index regular
+modes/stages and source descendants before opening any payload, then retains
+worktree conflict markers and all base/ours/theirs blobs. Manifest at
+`.tools/t17/evidence/conflicts/accepted-t12-40c32ff6/manifest.json`, SHA256
+`e18a3c667a2b43f529af0908416658e401e0b12d94d49fbe4943c3be32dde2c9`;
+25 conflicts, exact gzip byte restorations for every retained version. It passes
+within1MiB output forecast (898920 bytes before its receipt), backend57,693,089
+bytes before receipt. Original files/custody/maps remain unchanged.
+
+Conflict reconciliation preserves both finite and institutional workflow entries
+in library/rules/capabilities/preflight/UI descriptions/icons/suggestions and both
+documentary histories. Shared closing braces/return fields are reconstructed
+for both instrument branches, without installing any new rule. DB/current export
+and schema assertions are updated atomically to genuine combined meanings:
+DB14/export16/library9, definition2/research-operation2/generation-eventv2,
+workflow1.0.0. T12 DB12/export13/library8 and T17-only DB13/export15/library8 are
+explicitly incompatible, including both distinct meanings oflibrary8. Prior DB13
+and libraryv8 rejection cases are extended. All current source callers, frontend
+fixtures/e2e expectations, backend/current qualification tests, smoke callers and
+normative docs use the combined contracts; historical reports/oracles/scores and
+original frozen T01 runner/cases are not reinterpreted. The independent
+co-signature table remains unchanged. No aliases/migration/reset.
+
+T12's accepted delivered-message/handoff/acceptance allowlists, actor controls and
+directed-count regressions are retained. T14 asynchronous Engine/Assistants/complete
+save/export dispatch remains installed; no redundant repair. This source merge
+has no new qualification yet. Unit source0cb4411c remains the exact pre-merge
+qualified source; final merged frontend/backend/static/current-matrix/T01-current
+observations require separately recorded sources. New backend retained room is
+about9MiB before final merge source capture, so remeasure/forecast each bounded job
+instead of assuming the prior16MiB-perjob ceiling grants additional cumulative
+space. Browser/build/services/production/providers/paid/held-out remain held.

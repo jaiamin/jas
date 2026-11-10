@@ -366,6 +366,10 @@ if __name__ == "__main__":
         )
         if os.getenv("JAS_TEST_PARTICIPANTS") == "1":
             deterministic_participants(app)
+        if os.getenv("JAS_TEST_WORKFLOW") == "1":
+            from workflow_provider import deterministic_workflow
+
+            deterministic_workflow(app)
         if os.getenv("JAS_TEST_CLAIMS") == "1":
             deterministic_researcher(app)
         if os.getenv("JAS_TEST_RESEARCHER") == "1":

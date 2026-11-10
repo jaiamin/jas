@@ -17,6 +17,7 @@ from .decisions import DecisionRules
 from .distributed import DistributedCoordination
 from .mechanisms import Bargaining, Information, Institution, RenewableResource
 from .reliance import RelianceCommitments
+from .workflow import InstitutionalWorkflow
 from .world import World
 
 
@@ -475,6 +476,8 @@ class EnvironmentDefinition:
 
 
 MEASURE_DESCRIPTIONS = {
+    "workflow_completion": "Accepted completed-work handoffs / all declared work items; "
+    "not self-reported productivity, intelligence or a required cooperative outcome.",
     "reliance_fulfillment": "Fulfilled / due relied promises with feasible and actual "
     "opportunities; "
     "null without eligible promises. Breach never establishes deception or betrayal.",
@@ -532,6 +535,15 @@ MEASURE_DESCRIPTIONS = {
 
 
 CATALOG = {
+    "institutional_workflow": EnvironmentDefinition(
+        "institutional_workflow",
+        "Institutional workflow",
+        "Owned artifact work, finite materials and explicit logical-time settlement.",
+        InstitutionalWorkflow,
+        "workflow_completion",
+        ("artifacts", "workflow", "communication", "communication_channels", "memory"),
+        ("workflow_completion",),
+    ),
     "reliance_commitments": EnvironmentDefinition(
         "reliance_commitments",
         "Reliance and commitments",

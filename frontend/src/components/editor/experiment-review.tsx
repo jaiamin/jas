@@ -9,6 +9,7 @@ import { CoordinationAssumptions } from "@/components/distributed-fields";
 import { FiniteMechanics } from "@/components/editor/finite-mechanics";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { WorkflowAssumptions } from "@/components/workflow-fields";
 import { label, modelLabel, money } from "@/lib/format";
 import type { Catalog, Design } from "@/lib/types";
 
@@ -216,6 +217,9 @@ export function ExperimentReview({
                       </span>
                     ))}
                   </div>
+                )}
+                {condition.parameters.workflow && (
+                  <WorkflowAssumptions rules={condition.parameters.workflow} />
                 )}
                 {condition.parameters.coordination && (
                   <CoordinationAssumptions

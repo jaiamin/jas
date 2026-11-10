@@ -102,7 +102,7 @@ for (const theme of ["light", "dark"]) {
       const path = testInfo.outputPath("experiment.json");
       await download.saveAs(path);
       const exported = JSON.parse(await readFile(path, "utf8"));
-      expect(exported.version).toBe(12);
+      expect(exported.version).toBe(16);
       expect(exported.study.comparison).toEqual(before.comparison);
       expect(exported.study.effects).toEqual(before.effects);
       expect(exported.requests).toEqual([]);

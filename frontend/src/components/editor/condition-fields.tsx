@@ -266,6 +266,7 @@ export function ConditionFields({
                     "artifact_workspace",
                     "distributed_coordination",
                     "reliance_commitments",
+                    "institutional_workflow",
                   ].includes(design.environment)}
                   environment={design.environment}
                   onAblation={(choice) => {
@@ -336,10 +337,12 @@ export function ConditionFields({
                       {(["messages", "reports", "promises"] as const)
                         .filter(
                           (channel) =>
-                            channel !== "promises" ||
-                            ["commons", "trust_exchange"].includes(
-                              design.environment,
-                            ),
+                            (design.environment !== "institutional_workflow" ||
+                              channel === "messages") &&
+                            (channel !== "promises" ||
+                              ["commons", "trust_exchange"].includes(
+                                design.environment,
+                              )),
                         )
                         .map((channel) => (
                           <FieldLabel

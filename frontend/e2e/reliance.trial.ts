@@ -160,7 +160,7 @@ for (const variant of [
     const exported = await (
       await request.get(`/api/studies/${sid}/export`)
     ).json();
-    expect(exported.version).toBe(12);
+    expect(exported.version).toBe(16);
     expect(exported.runs[0].record.state.outcome.payoffs).toEqual({
       iris: 10,
       moss: 19,

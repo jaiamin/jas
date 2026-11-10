@@ -19,6 +19,7 @@ from .domain import (
     StopArtifact,
     Strict,
     Treatment,
+    WaitWorkflow,
 )
 from .simulation.checkpoints import Observation
 from .simulation.environments import create_world, get_environment
@@ -38,6 +39,14 @@ CAPABILITIES = {
         "reviewed_finite_transitions": "Pinned explicit role/state/credit transitions against an "
         "external exhaustive reviewed table; no proof of natural-language understanding. "
         "Static actor-private fields, fixed role order, conservation and horizon.",
+    },
+    "institutional_workflow": {
+        "versioned_artifacts": "Owned work appends authorized immutable artifact versions.",
+        "finite_stock": "Work starts atomically consume their declared shared material cost.",
+        "task_dependencies": "Exclusive claims/delegation, delayed artifact work and selected "
+        "recipient acceptance enforce prerequisite handoffs; prose cannot edit procedures.",
+        "messaging": "Explicit sender/recipient routes deliver mail after declared logical "
+        "delay; no ambient broadcast or synthetic signals.",
     },
     "reliance_commitments": {
         "versioned_artifacts": "Actor-authorized artifacts and voluntary read-access entrusting.",
@@ -177,6 +186,7 @@ class Requirement(Strict):
 def capabilities(environment: str) -> dict[str, str]:
     available = {**COMMON, **CAPABILITIES[environment]}
     if environment in {
+        "institutional_workflow",
         "artifact_workspace",
         "sealed_relay",
         "reviewed_finite",
@@ -185,7 +195,12 @@ def capabilities(environment: str) -> dict[str, str]:
     }:
         for key in (
             ("signal_disclosure",)
-            if environment in {"distributed_coordination", "reliance_commitments"}
+            if environment
+            in {
+                "institutional_workflow",
+                "distributed_coordination",
+                "reliance_commitments",
+            }
             else ("messaging", "signal_disclosure")
         ):
             available.pop(key)
@@ -336,6 +351,13 @@ def _instrument(world: World, actor: str, observation: Observation, variant: int
         return Decision(
             action=FiniteAction(operation=choices[variant % len(choices)]),
             rationale="External finite preflight witness, not model behavior.",
+            memory="",
+            forecast=None,
+        )
+    if "workflow" in observation:
+        return Decision(
+            action=WaitWorkflow(kind="wait_workflow"),
+            rationale="Preflight wait witness.",
             memory="",
             forecast=None,
         )
@@ -623,6 +645,7 @@ def _preflight(specification: str, runner=None) -> dict:
     # Endowment also sets incidental synthetic signal ranges in these worlds.
     active = set(get_environment(design.environment).parameters)
     if design.environment not in {
+        "institutional_workflow",
         "artifact_workspace",
         "sealed_relay",
         "reviewed_finite",

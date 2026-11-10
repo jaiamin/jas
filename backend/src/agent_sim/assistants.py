@@ -890,9 +890,8 @@ class Assistants:
                             else {}
                         ),
                         **(
-                            {"coordination_outcome": state.get("outcome")}
-                            if design.environment
-                            in {"distributed_coordination", "reliance_commitments"}
+                            {"workflow_outcome": state.get("outcome")}
+                            if design.environment == "institutional_workflow"
                             else {}
                         ),
                         **(
@@ -919,7 +918,32 @@ class Assistants:
                             "artifact_workspace",
                             "distributed_coordination",
                             "reliance_commitments",
+                            "institutional_workflow",
                         }
+                        else {}
+                    ),
+                    **(
+                        {
+                            "workflow_state": {
+                                **{
+                                    name: state[name]
+                                    for name in (
+                                        "logical_time",
+                                        "phase_actors",
+                                        "withdrawn",
+                                        "resource_stock",
+                                        "resource_spent",
+                                        "work",
+                                        "work_history",
+                                        "read_grants",
+                                        "pending_deliveries",
+                                        "outcome",
+                                    )
+                                },
+                                "pending_proposals": len(state["pending_actions"]),
+                            }
+                        }
+                        if design.environment == "institutional_workflow"
                         else {}
                     ),
                     **(

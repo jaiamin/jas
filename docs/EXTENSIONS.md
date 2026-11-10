@@ -153,11 +153,12 @@ T11's DB9/export10/library6, T16 integration advanced the contract atomically to
 DB10/export11/library7 because revisions, checkpoints,
 actions and reusable definitions may now contain an admitted executable package.
 T14 introduced durable bounded investigations as DB11/export12/library7. The current
-combined T17 contract is DB13/export15/library8/definition2/research-operation2,
-retaining investigation ownership alongside finite packages and generation allowances.
+combined T17 contract is DB14/export16/library9/definition2/research-operation2,
+retaining investigation ownership and accepted T12 workflow alongside finite
+packages and generation allowances.
 Capture1/comparison1/tool2.0/direct1.0 and installed World rules retain their meanings.
-Prior DB1–12, library1–7/definition1, research-operation1 and intermediate
-export1–14 meanings are incompatible; preserve their original
+Prior DB1–13, library1–8/definition1, research-operation1 and intermediate
+export1–15 meanings are incompatible; preserve their original
 source/data for inspection. No migration, adapter or reset is provided. In-memory
 workspaces use an owned temporary directory. Include the sidecar with workspace
 backups; keep it out of Git. Review history describes its recorded runtime;

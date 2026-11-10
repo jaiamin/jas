@@ -83,7 +83,7 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
     }
     return {
         "format": "jas-study",
-        "version": 15,
+        "version": 16,
         "extension_generations": [
             attempt
             for attempt in research.extensions.generations.list()
