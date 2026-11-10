@@ -172,7 +172,7 @@ export function agentSuggestions({
       action: run ? "trace" : "compare",
       prompt: run
         ? `For ${identity}, how did the recorded outcomes change across rounds? Identify turning points with cited decisions, and state what this single run cannot establish.`
-        : `${comparison} for ${identity} using independent runs and matched seeds where available. Which differences are supported, and how much uncertainty remains? Do not treat turns as independent replicates.`,
+        : `${comparison} for ${identity} using planned runs and matched seeds where available. Which differences are supported, and how much uncertainty remains? Do not treat turns as independent replicates.`,
     },
     {
       title: "Trace decisions",

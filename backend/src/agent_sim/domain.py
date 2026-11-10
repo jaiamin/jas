@@ -326,7 +326,7 @@ class Design(DesignSpec):
             if resolved != keys:
                 raise ValueError("Task dependencies must exist and form an acyclic graph")
         if len(self.conditions) * len(self.seeds) * self.repetitions > 120:
-            raise ValueError("A study supports up to 120 independent runs")
+            raise ValueError("A study supports up to 120 planned runs")
         if self.environment == "trust_exchange" and len(self.profiles) % 2:
             raise ValueError("Trust exchange requires an even number of agents")
         if self.environment == "bargaining" and len(self.profiles) != 2:

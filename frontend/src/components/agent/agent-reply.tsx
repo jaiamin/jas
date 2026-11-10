@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ReplyActivity } from "@/components/agent/agent-activity";
 import { AgentMarkdown } from "@/components/agent/agent-markdown";
 import { AgentTarget } from "@/components/agent/agent-target";
+import { ComparisonEvidence } from "@/components/comparison-evidence";
 import {
   Disclosure,
   DisclosureContent,
@@ -191,6 +192,17 @@ export const AgentReply = memo(function AgentReply({
                 ))}
               </div>
             )}
+            {row.output?.comparisons &&
+              Object.entries(row.output.comparisons).map(([key, report]) => (
+                <Disclosure key={key}>
+                  <DisclosureTrigger>
+                    Captured comparison · revision {report.comparison.revision}
+                  </DisclosureTrigger>
+                  <DisclosureContent>
+                    <ComparisonEvidence report={report} />
+                  </DisclosureContent>
+                </Disclosure>
+              ))}
             {complete && !!row.output?.caveats?.length && (
               <Disclosure className="min-w-0">
                 <DisclosureTrigger>Limitations & uncertainty</DisclosureTrigger>

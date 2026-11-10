@@ -5,6 +5,7 @@ from typing import TypedDict
 
 from sqlalchemy import delete, or_, select, update
 
+from .comparisons import ComparisonRun, compare_runs
 from .db import (
     Agent,
     Analysis,
@@ -25,7 +26,7 @@ from .db import (
 from .domain import Design, Treatment
 from .environment_library import EnvironmentLibrary
 from .llm import PRICES, LanguageModels, Usage, empty_usage
-from .metrics import RunMetrics, aggregate_metrics, condition_results, matched_effects
+from .metrics import aggregate_metrics
 from .participants import activation_record, operation_record
 from .simulation.environments import CATALOG, create_world
 from .validity import Requirement, factorial_issues, preflight, require_valid, requirement_issues
@@ -467,18 +468,37 @@ class Research:
             ).all()
         selected_ids = {run.id for run in self.operational_runs(study_id, revision.number)}
         summaries = self.runs(study_id, run_ids=selected_ids)
+        with self.db.session() as session:
+            attempted = set(
+                session.scalars(
+                    select(ParticipantActivation.run_id)
+                    .where(ParticipantActivation.run_id.in_(selected_ids))
+                    .distinct()
+                )
+            )
         completed = [run for run in summaries if run["status"] == "complete"]
         metrics = self.metrics_many({run["id"] for run in completed})
-        samples = [
-            RunMetrics(
-                condition_key=run["condition_key"],
-                condition=run["condition"],
-                seed=run["seed"],
-                repetition=run["repetition"],
-                metrics=metrics[run["id"]],
-            )
-            for run in completed
-        ]
+        comparison = compare_runs(
+            [
+                ComparisonRun(
+                    run_id=run["id"],
+                    condition_key=run["condition_key"],
+                    seed=run["seed"],
+                    repetition=run["repetition"],
+                    status=run["status"],
+                    through_turn=run["turn"],
+                    attempted=run["turn"] > 0
+                    or run["id"] in attempted
+                    or run["status"] == "failed",
+                    metrics=metrics.get(run["id"], {}),
+                    error=run["error"],
+                )
+                for run in summaries
+            ],
+            Design.model_validate(revision.design),
+        )
+        comparison["comparison"]["revision"] = revision.number
+        comparison["comparison"]["design_sha256"] = revision.sha256
         check = self.preflight(
             Design.model_validate(revision.design),
             revision.source.removeprefix("plan:") if revision.source.startswith("plan:") else None,
@@ -519,8 +539,7 @@ class Research:
                 {"number": r.number, "created": r.created, "sha256": r.sha256} for r in revisions
             ],
             "runs": summaries,
-            "results": condition_results(samples),
-            "effects": matched_effects(samples, Design.model_validate(revision.design)),
+            **comparison,
             "usage": self.models.usage(study_id=study_id),
             "preflight": check,
         }
@@ -670,6 +689,65 @@ class Research:
 
     def metrics(self, run_id: str) -> dict[str, float]:
         return self.metrics_many({run_id})[run_id]
+
+    def capture_comparisons(self, cutoffs: dict[str, int]) -> dict:
+        """Freeze sample membership, run disposition and terminal metrics together."""
+        with self.db.session() as session:
+            rows = session.execute(
+                select(Run, Condition, Revision)
+                .join(Condition, Run.condition_id == Condition.id)
+                .join(Revision, Condition.revision_id == Revision.id)
+                .where(Run.id.in_(cutoffs))
+            ).all()
+            measures = session.scalars(
+                select(Measurement).where(Measurement.run_id.in_(cutoffs)).order_by(Measurement.id)
+            ).all()
+            activations = session.execute(
+                select(ParticipantActivation.run_id, ParticipantActivation.turn).where(
+                    ParticipantActivation.run_id.in_(cutoffs)
+                )
+            ).all()
+        values: dict[str, list[tuple[str, float | None]]] = defaultdict(list)
+        for measure in measures:
+            if measure.turn <= cutoffs[measure.run_id]:
+                values[measure.run_id].append((measure.key, measure.value))
+        attempted = {
+            rid
+            for rid, turn in activations
+            if turn <= cutoffs[rid] + 1
+        }
+        groups: dict[str, list[ComparisonRun]] = defaultdict(list)
+        revisions = {}
+        for run, condition, revision in rows:
+            cutoff = cutoffs[run.id]
+            state = (
+                run.checkpoint
+                if run.turn == cutoff
+                else self.evidence(run.id, cutoff)["checkpoint"]
+            )
+            terminal = state["done"]
+            status = "complete" if terminal else run.status if run.turn == cutoff else "cutoff"
+            groups[revision.id].append(
+                ComparisonRun(
+                    run_id=run.id,
+                    condition_key=condition.key,
+                    seed=run.seed,
+                    repetition=run.repetition,
+                    status=status,
+                    through_turn=cutoff,
+                    attempted=cutoff > 0 or run.id in attempted or status == "failed",
+                    metrics=aggregate_metrics(values[run.id]) if terminal else {},
+                    error=run.error if run.turn == cutoff else None,
+                )
+            )
+            revisions[revision.id] = revision
+        comparisons = {}
+        for key, group in groups.items():
+            revision = revisions[key]
+            result = compare_runs(group, Design.model_validate(revision.design))
+            result["comparison"].update(revision=revision.number, design_sha256=revision.sha256)
+            comparisons[key] = result
+        return comparisons
 
     def metrics_many(self, run_ids: set[str]) -> dict[str, dict[str, float]]:
         with self.db.session() as session:

@@ -1,3 +1,52 @@
+# T06 implementation checkpoint
+
+T06/#17 is complete on `t3/t06-uncertainty`, pending fresh merger review. Read
+[acceptance, decisions and all observed checks](docs/research/T06_UNCERTAINTY.md).
+Latest included accepted integration is
+`350359fc2e9d3dce6ed157149ec50a3293e0f276` (T04/T05 and the frozen Sol development
+protocol), merged at `11b7afa997f220f763b9c3c8554f029b969d2456`. No child branch
+was merged directly. Retain schema 5/setup v2/activations and current export 6.
+
+Full combined backend: 1,005 passed; frontend: 109 passed, lint/build. After the
+acceptance/copy changes: 105 affected backend, 15 affected frontend, 44 shared
+browser flows and two actual harness flows passed; Ruff/ty passed. The earlier
+178-browser run is pre-T04 evidence. Frozen T01 still exits 1 for four intentional
+v4-export failures and terminal flags; every other check and usage match. Raw
+parity retains 44 record differences, all classified as added adapter provenance
+or SDK timestamps/IDs; 22 turns' world evidence/actions/metrics/usage are equal.
+No fresh production smoke, held-out or live competence claim; actual spend $0.
+
+Preserve the entire ignored `data/t06/` before any cleanup. Its immutable
+679-file manifest has canonical SHA-256
+`c971c20a9e66f06f96b63db77a55f4eace12aa887146674cc7b3278936094ad8`;
+`artifact-manifest-final.json` includes the final clean source/HEAD checkpoint.
+All attempts, failures, HTTP records, exports, source/case identities, screenshots
+and setup/review scripts remain. Port 18117 and owned browsers are closed.
+Stash `f771128ba1c9295262a4073df40cc25647b1370f` is untouched; no root `pbcopy`
+inspection, paid calls, descendants, extra checkout, push, PR/issue or security
+change. Only T06's ticket status was updated. Parent owns integration/publication.
+
+# T06 fresh integration review in progress
+
+Exclusive writer: fresh T06 merger on `integration/research-harness`, starting
+`ff1567453cc119824bb4b3c03ceee1d73acdb9fe`. Source ticket HEAD
+`20c7b020b88f64e153f8138adf59be7691b34f12` is preserved intact. All 685 ignored
+artifacts (89,936,683 bytes), including the 684-file final manifest itself, are
+copied without overwrites and verified under `.tools/research-harness/evidence/T06/`.
+Copy canonical SHA-256: `43db2a6e4ae3bc610e4d10d9eec3de2c0d0aced7017c3d5442f5479967702187`.
+Fresh commands, source archives and independent oracles go in `T06-integration/`.
+
+Acceptance plan: independently review counts, matching, selection, finite-sample
+bounds/nonidentification and frozen membership; preserve both live-discovery
+repairs and authoritative Sol history; run affected backend/static/frontend and
+keyless browser checks on 18217; classify frozen T01 v4 failures alongside
+positive schema-5/export-6 and exact direct-action parity; record accepted merge,
+fresh/inherited checks and immutable evidence, then commit without publication.
+No paid allocation is active: $0.611632 / 55 known-usage requests spent,
+$9.388368 remains. T03 and T08 are in progress; T07 stays Ready. T15 still waits
+on T08, T19 on T07, T14 on T13 after T06 acceptance. Do not read/archive `pbcopy`,
+apply the preserved stash, modify other worktrees/processes or dispose the source.
+
 # T04 integration checkpoint
 
 T04/#15 is accepted at no-ff merge
