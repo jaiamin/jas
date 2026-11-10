@@ -185,9 +185,11 @@ Merge `8a7b089` includes accepted integration `777a609` (its actual second paren
 including the repaired binding of exposure to final bounded requests and real T08
 capability delivery. Artifact-specific instructions and authorized read receipts are
 retained. The accepted exposure browser configuration supersedes the earlier
-tool-only compatibility fixture. Merge `14278e6` includes the latest observed
-accepted integration `32fa9fc9aa5080a87458ea22756478dbe8b4eda3`; that final merge
-changes only T07/progress/handoff documentation. Other ticket statuses are retained.
+tool-only compatibility fixture. Merge `14278e6` includes accepted integration
+`32fa9fc9aa5080a87458ea22756478dbe8b4eda3`; merge `145f1a4` also includes the
+latest observed accepted tip `59e20935c17bd8ea0c44f712790ffeeb38ebb83b`.
+Both merges change only accepted-review/frontier documentation. Other ticket
+statuses are retained.
 
 The application checkpoint is `fe0ba04a87c2450b260dfa2232c1f505b69e2310`.
 Its backend source digest is

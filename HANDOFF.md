@@ -2311,9 +2311,10 @@ fresh merger review and the single integration draft PR #32.
 
 Assigned checkout `/home/agent/.t3/worktrees/workspace/t3-872f635b`, branch
 `t3/implement-t09-artifact-world`, confirmed base `c2a7d5a`. Application checkpoint
-`fe0ba04a87c2450b260dfa2232c1f505b69e2310`; merge `14278e6` includes accepted
-integration `32fa9fc9aa5080a87458ea22756478dbe8b4eda3`. That final merge changes
-only accepted-review documentation; closure checks actual code/test/build hashes.
+`fe0ba04a87c2450b260dfa2232c1f505b69e2310`; merge `145f1a4` includes latest
+accepted integration `59e20935c17bd8ea0c44f712790ffeeb38ebb83b`. These final
+merges change only accepted-review/frontier documentation; closure checks actual
+code/test/build hashes.
 Read [the T09 report](docs/research/T09_ARTIFACT_WORLD.md) for decisions, worked
 oracles, retained failures and limits. Contract: **DB7/export8/comparison1/library4**.
 
