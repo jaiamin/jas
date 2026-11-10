@@ -1,5 +1,17 @@
 # T11 fresh integration review
 
+**Interrupted, unaccepted.** The reviewer reached an account usage limit before
+final qualification/acceptance. Root confirmed terminal state and reclaimed the
+shared checkout on user instruction to continue. The original plan and observed
+evidence below remain historical; unchecked criteria remain outstanding.
+Root recovery evidence is
+`.tools/research-harness/maintenance/T11-recovery-20261110/`: exact application/test
+source equality to `6b9d8964bded676bf9d129bfc75a79094ac203f5f211f899417aaeef31044de3`
+and fresh63-case/Ruff/ty passes. Interrupted records separately include1,559
+segmented backend passes and115 frontend units. Final parity still exits1 with
+unclassified differences; visual review and final evidence/closure remain pending.
+No independent acceptance or uninterrupted-suite claim follows from recovery.
+
 Fresh sole writer, 2026-11-10, in the assigned shared checkout on
 `integration/research-harness`. Accepted starting HEAD is
 `946afbc092e795f5ef458b8c697acd4861d2fd67`; exact proposed source is
@@ -9,12 +21,12 @@ Fresh evidence belongs only to `.tools/research-harness/evidence/T11-integration
 
 ## Acceptance and durable plan
 
-- [ ] Independently verify immutable hardlinked custody, source qualification,
+- [x] Independently verify immutable hardlinked custody, source qualification,
   nested archive proofs and nonzero attempts. Retain six inherited formatting
   differences and 19 early captures without after-inventories.
-- [ ] Review Standards and Spec separately against the spec/T11 ticket, project
+- [x] Review Standards and Spec separately against the spec/T11 ticket, project
   instructions, architecture/design/glossary/ADRs and accepted T10/T13/T15/T19.
-- [ ] Merge the exact source as a no-ff second parent, preserving both histories;
+- [x] Merge the exact source as a no-ff second parent, preserving both histories;
   reconcile T13 with DB9/export10/library6 atomically, without aliases,
   migrations, resets or new runtime/dependency infrastructure.
 - [ ] Freeze independent DEVELOPMENT expectations before outputs. Repair
@@ -31,7 +43,7 @@ Fresh evidence belongs only to `.tools/research-harness/evidence/T11-integration
 - [ ] Preserve the frozen T01 runner/cases/scores and four v4 failures/flags/exit1;
   separately verify current five-run/22-turn/22-request behavior, full bounded
   inputs, effort and integer ledger parity; classify every raw difference.
-- [ ] Justify inherited production by exact infrastructure-input identity or run
+- [x] Justify inherited production by exact infrastructure-input identity or run
   a fresh production check if changed inputs require it.
 - [ ] Update HANDOFF/PROGRESS, commit with ordinary hooks, close owned services
   and browser, reverify custody/evidence/status/stash and explicitly return sole
@@ -117,14 +129,115 @@ identities and literal values, not the implementer's worked example.
 
 ## Standards review
 
-Pending independent code/caller review and observed checks.
+Reviewed the source diff and actual World/domain, provider, execution, library,
+analysis and UI callers against the project standards and the skill's smell
+baseline. Existing artifact/timing/API/accounting seams remain; no dependency,
+parallel engine, compatibility layer or new provider is introduced. Revisions,
+actor projections and checkpointed grants remain authoritative. The single-user
+local workspace is the expected load. Combined qualification remains pending.
+
+Integration exposed stale T13 library5/export9 assertions and a current-contract
+architecture sentence. The public API red retains two failures/six passes on
+merged source. Repair advances only the declared exact contract to6/10/9;
+it does not accept historical formats or weaken question/source/zero-call checks.
 
 ## Spec review
 
-Pending independent requirement/enforcement review and observed checks.
+Reviewed the T11 criteria independently from style/architecture. Four optional
+promises/reliance, real grants, final alternatives, declared timing, recipient
+effects and later responses are implemented through existing public seams.
+Private histories/schemas exclude foreign opportunities; phases validate before
+mutating. Due eligibility requires reliance, structural feasibility and actual
+opportunities. Infeasible, absent, unresolved and null results remain distinct;
+breach never certifies intent. T13 capability discovery is dynamic and its
+bounded false-decline guard must recognize the newly installed four-role World.
+Independent tests and combined browser/contract qualification remain pending.
 
 ## Progress and next steps
 
-Initial context and immutable source identities are pinned. Next: establish the
-tracked-only capture wrapper, inspect custody/nested proofs and exact product
-diff, then merge and run independent red/green and combined qualification.
+Plan checkpoint `4fbf757`; exact no-ff merge
+`57c827c1d120a81fb96db9c0160e615bfc091f3b`, second parent
+`4aac5a9eb8e5ea4a0213d4fa37488e5251729fe8`. Only HANDOFF/PROGRESS conflicted;
+both documentary histories and raw conflict copies are retained. Ordinary hooks
+passed. The initial new-file staging command was rejected by the invocation-local
+ignore-all rule; staging only the explicitly named new file corrected it without
+changing capture exclusions or hooks.
+
+Independent custody verification matches2,980 files/175 directories/192,456,565
+bytes and both assigned hashes. All2,980 files are hardlinked. All55 keyed source
+archives,1,147 packed archives, six nested source archives and106 attempt logs
+verify.37 inherited nonzero attempts and19 before-only captures remain. Four
+synthetic `.env` members received only permitted metadata inspection. The exact
+final source inventory matches every Git blob at4aac5a9. Verifier failures on
+directory members, `./` normalization and the symlink-proof `target` key remain;
+they are evidence-tool errors, not product reds. No inherited helper ran.
+
+The first new independent job observes39 passes and one fixture KeyError because
+the borrowed T13 scope helper requires materialized default `repetitions`.
+Materializing the public Design defaults corrects that fixture; it is not a
+product failure or a changed oracle. Next: qualifying green and combined checks.
+
+The combined focused attempt then retains114 passes/one substantive integration
+failure: after two retained T13 proposals, the next candidate request exceeds the
+180,000-byte bound before source-identity rejection. A one-case reproduction
+fails deterministically in0.78s. Provider-boundary measurement observes181,510
+bounded bytes, including24,823 bytes of design schema repeated alongside the
+typed Candidate output schema. Limits/reservations remain intact. Before any
+repair output, extend the independent oracle: four successive proposals for the
+literal four-role protocol must retain exact source/rules and remain reviewable,
+without participant sampling. This is DEVELOPMENT, not a held-out evaluation.
+
+The Candidate-only schema omission fixed the source-rejection reproduction but
+the fourth four-role proposal still failed at DesignReview (184,427 bytes).
+The complete catalog/source-linked discovery record and the independently built
+catalog repeated 19,863 bytes of metadata. The repair retains all rule examples,
+complete discovered sources, capability identifiers, parameters, measures and
+the full schema for scoping/review; Candidate receives that schema through its
+typed output. Both public-API reproductions now pass without changing the
+180,000-byte limit. Measured maximum input bounds: StudyBrief146,502,
+Candidate149,075 and DesignReview164,538 bytes for this combined attempt.
+False provenance still exhausts validation and is rejected, and four successive
+valid proposals preserve the exact question, source and rules without sampling.
+
+The final focused group observes116 passes. The subsequent per-file combined
+backend checks are explicitly segmented, not uninterrupted coverage. They reveal
+one direct `_context` caller expecting saved custom mechanics: preserve that
+standalone context and omit its duplicate only at the provider boundary when
+source-linked discovery is present. This caller repair awaits a qualifying check.
+
+Root then requested a coordinated storage hold. The current exposure/context
+jobs retained ENOSPC-related errors (17 passes/four errors and seven passes/18
+errors), not product greens. The own driver was stopped to prevent another job;
+its final child completed with kernel-observed exit1 and released the flock.
+The stopped driver was terminated (137); its receipt was reconstructed from the
+saved start, closed output and kernel exit status, all preserved. Only closed own
+outputs were losslessly packed with verified maps, recovering space. New heavy
+installs/builds/browser/backend jobs remain held until root grants a slot. No
+other-agent environment or prior evidence/maintenance map was changed.
+
+Root's subsequent coordinated recovery is independent maintenance, not a fresh
+T11 check. Preserve
+`.tools/research-harness/maintenance/closed-root-compression-20261110T110638Z/mapping.jsonl`
+and adjacent `verification.json`: 795 closed root-generated JSON/log/tar paths
+resolve through verified lossless compressed replacements with original
+hashes/modes/mtimes. Root reports143,048,704 free bytes at completion and grants
+T16 the temporary heavy-check slot. T11/T13 integration, child source/custody,
+multiply-linked files, protected paths and T13's final index were excluded.
+This reviewer does not operate or poll T16. Earlier maintenance references in
+HANDOFF remain authoritative and unchanged.
+
+Read-only inherited review independently classifies all37 nonzero attempts by
+their verified raw logs, and verifies all six inherited formatting diff proofs
+against exact source/base Git blobs. Those historical limitations and19 early
+before-only captures remain. Accepted T13 already used the formatted planner
+context before this integration; the replaced old formatting hunk is not a new
+T11 formatting repair. Required lint and final observed checks remain separate.
+
+Eleven production inputs (container, ignore rules, entrypoint, dependency locks,
+configuration, containment and production-smoke source) match accepted T10,
+accepted starting HEAD and source-qualified T11 byte-for-byte. The T11 production
+receipt at source key `95a2d933c5855298d34f2562c67e63e8d88daa950f4ea32462719627586b3ff8`
+has identical before/after source and exit0; runtime records UID10001:10001 and
+healthy. That production qualification is inherited, not a fresh current-image
+smoke. Current application qualification is separate. No infrastructure input
+requires a new production run; no old image is claimed to contain these bytes.

@@ -1,3 +1,71 @@
+# Root recovery — T11 review interrupted by account usage limit (2026-11-10)
+
+The user instructed continuation after T11 review and T07 tool-cleanup delegates
+failed with an account usage limit. Root confirmed both terminal states, closed
+the failed T11 task and reclaimed sole shared-checkout writing. The historical
+review below has no active writing ownership. No provider/model substitution.
+
+**T11 remains unaccepted.** Exact source `4aac5a9` is already the second parent
+of no-ff `57c827c`; accepted published frontier remains `946afbc` containing
+T01–T10/T13/T15/T19 for their documented scopes. DB9/export10/library6 remain
+provisional T11 contracts. Do not publish this frontier as accepted.
+
+Root preserved the interrupted patch/source in
+`.tools/research-harness/maintenance/T11-recovery-20261110/` and verified exact
+application/test equality to interrupted-review source
+`6b9d8964bded676bf9d129bfc75a79094ac203f5f211f899417aaeef31044de3`.
+Fresh root qualification: **63 backend cases, Ruff and ty passed**. Interrupted
+records separately contain1,559 segmented backend passes and115 frontend units;
+these remain inherited observations. Port18226 is closed. One documentation patch
+failed on changed context before applying; its receipt is retained.
+
+Checkpoint the planner input-deduplication fix, independent tests and contract
+assertions. A new fresh review must finish parity difference classification,
+visual/evidence checks and final provenance/index/closure before acceptance.
+`T11-integration/parity-unexplained.json` and parity exit1 remain failures;
+preserve them. Do not execute inherited ignored helper programs or restart the
+failed reviewer as a fresh review. New review evidence needs a separate directory.
+
+T16 is complete/unaccepted at `475bfc73`, with root-verified immutable hardlinked
+custody in `evidence/T16/` and sibling `T16-copy-verification.json` under the
+research harness. Manifest SHA256
+`ad80b4fc0c17fc98b6988ecc049053e36492b232985bf5fe00ca55ee1da051a8`;
+custody includes2,314 files/14 symlinks/333 directories/278,978,011 bytes.
+These are not independent physical copies; eight synthetic `.env` files remain
+excluded without content/hash. Never write either source/custody tree.
+
+Completed owners removed disposable uv copies for T01–T06/T08, preserving source,
+evidence and receipts. T07 cleanup failed and remains unverified; leave that
+environment alone. T12/T14/T18 are Ready; T17 waits on accepted T16, and T20 waits
+on its graph. Sol stays$0.611632/55 requests, $9.388368 remaining; Luna unallocated.
+Preserve all storage maps, custody, stash and unread `pbcopy`. No publication.
+
+# T11 fresh integration review — interrupted, historical ownership (2026-11-10)
+
+The assigned reviewer retains sole tracked writing ownership until explicit final
+completion. Starting accepted `946afbc`; exact T11 `4aac5a9` is second parent of
+no-ff `57c827c`. Both documentary histories survive. Current contract is
+DB9/export10/library6, with no aliases/migration/reset. Read
+[the durable review](docs/research/T11_INTEGRATION_REVIEW.md) for independent
+oracles, Standards/Spec findings, request-bound reds/green and pending checks.
+
+Root's temporary heavy-check slot belongs to T16. This reviewer closed its own
+backend driver/current child and released the shared flock; ENOSPC errors and
+administrative exit137 are preserved. New heavy work is held. Only closed own
+outputs were losslessly compacted with verified maps. Root's independent latest
+maintenance is
+`.tools/research-harness/maintenance/closed-root-compression-20261110T110638Z/`
+`mapping.jsonl` and adjacent `verification.json` (795 root-owned logical paths).
+Preserve this and all older maps/owner receipts referenced below. T11/T13
+integration, child custody/source, multiply-linked and protected paths were
+excluded; T13's final index is unchanged. Shared free space is not reserved.
+
+Never open/inspect/hash/copy/change/delete root `pbcopy`; every capture child
+preflights tracked-only Git selection using invocation-local exclusions. Stash
+`f771128ba1c9295262a4073df40cc25647b1370f` remains protected. No inherited ignored
+helper ran and immutable hardlinked custody remains unchanged. No paid calls,
+publication, descendants, extra checkouts or T16 environment operations.
+
 # Root coordination — T13 verified; T11 review next (2026-11-10)
 
 Accepted frontier is `32a1247e286ee2d58ee105d5aeb7640222a619e2`:

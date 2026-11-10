@@ -162,8 +162,8 @@ requires a nonempty advance analysis plan and semantic review. The brief justifi
 participants, roles, conditions, opportunity-based horizon/stopping, replication and capture.
 Material clarification keeps the same conversation without an executable proposal. Unsupported
 questions retain their original text and may offer explicitly narrower installed alternatives.
-These additions are research artifacts, not World or database semantics; current DB8/export9/
-capture1/comparison1/library5/tool2.0/direct1.0 contracts remain unchanged. Installed
+These additions are research artifacts, not World or database semantics; current DB9/export10/
+capture1/comparison1/library6/tool2.0/direct1.0 contracts retain those semantics. Installed
 three-participant distributed coordination includes phase/conflict rules and logical addressed
 mail; solo artifact investigation remains sequential. A decline whose direct requirements and
 population have an installed example witness receives a bounded, recorded scoping recheck.

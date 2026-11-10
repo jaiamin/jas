@@ -51,6 +51,43 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### T11 interrupted-review recovery (2026-11-10)
+
+Account usage limits interrupted T11 review and T07 disposable-tool cleanup.
+Root confirmed terminal state and reclaimed sole shared-checkout writing. Exact
+T11 merge `57c827c` remains **unaccepted**; accepted published frontier is
+`946afbc`. Root preserved the unfinished patch/source and observed63 focused
+backend cases plus Ruff/ty pass. Exact application/test inputs match recorded
+review source `6b9d8964bded676bf9d129bfc75a79094ac203f5f211f899417aaeef31044de3`,
+which separately records1,559 segmented backend passes and115 frontend units.
+Remaining parity differences, visual/evidence closure and independent acceptance
+require a fresh review. No failed gate or inherited check becomes a fresh pass.
+T16 is complete/unaccepted with root-verified immutable custody; T12/T14/T18 are
+Ready. No provider/model change, paid calls or publication.
+
+### T11 fresh integration review — qualification in progress (2026-11-10)
+
+The sole reviewer merged exact `4aac5a9` as the second parent of no-ff `57c827c`,
+preserving both documentary histories. Current DB9/export10/library6 is reconciled
+with accepted T13. Independent DEVELOPMENT oracles use new actors and literal
+recipient effects; Standards and Spec reviews are separate. Public-API repeated
+proposal reds exposed duplicated catalog/schema input exceeding180,000 bytes;
+the bounded repair keeps complete grounded sources, schema guidance and prior
+questions. Two reproductions and116 focused cases pass; a standalone context
+caller correction still needs final qualification. No limit was weakened.
+
+Combined backend qualification is incomplete. Root's coordinated storage hold
+closed the current driver after ENOSPC exposure/context errors; these are retained,
+not passes. New heavy jobs await root's slot. Read-only review independently
+verifies inherited custody,37 nonzero attempts, six historical formatting deltas,
+19 before-only captures and exact production-infrastructure input identity.
+Production smoke remains inherited. Preserve the new root compression map at
+`maintenance/closed-root-compression-20261110T110638Z/mapping.jsonl` and adjacent
+verification under `.tools/research-harness/`, alongside every older map. T11/T13
+integration, custody, protected paths and multiply-linked files were excluded.
+Details and remaining acceptance: [fresh review](research/T11_INTEGRATION_REVIEW.md).
+No live/held-out acceptance or paid calls; T16 remains independently unpolled.
+
 ### Root verification and next frontier (2026-11-10)
 
 Root reverified all931 files/196 directories/79,724,933 bytes in T13's final

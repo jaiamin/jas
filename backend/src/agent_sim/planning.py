@@ -18,10 +18,9 @@ from .research_tools import (
     ProbeStep,
     ResearchTools,
 )
-from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, create_world
+from .simulation.environments import CATALOG, create_world
 from .templates import templates
 from .validity import Requirement, factorial_issues, preflight, requirement_issues
-from .validity import capabilities as environment_capabilities
 
 PLANNING = """Design empirical studies of model-controlled agents, not claims of human prediction.
 Preserve the essential meaning of the ORIGINAL user question. First map its essential constructs
@@ -313,6 +312,11 @@ class Planner:
         max_tokens: int,
         web_search: bool = False,
     ) -> T:
+        omitted = {"custom_environments"} if "research_operations" in data else set()
+        if output is Candidate:
+            # Candidate's typed output already supplies the complete design schema.
+            omitted.add("design_schema")
+        data = {name: value for name, value in data.items() if name not in omitted}
         return await self.models.generate(
             output,
             model=setting("PLANNER_MODEL", "openai:gpt-6.1-sol"),
@@ -326,7 +330,7 @@ class Planner:
         )
 
     def _context(self, question: str, conversation: Sequence[dict]) -> dict[str, object]:
-        capabilities = []
+        rule_examples = []
         for environment_definition in CATALOG.values():
             example = Design.model_validate(
                 next(t["design"] for t in templates() if t["id"] == environment_definition.key)
@@ -335,17 +339,10 @@ class Planner:
             actor = world.actor()
             if actor is None:
                 raise ValueError(f"Template {environment_definition.key} has no initial actor")
-            capabilities.append(
+            rule_examples.append(
                 {
                     "key": environment_definition.key,
-                    "description": environment_definition.description,
-                    "parameters": environment_definition.parameters,
-                    "measures": environment_definition.measures,
-                    "measure_definitions": {
-                        m: MEASURE_DESCRIPTIONS[m] for m in environment_definition.measures
-                    },
                     "rules_example": world.observe(actor)["rules"],
-                    "capabilities": environment_capabilities(environment_definition.key),
                     "example_note": "Example values are template settings, not fixed constants. "
                     "Use the design schema descriptions to identify changeable parameters.",
                 }
@@ -355,7 +352,8 @@ class Planner:
             "conversation": conversation,
             "research_available": setting("PLANNER_MODEL", "openai:gpt-6.1-sol")
             == "openai:gpt-6.1-sol",
-            "capabilities": capabilities,
+            # The source-linked discovery operation supplies the full catalog once.
+            "rule_examples": rule_examples,
             "models": self.models.catalog(),
             "custom_environments": [
                 record.model_dump() for record in self.research.environments.list()
