@@ -1,3 +1,47 @@
+# T16 implementation complete — fresh acceptance pending (2026-11-10)
+
+Original assigned `t3-653eb2ec` / `t3/t16-extension-admission`, port18125.
+No descendants/extra checkout. Only documented accepted`32a1247e286ee2d58ee105d5aeb7640222a619e2`
+is merged, including original8158fccc ancestry; T11`4aac5a9` is absent/unaccepted.
+Combined DB9/export10/library6 remain provisional until T16 fresh review.
+
+Read [the final implementation report](docs/research/T16_EXTENSION_ADMISSION.md).
+`review_design` now guards every untrusted draft/proposal/copied-candidate path
+before worker execution, while trusted pinned runs/inspection/export/replay survive
+original sidecar loss. Public six-call and one-call ordering reds are retained.
+Final application/build source`6556a8a` / key`18372fd7…`;1,423 distinct backend
+passes are composite across nine original segments plus the full8-case version-
+assertion repair module. Two original library-version failures remain; only3
+current-contract assertion literals changed. Ruff/ty pass. Frontend lint216 files,
+112 units/30 files, forced TypeScript and exact54-file normal/new-empty builds pass.
+All61 fresh configured browser cases/15 files pass in8 bounded workspaces. Actual
+non-root UID10001 production verifies95 deployed bytes sets,26 containment cases,
+admission guards and literal World/restoration/replay; no provider used there.
+
+Frozen T01 runner/cases/scores remain unchanged: four export-v4 failures/four failed
+flags, runner/comparator exit1. Separate current-contract parity:5 runs/22 turns/
+22 stand-in requests,98 HTTP operations,1,985 classified differences/zero unexplained;
+actual spend0. Finite independent relay mechanics only, no arbitrary-program or
+live intelligence claim. No T17/T18/held-out access or new paid allocation.
+
+Raw entry points are`data/t16/qualification-index-final.json`, backend case index,
+failure ledger, final source equivalence, archive/nested audits, closure-final.json
+and evidence-final.json with checksum. Preserve all44 wrapped nonzero attempts,
+other setup/maintenance failures and historical pre-read capture gaps. Recursive
+audit verifies17 nested source archives/6,873 members, zero protected copies. V3
+preflights tracked-only source and all child snapshots; protected root pbcopy is
+never touched.8 own synthetic CLI-test.env files remain deliberately unread/unhashed
+with name/size-only exclusions. No valuable evidence was deleted.
+
+All owned services/browser18125 are closed; original tooling and new54 assets are
+member/mode/link verified and parked separately. Temporary heavy-check slot released;
+T11 may resume. Final parking returned about175MB, immediate headroom273,494,016
+bytes shared/unreserved. No push/PR/issues/watch/reset/stash/clipboard, global
+store/config/security/credential changes. Root owns a later FRESH acceptance and
+publication; this implementation handoff does not accept or integrate T16.
+
+Historical checkpoints below keep their source and scope attributions.
+
 # T16 final frontier qualification — backend composite green (2026-11-10)
 
 Accepted32a1247 remains merged, T11 absent. Nine final backend segments execute

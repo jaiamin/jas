@@ -1,5 +1,139 @@
 # T16 / #27: bounded extension admission
 
+## Implementation complete; fresh acceptance pending (2026-11-10)
+
+T16/#27 is implemented in the original assigned worktree and branch. This is the
+implementer's continuation and self-check, **not a fresh independent acceptance**.
+Only documented accepted`32a1247e286ee2d58ee105d5aeb7640222a619e2` is merged,
+including accepted T01–T10/T13/T15/T19 and original`8158fccc` ancestry. Final
+read-only integration HANDOFF recheck confirms the same accepted frontier. T11's
+unaccepted`4aac5a9` is absent. Combined **DB9/export10/library6 remain provisional
+until T16 fresh review**; capture1/comparison1/tool2.0/direct1.0 retain their actual
+accepted meanings. There are no aliases, adapters, migrations or data resets.
+
+The normal library/design/Engine/request/evidence/export/replay workflow now uses
+an independently admitted, pinned executable package. A narrow existing World
+mediates copied integers through the original credential-free import-free Wasm
+worker. It independently settles permissions, observations and consequences;
+no second application engine or general extension framework was introduced.
+The real fixture needs no host import or broader executable contract. Only explicit
+WAT artifacts enter this path. Candidate prose/examples and a self-reported proof
+cannot authorize execution or create executable facts.
+
+The continuation retained two concrete public ordering reds. A coherent forged
+admission caused six worker calls during draft preflight. After accepted T13 was
+merged, a copied-candidate probe with lost sidecars caused one worker call before
+failure. `Research.review_design` now requires the actual matching admission
+**before any untrusted draft worker use**, including manual preflight/create/
+revise, planner review and ProposalSource/CandidateSource probes. Trusted pinned
+revision reads, pending execution, inspection/export and replay retain their own
+self-contained package/runtime checks after original review/admission sidecar
+loss. New saves/drafts still require actual admission. No new persisted meaning
+or isolated capability was added by these ordering repairs.
+
+### Observed final qualification
+
+Application/build source is clean`6556a8a0f3746f04c81d61cd525a94395a247bc8`,
+key`18372fd7044ddcf16d84babb06566cf0612010af985f2545d8e887a7c17e8cfe`.
+The nine initial backend segments at`ef3c186` / key`381c6cb3…` have identical
+application bytes. They execute1,423 cases/45 files:1,421 pass, two old accepted-T13
+library-format assertions fail. Only three format/export assertion literals change;
+the whole eight-case module passes at`68897aae…`. This is **composite segmented
+1,423 distinct passing cases**, with both original failures retained. It is not an
+uninterrupted green full-suite claim.
+
+| Gate | Observed evidence and precise scope |
+| --- | --- |
+| Public extension workflow | All9 cases pass, including independent admission vs weak self-tests; library edit/delete; lost-sidecar pinned start/replay; forgery/draft/candidate rejection before worker; runtime loss/restart; Pause/one writer; actor-scoped tools and denied/false consequences with accounted requests. |
+| Static | Ruff over backend/benchmarks/scripts and ty pass at`68897aae…`; later changes are docs only. |
+| Frontend | Lint216 files;112 units/30 files; forced TypeScript; normal Dockerfile build and fresh empty-output-directory build pass. All54 assets equal in bytes/modes,234 tracked frontend inputs verified against the image. |
+| Fresh browser |61 distinct cases/15 files in8 bounded fresh workspaces: extension2, workflow30, reference2, context2, claims7, harness11, coordination5, Researcher2. All pass on final combined assets. Includes actual T09 artifact/ACL/exposure, T15 zero-call controls, T19 cutoff/billing support and T13 draft/question workflows. |
+| Actual production | Normal current Dockerfile image, UID/GID10001, Wasmtime50.0.1;95 deployed backend/assets match host bytes.26 real containment witnesses, public independent admission/save/pin/export10, forged/lost-admission HTTP rejection and literal World/checkpoint/event/measurement restoration/replay pass. No provider constructed/requested; deterministic Engine/provider/browser observations are separately attributed. |
+| Frozen T01 | Unchanged runner/cases/scores retain exactly four export-v4 failures and four terminal failed flags; runner/comparator exit1, zero regressions/improvements. Initial direct-file import failure is separately retained and is not that expected result. |
+| Positive current contract | Compared with retained accepted T10`7aec3f5` (not a rerun of that source):5 runs/22 turns/22 Luna stand-in requests,98 HTTP operations each; exact complete prompts/schema/settings/observations/actions/consequences/checkpoints and integer accounting.1,985 raw differences classified, zero unexplained. Synthetic770 microdollars/2,200 input/1,100 output tokens; actual spending0. Original33 benchmark files unchanged; only accepted-T13 DEVELOPMENT manifest addition separately verified against`32a1247`. |
+
+Current admission enumerates132 independent inputs twice from264 fresh instances,
+then literal actual World witnesses check actor/schema/atomic rejection, private
+projection/schema invariance, credit conservation, unsuccessful stops/horizon,
+complete restoration and exact event/measurement replay. Pinned WAT SHA256 is
+`5529b29db9a176ed4fb5a99839923f4013d5f2a879eded169d3d358f3d56f6bf`;
+compiled Wasm SHA256 is
+`b5bfaada9db368cda2d9edbf6b176ed01d9c4b667a391fa8a461f99242992509`.
+The frozen independent specification predates implementation; fixture byte identity
+through development and real production remains proved, without retuning or rescoring.
+
+Finite sealed-relay-v1 is the supported semantic scope. Native code, host/WASI
+imports, external data/network, arbitrary new interfaces, generation and adjudication
+remain unsupported and fail explicitly. Every execution/replay needs current local
+qualification; restart, changed source/runtime or worker failure blocks it. Memory,
+table, stack, fuel, input/output, CPU, wall time and cleanup boundaries are actually
+qualified. The trusted kernel/Python/Wasmtime runtime is assumed; this is not a claim
+to contain arbitrary native exploits or prove arbitrary-program correctness.
+
+### Evidence custody, retained failures and closure
+
+Raw evidence is ignored`data/t16/`. Entry points for the later fresh reviewer are
+`qualification-index-final.json`, `backend-frontier-index.json`,
+`failure-ledger-frontier.json`, `qualification-source-equivalence-final.json`,
+`archive-integrity-final.json`, `nested-source-audit-final.json`, `closure-final.json`
+and `evidence-final.json` with its checksum. Check records retain exact commands,
+exits, source identities, before/after inventories, archives and diffs. Identical
+snapshots are reused with member-byte verification. Helper versions/derivation diffs,
+all failures and all source archives remain. No historical source is silently replaced.
+
+The preclosure global byte audit verifies43 keyed source archives,67 closed-output
+archives,1,787 nested synthetic test archives,4 trace ZIPs and4 original/new tooling
+archives. The deeper header-first audit additionally verifies17 nested T01 source
+archives/6,873 source members against their recorded inventories, with zero protected
+copies. Later docs-only closure captures each have their own member-byte proofs.
+Old captures lack a pre-read path-selection proof; v2 outer captures had one but
+internal historical snapshots lacked enforced descendant exclusions. These historical
+provenance gaps remain explicit; a later byte audit cannot retroactively supply them.
+V3 now persists tracked-only/protected-path preflight before reads and enforces the
+same selection in **all subprocess snapshots** with invocation-local exclusions.
+No original protected clipboard file was opened, copied, hashed or changed.
+
+There are44 retained wrapped nonzero attempts, individually classified in the failure
+ledger, plus the separately indexed unwrapped maintenance/setup failures. These include
+both new guard reds, old public/ordering/contract/static reds, interrupted lock waits,
+ENOSPC installs/lifecycle/browser work, initial parity-helper assumptions, the old
+182/184 main-browser result and two unchanged zero-call controls later passing in their
+own fresh workspace, three merge-conflict attempts and expected frozen exit1 results.
+No failed attempt is recast as passing qualification.
+
+A new frontend check passes all commands but fails build parity because Tailwind
+also scans previous generated`dist` in the Docker workspace without the parent
+ignore file. Moving only generated output outside that scan yields exact54-file
+normal/new-empty parity at unchanged source. Original differing output bytes were
+not copied before that failed helper closed its container; logs remain. An official
+documentation GET was blocked403, without bypass. An overbroad key-suffix audit first
+rejects certifi's public CA bundle without reading it; the exact locked package-member
+exception then passes. A read-only shared-preview check confirms keyboard focus,
+phone/dark layout, no overflow and disabled unqualified validation; one GET connection
+refusal during test-server switching is retained. The owned tab is closed.
+
+The temporary browser slot is released after all61 cases and byte-proved parking.
+The original archive restores only necessary own Python members (Ruff/ty executables
+omitted after static completion) and three locked Playwright packages; no duplicate
+store or other checkout's dependencies/caches are used. Full-disk failure once prevents
+even capture-directory creation; own inactive verified runtime is safely parked, then
+node tooling under flock, with exact receipts. Final parking returns about175MB;
+last immediate measurement273,494,016 available bytes is shared, not reserved.
+Eight synthetic CLI-test`.env` files remain in own raw tmp directories, deliberately
+unread/unhashed/excluded from content capture, with name/size-only metadata; no test
+failure or valuable evidence is deleted. Owned services/browser18125 are closed;
+normal scanning/hooks and final clean-HEAD/source-equivalence receipts are retained.
+
+Preserved accepted scopes include T19 structured calculations/prose-unassessed and
+billing identity`716a44b`, T15 actual zero-call controls/ablations/read effort`6e1a7c8`,
+T09 ACL/exposure/replay`4ed18af`/`84867cc`, T07/T08 and T03/T05/T06 repairs.
+Sol remains Researcher/planner/assistant and Luna model participants. No live provider
+work, paid allocation, T17 generation, T18 adjudication or final held-out task access
+occurred. Deterministic fixtures establish mechanics only. **T16 acceptance and any
+later publication/integration belong to root's fresh reviewer.**
+
+Historical design/implementation checkpoints below retain their original attributions.
+
 Assigned branch `t3/t16-extension-admission`, worktree `t3-653eb2ec`.
 Starting HEAD exactly `8158fccc01382b61d9efd3589d975119a6e7b8e2` (accepted
 T01–T09, T15, T19). Linux aarch64 Docker Sandbox; no descendants or extra
@@ -77,7 +211,7 @@ this frozen specification, never copied candidate self-tests.
       current-contract parity, with every difference retained/classified.
 - [x] Merge **documented accepted** integration `f9e87c2`, reconcile T10
       DB8/export9/library5 with T16 DB9/export10/library6; recheck before handoff.
-- [ ] Coherent scanned commits, raw member-verified source archives/inventories,
+- [x] Coherent scanned commits, raw member-verified source archives/inventories,
       failures retained, clean branch and closed owned services/browser18125.
 
 Continuation at7383c13 records the public admission-ordering red before repair:
@@ -301,8 +435,8 @@ frontend requires a new build and affected qualification; old assets/results are
 retained with their exact older source. No additional persisted meaning is added
 by T13, so combined T16 DB9/export10/library6 remain genuine and provisional.
 
-- [ ] Public copied-candidate red/guard/green on the accepted T13 combination.
-- [ ] Qualify combined backend/static/frontend/build/browser/production and
+- [x] Public copied-candidate red/guard/green on the accepted T13 combination.
+- [x] Qualify combined backend/static/frontend/build/browser/production and
       untouched frozen plus independent positive parity; finish custody/closure.
 
 The copied-candidate public red exits1 at the expected worker witness: the retained
