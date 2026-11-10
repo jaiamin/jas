@@ -22,6 +22,7 @@ LENSES = {
             "recorded_events",
             "versioned_measurements",
             "planned_membership",
+            "artifact_versions_when_defined",
         ],
     },
     "communication": {
@@ -35,6 +36,7 @@ LENSES = {
             "authorized_observations",
             "exact_request_delivery",
             "feasible_commitment_resolution",
+            "artifact_versions_when_defined",
         ],
     },
 }
@@ -98,6 +100,7 @@ def capture_lens(
             "through_turn": cutoff,
             "state_hash": recorded["state_hash"],
             "balances": balances,
+            "artifact_state": recorded.get("artifact_state"),
             "measurements": raw_measurements,
             "rule_version": recorded["recorded_rule_version"],
             "turns": [
@@ -123,13 +126,42 @@ def capture_lens(
                 "id": f"run:{rid}:total_utility",
                 "label": "Recorded total utility",
                 "scope": "captured_run",
-                "value": math.fsum(balances.values()),
-                "formula": "sum(balances.values())",
+                "value": math.fsum(balances.values()) if balances is not None else None,
+                "formula": "sum(balances.values()); unavailable when the World has no balances",
                 "inputs": {"balances": balances},
                 "sources": [fact["source"]],
                 "assumptions": ["Utility balances are World accounting, not evidence of motive."],
             }
         )
+        if artifact_state := fact["artifact_state"]:
+            outcome = artifact_state["outcome"]
+            for name, value, formula in (
+                (
+                    "artifact_writes",
+                    sum(len(obj["versions"]) - 1 for obj in artifact_state["artifacts"].values()),
+                    "sum(len(artifact.versions) - 1): initial versions are not writes",
+                ),
+                (
+                    "artifact_success",
+                    int(outcome["status"] == "success") if outcome is not None else None,
+                    "1 if recorded terminal outcome is success else 0; null before termination",
+                ),
+            ):
+                calculations.append(
+                    {
+                        "id": f"run:{rid}:{name}",
+                        "label": name.replace("_", " ").capitalize(),
+                        "scope": "captured_run",
+                        "value": value,
+                        "formula": formula,
+                        "inputs": artifact_state,
+                        "sources": [fact["snapshot_source"]],
+                        "assumptions": [
+                            "Executable artifact outcomes are distinct from utility, actual "
+                            "reading, input inclusion, attention or private intent."
+                        ],
+                    }
+                )
         claims = [e for e in events if e.kind == "claim" and e.data.get("eligible")]
         resolutions = [e for e in events if e.kind == "commitment_resolved"]
         counters = {
@@ -214,6 +246,9 @@ def capture_lens(
                             else None,
                             "experience_records": len(t.observation["your_experiences"])
                             if "your_experiences" in t.observation
+                            else None,
+                            "artifact_history_records": len(t.observation["artifact_history"])
+                            if "artifact_history" in t.observation
                             else None,
                         }
                         for t in turns
@@ -322,8 +357,15 @@ def apply_lens(frozen: dict, key: LensKey) -> dict:
     account = []
     for row in frozen["coverage"]["runs"]:
         rid = row["run_id"]
+        artifact = next(f.get("artifact_state") for f in frozen["facts"] if f["run_id"] == rid)
         text = (
             (
+                f"{row['recorded_turns']} recorded artifact decisions; retained writes "
+                f"{values[f'run:{rid}:artifact_writes']}; outcome "
+                f"{artifact['outcome']['status'] if artifact['outcome'] else 'unfinished'}."
+            )
+            if key == "behavior" and artifact
+            else (
                 f"{row['recorded_turns']} recorded decisions; cumulative utility "
                 f"{values[f'run:{rid}:total_utility']:g}."
             )
@@ -352,7 +394,10 @@ def assess(answer: Finding, lens: dict) -> dict:
             reason = "These recorded traces do not establish causation or private intent."
         elif claim.kind == "calculation":
             if calculation is None or calculation["value"] is None:
-                status, reason = "unavailable", "No such calculation in this frozen lens."
+                status, reason = (
+                    "unavailable",
+                    "Calculation or required inputs are unavailable in this frozen lens.",
+                )
             elif claim.scope != calculation["scope"]:
                 status, reason = (
                     "unsupported",

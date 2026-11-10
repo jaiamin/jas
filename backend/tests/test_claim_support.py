@@ -796,7 +796,7 @@ def test_accepted_artifact_world_lens_retains_versions_without_financial_proxy(c
     ]
     assert len(state["artifact_history"]) == 4
     account = final["output"]["lens"]["account"][0]["text"]
-    assert "1 retained writes" in account and "utility" not in account
+    assert "retained writes 1" in account and "utility" not in account
     assert source(client.get(f"/api/studies/{sid}/export").json()) == before
     second = finish(
         client,

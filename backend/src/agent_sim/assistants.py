@@ -827,6 +827,21 @@ class Assistants:
                             else {}
                         ),
                     },
+                    **(
+                        {
+                            "artifact_state": {
+                                name: state[name]
+                                for name in (
+                                    "artifacts",
+                                    "artifact_history",
+                                    "writes_remaining",
+                                    "outcome",
+                                )
+                            }
+                        }
+                        if design.environment == "artifact_workspace"
+                        else {}
+                    ),
                 }
             )
         effects = {key: result["effects"] for key, result in comparisons.items()}
@@ -993,8 +1008,12 @@ class Assistants:
             index=index,
             analysis_id=key,
         )
+        frozen_index = index
         index = {
             **index,
+            "runs": [
+                {k: v for k, v in run.items() if k != "artifact_state"} for run in index["runs"]
+            ],
             "lens": {
                 **{k: v for k, v in lens.items() if k not in {"facts", "calculations"}},
                 "calculations": [
@@ -1063,7 +1082,7 @@ class Assistants:
                     "examined": examined,
                     "comparisons": index["comparisons"],
                     "lens": lens,
-                    "evidence_index": {k: v for k, v in index.items() if k != "lens"},
+                    "evidence_index": frozen_index,
                     "support": assess(answer, lens),
                     "source_analysis_id": (current.output or {}).get("source_analysis_id"),
                 }
