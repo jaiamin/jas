@@ -73,6 +73,9 @@ Scripted providers test enforcement and orchestration, not semantic intelligence
 7. **Simple/general continuity**: A two-person31-credit binding bargain remains a
    simple bargain. A question about replay versus new sampling yields a useful
    explanation without a protocol. Neither saving nor explanation samples Luna.
+   Additional literal fixture commitments before that simple-case output:
+   seed227, one `binding_split` condition, pie31, discount1, two rounds; copied
+   inspection must expose an offer ceiling31 and saving must add zero calls.
 8. **Public workflow continuity**: Pending critique has no reviewable design and
    cannot save/duplicate; reconnect preserves record identity without resubmission.
    Review/edit/draft navigation and late responses retain user work. Public activity
@@ -169,8 +172,10 @@ rule was suppressed. Every red, mistaken fixture and static failure remains.
 Repair `5e86dfac4daf5cb1e4f7a9998dcf767d15664e7a` passed normal Gitleaks hooks.
 Qualified tracked-source key is
 `1d648e944a0b92dae01aa058ec3492000a6c51a12d73a480ec93122ab3226916`.
-All **1,412 backend cases** have observed passes across **44 per-file jobs**,
-with no product failures/errors/skips. This is segmented coverage, not an
+All **1,413 distinct backend cases** have observed passes:1,412 across **44
+per-file jobs**, followed by all eight independent cases including the additional
+frozen simple31 case. There are no outstanding product failures/errors/skips.
+This is segmented coverage, not an
 uninterrupted suite. Ruff/ty and frontend lint pass. Full frontend units/build
 and browser qualification remain pending the root storage hold.
 
@@ -180,9 +185,13 @@ tracked-only after run preserves five runs/22 turns/22 Luna FunctionModel reques
 and98 HTTP operations. Independent complete-input, checkpoint, effort and integer
 ledger comparison against attributed accepted T10 `7aec3f5` passes:770 synthetic
 microdollars,2,200/1,100 tokens, no actual provider spending. All1,763 JSON
-differences are classified, zero unexplained. Three audit-helper failures remain:
+differences are classified, zero unexplained. Four audit-helper failures remain:
 initial evidence has null state_hash, source labels use eight-character IDs, and
-manifest source identities need separate classification. They are not product reds.
+manifest source identities need separate classification; builtin source metadata
+belongs to catalog environments, not nullable template design sources. They are
+not product reds. The first simple31 fixture also supplied invalid parameter
+names; correcting those names preserves the exact31-credit question and oracle.
+Its failed attempt remains, followed by eight passing cases and final Ruff/ty.
 
 Production container, entrypoint, configuration, dependency lockfiles and isolation
 inputs match accepted T10 byte-for-byte. Its UID10001 production qualification is

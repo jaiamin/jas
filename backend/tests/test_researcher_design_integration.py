@@ -488,3 +488,73 @@ def test_genuine_population_incompatibility_remains_honestly_unsupported(
     assert rejected.status_code == 422, rejected.text
     assert client.get("/api/studies").json() == []
     retain(f"incompatible-population-{population}", {"answer": row, "validation": rejected.json()})
+
+
+def test_two_person_binding_bargain_keeps_its_simple_question_and_spends_nothing_on_save(
+    client, monkeypatch
+):
+    design = next(
+        t["design"]
+        for t in client.get("/api/catalog").json()["templates"]
+        if t["id"] == "bargaining"
+    )
+    question = "Design a two-person binding bargain over31 credits."
+    design.update(question=question, seeds=[227], rounds=2, hypothesis="", measures=[])
+    design["conditions"] = design["conditions"][:1]
+    design["conditions"][0].update(key="binding_split", name="Binding split")
+    design["conditions"][0]["parameters"]["endowment"] = 31
+    design["conditions"][0]["parameters"]["bargaining"]["discount"] = 1
+    brief = scope(
+        design,
+        explanation="Two counterparties can negotiate a binding discounted split.",
+        operationalization="Retain offers, accept/reject/exit, settled shares and early stops "
+        "without claiming preferences or forcing agreement.",
+        requirements=[
+            {
+                "source": "binding bargain",
+                "capability": "binding_negotiation",
+                "mapping": "direct",
+                "explanation": "A binding discounted dyadic offer and response.",
+            }
+        ],
+        size_rationale="Two necessary counterparties; two rounds permit an offer and response "
+        "with one reversal after rejection, or earlier acceptance/exit. One condition and "
+        "seed describe a trajectory, not independent population evidence. Retain every "
+        "offer, rejection, choice, input and terminal outcome.",
+    )
+    calls = provider(
+        client,
+        monkeypatch,
+        design,
+        brief=brief,
+        review=lambda _: {
+            "issues": [],
+            "summary": "Inspect offers and settled shares in a binding split. One fixed "
+            "trajectory does not establish population preferences.",
+        },
+    )
+    row = finish(client, client.post("/api/chats", json={"question": question}))
+    assert row["status"] == "complete", row
+    proposed = row["output"]["design"]
+    assert proposed["question"] == question and len(proposed["profiles"]) == 2
+    assert proposed["environment"] == "bargaining" and proposed["seeds"] == [227]
+    assert proposed["hypothesis"] == "" and proposed["measures"] == []
+    assert len(proposed["conditions"]) == 1
+    assert proposed["conditions"][0]["parameters"]["endowment"] == 31
+    assert proposed["conditions"][0]["parameters"]["bargaining"]["discount"] == 1
+    probe = next(
+        op["data"]
+        for op in row["output"]["research"]["operations"]
+        if op["request"].get("source", {}).get("kind") == "candidate"
+    )
+    assert probe["stop_reason"] == "inspected" and probe["participant_calls"] == 0
+    offer = next(a for a in probe["observation"]["legal_actions"] if a["kind"] == "offer")
+    assert offer["amount_max"] == 31
+    usage = client.get("/api/settings").json()["usage"]
+    count = len(calls)
+    saved = client.post("/api/studies", json={"design": proposed, "plan_id": row["id"]})
+    assert saved.status_code == 201, saved.text
+    assert len(calls) == count and client.get("/api/settings").json()["usage"] == usage
+    study = client.get(f"/api/studies/{saved.json()['id']}").json()
+    assert len(study["runs"]) == 1 and study["runs"][0]["turn"] == 0
+    retain("simple-binding-31", {"proposal": row, "study": study, "requests": calls})
