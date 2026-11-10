@@ -11,7 +11,7 @@ from benchmarks.research_baseline import run_baseline
 
 def assert_current_workflow_with_frozen_v4_oracle(attempts):
     # Keep T01's case/harness bytes unchanged across the paired comparison.
-    # T04 deliberately versions the export contract; every other check must pass.
+    # T04/T06 version the export contract; every other check must pass.
     for row in attempts:
         failures = {key for key, passed in row["checks"].items() if not passed}
         if "export-v4" in row["checks"]:
@@ -33,7 +33,7 @@ def test_keyless_baseline_retains_real_api_evidence_and_operation_counts(tmp_pat
     assert all(run["status"] == "complete" for run in simple["run_stops"])
     assert simple["usage"]["requests"] == 2
     exported = json.loads((output / simple["export"]).read_text())
-    assert exported["version"] == 5
+    assert exported["version"] == 6
     assert len(exported["activations"]) == 2
     assert len(exported["runs"][0]["evidence"]) == 3
     rejected = report["attempts"][-1]

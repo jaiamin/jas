@@ -164,6 +164,87 @@ export interface Result {
   seeds: number;
   interval: number[] | null;
   method: string;
+  planned: number;
+  excluded: number;
+  exclusions: {
+    run_id: string | null;
+    seed: number;
+    repetition: number;
+    reason: string;
+  }[];
+  uncertainty_reason: string;
+  selection_assumption: string;
+  sensitivity: Sensitivity;
+}
+export interface Sensitivity {
+  status: "bounded" | "observed" | "not_identified";
+  bounds: number[] | null;
+  reason: string;
+}
+export interface Effect {
+  condition_key: string;
+  baseline_key: string;
+  condition: string;
+  baseline: string;
+  metric: string;
+  mean: number | null;
+  seeds: number;
+  pairs: number;
+  planned_pairs: number;
+  interval: number[] | null;
+  method: string;
+  uncertainty_reason: string;
+  selection_assumption: string;
+  sensitivity: Sensitivity;
+  missing_pairs: {
+    seed: number;
+    repetition: number;
+    baseline_run_id: string | null;
+    condition_run_id: string | null;
+    reason: string;
+  }[];
+}
+export interface Comparison {
+  version: number;
+  revision: number;
+  design_sha256: string;
+  matching_unit: string;
+  inference_unit: string;
+  independent_support: number | null;
+  dependence: string;
+  uncertainty_reason: string;
+  selection_assumption: string;
+  conditions: {
+    condition_key: string;
+    condition: string;
+    planned: number;
+    attempted: number;
+    complete: number;
+    failed: number;
+    interrupted: number;
+    ready: number;
+    in_progress: number;
+    not_captured: number;
+    excluded: number;
+    unmatched: number;
+    reasons: Record<string, number>;
+  }[];
+  cells: {
+    run_id: string | null;
+    condition_key: string;
+    seed: number;
+    repetition: number;
+    status: string;
+    through_turn: number | null;
+    attempted: boolean;
+    reason: string;
+    metrics: Record<string, number>;
+  }[];
+}
+export interface ComparisonReport {
+  comparison: Comparison;
+  results: Result[];
+  effects: Effect[];
 }
 export interface QuestionRequirement {
   source: string;
@@ -191,7 +272,7 @@ export interface ExperimentPreflight {
   question_mapping?: QuestionRequirement[];
   original_question?: string | null;
 }
-export interface StudyDetail {
+export interface StudyDetail extends ComparisonReport {
   preflight: ExperimentPreflight;
   id: string;
   design: Design;
@@ -201,17 +282,6 @@ export interface StudyDetail {
   created: string;
   revisions: { number: number; created: string; sha256: string }[];
   runs: RunSummary[];
-  results: Result[];
-  effects: {
-    condition: string;
-    baseline: string;
-    metric: string;
-    mean: number;
-    seeds: number;
-    pairs: number;
-    interval: number[] | null;
-    method: string;
-  }[];
   usage: Usage;
 }
 export interface Environment {
@@ -473,6 +543,7 @@ export interface Analysis {
       end: number;
       full_turn: boolean;
     }[];
+    comparisons?: Record<string, ComparisonReport>;
   } | null;
   error: string | null;
   cutoffs: Record<string, number>;

@@ -112,7 +112,7 @@ test("current in-progress evidence enables comparison without treating turns as 
     runs: [{ ...runDetail.summary, revision: 2, turn: 1 }],
   });
   expect(suggestions[0].title).toBe("Summarize evidence");
-  expect(suggestions[1].prompt).toContain("independent runs and matched seeds");
+  expect(suggestions[1].prompt).toContain("planned runs and matched seeds");
   expect(suggestions[1].prompt).toContain(
     "Do not treat turns as independent replicates",
   );

@@ -60,7 +60,7 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v5.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v6.
 This WIP uses only the current schema and rules; incompatible workspaces must be reset.
 
 T04 introduces database schema **5** for durable participant activations and

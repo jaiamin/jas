@@ -58,9 +58,10 @@ consciousness, loans/collateral, external tool use or arbitrary code execution. 
 missing capability, not a pretend approximation. Broad questions about observable behavior can
 be operationalized: define the criterion, retain uncertainty, and use a compact controlled study.
 Use explicit treatment conditions differing only in the intended intervention, matched seeds,
-and at least 3 independent seeds by default. Repetitions rerun fresh models under the same
-seed; they do not change the environment randomization. Choose the smallest informative
-design for this question; do not copy template counts.
+and varied world seeds when the budget permits. No seed-count threshold certifies inference;
+fixed seeds are not automatically independent population draws. Repetitions rerun fresh models
+under the same seed; they do not change the environment randomization. Choose the smallest
+informative design for this question; do not copy template counts.
 Dyadic exchange needs paired agents; team coordination needs enough agents for meaningful
 dependencies. A descriptive pilot may need one condition; an intervention needs a matched
 control; dose-response may need three or more levels. Justify every extra condition.
