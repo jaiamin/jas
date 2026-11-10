@@ -60,14 +60,14 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v8.
-Schema v7 and library format `jas-environment-v4` accept only the current contract.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v9.
+Schema v8 and library format `jas-environment-v5` accept only the current contract.
 Older databases/library records receive explicit errors; no data is converted or reset.
 Use a separate fresh workspace path for the new contract and preserve existing evidence.
 
 The current schema retains T04's durable participant activations and per-request
-links alongside T03's pinned environment sources. Old schema 4/5/6 databases and
-v1/v2/v3 environment files are explicitly rejected; preserve them separately. No
+links alongside T03's pinned environment sources. Old schema 4/5/6/7 databases and
+v1/v2/v3/v4 environment files are explicitly rejected; preserve them separately. No
 compatibility reader or automatic reset is provided. Reusable mechanics exclude
 participant harness settings; each experiment pins those separately.
 
@@ -92,7 +92,9 @@ for inspection with that contract; no migration, compatibility reader or automat
 reset is performed. T08 itself added no database schema change; T07 added exposure
 capture v1 in export v7. T09 advances the combined current
 contract to database schema 7, export 8 and environment-library v4 for typed artifact operations
-and complete versioned work/checkpoints.
+and complete versioned work/checkpoints. T16 now advances these to DB8/export9/library5
+for immutable admitted executable packages and sealed-relay checkpoints/actions.
+See [extension admission](EXTENSIONS.md); preserve older workspaces without resetting them.
 New runs must pin the current harness. Each capability can be explicitly disabled;
 there is no substitute policy. The same activation request/operation budgets apply.
 

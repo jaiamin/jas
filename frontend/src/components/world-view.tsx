@@ -22,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { label } from "@/lib/format";
 import type { Event, Profile, RunDetail, State } from "@/lib/types";
 
 function isContributions(value: unknown): value is Record<string, number> {
@@ -47,6 +48,58 @@ export function WorldView({
   onAgent: (key: string) => void;
 }) {
   const profiles = run.design.profiles;
+  if (run.design.environment === "sealed_relay") {
+    const outcome =
+      state.outcome && "success" in state.outcome ? state.outcome : null;
+    const rules = run.parameters.relay;
+    return (
+      <section
+        aria-label="Sealed relay state"
+        className="flex min-w-0 flex-col gap-4"
+      >
+        <h2 className="text-base font-semibold">Sealed relay</h2>
+        <p className="text-sm text-muted-foreground">
+          Researcher view of enforced mechanics. Participant observations use
+          their explicit permissions; explanations cannot settle a transition.
+        </p>
+        <dl className="grid gap-3 text-sm">
+          <div>
+            <dt className="text-muted-foreground">Phase</dt>
+            <dd>
+              {["Sealed", "Lodged", "Released", "Stopped"][state.phase ?? 0]}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground">Action credits</dt>
+            <dd>{state.credits} of 3 remaining</dd>
+          </div>
+          {rules && (
+            <div>
+              <dt className="text-muted-foreground">Permissions</dt>
+              <dd>
+                Submitter {rules.submitter} · Reviewer {rules.reviewer}
+              </dd>
+            </div>
+          )}
+          {outcome && (
+            <div>
+              <dt className="text-muted-foreground">Terminal result</dt>
+              <dd>
+                {label(outcome.reason)} ·{" "}
+                {outcome.success ? "Success" : "Unsuccessful"}
+              </dd>
+            </div>
+          )}
+        </dl>
+        <details className="min-w-0 text-sm">
+          <summary>Pinned executable package</summary>
+          <p className="mt-3 break-all text-muted-foreground">
+            SHA-256 {state.package_sha256}
+          </p>
+        </details>
+      </section>
+    );
+  }
   if (run.design.environment === "artifact_workspace")
     return <ArtifactView run={run} state={state} />;
   if (run.design.environment === "coordination") {

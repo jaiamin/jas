@@ -236,11 +236,31 @@ structural object/requirement edits also use the existing JSON editor. The revie
 shows requirements and ACLs; the run view links versions and terminal results to
 recorded turns. Reusable mechanics extract/rebind ACL roles and retain complete
 immutable source snapshots, independently of population, model, harness and memory.
-DB 7, export 8, comparison 1 and `jas-environment-v4` are the current contract.
+DB 8, export 9, comparison 1 and `jas-environment-v5` are the current contract.
 Older database/library versions fail explicitly; preserve them with their source.
 No migration, compatibility reader or reset is performed. Controlled-world rules
 remain unchanged; generated execution/admission and model adjudication remain out
 of this World.
+
+### Independently admitted finite extensions
+
+T16 adds the explicit `sealed-relay-v1` profile through the existing World,
+participant, revision, library and evidence seams. Its sole guest interface remains
+import-free `step(i32)->i32`: packed phase/credits/actor-slot/operation in, proposed
+finite consequence out. Trusted World rules enforce typed actions, explicit identity
+permissions, private projections, resource costs and termination before committing.
+Only the bounded worker compiles WAT; no stored prose or source runs in the app.
+
+Containment qualification plus independent exhaustive finite inputs and literal World
+privacy/resource/stop/checkpoint/replay witnesses precede admission. Revisions pin
+exact source/compiled hashes, package/capability versions and full check provenance.
+Library changes cannot affect them. Every actual execution and replay requires the
+same qualified runtime; restart or failure revokes it, without affecting inspection.
+The normal Engine retains one writer and commits in-flight final responses on Pause;
+relay transitions run off the API event loop. Candidate self-tests grant no authority.
+Other semantics, imports, generation and adjudication remain unsupported. Finite
+qualification makes no claim about arbitrary-program correctness or intelligence.
+See [the contract](EXTENSIONS.md) and [T16 evidence](research/T16_EXTENSION_ADMISSION.md).
 
 ### Playback, consequence replay, restoration and sampling
 

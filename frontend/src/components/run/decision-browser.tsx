@@ -146,6 +146,8 @@ export function DecisionBrowser({
                   <TableCell>
                     <strong className="font-medium">
                       {label(t.action.kind)}
+                      {"operation" in t.action &&
+                        ` · ${label(String(t.action.operation))}`}
                       {"amount" in t.action &&
                         ["contribute", "send", "return"].includes(
                           t.action.kind,

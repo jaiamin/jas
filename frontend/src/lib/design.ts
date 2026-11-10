@@ -129,6 +129,10 @@ export function changeEnvironment(
       },
       parameters: {
         ...condition.parameters,
+        relay:
+          environment.key === "sealed_relay"
+            ? condition.parameters.relay
+            : null,
         artifacts:
           environment.key === "artifact_workspace"
             ? (condition.parameters.artifacts ??

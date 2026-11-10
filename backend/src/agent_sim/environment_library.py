@@ -21,7 +21,7 @@ from .domain import (
     SavedEnvironment,
     Treatment,
 )
-from .simulation.environments import CATALOG
+from .simulation.environments import CATALOG, get_environment
 from .templates import templates
 from .validity import preflight, require_valid
 
@@ -42,7 +42,35 @@ def bind_artifacts(parameters: dict, bindings: dict[str, str]) -> None:
 
 
 def validate_definition(definition: EnvironmentMechanics) -> None:
-    installed = CATALOG[definition.environment]
+    if definition.environment == "sealed_relay":
+        from .extension_profile import validate_package
+
+        if definition.extension is None:
+            raise ValueError("Sealed relay requires an independently admitted package")
+        validate_package(definition.extension)
+        defaults = MechanicsParameters().model_dump()
+        for example in definition.examples:
+            rules = example.parameters.relay
+            if (
+                rules is None
+                or set(example.roles) != {rules.submitter, rules.reviewer}
+                or len(example.roles) != 2
+                or example.tasks
+                or any(
+                    value != defaults[key]
+                    for key, value in example.parameters.model_dump(exclude={"relay"}).items()
+                )
+            ):
+                raise ValueError(
+                    "Sealed relay examples require exactly two explicit roles "
+                    "and supported mechanics"
+                )
+        if definition.rule_version != "1.0.0":
+            raise ValueError("Unsupported sealed relay rule version")
+        return
+    if definition.extension is not None:
+        raise ValueError("Executable packages require the sealed relay admission profile")
+    installed = get_environment(definition.environment)
     if definition.rule_version != installed.world.version:
         raise ValueError(
             f"Unsupported environment rule version {definition.rule_version}; "
@@ -59,6 +87,8 @@ def validate_definition(definition: EnvironmentMechanics) -> None:
         if params.composition:
             references.update(role for r in params.composition.resources for role in r.controllers)
         references.update(artifact_roles(params.model_dump()))
+        if params.relay:
+            references.update([params.relay.submitter, params.relay.reviewer])
         if len(set(example.roles)) != len(example.roles) or references != set(example.roles):
             raise ValueError("Example roles must name exactly the unbound mechanic roles")
         if any(
@@ -105,7 +135,7 @@ def validate_source(source: SavedEnvironment) -> None:
 
 def definition_from_design(design: Design) -> EnvironmentMechanics:
     """Extract examples, discarding study commitments and actual participant bindings."""
-    installed = CATALOG[design.environment]
+    installed = get_environment(design.environment)
     examples = []
     seen = set()
     for condition in design.conditions:
@@ -119,6 +149,8 @@ def definition_from_design(design: Design) -> EnvironmentMechanics:
                 role for r in parameters["composition"]["resources"] for role in r["controllers"]
             )
         references.update(artifact_roles(parameters))
+        if parameters.get("relay"):
+            references.update([parameters["relay"]["submitter"], parameters["relay"]["reviewer"]])
         bindings = {
             profile.key: f"role_{index}"
             for index, profile in enumerate(
@@ -132,6 +164,9 @@ def definition_from_design(design: Design) -> EnvironmentMechanics:
             for resource in parameters["composition"]["resources"]:
                 resource["controllers"] = [bindings[key] for key in resource["controllers"]]
         bind_artifacts(parameters, bindings)
+        if parameters.get("relay"):
+            for field in ("submitter", "reviewer"):
+                parameters["relay"][field] = bindings[parameters["relay"][field]]
         content = {
             "parameters": parameters,
             "roles": list(bindings.values()),
@@ -152,6 +187,9 @@ def definition_from_design(design: Design) -> EnvironmentMechanics:
         environment=design.environment,
         rule_version=installed.world.version,
         examples=examples,
+        extension=design.environment_source.definition.extension
+        if design.environment_source and design.environment == "sealed_relay"
+        else None,
     )
     validate_definition(definition)
     return definition
@@ -189,6 +227,8 @@ def use_environment(
             12,
             max(1, len(example.roles))
             if source.definition.environment == "artifact_workspace"
+            else 2
+            if source.definition.environment == "sealed_relay"
             else max(2, len(example.roles) + 1),
         )
         profiles = [
@@ -227,12 +267,17 @@ def use_environment(
         for resource in parameters["composition"]["resources"]:
             resource["controllers"] = [bindings[role] for role in resource["controllers"]]
     bind_artifacts(parameters, bindings)
+    if parameters.get("relay"):
+        for field in ("submitter", "reviewer"):
+            parameters["relay"][field] = bindings[parameters["relay"][field]]
     payload.update(
         environment=source.definition.environment,
         environment_source=source.model_dump(),
         tasks=[task.model_dump() for task in example.tasks],
         measures=[
-            m for m in payload["measures"] if m in CATALOG[source.definition.environment].measures
+            m
+            for m in payload["measures"]
+            if m in get_environment(source.definition.environment).measures
         ],
     )
     for condition in payload["conditions"]:
@@ -245,7 +290,8 @@ class EnvironmentConflict(ValueError):
 
 
 class EnvironmentLibrary:
-    def __init__(self, database_path: str | None):
+    def __init__(self, database_path: str | None, extensions=None):
+        self.extensions = extensions
         self.temporary = (
             TemporaryDirectory(prefix="jas-environments-")
             if database_path in (None, "", ":memory:")
@@ -268,8 +314,8 @@ class EnvironmentLibrary:
             payload = json.loads(self._path(key).read_text())
         except FileNotFoundError:
             raise NoResultFound() from None
-        if not isinstance(payload, dict) or payload.get("format") != "jas-environment-v4":
-            raise ValueError("Unsupported custom environment format; expected jas-environment-v4")
+        if not isinstance(payload, dict) or payload.get("format") != "jas-environment-v5":
+            raise ValueError("Unsupported custom environment format; expected jas-environment-v5")
         record = SavedEnvironment.model_validate(payload)
         if record.id != key or record.sha256 != digest(record.definition.model_dump()):
             raise ValueError("Custom environment has an invalid identity or content hash")
@@ -289,6 +335,10 @@ class EnvironmentLibrary:
     ) -> SavedEnvironment:
         definition = EnvironmentMechanics.model_validate_json(definition.model_dump_json())
         validate_definition(definition)
+        if definition.extension:
+            if self.extensions is None:
+                raise ValueError("Independent local extension qualification is required")
+            self.extensions.check_package(definition.extension)
         with self.lock:
             previous = self.get(key) if key else None
             if previous and revision != previous.revision:

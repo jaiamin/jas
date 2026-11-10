@@ -68,9 +68,9 @@ this frozen specification, never copied candidate self-tests.
 
 - [x] Verify assigned OS/path/clean branch and accepted ancestry; read skills/spec.
 - [x] Freeze independent fixture, acceptance/privacy/replay oracles before code.
-- [ ] Public-API red/green: independent admission and fail-closed review.
-- [ ] Pin admitted package/capabilities/proof in normal library/design/run workflow.
-- [ ] Independent World/privacy/resource/termination/restore/replay qualification.
+- [x] Public-API red/green: independent admission and fail-closed review.
+- [x] Pin admitted package/capabilities/proof in normal library/design/run workflow.
+- [x] Independent World/privacy/resource/termination/restore/replay qualification.
 - [ ] Existing UI review/use/inspection with mobile/theme/keyboard/browser checks.
 - [ ] Static/backend/frontend/build and actual non-root production smoke/containment.
 - [ ] Frozen T01 exit1/four export-v4 failures preserved; separate five-run/22-turn
@@ -94,3 +94,59 @@ with `/home/agent/.t3/worktrees/workspace/t3-fdf9bdeb/.tools/research-harness/ch
 Archive only closed own synthetic outputs with per-member byte proofs. Record all
 commands/exits and exact keyed source snapshots/diffs. Do not modify historical
 T01 runner/cases/scores or inspect the final held-out generation task.
+
+
+### Implementation checkpoint (before full final qualification)
+
+The first commit `76b11a8` froze the independent fixture and seams. Public API reds
+retain missing admission405 and unsupported relay422, then passing vertical checks.
+The bounded worker still exposes only import-free `step(i32)->i32`; its successful
+response additionally identifies exact compiled Wasm bytes. No new imports, host
+interfaces, dependency, provider, authority or universal extension framework was added.
+
+Admission separately enumerates132 independent inputs twice from264 fresh instances,
+then runs literal actual World guards, private projection/schema invariance, resource,
+unsuccessful stop/horizon and complete restoration/event/measurement replay witnesses.
+World mediation rejects unauthorized actor/actions or a false guest consequence before
+any state/note/history mutation. The same existing Engine, participant harnesses,
+immutable source/revision, evidence/export and replay paths consume the admitted package.
+Only new saves require the original admission record; pinned runs use their own exact
+package and current local qualification. Library edit/deletion is explicitly tested.
+
+Current serialized meanings become **DB8/export9/library5**: admitted package/provenance
+in reusable definitions and revisions, new relay action/checkpoint forms and explicit
+relay parameters. Capture1/comparison1/tool2.0/direct1.0 retain accepted meanings.
+Older workspaces/library files reject explicitly, with no migration, adapter or reset.
+T10's independently proposed same numbers remain unaccepted; no T10 source is included.
+The latest documented accepted integration remains an ancestor; recheck before handoff.
+
+`scoped-world` passes **8** public workflows: independent admission vs weak self-tests,
+normal save/run/evidence/export/call-free replay after library edit/deletion, restart
+blocking and exact pinned evidence, unsupported/forged proof, Pause/one-writer, actual
+actor-scoped tools, denied tools and false worker consequence. A false result commits
+no turn/event/measurement/note; its completed synthetic request remains accounted for.
+The pause red found synchronous guest work blocking the API; transitions now run off
+the loop, with in-flight final response committed once. The restart red found absent
+execution-blocking metadata; run inspection now explains current local permission.
+`lifecycle-current` retained **16 pass/one intentional red**; `lifecycle-green` passed5
+before the extra scoped witnesses. The four memory-mode admission witness now uses the
+actual vocabulary none/notes/history/episodic (an intermediate qualifier misspelled
+history; that earlier passing source is not the final four-mode qualification).
+
+`browser-ready` passes **7** flows: new public admission/save/review/create/run/Record
+replay in light1280/dark390 plus5 inherited candidate/draft/late-response/error flows.
+Rendered screenshots were inspected; no overflow or page errors in the two new flows.
+A prior browser red found the editor ignored `?step=review` and fixed that real path;
+the second red corrected test navigation through the existing Runs tab. All traces
+remain in member-verified `closed/browser-*-results.tar.gz`; these are retained failures.
+Static Ruff/ty and frontend lint/build pass at their recorded sources. The changed-UI
+detector reports no regex findings and explicitly did not run parsed DOM/contrast rules.
+Full backend/frontend/browser regressions, final source and real production qualification
+remain pending; no all-green full-suite or production claim is made here yet.
+
+Other retained failures include initial Python annotation shadowing, missing contract/
+package checks, an incorrect test response-shape assumption, two lock-wait cancellations,
+dependency-install ENOSPC, intermediate type/static errors and an ENOSPC lifecycle batch
+(3 failures/14 setup errors). Evidence records every wrapped attempt's actual exit and
+source stability; cancelled/unstable sources are never counted as qualification.
+No paid/live participant, generation, adjudication or held-out evaluation has run.

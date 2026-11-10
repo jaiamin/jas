@@ -1,4 +1,6 @@
-"""Review-only extension candidates. Nothing here registers an experiment World."""
+"""Immutable candidate review and independent finite, capability-free World admission."""
+
+from __future__ import annotations
 
 import hashlib
 import json
@@ -14,8 +16,16 @@ from typing import Literal
 from pydantic import Field
 from sqlalchemy.exc import NoResultFound
 
-from .db import now, uid
-from .domain import Strict
+from .db import digest, now, uid
+from .domain import AdmissionCheck, ExtensionPackage, Strict
+from .extension_profile import (
+    CAPABILITIES,
+    INPUTS,
+    PROFILE,
+    expected,
+    profile_hash,
+    validate_package,
+)
 from .extension_sandbox import WORKER, execute
 
 CASES = Path(__file__).with_name("extension_qualification.json")
@@ -43,12 +53,12 @@ class ValidationActivity(Strict):
 class ExtensionRuntime(Strict):
     status: Literal["unqualified", "qualified", "failed"] = "unqualified"
     validation_enabled: bool = False
-    execution_enabled: Literal[False] = False
+    execution_enabled: bool = False
     detail: str = "Check containment in this runtime before validating executable candidates."
     fingerprint: str | None = None
     case_sha256: str | None = None
     wasmtime_version: str | None = None
-    checks: list["QualificationCheck"] = Field(default_factory=list)
+    checks: list[QualificationCheck] = Field(default_factory=list)
 
 
 class QualificationCheck(Strict):
@@ -69,6 +79,29 @@ class ExtensionReview(Strict):
     runtime: ExtensionRuntime
     activity: list[ValidationActivity]
     outputs: list[int] = Field(default_factory=list)
+
+
+class ExtensionAdmission(Strict):
+    format: Literal["jas-extension-admission-v1"] = "jas-extension-admission-v1"
+    id: str
+    created: str
+    review_id: str
+    profile: str
+    runnable: bool = False
+    checks: list[AdmissionCheck]
+    package: ExtensionPackage | None = None
+    cases: list[dict] = Field(default_factory=list)
+    limitations: list[str] = Field(
+        default_factory=lambda: [
+            "Only sealed-relay-v1 finite semantics are independently specified.",
+            "Finite checks do not certify arbitrary programs, intelligence or research validity.",
+            (
+                "Native code, host imports, external data, network, adjudication "
+                "and generation are unsupported."
+            ),
+            "Current local containment qualification is required for every execution and replay.",
+        ]
+    )
 
 
 class Extensions:
@@ -97,7 +130,7 @@ class Extensions:
             raise ValueError("Extension review has an invalid identity or content hash")
         return record
 
-    def list(self) -> list[ExtensionReview]:
+    def reviews(self) -> list[ExtensionReview]:
         with self.lock:
             return sorted(
                 (self.get(path.stem) for path in self.root.glob("*.json")),
@@ -112,10 +145,240 @@ class Extensions:
     @staticmethod
     def _fingerprint() -> str:
         fingerprint = hashlib.sha256()
-        for path in (Path(__file__), WORKER, WORKER.with_name("extension_sandbox.py"), CASES):
+        for path in (
+            Path(__file__),
+            WORKER,
+            WORKER.with_name("extension_sandbox.py"),
+            CASES,
+            WORKER.with_name("extension_profile.py"),
+            WORKER.with_name("extension_checks.py"),
+            *(
+                WORKER.with_name("simulation") / name
+                for name in (
+                    "extension.py",
+                    "world.py",
+                    "environments.py",
+                    "checkpoints.py",
+                    "decisions.py",
+                )
+            ),
+            WORKER.with_name("domain.py"),
+        ):
             fingerprint.update(path.read_bytes())
         fingerprint.update(f"{version('wasmtime')}:{sys.version}:{platform.platform()}".encode())
         return fingerprint.hexdigest()
+
+    def require_qualified(self) -> None:
+        if self.runtime.validation_enabled and self.runtime.fingerprint != self._fingerprint():
+            self.runtime = ExtensionRuntime(
+                status="failed", detail="Runtime changed; check containment again."
+            )
+        if not self.runtime.validation_enabled:
+            raise ValueError(
+                "Extension execution blocked: check local containment before "
+                "admission, execution or replay"
+            )
+
+    def check_runtime(self, package: ExtensionPackage) -> None:
+        self.require_qualified()
+        validate_package(package)
+        if package.containment["fingerprint"] != self.runtime.fingerprint:
+            raise ValueError(
+                "Pinned extension requires a different qualified runtime; re-admit explicitly"
+            )
+
+    def transition(self, package: ExtensionPackage, inputs: list[int]) -> list[int]:
+        """Only copied bounded integers reach the qualified capability-free worker."""
+        with self.lock:
+            self.check_runtime(package)
+            result = execute(package.source, inputs)
+            if result["code"] in {"worker_failed", "worker_unavailable"} or not result["cleaned"]:
+                self.runtime = ExtensionRuntime(
+                    status="failed", detail="Extension worker failed; check containment again."
+                )
+            if result["code"] != "ok" or not result["cleaned"]:
+                raise ValueError(f"Extension execution stopped: {result['code']}")
+            if result.get("wasm_sha256") != package.wasm_sha256:
+                raise ValueError("Pinned extension bytecode hash differs")
+            return result["outputs"]
+
+    def check_package(self, package: ExtensionPackage) -> None:
+        # A pasted manifest or self-reported proof never authorizes execution.
+        admission = self.admission(package.admission_id)
+        if not admission.runnable or admission.package != package:
+            raise ValueError("Package does not match its immutable independent admission record")
+        actual = self.transition(package, INPUTS + INPUTS)
+        oracle = [expected(value) for value in INPUTS] * 2
+        if actual != oracle:
+            raise ValueError("Pinned extension failed independent admission checks")
+
+    def admission(self, key: str) -> ExtensionAdmission:
+        if not re.fullmatch(r"[a-f0-9]{16}", key):
+            raise NoResultFound()
+        try:
+            record = ExtensionAdmission.model_validate_json(
+                (self.root / "admissions" / f"{key}.json").read_text()
+            )
+        except FileNotFoundError:
+            raise NoResultFound() from None
+        if record.id != key:
+            raise ValueError("Invalid extension admission identity")
+        if record.package:
+            validate_package(record.package)
+        return record
+
+    def admissions(self) -> list[ExtensionAdmission]:
+        with self.lock:
+            return sorted(
+                (self.admission(path.stem) for path in (self.root / "admissions").glob("*.json")),
+                key=lambda r: r.created,
+                reverse=True,
+            )
+
+    def admit(self, key: str, profile: str) -> ExtensionAdmission:
+        with self.lock:
+            review = self.get(key)
+            record = ExtensionAdmission(
+                id=uid(), created=now(), review_id=key, profile=profile, checks=[]
+            )
+            try:
+                self.require_qualified()
+                if profile != PROFILE:
+                    raise ValueError(
+                        "Unsupported independent admission profile; "
+                        "only sealed-relay-v1 is specified"
+                    )
+                if review.admission != "needs_world_review":
+                    raise ValueError(
+                        "Candidate validation did not pass; its failed/blocked review "
+                        "cannot authorize execution"
+                    )
+                record.checks.append(
+                    AdmissionCheck(
+                        stage="containment",
+                        status="passed",
+                        detail=(
+                            "Current local access/resource/termination/cleanup qualification "
+                            "passed; full proof pinned."
+                        ),
+                    )
+                )
+                result = execute(review.candidate.source, INPUTS + INPUTS)
+                if result["code"] != "ok" or not result["cleaned"]:
+                    if (
+                        result["code"] in {"worker_failed", "worker_unavailable"}
+                        or not result["cleaned"]
+                    ):
+                        self.runtime = ExtensionRuntime(
+                            status="failed",
+                            detail="Admission worker failed; check containment again.",
+                        )
+                    raise ValueError(f"Independent execution stopped: {result['code']}")
+                oracle = [expected(value) for value in INPUTS]
+                record.cases = [
+                    {"input": value, "expected": target, "observed": output}
+                    for value, target, output in zip(
+                        INPUTS + INPUTS, oracle * 2, result["outputs"], strict=True
+                    )
+                ]
+                if result["outputs"][: len(INPUTS)] != oracle:
+                    raise ValueError(
+                        "Candidate differs from independent "
+                        "action/permission/consequence/resource/termination specification"
+                    )
+                record.checks.append(
+                    AdmissionCheck(
+                        stage="action_authorization_consequence",
+                        status="passed",
+                        detail=(
+                            "All 128 finite state/resource/actor/action inputs and four invalid"
+                            " integers match the independent specification, including "
+                            "rejection and terminal guards."
+                        ),
+                    )
+                )
+                record.checks.append(
+                    AdmissionCheck(
+                        stage="observation",
+                        status="passed",
+                        detail=(
+                            "The guest receives only packed public phase/credits, actor slot "
+                            "and operation; no docket, names, notes, history, credentials or "
+                            "host interface."
+                        ),
+                    )
+                )
+                if result["outputs"][len(INPUTS) :] != oracle:
+                    raise ValueError("Independent fresh-checkpoint restoration differs")
+                record.checks.append(
+                    AdmissionCheck(
+                        stage="restoration",
+                        status="passed",
+                        detail=(
+                            "Every finite input repeated from a fresh bounded instance; no "
+                            "hidden guest state crosses transitions."
+                        ),
+                    )
+                )
+                world_check = AdmissionCheck(
+                    stage="world_permissions_projection_restoration_replay",
+                    status="passed",
+                    detail=(
+                        "Independent literal World witnesses: actor/schema/atomic "
+                        "rejection, private observation/schema invariance, resources, "
+                        "unsuccessful stops, complete checkpoint restoration and exact "
+                        "event/measurement replay."
+                    ),
+                )
+                payload = dict(
+                    name=review.candidate.name,
+                    provenance=review.candidate.provenance,
+                    source=review.candidate.source,
+                    source_sha256=hashlib.sha256(review.candidate.source.encode()).hexdigest(),
+                    wasm_sha256=result["wasm_sha256"],
+                    profile_sha256=profile_hash(),
+                    capabilities=CAPABILITIES,
+                    review_id=key,
+                    admission_id=record.id,
+                    created=record.created,
+                    containment=self.runtime.model_dump(),
+                    checks=[c.model_dump() for c in [*record.checks, world_check]],
+                    verification={
+                        "inputs_sha256": digest(INPUTS + INPUTS),
+                        "expected_sha256": digest(oracle * 2),
+                        "observed_sha256": digest(result["outputs"]),
+                        "fresh_instances": len(INPUTS) * 2,
+                        "world_checks_sha256": hashlib.sha256(
+                            WORKER.with_name("extension_checks.py").read_bytes()
+                        ).hexdigest(),
+                    },
+                )
+                package = ExtensionPackage.model_validate(payload | {"sha256": "0" * 64})
+                package.sha256 = digest(package.model_dump(exclude={"sha256"}))
+                validate_package(package)
+                from .extension_checks import qualify_world
+
+                qualify_world(package, self.transition)
+                record.checks.append(world_check)
+                record.package, record.runnable = package, True
+            except ValueError as error:
+                record.checks.append(
+                    AdmissionCheck(
+                        stage="admission",
+                        status="failed" if self.runtime.validation_enabled else "blocked",
+                        detail=str(error),
+                    )
+                )
+            path = self.root / "admissions" / f"{record.id}.json"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            temporary = path.with_suffix(".tmp")
+            try:
+                with temporary.open("x") as stream:
+                    stream.write(record.model_dump_json())
+                temporary.replace(path)
+            finally:
+                temporary.unlink(missing_ok=True)
+            return record
 
     def validate(self, candidate: ExtensionCandidate) -> ExtensionReview:
         # Round-trip the boundary input: the worker never receives a live object.
@@ -277,9 +540,10 @@ class Extensions:
             self.runtime = ExtensionRuntime(
                 status="qualified" if qualified else "failed",
                 validation_enabled=qualified,
+                execution_enabled=qualified,
                 detail=(
                     "Local import-free Wasm containment passed. Candidate validation is available; "
-                    "experiment execution still requires independent world admission."
+                    "only independently admitted finite packages may execute as worlds."
                     if qualified
                     else "Containment qualification failed; "
                     "executable candidate validation is disabled."

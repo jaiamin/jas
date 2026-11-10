@@ -21,6 +21,12 @@ import type { Environment, EnvironmentId } from "@/lib/types";
 
 const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
   {
+    sealed_relay: {
+      observes:
+        "Public phase, action credits, own explicit permission and authorized memory. Only the reviewer receives the private docket.",
+      enforces:
+        "Independently admitted finite transitions, explicit permissions, three shared credits, bounded isolated execution and complete replay. Unsupported mechanics cannot execute.",
+    },
     artifact_workspace: {
       observes:
         "Permitted document identities, versions, write allowance and actual read/check results. Contents require an authorized read; private sources stay scoped to their readers.",

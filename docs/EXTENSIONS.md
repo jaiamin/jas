@@ -22,13 +22,31 @@ A review has one of three admission statuses:
 - `rejected`: executable contract, resource bounds or supplied examples failed.
 - `needs_world_review`: the examples and fresh-instance restoration passed.
   Independently verify world actions, permissions, observation projection,
-  consequences and complete replay before admission in T16.
+  consequences and complete replay through the independent admission step.
 
-**No candidate is a runnable environment.** `runnable` and runtime
-`execution_enabled` are always false. Supplied examples can be wrong or weak;
-passing them is neither independent semantic admission nor intelligence evidence.
-Existing installed environments, model assignments, accounting and replay are
-unchanged. Experiment revisions and study export v8 do not acquire candidates.
+A candidate review never authorizes execution. **Check sealed relay admission**
+separately checks the installed independent `sealed-relay-v1` specification. Only
+that finite two-participant profile is supported: explicit submitter/reviewer
+permissions, a reviewer-private docket, three action credits and sequential logical
+time. A failed or unsupported check remains visible in immutable admission history.
+Candidate prose and self-tests cannot alter the checks. Finite checks establish
+mechanics; they do not certify arbitrary programs, intelligence or research validity.
+
+After local containment and independent admission pass, **Save admitted environment**
+uses the normal reusable mechanics library. **Review an experiment** opens the
+standard design Review. Saving an immutable revision pins exact WAT content, WAT
+and compiled Wasm hashes, package/profile versions, declared capabilities, current
+runner/runtime fingerprints and full containment/semantic check provenance. Run,
+Record, evidence export and exact call-free consequence replay use the same World
+and scoped isolated runner. Changes or deletion in the library/review sidecar cannot
+change pinned pending or past runs. Starting a new revision requires an actual
+matching admission record; a pasted self-reported package cannot authorize it.
+
+`execution_enabled` describes the current qualified boundary, not candidate
+permission. Restart, runtime source changes or worker failure revoke qualification.
+Run inspection shows why execution/replay is blocked while retaining evidence.
+Unsupported package/profile/runtime semantics fail explicitly without fallback.
+Requalification never rewrites a pinned package or substitutes a model.
 
 ## Containment boundary
 
@@ -74,12 +92,21 @@ visible. Actual development and production evidence is recorded separately in
 - `POST /api/extensions/validate`: retain a new immutable review; blocked runtimes
   store the artifact without compiling or executing it.
 - `GET /api/extensions/reviews` and `GET /api/extensions/reviews/{id}`: restore
-  candidate, proof, public activity and results. No update/admit/run endpoint.
+  candidate, proof, public activity and results.
+- `POST /api/extensions/reviews/{id}/admit` with `{"profile":"sealed-relay-v1"}`:
+  run independent finite action/authorization/consequence/resource/termination and
+  World projection/restoration/replay checks; retain a new immutable attempt.
+- `GET /api/extensions/admissions` and `/api/extensions/admissions/{id}`:
+  inspect successful, failed and unsupported attempts and pinned packages.
 
 Reviews live beside the workspace database in `<database>.extensions/`, like
 custom environment setups. They use `jas-extension-review-v1`, validate their
-candidate identity/hash on read, and publish only complete files. The database
-schema and existing rules/exports require no migration or reset. In-memory
+candidate identity/hash on read, and publish only complete files. T16 advances the
+current contract atomically to DB8/export9/library5 because revisions, checkpoints,
+actions and reusable definitions may now contain an admitted executable package.
+Capture1/comparison1/tool2.0/direct1.0 and installed World rules retain their meanings.
+Older DB7 and library4 records are rejected explicitly; preserve their original
+source/data for inspection. No migration, adapter or reset is provided. In-memory
 workspaces use an owned temporary directory. Include the sidecar with workspace
 backups; keep it out of Git. Review history describes its recorded runtime;
 current permission always comes from the live runtime status.
@@ -88,4 +115,6 @@ For a keyless production check, build the normal Dockerfile, start a fresh
 non-root container with disposable data and no provider keys, and execute
 `.github/scripts/smoke.py` inside it. The smoke check qualifies that real runtime,
 then submits independently authored safe, denied and exhausted candidates through
-the same HTTP API. Never point this check at user data.
+the same HTTP API. It also admits/saves/pins the identical sealed-relay artifact and
+checks literal World consequences and fresh restoration/replay in that image.
+Engine/provider workflow witnesses are separate deterministic development checks. Never point this check at user data.

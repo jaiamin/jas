@@ -16,10 +16,16 @@ from .domain import Design, EnvironmentMechanics, SavedEnvironment, Strict
 from .environment_library import builtin_environment, definition_from_design, use_environment
 from .execution import Engine
 from .exports import export_study
-from .extensions import ExtensionCandidate, ExtensionReview, ExtensionRuntime, Extensions
+from .extensions import (
+    ExtensionAdmission,
+    ExtensionCandidate,
+    ExtensionReview,
+    ExtensionRuntime,
+    Extensions,
+)
 from .llm import LanguageModels
 from .research import Research, RunSummary
-from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS
+from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, get_environment
 from .templates import templates
 
 router = APIRouter()
@@ -87,12 +93,33 @@ async def qualify_extensions(*, extensions: ExtensionsDep) -> ExtensionRuntime:
 
 @router.get("/api/extensions/reviews")
 async def extension_reviews(*, extensions: ExtensionsDep) -> list[ExtensionReview]:
-    return await asyncio.to_thread(extensions.list)
+    return await asyncio.to_thread(extensions.reviews)
 
 
 @router.get("/api/extensions/reviews/{key}")
 async def extension_review(key: str, *, extensions: ExtensionsDep) -> ExtensionReview:
     return await asyncio.to_thread(extensions.get, key)
+
+
+class AdmitExtension(Strict):
+    profile: str = Field(min_length=1, max_length=80)
+
+
+@router.post("/api/extensions/reviews/{key}/admit", status_code=201)
+async def admit_extension(
+    key: str, body: AdmitExtension, *, extensions: ExtensionsDep
+) -> ExtensionAdmission:
+    return await asyncio.to_thread(extensions.admit, key, body.profile)
+
+
+@router.get("/api/extensions/admissions")
+async def extension_admissions(*, extensions: ExtensionsDep) -> list[ExtensionAdmission]:
+    return await asyncio.to_thread(extensions.admissions)
+
+
+@router.get("/api/extensions/admissions/{key}")
+async def extension_admission(key: str, *, extensions: ExtensionsDep) -> ExtensionAdmission:
+    return await asyncio.to_thread(extensions.admission, key)
 
 
 async def static_directory(request: Request) -> Path:
@@ -170,7 +197,18 @@ async def health(*, db: DatabaseDep) -> dict[str, Any]:
 
 
 @router.get("/api/catalog")
-async def catalog(*, models: LanguageModelsDep) -> dict[str, Any]:
+async def catalog(*, models: LanguageModelsDep, research: ResearchDep) -> dict[str, Any]:
+    sources = [builtin_environment(key) for key in CATALOG]
+    admitted = next(
+        (
+            source
+            for source in research.environments.list()
+            if source.definition.environment == "sealed_relay"
+        ),
+        None,
+    )
+    if admitted:
+        sources.append(admitted)
     return {
         "environments": [
             {
@@ -182,9 +220,10 @@ async def catalog(*, models: LanguageModelsDep) -> dict[str, Any]:
                 "measures": list(a.measures),
                 "measure_definitions": {m: MEASURE_DESCRIPTIONS[m] for m in a.measures},
                 "rule_version": a.world.version,
-                "source": builtin_environment(a.key).model_dump(),
+                "source": source.model_dump(),
             }
-            for a in CATALOG.values()
+            for source in sources
+            for a in [get_environment(source.definition.environment)]
         ],
         "models": models.catalog(),
         "templates": templates(),
@@ -383,7 +422,7 @@ async def control_run(run_id: str, body: RunControl, *, engine: EngineDep) -> di
 
 @router.post("/api/runs/{run_id}/verify")
 async def verify_run(run_id: str, *, engine: EngineDep) -> dict[str, Any]:
-    return engine.replay(run_id)
+    return await asyncio.to_thread(engine.replay, run_id)
 
 
 @router.get("/api/runs/{run_id}/annotations")

@@ -9,7 +9,7 @@ from .db import Analysis, digest, uid
 from .domain import ActionRequest, Decision, Design, Parameters, Strict
 from .environment_library import builtin_environment
 from .research import Research
-from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, create_world
+from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS
 from .templates import templates
 from .validity import capabilities
 
@@ -301,7 +301,7 @@ class ResearchTools:
         design = Design.model_validate(design.model_dump()).resolve(condition)
         self.research.validate_design(design)
         # World copies the JSON checkpoint. Never use an Engine, save, or provider here.
-        world = create_world(design, condition.parameters, seed, state)
+        world = self.research.world(design, condition.parameters, seed, state)
         initial = world.snapshot()
         actor = world.actor()
         observation = world.observe(actor) if actor else None
@@ -326,7 +326,7 @@ class ResearchTools:
                 break
             observed = world.observe(current_actor)
             # A fresh candidate makes even a rejected transition atomic for the probe.
-            candidate = create_world(design, condition.parameters, seed, world.snapshot())
+            candidate = self.research.world(design, condition.parameters, seed, world.snapshot())
             try:
                 events, measures = candidate.step(
                     step.actor,

@@ -17,9 +17,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { api, useApi } from "@/lib/api";
 import { label } from "@/lib/format";
 import type {
+  ExtensionAdmission,
   ExtensionCandidate,
+  ExtensionPackage,
   ExtensionReview,
   ExtensionRuntime,
+  SavedEnvironment,
 } from "@/lib/types";
 
 const draftKey = "jas:extension-candidate-draft:v1";
@@ -40,7 +43,59 @@ const admissionLabels = {
   needs_world_review: "Needs world review",
 };
 
-function Review({ report }: { report: ExtensionReview }) {
+function Review({
+  report,
+  runtime,
+}: {
+  report: ExtensionReview;
+  runtime?: ExtensionRuntime;
+}) {
+  const client = useQueryClient();
+  const history = useApi<ExtensionAdmission[]>("/extensions/admissions");
+  const admission = useMutation({
+    mutationFn: () =>
+      api<ExtensionAdmission>(`/extensions/reviews/${report.id}/admit`, {
+        profile: "sealed-relay-v1",
+      }),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: ["/extensions/admissions"] });
+      void client.invalidateQueries({ queryKey: ["/extensions/runtime"] });
+    },
+  });
+  const save = useMutation({
+    mutationFn: (extension: ExtensionPackage) =>
+      api<SavedEnvironment>("/environments", {
+        definition: {
+          name: extension.name.slice(0, 100),
+          description:
+            "Independently checked sealed relay v1. Finite mechanics; no intelligence or validity claim.",
+          environment: "sealed_relay",
+          rule_version: "1.0.0",
+          extension,
+          examples: [
+            {
+              key: "relay",
+              name: "Three action credits",
+              roles: ["submitter", "reviewer"],
+              parameters: {
+                relay: {
+                  submitter: "submitter",
+                  reviewer: "reviewer",
+                  docket: "counterseal-17",
+                },
+              },
+            },
+          ],
+        },
+      }),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: ["/environments"] });
+      void client.invalidateQueries({ queryKey: ["/catalog"] });
+    },
+  });
+  const records =
+    history.data?.filter((record) => record.review_id === report.id) ?? [];
+  const admitted = records.find((record) => record.runnable)?.package;
   return (
     <section
       aria-label="Candidate review"
@@ -51,7 +106,11 @@ function Review({ report }: { report: ExtensionReview }) {
           {admissionLabels[report.admission]}
         </h3>
         <p className="text-sm text-muted-foreground">{report.candidate.name}</p>
-        <p className="text-sm">Experiment execution is disabled.</p>
+        <p className="text-sm">
+          {admitted
+            ? "Independently admitted sealed relay mechanics. Save an environment to review an experiment."
+            : "Experiment execution is disabled."}
+        </p>
       </div>
       <ol className="flex flex-col gap-3 text-sm">
         {report.activity.map((activity) => (
@@ -76,6 +135,111 @@ function Review({ report }: { report: ExtensionReview }) {
           value={JSON.stringify(report.candidate, null, 2)}
         />
       </details>
+      <Separator />
+      <div className="flex flex-col gap-3">
+        <h3 className="text-base font-medium">Independent world admission</h3>
+        <p className="max-w-prose text-sm text-muted-foreground">
+          Only sealed relay v1 is specified: two explicit permissions, a private
+          reviewer docket and three action credits. Supplied examples and
+          explanations cannot authorize execution. Other semantics are
+          unsupported.
+        </p>
+        {history.error && (
+          <ErrorState error={history.error} onRetry={history.refetch} />
+        )}
+        <div>
+          <Button
+            variant="outline"
+            disabled={
+              !runtime?.validation_enabled ||
+              report.admission !== "needs_world_review" ||
+              admission.isPending ||
+              save.isPending
+            }
+            onClick={() => admission.mutate()}
+          >
+            {admission.isPending && <Spinner data-icon="inline-start" />}
+            {admission.isPending
+              ? "Checking admission…"
+              : "Check sealed relay admission"}
+          </Button>
+        </div>
+        {admission.error && (
+          <Alert variant="error">{admission.error.message}</Alert>
+        )}
+        {records.map((record) => (
+          <details
+            key={record.id}
+            className="text-sm"
+            open={record === records[0]}
+          >
+            <summary>
+              {record.runnable
+                ? "Admission passed"
+                : "Admission failed or blocked"}{" "}
+              · {record.id}
+            </summary>
+            <ul className="mt-3 flex flex-col gap-2">
+              {record.checks.map((check) => (
+                <li key={check.stage}>
+                  <span className="font-medium">
+                    {label(check.stage)} · {label(check.status)}
+                  </span>
+                  <p className="text-muted-foreground">{check.detail}</p>
+                </li>
+              ))}
+            </ul>
+            <ul className="mt-3 flex flex-col gap-2 text-muted-foreground">
+              {record.limitations.map((limit) => (
+                <li key={limit}>{limit}</li>
+              ))}
+            </ul>
+            {record.package && (
+              <Textarea
+                aria-label="Pinned admitted package"
+                className="mt-3"
+                readOnly
+                rows={6}
+                value={JSON.stringify(record.package, null, 2)}
+              />
+            )}
+          </details>
+        ))}
+        {admitted && (
+          <div className="flex flex-col gap-3">
+            <p className="break-all text-xs text-muted-foreground">
+              Package SHA-256 {admitted.sha256}
+            </p>
+            <div>
+              <Button
+                disabled={
+                  save.isPending ||
+                  !runtime?.validation_enabled ||
+                  admitted.containment.fingerprint !== runtime.fingerprint
+                }
+                onClick={() => save.mutate(admitted)}
+              >
+                {save.isPending && <Spinner data-icon="inline-start" />}Save
+                admitted environment
+              </Button>
+            </div>
+            {!runtime?.validation_enabled && (
+              <p className="text-sm">
+                Check containment again before saving, running or replaying this
+                package.
+              </p>
+            )}
+            {save.error && <Alert variant="error">{save.error.message}</Alert>}
+            {save.data && (
+              <Alert title="Admitted environment saved">
+                <Link to={`/new?setup=${save.data.id}&step=review`}>
+                  Review an experiment
+                </Link>
+              </Alert>
+            )}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
@@ -150,8 +314,8 @@ export function ExtensionCandidates({
       >
         <h2 className="text-base font-medium">Review an extension candidate</h2>
         <p className="max-w-prose text-sm text-muted-foreground">
-          Check a small integer transition against supplied examples. Candidates
-          remain separate from runnable experiment environments.
+          Validate an explicit executable artifact, then check supported
+          mechanics against an independent specification.
         </p>
         {runtime.error && (
           <ErrorState error={runtime.error} onRetry={runtime.refetch} />
@@ -275,7 +439,9 @@ export function ExtensionCandidates({
           )}
         </div>
       </form>
-      {report && <Review report={report} />}
+      {report && (
+        <Review key={report.id} report={report} runtime={runtime.data} />
+      )}
       {selectedId && history.data && !report && (
         <Alert title="Candidate review not found">
           <Link to="/environments?view=candidates">

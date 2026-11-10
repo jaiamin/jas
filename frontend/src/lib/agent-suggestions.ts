@@ -20,6 +20,8 @@ export interface AgentSuggestion {
 }
 
 const evidenceQuestions: Record<EnvironmentId, string> = {
+  sealed_relay:
+    "Inspect the admitted finite relay, its explicit permissions, action credits and exact replay without inferring intent.",
   artifact_workspace:
     "Inspect authorized evidence, edit versioned work and decide when to submit or stop.",
   composed:
