@@ -329,8 +329,11 @@ tables or bypasses those memory windows. Source IDs point to a saved activation'
 observation field/index or plan-operation receipt, with hashes of accessible
 content and a pre-activation turn cutoff. Earlier requested cutoffs filter those
 available sources; they do not reconstruct an older observation or expose future
-data. Result counts and metadata concern only permitted matches, with at most
-the declared memory-result limit. Missing/forbidden sources share a generic error.
+data. Retrieval receipts separately identify the current `observation_cutoff`;
+an earlier requested turn cutoff has a null round, rather than claiming that the
+current round describes historical state. Result counts and metadata concern only
+permitted matches, with at most the declared memory-result limit.
+Missing/forbidden sources share a generic error.
 
 Investigation reads a chosen current-state/rules/legal-options facet. Verification
 checks the actor's legal-action schema and exact source quotes. A schema-valid

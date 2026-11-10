@@ -112,6 +112,51 @@ def test_retained_plans_and_retrieved_sources_respect_memory_policy(context_clie
     assert client.post(f"/api/runs/{run_id}/verify").json()["verified_turns"] == 3
 
 
+def test_past_retrieval_cutoff_does_not_claim_the_current_observation_round(
+    context_client, design
+):
+    client, responses, _ = context_client
+    value = protocol(design, max_requests=3)
+    value["rounds"] = 2
+    study, run_id = save(client, value)
+    for _ in range(3):
+        responses.extend(
+            [
+                request("plan", plan={"text": "Keep this intentional prior plan."}),
+                finish(),
+            ]
+        )
+        run = step(client, run_id)
+    prior = next(a for a in run["activations"] if a["actor"] == run["next_actor"])
+    artifact = prior["operations"][0]["result"]["artifact"]
+    responses.extend(
+        [
+            request("retrieve", retrieval={"cutoff_turn": 0}),
+            request(
+                "retrieve",
+                retrieval={"source_ids": [artifact["id"]], "cutoff_turn": prior["turn"]},
+            ),
+            finish(),
+        ]
+    )
+    run = step(client, run_id)
+    assert run["summary"]["turn"] == 4, run["summary"]["error"]
+    result = run["activations"][-1]["operations"][0]["result"]
+    assert result["cutoff"] == {"turn": 0, "round": None}
+    assert result["observation_cutoff"] == {"turn": 3, "round": 2}
+    assert result["items"] == []
+    result = run["activations"][-1]["operations"][1]["result"]
+    assert result["cutoff"] == {"turn": prior["turn"], "round": None}
+    assert result["observation_cutoff"] == {"turn": 3, "round": 2}
+    assert len(result["items"]) == 1
+    assert result["items"][0]["content"] == artifact
+    assert result["items"][0]["cutoff"] == {"turn": prior["turn"], "round": 1}
+    exported = client.get(f"/api/studies/{study['id']}/export").json()
+    assert exported["activations"] == run["activations"]
+    assert len(exported["requests"]) == 9
+    assert client.post(f"/api/runs/{run_id}/verify").json()["verified_turns"] == 4
+
+
 def test_investigation_and_verification_use_accessible_sources_without_settling(
     context_client, design
 ):
