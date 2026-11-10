@@ -45,6 +45,8 @@ def claim_client(tmp_path, monkeypatch, request):
                     }],
                 }}
         else:
+            if controls.get("failure"):
+                raise TimeoutError("Controlled failed DEVELOPMENT participant request")
             payload = {
                 "action": {"kind": "contribute", "amount": controls["amount"], "target": "",
                            "message": "", "report": None, "promise": None},
@@ -189,3 +191,66 @@ def test_condition_contrast_is_recomputed_in_declared_direction(
     assert calculation["inputs"]["baseline_key"] == first["key"]
     assert calculation["coverage"] == {"pairs": 1, "planned_pairs": 1, "seed_clusters": 1}
     assert final["output"]["support"]["prose_status"] == "unassessed"
+
+
+def test_missing_trial_cannot_be_claimed_as_a_second_observed_pair(claim_client, design):
+    client, controls, _ = claim_client
+    value = design.model_dump()
+    value.update(rounds=1, seeds=[7, 11], profiles=value["profiles"][:2])
+    first = value["conditions"][0]
+    first["parameters"].update(endowment=10, multiplier=1.5)
+    value["conditions"].append({**first, "key": "treatment", "name": "Treatment"})
+    sid = client.post("/api/studies", json={"design": value}).json()["id"]
+    for record in client.get(f"/api/studies/{sid}").json()["runs"]:
+        controls["amount"] = 0 if record["condition_key"] == first["key"] and record["seed"] == 7 else 10
+        controls["failure"] = record["condition_key"] == "treatment" and record["seed"] == 11
+        assert run(client, record["id"])["status"] == ("failed" if controls["failure"] else "complete")
+    controls["failure"] = False
+
+    def claims(prompt, _rid):
+        revision = next(iter(prompt["index"]["comparisons"]))
+        return [{"kind": "calculation", "text": "The difference was +1 across two observed pairs.",
+                 "calculation_id": f"contrast:{revision}:treatment:contribution_rate",
+                 "value": 1, "scope": "observed_pairs", "pairs": 2}]
+
+    controls["claims"] = claims
+    final = finish(client, client.post("/api/chats", json={
+        "question": "Check both planned seed pairs, retaining failures.", "context": f"study:{sid}",
+    }))
+    assert final["status"] == "complete", final
+    checked = final["output"]["support"]["claims"][0]
+    assert checked["status"] == "contradicted" and checked["computed"] == 1
+    calc = next(c for c in final["output"]["lens"]["calculations"]
+                if c["id"] == checked["calculation_id"])
+    assert calc["coverage"] == {"pairs": 1, "planned_pairs": 2, "seed_clusters": 1}
+    assert calc["sensitivity"]["bounds"] == [0, 0.5]
+    assert len(calc["missing"]) == 1
+    assert final["output"]["lens"]["coverage"]["planned_cells"] == 4
+    assert final["output"]["lens"]["coverage"]["failed_cells"] == 1
+
+
+def test_communication_lens_rejects_absent_exposure_and_declares_coverage(claim_client, design):
+    client, controls, _ = claim_client
+    _, rid = save(client, design)
+    run(client, rid)
+    controls["claims"] = lambda _prompt, rid: [{
+        "kind": "calculation", "text": "A participant received a recorded message.",
+        "calculation_id": f"run:{rid}:message_exposed_participants", "value": 1,
+        "scope": "captured_run",
+    }]
+    final = finish(client, client.post("/api/chats", json={
+        "question": "What communication was actually included?", "context": f"run:{rid}",
+        "lens": "communication",
+    }))
+    assert final["status"] == "complete", final
+    lens = final["output"]["lens"]
+    assert lens["key"] == "communication" and lens["version"] == 1
+    assert "exact_request_delivery" in lens["requirements"]
+    coverage = lens["coverage"]["runs"][0]
+    assert coverage["recorded_turns"] == 4 and coverage["missing_turns"] == []
+    assert coverage["exposure_capture"] == "complete"
+    assert coverage["message_opportunities"] == 0 and coverage["unknown_requests"] == 0
+    assert coverage["truncation"]["run_continues"] is False
+    assert "unavailable" in coverage["truncation"]["unrecorded_history"]
+    result = final["output"]["support"]["claims"][0]
+    assert result["status"] == "contradicted" and result["computed"] == 0
