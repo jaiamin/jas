@@ -55,7 +55,35 @@ Statuses reflect accepted integration work, not automatic GitHub closure. Issues
 remain open until the tracker resolves them through draft PR #32. No
 default-branch merge, auto-merge or history rewrite is authorized.
 
-### Root coordination — T15 accepted; T19 separate review pending (2026-11-10)
+### Root coordination — T13 implementation and fresh T19 review assigned (2026-11-10)
+
+T01–T09 and T15 are accepted at `d55f270` (qualified code `6e1a7c8`). Root
+rehashed all 1,032 T15 fresh-manifest files, then prepares publication and two
+fresh assignments: isolated T13/#24 implementation on 18124, followed by
+sole-writer T19/#30 integration review on 18222. T10 remains running/unpolled
+on 18123. T16/T18 are Ready; dependent tickets remain blocked as listed below.
+
+Complete T19 evidence is preserved under `.tools/research-harness/evidence/T19/`
+with sibling `T19-copy-verification.json`: **3,244 complete files / 672 links**,
+all 3,242 child-indexed hashes plus manifest/checksum and **2,447 gzip raw hashes**
+verify against stable clean source `1d8d977`. Child manifest SHA-256 is
+`eb64fef96962f010929f21358d4ba78ce713e6c6b4b43408f7578a14ddd3f04a`.
+Preservation uses hardlinks for immutable closed evidence only; it is not an
+independent physical copy. Never modify either data tree. All bytes/modes/mtimes/
+literal link targets remain equal; no external links were followed. Generated
+prose and earlier outside-cache effects remain unassessed pending fresh review.
+
+Additional reversible storage maintenance packed 349 closed synthetic DB copies
+(138,805,248 → 6,267,825 bytes), excluding T01/live work, with raw-hash proofs.
+It also shared 6,109 identical immutable completed evidence files with source
+copies, preserving all 10,753 affected logical entries and metadata except
+inode link counts/ctimes. Proofs: `maintenance/closed-databases-20261110T073015Z/`
+and `maintenance/immutable-evidence-20261110T073248Z/` under the ignored harness
+directory. No active dependency/build cache or source code was shared. Keep
+all existing mappings and evidence immutable. Free disk after T19 preservation
+was 909,156,352 bytes. No new paid calls or root product tests ran.
+
+### T15 acceptance checkpoint (2026-11-10)
 
 **T01–T09 and T15 are accepted.** Fresh sole-writer T15 review merges exact clean
 `0d026992b4740675dac3afce54b17a785e3f73e9` into assigned `5ef3abf` through no-ff
@@ -323,13 +351,13 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Assigned to fresh isolated implementation (18123) | — |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Waiting | — |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Waiting | — |
-| T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Ready; root chooses launch | — |
+| T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Assigned to fresh isolated implementation (18124) | — |
 | T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Waiting on T13 | — |
 | T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Integrated and accepted after fresh review repair | `fa1c825`, `6e1a7c8`; [report](research/T15_BASELINES.md) |
 | T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Ready; root chooses launch | — |
 | T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | Waiting | — |
 | T18 | [#29](https://github.com/jaiamin/ass/issues/29) Inspect a declared fallible adjudication and replay its consequences | T09 | Ready; root chooses launch | — |
-| T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Complete; awaiting separate fresh review (root-reported) | Not integrated; source `1d8d977` |
+| T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Complete; evidence preserved; assigned to fresh integration review (18222) | Not integrated; source `1d8d977` |
 | T20 | [#31](https://github.com/jaiamin/ass/issues/31) Demonstrate the small-population generalization milestone | T11, T12, T14, T15, T17, T18, T19 | Waiting | — |
 
 ## Preserved drafts and spending
@@ -398,18 +426,20 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. Root resumes sole integration ownership after clean T15 handoff. Review its
-   exact final checkpoint/manifest and choose draft PR #32 publication; this
-   reviewer did not push, edit PR/issues, query hosted checks or watch anything.
-2. Schedule a separate fresh T19 custody/Standards/Spec integration review from
-   root-reported clean `1d8d977`, preserving its disclosed earlier cache-effects
-   limitation. Its evidence has not been copied or accepted. Keep generated
-   caches private and force recomputation. T10 remains independently assigned
-   at 18123; do not poll or modify that checkout.
-3. T13/T16/T18 stay Ready; T11/T12 wait on accepted T10, T14 on T13, T17 on
-   T13/T16. Retain all source worktrees, mapped logical evidence, actual frozen
-   failures and exact source/case attribution. Keep future checks bounded and
-   archive closed outputs with member verification. Live/held-out gates remain
+1. Publish accepted T15 and this coordination checkpoint to draft PR #32; link
+   immediately. Launch fresh T13 implementation in the assigned isolated
+   checkout (18124) before handing shared writing ownership to fresh T19 review
+   (18222). T10 continues independently on 18123; do not poll running tasks.
+2. Fresh T19 review must reconcile exact source `1d8d977` with accepted T15
+   controls/effort and T09 artifact exposure/replay. Reverify complete preserved
+   evidence, independent claim calculations, unsupported prose/intent status,
+   frozen cutoffs and read-only reanalysis. Keep generated caches private and
+   force recomputation; earlier outside-cache effects stay unassessed. Only
+   root publishes, and no issue closes before the tracker resolves the work.
+3. T16/T18 remain Ready; T11/T12 wait on accepted T10, T14 on T13, T17 on
+   T13/T16. Retain source worktrees, immutable hardlinked evidence, gzip mappings,
+   actual frozen failures and exact source/case attribution. Keep checks bounded
+   and archive closed outputs with member verification. Live/held-out gates stay
    unverified; Sol is $0.611632/55 requests with $9.388368 remaining and no active
    allocation; Luna remains unallocated.
 
