@@ -44,7 +44,7 @@ updated timestamp and definition hash. Examples contain mechanics parameters, op
 and unbound roles. Create/update accept `{definition, revision}`; selection and extraction use
 `POST /api/design/use-environment` and `POST /api/design/environment`.
 Unsupported library/definition/rule versions and content hashes fail explicitly.
-The combined current database schema13 and export14 retain T14 investigation
+The combined current database schema13 and export15 retain T14 investigation
 ownership plus T17 finite packages/generation allowances. Prior libraryv7,
 definition1, DB11/12 and export12/13 are incompatible; no alias, conversion,
 deletion or automatic reset occurs. Preserve

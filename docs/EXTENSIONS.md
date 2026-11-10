@@ -53,15 +53,18 @@ has no generation allowance. Generation emits explicit WAT through the real mode
 path, then validation/independent admission/library operations run on the qualified
 worker path. No template selector or production WAT generator supplies the answer.
 Candidate versions, failed checks, explicit repair links, sources and stop reasons
-remain in append-only attempt events. A resulting experiment remains pending
+remain in append-only attempt events. Generation records/events use v2 and retain
+each generator request's model, reservation, settlement, tokens, cost and error;
+prior unversioned/v1 events are rejected explicitly. A resulting experiment remains pending
 human review and separately authorized participant execution; discussion and saving
 never sample participants. Copied probes are distinct from executable containment.
 
 T17 is incomplete and UNACCEPTED. Its first scripted Pydantic AI Sol-identity
-orchestration passed on the earlier source recorded in
-[the T17 plan](research/T17_EXTENSION_GENERATION.md); the combined source has not
-been executed or qualified. Live Sol competence, second-artifact generation,
-complete generation export and final UI/production checks remain unverified.
+orchestration and its one combined-source integration check passed at the sources
+recorded in [the T17 plan](research/T17_EXTENSION_GENERATION.md). Second scripted
+generation/repair, actual World and Engine/private-tool/replay checks also pass at
+their recorded sources. Complete generation export and final UI/production checks
+remain unverified; live Sol competence remains unobserved.
 
 After local containment and independent admission pass, **Save admitted environment**
 uses the normal reusable mechanics library. **Review an experiment** opens the
@@ -150,11 +153,11 @@ T11's DB9/export10/library6, T16 integration advanced the contract atomically to
 DB10/export11/library7 because revisions, checkpoints,
 actions and reusable definitions may now contain an admitted executable package.
 T14 introduced durable bounded investigations as DB11/export12/library7. The current
-combined T17 contract is DB13/export14/library8/definition2/research-operation2,
+combined T17 contract is DB13/export15/library8/definition2/research-operation2,
 retaining investigation ownership alongside finite packages and generation allowances.
 Capture1/comparison1/tool2.0/direct1.0 and installed World rules retain their meanings.
 Prior DB1–12, library1–7/definition1, research-operation1 and intermediate
-export12/13 meanings are incompatible; preserve their original
+export1–14 meanings are incompatible; preserve their original
 source/data for inspection. No migration, adapter or reset is provided. In-memory
 workspaces use an owned temporary directory. Include the sidecar with workspace
 backups; keep it out of Git. Review history describes its recorded runtime;

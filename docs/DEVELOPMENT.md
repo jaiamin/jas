@@ -67,7 +67,7 @@ Use a separate fresh workspace path for the new contract and preserve existing e
 T11 introduced typed commitment mechanics as DB9/export10/library6. T16 integration
 adds admitted packages as DB10/export11/library7. T14 adds durable investigation
 authorization and nested request ownership as DB11/export12/library7. T17's combined
-DB13/export14/library8/definition2 also retains externally reviewed finite packages,
+DB13/export15/library8/definition2 also retains externally reviewed finite packages,
 generation allowances and per-question request/candidate/charge counters. The earlier
 T17-only DB11/12 and export12/13 mean different things and are explicitly incompatible.
 Capture1/comparison1/tool2.0/direct1.0 remain current;
@@ -114,7 +114,7 @@ and complete versioned work/checkpoints. T10 advances these to DB8/export9/libra
 the contract to DB10/export11/library7
 for immutable admitted executable packages and sealed-relay checkpoints/actions.
 T14 introduced DB11/export12/library7 for durable bounded investigations and nested
-request accounting. Current T17 combined semantics are DB13/export14/library8/
+request accounting. Current T17 combined semantics are DB13/export15/library8/
 definition2/research-operation2; no incompatible intermediate format is accepted.
 See [extension admission](EXTENSIONS.md); preserve older workspaces without resetting them.
 New runs must pin the current harness. Each capability can be explicitly disabled;

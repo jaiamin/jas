@@ -83,7 +83,12 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
     }
     return {
         "format": "jas-study",
-        "version": 14,
+        "version": 15,
+        "extension_generations": [
+            attempt
+            for attempt in research.extensions.generations.list()
+            if attempt["analysis_id"] in {analysis.id for analysis in analyses}
+        ],
         "investigations": [
             {
                 "id": i.id,
@@ -124,6 +129,15 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
                 "output": a.output,
                 "error": a.error,
                 "created": a.created,
+                "generation": {
+                    "authorization": a.generation["authorization"],
+                    "contract": a.generation["contract"],
+                    "requests": a.generation_requests,
+                    "candidates": a.generation_candidates,
+                    "charged_microdollars": a.generation_charged,
+                }
+                if a.generation is not None
+                else None,
             }
             for a in analyses
         ],
@@ -146,12 +160,15 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
                 "activation_id": c.activation_id,
                 "turn": c.turn,
                 "model": c.model,
+                "purpose": c.purpose,
                 "status": c.status,
                 "request": c.request_payload,
                 "response": c.response_payload,
                 "input_tokens": c.input_tokens,
                 "output_tokens": c.output_tokens,
                 "cost_usd": c.charged / 1_000_000,
+                "reserved": c.reserved,
+                "charged": c.charged,
                 "error": c.error,
             }
             for c in calls

@@ -31,7 +31,11 @@ from .metrics import aggregate_metrics
 from .planning import Planner, public_activity, stream_partial
 from .research import Research, event_dict
 from .research_tools import (
-    ContextRequest, GenerateExtensionRequest, ProbeRequest, ResearchRequest, ResearchTools,
+    ContextRequest,
+    GenerateExtensionRequest,
+    ProbeRequest,
+    ResearchRequest,
+    ResearchTools,
 )
 from .simulation.environments import CATALOG
 from .validity import capabilities as environment_capabilities
@@ -300,10 +304,13 @@ class Assistants:
         if generation is not None:
             if purpose == "analysis":
                 raise ValueError("Extension generation requires an unscoped question or proposal")
-            if any(setting(name, "openai:gpt-6.1-sol") != "openai:gpt-6.1-sol" for name in (
-                "ASSISTANT_MODEL", "PLANNER_MODEL"
-            )):
-                raise ValueError("Extension generation requires the configured Sol Researcher and planner")
+            if any(
+                setting(name, "openai:gpt-6.1-sol") != "openai:gpt-6.1-sol"
+                for name in ("ASSISTANT_MODEL", "PLANNER_MODEL")
+            ):
+                raise ValueError(
+                    "Extension generation requires the configured Sol Researcher and planner"
+                )
             generation_scope = {
                 "authorization": generation.model_dump(),
                 "contract": self.research.extensions.contract(generation.contract_id).model_dump(),
@@ -371,15 +378,9 @@ class Assistants:
         self, cutoffs: dict[str, int], snapshot: dict | None, key: str, lens: LensKey | None
     ) -> dict:
         comparisons = (
-            snapshot["comparisons"]
-            if snapshot
-            else self.research.capture_comparisons(cutoffs)
+            snapshot["comparisons"] if snapshot else self.research.capture_comparisons(cutoffs)
         )
-        exposure = (
-            snapshot["exposure"]
-            if snapshot
-            else self.research.capture_exposure(cutoffs)
-        )
+        exposure = snapshot["exposure"] if snapshot else self.research.capture_exposure(cutoffs)
         index = (
             snapshot["evidence_index"]
             if snapshot
@@ -423,9 +424,12 @@ class Assistants:
             "generation": {
                 "authorization": row.generation["authorization"],
                 "contract": row.generation["contract"],
-                "requests": row.generation_requests, "candidates": row.generation_candidates,
+                "requests": row.generation_requests,
+                "candidates": row.generation_candidates,
                 "charged_usd": row.generation_charged / 1_000_000,
-            } if row.generation is not None else None,
+            }
+            if row.generation is not None
+            else None,
         }
 
     def get(self, key: str) -> dict:
@@ -1219,8 +1223,9 @@ class Assistants:
         if operation["status"] != "pending":
             return
         stage = (
-            "generating" if isinstance(request, GenerateExtensionRequest) else
-            "probing"
+            "generating"
+            if isinstance(request, GenerateExtensionRequest)
+            else "probing"
             if isinstance(request, ProbeRequest)
             else ("retrieving" if isinstance(request, ContextRequest) else "discovering")
         )
@@ -1234,11 +1239,12 @@ class Assistants:
                 await asyncio.to_thread(tools.dispatch, request, operation)
         except Exception:
             operation.update(
-                status="failed", summary=(
+                status="failed",
+                summary=(
                     "Generation failed; retain its source-linked attempts and request settlement."
                     if isinstance(request, GenerateExtensionRequest)
                     else "Operation failed; no source changes were made."
-                )
+                ),
             )
             self._research_progress(key, tools, stage)
             raise

@@ -1,5 +1,28 @@
 # Research harness implementation progress
 
+T17 checkpoint boundary: explicit failed+repaired generation history and exact
+integer request ledgers now export under15; DB13/library8/definition2/research2/
+generationv2 unchanged. Both independent mechanisms have separately attributed
+worker/World/Engine/private-tool/zero-call replay passes. Ceiling/unknown-usage
+qualification passes2/10.58s at637fe2...; every red/failure/source is retained.
+Normal checkpoint and exact accepted fdfb5f7a docs-policy merge are next; no
+provisionalT12. Own28.2MB evidence under64MiB ceiling; backend restart/cancellation,
+final-source/current-contract qualification and UI/production remain incomplete.
+No UI/service/provider/paid/held-out grant; T17 remains UNACCEPTED.
+
+Latest T17: accepted e76ef124 merged normally as1458a3e3, excluding provisional
+T12. Combined-source generation check passed1; second missing-cost-receipt RED
+retained and both generation workflows then passed2/16.05s at source73c997... .
+Actual wrong WAT failed the independently frozen368 observations; explicit repair
+preserves failure and separate scripted Sol costs, no participant calls. Current
+generation/eventv2 rejects prior events; DB13/export14/library8/definition2/
+research-operation2 remain. Next frozen World witness forecasts8MiB under64MiB
+backend envelope. Frontend/services/production/providers/paid/held-out held.
+ROOT docs-only fdfb5f7a is next accepted merge target; historical deleted BEFORE
+qualification is retired in favor of fresh independent current-contract checks.
+Own active evidence retained; T17 incomplete/UNACCEPTED. Earlier boundaries below
+remain historical, not claims of current source or artifact availability.
+
 T17 current boundary: normal-hook checkpointf8d94d3d retains the observed first
 generation work. Exact accepted e76ef124 source merge is being resolved, preserving
 all18 conflicts and accepted T14 async/accounting repairs; no provisional T12.

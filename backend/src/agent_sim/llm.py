@@ -351,19 +351,26 @@ class LanguageModels:
                     allowance = GenerationAuthorization.model_validate(
                         analysis.generation["authorization"]
                     )
-                    if session.execute(
-                        update(Analysis).where(
-                            Analysis.id == call.analysis_id,
-                            Analysis.generation_requests < allowance.max_requests,
-                            Analysis.generation_charged + call.reserved
-                            <= math.floor(allowance.budget_usd * 1_000_000),
-                        ).values(
-                            generation_requests=Analysis.generation_requests + 1,
-                            generation_charged=Analysis.generation_charged + call.reserved,
-                        ).returning(Analysis.id)
-                    ).scalar_one_or_none() is None:
+                    if (
+                        session.execute(
+                            update(Analysis)
+                            .where(
+                                Analysis.id == call.analysis_id,
+                                Analysis.generation_requests < allowance.max_requests,
+                                Analysis.generation_charged + call.reserved
+                                <= math.floor(allowance.budget_usd * 1_000_000),
+                            )
+                            .values(
+                                generation_requests=Analysis.generation_requests + 1,
+                                generation_charged=Analysis.generation_charged + call.reserved,
+                            )
+                            .returning(Analysis.id)
+                        ).scalar_one_or_none()
+                        is None
+                    ):
                         raise ProviderFailure(
-                            "Extension question request/spending allowance reached. No request was sent."
+                            "Extension question request/spending allowance reached. "
+                            "No request was sent."
                         )
             session.add(call)
             session.flush()
@@ -435,9 +442,15 @@ class LanguageModels:
             if call.analysis_id:
                 analysis = session.get_one(Analysis, call.analysis_id)
                 if analysis.generation is not None:
-                    session.execute(update(Analysis).where(
-                        Analysis.id == call.analysis_id,
-                    ).values(generation_charged=Analysis.generation_charged + charged - call.reserved))
+                    session.execute(
+                        update(Analysis)
+                        .where(
+                            Analysis.id == call.analysis_id,
+                        )
+                        .values(
+                            generation_charged=Analysis.generation_charged + charged - call.reserved
+                        )
+                    )
 
     async def close(self) -> None:
         for model in self.models.values():

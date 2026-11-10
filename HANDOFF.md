@@ -1,4 +1,38 @@
-# T17 accepted-frontier source integration (2026-11-10)
+# T17 backend checkpoint boundary (2026-11-10)
+
+Two distinct independently specified DEVELOPMENT mechanisms now have real
+scripted generation/worker/admission and World/Engine/private-projection/replay
+witnesses at the separately recorded T17-plan sources. Explicit wrong WAT +
+linked repair and all costs are retained/exported as current export15, with
+generation/eventv2, DB13/library8/definition2/research-operation2 unchanged.
+Export intended red and failed first fix are retained. Current request-ceiling/
+unknown-usage cases pass2/10.58s at637fe2...; affected Ruff/global ty pass at an
+earlier separately recorded source. No final-source runtime/static claim yet.
+Next normal checkpoint then exact accepted fdfb5f7a merge; no provisionalT12.
+Backend restart/cancellation, final-source regressions/current-contract matrix
+and all UI/browser/production work remain incomplete. UI/services/production/
+actual providers/paid/held-out are held; no active service. Own evidence28.2MB
+under64MiB envelope, lock released between jobs. T17 remains UNACCEPTED.
+
+# T17 earlier second DEVELOPMENT generation boundary (2026-11-10)
+
+Exact accepted e76ef124 merged normally as1458a3e3. Both affected generation
+workflows now pass2/16.05s at source73c99778439f6a82e9264952a7b03c46d067bc4054a6a1e91afea5edd027f9d9.
+Second immutable180+4 contract eef4... rejected an actual wrong WAT; intended
+missing-receipt red is retained, followed by explicit generation/eventv2 receipts
+and linked repair, eight separately settled scripted Sol requests/two attempts.
+No participants sampled. Next separately frozen World witness has8MiB forecast;
+backend second slice remains released under64MiB retained outputs. Frontend/
+services/browser/production/provider/paid/held-out remain held. No active lock/job.
+
+ROOT docs-only accepted fdfb5f7a is required before completion. Its compact-policy
+replacement is fresh current-contract qualification, never historical parity;
+deleted historical references must not be searched/restored/reconstructed. Own
+active evidence remains. See the durable T17 plan for exact attempts/sources and
+pending World/Engine/privacy/replay/static/UI/production qualification. Incomplete
+and UNACCEPTED; fresh integration review still required.
+
+# T17 earlier accepted-frontier source integration (2026-11-10)
 
 Own normal-hook checkpointf8d94d3dac0760352cdb380d81ad47420e87d0d0 passed
 secret scanning. Normal merge of exact accepted published

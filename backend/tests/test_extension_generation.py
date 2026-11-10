@@ -204,7 +204,8 @@ def test_generated_artifact_is_checked_against_external_full_domain_not_its_exam
                 json={
                     "format": "jas-extension-candidate-v1",
                     "name": "Scripted Sol DEVELOPMENT",
-                    "provenance": "Immutable external permit oracle; scripted artifact, no paid model",
+                    "provenance": "Immutable external permit oracle; "
+                    "scripted artifact, no paid model",
                     "source": code,
                     "examples": examples,
                 },

@@ -57,8 +57,9 @@ port18129 is held until services are released.
 - [x] Observe the first intended API red, then implement only that slice.
 - [x] Freeze an immutable independent contract before any generation; expose its
       source identity, full-table prerequisite and narrow supported profile.
-- [ ] Use actual bounded Sol artifact generation and actual worker validation /
-      independent admission in the existing question/proposal workflow.
+- [x] Use actual bounded Sol artifact generation and actual worker validation /
+      independent admission in the existing question/proposal workflow, with
+      scripted Sol identity only; live competence remains unverified.
 - [ ] Retain every candidate version, generation/check/repair operation, source,
       cost, failure, public activity and stop reason. No silent retry/substitution.
 - [ ] Reject self-admission, invented/unavailable contract provenance, resource
@@ -75,9 +76,11 @@ port18129 is held until services are released.
       explicitly reject prior contracts, with no alias/migration/reset.
 - [ ] Qualify appropriate backend/static/frontend/browser and fresh non-root
       production containment/admission/Engine/replay on exact final source.
-- [ ] Preserve frozen T01 runner/cases/scores and exactly four historical export-v4
-      failures/false flags/exit1. Independently author a separate positive
-      current-contract parity proof; classify every difference without masking it.
+- [ ] Preserve frozen T01 runner/cases/scores, run it on CURRENT source with safe
+      selection and record actual failures/flags/exit. Independently freeze fresh
+      current-contract full-input/effect/privacy/checkpoint/cutoff/replay/integer-
+      ledger qualification. Historical raw BEFORE/comparison is explicitly retired
+      by ROOT policy; do not reconstruct it or claim historical parity/improvement.
 - [ ] Merge only latest root-documented accepted integration, reconcile and
       qualify affected final source. Close owned services/browser; provide clean
       branch/head/base/merge and complete ignored evidence manifest/digest/proofs.
@@ -721,3 +724,244 @@ service and resets no data. Before completion it must still merge the latest
 root-documented accepted source, qualify exact affected source, close owned
 resources and await a NEW fresh integration reviewer. Implementation is incomplete
 and UNACCEPTED.
+
+## Combined-source green and frozen second vertical API slice
+
+Exact normal merge is1458a3e341ea27bbd13ff70db1b8d6bba1ec35f9, with own
+f8d94d3d first parent and approved e76ef124 second parent. Normal hooks/Gitleaks
+pass and tracked state was clean before the released check. The sole
+`generation-integration-01` check passes **1 in8.11s**, source before=after
+`ab570380e4fc40d22e436cdd3dacf4b5c4a1ee5589c481d4c81951be44ea0395`.
+Actual worker/admission and six scripted separately billed Sol requests retain
+their first-generation scope. Free1856327680→1853816832 under lock; post-result
+metadata observes12,861,927 evidence bytes/833 files and shared free1844359168.
+Lock released. No wider/backend-static/frontend/production qualification follows
+from this one pass.
+
+That pass releases the separately staged second backend slice. Before ANY second
+candidate output, the public API test now freezes an actual wrong constant4
+artifact with its own passing example24→4, followed by inspection of the actual
+failed external180+4 comparison (368 observed4s, failed admission, no environment
+source/study/participant). Its first intended missing-property red is the absence
+of an append-only **per-attempt provider request/cost receipt**. The existing
+question-wide ledger alone does not supply a hash-linked attempt receipt. The
+test blocks the next external provider response until that receipt is inspected;
+its future correct WAT file does not exist for this initial red.
+
+Independent accounting oracle: a generator response reports100 input/50 output
+tokens at declared Sol rates$2/$10 per million, exactly700 scripted microdollars.
+That completed billed request remains billed even though its artifact fails the
+external table. The explicit repair must identify the failed attempt, produce a
+different executable artifact, preserve the failure byte-for-byte and settle a
+separate700-microdollar generator request. Full workflow allowance is two candidate
+attempts/eight total nested Sol requests. Each gets a separate reservation and
+settlement; no ninth call, participant sample or hidden retry is permitted. The
+result remains a pending reviewed experiment with exact admitted source.
+
+The prospective receipt change must version the generation journal/events
+explicitly and reject the prior contract; never reinterpret or mutate the old
+v1 attempt evidence. Candidate prose/self-tests cannot change the approved
+fixture/hash/table, permissions, resource/stopping or restore/replay oracles above.
+Test/source freeze precedes its model output. Initial red forecast4MiB; no install
+or services. Keep each bounded job under the unchanged shared lock/floor and
+retain every failure/source. The new64MiB total envelope supersedes20MiB only
+for future work; earlier immutable receipts are unchanged.
+
+`cosigned-receipt-red-01` observes the intended **KeyError `requests`** after
+the real worker accepted the constant4 self-example and the actual external368
+comparison failed. Source before=after
+`d82e66c6084f37cffc581b44e8e6e7f9874f2b17930a505029d3d12425a1324d`;
+exit1,5.71s, outputs13,782,600 bytes before its final receipt. The blocked next
+General provider call is cancelled by normal test-server teardown; that separate
+CancelledError/unknown usage is retained, not mistaken for the primary assertion.
+The approved fixture's exact SHA assertion passed before any candidate output.
+
+Only after that red, source adds hash-linked per-attempt request receipts from
+the exact analysis/purpose/attempt-tagged actual provider record, retaining model,
+adapter, request hash, reservation, status, token counts, charge and error.
+Generator completion/failure captures its already-settled call before the
+candidate/check/stop, without silently retrying. Generation record/event contracts
+advance explicitly to `jas-extension-generation-v2` /
+`jas-extension-generation-event-v2`; prior unversioned/v1 events reject on read.
+All old v1 test evidence is retained untouched as historical data, not upgraded.
+DB13 authorization/counter meanings, export14 and research-operation2 retain their
+current meanings; generation event/record versions identify the changed sidecar
+contract. The DEVELOPMENT repair WAT is authored now as candidate code, never
+used as the oracle; only the previously approved literal table may admit it.
+
+Next bounded job is `cosigned-receipt-green-01`: both affected generation API
+tests, existing private environment,8MiB peak/output forecast, unchanged shared
+floor/lock,64MiB total retained-output ceiling. Own recorder v3 retains v1/v2
+unchanged and applies protected-excluded tracked selection also to Git stage
+metadata. No aggregate benchmark/snapshot subprocess is reached by these tests.
+
+ROOT's published docs-only `fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd` supersedes
+e76ef124 as the normal merge target before completion; no application frontier
+change. Its compact report's **Qualification after historical evidence retirement**
+explicitly retires historical BEFORE/comparator qualification. Do not search,
+restore or reconstruct deleted raw reference data. Preserve frozen T01 source/
+scores and record its CURRENT-source actual exit/checks with invocation-local
+safe selection; independently freeze and execute the applicable literal current-
+contract5-run/22-turn/22-request matrix, full inputs/effects/privacy/cutoffs/
+checkpoints/replay/integer ledgers, with explicit fixture replacements when needed.
+This is fresh current-contract qualification, never historical parity or evidence
+of zero regressions/improvement. This supersedes earlier acceptance wording above
+only for that retired comparison gate. Own active evidence remains preserved.
+
+`cosigned-receipt-green-01` passes both affected generation tests in16.05s,
+source before=after
+`73c99778439f6a82e9264952a7b03c46d067bc4054a6a1e91afea5edd027f9d9`.
+The failed constant artifact and its700-microdollar receipt remain byte-for-byte
+unchanged after explicit linked repair. The new WAT passes the independent368
+comparison/admission and becomes a pending proposal; eight separately settled Sol
+requests/two attempts, no participant sampling. All money here is scripted,
+not paid spend. Free1805082624→1800302592; retained footprint17,041,426 bytes
+before the final receipt. Lock released. Two failed multi-file patch applications
+before this check made no changes; corrected patches were then applied, without
+changing either external oracle.
+
+Next `cosigned-world-01` freezes an existing-property World witness in
+`backend/tests/test_cosigned_world.py`: public contract/check/admission/library/
+application routes, then actual-worker success/refund/reoffer/duplicate-refund
+horizon/veto/irrevocable-signature/stop/signed-horizon consequences; atomic denials;
+complete snapshots before and after each accepted action; static docket privacy
+and schemas/restored projections in all four memory modes. Literal expected
+tuples/outcomes come from the approved pre-candidate contract/traces above.
+No product implementation or Engine-dispatch repair precedes this observation.
+A first-observation pass is honest qualification, not an invented red/green.
+Forecast8MiB peak/output under the existing64MiB envelope/floor/flock. Engine/tool
+and zero-call replay remain a subsequent separately frozen witness after this.
+
+`cosigned-world-01` retained a fixture-setup failure (exit1,7.22s), source
+`97b010fa19e66a4159be7d13c357b5cc784cd6f3fb2678ae37cdb450b31736b3`.
+The public apply-environment route correctly creates `member_1`/`member_2` and
+binds logical initiator/counterparty slots to them; the test had incorrectly
+assumed actor keys equal role keys. No product defect/red-green is claimed.
+Corrected only test actor references to the explicit existing binding and asserted
+that binding; literal consequence/table/ACL/trace meaning is unchanged. Before
+this run the shell queued on the shared flock (no preflight/output yet); an early
+commentary described worker execution prematurely and was explicitly corrected.
+Observed actual job time7.22s excludes that queue. Free1778601984→1777545216;
+retained footprint17,729,690 bytes before receipt. No active lock remains.
+Next `cosigned-world-02` repeats only this corrected World witness,8MiB forecast.
+
+`cosigned-world-02` passes1 in10.20s, exact unchanged source
+`dc1a10cab540ae495477b7b1de96fc5bb4ec92c821550e09b13916ccc620d2d0`.
+This is existing-property qualification after correcting only actor-key setup,
+not a production red/green. Free1774497792→1773178880; footprint18,271,142 bytes
+before receipt; lock released. Approved fixture bytes/meaning remain unchanged.
+
+Next `cosigned-engine-01` freezes the public Engine/tool lifecycle test before
+its new outputs. Two otherwise identical studies vary only the initiator docket.
+Each explicitly starts three turns offer/sign/release; every activation performs
+one actor-scoped observe then decide within2 requests/1 tool. Expected final
+state/resources are(3,1,0,1), successful released; no calls on save; counterpart
+tool results/projections identical and all counterpart prompts omit both dockets.
+Each Luna response reports100 input/50 output tokens at$0.10/$0.50 per million:
+exact35 scripted microdollars/request,6 requests/study,12 requests/1200 input/
+600 output/420 microdollars total. Separate per-request reservations remain the
+existing accounting contract, not replaced by these known-usage charges.
+Revisions/evidence/exports must remain unchanged through exact3-turn replay with
+zero provider construction/calls. Forecast8MiB, same released floor/flock64MiB
+envelope; no production/browser/service/provider call or redundant dispatch fix.
+
+`cosigned-engine-01` passes on first observation1/11.30s (one deselected),
+source before=after
+`cdb43f2c4297d038723ff14af6f9074d23b6d23cffd93f9ebfa9b99a3db79c0d`.
+Two actual three-turn public runs each use6 separately accounted scripted Luna
+requests,210 microdollars, actor-private observe/decide and exact zero-call replay.
+Across both:12 requests/1200 input/600 output/420 scripted microdollars. Saving,
+inspection, export and replay sample no models. This is finite DEVELOPMENT, not
+live intelligence or production qualification. No async Engine repair was needed.
+Free1757278208→1755893760, footprint19,171,184 bytes before receipt; lock released.
+
+Next `generation-export-red-01` extends only the completed second question API
+slice: save its pending protocol without sampling, then require complete immutable
+failed+repaired generation records, independent contract/check/admission/source
+links, and authorization/candidate/request counters plus exact integer reserved/
+charged per-request ledgers in the export. First intended missing-property failure
+is absent `extension_generations`. The future current export contract is15;
+DB13/library8/definition2/research-operation2/generationv2 retain their meanings.
+Every affected current export caller/test/doc must advance after observed red;
+frozen historical T01 bytes/scores remain untouched. Forecast8MiB, same bounded
+backend envelope/floor/flock. No implementation precedes this export red.
+
+`generation-export-red-01` observes the intended **KeyError
+`extension_generations`**, exit1/9.14s, exact unchanged source
+`c697d1586f5e450a45293b1ea8a5fcc61a69f029d3cf02b55c0c920ba4c3f24d`.
+The complete wrong-artifact/repair workflow and save passed before the missing
+export field. Free1743949824→1741586432; footprint21,065,259 bytes before
+receipt; lock released. Failure/source and approved external oracle are retained.
+Only after red, export15 adds complete linked attempt records, generation
+authorization/counters and per-request purpose/integer reservation/charge fields.
+All current export-version assertions and live docs advance together; previous
+export1–14 contracts are explicitly incompatible. Frozen original T01 runner,
+cases and scores are unchanged. No DB/library/research/generation version is
+reused for a changed meaning. Next `generation-export-green-01` runs the affected
+second workflow plus one ordinary public API export lifecycle regression;
+forecast8MiB, no benchmark snapshot subprocess, unchanged bounded floor/flock.
+
+`generation-export-green-01` retains2 failures/9.32s at exact unchanged source
+`9fd1a52a6f41f554c5790d2137f756536a3c7b7b370f796caf0a993ea4a5bed4`.
+The initial implementation patch matched annotation `created` instead of analysis
+`created`, leaving generation absent from analyses and causing an Annotation
+AttributeError in ordinary export. This is an implementation mistake, not an
+oracle correction. Move that block to analysis records only; preserve both failures
+and source. Free1742176256→1739079680; footprint23,319,644 bytes before receipt,
+lock released. `generation-export-green-02` is the same two checks with8MiB
+forecast after the targeted fix, no automatic retry or expanded test scope.
+
+`generation-export-green-02` passes2/9.32s, exact unchanged source
+`7e02edefc3ee57ecfb6facddcd911f98b3b9dde7008183c6578d2bf81ab8f1d0`.
+Both failed+repaired attempts, every linked external check/admission/source and
+question allowance/counter/integer-cost record are now exported and saving adds
+no requests; ordinary annotated export also passes. All earlier failures remain.
+Free1732001792→1726423040; footprint25,453,328 bytes before receipt, lock released.
+Next bounded affected-backend Ruff check forecasts4MiB (no cache), followed by
+a separately locked4MiB type check. No backend aggregate pytest, frontend,
+production or historical comparator work is implied by these checks.
+
+`backend-style-02` retains92 Ruff diagnostics at exact source
+`0dc72e1ec4492653679c372f8ae36412c303621b9395f74c994c1fdbda09052c`:
+mostly unformatted added Python/long lines and3 import fixes. `backend-types-02`
+at the same source retains3 optional-field diagnostics in the new World witness
+(finite bindings/private and test portal); no type errors are suppressed. Add
+explicit non-null assertions, then use bounded normal Ruff import/format commands
+on affected Python files only. The immutable external JSON/WAT fixtures are not
+formatter inputs. Each formatting job records deliberate before/after source
+identity changes; none is a runtime pass. Next check after actual formatting has
+its own unique receipt. Each style/type/format job forecasts4MiB; total retained
+footprint25,863,157 bytes before the type receipt, lock released between jobs.
+
+`backend-imports-02` fixes2 imports; `backend-format-02` formats9 files, leaves8
+unchanged. Both intentionally record changed source identities. Subsequent
+`backend-style-03` retains22 remaining long-string/late-loop-binding diagnostics.
+Manual adjacent string splits preserve exact runtime text; the Engine test binds
+its immediate wait callback's run id explicitly. No ignores or checks are weakened.
+`backend-style-04` (affected17 Python files) and global `backend-types-03` both
+pass at exact source
+`96ae048832e3471b1faaf6f83a3cc549de04fbbe2e22f0ecd3967d28adfaa42a`.
+These are static checks, not requalification of prior runtime source after format.
+Footprint27,035,610 bytes before type receipt; free1692848128, lock released.
+
+Next `generation-limits-01` freezes two existing-property API cases at the real
+provider/accounting seam. With max_requests1 the initial General request settles,
+the generator reservation is refused atomically before any provider send, the
+one started candidate closes failed with no request/candidate/check/source. With
+max_requests2 the generator sends once then a deliberate provider RuntimeError
+before usage leaves statusunknown, zero reported tokens and charged=reserved>0;
+its immutable attempt receipt retains that error/charge. Both stop without retry,
+substitution, second candidate, participant or study. Question counters and integer
+charges reconcile exactly with separately exposed settled calls. First-observation
+passes are qualification, not a claimed repair. Forecast8MiB, same64MiB bounded
+backend floor/flock; no new dependencies, services or actual provider calls.
+
+`generation-limits-01` passes2 (two deselected)/10.58s, source unchanged
+`637fe2b9d9148933b51f8a377b0a71b70adbb4c8cedb5412b21bd43f392882ae`.
+Both literal stop/unknown-charge expectations hold without a product repair.
+Free1684492288→1681735680; footprint28,189,839 bytes before receipt; lock released.
+Next coherent normal-hook checkpoint and normal merge of exact published accepted
+`fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd` retain both documentary histories
+and retired-reference policy. Forecast4MiB for each bounded Git job; source capture
+uses the same protected-excluded tracked selection and source deduplication.
+No publication, moving-ref/provisional merge, install, service or provider grant.

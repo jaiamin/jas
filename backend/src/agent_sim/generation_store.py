@@ -9,6 +9,9 @@ from sqlalchemy.exc import NoResultFound
 
 from .db import digest, now, uid
 
+FORMAT = "jas-extension-generation-v2"
+EVENT_FORMAT = "jas-extension-generation-event-v2"
+
 
 class GenerationStore:
     def __init__(self, root: Path):
@@ -27,9 +30,14 @@ class GenerationStore:
         events, previous = [], None
         for path in sorted((self.root / key).glob("*.json")):
             record = json.loads(path.read_text())
-            if (path.name != f"{len(events):04}.json" or record["sequence"] != len(events)
+            if record.get("format") != EVENT_FORMAT:
+                raise ValueError("Unsupported extension generation event format; expected v2")
+            if (
+                path.name != f"{len(events):04}.json"
+                or record["sequence"] != len(events)
                 or record["previous"] != previous
-                or record["sha256"] != digest({k: v for k, v in record.items() if k != "sha256"})):
+                or record["sha256"] != digest({k: v for k, v in record.items() if k != "sha256"})
+            ):
                 raise ValueError("Invalid immutable generation event sequence or content hash")
             events.append(record)
             previous = record["sha256"]
@@ -40,8 +48,14 @@ class GenerationStore:
             events = self._events(key)
             if any(event["kind"] == "stopped" for event in events):
                 raise ValueError("A closed generation attempt cannot receive more events")
-            payload = {"sequence": len(events), "created": now(), "kind": kind, "data": data,
-                       "previous": events[-1]["sha256"] if events else None}
+            payload = {
+                "format": EVENT_FORMAT,
+                "sequence": len(events),
+                "created": now(),
+                "kind": kind,
+                "data": data,
+                "previous": events[-1]["sha256"] if events else None,
+            }
             payload["sha256"] = digest(payload)
             path = self.root / key / f"{len(events):04}.json"
             temporary = path.with_suffix(".tmp")
@@ -57,13 +71,25 @@ class GenerationStore:
             events = self._events(key)
             if not events or events[0]["kind"] != "started":
                 raise ValueError("Missing generation attempt origin")
-            result = {"format": "jas-extension-generation-v1", "id": key,
-                      **events[0]["data"], "created": events[0]["created"], "events": events,
-                      "candidate": None, "review": None, "check": None, "admission": None,
-                      "source": None, "stop_reason": "in_progress"}
+            result = {
+                "format": FORMAT,
+                "id": key,
+                **events[0]["data"],
+                "created": events[0]["created"],
+                "events": events,
+                "candidate": None,
+                "review": None,
+                "check": None,
+                "admission": None,
+                "source": None,
+                "requests": [],
+                "stop_reason": "in_progress",
+            }
             for event in events[1:]:
                 if event["kind"] == "stopped":
                     result.update(event["data"])
+                elif event["kind"] == "request":
+                    result["requests"].append(event["data"])
                 elif event["kind"] in {"candidate", "review", "check", "admission", "source"}:
                     result[event["kind"]] = event["data"]
             result["sha256"] = events[-1]["sha256"]
@@ -71,5 +97,8 @@ class GenerationStore:
 
     def list(self) -> list[dict]:
         with self.lock:
-            return sorted((self.get(p.name) for p in self.root.glob("*") if p.is_dir()),
-                          key=lambda r: r["created"], reverse=True)
+            return sorted(
+                (self.get(p.name) for p in self.root.glob("*") if p.is_dir()),
+                key=lambda r: r["created"],
+                reverse=True,
+            )

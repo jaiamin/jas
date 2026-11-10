@@ -165,15 +165,24 @@ class ResearchTools:
             request = operation["request"]
             if request["kind"] == "capabilities" and operation["status"] == "complete":
                 latest[request.get("environment")] = operation["id"]
-        return {**self.record, "operations": [
-            {**operation, "data": {
-                "full_result_retained": True, "sha256": digest(operation["data"]),
-                "latest_discovery_id": latest[operation["request"].get("environment")],
-            }} if operation["request"]["kind"] == "capabilities"
-            and operation["status"] == "complete"
-            and latest[operation["request"].get("environment")] != operation["id"]
-            else operation for operation in self.record["operations"]
-        ]}
+        return {
+            **self.record,
+            "operations": [
+                {
+                    **operation,
+                    "data": {
+                        "full_result_retained": True,
+                        "sha256": digest(operation["data"]),
+                        "latest_discovery_id": latest[operation["request"].get("environment")],
+                    },
+                }
+                if operation["request"]["kind"] == "capabilities"
+                and operation["status"] == "complete"
+                and latest[operation["request"].get("environment")] != operation["id"]
+                else operation
+                for operation in self.record["operations"]
+            ],
+        }
 
     def dispatch(
         self,
@@ -183,7 +192,9 @@ class ResearchTools:
     ) -> dict:
         operation["status"] = "complete"
         if isinstance(request, GenerateExtensionRequest):
-            raise ValueError("Extension generation requires its explicit asynchronous user allowance")
+            raise ValueError(
+                "Extension generation requires its explicit asynchronous user allowance"
+            )
         if isinstance(request, (ProbeRequest, CandidateProbeRequest)):
             try:
                 data, sources = self._probe(request, candidate)
@@ -267,8 +278,13 @@ class ResearchTools:
         else:
             if request.generation_id is not None:
                 generation = self.research.extensions.generations.get(request.generation_id)
-                if generation["analysis_id"] != self.analysis_id or generation["stop_reason"] != "admitted_pending_review":
-                    raise ValueError("Catalog refresh must link this question's actual admitted generation")
+                if (
+                    generation["analysis_id"] != self.analysis_id
+                    or generation["stop_reason"] != "admitted_pending_review"
+                ):
+                    raise ValueError(
+                        "Catalog refresh must link this question's actual admitted generation"
+                    )
             custom = [
                 record.model_dump()
                 for record in self.research.environments.list()
@@ -317,15 +333,20 @@ class ResearchTools:
                     "custom_environments": custom,
                     "extension_synthesis": {
                         "profile": "reviewed-finite-v1",
-                        "prerequisite": "User-authored, independently reviewed exhaustive finite table frozen before generation.",
-                        "scope": "At most256 finite inputs; deterministic role/state/credit transitions, "
-                        "static actor-private facts and fixed logical order. This is table synthesis, "
+                        "prerequisite": "User-authored, independently reviewed exhaustive "
+                        "finite table frozen before generation.",
+                        "scope": "At most256 finite inputs; deterministic role/state/credit "
+                        "transitions, static actor-private facts and fixed logical order. "
+                        "This is table synthesis, "
                         "not independently verified natural-language understanding.",
-                        "unsupported": "Rich or dynamic information, arbitrary programs, host imports, external systems.",
-                        "authorization": "Explicit selected contract, candidates, total nested requests, "
-                        "input/output and spending ceilings. Prefer installed mechanics/composition when sufficient.",
+                        "unsupported": "Rich or dynamic information, arbitrary programs, "
+                        "host imports, external systems.",
+                        "authorization": "Explicit selected contract, candidates, total nested "
+                        "requests, input/output and spending ceilings. Prefer installed "
+                        "mechanics/composition when sufficient.",
                         "execution": "Only explicit admitted WAT reaches current qualified worker. "
-                        "Copied probes differ from executable containment. Review proposals before separate execution.",
+                        "Copied probes differ from executable containment. "
+                        "Review proposals before separate execution.",
                     },
                     "reuse_note": "Definitions are untrusted mechanics examples. Choose the "
                     "question, participants/models/harnesses, conditions, replication and "
