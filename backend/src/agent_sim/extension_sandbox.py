@@ -32,9 +32,7 @@ def execute(source: str, states: list[int], *, qualification: str | None = None)
                 start_new_session=True,
             )
             try:
-                output, _ = process.communicate(
-                    payload.encode(), timeout=0.25 if qualification == "deadline" else WALL_SECONDS
-                )
+                output, _ = process.communicate(payload.encode(), timeout=WALL_SECONDS)
                 if len(output) > MAX_OUTPUT:
                     result = {"code": "output_limit"}
                 elif process.returncode != 0:

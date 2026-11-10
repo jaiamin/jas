@@ -226,3 +226,15 @@ def test_candidate_probes_leave_checkpoint_evidence_and_next_delivery_unchanged(
     assert client.get(f"/api/runs/{rid}/turns/2").json()["observation"] == (
         delivery | {"you": profile.model_dump()}
     )
+
+
+def test_qualification_exercises_the_documented_worker_deadline(client):
+    import time
+
+    started = time.monotonic()
+    result = client.post("/api/extensions/qualify", json={}).json()
+    elapsed = time.monotonic() - started
+    assert result["status"] == "qualified"
+    # The independent termination fixture must actually reach the documented
+    # four-second worker deadline, rather than a cheaper test-only timeout.
+    assert 4 <= elapsed < 25
