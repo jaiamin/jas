@@ -149,4 +149,13 @@ source checkpoints are committed. Live requests and actual spend: **zero**.
 - Comparison tracer: absent comparator → red; per-check regression reporting,
   retained failures and rejected incomparable case sets → green. Terminal
   `passed` failures are retained alongside individual failed checks. Current
-  focused test result: **3 passed**.
+  focused result at the first checkpoint: **3 passed**.
+- Disconnect-retention tracer: a simulated API transport disconnect initially
+  aborted the runner → red; the failed attempt/operation now persists with
+  unknown usage and the remaining cases continue → green, **4 passed**. An
+  unexpected failure after save also retains a best-effort partial export.
+  Logs: `setup/tdd-red-disconnect.log`, `setup/tdd-green-disconnect.log`.
+- The full owned keyless Chromium suite passed: **165 passed**, zero unexpected,
+  skipped or flaky tests (338.46s). It ran against the unchanged production
+  backend/frontend with `JAS_TEST_PORT=18112`; Playwright shut down its server.
+  Log with JSON results: `setup/browser.log`.

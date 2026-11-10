@@ -1,6 +1,8 @@
 import json
 
+import httpx
 import pytest
+from fastapi.testclient import TestClient
 from pydantic_ai.models.function import FunctionModel
 
 from benchmarks import research_baseline
@@ -88,3 +90,30 @@ def test_comparison_retains_prior_failures_and_reports_each_regression():
         research_baseline.compare(before, after | {"suite_sha256": "changed-cases"})
     with pytest.raises(ValueError, match="case"):
         research_baseline.compare(before, after | {"attempts": []})
+
+
+def test_api_transport_failure_keeps_attempt_and_continues_other_cases(tmp_path, monkeypatch):
+    request = TestClient.request
+    failed = False
+
+    def interrupted(self, method, url, **kwargs):
+        nonlocal failed
+        if url == "/api/settings" and not failed:
+            failed = True
+            raise httpx.ConnectError("Controlled disconnect")
+        return request(self, method, url, **kwargs)
+
+    monkeypatch.setattr(TestClient, "request", interrupted)
+    output = tmp_path / "disconnected"
+    report = run_baseline(output)
+    first = report["attempts"][0]
+    assert first["passed"] is False
+    assert first["stop_reason"] == "error"
+    assert first["usage"]["requests"] is None
+    assert first["usage"]["partial"] is True
+    assert all(row["passed"] for row in report["attempts"][1:])
+    operations = [
+        json.loads(line) for line in (output / "operations.jsonl").read_text().splitlines()
+    ]
+    assert len(operations) == report["http_operations"]
+    assert any(row.get("error") == "ConnectError" for row in operations)

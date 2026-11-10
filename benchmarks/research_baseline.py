@@ -139,18 +139,24 @@ def provider_for(case):
 
 def exercise(client, case, output, operations):
     def request(method, path, body=None):
-        response = client.request(method, path, json=body)
         row = {
             "number": len(operations) + 1,
             "case_id": case["id"],
             "method": method,
             "path": path,
-            "status": response.status_code,
+            "status": None,
         }
-        operations.append(row)
-        with (output / "operations.jsonl").open("a") as stream:
-            stream.write(json.dumps(row) + "\n")
-        return response
+        try:
+            response = client.request(method, path, json=body)
+            row["status"] = response.status_code
+            return response
+        except Exception as error:
+            row["error"] = type(error).__name__
+            raise
+        finally:
+            operations.append(row)
+            with (output / "operations.jsonl").open("a") as stream:
+                stream.write(json.dumps(row) + "\n")
 
     def api(method, path, body=None):
         response = request(method, path, body)
@@ -160,11 +166,12 @@ def exercise(client, case, output, operations):
     row = {"id": case["id"], "attempt": 1, "checks": {}, "run_stops": [], "stop_reason": "error"}
     checks = row["checks"]
     operation_start = len(operations)
-    if not operations:
-        write_json(output / "catalog.json", api("GET", "/api/catalog"))
-    initial_usage = api("GET", "/api/settings")["usage"]
-    initial = initial_usage["requests"]
+    initial_usage, sid = None, None
     try:
+        if not operations:
+            write_json(output / "catalog.json", api("GET", "/api/catalog"))
+        initial_usage = api("GET", "/api/settings")["usage"]
+        initial = initial_usage["requests"]
         design = design_for(case)
         validation = request("POST", "/api/design/validate", {"design": design})
         expected = case["expected"]
@@ -275,17 +282,35 @@ def exercise(client, case, output, operations):
     except Exception as error:
         row["error"] = f"{type(error).__name__}: {error}"
     finally:
-        settings = api("GET", "/api/settings")
-        write_json(output / "settings.json", settings)
-        usage = settings["usage"]
-        row["usage"] = {
-            key: usage[key] - initial_usage[key]
-            for key in ("requests", "input_tokens", "output_tokens", "cost_usd")
-        } | {"partial": usage["partial"]}
+        if sid is not None and "export" not in row:
+            try:
+                export = api("GET", f"/api/studies/{sid}/export")
+                row["export"] = f"{case['id']}-export.json"
+                write_json(output / row["export"], export)
+            except Exception as error:
+                row["export_error"] = type(error).__name__
+        row["usage"] = dict.fromkeys(("requests", "input_tokens", "output_tokens", "cost_usd"))
+        row["usage"]["partial"] = True
+        try:
+            settings = api("GET", "/api/settings")
+            write_json(output / "settings.json", settings)
+            usage = settings["usage"]
+            if initial_usage is not None:
+                row["usage"] = {
+                    key: usage[key] - initial_usage[key]
+                    for key in ("requests", "input_tokens", "output_tokens", "cost_usd")
+                } | {"partial": usage["partial"]}
+        except Exception as error:
+            row["usage_error"] = type(error).__name__
         row["http_operations"] = len(operations) - operation_start
         if "validation_status" in case["expected"]:
             checks["rejection-does-not-spend"] = row["usage"]["requests"] == 0
-        row["passed"] = bool(checks) and all(checks.values()) and "error" not in row
+        row["passed"] = (
+            bool(checks)
+            and all(checks.values())
+            and "error" not in row
+            and "usage_error" not in row
+        )
         with (output / "attempts.jsonl").open("a") as stream:
             stream.write(json.dumps(row) + "\n")
     return row
@@ -340,7 +365,8 @@ def run_baseline(output):
             for case in suite["cases"]:
                 with patch.object(app.state.models, "model", return_value=provider_for(case)):
                     report["attempts"].append(exercise(client, case, output, operations))
-    report["settings"] = json.loads((output / "settings.json").read_text())
+    settings_path = output / "settings.json"
+    report["settings"] = json.loads(settings_path.read_text()) if settings_path.exists() else None
     report["http_operations"] = len(operations)
     report["source_unchanged"] = all(
         (ROOT / name).is_file() and hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == digest
