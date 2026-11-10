@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 from threading import Event
+from typing import Any
 from uuid import uuid4
 
 import pytest
@@ -22,7 +23,9 @@ from pydantic_ai.usage import RequestUsage
 
 @pytest.fixture
 def claim_client(tmp_path, monkeypatch, request):
-    controls = {"amount": 2, "answer": "The recorded total utility is 440.", "value": 440}
+    controls: dict[str, Any] = {
+        "amount": 2, "answer": "The recorded total utility is 440.", "value": 440,
+    }
     seen, operations = [], []
 
     async def respond(messages, info):

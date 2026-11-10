@@ -249,7 +249,9 @@ def capture_lens(
             calculations.append(
                 {
                     "id": f"contrast:{revision}:{effect['condition_key']}:{effect['metric']}",
-                    "label": f"{effect['condition']} minus {effect['baseline']} · {effect['metric']}",
+                    "label": (
+                        f"{effect['condition']} minus {effect['baseline']} · {effect['metric']}"
+                    ),
                     "scope": "observed_pairs",
                     "value": effect["mean"],
                     "formula": "T06 comparison v1: condition - baseline per matched terminal cell; "

@@ -972,7 +972,7 @@ class Assistants:
         comparisons = (current.output or {}).get("comparisons")
         tools = ResearchTools(current, self.research)
         self._research_progress(key, tools, "indexing")
-        index = (current.output or {}).get("evidence_index") or await asyncio.to_thread(
+        index: dict = (current.output or {}).get("evidence_index") or await asyncio.to_thread(
             self._evidence_index,
             cutoffs,
             comparisons,
