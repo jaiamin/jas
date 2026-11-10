@@ -8,6 +8,7 @@ from sqlalchemy import select
 from .db import Analysis, digest, uid
 from .domain import ActionRequest, Decision, Design, Parameters, Strict
 from .environment_library import builtin_environment
+from .investigation_limits import claim_work
 from .research import Research
 from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS
 from .templates import templates
@@ -93,6 +94,7 @@ class ResearchTools:
     def __init__(self, row: Analysis, research: Research):
         self.research = research
         self.analysis_id = row.id
+        self.investigation_id = row.investigation_id
         with research.db.session() as session:
             query = select(Analysis).where(
                 Analysis.chat_id == row.chat_id,
@@ -152,6 +154,7 @@ class ResearchTools:
             "sources": [],
             "data": None,
         }
+        claim_work(self.research.db, self.investigation_id, "operations")
         self.record["operations"].append(operation)
         return operation
 

@@ -56,7 +56,7 @@ test("activity exposes hypothetical operation sources, results and the stop reas
               answer: "The hypothetical split is five and nine.",
               activity: ["probing", "writing"],
               research: {
-                version: 1,
+                version: 2,
                 scope: {
                   chat_id: "chat",
                   before: "2026-11-10",

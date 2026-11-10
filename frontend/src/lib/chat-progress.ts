@@ -2,7 +2,8 @@ import type { ResearchActivity } from "./types";
 
 interface ChatProgress {
   status: "pending" | "complete" | "failed";
-  purpose: "general" | "design" | "analysis";
+  purpose: "general" | "design" | "analysis" | "investigation";
+  investigation_id?: string;
   partial?: string;
   introduction?: string;
   stage?: string;
@@ -17,7 +18,7 @@ function object(value: unknown): value is Record<string, unknown> {
 function researchActivity(value: unknown): value is ResearchActivity {
   if (
     !object(value) ||
-    value.version !== 1 ||
+    value.version !== 2 ||
     !object(value.scope) ||
     typeof value.scope.chat_id !== "string" ||
     typeof value.scope.before !== "string" ||
@@ -38,7 +39,7 @@ function researchActivity(value: unknown): value is ResearchActivity {
       typeof operation.id === "string" &&
       typeof operation.summary === "string" &&
       object(operation.request) &&
-      ["capabilities", "context", "probe"].includes(
+      ["capabilities", "context", "probe", "generate_extension"].includes(
         String(operation.request.kind),
       ) &&
       ["pending", "complete", "rejected", "failed"].includes(
@@ -49,7 +50,17 @@ function researchActivity(value: unknown): value is ResearchActivity {
       operation.sources.every(
         (source: unknown) =>
           object(source) &&
-          ["builtin", "analysis", "run"].includes(String(source.kind)) &&
+          [
+            "builtin",
+            "environment",
+            "analysis",
+            "run",
+            "finite_contract",
+            "extension_generation",
+            "extension_review",
+            "finite_check",
+            "finite_admission",
+          ].includes(String(source.kind)) &&
           typeof source.id === "string" &&
           typeof source.hash === "string" &&
           (source.turn === undefined ||
@@ -89,9 +100,18 @@ export function chatProgress(
     )
       return null;
     const purpose = "purpose" in row ? row.purpose : undefined;
-    if (purpose !== "general" && purpose !== "design" && purpose !== "analysis")
+    if (
+      purpose !== "general" &&
+      purpose !== "design" &&
+      purpose !== "analysis" &&
+      purpose !== "investigation"
+    )
       return null;
     const output = row.output;
+    const investigationId =
+      "investigation_id" in output ? output.investigation_id : undefined;
+    if (investigationId !== undefined && investigationId !== messageId)
+      return null;
     const partial = "partial" in output ? output.partial : undefined;
     const introduction =
       "introduction" in output ? output.introduction : undefined;
@@ -111,6 +131,9 @@ export function chatProgress(
       return null;
     return {
       ...(activity ? { activity } : {}),
+      ...(typeof investigationId === "string"
+        ? { investigation_id: investigationId }
+        : {}),
       ...(research ? { research } : {}),
       ...(introduction !== undefined ? { introduction } : {}),
       status: row.status,

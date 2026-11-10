@@ -1,5 +1,18 @@
 # Research harness implementation progress
 
+T17 current boundary: normal-hook checkpointf8d94d3d retains the observed first
+generation work. Exact accepted e76ef124 source merge is being resolved, preserving
+all18 conflicts and accepted T14 async/accounting repairs; no provisional T12.
+Combined contracts DB13/export14/library8/definition2/research-operation2 reject
+incompatible intermediate meanings. Parent approved unchanged second180+4 oracle
+before candidate output. Root released normal-hook merge completion and one
+existing-generation integration check (4MiB); only a pass releases the later
+separate second backend slice under64MiB outputs/per-job<=16MiB. No combined
+source qualification has yet run; frontend/production/live stages remain held.
+Root historical raw/custody paths/maps are user-authorized retired after its
+compact report; own T17 active evidence remains. Do not restore retired artifacts
+or claim their current availability. Earlier statements retain historical scope.
+
 Latest T17: root's single released scripted-Sol generation-green-01 passes on
 exact unchanged source9742aa243e6c9c8f9fdc3069e6e5bdde71806272927ea1c28ea8a57bab0830a7.
 Actual Pydantic AI dispatch, emitted WAT, qualified worker/external finite checks,
@@ -92,6 +105,112 @@ Setup/check/capture/service/browser/Docker remain explicitly held for T14's fina
 production window. Cache coordination is not a setup grant. Current contracts
 remain DB10/export11/library7; T17 is unaccepted. There is no paid/provider/held-out
 work or publication, and no new intelligence/benchmark/containment claim.
+
+### T14 independent recovery closure accepted locally (2026-11-10)
+
+NEW personal current **Standards PASS / Spec PASS**, zero unresolved current
+findings, accepts only finite deterministic T14/#25 DEVELOPMENT scope. Historical
+R1 Standards FAIL and the original withheld review/qualification/index/seals
+remain unchanged. See [closure](research/T14_RECOVERY_CLOSURE.md) and
+[recovery](research/T14_INCIDENT_RECOVERY.md); no clean-history or final milestone
+claim. Sole tracked writing returns only with the explicit final handback.
+
+Independent recovery audits match all1,320 preserved members/full TarInfo/PAX,
+48 untouched files, six complete source-record proofs, recomputed source maps
+and explicitly redacted current container identities. Exact57-file affected
+membership has no prohibited member/digest entry or stage/unredacted duplicate.
+Header inspection includes nested captures; protected original and synthetic
+configuration payloads remain opaque. All823 original safe-index entries,
+1,489 immutable custody hardlinks/seven seal entries, original130 attempts/
+46 nonzero/79 maps, historical reviewer attempts and ROOT proofs/maps/stash
+remain. Zero restoration/repack was needed; all verifier failures are retained.
+
+All383 distinct qualification inputs and438 original source members match.
+Exact recorded JUnit outcomes recompute to5 independent HTTP,63/61/715 segmented
+backend and13 library cases. No application suites/builds/browser/images were
+rerun: unchanged original reviewer results retain attribution, with116 frontend
+units/33 files and lint explicitly inherited. Non-root44-backend/53-asset image,
+in-image artifact Engine and host admitted worker scopes remain distinct.
+Frozen T01 keeps four export-v4 failures/failed flags/exit1; positive parity is
+separate. Preserve all TDD/capture/classifier and ENOSPC/rollback disclosures.
+DB11/export12/library7 stand without aliases/migration/reset. No paid/provider/
+live/held-out or publication activity; live competence, validity and final gates
+remain open. T12/T17 provisional work is excluded; ROOT coordinates staged
+releases against the last published accepted target until publication changes it.
+
+### T14 targeted incident recovery; independent closure pending (2026-11-10)
+
+The fresh product review passed bounded Spec checks and repaired three lifecycle
+defects, but withheld acceptance on an unsafe indirect snapshot invocation.
+ROOT's separately recorded minimal recovery removed only unintended generated
+protected members/digest entries, preserving all unaffected data, adverse records
+and the historical Standards FAIL. All823 original safe-index files remain
+unchanged. See [recovery](research/T14_INCIDENT_RECOVERY.md). No runtime, frozen
+baseline, reset, paid work or publication changed. A NEW independent closure
+review is required before acceptance; provisional T14 remains excluded from
+siblings' accepted merge targets. T12 has a renewed warm-offline setup and bounded
+backend release; T17's one generation green waits for that setup boundary.
+
+### T14 review completed; acceptance held on review-protocol breach (2026-11-10)
+
+Personal Standards: **FAIL on reviewer protected-selection protocol**; all three
+application lifecycle findings and the library-version documentation mismatch are
+repaired. Personal Spec: **PASS for bounded T14 DEVELOPMENT mechanics**, with no
+research-validity/live/milestone claim. Exact merge463f14f2 retains b304029e as
+second parent; runtime repair23de5e48 is frozen and fully affected-qualified.
+
+Fresh reviewer checks: five independent actual-worker HTTP cases; segmented
+63 lifecycle/61 analysis/715 contract cases;13 library cases; Ruff/ty/forced TS/
+clean build; five investigation and four composer browser cases. The strengthened
+disclosure is within the five; the earlier separate disclosure execution and116
+frontend units/33files/frontend lint retain exact source-verified attribution.
+Fresh production matches44backend/53assets and contains separate keyless artifact
+Engine HTTP Pause/Resume/accounting/replay; admitted actual-worker host scope is
+explicit. Frozen baseline retains exactly four export-v4 failures/failed flags/
+exit1 and zero regressions/improvements; current-contract5run/22turn/22literal-
+request parity passes separately with770 scripted microdollars,2200in/1100out,
+actual0. Every adverse attempt and classifier amendment remains retained.
+
+R1: contract711 snapshot tests omitted the protected Git-selection wrapper and
+could capture protected root files; filename-only membership contained two
+prohibited names. Entire generated runtime/contract-711 remains opaque, excluded
+from reads/hashes/copy/packing/cleanup and final safe index. Corrected safe
+invocations pass the four cases again but cannot undo the breach. **T14 remains
+unaccepted pending ROOT's opaque-output/protocol disposition.** Review/HANDOFF
+link exact qualification SHA e1d4d9d3283bcfd9e3681499a7fe8af0147924b8101d68277ea5640418c9c440,
+closure, maps and resource recovery/rollback disclosures. No provisional sibling
+merge, paid work, publication or final milestone claim. Sole tracked writing
+returns only through the explicit final reviewer completion message.
+
+### Earlier T14 reviewer runtime checkpoint (2026-11-10)
+
+Exact source b304029e was merged with no-ff second-parent ancestry at463f14f2.
+The fresh reviewer personally separated Standards and Spec, found and reproduced
+three pause lifecycle defects, and repaired them in Engine/Investigations. Five
+independent public-HTTP witnesses pass, including actual admitted workers;
+full Ruff/ty pass. All findings/adverse attempts and capture limits are retained
+in [the review report](research/T14_INTEGRATION_REVIEW.md). Runtime is frozen for
+affected checks/baseline/parity/browser/fresh production; no acceptance yet.
+Unchanged116frontend units and build retain explicit source-verified inherited
+attribution. Sole shared tracked writing has not been returned to ROOT.
+
+### T14 implementation complete; independent evidence preservation verified (2026-11-10)
+
+Clean source `b304029e` includes accepted29af3413; T14 remains unaccepted until
+a NEW sequential shared-checkout merger completes independent review. Root
+verified1,481 indexed evidence files/seal and438 protected-excluded current source/
+archive inputs, preserving1,489 files including closure records in immutable
+shared hardlink custody. HANDOFF links exact hashes, limits and root proof.
+Segmented63/61/715 backend jobs,116 frontend units and separate browser/production/
+baseline/parity observations retain their original attribution; root reran no
+product check. All TDD/capture/classifier gaps and adverse attempts stay explicit.
+
+Owner permission now covers distinct ROOT-reviewer/T12 venv normal uv-cache reuse
+and staged ROOT pnpm policy-cache/store import. No manual dependency links/copies,
+cache cleanup or policy bypass; stop on missing metadata. Preserve128MiB shared
+check floor and stage frontend/production against measured peaks. T17 backend TDD
+and T12 source preparation continue; T18 awaits a slot.
+
 ### T14 production boundary verified; T17 backend stage released (2026-11-10)
 
 T14 remains unaccepted pending completed evidence closure and a fresh independent
@@ -102,11 +221,13 @@ World smoke and separately source-matched HTTP Engine witnesses retain their
 distinct scopes. Final parity/composer/evidence reports are implementer evidence,
 not fresh root product execution or ticket acceptance.
 
-T17's same implementer is released for normal coordinated Python-cache reuse
-into its distinct environment, with a256MiB under-lock setup preflight, import
-proof and first previously frozen API red. Bounded backend TDD may then continue
-under unchanged128MiB check floors; frontend/browser/production remain staged.
-T12 source-only preparation follows that setup boundary; T18 is Ready. See
+T17's same implementer completed normal coordinated Python-cache reuse into its
+distinct environment after retained setup01 rejection and lossless root headroom
+recovery. Setup02/import proof and the first frozen API405/201 red are verified
+as recorded evidence; no fresh root test or ticket acceptance is implied.
+Bounded backend TDD continues under unchanged128MiB check floors; frontend/
+browser/production remain staged. Fresh isolated T12 source-only preparation is
+active from accepted29af3413; T18 is Ready. See
 HANDOFF/storage-frontier for exact records, protected exclusions and cache paths.
 
 ### Production headroom restored without changing Git history (2026-11-10)
@@ -878,12 +999,12 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Integrated and accepted after fresh review repairs | `c357a3b`, `4ed18af`, `84867cc`; [report](research/T09_ARTIFACT_WORLD.md) |
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Accepted after fresh Standards/Spec review and T19 integration repairs | No-ff `02879c3`; repair `7aec3f5`; DB8/export9/library5 |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Accepted for documented deterministic scope after independent recovery review | Exact source `4aac5a9`; accepted frontier`8df6c59`; introduced DB9/export10/library6; [review](research/T11_RECOVERY_REVIEW.md) |
-| T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Ready; isolated source-only launch scheduled | No dependency setup/check allocation yet |
+| T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Fresh isolated source-only preparation active | From accepted `29af3413`; no setup/check/capture allocation yet |
 | T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Accepted for deterministic scope; live competence unassessed | Exact no-ff `5af3fbb`; scoping repair `5e86dfa`; [report](research/T13_INTEGRATION_REVIEW.md) |
-| T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Evidence closure in progress; unaccepted | Production records independently verified; fresh merger follows completion; no paid allocation |
+| T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Accepted locally: finite deterministic DEVELOPMENT | Exact `b304029e` merge + `23de5e48` repairs; independent recovery closure PASS; historical R1 FAIL retained; DB11/export12/library7; no paid/live/held-out claim or publication |
 | T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Integrated and accepted after fresh review repair | `fa1c825`, `6e1a7c8`; [report](research/T15_BASELINES.md) |
 | T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Accepted for finite deterministic DEVELOPMENT scope | Exact no-ff`40ef0e59`/second parent`475bfc73`; repair`55d1a8c`; separate Standards/Spec pass; [review](research/T16_INTEGRATION_REVIEW.md); DB10/export11/library7 |
-| T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | Python setup/first-red and bounded backend stage released; unaccepted | Same implementer, distinct venv and coordinated exact cache; no setup/test success yet claimed |
+| T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | First scripted generation green; accepted-frontier source integration active; unaccepted | Old-source1 pass, external120+4 permit/World/Engine witnesses and all failures retained; second180+4 contract parent-approved; combined-source/frontend/production qualification pending |
 | T18 | [#29](https://github.com/jaiamin/ass/issues/29) Inspect a declared fallible adjudication and replay its consequences | T09 | Ready; root chooses launch | — |
 | T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Accepted: structured calculations; prose unassessed | No-ff `7e8647f`; reporting repair `716a44b`; tests `d448ea5` |
 | T20 | [#31](https://github.com/jaiamin/ass/issues/31) Demonstrate the small-population generalization milestone | T11, T12, T14, T15, T17, T18, T19 | Waiting | — |
@@ -957,9 +1078,9 @@ those trials run, the live milestone remains unverified.
 1. Accepted T16 and documentary coordination are published through `375877c`;
    all five hosted checks passed at that published source. Publish later coherent
    root documentation and immediately link PR32. Root owns shared tracked writing.
-2. T14 is completing evidence closure after production qualification. Resume T17's
-   released Python/first-red/backend stage and launch isolated T12 source work
-   after its setup boundary. T18 remains Ready for the next slot. Give each
+2. Give complete preserved T14 a NEW independent merger/reviewer. Continue
+   T17's bounded backend TDD and T12's isolated source preparation; coordinate each
+   new setup/build forecast. T18 remains Ready for the next slot. Give each
    completed implementation a fresh sequential integration review. T20 waits on
    T12/T14/T17/T18. Do not poll delegates or alter their environments.
 3. Preserve immutable hardlinked evidence and all compression maps. Serialize

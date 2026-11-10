@@ -176,7 +176,7 @@ def test_two_questions_and_populations_reuse_pinned_mechanics_without_importing_
             retained = client.get(f"/api/studies/{study['id']}").json()
             assert retained["design"] == study["design"]
             exported = client.get(f"/api/studies/{study['id']}/export").json()
-            assert exported["version"] == 13
+            assert exported["version"] == 14
             assert exported["revisions"][0]["design"]["environment_source"] == saved
             assert exported["rule_versions"] == ["1.0.0"]
             for request in exported["requests"]:
@@ -231,6 +231,7 @@ def test_catalog_and_editor_extract_examples_without_study_commitments(tmp_path)
 @pytest.mark.parametrize(
     "change, message",
     [
+        ({"version": 1}, "version"),
         ({"version": 99}, "version"),
         ({"rule_version": "999.0.0"}, "Unsupported environment rule version"),
         ({"question": "Study commitment"}, "Extra inputs"),

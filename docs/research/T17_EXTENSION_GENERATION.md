@@ -632,3 +632,92 @@ floor and shared flock. Resource hold and20MiB cumulative envelope still apply.
 The full external finite contract remains a prerequisite; richer/dynamic
 information policies and external systems stay unsupported. Live competence and
 the final held-out mechanic remain entirely unexamined.
+
+## Accepted T14 source integration and revised resource/evidence boundary
+
+Root explicitly supersedes accepted2ad967f with exact published
+`e76ef124e01274f9b8ddccfa343c51351149c0ee`. The T14 current independent closure
+has Standards PASS / Spec PASS for finite deterministic DEVELOPMENT; its original
+R1 Standards FAIL remains FAIL. Read the new integration/recovery/closure reports;
+do not rewrite their historical attribution or imply a clean capture history.
+No provisional T12 product is included.
+
+Own normal-hook checkpoint
+`f8d94d3dac0760352cdb380d81ad47420e87d0d0` retains the first generation/World
+work and exact second external fixture before this merge. Gitleaks reports no
+leaks. Normal `git merge --no-ff --no-commit e76ef124...` returned1 with the
+following18 content conflicts. Both complete parent sources are retained in Git;
+merge-base is29af3413c12c8b14f24bc0faae39933fe56e344d. No source archive or
+ignored evidence capture was made during resolution.
+
+| Conflict paths | Resolution |
+| --- | --- |
+| `HANDOFF.md`, `docs/RESEARCH_HARNESS_PROGRESS.md` | Retain both documentary sides verbatim, then prepend the current T17 boundary. Historical failures, resource holds and accepted-review attribution remain. |
+| `backend/src/agent_sim/assistants.py` | Retain both investigation and generation imports/ownership fields; preserve T14 async startup and offloaded canonical analysis inputs, plus explicit generation authorization/counters. |
+| `backend/src/agent_sim/db.py` | Retain investigation ownership and generation columns; use a new combined schema13 rather than equating independently different schemas. |
+| `backend/src/agent_sim/exports.py` | Retain T14 investigation records/ownership and finite revision content; export14 is the combined meaning. Complete generation-journal export remains a later red-first obligation. |
+| `backend/src/agent_sim/llm.py` | Retain both imports and atomic investigation/question/study/workspace reservations, separate settlement and T14's idempotent settlement guard. |
+| `backend/src/agent_sim/routes.py` | Await accepted async chat submission while forwarding the explicit generation allowance; preserve complete offloaded save/export and async Engine controls. |
+| `backend/tests/test_api.py`, `test_artifact_workspace.py`, `test_environment_reuse.py`, `test_exposure.py`, `test_participant_harnesses.py`, `test_reference_policies.py`, `test_reliance_commitments.py`, `test_reliance_integration.py`, `test_research_baseline.py`, `test_researcher_design_integration.py`, `test_uncertainty.py` | Eleven export-version conflicts retain all behavior assertions and advance only the current combined export expectation to14. |
+
+Current source meanings are **DB13/export14/library8/definition2/research-operation2**.
+Accepted T14 alone was DB11/export12/library7/definition1; the earlier independent
+T17-only DB11/12 and export12/13 mean different things and cannot be accepted as
+the combined contract. Database readers accept only13; library readers onlyv8,
+definition readers only2 and live research decoders only2. Prior-version rejection
+oracles now explicitly include DB11/12, libraryv7 and definition1. Current backend
+export assertions, existing consumer types/decoder/fixtures and live architecture/
+development/extension docs are reconciled without aliases, adapters, migration,
+data reset or historical reinterpretation. These consumer changes add no UI
+controls or layout. Full finite editor/generation UI and its checks remain held.
+Capture1/comparison1/tool2.0/direct1.0 and installed rich World rules are unchanged.
+
+Source inspection closes the old dispatch finding: accepted T14 `Engine.start`
+and `start_study` await `asyncio.to_thread` preflight under their startup lock;
+Assistants startup offloads complete analysis inputs, and save/export routes
+offload their complete operations. The clean merge retains `reviewed_finite` in
+the actual executable Engine/replay branches. No redundant dispatch repair was
+introduced. A later responsiveness witness may pass on its first observation;
+that is an existing-property witness, not an invented red/green repair.
+
+The second external contract is now **parent-reviewed and approved**, unchanged:
+root-reported SHA256
+`eef4d9c9c7f23e3079d8ff140284be3792dd31496dc86e30c5cef477766a4407`.
+Its literal historical provenance text is preserved as part of that immutable
+fixture. Parent review independently compared all180 cells/conservation/traces,
+ran no T17 candidate/WAT/worker/import/test, and retained an initial metadata-only
+integer-row TypeError. The parent record is
+`maintenance/T17-second-development-contract-review-20261110.json`. No second
+candidate/test output exists at this source-integration boundary.
+
+Root temporarily held commits/hooks as free space fell below the unchanged
+ordinary floor. Only source resolution/inspection continued. Root then reported
+explicit user-authorized historical evidence deletion after its compact report,
+with measured shared free1,863,630,848 bytes. **Root historical raw/custody paths
+and maps are retired; do not restore them or claim they remain verified/retained.**
+Earlier preservation statements above describe historical boundaries, not current
+availability. Root's compact report is documentary work outside this exact accepted
+merge; no uncommitted sibling/root source is merged here. T17's own active evidence,
+source pool, private environment and coordinated caches remain preserved; this
+implementer deleted/compacted nothing. Historical Sol spend and no-paid/held-out
+constraints remain unchanged.
+
+The new concrete release permits normal-hook completion of this exact merge and
+**one** existing-generation combined-source integration check. Forecast4MiB extra
+peak/output, no setup/new dependency/cache consumer, unchanged134,217,728-byte
+under-lock floor. The old source9742aa... pass remains exactly one observed old-
+source test, not combined qualification. Only if that check passes may the frozen
+second DEVELOPMENT test be authored before candidate output and run as a separate
+red-first backend slice. Its independent later forecast is4MiB per bounded job,
+not an assumed cumulative allocation. The revised total retained-output envelope
+is64MiB, per-job forecasts at most16MiB, with safe tracked-only deduplication and
+lock release between jobs. Earlier20MiB receipts stay unchanged. No frontend,
+browser/service/production/provider/paid/held-out stage is released.
+
+The user's final minimalist UX, whole-code quality review, fresh app data and
+port8080 request is root-owned completion scope; this T17 worker continues only
+its assigned ticket and assigned later lifecycle port18129. It starts no final
+service and resets no data. Before completion it must still merge the latest
+root-documented accepted source, qualify exact affected source, close owned
+resources and await a NEW fresh integration reviewer. Implementation is incomplete
+and UNACCEPTED.

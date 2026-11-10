@@ -7,7 +7,7 @@ remain ordered. Only explicit user actions create paid work. Restart pauses inte
 ## Storage
 
 SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. Startup creates
-schema v10 for fresh workspaces and rejects incompatible schemas. Local transactions
+schema13 for fresh workspaces and rejects incompatible schemas. Local transactions
 commit each turn's input, decision, consequences, metrics and checkpoint together.
 
 | Record | Purpose / invariant |
@@ -21,8 +21,9 @@ commit each turn's input, decision, consequences, metrics and checkpoint togethe
 | Event | Typed consequence with actor, recipient, visibility and structured payload. |
 | Measurement | Versioned metric value, denominator and turn/round. Null rates stay null. |
 | Analysis | Design proposal, general conversation or scoped analysis; explicit question, answer and status. Scoped analysis freezes evidence cutoffs. |
+| Investigation | Immutable displayed authorization, parent workflow status, work counters, retained attempts, decisions and frozen confirmation. |
 | Annotation | Researcher interpretation attached to a specific run/turn. |
-| Provider call | Reservation before sending; actual or unknown usage after. Atomic workspace/study ceilings. |
+| Provider call | Reservation before sending; actual or unknown usage after. Atomic workspace/study/investigation ceilings. |
 
 Use relational keys/indexes for identity, joins, selection and time series. Use JSON for
 versioned immutable specifications and environment-specific payloads. Do not turn all domain
@@ -43,6 +44,8 @@ and requests settle; roll back every change on rejection. Provider-call usage/st
 records survive with deleted foreign keys detached and request/response payloads cleared;
 workspace charges and ceilings never reset. This requires no schema change. UI deletion
 requires explicit confirmation; local browser drafts remain recoverable.
+Investigation-bound studies retain their evidence and attempts; ordinary deletion
+and external revision mutation are rejected.
 
 ## Experiment design
 
@@ -66,8 +69,8 @@ revisions and run matrices; saving does not start execution.
 `/agent` is a single conversation surface with a conversation toolbar and a contextual
 composer. Experiment/run Ask Agent links select their record on that page. The protocol
 editor offers Generate with Agent while keeping unfinished manual drafts.
-Proposals stay in chat until Review protocol opens the editor; Back to Agent returns to
-their conversation. No proposal automatically saves or runs.
+Ordinary proposals stay in chat until Review protocol opens the editor; Back to Agent
+returns to their conversation. Ordinary chat and saving a proposal never start a run.
 
 `POST /api/chats` accepts a question, context (`general`, `new`, `study:<id>`, or `run:<id>`),
 and optional existing `chat_id`. The first accepted message creates the conversation.
@@ -111,11 +114,45 @@ exact scope and purpose, and citations still require inspected turns within froz
 The model receives up to three completed prior turns; design refinements include previous
 proposals and revalidate all rules. Complete transcripts remain saved and visible.
 
-All assistant submissions use `POST /api/chats`. The protocol editor reads individual
+Ordinary assistant submissions use `POST /api/chats`. The protocol editor reads individual
 proposals through `GET /api/analyses/{id}`. Provider availability is reported without keys;
 the composer checks the configured assistant provider for ordinary messages.
 The automatic handoff uses the configured planner provider and reports its failures;
 explicit retries of failed proposals keep their design purpose and planner provider.
+
+The explicit Investigate control uses `POST /api/investigations`. Its displayed
+authorization fixes the question, installed worlds, participant harnesses, Sol
+Researcher/Luna participant identities, investigation/study spending ceilings,
+request/run/turn/operation/revision limits, population/horizon and stopping policy.
+Authorization is persisted before the workflow starts. A server-owned parent
+Analysis occupies one pending chat turn and retains the investigation identity;
+ordinary follow-ups cannot overlap it. `GET /api/investigations/{id}` restores
+scope, attempts, decisions, charges and source-linked run progress without spending.
+`POST /api/investigations/{id}/control` requests pause, resume or cancellation.
+
+`investigations.py` composes existing Assistants/Planner, Research revisions,
+Engine run writers and read-only analysis. Planner context includes the immutable
+authorization; its checked output must still fit the allowed world, model,
+harness, population, horizon and remaining run allowance before saving/rollout.
+Each pilot retains a separate revision. Confirmatory trials record the exact
+protocol/hash, run identities and stopping policy before their first request.
+Frozen decisions cannot be edited through ordinary revision routes. Material
+ambiguity, changed scope, failed work and exhaustion stop visibly with evidence.
+
+Nested analyses and runs bind each provider request to the parent investigation.
+The existing ledger transaction reserves investigation, study and workspace
+ceilings together before send; a refused ceiling rolls all three back. Each
+request settles independently to actual usage or retains an unknown reservation.
+Work counters are durable and bounded separately. Pause commits an in-flight final
+decision; explicit resume continues from the committed cursor. Restart restores
+paused parents and retains accounting without automatic spending. These lifecycle
+and UI paths are under T14 development qualification; see the retained
+[T14 report](research/T14_INVESTIGATIONS.md) for observed checks and open cases.
+
+The parent result reports recorded complete/failed/missing run counts and exact
+cutoffs with descriptive, missingness and small-sample limits. Separately billed
+model analysis remains an interpretation. Workflow completion does not certify
+research validity, causal effects, intelligence or private motives.
 
 The Researcher can dispatch `capabilities`, `context` and `probe` operations through
 the same general-answer or scoped-investigation loop. There are at most three
@@ -124,11 +161,13 @@ reserved/settled Researcher requests); the existing planner has its own bounded
 handoff. Identical operations reuse their retained result. Ordinary answers need
 no operation or protocol. Provider errors stop without a retry or substitution.
 
-`Analysis.output.research` is a version-1 additive artifact envelope containing
+`Analysis.output.research` is a version-2 artifact envelope containing
 the chat, capture time, selected run cutoffs, operation IDs, requests, public
-results, source IDs/content hashes and terminal reason. Existing saved analyses
-remain valid; no database, world-rule or study-export version changes or resets
-are required. Pending operations are persisted before dispatch. Failures,
+results, source IDs/content hashes and terminal reason. Version2 adds explicitly
+authorized finite generation and immutable contract/artifact/check/admission source
+links. Version1 is not a current contract; earlier databases/exports/library
+definitions are rejected without reinterpretation, migration or reset. Pending
+operations are persisted before dispatch. Failures,
 interruption and restart retain completed artifacts and mark unfinished work
 stopped. Streaming snapshots, polling and reload share these same records; the
 Activity disclosure exposes results and sources without provider reasoning.
@@ -152,8 +191,10 @@ explicit hypothetical actions settles on a fresh candidate through the normal
 legal decision schema and World rules. Rejected actions leave that probe state
 unchanged. Results include actor-projected observations, legal schemas, events,
 measurements and checkpoint hashes; they do not append source evidence, save a
-study, access an Engine or contact participants. Generated code and autonomous
-participant rollouts are unavailable. Hypothetical consequences are mechanism
+study, access an Engine or contact participants. Executable copied probes require
+actual admission and current qualified containment; copied checkpoint isolation
+alone cannot authorize code. Autonomous participant rollouts are unavailable in
+this operation. Hypothetical consequences are mechanism
 witnesses, not participant observations or evidence of Researcher competence.
 
 Planner briefs distinguish exploratory and confirmatory intent. Exploration may retain
@@ -162,8 +203,8 @@ requires a nonempty advance analysis plan and semantic review. The brief justifi
 participants, roles, conditions, opportunity-based horizon/stopping, replication and capture.
 Material clarification keeps the same conversation without an executable proposal. Unsupported
 questions retain their original text and may offer explicitly narrower installed alternatives.
-These additions are research artifacts, not World or database semantics; current DB10/export11/
-capture1/comparison1/library7/tool2.0/direct1.0 contracts retain those semantics. Installed
+These planning additions are research artifacts. The combined current contract is
+DB13/export14/capture1/comparison1/library8/tool2.0/direct1.0. Installed
 three-participant distributed coordination includes phase/conflict rules and logical addressed
 mail; solo artifact investigation remains sequential. A decline whose direct requirements and
 population have an installed example witness receives a bounded, recorded scoping recheck.
@@ -265,7 +306,7 @@ structural object/requirement edits also use the existing JSON editor. The revie
 shows requirements and ACLs; the run view links versions and terminal results to
 recorded turns. Reusable mechanics extract/rebind ACL roles and retain complete
 immutable source snapshots, independently of population, model, harness and memory.
-DB 10, export 11, comparison 1 and `jas-environment-v7` are the current contract.
+DB13, export14, comparison1 and `jas-environment-v8`/definition2 are the current contract.
 Older database/library versions fail explicitly; preserve them with their source.
 No migration, compatibility reader or reset is performed. Controlled-world rules
 remain unchanged; generated execution/admission and model adjudication remain out
@@ -292,9 +333,34 @@ without affecting inspection.
 The normal Engine retains one writer and commits in-flight final responses on Pause;
 relay transitions and executable create/revise validation run off the API event
 loop. Candidate self-tests grant no authority.
-Other semantics, imports, generation and adjudication remain unsupported. Finite
+This sealed profile alone supplies no general generation or adjudication. Finite
 qualification makes no claim about arbitrary-program correctness or intelligence.
 See [the contract](EXTENSIONS.md) and [T16 evidence](research/T16_EXTENSION_ADMISSION.md).
+
+T17 adds the separate `reviewed-finite-v1` backend profile. Its prerequisite is an
+independently user-authored exhaustive external table, operation-role permissions,
+state/resource/escrow declarations and terminal status, frozen before any candidate
+output. At most256 encoded inputs plus four invalid signed integers are checked
+twice from fresh instances. This proves bounded table conformance, not independently
+understood natural-language intent. Rich installed Worlds retain their own APIs;
+dynamic information policy, arbitrary programs, imports and external systems are
+unsupported. Static actor-private facts remain outside the guest and other actors'
+observations/schemas/memories.
+
+An explicit per-question generation allowance selects the frozen contract and
+caps candidates, all nested Sol requests, input/output and spend. Sol returns an
+explicit candidate WAT artifact; no production answer/compiler/catalog selector
+supplies it. Hash-linked append-only generation events retain candidate, validation,
+independent check, admission, reusable source, explicit repair link and stop reason.
+Only actual independent admission permits the normal World/library/revision path.
+The trusted table mediates every guest proposal and enforces conservation, actor
+permissions, complete checkpoints and unsuccessful horizon/stop consequences.
+Generation and checking do not sample participants. The resulting experiment awaits
+review and separate execution. Each Researcher/generator/planner request reserves
+and settles separately; any investigation/study/workspace ceiling also applies in
+the same atomic reservation. This combined source still needs final qualification;
+the observed first scripted generation green belongs to its earlier source, with
+live competence unverified. See [the T17 plan](research/T17_EXTENSION_GENERATION.md).
 
 
 ## Distributed information and consequential choice
@@ -377,8 +443,11 @@ Frozen analysis lenses recompute nonfinancial reliance value/eligibility while
 financial utility remains null; Sol analysis is separately billed from Luna work.
 
 T11 introduced DB9/export10/library6 for typed commitment parameters. The current
-combined contract is DB10/export11/library7 for those mechanics and T16 admitted
-packages, including canonical designs/mechanics hashes. Older persisted formats
+combined contract is DB13/export14/library8/definition2 for those mechanics,
+T16 admitted packages, T14 durable investigation authorization/nested request
+ownership and T17 externally reviewed finite packages/generation authorization,
+including canonical designs/mechanics hashes. Earlier T17-only DB11/12 and
+export12/13 have different meanings from this combined contract. Older persisted formats
 are explicitly rejected with no compatibility reader, migration or reset.
 T10's three-participant rule version and all controlled/solo consequences remain
 unchanged. Capture1/comparison1/tool2.0/direct1.0 remain current. This adds no
@@ -446,9 +515,9 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v10 (`jas-study`)
-includes every revision and its runs, actual recorded rule versions, exact turn evidence
-and provider traces; it batches
+Every Analysis has an indexed conversation identity. Study export v14 (`jas-study`)
+includes investigation authorization, decisions and attempts, every revision and its
+runs, actual recorded rule versions, exact turn evidence and provider traces; it batches
 journal queries.
 Participant harnesses (`participants.py`; direct action 1.0.0, tool using 2.0.0) are condition factors,
 independent of provider/model assignments and World. Direct action preserves the
@@ -586,9 +655,9 @@ receipt establishes inclusion; pending proposals and queued mail cannot supply i
 Applying a different lens changes its
 requirements/account without rewriting the source analysis. Unsupported lens
 versions are rejected without conversion; historical analyses without a lens
-remain unassessed and cannot supply lens inputs. Database10/export11/capture1/
-comparison1/libraryv7 and harness contracts retain their existing meanings;
-this additive versioned analysis JSON requires no migration or reset.
+remain unassessed and cannot supply lens inputs. Database13/export14/capture1/
+comparison1/libraryv8 and harness contracts retain the analysis lens meanings;
+the combined persistence change provides no migration or reset.
 
 Agent replies lead with a deterministic source-linked account, then expose claim
 status, calculation inputs, coverage/missingness and frozen-evidence download in
@@ -631,7 +700,7 @@ continues to settle its own consequences independently of model prose.
 
 `EnvironmentLibrary` owns reusable custom setups as versioned JSON records in a sibling
 `<database-stem>.environments` directory. An in-memory workspace uses a temporary library.
-The v7 library contract stores an `EnvironmentMechanics` definition and named configuration
+The v8 library contract stores a version2 `EnvironmentMechanics` definition and named configuration
 examples, independently of questions, participant/model/harness assignments, condition arms,
 replication and analysis. Examples declare unbound mechanic roles; experiment authors bind
 those roles to their own participants. Memory remains an experiment/harness choice.
@@ -653,7 +722,7 @@ the experiment adapts those examples. Editing/deleting a reusable environment ne
 or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
 12 recent definitions as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
-call or run. Database schema 10, export 11 and library v7 reject incompatible versions explicitly; there is
+call or run. Database schema13, export14 and libraryv8 reject incompatible versions explicitly; there is
 no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 ### Failure-aware comparisons (T06)
@@ -686,7 +755,7 @@ Analysis submissions synchronously freeze cutoffs, dispositions, terminal metric
 eligibility, revision/hash and calculations before the server task runs. Progress,
 reconnect, failure and export preserve that snapshot across later run completion or
 new revisions. Analysis reads do not append participant evidence or provider calls.
-Study export v11 includes this versioned comparison contract and persisted analysis
+Study export v14 includes this versioned comparison contract and persisted analysis
 snapshots, changing earlier consumer expectations. T06 changes no database columns and
 requires no data reset; historical evidence is never backfilled with invented states.
 
@@ -736,9 +805,13 @@ artifact. Inspection/export/replay remain
 read-only. Exposure-conditioned descriptions are post-treatment selections, not
 automatic causal effects; inclusion establishes no attention, belief or intent.
 
-Exposure capture v1 was introduced in export v7; current export v11 retains the
+Exposure capture v1 was introduced in export v7; current export v14 retains the
 exposure chain and frozen analysis artifacts alongside artifact work. T09 advances
 the database to schema 7; T10 extends the typed mechanics contract to schema 8;
 T11 adds typed commitments in schema 9; T16 advances it to schema 10 for pinned
-executable packages. Exposure provenance alone does not alter controlled-world
+executable packages; T14 advances it to schema11 for investigation ownership;
+T17's combined schema13 also retains external finite generation authorization
+and per-question request/candidate/charge counters. Intermediate T17-only schemas
+are rejected explicitly and are not reinterpreted as the combined schema.
+Exposure provenance alone does not alter controlled-world
 settlement, prompts or checkpoint replay. No migration or reset is performed.

@@ -25,9 +25,10 @@ from pydantic_core import from_json
 from sqlalchemy import func, select, update
 
 from .config import setting
-from .db import Analysis, Database, ProviderCall, Study, Workspace
+from .db import Analysis, Database, InvestigationRecord, ProviderCall, Run, Study, Workspace
 from .diagnostics import log_failure
 from .finite_contract import GenerationAuthorization
+from .investigation_limits import InvestigationStopped, wait_ready
 
 T = TypeVar("T")
 PRICES: dict[str, tuple[float, float]] = {
@@ -97,6 +98,16 @@ class LanguageModels:
         if not 1 <= self.concurrency <= 32:
             raise ValueError("Concurrent provider requests must be between 1 and 32")
         self.capacity = asyncio.Semaphore(self.concurrency)
+
+    def research_model(self, purpose: str, investigation_id: str | None = None) -> str:
+        if investigation_id:
+            with self.db.session() as session:
+                return session.get_one(InvestigationRecord, investigation_id).authorization[
+                    "researcher_model"
+                ]
+        return setting(
+            "PLANNER_MODEL" if purpose == "design" else "ASSISTANT_MODEL", "openai:gpt-6.1-sol"
+        )
 
     def model(self, name: str) -> Model:
         if name in self.models:
@@ -177,8 +188,23 @@ class LanguageModels:
             reserved = (
                 math.ceil(1_050_000 * input_rate * 2 + max_tokens * output_rate * 1.5) + 20_000
             )
+        investigation_id = None
+        with self.db.session() as session:
+            owner = (
+                session.get(Analysis, analysis_id)
+                if analysis_id
+                else (session.get(Run, run_id) if run_id else None)
+            )
+            if owner and owner.investigation_id:
+                investigation_id = owner.investigation_id
+                if study_id is not None and study_id != owner.study_id:
+                    raise ValueError("Request study does not match its investigation owner")
+                study_id = owner.study_id
+        await wait_ready(self.db, investigation_id)
         async with self.capacity:
+            await wait_ready(self.db, investigation_id)
             call = ProviderCall(
+                investigation_id=investigation_id,
                 study_id=study_id,
                 run_id=run_id,
                 analysis_id=analysis_id,
@@ -262,6 +288,38 @@ class LanguageModels:
 
     def _reserve(self, call: ProviderCall) -> None:
         with self.db.session.begin() as session:
+            if call.investigation_id:
+                parent = session.get_one(InvestigationRecord, call.investigation_id)
+                expected = parent.authorization[
+                    "researcher_model" if call.analysis_id else "participant_model"
+                ]
+                if call.model != expected:
+                    raise InvestigationStopped("model_outside_scope")
+                if (
+                    session.execute(
+                        update(InvestigationRecord)
+                        .where(
+                            InvestigationRecord.id == parent.id,
+                            InvestigationRecord.status == "running",
+                            InvestigationRecord.charged + call.reserved
+                            <= InvestigationRecord.ceiling,
+                            InvestigationRecord.requests < parent.authorization["max_requests"],
+                        )
+                        .values(
+                            charged=InvestigationRecord.charged + call.reserved,
+                            requests=InvestigationRecord.requests + 1,
+                        )
+                        .returning(InvestigationRecord.id)
+                    ).scalar_one_or_none()
+                    is None
+                ):
+                    raise InvestigationStopped(
+                        parent.status
+                        if parent.status != "running"
+                        else "requests_allowance_exhausted"
+                        if parent.requests >= parent.authorization["max_requests"]
+                        else "spending_allowance_exhausted"
+                    )
             if (
                 session.execute(
                     update(Workspace)
@@ -336,6 +394,8 @@ class LanguageModels:
         )
         with self.db.session.begin() as session:
             record = session.get_one(ProviderCall, call.id)
+            if record.status != "pending":
+                return
             record.status = (
                 "complete" if failure is None else "failed" if usage_known else "unknown"
             )
@@ -355,6 +415,12 @@ class LanguageModels:
             record.charged = charged
             record.input_tokens, record.output_tokens = inputs, outputs
             record.reasoning_tokens = reasoning
+            if call.investigation_id:
+                session.execute(
+                    update(InvestigationRecord)
+                    .where(InvestigationRecord.id == call.investigation_id)
+                    .values(charged=InvestigationRecord.charged + charged - call.reserved)
+                )
             session.execute(
                 update(Workspace)
                 .where(Workspace.id == 1)
@@ -405,7 +471,11 @@ class LanguageModels:
         )
 
     def usage(
-        self, study_id: str | None = None, run_id: str | None = None, analysis_id: str | None = None
+        self,
+        study_id: str | None = None,
+        run_id: str | None = None,
+        analysis_id: str | None = None,
+        investigation_id: str | None = None,
     ) -> Usage:
         query = select(*self.usage_columns())
         if study_id:
@@ -414,6 +484,8 @@ class LanguageModels:
             query = query.where(ProviderCall.run_id == run_id)
         if analysis_id:
             query = query.where(ProviderCall.analysis_id == analysis_id)
+        if investigation_id:
+            query = query.where(ProviderCall.investigation_id == investigation_id)
         with self.db.session() as session:
             return usage_record(session.execute(query).mappings().one())
 

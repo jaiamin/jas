@@ -1,13 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { api, useApi } from "@/lib/api";
-import type { AnalysisLensKey, Settings } from "@/lib/types";
+import type {
+  AnalysisLensKey,
+  InvestigationAllowance,
+  Settings,
+} from "@/lib/types";
 
 type Submission = {
   question: string;
   context: string;
   lens?: AnalysisLensKey;
   source_analysis_id?: string;
+  investigation?: InvestigationAllowance;
 };
 type ChatCreated = { id: string; chat_id: string };
 
@@ -52,14 +57,18 @@ export function useAgentComposer({
     ":",
   )[0];
   const unavailable = settings.data?.providers[provider] === false;
+  const investigationUnavailable = settings.data?.providers.openai === false;
   const client = useQueryClient();
   const submitting = useRef(false);
   const send = useMutation({
     mutationFn: (submission: Submission) =>
-      api<{ id: string; chat_id: string }>("/chats", {
-        ...submission,
-        chat_id: chatId,
-      }),
+      submission.investigation
+        ? api<ChatCreated>("/investigations", {
+            ...submission.investigation,
+            question: submission.question,
+            chat_id: chatId,
+          })
+        : api<ChatCreated>("/chats", { ...submission, chat_id: chatId }),
     onSettled: () => {
       submitting.current = false;
     },
@@ -79,19 +88,22 @@ export function useAgentComposer({
     setQuestion(text);
     composer.current?.focus();
   }
-  function submit() {
+  function submit(investigation?: InvestigationAllowance) {
     if (
       question.trim() &&
       !busy &&
       !send.isPending &&
       !submitting.current &&
-      !unavailable &&
+      !(investigation ? investigationUnavailable : unavailable) &&
       settings.data
     ) {
       submitting.current = true;
       // Per-call callbacks stop with their observer when this composer unmounts.
       // Cache and draft settlement above still runs for the accepted request.
-      send.mutate({ question, context }, { onSuccess: onSent });
+      send.mutate(
+        { question, context, ...(investigation ? { investigation } : {}) },
+        { onSuccess: onSent },
+      );
     }
   }
   return {
@@ -105,9 +117,12 @@ export function useAgentComposer({
     assistantModel,
     provider,
     unavailable,
+    investigationUnavailable,
     send,
     submit,
     blocked: busy || send.isPending || !settings.data,
     disabled: busy || send.isPending || !settings.data || !!unavailable,
+    investigationDisabled:
+      busy || send.isPending || !settings.data || investigationUnavailable,
   };
 }

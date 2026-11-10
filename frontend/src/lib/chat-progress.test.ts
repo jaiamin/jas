@@ -3,7 +3,7 @@ import { chatProgress } from "./chat-progress";
 
 test("live events retain public operation results and reject malformed artifacts", () => {
   const research = {
-    version: 1,
+    version: 2,
     scope: {
       chat_id: "chat",
       before: "2026-11-10",
@@ -33,7 +33,7 @@ test("live events retain public operation results and reject malformed artifacts
   for (const malformed of [
     null,
     [],
-    { ...research, version: 2 },
+    { ...research, version: 1 },
     { ...research, operations: [{}] },
     { ...research, scope: { cutoffs: [] } },
     { ...research, stop_reason: {} },

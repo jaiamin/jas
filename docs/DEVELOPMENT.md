@@ -60,17 +60,22 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v11.
-Schema v10 and library format `jas-environment-v7` accept only the current contract.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v14.
+Schema13 and library format `jas-environment-v8`/definition2 accept only the current contract.
 Older databases/library records receive explicit errors; no data is converted or reset.
 Use a separate fresh workspace path for the new contract and preserve existing evidence.
 T11 introduced typed commitment mechanics as DB9/export10/library6. T16 integration
-adds admitted packages as DB10/export11/library7. Capture1/comparison1/tool2.0/direct1.0 remain current;
+adds admitted packages as DB10/export11/library7. T14 adds durable investigation
+authorization and nested request ownership as DB11/export12/library7. T17's combined
+DB13/export14/library8/definition2 also retains externally reviewed finite packages,
+generation allowances and per-question request/candidate/charge counters. The earlier
+T17-only DB11/12 and export12/13 mean different things and are explicitly incompatible.
+Capture1/comparison1/tool2.0/direct1.0 remain current;
 controlled-world mechanics and solo artifact submission behavior are unchanged.
 
 The current schema retains T04's durable participant activations and per-request
-links alongside T03's pinned environment sources. Old schema 4/5/6/7/8/9 databases and
-v1/v2/v3/v4/v5/v6 environment files are explicitly rejected; preserve them separately. No
+links alongside T03's pinned environment sources. Old schema1–12 databases and
+v1–v7 environment files/definition1 are explicitly rejected; preserve them separately. No
 compatibility reader or automatic reset is provided. Reusable mechanics exclude
 participant harness settings; each experiment pins those separately.
 
@@ -106,8 +111,11 @@ reset is performed. T08 itself added no database schema change; T07 added exposu
 capture v1 in export v7. T09 advances the combined current
 contract to database schema 7, export 8 and environment-library v4 for typed artifact operations
 and complete versioned work/checkpoints. T10 advances these to DB8/export9/library5 for distributed coordination. T11 introduced DB9/export10/library6; T16 integration advances
-the combined contract to DB10/export11/library7
+the contract to DB10/export11/library7
 for immutable admitted executable packages and sealed-relay checkpoints/actions.
+T14 introduced DB11/export12/library7 for durable bounded investigations and nested
+request accounting. Current T17 combined semantics are DB13/export14/library8/
+definition2/research-operation2; no incompatible intermediate format is accepted.
 See [extension admission](EXTENSIONS.md); preserve older workspaces without resetting them.
 New runs must pin the current harness. Each capability can be explicitly disabled;
 there is no substitute policy. The same activation request/operation budgets apply.

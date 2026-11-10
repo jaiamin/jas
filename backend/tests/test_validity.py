@@ -306,7 +306,7 @@ def test_checks_gate_saving_and_execution_before_providers_or_mutations(
 
     async def start():
         with pytest.raises(ValueError, match="inactive"):
-            engine.start_study(sid)
+            await engine.start_study(sid)
         assert not engine.executions
 
     asyncio.run(start())
@@ -357,7 +357,7 @@ def test_cutoff_exposure_cannot_see_later_actions_or_invent_opportunities(runtim
     rid = selected_run["id"]
 
     async def run():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
 
     asyncio.run(run())
@@ -524,7 +524,7 @@ def test_factorial_intent_is_rechecked_on_save_and_run(runtime, monkeypatch):
 
     async def start():
         with pytest.raises(ValueError, match="Declared factorial"):
-            engine.start_study(sid)
+            await engine.start_study(sid)
         assert not engine.executions
 
     asyncio.run(start())

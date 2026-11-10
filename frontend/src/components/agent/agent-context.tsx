@@ -25,6 +25,7 @@ export function messageContext(row: {
   study_id: string | null;
   run_id: string | null;
 }) {
+  if (row.purpose === "investigation") return "general";
   return row.run_id
     ? `run:${row.run_id}`
     : row.study_id

@@ -1,4 +1,31 @@
-# T17 bounded backend continuation (2026-11-10)
+# T17 accepted-frontier source integration (2026-11-10)
+
+Own normal-hook checkpointf8d94d3dac0760352cdb380d81ad47420e87d0d0 passed
+secret scanning. Normal merge of exact accepted published
+e76ef124e01274f9b8ddccfa343c51351149c0ee is being resolved, with all18 conflicts
+and both fixed parents documented in the T17 plan. T14 current closure PASS is
+accepted; historical R1 FAIL remains. No provisional T12 source is included.
+Combined source is DB13/export14/library8/definition2/research-operation2, with
+incompatible intermediate meanings explicitly rejected. Accepted async Engine/
+Assistants startup and complete save/export offloads remain; the old Engine
+dispatch source finding is superseded, without a redundant repair.
+
+Root approved the unchanged second external180+4 contract, SHA256
+eef4d9c9c7f23e3079d8ff140284be3792dd31496dc86e30c5cef477766a4407,
+before any second candidate/test output. Root's new headroom release permits
+normal-hook merge completion and ONE existing-generation integration check
+(4MiB forecast). Only after a pass may the separate frozen second backend slice
+proceed, within revised64MiB outputs/per-job<=16MiB and unchanged134217728 floor.
+Old generation-green source9742aa... remains exactly1 old-source pass. Frontend/
+services/browser/production/providers/paid/held-out remain held; T17 is incomplete.
+
+User-authorized root historical evidence retirement supersedes earlier retention
+instructions only for root's deleted closed evidence/sol-development/dataT07/T02.
+Those raw/custody paths/maps are retired; do not restore or claim retained proof.
+T17's active evidence/environment/caches are intact; no other-owner deletion here.
+Root owns final minimalist UX/whole-code review/fresh data/port8080 completion.
+
+# T17 earlier bounded backend continuation (2026-11-10)
 
 Latest: root's single released `generation-green-01` passes1 test in8.05s on
 unchanged source9742aa243e6c9c8f9fdc3069e6e5bdde71806272927ea1c28ea8a57bab0830a7.
@@ -91,6 +118,229 @@ Preserve all prior history/maps/stash/custody and unread root `pbcopy`; inherite
 ignored helpers are data only. Historical root checkpoint follows unchanged.
 # Latest boundary — T14 production verified; T17 Python stage released (2026-11-10)
 
+# T14 independent recovery closure accepted locally (2026-11-10)
+
+Current personal **Standards PASS / Spec PASS**, with zero unresolved current
+findings; acceptance is ONLY finite deterministic T14/#25 DEVELOPMENT scope.
+The original R1 review-protocol **Standards FAIL remains FAIL**. Its original
+report, qualification, safe index and closure seals remain immutable; this is a
+new assessment of the remedied current state, not a clean-history claim.
+See [independent closure](docs/research/T14_RECOVERY_CLOSURE.md) and
+[recovery](docs/research/T14_INCIDENT_RECOVERY.md).
+
+New reviewer started clean at73537d9f878f90d1bb34ad423f9faa14e0dee6ee and froze
+oracles at a440e765b4cb83ed71f00f15d70624d0e860c88c before own audit outputs.
+No descendant/helper delegation, install, service/browser/Docker start, paid/
+provider/live/held-out work, push, publication, issue/PR mutation or watch.
+No executable bytes changed. Exact T14 merge463f14f2 retains b304029e as its
+second parent; application repair23de5e48 remains the qualified runtime.
+DB11/export12/library7 stand; no alias, migration, reset or provisional T12/T17.
+
+Own stdlib verifier independently matched1,320 safe archive members/full TarInfo/
+PAX, all48 untouched files/hash/size/mode/integer-ns, all six whole-record source
+proofs,440-entry source maps and redacted current container identities. Exact57
+regular generated files remain without stage/unredacted duplicate or prohibited
+member/digest entry. All3 headers preceded safe payload reads; original protected
+clipboard and real/synthetic configuration payloads were never read/hashed/copied.
+The old contract711 opaque boundary below is historical; ROOT's narrow disposition
+permits only current confirmed sanitized generated files. No original tainted
+whole-container identity was newly computed or claimed.
+
+Names/headers covered890 regular review files/15 archive containers with nesting
+and1,489 custody files/159 containers; zero prohibited members.172 pytest pointer
+symlinks were excluded, not followed. All823 original safe-index files,1,481
+custody-index entries/seven seal entries/1,489 actual immutable hardlinks,
+130 original attempts/46 nonzero/79 maps,105 historical review attempts/13
+nonzero and separately sealed final audit remain. ROOT's nine recovery proofs
+and three recent maps match. All required safe files were present; zero restores
+or repacks. Stashf771128ba1c9295262a4073df40cc25647b1370f is preserved.
+
+All383 distinct qualification inputs match current tracked bytes/size/mode;
+438 original source members match. Exact recorded JUnit cases independently
+recomputed:5 HTTP,63 lifecycle,61 analysis,715 contracts,13 library. These are
+the ORIGINAL reviewer's executions, not new product tests. Original5 investigation
++4 composer browser, static/types/clean build and non-root44-backend/53-asset
+production keep original attribution.116 frontend units/33 files and lint remain
+inherited implementer checks. The separate in-image artifact Engine witness and
+host admitted Engine scope stay distinct. Frozen T01 remains four v4 failures/
+failed flags/exit1; current-contract parity stays separate:5 runs/22 turns/
+22 literal requests,770 scripted microdollars/2200in/1100out, actual0. No scores
+were rerun or rebaselined. All earlier TDD/capture/classifier/live/held-out limits,
+ROOT's broad-repack ENOSPC/complete rollback and historical R1 remain disclosed.
+
+New evidence is under
+`.tools/research-harness/maintenance/T14-independent-closure-20261110/`;
+`sealed/` is the new final index/seal/completion, separate from original closure.
+Two verifier failures are retained with source versions: overstrict pytest-pointer
+rejection and a null-archive schema assumption for early static/type stamps.
+Corrected audits passed without upgrading stamps into pre-output archives.
+Final bookends bind final documentary HEAD, normal hooks/Gitleaks, clean tracked
+state, unchanged custody/index/proofs/stash, ports and released flock. Audits use
+the unchanged134217728 floor, <=4MiB new-output forecast and release between jobs.
+No original custody/index/seal or inherited helper was written/executed.
+
+Sole tracked writing returns to ROOT only with this reviewer's explicit final
+message. ROOT may coordinate T12/T17's existing releases and later publication;
+the last PUBLISHED accepted target remains2ad967f325ad2fb4c2d842323944dd01c69f07ef
+until ROOT acts. Sibling source/caches/environments, bootstrap uv and every prior
+restoration map remain untouched. Earlier history and restoration pointers follow.
+
+# Earlier ROOT T14 targeted recovery; closure review pending (2026-11-10)
+
+ROOT resumed sole tracked writing at08700e9265ca0805d264d98cde83587b8e516e61.
+T14 remains unaccepted and unpublished. The narrowly scoped disposition,
+observed result and acceptance criteria are in
+[the recovery record](docs/research/T14_INCIDENT_RECOVERY.md).
+Metadata-only enumeration found three generated source archives and six source
+manifest/report records in the exact contract711 subtree, with no direct
+protected-name files or shared hardlinks. ROOT permits minimal header-filtered
+removal of unintended generated protected copies/digest entries, preserving
+unaffected evidence and historical failures; original clipboard/configuration
+payloads remain outside the scope. The old opaque instruction below records the
+reviewer's handback state and is superseded only by this bounded ROOT disposition.
+ROOT removed six prohibited members from three generated archives and twelve
+digest entries from six generated source records, with no prohibited payload
+extraction/hash, original protected access or retained unredacted backup. Exact
+bytes/TarInfo/PAX for1,320 unaffected members and all48 other files were verified.
+All823 original safe-index files and the qualification hash remain unchanged.
+Root proofs: `maintenance/T14-incident-recovery-20261110/` under the harness;
+proof SHA badf64da004360f86e601ff4913258fa72c99e53e7ca888a5eedf85d3477333c.
+The historical Standards FAIL is preserved, not retrospectively relabeled pass.
+No app/runtime/frozen-baseline change, reset, paid work or publication occurred.
+Fresh independent closure review remains required. T12 has renewed ONE offline
+warm setup/first-red/bounded20MiB backend release (setup201326592; checks134217728).
+T17 next single generation-green4MiB remains held until setup releases. Both still
+target the last published accepted2ad967f3, excluding T14's moving frontier.
+
+# T14 review complete — acceptance held on reviewer protocol breach (2026-11-10)
+
+Personal Standards verdict: **FAIL on protected-selection review protocol**;
+application findings are repaired. Personal Spec verdict: **PASS for bounded
+T14 DEVELOPMENT mechanics**. No unconditional T14 or final milestone acceptance.
+See [independent review](docs/research/T14_INTEGRATION_REVIEW.md), including R1.
+
+Exact no-ff merge463f14f2f8146bfe38d122e699113129b7b64566 retains source
+b304029e85aeb97ccb02a2151d4bb6101bf684fc as second parent. Runtime repair
+23de5e48ed1aab790d634ec434cf10e8f91c7d9b fixes child Pause spending, lost accepted
+Pause decisions during worker-backed save, and queued startup Pause termination.
+The final documentation also corrects library v6→v7. No T12/T17 provisional code.
+
+Reviewer qualification: five independent actual-worker HTTP cases; segmented
+63 lifecycle/61 analysis/715 contract cases;13 library cases; Ruff/ty/forced TS/
+clean build; five investigation and four composer browser cases. The strengthened
+disclosure ran within those five; the prior separate disclosure execution and
+116 frontend units/33files/frontend lint retain explicit source-verified inherited
+attribution. Fresh non-root production matched44backend/53assets, containment and
+World replay; a separate in-image artifact Engine HTTP witness executed two turns.
+Host admitted Engine/worker scope stays separate. Frozen baseline keeps exactly
+four export-v4 failures/failed flags/exit1; comparator exit1 and zero regressions/
+improvements. Positive current-contract parity separately proves5runs/22turns/
+22literal requests and770 scripted microdollars/2200in/1100out, actual0.
+
+R1: reviewer contract711 invoked frozen snapshot tests without the protected Git
+selection wrapper. Filename-only membership contained two prohibited names;
+treat this as an indirect protected read/hash/archive breach. The original root
+clipboard/configuration must not be opened to diagnose it. Entire ignored
+`.tools/research-harness/evidence/T14-integration/runtime/contract-711/` is retained
+**OPAQUE: no reads/hashes/copies/packing/chmod/cleanup**. Outer safe receipts/JUnit
+remain; corrected wrapper invocations pass all four cases again. They replace
+that unsafe execution in qualification but cannot undo it. ROOT must decide
+opaque-output disposition before accepting the review protocol. No contents were
+printed or published. Do not claim all-files protected capture compliance.
+
+Evidence `.tools/research-harness/evidence/T14-integration/qualification-final.json`
+SHA256 e1d4d9d3283bcfd9e3681499a7fe8af0147924b8101d68277ea5640418c9c440 has exact
+component/case/source/input identities. Runtime snapshot key3fbb5d75f7b0052e47e7552096eb704c700ac82fa7772a85fd13b8149a97e892,
+archive0b800b54ef1304fd7be396534fcab3bc323c3f5c3a02c98ebeb136a16d3a1ccc.
+Final documentary source, original custody/seals, retained attempts, actual map
+restorations, stash/resources/ports/flock are bookended under `closure/final-01/`.
+Do not interpret its safe index as including the opaque R1 subtree.
+
+Original1,489 immutable-by-protocol custody HARDLINKS remain, not physical copies.
+All source130 attempts/46nonzero/79maps and reviewer failures are retained. Four
+OWN closed-output maps preserve255 paths with actual SHA/size/mode/integer-ns
+restoration; map04 SHA90d61b9b970762a96e6a83874dbcc3c12b07de531e9045f196b44127c6436e89
+recovered39,686,144 measured bytes. Never read/pack R1 outputs. Own services/browser/
+container/volume/image are closed and lock released at final handback. ROOT's
+production grant02 allowed normal declared Dockerfile dependency downloads; build03
+passed at283848704 prebuild free. No floor was lowered. Later check outputs reduced
+free space; final bookend is authoritative. Two jobs exceeded8MiB output forecasts;
+ordinary134217728 floor held. All capacity is shared/unreserved.
+
+Additional ROOT recovery/restoration pointers (under `.tools/research-harness/`):
+
+- `maintenance/closed-root-check-outputs-20261110T153600Z/mapping.jsonl.gz`, SHA72e6abee6a608ecf8c67a66eecd87a6cbdc575ebadafcd3855b3d31f665c473d;3,591 exact restores. Archive `closed-outputs.tar.gz`, SHAaaf4957245d90c99058cf19fceb0c031c884f9605c257aef7044e65fd9707dea.
+- `maintenance/closed-maintenance-metadata-20261110/mapping.json`, SHA143800fa96decef33d231686d7e4abdf7cc71c1fcb39b35ee38f317f40eee7eb;19 exact restores.
+- `maintenance/closed-sol-source-representation-20261110/mapping.jsonl.gz`, SHA735475319587a72fe8ee1b30aacc88d7a2be0dfb7b5fa6c375dc72d9ab3a1c6c;1,668 exact restores against existing archives; five opaque configuration-example names remain excluded.
+- Recovery proofs `maintenance/closed-baseline-selected-loose-20261110/result.json` and `maintenance/closed-baseline-selected-pair-20261110/result.json` preserve complete object sets/refs/HEAD/index and original packs. Earlier identical-pack sharing recovered76,128,256 bytes; closed check-output packing26,689,536; selected T06 packing8,736,768.
+- Retain the failed broad all-object packing/ENOSPC disclosure and complete rollback proof `maintenance/closed-baseline-git-packing-20261110T154000Z/rollback-02.json`; no uninterrupted-success claim. `maintenance/storage-frontier.json` is authoritative. Restore only necessary logical members; no mass decompression.
+
+Preserve all earlier795-path/closed-T07/T11-recovery/browser/research174 and six
+Git-tree response maps, original stashf771128ba1c9295262a4073df40cc25647b1370f,
+owner caches, sibling environments and working `.tools/uv-bootstrap/bin/uv`.
+Zero paid/live/held-out requests, no new allocation, publication or PR mutation.
+Sole tracked writing returns to ROOT only with this reviewer's explicit final
+completion/return message. Earlier coordination and review history follow intact.
+
+# T14 independent integration review in progress (2026-11-10)
+
+Reviewer runtime checkpoint: exact no-ff merge463f14f2 retained b304029e as its
+second parent. Three personally reproduced lifecycle findings are repaired:
+child Run/Study Pause no longer permits parent restart/spending; accepted Pause
+decisions survive worker-backed saves; queued startup Pause remains resumable.
+Five independent real-HTTP cases pass on the repaired runtime, including actual
+admitted workers/privacy/null utility/export/replay. Full Ruff/ty pass after one
+retained test-format failure. Runtime inputs are frozen for affected final checks;
+T14 is still unaccepted and sole tracked writing stays with this reviewer.
+ROOT released only bounded backend jobs (8MiB forecast, unchanged128MiB floor,
+PYTHONDONTWRITEBYTECODE=1 and shared flock). Frontend/browser/production remain
+held pending staged resource release, with production floor268435456 unchanged.
+See the review report/evidence for exact source/archive/attempt identities and
+honest inherited attribution; no T12/T17 source, paid work or publication.
+
+The fresh reviewer holds sole tracked writing. Frozen personal Standards/Spec plan:
+[review](docs/research/T14_INTEGRATION_REVIEW.md), checkpoint `c209d8a3`.
+The exact T14 source is being merged with its original second-parent identity;
+T14 remains unaccepted pending this review. All current root coordination below
+and the original T14 handoff at the end remain preserved. T12/T17 are excluded.
+No publication, paid work or milestone acceptance is authorized here.
+
+# Latest boundary — T14 complete, preserved and queued for fresh review (2026-11-10)
+
+T14 implementer returned clean `b304029e85aeb97ccb02a2151d4bb6101bf684fc`,
+including documented accepted29af3413. It remains **unaccepted**. Root verified
+all1,481 indexed evidence files (bytes/hash/mode/integer-ns), seven seal entries,
+all438 protected-excluded current tracked/archive inputs and exact archive SHA.
+The final seal SHA256 is
+`3ed39ace69006bb3656f50e5a8f9cb07dd9141588af86010e57ea2b2aa630a5c`.
+Preserved custody at `.tools/research-harness/evidence/T14/` holds1,489 files,
+198,433,400 logical bytes including eight closure files. They share immutable
+hardlinks with original source evidence; these are not independent physical
+copies. Source file modes/ns remain unchanged; custody directories are read-only.
+Root receipts: `maintenance/T14-final-seal-root-verification-20261110.json` and
+`maintenance/T14-custody-20261110.json` under the root harness directory.
+
+The next NEW shared-checkout merger/reviewer receives sole tracked writing from
+root, preserves exact no-ff source ancestry, and reviews Standards and Spec
+separately before acceptance. T14's provisional DB11/export12/library7 and its
+segmented qualification must remain explicit. Slice17's unobserved red, save
+shield chronology, historical timestamp gaps and every retained failure remain;
+image World smoke must not be relabeled Engine execution. Fresh review starts
+with source/backend work; frontend setup and production need staged forecasts.
+
+The T14 owner explicitly granted additional normal frozen hardlink uv-cache
+consumers for the ROOT reviewer and T12 in distinct environments. ROOT may also
+use its exact750-byte pnpm policy cache and immutable store for normal frozen
+import into distinct node_modules. Preserve caches and original dependencies;
+no cleanup/moves/manual package copies/links/policy bypass, and stop on missing
+policy metadata. Permission is recorded in
+`maintenance/T14-cache-owner-permission-20261110.json`. Ordinary shared flock/
+128MiB floor stays unchanged. Root measured236,044,288 bytes after custody,
+shared/unreserved. T17 bounded backend TDD and T12 source-only preparation remain
+independent; T18 waits for capacity. No paid/live/held-out work is allocated.
+
+# Earlier boundary — T17 setup/first API red verified; T12 source preparation (2026-11-10)
+
 T14 implementation remains unaccepted. Root independently checked its completed
 production receipt, all438 protected-excluded tracked archive entries,44 deployed
 backend files and53 assets against the qualified source/current build. Every
@@ -109,10 +359,26 @@ exact cache into a distinct T17 `.venv`; verify its prefix and editable import.
 After release, bounded backend TDD/static/type/regression slices may proceed under
 the unchanged134,217,728-byte floor, releasing between jobs and forecasting new
 outputs. Frontend/browser/production/new installs/paid work remain separately held.
-Root observed269,979,648 bytes at production verification, shared and unreserved.
-This is an authorized stage, not an observed setup/test result. Preserve owner
-caches, working root uv bootstrap, all evidence/maps and opaque configurations.
-T12 source-only checkout follows T17's setup boundary; T18 remains Ready. Root
+Setup01 retained a preflight rejection before uv. After root recovered16,220,160
+bytes by losslessly packing six CLOSED public GitHub tree responses, setup02
+passed:51 packages,278,548,480→274,673,664 free bytes and the correct distinct
+T17 prefix/editable import. First inert contract API red returned405 versus201;
+its exit1/source-before-after/JUnit and setup receipts are independently verified
+in `maintenance/T17-setup-red-boundary-root-verification-20261110.json` under the
+root harness directory. This is recorded DEVELOPMENT evidence, not root rerun
+or T17 acceptance. Bounded backend TDD continues. Root explicitly superseded
+T17's accepted merge target to published29af3413 (only HANDOFF/PROGRESS differ
+fromd276); provisional T14 remains excluded.
+
+The six logical raw downloads now resolve through
+`.tools/research-harness/maintenance/closed-root-tree-responses-20261110T151900Z/mapping.jsonl`,
+SHA256 `9f1b66b7ac00f57d650952ffc2e2612be3c0e73c96038dfca4d7cf102753f97c`.
+Actual restores proved bytes/hash/mode/integer-ns before raw removal; no source,
+custody, configuration or original clipboard file was touched. Preserve this map,
+all prior maps, owner caches and the working root uv bootstrap.
+
+Fresh isolated T12 source-only preparation is active from accepted29af3413,
+with no install/check/capture grant; port18130 is reserved. T18 remains Ready. Root
 retains sole shared tracked writing. Accepted contracts remain DB10/export11/
 library7; T14's combined DB11/export12 remain provisional until fresh review.
 
@@ -3827,3 +4093,63 @@ removed; port18120 is closed. No paid calls, real credential/clipboard access,
 stash operations, other-worktree changes, pushes or publication. T09 spend $0;
 no live/held-out claim, general generated execution, T10 timing or T18 adjudication.
 Root owns fresh acceptance and publication; this handoff does not accept T09.
+
+# Preserved source handoff at exact b304029e
+
+# T14 implementation — ready for independent integration review
+
+Branch `t3/t14-investigation-workflow`; starting accepted ancestor
+`8df6c592c453e0595406711b9fe3387f8c385d26`. Only T14 is implemented here;
+root acceptance is separate. Accepted T16 `b0446d9` is integrated; the latest root-documented
+accepted documentary tip included is
+`29af3413c12c8b14f24bc0faae39933fe56e344d` (includes d276b70/published375877c).
+Combined current contract: **DB11/export12/library7**, with explicit historical
+rejections. Never merge provisional review tips.
+
+Read [T14 plan/oracles/decisions/chronology](docs/research/T14_INVESTIGATIONS.md).
+Implementation and qualification are complete; root acceptance is separate.
+Latest DEVELOPMENT: all27 T14 HTTP cases pass within63 lifecycle cases;61
+analysis/admitted-world and715 contract/World cases pass separately. Ruff/ty,
+frontend lint/116 units/33 files, forced TypeScript and clean Vite pass. Five
+post-merge HTTP browser flows pass; a separately strengthened caveat-disclosure
+check passes. Actual worker completion/cancel-save/export/privacy/accounting
+witnesses pass. All reds and fixture/helper failures remain. Slice17 retains its
+unobserved-red/TDD sequencing gap;2135/2100 microdollars are scripted accounting.
+Frozen T01 before/after retain four export-v4 failures/failed flags/exit1;
+unchanged comparison has zero regressions/improvements. Separate positive parity
+passes66 checks over five runs/22 turns/22 exact complete bounded requests and
+matching reserve/settle ledgers (770 synthetic microdollars, actual0). Its initial
+metadata-classifier failure and explicit post-output provenance amendment remain.
+Final-source
+production passes at canonical source3533412b: all44 backend files and53 clean-
+build assets match; non-root/keyless containment/admission/World replay pass;
+owned container/volume/image teardown succeeds and flock is released. Engine
+replay/accounting remain separately source-matched HTTP qualification. Four
+post-merge ordinary-composer browser cases also pass. Final Ruff/lint pass; the
+lint failure on caveat-test formatting is retained and repaired with whitespace.
+Exact memberships/input reuse, all attempts/failures and final source are indexed
+in `data/t14/closure/final-01/manifest.json` and `qualification.json`.
+
+All heavy phases use shared checks.lock and unchanged134217728-byte floor;
+production retained268435456. Production-priority window is released. Root has
+completed one coordinated normal-manager Python-only consumer of this exact
+uv-cache into T17's distinct venv; root reports its own-import proof and released
+flock. Own uv/pnpm caches
+are preserved coordinated package resources; no cleanup/move/manual tree reuse.
+Use only private `.venv`/node_modules; root's immutable uv CLI remains read-only.
+Root `.venv`/node_modules/dist were removed without affecting private imports.
+
+Evidence only `data/t14/`, one canonical content-keyed tracked-only archive per
+tree. Every nested snapshot uses invocation-local protected exclusions. Never
+inspect/hash/copy protected pbcopy/real configuration or synthetic .env bytes.
+Preserve stash/source/custody/unique evidence/maps. Closed-output maps retain
+verified hash/size/mode/integer-ns restoration. No inherited ignored helpers.
+No paid/held-out work, descendants, extra checkouts, push/PR/issue/publication.
+Browser18127 uses existing retained headless shell via
+`PLAYWRIGHT_BROWSERS_PATH=/home/agent/.cache/ms-playwright`; production uses18128.
+No own service/browser/container/volume/image is running; preview reports
+unavailable/no owned tab. Root independently verified the production source/assets
+and teardown, adding no product execution or T14 acceptance. Next: root's fresh
+integration merger/review. No push/PR/issue/watch was performed here.
+Historical handoffs below remain preserved.
+
