@@ -1,22 +1,81 @@
-# T15 integration review in progress (2026-11-10)
+# T15 fresh integration checkpoint — accepted (2026-11-10)
 
-Sole writer: fresh review in assigned checkout, port 18221. Exact source
-`0d026992b4740675dac3afce54b17a785e3f73e9` merges into `5ef3abf`.
-Acceptance criteria: preserve DB7/export8/library4 and T07/T08/T09 repairs;
-prove no-provider reference execution, honest input/privacy/configuration,
-all-attempt effort/matching/frozen analysis, public editor/results/export and
-unchanged frozen T01 failed flags with positive 22-turn/five-run parity.
-Complete custody passes 10,198 files / 94 checks / 131 inner proofs without
-extraction. Review Standards and Spec separately; no delegation, paid calls,
-publication, reset, stash or pbcopy access. Evidence: ignored
-`.tools/research-harness/evidence/T15-integration/`, keyed verified source
-archives, every check command/exit and dirty-source identity.
+**T01–T09 and T15 are accepted. Root resumes sole assigned-checkout ownership.**
+Fresh sole-writer Standards/Spec review merged assigned `5ef3abf` and exact clean
+T15 `0d026992b4740675dac3afce54b17a785e3f73e9` through coherent no-ff
+`fa1c825fb336f8c9292a66404576162e41807fab`. Qualified executable source is
+`6e1a7c86b06ebd5e39a3445cea6ca6c7786252c3`; only acceptance prose follows.
+Final exact HEAD, clean tracked status, normal hooks and verified docs-source
+archive are under
+`.tools/research-harness/evidence/T15-integration/acceptance-checkpoint/`.
+Read [the fresh report](docs/research/T15_BASELINES.md#fresh-integration-acceptance-2026-11-10).
 
-Next: commit coherent no-ff merge retaining artifact guards and controls;
-reproduce suspected omitted artifact-read effort at the public API, fix only
-concrete findings red/green, qualify combined backend/static/frontend/browser
-and frozen/current-contract behavior, pack closed outputs with full member
-verification, and return clean ownership to root. T10/T19 resources untouched.
+The concrete review repair counts T09 pure artifact reads in T15 tool effort:
+successful and denied public-API attempts both failed before the fix. Retained
+green tests cover run/comparison/export accounting and read/rejection replay.
+Stale child export7 assertions now expect current 8; their initial failures remain.
+Three actual non-model controls, no provider construction, authorized private
+input, immutable configuration/source identity, native ablations, attempted/sent/
+unknown usage, integer-microdollar sums, missingness and frozen T06 matching pass
+independent checks. Current contracts remain DB7/export8/capture1/comparison1/
+library4/tool2.0/direct1.0; no adapter, migration or reset. T07 `d5568c1`, T08
+`de5556b`/capability delivery, T09 `4ed18af`/`84867cc`, T03/T05 reuse/probes and
+live-discovery fixes, and Sol/Luna roles remain preserved.
+
+Fresh qualification: **1,209 backend tests / 39 files**, Ruff/ty/lint, **111 frontend
+units**, TypeScript/build, **298 independent control checks**, **160 artifact
+checks**, six T06 scenarios and **58 passing browser executions / 57 distinct
+configured flows** at 18221. A separate freshly forced TypeScript/new-directory
+build is byte-identical to the normal build; manual light 1280/dark 390 checks show
+four runs/eight actual scripted decisions/zero provider requests. Own 59 mutable
+cache/build files have private inodes. All owned services/PID/browser tab and
+18221 are closed. No uninterrupted full-browser success is claimed. Accepted
+T09 production-container smoke is inherited; no fresh image/container smoke.
+
+Frozen T01 remains **exit 1/four export-v4 failures/four failed flags**, unchanged
+runner/cases/scores, zero regressions/improvements. Positive current-contract
+**five-run/22-turn/22-request** parity independently matches behavior/input and
+accounting against retained accepted T09 evidence (before not rerun): HTTP 98→98,
+**1,807 differences** classified, zero unexplained. Four fresh neutral DEVELOPMENT
+cases pass with 32 runs (29 complete/one failed/one paused/one ready), 59 turns,
+28 scripts, 46 stand-in requests, 15 tools, 4,600/2,300 tokens and **1,610 integer
+microdollars** synthetic charges. Actual spend zero; incomplete/null results remain.
+
+Both complete-child custody checks pass **10,198 files / 94 checks / 131 inner
+compression proofs** by streaming, no extraction, unchanged source. Archive SHA
+`4eb54be4f58725e36d1f53e9edec120ba3ded5dfaeafa048d1a50c34b2d2d6cc`;
+manifest `985c0dc22f92a598ee4c73a42da815defa30623392ff8b396cc67d7132148582`.
+Fresh `T15-integration/verification-manifest.json`: **1,032 files / 55,245,827 bytes /
+53 checks / 13 nonzero attempts**, canonical SHA
+`2976bdb912a9b550190ca05bb8d052291af45ae157d3df08861f9726e80800e6`, file SHA
+`1cfb66c0020f1c11705fec75b0cfeafce3dc1c1b23e5c2f886ace187b9812efd`.
+All 39 new archives/4,682 members verify complete bytes/modes/link targets; later
+exact-HEAD/hook/source records are separate. Some early exploratory read errors
+have retrospective summaries; substantive attempts retain raw commands/exits/
+source evidence. All 1,745 Sol artifacts and prior maintenance mappings remain
+verified unchanged; no originals were unpacked/overwritten.
+
+**T19 complete, awaiting a separate fresh review — root-supplied status only.**
+Clean `1d8d9774a9dccb2e32f8171da7264185040c44c1` on `t3/research-claim-support`,
+`/home/agent/.t3/worktrees/workspace/t3-95af26a2`, includes accepted `12b35c9`.
+Report `docs/research/T19_CLAIM_SUPPORT.md`; complete `data/t19` about 184 MiB,
+manifest `eb64fef96962f010929f21358d4ba78ce713e6c6b4b43408f7578a14ddd3f04a`,
+3,242 indexed files / 672 links / 30 nonzero attempts. Root read report/manifest but
+has not copied or accepted it. This reviewer did not inspect/copy/review/merge it.
+Disclosed limit: initially hardlinked mutable TypeScript/Vite caches; 42 generated
+source-checkout files later detached and fresh forced checks passed, but earlier
+outside-cache effects remain **unassessed** (report Cache/resources section).
+No source/evidence corruption is claimed. Own T15 final checks force recomputation
+with private caches; they do not assess earlier outside effects.
+
+T10 remains independently assigned at 18123. Root schedules separate T19 review
+after this ownership return; T13/T16/T18 remain Ready. No push, PR/issue edits,
+hosted check/review query, watch, main merge, delegation, worktree disposal, paid
+call, stash or `pbcopy` access. Source checkouts and others' evidence/dependencies
+remain intact. Live/held-out/generalization gates remain unverified. Sol history
+stays **$0.611632/55 known requests**, **$9.388368 remaining**, no active allocation;
+Luna needs its own explicit allowance. Root owns publication decisions for draft
+PR #32. The earlier sections below retain historical source-specific statuses.
 
 # T15 implementation handoff — fresh review pending (2026-11-10)
 

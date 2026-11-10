@@ -1,6 +1,175 @@
 # T15 reference policies and harness ablations
 
-Ticket: T15 / #26. Status: implemented; awaiting parent fresh integration review.
+Ticket: T15 / #26. Status: **accepted after fresh integration review**.
+
+## Fresh integration acceptance (2026-11-10)
+
+Fresh sole-writer Standards and Spec review joined assigned clean checkpoint
+`5ef3abf5eb714aa2d9e619ddffa189ab9ae6b3f2` and exact clean child
+`0d026992b4740675dac3afce54b17a785e3f73e9` through no-ff merge
+`fa1c825fb336f8c9292a66404576162e41807fab`. The qualified executable source is
+`6e1a7c86b06ebd5e39a3445cea6ca6c7786252c3`; only acceptance documentation follows.
+Its tracked-source inventory SHA-256 is
+`9591afabb089fe114c70c3bcf49f9b7f1de0f0567169253729d136f0e5d4e9c8`.
+Final exact HEAD, normal hooks, clean status and postcommit rechecks are separate
+under `.tools/research-harness/evidence/T15-integration/acceptance-checkpoint/`.
+No delegates, additional checkout or publication were used.
+
+### Independent review and concrete repair
+
+**Standards:** no remaining concrete documented-standard finding. The controls
+use the existing participant/activation/World seam, immutable revisions and source
+pins. Actor projections, stock UI, explicit failures and provider/accounting
+boundaries remain intact. Necessary merge conflicts retain both T09 artifact
+ACL/tool guards and scripted-world guards, and both editor configuration props.
+
+**Spec:** a real integration defect omitted T09 pure `read_artifact` work from
+T15 effort. Separate public-API reds demonstrated successful and denied reads
+both reporting zero attempts. Repair `6e1a7c8` counts every such attempt and counts
+a completed operation only on success. The retained parametrized regression
+checks run/comparison/export effort plus successful-read or denied-read replay.
+Child export7 assertions in the reference backend/browser tests were also stale;
+their original failures remain, and only those version expectations advance to 8.
+No other product repair or unrelated ticket was added.
+
+All three declared controls really execute: `commons_keep_v1`,
+`commons_half_v1`, `private_signal_v1`. Independent execution with a provider
+factory that raises proves no provider is constructed; controls send no requests.
+They receive only actor-authorized observations and legal schema. Odd endowment 9,
+a round-two shock to 2, four memory modes and private-input/schema invariance
+checks exercise behavior beyond the implementation fixtures. Unsupported worlds
+reject with 422; no hidden oracle, replacement model or fallback action appears.
+Configured unused model assignments remain distinguishable from effective
+non-model identity. Sol Researcher/planner/assistant and Luna model participants
+are unchanged.
+
+Saved native memory/capability/request-limit ablations, immutable reuse and source
+identity, attempted/sent/unknown usage, integer-ledger charge sums, failed and
+unmatched work, selected support and uncertainty remain visible through the
+public editor, Review, Results, Record, comparison and export. T09 actual artifact
+content exposure, bounded-request delivery, denied replay and operation identity
+repairs `4ed18af`/`84867cc` are preserved and freshly exercised. T07 `d5568c1`,
+T08 `de5556b`/capability delivery, T03 mechanics-only reuse, T05 probes and
+`0ea4064`/`a874f7c`, and T06 frozen analysis remain protected.
+
+Current contracts remain **DB7/export8/capture1/comparison1/library4/tool2.0/
+direct1.0**, plus self-versioned scripted1.0. No incompatible semantic change,
+adapter, migration, alias or reset was introduced.
+
+### Fresh combined checks
+
+Evidence paths below are relative to ignored
+`.tools/research-harness/evidence/T15-integration/`. Every wrapped attempt retains
+command/exit/output and before/after tracked inventories, dirty status and keyed,
+member-verified source archives. Runtime checks use clean `6e1a7c8`. Ruff/ty ran
+before that commit on a stamped working tree with exactly the same final tracked
+contents and inventory hash above; this is not reliance on child test counts.
+
+| Check | Fresh observed result | Evidence |
+| --- | --- | --- |
+| Complete combined backend | **1,209 pass**, all 39 files in six sequential batches; zero failures/errors/skips | `backend-index.json`, six JUnit files, `checks/backend-final-1/` through `6/` |
+| Static/frontend | Ruff/ty/lint pass; **111 unit tests / 30 files**; TypeScript and production frontend build pass | `checks/backend-static-green/`, `backend-types/`, `frontend-*` |
+| Independent zero-provider/access guards | **298 checks**, 12 actual control runs / 48 decisions, all four memory modes, zero calls | `independent.py`, `independent-controls.tar.gz` |
+| Independent T09 World/API witness | **160 checks**, six workflows/four memory modes, privacy/ACL/version/write/exposure/failure/recovery/replay and old-DB rejection without reset | `independent_artifact.py`, `independent-artifact.tar.gz` |
+| Independent T06 finite/frozen witness | **Six scenarios pass**, including missing arms/repetitions, disjoint support, frozen failed/ready membership and unsent failure | `independent_comparison.py`, `independent-comparison.tar.gz` |
+| Focused browser | **58 passing executions / 57 distinct configured flows**, one repeated exposure retry; reference/ablation/Record/export, both harnesses, artifact/exposure, T08, reuse, Researcher, drafts, recovery, focus and uncertainty | Five `checks/browser-*/` invocations, verified adjacent output archives |
+| Fresh build/manual inspection | Forced TypeScript plus new empty-directory Vite build; byte-identical to normal build. Public API: 4 runs/8 scripted decisions/0 requests; light 1280 and dark 390 visual/DOM checks pass | `cache-*.json`, `checks/frontend-types-forced/`, `frontend-build-fresh/`, `manual.tar.gz`, `closure.json` |
+
+Independent T09 oracle code was relocated only; the T06 oracle advances its
+export6 assertion to 8 while preserving numerical/missingness/freeze expectations.
+Their original evidence is untouched. Changed-UI detector returns `[]`.
+Browser checks use owned 18221, bounded sequential invocations and explicit keyless
+stand-ins. No uninterrupted full shared-browser run is claimed. All owned
+Playwright services, the manual server/PID and preview tab are closed; 18221 is closed.
+
+### Frozen baseline, positive parity and neutral development
+
+Frozen T01 runner/cases/scores remain unchanged: fresh run **exit 1**, four
+export-v4 failures and four failed terminal flags; both schema rejection cases
+pass. The corrected comparator also exits 1 with **zero regressions/improvements**.
+This is not an all-green frozen suite. A per-process Git excludes file prevented
+the unchanged runner from reading untracked `pbcopy`; no Git configuration changed.
+
+The independent positive DB7/export8/library4/capture1/comparison1 audit compares
+fresh `6e1a7c8` with retained accepted T09 `84867cc` evidence, streamed without
+extraction. The before trial is inherited, not rerun. **All five runs/22 turns/
+22 requests** match observations, actions, checkpoints, events, metrics, final
+state, exact prompts/schema/settings/input bindings and accounting. Both record
+98 HTTP operations with equal canonical workflow. Synthetic usage is 2,200 input /
+1,100 output tokens and 770 integer microdollars; actual spend 0.
+
+All **1,807 raw JSON differences** are classified, zero unexplained: schema 3,
+clocks 261, generated record IDs 488, participant source 44, explicit model-kind 44,
+embedded identity 831, activation membership keys 44, additive effort/config 24 and
+source inventory 68. Raw exports differ; no latency improvement is inferred.
+All 30 historical benchmark files remain unchanged; T15 adds only its two new
+development files. See `parity.tar.gz` and `frozen-comparison.json`.
+
+All four predeclared DEVELOPMENT cases pass freshly: **32 runs**, 29 complete,
+one failed, one paused, one ready; 59 turns/28 scripted decisions. Controls make
+zero requests. FunctionModel stand-ins record 46 requests, 15 tool operations,
+4,600/2,300 tokens and **1,610 integer microdollars** synthetic charges; run and
+condition sums independently match exactly. Stops are 59 `decision_committed`
+and one `request_limit`. Null/simple-control differences and incomplete work
+remain visible. See `neutral-development.tar.gz` and `protected.json`.
+
+### Custody, retained failures and limits
+
+Complete child evidence remains preserved without extraction at
+`.tools/research-harness/evidence/T15/complete-data-t15.tar.gz`: **10,198 files /
+435,622,928 original bytes / 263,221,522 packed bytes**. Both fresh custody checks
+verify all 10,197 child-indexed files plus manifest, every outer member's bytes/mode,
+94 child checks and all 131 inner compression proofs against unchanged clean source.
+Archive SHA-256:
+`4eb54be4f58725e36d1f53e9edec120ba3ded5dfaeafa048d1a50c34b2d2d6cc`;
+child manifest:
+`985c0dc22f92a598ee4c73a42da815defa30623392ff8b396cc67d7132148582`.
+`custody.json` and `custody-final.json` retain both checks. No second expanded copy.
+
+Fresh `verification-manifest.json` freezes **1,032 files / 55,245,827 bytes /
+53 check records / 13 nonzero attempts**. Canonical SHA-256:
+`2976bdb912a9b550190ca05bb8d052291af45ae157d3df08861f9726e80800e6`;
+manifest file SHA-256:
+`1cfb66c0020f1c11705fec75b0cfeafce3dc1c1b23e5c2f886ace187b9812efd`.
+It rehashes independently before/after the documentation commit. All 39 fresh
+archives/4,682 members have complete streaming byte/mode/link-target verification;
+closed synthetic originals were packed only after processes ended. Later exact
+HEAD/hooks/documentation-source archive records are excluded explicitly and
+verified separately under `acceptance-checkpoint/`. Prior logical original-path
+inventories still resolve through root's reversible maintenance mappings.
+All 1,745 Sol artifacts/28,228,835 bytes freshly match their original manifest.
+
+All attempts remain classified in `retained-errors.json`: the real read-effort
+reds, stale export assertions, normal merge conflicts, formatting failures,
+frozen failures, a comparator import-path error, unsupported Vite `--force`,
+metadata-helper mistakes and intentional manual-server SIGTERM. Some early
+read-only exploratory commands were summarized retrospectively rather than
+separately raw-logged; every substantive acceptance attempt has its raw check
+record. Child interrupted/ENOSPC/broader results below remain inherited and
+are not relabeled fresh successes.
+
+Own 59 mutable TypeScript/Vite/build files were checked private (link count 1).
+Forced TypeScript recomputation and a new empty-directory build avoid prior
+incremental-cache reliance. Root separately reports T19 complete awaiting fresh
+review: initially hardlinked mutable caches, 42 generated files later detached,
+forced checks passed, but earlier outside-cache effects remain **unassessed**.
+No source/evidence corruption is claimed; T19 was not reviewed, copied or merged.
+
+No container/deployment/dependency/workflow inputs changed. **Production-container
+smoke is inherited from accepted T09 `84867cc`; no fresh image/container smoke is
+claimed.** API/persistence and freshly built SPA flows are freshly qualified.
+Live/paid/held-out competence, causal identification and population generalization
+remain unverified. Actual spend is $0; closed Sol history stays $0.611632/55 known
+requests, $9.388368 remaining, no active allocation and no Luna allowance.
+Source checkouts, other agents, prior evidence, stash and unread `pbcopy` remain
+untouched. Root resumes sole checkout ownership and publication decisions.
+
+## Original implementation report (historical, before integration review)
+
+The following source-specific implementation history retains its original checks,
+limits and then-pending review status; the acceptance above supersedes that status.
+
+Ticket: T15 / #26. Implementation was awaiting parent fresh integration review.
 Assigned branch: `t3/t15-reference-policies`. Clean starting accepted integration:
 `e2d42c9fa81ac3b9ce2f440f0ef480e0bb76444d`, including T08 merge `9750caf`
 and required receipt repair `de5556b`. Linux Docker Sandbox; assigned checkout only.
