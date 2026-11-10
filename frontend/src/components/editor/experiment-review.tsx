@@ -4,6 +4,7 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { CoordinationAssumptions } from "@/components/distributed-fields";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { label, modelLabel, money } from "@/lib/format";
@@ -163,6 +164,11 @@ export function ExperimentReview({
                       </span>
                     ))}
                   </div>
+                )}
+                {condition.parameters.coordination && (
+                  <CoordinationAssumptions
+                    rules={condition.parameters.coordination}
+                  />
                 )}
                 {condition.harness.kind === "tool_using" && (
                   <>

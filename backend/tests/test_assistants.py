@@ -59,7 +59,7 @@ def test_general_agent_keeps_history_separate_and_rejects_unselected_evidence(
                     "cutoffs": {},
                 }
             ]
-            assert len(prompt["environments"]) == 9
+            assert len(prompt["environments"]) == 10
             assert "index" not in prompt and "evidence" not in prompt
             return GeneralResponse(
                 answer="Matched seeds support more informative comparisons.",

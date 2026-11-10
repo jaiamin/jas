@@ -116,6 +116,45 @@ were unread. Source/evidence worktrees remain. Global Sol stays$0.611632/55 know
 requests, $9.388368 remaining; no active allocation or Luna allowance. Root owns
 subsequent review/publication for draft PR32. Historical status sections follow.
 
+# T10 implementation handoff — ready for fresh review (2026-11-10)
+
+T10/#21 is implemented on `t3/t10-distributed-information`, assigned checkout
+`/home/agent/.t3/worktrees/workspace/t3-9cbd6ed6`. Original accepted base
+`5ef3abf5eb714aa2d9e619ddffa189ab9ae6b3f2`; latest user-published documented
+accepted checkpoint `14e8af90513d5e7ffa394daec31bcfd6d2730845` is merged through
+`383816d`. No provisional T19 review tip was merged. Executable checkpoint
+`d529f97d77ff633ec9eefb17878925a35ccef5df`; only T10 documentation follows.
+Final exact HEAD/source are in `data/t10/qualification/final.json` and commit
+receipts. A fresh merger must decide adoption; this is not root acceptance.
+
+Report: [T10_COORDINATION.md](docs/research/T10_COORDINATION.md).
+Complete ignored evidence: `data/t10/`, indexed by `evidence-manifest.json` and
+its checksum, including verified source/capture-base proofs, closed synthetic
+archives and browser traces. Current contracts on this branch are
+**DB8/export9/capture1/comparison1/library5/tool2.0/direct1.0**, scripted1.0.
+World `distributed_coordination`1.0 has three consequential independent choices,
+shared-information control, sequential/phased timing, addressed logical delivery,
+actor-scoped artifacts and conflict priority. Alternatives/abstention/horizon and
+T15 scripted controls/successful and denied pure-read effort remain preserved.
+
+Observed qualification: one full backend run **1,252 pass/53 fail**, followed by
+**95 passing targeted cases** covering all53 former failures and all42 T10 cases;
+**1,305 distinct backend cases observed passing**, not an uninterrupted final
+all-green run. Final13 inherited effort/control/isolation cases, Ruff/ty/lint,
+111 frontend units, TypeScript/build, five final T10 browser flows and affected
+inherited browser reruns pass. All28 configured browser flows have observed
+passes across retained runs. ENOSPC save failure and stale export assertions
+remain recorded alongside successful repairs. Frozen T01 stays exit1/four
+export-v4 failures; separate positive five-run/22-turn/22-request parity passes
+with1,833 classified raw differences/zero unexplained. Exact commands/source gaps
+and all failures are in the report. No paid/live or final held-out work.
+
+Own18123/browser services are closed. No push/PR/issues/watch/reset/stash operation,
+new checkout, delegation or other agent's files/processes/cache changes. Local
+dependencies/generated caches are private. Closed T10 outputs were packed with
+verified lossless maps as shared disk approached1MiB. Preserve evidence and frozen
+historical failures; T11/T12 still require accepted T10 and remain out of scope.
+
 # Root coordination — T15 accepted; T13/T19 assigned (2026-11-10)
 
 Accepted integration: `d55f27032b3468ee1f5ad7399ca0d3b1827f4a81` (T01–T09,

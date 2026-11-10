@@ -5,8 +5,10 @@ from .domain import (
     BargainingRules,
     CompositionRules,
     Design,
+    DistributedRules,
     InformationRules,
     InstitutionRules,
+    MessageRoute,
     Parameters,
     Profile,
     ResourcePrimitive,
@@ -327,6 +329,81 @@ def artifact_template() -> Design:
     )
 
 
+def distributed_template() -> Design:
+    actors = ["iris", "moss", "vale"]
+    values = [
+        {"cedar": 9, "quartz": 2, "reed": -2},
+        {"cedar": -3, "quartz": 8, "reed": 1},
+        {"cedar": 0, "quartz": -4, "reed": 7},
+    ]
+    return Design(
+        title="Distributed information and independent choices",
+        question="How does sharing local evidence affect three participants' choices?",
+        environment="distributed_coordination",
+        profiles=[
+            Profile(key=a, name=a.title(), goal="Inspect and choose as you prefer.") for a in actors
+        ],
+        seeds=[7],
+        rounds=8,
+        openai_reasoning_effort="low",
+        conditions=[
+            Treatment(
+                key="shared" if shared else "distributed",
+                name="Shared information" if shared else "Distributed information",
+                parameters=Parameters(
+                    artifacts=ArtifactRules(
+                        write_limit=4,
+                        objects=[
+                            *[
+                                ArtifactObject(
+                                    key=f"values_{a}",
+                                    name=f"Values for {a.title()}",
+                                    readers=actors if shared else [a],
+                                    content=values[i],
+                                )
+                                for i, a in enumerate(actors)
+                            ],
+                            ArtifactObject(
+                                key="draft",
+                                name="Shared draft",
+                                readers=actors,
+                                writers=actors,
+                                content={"proposal": "undecided"},
+                            ),
+                        ],
+                    ),
+                    coordination=DistributedRules(
+                        timing="phased_simultaneous",
+                        turn_order=actors,
+                        conflict_order=["moss", "vale", "iris"],
+                        delivery_delay=2,
+                        alternatives=["cedar", "quartz", "reed"],
+                        match_bonus=3,
+                        information={a: f"values_{a}" for a in actors},
+                        routes=[
+                            MessageRoute(sender=a, recipient=b)
+                            for a in actors
+                            for b in actors
+                            if a != b
+                        ],
+                    ),
+                ),
+            )
+            for shared in (False, True)
+        ],
+        measures=["coordination_match", "coordination_value"],
+        limitations=[
+            "The shared-information control changes evidence read ACLs only; "
+            "no cooperation is required.",
+            "Directory roles, turn/conflict priority, directed routes and their order "
+            "are explicit assumptions.",
+            "Phased observations freeze until settlement; physical model requests may be serial.",
+            "Logical mail delivery and input receipts establish availability/inclusion, "
+            "not attention or intent.",
+        ],
+    )
+
+
 def templates() -> list[dict[str, object]]:
     examples = [
         commons_template(),
@@ -338,5 +415,6 @@ def templates() -> list[dict[str, object]]:
         renewable_resource_template(),
         composed_template(),
         artifact_template(),
+        distributed_template(),
     ]
     return [{"id": design.environment, "design": design.model_dump()} for design in examples]

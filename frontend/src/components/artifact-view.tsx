@@ -20,7 +20,8 @@ export function ArtifactView({ run, state }: { run: RunDetail; state: State }) {
     throw new Error("Artifact checkpoint is missing objects");
   const name = (key: string) =>
     run.design.profiles.find((p) => p.key === key)?.name ?? key;
-  const outcome = state.outcome;
+  const outcome =
+    state.outcome && "status" in state.outcome ? state.outcome : null;
   return (
     <section className="flex min-w-0 flex-col gap-4">
       <div>

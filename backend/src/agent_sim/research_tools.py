@@ -370,6 +370,11 @@ class ResearchTools:
                     if design.environment == "artifact_workspace"
                     else {}
                 ),
+                **(
+                    {"coordination_outcome": final.get("outcome")}
+                    if design.environment == "distributed_coordination"
+                    else {}
+                ),
             },
         )
         assert digest(initial) == data["source_checkpoint_hash"]

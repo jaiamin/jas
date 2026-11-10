@@ -805,3 +805,15 @@ operable disclosures. Retain cached evidence and a local retry on refresh errors
 polling cannot replace another selected record. Phone tables scroll internally.
 Inclusion is not attention/belief/intent, and exposure-conditioned filtering is
 post-treatment selection rather than an automatic causal estimate.
+
+### Three-participant coordination
+
+Keep coordination on the existing Conditions, Review and run Environment surfaces.
+Timing, logical delay, activation/conflict priority and directed routes use stock
+fields; structural alternatives/bindings remain editable in Specification. Disclose
+directory and ordering assumptions beside the controls and in run inspection.
+Researcher-scoped choices/values and addressed mail use compact tables, with null
+or unchosen outcomes named explicitly. Keep settlements, conflicts and artifact
+versions source-linked behind disclosures. Preserve internal table scrolling,
+keyboard controls and phone/light/dark behavior. Agreement is optional; the UI
+must not turn the agreement measure into a success label.

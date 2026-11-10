@@ -262,7 +262,10 @@ export function ConditionFields({
                   id={c.key}
                   index={i}
                   value={c.harness}
-                  artifacts={design.environment === "artifact_workspace"}
+                  artifacts={[
+                    "artifact_workspace",
+                    "distributed_coordination",
+                  ].includes(design.environment)}
                   environment={design.environment}
                   onAblation={(choice) => {
                     if (c.harness.kind !== "tool_using") return;

@@ -21,6 +21,7 @@ EnvironmentId = Literal[
     "renewable_resource",
     "composed",
     "artifact_workspace",
+    "distributed_coordination",
 ]
 
 
@@ -180,7 +181,7 @@ class ArtifactRequirement(Strict):
 
 class ArtifactRules(Strict):
     objects: list[ArtifactObject] = Field(min_length=2, max_length=12)
-    requirements: list[ArtifactRequirement] = Field(min_length=1, max_length=12)
+    requirements: list[ArtifactRequirement] = Field(default_factory=list, max_length=12)
     write_limit: int = Field(default=4, ge=1, le=100)
 
     @model_validator(mode="after")
@@ -198,6 +199,22 @@ class ArtifactRules(Strict):
             if source.owner is not None or source.writers or not (target.owner or target.writers):
                 raise ValueError("Requirements need immutable evidence and writable work")
         return self
+
+
+class MessageRoute(Strict):
+    sender: ArtifactKey
+    recipient: ArtifactKey
+
+
+class DistributedRules(Strict):
+    timing: Literal["sequential", "phased_simultaneous"]
+    turn_order: list[ArtifactKey] = Field(min_length=3, max_length=3)
+    conflict_order: list[ArtifactKey] = Field(min_length=3, max_length=3)
+    routes: list[MessageRoute] = Field(max_length=6)
+    delivery_delay: int = Field(ge=1, le=12)
+    alternatives: list[ArtifactKey] = Field(min_length=2, max_length=6)
+    information: dict[ArtifactKey, ArtifactKey] = Field(min_length=3, max_length=3)
+    match_bonus: int = Field(ge=0, le=100)
 
 
 class MechanicsParameters(Strict):
@@ -240,6 +257,7 @@ class MechanicsParameters(Strict):
     resource: ResourceRules = Field(default_factory=ResourceRules)
     composition: CompositionRules | None = None
     artifacts: ArtifactRules | None = None
+    coordination: DistributedRules | None = None
     resource_schedule: list[ResourceChange] = Field(default_factory=list, max_length=12)
 
 
@@ -350,7 +368,7 @@ class EnvironmentMechanics(Strict):
 
 
 class SavedEnvironment(Strict):
-    format: Literal["jas-environment-v4"] = "jas-environment-v4"
+    format: Literal["jas-environment-v5"] = "jas-environment-v5"
     id: str
     revision: int = Field(ge=1)
     updated: str
@@ -412,7 +430,7 @@ class Design(DesignSpec):
                 raise ValueError(f"{label} identifiers must be unique")
         for condition in self.conditions:
             artifacts = condition.parameters.artifacts
-            if self.environment == "artifact_workspace":
+            if self.environment in {"artifact_workspace", "distributed_coordination"}:
                 if artifacts is None:
                     raise ValueError("Artifact workspace requires explicit artifact mechanics")
                 references = {
@@ -422,13 +440,63 @@ class Design(DesignSpec):
                 }
                 if not references <= {p.key for p in self.profiles}:
                     raise ValueError("Artifact permissions must name existing participants")
+                if self.environment == "artifact_workspace" and not artifacts.requirements:
+                    raise ValueError("Artifact investigation requires content/source requirements")
             elif artifacts is not None:
                 raise ValueError("Artifact mechanics require the artifact workspace")
             if (
-                self.environment != "artifact_workspace"
+                self.environment not in {"artifact_workspace", "distributed_coordination"}
                 and "read_artifact" in condition.harness.tools
             ):
                 raise ValueError("Artifact read tools require the artifact workspace")
+            coordination = condition.parameters.coordination
+            if self.environment == "distributed_coordination":
+                ids = {p.key for p in self.profiles}
+                if len(ids) != 3 or coordination is None or artifacts is None:
+                    raise ValueError(
+                        "Distributed coordination requires three participants and rules"
+                    )
+                if any(
+                    len(set(order)) != 3 or set(order) != ids
+                    for order in (coordination.turn_order, coordination.conflict_order)
+                ):
+                    raise ValueError(
+                        "Turn and conflict orders must each list all three participants"
+                    )
+                routes = [(route.sender, route.recipient) for route in coordination.routes]
+                if len(set(routes)) != len(routes) or any(
+                    a not in ids or b not in ids or a == b for a, b in routes
+                ):
+                    raise ValueError("Message routes must be distinct directed participant pairs")
+                if len(set(coordination.alternatives)) != len(coordination.alternatives):
+                    raise ValueError("Coordination alternatives must be unique")
+                if (
+                    set(coordination.information) != ids
+                    or len(set(coordination.information.values())) != 3
+                ):
+                    raise ValueError("Each participant requires a distinct value artifact")
+                objects = {obj.key: obj for obj in artifacts.objects}
+                for actor, key in coordination.information.items():
+                    obj = objects.get(key)
+                    if (
+                        obj is None
+                        or obj.owner is not None
+                        or obj.writers
+                        or actor not in obj.readers
+                        or set(obj.content) != set(coordination.alternatives)
+                        or any(
+                            type(v) is not int or not -100 <= v <= 100 for v in obj.content.values()
+                        )
+                    ):
+                        raise ValueError(
+                            "Value artifacts must be immutable, readable local integer values"
+                        )
+                if artifacts.requirements:
+                    raise ValueError(
+                        "Coordination uses alternative values, not solo submission requirements"
+                    )
+            elif coordination is not None:
+                raise ValueError("Distributed rules require distributed coordination")
             if condition.harness.kind == "scripted":
                 required_world = (
                     "information"
@@ -558,11 +626,26 @@ class StopArtifact(Strict):
     kind: Literal["stop"]
 
 
+class ChooseAlternative(Strict):
+    kind: Literal["choose_alternative"]
+    alternative: ArtifactKey
+
+
+class WaitCoordination(Strict):
+    kind: Literal["wait_coordination"]
+
+
+class SendMessage(Strict):
+    kind: Literal["send_message"]
+    recipient: ArtifactKey
+    text: str = Field(min_length=1, max_length=1000)
+
+
 ArtifactAction = Annotated[
     ReadArtifact | WriteArtifact | CheckArtifacts | SubmitArtifacts | StopArtifact,
     Field(discriminator="kind"),
 ]
-ActionRequest = Action | ArtifactAction
+ActionRequest = Action | ArtifactAction | ChooseAlternative | WaitCoordination | SendMessage
 
 
 class Decision(Strict):

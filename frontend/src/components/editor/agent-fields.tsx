@@ -52,7 +52,10 @@ export function AgentFields({
           type="button"
           variant="outline"
           size="sm"
-          disabled={design.profiles.length >= 12}
+          disabled={
+            design.profiles.length >=
+            (design.environment === "distributed_coordination" ? 3 : 12)
+          }
           onClick={() => {
             let n = design.profiles.length + 1;
             while (design.profiles.some((p) => p.key === `agent-${n}`)) n++;
@@ -174,7 +177,14 @@ export function AgentFields({
                   aria-label={`Remove ${p.name}`}
                   disabled={
                     design.profiles.length <=
-                    minimumParticipants(design.environment)
+                      minimumParticipants(design.environment) ||
+                    (design.environment === "distributed_coordination" &&
+                      design.conditions.some((condition) =>
+                        Object.hasOwn(
+                          condition.parameters.coordination?.information ?? {},
+                          p.key,
+                        ),
+                      ))
                   }
                   onClick={() => onChange(removeProfile(design, p.key))}
                 >

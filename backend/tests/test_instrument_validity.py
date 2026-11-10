@@ -48,12 +48,14 @@ def test_observation_deep_isolation_and_terminal_guard(template):
     world.state["experiences"][actor] = [{"text": "private-experience"}]
     before, parameters = world.snapshot(), params.model_dump()
     obs = world.observe(actor)
-    if design.environment == "artifact_workspace":
+    if design.environment in {"artifact_workspace", "distributed_coordination"}:
         assert obs["public_history"] == []
         from agent_sim.domain import ReadArtifact
 
-        read = world.read(actor, ReadArtifact(kind="read_artifact", artifact="measurement"))
-        read["content"]["reading"] = "corrupt"
+        read = world.read(
+            actor, ReadArtifact(kind="read_artifact", artifact=obs["artifacts"][0]["key"])
+        )
+        read["content"][next(iter(read["content"]))] = "corrupt"
     else:
         obs["public_history"][0]["nested"]["value"] = "corrupt"
     obs["your_experiences"][0]["text"] = "corrupt"
