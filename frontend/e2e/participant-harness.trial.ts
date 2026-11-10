@@ -41,7 +41,7 @@ for (const { theme, width } of [
     ).toHaveValue("3");
     await page.getByRole("tab", { name: "Review", exact: true }).click();
     await expect(page.getByLabel("Experiment review")).toContainText(
-      "Tool using · v1.0.0",
+      "Tool using · v2.0.0",
     );
     await expect(page.getByLabel("Experiment review")).toContainText(
       "4 requests",

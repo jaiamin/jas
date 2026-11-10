@@ -263,14 +263,24 @@ class DirectActionHarness(Strict):
     tools: list[ParticipantTool] = Field(default_factory=list, max_length=0)
 
 
+class ParticipantCapabilities(Strict):
+    planning: Literal["actor_plan_v1", "disabled"] = "actor_plan_v1"
+    memory: Literal["actor_sources_v1", "disabled"] = "actor_sources_v1"
+    investigation: Literal["actor_inspection_v1", "disabled"] = "actor_inspection_v1"
+    verification: Literal["legal_evidence_v1", "disabled"] = "legal_evidence_v1"
+
+
 class ToolUsingHarness(Strict):
     kind: Literal["tool_using"] = "tool_using"
-    version: Literal["1.0.0"] = "1.0.0"
+    version: Literal["2.0.0"] = "2.0.0"
     max_requests: int = Field(default=4, ge=1, le=8)
     max_tool_operations: int = Field(default=3, ge=0, le=12)
     tools: list[ParticipantTool] = Field(
         default=["observe", "rules", "legal_options"], max_length=4
     )
+    capabilities: ParticipantCapabilities = Field(default_factory=ParticipantCapabilities)
+    max_context_chars: int = Field(default=16000, ge=4000, le=32000)
+    max_memory_items: int = Field(default=8, ge=1, le=16)
 
     @model_validator(mode="after")
     def unique_tools(self) -> Self:

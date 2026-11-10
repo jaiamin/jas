@@ -163,7 +163,8 @@ def exercise(client, case, output, operations):
             )
             checks[f"{prefix}:identity"] = all(
                 a["identity"]["model"] == "openai:gpt-6-luna"
-                and a["identity"]["harness"]["version"] == "1.0.0"
+                and a["identity"]["harness"]["version"]
+                == ("1.0.0" if prefix == "direct_action" else "2.0.0")
                 and a["identity"]["implementation_sha256"]
                 for a in run["activations"]
             )

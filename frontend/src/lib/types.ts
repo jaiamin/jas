@@ -129,13 +129,29 @@ export interface Profile {
   role: string;
   model: ModelId | null;
 }
-export interface ParticipantHarness {
-  kind: "direct_action" | "tool_using";
-  version: "1.0.0";
+export interface ParticipantCapabilities {
+  planning: "actor_plan_v1" | "disabled";
+  memory: "actor_sources_v1" | "disabled";
+  investigation: "actor_inspection_v1" | "disabled";
+  verification: "legal_evidence_v1" | "disabled";
+}
+interface HarnessLimits {
   max_requests: number;
   max_tool_operations: number;
   tools: ("observe" | "rules" | "legal_options" | "read_artifact")[];
 }
+export interface DirectActionHarness extends HarnessLimits {
+  kind: "direct_action";
+  version: "1.0.0";
+}
+export interface ToolUsingHarness extends HarnessLimits {
+  kind: "tool_using";
+  version: "2.0.0";
+  capabilities: ParticipantCapabilities;
+  max_context_chars: number;
+  max_memory_items: number;
+}
+export type ParticipantHarness = DirectActionHarness | ToolUsingHarness;
 export interface Treatment {
   key: string;
   name: string;

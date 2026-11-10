@@ -363,7 +363,7 @@ def test_reusing_mechanics_preserves_each_conditions_participant_harness_and_mem
         design["conditions"][0]["harness"] = {"kind": "direct_action", "version": "1.0.0"}
         design["conditions"][1]["harness"] = {
             "kind": "tool_using",
-            "version": "1.0.0",
+            "version": "2.0.0",
             "max_requests": 2,
             "max_tool_operations": 1,
             "tools": ["rules"],

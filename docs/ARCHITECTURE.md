@@ -229,13 +229,49 @@ Every Analysis has an indexed conversation identity. Study export v6 (`jas-study
 includes every revision and its runs, actual recorded rule versions, exact turn evidence
 and provider traces; it batches
 journal queries.
-Participant harnesses (`participants.py`, version 1.0.0) are condition factors,
+Participant harnesses (`participants.py`; direct action 1.0.0, tool using 2.0.0) are condition factors,
 independent of provider/model assignments and World. Direct action preserves the
 single structured-decision request and its observation. Tool using owns a bounded
 application loop: each inference uses `LanguageModels.generate` once with its own
 atomic reservation/settlement. Only the active actor's observation, rules and legal
 options can be read; no operation accepts an actor or state selector. World.step
 independently validates the final decision. Reads never advance logical time.
+
+Tool-using conditions independently select versioned planning, memory retrieval,
+investigation and verification policies in `participant_context.py`, or explicitly
+disable each capability. Participants choose operations within the same inference/
+operation budgets; no planning pipeline or fallback is imposed. Capability policies
+receive the frozen actor projection, its legal schema and permitted artifacts,
+without World state, database/Engine access or provider clients. Implementation
+digests and policy IDs are retained alongside the harness identity.
+
+Plan operations append private intentional artifacts, marked as self-reports,
+with source references instead of recursively embedding other artifacts. Within
+an activation, its own artifacts remain accessible, including after explicit
+pause/restart. Across committed turns only the same run/actor's latest plan is
+retained, and only in episodic/notes modes. Failed/interrupted attempts remain
+inspectable but do not supply context to a new activation. History/none modes
+never restore prior private plans. World notes retain their existing memory policy.
+
+Retrieval searches the permitted bounded observation (12 experiences, 64 public
+history items, current note) and allowed plans; it never searches researcher
+tables or bypasses those memory windows. Source IDs point to a saved activation's
+observation field/index or plan-operation receipt, with hashes of accessible
+content and a pre-activation turn cutoff. Earlier requested cutoffs filter those
+available sources; they do not reconstruct an older observation or expose future
+data. Result counts and metadata concern only permitted matches, with at most
+the declared memory-result limit. Missing/forbidden sources share a generic error.
+
+Investigation reads a chosen current-state/rules/legal-options facet. Verification
+checks the actor's legal-action schema and exact source quotes. A schema-valid
+proposal can still fail independent World settlement; verification neither applies
+it nor predicts consequences. A quote match establishes recorded text, not claim
+truth or provider reasoning. Model prompt JSON has a declared character bound;
+older oversized payloads become receipt references, with full append-only evidence
+retained for inspection. The fixed instructions and typed response schema are
+additional bounded inputs. Pause restoration checks the existing World checkpoint
+hash and reuses the activation/journal and consumed limits. Replay reuses settled
+decisions without rerunning capabilities or model requests.
 
 Participant activations are durable attempts, separate from committed turns.
 They pin model/provider adapter and package versions, harness/source digest,

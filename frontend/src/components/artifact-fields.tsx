@@ -184,7 +184,7 @@ export function ArtifactFields({
         </FieldDescription>
         {rules.requirements.map((requirement, index) => (
           <FieldGroup
-            key={`${index}-${requirement.artifact}-${requirement.field}`}
+            key={`${requirement.artifact}-${requirement.field}`}
             className="grid grid-cols-1 gap-4 sm:grid-cols-2"
           >
             {(["artifact", "field", "source", "source_field"] as const).map(
@@ -206,9 +206,9 @@ export function ArtifactFields({
                   </FieldLabel>
                   <Input
                     id={`${id}-requirement-${index}-${key}`}
-                    value={requirement[key]}
+                    defaultValue={requirement[key]}
                     maxLength={24}
-                    onChange={(event) =>
+                    onBlur={(event) =>
                       onChange({
                         ...rules,
                         requirements: rules.requirements.map((r, i) =>

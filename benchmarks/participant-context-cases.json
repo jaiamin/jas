@@ -1,0 +1,14 @@
+{
+  "id": "t08-neutral-capabilities-development",
+  "version": 1,
+  "split": "DEVELOPMENT",
+  "authorship": "Independent finite requirements and arithmetic, specified before this trial runner's first execution. Public development witnesses, not held-out tasks or model intelligence.",
+  "effort": { "max_requests": 6, "max_tool_operations": 5, "response_tokens": 512, "max_context_chars": 16000, "max_memory_items": 8 },
+  "cases": [
+    { "id": "neutral-credit-retention", "environment": "commons", "rounds": 2, "participants": 2, "mode": "capabilities", "memory": "episodic", "expected_turns": 4, "expected_status": "complete", "expected_balances": [26, 26], "expected_requests": 24 },
+    { "id": "private-measurement-choice", "environment": "information", "rounds": 1, "participants": 3, "mode": "capabilities", "memory": "notes", "expected_turns": 3, "expected_status": "complete", "expected_balances": [9, 9, 9], "expected_requests": 18 },
+    { "id": "optional-disabled-capabilities", "environment": "commons", "rounds": 1, "participants": 2, "mode": "immediate", "memory": "none", "expected_turns": 2, "expected_status": "complete", "expected_balances": [13, 13], "expected_requests": 2 },
+    { "id": "inaccessible-source-check", "environment": "commons", "rounds": 1, "participants": 2, "mode": "denied", "memory": "history", "expected_turns": 0, "expected_status": "failed", "expected_balances": [0, 0], "expected_requests": 1 },
+    { "id": "unknown-auxiliary-usage", "environment": "commons", "rounds": 1, "participants": 2, "mode": "unknown", "memory": "episodic", "expected_turns": 0, "expected_status": "failed", "expected_balances": [0, 0], "expected_requests": 2 }
+  ]
+}

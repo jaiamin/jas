@@ -85,6 +85,27 @@ keyless regressions. Neither test server loads `.env` or permits paid requests.
 The trial runner retains source/case/harness hashes, all attempts and complete
 exports. Its scripted choices establish mechanics, not participant intelligence.
 
+T08 adds selectable planning, retrieval, investigation and accessible verification
+policies to **tool-using harness 2.0.0**. Direct action remains 1.0.0. Unsupported
+tool-using 1.0.0 designs are explicitly rejected: preserve their source/data/exports
+for inspection with that contract; no migration, compatibility reader or automatic
+reset is performed. T08 adds no database schema change; the accepted T03 integration
+uses schema 6, and study exports remain v6.
+New runs must pin the current harness. Each capability can be explicitly disabled;
+there is no substitute policy. The same activation request/operation budgets apply.
+
+The neutral DEVELOPMENT runner and dedicated keyless UI flow exercise actual
+capabilities, source receipts, private plans, pause/reload/resume and replay:
+
+```sh
+uv run python -m benchmarks.participant_context_trial --output data/t08/development
+JAS_TEST_PORT=18119 pnpm --dir frontend exec playwright test --config playwright.context.config.ts
+```
+
+Use a new output path for each trial. These external-provider stand-ins make no
+paid calls and do not establish intelligence. Keep `data/t08/` evidence; see the
+[T08 acceptance report](research/T08_PARTICIPANT_CONTEXT.md).
+
 `JAS_ALLOWED_HOSTS` lists accepted hostnames/IPs without ports (comma-separated).
 Defaults: `localhost,127.0.0.1,[::1]`. Add the explicit LAN/proxy host before using a
 non-local URL; keep localhost entries for health checks. Restart after configuration changes.

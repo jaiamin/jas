@@ -10,6 +10,7 @@ from agent_sim.api import create_app
 
 def deterministic_participants(app):
     """Opt-in external provider stand-in for the dedicated T04 browser workflow."""
+    import asyncio
     import json
 
     from pydantic_ai import models
@@ -35,8 +36,53 @@ def deterministic_participants(app):
             "forecast": None,
         }
         if "operations" in prompt:
-            operation = ["observe", "rules", "legal_options", "decide"][len(prompt["operations"])]
-            output = {"operation": operation, "decision": final if operation == "decide" else None}
+            journal = prompt["operations"]
+            if os.getenv("JAS_TEST_CONTEXT") == "1":
+                if not journal:
+                    # Deterministic provider delay lets the browser pause real in-flight work.
+                    await asyncio.sleep(1)
+                    output = {
+                        "operation": "investigate",
+                        "decision": None,
+                        "investigation": {"facet": "state"},
+                    }
+                elif len(journal) == 1:
+                    output = {
+                        "operation": "plan",
+                        "decision": None,
+                        "plan": {
+                            "text": "Check the observed budget before choosing an available amount.",
+                            "source_ids": [journal[0]["result"]["source"]["id"]],
+                        },
+                    }
+                elif len(journal) == 2:
+                    output = {
+                        "operation": "retrieve",
+                        "decision": None,
+                        "retrieval": {"query": "budget", "limit": 2},
+                    }
+                elif len(journal) == 3:
+                    output = {
+                        "operation": "verify",
+                        "decision": None,
+                        "verification": {
+                            "proposed": final,
+                            "checks": [
+                                {
+                                    "source_id": journal[0]["result"]["source"]["id"],
+                                    "quote": "your_private_signal",
+                                }
+                            ],
+                        },
+                    }
+                else:
+                    output = {"operation": "decide", "decision": final}
+            else:
+                operation = ["observe", "rules", "legal_options", "decide"][len(journal)]
+                output = {
+                    "operation": operation,
+                    "decision": final if operation == "decide" else None,
+                }
         else:
             output = final
         return ModelResponse(
