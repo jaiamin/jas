@@ -58,11 +58,11 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | --- | --- | --- | --- | --- |
 | T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Integrated | `bf3b76e` |
 | T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Integrated and accepted | `77f6014`, `c546c85` |
-| T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | In progress in isolated worktree | — |
+| T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Complete; queued for fresh integration review | — |
 | T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Integrated and accepted | `48600d2` |
 | T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Integrated and accepted | `a4ab9ee` |
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Integrated and accepted | `aaf3a15`; [evidence](research/T06_UNCERTAINTY.md) |
-| T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Ready | — |
+| T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | In progress in isolated worktree | — |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | In progress in isolated worktree | — |
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Waiting on T03 | — |
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Waiting | — |
@@ -143,9 +143,10 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. T01/T02/T04/T05/T06 are accepted with preserved evidence. T03/#14 and T08/#19
-   are in progress in isolated worktrees; T07/#18 stays Ready. T09/#20 waits on
-   T03; T15 waits for completed T08, T19 for T07 and T14 for T13.
+1. T01/T02/T04/T05/T06 are accepted with preserved evidence. T03/#14 is complete
+   on `c2b8ac1`, queued for fresh integration review; preserve all `data/t03/`.
+   T07/#18 and T08/#19 are running in isolated worktrees. T09/#20 waits on T03;
+   T15 waits for completed T08, T19 for T07 and T14 for T13.
 2. Review and merge each accepted slice sequentially, then refresh/link draft
    PR #32; qualification failure gates generated execution, not trusted worlds.
 3. Preserve source-stamped inherited and new-behavior evidence for each slice;
@@ -331,5 +332,6 @@ narrow successes leave live participant, held-out and generalization gates open.
 The owned preview and all owned servers on **18217** are closed. `pbcopy` remains
 unread/unadded/uncopied/unarchived; stash unchanged. No push, PR/issue operation,
 host/security/credential change, other-worktree/process change or source disposal.
-Parent retains the single draft PR #32 and publication. T03/T08 in progress,
-T07 Ready; T15 waits on T08, T19 on T07, T14 on T13.
+Parent retains the single draft PR #32 and publication. T03 is complete and
+queued for fresh integration review; T07/T08 are in progress. T15 waits on T08,
+T19 on T07, T14 on T13.

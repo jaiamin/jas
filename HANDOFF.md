@@ -49,8 +49,24 @@ Port 18217, both Playwright servers, copied-database server and owned preview
 are closed. `pbcopy` is the sole unrelated untracked file and was never
 read/added/copied/archived; stash `f771128ba1c9295262a4073df40cc25647b1370f`
 is untouched. No push, PR/issue, host/security/credential or other-worktree/process
-changes. Parent owns the single draft PR #32 and publication. T03/T08 are in
-progress; T07 Ready. T15 waits for T08, T19 for T07 and T14 for T13.
+changes. Parent owns the single draft PR #32 and publication. T03 is complete,
+queued for fresh integration review; T07/T08 are in progress. T15 waits for T08,
+T19 for T07 and T14 for T13.
+
+T03 handoff: clean `t3/add-reusable-environments`, HEAD
+`c2b8ac15b259302786e6107a0074d93a96e82671`, source worktree
+`/home/agent/.t3/worktrees/workspace/t3-6cea71e7`. Read
+`docs/research/T03_ENVIRONMENTS.md`; preserve/hash-verify the complete ignored
+`data/t03/` before any cleanup (manifest indexes 2,250 files). It includes
+accepted integration `ff15674`, not T06. Fresh merger must combine T03 schema 6
+with T06 comparison/export-6 semantics, retain both live probe repairs and
+independently verify reuse/immutability, current contracts and exact 22-turn
+parity. Frozen v4 failures remain classified failures. Root owns publication;
+the merger gets sole integration write access and browser port 18214.
+
+Running T07 uses port 18118; running T08 uses 18119. Their fresh isolated tasks
+must include the latest accepted integration before handoff. Do not poll them.
+T09 becomes Ready only after T03 acceptance. No paid allocation is active.
 
 # T06 ticket-branch checkpoint (inherited)
 
@@ -196,8 +212,8 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01/T02/T04/T05/T06 accepted; T03/T08 in progress;
-T07 Ready; T09 waits on T03; draft PR #32.**
+**Current checkpoint: T01/T02/T04/T05/T06 accepted; T03 complete, queued for
+fresh integration review; T07/T08 running; T09 waits on T03; draft PR #32.**
 
 Fresh Sol DEVELOPMENT is complete for this checkpoint: read
 `docs/research/SOL_DEVELOPMENT.md`. The frozen original eight-case pair,
@@ -295,9 +311,10 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: T07/#18 is Ready. T03/#14 and T08/#19 are in progress in isolated
-worktrees; T09/#20 still waits on T03. T06/#17 is accepted. T15 waits for completed
-T08, T19 for T07 and T14 for T13; accepting T06 alone does not ready those tickets.
+Current frontier: T03/#14 is complete and queued for fresh integration review;
+T07/#18 and T08/#19 are running in isolated worktrees. T09/#20 still waits on
+T03 acceptance. T06/#17 is accepted. T15 waits for completed T08, T19 for T07 and
+T14 for T13; accepting T06 alone does not ready those tickets.
 Draft PR #32 is the single integration PR and
 was linked immediately. Refresh/link it on each push. Do not merge to main or
 close issues as if unverified work were complete. The default-branch PR merge
