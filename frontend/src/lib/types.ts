@@ -536,6 +536,9 @@ export interface Relationship {
 }
 export interface RequestSummary {
   id: string;
+  analysis_id: string | null;
+  purpose: string;
+  model: string;
   activation_id: string | null;
   turn: number | null;
   status: string;
@@ -547,6 +550,9 @@ export interface RequestSummary {
 }
 export interface RequestEvidence {
   id: string;
+  analysis_id: string | null;
+  purpose: string;
+  model: string;
   activation_id: string | null;
   run_id: string;
   turn: number | null;

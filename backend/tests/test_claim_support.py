@@ -899,3 +899,64 @@ def test_initial_artifact_lens_retains_checkpoint_and_unfinished_outcome(claim_c
     assert second["cutoffs"] == {rid: 0}
     assert source(client.get(f"/api/studies/{sid}/export").json()) == settled
     assert final["usage"]["requests"] == second["usage"]["requests"] == 2
+
+
+def test_analysis_requests_are_identified_apart_from_non_model_participant_effort(
+    claim_client, design
+):
+    client, controls, seen = claim_client
+    from agent_sim.domain import ScriptedHarness
+
+    design.conditions[0].harness = ScriptedHarness(policy="commons_half_v1")
+    sid, rid = save(client, design)
+    assert run(client, rid)["status"] == "complete"
+    assert seen == []
+    before = client.get(f"/api/studies/{sid}/export").json()
+    effort = before["runs"][0]["record"]["effort"]
+    controls.update(answer="The captured total is 50; private intent remains unknown.", value=50)
+    first = finish(
+        client,
+        client.post(
+            "/api/chats",
+            json={"question": "Inspect the scripted control.", "context": f"run:{rid}"},
+        ),
+    )
+    assert first["status"] == "complete", first
+    second = finish(
+        client,
+        client.post(
+            "/api/chats",
+            json={
+                "question": "Reinspect only the same frozen evidence.",
+                "context": f"run:{rid}",
+                "chat_id": first["chat_id"],
+                "source_analysis_id": first["id"],
+                "lens": "communication",
+            },
+        ),
+    )
+    assert second["status"] == "complete", second
+    after = client.get(f"/api/studies/{sid}/export").json()
+    record = client.get(f"/api/runs/{rid}").json()
+    assert source(before) == source(after)
+    assert record["effort"] == effort
+    assert record["effort"]["usage"]["requests"] == 0
+    assert record["effort"]["scripted_decisions"] == 4
+    assert record["summary"]["model"] is None
+    assert record["summary"]["models"] == []
+    assert record["summary"]["usage"]["requests"] == 4
+    assert len(record["requests"]) == 4
+    assert {call["purpose"] for call in record["requests"]} == {"analysis"}
+    assert {call["analysis_id"] for call in record["requests"]} == {first["id"], second["id"]}
+    assert {call["model"] for call in record["requests"]} == {"openai:gpt-6.1-sol"}
+    for call in record["requests"]:
+        assert call["activation_id"] is None
+        detail = client.get(f"/api/requests/{call['id']}").json()
+        for field in ("purpose", "analysis_id", "model"):
+            assert detail[field] == call[field]
+    for analysis in (first, second):
+        calls = [call for call in after["requests"] if call["analysis_id"] == analysis["id"]]
+        assert len(calls) == analysis["usage"]["requests"] == 2
+        assert all(call["status"] == "complete" for call in calls)
+        assert analysis["output"]["support"]["prose_status"] == "unassessed"
+    assert client.post(f"/api/runs/{rid}/verify").json()["verified_turns"] == 4

@@ -428,6 +428,10 @@ The existing `/api/chats` analysis submission accepts `lens` and optional
 retains the original frozen index/inputs/cutoffs and records its own requests and
 usage. Later same-chat answers outside those cutoffs are excluded from its context.
 It cannot run participants, amend World evidence or resettle old requests.
+Run aggregate usage includes analysis billing; participant effort is computed only
+from participant activation requests. Run request summaries and request detail
+retain purpose, analysis identity and actual model, so a non-model control does not
+appear to have sampled a model when its evidence is subsequently analyzed.
 Coverage retains bounded observation window sizes; missing historical fields and
 unknown delivery stay null/unavailable. Artifact Worlds retain exact contents, versions,
 source references, write allowance, history and outcome. Utility is unavailable where

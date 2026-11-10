@@ -331,3 +331,137 @@ test("artifact findings retain versions without inventing financial outcomes", a
   });
   expect(errors).toEqual([]);
 });
+
+for (const { theme, width } of [
+  { theme: "light", width: 1440 },
+  { theme: "dark", width: 390 },
+]) {
+  test(`analysis billing stays distinct from scripted participant work · ${theme}`, async ({
+    page,
+    request,
+  }, testInfo) => {
+    const design = templateDesign(
+      await (await request.get("/api/catalog")).json(),
+    );
+    design.title = `T19 scripted analysis accounting ${theme}`;
+    design.profiles = design.profiles.slice(0, 2);
+    design.rounds = 2;
+    design.seeds = [137];
+    design.conditions = design.conditions.slice(0, 1);
+    design.conditions[0].harness = {
+      kind: "scripted",
+      version: "1.0.0",
+      policy: "commons_half_v1",
+      tools: [],
+      max_requests: 0,
+      max_tool_operations: 0,
+    };
+    design.conditions[0].parameters.endowment = 10;
+    design.conditions[0].parameters.multiplier = 1.5;
+    const saved = await request.post("/api/studies", { data: { design } });
+    expect(saved.status()).toBe(201);
+    const sid = (await saved.json()).id;
+    const rid = (await (await request.get(`/api/studies/${sid}`)).json())
+      .runs[0].id;
+    await request.post(`/api/runs/${rid}/control`, {
+      data: { action: "start" },
+    });
+    await expect
+      .poll(
+        async () =>
+          (await (await request.get(`/api/runs/${rid}`)).json()).summary.status,
+      )
+      .toBe("complete");
+    const before = await (await request.get(`/api/runs/${rid}`)).json();
+    expect(before.requests).toHaveLength(0);
+    expect(before.effort.scripted_decisions).toBe(4);
+    await page.addInitScript(
+      (value) => localStorage.setItem("jas-theme", value),
+      theme,
+    );
+    await page.setViewportSize({ width, height: 900 });
+    await page.route("**/api/settings", async (route) => {
+      const settings = await (await route.fetch()).json();
+      await route.fulfill({
+        json: { ...settings, providers: { openai: true } },
+      });
+    });
+    await page.goto(`/agent?context=run:${rid}`);
+    await page
+      .getByLabel("Message Agent", { exact: true })
+      .fill("Describe the recorded utility accurately.");
+    await page
+      .getByRole("button", { name: "Send message", exact: true })
+      .click();
+    const evidence = page.getByRole("region", { name: "Finding evidence" });
+    await expect(
+      evidence.getByText("4 recorded decisions; cumulative utility 50."),
+    ).toBeVisible();
+    await evidence
+      .getByRole("button", { name: "Evidence & claim status", exact: true })
+      .click();
+    await expect(
+      evidence.getByText("Claimed 44 · computed 50", { exact: true }),
+    ).toBeVisible();
+    const after = await (await request.get(`/api/runs/${rid}`)).json();
+    expect(after.effort).toEqual(before.effort);
+    expect(after.state).toEqual(before.state);
+    expect(after.activations).toEqual(before.activations);
+    expect(after.summary.model).toBeNull();
+    expect(after.summary.usage.requests).toBe(2);
+    expect(
+      after.requests.every(
+        (call: {
+          purpose: string;
+          model: string;
+          analysis_id: string | null;
+        }) =>
+          call.purpose === "analysis" &&
+          call.model === "openai:gpt-6.1-sol" &&
+          call.analysis_id !== null,
+      ),
+    ).toBe(true);
+    await page.goto(`/runs/${rid}?tab=record`);
+    await expect(
+      page.getByText("Non-model control", { exact: true }).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        "Run usage includes separately billed analysis. Participant effort below excludes analysis requests.",
+      ),
+    ).toBeVisible();
+    const table = page.getByRole("table").filter({
+      has: page.getByRole("columnheader", { name: "Work", exact: true }),
+    });
+    await expect(table.getByRole("link", { name: /^Analysis / })).toHaveCount(
+      2,
+    );
+    await expect(table.getByText("gpt-6.1-sol", { exact: true })).toHaveCount(
+      2,
+    );
+    await table.getByRole("button").first().focus();
+    await page.keyboard.press("Enter");
+    await expect(
+      page.getByText("Analysis · openai:gpt-6.1-sol · analysis", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth > innerWidth,
+      ),
+    ).toBe(false);
+    await page.screenshot({
+      path: testInfo.outputPath("scripted-analysis-record.png"),
+      fullPage: true,
+    });
+    await writeFile(
+      testInfo.outputPath("before.json"),
+      JSON.stringify(before, null, 2),
+    );
+    await writeFile(
+      testInfo.outputPath("after.json"),
+      JSON.stringify(after, null, 2),
+    );
+  });
+}
