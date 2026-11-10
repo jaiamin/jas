@@ -187,7 +187,7 @@ def test_direct_artifact_read_content_is_bound_to_the_next_actual_request(
         assert any("last_result" in i["source"]["pointer"] for i in row["inputs"])
 
 
-@pytest.mark.parametrize("corruption", ["result", "request"])
+@pytest.mark.parametrize("corruption", ["result", "request", "operation", "kind"])
 def test_replay_checks_rejected_artifact_read_receipts(tmp_path, monkeypatch, corruption):
     from agent_sim.db import ParticipantOperation
     from sqlalchemy import select
@@ -222,6 +222,10 @@ def test_replay_checks_rejected_artifact_read_receipts(tmp_path, monkeypatch, co
             receipt = session.scalars(select(ParticipantOperation)).one()
             if corruption == "result":
                 receipt.result = "Forged rejection"
+            elif corruption == "operation":
+                receipt.request = {**receipt.request, "operation": "decide"}
+            elif corruption == "kind":
+                receipt.kind = "observe"
             else:
                 receipt.request = {
                     **receipt.request,

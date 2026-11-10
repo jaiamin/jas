@@ -338,6 +338,11 @@ class Engine:
                 if observed != activation["observation"]:
                     raise ValueError("Activation observation mismatch")
                 for operation in activation["operations"]:
+                    if (
+                        operation["kind"] == "read_artifact"
+                        or operation["request"].get("operation") == "read_artifact"
+                    ) and operation["request"].get("operation") != operation["kind"]:
+                        raise ValueError("Artifact read operation mismatch")
                     if operation["kind"] == "read_artifact":
                         request = operation["request"]
                         error = None
