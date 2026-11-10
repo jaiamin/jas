@@ -774,7 +774,9 @@ def test_accepted_artifact_world_lens_retains_versions_without_financial_proxy(c
         client.post(
             "/api/chats",
             json={
-                "question": "Describe the recorded artifact work and assess the claimed financial zero.",
+                "question": (
+                    "Describe the recorded artifact work and assess the claimed financial zero."
+                ),
                 "context": f"run:{rid}",
             },
         ),
