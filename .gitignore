@@ -10,6 +10,7 @@ __pycache__/
 *.sqlite3*
 .env
 .env.*
+pbcopy
 !.env.example
 .impeccable/
 data/

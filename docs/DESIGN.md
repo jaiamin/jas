@@ -100,7 +100,7 @@ selected item keeps its full accent on hover. Both are shared semantic tokens.
 Send and New experiment use the primary Button variant. Primary actions use a
 shared blue primary token with a light foreground in both themes; secondary surfaces, muted text,
 borders, focus and destructive states use their corresponding semantic tokens.
-Keep foreground/background pairs together when composing components.
+Keep foreground/background pairs together when composing components. Link variants and inline link hover use the shared accent-foreground token so small blue text remains readable on both themes; filled primary buttons keep their primary foreground/background pair.
 Shared cursor rules give enabled actions, links, labels and portalled menu/select
 items a pointer. Text entry keeps its text cursor; disabled controls are excluded.
 Focus decoration follows input modality throughout the app, including portals:

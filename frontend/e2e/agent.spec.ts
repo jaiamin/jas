@@ -4,9 +4,9 @@ for (const width of [320, 1440]) {
   test(`context selection keeps the composer anchored and clearable · ${width}`, async ({
     page,
     request,
-  }) => {
+  }, testInfo) => {
     const catalog = await (await request.get("/api/catalog")).json();
-    const title = `Cooperation across changing resource constraints and communication rules (${width})`;
+    const title = `Cooperation across changing resource constraints and communication rules (${width}; repeat ${testInfo.repeatEachIndex})`;
     await request.post("/api/studies", {
       data: { design: { ...catalog.templates[0].design, title } },
     });
@@ -18,6 +18,9 @@ for (const width of [320, 1440]) {
     const composer = page
       .getByRole("form", { name: "Agent composer" })
       .locator('[data-slot="input-group"]');
+    await expect(
+      page.getByRole("link", { name: "Configure a provider", exact: true }),
+    ).toBeVisible();
     const initial = await composer.boundingBox();
     await context.click();
     const search = page.getByRole("combobox", {

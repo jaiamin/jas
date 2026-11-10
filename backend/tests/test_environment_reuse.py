@@ -176,7 +176,7 @@ def test_two_questions_and_populations_reuse_pinned_mechanics_without_importing_
             retained = client.get(f"/api/studies/{study['id']}").json()
             assert retained["design"] == study["design"]
             exported = client.get(f"/api/studies/{study['id']}/export").json()
-            assert exported["version"] == 17
+            assert exported["version"] == 18
             assert exported["revisions"][0]["design"]["environment_source"] == saved
             assert exported["rule_versions"] == ["1.0.0"]
             for request in exported["requests"]:

@@ -1,116 +1,63 @@
-# T17 integration review
+# T17 independent integration review
 
-Status: **IN PROGRESS; no acceptance verdict**. ROOT reviews the implementation
-independently from its author, in the assigned integration checkout. Review base
-is accepted46d48d5e615eb22920219df26d42249ca2e5c0e0; candidate checkpoint is
-1a43f175073b8364bad5e2ac9b586323aba873e8. ROOT's subsequent benchmark preparation
-and saved-turn playback remain separate, with their own attributions.
+**Standards PASS; Spec PASS for bounded deterministic DEVELOPMENT.** ROOT reviewed
+and repaired the independent implementation, then qualified the combined UI and
+runtime. Live competence, held-out generation, general semantic understanding and
+power-loss durability remain unverified. Final current contracts are
+DB15/export18/library10/definition2/research-operation2/generation-event-v2.
 
-## Scope and evidence
+## Independent specification and observed failures
 
-Review the explicit generation allowance, frozen finite oracle, actual isolated
-artifact checks/admission, rich-World boundary, private projections, immutable
-sources, linked failed/repair attempts, per-request costs and restart behavior.
-Review Agent author/freeze/authorize/review/save and reconnect/draft behavior
-against docs/DESIGN.md and the T17 specification. Expected load is one local
-workspace,1–12 participants. No provider network, paid, live or held-out work.
+The review used existing externally authored finite contracts and real public
+HTTP/Engine/storage/isolated-worker boundaries. Candidate self-examples were not
+the oracle. It froze real-process interruption points before their first outputs:
 
-The implementer's75 current segmented backend cases,65 affected UI units,
-static/types/build and earlier generation/World witnesses remain attributed to
-their recorded sources. Frozen T01 CURRENT retains its actual four export-v4
-failures/exit1. Fresh current-contract5/22/22 qualification replaces the retired
-historical BEFORE comparison; no reconstructed parity claim is permitted.
-The implementer's browser01 is FAILED on its recorder's mismatched JSON digest
-assumption, before the planned409 request. Its observed draft restoration,
-disabled authorization, pending-proposal inspection and mobile keyboard/overflow
-checks remain separate observations. Zero provider requests; all owned resources
-closed. ROOT will finish a distinct final combined-source browser qualification.
+- After creating a generation origin directory, before publishing its started
+  event: startup raised Missing generation attempt origin at896a4e82.
+- After writing a request-event temporary file, before atomic replacement:
+  restart raised FileExistsError on0001.tmp atcb4dd61c.
+- After terminal journal recovery, before operation reconciliation: the next
+  restart left the operation in_progress at66d0d57a.
 
-## Independent lifecycle probes frozen before output
+Atomic directory publication, unique temporary event names and idempotent terminal
+reconciliation repair those boundaries. Closed event-v2 sequences remain unchanged;
+there is no provider retry, historical-format adapter or cross-store atomicity claim.
+An unpublished .pending directory has no authority to become a public attempt.
 
-1. **Generation origin publication.** Interrupt the real request's attempt
-   initialization before its first started event is committed. Reopening the
-   same current-contract application must succeed, make no new provider request
-   and retain settled preceding requests. An unpublished origin cannot strand
-   the entire workspace. This tests a different boundary from the implementer's
-   already reserved/pending provider crash. No product outcome is observed yet.
-2. **Export reachability correction, before execution.** Further source tracing
-   shows the initially proposed active-generation export cannot arise through
-   supported public calls. Generation is unscoped; analysis-scoped generation is
-   rejected. Only completed supported design plans can become revision provenance,
-   and a closed attempt rejects further events. Do not manufacture database links
-   to claim a race. Instead freeze a public preservation check: while a real
-   generation request is pending, attaching it as a plan or authorizing generation
-   in an existing study must reject without another provider call. Exporting that
-   existing study must contain none of the unscoped attempt's calls/history.
-   Later closed-plan exports retain their existing full-history witnesses.
+Source tracing corrected an unreachable proposed race before execution: supported
+public calls cannot attach an active unscoped generation to study provenance.
+The public preservation check instead confirms that pending attachment/scoped
+authorization reject without another provider call and do not leak into export.
+No manufactured database linkage was used to claim the original scenario.
 
-Use keyless FunctionModel responses, existing external literal contracts and real
-HTTP/Engine/storage/worker boundaries. Candidate self-examples are never the
-oracle. Keep first failures and source identities. Repair only demonstrated
-issues. Jobs use the shared checks.lock,134217728-byte floor and an explicit
-per-job forecast; source selection excludes protected names and symlink ancestors
-before reads, including indirect benchmark captures. Preserve opaque pbcopy,
-protected stash and other-owner data/caches. Final browser/production and the
-whole-product benchmark/8080 gates remain open.
+## Qualification and disposition
 
-Origin probe reproduced the intended restart failure at896a4e82:
-create_app raises Missing generation attempt origin after the real subprocess
-stops immediately following attempt mkdir. The preceding Researcher request is
-settled; generation dispatch has not started. Raw failure retained in
-current/t17-origin-red-01. Before any repair, extend the independently frozen
-probe to interrupt after writing the request event's temporary file, before its
-atomic replace. Both preceding requests must remain settled, the committed
-started-event prefix must stay byte-identical, recovery must retain the700µ
-generation receipt with no candidate, and two reopens must be idempotent and
-construct no provider. The second probe reproduced FileExistsError on0001.tmp
-at cb4dd61c in current/t17-event-red-01, before any production repair.
+At independent backend source7125822b,15 generation/workflow/current-contract cases
+passed, including all three process interruptions, explicit failed-artifact/linked
+repair histories, per-request receipts, cancellation and unknown-usage ceilings.
+The fresh independent5-run/22-turn/22-request oracle passed full serialized inputs,
+checkpoint prefixes, cutoffs, private projections, reopen and zero-call replay.
+Normal checkpointb9c992db retained those repairs; Ruff/global ty and Gitleaks passed.
 
-The minimal repair publishes a new attempt directory only after its started
-event has been written, and uses unique temporary event names. Only the known
-unpublished .pending-<16hex> shape is excluded from the public attempt list.
-Committed event-v2 bytes and hashes remain unchanged; there is no migration,
-provider retry or power-loss/fsync guarantee. Both actual-process probes now
-passed their first post-repair observation (2 cases,14.47s). The complete workflow
-and new public scope/provenance preservation check then passed9 cases at
-eabbb79f, including existing abrupt/graceful recovery and failed/repair exports.
+Final source667070b7 passes13 affected generation/World/current-contract cases,
+including both approved mechanisms, actual-worker consequences, private tool
+projections, explicit repair linkage, crash reconciliation and exact replay.
+Other source-attributed API/current-contract/static/UI groups are in the
+[final verification manifest](FINAL_VERIFICATION.json).
 
-Before another production change, freeze one final restart boundary: interrupt
-recovery immediately after its terminal journal event, before updating the
-analysis operation. The next restart must finish reconciliation, retaining
-the terminal attempt, settled receipt and final source hash without another
-event or provider request. The intended red was observed at66d0d57a in
-current/t17-recovery-commit-red-01: the journal was interrupted but the analysis
-operation still reported in_progress. Recovery now also reconciles already
-interrupted attempts, leaving their closed event sequence untouched. This is
-idempotent reconciliation across the two stores, not an atomic cross-store commit.
+ROOT's actual rendered combined flows cover pending finite inspection and the
+explicit author-contract/authorize-generation path, mobile/desktop, both themes
+and keyboard use. Fresh production image smoke qualifies real containment,
+independent admission, pinned revisions and World restoration/replay. Native
+reopening preserves saved data and requires fresh process-local containment
+qualification before executable replay. Saving/admission does not sample participants.
 
-## Independent backend result
+The implementer's Browser01 remains a failed recorder assertion with409 unreached;
+it is not retrospectively green. ROOT's later observations close the bounded UI
+and runtime gate separately. Earlier fixture/setup/hook/cleanup failures remain
+historical adverse outcomes in the compact reports. Frozen T01 remains exit1 on
+four export-v4 checks; fresh current qualification is not historical parity.
 
-Normal checkpointb9c992db8318b3e470abaf0a5222ea3b163961a5 retains the three
-observed reds and their minimal repairs. At exact source
-7125822be34da9bacb94b13f0e50b1a6d4b06b15e578167ddb04faf818bbc30a:
-
-- All15 generation/workflow/current-contract cases PASS in73.30s. This includes
-  the three actual-process crash boundaries, a public pending-generation
-  provenance/scope/export preservation case, existing failed/repair attempt
-  exports, request/unknown-usage ceilings and abrupt/graceful cancellation.
-- Fresh independent current-contract matrix:5 runs,22 turns,22 fully serialized
-  participant requests,2200 input/1100 output tokens,770 synthetic microdollars,
-  all checkpoint prefixes, cutoffs, exposure, reopen and zero-call replay.
-- Whole prescribed backend/benchmarks/scripts Ruff and global ty PASS. Initial
-  two long-string diagnostics and a fixture method-signature diagnostic remain
-  retained; no production semantics changed in those corrections.
-- The normal commit's source before/after is the same tested7125822b; Gitleaks PASS.
-
-Standards and Spec backend review pass after these repairs. Scope/authority,
-isolated real-worker admission, independent literal oracles, private projections,
-complete immutable pins and per-request reservations were traced end to end.
-The accepted Engine already offloads executable preflight; no redundant dispatch
-repair was made. There is no supported active-generation/study-export race, and
-the public preservation test confirms its rejection boundary instead.
-
-Ticket acceptance remains withheld until final combined UI/browser and runtime
-qualification. Frozen T01's four historical export-v4 failures remain failures;
-this fresh matrix is not historical parity. Live competence, general semantic
-understanding, held-out extension success and power-loss durability are unverified.
+T17 is accepted for its finite deterministic DEVELOPMENT contract. See the
+[final product review](FINAL_PRODUCT_REVIEW.md) for measurements, evidence
+retirement, final app startup and limits. Retired raw paths are not retained proof.

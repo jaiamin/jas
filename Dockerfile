@@ -4,6 +4,7 @@ RUN npm install --global pnpm@12.18.0
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY frontend/ ./
+COPY backend/tests/fixtures/t17_cosigned_escrow_contract.json /backend/tests/fixtures/
 RUN pnpm build
 
 FROM python:3.13-slim-bookworm

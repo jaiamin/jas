@@ -5,7 +5,6 @@ from sqlalchemy import select
 from .db import (
     Analysis,
     Annotation,
-    Condition,
     InvestigationRecord,
     ProviderCall,
     RecordedEvent,
@@ -14,7 +13,6 @@ from .db import (
     Turn,
 )
 from .research import Research, event_dict
-from .simulation.environments import get_environment
 
 
 def export_study(research: Research, study_id: str) -> dict[str, object]:
@@ -29,13 +27,6 @@ def _export_study(research: Research, study_id: str) -> dict[str, object]:
             select(Revision).where(Revision.study_id == study_id).order_by(Revision.number)
         ).all()
         runs = session.scalars(select(Run).where(Run.study_id == study_id)).all()
-        environments = dict(
-            session.execute(
-                select(Condition.id, Revision.design["environment"].as_string())
-                .join(Revision, Condition.revision_id == Revision.id)
-                .where(Revision.study_id == study_id)
-            ).all()
-        )
         plan_ids = [
             r.source.removeprefix("plan:") for r in revisions if r.source.startswith("plan:")
         ]
@@ -79,16 +70,10 @@ def _export_study(research: Research, study_id: str) -> dict[str, object]:
                 "events": grouped_events[turn.run_id, turn.number],
             }
         )
-    initial = {
-        run.id: research.evidence(run.id, 0)
-        for run in runs
-        if run.turn == 0
-        or run.checkpoint["rule_version"]
-        == get_environment(environments[run.condition_id]).world.version
-    }
+    initial = {run.id: research.evidence(run.id, 0) for run in runs}
     return {
         "format": "jas-study",
-        "version": 17,
+        "version": 18,
         "extension_generations": [
             attempt
             for attempt in research.extensions.generations.list()
@@ -181,8 +166,7 @@ def _export_study(research: Research, study_id: str) -> dict[str, object]:
         "runs": [
             {
                 "record": research.run(r.id),
-                "initial_state_available": r.id in initial,
-                "evidence": ([initial[r.id]] if r.id in initial else []) + grouped_turns[r.id],
+                "evidence": [initial[r.id], *grouped_turns[r.id]],
             }
             for r in runs
         ],

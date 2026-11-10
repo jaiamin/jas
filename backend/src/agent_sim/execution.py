@@ -26,7 +26,6 @@ from .llm import LanguageModels, ProviderFailure
 from .participants import Activation
 from .participants import operations as activation_record_operations
 from .research import Research
-from .simulation.environments import get_environment
 
 
 @dataclass
@@ -115,8 +114,6 @@ class Engine:
                 ):
                     raise InvestigationStopped("interrupted_turn_requires_new_attempt")
         self.research.check_run(run_id)
-        if run.checkpoint.get("rule_version") != get_environment(design.environment).world.version:
-            raise ValueError("This saved run requires a different environment rule version")
         if condition.harness.kind != "scripted":
             for model in {p.model or condition.model for p in design.profiles}:
                 self.models.model(model)

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import TypedDict
 
 from sqlalchemy import delete, or_, select, update
+from sqlalchemy.orm import defer
 
 from .comparisons import ComparisonRun, compare_runs, empty_effort
 from .db import (
@@ -157,9 +158,7 @@ class Research:
     @staticmethod
     def validate_design(design: Design) -> None:
         if any(
-            c.parameters.artifacts
-            and c.parameters.artifacts.judgment
-            and c.adjudicator is None
+            c.parameters.artifacts and c.parameters.artifacts.judgment and c.adjudicator is None
             for c in design.conditions
         ):
             raise ValueError("Declare the adjudicator model/configuration before execution")
@@ -376,7 +375,13 @@ class Research:
             condition = session.get_one(Condition, run.condition_id)
             revision = session.get_one(Revision, condition.revision_id)
             treatment = Treatment.model_validate(condition.specification)
-            return run, Design.model_validate(revision.design).resolve(treatment), treatment
+            design = Design.model_validate(revision.design).resolve(treatment)
+            if (
+                run.checkpoint.get("rule_version")
+                != get_environment(design.environment).world.version
+            ):
+                raise ValueError("Saved rule version is incompatible; create a fresh experiment")
+            return run, design, treatment
 
     def run_summary(
         self,
@@ -553,28 +558,14 @@ class Research:
             revision.source.removeprefix("plan:") if revision.source.startswith("plan:") else None,
         )
         with self.db.session() as session:
-            versions = session.execute(
-                select(Run.status, Run.checkpoint["rule_version"].as_string())
+            versions = session.scalars(
+                select(Run.checkpoint["rule_version"].as_string())
                 .join(Condition, Run.condition_id == Condition.id)
                 .where(Condition.revision_id == revision.id)
             ).all()
         current_version = get_environment(revision.design["environment"]).world.version
-        incompatible = [
-            (status, version) for status, version in versions if version != current_version
-        ]
-        if incompatible:
-            blocked = any(status != "complete" for status, _ in incompatible)
-            check["issues"].append(
-                {
-                    "code": "historical_rules",
-                    "severity": "error" if blocked else "warning",
-                    "message": "Saved runs use a different rule version. Evidence stays readable; "
-                    "replay/resume requires its original engine. "
-                    "Save a new revision for current rules. "
-                    "The mechanical checks below use current rules.",
-                }
-            )
-            check["status"] = "blocked" if blocked or check["status"] == "blocked" else "review"
+        if any(version != current_version for version in versions):
+            raise ValueError("Saved rule version is incompatible; create a fresh experiment")
         return {
             "id": study_id,
             "design": revision.design,
@@ -604,10 +595,14 @@ class Research:
             calls = session.scalars(
                 select(ProviderCall)
                 .where(ProviderCall.run_id == run_id)
+                .options(defer(ProviderCall.request_payload), defer(ProviderCall.response_payload))
                 .order_by(ProviderCall.created)
             ).all()
             turns = session.scalars(
-                select(Turn).where(Turn.run_id == run_id).order_by(Turn.number)
+                select(Turn)
+                .where(Turn.run_id == run_id)
+                .options(defer(Turn.observation), defer(Turn.checkpoint))
+                .order_by(Turn.number)
             ).all()
             events = session.scalars(
                 select(RecordedEvent)
@@ -618,12 +613,7 @@ class Research:
                 select(Measurement).where(Measurement.run_id == run_id).order_by(Measurement.id)
             ).all()
         blocked = None
-        if run.checkpoint["rule_version"] != get_environment(design.environment).world.version:
-            blocked = (
-                "Saved rules differ from this engine. Inspect evidence or save a new revision; "
-                "this run cannot resume or replay here."
-            )
-        elif design.environment in {"sealed_relay", "reviewed_finite"}:
+        if design.environment in {"sealed_relay", "reviewed_finite"}:
             assert design.environment_source and design.environment_source.definition.extension
             try:
                 self.extensions.check_runtime(design.environment_source.definition.extension)
@@ -636,9 +626,9 @@ class Research:
             "harness": condition.harness.model_dump(),
             "activations": self.activations(run_id),
             "effort": self.participant_effort({run_id: run.turn + 1})[run_id],
-            "next_actor": self.world(design, condition.parameters, run.seed, run.checkpoint).actor()
-            if run.checkpoint["rule_version"] == get_environment(design.environment).world.version
-            else None,
+            "next_actor": self.world(
+                design, condition.parameters, run.seed, run.checkpoint
+            ).actor(),
             "execution_blocked": blocked,
             "requests": [
                 {
@@ -791,14 +781,6 @@ class Research:
             if number == 0:
                 if run.turn == 0:
                     checkpoint = run.checkpoint
-                elif (
-                    run.checkpoint["rule_version"]
-                    != get_environment(design.environment).world.version
-                ):
-                    raise ValueError(
-                        "Initial state cannot be reconstructed with different rules; "
-                        "inspect recorded turns"
-                    )
                 else:
                     checkpoint = self.world(design, condition.parameters, run.seed).snapshot()
                 return {
@@ -898,14 +880,20 @@ class Research:
         charges = dict.fromkeys(through_turns, 0)
         with self.db.session() as session:
             activations = session.scalars(
-                select(ParticipantActivation).where(ParticipantActivation.run_id.in_(through_turns))
+                select(ParticipantActivation)
+                .where(ParticipantActivation.run_id.in_(through_turns))
+                .options(defer(ParticipantActivation.observation))
             ).all()
             allowed = {a.id: a for a in activations if a.turn <= through_turns[a.run_id]}
             journal = session.scalars(
-                select(ParticipantOperation).where(ParticipantOperation.activation_id.in_(allowed))
+                select(ParticipantOperation)
+                .where(ParticipantOperation.activation_id.in_(allowed))
+                .options(defer(ParticipantOperation.request), defer(ParticipantOperation.result))
             ).all()
             calls = session.scalars(
-                select(ProviderCall).where(ProviderCall.activation_id.in_(allowed))
+                select(ProviderCall)
+                .where(ProviderCall.activation_id.in_(allowed))
+                .options(defer(ProviderCall.request_payload), defer(ProviderCall.response_payload))
             ).all()
         for activation in allowed.values():
             effort = result[activation.run_id]

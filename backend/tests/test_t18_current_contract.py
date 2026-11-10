@@ -22,7 +22,7 @@ from test_fallible_adjudication import finished
 from benchmarks.research_baseline import design_for
 
 ROOT = Path(__file__).absolute().parents[2]
-REFERENCE = ROOT / "backend/tests/fixtures/t18-current-contract-v5.json"
+REFERENCE = ROOT / "backend/tests/fixtures/current-contract.json"
 
 
 def api(client, method, path, body=None):

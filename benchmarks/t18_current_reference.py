@@ -5,12 +5,12 @@ Run before candidate execution to freeze literal inputs, actions and evidence.
 This is a new current-contract reference, not recovered historical evidence.
 """
 
+import argparse
 import copy
 import hashlib
 import json
 import math
 import random
-import sys
 from pathlib import Path
 
 INSTRUCTIONS = """You are one participant in a rule-governed simulation.
@@ -478,15 +478,15 @@ def build_run(environment, seed, count, rounds, public=False):
 
 
 def freeze():
-    return {
-        "version": 1,
+    value = {
+        "version": 6,
         "split": "DEVELOPMENT",
         "historical_comparison": False,
         "authorship": (
             "Independent stdlib contract arithmetic before candidate outputs; no JAS imports."
         ),
         "limits": "Finite scripted correctness only; no live accuracy or generic competence.",
-        "contracts": {"database": 12, "export": 13, "library": 8},
+        "contracts": {"database": 15, "export": 18, "library": 10},
         "totals": {
             "runs": 5,
             "turns": 22,
@@ -505,31 +505,6 @@ def freeze():
         ],
     }
 
-
-def provider_envelope(value):
-    """Explicit v2 amendment: only Pydantic AI's instruction-strip envelope."""
-    value = copy.deepcopy(value)
-    value["version"] = 2
-    value["amendment"] = (
-        "Pydantic AI _instructions.py _add_instruction_text strips instruction "
-        "outer whitespace before FunctionModel; raw persisted request and "
-        "reservation still use the original complete string."
-    )
-    for run in value["runs"]:
-        for turn in run["turns"]:
-            turn["provider_instructions"] = turn["request"]["instructions"].strip()
-    return value
-
-
-def provider_schema_envelope(value):
-    """Explicit v3: GenerateToolJsonSchema removes property titles recursively."""
-    value = provider_envelope(value)
-    value["version"] = 3
-    value["schema_amendment"] = (
-        "Pydantic AI tools.GenerateToolJsonSchema._named_required_fields_schema "
-        "removes only property titles; raw ledger schema remains unchanged."
-    )
-
     def strip_property_titles(node):
         if isinstance(node, dict):
             for field in node.get("properties", {}).values():
@@ -542,6 +517,7 @@ def provider_schema_envelope(value):
 
     for run in value["runs"]:
         for turn in run["turns"]:
+            turn["provider_instructions"] = turn["request"]["instructions"].strip()
             schema = copy.deepcopy(turn["request"]["schema"])
             strip_property_titles(schema)
             turn["provider_tool"] = {
@@ -553,27 +529,8 @@ def provider_schema_envelope(value):
     return value
 
 
-def combined_contract_envelope(value):
-    """Explicit v4: accepted T12 plus T18 has a distinct persisted contract."""
-    value = provider_schema_envelope(value)
-    value["version"] = 4
-    value["combined_contract_amendment"] = (
-        "Accepted T12 and T18 separately used database12/export13/library8. "
-        "Their combined meaning is database13/export14/library9. All literal "
-        "neutral-world inputs/actions/evidence/checkpoints/privacy/cutoffs and "
-        "integer ledgers are unchanged from v3; this is fresh qualification."
-    )
-    value["contracts"] = {"database": 13, "export": 14, "library": 9}
-    return value
-
-
 if __name__ == "__main__":
-    with Path(sys.argv[1]).open("x") as output:
-        value = freeze()
-        if sys.argv[2:] == ["--provider-envelope"]:
-            value = provider_envelope(value)
-        elif sys.argv[2:] == ["--provider-schema-envelope"]:
-            value = provider_schema_envelope(value)
-        elif sys.argv[2:] == ["--combined-contract-envelope"]:
-            value = combined_contract_envelope(value)
-        output.write(json.dumps(value, indent=2) + "\n")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("output", type=Path)
+    with parser.parse_args().output.open("x") as output:
+        output.write(json.dumps(freeze(), indent=2) + "\n")

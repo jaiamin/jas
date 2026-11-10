@@ -24,10 +24,7 @@ SELECT = (
     "backend/tests/test_research_baseline.py",
     "backend/tests/test_t18_current_contract.py",
     "backend/tests/test_t18_snapshot_guard.py",
-    "backend/tests/fixtures/t18-current-contract.json",
-    "backend/tests/fixtures/t18-current-contract-v2.json",
-    "backend/tests/fixtures/t18-current-contract-v3.json",
-    "backend/tests/fixtures/t18-current-contract-v4.json",
+    "backend/tests/fixtures/current-contract.json",
     "pyproject.toml",
     "uv.lock",
 )

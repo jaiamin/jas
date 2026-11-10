@@ -6,7 +6,7 @@ from pydantic_ai import models
 from test_fallible_adjudication import protocol
 
 
-def test_combined_adjudication_export_is_version17_without_spending(tmp_path, monkeypatch):
+def test_combined_adjudication_export_is_version18_without_spending(tmp_path, monkeypatch):
     monkeypatch.setattr(models, "ALLOW_MODEL_REQUESTS", False)
     app = create_app(f"sqlite:///{tmp_path}/combined.sqlite3", static_dir=tmp_path / "static")
     with TestClient(app, base_url="http://localhost") as client:
@@ -14,7 +14,7 @@ def test_combined_adjudication_export_is_version17_without_spending(tmp_path, mo
         assert saved.status_code == 201, saved.text
         exported = client.get(f"/api/studies/{saved.json()['id']}/export")
         assert exported.status_code == 200, exported.text
-        assert exported.json()["version"] == 17
+        assert exported.json()["version"] == 18
         assert exported.json()["requests"] == []
         assert client.get("/api/settings").json()["usage"]["cost_usd"] == 0
 

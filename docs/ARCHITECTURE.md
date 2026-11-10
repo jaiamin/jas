@@ -204,7 +204,7 @@ participants, roles, conditions, opportunity-based horizon/stopping, replication
 Material clarification keeps the same conversation without an executable proposal. Unsupported
 questions retain their original text and may offer explicitly narrower installed alternatives.
 These planning additions are research artifacts. The combined current contract is
-DB15/export17/capture1/comparison1/library10/tool2.0/direct1.0. Installed
+DB15/export18/capture1/comparison1/library10/tool2.0/direct1.0. Installed
 three-participant distributed coordination includes phase/conflict rules and logical addressed
 mail; solo artifact investigation remains sequential. A decline whose direct requirements and
 population have an installed example witness receives a bounded, recorded scoping recheck.
@@ -246,7 +246,8 @@ checkpoint initialization, legal-action schema capabilities and derived environm
 `decisions.py` builds schemas from those capabilities without selecting environments.
 `checkpoints.py` declares shared observations/actions and each world's state. Snapshots
 contain only that world's state. Institution uses rule version 4.1.0; artifact
-investigation uses 2.0.0; composition, distributed coordination and reliance commitments use 1.0.0;
+investigation uses 2.0.0; composition and distributed coordination use 1.0.0;
+reliance commitments use 1.0.1;
 the other controlled worlds use 4.0.0. Incompatible
 checkpoints fail explicitly. `environments.py` contains the catalog and three games;
 `mechanisms.py` implements four fixed worlds; `composed.py` interprets resource compositions;
@@ -254,10 +255,9 @@ checkpoints fail explicitly. `environments.py` contains the catalog and three ga
 seam for three-person choice tasks. `reliance.py` adds four-person voluntary
 commitments through the same settlement, artifact and logical-time seams.
 Reliance rule1.0.1 checks promise feasibility against the currently scheduled
-future decision slots, including the exclusive deadline. Earlier rule1.0.0
-checkpoints require their original engine for replay/resume; no conversion is
-performed. This rule fix itself does not advance persistence formats; the combined
-T12/T18 contract remains DB13/export14/library10.
+future decision slots, including the exclusive deadline. Incompatible rule
+checkpoints are rejected on inspection, export, execution and replay.
+The current combined contract is DB15/export18/library10.
 The promise-time forecast assumes the current schedule; later withdrawals can
 change that cadence. A recorded actual fulfillment opportunity establishes
 feasibility for settlement even when the original schedule forecast was false.
@@ -321,7 +321,7 @@ structural object/requirement edits also use the existing JSON editor. The revie
 shows requirements and ACLs; the run view links versions and terminal results to
 recorded turns. Reusable mechanics extract/rebind ACL roles and retain complete
 immutable source snapshots, independently of population, model, harness and memory.
-DB15, export17, comparison1 and `jas-environment-v10`/definition2 are the current contract.
+DB15, export18, comparison1 and `jas-environment-v10`/definition2 are the current contract.
 Older database/library versions fail explicitly; preserve them with their source.
 No migration, compatibility reader or reset is performed. Controlled-world rules
 remain unchanged. Generated execution uses its separate admission profile.
@@ -495,24 +495,19 @@ provider request confirms input inclusion, separately from availability or inten
 Frozen analysis lenses recompute nonfinancial reliance value/eligibility while
 financial utility remains null; Sol analysis is separately billed from Luna work.
 
-T11 introduced DB9/export10/library6 for typed commitment parameters. The current
-combined contract is DB15/export17/library10/definition2 for those mechanics,
-T16 admitted packages, T14 durable investigation authorization/nested request
-ownership, accepted T12 institutional workflow and T17 externally reviewed finite
-packages/generation authorization,
-including canonical designs/mechanics hashes. Accepted T12 DB12/export13/library8
-and T17-only DB13/export15/library8 have incompatible intermediate meanings;
-earlier T17-only DB11/12 and export12/13 are also incompatible. Older persisted formats
-are explicitly rejected with no compatibility reader, migration or reset.
-T10's three-participant rule version and all controlled/solo consequences remain
-unchanged. Capture1/comparison1/tool2.0/direct1.0 remain current. T11 itself adds no
-institution, parallel engine, semantic judge or inferred intent mechanism.
+The current contract is DB15/export18/library10/definition2, with
+research-operation2 and generation-event-v2. It includes typed commitments,
+admitted packages, durable investigation ownership, institutional workflow,
+externally reviewed finite generation and declared fallible adjudication.
+Incompatible persisted meanings are rejected without a compatibility reader,
+migration or reset. Capture1/comparison1/tool2.0/direct1.0 remain current.
 
 ## Institutional workflow (T12 accepted finite DEVELOPMENT)
 
 The [independent T12 integration review](research/T12_INTEGRATION_REVIEW.md) accepts
 its deterministic DEVELOPMENT scope, including delivered-message/handoff/acceptance
-interaction inspection. T17 combined-source and final-product qualification remain separate.
+interaction inspection. The [final review](research/FINAL_PRODUCT_REVIEW.md)
+records combined-source browser/runtime qualification and its limits.
 
 `institutional_workflow` extends the existing artifact World for6–12 participants.
 Typed work items bind one artifact to declared workers, material cost, duration,
@@ -542,10 +537,7 @@ passes export/reopen/zero-call replay and distinct local World restoration. It i
 not non-root-container or live-competence qualification. Independent integration
 review accepted its finite DEVELOPMENT scope; see the
 [integration review](research/T12_INTEGRATION_REVIEW.md).
-See the [T12 plan](research/T12_INSTITUTIONAL_WORKFLOW.md). T12 introduced
-DB12/export13/library8. The current DB15/export17/library10 combines that typed
-mechanics contract with T14 investigation ownership and T17 finite generation.
-The incompatible intermediate contracts are rejected without conversion.
+See the [T12 plan](research/T12_INSTITUTIONAL_WORKFLOW.md).
 
 ### Playback, consequence replay, restoration and sampling
 
@@ -753,7 +745,7 @@ receipt establishes inclusion; pending proposals and queued mail cannot supply i
 Applying a different lens changes its
 requirements/account without rewriting the source analysis. Unsupported lens
 versions are rejected without conversion; historical analyses without a lens
-remain unassessed and cannot supply lens inputs. Database15/export17/capture1/
+remain unassessed and cannot supply lens inputs. Database15/export18/capture1/
 comparison1/libraryv10 and harness contracts retain the analysis lens meanings;
 the combined persistence change provides no migration or reset.
 
@@ -820,7 +812,7 @@ the experiment adapts those examples. Editing/deleting a reusable environment ne
 or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
 12 recent definitions as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
-call or run. Database schema15, export17 and libraryv10 reject incompatible versions explicitly; there is
+call or run. Database schema15, export18 and libraryv10 reject incompatible versions explicitly; there is
 no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 ### Failure-aware comparisons (T06)
@@ -908,7 +900,7 @@ exposure chain and frozen analysis artifacts alongside artifact work. T09 advanc
 the database to schema 7; T10 extends the typed mechanics contract to schema 8;
 T11 adds typed commitments in schema 9; T16 advances it to schema 10 for pinned
 executable packages; T14 advances it to schema11 for investigation ownership;
-The combined schema15/export17/library10 retains T12 typed institutional workflow
+The combined schema15/export18/library10 retains T12 typed institutional workflow
 alongside T17 external finite generation authorization and per-question
 request/candidate/charge counters. Intermediate T12 and T17 schemas
 are rejected explicitly and are not reinterpreted as the combined schema.

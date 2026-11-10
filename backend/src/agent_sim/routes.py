@@ -527,9 +527,10 @@ async def runs(study_id: str | None = None, *, research: ResearchDep) -> list[Ru
     return research.runs(study_id)
 
 
-@router.get("/api/runs/{run_id}")
-async def get_run(run_id: str, *, research: ResearchDep) -> dict[str, Any]:
-    return research.run(run_id)
+@router.get("/api/runs/{run_id}", response_model=dict[str, Any])
+def get_run(run_id: str, *, research: ResearchDep) -> JSONResponse:
+    with research.db.read_snapshot():
+        return JSONResponse(research.run(run_id))
 
 
 @router.get("/api/runs/{run_id}/exposure")

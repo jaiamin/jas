@@ -531,7 +531,7 @@ def test_cosigned_escrow_retains_external_failure_receipt_before_explicit_repair
         exported = client.get(f"/api/studies/{saved.json()['id']}/export").json()
         # Next intended RED: executable failure/repair history is not exported.
         assert exported["extension_generations"] == records
-        assert exported["version"] == 17
+        assert exported["version"] == 18
         analysis = next(a for a in exported["analyses"] if a["id"] == key)
         assert analysis["generation"] == {
             "authorization": row["generation"]["authorization"],

@@ -199,7 +199,7 @@ def test_judge_commit_cannot_cross_an_active_export_snapshot(tmp_path, monkeypat
         assert client.post(f"/api/runs/{rid}/control", json={"action": "start"}).status_code == 200
         assert entered.wait(8), "The actual adjudication was never dispatched"
         prior = client.get(f"/api/studies/{sid}/export").json()
-        assert prior["version"] == 17
+        assert prior["version"] == 18
         assert prior["runs"][0]["record"]["summary"]["turn"] == 1
         assert len(prior["requests"]) == 3
         pending = next(r for r in prior["requests"] if r["purpose"] == "adjudication")
