@@ -1,3 +1,21 @@
+# T17 accepted ROOT46 isolated build boundary (2026-11-10)
+
+Normal merge74a87c03 includes exact accepted46d48d5e, no conflict, hooks PASS.
+Current combined contracts remain DB14/export16/library9, reliance1.0.1/T12
+interactions preserved. Sourcef1c3999c passes65 affected units/10 files, lint243,
+forced TypeScript and ONE fresh isolated normal-manager build. Its backend/case
+inputs equal the75-case/current5/22/22/Ruff sourceeacc1f0b and globalty7aa35a00;
+the unchanged frozen T01 CURRENT keeps four export-v4 failures/false flags/exit1.
+No retired comparator, historical parity or live-competence claim.
+
+Backend64.89MB/64MiB and frontend7.75MB/16MiB before documentary closure. Full
+source/case/build/evidence/restoration attribution is under root46-boundary-audit-01
+in own ignored evidence. Every failure/map retained; no other-owner/cache changes.
+T17 incomplete/UNACCEPTED. Browser proposal: existing build/headless shell,18129,
+own DB,<=8MiB additional frontend evidence,256MiB peak+floor, entry402653184.
+Actual public UI lifecycle and fresh non-root production/NEW integration review
+remain pending; browser/services/providers/live/paid/held-out remain HELD.
+
 # T17 accepted ROOT370 source integration (2026-11-10)
 
 Normal exact370f835b merge4de116d9 follows clean4ed2f589; one HANDOFF conflict

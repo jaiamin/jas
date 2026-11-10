@@ -2219,3 +2219,57 @@ install/download/cache consumer. Frontend currently4,434,075 bytes of16MiB,
 leaving room for those measured small logs and expected~3MiB assets. Preserve
 the first build outcome; no automatic retry, floor reduction or weakened check.
 Actual browser/services/production/provider/live/paid/held-out remain HELD.
+
+## Accepted ROOT46 isolated build boundary (2026-11-10)
+
+Normal documentary checkpointa31ae751dd846935d0b4fa7ea181b0b2f19371ed and
+normal merge74a87c03a91ed83ee4f6d15b77db2d27ebc29e43 pass Gitleaks. Merge's
+second parent is exactly46d48d5e615eb22920219df26d42249ca2e5c0e0; no conflict.
+All accepted changes and both histories remain. Current DB14/export16/library9/
+definition2/research2/generationv2 and reliance1.0.1/T12 interaction meaning stay.
+
+Exact application/test source for the following is
+`f1c3999cc734cc618d1b5d4f4bdec244d5550014087ff72b7aa2d1f707abe875`:
+
+| Attempt | Observed result |
+| --- | --- |
+| `root46-affected-shell-unit-01` | PASS65/10 files; actual-shell generation/finite cases plus affected isolated editor/reply/renderer/progress/design cases |
+| `root46-frontend-lint-01` | PASS;243 files, no fixes |
+| `root46-frontend-types-01` | PASS; forced global TypeScript |
+| `root46-isolated-build-01` | PASS; ONE normal pnpm12.18 run build with fresh distinct own output; tsc and Vite complete, source unchanged |
+
+Every job separately acquired/released flock and entered at>=268435456, preserving
+the ordinary134217728 floor plus128MiB forecast. Build entered360,550,400 and
+finished355,274,752 shared/unreserved;3,042,325 additional retained bytes including
+assets/log/receipts before its final receipt, within4MiB forecast. Frontend
+7,745,730 bytes before final receipt remains below16MiB. No install/download,
+new coordinated-cache consumer, provider, service or browser was started. The
+frontend uses existing distinct private modules and private normal-manager
+metadata; no immutable shared store, owner cache or other checkout was changed.
+
+Backend code/test/case inputs are unchanged from eacc1f0b's75-case/current5/22/22/
+Ruff qualification and7aa35a00's globalty pass. The original T01 CURRENT record
+keeps its exact eacc source/four failures/exit1; no redundant rerun or historical
+comparison is claimed for this Markdown/documentary merge. Earlier74 backend
+cases stay attributed to e19ee690. Final documentary source equality, original
+runner/case identities, build assets, all owned ignored outputs and independent
+restoration verification are frozen in the bounded root46-boundary-audit-01
+source/summary/inventory/proof receipts. Exclude that open attempt and later
+checkpoint explicitly; this is a stage inventory, not final ticket closure.
+
+Next browser proposal, still HELD: reuse these built assets and existing private
+env/headless shell (PLAYWRIGHT_BROWSERS_PATH=/home/agent/.cache/ms-playwright),
+fresh own database and port18129, no install or browser download. Keep correct
+Sol/Luna identities with keyless scripted provider-bound responses through the
+actual app/accounting/worker. The literal independent contracts stay immutable.
+Exercise public author/freeze/explicit generation, retained failure/explicit
+repair/admission, pending review/edit/save without sampling, then distinct
+authorized participant execution/evidence/export/replay. Check390/1440, both
+themes, keyboard/focus, draft/navigation/late-response isolation and reconnect
+without resubmission. Forecast<=8MiB NEW retained output within remaining frontend
+16MiB;256MiB incremental disk peak+134217728 floor => entry402653184, unchanged
+from the earlier browser proposal. Latest shared free is below that proposal;
+no service/browser starts without ROOT's explicit staged release. Fresh non-root
+production containment/admission/Engine/replay still needs its own later release.
+No paid/live/held-out qualification, reset, publication, descendants or additional
+checkout. T17 remains INCOMPLETE/UNACCEPTED and requires a NEW integration reviewer.

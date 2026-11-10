@@ -1,3 +1,30 @@
+# T17 accepted ROOT46 build boundary (2026-11-10)
+
+Normal merge74a87c03a91ed83ee4f6d15b77db2d27ebc29e43 includes exact accepted
+46d48d5e615eb22920219df26d42249ca2e5c0e0, without conflict, after normal
+checkpointa31ae751. Both hooks/Gitleaks pass. Current DB14/export16/library9/
+definition2/research2/generationv2, reliance1.0.1 and accepted T12 interactions
+remain, without alias/migration/reset or provisional sibling source.
+
+At sourcef1c3999cc734cc618d1b5d4f4bdec244d5550014087ff72b7aa2d1f707abe875:
+65 affected frontend units/10 files, lint243, forced types and ONE isolated
+normal-manager build PASS. Fresh own assets are in .tools/t17/frontend-evidence/
+attempts/root46-isolated-build-01/dist. Backend inputs equal the qualified75-case/
+literal5/22/22/Ruff sourceeacc1f0b and globalty source7aa35a00; only frontend/docs
+changed. Frozen T01 CURRENT retains four export-v4 failures/false flags/exit1;
+there is no retired historical comparison. Earlier74-case source remains e19ee690.
+
+Frontend7.75MB/16MiB, backend64.89MB/64MiB before final documentary inventory.
+The independent source/case/restoration/build manifest is recorded in
+.tools/t17/evidence/attempts/root46-boundary-audit-01/summary.json; its open
+attempt and later checkpoint are explicit additions, not a ticket closure seal.
+All failed attempts/maps remain. No own service/browser/container/lock is active.
+T17 is INCOMPLETE/UNACCEPTED; actual browser/public lifecycle and fresh non-root
+production plus NEW independent integration review remain pending. Proposed
+browser: existing build/headless shell/private deps,18129/own DB,<=8MiB new
+evidence within frontend16MiB,256MiB peak+floor, entry402653184. No install,
+provider/live/paid/held-out work or publication; browser/services remain HELD.
+
 # T17 accepted ROOT370 integration boundary (2026-11-10)
 
 Exact accepted370f835b45bdc7172de5c719aae1ffa1e185b3f5 was normally merged
