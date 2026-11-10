@@ -38,7 +38,7 @@ def claim_client(tmp_path, monkeypatch, request):
                     "answer": controls["answer"],
                     "citations": [{"run_id": rid, "turn": 1}],
                     "caveats": ["One fixed seed does not establish independent support."],
-                    "claims": [{
+                    "claims": controls["claims"](prompt, rid) if "claims" in controls else [{
                         "kind": "calculation", "text": controls["answer"],
                         "calculation_id": f"run:{rid}:total_utility",
                         "value": controls["value"], "scope": "captured_run",
@@ -152,3 +152,40 @@ def test_inspected_citation_cannot_validate_invented_total(claim_client, design)
     assert calculation["value"] == 44 and calculation["scope"] == "captured_run"
     assert source(client.get(f"/api/studies/{sid}/export").json()) == before
     assert final["usage"]["requests"] == 2
+
+
+@pytest.mark.parametrize("asserted,expected", [(-1, "contradicted"), (1, "checked")])
+def test_condition_contrast_is_recomputed_in_declared_direction(
+    claim_client, design, asserted, expected,
+):
+    client, controls, _ = claim_client
+    value = design.model_dump()
+    value.update(rounds=1, seeds=[7], profiles=value["profiles"][:2])
+    first = value["conditions"][0]
+    first["parameters"].update(endowment=10, multiplier=1.5)
+    value["conditions"].append({**first, "key": "treatment", "name": "Treatment"})
+    sid = client.post("/api/studies", json={"design": value}).json()["id"]
+    study = client.get(f"/api/studies/{sid}").json()
+    for record in study["runs"]:
+        controls["amount"] = 10 if record["condition_key"] == "treatment" else 0
+        assert run(client, record["id"])["status"] == "complete"
+
+    def claims(prompt, _rid):
+        revision = next(iter(prompt["index"]["comparisons"]))
+        return [{"kind": "calculation", "text": "Treatment minus baseline contribution rate.",
+                 "calculation_id": f"contrast:{revision}:treatment:contribution_rate",
+                 "value": asserted, "scope": "observed_pairs"}]
+
+    controls["claims"] = claims
+    final = finish(client, client.post("/api/chats", json={
+        "question": "What was treatment minus baseline?", "context": f"study:{sid}",
+    }))
+    assert final["status"] == "complete", final
+    result = final["output"]["support"]["claims"][0]
+    assert result["status"] == expected and result["computed"] == 1
+    calculation = next(c for c in final["output"]["lens"]["calculations"]
+                       if c["id"] == result["calculation_id"])
+    assert calculation["inputs"]["condition_key"] == "treatment"
+    assert calculation["inputs"]["baseline_key"] == first["key"]
+    assert calculation["coverage"] == {"pairs": 1, "planned_pairs": 1, "seed_clusters": 1}
+    assert final["output"]["support"]["prose_status"] == "unassessed"
