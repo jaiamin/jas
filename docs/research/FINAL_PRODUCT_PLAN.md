@@ -38,9 +38,20 @@ fresh workspace running on port 8080 for manual testing.
 - [x] Recover storage from ROOT's closed historical output; release bounded child work.
 - [x] Reproduce/fix mobile composer CI failure; 10 repeated cases, all three
   suggestions cases, lint and forced TypeScript passed. Published at `a4ed8743`.
+- [x] Correct the overstated navigation finding: remove redundant mutation keys
+  and verify pending controls/late responses through the existing workspace shell.
+  13 focused tests, lint/types/clean build and mobile-light/desktop-dark browser
+  checks pass. The isolated-page failures were not whole-app defect evidence.
 - [ ] Complete remaining ticket graph with staged, measured resource allowances.
 - [ ] Review and refine the full UI/UX using `docs/DESIGN.md` and browser evidence.
+  Experiment Overview now leads with results/progress and keeps complete evidence
+  in one closed disclosure.118 units, lint/types/clean build, nine affected browser
+  cases and default-view desktop-light/mobile-dark inspection pass. Full combined
+  workflow review remains open.
 - [ ] Complete end-to-end code review, relevant checks and meaningful benchmarks.
+  The analysis cutoff race has observed HTTP red→green; a separate in-flight
+  capture preservation case and99 affected cases/Ruff/ty pass. Combined-source
+  review and measurements remain open.
 - [ ] Summarize final evidence, remove obsolete records and start port 8080.
 
 Operational constraints: preserve protected original clipboard/configuration

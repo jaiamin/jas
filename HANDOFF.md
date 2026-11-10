@@ -35,6 +35,32 @@ reference is used.
 
 # Current user direction and evidence retirement (2026-11-10)
 
+ROOT independently reproduced and fixed an analysis cutoff race: turn1 analysis
+could capture turn2 exposure after a concurrent step. Explicit cutoff propagation
+passes the same public HTTP witness; a separate in-flight input/settlement/export
+preservation case passes first observation.99 affected cases in two segmented
+jobs, Ruff and ty pass at31ee798a source. No provider spending; contracts remain
+DB11/export12/library7. See current/analysis-capture-* and the quality review.
+
+ROOT's usability refinement makes Experiment Overview lead with results
+or progress; full comparison/exposure stays in a closed stock disclosure.118
+units/33files, lint228, forced types/clean build, nine affected browser cases and
+default1440px-light/390px-dark visual review pass at43d7dac4 source. All evidence
+assertions remain; no provider work or red→green bug claim. Own18228/tab are
+closed and lock released. Published UI frontier is8329cfc7;
+T12/T17/T18 remain separate and incomplete. The cutoff repair above supersedes
+the earlier unproven finding; whole-product review and final acceptance stay open.
+
+Current ROOT quality pass corrects a mistaken navigation diagnosis at `dd48bf31`:
+the isolated tests omitted `WorkspaceShell`, which already remounts record pages.
+The redundant mutation keys are removed; the new tests now use the actual shell.
+No whole-app red→green product repair is claimed. Corrected-source13 focused
+tests/lint/forced types/clean build and390px-light/1440px-dark rendered checks pass.
+The post-shutdown plain-bind helper failed; separate listener/reuse-address
+reconciliation passed. See the [quality review](docs/research/FINAL_CODE_QUALITY_REVIEW.md).
+Owned18228/tab are closed; ROOT retains sole tracked writing. T12 frontend is
+released under measured private-cache setup/bounded checks; production held.
+
 ROOT owns tracked writing at published accepted `e76ef124`. Continue remaining
 T12/T17/T18/T20, then complete whole-product UI/UX and frontend/backend review,
 benchmark and iterate, reset app data and run the final app on port8080. See

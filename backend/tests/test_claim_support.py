@@ -8,6 +8,7 @@ import asyncio
 import gzip
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from threading import Event
 from typing import Any
@@ -391,6 +392,108 @@ def test_communication_lens_rejects_absent_exposure_and_declares_coverage(claim_
     assert "unavailable" in coverage["truncation"]["unrecorded_history"].casefold()
     result = final["output"]["support"]["claims"][0]
     assert result["status"] == "contradicted" and result["computed"] == 0
+
+
+def test_analysis_acceptance_keeps_its_cutoff_when_a_step_commits_during_capture(
+    claim_client, design, monkeypatch
+):
+    client, _, _ = claim_client
+    sid, rid = save(client, design)
+    assert run(client, rid, "step")["turn"] == 1
+    first = client.get(f"/api/runs/{rid}").json()
+    entered, release = Event(), Event()
+    exposure = client.app.state.research.exposure
+
+    def scheduled_exposure(run_id, *args, **kwargs):
+        # Delay a real read, without replacing the Engine, storage or its result.
+        if run_id == rid and not entered.is_set():
+            entered.set()
+            assert release.wait(10)
+        return exposure(run_id, *args, **kwargs)
+
+    monkeypatch.setattr(client.app.state.research, "exposure", scheduled_exposure)
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        pending = executor.submit(
+            client.post,
+            "/api/chats",
+            json={
+                "question": "Inspect only the evidence accepted at this turn boundary.",
+                "context": f"run:{rid}",
+            },
+        )
+        try:
+            assert entered.wait(5)
+            assert run(client, rid, "step")["turn"] == 2
+        finally:
+            release.set()
+        submitted = pending.result(timeout=10)
+
+    final = finish(client, submitted)
+    assert final["status"] == "complete", final
+    assert final["cutoffs"] == {rid: 1}
+    frozen = final["output"]["exposure"][rid]
+    assert frozen["through_turn"] == 1
+    assert frozen["membership"]["requests"] == [first["requests"][0]["id"]]
+    assert frozen["membership"]["activations"] == [first["activations"][0]["id"]]
+    indexed = final["output"]["evidence_index"]["runs"][0]
+    assert indexed["through_turn"] == 1
+    assert indexed["execution_usage"]["requests"] == 1
+    assert final["output"]["lens"]["cutoffs"] == {rid: 1}
+    current = client.get(f"/api/runs/{rid}").json()
+    assert current["summary"]["turn"] == 2
+    assert len(current["activations"]) == 2
+    participant_requests = [r for r in current["requests"] if r["purpose"] == "decision"]
+    assert len(participant_requests) == 2
+    assert all(r["input_tokens"] == 100 and r["output_tokens"] == 50 for r in participant_requests)
+    assert all(r["cost_usd"] == 0.000035 for r in participant_requests)
+    exported = client.get(f"/api/studies/{sid}/export").json()
+    saved = next(a for a in exported["analyses"] if a["id"] == final["id"])
+    assert saved["output"]["exposure"][rid] == frozen
+
+
+def test_analysis_capture_retains_an_inflight_input_at_its_current_turn(claim_client, design):
+    client, controls, _ = claim_client
+    sid, rid = save(client, design)
+    assert run(client, rid, "step")["turn"] == 1
+    controls.update(participant_gate=Event(), participant_entered=Event())
+    response = client.post(f"/api/runs/{rid}/control", json={"action": "step"})
+    assert response.status_code == 200, response.text
+    try:
+        assert controls["participant_entered"].wait(5)
+        pending = client.get(f"/api/runs/{rid}").json()
+        assert pending["summary"]["turn"] == 1
+        participant_requests = [r for r in pending["requests"] if r["purpose"] == "decision"]
+        assert len(participant_requests) == 2
+        assert sorted(r["status"] for r in participant_requests) == ["complete", "pending"]
+        final = finish(
+            client,
+            client.post(
+                "/api/chats",
+                json={
+                    "question": "Retain current in-flight input evidence.",
+                    "context": f"run:{rid}",
+                },
+            ),
+        )
+        assert final["status"] == "complete", final
+        assert final["cutoffs"] == {rid: 1}
+        frozen = final["output"]["exposure"][rid]
+        assert frozen["through_turn"] == 1
+        assert set(frozen["membership"]["requests"]) == {r["id"] for r in participant_requests}
+        assert frozen["delivery"]["confirmed_requests"] == 1
+        assert frozen["delivery"]["unknown_requests"] == 1
+    finally:
+        controls["participant_gate"].set()
+
+        async def settled():
+            await client.app.state.engine.executions[rid].task
+
+        client.portal.call(settled)
+    assert client.get(f"/api/runs/{rid}").json()["summary"]["turn"] == 2
+    assert client.get(f"/api/analyses/{final['id']}").json() == final
+    exported = client.get(f"/api/studies/{sid}/export").json()
+    saved = next(a for a in exported["analyses"] if a["id"] == final["id"])
+    assert saved["output"]["exposure"][rid] == frozen
 
 
 def test_reanalysis_uses_frozen_inputs_after_resume_and_revision_without_participant_work(
