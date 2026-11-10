@@ -110,7 +110,7 @@ def test_reference_inputs_ignore_other_actors_hidden_contents_and_counts(
         design = next(
             Design.model_validate(t["design"])
             for t in templates()
-            if t["design"]["environment"] == environment
+            if Design.model_validate(t["design"]).environment == environment
         )
     design.conditions[0].parameters.memory = memory
     world = create_world(design, design.conditions[0].parameters, 7)

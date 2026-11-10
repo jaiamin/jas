@@ -113,6 +113,13 @@ requests, $9.388368 remaining; Luna needs a separate concrete allowance.
   no assertion or screenshot check is weakened. Remaining shards and a focused
   final-source repeat of the affected flow are pending. The 22 reference tests
   pass after the independent information-world privacy expansion.
+- Shared-browser shard 2 passed all 54 cases before the accepted T07 merge.
+  Merge `0457e9a` includes accepted `32fa9fc`; conflicts retained both the scripted
+  provider guard and T07 available-input capture, and both architecture sections.
+  One later privacy fixture type error is retained in `combined-type-red/` and
+  corrected by validating the template before reading its environment.
+  Combined-source Ruff/ty/lint, 111 frontend tests and production build pass in
+  `combined-static/`. Fresh combined backend/browser/baselines follow separately.
 
 ## Final results and limits
 
