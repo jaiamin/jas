@@ -679,6 +679,11 @@ def test_paused_tool_read_restores_its_durable_receipt_without_calls_and_explici
             assert restored[field] == paused[field]
         assert client.post(f"/api/runs/{run_id}/verify").json()["verified_reads"] == 1
         assert client.get("/api/settings").json()["usage"] == usage
+        read_exposure = client.get(f"/api/runs/{run_id}/exposure").json()
+        read_opportunity = next(
+            r for r in read_exposure["opportunities"] if r["kind"] == "read_artifact"
+        )
+        assert read_opportunity["included"] is False and read_opportunity["inputs"] == []
 
         async def finish(messages, info):
             prompt = json.loads(messages[-1].parts[0].content)
@@ -714,6 +719,11 @@ def test_paused_tool_read_restores_its_durable_receipt_without_calls_and_explici
         restored = wait_finished(client, run_id)
         assert restored["summary"]["turn"] == 1 and len(restored["activations"]) == 1
         assert restored["summary"]["usage"]["requests"] == 2
+        read_exposure = client.get(f"/api/runs/{run_id}/exposure").json()
+        read_opportunity = next(
+            r for r in read_exposure["opportunities"] if r["kind"] == "read_artifact"
+        )
+        assert read_opportunity["included"] is True and len(read_opportunity["inputs"]) == 1
         assert restored["state"]["artifacts"]["report"]["versions"][1]["content"] == {"reading": 17}
         client.post(f"/api/runs/{run_id}/control", json={"action": "step"})
         complete = wait_finished(client, run_id)

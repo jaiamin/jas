@@ -8,7 +8,15 @@ import json
 from collections.abc import Sequence
 from typing import Any
 
-from .db import ParticipantActivation, ProviderCall, RecordedEvent, Revision, Run, digest
+from .db import (
+    ParticipantActivation,
+    ParticipantOperation,
+    ProviderCall,
+    RecordedEvent,
+    Revision,
+    Run,
+    digest,
+)
 from .domain import Design, Treatment
 from .simulation.checkpoints import Observation
 from .simulation.world import World
@@ -71,6 +79,7 @@ def input_bindings(
     *,
     activation_id: str,
     tool_using: bool,
+    artifact_reads: Sequence[dict] = (),
 ) -> dict | None:
     """Bind only the inputs actually used by the two current participant policies.
 
@@ -149,6 +158,29 @@ def input_bindings(
                             "operation": number,
                         }
                     )
+    if tool_using:
+        reads = {
+            op["number"]: op
+            for op in artifact_reads
+            if op["kind"] == "read_artifact" and op["status"] == "complete"
+        }
+        for index, operation in enumerate(payload["operations"]):
+            recorded = reads.get(operation["number"])
+            if (
+                recorded is not None
+                and operation["kind"] == "read_artifact"
+                and operation["status"] == "complete"
+                and "receipt" not in operation
+                and digest(operation["result"]) == digest(recorded["result"])
+            ):
+                items.append(
+                    {
+                        "key": f"artifact_read:{activation_id}:{operation['number']}",
+                        "surface": "prompt",
+                        "path": ["operations", index, "result"],
+                        "operation": operation["number"],
+                    }
+                )
     return {"version": VERSION, "items": items}
 
 
@@ -163,6 +195,7 @@ def exposure_report(
     operations: dict[str, list[int]],
     *,
     through_turn: int,
+    artifact_reads: Sequence[ParticipantOperation] = (),
 ) -> dict:
     source = {
         "href": f"/api/studies/{run.study_id}?revision={revision.number}",
@@ -204,6 +237,28 @@ def exposure_report(
                     "included": False,
                 }
             )
+    by_id = {activation.id: activation for activation in activations}
+    for read in artifact_reads:
+        activation = by_id[read.activation_id]
+        source = {
+            "href": f"/api/runs/{run.id}",
+            "pointer": f"/activations/id={activation.id}/operations/number={read.number}/result",
+            "label": f"Turn {activation.turn} · artifact read · operation {read.number}",
+        }
+        key = f"artifact_read:{activation.id}:{read.number}"
+        opportunities.append(
+            {
+                "id": key,
+                "key": key,
+                "kind": "read_artifact",
+                "participant": activation.actor,
+                "after_turn": activation.turn - 1,
+                "source": source,
+                "available": [source],
+                "inputs": [],
+                "included": False,
+            }
+        )
     by_actor: dict[str, list[ParticipantActivation]] = {
         profile.key: [] for profile in design.profiles
     }

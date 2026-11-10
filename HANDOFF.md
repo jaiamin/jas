@@ -1,5 +1,13 @@
 # T09 integration review assignment (2026-11-10)
 
+Fresh sole-writer review is in progress after no-ff merge `c357a3b`. The durable
+acceptance checklist, demonstrated repairs and next checks are at the top of
+`docs/research/T09_ARTIFACT_WORLD.md`. Complete child evidence is preserved and
+verified under `.tools/research-harness/evidence/T09/`; all fresh results/failures
+are separate under `T09-integration/`. Keep 18220 exclusive to this review.
+Do not launch the newly eligible frontier until final acceptance is recorded.
+Root retains publication. T15/T19 remain unpolled and untouched.
+
 T01–T08 are accepted. T09 is implemented and assigned to a fresh sole-writer
 integration review on port 18220. T15/T19 continue on 18121/18122 and must not be
 polled. T10/T13/T16/T18 become Ready only after T09 acceptance.

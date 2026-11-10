@@ -676,12 +676,15 @@ class Research:
                 .order_by(RecordedEvent.id)
             ).all()
             operations: dict[str, list[int]] = {key: [] for key in ids}
+            artifact_reads = []
             for operation in session.scalars(
                 select(ParticipantOperation)
                 .where(ParticipantOperation.activation_id.in_(ids))
                 .order_by(ParticipantOperation.number)
             ):
                 operations[operation.activation_id].append(operation.number)
+                if operation.kind == "read_artifact" and operation.status == "complete":
+                    artifact_reads.append(operation)
         return exposure_report(
             run,
             design,
@@ -692,6 +695,7 @@ class Research:
             events,
             operations,
             through_turn=cutoff,
+            artifact_reads=artifact_reads,
         )
 
     def activations(self, run_id: str) -> list[dict]:

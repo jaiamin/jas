@@ -1,5 +1,45 @@
 # T09: persistent artifact investigation
 
+## Fresh integration review in progress (2026-11-10)
+
+The sole writer merged exact clean source `4e6b2ea` into assigned integration
+`4186d33` with no-ff merge `c357a3b`. Only progress coordination prose conflicted.
+No descendants, paid requests, publication or other-ticket inspection is authorized.
+Fresh evidence is separate at `.tools/research-harness/evidence/T09-integration/`.
+
+- [x] Preserve the complete ignored source before merge and verify stable source,
+  manifest, archive-member bytes and symlink targets without extracting archives.
+  The copy contains 1,147 files / 149,021,583 bytes, canonical inventory SHA-256
+  `986330bcc35668ca19358d0e1dbb09803acefe3201a89ce774978046a375d37f`.
+  All 1,145 indexed entries and all 3,948 packed members in four archives verify;
+  manifest SHA-256 remains `9f3dde334f10837db43735ef8074c5f93a4c8ed8c0a327d499c6a8601c02619f`.
+- [x] Review authoritative rules and the changed domain/request/persistence/replay
+  paths independently. The initial merged checkpoint passed 1,176 backend tests.
+- [x] Demonstrate and repair two integration defects through public API red/green:
+  artifact content delivery was absent from exposure bindings, and Verify ignored
+  corrupted rejected artifact-tool read receipts. Five valid delivery reds and
+  two rejection reds are retained. Direct-action last-result/history bindings and
+  pure-tool read bindings now name actual content in each final bounded request;
+  compacted receipts do not count, and missing provider receipts stay unknown.
+  Paused pure reads remain unexposed across restart until explicit continuation.
+  Verify checks actual rejection reason, applicable harness limits and atomicity.
+- [x] Run the affected artifact/lifecycle/T07/T08 group: 106 passed. Frontend
+  lint, 111 units and build pass. Ruff passes; an initial new-test typing error
+  was corrected and ty passes. The first five-case red had an invalid missing-goal
+  fixture; its corrected five-case red establishes the product failure.
+- [ ] Complete independent API/World witnesses and controlled before/after parity.
+- [ ] Complete fresh browser and production qualification on owned port 18220.
+- [ ] Run final combined-source backend/static checks, reverify protected evidence,
+  close owned resources and record final acceptance or concrete blockers.
+
+The first harness-browser run passed nine flows and failed its two disclosure
+flows because its server command omitted the required disclosure fixture flag.
+The config now enables that fixture itself; targeted browser requalification is
+pending. No product expectation was weakened. All failed attempts remain retained.
+Closed fresh outputs alone are losslessly packed with verified member indexes.
+Historical implementation checks below remain inherited, including the early
+slices 1–6 provenance gap and interrupted full-browser chronology.
+
 Ticket [#20](https://github.com/jaiamin/ass/issues/20). Implementation branch
 `t3/implement-t09-artifact-world`, assigned worktree
 `/home/agent/.t3/worktrees/workspace/t3-872f635b`, clean base

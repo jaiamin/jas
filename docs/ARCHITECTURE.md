@@ -154,6 +154,15 @@ witnesses, not participant observations or evidence of Researcher competence.
 
 ## Environment seam
 
+Artifact exposure binds actual content, separately from a participant's descriptive
+memory of an operation. Direct-action inputs identify the delivered last result or
+authorized artifact history. Pure artifact-tool reads retain an operation-scoped
+opportunity and bind its exact result only when present in a subsequent bounded
+request. A compacted receipt does not deliver that result; a missing provider
+response leaves delivery unknown. Local reads, plans and task success alone do not
+establish investigation or input inclusion. Artifact replay also validates denied
+read receipts against their request, harness allowance and unchanged checkpoint.
+
 The `simulation/` package owns world rules, state and action schemas. A world initializes
 seeded state, selects an actor, constructs its observation, validates/applies actions,
 emits events/measurements and snapshots/restores state. It knows nothing about providers,

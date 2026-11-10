@@ -12,7 +12,8 @@ export default defineConfig({
   ],
   use: { ...base.use, baseURL },
   webServer: {
-    command: "JAS_TEST_PARTICIPANTS=1 ../.venv/bin/python e2e/server.py",
+    command:
+      "JAS_TEST_PARTICIPANTS=1 JAS_TEST_EXPOSURE=1 ../.venv/bin/python e2e/server.py",
     url: `${baseURL}/api/health`,
     reuseExistingServer: false,
     gracefulShutdown: { signal: "SIGTERM", timeout: 5000 },

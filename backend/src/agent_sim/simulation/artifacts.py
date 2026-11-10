@@ -222,6 +222,28 @@ class ArtifactWorkspace(World[ArtifactCheckpoint]):
             forecast=(type(None), ...),
         )
 
+    def exposure_paths(self, event: dict, observation: Observation) -> list[list[str | int]]:
+        # An operation's descriptive memory does not deliver its artifact content.
+        row = event["data"]
+        paths: list[list[str | int]] = [
+            ["artifact_history", index]
+            for index, item in enumerate(observation["artifact_history"])
+            if all(item.get(key) == row.get(key) for key in ("operation", "round", "actor", "kind"))
+        ]
+        latest = next(
+            (
+                item
+                for item in reversed(self.state["artifact_history"])
+                if item["actor"] == event["actor"]
+            ),
+            None,
+        )
+        if latest == row and observation["last_result"] == self.state["last_results"].get(
+            event["actor"]
+        ):
+            paths.append(["last_result"])
+        return paths
+
     def apply(self, agent: str, action: Action) -> tuple[list[Event], list[Measure]]:
         raise ValueError("Artifact workspace requires an artifact decision")
 

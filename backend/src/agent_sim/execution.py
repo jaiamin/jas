@@ -338,13 +338,66 @@ class Engine:
                 if observed != activation["observation"]:
                     raise ValueError("Activation observation mismatch")
                 for operation in activation["operations"]:
-                    if operation["kind"] == "read_artifact" and operation["status"] == "complete":
-                        actual = restored.read(
-                            actor, ReadArtifact.model_validate(operation["request"]["read"])
-                        )
-                        if actual != operation["result"]:
+                    if operation["kind"] == "read_artifact":
+                        request = operation["request"]
+                        error = None
+                        actual = None
+                        if request.get("read") is None or any(
+                            request.get(field) is not None
+                            for field in (
+                                "decision",
+                                "plan",
+                                "retrieval",
+                                "investigation",
+                                "verification",
+                            )
+                        ):
+                            error = "Unexpected operation payload."
+                        elif "read_artifact" not in condition.harness.tools:
+                            error = "Operation is not authorized by this harness."
+                        elif (
+                            sum(
+                                prior_op["kind"]
+                                in {
+                                    "observe",
+                                    "rules",
+                                    "legal_options",
+                                    "read_artifact",
+                                    "plan",
+                                    "retrieve",
+                                    "investigate",
+                                    "verify",
+                                    "decide",
+                                }
+                                for prior_op in activation["operations"]
+                                if prior_op["number"] < operation["number"]
+                            )
+                            >= condition.harness.max_tool_operations
+                        ):
+                            error = "Tool-operation limit reached."
+                        else:
+                            try:
+                                actual = restored.read(
+                                    actor, ReadArtifact.model_validate(request["read"])
+                                )
+                            except ValueError as failure:
+                                error = str(failure)
+                        if (
+                            error is None
+                            and operation["status"] == "complete"
+                            and actual == operation["result"]
+                        ):
+                            reads += 1
+                        elif (
+                            error is not None
+                            and operation["status"] == "rejected"
+                            and error == operation["result"]
+                        ):
+                            rejections += 1
+                        else:
                             raise ValueError("Artifact read receipt mismatch")
-                        reads += 1
+                        if restored.snapshot() != prior:
+                            raise ValueError("Artifact read changed the checkpoint")
                     elif operation["kind"] == "reject" and operation["status"] == "rejected":
                         try:
                             restored.step(actor, Decision.model_validate(operation["request"]))

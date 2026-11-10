@@ -254,6 +254,8 @@ class Activation:
         output: type[OutputT],
         prompt: str,
         instructions: str,
+        *,
+        artifact_reads: list[dict] | None = None,
     ) -> OutputT:
         if self.row.requests >= self.harness.max_requests:
             raise EffortLimit("request_limit")
@@ -282,6 +284,7 @@ class Activation:
                 prompt,
                 activation_id=self.row.id,
                 tool_using=self.harness.kind == "tool_using",
+                artifact_reads=artifact_reads or (),
             ),
         )
 
@@ -454,6 +457,7 @@ class ToolUsing:
                 (ARTIFACT_TOOL_INSTRUCTIONS + TOOL_INSTRUCTIONS.removeprefix(INSTRUCTIONS))
                 if artifact_tools
                 else TOOL_INSTRUCTIONS,
+                artifact_reads=history if artifact_tools else None,
             )
             request = result.model_dump()
             kind = request["operation"]
