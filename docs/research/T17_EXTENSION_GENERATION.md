@@ -2147,3 +2147,75 @@ if needed to stay within64MiB. Backend58.1MB after the merge attempt leaves
 about9MB; preflight each job against that cumulative ceiling. Source integration
 is not execution qualification. Frontend inputs are unchanged; all build/browser/
 services/production/provider/live/held-out work remains held and T17 unaccepted.
+
+Normal merge `4de116d990f01cc1984cf163471e02e1ca2c8c6c` has parents
+4ed2f589 and exact accepted370f835b; Gitleaks scans48961 staged bytes and passes.
+Its unchanged qualified source is
+`eacc1f0bf64399157ef08436ff508ecebff55238bbdfe367c7375c13d48ac852`.
+
+| Attempt | Observed result on this source |
+| --- | --- |
+| `root370-generated-export-01` | PASS3; both actual scripted-Sol generation/admission/proposal/export paths and the actual-worker Engine dispatch witness |
+| `root370-exposure-accounting-snapshot-01` | PASS11; shared authorized artifact/workflow inputs, grant cutoffs, assignment citations, complete tool-harness execution usage and both real concurrent-export witnesses |
+| `root370-reliance-regression-01` | PASS58; full rule1.0.1 suite, cadence/withdrawal/classification, restoration/replay, privacy and current combined source-reuse contracts |
+| `root370-current-contract-01` | PASS3; immutable literal5/22/22 complete inputs/effects/checkpoints/privacy/reopen/replay/integer ledgers and both accepted analysis-cutoff controls |
+| `root370-frozen-t01-current-01` | Actual child/recorder exit1; exactly four export-v4 failures/four false flags,98 HTTP operations/22 scripted requests/source_unchanged=true; both historical schema-only negative rows pass |
+| `root370-final-ruff-01` | PASS; full backend/benchmarks/scripts Ruff, no cache |
+
+These are75 distinct segmented cases, not a full repository pass. The earlier
+74 cases at e19ee690 retain that attribution; current frontend application/test
+inputs are unchanged. Frozen original runner/cases/scores remain unchanged;
+no retired BEFORE/comparator/reference reconstruction or historical parity claim.
+
+Resource maintenance retains a separate failed attempt: closed-export-pack01
+rejects a pytest sibling `*current` symlink during metadata selection, before
+any export payload is read or changed. Its expected15 was also corrected to
+the independently inspected12 exports (four studies/five runs per matrix).
+Distinct02 selects only the exact known generated-test directories, preflights
+all selected paths/ancestors and never follows the excluded sibling links.
+It ACTUALLY restores12 closed JSON exports/3,662,108 logical bytes with matching
+SHA/size/mode/integer-ns atime+mtime before raw removal; mapping SHA
+`9cd827e6f798ef1fa9975da5f45b3e578b7edf1ae4c9fe623598aba0d3f1784c`.
+All failed/successful matrix identities remain available through logical paths.
+Five passing test jobs separately pack29 own closed generated databases with
+actual restoration proofs. No source/custody hardlink, protected payload,
+other-owner data, dependency or cache changes. After Ruff: about63.45MB backend
+of64MiB and4,434,075 frontend bytes of16MiB, before documentary closure.
+
+ROOT's short resource hold arrived after Ruff completed and released flock.
+No new check/capture/hook/job starts during that hold; only bounded documentary
+updates above. Globalty and independent boundary/source/inventory closure remain
+pending, followed by a normal documentary checkpoint when released. No own
+active job, service, browser, container or flock. Build/browser/production still
+need separately staged release; the existing18129/no-install/32MiB-evidence/
+256MiB-disk-peak proposal and unchanged402653184 entry threshold remain only a
+forecast. No provider/live/paid/held-out work. T17 remains INCOMPLETE/UNACCEPTED.
+
+## Resumed backend closure and accepted Markdown integration (2026-11-10)
+
+ROOT lifted its temporary hold after its browser teardown. No own held job was
+started. `root370-final-ty-01` now passes globalty at exact source7aa35a004d90c7d1,
+whose only differences from qualifiedeacc1f0b are the three documentary updates.
+Backend63,916KB before later checkpoint receipts remains within64MiB; no new
+compaction or dependency/cache consumer is needed. Existing closed SQLite/JSON
+maps and all adverse attempts remain untouched. New compaction authorization is
+limited to own closed SQLite with actual restoration; no further JSON packing.
+
+The next normal merge target is exact accepted46d48d5e615eb22920219df26d42249ca2e5c0e0.
+Its six-path delta since370f changes only Markdown image rendering/tests and
+documentation. The accepted independent red, default URL filtering, explicit
+keyboard-accessible image links and zero automatic image requests are documented
+in FINAL_CODE_QUALITY_REVIEW. Read that report and full six-path delta before
+integration. Persisted meanings and reliance1.0.1/T12 interactions stay unchanged.
+No provisional sibling is included. Normal checkpoint/merge jobs each forecast
+<=1MiB retained/4MiB peak; retain any conflict/stages and both histories.
+
+After that source boundary: the existing nine-file affected shell/UI selection
+plus accepted Markdown cases, full affected lint and forced TypeScript run as
+separate bounded jobs, entry268435456/128MiB peak/<=4MiB output each. A newly
+conditional ONE build uses existing private dependencies with fresh own output,
+the same268435456 entry and128MiB incremental peak. Forecast4MiB output, no new
+install/download/cache consumer. Frontend currently4,434,075 bytes of16MiB,
+leaving room for those measured small logs and expected~3MiB assets. Preserve
+the first build outcome; no automatic retry, floor reduction or weakened check.
+Actual browser/services/production/provider/live/paid/held-out remain HELD.

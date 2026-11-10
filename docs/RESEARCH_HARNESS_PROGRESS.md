@@ -1,13 +1,18 @@
 # T17 accepted ROOT370 source integration (2026-11-10)
 
-Normal exact370f835b merge follows clean4ed2f589; one HANDOFF conflict and
-all stages/history retained. Current DB14/export16/library9 remains, alongside
+Normal exact370f835b merge4de116d9 follows clean4ed2f589; one HANDOFF conflict
+and all stages/history retained. Current DB14/export16/library9 remains, alongside
 accepted reliance1.0.1/checkpoint rejection, coherent active-export snapshots,
 authorized exposure/provenance and complete participant-operation accounting.
 Accepted T12 interactions and independent T17 contracts are preserved. Earlier
-74 backend/60 frontend passes belong to e19ee690, not this new combined source.
-Affected backend/static/current-contract checks remain within existing64MiB,
-16MiB-per-job release; frontend source is unchanged. Build/browser/services/
+74 backend/60 frontend passes belong to e19ee690. New sourceeacc1f0b passes75
+affected cases across four jobs and full prescribed Ruff. Independent5/22/22
+passes; frozen T01 CURRENT retains four export-v4 failures/false flags/exit1.
+Globalty now passes at source7aa35a00, with identical backend inputs. ROOT lifted
+the resource hold; exact46d48d5e is next for normal merge. No active own job/flock.
+Existing64MiB/16MiB-per-job backend bounds remain. After affected shell/renderer
+units/lint/types pass and room is proven, one fresh existing-env build is released
+within frontend16MiB, entry268435456/128MiB peak. Browser/services/
 production/provider/live/held-out remain HELD; T17 incomplete/UNACCEPTED.
 
 # T17 combined backend/UI UNIT boundary (2026-11-10)

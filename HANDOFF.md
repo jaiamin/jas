@@ -1,16 +1,27 @@
 # T17 accepted ROOT370 integration boundary (2026-11-10)
 
-Exact accepted370f835b45bdc7172de5c719aae1ffa1e185b3f5 is being normally
-merged after clean checkpoint4ed2f589. Only HANDOFF conflicted; every stage
+Exact accepted370f835b45bdc7172de5c719aae1ffa1e185b3f5 was normally merged
+at4de116d990f01cc1984cf163471e02e1ca2c8c6c after checkpoint4ed2f589. Only
+HANDOFF conflicted; every stage
 and marker-bearing source is retained, and both histories below are preserved.
 Accepted exposure/participant-usage/provenance/read-snapshot corrections and
 reliance1.0.1 combine without changing DB14/export16/library9/definition2.
 T12 delivered-message/handoff/acceptance interaction repairs remain intact.
 No incompatible checkpoint, schema or library alias/migration/reset is added.
-Earlier74 backend/60 frontend passes retain exacte19ee690 source attribution;
-the new combined source still requires affected qualification. Current64MiB
+At exacteacc1f0bf64399157ef08436ff508ecebff55238bbdfe367c7375c13d48ac852,
+75 affected cases pass across four jobs; full prescribed Ruff passes. Earlier74
+backend/60 frontend passes retain exacte19ee690 attribution. Frozen T01 CURRENT
+still has exactly four export-v4 failures/false flags/exit1; independent literal
+5/22/22 passes. Globalty passes at source7aa35a00; only documentary changes
+separate its backend inputs from eacc1f0b. ROOT lifted the temporary hold and
+approved exact46d48d5e for the next normal merge; no active own job/flock. Current64MiB
 backend/16MiB frontend evidence limits and all build/browser/production holds
 remain. This is source integration, not T17 acceptance or live competence.
+
+Next: normal documentary checkpoint and exact46d48d5e Markdown repair merge,
+then affected shell/renderer units/lint/forcedtypes. Only after those gates and
+evidence-room proof, one distinct existing-env build is released (entry268435456,
+128MiB peak, frontend16MiB total). Browser/services/production remain HELD.
 
 # T17 combined backend/UI UNIT boundary (2026-11-10)
 
