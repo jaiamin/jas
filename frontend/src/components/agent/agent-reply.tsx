@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ReplyActivity } from "@/components/agent/agent-activity";
 import { AgentMarkdown } from "@/components/agent/agent-markdown";
 import { AgentTarget } from "@/components/agent/agent-target";
+import { ClaimEvidence } from "@/components/claim-evidence";
 import { ComparisonEvidence } from "@/components/comparison-evidence";
 import {
   Disclosure,
@@ -32,16 +33,18 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Analysis } from "@/lib/types";
+import type { Analysis, AnalysisLensKey } from "@/lib/types";
 
 export const AgentReply = memo(function AgentReply({
   row,
   disabled,
   onRetry,
+  onReanalyze,
 }: {
   row: Analysis;
   disabled: boolean;
   onRetry: () => void;
+  onReanalyze?: (lens: AnalysisLensKey) => void;
 }) {
   const pending = row.status === "pending";
   const complete = row.status === "complete";
@@ -84,6 +87,7 @@ export const AgentReply = memo(function AgentReply({
           />
           <ReplyActivity row={row} />
         </MessageHeader>
+        <ClaimEvidence row={row} disabled={disabled} onReanalyze={onReanalyze} />
         {messageText && (
           <AgentMarkdown
             text={messageText}
