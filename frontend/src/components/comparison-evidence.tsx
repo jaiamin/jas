@@ -4,6 +4,7 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { ParticipantComparison } from "@/components/participant-comparison";
 import {
   Table,
   TableBody,
@@ -92,6 +93,7 @@ export function ComparisonEvidence({ report }: { report: ComparisonReport }) {
         outcome; unmatched runs lack a complete counterpart. Counts overlap.
         Confidence intervals are withheld.
       </p>
+      <ParticipantComparison comparison={comparison} />
       <Disclosure>
         <DisclosureTrigger>Sample &amp; uncertainty</DisclosureTrigger>
         <DisclosureContent className="flex min-w-0 flex-col gap-4 text-sm">

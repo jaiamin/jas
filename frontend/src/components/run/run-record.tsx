@@ -37,7 +37,7 @@ export function RunRecord({ run }: { run: RunDetail }) {
             </div>
             <div>
               <dt>Model</dt>
-              <dd>{summary.model}</dd>
+              <dd>{summary.model ?? "Non-model control"}</dd>
             </div>
             <div>
               <dt>Participant harness</dt>
@@ -47,6 +47,12 @@ export function RunRecord({ run }: { run: RunDetail }) {
                 {run.harness.max_tool_operations} operations per activation
               </dd>
             </div>
+            {run.harness.kind === "scripted" && (
+              <div>
+                <dt>Reference policy</dt>
+                <dd>{run.harness.policy} · actor-authorized input only</dd>
+              </div>
+            )}
             <div>
               <dt>Environment</dt>
               <dd>
@@ -70,7 +76,11 @@ export function RunRecord({ run }: { run: RunDetail }) {
             </div>
             <div>
               <dt>Response limit</dt>
-              <dd>{run.design.response_tokens} tokens including reasoning</dd>
+              <dd>
+                {run.harness.kind === "scripted"
+                  ? "No model inference"
+                  : `${run.design.response_tokens} tokens including reasoning`}
+              </dd>
             </div>
           </dl>
           <Button

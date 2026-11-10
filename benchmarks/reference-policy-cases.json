@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "split": "DEVELOPMENT",
   "evidence": "Deterministic mechanics only; no participant intelligence or held-out claim.",
   "cases": [
@@ -23,7 +23,7 @@
     },
     {
       "id": "neutral-private-signal",
-      "environment": "information_cascade",
+      "environment": "information",
       "seeds": [521, 631],
       "repetitions": 1,
       "conditions": ["direct", "capable", "signal"],

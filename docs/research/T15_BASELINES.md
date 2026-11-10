@@ -11,14 +11,14 @@ and required receipt repair `de5556b`. Linux Docker Sandbox; assigned checkout o
   glossary, ADRs and prior T06/T08 evidence reports.
 - [ ] Preserve clean tracked-source before evidence, unchanged frozen T01 results
   and fresh neutral DEVELOPMENT cases/expectations before implementation.
-- [ ] Actual versioned non-model reference conditions through the existing
+- [x] Actual versioned non-model reference conditions through the existing
   participant/execution seam, receiving only authorized observation/legal actions;
   no provider construction, calls, hidden truth or substitution.
-- [ ] Explicit memory/tool/deliberation ablations, complete immutable participant
+- [x] Explicit memory/tool/deliberation ablations, complete immutable participant
   factors, implementation sources, limits and measured work/stop reasons.
-- [ ] Existing review/results/export surfaces show matched direct/capable/control
+- [x] Existing review/results/export surfaces show matched direct/capable/control
   conditions, effort envelopes, missingness and limited inference.
-- [ ] Vertical public-API red/green checks, independent privacy/no-call, fidelity,
+- [x] Vertical public-API red/green checks, independent privacy/no-call, fidelity,
   immutable reuse/revisions, matching/effort, lifecycle and replay checks.
 - [ ] Affected inherited backend/static/frontend/build/browser verification;
   keyless browser port 18121, fresh neutral before/after and frozen parity audit.
@@ -68,6 +68,41 @@ requests, $9.388368 remaining; Luna needs a separate concrete allowance.
 - Local uv installed under `.tools/uv-package`; frozen offline dependency installs
   succeeded using existing cached packages, with own `.venv` and `node_modules`.
   Exact setup logs are under `data/t15/setup/`.
+- Public HTTP red/green slices now run three concrete controls, capture real effort
+  and immutable configuration, exclude unused configured models from effective
+  factors, and preserve lifecycle/replay and frozen comparisons. Controls bypass
+  provider construction; no model participant is substituted.
+- Editor, Review, Results, selected-run comparison and Record use stock controls,
+  tables and disclosures. Memory/tools/request ablations edit native saved factors.
+  The first keyless desktop/light and phone/dark flow passed; expanded final flows
+  and inherited checks remain to be run.
+- Retained red attempts include unsupported scripted kind, absent effort capture,
+  unused-model factor detection and initial absent UI. Retained test-harness mistakes
+  include fixture endowment, `information_cascade` versus current `information`,
+  undefined report/promise endpoint matching, and asynchronous keyboard focus.
+  The latter are explicit corrections, not product regressions or hidden retries.
+- Fresh cases were committed before product implementation. Case v2 corrects only
+  the installed world's identifier; v1 and its before attempt remain preserved.
+  The runner explicitly excludes undefined conditional endpoints under T06; the
+  same corrected cases/runner must be used for the final clean-source before/after.
+- Combined Ruff/ty/frontend lint passed; all 109 frontend tests and production build
+  passed. All 1,069 collected backend tests passed sequentially in 14 partitions on
+  exact source inventory `5f44660ccc3afc6bed70b12859fd71faa80111782816b15da1d907142f22b475`.
+  A later independent privacy expansion also covers information-world controls.
+- Final T15 browser flows passed in both themes/viewports, as did inherited T04/T08
+  browser trials. Changed UI detector returned no findings. Screens were inspected;
+  the task-owned preview tab is closed.
+- The first shared browser attempt was interrupted (tool session exit 143, no
+  wrapper/suite completion): 142 observed passes and two failed flags before the
+  interruption. Both flagged cases passed on an unchanged-source diagnostic run;
+  the original failure causes remain unobserved. Retain all logs/screens, do not
+  relabel the interrupted attempt green. The verified orphaned task server was
+  stopped with SIGTERM and port 18121 was observed closed. Use bounded shards next.
+- Bounded shared-browser shard 1 finished: 46 passed, one failed with explicit
+  `ENOSPC` creating a screenshot directory. Preserve this separate resource failure;
+  no assertion or screenshot check is weakened. Remaining shards and a focused
+  final-source repeat of the affected flow are pending. The 22 reference tests
+  pass after the independent information-world privacy expansion.
 
 ## Final results and limits
 

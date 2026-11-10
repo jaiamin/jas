@@ -145,6 +145,13 @@ def exercise(client, case, output):
             all(e["interval"] is None for e in study["effects"])
             and study["comparison"]["independent_support"] is None
         )
+        # No reports/promises are issued in these cases. Their conditional endpoints
+        # are undefined, so T06 correctly excludes those pairs from inference.
+        eligible = (
+            {"contribution_rate", "group_payoff"}
+            if case["environment"] == "commons"
+            else {"accuracy", "signal_override_rate"}
+        )
         if case.get("missing"):
             conditions = {c["condition_key"]: c for c in study["comparison"]["conditions"]}
             checks["missingness-retained"] = (
@@ -161,13 +168,18 @@ def exercise(client, case, output):
                 if r["summary"]["status"] == "failed"
             )
             checks["matching"] = all(
-                e["pairs"] == (1 if e["condition_key"] == "keep" else 0) for e in study["effects"]
+                e["pairs"] == (1 if e["condition_key"] == "keep" and e["metric"] in eligible else 0)
+                for e in study["effects"]
             )
         else:
             checks["complete-matrix"] = all(r["summary"]["status"] == "complete" for r in runs)
             checks["matching"] = all(
-                e["pairs"] == len(case["seeds"]) * case["repetitions"]
-                and e["seeds"] == len(case["seeds"])
+                (
+                    e["pairs"] == len(case["seeds"]) * case["repetitions"]
+                    and e["seeds"] == len(case["seeds"])
+                )
+                if e["metric"] in eligible
+                else e["pairs"] == 0 and e["mean"] is None
                 for e in study["effects"]
             )
             if case["environment"] == "commons":
@@ -199,7 +211,9 @@ def exercise(client, case, output):
                     for t in r["evidence"]
                     if t["number"] > 0
                 )
-                checks["null-contrast"] = all(e["mean"] == 0 for e in study["effects"])
+                checks["null-contrast"] = all(
+                    e["mean"] == (0 if e["metric"] in eligible else None) for e in study["effects"]
+                )
         checks["mechanics-replay"] = True
         write_json(output / "study.json", study)
         record["stop_reason"] = "complete" if all(checks.values()) else "check-failure"

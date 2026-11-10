@@ -1,6 +1,7 @@
 import type {
   Design,
   Environment,
+  EnvironmentId,
   ParticipantHarness,
   ResourcePrimitive,
   TaskDefinition,
@@ -8,7 +9,18 @@ import type {
 
 export function participantHarness(
   kind: ParticipantHarness["kind"],
+  environment: EnvironmentId = "commons",
 ): ParticipantHarness {
+  if (kind === "scripted")
+    return {
+      kind: "scripted",
+      version: "1.0.0",
+      policy:
+        environment === "information" ? "private_signal_v1" : "commons_keep_v1",
+      max_requests: 0,
+      max_tool_operations: 0,
+      tools: [],
+    };
   if (kind === "direct_action")
     return {
       kind: "direct_action",

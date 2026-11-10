@@ -55,7 +55,9 @@ export function ActivationInspector({
               <dl className="grid gap-2 text-sm sm:grid-cols-2">
                 <div>
                   <dt className="text-muted-foreground">Model</dt>
-                  <dd className="break-all">{activation.identity.model}</dd>
+                  <dd className="break-all">
+                    {activation.identity.model ?? "Non-model control"}
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-muted-foreground">Effort</dt>
@@ -66,6 +68,12 @@ export function ActivationInspector({
                   </dd>
                 </div>
               </dl>
+              {activation.identity.harness.kind === "scripted" && (
+                <p className="text-sm text-muted-foreground">
+                  {activation.identity.harness.policy} · actor observation and
+                  legal schema only. No provider requests.
+                </p>
+              )}
               {activation.identity.harness.kind === "tool_using" && (
                 <dl className="grid gap-2 text-sm sm:grid-cols-2">
                   {Object.entries(activation.identity.harness.capabilities).map(

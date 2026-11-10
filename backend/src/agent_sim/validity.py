@@ -189,6 +189,17 @@ def _differences(left: dict, right: dict, prefix: str = "") -> list[str]:
     return result
 
 
+def participant_assignment(design: Design, condition: Treatment) -> dict:
+    scripted = condition.harness.kind == "scripted"
+    return {
+        "model": None if scripted else condition.model,
+        "profiles": [
+            p.model_dump() | ({"model": None} if scripted else {})
+            for p in design.resolve(condition).profiles
+        ],
+    }
+
+
 def condition_grid(design: Design) -> dict:
     """Crossing of executable settings; perfectly coupled fields form one bundle."""
 
@@ -214,9 +225,8 @@ def condition_grid(design: Design) -> dict:
         fields(
             {
                 "parameters": c.parameters.model_dump(),
-                "model": c.model,
                 "harness": c.harness.model_dump(),
-                "profiles": [p.model_dump() for p in design.resolve(c).profiles],
+                **participant_assignment(design, c),
             }
         )
         for c in design.conditions
@@ -529,9 +539,8 @@ def _preflight(specification: str) -> dict:
     active = set(CATALOG[design.environment].parameters) | {"private_signal", "endowment"}
     for c in design.conditions[1:]:
         changes = _differences(baseline.parameters.model_dump(), c.parameters.model_dump())
-        assignment_changed = (
-            baseline.model != c.model
-            or design.resolve(baseline).profiles != design.resolve(c).profiles
+        assignment_changed = participant_assignment(design, baseline) != participant_assignment(
+            design, c
         )
         inactive = [p for p in changes if p.split(".")[0] not in active]
         if design.tasks and "task_count" in changes:

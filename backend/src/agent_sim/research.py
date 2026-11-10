@@ -5,7 +5,7 @@ from typing import TypedDict
 
 from sqlalchemy import delete, or_, select, update
 
-from .comparisons import ComparisonRun, compare_runs
+from .comparisons import ComparisonRun, compare_runs, empty_effort
 from .db import (
     Agent,
     Analysis,
@@ -27,6 +27,7 @@ from .domain import Design, Treatment
 from .environment_library import EnvironmentLibrary, validate_source
 from .llm import PRICES, LanguageModels, Usage, empty_usage
 from .metrics import aggregate_metrics
+from .participant_context import OPERATION_CAPABILITY
 from .participants import activation_record, operation_record
 from .simulation.environments import CATALOG, create_world
 from .validity import Requirement, factorial_issues, preflight, require_valid, requirement_issues
@@ -67,7 +68,7 @@ class RunSummary(TypedDict):
     condition: str
     condition_key: str
     environment: str
-    model: str
+    model: str | None
     models: list[str]
     status: str
     turn: int
@@ -355,10 +356,12 @@ class Research:
             "condition": condition.name,
             "condition_key": condition.key,
             "environment": design.environment,
-            "model": condition.model,
+            "model": None if condition.harness.kind == "scripted" else condition.model,
             "models": sorted(
                 {p.model or condition.model for p in design.resolve(condition).profiles}
-            ),
+            )
+            if condition.harness.kind != "scripted"
+            else [],
             "status": run.status,
             "turn": run.turn,
             "round": run.round,
@@ -482,6 +485,7 @@ class Research:
             )
         completed = [run for run in summaries if run["status"] == "complete"]
         metrics = self.metrics_many({run["id"] for run in completed})
+        effort = self.participant_effort({run["id"]: run["turn"] + 1 for run in summaries})
         comparison = compare_runs(
             [
                 ComparisonRun(
@@ -496,6 +500,7 @@ class Research:
                     or run["status"] == "failed",
                     metrics=metrics.get(run["id"], {}),
                     error=run["error"],
+                    effort=effort[run["id"]],
                 )
                 for run in summaries
             ],
@@ -578,6 +583,7 @@ class Research:
             "parameters": condition.parameters.model_dump(),
             "harness": condition.harness.model_dump(),
             "activations": self.activations(run_id),
+            "effort": self.participant_effort({run_id: run.turn + 1})[run_id],
             "next_actor": create_world(
                 design, condition.parameters, run.seed, run.checkpoint
             ).actor()
@@ -711,15 +717,14 @@ class Research:
                     ParticipantActivation.run_id.in_(cutoffs)
                 )
             ).all()
+        effort = self.participant_effort(
+            {run.id: cutoffs[run.id] + (run.turn == cutoffs[run.id]) for run, _, _ in rows}
+        )
         values: dict[str, list[tuple[str, float | None]]] = defaultdict(list)
         for measure in measures:
             if measure.turn <= cutoffs[measure.run_id]:
                 values[measure.run_id].append((measure.key, measure.value))
-        attempted = {
-            rid
-            for rid, turn in activations
-            if turn <= cutoffs[rid] + 1
-        }
+        attempted = {rid for rid, turn in activations if turn <= cutoffs[rid] + 1}
         groups: dict[str, list[ComparisonRun]] = defaultdict(list)
         revisions = {}
         for run, condition, revision in rows:
@@ -742,6 +747,7 @@ class Research:
                     attempted=cutoff > 0 or run.id in attempted or status == "failed",
                     metrics=aggregate_metrics(values[run.id]) if terminal else {},
                     error=run.error if run.turn == cutoff else None,
+                    effort=effort[run.id],
                 )
             )
             revisions[revision.id] = revision
@@ -752,6 +758,56 @@ class Research:
             result["comparison"].update(revision=revision.number, design_sha256=revision.sha256)
             comparisons[key] = result
         return comparisons
+
+    def participant_effort(self, through_turns: dict[str, int]) -> dict[str, dict]:
+        """Capture all recorded attempts/charges, independently of terminal eligibility."""
+        result = {run_id: empty_effort() for run_id in through_turns}
+        with self.db.session() as session:
+            activations = session.scalars(
+                select(ParticipantActivation).where(ParticipantActivation.run_id.in_(through_turns))
+            ).all()
+            allowed = {a.id: a for a in activations if a.turn <= through_turns[a.run_id]}
+            journal = session.scalars(
+                select(ParticipantOperation).where(ParticipantOperation.activation_id.in_(allowed))
+            ).all()
+            calls = session.scalars(
+                select(ProviderCall).where(ProviderCall.activation_id.in_(allowed))
+            ).all()
+        for activation in allowed.values():
+            effort = result[activation.run_id]
+            effort["activations"] += 1
+            effort["inference_attempts"] += activation.requests
+            effort["committed_decisions"] += activation.status == "committed"
+            reason = activation.stop_reason or "in_progress"
+            effort["stop_reasons"][reason] = effort["stop_reasons"].get(reason, 0) + 1
+            source = {
+                key: value
+                for key, value in activation.identity.items()
+                if key.endswith("implementation_sha256") or key == "versions"
+            }
+            if source not in effort["implementation_sources"]:
+                effort["implementation_sources"].append(source)
+        for op in journal:
+            effort = result[allowed[op.activation_id].run_id]
+            if op.kind in {"observe", "rules", "legal_options", *OPERATION_CAPABILITY}:
+                effort["tool_attempts"] += 1
+                effort["tool_operations"] += op.status == "complete"
+            elif op.kind == "reference":
+                effort["scripted_attempts"] += 1
+                effort["scripted_decisions"] += op.status == "complete"
+        for call in calls:
+            assert call.activation_id is not None
+            effort = result[allowed[call.activation_id].run_id]
+            usage = effort["usage"]
+            usage["requests"] += 1
+            usage["input_tokens"] += call.input_tokens
+            usage["output_tokens"] += call.output_tokens
+            usage["cost_usd"] += call.charged / 1_000_000
+            usage["partial"] |= call.status in {"pending", "unknown"}
+            effort["reasoning_tokens"] += call.reasoning_tokens
+            statuses = effort["request_statuses"]
+            statuses[call.status] = statuses.get(call.status, 0) + 1
+        return result
 
     def metrics_many(self, run_ids: set[str]) -> dict[str, dict[str, float]]:
         with self.db.session() as session:

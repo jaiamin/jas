@@ -1,5 +1,13 @@
 import { OptionSelect } from "@/components/option-select";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Field,
   FieldDescription,
@@ -10,7 +18,11 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { participantHarness } from "@/lib/design";
-import type { ParticipantHarness } from "@/lib/types";
+import type {
+  EnvironmentId,
+  ParticipantHarness,
+  ScriptedHarness,
+} from "@/lib/types";
 
 const capabilities = [
   { key: "planning", policy: "actor_plan_v1", label: "Plan artifacts" },
@@ -32,11 +44,15 @@ export function HarnessFields({
   index,
   value,
   onChange,
+  environment,
+  onAblation,
 }: {
   id: string;
   index: number;
   value: ParticipantHarness;
   onChange: (value: ParticipantHarness) => void;
+  environment: EnvironmentId;
+  onAblation: (choice: "memory" | "tools" | "deliberation") => void;
 }) {
   return (
     <FieldSet>
@@ -49,21 +65,98 @@ export function HarnessFields({
             label={`Condition ${index + 1} participant harness`}
             value={value.kind}
             onValueChange={(kind) =>
-              onChange(participantHarness(kind as ParticipantHarness["kind"]))
+              onChange(
+                participantHarness(
+                  kind as ParticipantHarness["kind"],
+                  environment,
+                ),
+              )
             }
             options={[
               { value: "direct_action", label: "Direct action" },
               { value: "tool_using", label: "Tool using" },
+              { value: "scripted", label: "Scripted control" },
             ]}
           />
           <FieldDescription>
             {value.kind === "direct_action"
               ? "One request receives the current observation and proposes an action."
-              : "The participant chooses capabilities, reads and an action within these limits. Each inference is charged separately."}
+              : value.kind === "scripted"
+                ? "Non-model control. No provider requests."
+                : "The participant chooses capabilities, reads and an action within these limits. Each inference is charged separately."}
           </FieldDescription>
         </Field>
+        {value.kind === "scripted" && (
+          <Field className="sm:col-span-full">
+            <FieldLabel htmlFor={`reference-${id}`}>
+              Reference policy
+            </FieldLabel>
+            <OptionSelect
+              id={`reference-${id}`}
+              label={`Condition ${index + 1} reference policy`}
+              value={value.policy}
+              options={[
+                { value: "commons_keep_v1", label: "Keep credits · commons" },
+                {
+                  value: "commons_half_v1",
+                  label: "Half contribution · commons",
+                },
+                {
+                  value: "private_signal_v1",
+                  label: "Own private signal · information",
+                },
+              ]}
+              onValueChange={(policy) =>
+                onChange({
+                  ...value,
+                  policy: policy as ScriptedHarness["policy"],
+                })
+              }
+            />
+            <FieldDescription>
+              Keep credits contributes zero. Half contribution uses half the
+              legal maximum, rounded down. Own private signal chooses the
+              actor's observed signal. Controls read only that participant's
+              observation and legal options, send no communication and retain no
+              self-authored notes. The named world is required.
+            </FieldDescription>
+          </Field>
+        )}
         {value.kind === "tool_using" && (
           <>
+            <Field className="sm:col-span-full">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="self-start"
+                  >
+                    Apply ablation
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem onSelect={() => onAblation("memory")}>
+                      Disable retained memory
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => onAblation("tools")}>
+                      Disable tool access
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onSelect={() => onAblation("deliberation")}
+                    >
+                      Limit to one inference
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <FieldDescription>
+                Applies an editable, saved configuration. One inference may
+                decide immediately; choosing an auxiliary operation can exhaust
+                its budget without an action.
+              </FieldDescription>
+            </Field>
             <Field>
               <FieldLabel htmlFor={`requests-${id}`}>
                 Maximum requests per activation
