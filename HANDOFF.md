@@ -1,5 +1,30 @@
 # T17 bounded backend continuation (2026-11-10)
 
+Latest: root's single released `generation-green-01` passes1 test in8.05s on
+unchanged source9742aa243e6c9c8f9fdc3069e6e5bdde71806272927ea1c28ea8a57bab0830a7.
+Actual Pydantic AI scripted-Sol orchestration emits WAT, reaches real qualified
+worker/external finite admission/library/planner and returns a pending supported
+proposal. Six requests reserve/settle separately; saving adds zero requests and
+participants are unsampled. This is DEVELOPMENT orchestration, not live competence.
+Earlier finite World/Engine/refund/ACL/restoration green and API422/202 red remain.
+Root again holds ALL NEW captures/checks/heavy jobs after that one check. Bytecode
+disabled; under-lock free147,189,760→144,564,224. Post-result metadata observed
+free142,880,768 and10,805,900 evidence bytes/736 files; flock released.
+See [plan continuation](docs/research/T17_EXTENSION_GENERATION.md) for every
+attempt/source/limitation. Combined proposed source now uses DB12/export13,
+library8/definition2/research2, explicitly rejecting prior/intermediate contracts.
+Broader/static/frontend/production qualification remains held. No live provider/paid
+or held-out work. Accepted2ad967f docs-only may supersede the earlier29af merge;
+it remains unmerged and provisional T14 remains excluded.
+
+Source-only second DEVELOPMENT contract now specifies an irrevocable co-signature
+escrow with return to the initiator for release, pre-sign refund/veto and distinct
+stop/horizon consequences. Its literal180+4 domain, privacy and restore/replay
+oracles are in the T17 plan and
+`backend/tests/fixtures/t17_cosigned_escrow_contract.json`. Parent contract review
+and a new resource slot are pending; no second candidate/WAT/test output exists.
+Do not repair Engine start dispatch before its later independent public-API red.
+
 Setup02 passed after root's new headroom evidence: free278,548,480→274,673,664;
 normal frozen uv hardlink sync reused the explicitly coordinated T14 cache into
 this checkout's distinct `.venv`. Private sys.prefix and agent_sim import proof

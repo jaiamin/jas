@@ -18,7 +18,7 @@ from .research_tools import (
     ProbeStep,
     ResearchTools,
 )
-from .simulation.environments import CATALOG, create_world
+from .simulation.environments import CATALOG, create_world, get_environment
 from .templates import templates
 from .validity import Requirement, factorial_issues, requirement_issues
 
@@ -194,6 +194,18 @@ clarification, return supported=false and no executable proposal; retain the sam
 For unsupported questions supply up to three alternatives with an installed environment,
 clearly narrower question and remaining limitation. These are suggestions, never substitute
 protocols or authorization to run them.
+"""
+
+PLANNING += """
+An actual admitted reviewed_finite source may also be supplied by discovery. This narrow
+extension profile requires an independently user-authored exhaustive finite table fixed BEFORE
+generation. It is bounded artifact synthesis against that table, not independent understanding
+of natural-language intent or a universal language for rich installed Worlds. Inspect its pinned
+contract/source/checks, explicit role bindings, static actor-private facts, resource conservation,
+terminal/horizon and harness/effort limits. Reject unsupported richer semantics honestly.
+The reviewed_finite_transitions capability refers only to that actual pinned contract; retain
+human review of whether it expresses the question. Never invent a source, change the contract,
+or use candidate explanations/self-tests as admission. Saving never samples participants.
 """
 
 
@@ -440,9 +452,12 @@ class Planner:
         if operation["status"] == "pending":
             await asyncio.to_thread(tools.dispatch, request, operation)
         self.progress(key, "discovering", research=tools.record)
-        context["research_operations"] = tools.record
+        context["research_operations"] = tools.prompt_record()
         sources = [e["source"] for e in operation["data"]["environments"]]
         sources.extend(operation["data"]["custom_environments"])
+        sources.extend(source for op in tools.record["operations"]
+                       if op["request"]["kind"] == "capabilities" and op["status"] == "complete"
+                       for source in op["data"]["custom_environments"])
         sources.extend(
             proposal["environment_source"]
             for previous in tools.previous.values()
@@ -559,7 +574,9 @@ class Planner:
             }
         gaps = {
             environment: requirement_issues(environment, brief.requirements)
-            for environment in CATALOG
+            for environment in dict.fromkeys([
+                *CATALOG, *(source["definition"]["environment"] for source in sources)
+            ])
         }
         if all(gaps.values()):
             closest = min(gaps, key=lambda environment: len(gaps[environment]))
@@ -567,7 +584,7 @@ class Planner:
                 **PlannedStudy(
                     supported=False,
                     explanation="No single environment implements this required combination. "
-                    f"Closest fit, {CATALOG[closest].name}, still lacks: "
+                    f"Closest fit, {get_environment(closest).name}, still lacks: "
                     + " ".join(gaps[closest])
                     + "".join(
                         f"\n\nSupported narrower question: {a.question}\n{a.limitation}"
@@ -607,6 +624,7 @@ class Planner:
             planning.pop("preflight", None)
             context.pop("preflight", None)
             self.progress(key, "drafting" if attempt == 0 else "revising", planning=planning)
+            context["research_operations"] = tools.prompt_record()
             candidate = await self._call(
                 key,
                 Candidate,
@@ -671,6 +689,7 @@ class Planner:
                 self.progress(key, "revising", planning=planning)
                 continue
             self.progress(key, "reviewing", planning=planning)
+            context["research_operations"] = tools.prompt_record()
             review = await self._call(
                 key,
                 DesignReview,

@@ -1,0 +1,62 @@
+{
+  "format": "jas-finite-contract-v1",
+  "name": "Irrevocable co-signature escrow DEVELOPMENT",
+  "provenance": "Independent T17 second DEVELOPMENT oracle; source-authored after first generation green and before any second candidate output. Awaiting parent contract review before generation.",
+  "requirements": "An initiator offers one unit from a shared two-unit allowance into escrow. The counterparty can sign, wait, veto with a full refund and terminal failure, or stop with escrow forfeiture. Before signing the initiator can cancel with full refund and offer again; after signing cancellation is denied for both actors. Only the initiator can release a signed offer, consuming the escrowed unit and succeeding with the other unit still available. Stop forfeits any escrow and fails; horizon fails without a release or implicit refund. Fixed actor order, static private facts, no communication, no external operations. This independently supplied finite table is a prerequisite, not proof that natural-language intent was independently understood.",
+  "roles": ["initiator", "counterparty"],
+  "states": [
+    {"key": "open", "escrow": 0, "status": "running"},
+    {"key": "offered", "escrow": 1, "status": "running"},
+    {"key": "signed", "escrow": 1, "status": "running"},
+    {"key": "released", "escrow": 0, "status": "success"},
+    {"key": "stopped", "escrow": 0, "status": "failure"}
+  ],
+  "operations": [
+    {"key": "offer", "roles": ["initiator"]},
+    {"key": "sign", "roles": ["counterparty"]},
+    {"key": "release", "roles": ["initiator"]},
+    {"key": "cancel", "roles": ["initiator", "counterparty"]},
+    {"key": "wait", "roles": ["initiator", "counterparty"]},
+    {"key": "stop", "roles": ["initiator", "counterparty"]}
+  ],
+  "initial_state": 0,
+  "initial_credits": 2,
+  "total_resource": 2,
+  "max_credits": 2,
+  "table": [
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, 1, 13,
+    -1, -1, -1, -1, 1, 13,
+    4, -1, -1, -1, 2, 14,
+    -1, -1, -1, -1, 2, 14,
+
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, 2, 4, 13,
+    -1, 7, -1, 14, 4, 13,
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1,
+
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, 10, -1, 7, 13,
+    -1, -1, -1, -1, 7, 13,
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1,
+
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1,
+
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1
+  ]
+}

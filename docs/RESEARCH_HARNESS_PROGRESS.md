@@ -1,5 +1,19 @@
 # Research harness implementation progress
 
+Latest T17: root's single released scripted-Sol generation-green-01 passes on
+exact unchanged source9742aa243e6c9c8f9fdc3069e6e5bdde71806272927ea1c28ea8a57bab0830a7.
+Actual Pydantic AI dispatch, emitted WAT, qualified worker/external finite checks,
+admission/library and pending planner proposal pass; six separate reserved/settled
+requests, zero participant sampling and zero further requests on save. This is
+keyless DEVELOPMENT orchestration, not live competence. Earlier finite World/
+Engine/refund/ACL/resource/horizon/restoration witnesses and422/202 red remain.
+Root again holds new captures/checks/heavy jobs. Combined proposed contracts
+DB12/export13/library8/definition2/research2 need broader/static/frontend/
+production qualification; no new stage is implied by the single green.
+Accepted2ad967f docs-only supersession is documented but unmerged; provisional
+T14/T12 remain excluded. See the T17 plan and retained10,805,900-byte evidence.
+Flock released; latest metadata-only shared free142,880,768 bytes.
+
 T17 continuation: normal-manager private Python setup/import proof and first
 API405/201 red are now observed, retained and followed by bounded backend
 red/green slices for immutable external finite contracts and actual-worker

@@ -691,6 +691,15 @@ CATALOG = {
 
 
 def get_environment(key: str) -> EnvironmentDefinition:
+    if key == "reviewed_finite":
+        from .finite import ReviewedFinite
+
+        return EnvironmentDefinition(
+            "reviewed_finite", "Reviewed finite extension",
+            "Requires an external exhaustive finite contract and independently admitted WAT; "
+            "not natural-language understanding or support for arbitrary rich worlds.",
+            ReviewedFinite, "finite_success", ("finite", "memory"), ("finite_success",),
+        )
     if key == "sealed_relay":
         from .extension import SealedRelay
 
@@ -711,6 +720,10 @@ MEASURE_DESCRIPTIONS["relay_success"] = (
     "reached released phase2; no inference about intelligence or "
     "intent."
 )
+MEASURE_DESCRIPTIONS["finite_success"] = (
+    "One terminal 0/1: reached a success state of the externally reviewed finite contract; "
+    "zero available credits or horizon is unsuccessful otherwise. No competence inference."
+)
 
 
 def create_world(
@@ -720,5 +733,9 @@ def create_world(
     from .extension import SealedRelay
 
     if isinstance(world, SealedRelay):
+        world.runner = runner
+    from .finite import ReviewedFinite
+
+    if isinstance(world, ReviewedFinite):
         world.runner = runner
     return world

@@ -10,7 +10,16 @@ from typing import Literal
 
 from pydantic import Field, field_validator
 
-from .domain import Action, Decision, Design, RelayAction, StopArtifact, Strict, Treatment
+from .domain import (
+    Action,
+    Decision,
+    Design,
+    FiniteAction,
+    RelayAction,
+    StopArtifact,
+    Strict,
+    Treatment,
+)
 from .simulation.checkpoints import Observation
 from .simulation.environments import create_world, get_environment
 from .simulation.world import World
@@ -25,6 +34,11 @@ COMMON = {
     "repeated_interaction": "Finite repeated model decisions, not calibrated human prediction.",
 }
 CAPABILITIES = {
+    "reviewed_finite": {
+        "reviewed_finite_transitions": "Pinned explicit role/state/credit transitions against an "
+        "external exhaustive reviewed table; no proof of natural-language understanding. "
+        "Static actor-private fields, fixed role order, conservation and horizon.",
+    },
     "reliance_commitments": {
         "versioned_artifacts": "Actor-authorized artifacts and voluntary read-access entrusting.",
         "distributed_information": "Four local-value participants, addressed mail and "
@@ -106,6 +120,7 @@ class Requirement(Strict):
         "exclude behavioral outcome labels.",
     )
     capability: Literal[
+        "reviewed_finite_transitions",
         "versioned_artifacts",
         "distributed_information",
         "artifact_verification",
@@ -164,6 +179,7 @@ def capabilities(environment: str) -> dict[str, str]:
     if environment in {
         "artifact_workspace",
         "sealed_relay",
+        "reviewed_finite",
         "distributed_coordination",
         "reliance_commitments",
     }:
@@ -313,6 +329,16 @@ def factorial_issues(grid: dict) -> list[dict]:
 
 def _instrument(world: World, actor: str, observation: Observation, variant: int) -> Decision:
     """Legal diagnostic choices only. Never used by participant execution."""
+    if "finite" in observation:
+        choices = [option["kind"] for option in observation["legal_actions"]]
+        if not choices:
+            raise ValueError("Reviewed finite contract has no operation for its current actor")
+        return Decision(
+            action=FiniteAction(operation=choices[variant % len(choices)]),
+            rationale="External finite preflight witness, not model behavior.",
+            memory="",
+            forecast=None,
+        )
     if "relay" in observation:
         choices = [option["kind"] for option in observation["legal_actions"]]
         operation = choices[0] if variant == 0 else "wait" if variant == 1 else "stop"
@@ -422,7 +448,7 @@ def _trace(design: Design, condition: Treatment, variant: int, runner=None) -> d
 
 
 def preflight(design: Design, *, runner=None) -> dict:
-    if design.environment == "sealed_relay":
+    if design.environment in {"sealed_relay", "reviewed_finite"}:
         return _preflight.__wrapped__(design.model_dump_json(), runner)
     return copy.deepcopy(_preflight(design.model_dump_json()))
 
@@ -599,6 +625,7 @@ def _preflight(specification: str, runner=None) -> dict:
     if design.environment not in {
         "artifact_workspace",
         "sealed_relay",
+        "reviewed_finite",
         "distributed_coordination",
         "reliance_commitments",
     }:

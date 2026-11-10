@@ -374,3 +374,261 @@ provisional/excluded. Next: finite World/admission and Engine lifecycle at API,
 then real bounded scripted-Sol generation/accounting/proposal slices. No second
 variation until the first real World red/green. Final qualification, merge,
 manifest/closure and new fresh integration review remain incomplete.
+
+## World boundary and subsequent recovery hold
+
+Accepted29af3413 was normally merged as8341531e after checkpointbb4138c4.
+Only HANDOFF/PROGRESS conflicted; both histories were retained. Root subsequently
+documented accepted2ad967f325ad2fb4c2d842323944dd01c69f07ef as a permissible
+docs-only supersession; it is not yet merged. Never follow the moving integration
+branch, which may include provisional review work.
+
+`finite-world-red-01` observes405 vs201 at actual finite admission, source
+`46bb7e9fbaf7eb5be1a0c8fe0c0d436bbce8198cf7f0c8094a837593da924c21`.
+`finite-world-green-01` passes on
+`a03023aa65541c10337d785030417824f6e9d0f4c33d8f24f13e7a1bed90d108`:
+real worker/external admission, library/immutable revision, real Engine with two
+scripted Luna activations, exact issue/redeem resources and private docket,
+source pin/export and zero-provider replay. No actual Sol generation was observed.
+
+`finite-restore-red-01` retains a strict-checkpoint defect on
+`a2958cf126e8f1d444fac58e8d979abd643285708cc060fae6a15b9514702fdb`:
+literal refund/reissue/denial/horizon/stop/exhaustion/privacy checks already pass,
+but a boolean resource checkpoint is accepted. The correction rejects coerced
+resource types, impossible logical time and inconsistent terminal facts;
+`finite-restore-green-01` passes on
+`a0652edb7d458cb26e5f585b64e9d926359cb388a84ee9df9778898e6a7f48a6`.
+All four memory modes preserve hidden-docket observation/schema/restored
+projection equality. Two issue/wait/revoke/wait rounds retain resource2/spent0
+and terminate unsuccessfully at horizon. These are exact DEVELOPMENT witnesses,
+separate from containment, participant competence and semantic intent review.
+
+Static attempts `backend-static-01` and `backend-types-01` retain42 Ruff and6 ty
+diagnostics. Own recorded import/format passes preserve before/after source
+identities and explicitly mark intended source changes; remaining verification
+is pending. No check was weakened. Formatting does not qualify product behavior.
+
+First actual generation-workflow RED `generation-red-01` observes422 vs202:
+the existing question endpoint rejects explicit `generation` authorization.
+Source `0d883e4f9729d48e9b175c9e2887d4e5a3d874b341a9ed508ef03d361496bf1a`
+is unchanged; exit1, output8,974,249 bytes cumulative and150,851,584 free. Root
+then held ALL NEW captures/checks/heavy jobs for resource recovery. Lock is
+released. No blind retries, provider/service/frontend/production work follows.
+
+Bounded source edits for this already observed red add explicit per-question
+authorization, separate atomic reservation/settlement for every nested Sol
+request, an append-only hash-linked generation journal, explicit check/admission
+operations and pending proposal handoff. Candidate output precedes worker work;
+completed offloaded results survive cancellation. A source-linked catalog refresh
+is a new operation, not a rewrite of original discovery. These source edits are
+**unrun and unqualified** until root releases the next bounded job. The generator
+contains no permit answer, WAT compiler or catalog selector. It calls the real
+Pydantic AI accounting path with the Sol identity; the DEVELOPMENT provider seam
+will return a prewritten WAT artifact solely to qualify orchestration.
+
+The intermediate World-only provisional DB11/export12 is now rejected by the
+combined generation/accounting schema **DB12/export13**, library8/definition2,
+research-operation record2; unchanged capture1/comparison1/tool2.0/direct1.0.
+This explicitly versions the newly persisted allowance/counters and operation
+meaning. No migration, alias, reset or historical reinterpretation. T14 remains
+provisional/excluded. Backend current callers are being advanced; frontend
+callers are still held and must be updated/qualified before completion.
+
+Next released generation green forecasts at most4MiB additional peak/output;
+current evidence remains below20MiB. After first observed generation green,
+continue request/candidate/money/unknown/cancellation/primary-error and actual
+worker-dispatch regressions, then freeze a second genuinely new DEVELOPMENT
+variation before its outputs. A second variation has not been authored or run.
+Frontend/browser and fresh non-root production need separate resource releases.
+
+## Read-only review during recovery hold
+
+Resumed on the same Linux checkout/branch and confirmed HEAD
+`8341531e0930952d38c85f8420d92be004c9aff1` includes the assigned accepted base.
+No check, capture, installation or service was started after `generation-red-01`;
+the last observed free/output measurements above are historical, not a new
+headroom release. Re-read the implement-spec/TDD instructions and current source.
+The frozen permit table and scripted candidate source remain unchanged.
+
+Source inspection identifies these next vertical obligations; none is a claimed
+observed failure or a reason to implement ahead of its public-API red:
+
+- **Actual-worker control dispatch.** `Engine.start` and `start_study` still call
+  synchronous `_preflight` / `Research.check_run`, which can reach executable
+  World checks on the API loop. The accepted T16 create/revise route repair
+  offloads the complete save, and the new generation validation/check/admission/
+  library operations are offloaded. Those facts do not establish responsive
+  start controls. The later discriminator must place a barrier at the external
+  worker-process boundary, observe a concurrent public read while start is
+  pending, then release it and verify only one server-owned run writer, actual
+  Engine settlement and exact replay. Do not bypass qualification or replace
+  the executable World with a fake.
+- **Unfinished journal recovery.** Analysis/provider restart recovery does not
+  currently close a generation journal left `in_progress`. The intended later
+  HTTP witness must preserve every existing event/hash and append an explicit
+  interrupted stop without a new provider request; repeated startup must append
+  nothing further. Recovery cannot reinterpret a failed candidate as admitted.
+- **Retained provenance and accounting.** Later request/candidate/money/error/
+  cancellation slices must read the public analysis/request/generation records,
+  distinguish reserved candidate attempts from emitted artifacts, and preserve
+  primary errors and unknown charges. A generation export must retain the frozen
+  authorization, every attempt/repair/event/source and its individual provider
+  accounting; export version13 alone is not evidence of that content.
+- **Supported-profile boundaries.** An unused malformed role name can currently
+  pass the external contract's plain `roles: list[str]` field. A running state
+  can also have no enabled operation for its next actor. Future boundary cases
+  must either reject such unsupported contracts before generation or expose an
+  independently specified unsuccessful stop; model prose cannot invent progress
+  or relax the external table. No such repair has been implemented during hold.
+
+Resource inspection distinguishes process calls from guest instances. For a
+table of D inputs and E candidate examples, generation through mechanics save
+uses at most `4 + 2*D` worker processes: one candidate validation, one external
+check, one admission recheck, two per accepted World-table row, and one save
+recheck. Candidate validation creates `2*E` fresh instances; each full-domain
+check creates `2*(D+4)` fresh instances. Planner probes/preflight are additional
+bounded work and must not be described as included in this generation-only
+process bound. Every process retains the unchanged worker CPU/wall/fuel/memory
+limits. This is a source-derived forecast, not measured execution evidence.
+
+The immediate next released job remains the single pending scripted-Sol workflow
+test, forecasting4MiB extra peak and retaining its full source/receipt even if it
+fails again. Only after an observed first generation green may a second genuinely
+new DEVELOPMENT variation be independently frozen. No second candidate/oracle,
+frontend work, service or production job was introduced during this hold.
+
+## First actual scripted-Sol generation green; new check hold
+
+Root released exactly one `generation-green-01` after T12's distinct offline
+setup/import boundary. No installation/cache consumer was needed. The existing
+private environment ran only
+`test_authorized_question_generates_actual_wat_then_returns_pending_reviewed_proposal`:
+**1 passed in8.05s, exit0**. Exact source before/after is
+`9742aa243e6c9c8f9fdc3069e6e5bdde71806272927ea1c28ea8a57bab0830a7`;
+the cached-only, protected-excluded selection and every regular ancestor were
+preflighted before payload reads. This invocation's selected test/conftest/imported
+oracle do not call the frozen benchmark snapshot routine; no indirect benchmark
+snapshot ran. Future invocations that can reach it still require their own
+invocation-local safe selection before any such subprocess reads. The original
+runner remains untouched. Bytecode was disabled for the recorder, pytest and
+qualified worker. No protected source/configuration was read or captured.
+
+The passing public workflow witnesses actual Pydantic AI operation dispatch at
+the Sol identity using a keyless external FunctionModel stand-in, explicit WAT
+output, real qualified artifact validation, the immutable120+4 external oracle,
+actual finite World admission, reusable mechanics and a pending supported planner
+proposal. It observes six separately reserved/settled Sol-identity requests,
+source-linked attempts/checks/admission, no participant sampling and zero further
+requests when saving the proposal. This qualifies the scripted orchestration
+slice; it does not establish live Sol competence or prove that natural-language
+intent was independently understood. Earlier World/Engine/red/green evidence
+retains its separate source identity; it was not rerun in this one-test release.
+
+Under-lock free bytes were147,189,760 before capture,146,522,112 immediately
+before pytest and144,564,224 at command completion. The unchanged134,217,728
+floor plus4,194,304 forecast passed. After the result receipt closed, a
+metadata-only footprint observed **10,805,900 bytes /736 files** and shared free
+**142,880,768 bytes**. The prior8,974,249-byte reported red footprint and its
+additional final receipt remain intact. Total new bytes fit the20MiB envelope.
+Shared flock released normally; no owned service/browser/job remains.
+
+Root has explicitly held ALL NEW checks/captures after this single job. No retry,
+broader/static/type/frontend/service/browser/production/provider/paid/held-out
+work is authorized by this result. Continue source-only specification/review;
+the later Engine control dispatch red must precede its repair. The exact accepted
+merge target remains2ad967f325ad2fb4c2d842323944dd01c69f07ef, unmerged here.
+T14/T12 provisional product remains excluded and T17 remains UNACCEPTED.
+One attempted documentation patch used an incorrect HANDOFF heading and was
+rejected without changes; the corrected patch follows. It is not product evidence.
+
+## Proposed second DEVELOPMENT discriminator, frozen before candidate output
+
+**Source-only proposal; parent contract review and another staged check release
+remain pending.** No second candidate, WAT, generation or test run exists.
+The independent literal external contract is
+[`t17_cosigned_escrow_contract.json`](../../backend/tests/fixtures/t17_cosigned_escrow_contract.json).
+Do not edit that fixture after review/generation; a correction would require a
+separately identified specification and retention of the original attempt.
+
+The new consequence is an **irrevocable co-signature lock with return to the
+initiator for release**. T16 sealed relay has only lodge/release/wait/stop,
+charges1 then2 credits, and has no refund or consent lock. Accepted reliance
+grants are irrevocable access grants, with final alternative choices and declared
+effects, not a reversible escrow plus co-signature/release protocol. Distributed
+choices are final alternatives; resource controllers remain static. Composition
+of those rules supplies neither an executable pre-sign cancellation refund nor
+the state-dependent denial after signing. The first provisional permit can be
+revoked while live and completes directly when the holder redeems; it has no
+intermediate irrevocable signature and return to the original actor. This
+proposal therefore needs another actual artifact, rather than a renamed source
+or a catalog selection. The finite runtime is reused; no new universal language
+or arbitrary richer-world capability is claimed.
+
+The independently specified full domain is180 inputs: five states, three
+available-credit values, two actor slots and six operations. Encoding is
+`(((state*3+available)*2+slot)*6+operation)`; outputs are `next_state*3+available`
+or denial-1. States, in order, are open0/escrow0, offered1/escrow1,
+signed2/escrow1, released3/escrow0(success), stopped4/escrow0(failure). Initial
+state is open with available2 and total2. Slots are initiator0, counterparty1;
+operations are offer0, sign1, release2, cancel3, wait4, stop5. All source states
+with available0, offered/signed with available2, all terminal states, and signed
+i32 inputs-1/180/INT_MAX/INT_MIN deny. Every other full-domain cell is literal in
+the external fixture, with the following complete non-denial rows:
+
+| State / available | Initiator: offer, sign, release, cancel, wait, stop | Counterparty: offer, sign, release, cancel, wait, stop |
+| --- | --- | --- |
+| open /1 | -1,-1,-1,-1,1,13 | -1,-1,-1,-1,1,13 |
+| open /2 | 4,-1,-1,-1,2,14 | -1,-1,-1,-1,2,14 |
+| offered /1 | -1,-1,-1,2,4,13 | -1,7,-1,14,4,13 |
+| signed /1 | -1,-1,10,-1,7,13 | -1,-1,-1,-1,7,13 |
+
+Each valid step conserves `available + escrow + spent = 2`; spent cannot
+decrease. Offering escrows one unit, cancel before signing refunds exactly that
+unit, signing changes no resources, release consumes only the escrow and leaves
+available1/spent1. Stop consumes any escrow and keeps the available balance;
+counterparty cancel while offered is a veto with full refund, stopped/available2/
+spent0. Cancel after signing is denied atomically, including for the initiator.
+No action from open/available1 can offer into an immediately exhausted running
+state. Wait costs no resource but consumes its normal logical turn. An operator
+horizon terminates unsuccessfully without a synthetic release/refund; a signed
+horizon preserves available1/escrow1/spent0 as a terminal checkpoint.
+
+Frozen literal traces for later public World/Engine/restore/replay witnesses:
+
+- **Success:** initiator offer24→4, counterparty sign55→7, initiator release86→10;
+  three turns, terminal success, available1/escrow0/spent1. Wrong-role sign49,
+  early release50 and counterparty release92 deny without state/time changes.
+- **Refund and reoffer:** offer24→4, counterparty wait58→4, initiator cancel51→2,
+  counterparty wait34→2, then offer/sign/release. The refund prefix has spent0;
+  repeating that four-turn prefix twice reaches an eight-turn unsuccessful horizon
+  at open/available2/escrow0/spent0, without minted resources.
+- **Veto:** offer24→4 then counterparty cancel57→14; terminal failure,
+  available2/escrow0/spent0. No later release or signature is possible.
+- **Irrevocability:** after offer/sign, cancellation87 or93 denies atomically.
+  Stop89 or95 ends unsuccessfully at stopped/available1/spent1. A two-round
+  offer/sign/wait/wait trajectory instead ends at signed/available1/escrow1/spent0.
+- **Private projections:** independently vary the initiator-only static docket
+  `consent-37`/`consent-91`; counterparty observation, decision schema, tool and
+  restored projections must be identical in none/notes/history/episodic modes.
+  Prose role labels cannot alter bound permissions. No dynamic ACL or revocable
+  erasure of facts already delivered is promised by this profile.
+- **Restoration/replay:** preserve all state/resource/time/memory/package fields,
+  each accepted effect/event/measurement and every atomic denied step. Replay of
+  recorded accepted decisions makes exactly zero provider requests. All terminal,
+  exhausted, invalid resource and outside-domain cells are compared twice from
+  fresh guest instances:368 instances per full-domain check.
+
+The later orchestration discriminator should retain an explicit wrong artifact
+that passes its own supplied example but fails this independent table, followed
+only by an explicit source-linked repair within a two-candidate user allowance.
+The wrong candidate cannot admit itself; the repair must output a different WAT
+artifact, retain the prior failure/cost and reach a pending proposal. This is a
+prospective vertical test design, not an observed red or implementation grant.
+No model-produced prose or examples can author or relax these expected values.
+
+No setup/dependency change is needed. A future single backend slice forecasts at
+most4MiB extra output/peak with existing private dependencies, unchanged128MiB
+floor and shared flock. Resource hold and20MiB cumulative envelope still apply.
+The full external finite contract remains a prerequisite; richer/dynamic
+information policies and external systems stay unsupported. Live competence and
+the final held-out mechanic remain entirely unexamined.

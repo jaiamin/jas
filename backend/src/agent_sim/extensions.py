@@ -17,7 +17,13 @@ from pydantic import Field
 from sqlalchemy.exc import NoResultFound
 
 from .db import digest, now, uid
-from .domain import AdmissionCheck, ExtensionPackage, Strict
+from .domain import (
+    AdmissionCheck,
+    ExecutablePackage,
+    ExtensionPackage,
+    FiniteExtensionPackage,
+    Strict,
+)
 from .extension_profile import (
     CAPABILITIES,
     INPUTS,
@@ -28,7 +34,21 @@ from .extension_profile import (
 )
 from .extension_sandbox import WORKER, execute
 from .finite_contract import (
-    FiniteArtifactCheck, FiniteContract, ReviewedFiniteContract, contract_inputs, contract_outputs,
+    FiniteArtifactCheck,
+    FiniteContract,
+    ReviewedFiniteContract,
+    contract_inputs,
+    contract_outputs,
+)
+from .finite_profile import (
+    STAGES as FINITE_STAGES,
+)
+from .generation_store import GenerationStore
+from .finite_profile import (
+    profile_hash as finite_profile_hash,
+)
+from .finite_profile import (
+    validate_package as validate_finite_package,
 )
 
 CASES = Path(__file__).with_name("extension_qualification.json")
@@ -107,6 +127,26 @@ class ExtensionAdmission(Strict):
     )
 
 
+class FiniteAdmission(Strict):
+    format: Literal["jas-finite-admission-v1"] = "jas-finite-admission-v1"
+    id: str
+    created: str
+    artifact_check_id: str
+    runnable: bool = False
+    checks: list[AdmissionCheck]
+    package: FiniteExtensionPackage | None = None
+    sha256: str = ""
+    limitations: list[str] = Field(
+        default_factory=lambda: [
+            "External exhaustive finite transition table is a prerequisite, not understood intent.",
+            "Supports bounded deterministic role/state/credit transitions and static actor-private facts.",
+            "Richer worlds, dynamic information, imports, native code and external systems unsupported.",
+            "Copied probe isolation differs from qualified executable containment; current runtime required.",
+            "Participant trials require separate explicit user execution; no live competence established.",
+        ]
+    )
+
+
 class Extensions:
     def __init__(self, database_path: str | None):
         self.temporary = (
@@ -121,11 +161,14 @@ class Extensions:
         )
         self.lock = RLock()
         self.runtime = ExtensionRuntime()
+        self.generations = GenerationStore(self.root / "generations")
 
     def freeze_contract(self, specification: FiniteContract) -> ReviewedFiniteContract:
         with self.lock:
             record = ReviewedFiniteContract(
-                id=uid(), created=now(), specification=specification.model_copy(deep=True),
+                id=uid(),
+                created=now(),
+                specification=specification.model_copy(deep=True),
                 sha256=digest(specification.model_dump()),
             )
             path = self.root / "contracts" / f"{record.id}.json"
@@ -156,14 +199,16 @@ class Extensions:
         with self.lock:
             return sorted(
                 (self.contract(p.stem) for p in (self.root / "contracts").glob("*.json")),
-                key=lambda r: r.created, reverse=True,
+                key=lambda r: r.created,
+                reverse=True,
             )
 
     def check_finite_artifact(self, key: str, review_id: str) -> FiniteArtifactCheck:
         with self.lock:
             contract, review = self.contract(key), self.get(review_id)
-            inputs, oracle = contract_inputs(contract.specification), contract_outputs(
-                contract.specification
+            inputs, oracle = (
+                contract_inputs(contract.specification),
+                contract_outputs(contract.specification),
             )
             result: dict = {"code": "blocked"}
             detail = "Candidate validation and current containment qualification are required."
@@ -172,7 +217,10 @@ class Extensions:
                 if review.admission != "needs_world_review":
                     raise ValueError("Blocked or rejected candidate cannot pass independent checks")
                 result = execute(review.candidate.source, inputs)
-                if result["code"] in {"worker_failed", "worker_unavailable"} or not result["cleaned"]:
+                if (
+                    result["code"] in {"worker_failed", "worker_unavailable"}
+                    or not result["cleaned"]
+                ):
                     self.runtime = ExtensionRuntime(status="failed", detail="Finite worker failed.")
                 detail = (
                     "External exhaustive table and four invalid encodings checked twice from fresh "
@@ -183,12 +231,22 @@ class Extensions:
                 detail = str(error)
             observed = result.get("outputs", [])
             record = FiniteArtifactCheck(
-                id=uid(), created=now(), contract=contract, review_id=review.id,
-                candidate_sha256=review.candidate_sha256, runtime=self.runtime.model_dump(),
-                code=result["code"], inputs=inputs, expected=oracle, observed=observed,
-                passed=(result["code"] == "ok" and result.get("cleaned", False)
-                        and observed == oracle),
-                wasm_sha256=result.get("wasm_sha256"), detail=detail, sha256="",
+                id=uid(),
+                created=now(),
+                contract=contract,
+                review_id=review.id,
+                candidate_sha256=review.candidate_sha256,
+                runtime=self.runtime.model_dump(),
+                code=result["code"],
+                inputs=inputs,
+                expected=oracle,
+                observed=observed,
+                passed=(
+                    result["code"] == "ok" and result.get("cleaned", False) and observed == oracle
+                ),
+                wasm_sha256=result.get("wasm_sha256"),
+                detail=detail,
+                sha256="",
             )
             record.sha256 = digest(record.model_dump(exclude={"sha256"}))
             path = self.root / "finite-checks" / f"{record.id}.json"
@@ -219,7 +277,122 @@ class Extensions:
         with self.lock:
             return sorted(
                 (self.finite_check(p.stem) for p in (self.root / "finite-checks").glob("*.json")),
-                key=lambda r: r.created, reverse=True,
+                key=lambda r: r.created,
+                reverse=True,
+            )
+
+    def admit_finite(self, key: str) -> FiniteAdmission:
+        with self.lock:
+            check = self.finite_check(key)
+            record = FiniteAdmission(id=uid(), created=now(), artifact_check_id=key, checks=[])
+            try:
+                self.require_qualified()
+                if (
+                    not check.passed
+                    or check.runtime.get("fingerprint") != self.runtime.fingerprint
+                    or self.contract(check.contract.id) != check.contract
+                ):
+                    raise ValueError(
+                        "Matching passed external check and actual frozen contract required"
+                    )
+                review = self.get(check.review_id)
+                if review.candidate_sha256 != check.candidate_sha256:
+                    raise ValueError("Checked candidate identity differs")
+                # Re-execute at admission. Earlier examples or a copied claimed proof do not admit.
+                result = execute(review.candidate.source, check.inputs)
+                if (
+                    result["code"] != "ok"
+                    or not result["cleaned"]
+                    or result["outputs"] != check.expected
+                ):
+                    raise ValueError("Finite artifact failed independent recheck")
+                checks = [
+                    AdmissionCheck(stage=stage, status="passed", detail=detail)
+                    for stage, detail in zip(
+                        FINITE_STAGES,
+                        [
+                            "Current credential-free/import-free bounded worker is qualified.",
+                            "Actual artifact matched the immutable external full domain twice.",
+                            "External table consequences, role guards, resource conservation, private "
+                            "projections and exact World checkpoint/event/measurement restoration/replay.",
+                        ],
+                        strict=True,
+                    )
+                ]
+                package = FiniteExtensionPackage(
+                    name=review.candidate.name,
+                    provenance=review.candidate.provenance,
+                    source=review.candidate.source,
+                    source_sha256=hashlib.sha256(review.candidate.source.encode()).hexdigest(),
+                    wasm_sha256=result["wasm_sha256"],
+                    profile_sha256=finite_profile_hash(),
+                    contract=check.contract.model_dump(),
+                    review_id=review.id,
+                    artifact_check_id=key,
+                    admission_id=record.id,
+                    created=record.created,
+                    containment=self.runtime.model_dump(),
+                    checks=checks,
+                    verification={
+                        "inputs_sha256": digest(check.inputs),
+                        "expected_sha256": digest(check.expected),
+                        "observed_sha256": digest(result["outputs"]),
+                        "fresh_instances": len(check.inputs),
+                        "world_checks_sha256": hashlib.sha256(
+                            WORKER.with_name("finite_checks.py").read_bytes()
+                        ).hexdigest(),
+                    },
+                    sha256="0" * 64,
+                )
+                package.sha256 = digest(package.model_dump(exclude={"sha256"}))
+                from .finite_checks import qualify_world
+
+                qualify_world(package, self.transition)
+                record.checks, record.package, record.runnable = checks, package, True
+            except ValueError as error:
+                record.checks.append(
+                    AdmissionCheck(
+                        stage="admission",
+                        status="failed" if self.runtime.validation_enabled else "blocked",
+                        detail=str(error),
+                    )
+                )
+            record.sha256 = digest(record.model_dump(exclude={"sha256"}))
+            path = self.root / "finite-admissions" / f"{record.id}.json"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            temporary = path.with_suffix(".tmp")
+            try:
+                with temporary.open("x") as stream:
+                    stream.write(record.model_dump_json())
+                temporary.replace(path)
+            finally:
+                temporary.unlink(missing_ok=True)
+            return record
+
+    def finite_admission(self, key: str) -> FiniteAdmission:
+        if not re.fullmatch(r"[a-f0-9]{16}", key):
+            raise NoResultFound()
+        try:
+            record = FiniteAdmission.model_validate_json(
+                (self.root / "finite-admissions" / f"{key}.json").read_text()
+            )
+        except FileNotFoundError:
+            raise NoResultFound() from None
+        if record.id != key or record.sha256 != digest(record.model_dump(exclude={"sha256"})):
+            raise ValueError("Invalid finite admission identity or content hash")
+        if record.package:
+            validate_finite_package(record.package)
+        return record
+
+    def finite_admissions(self) -> list[FiniteAdmission]:
+        with self.lock:
+            return sorted(
+                (
+                    self.finite_admission(p.stem)
+                    for p in (self.root / "finite-admissions").glob("*.json")
+                ),
+                key=lambda r: r.created,
+                reverse=True,
             )
 
     def get(self, key: str) -> ExtensionReview:
@@ -255,10 +428,14 @@ class Extensions:
             CASES,
             WORKER.with_name("extension_profile.py"),
             WORKER.with_name("extension_checks.py"),
+            WORKER.with_name("finite_contract.py"),
+            WORKER.with_name("finite_profile.py"),
+            WORKER.with_name("finite_checks.py"),
             *(
                 WORKER.with_name("simulation") / name
                 for name in (
                     "extension.py",
+                    "finite.py",
                     "world.py",
                     "environments.py",
                     "checkpoints.py",
@@ -282,15 +459,18 @@ class Extensions:
                 "admission, execution or replay"
             )
 
-    def check_runtime(self, package: ExtensionPackage) -> None:
+    def check_runtime(self, package: ExecutablePackage) -> None:
         self.require_qualified()
-        validate_package(package)
+        if isinstance(package, FiniteExtensionPackage):
+            validate_finite_package(package)
+        else:
+            validate_package(package)
         if package.containment["fingerprint"] != self.runtime.fingerprint:
             raise ValueError(
                 "Pinned extension requires a different qualified runtime; re-admit explicitly"
             )
 
-    def transition(self, package: ExtensionPackage, inputs: list[int]) -> list[int]:
+    def transition(self, package: ExecutablePackage, inputs: list[int]) -> list[int]:
         """Only copied bounded integers reach the qualified capability-free worker."""
         with self.lock:
             self.check_runtime(package)
@@ -305,8 +485,16 @@ class Extensions:
                 raise ValueError("Pinned extension bytecode hash differs")
             return result["outputs"]
 
-    def check_package(self, package: ExtensionPackage) -> None:
+    def check_package(self, package: ExecutablePackage) -> None:
         # A pasted manifest or self-reported proof never authorizes execution.
+        if isinstance(package, FiniteExtensionPackage):
+            admission = self.finite_admission(package.admission_id)
+            if not admission.runnable or admission.package != package:
+                raise ValueError("Package differs from its actual immutable finite admission")
+            contract = validate_finite_package(package).specification
+            if self.transition(package, contract_inputs(contract)) != contract_outputs(contract):
+                raise ValueError("Pinned finite artifact failed independent admission checks")
+            return
         admission = self.admission(package.admission_id)
         if not admission.runnable or admission.package != package:
             raise ValueError("Package does not match its immutable independent admission record")

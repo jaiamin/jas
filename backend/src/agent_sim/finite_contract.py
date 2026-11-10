@@ -38,7 +38,9 @@ class FiniteContract(Strict):
     def complete_conservative_domain(self) -> Self:
         width = self.max_credits + 1
         if len(self.table) != len(self.states) * width * len(self.roles) * len(self.operations):
-            raise ValueError("An exhaustive external table of at most 256 finite inputs is required")
+            raise ValueError(
+                "An exhaustive external table of at most 256 finite inputs is required"
+            )
         for keys in (self.roles, [s.key for s in self.states], [op.key for op in self.operations]):
             if len(keys) != len(set(keys)):
                 raise ValueError("Finite contract role, state and operation keys must be unique")
@@ -101,6 +103,17 @@ class FiniteArtifactCheck(Strict):
     wasm_sha256: str | None = None
     detail: str
     sha256: str
+
+
+class GenerationAuthorization(Strict):
+    """Explicit user allowance for one question, including every nested Sol request."""
+
+    contract_id: str = Field(pattern=r"^[a-f0-9]{16}$")
+    max_candidates: int = Field(ge=1, le=3, strict=True)
+    max_requests: int = Field(ge=1, le=12, strict=True)
+    max_output_tokens: int = Field(ge=512, le=16384, strict=True)
+    max_input_bytes: int = Field(ge=4096, le=180000, strict=True)
+    budget_usd: float = Field(ge=0.01, le=10)
 
 
 def contract_inputs(contract: FiniteContract) -> list[int]:
