@@ -511,6 +511,7 @@ artifact. Inspection/export/replay remain
 read-only. Exposure-conditioned descriptions are post-treatment selections, not
 automatic causal effects; inclusion establishes no attention, belief or intent.
 
-Export v7 includes the exposure chain and frozen analysis artifacts. Database schema
-6 and all World rule versions are unchanged: additive JSON provenance does not alter
-world settlement, prompts or checkpoint replay. No migration or reset is performed.
+Exposure capture v1 was introduced in export v7; current export v8 retains the
+exposure chain and frozen analysis artifacts alongside artifact work. T09 advances
+the database to schema 7; exposure provenance alone does not alter controlled-world
+settlement, prompts or checkpoint replay. No migration or reset is performed.
