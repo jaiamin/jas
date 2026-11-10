@@ -238,3 +238,40 @@ def test_qualification_exercises_the_documented_worker_deadline(client):
     # The independent termination fixture must actually reach the documented
     # four-second worker deadline, rather than a cheaper test-only timeout.
     assert 4 <= elapsed < 25
+
+
+def test_worker_exit_during_timeout_still_retains_a_review_and_recovers(client, monkeypatch):
+    import subprocess
+
+    assert client.post("/api/extensions/qualify", json={}).json()["status"] == "qualified"
+
+    class ExitedWorker:
+        pid = 12345
+        returncode = None
+
+        def communicate(self, _input=None, timeout=None):
+            if timeout is not None:
+                raise subprocess.TimeoutExpired("controlled-worker", timeout)
+            self.returncode = 0
+            return b"", b""
+
+        def poll(self):
+            return None
+
+    def already_exited(*_args):
+        raise ProcessLookupError("Worker exited between polling and termination")
+
+    # External process race: the deadline expired, but its process group has
+    # already disappeared by the time termination is requested.
+    with monkeypatch.context() as boundary:
+        boundary.setattr(subprocess, "Popen", lambda *_args, **_kwargs: ExitedWorker())
+        boundary.setattr("os.killpg", already_exited)
+        response = client.post("/api/extensions/validate", json=candidate())
+    assert response.status_code == 201
+    report = response.json()
+    assert report["admission"] == "rejected"
+    assert any("timeout" in item["detail"] for item in report["activity"])
+    assert client.get(f"/api/extensions/reviews/{report['id']}").json() == report
+    assert client.post("/api/extensions/validate", json=candidate()).json()["admission"] == (
+        "needs_world_review"
+    )
