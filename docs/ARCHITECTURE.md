@@ -364,7 +364,7 @@ eligibility, revision/hash and calculations before the server task runs. Progres
 reconnect, failure and export preserve that snapshot across later run completion or
 new revisions. Analysis reads do not append participant evidence or provider calls.
 Study export v7 includes this versioned comparison contract and persisted analysis
-snapshots, changing v4/v5 consumer expectations. T06 changes no database columns and
+snapshots, changing earlier consumer expectations. T06 changes no database columns and
 requires no data reset; historical evidence is never backfilled with invented states.
 
 ## Treatment exposure inspection
