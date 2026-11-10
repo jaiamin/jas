@@ -51,6 +51,43 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### T11 independent recovery review accepted (2026-11-10)
+
+Fresh Standards and Spec review each have zero unresolved findings. Exact T11
+`4aac5a9` remains second parent of no-ff `57c827c`; root's input-bound repair
+`e692828` is accepted with T11's deterministic scope. Current DB9/export10/library6
+is accepted; capture1/comparison1/tool2.0/direct1.0 remain. No additional source
+merge/application repair. Local accepted frontier now contains T01–T11/T13/T15/T19;
+published accepted frontier stays `946afbc` until root publication.
+
+Independently verified equal executable/test inputs and raw inherited 1,559
+backend passes in 46 jobs, 115 frontend units, static/type/lint/build passes,
+54 byte/mode-identical build files and 216 configured browser cases in 16 groups.
+Root's 63 focused cases/Ruff/ty are separately attributed. This reviewer freshly
+ran five keyless reliance browser flows and inspected desktop/light, phone/dark,
+keyboard, tables and source links. Loading/error/reconnect coverage is verified
+inherited execution. Production inputs equal accepted T10/frontier/original T11;
+production smoke is inherited, not fresh-image qualification.
+
+Positive current-contract parity: five runs/22 turns/22 literally identical
+bounded requests, 98 HTTP operations, full actions/evidence/effort/integer ledger,
+2,407 classified differences and zero unexplained. Frozen T01 still has exactly
+four export-v4 failures/four failed flags and runner/comparator exit1; old failed
+parity remains untouched. Original custody 2,980 files/175 directories/192,456,565
+bytes, all source/archive/log hashes and shared inode identity are reverified.
+Hardlinked custody is not an independent physical copy. Preserve 37 original
+nonzero attempts, six formatting proofs, 19 missing early after-inventories and
+all own helper/preview/documentation failures.
+
+See [the recovery review](research/T11_RECOVERY_REVIEW.md) and its separate
+`T11-recovery-review/evidence-final.json`/`.sha256` and final closure. No inherited
+helper executed. Owned browser/service/port 18226 are closed. Stash/unread `pbcopy`,
+tracked-only capture exclusions, synthetic configuration restrictions and all
+maintenance/compression maps remain. No paid/live/held-out acceptance or
+publication. T16 `475bfc73` stays complete/unaccepted/untouched; T12/T14/T18 Ready,
+T17 waits on accepted T16. Root resumes sole writing after explicit final handoff.
+The following T11 sections describe historical interrupted checkpoints.
+
 ### T11 interrupted-review recovery (2026-11-10)
 
 Account usage limits interrupted T11 review and T07 disposable-tool cleanup.

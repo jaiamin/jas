@@ -1,3 +1,68 @@
+# T11 recovery review accepted — final completion returns writing to root (2026-11-10)
+
+**T01–T11, T13, T15 and T19 are accepted for their documented deterministic
+scopes.** This fresh reviewer started clean at `e69282873f0b9a97c220bd8ac1e5dce9671ada65`
+on `integration/research-harness`. Exact T11 `4aac5a9` is already the second
+parent of no-ff `57c827c`; no duplicate merge or new application repair was made.
+Current **DB9/export10/library6/capture1/comparison1/tool2.0/direct1.0** are
+accepted for T11's scope. Published accepted frontier remains `946afbc` until
+root publishes this local documentation/acceptance checkpoint. Root owns PR32;
+this reviewer performed no publication, push/PR/issue/watch action.
+
+Read [the independent recovery review](docs/research/T11_RECOVERY_REVIEW.md).
+Standards and Spec each have zero unresolved findings, reviewed personally under
+the explicit no-descendants instruction. Root's planner repair retains four
+successive grounded source-pinned designs below the unchanged 180,000-byte bound,
+general/simple answers, honest unsupported cases and zero-call saving.
+
+Fresh independent artifact/source verification confirms 1,559 distinct inherited
+backend passes in 46 segmented jobs, 115 frontend units, static/type/lint/build
+passes, 54 equal build files and 216 configured browser passes in 16 bounded groups.
+Root executed 63 focused backend cases/Ruff/ty; those records were independently
+verified. These executions are inherited, not freshly rerun whole suites.
+This reviewer freshly executed five keyless reliance browser flows and inspected
+desktop/light, phone/dark, keyboard focus, internal table scrolling and source
+links. Loading/error/reconnect/drafts/pending/late-response coverage is attributed
+to verified source-equal inherited browser execution. Production's 11 infrastructure
+inputs match accepted T10/frontier/original T11; UID 10001 smoke is inherited,
+not a fresh-image claim.
+
+Independent current-contract parity passes: five runs/22 turns/22 requests/98
+HTTP operations, literally equal bounded inputs/actions/evidence/effort/integer
+ledger, 2,407 classified differences/zero unexplained. Ledger 770 synthetic
+microdollars/2,200 input/1,100 output tokens; actual spending 0. Frozen T01
+runner/cases/scores remain unchanged with exactly four export-v4 failures/four
+failed flags and runner/comparator exit1. Old failed parity exit1/nonempty
+unexplained output stays immutable; the positive gate is separate.
+
+New evidence is `.tools/research-harness/evidence/T11-recovery-review/`, with
+final source/custody/interrupted-evidence closure in `final-verification.json`
+and immutable `evidence-final.json`/`.sha256` after the documentation commit.
+All eight own helper failures, preview/discovery errors and one rejected
+documentation patch are retained. Original 37 failed attempts, six formatting
+proofs and 19 missing early after-inventories remain explicit. Original T11
+custody/source hardlinks are immutable, not independent physical copies:
+2,980 files/175 directories/192,456,565 bytes; manifest
+`3d9f0484bbd2d1b5dd1fcc7c6df892e98b48d69100327e870a310fc693058074`, canonical
+`0cd466f155e6794ac0d73c6dac8c74f01b0136f307ce534f27848767268677fd`.
+
+Owned preview/service/PID/port 18226 are closed; intentional service SIGTERM 143
+and complete shutdown are retained. Closed browser data passes read-only
+integrity/schema 9 checks. Protected root `pbcopy` was never accessed/captured;
+all snapshots preflight tracked-only invocation-local exclusions. Synthetic
+`.env` contents/hashes remain excluded. Stash `f771128ba1c9295262a4073df40cc25647b1370f`
+and all older maps/receipts remain, including root's 795-path
+`maintenance/closed-root-compression-20261110T110638Z/mapping.jsonl`.
+
+T16 `475bfc73` remains complete/unaccepted with root-verified immutable custody;
+it was not merged, polled or changed. T12/T14/T18 are Ready; T17 waits for accepted
+T16. T07 cleanup remains owner-unverified; leave its environment alone. No paid
+calls, held-out exposure or live/generalization claim. Researcher remains Sol,
+participants Luna; historical Sol $0.611632/55 requests, $9.388368 remaining;
+Luna unallocated. Sole shared writing returns to root only at the reviewer's
+explicit final completion message. The sections below are historical checkpoints;
+their pending T11 statuses are superseded by this acceptance.
+
 # Root recovery — T11 review interrupted by account usage limit (2026-11-10)
 
 The user instructed continuation after T11 review and T07 tool-cleanup delegates
