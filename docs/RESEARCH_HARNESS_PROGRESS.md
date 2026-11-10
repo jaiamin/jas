@@ -64,7 +64,7 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Integrated and accepted | `aaf3a15`; [evidence](research/T06_UNCERTAINTY.md) |
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | In progress in isolated worktree | — |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | In progress in isolated worktree | — |
-| T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Ready | — |
+| T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Assigned to fresh isolated implementer | — |
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Waiting | — |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Waiting | — |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Waiting | — |
@@ -145,7 +145,8 @@ those trials run, the live milestone remains unverified.
 
 1. T01/T02/T03/T04/T05/T06 are accepted with preserved evidence. T03/#14 is
    accepted at `6c290df`; its source worktree and both evidence directories remain.
-   T07/#18 and T08/#19 remain running in isolated worktrees. T09/#20 is Ready;
+   T07/#18 and T08/#19 remain running in isolated worktrees. T09/#20 is assigned
+   to a fresh isolated implementer on accepted T03/T06 (browser port 18120);
    T15 waits for completed T08, T19 for T07 and T14 for T13.
 2. Review and merge each accepted slice sequentially, then refresh/link draft
    PR #32; qualification failure gates generated execution, not trusted worlds.

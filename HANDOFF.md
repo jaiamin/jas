@@ -32,8 +32,9 @@ without overwrites under `.tools/research-harness/evidence/T03/`; all 2,250
 child-indexed hashes and complete source/destination inventories match, reverified
 at closure. Canonical file-inventory SHA-256:
 `e38a459675aacb0d1579f740ea43fb6d7a39edb2ccf9a01b39e46febcf03ecc8`.
-The user explicitly authorized opaque hashing/copying of only six indexed
-synthetic pytest `.env` fixtures. No contents displayed/committed and no real
+The parent clarified that opaque hashing/copying of only six indexed synthetic
+pytest `.env` fixtures was within the authorized evidence-preservation task,
+after checking their tracked generator. No contents displayed/committed and no real
 configuration/credentials accessed. Source worktree remains intact.
 
 Fresh scripts/commands/exits/raw evidence/failed attempts live separately in
@@ -51,7 +52,8 @@ Owned preview, browser backends and **18214** are closed; owned production
 container/image tag removed. No push, PR/issue changes, other-agent/process/
 worktree edits, security/host changes or paid calls. Global actual spending stays
 **$0.611632 / 55 requests**, **$9.388368 remaining**, no active allocation.
-T03 acceptance makes **T09 Ready**. T07/T08 remain running and were not polled;
+T03 acceptance makes **T09 Ready**, now assigned to a fresh isolated implementer.
+T07/T08 remain running and were not polled;
 T15 waits on T08, T19 on T07 and T14 on T13. Root resumes sole integration
 ownership and owns publication/frontier launches and draft PR #32. Final local
 HEAD is the documentation acceptance commit following `6c290df` (`git rev-parse
@@ -272,7 +274,7 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
 **Current checkpoint: T01/T02/T03/T04/T05/T06 accepted; T07/T08 running;
-T09 Ready; draft PR #32.**
+T09 assigned to a fresh isolated implementer; draft PR #32.**
 
 Fresh Sol DEVELOPMENT is complete for this checkpoint: read
 `docs/research/SOL_DEVELOPMENT.md`. The frozen original eight-case pair,
@@ -370,7 +372,11 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: T03/#14 is accepted at `6c290df`, and T09/#20 is Ready.
+Current frontier: T03/#14 is accepted at `6c290df`, and T09/#20 is assigned to a
+fresh isolated implementer, based on the accepted T03/T06 integration. Its
+dedicated browser port is 18120; report `docs/research/T09_ARTIFACT_WORLD.md`,
+raw evidence `data/t09/`. It must merge the latest accepted integration before
+handoff. No paid calls are allocated. T07/T08 remain running; do not poll them.
 T07/#18 and T08/#19 remain running in isolated worktrees and were not polled.
 T15 waits for completed T08, T19 for T07 and T14 for T13.
 Draft PR #32 is the single integration PR and

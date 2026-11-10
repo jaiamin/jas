@@ -94,8 +94,9 @@ source HEAD/status/bytes reverified at closure. File-inventory canonical SHA-256
 `e38a459675aacb0d1579f740ea43fb6d7a39edb2ccf9a01b39e46febcf03ecc8`.
 Complete files/symlinks inventory SHA-256:
 `9f058b50d36bc61bab226ccf20156b54de7ec4af4da608b55cc95042b7bc316c`.
-The user explicitly authorized opaque hashing/copying of only the six indexed
-synthetic pytest `.env` fixtures after checking their tracked generator. No
+The parent clarified that opaque hashing/copying of only the six indexed
+synthetic pytest `.env` fixtures was within the authorized evidence-preservation
+task after checking their tracked generator. No
 contents were displayed or committed; no real configuration/credentials were read.
 
 Fresh scripts, raw results, exact commands/exits, source/case identities and
