@@ -1,3 +1,109 @@
+# T12 backend TDD in progress — incomplete/unaccepted (2026-11-10)
+
+Checkpoint boundary: last one-case `workflow-contract-green` passes role binding,
+immutable source pins and prior-library rejection with zero requests. Later own
+slices cover frozen reads, terminal horizons/all-accepted/withdrawal, both720-order
+claim/resource priorities,16 atomic denials, four privacy/memory modes, actual
+tool instructions and separate cancellation/timeout cases. Ruff/ty passed at an
+earlier source; combined-source qualification remains open. No full-suite claim.
+Failed overrun remains recorder126/pytest1,91 pass/two catalog failures. Separate
+repairs and verified own-scratch archives/maps preserve every attempt. See plan.
+
+Root now accepted **e76ef124e01274f9b8ddccfa343c51351149c0ee** (T14DB11/export12/
+library7), superseding2ad967f. Make this own incomplete checkpoint, then normal
+merge that exact SHA and reconcile distinct same-number contracts by advancing
+the combined contract; no aliases/migrations/resets, no provisional T17. Renewed
+envelope permits World≤0.5MiB or ONE HTTP≤2MiB per job, scratch≤4MiB before own
+verified compaction and total retained≤20MiB. All held stages remain held.
+
+Same assigned `t3-190f8b94`, branch `t3/institutional-workflow`, HEAD29af3413.
+Renewed exact warm offline setup attempt02 passed; net shared decrease3,862,528
+bytes, own `.venv` prefix/import verified, final205,537,280 free. Attempt01's125
+before uv is retained. No additional install/fallback. First frozen public HTTP
+tracer observed red before production edits. Tracer, handoff, delegation and
+addressed-mail slices subsequently passed individually; these are not a final
+combined regression qualification. Complete attempts/source attribution live in
+`.tools/t12/evidence/`; see [T12 plan](docs/research/T12_INSTITUTIONAL_WORKFLOW.md).
+
+Backend slices alone are released: shared flock134,217,728-byte floor, disabled
+bytecode,20MiB cumulative new evidence cap, lock released between jobs. Latest
+retained evidence7,376,858 bytes. Static/types/affected regressions remain unrun.
+Next: frozen read receipt/restoration, contention/atomic denials, terminal and
+harness/privacy/reuse/contract integration. Every indirect snapshot producer
+must receive the own protected-excluded tracked-only Git wrapper/preflight.
+Frontend/browser/services/Docker/new installs/paid/live/held-out stay held;18130
+reserved only. No descendants/publication; preserve all existing custody/maps.
+Only exact accepted2ad967f is a later merge target, never provisional T14/T17.
+
+# Historical T12 warm setup boundary — floor rejected before uv (2026-11-10)
+
+Root accepted preparation only and released one warm offline Python setup/first
+frozen API red, then bounded backend TDD under the unchanged ordinary128MiB
+floor. Owner-cache permission was explicitly granted; root proved exact project/
+lock and same-device cache equality. The narrower setup required201,326,592 free
+bytes under the shared actual flock; it did not authorize cold/network fallback.
+
+At2026-11-10T15:31:25Z the setup preflight observed **187,224,064 bytes** and
+exited **125**, short **14,102,528 bytes**, **before uv was invoked**. Receipt:
+`.tools/t12/setup/attempt-01.json`. Shared flock is released. No dependency manager
+ran, no `.venv` exists, imports were not attempted and the one frozen HTTP tracer
+is still **unrun**. No implementation or product/static/type/regression result.
+No automatic retry, foreign environment, owner mutation or cache cleanup.
+
+T12 remains **incomplete/unaccepted**, branch `t3/institutional-workflow`, HEAD
+`29af3413c12c8b14f24bc0faae39933fe56e344d`, with the same four preparation files
+staged (plan/HANDOFF/PROGRESS and one tracer). Root must coordinate headroom and
+renew the setup release before the observed-red slot. Latest explicitly accepted
+normal merge target is `2ad967f325ad2fb4c2d842323944dd01c69f07ef`, application
+T16/DB10/export11/library7. Do not merge the moving root ref or provisional T14/
+T17. Frontend/browser/services/Docker/new installs/provider/paid/held-out work is
+held;18130 is reserved only. All prior protected source/custody/maps stay intact.
+
+# T12 source-only preparation — unrun tracer; setup/test grant pending (2026-11-10)
+
+Fresh T12/#23 implementer owns only the T3-prepared isolated checkout
+`/home/agent/.t3/worktrees/workspace/t3-190f8b94`, branch
+`t3/institutional-workflow`, starting/current HEAD
+`29af3413c12c8b14f24bc0faae39933fe56e344d`. Linux/cwd/AGENTS/clean start and
+accepted ancestry were reviewed. Accepted application T16 `fde4bce` is included;
+later root commits are documentary. Preserve **DB10/export11/library7** and all
+accepted work. No provisional T14/T17 merge. No descendants or extra checkout.
+
+Durable acceptance, concrete new mechanism, independently specified literal
+DEVELOPMENT oracles, inherited/check attribution, footprint forecasts and next
+steps: [T12 plan](docs/research/T12_INSTITUTIONAL_WORKFLOW.md). One unrun tracer
+is prepared in `backend/tests/test_institutional_workflow.py`, using the actual
+public save/step/inspect/export/verify API and the existing deterministic provider
+boundary. It expects an owned intake start to append v2/batch17, debit materials
+7→4/spent3, retain due3 at logical2 and replay12 turns with zero calls. These are
+expectations, not observed results. No application implementation exists yet.
+
+T12 is **incomplete/unaccepted**, held at source-only preparation. No install,
+dependency-cache use, test/static/build check, capture, service, browser, Docker,
+model/paid/live request, held-out case, publication or issue/PR action occurred.
+No commit/hooks run at this stage. Reserve18130 only; it has not been launched.
+Researcher/planner stays Sol; model participants Luna, with no fallback/policy
+replacement or prescribed cooperative outcome.
+
+Root must provide the concrete setup/first-red grant and coordinate exact normal
+frozen-manager cache reuse into this distinct `.venv`. Forecast16–32MiB Python
+environment/metadata, conservative128MiB combined setup/temp/evidence allowance;
+proposed268,435,456-byte under-lock setup floor. T17's measured3,874,816-byte
+increment is historical context, not a prediction. Ordinary future heavy jobs
+use the shared checks.lock, actual free-space measurement and unchanged
+134,217,728-byte floor plus job peak, releasing between bounded jobs.
+Frontend/browser/production need separate grants and measured forecasts.
+
+Original root unread `pbcopy`, opaque configurations, protected stash, source/
+custody immutable hardlinks, lossless maps, root uv bootstrap and other owners'
+environments/processes remain untouched. Source review used tracked Git
+selection with invocation-local protected/untracked-name and symlink/descendant
+guards. Two read-only selector guards stopped before reads on an empty magic-
+excluded selection; explicit tracked paths with local exclusions resolved it.
+No inherited ignored helper was executed. Continue useful read-only source
+review while waiting; after release retain the first observed API red before
+any implementation, then proceed one meaningful vertical slice at a time.
+
 # Latest boundary — T14 production verified; T17 Python stage released (2026-11-10)
 
 T14 implementation remains unaccepted. Root independently checked its completed

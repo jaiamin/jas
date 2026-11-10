@@ -7,7 +7,7 @@ remain ordered. Only explicit user actions create paid work. Restart pauses inte
 ## Storage
 
 SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. Startup creates
-schema v10 for fresh workspaces and rejects incompatible schemas. Local transactions
+schema v11 for fresh workspaces and rejects incompatible schemas. Local transactions
 commit each turn's input, decision, consequences, metrics and checkpoint together.
 
 | Record | Purpose / invariant |
@@ -265,7 +265,8 @@ structural object/requirement edits also use the existing JSON editor. The revie
 shows requirements and ACLs; the run view links versions and terminal results to
 recorded turns. Reusable mechanics extract/rebind ACL roles and retain complete
 immutable source snapshots, independently of population, model, harness and memory.
-DB 10, export 11, comparison 1 and `jas-environment-v7` are the current contract.
+DB 11, export 12, comparison 1 and `jas-environment-v8` are the current contract
+on the incomplete T12 task branch, pending integration acceptance.
 Older database/library versions fail explicitly; preserve them with their source.
 No migration, compatibility reader or reset is performed. Controlled-world rules
 remain unchanged; generated execution/admission and model adjudication remain out
@@ -631,7 +632,7 @@ continues to settle its own consequences independently of model prose.
 
 `EnvironmentLibrary` owns reusable custom setups as versioned JSON records in a sibling
 `<database-stem>.environments` directory. An in-memory workspace uses a temporary library.
-The v7 library contract stores an `EnvironmentMechanics` definition and named configuration
+The v8 library contract stores an `EnvironmentMechanics` definition and named configuration
 examples, independently of questions, participant/model/harness assignments, condition arms,
 replication and analysis. Examples declare unbound mechanic roles; experiment authors bind
 those roles to their own participants. Memory remains an experiment/harness choice.
@@ -653,7 +654,7 @@ the experiment adapts those examples. Editing/deleting a reusable environment ne
 or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
 12 recent definitions as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
-call or run. Database schema 10, export 11 and library v7 reject incompatible versions explicitly; there is
+call or run. Database schema 11, export 12 and library v8 reject incompatible versions explicitly; there is
 no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 ### Failure-aware comparisons (T06)

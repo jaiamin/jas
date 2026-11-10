@@ -133,7 +133,7 @@ def test_two_policies_run_real_operations_with_individual_accounting(harness_cli
     for run_id in [direct_id, tool_id]:
         assert client.post(f"/api/runs/{run_id}/verify").json()["verified_turns"] == 1
     exported = client.get(f"/api/studies/{study['id']}/export").json()
-    assert exported["version"] == 11
+    assert exported["version"] == 12
     assert len(exported["activations"]) == 2
     assert len(exported["requests"]) == 5
 
@@ -205,8 +205,10 @@ def test_each_auxiliary_inference_rechecks_the_atomic_ceiling_before_sending(
         # Approved accounting fixture: revoke further allowance during the first
         # in-flight request. Inspect all resulting behavior through the public API.
         with client.app.state.db.session.begin() as session:
-            row = session.get_one(Workspace, 1) if ceiling == "workspace" else session.get_one(
-                Study, study["id"]
+            row = (
+                session.get_one(Workspace, 1)
+                if ceiling == "workspace"
+                else session.get_one(Study, study["id"])
             )
             row.ceiling = 0
         return await respond(messages, info)

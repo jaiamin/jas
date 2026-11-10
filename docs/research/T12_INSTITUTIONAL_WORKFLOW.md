@@ -1,0 +1,453 @@
+# T12: institutional workflow with atomic work and resource effects
+
+## Current boundary: backend TDD released; incomplete and unaccepted
+
+At root's acceptance notice, the last bounded job `workflow-contract-green`
+passed its one HTTP case. Root now authorizes exact accepted frontier
+**e76ef124e01274f9b8ddccfa343c51351149c0ee**, superseding2ad967f. T14's accepted
+DB11/export12/library7 has different meanings from this branch's provisional
+DB11/export12/library8. Checkpoint this incomplete backend, normally merge that
+exact SHA, and advance the genuine combined contract beyond both intermediates.
+No provisional T17, aliases, migrations or resets. Frontend remains held.
+
+Later observed slices (all full source-stamped): frozen reads red→five-test
+green; horizon red→green; all-accepted red→green; withdrawal red→six World cases
+green; both priority variants for each720 claim and resource completion orders
+green;16 whole-checkpoint atomic denials green; four memory/privacy/restore
+cases green; actual tool instructions red→green; actual tool cancellation and
+timeout each one HTTP case green; reusable source/contract red→green. Ruff and
+ty passed before subsequent tests/contracts were added; they need qualification
+on combined source. Full backend, browser, build, runtime and parity remain open.
+
+**Failed output boundary retained:** `addressed-affected-regressions` exited126
+from the recorder (pytest1), with91 passes and two catalog failures. Its33,440,088
+retained bytes exceeded the20MiB cap. Neither that result nor its boundary is
+relabeled after repairs. Separate `catalog-repair-green` passed the two failing
+cases before the renewed one-HTTP-case restriction. Closed own scratch was
+losslessly compacted with independent member hash/mode/link readback and
+integer-ns restoration maps; all raw logs/XML/source objects/errors remain.
+Archive01 preserves119 members/30,696,657 original bytes in2,369,119 bytes;
+archive02 preserves17 members/1,872,585 original bytes in123,077 bytes.
+
+Renewed envelope: World-only jobs forecast≤0.5MiB or ONE HTTP case≤2MiB, no grouped
+SQLite regressions. Keep uncompressed scratch≤4MiB, total retained outputs≤20MiB;
+compact only closed own scratch with full peak preflight (maximum4MiB added).
+The recorder enforces job kind, floor+forecast, scratch and retained-output caps.
+Latest completed job retained8,100,830 bytes; space is shared/unreserved.
+
+Renewed warm offline setup attempt02 passed at 2026-11-10T16:32Z using the
+exact owner-authorized cache and root uv command. Net shared-space decrease was
+**3,862,528 bytes**; final free space **205,537,280 bytes**. Both `sys.prefix`
+and `agent_sim.__file__` resolve to this assigned checkout. Attempt01's preflight
+rejection remains retained; no fallback or extra installation occurred.
+
+The frozen public HTTP tracer first failed for the absent workflow (HTTP422),
+before production edits. Subsequent source-stamped vertical slices observed:
+
+| Evidence job | Observed result |
+| --- | --- |
+| first-api-red / first-api-green-01 | 1 failed / 1 passed |
+| handoff-api-red / handoff-api-green-01 | 1 failed / 2 passed |
+| delegation-red / delegation-green | 1 failed / 3 passed |
+| addressed-mail-red / addressed-mail-green | 1 failed / 1 passed |
+
+These are slice results, **not final combined qualification**. Receipts, raw
+logs, XML, exact commands and deduplicated complete protected-excluded tracked
+source are under `.tools/t12/evidence/`; setup receipts under `.tools/t12/setup/`.
+The new invocation-local Git wrapper also guards indirect frozen provenance
+snapshots. No frozen baseline source has changed. Latest retained output size
+is7,376,858 bytes; new cumulative evidence remains capped at20MiB. Each bounded
+backend job uses the shared flock,134,217,728-byte floor and disabled bytecode.
+Frontend/browser/services/Docker/new installs/provider/paid/held-out remain held.
+
+Implemented slices add one owned-work World: atomic material/version/due-time
+start, delayed readiness, acknowledged dependency handoffs, delegation and shared
+addressed mail. Static/type checks and affected T10/T11 regressions have not yet
+run. Next slice independently checks that phase reads retain the committed
+version through competing settlement and partial-checkpoint restoration. Then
+cover contention, atomic denials, termination, harness/privacy/source binding,
+reusable mechanics/contracts and remaining acceptance. HEAD is still29af3413;
+only exact accepted2ad967f may be merged later. No descendants/publication.
+
+## Historical attempt01 boundary: setup preflight rejected
+
+The one released warm setup preflight acquired the actual shared flock at
+2026-11-10T15:31:25Z and measured **187,224,064 free bytes**, below the required
+**201,326,592** by **14,102,528**. It exited **125 before invoking uv**. The cache
+directory and checkout are on the same device. The flock command returned and
+released its lock. Receipt: `.tools/t12/setup/attempt-01.json` (own new evidence).
+
+No manager process ran, no `.venv` was created, and import verification was not
+attempted. The existing tracer remains frozen and **unrun**; no product red/green,
+static/type/regression or implementation is claimed. Do not retry setup or use a
+cold/network/foreign-environment fallback. Root must provide a renewed concrete
+setup release after coordinating headroom. Frontend/services/browser/Docker/live/
+held-out work stays held. Exact accepted2ad967f remains the later normal merge
+target; it has not been merged over the staged preparation.
+
+## Released continuation: warm offline Python and bounded backend work
+
+Root accepted preparation only and released this SAME implementer for one warm
+offline Python setup attempt, the frozen HTTP tracer's first observed red, then
+bounded backend TDD/static/type/affected regressions. Cache-owner permission is
+explicitly granted; root compared this exact lock/project with T14/T17 and their
+same-device cache. This supersedes the proposed cold/unknown setup profile below:
+require **201,326,592 bytes immediately before setup under the shared flock**.
+Ordinary checks retain the unchanged **134,217,728-byte** under-lock floor.
+
+Use exactly root's working bootstrap with `sync --frozen --link-mode hardlink
+--offline`, `UV_CACHE_DIR=/home/agent/.t3/worktrees/workspace/t3-afe9381b/.tools/t14/uv-cache`
+and this checkout's distinct `.venv`. One attempt only; retain/report any floor,
+cache, manager, import or footprint failure without retry or cold/network fallback.
+Measure before/after and verify `sys.prefix` and `agent_sim.__file__` point here.
+T17's3,874,816-byte net increment is attributed precedent, not a prediction.
+
+Release flock after setup and between every bounded job. Before production edits,
+retain the original tracer red with protected-excluded tracked-only deduplicated
+source attribution. Keep new evidence at most20MiB until a revised forecast.
+Frontend/browser/services/Docker/new installs/provider/paid/held-out work remain
+held.18130 is reserved only. No descendants or publication. Latest explicitly
+accepted normal merge target is **2ad967f325ad2fb4c2d842323944dd01c69f07ef**;
+never merge a moving integration ref or provisional T14/T17. That frontier changes
+only HANDOFF/PROGRESS; accepted application remains T16/DB10/export11/library7.
+
+**Historical source-only preparation; incomplete and unaccepted.** No installation, product
+check, source capture, service, browser, Docker, model request or held-out work is
+authorized at this boundary. The one HTTP tracer below will be staged but unrun.
+This document precedes that tracer and all implementation. Checkboxes describe
+acceptance work, not observed results.
+
+## Assignment and accepted source
+
+- Ticket: T12 / [#23](https://github.com/jaiamin/ass/issues/23), exactly as retained
+  in [the tickets](../RESEARCH_HARNESS_TICKETS.md#t12--run-a-small-institutional-workflow-with-atomic-workresource-effects).
+  Parent: [spec](../RESEARCH_HARNESS_SPEC.md), especially decisions 8, 12–15, 24,
+  26–28 and testing decisions 1–4, 7–8, 12, 15–18.
+- Assigned Linux checkout:
+  `/home/agent/.t3/worktrees/workspace/t3-190f8b94`, branch
+  `t3/institutional-workflow`, starting HEAD
+  `29af3413c12c8b14f24bc0faae39933fe56e344d`. Initial tracked state was clean;
+  accepted T16 `fde4bce1af2483a3249fde02c4f32a199c284ed7` is an ancestor.
+- Accepted application contracts: **DB10 / export11 / library7**. Later root
+  commits are documentary. Provisional T14 and T17 are excluded. Before final
+  completion, normally merge the latest root-documented accepted frontier only.
+- Read implement-spec and TDD directly. The approved primary seam is the real
+  public workflow HTTP API; World/privacy/replay and provider/accounting seams
+  supplement enforcement. This authorization is already settled.
+- Read AGENTS, ARCHITECTURE, DESIGN, GLOSSARY, both ADRs, HANDOFF/PROGRESS, and the
+  T10, T11/recovery and T16 integration reports. Their recorded passes are
+  **inherited reports**, not T12 executions. Preserve their limits and failures.
+- Work personally, one writer in this assigned branch; no descendants, extra
+  checkout, publication, PR/issue action or merge of provisional work.
+
+## Narrow new mechanism
+
+Add one installed `institutional_workflow` World for **6–12 active participants**.
+It represents a bounded work queue with persistent structured artifacts, explicit
+eligible workers, one actual owner, dependencies, material costs, delayed work
+completion and acknowledged handoffs. Keep the existing simple `institution`,
+solo artifacts, controlled/composed worlds, coordination, commitments and admitted
+finite extensions intact.
+
+The genuinely absent mechanism is an atomic **owned work start**: the same actor
+at the same logical boundary must own an eligible task, have every dependency's
+handoff accepted, hold the current artifact version, have authorized source
+references and have sufficient shared materials. Acceptance appends that exact
+artifact version, debits the task's real material cost and schedules its declared
+completion together. A failure cannot debit materials, append content, take
+ownership, change a note or partially schedule work. This is more than the
+artifact World's uniform write allowance or a narrated productivity measure.
+
+Use the existing World/Engine, artifact ACL/version/read/source machinery,
+T10 logical phases/conflict priority/addressed delivery, interchangeable participant
+harnesses, request ledger, checkpoint/evidence/replay, reusable mechanics and
+experiment/run views. Reuse concrete shared timing/mail operations where possible;
+extract only operations required by these working Worlds if needed. Do not force
+the workflow to invent alternative-value artifacts or install a second engine,
+universal rule language, distributed platform or hypothetical adapter hierarchy.
+
+Planned typed operations are `claim_work`, `perform_work`, `handoff_work`,
+`accept_handoff`, bounded ownership delegation, permitted artifact reads,
+addressed messages, waiting and personal withdrawal. Work content is bounded
+structured data, with normal immutable versions and source references. A material
+cost is spent once on accepted start, never on an unsuccessful attempt or again
+on delayed completion. During pending work its version is inspectable only under
+the actual ACL; a dependent start remains unavailable until the prerequisite's
+completed version is explicitly handed off and accepted by its recipient.
+
+Mutable relationships have explicit boundaries: only an authorized owner may
+delegate unstarted work to another declared eligible worker, and only a declared
+handoff recipient may accept the selected completed version. Delegation revokes
+the previous owner's start affordance and grants the new owner's. Handoff grants
+only the declared run-scoped artifact access needed by its recipient. General
+procedure/dependency/cost editing is unsupported and must reject; pinned procedure
+definitions and participant prose cannot rewrite rules. No profile role grants
+authority. Do not install cooperation, completion, hierarchy, betrayal or any
+other desired outcome as a participant policy.
+
+Timing is explicit: sequential settlement advances one logical tick per accepted
+action; a phased barrier advances one tick after all active proposals settle in
+declared conflict order. Partial phases expose no other proposals, reservations,
+notes or uncommitted versions. Start at logical t with duration d becomes ready
+after committed advancement reaches t+d. Provider latency and completion order
+cannot choose a claimant, consume time or complete work. A terminal horizon does
+not flush future work or mail. Full checkpoints retain both material and artifact
+state, owners, handoff/version receipts, due work, pending proposals/mail and
+actor sessions at each committed boundary.
+
+## Acceptance criteria
+
+- [ ] Validate 6–12 participants, bounded acyclic dependencies, distinct task/artifact
+  bindings, declared identity/ACL/order/routes, positive costs/durations and exact
+  typed operations at the API/domain and World boundaries.
+- [ ] Complete a six-participant work/handoff trajectory through real HTTP
+  validate/save/run/inspect/export/replay. Work, ownership and dependency progress
+  must be authoritative effects, with meaningful feasible alternatives and nulls.
+- [ ] Couple artifact version + material debit + delayed work atomically; show
+  exact unchanged rejection state and explicit contention outcomes. Check resource
+  conservation with independent literal ledgers, not a copy of the implementation.
+- [ ] Enforce claims, delegation, handoff recipient/version and dependencies.
+  Supported relationship changes must change later affordances; unsupported rule
+  edits and prose have no effect.
+- [ ] Preserve actor-scoped observations, legal schemas, read tools, histories,
+  metadata/errors, memory, bounded inputs and restored sessions. Researcher full
+  inspection/export is privileged and labeled. Availability is not receipt-confirmed
+  model input, attention or intention.
+- [ ] Prove declared sequential/phased timing, delayed work/mail, frozen barriers,
+  priority/completion-order independence, complete restoration and exact zero-call
+  replay including rejection/read receipts and immutable evidence prefixes.
+- [ ] Preserve both actual participant harnesses and existing one-writer, budget
+  reservation/settlement, unknown-usage, cancellation/primary-error and restart
+  guarantees. No retry, replacement policy/model or automatic paid execution.
+- [ ] Pin complete reusable workflow mechanics and source revisions. Advance all
+  changed DB/export/library contracts together beyond the accepted frontier;
+  explicitly reject prior contracts without aliases, migration or data reset.
+- [ ] Compose existing Conditions/Review and run Environment/Record surfaces for
+  tasks, owners, dependencies, resources, due times, handoffs, communications,
+  conflicts, artifact histories and recorded consequences. Keep stock tokens,
+  mobile/keyboard/light/dark and loading/error/reconnect/draft/late-response states;
+  add no invented spatial geometry.
+- [ ] Qualify affected checks and fresh applicable runtime smoke after staged
+  grants; retain every raw failure, attempt, source identity and limitation.
+  Run the frozen original T01 files unchanged, preserving precisely four export-v4
+  failures, four false terminal flags and exit1; independently prove current-contract
+  five-run/22-turn complete-input, behavioral and accounting parity.
+- [ ] Review Standards and Spec personally, merge only the documented accepted
+  root frontier, commit coherent checkpoints through normal hooks/Gitleaks,
+  close owned resources, finish HANDOFF/PROGRESS/report and return exact HEAD for
+  root's fresh independent merger. No ticket acceptance claim by this implementer.
+
+## Independently specified DEVELOPMENT oracles v1
+
+These literal worked examples are fixed **before any product output** and are
+DEVELOPMENT only. They do not establish live competence or generalization. Add
+one vertical test after the preceding observed red/green; the list is not a batch
+of tests to write in advance. Expected values must not be generated by World
+code, self-tests, planner prose, checkpoints or the implementation's formulas.
+
+Terminal representation fixed before its first slice: `outcome.status` is
+`all_accepted`, `withdrawn` or `horizon`; `accepted` and `unfinished` list work
+keys in declared order. No productivity/success or intention judgment follows.
+At a two-round horizon with intake started at1 and Elm mail queued at1, the
+terminal checkpoint has logical2, intake still in_progress/due3, mail due3 and
+undelivered, materials4/spent3, accepted[] and unfinished[intake,release,audit].
+
+Actors are `alder`, `birch`, `cedar`, `dune`, `elm`, `fern`. Activation order is
+that list; priority is `birch, alder, dune, cedar, fern, elm`. Materials initially
+**7**, separately from an artifact write allowance of **20**. Three work items:
+
+| Work | Eligible workers | Artifact | Prerequisites | Eligible handoff recipients | Cost | Duration |
+| --- | --- | --- | --- | --- | --- | --- |
+| intake | alder, birch | intake_record | none | cedar, dune | 3 | 2 |
+| release | cedar, dune | release_record | accepted intake handoff | elm, fern | 2 | 1 |
+| audit | elm, fern | audit_record | none | alder, birch | 4 | 1 |
+
+Each work artifact starts at v1 with `{"batch": 0}`. Start content is
+`{"batch": 17}` for intake, `{"batch": -6}` for release and `{"batch": 29}`
+for audit. Separate private evidence has no public reader and content
+`{"marker": "sealed-development-431"}`. Text and roles are inert. Routes and
+logical delay **2** are declared, with no ambient broadcast. The first tracer
+uses the six-recipient ring and phased timing; later route/order variants are
+specified here independently.
+
+1. **First public tracer — actual coupled start.** At t0 Alder claims intake;
+   other actors wait. At the barrier t1 intake is owned by Alder, all artifacts
+   remain v1, materials7/spent0/write allowance20. At t1 Alder performs intake
+   against v1; five actors wait. At the next barrier t2 the intake artifact is
+   exactly v1 `batch0`, v2 `batch17` authored by Alder; materials**4**, spent**3**,
+   write allowance**19**. Intake is still in progress with due_at**3**. There are
+   exactly **12** settled decisions and **12** synthetic direct-action requests.
+   Saving made zero calls. Export and replay preserve that boundary; replay adds
+   **0** provider calls and changes neither ledger nor evidence.
+2. **Completion and enforced handoff.** Waiting to t3 makes intake ready without
+   another material charge/version. Alder's handoff of v2 to Cedar followed by
+   Cedar's acceptance unblocks release. A mere message saying "completed" or
+   "approved" does neither. Dune cannot accept Cedar's selected handoff; v1,
+   foreign, pending or nonexistent versions cannot satisfy the dependency.
+   Cedar may then claim/start release: materials**2**, cumulative spent**5**,
+   release v2 `batch-6`, due_at=start+**1**. Before acceptance, release's claim/
+   start is blocked and all material/artifact/owner state is unchanged on rejection.
+3. **Resource alternatives, full and null paths.** Intake+release consumes**5**
+   and leaves**2**; audit cannot consume its required**4** afterward. Audit+intake
+   consumes**7**, leaves**0** and makes release unfunded. Audit alone consumes**4**
+   and leaves**3**. A separate initial-stock**9** case permits all three completed
+   and accepted handoffs using all six actors, spent**9**/remaining**0**. All-wait,
+   withdrawal and horizon cases keep unfinished work visibly incomplete. Completing
+   a primary chain, choosing audit or doing nothing is not a mandated social result.
+4. **Concurrent claims and resource contention.** Alder and Birch both claim
+   intake from the same frozen t0 state: Birch wins under the declared priority,
+   Alder receives an explicit conflict, materials stay**7**, versions stay v1.
+   Reverse priority and Alder wins. For simultaneously owned intake/audit with
+   initial stock**5**, two starts costing**3**/**4** are each initially feasible;
+   the priority winner alone starts, leaving**2** or**1** respectively. The loser
+   gets no version, reservation, material debit or due task. Repeat all **720**
+   six-actor proposal completion orders at the World seam, plus bounded HTTP
+   provider-delay witnesses; do not claim the physically serial Engine is concurrent.
+5. **Atomic failures and supported relationships.** Unauthorized claim/start,
+   duplicate claim/start, stale version, invalid/foreign/future source, missing
+   dependency, insufficient stock, early handoff, wrong recipient and unsupported
+   procedure edits reject before mutation. Compare whole snapshots, not selected
+   counters. If Alder owns unstarted intake, an explicit delegation to Birch makes
+   Birch's start available and Alder's unavailable without spending or content
+   changes. An undeclared assignee or prose "Birch owns this" grants nothing.
+6. **Timing and interruption.** Duration2 start at t1 stays pending at t2 and is
+   ready at t3 in either timing mode; sequential actions and phased barriers are
+   distinct units. Partial phases and restored partial phases retain the same
+   committed observations. Ring mail at t0/delay2 is absent at t1 and available at
+   t2 only to its recipient. Reverse actor/recipient/route order and use empty,
+   ring/reverse-ring/complete routes without changing declared priority. Preserve
+   future work/mail at horizon. Pause/restart/restoration issue**0** calls and
+   preserve materials4/spent3/intakev2/due3 at the tracer boundary. Explicit later
+   sampling alone may advance it. Exact replay checks actions, observations,
+   events, measurements, hashes, pending work and authorized read/rejection receipts.
+7. **Privacy and actual harness substitution.** Change only the private marker
+   between `sealed-development-431` and `sealed-development-907`. Every unrelated
+   actor's observation/schema/tool/memory/error and bounded provider input stays
+   byte-equal before and after restore. Unknown and inaccessible objects have the
+   same actor-visible error. A handoff recipient's actual v2 read has exact source/
+   version/read identity. Pure reads advance no time or material stock. Run through
+   both direct-action and discretionary tool-using harnesses, all four memory
+   modes, operation/effort exhaustion and missing receipt; local or compacted read
+   receipts cannot be called confirmed model input.
+8. **Lifecycle/accounting and read-only research.** One writer; no duplicate work
+   or debit across repeated control requests, pause, cancellation or restart.
+   Failure before send, unknown usage and settlement failure retain exact request
+   counts/charges and primary errors without retry. At **100 input/50 output**
+   synthetic tokens per direct response, the tracer has **1,200/600** tokens,
+   **12** decision requests and **420 synthetic microdollars**. These literal
+   charges use the accepted tracked Luna price table ($0.10/$0.50 per million
+   input/output tokens), not a run result. Actual provider spending is **0**.
+   Inspection/export/copied probes/lenses cannot alter work, ledger or evidence.
+   Later reanalysis keeps frozen cutoff membership and separates Sol Analysis
+   from Luna Participant requests; undefined financial utility remains unavailable.
+9. **Pins and UI.** Public validate/save/revise/reuse with explicit role bindings
+   retains the original question and exact mechanics after library edits/deletion.
+   Invalid 5/13 populations, cycles, unknown actors and prior contracts fail closed.
+   Existing run/experiment surfaces show the literal resource ledger, unaccepted
+   handoff, due work, denied conflict and source-linked v2, including negative and
+   empty states. Browser qualification later covers desktop/light, phone/dark,
+   keyboard, loading/error, reconnect and retained drafts without paid calls.
+
+## Inherited baseline and source attribution
+
+Accepted T10/T11/T16 report counts and production receipts are historical,
+separately attributed evidence. None is a T12 pass. Frozen original runner,
+cases and comparator plus a separately verified before execution must be selected
+from tracked Git source after grant; never execute inherited ignored helpers.
+Keep the four historical export-v4 failures/flags/exit1 as failures. The positive
+current-contract gate independently compares all five runs,22 turns,22 complete
+bounded requests,98 HTTP operations, actions/effects/checkpoints and integer
+accounting against source-matched inherited evidence. Preserve all raw differences
+and explicit injective identity/source/hash proofs; normalize no substantive
+input, opportunity, behavior or cost difference away.
+
+Each future bounded job records exact invocation/exit, source HEAD and protected-
+excluded tracked inventory/diff, case identity and before/after source stability.
+Captures require invocation-local `untracked*` exclusions, protected-name and
+symlink/descendant preflight **before reads**, including nested/subprocess capture.
+Original root `pbcopy`, opaque configurations, protected stash, immutable hardlinked
+source/custody and every lossless restoration map remain untouched. Never run an
+inherited ignored evidence helper. Do not claim an uninterrupted full suite from
+segmented source-attributed checks.
+
+## Footprint forecast and staged release
+
+No cache consumer is granted. Root coordinates exact owner-cache reuse via normal
+frozen managers, never manual dependency copying/linking. Preserve root's
+`.tools/uv-bootstrap/bin/uv`. Use this checkout's distinct `.venv`, frontend
+dependencies/output, temporary databases and own evidence. **18130 is reserved
+only; no service has been launched.**
+
+All future heavy jobs require `flock -x
+/home/agent/.t3/worktrees/workspace/t3-fdf9bdeb/.tools/research-harness/checks.lock`,
+an actual under-lock free-space measurement and at least **134,217,728 bytes**
+remaining as the ordinary floor. Release between bounded jobs. Resource forecasts
+are planning bounds, not measurements, reservations or authorization:
+
+| Stage | Forecast incremental peak | Proposed preflight and condition |
+| --- | --- | --- |
+| Preparation | less than 64KiB tracked plan/test/handoff text | No dependencies, captures or checks |
+| Frozen Python setup + first HTTP red | 16–32MiB environment/metadata; reserve up to128MiB including cache misses/temp/evidence | At least268,435,456 bytes under lock; exact shared cache and manager invocation require root's concrete grant; stop/reforecast on missing distributions rather than infer T17's3,874,816-byte reuse applies here |
+| Bounded backend TDD/static/type/regressions | 8–32MiB per small job including private DB/scratch/evidence | Ordinary128MiB floor plus job peak, root grant; compact only verified closed own outputs |
+| Frontend setup/build/unit | 32–96MiB additional peak, unresolved until owner store is coordinated | Separate grant with at least floor+forecast; no global install or automatic browser download |
+| Browser/runtime/production | 32–128MiB own transient output plus existing image/tool assumptions | Separate measured grant; distinct18130 service/data, no paid/model calls, fresh applicable runtime smoke |
+
+Implementation forecast is one concrete World plus focused integration changes:
+roughly12–18 backend files and6–10 UI files, no new dependency. Expect approximately
+1,200–2,200 implementation lines and400–800 test lines only if acceptance requires
+them; reduce this footprint by existing concrete reuse. This is a forecast, not
+permission for speculative refactors. Do not change runtime/container/workflow
+inputs without need; any such change requires its applicable checks after grant.
+
+Preparation's metadata-only observation is **222,343,168 available bytes**;
+space is shared/unreserved and below the proposed268,435,456-byte setup preflight.
+This checkout has no `.venv`, `frontend/node_modules` or `frontend/dist`.
+No dependency, cache or resource claim follows from this observation.
+
+## Source-review notes for the released implementation
+
+- `DistributedRules` is intentionally specific to three/four-person alternative
+  choice and value artifacts. Do not widen it or give institutional participants
+  invented value artifacts merely to reuse it. Preserve existing filtered action
+  schemas and complete bounded inputs in the positive baseline comparison.
+- Artifact ACL lookup, pure reads, immutable versions/source projection and shared
+  write allowance already exist. Task ownership must independently restrict writes;
+  an old artifact writer ACL cannot bypass the owned start/material transaction.
+- T10 already stages complete decisions and read snapshots until a declared
+  barrier, then settles priority and delivers mail after advancing logical time.
+  Its terminal payoff logic is choice-specific. Reuse the actual scheduling/mail
+  behavior without inheriting those payoffs or premature end conditions.
+- Engine replay has explicit artifact-world lists for complete observation/event/
+  measurement and pure-read/rejection validation. The new World must enter those
+  existing paths; matching only final checkpoints would miss recorded corruption.
+- Reusable role extraction/rebinding currently handles artifact ACLs, coordination
+  orders/routes and commitment parties explicitly. Include every workflow worker,
+  handoff recipient, order and route, including actors with no artifact ACL, so a
+  neutral reusable setup neither drops identity nor invents an extra participant.
+- The existing run `WorldView` dispatch, artifact history and coordination tables,
+  Conditions controls and protocol Review supply the presentation seams. No new
+  route, spatial depiction or client-owned remote state is needed.
+- The accepted tracked Luna price table gives35 synthetic microdollars per
+  100/50-token response, hence420 for the first tracer. The external provider
+  alone is replaced by FunctionModel, using existing keyless fixture conventions.
+- Two read-only tracked-selector guards stopped before content reads on empty
+  magic-excluded selections. Invocation-local protected/untracked-name filtering
+  of explicit tracked Git paths resolved discovery. No product test ran, and no
+  inherited ignored helper was executed.
+
+## Progress and next steps
+
+- [x] Source-only Linux/path/clean-start/accepted-ancestry review.
+- [x] Durable plan, acceptance criteria and independent literal DEVELOPMENT
+  expectations written before the tracer or implementation.
+- [x] Stage exactly one unrun public HTTP tracer. No implementation in preparation.
+- [ ] Report exact branch/HEAD/staged files, narrow mechanism/oracles and setup/
+  peak forecast to root; wait for its concrete setup/test grant.
+- [ ] After grant, observe that tracer red, retain it, implement only its slice,
+  observe green, then choose the next meaningful API/invariant slice.
+- [ ] Complete remaining acceptance, regression/parity/source/evidence review and
+  normal accepted-frontier merge, then hand implementation to root's fresh merger.
+
+The source-only boundary above preceded root's renewed release and the observed
+backend slices recorded at the top. No frontend/build/browser/runtime/live or
+held-out result is claimed.

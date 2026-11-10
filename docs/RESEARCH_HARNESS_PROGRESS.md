@@ -51,6 +51,67 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### T12 renewed setup passed; backend TDD in progress (2026-11-10)
+
+Checkpoint update: exact accepted frontier now **e76ef124** includes independently
+accepted T14DB11/export12/library7. Root requested an own coherent checkpoint and
+normal exact-SHA merge, then advance T12's distinct provisional same-number
+contracts coherently. No provisional T17; frontend and all other held stages held.
+Latest one-case workflow-contract check passed. New independent720-order claim/
+resource,16 denial/four privacy, terminal/read and actual tool interruption slices
+have passes; Ruff/ty passed earlier source only. Incomplete/unaccepted.
+The prior grouped regression remains a FAILED boundary: recorder126/pytest1,
+91 passes/two catalog failures and20MiB overrun. Separate repaired checks and
+verified closed-own-scratch archives/maps preserve all raw attempts. Current
+release is World≤0.5MiB OR ONE HTTP≤2MiB, uncompressed scratch≤4MiB, total20MiB.
+
+Same implementer/worktree/branch at29af3413; incomplete/unaccepted. Retained
+attempt02 passed the exact warm offline sync with3,862,528 net shared bytes,
+own prefix/import verified and205,537,280 final free. Attempt01's125 is preserved.
+Frozen first HTTP tracer observed red before production changes; incremental
+tracer/handoff/delegation/mail slices passed individually. No final combined,
+static/type or affected-regression result yet. See [T12 plan](research/T12_INSTITUTIONAL_WORKFLOW.md)
+and `.tools/t12/evidence/` for every raw attempt and complete source attribution.
+
+Backend-only continuation uses shared flock/134,217,728 floor, disabled bytecode,
+protected-excluded tracked-only indirect snapshot guard and20MiB new output cap.
+No frontend/browser/services/Docker/new install/paid/live/held-out authorization.
+Exact2ad967f is the accepted later merge target; moving/provisional T14/T17 refs
+are excluded. Next: frozen reads, contention/atomic failure and remaining contract,
+harness/privacy/reuse/termination acceptance. No descendants/publication.
+
+### Historical T12 warm setup preflight — floor rejection retained (2026-11-10)
+
+Root granted exact coordinated owner-cache reuse for one warm offline Python
+setup, first frozen HTTP red and subsequent bounded backend work. The actual
+under-lock setup measurement was187,224,064 bytes against201,326,592 required;
+the preflight exited125 before invoking uv. Receipt is
+`.tools/t12/setup/attempt-01.json`; flock is released. No `.venv`, import attempt,
+test/static/type/regression run or implementation exists. No retry/cold fallback.
+The one API tracer stays frozen/unrun. T12 remains incomplete/unaccepted pending
+renewed concrete setup release after root coordinates headroom. Accepted normal
+merge target2ad967f is exact and documentary only; moving/provisional T14/T17 refs
+stay excluded. Further UI/service/browser/Docker/live/held-out stages remain held.
+
+### T12 isolated source-only preparation — grant pending (2026-11-10)
+
+Fresh implementer on `t3/institutional-workflow` in `t3-190f8b94` confirmed clean
+accepted `29af3413` ancestry including T16 `fde4bce`. Provisional T14/T17 remain
+excluded; current accepted contracts remain DB10/export11/library7. The
+[durable T12 plan](research/T12_INSTITUTIONAL_WORKFLOW.md) fixes acceptance,
+literal independently specified DEVELOPMENT oracles, inherited source/check
+attribution, footprint forecasts and next steps before any implementation.
+
+Exactly one unrun public HTTP tracer is prepared: six actors claim then start
+intake, append artifactv2, consume3 of7 material units and retain delayed due3
+at logical2, with12 requests and call-free replay. No product result is claimed.
+No application implementation, install/cache consumption, check/capture/service/
+browser/Docker/model/paid/live/held-out work or commit has run.18130 is reserved
+only. Root must grant concrete normal frozen Python setup/first-red work before
+execution; conservative proposed preflight256MiB, including128MiB ordinary floor
+and128MiB setup/temp/evidence allowance. Further stages remain separately held.
+T12 remains **incomplete/unaccepted**; preserve every earlier report and map.
+
 ### T14 production boundary verified; T17 backend stage released (2026-11-10)
 
 T14 remains unaccepted pending completed evidence closure and a fresh independent
@@ -837,7 +898,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Integrated and accepted after fresh review repairs | `c357a3b`, `4ed18af`, `84867cc`; [report](research/T09_ARTIFACT_WORLD.md) |
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Accepted after fresh Standards/Spec review and T19 integration repairs | No-ff `02879c3`; repair `7aec3f5`; DB8/export9/library5 |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Accepted for documented deterministic scope after independent recovery review | Exact source `4aac5a9`; accepted frontier`8df6c59`; introduced DB9/export10/library6; [review](research/T11_RECOVERY_REVIEW.md) |
-| T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Ready; isolated source-only launch scheduled | No dependency setup/check allocation yet |
+| T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Incomplete/unaccepted; renewed setup passed, backend TDD in progress | `t3/institutional-workflow` at29af3413; first HTTP red retained, individual work/handoff/delegation/mail slices passed; remaining gates open |
 | T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Accepted for deterministic scope; live competence unassessed | Exact no-ff `5af3fbb`; scoping repair `5e86dfa`; [report](research/T13_INTEGRATION_REVIEW.md) |
 | T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Evidence closure in progress; unaccepted | Production records independently verified; fresh merger follows completion; no paid allocation |
 | T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Integrated and accepted after fresh review repair | `fa1c825`, `6e1a7c8`; [report](research/T15_BASELINES.md) |

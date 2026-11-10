@@ -10,7 +10,16 @@ from typing import Literal
 
 from pydantic import Field, field_validator
 
-from .domain import Action, Decision, Design, RelayAction, StopArtifact, Strict, Treatment
+from .domain import (
+    Action,
+    Decision,
+    Design,
+    RelayAction,
+    StopArtifact,
+    Strict,
+    Treatment,
+    WaitWorkflow,
+)
 from .simulation.checkpoints import Observation
 from .simulation.environments import create_world, get_environment
 from .simulation.world import World
@@ -25,6 +34,11 @@ COMMON = {
     "repeated_interaction": "Finite repeated model decisions, not calibrated human prediction.",
 }
 CAPABILITIES = {
+    "institutional_workflow": {
+        "versioned_artifacts": "Owned work appends authorized immutable artifact versions.",
+        "finite_stock": "Work starts atomically consume their declared shared material cost.",
+        "task_dependencies": "Work starts require accepted prerequisite handoffs.",
+    },
     "reliance_commitments": {
         "versioned_artifacts": "Actor-authorized artifacts and voluntary read-access entrusting.",
         "distributed_information": "Four local-value participants, addressed mail and "
@@ -313,6 +327,13 @@ def factorial_issues(grid: dict) -> list[dict]:
 
 def _instrument(world: World, actor: str, observation: Observation, variant: int) -> Decision:
     """Legal diagnostic choices only. Never used by participant execution."""
+    if "workflow" in observation:
+        return Decision(
+            action=WaitWorkflow(kind="wait_workflow"),
+            rationale="Preflight wait witness.",
+            memory="",
+            forecast=None,
+        )
     if "relay" in observation:
         choices = [option["kind"] for option in observation["legal_actions"]]
         operation = choices[0] if variant == 0 else "wait" if variant == 1 else "stop"
@@ -597,6 +618,7 @@ def _preflight(specification: str, runner=None) -> dict:
     # Endowment also sets incidental synthetic signal ranges in these worlds.
     active = set(get_environment(design.environment).parameters)
     if design.environment not in {
+        "institutional_workflow",
         "artifact_workspace",
         "sealed_relay",
         "distributed_coordination",

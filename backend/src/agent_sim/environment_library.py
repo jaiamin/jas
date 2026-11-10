@@ -27,11 +27,22 @@ from .validity import preflight, require_valid
 
 
 def artifact_roles(parameters: dict) -> set[str]:
-    return {
+    roles = {
         key
         for obj in (parameters.get("artifacts") or {}).get("objects", [])
         for key in [*obj["readers"], *obj["writers"], *([obj["owner"]] if obj["owner"] else [])]
     }
+    workflow = parameters.get("workflow")
+    if workflow:
+        roles.update(workflow["turn_order"])
+        roles.update(workflow["conflict_order"])
+        roles.update(actor for route in workflow["routes"] for actor in route.values())
+        roles.update(
+            actor
+            for work in workflow["work_items"]
+            for actor in [*work["workers"], *work["handoff_to"]]
+        )
+    return roles
 
 
 def bind_artifacts(parameters: dict, bindings: dict[str, str]) -> None:
@@ -53,6 +64,16 @@ def bind_artifacts(parameters: dict, bindings: dict[str, str]) -> None:
     for opportunity in (parameters.get("commitments") or {}).get("opportunities", []):
         for field in ("promisor", "recipient"):
             opportunity[field] = bindings[opportunity[field]]
+    workflow = parameters.get("workflow")
+    if workflow:
+        for field in ("turn_order", "conflict_order"):
+            workflow[field] = [bindings[actor] for actor in workflow[field]]
+        for route in workflow["routes"]:
+            for field in ("sender", "recipient"):
+                route[field] = bindings[route[field]]
+        for work in workflow["work_items"]:
+            for field in ("workers", "handoff_to"):
+                work[field] = [bindings[actor] for actor in work[field]]
 
 
 def validate_definition(definition: EnvironmentMechanics) -> None:
@@ -116,7 +137,12 @@ def validate_definition(definition: EnvironmentMechanics) -> None:
                 12,
                 max(1, len(example.roles))
                 if definition.environment
-                in {"artifact_workspace", "distributed_coordination", "reliance_commitments"}
+                in {
+                    "artifact_workspace",
+                    "distributed_coordination",
+                    "reliance_commitments",
+                    "institutional_workflow",
+                }
                 else max(2, len(example.roles) + 1),
             ):
                 break
@@ -242,7 +268,12 @@ def use_environment(
             12,
             max(1, len(example.roles))
             if source.definition.environment
-            in {"artifact_workspace", "distributed_coordination", "reliance_commitments"}
+            in {
+                "artifact_workspace",
+                "distributed_coordination",
+                "reliance_commitments",
+                "institutional_workflow",
+            }
             else 2
             if source.definition.environment == "sealed_relay"
             else max(2, len(example.roles) + 1),
@@ -330,8 +361,8 @@ class EnvironmentLibrary:
             payload = json.loads(self._path(key).read_text())
         except FileNotFoundError:
             raise NoResultFound() from None
-        if not isinstance(payload, dict) or payload.get("format") != "jas-environment-v7":
-            raise ValueError("Unsupported custom environment format; expected jas-environment-v7")
+        if not isinstance(payload, dict) or payload.get("format") != "jas-environment-v8":
+            raise ValueError("Unsupported custom environment format; expected jas-environment-v8")
         record = SavedEnvironment.model_validate(payload)
         if record.id != key or record.sha256 != digest(record.definition.model_dump()):
             raise ValueError("Custom environment has an invalid identity or content hash")

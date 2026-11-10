@@ -24,6 +24,7 @@ EnvironmentId = Literal[
     "sealed_relay",
     "distributed_coordination",
     "reliance_commitments",
+    "institutional_workflow",
 ]
 
 
@@ -273,6 +274,26 @@ class CommitmentRules(Strict):
     opportunities: list[CommitmentOpportunity] = Field(min_length=1, max_length=12)
 
 
+class WorkItem(Strict):
+    key: ArtifactKey
+    artifact: ArtifactKey
+    workers: list[ArtifactKey] = Field(min_length=1, max_length=12)
+    dependencies: list[ArtifactKey] = Field(default_factory=list, max_length=12)
+    handoff_to: list[ArtifactKey] = Field(min_length=1, max_length=12)
+    resource_cost: int = Field(ge=1, le=1000)
+    duration: int = Field(ge=1, le=1200)
+
+
+class WorkflowRules(Strict):
+    timing: Literal["sequential", "phased_simultaneous"]
+    turn_order: list[ArtifactKey] = Field(min_length=6, max_length=12)
+    conflict_order: list[ArtifactKey] = Field(min_length=6, max_length=12)
+    routes: list[MessageRoute] = Field(max_length=132)
+    delivery_delay: int = Field(ge=1, le=12)
+    resource_stock: int = Field(ge=0, le=12000)
+    work_items: list[WorkItem] = Field(min_length=1, max_length=12)
+
+
 class MechanicsParameters(Strict):
     endowment: int = Field(
         default=10,
@@ -316,6 +337,7 @@ class MechanicsParameters(Strict):
     relay: RelayRules | None = None
     coordination: DistributedRules | None = None
     commitments: CommitmentRules | None = None
+    workflow: WorkflowRules | None = None
     resource_schedule: list[ResourceChange] = Field(default_factory=list, max_length=12)
 
 
@@ -427,7 +449,7 @@ class EnvironmentMechanics(Strict):
 
 
 class SavedEnvironment(Strict):
-    format: Literal["jas-environment-v7"] = "jas-environment-v7"
+    format: Literal["jas-environment-v8"] = "jas-environment-v8"
     id: str
     revision: int = Field(ge=1)
     updated: str
@@ -517,6 +539,7 @@ class Design(DesignSpec):
                 "artifact_workspace",
                 "distributed_coordination",
                 "reliance_commitments",
+                "institutional_workflow",
             }:
                 if artifacts is None:
                     raise ValueError("Artifact workspace requires explicit artifact mechanics")
@@ -533,7 +556,12 @@ class Design(DesignSpec):
                 raise ValueError("Artifact mechanics require the artifact workspace")
             if (
                 self.environment
-                not in {"artifact_workspace", "distributed_coordination", "reliance_commitments"}
+                not in {
+                    "artifact_workspace",
+                    "distributed_coordination",
+                    "reliance_commitments",
+                    "institutional_workflow",
+                }
                 and "read_artifact" in condition.harness.tools
             ):
                 raise ValueError("Artifact read tools require the artifact workspace")
@@ -613,6 +641,55 @@ class Design(DesignSpec):
                         )
             elif commitments is not None:
                 raise ValueError("Commitment rules require reliance_commitments")
+            workflow = condition.parameters.workflow
+            if self.environment == "institutional_workflow":
+                ids = {p.key for p in self.profiles}
+                if workflow is None or artifacts is None or not 6 <= len(ids) <= 12:
+                    raise ValueError("Institutional workflow requires 6–12 participants and rules")
+                for order in (workflow.turn_order, workflow.conflict_order):
+                    if len(order) != len(ids) or set(order) != ids:
+                        raise ValueError("Workflow orders must list every participant once")
+                routes = [(r.sender, r.recipient) for r in workflow.routes]
+                if len(routes) != len(set(routes)) or any(
+                    a not in ids or b not in ids or a == b for a, b in routes
+                ):
+                    raise ValueError("Workflow routes require distinct declared participant pairs")
+                objects = {o.key: o for o in artifacts.objects}
+                work = {w.key: w for w in workflow.work_items}
+                if len(work) != len(workflow.work_items) or len(
+                    {w.artifact for w in work.values()}
+                ) != len(work):
+                    raise ValueError("Work keys and work artifacts must be distinct")
+                for item in work.values():
+                    obj = objects.get(item.artifact)
+                    if (
+                        obj is None
+                        or not set(item.workers) <= ids
+                        or not set(item.handoff_to) <= ids
+                        or len(item.workers) != len(set(item.workers))
+                        or len(item.handoff_to) != len(set(item.handoff_to))
+                        or len(item.dependencies) != len(set(item.dependencies))
+                        or not set(item.dependencies) <= work.keys()
+                        or item.key in item.dependencies
+                        or not set(item.workers) <= set(obj.writers) | {obj.owner}
+                    ):
+                        raise ValueError(
+                            "Work requires valid artifacts, permissions and dependencies"
+                        )
+                remaining = {key: set(item.dependencies) for key, item in work.items()}
+                while remaining:
+                    ready = {key for key, dependencies in remaining.items() if not dependencies}
+                    if not ready:
+                        raise ValueError("Workflow dependencies must be acyclic")
+                    remaining = {
+                        key: dependencies - ready
+                        for key, dependencies in remaining.items()
+                        if key not in ready
+                    }
+                if artifacts.requirements:
+                    raise ValueError("Workflow uses accepted handoffs, not solo submission checks")
+            elif workflow is not None:
+                raise ValueError("Workflow mechanics require institutional_workflow")
             if condition.harness.kind == "scripted":
                 required_world = (
                     "information" if condition.harness.policy == "private_signal_v1" else "commons"
@@ -770,6 +847,42 @@ class RelyOnCommitment(Strict):
     opportunity: ArtifactKey
 
 
+class ClaimWork(Strict):
+    kind: Literal["claim_work"]
+    work: ArtifactKey
+
+
+class PerformWork(Strict):
+    kind: Literal["perform_work"]
+    work: ArtifactKey
+    expected_version: int = Field(ge=1, le=1201)
+    content: ArtifactContent
+    sources: list[ArtifactReference] = Field(max_length=12)
+
+
+class WaitWorkflow(Strict):
+    kind: Literal["wait_workflow"]
+
+
+class HandoffWork(Strict):
+    kind: Literal["handoff_work"]
+    work: ArtifactKey
+    recipient: ArtifactKey
+    version: int = Field(ge=1, le=1201)
+
+
+class AcceptHandoff(Strict):
+    kind: Literal["accept_handoff"]
+    work: ArtifactKey
+    version: int = Field(ge=1, le=1201)
+
+
+class DelegateWork(Strict):
+    kind: Literal["delegate_work"]
+    work: ArtifactKey
+    recipient: ArtifactKey
+
+
 ArtifactAction = Annotated[
     ReadArtifact | WriteArtifact | CheckArtifacts | SubmitArtifacts | StopArtifact,
     Field(discriminator="kind"),
@@ -783,6 +896,12 @@ ActionRequest = (
     | SendMessage
     | MakeCommitment
     | RelyOnCommitment
+    | ClaimWork
+    | PerformWork
+    | WaitWorkflow
+    | HandoffWork
+    | AcceptHandoff
+    | DelegateWork
 )
 
 
