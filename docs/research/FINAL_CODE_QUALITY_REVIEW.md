@@ -336,6 +336,26 @@ records are `current/markdown-*` and browser-proof.json; screenshots are referen
 by their original browser-tool paths. These checks qualify this small renderer
 change; the combined T17/T18 and final UI/runtime/benchmark gates remain open.
 
+## Final platform benchmark v2 — manifest frozen, unrun
+
+The original two cases are repeated with their original2/12 participants,2
+rounds,seed7 and declared commons_half_v1 non-model policy. A third independently
+declared case uses12 participants,20 rounds,240 turns. Each must finish complete,
+retain exactly one activation per turn, export241 evidence boundaries for the
+larger case, replay all turns exactly and make0 provider requests/charges. The
+original20 warm sequential health/run/experiment reads remain; the larger case
+then makes20 more requests per endpoint through4 concurrent workers, measuring
+the interference between those ordinary inspection requests. It adds no arbitrary
+latency pass threshold or model-competence score.
+
+This manifest and benchmark source precede any larger-case output. Final execution
+waits for the combined accepted application; forecast64MiB incremental disk and
+16MiB retained output under the ordinary floor/flock. Source-stamped results will
+report p50/p95/max, actual samples/response sizes, completion/replay/export times,
+server RSS/high-water memory and database size. A single local VM sample cannot
+establish capacity, provider latency or live scientific usefulness. No fresh
+benchmark outcome is claimed here.
+
 ## Remaining review
 
 - Browser verification of the remaining ticket workflows and both app themes.

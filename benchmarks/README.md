@@ -35,9 +35,11 @@ For bounded local platform timings without any model requests:
 uv run python -m benchmarks.runtime --output data/runtime/current
 ```
 
-This starts and closes its own keyless HTTP server on port18228. It measures two
-Commons workloads with2/12 non-model participants, exact replay/export and20 warm
-reads per endpoint. Results include raw timings, response sizes and server memory;
+This starts and closes its own keyless HTTP server on port18228. It repeats the
+2/12-participant two-round Commons workloads, then measures12 participants across
+20 rounds (240 turns), with exact replay/export and20 warm reads per endpoint.
+The larger case also mixes health/run/experiment reads through four concurrent
+workers,20 requests to each endpoint. Results include raw timings, response sizes and server memory;
 they measure platform overhead, not model latency or competence. Use a fresh output
 directory and `--port` when another local task owns the default port.
 

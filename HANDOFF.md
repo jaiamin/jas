@@ -1,4 +1,23 @@
-# ROOT continuation — reported correctness defects repaired (2026-11-10)
+# ROOT continuation — final benchmark preparation (2026-11-10)
+
+Accepted ROOT46d48d5e includes the four reported correctness repairs and the
+explicit Markdown image-link repair. The frozen platform benchmark v2 adds a
+12-participant/20-round/240-turn case and four-worker mixed inspection to the
+original4/24-turn cases. Its Ruff and explicit ty checks pass; v2 execution is
+UNRUN and waits for final accepted combined source. No live/provider work is
+authorized. The benchmark manifest and source precede any v2 output.
+
+T17/T18 continue their same released bounded backend/unit/static work and must
+normally include exact46d48d5e. One conditional build each follows their final
+checks with128MiB peak/16MiB output and entry>=268435456; browser/services remain
+held. Current shared free is about349MB, unreserved. ROOT owns sole tracked
+writing; no ROOT service or job is active and8080 is not running. Final independent
+integration, browser/production/benchmark, compact reporting, authorized obsolete
+data/evidence removal and8080 remain open. The original pbcopy and protected stash
+remain untouched. Earlier attributions and retired-evidence limitations below
+remain binding.
+
+# Historical ROOT correctness checkpoint (2026-11-10)
 
 ROOT370f835b is pushed/linked;115922ed adds the committed compact report for
 closed successful scratch retirement. A further observed Markdown image red

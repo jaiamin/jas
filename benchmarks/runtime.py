@@ -14,6 +14,7 @@ import socket
 import subprocess
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.request import Request, urlopen
 
@@ -30,9 +31,7 @@ def request(base: str, path: str, body: dict | None = None) -> tuple[dict, float
     return value, (time.perf_counter() - started) * 1000, len(payload)
 
 
-def reads(base: str, path: str) -> dict:
-    request(base, path)
-    samples = [request(base, path)[1:] for _ in range(20)]
+def summarize(samples: list[tuple[float, int]]) -> dict:
     times = sorted(elapsed for elapsed, _ in samples)
     return {
         "samples_ms": [elapsed for elapsed, _ in samples],
@@ -43,12 +42,36 @@ def reads(base: str, path: str) -> dict:
     }
 
 
-def workload(base: str, population: int) -> dict:
+def reads(base: str, path: str) -> dict:
+    request(base, path)
+    return summarize([request(base, path)[1:] for _ in range(20)])
+
+
+def concurrent_inspection(base: str, paths: dict[str, str]) -> dict:
+    jobs = [(key, path) for _ in range(20) for key, path in paths.items()]
+
+    def inspect(job: tuple[str, str]) -> tuple[str, float, int]:
+        key, path = job
+        _, elapsed, size = request(base, path)
+        return key, elapsed, size
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        samples = list(pool.map(inspect, jobs))
+    return {
+        "workers": 4,
+        "endpoints": {
+            key: summarize([(elapsed, size) for kind, elapsed, size in samples if kind == key])
+            for key in paths
+        },
+    }
+
+
+def workload(base: str, population: int, rounds: int) -> dict:
     catalog, _, _ = request(base, "/api/catalog")
     design = next(t["design"] for t in catalog["templates"] if t["id"] == "commons")
     design.update(
-        title=f"Runtime benchmark: {population} non-model participants",
-        rounds=2,
+        title=f"Runtime benchmark: {population} non-model participants, {rounds} rounds",
+        rounds=rounds,
         seeds=[7],
         repetitions=1,
         profiles=[
@@ -77,7 +100,7 @@ def workload(base: str, population: int) -> dict:
             raise TimeoutError("Non-model run exceeded the declared 30-second bound")
         time.sleep(0.01)
     wall_ms = (time.perf_counter() - started) * 1000
-    turns = population * 2
+    turns = population * rounds
     assert run["summary"]["status"] == "complete", run["summary"]
     assert run["summary"]["turn"] == turns
     assert run["summary"]["usage"]["requests"] == 0
@@ -88,9 +111,14 @@ def workload(base: str, population: int) -> dict:
     exported, export_ms, export_bytes = request(base, f"/api/studies/{sid}/export")
     assert exported["requests"] == []
     assert len(exported["runs"][0]["evidence"]) == turns + 1
-    return {
+    paths = {
+        "health": "/api/health",
+        "run": f"/api/runs/{rid}",
+        "experiment": f"/api/studies/{sid}",
+    }
+    result = {
         "population": population,
-        "rounds": 2,
+        "rounds": rounds,
         "turns": turns,
         "policy": "commons_half_v1",
         "provider_requests": 0,
@@ -99,15 +127,11 @@ def workload(base: str, population: int) -> dict:
         "replay_ms": replay_ms,
         "export_ms": export_ms,
         "export_bytes": export_bytes,
-        "reads": {
-            key: reads(base, path)
-            for key, path in {
-                "health": "/api/health",
-                "run": f"/api/runs/{rid}",
-                "experiment": f"/api/studies/{sid}",
-            }.items()
-        },
+        "reads": {key: reads(base, path) for key, path in paths.items()},
     }
+    if rounds == 20:
+        result["concurrent_inspection"] = concurrent_inspection(base, paths)
+    return result
 
 
 def main() -> None:
@@ -130,6 +154,7 @@ app = create_app('sqlite:///' + sys.argv[1], budget_usd=0, static_dir=Path('fron
 uvicorn.run(app, host='127.0.0.1', port=int(sys.argv[2]), access_log=False)
 """
     record = {
+        "version": 2,
         "platform": platform.platform(),
         "python": sys.version,
         "cpu_count": os.cpu_count(),
@@ -153,8 +178,8 @@ uvicorn.run(app, host='127.0.0.1', port=int(sys.argv[2]), access_log=False)
                     if process.poll() is not None or time.monotonic() >= deadline:
                         raise RuntimeError("Benchmark server did not become ready") from None
                     time.sleep(0.05)
-            for population in (2, 12):
-                record["cases"].append(workload(base, population))
+            for population, rounds in ((2, 2), (12, 2), (12, 20)):
+                record["cases"].append(workload(base, population, rounds))
             record["server_memory"] = [
                 line
                 for line in Path(f"/proc/{process.pid}/status").read_text().splitlines()
