@@ -1,3 +1,7 @@
+# T19 fresh sole-writer integration review in progress (2026-11-10)
+
+Root stopped editing at `14e8af9`; exact clean source `1d8d977` is being merged and independently qualified on 18222. Only coordination prose conflicted; accepted T15 and historical T19 handoffs remain below. Review plan, raw commands, source archives and custody are retained in `.tools/research-harness/evidence/T19-integration/PLAN.md`. No T19 acceptance is claimed until final qualification. No paid allocation or publication; other tasks remain untouched.
+
 # Root coordination — T15 accepted; T13/T19 assigned (2026-11-10)
 
 Accepted integration: `d55f27032b3468ee1f5ad7399ca0d3b1827f4a81` (T01–T09,
@@ -219,6 +223,75 @@ links immediately after push, then hands sole writing ownership to T15 review.
 No paid calls were made: Sol remains **$0.611632 / 55 known requests**, with
 **$9.388368 remaining** and no active allocation; Luna needs its separate
 explicit allowance. Live/held-out/generalization gates remain unverified.
+
+# T19 isolated implementation — pending independent root review (2026-11-10)
+
+T19/#30 is implemented in `t3/research-claim-support`; qualified checkpoint
+`eee988599f4f604639d6c1a0ec2dd27e9c98952e`, followed only by handoff documentation.
+Assigned base was accepted `59e2093`; documented accepted T09 `12b35c9` was merged
+at `6567dc8`. Final accepted-base merge is Already up to date. Later local parent
+review-source merges are excluded because progress still names `12b35c9` as accepted.
+This branch is **not integrated or accepted**. Root owns independent review and
+PR32 publication. Read [the T19 report](docs/research/T19_CLAIM_SUPPORT.md).
+
+Two lens/support1 read-only lenses in the existing Researcher workflow freeze
+cutoffs, World evidence, planned support and exact request membership. Retained
+inputs reproduce totals/counts/contrast direction/pairs/exposure; inspected
+citations do not validate invented numbers, reversed arms or missing trials.
+All generated wording stays unassessed; no semantic/causal/intent validity pass.
+Artifact contents/versions/history/source references are frozen; absent utility
+and unfinished outcomes stay null. Turn-zero API hash is explicitly null. General
+explanation/design/probe workflows and scoped privacy remain intact.
+
+Combined qualification: **345 distinct affected backend tests**, including 28 T19;
+Ruff/ty/lint, 112 frontend units, TypeScript/build; **63 browser flows** on 18122
+(47 inherited, 11 accepted harness/exposure/artifact, 5 T19) pass. Offline
+retained-input audit reproduces **571 calculations / 33 analyses**,0 DB/provider
+calls. Eleven predeclared semantic DEVELOPMENT candidates retain independent
+rationales, disagreements and abstentions. No live competence/reliability claim.
+Application inputs remain identical across the combined group checkpoints; exact
+source attributions, checks and all failures are in the report/data.
+
+Unchanged T01 before/combined-after/comparison retain **exit1**, four intentional
+export-v4 failures and four failed terminal flags, no regressions/improvements.
+Positive current-contract checks and exact **22-turn /5-run /22-scripted-request**
+behavior/accounting parity pass. All **1,874 raw differences** are classified
+(1,738 export, 69 keyed catalog,67 HTTP operation),0 unexplained;98→98 operations.
+Synthetic usage2,200 input/1,100 output/$0.000770; actual spend $0. All 30 inherited
+benchmark files and stash `f771128ba1c9295262a4073df40cc25647b1370f` remain unchanged.
+No new external hash audit of the 1,745 protected Sol artifacts is claimed.
+
+Current combined contracts **DB7/export8/capture1/comparison1/libraryv4/tool2.0.0/
+direct1.0.0**, additive lens/support1. No aliases/migration/reset, generated
+admission or T10/T15/T16/T18 implementation. Models remain Sol Researcher/planner/
+assistant and Luna participants. T03/T05/T06/T07/T08 invariants remain protected.
+T19 changes no runtime/container/dependency/workflow; production smoke is inherited
+from accepted **T09/84867cc**, not a fresh T19 production/full-suite result.
+
+Setup limitation: the initial dependency hardlink copy included mutable TypeScript/
+Vite caches. Earlier builds may have written shared cache inodes. Only this
+checkout's 42 shared generated cache files were detached, preserving digests and
+verifying link-count1, followed by forced fresh tsc and passing frontend checks.
+Other checkout cache effects were not inspected/repaired. See
+`data/t19/cache-isolation-20261110T064712512773Z/`. Source/research work stayed scoped;
+this limitation qualifies broader claims that other environments were untouched.
+No T09/T15 checkout, evidence, ports 18120/18121 or process was inspected or operated.
+
+Retain complete ignored `data/t19/`, including all source/case/check snapshots,
+HTTP/provider/export/database evidence, screenshots and failures. Closed task-owned
+outputs alone are compressed losslessly with raw/gzip digests and decompression
+checks. `artifact-manifest.json`/`.sha256` provide the final inventory;
+`preclosure-manifest.json` is historical. Final clean-source closure records the
+HEAD, accepted ancestry, executable parity, own cache isolation/stash and closed 18122.
+Both owned preview tabs/manual server were closed earlier; automated services
+shut down. Retain the manual server's actual -15 shutdown and the intended turn-zero
+red that passed, alongside genuine product reds and fixture/oracle failures.
+
+Next: root's independent Standards/Spec review and acceptance. No descendant,
+extra checkout, push/PR/issue edit/watch/closure, source deletion, real.env/clipboard
+access, data reset or host/security change. Paid allocation/spend $0; global Sol
+remains $0.611632/55 known requests, $9.388368 remaining, no paid Luna. Semantic
+certification, live competence and held-out generalization remain unverified.
 
 # T09 fresh integration checkpoint — accepted (2026-11-10)
 

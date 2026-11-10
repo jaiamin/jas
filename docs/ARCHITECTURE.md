@@ -403,6 +403,48 @@ The Agent still validates every citation against an inspected range and frozen c
 
 ## Analysis calculations
 
+Recorded-run findings carry additive **analysis lens/support v1** artifacts.
+`claim_support.py` supplies two installed read-only lenses: recorded behavior and
+communication evidence. Submission synchronously captures selected cutoffs,
+World balances/state hashes/rule versions, settled actions/events, versioned measurements,
+T06 membership/comparisons and T07 exposure/receipt membership before scheduling
+the existing bounded Researcher task. Retained inputs and explicit formulas
+reproduce totals, event counts and T06 contrasts; no second statistical engine
+or natural-language truth oracle is introduced. The prompt includes at most 96
+calculation summaries and declares omissions; the full artifact remains available.
+
+Optional calculation assertions identify a retained calculation, numeric value,
+scope and observed pair count. Mismatched numbers/pairs are contradicted; absent
+or unknown inputs are unavailable; unsupported scopes, causal and intent claims
+cannot pass. A numerical match checks only that structured value. Generated
+wording and semantic annotations always remain **unassessed**, including a correct
+number attached to an unsupported story. Free prose without an assertion is
+never silently certified. Relative/absolute comparison tolerance is retained
+as `1e-12`. False recorded factual reports, feasible commitment breaches and
+intentional deception remain distinct.
+
+The existing `/api/chats` analysis submission accepts `lens` and optional
+`source_analysis_id`. Reanalysis requires the same chat and exact run/study scope,
+retains the original frozen index/inputs/cutoffs and records its own requests and
+usage. Later same-chat answers outside those cutoffs are excluded from its context.
+It cannot run participants, amend World evidence or resettle old requests.
+Coverage retains bounded observation window sizes; missing historical fields and
+unknown delivery stay null/unavailable. Artifact Worlds retain exact contents, versions,
+source references, write allowance, history and outcome. Utility is unavailable where
+no balances exist; success remains null before termination. Applying a different lens changes its
+requirements/account without rewriting the source analysis. Unsupported lens
+versions are rejected without conversion; historical analyses without a lens
+remain unassessed and cannot supply lens inputs. Database7/export8/capture1/
+comparison1/libraryv4 and harness contracts retain their existing meanings;
+this additive versioned analysis JSON requires no migration or reset.
+
+Agent replies lead with a deterministic source-linked account, then expose claim
+status, calculation inputs, coverage/missingness and frozen-evidence download in
+stock disclosures. Reanalysis uses the existing TanStack mutation and preserves
+drafts/record identity. General explanation, planning and copied-probe workflows
+retain their existing response shapes. See the [T19 report](research/T19_CLAIM_SUPPORT.md)
+for independent DEVELOPMENT examples, retained disagreements and operating limits.
+
 The investigator receives cutoff-scoped opportunity counts, actual balances, decision usage
 and failure-aware matched effects. Conditions group by immutable revision even when their
 private profiles differ. Shared experiment ceilings are distinct from measured execution cost.

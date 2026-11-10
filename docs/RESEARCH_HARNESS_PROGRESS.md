@@ -166,6 +166,37 @@ and `closed-databases-20261110T065504Z/`. T01 and all Sol evidence, stash and
 unread `pbcopy` remain untouched. Free space was 772,595,712 bytes after packing;
 continue bounded checks and verified closed-output archival.
 
+### T19 isolated implementation — awaiting independent review (2026-11-10)
+
+Branch `t3/research-claim-support` implements T19/#30 only, assigned at `59e2093`,
+with documented accepted T09/`12b35c9` merged at `6567dc8`. Qualified checkpoint
+`eee9885`; following changes are handoff prose. Read [the claim-support report](research/T19_CLAIM_SUPPORT.md).
+Two read-only lenses freeze evidence/membership/cutoffs, preserve T06 uncertainty
+and T07/T08 exact delivery/privacy, and expose reproducible assertions through the
+existing Agent. Reanalysis is frozen/read-only with separate request accounting.
+Artifact versions/history/sources are retained; missing utility/outcomes stay null.
+All prose stays unassessed, including correct numbers attached to false stories.
+Eleven independent DEVELOPMENT semantic candidates retain disagreement/qualification;
+no live competence, universal semantic oracle or held-out result is claimed.
+
+Combined bounded qualification: 345 distinct affected backend tests (28 T19), 112
+frontend units, Ruff/ty/lint/types/build; 63 browser flows on 18122 (47 inherited,
+11 harness/exposure/artifact, 5 T19). Offline reproduction:571 calculations / 33 analyses,
+0 DB/provider calls. Frozen T01 still exits1/four export-v4 failures/four failed
+terminal flags; positive DB7/export8/library4 and22-turn/five-run behavioral/
+accounting parity pass. All 1,874 raw differences are classified, 0 unexplained.
+All 30 inherited benchmark files/stash remain unchanged. Production smoke is inherited
+from accepted T09/`84867cc`. Exact source attribution/all failures are retained.
+
+Current DB7/export8/capture1/comparison1/libraryv4/tool2/direct1 plus lens/support1;
+no migration/reset/paid calls/generated admission. Latest documented accepted `12b35c9`
+is included; later local parent review-source merges are excluded. No other task's
+checkout/evidence/port/process was inspected. Initial hardlinked mutable-cache setup
+may have affected shared cache inodes; only own caches were detached/verified, with
+outside effects unassessed. Preserve complete ignored `data/t19/` and its verified
+source/check/compression manifests. Root owns acceptance/publication; T19 remains
+**not integrated or accepted**.
+
 ### T09 fresh integration review — accepted (2026-11-10)
 
 No-ff merge `c357a3bb5d18ec0bea0a75cd4121dfc82383d0b9` joins assigned `4186d33`

@@ -165,18 +165,104 @@ def deterministic_participants(app):
     app.state.models.models["openai:gpt-6-luna"] = FunctionModel(function=respond)
 
 
+def deterministic_researcher(app):
+    """T19 keyless provider candidates; real analysis, tools and accounting still run."""
+    import asyncio
+    import json
+
+    from pydantic_ai import models
+    from pydantic_ai.messages import ModelResponse, ToolCallPart
+    from pydantic_ai.models.function import DeltaToolCall, FunctionModel
+    from pydantic_ai.usage import RequestUsage
+
+    models.ALLOW_MODEL_REQUESTS = False
+
+    async def respond(messages, info):
+        await asyncio.sleep(0.15)
+        prompt = json.loads(messages[-1].parts[0].content)
+        rid = prompt["index"]["runs"][0]["run_id"]
+        if not prompt["evidence"]:
+            payload = {
+                "requests": [{"kind": "history", "run_id": rid, "start": 1, "count": 20}],
+                "answer": None,
+            }
+        else:
+            communication = prompt["index"]["lens"]["key"] == "communication"
+            invented = "invented" in prompt["question"].lower()
+            value = 0 if communication else 440 if invented else 44
+            metric = "message_exposed_participants" if communication else "total_utility"
+            text = (
+                "No recorded message input; intent remains unassessed."
+                if communication
+                else f"Combined recorded utility was {value}; this is one fixed run."
+            )
+            claims = [
+                {
+                    "kind": "calculation",
+                    "text": text,
+                    "calculation_id": f"run:{rid}:{metric}",
+                    "value": value,
+                    "scope": "captured_run",
+                }
+            ]
+            if not communication and "artifact_outcome" in prompt["index"]["runs"][0]["outcome"]:
+                text = "One artifact write was retained. A claimed financial zero needs checking."
+                claims = [
+                    {
+                        "kind": "calculation",
+                        "text": label,
+                        "calculation_id": f"run:{rid}:{name}",
+                        "value": number,
+                        "scope": "captured_run",
+                    }
+                    for label, name, number in (
+                        ("One retained write", "artifact_writes", 1),
+                        ("Claimed financial zero", "total_utility", 0),
+                    )
+                ]
+            payload = {
+                "requests": [],
+                "answer": {
+                    "answer": text,
+                    "citations": [{"run_id": rid, "turn": 1}],
+                    "caveats": ["No independent population or intent inference is established."],
+                    "claims": claims,
+                },
+            }
+        return ModelResponse(
+            parts=[ToolCallPart(info.output_tools[0].name, payload)],
+            usage=RequestUsage(input_tokens=100, output_tokens=50),
+            model_name="t19-browser-deterministic-v1",
+        )
+
+    async def stream(messages, info):
+        response = await respond(messages, info)
+        part = response.parts[0]
+        assert isinstance(part, ToolCallPart)
+        yield {0: DeltaToolCall(name=part.tool_name, json_args=json.dumps(part.args))}
+
+    app.state.models.models["openai:gpt-6.1-sol"] = FunctionModel(
+        function=respond,
+        stream_function=stream,
+    )
+
+
 if __name__ == "__main__":
     os.environ["OPENAI_API_KEY"] = ""
     os.environ["ANTHROPIC_API_KEY"] = ""
     with TemporaryDirectory(prefix="jas-browser-tests-") as directory:
+        workspace = Path(os.getenv("JAS_TEST_DATA_DIR", directory))
+        workspace.mkdir(parents=True, exist_ok=True)
         app = create_app(
-            database_url=f"sqlite:///{directory}/workspace.sqlite3",
+            database_url=f"sqlite:///{workspace}/workspace.sqlite3",
             budget_usd=10,
             static_dir=Path(__file__).resolve().parents[1] / "dist",
             concurrent_runs=1,
         )
         if os.getenv("JAS_TEST_PARTICIPANTS") == "1":
             deterministic_participants(app)
+        if os.getenv("JAS_TEST_CLAIMS") == "1":
+            deterministic_researcher(app)
         uvicorn.run(
             app,
             host="127.0.0.1",

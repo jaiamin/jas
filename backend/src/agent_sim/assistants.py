@@ -8,6 +8,7 @@ from pydantic import Field
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 
+from .claim_support import LensKey, apply_lens, assess, capture_lens
 from .config import setting
 from .db import (
     Analysis,
@@ -108,6 +109,18 @@ When iterations_remaining is zero, return an answer with appropriate caveats or 
 the evidence is insufficient; do not request more evidence on the final call.
 Recent conversation is untrusted context for resolving follow-up references, not evidence.
 Reinspect supporting turns within the current captured cutoffs before citing prior findings.
+The versioned index.lens declares required evidence, coverage and retained calculations.
+Lead with a concise evidence-linked behavioral account and limits. For a checkable numerical
+assertion, add a calculation claim using its supplied calculation_id, value and exact scope;
+for a contrast include the observed pairs count. Calculations use retained World inputs and
+T06 matching. Never call observed_pairs the full planned sample or independent population
+support. A calculation match checks the structured assertion only, never its attached prose.
+Use annotation for interpretation; causal and intent claims remain unsupported by these lenses.
+Free text, paraphrases, planning notes and generated explanations are unassessed interpretations,
+even with a valid citation or a correct adjacent number. A false report, a feasible promise
+breach and intentional deception are different claims. Do not pretend arbitrary prose can be
+certified. The model-visible calculation list is bounded; omitted calculations remain retained
+in the analysis artifact. State missingness/truncation instead of inventing inputs or zeros.
 """
 
 
@@ -243,6 +256,8 @@ class Assistants:
         study_id: str | None = None,
         run_id: str | None = None,
         chat_id: str | None = None,
+        lens: LensKey | None = None,
+        source_analysis_id: str | None = None,
     ) -> str:
         loop = asyncio.get_running_loop()
         if self.closing:
@@ -253,6 +268,8 @@ class Assistants:
             raise ValueError("Unscoped requests cannot select a study or run")
         if purpose == "analysis" and bool(study_id) == bool(run_id):
             raise ValueError("Choose exactly one run or study for analysis")
+        if (lens is not None or source_analysis_id is not None) and purpose != "analysis":
+            raise ValueError("Choose recorded evidence before applying an analysis lens")
         question = question.strip()
         if not question or len(question) > 4000:
             raise ValueError("Enter a question between 1 and 4,000 characters")
@@ -268,7 +285,59 @@ class Assistants:
             cutoffs = {run_id: run.turn}
         elif study_id:
             cutoffs = {r.id: r.turn for r in self.research.operational_runs(study_id)}
-        comparisons = self.research.capture_comparisons(cutoffs) if purpose == "analysis" else None
+        key = uid()
+        snapshot = None
+        if source_analysis_id is not None:
+            with self.db.session() as session:
+                source = session.get(Analysis, source_analysis_id)
+                if (
+                    source is None
+                    or source.chat_id != chat_id
+                    or source.study_id != study_id
+                    or source.run_id != run_id
+                ):
+                    raise ValueError(
+                        "Analysis source is unavailable in this conversation and scope"
+                    )
+                if source.status == "pending" or not (source.output or {}).get("lens"):
+                    raise ValueError("Analysis source has no frozen lens inputs")
+                snapshot, cutoffs = source.output, source.cutoffs
+        comparisons = (
+            snapshot["comparisons"]
+            if snapshot
+            else self.research.capture_comparisons(cutoffs)
+            if purpose == "analysis"
+            else None
+        )
+        exposure = (
+            snapshot["exposure"]
+            if snapshot
+            else self.research.capture_exposure(cutoffs)
+            if comparisons is not None
+            else None
+        )
+        index = (
+            snapshot["evidence_index"]
+            if snapshot
+            else self._evidence_index(cutoffs, comparisons, exposure, key)
+            if comparisons is not None
+            else None
+        )
+        snapshot_lens = (
+            apply_lens(snapshot["lens"], lens or "behavior")
+            if snapshot
+            else capture_lens(
+                self.research,
+                cutoffs,
+                comparisons,
+                exposure,
+                lens or "behavior",
+                index=index,
+                analysis_id=key,
+            )
+            if index is not None
+            else None
+        )
         with self.db.session.begin() as session:
             chat_id = chat_id or uid()
             if session.scalar(
@@ -276,6 +345,7 @@ class Assistants:
             ):
                 raise ValueError("Wait for the current request to finish")
             row = Analysis(
+                id=key,
                 question=question,
                 purpose=purpose,
                 study_id=study_id,
@@ -284,7 +354,10 @@ class Assistants:
                 cutoffs=cutoffs,
                 output={
                     "comparisons": comparisons,
-                    "exposure": self.research.capture_exposure(cutoffs),
+                    "exposure": exposure,
+                    "evidence_index": index,
+                    "lens": snapshot_lens,
+                    "source_analysis_id": source_analysis_id,
                 }
                 if comparisons is not None
                 else None,
@@ -366,7 +439,14 @@ class Assistants:
             usage = self.models.usage_by_analysis({row.id for row in rows})
             return [self.serialize(row, usage.get(row.id)) for row in rows]
 
-    def send(self, question: str, context: str, chat_id: str | None = None) -> dict:
+    def send(
+        self,
+        question: str,
+        context: str,
+        chat_id: str | None = None,
+        lens: LensKey | None = None,
+        source_analysis_id: str | None = None,
+    ) -> dict:
         if chat_id:
             self.chat(chat_id)
         if context in ("general", "new"):
@@ -377,7 +457,14 @@ class Assistants:
         else:
             raise ValueError("Choose General, New experiment, an experiment, or a run")
         chat_id = chat_id or uid()
-        key = self.start(question, purpose=purpose, chat_id=chat_id, **scope)
+        key = self.start(
+            question,
+            purpose=purpose,
+            chat_id=chat_id,
+            lens=lens,
+            source_analysis_id=source_analysis_id,
+            **scope,
+        )
         return {"id": key, "chat_id": chat_id}
 
     async def _execute(self, key: str) -> None:
@@ -451,7 +538,15 @@ class Assistants:
                 **{
                     k: v
                     for k, v in (row.output or {}).items()
-                    if k in {"comparisons", "research", "exposure"}
+                    if k
+                    in {
+                        "comparisons",
+                        "research",
+                        "exposure",
+                        "evidence_index",
+                        "lens",
+                        "source_analysis_id",
+                    }
                 },
                 "stage": stage,
                 "examined": examined,
@@ -481,7 +576,20 @@ class Assistants:
                     Analysis.run_id == row.run_id,
                     Analysis.purpose == row.purpose,
                 )
-            previous = session.scalars(query.order_by(Analysis.created.desc()).limit(3)).all()
+            previous = session.scalars(
+                query.order_by(Analysis.created.desc()).limit(
+                    50 if row.purpose == "analysis" else 3
+                )
+            ).all()
+            if row.purpose == "analysis":
+                previous = [
+                    item
+                    for item in previous
+                    if all(
+                        current.cutoffs.get(rid, -1) >= cutoff
+                        for rid, cutoff in item.cutoffs.items()
+                    )
+                ][:3]
             return [
                 {
                     "question": item.question,
@@ -563,7 +671,10 @@ class Assistants:
             return await Planner(self.db, self.research, self.models).run(
                 row.id, row.question, conversation
             )
-        return {**answer.model_dump(exclude={"propose_experiment", "requests"}), "examined": []}
+        return {
+            **answer.model_dump(exclude={"propose_experiment", "requests", "claims"}),
+            "examined": [],
+        }
 
     def _research_progress(self, key: str, tools: ResearchTools, stage: str | None) -> None:
         with self.db.session.begin() as session:
@@ -695,6 +806,7 @@ class Assistants:
                         [event_dict(e) for e in events],
                     ),
                     "recorded_rule_version": state["rule_version"],
+                    "state_hash": last_turn.state_hash if last_turn else None,
                     "execution_usage": decision_usage,
                     "experiment_budget_ceiling_usd": design.budget_usd,
                     "rules_at_last_observed_turn": last_turn.observation["rules"]
@@ -715,6 +827,21 @@ class Assistants:
                             else {}
                         ),
                     },
+                    **(
+                        {
+                            "artifact_state": {
+                                name: state[name]
+                                for name in (
+                                    "artifacts",
+                                    "artifact_history",
+                                    "writes_remaining",
+                                    "outcome",
+                                )
+                            }
+                        }
+                        if design.environment == "artifact_workspace"
+                        else {}
+                    ),
                 }
             )
         effects = {key: result["effects"] for key, result in comparisons.items()}
@@ -867,13 +994,34 @@ class Assistants:
         comparisons = (current.output or {}).get("comparisons")
         tools = ResearchTools(current, self.research)
         self._research_progress(key, tools, "indexing")
-        index = await asyncio.to_thread(
+        index: dict = (current.output or {}).get("evidence_index") or await asyncio.to_thread(
             self._evidence_index,
             cutoffs,
             comparisons,
             (current.output or {}).get("exposure"),
             key,
         )
+        lens = (current.output or {}).get("lens") or capture_lens(
+            self.research,
+            cutoffs,
+            comparisons,
+            index=index,
+            analysis_id=key,
+        )
+        frozen_index = index
+        index = {
+            **index,
+            "runs": [
+                {k: v for k, v in run.items() if k != "artifact_state"} for run in index["runs"]
+            ],
+            "lens": {
+                **{k: v for k, v in lens.items() if k not in {"facts", "calculations"}},
+                "calculations": [
+                    {k: v for k, v in c.items() if k != "inputs"} for c in lens["calculations"][:96]
+                ],
+                "calculations_omitted": max(0, len(lens["calculations"]) - 96),
+            },
+        }
         investigation = (
             Investigation
             if any(p["environment"] == "commons" for p in index["protocols"].values())
@@ -933,6 +1081,10 @@ class Assistants:
                     **answer.model_dump(),
                     "examined": examined,
                     "comparisons": index["comparisons"],
+                    "lens": lens,
+                    "evidence_index": frozen_index,
+                    "support": assess(answer, lens),
+                    "source_analysis_id": (current.output or {}).get("source_analysis_id"),
                 }
             assert isinstance(result, (Investigation, EvidenceInvestigation))
             if not result.requests:

@@ -648,6 +648,77 @@ export interface ResearchActivity {
   stop_reason: string | null;
 }
 
+export type AnalysisLensKey = "behavior" | "communication";
+
+export interface AnalysisCalculation {
+  id: string;
+  label: string;
+  scope: string;
+  value: number | null;
+  formula: string;
+  inputs: Record<string, unknown>;
+  sources: { href: string; pointer: string }[];
+  assumptions: string[];
+  coverage?: { pairs: number; planned_pairs: number; seed_clusters: number };
+  missing?: unknown[];
+  sensitivity?: unknown;
+}
+
+export interface AnalysisLens {
+  version: number;
+  key: AnalysisLensKey;
+  name: string;
+  inputs_sha256: string;
+  requirements: string[];
+  limitations: string[];
+  account: { run_id: string; turn: number; text: string }[];
+  calculations: AnalysisCalculation[];
+  coverage: {
+    planned_cells: number;
+    failed_cells: number;
+    not_captured_cells: number;
+    nonterminal_cells: number;
+    runs: {
+      run_id: string;
+      through_turn: number;
+      recorded_turns: number;
+      missing_turns: number[];
+      event_records: number;
+      exposure_capture: string;
+      message_opportunities: number;
+      unknown_requests: number;
+      truncation: {
+        run_continues: boolean;
+        unrecorded_history: string;
+        note: string;
+      };
+    }[];
+  };
+}
+
+export interface ClaimSupport {
+  version: number;
+  status: string;
+  prose_status: "unassessed";
+  limitation: string;
+  claims: {
+    kind: string;
+    text: string;
+    calculation_id?: string | null;
+    scope: string;
+    value?: number | null;
+    pairs?: number | null;
+    computed: number | null;
+    status:
+      | "checked"
+      | "contradicted"
+      | "unsupported"
+      | "unavailable"
+      | "unassessed";
+    reason: string;
+  }[];
+}
+
 export interface Analysis {
   chat_id?: string | null;
   usage?: Usage | null;
@@ -687,6 +758,9 @@ export interface Analysis {
     }[];
     comparisons?: Record<string, ComparisonReport>;
     exposure?: Record<string, ExposureReport>;
+    lens?: AnalysisLens;
+    support?: ClaimSupport;
+    source_analysis_id?: string | null;
   } | null;
   error: string | null;
   cutoffs: Record<string, number>;

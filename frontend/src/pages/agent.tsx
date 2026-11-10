@@ -361,6 +361,23 @@ function AgentConversation({
                             row.purpose === "design"
                               ? "new"
                               : messageContext(row),
+                          ...(row.output?.lens
+                            ? { lens: row.output.lens.key }
+                            : {}),
+                          ...(row.output?.source_analysis_id
+                            ? {
+                                source_analysis_id:
+                                  row.output.source_analysis_id,
+                              }
+                            : {}),
+                        })
+                      }
+                      onReanalyze={(lens) =>
+                        send.mutate({
+                          question: `Reanalyze the same frozen evidence using the ${lens} lens. Give a concise behavioral account and assess its limits.`,
+                          context: messageContext(row),
+                          source_analysis_id: row.id,
+                          lens,
                         })
                       }
                     />
