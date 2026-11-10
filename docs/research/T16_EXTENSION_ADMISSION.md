@@ -270,3 +270,6 @@ implementation has changed yet. Preserve trusted pinned reads/replay when origin
 review records disappear. After the red/guard/green, requalify final application
 source and refresh backend/static, frontend attribution, browser, production and
 frozen/positive parity evidence; earlier source results remain separately retained.
+
+
+The continuation merges only published documented accepted `eb9c29a9490480a241489ec353abea3f64baa15a`. It adds HANDOFF/progress custody documentation only; the initial HANDOFF conflict and resolution are retained. No T11/T13 provisional tip is merged. Accepted DB8/export9/library5 retain their coordination meanings; the combined T16 DB9/export10/library6 remain provisional. This draft guard repair changes no persisted contract or isolated capability.

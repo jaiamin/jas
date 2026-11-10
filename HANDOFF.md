@@ -9,7 +9,7 @@ pass. Genuine lost-sidecar draft/create/revise assertions and actual production
 HTTP guard witnesses are added for final qualification. Source captures now use
 tracked-only pre-read selection proofs; older captures retain their historical
 preselection gap. Own verified Python restored under shared flock; about190MiB
-remains shared at this point. Next merge only accepted eb9c29a, then final static/
+remains shared at this point. Accepted eb9c29a is now merged; next final static/
 backend/browser/actual production/frozen-positive parity and custody closure.
 The existing evidence and older qualification paragraphs below remain historical.
 
@@ -52,6 +52,37 @@ finalize archive/case/check indexes/source equivalence/manifest and clean handof
 Deterministic mechanics only: no live intelligence, T17 generation, T18 adjudication,
 held-out task access or T01 runner/case/score changes. Preserve T19 structured-only
 scope/cutoffs/billing716a44b, T15 zero-call controls/effort6e1a7c8 and T09 repairs.
+
+# Root coordination — T10 accepted; T13 review and T11 next (2026-11-10)
+
+Accepted integration is `f9e87c2b0cae14ca862ba2a051b2b95dffc3f78d`:
+**T01–T10, T15 and T19 accepted**, with current DB8/export9/library5.
+Root rehashed all **1,286 files / 83,049,253 bytes** in the fresh T10 manifest;
+SHA256 `6173f5b6dad7403ae8f427da2423e2cd205f6b01330033a4009aed4ef03fa9de`.
+No product changes or new product tests were needed for this coordination step.
+Publish this checkpoint to draft PR #32 and link immediately. Assign T11/#22
+to a fresh isolated TDD implementer on18126, then hand sole shared-checkout
+writing to a fresh T13/#24 integration reviewer on18224. T16 remains independent
+on18125, unpolled. T12/T18 remain Ready; T14 waits for accepted T13, T17 for
+accepted T13/T16. The final live/held-out and whole-branch review gates remain.
+
+Complete T13 evidence is preserved under `.tools/research-harness/evidence/T13/`;
+sibling `T13-copy-verification.json` records **944 regular files / 203 directories /
+106,152,423 bytes**, including all **942 indexed files / 1,145 indexed entries**.
+Source and custody hashes/modes/mtimes match; source stays clean at `75766ba`.
+Manifest SHA256 `526ea658d82c30ed1ad64b24256a1798d5cac6faf1deae08e3d4d59a48a1624a`;
+canonical inventory `436e91d78acbffa73bd9a811947ddd99645e04044a11d3b90da9a66f1e51d238`.
+This is immutable hardlinked custody, not independent physical copies: never
+write either evidence tree. The first read-only inspector handled files but not
+directory entries; the corrected full inspection passed with no mismatch.
+T13 remains unaccepted until separate fresh review, especially question fidelity,
+unsupported needs, source provenance, stopping rules and zero-call saving.
+
+Shared disk had about487MiB free after T10 closure. Continue the shared flock,
+bounded checks, private mutable caches and verified compression of closed own
+outputs. Preserve all prior maps/evidence, stash and unread `pbcopy`. No paid
+allocation: Sol stays$0.611632/55 requests, $9.388368 remaining; Luna unallocated.
+Root owns publication; PR remains draft and no issue/default-branch merge occurs.
 
 # T10 fresh integration accepted — sole ownership returns to root (2026-11-10)
 
