@@ -1,30 +1,65 @@
-# T03 integration review — active writer (2026-11-10)
+# T03 integration checkpoint — accepted (2026-11-10)
 
-Fresh merger owns only T03/#14 on `integration/research-harness`, starting at
-`ce7e801b409bf7982a1635b78dea371c466c9c2e`. Source is clean
-`c2b8ac15b259302786e6107a0074d93a96e82671` in `t3-6cea71e7` and stays intact.
-Before merging, preserved all **2,251 files / 470,287,451 bytes** and **602
-symlinks** under ignored `.tools/research-harness/evidence/T03/`; all 2,250
-child-indexed hashes and complete source/destination inventories match.
-File-inventory canonical SHA-256:
+T03/#14 is accepted at no-ff merge
+`6c290df700547ddf71334ee6472f4c8ed0321328`, with parents
+`ce7e801b409bf7982a1635b78dea371c466c9c2e` and clean source
+`c2b8ac15b259302786e6107a0074d93a96e82671`. Four routine comment/docs
+conflicts were resolved; no substantive product finding or repair remained.
+Current contract: **DB 6 / export 6 / comparison 1 / library v3**. T06 comparison,
+frozen-membership and export modules remain byte-identical; both live-discovery
+repairs/tests and T04/T05 accounting, policies and probes remain. Read the
+[independent acceptance report](docs/research/T03_ENVIRONMENTS.md).
+
+Fresh merged-source observations: **1,018 backend**, **109 frontend**, **25
+affected browser**, **two actual-harness browser** tests pass, plus Ruff/ty/lint/
+TypeScript/build. Independent HTTP/World checks pass for different studies,
+models/harnesses/memory, in-flight/pending immutable source retention through
+library update/delete, World-enforced roles/privacy, replay and T06 snapshots
+through Pause/new revision/repeated exports. Fresh non-root production build,
+containment qualification and independent source-pinned reuse/export smoke pass.
+Manual desktop/light and phone/dark preview verifies role rebinding, draft reload
+and save/export without spending. Child full 178-browser results stay inherited.
+
+Frozen T01 runner/cases remain unchanged; clean-source after and comparisons
+retain **exit 1**, four intentional `export-v4` failures and terminal failed flags.
+Positive schema-6/export-6/activation/comparison checks and exact **22-turn / five-
+run** behavioral/accounting parity pass. All **505** report/export differences
+(117 report / 388 export) are classified; zero unexplained. No live competence,
+held-out, reliability or solo-world claim is made.
+
+All **2,251 source files / 470,287,451 bytes** and **602 symlinks** are preserved
+without overwrites under `.tools/research-harness/evidence/T03/`; all 2,250
+child-indexed hashes and complete source/destination inventories match, reverified
+at closure. Canonical file-inventory SHA-256:
 `e38a459675aacb0d1579f740ea43fb6d7a39edb2ccf9a01b39e46febcf03ecc8`.
-The user explicitly authorized opaque hashing/copying of only the six indexed
-synthetic pytest `.env` fixtures; no contents are displayed or committed. All
-other configuration/credentials and root `pbcopy` remain excluded. Original
-stash and all pre-existing evidence/Sol artifacts remain protected.
+The parent clarified that opaque hashing/copying of only six indexed synthetic
+pytest `.env` fixtures was within the authorized evidence-preservation task,
+after checking their tracked generator. No contents displayed/committed and no real
+configuration/credentials accessed. Source worktree remains intact.
 
-Acceptance plan: review mechanics-only sources and independent study/draft
-lifecycles; combine schema 6/library v3 with T06 failure-aware comparisons,
-frozen membership and export 6; preserve both live-discovery fixes and T04/T05;
-run fresh backend/static/frontend, keyless browser on **18214**, production
-smoke, clean-source frozen oracle and exact 22-turn parity; retain failures and
-commands, document acceptance, then commit without publication. Fresh evidence
-is separate in `.tools/research-harness/evidence/T03-integration/`.
-T07/T08 remain running and are not polled/modified. T09 waits for acceptance.
-No paid allocation: $0.611632 / 55 requests spent globally, $9.388368 remains.
-Root owns publication and draft PR #32; this merger makes no remote changes.
+Fresh scripts/commands/exits/raw evidence/failed attempts live separately in
+`.tools/research-harness/evidence/T03-integration/`. Its immutable verification
+manifest covers **936 files / 148,509,827 bytes**, canonical SHA-256
+`c200385445805484cce1996424971d77c0ae00a5f90af3533befc453aa89c18a`.
+Two newly generated test `.env` files stay opaque, with metadata-only exclusions.
+Final checkpoint records add documentation/commit identity separately. Keep all
+evidence. Every pre-existing ticket artifact and all **1,745 indexed Sol files**
+plus their final manifest remain unchanged. Stash
+`f771128ba1c9295262a4073df40cc25647b1370f` remains untouched; root `pbcopy`
+was never read/copied/added/archived.
 
-# T06 integration checkpoint — accepted
+Owned preview, browser backends and **18214** are closed; owned production
+container/image tag removed. No push, PR/issue changes, other-agent/process/
+worktree edits, security/host changes or paid calls. Global actual spending stays
+**$0.611632 / 55 requests**, **$9.388368 remaining**, no active allocation.
+T03 acceptance makes **T09 Ready**, now assigned to a fresh isolated implementer.
+T07/T08 remain running and were not polled;
+T15 waits on T08, T19 on T07 and T14 on T13. Root resumes sole integration
+ownership and owns publication/frontier launches and draft PR #32. Final local
+HEAD is the documentation acceptance commit following `6c290df` (`git rev-parse
+HEAD`); no remote head changed during this review.
+
+# T06 integration checkpoint — accepted (historical)
 
 T06/#17 is accepted at no-ff merge
 `aaf3a1522b371e68af845243854d581d48d1fc39`, from source
@@ -238,8 +273,8 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01/T02/T04/T05/T06 accepted; T03 complete, queued for
-fresh integration review; T07/T08 running; T09 waits on T03; draft PR #32.**
+**Current checkpoint: T01/T02/T03/T04/T05/T06 accepted; T07/T08 running;
+T09 assigned to a fresh isolated implementer; draft PR #32.**
 
 Fresh Sol DEVELOPMENT is complete for this checkpoint: read
 `docs/research/SOL_DEVELOPMENT.md`. The frozen original eight-case pair,
@@ -337,10 +372,13 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: T03/#14 is complete and queued for fresh integration review;
-T07/#18 and T08/#19 are running in isolated worktrees. T09/#20 still waits on
-T03 acceptance. T06/#17 is accepted. T15 waits for completed T08, T19 for T07 and
-T14 for T13; accepting T06 alone does not ready those tickets.
+Current frontier: T03/#14 is accepted at `6c290df`, and T09/#20 is assigned to a
+fresh isolated implementer, based on the accepted T03/T06 integration. Its
+dedicated browser port is 18120; report `docs/research/T09_ARTIFACT_WORLD.md`,
+raw evidence `data/t09/`. It must merge the latest accepted integration before
+handoff. No paid calls are allocated. T07/T08 remain running; do not poll them.
+T07/#18 and T08/#19 remain running in isolated worktrees and were not polled.
+T15 waits for completed T08, T19 for T07 and T14 for T13.
 Draft PR #32 is the single integration PR and
 was linked immediately. Refresh/link it on each push. Do not merge to main or
 close issues as if unverified work were complete. The default-branch PR merge
@@ -1898,7 +1936,7 @@ failures, with identical cases/harness/runtime and 22 scripted responses each.
 No paid calls or stash changes. Both production containers and owned browser
 backends are stopped. Preserve the complete ignored `data/t02/` directory;
 `checks.json` indexes evidence. No host/security/credential configuration changed.
-# T03 implementation handoff — ready for fresh integration review
+# T03 implementation handoff (inherited; superseded by acceptance above)
 
 Worktree `/home/agent/.t3/worktrees/workspace/t3-6cea71e7`, branch
 `t3/add-reusable-environments`. Read `docs/research/T03_ENVIRONMENTS.md`.

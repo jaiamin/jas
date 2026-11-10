@@ -1,5 +1,139 @@
 # T03 reusable environments
 
+## Fresh integration acceptance (2026-11-10)
+
+**Accepted** after independent review at no-ff merge
+`6c290df700547ddf71334ee6472f4c8ed0321328`, joining publication checkpoint
+`ce7e801b409bf7982a1635b78dea371c466c9c2e` and clean ticket HEAD
+`c2b8ac15b259302786e6107a0074d93a96e82671`. Source worktree `t3-6cea71e7`
+remains intact. Four conflicts concerned a frozen-oracle test comment and
+architecture/development/progress prose. Both contracts were retained; no
+substantive product finding or product-code repair remained.
+
+Current contracts are database **6**, export **6**, comparison **1** and
+`jas-environment-v3` with definition version **1**. T06's exports, calculations
+and assistant/frozen-membership implementation are byte-identical to `ce7e801`.
+T04 harness/execution/accounting and T05 copied probes remain. Both live-discovery
+repairs `0ea4064` / `a874f7c` remain ancestors, and their two independent API
+regressions are AST-identical and pass in the fresh full backend suite.
+Researcher/planner/assistant remain `openai:gpt-6.1-sol` with Pydantic AI;
+participants remain `openai:gpt-6-luna`. There were no paid calls or substitutions.
+The 2–12 participant constraint remains; T09 owns solo/artifact worlds.
+
+Independent HTTP/World witnesses confirm two studies reuse one private-stock
+definition while preserving their different questions, populations, seeds,
+condition identities, models, direct/tool harnesses and memory modes. Ten scripted
+turns execute and replay after source update/deletion. An actually in-flight
+activation and all pending runs retain the complete original source/hash and
+concrete rules. Stale update/delete receive 409. Profile role prose cannot grant
+allocation permission; unauthorized World actions leave the checkpoint unchanged.
+Changing hidden stock leaves an unauthorized participant's observation and schema
+unchanged. A source-pinned commons study retains its captured T06 comparison and
+cutoffs through Pause, a later revision, completion and repeated identical exports.
+These witnesses are development checks, not live or held-out competence evidence.
+
+Fresh observed checks on clean merged source `6c290df`:
+
+- **1,018 backend tests pass** (121.23s); Ruff and project-local frozen uv/ty pass.
+- **109 frontend tests**, lint and TypeScript/production frontend build pass.
+- **25 affected browser tests** pass, covering reuse, source editing/draft reload,
+  catalogue loading/errors, Researcher persistence, workspace and T06 comparisons.
+- **Two real participant-harness browser flows** pass, desktop/light and phone/dark,
+  using deterministic external provider responses and actual direct/tool policies.
+- Four independent HTTP/World witness groups pass. Raw operations, prompts,
+  exports and SQLite workspaces are in `independent-raw-03/`.
+- A fresh tracked-source production image builds. The unchanged production smoke
+  passes as non-root, including all 26 containment qualification cases; additional
+  independent two-population reuse/export checks positively require schema/export 6
+  and no paid calls. The build context excludes untracked files and root `pbcopy`.
+- Manual shared-preview verification saves/reopens mechanics, starts a neutral
+  experiment, changes the question, adds a third participant, rebinds the role,
+  reloads the draft and saves/exports it. The original source/revision and new
+  commitments persist. Desktop/light and settled phone/dark captures were inspected;
+  no horizontal document overflow was observed, and usage remains zero.
+
+The **178-browser** child run at `4c5a745`, earlier child backend/frontend checks,
+and all prior-ticket reports below are inherited, not fresh integration runs.
+The full browser suite was not rerun here; the 25 affected plus two actual-harness
+flows above are fresh. Hosted CI/reviews were not queried or claimed.
+
+### Frozen T01 and exact parity
+
+T01's runner and cases remain byte-unchanged. The fresh after executes from a
+clean tracked-source clone, excluding `pbcopy` and project `.env`. Its six cases
+retain **four `export-v4` failures, four failed terminal flags and exit 1**;
+both retained comparison commands also exit 1. All other checks and usage match.
+The final pairing uses the preserved clean T03 before at `b7e5b154`; an initial
+comparison against the equivalent preserved T06 before is separately retained.
+
+Independent positive schema-6/export-6/activation/comparison/design-hash checks
+pass, alongside exact parity for **22 turns / five runs**: observations, legal
+schemas, decisions, checkpoints/hashes, final states, events, metrics, prompts,
+settings, output content and accounting. Fresh provider SDK IDs/timestamps are
+classified separately. All **505 report/export differences** (**117 report,
+388 export**) are retained and classified, zero unexplained: source/runtime
+identity and timing, record IDs, explicit harness/source fields and their hashes,
+activation/adapter provenance, T06 support/planned matrices, export version and
+the deliberately failed frozen-v4 flags. `contract-and-parity-final.json` records
+every difference. There is no competence, reliability or generalization claim.
+
+Case SHA-256: `6e4f138cf31d32b8a5e28e348edbccc2e9b1308b62f8b274d39cf0f24ba33a6e`.
+Runner SHA-256: `b6438d9fa3390d05f4f3c5583aa1e0e6f2095d1db653060257cdc817138a5826`.
+Fresh frozen-run input tree SHA-256:
+`681cfde3e1d584cad4744a2c57a949726fe956e64d52f12728be7ea829234066`;
+archive SHA-256:
+`b432c08d5e4c5db30d55f08b65842ef8ff04c9419e883ebaaf350e00c6aa58f2`.
+
+### Artifact custody, retained attempts and closure
+
+Before merging, copied all **2,251 source files / 470,287,451 bytes**, including
+the manifest itself, and **602 symlinks** without overwrites to ignored
+`.tools/research-harness/evidence/T03/`. All **2,250 child-indexed hashes**,
+symlink targets and complete source/destination inventories match, with stable
+source HEAD/status/bytes reverified at closure. File-inventory canonical SHA-256:
+`e38a459675aacb0d1579f740ea43fb6d7a39edb2ccf9a01b39e46febcf03ecc8`.
+Complete files/symlinks inventory SHA-256:
+`9f058b50d36bc61bab226ccf20156b54de7ec4af4da608b55cc95042b7bc316c`.
+The parent clarified that opaque hashing/copying of only the six indexed
+synthetic pytest `.env` fixtures was within the authorized evidence-preservation
+task after checking their tracked generator. No
+contents were displayed or committed; no real configuration/credentials were read.
+
+Fresh scripts, raw results, exact commands/exits, source/case identities and
+failures remain separate in `.tools/research-harness/evidence/T03-integration/`.
+`verification-manifest.json` immutably indexes **936 files / 148,509,827 bytes**;
+canonical SHA-256:
+`c200385445805484cce1996424971d77c0ae00a5f90af3533befc453aa89c18a`.
+Two newly generated backend-test `.env` fixtures remain opaque and are listed
+as metadata-only exclusions from fresh hashing. A separate final checkpoint
+manifest adds acceptance documentation/commit records without changing that index.
+`check-index.json`, `copy-verification.json`, `closure-integrity.json` and
+`retained-attempts.json` provide entry points. Preserve both evidence directories.
+
+Retained non-green attempts include the initial conservative preservation guard,
+the expected merge conflicts, an early preview before its server existed, and
+two review-utility mistakes (expecting 200 instead of chat submission's 202;
+assuming API run-list order instead of selecting a condition key). Corrected
+witnesses pass; no application change was needed. The initial phone capture
+preceded theme-transition completion; the settled capture was inspected. Manual
+server exit 143 is its intentional, clean SIGTERM shutdown. Frozen-v4 failures
+remain failures. Full raw attempts and earlier child failures are retained.
+
+All pre-existing T01/T02/T04/T05/T06 evidence and all **1,745 indexed Sol files**
+plus their final manifest remain unchanged. Global actual spend remains
+**$0.611632 / 55 requests**, **$9.388368 remaining**, no active paid allocation;
+this review spent **$0**. Stash `f771128ba1c9295262a4073df40cc25647b1370f` is
+untouched; root `pbcopy` was never read/copied/added/archived. All owned browser
+servers/preview and port **18214** are closed; the owned production container
+and image tag are removed. No other agent/process/worktree, host/security/
+credential setting, remote PR/issue or published history was modified.
+
+T03 is accepted and **T09 is Ready**. T07/T08 remain running in their separate
+worktrees and were not polled. Root owns publication and the existing draft PR
+[#32](https://github.com/jaiamin/ass/pull/32); this review made no push or PR change.
+
+## Ticket-branch report (inherited)
+
 Ticket: [#14](https://github.com/jaiamin/ass/issues/14). Implemented on
 `t3/add-reusable-environments` in the assigned isolated worktree. Ready for a
 fresh integration review; this report does not claim parent acceptance.

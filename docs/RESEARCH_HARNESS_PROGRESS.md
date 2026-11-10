@@ -58,13 +58,13 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | --- | --- | --- | --- | --- |
 | T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Integrated | `bf3b76e` |
 | T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Integrated and accepted | `77f6014`, `c546c85` |
-| T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Complete; queued for fresh integration review | — |
+| T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Integrated and accepted | `6c290df`; [evidence](research/T03_ENVIRONMENTS.md) |
 | T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Integrated and accepted | `48600d2` |
 | T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Integrated and accepted | `a4ab9ee` |
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Integrated and accepted | `aaf3a15`; [evidence](research/T06_UNCERTAINTY.md) |
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | In progress in isolated worktree | — |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | In progress in isolated worktree | — |
-| T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Waiting on T03 | — |
+| T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Assigned to fresh isolated implementer | — |
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Waiting | — |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Waiting | — |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Waiting | — |
@@ -143,9 +143,10 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. T01/T02/T04/T05/T06 are accepted with preserved evidence. T03/#14 is complete
-   on `c2b8ac1`, queued for fresh integration review; preserve all `data/t03/`.
-   T07/#18 and T08/#19 are running in isolated worktrees. T09/#20 waits on T03;
+1. T01/T02/T03/T04/T05/T06 are accepted with preserved evidence. T03/#14 is
+   accepted at `6c290df`; its source worktree and both evidence directories remain.
+   T07/#18 and T08/#19 remain running in isolated worktrees. T09/#20 is assigned
+   to a fresh isolated implementer on accepted T03/T06 (browser port 18120);
    T15 waits for completed T08, T19 for T07 and T14 for T13.
 2. Review and merge each accepted slice sequentially, then refresh/link draft
    PR #32; qualification failure gates generated execution, not trusted worlds.
@@ -337,7 +338,7 @@ queued for fresh integration review; T07/T08 are in progress. T15 waits on T08,
 T19 on T07, T14 on T13.
 
 
-## T03 implementation — ready for fresh integration review
+## T03 implementation (inherited; acceptance follows)
 
 Ticket branch `t3/add-reusable-environments`, executable checkpoint `a0a0d08`,
 includes latest accepted integration `ff1567453cc119824bb4b3c03ceee1d73acdb9fe`.
@@ -357,3 +358,57 @@ and usage match exactly. Failures remain explicit. Read
 `manifest.json` indexes source/case-stamped evidence and raw failures. Port 18114
 is closed and owned containers/image tags are removed. T03 spend $0. Parent owns
 fresh acceptance and preservation; this does not mark T03 integrated or T09 ready.
+
+## T03 fresh integration — accepted
+
+No-ff merge `6c290df700547ddf71334ee6472f4c8ed0321328` joins clean ticket HEAD
+`c2b8ac15b259302786e6107a0074d93a96e82671` to `ce7e801`. Only a test comment
+and three documentation files conflicted. The review found no substantive product
+regression requiring a repair. Schema **6**, export **6**, comparison **1** and
+library **v3** coexist. T06's frozen membership/calculations/exports, T04 policies/
+accounting, T05 copied probes and both live-discovery repairs/tests remain.
+Read the [acceptance report](research/T03_ENVIRONMENTS.md) for exact identities,
+commands, failures and fresh/inherited attribution.
+
+Fresh on stable merged source: **1,018 backend**, **109 frontend**, **25 affected
+browser** and **two actual-harness browser** tests pass; Ruff/ty/lint/TypeScript/
+build pass. Four independent HTTP/World witness groups verify different study
+commitments, in-flight/pending source retention through library edits/deletion,
+privacy/World-enforced roles, exact replay and T06 comparison snapshots through
+Pause/new revision/repeated exports. Fresh actual non-root production build,
+26-case containment qualification and two-population reuse/export smoke pass.
+Manual desktop/light and phone/dark reuse, role rebinding, draft reload and save/
+export were verified with zero provider calls. Child full-browser results stay
+inherited; the full browser suite was not rerun at integration.
+
+The frozen unchanged T01 after and comparisons retain **exit 1**, four intentional
+`export-v4` failures and terminal failed flags. Positive schema-6/export-6/
+activation/comparison/hash checks pass. All **22 turns / five runs** match the
+preserved clean before in behavior, prompts/schemas/settings and accounting.
+All **505 report/export differences** are classified, zero unexplained. The after
+executes from a clean tracked-only clone; no `pbcopy` or project `.env` is copied.
+No live, held-out, reliability or generalization claim follows.
+
+All **2,251 T03 files / 470,287,451 bytes**, including its 2,250-file manifest,
+and **602 symlinks** are preserved without overwrites in ignored
+`.tools/research-harness/evidence/T03/`. Every child/source/destination hash and
+symlink target matches, reverified at closure. Canonical file-inventory SHA-256:
+`e38a459675aacb0d1579f740ea43fb6d7a39edb2ccf9a01b39e46febcf03ecc8`.
+The user explicitly authorized opaque handling of only six indexed synthetic
+pytest `.env` fixtures; real configuration/credentials remain excluded.
+Fresh sibling `T03-integration/verification-manifest.json` covers **936 files /
+148,509,827 bytes**, canonical SHA-256
+`c200385445805484cce1996424971d77c0ae00a5f90af3533befc453aa89c18a`.
+Two freshly generated test configurations remain opaque metadata-only exclusions.
+Final checkpoint evidence extends a separate manifest. Keep all artifacts and the
+unchanged source worktree. Raw review-utility failures, expected merge conflicts,
+early preview failure and all frozen/child failures are retained and explained.
+
+All prior-ticket evidence and **1,745 indexed Sol files** plus their final manifest
+are unchanged. Global spend remains **$0.611632 / 55 requests**, **$9.388368
+remaining**, no active paid allocation; review spend **$0**. Stash unchanged;
+`pbcopy` never read/copied/archived. Port **18214**, owned preview/browser servers
+and production container/image tag are closed/removed. No push, PR/issue or other
+agent/process/worktree/security changes. Root owns publication and draft PR #32.
+T03 is accepted; **T09 is Ready**. **T07/T08 remain running**, unpolled; T15
+waits on T08, T19 on T07 and T14 on T13.
