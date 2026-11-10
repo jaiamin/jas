@@ -1,3 +1,21 @@
+# T16 continuation — accepted T13 merged, final qualification pending (2026-11-10)
+
+Only documented accepted32a1247 was merged at6dca092; T11 is still absent.
+Combined DB9/export10/library6 remain provisional. The new copied-candidate HTTP
+red records one worker call before missing admission rejection; the same draft
+guard now covers CandidateSource and ProposalSource. All9 extension workflows
+pass, including lost-sidecar pending execution/replay; Ruff/ty pass after one
+retained formatting failure. Final combined static/backend/frontend/build/browser/
+actual production/frozen-positive parity and full evidence closure remain.
+Capture v3 enforces pre-read tracked-only selection for all subprocess snapshots,
+with invocation-local exclusions only. Earlier v2 inner-snapshot proof gaps remain
+explicit; root pbcopy is never selected or touched. Tooling is own/verified only,
+with Python and three small Playwright packages currently restored. Pre-T13 assets
+must be parked and the combined frontend rebuilt. No service/browser18125 is active.
+No descendants, new checkout, paid calls, T17/held-out, publication or reset.
+
+Historical checkpoints below retain their original source/scope attributions.
+
 # T16 implementation checkpoint — admission guard repaired (2026-11-10)
 
 Continuation observes the public red at7383c13: forged draft preflight returns200

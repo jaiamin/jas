@@ -360,6 +360,107 @@ def test_unsupported_profiles_and_forged_packages_are_visible_fail_closed(tmp_pa
         assert client.get("/api/settings").json()["usage"]["requests"] == 0
 
 
+def test_copied_researcher_candidate_requires_admission_before_any_probe(tmp_path, monkeypatch):
+    import agent_sim.extensions as isolated
+    from pydantic_ai import models
+
+    from backend.tests.test_researcher_designs import finish, provider, scope
+
+    monkeypatch.setattr(models, "ALLOW_MODEL_REQUESTS", False)
+    with TestClient(
+        create_app(f"sqlite:///{tmp_path}/candidate.sqlite3"), base_url="http://localhost"
+    ) as client:
+        assert client.post("/api/extensions/qualify", json={}).json()["status"] == "qualified"
+        review = client.post("/api/extensions/validate", json=candidate()).json()
+        admission = client.post(
+            f"/api/extensions/reviews/{review['id']}/admit", json={"profile": "sealed-relay-v1"}
+        ).json()
+        source = client.post(
+            "/api/environments",
+            json={
+                "definition": {
+                    "name": "Retained relay source",
+                    "environment": "sealed_relay",
+                    "rule_version": "1.0.0",
+                    "extension": admission["package"],
+                    "examples": [
+                        {
+                            "key": "relay",
+                            "name": "Relay",
+                            "roles": ["submitter", "reviewer"],
+                            "parameters": {
+                                "relay": {"submitter": "submitter", "reviewer": "reviewer"}
+                            },
+                        }
+                    ],
+                }
+            },
+        ).json()
+        design = client.post(
+            "/api/design/use-environment",
+            json={"source": source, "example": "relay", "bindings": {}},
+        ).json()
+        design.update(
+            question="Design an exploratory relay study with three action credits.",
+            hypothesis="",
+            rounds=2,
+        )
+        brief = scope(
+            design,
+            requirements=[
+                {
+                    "source": "three action credits",
+                    "capability": "finite_stock",
+                    "mapping": "direct",
+                    "explanation": "Three enforced operation credits in the existing relay.",
+                }
+            ],
+        )
+        calls = provider(
+            client,
+            monkeypatch,
+            design,
+            brief=brief,
+            candidate=lambda _: {
+                "explanation": "Select the retained finite artifact; generate no source.",
+                "design": design,
+                "probes": [
+                    {
+                        "condition_key": design["conditions"][0]["key"],
+                        "steps": [
+                            {
+                                "actor": (
+                                    design["conditions"][0]["parameters"]["relay"]["submitter"]
+                                ),
+                                "action": {"kind": "relay", "operation": "lodge"},
+                            }
+                        ],
+                    }
+                ],
+            },
+        )
+        sidecars = list((tmp_path / "candidate.extensions").rglob("*.json"))
+        assert len(sidecars) == 2
+        for path in sidecars:
+            path.unlink()
+        assert client.get("/api/extensions/admissions").json() == []
+        assert client.get("/api/environments").json() == [source]
+        worker_calls = []
+        execute = isolated.execute
+
+        def observed(source, states, **kwargs):
+            worker_calls.append(states)
+            return execute(source, states, **kwargs)
+
+        monkeypatch.setattr(isolated, "execute", observed)
+        row = finish(client, client.post("/api/chats", json={"question": design["question"]}))
+        assert row["status"] == "failed", row
+        assert worker_calls == [], "A retained source cannot authorize an unadmitted draft probe"
+        assert client.get("/api/studies").json() == []
+        assert client.get("/api/runs").json() == []
+        assert client.get("/api/settings").json()["usage"]["requests"] == len(calls)
+
+
 def test_inflight_isolated_transition_allows_pause_with_exactly_one_writer(tmp_path, monkeypatch):
     import threading
 

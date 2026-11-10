@@ -304,3 +304,23 @@ by T13, so combined T16 DB9/export10/library6 remain genuine and provisional.
 - [ ] Public copied-candidate red/guard/green on the accepted T13 combination.
 - [ ] Qualify combined backend/static/frontend/build/browser/production and
       untouched frozen plus independent positive parity; finish custody/closure.
+
+The copied-candidate public red exits1 at the expected worker witness: the retained
+source is discovered honestly and the final proposal fails, but its earlier copied
+probe still executes one `[24]` worker input after sidecar loss. The narrow repair
+extends the same draft guard to CandidateSource before its World is constructed.
+No copied-probe engine, alternate admission or model-generation path is introduced.
+
+
+The combined copied-candidate green passes all9 extension workflows (66.44s),
+including missing-sidecar rejection before probing and preserved pinned execution/
+replay. A101-column fixture line fails Ruff once; formatting alone repairs it,
+then Ruff/ty pass. Final combined backend/frontend/browser/production/parity follow.
+
+Capture v3 additionally proves that invocation-local excludes make every child
+`git ls-files --cached --others --exclude-standard` select exactly the pre-proven
+tracked list, including historical snapshots inside backend tests. It persists
+and verifies exact source modes. V2's outer captures had pre-read selection proof,
+but inner baseline test snapshots lacked enforced descendant exclusions; final
+recursive member audit will separately verify their actual bytes/selection. This
+historical gap is retained, never presented as retroactive pre-read proof.

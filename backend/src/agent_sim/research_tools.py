@@ -331,7 +331,7 @@ class ResearchTools:
                 {"kind": "run", "id": source.run_id, "turn": source.turn, "hash": digest(state)}
             ]
         design = Design.model_validate(design.model_dump()).resolve(condition)
-        if isinstance(source, ProposalSource):
+        if isinstance(source, (CandidateSource, ProposalSource)):
             self.research.review_design(design)
         else:
             self.research.validate_design(design)
