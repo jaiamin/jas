@@ -1,3 +1,73 @@
+# T14 review complete — acceptance held on reviewer protocol breach (2026-11-10)
+
+Personal Standards verdict: **FAIL on protected-selection review protocol**;
+application findings are repaired. Personal Spec verdict: **PASS for bounded
+T14 DEVELOPMENT mechanics**. No unconditional T14 or final milestone acceptance.
+See [independent review](docs/research/T14_INTEGRATION_REVIEW.md), including R1.
+
+Exact no-ff merge463f14f2f8146bfe38d122e699113129b7b64566 retains source
+b304029e85aeb97ccb02a2151d4bb6101bf684fc as second parent. Runtime repair
+23de5e48ed1aab790d634ec434cf10e8f91c7d9b fixes child Pause spending, lost accepted
+Pause decisions during worker-backed save, and queued startup Pause termination.
+The final documentation also corrects library v6→v7. No T12/T17 provisional code.
+
+Reviewer qualification: five independent actual-worker HTTP cases; segmented
+63 lifecycle/61 analysis/715 contract cases;13 library cases; Ruff/ty/forced TS/
+clean build; five investigation and four composer browser cases. The strengthened
+disclosure ran within those five; the prior separate disclosure execution and
+116 frontend units/33files/frontend lint retain explicit source-verified inherited
+attribution. Fresh non-root production matched44backend/53assets, containment and
+World replay; a separate in-image artifact Engine HTTP witness executed two turns.
+Host admitted Engine/worker scope stays separate. Frozen baseline keeps exactly
+four export-v4 failures/failed flags/exit1; comparator exit1 and zero regressions/
+improvements. Positive current-contract parity separately proves5runs/22turns/
+22literal requests and770 scripted microdollars/2200in/1100out, actual0.
+
+R1: reviewer contract711 invoked frozen snapshot tests without the protected Git
+selection wrapper. Filename-only membership contained two prohibited names;
+treat this as an indirect protected read/hash/archive breach. The original root
+clipboard/configuration must not be opened to diagnose it. Entire ignored
+`.tools/research-harness/evidence/T14-integration/runtime/contract-711/` is retained
+**OPAQUE: no reads/hashes/copies/packing/chmod/cleanup**. Outer safe receipts/JUnit
+remain; corrected wrapper invocations pass all four cases again. They replace
+that unsafe execution in qualification but cannot undo it. ROOT must decide
+opaque-output disposition before accepting the review protocol. No contents were
+printed or published. Do not claim all-files protected capture compliance.
+
+Evidence `.tools/research-harness/evidence/T14-integration/qualification-final.json`
+SHA256 e1d4d9d3283bcfd9e3681499a7fe8af0147924b8101d68277ea5640418c9c440 has exact
+component/case/source/input identities. Runtime snapshot key3fbb5d75f7b0052e47e7552096eb704c700ac82fa7772a85fd13b8149a97e892,
+archive0b800b54ef1304fd7be396534fcab3bc323c3f5c3a02c98ebeb136a16d3a1ccc.
+Final documentary source, original custody/seals, retained attempts, actual map
+restorations, stash/resources/ports/flock are bookended under `closure/final-01/`.
+Do not interpret its safe index as including the opaque R1 subtree.
+
+Original1,489 immutable-by-protocol custody HARDLINKS remain, not physical copies.
+All source130 attempts/46nonzero/79maps and reviewer failures are retained. Four
+OWN closed-output maps preserve255 paths with actual SHA/size/mode/integer-ns
+restoration; map04 SHA90d61b9b970762a96e6a83874dbcc3c12b07de531e9045f196b44127c6436e89
+recovered39,686,144 measured bytes. Never read/pack R1 outputs. Own services/browser/
+container/volume/image are closed and lock released at final handback. ROOT's
+production grant02 allowed normal declared Dockerfile dependency downloads; build03
+passed at283848704 prebuild free. No floor was lowered. Later check outputs reduced
+free space; final bookend is authoritative. Two jobs exceeded8MiB output forecasts;
+ordinary134217728 floor held. All capacity is shared/unreserved.
+
+Additional ROOT recovery/restoration pointers (under `.tools/research-harness/`):
+
+- `maintenance/closed-root-check-outputs-20261110T153600Z/mapping.jsonl.gz`, SHA72e6abee6a608ecf8c67a66eecd87a6cbdc575ebadafcd3855b3d31f665c473d;3,591 exact restores. Archive `closed-outputs.tar.gz`, SHAaaf4957245d90c99058cf19fceb0c031c884f9605c257aef7044e65fd9707dea.
+- `maintenance/closed-maintenance-metadata-20261110/mapping.json`, SHA143800fa96decef33d231686d7e4abdf7cc71c1fcb39b35ee38f317f40eee7eb;19 exact restores.
+- `maintenance/closed-sol-source-representation-20261110/mapping.jsonl.gz`, SHA735475319587a72fe8ee1b30aacc88d7a2be0dfb7b5fa6c375dc72d9ab3a1c6c;1,668 exact restores against existing archives; five opaque configuration-example names remain excluded.
+- Recovery proofs `maintenance/closed-baseline-selected-loose-20261110/result.json` and `maintenance/closed-baseline-selected-pair-20261110/result.json` preserve complete object sets/refs/HEAD/index and original packs. Earlier identical-pack sharing recovered76,128,256 bytes; closed check-output packing26,689,536; selected T06 packing8,736,768.
+- Retain the failed broad all-object packing/ENOSPC disclosure and complete rollback proof `maintenance/closed-baseline-git-packing-20261110T154000Z/rollback-02.json`; no uninterrupted-success claim. `maintenance/storage-frontier.json` is authoritative. Restore only necessary logical members; no mass decompression.
+
+Preserve all earlier795-path/closed-T07/T11-recovery/browser/research174 and six
+Git-tree response maps, original stashf771128ba1c9295262a4073df40cc25647b1370f,
+owner caches, sibling environments and working `.tools/uv-bootstrap/bin/uv`.
+Zero paid/live/held-out requests, no new allocation, publication or PR mutation.
+Sole tracked writing returns to ROOT only with this reviewer's explicit final
+completion/return message. Earlier coordination and review history follow intact.
+
 # T14 independent integration review in progress (2026-11-10)
 
 Reviewer runtime checkpoint: exact no-ff merge463f14f2 retained b304029e as its

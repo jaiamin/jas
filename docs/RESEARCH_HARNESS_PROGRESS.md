@@ -51,7 +51,38 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
-### T14 independent review: lifecycle repairs, qualification pending (2026-11-10)
+### T14 review completed; acceptance held on review-protocol breach (2026-11-10)
+
+Personal Standards: **FAIL on reviewer protected-selection protocol**; all three
+application lifecycle findings and the library-version documentation mismatch are
+repaired. Personal Spec: **PASS for bounded T14 DEVELOPMENT mechanics**, with no
+research-validity/live/milestone claim. Exact merge463f14f2 retains b304029e as
+second parent; runtime repair23de5e48 is frozen and fully affected-qualified.
+
+Fresh reviewer checks: five independent actual-worker HTTP cases; segmented
+63 lifecycle/61 analysis/715 contract cases;13 library cases; Ruff/ty/forced TS/
+clean build; five investigation and four composer browser cases. The strengthened
+disclosure is within the five; the earlier separate disclosure execution and116
+frontend units/33files/frontend lint retain exact source-verified attribution.
+Fresh production matches44backend/53assets and contains separate keyless artifact
+Engine HTTP Pause/Resume/accounting/replay; admitted actual-worker host scope is
+explicit. Frozen baseline retains exactly four export-v4 failures/failed flags/
+exit1 and zero regressions/improvements; current-contract5run/22turn/22literal-
+request parity passes separately with770 scripted microdollars,2200in/1100out,
+actual0. Every adverse attempt and classifier amendment remains retained.
+
+R1: contract711 snapshot tests omitted the protected Git-selection wrapper and
+could capture protected root files; filename-only membership contained two
+prohibited names. Entire generated runtime/contract-711 remains opaque, excluded
+from reads/hashes/copy/packing/cleanup and final safe index. Corrected safe
+invocations pass the four cases again but cannot undo the breach. **T14 remains
+unaccepted pending ROOT's opaque-output/protocol disposition.** Review/HANDOFF
+link exact qualification SHA e1d4d9d3283bcfd9e3681499a7fe8af0147924b8101d68277ea5640418c9c440,
+closure, maps and resource recovery/rollback disclosures. No provisional sibling
+merge, paid work, publication or final milestone claim. Sole tracked writing
+returns only through the explicit final reviewer completion message.
+
+### Earlier T14 reviewer runtime checkpoint (2026-11-10)
 
 Exact source b304029e was merged with no-ff second-parent ancestry at463f14f2.
 The fresh reviewer personally separated Standards and Spec, found and reproduced

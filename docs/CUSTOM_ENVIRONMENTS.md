@@ -38,7 +38,7 @@ verify derived analyses against the recorded evidence.
 
 Custom environments are stored beside the SQLite workspace in `<database-stem>.environments/`.
 Back up that directory with the database. Browser-only reusable setups have been removed;
-there is no legacy importer. Format `jas-environment-v6` contains `definition` (version 1,
+there is no legacy importer. Format `jas-environment-v7` contains `definition` (version 1,
 world/rule version, name/description and configuration examples), plus ID, optimistic revision,
 updated timestamp and definition hash. Examples contain mechanics parameters, optional tasks
 and unbound roles. Create/update accept `{definition, revision}`; selection and extraction use
