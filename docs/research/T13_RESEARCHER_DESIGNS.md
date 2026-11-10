@@ -1,5 +1,18 @@
 # T13 — Researcher artifact-world designs
 
+**Integration status (2026-11-10):** fresh review merged the exact source and
+repaired stale pre-T10 scoping; final UI qualification is pending. Read
+[the integration report](T13_INTEGRATION_REVIEW.md) for current findings, fresh
+evidence and the remediated protected-source capture incident. The implementation
+history below describes the earlier DB7/export8/library4 source. Current accepted
+integration is **DB8/export9/library5**, capture1/comparison1/tool2.0/direct1.0.
+Accepted T10 supports three independent peers, actor ACLs, explicit phase/conflict
+priority and logically delayed addressed mail. It must not be described as missing.
+Solo artifact work remains sequential; external Python/live camera execution
+remains unsupported. The historical question/ID `unsupported_coordination` stays
+unchanged, but its development expectation advances to supported coordination in
+manifest2. Historical source failures and earlier expectations remain attributable.
+
 Task: T13 / #24 only. Implementation in the assigned isolated checkout on
 `t3/implement-t13-researcher-designs`. Starting and published accepted integration:
 `14e8af90513d5e7ffa394daec31bcfd6d2730845`; accepted product code `6e1a7c8`.
@@ -22,7 +35,8 @@ HEAD equals the accepted base (ancestry confirmed). No descendants or new checko
   general answers and simple worlds remain supported.
 - [x] Record exploratory/confirmatory intent without mandatory invented endpoints;
   justify 1–12 population/roles, opportunity-based horizon/stopping, conditions,
-  replication/inference units and evidence capture. Do not claim T10 coordination.
+  replication/inference units and evidence capture. At this historical source,
+  T10 was excluded; the current integration reconciliation is documented above.
 - [x] Pin complete reusable World source and participant configurations into immutable
   proposals/revisions; retain question/proposal/check/source provenance across edits.
   Verify saving creates ready runs without participant inference.
@@ -44,7 +58,7 @@ Primary seam: existing question → general/design handoff → validated pending
 provider/accounting witnesses supplement it. Fake providers exercise orchestration;
 scripted answers and mechanical checks are not live Researcher intelligence.
 
-Current DB7/export8/capture1/comparison1/library4/tool2.0/direct1.0 contracts and
+Historical source DB7/export8/capture1/comparison1/library4/tool2.0/direct1.0 contracts and
 independent World authority remain in force, including accepted T19 additive
 lens/support1, structured-calculation-only support, unassessed prose, cutoff
 reanalysis and separate participant/analysis billing. No migrations, aliases, resets,
@@ -94,7 +108,8 @@ The existing Sol general-answer handoff, planner, bounded validation/revision an
 independent critique remain the only design path. No participant engine or planner
 was added. The stale brief minimum of two is now one; World/domain constraints
 still decide which populations each installed environment can implement. T09 solo
-artifact work is supported; artifact timing/coordination and T10 are not advertised.
+artifact work is supported. The historical branch excluded T10; current integration
+uses accepted distributed coordination for phase/conflict/mail requirements.
 
 The planner dispatches and persists real capability discovery even when entered
 directly. Each validated proposed condition is inspected on a copied World using
@@ -131,7 +146,8 @@ Stock components/tokens and the existing draft/record identity are retained.
 
 No World/checkpoint, export or persistence semantics changed. These are additive
 version-1 research artifacts and stricter new-proposal provenance checks, so
-DB7/export8/capture1/comparison1/library4/tool2.0/direct1.0 stay current. No migration,
+DB7/export8/capture1/comparison1/library4/tool2.0/direct1.0 stayed current on that
+historical source. Current integration retains accepted DB8/export9/library5. No migration,
 compatibility alias, reset, dependency change, extension generation/admission,
 provider fallback or hidden execution was introduced.
 
@@ -155,7 +171,7 @@ seed 151. Copied witnesses do not modify proposed initial content or write limit
 | `private_delta` | Authorized content/ACL and private public-history boundary; real saved library source, edit/delete, same-chat reuse, immutable revisions/check warnings/export lineage; actual ACL drift is rejected or repaired by independent scripted review |
 | `simple_exchange` | Two-party bargaining retained, 19-credit pie/discount 1, one condition/seed, original question and pinned builtin provenance |
 | `unsupported_network` | Explicit missing live browse/Python mechanics, original question, supported narrower preloaded-evidence alternative, no study |
-| `unsupported_coordination` | Explicit unavailable simultaneous artifact conflicts/delayed delivery; narrower solo alternative, no pretend T10 scheduler or executable substitute |
+| `unsupported_coordination` | Historical source declined pre-T10 timing/mail. Current manifest2 retains the exact question/ID and independently exercises accepted T10 phase/conflict priority, delayed addressed mail and exact private/shared copied conditions; solo substitution is not accepted |
 | `material_ambiguity` | One permission clarification, no proposal; answer continues in the same chat |
 | `general_explanation` | Real discovery followed by an ordinary explanation of save/replay/new sampling, without forcing a protocol |
 

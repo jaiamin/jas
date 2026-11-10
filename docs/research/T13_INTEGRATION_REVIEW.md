@@ -5,19 +5,21 @@ Sole writer: fresh integration reviewer, 2026-11-10. Assigned checkout is
 `eb9c29a9490480a241489ec353abea3f64baa15a`. Exact proposed second parent is
 `75766baaf204a3ffdf21d11ec5dcf147c4cd7bf4`. No descendants or extra checkout.
 Raw evidence belongs to `.tools/research-harness/evidence/T13-integration/`.
-Protected untracked `pbcopy` is never read, copied or archived. Preserve stash
+Protected untracked `pbcopy` must not be read, copied or archived. An indirect
+capture incident and its authorized remediation are recorded below; the initial
+handling requirement was violated, and no clean historical handling is claimed. Preserve stash
 `f771128ba1c9295262a4073df40cc25647b1370f` and immutable hardlinked T13 custody.
 
 ## Acceptance and plan
 
 - [x] Reverify custody, archive/member/source identity, all retained failures,
   closure and limitations before adoption. Never execute inherited evidence helpers.
-- [ ] Review Standards and Spec separately against the current accepted contracts.
+- [x] Review Standards and Spec separately against the current accepted contracts.
   Reconcile discovery/library5/coordination with accepted T10, preserving honest gaps.
 - [x] Merge the exact source with a normal no-ff merge; retain both documentary
   histories in conflicts. Repair concrete defects using red/green evidence at the
   already approved public HTTP, World and provider/accounting seams.
-- [ ] Qualify question fidelity, exact copied configurations, immutable provenance,
+- [x] Qualify question fidelity, exact copied configurations, immutable provenance,
   exploratory/confirmatory intent, material clarification, useful general/simple
   answers, population/opportunities/replication/capture, and zero calls on saving.
 - [ ] Preserve T07/T08/T09 exact exposure/ACL/replay, T10 phase/mail/time/privacy,
@@ -103,12 +105,13 @@ parallel engine, speculative adapter, new participant model or mutable revision
 was introduced. Source identity uses the full discovered/same-chat source, not
 merely a plausible hash. No remaining style or abstraction finding is established.
 
-**Spec:** an unsupported scoping response currently bypasses capability validation
-and independent review. It can decline requirements that its own declaration
+**Spec:** the source's unsupported scoping response bypassed capability validation
+and independent review. It could decline requirements that its own declaration
 maps directly to one installed World. The inherited coordination fixture and
-planner guidance also predate accepted T10. A fresh HTTP red is queued to require
+planner guidance also predated accepted T10. A fresh HTTP red required
 a bounded visible correction of this contradictory decline, retaining the exact
-question and three-agent phase/mail/artifact semantics. Actual absent external
+question and three-agent phase/mail/artifact semantics. The repaired guard and
+guidance pass the fresh cases below. Actual absent external
 execution/video must remain unsupported. Semantic fidelity and analysis quality
 cannot be certified by scripted providers or nonempty prose.
 
@@ -124,8 +127,8 @@ successful demonstration of the unsupported-mechanics defect.
 
 No-ff merge `5af3fbbb7e7b8221499bdf5e31e3a60ef7d34662` has exact second parent
 `75766baaf204a3ffdf21d11ec5dcf147c4cd7bf4`; both HANDOFF histories survive.
-Plan commit `22ac6f5` and merge commit passed normal Gitleaks hooks. Large checks
-are queued behind the assigned shared lock; no test has started at this checkpoint.
+Plan commit `22ac6f5` and merge commit passed normal Gitleaks hooks. At that merge
+checkpoint, large checks were queued behind the assigned shared lock.
 
 Root recovered space through verified closed-output maintenance, with no tracked
 edits or active/custody mutation. Closure must preserve/reference
@@ -160,3 +163,65 @@ mechanics. Correcting that declaration to the actual unavailable mechanism resto
 the honest unsupported result without weakening the new guard. One imported
 pytest fixture caused Ruff F811 and was corrected by explicit re-export; no lint
 rule was suppressed. Every red, mistaken fixture and static failure remains.
+
+## Qualification in progress
+
+Repair `5e86dfac4daf5cb1e4f7a9998dcf767d15664e7a` passed normal Gitleaks hooks.
+Qualified tracked-source key is
+`1d648e944a0b92dae01aa058ec3492000a6c51a12d73a480ec93122ab3226916`.
+All **1,412 backend cases** have observed passes across **44 per-file jobs**,
+with no product failures/errors/skips. This is segmented coverage, not an
+uninterrupted suite. Ruff/ty and frontend lint pass. Full frontend units/build
+and browser qualification remain pending the root storage hold.
+
+Fresh unchanged frozen T01 and its comparator both exit1: exactly four export-v4
+failures and four failed terminal flags, no regressions or improvements. The
+tracked-only after run preserves five runs/22 turns/22 Luna FunctionModel requests
+and98 HTTP operations. Independent complete-input, checkpoint, effort and integer
+ledger comparison against attributed accepted T10 `7aec3f5` passes:770 synthetic
+microdollars,2,200/1,100 tokens, no actual provider spending. All1,763 JSON
+differences are classified, zero unexplained. Three audit-helper failures remain:
+initial evidence has null state_hash, source labels use eight-character IDs, and
+manifest source identities need separate classification. They are not product reds.
+
+Production container, entrypoint, configuration, dependency lockfiles and isolation
+inputs match accepted T10 byte-for-byte. Its UID10001 production qualification is
+inherited, not freshly rerun and not a claim that this application's bytes were
+the old image. Current application qualification is separately observed here.
+
+## Protected-source handling incident and correction
+
+The initial complete-backend wrapper failed to pass invocation-local Git excludes
+to `test_research_baseline.py`. Its three internal T01 snapshots therefore read
+and archived protected untracked `pbcopy`. The dedicated frozen wrapper was safe,
+but that did not protect indirect calls. This was a handling error, not a product
+failure or a clean pass. The original file was not manually inspected or modified;
+the historical indirect read/archive cannot be undone.
+
+Root explicitly authorized removing only the unintended private copies. A scoped
+streaming scrubber confirmed nlink1/ownership, skipped exact excluded payloads
+without inspecting/printing/hashing them, and removed three nested members totaling
+75,459 bytes plus six generated source-file digest entries. It verified retained
+logical bytes/metadata, atomically replaced the archive/proof, and unlinked the
+unredacted container. Container hashes necessarily changed; the redaction map
+records both identities and never claims byte-identical compressed archives.
+
+Independent metadata-only post-audit covered117 archive containers and12 generated
+source records, finding zero remaining protected-name copies. Capture-code review
+establishes that T01 produced source archives and manifest/report source maps,
+while the review recorder's source archives/diffs were always tracked-only. Every
+future check child now receives task-private `excludesFile=*` and preflights exact
+cached versus selected path membership. No global Git configuration or frozen
+runner/cases/scores changed. The affected four regressions passed again; all three
+corrected snapshots contain405 tracked members, no protected member and clean
+tracked source. Preserve `protected-source-incident.json`,
+`protected-copy-redaction-map.json`, `protected-copy-redaction-completed.json`,
+`protected-copy-post-audit.json`, `privacy-incident-closure.json` and the corrected
+check under the fresh evidence root. Scope derives from capture code and exact
+member metadata; no clipboard content is research evidence.
+
+Root's later pnpm storage-recovery provenance belongs to
+`.tools/research-harness/maintenance/pnpm-storage-20261110T0949/`, alongside the
+earlier closed-output maps and completed-owner cleanup receipts. Root dependencies
+and caches were not used as mutable shared outputs. Earlier T19 outside-cache
+effects remain unassessed. No publication is attempted by this reviewer.
