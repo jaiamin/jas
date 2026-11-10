@@ -1,7 +1,13 @@
 # Harness and simulation design interview
 
-Status: **Q1–Q7 accepted; consolidated plan awaiting shared-understanding confirmation**.
-Started 2026-11-10. Implementation remains paused.
+Status: **complete; Q1–Q7 and consolidated plan confirmed**.
+Started 2026-11-10. The user then requested to-spec before implementation.
+
+Latest correction: the user explicitly withdrew the dramatic large-population
+example as a requirement and asked for a reasonable target. The first version
+targets **1–12 active participants**; later increases need a concrete research
+purpose and measured validation. This supersedes historical population targets
+below without reopening the accepted harness, isolation or validity decisions.
 The user explicitly invoked grill-with-docs before implementation. This record
 tracks the decision tree and answers; recommendations become decisions only
 through explicit answers.
@@ -42,7 +48,7 @@ reopening those choices.
 | World composition and execution contract | Resolved for the milestone by existing invariants and disclosed defaults below | Q5–Q7 | Prototype concrete semantics; no weaker replay or implicit provider-time priority |
 | Researcher tools, durable artifacts and work limits | Resolved in scope by Q1/Q3/Q6 and per-request accounting | Q3, Q5–Q7 | Implement scoped tools and configurable bounded work; tune only on development tasks |
 | Results and review experience | Resolved in scope by Q5 and validity requirements | Q5 and evidence/capture contracts | Preserve appearance, expose evidence/uncertainty and adapt views to represented worlds |
-| Final shared understanding | Awaiting confirmation of consolidated plan | Q1–Q7 and the four added requirements | Begin implementation after confirmation |
+| Final shared understanding | Confirmed by explicit “Yes” | Q1–Q7 and the four added requirements | Complete the subsequently requested spec publication, then follow the approved implementation scope |
 
 This is the current map, not a promise to ask every implementation detail.
 Routine choices can be resolved from repository patterns; product tradeoffs
@@ -102,9 +108,10 @@ or answer later questions. Record the following refinements as requirements.
    A well-supported null or an honest inconclusive result can satisfy the
    evidence standard; an interesting social outcome is not required.
 
-The small-first sequencing supersedes the earlier plan's unconditional
-large-population implementation step. It does not remove the eventual
-1,000-active-agent goal or authorize replacing individuals with scripted cohorts.
+The small-first sequencing superseded the earlier unconditional population
+implementation step. The user's later correction removes the fixed large-scale
+goal altogether. The initial supported range is 1–12 active participants;
+individuals cannot silently be replaced with scripted cohorts.
 
 ## Round 2: accepted
 
@@ -173,8 +180,9 @@ implementation choices visible; they do not silently expand scope.
   Keep all generated artifacts, repairs, costs and failures. One success is
   evidence of a narrow capability, not universal generation.
 - **Scope:** build and validate the four accepted small-study families first.
-  Dedicated 1,000-agent optimization follows their gate; expensive live trials
-  always need explicit run budgets. No paid participant budget is inferred from
+  There is no dedicated large-population deliverable; any later increase follows
+  the validation gate and a concrete study need. Live trials always need explicit
+  run budgets. No paid participant budget is inferred from
   the $10 Sol benchmark allowance.
 
 These defaults can be implemented reversibly and checked through the agreed

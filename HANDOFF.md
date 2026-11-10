@@ -2,10 +2,30 @@
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Implementation is paused at the user's requested research/plan checkpoint.**
-The user challenged the initial shallow review and asked for solid empirical
-evidence, including Olam Labs, before implementation. Do not resume production
-work automatically after this checkpoint. Earlier sections describe prior tasks.
+**Current checkpoint: to-spec publication complete.**
+The user confirmed shared understanding of the consolidated plan with “Yes,”
+then explicitly requested to-spec before implementation. The research interview
+is complete; do not ask its questions or final confirmation again. Setup was
+approved and applied: GitHub Issues in `jaiamin/ass`, the single-context existing
+glossary/ADRs, and `ready-for-agent` for spec publication. No triage skill is
+installed, so no five-role mapping or extra triage labels were added.
+
+**Latest scope correction:** user said the 1,000-agent example was dramatic and
+asked for something reasonable. The first version now targets **1–12 active
+participants** with no fixed large-population deliverable. Choose population
+for the question; later increases need a concrete study and measured limits.
+This supersedes older population targets below. Preserve all accepted harness,
+trust, research-validity and held-out-extension requirements.
+
+Published spec: https://github.com/jaiamin/ass/issues/11, titled “Build evidence-led
+researcher and participant harnesses for JAS,” labeled `ready-for-agent`.
+`docs/RESEARCH_HARNESS_SPEC.md` is its exact local body, with 90 user stories,
+implementation/testing decisions, scope and limits. Remote body equality,
+open status, label and corrected 1–12 initial range were verified. Do not
+duplicate the issue. The setup files are in `docs/agents/`; edit them directly
+for future configuration changes. No complete triage-label mapping was created.
+No implementation was started in the interrupted turn beyond commentary.
+Earlier sections describe prior tasks.
 
 Latest steering: user explicitly invoked **grill-with-docs** to interview and plan
 first. Read its composed `grilling` and `domain-modeling` skills. Track the decision
@@ -27,9 +47,9 @@ plan/retrieve/investigate/verify within budgets; direct-action controls and
 ablations remain. At least one held-out genuinely absent mechanic must be
 generated and pass independent checks before scaling. Do not ask these again.
 The consolidated plan discloses remaining reversible execution/UI defaults;
-no further product-question frontier is open for this milestone. Present the
-final concise plan and confirm shared understanding as required by the invoked
-grilling skill before beginning production work.
+no further product-question frontier is open for this milestone. The final
+shared-understanding check is now confirmed; subsequent to-spec steering takes
+precedence over immediately starting production work.
 Two new read-only agents completed participant/validity inspections without
 edits, providers or tests. Facts: current participant policy is still single-call;
 preflight copy isolation is not generated-code isolation; completed-only estimates
@@ -111,8 +131,8 @@ dependencies are installed. Ignored source downloads and disposable PDF reader
 are under `.tools/`. No credentials were inspected. All research delegates are
 finished; interrupted implementation delegates must remain inactive.
 
-Next: present the final consolidated plan and keep implementation paused until
-shared understanding is confirmed. Then implement the small vertical slice and its checks;
+Next: hand back the published spec. The confirmed plan and issue then govern
+implementation of the small vertical slice and its checks;
 do not claim universal generalization, enterprise readiness, or a 100× result.
 Latest design-interview verification: `git diff --check` passed; whitespace
 and all 26 local file links across fourteen research/decision/handoff documents passed.

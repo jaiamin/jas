@@ -19,8 +19,14 @@ evidence-seeking task, three-agent distributed information, four-agent
 reliance/commitments and a 6–12-agent institutional workflow. Participants choose
 when to use planning, retrieval, investigation and verification within declared
 limits. At least one held-out extension must introduce genuinely absent mechanics
-and pass independent checks before the scaling gate opens. The consolidated
-plan awaits final shared-understanding confirmation.
+and pass independent checks before the scaling gate opens. The user subsequently
+confirmed the consolidated plan and requested spec publication before implementation.
+
+Latest scope correction: the user withdrew the dramatic large-population
+example as a requirement. The first version targets **1–12 active participants**.
+Use richer mechanics and better evidence at that practical scale; later
+population increases require a concrete research question and measured limits.
+Source discussions of larger populations remain evidence, not JAS commitments.
 
 ## What the app should make possible
 
@@ -175,7 +181,7 @@ observations or action consequences, it belongs to world dynamics.
 | Three agents in a room | Objects, access and possible exits; distributed knowledge or complementary actions when testing coordination | A claimed private-information study gives everyone the solution; escape is only narrated |
 | Four friends and possible betrayal | Voluntary reliance/commitments, feasible alternatives and consequences; private information when relevant | A prescribed betrayer; counting every adverse outcome as betrayal |
 | Town | Local access and exposure, resources/services, feedback, agent-created responses and possibly revisable institutions | A built-in chaos score or collapse forced by impossible resource rules |
-| Company with 1,000 agents | Individual agency; workflow/artifact dependencies, permissions, handoffs or departments when relevant | Claiming rich workplace coordination while implementing only votes or transfers |
+| Organization of agents | Individual agency; workflow/artifact dependencies, permissions, handoffs or departments when relevant | Claiming rich workplace coordination while implementing only votes or transfers |
 
 These examples test representational breadth. They are not mandatory templates:
 a room can study conflict with shared information, and a company can study
@@ -270,8 +276,9 @@ before selecting the final abstraction. These tests should include a rich
 single-agent tool task, a distributed-information room, a commitment/opportunity
 study and an environment where agents can create persistent shared artifacts.
 These must establish meaningful interactions and defensible findings before
-dedicated thousand-agent scaling work. A later genuinely active large-population
-workload remains necessary; a toy counter passing at 1,000 actors cannot establish it.
+any proposed population expansion. There is no dedicated large-population
+deliverable. If later studies need more participants, measure a workload that
+actually represents those studies rather than relying on a toy counter test.
 
 Include valid simple cases where extra agents, private information, tool loops
 or detailed world mechanics would confound the question. The benchmark must
@@ -333,9 +340,9 @@ reasoning absent from the evidence.
 4. Integrate necessary UI controls and separate research-validity checks. Pass a
    small-population milestone with held-out tasks, meaningful interactions,
    participant competence and defensible findings. Preserve failures and costs.
-5. Only then address measured storage/execution bottlenecks for a realistic
-   1,000-active-actor workload. Keep systems-load evidence separate from later
-   live behavioral trials; do not replace requested actors with cohorts.
+5. Keep the initial population range at 1–12 active participants. Consider later
+   increases only for concrete study needs after the milestone passes, measuring
+   actual bottlenecks and distinguishing systems load from live behavior.
 
 This is a proposed sequence for user adjustment, not approval to start the
 paused implementation. The durable acceptance criteria are in

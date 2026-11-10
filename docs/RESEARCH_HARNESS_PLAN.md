@@ -1,17 +1,23 @@
 # Research harness and simulation plan
 
-Status: **Q1–Q7 accepted; consolidated plan awaiting shared-understanding confirmation**.
-Implementation paused. Updated 2026-11-10.
+Status: **approved; shared understanding confirmed**. Updated 2026-11-10.
+The user then requested spec synthesis/publication before implementation.
+See [the implementation spec](RESEARCH_HARNESS_SPEC.md).
+Latest correction: target **1–12 active participants initially**. The user
+withdrew the dramatic population example as a requirement; there is no fixed
+large-population deliverable. Later expansion needs a concrete question and
+measured operating limits.
 This replaces the initial implementation checklist. A universal bounded-state
-interpreter, mandatory primary endpoint and deterministic-only thousand-agent
+interpreter, mandatory primary endpoint and deterministic-only large-population
 test are not accepted requirements. The evidence and its limits are in
 [the research direction](research/RESEARCH_DIRECTION.md).
 
 The user requested grill-with-docs before implementation and has accepted both
 rounds, including all seven recommendations and four explicit refinements.
 [The design interview](research/DESIGN_INTERVIEW.md) records the decisions and
-disclosed engineering defaults. The final checkpoint confirms this consolidated
-scope before production implementation begins; these questions are not reopened.
+disclosed engineering defaults. The user answered “Yes” to the consolidated
+plan, completing that checkpoint. These questions are not reopened; the active
+step is the explicitly requested to-spec publication.
 
 ## Objective
 
@@ -80,13 +86,13 @@ adding speculative infrastructure.
    genuinely new mechanics that pass independent checks. Null or inconclusive
    results can be scientifically sound; merely
    completing a run or producing an interesting story cannot pass the gate.
-5. **Conditional population scaling.** Only after the small-population milestone
-   passes, undertake dedicated 1,000-agent execution/storage work. Measure
-   realistic individual memory, artifacts, messages, interdependent work,
-   concurrency and checkpoint growth. Distinguish entities, active model
-   participants, requests and interactions. Deterministic load tests establish
-   systems properties; separately authorized live trials establish behavior.
-   Do not substitute scripted cohorts for requested individuals.
+5. **Practical populations.** Support 1–12 active participants initially, chosen
+   for the mechanism and necessary roles rather than a larger-is-better target.
+   Complete the accepted behavioral/validity milestone before considering any
+   increase. A later increase needs a concrete research purpose and measured
+   memory, observations, request and storage limits; no dedicated large-scale
+   infrastructure is required now. Distinguish actual model participants from
+   background entities and do not silently replace them with scripts.
 
 ## Interchangeable participant harnesses
 
@@ -250,7 +256,7 @@ Accepted tradeoffs are recorded in
 ## Guarantees and validation
 
 - Environment complexity follows the question, not population size or theme.
-  A three-agent room, four-agent reliance study, evolving town and thousand-agent
+  A three-agent room, four-agent reliance study, evolving town and organizational
   company are capability tests, not compulsory detailed templates.
 - Population, graph, participant harness and horizon need defensible rationales.
   Where dynamics are unknown, propose pilots and sensitivity checks rather than
@@ -288,7 +294,7 @@ Accepted tradeoffs are recorded in
 - [x] Independently challenge pivotal claims and revise the initial direction.
 - [x] Prepare the concise revised plan for user adjustment at this checkpoint.
 - [x] Record Q1–Q7 and the four added requirements as accepted decisions.
-- [ ] Confirm shared understanding of this consolidated plan.
+- [x] Confirm shared understanding of this consolidated plan.
 - [ ] Implement the reviewed scope; run appropriate correctness/UI checks.
 - [ ] Run authorized fresh evaluation and publish observed limits.
 
