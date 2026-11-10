@@ -421,7 +421,8 @@ for (const { theme, width } of [
           call.analysis_id !== null,
       ),
     ).toBe(true);
-    await page.goto(`/runs/${rid}?tab=record`);
+    await page.goto(`/runs/${rid}`);
+    await page.getByRole("tab", { name: "Record", exact: true }).click();
     await expect(
       page.getByText("Non-model control", { exact: true }).first(),
     ).toBeVisible();
