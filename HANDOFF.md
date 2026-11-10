@@ -1,3 +1,19 @@
+# ROOT T14 incident recovery in progress (2026-11-10)
+
+ROOT resumed sole tracked writing at08700e9265ca0805d264d98cde83587b8e516e61.
+T14 remains unaccepted and unpublished. The narrowly scoped disposition and
+acceptance criteria are in [the recovery plan](docs/research/T14_INCIDENT_RECOVERY.md).
+Metadata-only enumeration found three generated source archives and six source
+manifest/report records in the exact contract711 subtree, with no direct
+protected-name files or shared hardlinks. ROOT permits minimal header-filtered
+removal of unintended generated protected copies/digest entries, preserving
+unaffected evidence and historical failures; original clipboard/configuration
+payloads remain outside the scope. The old opaque instruction below records the
+reviewer's handback state and is superseded only by this bounded ROOT disposition.
+No app/runtime/frozen-baseline change, reset, paid work or publication is allowed
+as part of this recovery. Fresh independent closure review remains required.
+T12/T17 still target the last published accepted frontier, excluding T14.
+
 # T14 review complete — acceptance held on reviewer protocol breach (2026-11-10)
 
 Personal Standards verdict: **FAIL on protected-selection review protocol**;
