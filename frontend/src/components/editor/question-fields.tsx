@@ -64,7 +64,17 @@ export function QuestionFields({
           onValueChange={(value) => {
             if (value !== design.environment) onEnvironmentChange(value);
           }}
-          options={catalog.environments.map((item) => ({
+          options={[
+            ...catalog.environments,
+            ...(design.environment === "sealed_relay" && !environment
+              ? [
+                  {
+                    key: "sealed_relay" as const,
+                    name: "Pinned admitted sealed relay",
+                  },
+                ]
+              : []),
+          ].map((item) => ({
             value: item.key,
             label: item.name,
           }))}

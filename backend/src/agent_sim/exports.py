@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from .db import Analysis, Annotation, Condition, ProviderCall, RecordedEvent, Revision, Run, Turn
 from .research import Research, event_dict
-from .simulation.environments import CATALOG
+from .simulation.environments import get_environment
 
 
 def export_study(research: Research, study_id: str) -> dict[str, object]:
@@ -61,11 +61,12 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
         run.id: research.evidence(run.id, 0)
         for run in runs
         if run.turn == 0
-        or run.checkpoint["rule_version"] == CATALOG[environments[run.condition_id]].world.version
+        or run.checkpoint["rule_version"]
+        == get_environment(environments[run.condition_id]).world.version
     }
     return {
         "format": "jas-study",
-        "version": 10,
+        "version": 11,
         "rule_versions": sorted({run.checkpoint["rule_version"] for run in runs}),
         "study": detail,
         "activations": [a for run in runs for a in research.activations(run.id)],

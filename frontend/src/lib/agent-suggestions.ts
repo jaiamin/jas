@@ -22,6 +22,8 @@ export interface AgentSuggestion {
 const evidenceQuestions: Record<EnvironmentId, string> = {
   reliance_commitments:
     "Trace voluntary promises, reliance, actual access grants, feasible alternatives and declared deadlines. Inspect recipient consequences and later responses, retaining infeasible, absent-opportunity and null outcomes without inferring intent.",
+  sealed_relay:
+    "Inspect the admitted finite relay, its explicit permissions, action credits and exact replay without inferring intent.",
   distributed_coordination:
     "Trace local evidence, addressed delivery, phase conflicts and independent alternatives. Compare shared information and preserve unmatched or abstaining outcomes.",
   artifact_workspace:

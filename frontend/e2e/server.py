@@ -76,6 +76,27 @@ def deterministic_participants(app):
 
     async def respond(messages, info):
         prompt = json.loads(messages[-1].parts[0].content)
+        if "relay" in prompt:
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        info.output_tools[0].name,
+                        {
+                            "action": {
+                                "kind": "relay",
+                                "operation": "lodge"
+                                if prompt["relay"]["phase"] == 0
+                                else "release",
+                            },
+                            "memory": "",
+                            "rationale": "Independent T16 deterministic browser fixture",
+                            "forecast": None,
+                        },
+                    )
+                ],
+                usage=RequestUsage(input_tokens=100, output_tokens=50),
+                model_name="t16-browser-deterministic-v1",
+            )
         if os.getenv("JAS_TEST_RELIANCE") == "1" and "commitment_opportunities" in prompt:
             actor, now = prompt["you"]["key"], prompt["logical_time"]
             opportunities = prompt["commitment_opportunities"]

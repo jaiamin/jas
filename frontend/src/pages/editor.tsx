@@ -239,9 +239,11 @@ export default function Editor() {
         initialStep={
           planId
             ? "review"
-            : params.get("step") === "conditions"
-              ? "conditions"
-              : "question"
+            : params.get("step") === "review"
+              ? "review"
+              : params.get("step") === "conditions"
+                ? "conditions"
+                : "question"
         }
         catalog={catalog.data}
         studyId={deletedSource ? null : studyId}

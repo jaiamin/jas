@@ -20,7 +20,7 @@ from .research_tools import (
 )
 from .simulation.environments import CATALOG, create_world
 from .templates import templates
-from .validity import Requirement, factorial_issues, preflight, requirement_issues
+from .validity import Requirement, factorial_issues, requirement_issues
 
 PLANNING = """Design empirical studies of model-controlled agents, not claims of human prediction.
 Preserve the essential meaning of the ORIGINAL user question. First map its essential constructs
@@ -644,7 +644,7 @@ class Planner:
                         raise ValueError(
                             "Required constructs are not implemented: " + " ".join(problems)
                         )
-                    check = await asyncio.to_thread(preflight, design)
+                    check = await asyncio.to_thread(self.research.review_design, design)
                     if brief.factorial:
                         check["issues"].extend(factorial_issues(check["condition_grid"]))
                         if any(i["severity"] == "error" for i in check["issues"]):

@@ -51,6 +51,20 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### T16 fresh integration review in progress (2026-11-10)
+
+Sole shared writing belongs to the independent reviewer starting at accepted
+`8df6c59`; no descendants or extra checkout. Plan `548640e` freezes literal
+DEVELOPMENT oracles. Exact T16 `475bfc73` is being merged, preserving both
+documentary histories and accepted T11 planner/capability/replay/UI behavior.
+Combined DB10/export11/library7 are provisional, pending qualification. Complete
+hardlinked custody and header-first source/archive proofs pass independently;
+all original44 wrapped nonzero attempts and pre-read capture gaps remain.
+Heavy checks/install/builds wait for root's storage coordination and T14's next
+bounded heavy slot. No flock held, paid calls, live/held-out exposure or publication.
+T17 remains blocked pending accepted T16. See
+[the review](research/T16_INTEGRATION_REVIEW.md); final handoff returns writing.
+
 ### Root verifies accepted T11 and advances the frontier (2026-11-10)
 
 Root reverified every156 file/35 directory/20,111,779-byte entry in the final
@@ -752,7 +766,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Accepted for deterministic scope; live competence unassessed | Exact no-ff `5af3fbb`; scoping repair `5e86dfa`; [report](research/T13_INTEGRATION_REVIEW.md) |
 | T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Ready; root chooses launch and explicit live allocation | — |
 | T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Integrated and accepted after fresh review repair | `fa1c825`, `6e1a7c8`; [report](research/T15_BASELINES.md) |
-| T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Original implementer resumed incomplete admission guard; unaccepted, root report only | `7383c13` continuation; unpolled here |
+| T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Implementation complete; fresh root acceptance pending | Guard `28dbd47`/`ef3c186`; final qualified source `6556a8a`; [implementation report](research/T16_EXTENSION_ADMISSION.md); provisional DB9/export10/library6 |
 | T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | Waiting for accepted T16; T13 accepted | — |
 | T18 | [#29](https://github.com/jaiamin/ass/issues/29) Inspect a declared fallible adjudication and replay its consequences | T09 | Ready; root chooses launch | — |
 | T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Accepted: structured calculations; prose unassessed | No-ff `7e8647f`; reporting repair `716a44b`; tests `d448ea5` |

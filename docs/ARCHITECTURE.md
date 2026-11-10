@@ -7,7 +7,7 @@ remain ordered. Only explicit user actions create paid work. Restart pauses inte
 ## Storage
 
 SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. Startup creates
-schema v9 for fresh workspaces and rejects incompatible schemas. Local transactions
+schema v10 for fresh workspaces and rejects incompatible schemas. Local transactions
 commit each turn's input, decision, consequences, metrics and checkpoint together.
 
 | Record | Purpose / invariant |
@@ -162,8 +162,8 @@ requires a nonempty advance analysis plan and semantic review. The brief justifi
 participants, roles, conditions, opportunity-based horizon/stopping, replication and capture.
 Material clarification keeps the same conversation without an executable proposal. Unsupported
 questions retain their original text and may offer explicitly narrower installed alternatives.
-These additions are research artifacts, not World or database semantics; current DB9/export10/
-capture1/comparison1/library6/tool2.0/direct1.0 contracts retain those semantics. Installed
+These additions are research artifacts, not World or database semantics; current DB10/export11/
+capture1/comparison1/library7/tool2.0/direct1.0 contracts retain those semantics. Installed
 three-participant distributed coordination includes phase/conflict rules and logical addressed
 mail; solo artifact investigation remains sequential. A decline whose direct requirements and
 population have an installed example witness receives a bounded, recorded scoping recheck.
@@ -265,11 +265,32 @@ structural object/requirement edits also use the existing JSON editor. The revie
 shows requirements and ACLs; the run view links versions and terminal results to
 recorded turns. Reusable mechanics extract/rebind ACL roles and retain complete
 immutable source snapshots, independently of population, model, harness and memory.
-DB 9, export 10, comparison 1 and `jas-environment-v6` are the current contract.
+DB 10, export 11, comparison 1 and `jas-environment-v7` are the current contract.
 Older database/library versions fail explicitly; preserve them with their source.
 No migration, compatibility reader or reset is performed. Controlled-world rules
 remain unchanged; generated execution/admission and model adjudication remain out
 of this World.
+
+### Independently admitted finite extensions
+
+T16 adds the explicit `sealed-relay-v1` profile through the existing World,
+participant, revision, library and evidence seams. Its sole guest interface remains
+import-free `step(i32)->i32`: packed phase/credits/actor-slot/operation in, proposed
+finite consequence out. Trusted World rules enforce typed actions, explicit identity
+permissions, private projections, resource costs and termination before committing.
+Only the bounded worker compiles WAT; no stored prose or source runs in the app.
+
+Containment qualification plus independent exhaustive finite inputs and literal World
+privacy/resource/stop/checkpoint/replay witnesses precede admission. Revisions pin
+exact source/compiled hashes, package/capability versions and full check provenance.
+Library changes cannot affect them. Every actual execution and replay requires the
+same qualified runtime; restart or failure revokes it, without affecting inspection.
+The normal Engine retains one writer and commits in-flight final responses on Pause;
+relay transitions run off the API event loop. Candidate self-tests grant no authority.
+Other semantics, imports, generation and adjudication remain unsupported. Finite
+qualification makes no claim about arbitrary-program correctness or intelligence.
+See [the contract](EXTENSIONS.md) and [T16 evidence](research/T16_EXTENSION_ADMISSION.md).
+
 
 ## Distributed information and consequential choice
 
@@ -350,8 +371,9 @@ provider request confirms input inclusion, separately from availability or inten
 Frozen analysis lenses recompute nonfinancial reliance value/eligibility while
 financial utility remains null; Sol analysis is separately billed from Luna work.
 
-The current combined contract is DB9/export10/library6 because new typed
-parameters change canonical designs/mechanics hashes. Older persisted formats
+T11 introduced DB9/export10/library6 for typed commitment parameters. The current
+combined contract is DB10/export11/library7 for those mechanics and T16 admitted
+packages, including canonical designs/mechanics hashes. Older persisted formats
 are explicitly rejected with no compatibility reader, migration or reset.
 T10's three-participant rule version and all controlled/solo consequences remain
 unchanged. Capture1/comparison1/tool2.0/direct1.0 remain current. This adds no
@@ -559,8 +581,8 @@ receipt establishes inclusion; pending proposals and queued mail cannot supply i
 Applying a different lens changes its
 requirements/account without rewriting the source analysis. Unsupported lens
 versions are rejected without conversion; historical analyses without a lens
-remain unassessed and cannot supply lens inputs. Database9/export10/capture1/
-comparison1/libraryv6 and harness contracts retain their existing meanings;
+remain unassessed and cannot supply lens inputs. Database10/export11/capture1/
+comparison1/libraryv7 and harness contracts retain their existing meanings;
 this additive versioned analysis JSON requires no migration or reset.
 
 Agent replies lead with a deterministic source-linked account, then expose claim
@@ -711,5 +733,5 @@ automatic causal effects; inclusion establishes no attention, belief or intent.
 
 Exposure capture v1 was introduced in export v7; current export v10 retains the
 exposure chain and frozen analysis artifacts alongside artifact work. T09 advances
-the database to schema 7; T10 extends the typed mechanics contract to schema 8. Exposure provenance alone does not alter controlled-world
+the database to schema 7; T10 extends the typed mechanics contract to schema 8; T16 advances it to schema 9 for pinned executable packages. Exposure provenance alone does not alter controlled-world
 settlement, prompts or checkpoint replay. No migration or reset is performed.

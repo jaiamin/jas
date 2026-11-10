@@ -9,6 +9,7 @@ export type EnvironmentId =
   | "renewable_resource"
   | "composed"
   | "artifact_workspace"
+  | "sealed_relay"
   | "distributed_coordination"
   | "reliance_commitments";
 
@@ -147,7 +148,7 @@ export interface CompositionRules {
   controllers_first: boolean;
 }
 export interface SavedEnvironment {
-  format: "jas-environment-v6";
+  format: "jas-environment-v7";
   id: string;
   revision: number;
   updated: string;
@@ -160,6 +161,7 @@ export interface EnvironmentMechanics {
   description: string;
   environment: EnvironmentId;
   rule_version: string;
+  extension: ExtensionPackage | null;
   examples: {
     key: string;
     name: string;
@@ -197,6 +199,7 @@ export interface Parameters {
   };
   composition: CompositionRules | null;
   artifacts: ArtifactRules | null;
+  relay: { submitter: string; reviewer: string; docket: string } | null;
   coordination: DistributedRules | null;
   commitments: CommitmentRules | null;
   resource_schedule: { round: number; endowment: number }[];
@@ -522,7 +525,8 @@ export type Action =
   | ControlledAction
   | ArtifactAction
   | CoordinationAction
-  | CommitmentAction;
+  | CommitmentAction
+  | { kind: "relay"; operation: "lodge" | "release" | "wait" | "stop" };
 export interface Decision {
   action: Action;
   rationale: string;
@@ -576,6 +580,9 @@ export interface State {
   round: number;
   position: number;
   done: boolean;
+  phase?: number;
+  credits?: number;
+  package_sha256?: string;
   balances?: Record<string, number>;
   pending?: Record<string, Action>;
   history: Record<string, unknown>[];
@@ -596,6 +603,10 @@ export interface State {
         actor: string;
         operation: number;
         result: Record<string, unknown>;
+      }
+    | {
+        success: boolean;
+        reason: "released" | "stopped" | "exhausted" | "horizon";
       }
     | CoordinationOutcome
     | null;
@@ -907,7 +918,7 @@ export interface ExtensionCandidate {
 export interface ExtensionRuntime {
   status: "unqualified" | "qualified" | "failed";
   validation_enabled: boolean;
-  execution_enabled: false;
+  execution_enabled: boolean;
   detail: string;
   fingerprint: string | null;
   case_sha256: string | null;
@@ -935,6 +946,43 @@ export interface ExtensionReview {
     detail: string;
   }[];
   outputs: number[];
+}
+
+export interface AdmissionCheck {
+  stage: string;
+  status: "passed" | "failed" | "blocked";
+  detail: string;
+}
+export interface ExtensionPackage {
+  format: "jas-sealed-relay-package-v1";
+  version: "1.0.0";
+  profile: "sealed-relay-v1";
+  name: string;
+  provenance: string;
+  source: string;
+  source_sha256: string;
+  wasm_sha256: string;
+  profile_sha256: string;
+  capabilities: string[];
+  review_id: string;
+  admission_id: string;
+  created: string;
+  containment: ExtensionRuntime;
+  checks: AdmissionCheck[];
+  verification: Record<string, string | number>;
+  sha256: string;
+}
+export interface ExtensionAdmission {
+  format: "jas-extension-admission-v1";
+  id: string;
+  created: string;
+  review_id: string;
+  profile: string;
+  runnable: boolean;
+  checks: AdmissionCheck[];
+  package: ExtensionPackage | null;
+  limitations: string[];
+  cases: { input: number; expected: number; observed: number }[];
 }
 
 export interface ExposureSource {

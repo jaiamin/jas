@@ -209,7 +209,7 @@ def test_quartz_exploration_preserves_exact_copies_and_saving_adds_no_calls(clie
     assert proposal["question"] == design["question"]
     assert proposal["hypothesis"] == "" and proposal["measures"] == []
     assert [p["key"] for p in proposal["profiles"]] == ["quartz"]
-    assert proposal["environment_source"]["format"] == "jas-environment-v6"
+    assert proposal["environment_source"]["format"] == "jas-environment-v7"
     probes = {
         op["request"]["source"]["condition_key"]: op["data"]
         for op in row["output"]["research"]["operations"]
@@ -233,7 +233,7 @@ def test_quartz_exploration_preserves_exact_copies_and_saving_adds_no_calls(clie
     saved = client.post("/api/studies", json={"design": proposal, "plan_id": row["id"]})
     assert saved.status_code == 201, saved.text
     exported = client.get(f"/api/studies/{saved.json()['id']}/export").json()
-    assert exported["version"] == 10
+    assert exported["version"] == 11
     assert len(exported["runs"]) == 4
     assert all(r["record"]["summary"]["status"] == "ready" for r in exported["runs"])
     assert all(r["record"]["summary"]["turn"] == 0 for r in exported["runs"])
@@ -338,7 +338,7 @@ def test_quartz_source_reuse_is_exact_and_scoped_to_the_captured_conversation(cl
     saved = client.post("/api/environments", json={"definition": definition})
     assert saved.status_code == 201, saved.text
     source = saved.json()
-    assert source["format"] == "jas-environment-v6"
+    assert source["format"] == "jas-environment-v7"
     design["environment_source"] = source
     brief = scope(design)
     brief["requirements"][0]["source"] = "revise a folio"

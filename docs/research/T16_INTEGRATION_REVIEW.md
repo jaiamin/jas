@@ -102,3 +102,35 @@ T14 on18127 or the T07 owner's environment. Source-equal inherited checks retain
 their attribution; segmented passes are not an uninterrupted-suite claim.
 Sol remains Researcher/planner/assistant; Luna model participants. Historical
 Sol spending stays$0.611632/55 requests, $9.388368 remaining; Luna unallocated.
+
+## Review checkpoints
+
+Plan commit: `548640ec2dc3aa694e0091e2dfe4d6182755af5c`. The initial merge
+conflicts and every recorder failure are retained. Both HANDOFF conflict sides
+were concatenated exactly. Code resolution retains both Worlds, replay/event/
+measurement verification, T11 messaging/commitment capabilities, frontend views
+and exact deterministic browser branches. Accepted planner input deduplication
+remains; the obsolete imports are removed. Combined contracts are provisionally
+**DB10/export11/library7**, pending qualification. Prior9/10/6 meanings and frozen
+historical evidence are not reinterpreted. Old DB9/library6 rejection cases are
+part of the current-contract tests; no reset or migration occurs.
+
+The corrected independent custody audit passes every selected file, directory,
+symlink target and regular-file shared inode. Its first failure incorrectly
+required symlinks to share inodes too; that verifier version/log remains. The
+independent header-first archive audit passes44 source archives,67 closed-output
+archives,1,787 nested test archives,17 nested source archives and4 tooling/4 ZIP
+containers. Exact final413 source members equal Git `475bfc73`. These are fresh
+artifact verifications, not new executions of inherited product checks.
+
+Standards and Spec remain separate, personally reasoned reviews in progress.
+Actual code inspection confirms that only copied integers reach the import-free
+worker; World rules independently settle authorization and consequences. New
+draft checks verify the actual admission before executable witnesses, while
+pinned revisions use self-contained package/runtime checks. Remaining review
+includes normal discovery/editor selection, planner request bounds and complete
+recovery/accounting qualification. No acceptance is inferred from self-tests.
+
+Root's storage coordination at approximately85MiB pauses new heavy checks,
+installs and builds; no job holds the shared flock. Source/conflict/evidence work
+continues. This reviewer does not use root's old `.tools/context7-cache`.

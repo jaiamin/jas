@@ -60,17 +60,17 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v10.
-Schema v9 and library format `jas-environment-v6` accept only the current contract.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v11.
+Schema v10 and library format `jas-environment-v7` accept only the current contract.
 Older databases/library records receive explicit errors; no data is converted or reset.
 Use a separate fresh workspace path for the new contract and preserve existing evidence.
-T11 versions typed commitment mechanics and their canonical hashes atomically as
-DB9/export10/libraryv6. Capture1/comparison1/tool2.0/direct1.0 remain current;
+T11 introduced typed commitment mechanics as DB9/export10/library6. T16 integration
+adds admitted packages as DB10/export11/library7. Capture1/comparison1/tool2.0/direct1.0 remain current;
 controlled-world mechanics and solo artifact submission behavior are unchanged.
 
 The current schema retains T04's durable participant activations and per-request
-links alongside T03's pinned environment sources. Old schema 4/5/6/7/8 databases and
-v1/v2/v3/v4/v5 environment files are explicitly rejected; preserve them separately. No
+links alongside T03's pinned environment sources. Old schema 4/5/6/7/8/9 databases and
+v1/v2/v3/v4/v5/v6 environment files are explicitly rejected; preserve them separately. No
 compatibility reader or automatic reset is provided. Reusable mechanics exclude
 participant harness settings; each experiment pins those separately.
 
@@ -105,7 +105,10 @@ for inspection with that contract; no migration, compatibility reader or automat
 reset is performed. T08 itself added no database schema change; T07 added exposure
 capture v1 in export v7. T09 advances the combined current
 contract to database schema 7, export 8 and environment-library v4 for typed artifact operations
-and complete versioned work/checkpoints.
+and complete versioned work/checkpoints. T10 advances these to DB8/export9/library5 for distributed coordination. T11 introduced DB9/export10/library6; T16 integration advances
+the combined contract to DB10/export11/library7
+for immutable admitted executable packages and sealed-relay checkpoints/actions.
+See [extension admission](EXTENSIONS.md); preserve older workspaces without resetting them.
 New runs must pin the current harness. Each capability can be explicitly disabled;
 there is no substitute policy. The same activation request/operation budgets apply.
 
@@ -195,3 +198,15 @@ The dedicated trial uses only an opt-in external-provider stand-in. Success, wro
 submission, stale-write rejection/recovery, both harnesses and mobile/draft behavior
 are development mechanics checks. They do not establish live intelligence or
 held-out generalization. See [T09 evidence](research/T09_ARTIFACT_WORLD.md).
+
+
+T16's finite extension browser trial runs with an explicit keyless provider stand-in
+in a separate temporary workspace, so its synthetic requests cannot contaminate
+zero-call browser controls:
+
+```sh
+JAS_TEST_PORT=18125 pnpm --dir frontend test:e2e --config playwright.extension.config.ts
+```
+
+This checks admission, reusable mechanics, normal Review/save/run and exact replay;
+it does not run generation or live participant intelligence.

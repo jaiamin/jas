@@ -1,5 +1,6 @@
 """Trusted worker for import-free core Wasm; never evaluates Python or model prose."""
 
+import hashlib
 import json
 import resource
 import sys
@@ -46,7 +47,8 @@ def run(payload: dict) -> dict:
     config.memory_reservation_for_growth = 0
     with wasmtime.Engine(config) as engine:
         try:
-            module = wasmtime.Module(engine, payload["source"])
+            bytecode = bytes(wasmtime.wat2wasm(payload["source"]))
+            module = wasmtime.Module(engine, bytecode)
         except wasmtime.WasmtimeError:
             return {"code": "invalid_module"}
         with module:
@@ -88,7 +90,11 @@ def run(payload: dict) -> dict:
                 return {"code": code}
             except wasmtime.WasmtimeError:
                 return {"code": "resource_limit"}
-            return {"code": "ok", "outputs": outputs}
+            return {
+                "code": "ok",
+                "outputs": outputs,
+                "wasm_sha256": hashlib.sha256(bytecode).hexdigest(),
+            }
 
 
 def main() -> None:

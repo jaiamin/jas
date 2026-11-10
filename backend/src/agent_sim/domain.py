@@ -21,6 +21,7 @@ EnvironmentId = Literal[
     "renewable_resource",
     "composed",
     "artifact_workspace",
+    "sealed_relay",
     "distributed_coordination",
     "reliance_commitments",
 ]
@@ -28,6 +29,32 @@ EnvironmentId = Literal[
 
 class Strict(BaseModel):
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
+
+
+class AdmissionCheck(Strict):
+    stage: str
+    status: Literal["passed", "blocked", "failed"]
+    detail: str
+
+
+class ExtensionPackage(Strict):
+    format: Literal["jas-sealed-relay-package-v1"] = "jas-sealed-relay-package-v1"
+    version: Literal["1.0.0"] = "1.0.0"
+    profile: Literal["sealed-relay-v1"] = "sealed-relay-v1"
+    name: str = Field(min_length=1, max_length=120)
+    provenance: str = Field(min_length=1, max_length=2000)
+    source: str = Field(min_length=1, max_length=65536)
+    source_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    wasm_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    profile_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    capabilities: list[str]
+    review_id: str
+    admission_id: str
+    created: str
+    containment: dict
+    checks: list[AdmissionCheck]
+    verification: dict
+    sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
 
 
 class Profile(Strict):
@@ -202,6 +229,18 @@ class ArtifactRules(Strict):
         return self
 
 
+class RelayRules(Strict):
+    submitter: ArtifactKey
+    reviewer: ArtifactKey
+    docket: str = Field(default="counterseal-17", min_length=1, max_length=120)
+
+    @model_validator(mode="after")
+    def distinct_permissions(self) -> Self:
+        if self.submitter == self.reviewer:
+            raise ValueError("Relay submitter and reviewer must be distinct participants")
+        return self
+
+
 class MessageRoute(Strict):
     sender: ArtifactKey
     recipient: ArtifactKey
@@ -274,6 +313,7 @@ class MechanicsParameters(Strict):
     resource: ResourceRules = Field(default_factory=ResourceRules)
     composition: CompositionRules | None = None
     artifacts: ArtifactRules | None = None
+    relay: RelayRules | None = None
     coordination: DistributedRules | None = None
     commitments: CommitmentRules | None = None
     resource_schedule: list[ResourceChange] = Field(default_factory=list, max_length=12)
@@ -377,6 +417,7 @@ class EnvironmentMechanics(Strict):
     environment: EnvironmentId
     rule_version: str = Field(min_length=1, max_length=40)
     examples: list[EnvironmentConfiguration] = Field(min_length=1, max_length=6)
+    extension: ExtensionPackage | None = None
 
     @model_validator(mode="after")
     def unique_examples(self) -> Self:
@@ -386,7 +427,7 @@ class EnvironmentMechanics(Strict):
 
 
 class SavedEnvironment(Strict):
-    format: Literal["jas-environment-v6"] = "jas-environment-v6"
+    format: Literal["jas-environment-v7"] = "jas-environment-v7"
     id: str
     revision: int = Field(ge=1)
     updated: str
@@ -447,6 +488,30 @@ class Design(DesignSpec):
             if len(set(values)) != len(values):
                 raise ValueError(f"{label} identifiers must be unique")
         for condition in self.conditions:
+            relay = condition.parameters.relay
+            if self.environment == "sealed_relay":
+                if (
+                    not self.environment_source
+                    or self.environment_source.definition.environment != "sealed_relay"
+                    or not self.environment_source.definition.extension
+                    or relay is None
+                    or {relay.submitter, relay.reviewer} != {p.key for p in self.profiles}
+                    or len(self.profiles) != 2
+                ):
+                    raise ValueError(
+                        "Sealed relay requires an independently admitted pinned package "
+                        "and exactly two explicitly authorized participants"
+                    )
+                defaults = MechanicsParameters().model_dump()
+                if any(
+                    value != defaults[key]
+                    for key, value in condition.parameters.model_dump(
+                        exclude={"relay", "memory"}
+                    ).items()
+                ):
+                    raise ValueError("Sealed relay does not support these extra controls")
+            elif relay is not None:
+                raise ValueError("Relay mechanics require the sealed relay environment")
             artifacts = condition.parameters.artifacts
             if self.environment in {
                 "artifact_workspace",
@@ -675,6 +740,11 @@ class StopArtifact(Strict):
     kind: Literal["stop"]
 
 
+class RelayAction(Strict):
+    kind: Literal["relay"] = "relay"
+    operation: Literal["lodge", "release", "wait", "stop"]
+
+
 class ChooseAlternative(Strict):
     kind: Literal["choose_alternative"]
     alternative: ArtifactKey
@@ -707,6 +777,7 @@ ArtifactAction = Annotated[
 ActionRequest = (
     Action
     | ArtifactAction
+    | RelayAction
     | ChooseAlternative
     | WaitCoordination
     | SendMessage

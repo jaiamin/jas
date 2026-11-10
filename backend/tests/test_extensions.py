@@ -54,7 +54,7 @@ def test_local_containment_must_pass_real_safe_denial_and_limit_cases(client):
     runtime = response.json()
     assert runtime["status"] == "qualified", runtime
     assert runtime["validation_enabled"] is True
-    assert runtime["execution_enabled"] is False
+    assert runtime["execution_enabled"] is True
     cases = {case["name"]: case for case in runtime["checks"]}
     assert cases["safe-transition"]["observed"] == ["ok", [-5, 3, 19]]
     assert cases["filesystem"]["observed"][0] == "imports_denied"
