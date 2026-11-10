@@ -30,8 +30,8 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01/T02 integrated; T02 UI review follow-up pending;
-draft PR #32; T04/T05 running.**
+**Current checkpoint: T01/T02 accepted; T04/T05 complete awaiting fresh mergers;
+draft PR #32; T03 next.**
 
 T02 source `07d6d9fa681bd5ce79777c480e0798b5d6fa6137` was integrated with
 no-ff merge `77f6014981754adefc954af51e06f9326ab95893`. The fresh merger
@@ -53,12 +53,35 @@ The child worktree remains intact. The pre-existing untracked `pbcopy` was
 untouched/unread and excluded from the tracked-source archive. Keep both T01
 and T02 preserved evidence. No stash, host policy or credential changes.
 
-Parent-owned follow-up before completing T02 review acceptance: submitting a
-candidate from a history URL leaves `selectedId` on the old review and hides
-the new validation result. Add a red/green browser regression and correct that
-selection in the next change. Containment is qualified for the narrow
-import-free Wasm contract; experiment/world admission remains disabled until
-T16. See `docs/research/T02_CONTAINMENT.md` for the full integration record.
+Parent fixes are committed at `c546c857348cb433163d52f99efc07f790a17288`:
+new candidate submissions select their saved review, late responses preserve
+newly selected history, and worker exit races retain their review. Sequential
+red/green evidence is preserved under `.tools/research-harness/evidence/T02-review/`.
+Observed after repair: 13 extension backend tests, 5 affected browser tests,
+106 frontend tests, lint/build, Ruff and ty passed. A fresh production build from
+tracked `c546c85` source passed all 26 containment checks; its container was
+removed and ports 18213/18313 closed. T02 is accepted for its narrow import-free
+Wasm contract; experiment/world admission stays disabled until T16. See
+`docs/research/T02_CONTAINMENT.md` for source identities and limitations.
+
+T05/#16 completed on `t3/researcher-probes` at
+`14101d005d4a46ac13362350d086817cca8ec064`, including integration `8f83a36`.
+Preserve all 261 ignored `data/t05/` files from
+`/home/agent/.t3/worktrees/workspace/t3-4f00062b` before cleanup; its manifest and
+`docs/research/T05_RESEARCHER.md` index the evidence. Reported: 961 backend,
+108 frontend, 14 affected browser tests passed; pre-merge full browser 169
+passed, lint/type/build and unchanged baseline passed. Controlled API cases
+improved from 14 failed to 14 passed. This is deterministic evidence only.
+
+T04/#15 completed on `t3/participant-policies` at
+`6a6c000ac87a44212f3da681dbd31497f9640982`, including `c546c85`.
+Preserve `data/t04/` from `/home/agent/.t3/worktrees/workspace/t3-19c753ac` before
+cleanup. See `docs/research/T04_PARTICIPANT_HARNESSES.md`. Reported: 981 backend,
+106 frontend, 165 inherited browser tests, 2 policy flows, 5 integration browser
+checks, static/build/production checks passed. Four expected export-v4 baseline
+failures are retained under the intentional v5 contract; independently inspect
+those and the exact direct-action parity evidence before acceptance. Fresh-merge
+T05 first, then T04 onto the resulting tip. Neither establishes live competence.
 
 The user explicitly invoked implement-spec after the reviewed breakdown. Treat
 that as authorization to implement the accepted task graph; do not repeat
@@ -82,9 +105,8 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: complete the T02/#13 UI review follow-up while T04/#15 and
-T05/#16 run in their assigned worktrees; T03/#14, T06/#17 and T07/#18 remain
-Ready. Draft PR #32 is the single integration PR and
+Current frontier: fresh-merge T05/#16, then T04/#15; start T03/#14 in a fresh
+isolated worktree. T06/#17 and T07/#18 remain Ready. Draft PR #32 is the single integration PR and
 was linked immediately. Refresh/link it on each push. Do not merge to main or
 close issues as if unverified work were complete. The default-branch PR merge
 itself is not authorized.

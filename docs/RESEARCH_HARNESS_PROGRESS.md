@@ -57,10 +57,10 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | Ticket | Issue and behavior | Blocked by | Status | Integrated commit |
 | --- | --- | --- | --- | --- |
 | T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Integrated | `bf3b76e` |
-| T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Integrated; UI review follow-up pending | `77f6014` |
+| T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Integrated and accepted | `77f6014`, `c546c85` |
 | T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Ready | — |
-| T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | In progress | — |
-| T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | In progress | — |
+| T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Complete; fresh merger after T05 | — |
+| T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Complete; fresh merger next | — |
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Ready | — |
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Ready | — |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Waiting | — |
@@ -125,15 +125,15 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. Complete T02/#13's parent-owned history-URL submission correction and
-   red/green browser regression. T04/#15 and T05/#16 are running in isolated
-   worktrees; T03/#14, T06/#17 and T07/#18 remain Ready for available slots.
+1. Fresh-merge completed T05/#16, then T04/#15; preserve ignored evidence before
+   cleanup. Start T03/#14 next. T06/#17 and T07/#18 remain Ready for available
+   slots. T02 review is accepted.
 2. Review and merge each accepted slice sequentially, then refresh/link draft
    PR #32; qualification failure gates generated execution, not trusted worlds.
 3. Preserve source-stamped inherited and new-behavior evidence for each slice;
    keep live and held-out gates unverified until their required trials run.
 
-## T02 integration — UI review follow-up pending
+## T02 integration — accepted after review fixes
 
 The assigned ticket branch `t3/candidate-containment-review` implements immutable
 candidate reviews and the environment review UI. Import-free Wasm containment
@@ -164,7 +164,11 @@ Fresh merger source, raw logs, command records and container proof are under
 `.tools/research-harness/evidence/T02-integration/`; the child worktree remains
 intact. The unrelated untracked `pbcopy` was not read, copied or archived.
 
-T02 review acceptance remains pending one parent-owned UI correction:
-submitting from a history URL retains the previous `selectedId`, hiding the
-new result. Add the browser regression before correcting selection. This does
-not enable world admission or clear the remaining global acceptance gates.
+Parent follow-up `c546c85` fixes history submission selection, late-response
+navigation isolation and the worker-exit/termination race, with sequential
+red/green evidence in `.tools/research-harness/evidence/T02-review/`. After repair,
+13 affected backend tests, 5 affected browser tests, 106 frontend tests,
+lint/build, Ruff and ty passed. A fresh tracked-source non-root production
+build passed all 26 checks. T02 review is accepted; this does not admit worlds
+or clear the remaining global acceptance gates. The report records full source,
+runtime and artifact identities. All task-owned services were closed.

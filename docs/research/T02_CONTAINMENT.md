@@ -264,10 +264,37 @@ accepted without another baseline or browser-suite rerun; the evidence above
 distinguishes fresh merger observations from inherited results. No paid calls,
 pushes, PR/issue actions, stash changes or unrelated process changes occurred.
 
-**T02 UI review follow-up remains pending.** The parent identified that
-submitting from a history URL leaves `selectedId` pinned to the old review and
-hides the new validation result. The parent will add the red/green browser
-regression and correction after this merge. The narrow containment boundary is
-qualified; overall T02 review acceptance is not yet complete. T16 world
-admission, native/Python extensions, live competence and held-out generation
-remain unqualified.
+## Parent review fixes and acceptance (2026-11-10)
+
+Commit `c546c857348cb433163d52f99efc07f790a17288` corrects three review findings:
+submitting from a history URL now selects the newly saved review; a late
+response cannot redirect away from a later history selection; and a worker
+exiting between `poll()` and `killpg()` no longer loses the immutable review.
+The worker fix suppresses only `ProcessLookupError` before reaping.
+
+Sequential red/green checks reproduced both navigation failures and the process
+race before repair. The initial browser locator mistake is retained separately
+from the subsequently reproduced product failure. No checks were relaxed.
+
+| Check on repaired source | Observed result |
+| --- | --- |
+| Extension backend | **13 passed**, 55.67s |
+| Affected browser | **5 passed**, 23.3s, including both new history-selection regressions |
+| Frontend / static | **106 unit tests**, lint/build, Ruff and ty passed |
+| Actual production | Fresh tracked-source normal Dockerfile build and non-root smoke passed **all 26 containment checks** |
+| Commit scanning | Gitleaks passed |
+
+Raw red/green patches, traces and check logs are preserved in ignored
+`.tools/research-harness/evidence/T02-review/`. Production source/log/proof is
+in its `production-c546c85/` directory. Source archive SHA-256:
+`806d5c041352530419f7b9c9f563dc7bf5c7a8e2845359152c7ec7318d75aed4`.
+Image ID:
+`sha256:196364b192139c15c78016acae1e2460e91d45061a96421edfd5af57fb6ae1d0`.
+Runtime fingerprint:
+`89c561c31beed7c7921b5e31c94d63ec8ab31d50c6172c026a1613adf9831879`.
+Container `jas-t02-parent-fdf9bdeb-c546c85` was removed and its port 18313 closed;
+the affected-browser server on 18213 was also stopped.
+
+T02 is accepted for its stated narrow containment and review contract. World
+admission remains disabled pending T16. These deterministic checks establish
+neither live competence nor research validity. No paid calls were made.
