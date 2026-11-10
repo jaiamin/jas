@@ -16,6 +16,16 @@ is incomplete and UNACCEPTED pending a NEW fresh integration reviewer.
 
 # Current user direction and evidence retirement (2026-11-10)
 
+Current ROOT quality pass corrects a mistaken navigation diagnosis at `dd48bf31`:
+the isolated tests omitted `WorkspaceShell`, which already remounts record pages.
+The redundant mutation keys are removed; the new tests now use the actual shell.
+No whole-app red→green product repair is claimed. Corrected-source13 focused
+tests/lint/forced types/clean build and390px-light/1440px-dark rendered checks pass.
+The post-shutdown plain-bind helper failed; separate listener/reuse-address
+reconciliation passed. See the [quality review](docs/research/FINAL_CODE_QUALITY_REVIEW.md).
+Owned18228/tab are closed; ROOT retains sole tracked writing. T12 frontend is
+released under measured private-cache setup/bounded checks; production held.
+
 ROOT owns tracked writing at published accepted `e76ef124`. Continue remaining
 T12/T17/T18/T20, then complete whole-product UI/UX and frontend/backend review,
 benchmark and iterate, reset app data and run the final app on port8080. See

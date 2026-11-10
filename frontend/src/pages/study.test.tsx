@@ -1,9 +1,11 @@
 import { act, fireEvent, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
 import { expect, test, vi } from "vitest";
+import { WorkspaceProvider } from "@/components/workspace-provider";
+import WorkspaceShell from "@/components/workspace-shell";
 import type { StudyDetail } from "@/lib/types";
 import { design, runDetail } from "@/test/fixtures";
-import { renderWithQueries } from "@/test/queries";
+import { deferredResponse, renderWithQueries } from "@/test/queries";
 import Study from "./study";
 
 const study: StudyDetail = {
@@ -60,6 +62,77 @@ function renderStudy(path = "/studies/study") {
     </MemoryRouter>,
   );
 }
+
+test("an in-flight experiment control belongs to the experiment that submitted it", async () => {
+  const control = deferredResponse();
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => ({
+      matches: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })),
+  );
+  vi.stubGlobal(
+    "fetch",
+    vi.fn((path: string) =>
+      path === "/api/runs"
+        ? Promise.resolve(Response.json([]))
+        : path.endsWith("/control")
+          ? control.promise
+          : Promise.resolve(
+              Response.json(
+                path.includes("/exposure")
+                  ? { runs: [] }
+                  : {
+                      ...snapshot(["ready"]),
+                      design: {
+                        ...design,
+                        title: path.endsWith("/second")
+                          ? "Second experiment"
+                          : design.title,
+                      },
+                    },
+              ),
+            ),
+    ),
+  );
+  renderWithQueries(
+    <MemoryRouter initialEntries={["/studies/study"]}>
+      <Link to="/studies/second">Other experiment</Link>
+      <Routes>
+        <Route
+          element={
+            <WorkspaceProvider>
+              <WorkspaceShell />
+            </WorkspaceProvider>
+          }
+        >
+          <Route path="/studies/:id" element={<Study />} />
+        </Route>
+      </Routes>
+    </MemoryRouter>,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Run experiment" }),
+  );
+  fireEvent.click(screen.getByRole("link", { name: "Other experiment" }));
+  expect(
+    await screen.findByRole("heading", { name: "Second experiment" }),
+  ).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Run experiment" })).toBeEnabled();
+  await act(async () => {
+    control.resolve(
+      Response.json(
+        { detail: "First experiment is unavailable" },
+        { status: 503 },
+      ),
+    );
+  });
+  expect(
+    screen.queryByText(/First experiment is unavailable/),
+  ).not.toBeInTheDocument();
+});
 
 test("mixed-run updates preserve status precedence and the appropriate execution control", async () => {
   vi.stubGlobal(
