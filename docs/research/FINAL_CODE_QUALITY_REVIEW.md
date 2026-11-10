@@ -118,6 +118,26 @@ cases include both new HTTP witnesses. Each recorded unchanged source
 Records are `current/analysis-capture-*`; actual spending is zero. No global
 atomic-snapshot or complete-repository verdict follows from this narrow fix.
 
+## Pre-integration runtime measurements
+
+The first native HTTP benchmark passed at source
+`1c44e1f9fe8acb82b70a1de8cafafde73799864984080708cfc4bcb640908d22`
+(accepted application0527e737 plus the staged benchmark/plan). Its independently
+declared workloads completed4/24 turns with2/12 participants, zero provider
+requests/charges, matching activation counts, exact replay and complete export.
+The keyless server exited on the requested SIGTERM(-15); port reuse passed.
+Affected Ruff and explicit benchmark ty pass. This is a local platform baseline, before remaining
+ticket integration, with no model latency or competence claim.
+
+On Linux/aarch64, Python3.13.5 and4 reported CPUs, observed completion wall times
+were26.60/133.03ms. The20 warm Run reads had p95=2.36/6.19ms and response sizes
+25,086/191,488bytes; the larger case's maximum was34.22ms. Experiment-read p95
+was2.23/2.99ms. Replay took1.33/7.58ms; export10.39/19.08ms. Peak server RSS was
+136,496KiB, and the final SQLite file851,968bytes. These are small sequential
+samples in a shared VM; no latency target or concurrency capacity is inferred.
+Raw samples and cleanup/source receipts are in
+`current/runtime-baseline-01/`. Repeat the same workload on final combined source.
+
 ## Remaining review
 
 - Browser verification of the remaining ticket workflows and both app themes.

@@ -29,6 +29,18 @@ observation isolation, sealed choices, privacy, memory and deterministic per-tur
 Scripted witnesses cover communication that helps, hurts or makes no difference. They
 validate the instrument; they are not production participants or preferred model outcomes.
 
+For bounded local platform timings without any model requests:
+
+```sh
+uv run python -m benchmarks.runtime --output data/runtime/current
+```
+
+This starts and closes its own keyless HTTP server on port18228. It measures two
+Commons workloads with2/12 non-model participants, exact replay/export and20 warm
+reads per endpoint. Results include raw timings, response sizes and server memory;
+they measure platform overhead, not model latency or competence. Use a fresh output
+directory and `--port` when another local task owns the default port.
+
 ## Run model trials
 
 Set `OPENAI_API_KEY` in the root `.env`. These commands spend real credits and require the
