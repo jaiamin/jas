@@ -58,6 +58,12 @@ def claim_client(tmp_path, monkeypatch, request):
                            "message": "", "report": None, "promise": None},
                 "memory": "", "rationale": "Scripted development choice.", "forecast": None,
             }
+            if controls.get("breach"):
+                payload["action"].update(
+                    amount=2 if prompt["round"] == 1 else 0,
+                    promise=3 if prompt["round"] == 1 else None,
+                    report=(prompt["your_private_signal"] + 1) % 101,
+                )
         return ModelResponse(
             parts=[ToolCallPart(info.output_tools[0].name, payload)],
             usage=RequestUsage(input_tokens=100, output_tokens=50), model_name="t19-development-v1",
@@ -309,3 +315,85 @@ def test_reanalysis_uses_frozen_inputs_after_resume_and_revision_without_partici
         "question": "Cross-chat retrieval", "context": f"run:{rid}",
         "source_analysis_id": first["id"], "lens": "communication",
     }).status_code == 422
+
+
+SEMANTIC_CASES = json.loads((Path(__file__).resolve().parents[2]
+    / "benchmarks/claim-support-development-cases.json").read_text())["cases"]
+
+
+@pytest.mark.parametrize("case", SEMANTIC_CASES, ids=[c["id"] for c in SEMANTIC_CASES])
+def test_independent_semantic_candidates_never_get_a_prose_validity_pass(claim_client, design, case):
+    client, controls, _ = claim_client
+    sid, rid = save(client, design)
+    run(client, rid)
+    controls["answer"] = case["answer"]
+    controls["claims"] = lambda _prompt, selected: [] if case["kind"] is None else [{
+        "kind": case["kind"], "text": case["answer"], "value": case.get("value"),
+        "calculation_id": f"run:{selected}:total_utility" if case["kind"] == "calculation" else None,
+        "scope": "captured_run",
+    }]
+    before = source(client.get(f"/api/studies/{sid}/export").json())
+    final = finish(client, client.post("/api/chats", json={
+        "question": "Assess this recorded account; preserve interpretation limits.",
+        "context": f"run:{rid}",
+    }))
+    assert final["status"] == "complete", final
+    support = final["output"]["support"]
+    assert support["prose_status"] == "unassessed"
+    assert support["status"] in {"needs_review", "contradicted"}
+    assert [c["status"] for c in support["claims"]] == (
+        [case["expected_check"]] if case["expected_check"] else []
+    )
+    assert source(client.get(f"/api/studies/{sid}/export").json()) == before
+    if directory := os.getenv("JAS_T19_EVIDENCE"):
+        path = Path(directory) / "independent-assessments.jsonl"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a") as handle:
+            handle.write(json.dumps({"case": case, "assessment": support,
+                                    "analysis_id": final["id"]}) + "\n")
+
+
+def test_false_reports_feasible_breaches_and_intent_remain_different_claims(claim_client, design):
+    client, controls, _ = claim_client
+    controls["breach"] = True
+    _, rid = save(client, design)
+    assert run(client, rid)["status"] == "complete"
+    controls["claims"] = lambda _prompt, selected: [
+        {"kind": "calculation", "text": text, "calculation_id": f"run:{selected}:{key}",
+         "value": value, "scope": "captured_run"}
+        for text, key, value in [("Four false factual reports", "false_reports", 4),
+                                  ("Two feasible breaches", "feasible_commitment_breaches", 2),
+                                  ("Utility was 42", "total_utility", 42)]
+    ] + [{"kind": "intent", "text": "The breaches prove intentional deception."}]
+    final = finish(client, client.post("/api/chats", json={
+        "question": "Separate falsehood, feasible breach and intent.", "context": f"run:{rid}",
+        "lens": "communication",
+    }))
+    assert final["status"] == "complete", final
+    assert [r["status"] for r in final["output"]["support"]["claims"]] == [
+        "checked", "checked", "checked", "unsupported",
+    ]
+    assert final["output"]["support"]["prose_status"] == "unassessed"
+
+
+def test_missing_historical_input_capture_is_unavailable_not_zero(claim_client, design):
+    from agent_sim.db import ParticipantActivation
+    from sqlalchemy import select
+
+    client, controls, _ = claim_client
+    _, rid = save(client, design)
+    run(client, rid)
+    # Simulate a known synthetic historical fixture, not a mutation by the lens.
+    with client.app.state.db.session.begin() as session:
+        for activation in session.scalars(select(ParticipantActivation)):
+            activation.identity = {k: v for k, v in activation.identity.items() if k != "exposure"}
+    controls["claims"] = lambda _prompt, selected: [{
+        "kind": "calculation", "text": "Zero participants received a message.",
+        "calculation_id": f"run:{selected}:message_exposed_participants", "value": 0,
+    }]
+    final = finish(client, client.post("/api/chats", json={
+        "question": "Can historical message delivery be assessed?", "context": f"run:{rid}",
+    }))
+    assert final["status"] == "complete", final
+    assert final["output"]["support"]["claims"][0]["status"] == "unavailable"
+    assert final["output"]["lens"]["coverage"]["runs"][0]["exposure_capture"] == "unavailable"
