@@ -51,6 +51,24 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### Root coordination — T13 custody verified; next frontier (2026-11-10)
+
+T01–T10, T15 and T19 are accepted at `f9e87c2`; root rehashed all1,286 fresh
+T10 manifest files with no mismatch. Publish to the existing draft PR32, then
+assign isolated T11/#22 implementation on18126 and fresh sole-writer T13/#24
+review on18224. T16 continues independently on18125; T12/T18 remain Ready.
+T14/T17 and final live/held-out gates retain their dependencies.
+
+Complete unaccepted T13 custody is now under ignored evidence `T13/`, with
+`T13-copy-verification.json`:944 files/203 directories/106,152,423 bytes,
+including all942 indexed files/1,145 entries. Manifest SHA256
+`526ea658d82c30ed1ad64b24256a1798d5cac6faf1deae08e3d4d59a48a1624a`;
+canonical inventory `436e91d78acbffa73bd9a811947ddd99645e04044a11d3b90da9a66f1e51d238`.
+Bytes/modes/mtimes match clean source `75766ba`; immutable hardlinks are not
+independent physical copies and must never be written in either tree. Root's
+first read-only script lacked directory handling; the corrected complete check
+passed. No new product tests/code or paid calls in this coordination step.
+
 ### T10 fresh integration accepted; ownership returns to root (2026-11-10)
 
 **T01–T10, T15 and T19 are accepted for their documented deterministic scopes.**
