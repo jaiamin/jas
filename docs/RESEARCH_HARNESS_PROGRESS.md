@@ -51,6 +51,27 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### T10 implementation ready for fresh review (2026-11-10)
+
+T10/#21 is complete on isolated `t3/t10-distributed-information`, executable
+checkpoint `d529f97d77ff633ec9eefb17878925a35ccef5df`, with accepted published
+`14e8af90513d5e7ffa394daec31bcfd6d2730845` merged. No provisional T19 tip.
+Fresh merger acceptance remains pending. [Report](research/T10_COORDINATION.md)
+and ignored `data/t10/evidence-manifest.json` preserve all source/check attempts.
+Current branch contracts advance atomically to DB8/export9/library5; capture1,
+comparison1, tool2.0/direct1.0 and scripted1.0 remain. Three independent choices,
+shared-information control, phased/sequential delivery, actor ACLs and independent
+conflict/completion/restore oracles are implemented without T11/T12.
+
+One whole-backend run observed1,252 pass/53 fail; targeted95 pass cover every
+former failure, yielding1,305 distinct passing cases across stamped runs. Final
+13 effort/control/isolation checks,111 frontend units, static/build, five T10
+browser flows and inherited affected reruns pass. The report discloses the
+composite backend source gap, stale-contract/browser ENOSPC failures and repairs.
+Frozen T01 remains exit1/four export-v4 failures; separate five-run/22-turn actual
+request parity passes,1,833 differences classified/zero unexplained. No paid/live
+or held-out result; only later fresh review can accept this ticket.
+
 Statuses reflect accepted integration work, not automatic GitHub closure. Issues
 remain open until the tracker resolves them through draft PR #32. No
 default-branch merge, auto-merge or history rewrite is authorized.
@@ -348,7 +369,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Accepted after combined-contract review repairs | `a92105f`, `d5568c1` |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Integrated and accepted after cutoff receipt repair | `9750caf`, `de5556b`; [evidence](research/T08_PARTICIPANT_CONTEXT.md) |
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Integrated and accepted after fresh review repairs | `c357a3b`, `4ed18af`, `84867cc`; [report](research/T09_ARTIFACT_WORLD.md) |
-| T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Assigned to fresh isolated implementation (18123) | — |
+| T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Implementation complete; fresh review pending (18123 closed) | `d529f97`; [report](research/T10_COORDINATION.md) |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Waiting | — |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Waiting | — |
 | T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Assigned to fresh isolated implementation (18124) | — |

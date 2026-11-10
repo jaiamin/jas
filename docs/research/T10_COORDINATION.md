@@ -4,7 +4,7 @@ Ticket [#21](https://github.com/jaiamin/ass/issues/21). Implementation in the
 assigned isolated checkout on `t3/t10-distributed-information`; starting HEAD and
 published accepted base: `5ef3abf5eb714aa2d9e619ddffa189ab9ae6b3f2`.
 Linux/path/clean status and ancestry were observed before changes. Accepted T09
-repairs `4ed18af` and `84867cc` are ancestors. No additional checkout, descendants,
+repairs `4ed18af` and `84867cc` are ancestors. No additional checkout or delegation,
 paid allocation, infrastructure, publication, reset or stash operation.
 
 ## Durable plan and acceptance
@@ -21,11 +21,11 @@ paid allocation, infrastructure, publication, reset or stash operation.
   null/alternative behavior, checkpoint and call-free restore/replay oracles.
 - [x] Existing design/run inspection and export make assumptions, alternatives,
   conditions, logical timing and trajectory reviewable; browser on 18123.
-- [ ] Affected inherited development/regression checks, frontend static/unit/build
+- [x] Affected inherited development/regression checks, frontend static/unit/build
   and browser; final whole-backend qualification once on stable executable inputs.
-- [ ] Merge latest documented ACCEPTED integration checkpoint, preserve all failed
+- [x] Merge latest documented ACCEPTED integration checkpoint, preserve all failed
   attempts, verify complete raw evidence/archive index, commit with normal hooks.
-- [ ] Close owned resources and hand exact source/verification status to fresh merger.
+- [x] Close owned resources and hand exact source/verification status to fresh merger.
 
 ## Frozen DEVELOPMENT oracle v1 (before implementation)
 
@@ -78,8 +78,8 @@ One context-reading command used shell brace expansion under `sh`, causing `wc`
 to exit 1 and skip subsequent reads. The required reads were rerun directly;
 this was an exploration helper error, not a product check.
 
-Implementation qualification is in progress. No paid requests; live and held-out
-gates remain unverified. Root acceptance requires a later fresh merger.
+Implementation qualification is complete for fresh review. No paid requests; live
+and held-out gates remain unverified. Root acceptance requires a later fresh merger.
 
 ## Implemented scope and contract
 
@@ -199,13 +199,146 @@ the two own synthetic databases; export9/capture1/comparison1 are positive curre
 contract checks. Library5 and both harnesses are independently checked by their
 API/development tests. A green parity audit does not turn the frozen exit1 green.
 
-## Remaining qualification and acceptance limits
+## Accepted-base integration and final qualification
 
-Final whole-backend, final source/input archive qualification, additional inherited
-harness/browser checks, latest documented accepted-base merge, evidence index and
-normal-hook commits are still pending at this checkpoint. The integration tip was
-last observed as a provisional T15 review, so it was not merged; accepted base
-remains `5ef3abf` until documented acceptance changes it.
+Merged the published accepted T15 checkpoint `d55f27032b3468ee1f5ad7399ca0d3b1827f4a81`
+in `209e1980322bf3d50d57a6150ce14a59d2e63241`, then the user-published accepted root
+checkpoint **`14e8af90513d5e7ffa394daec31bcfd6d2730845`** in
+`383816dff2387292d4170885fb659e35021667a8`. Both T10 artifact guards and T15
+scripted-policy guards survive the resolved domain/UI conflicts. No provisional
+T19 tip was merged. `integration/merge-attempt.json` retains the initial exit1,
+conflicted source archive and affected paths; `root-accepted-merge.json` retains
+the exact accepted merge command, exit0 and before/after source captures.
+
+Final executable checkpoint **`d529f97d77ff633ec9eefb17878925a35ccef5df`**;
+complete tracked source SHA-256
+**`220eaf8912bc9ffa9fc45c93967f03d132a8bd0c0c29dd642e97fbda42cd1ba3`**.
+Subsequent changes are this ticket's documentation. Final documentation HEAD and
+source are recorded in `qualification/final.json` and the final commit/check
+records, avoiding a self-referential document hash.
+
+- `merged-static-and-frontends`: Ruff/ty/lint, **111 frontend tests / 30 files**,
+  TypeScript and production build pass on merged source
+  `3303f6b74ac0d2189ec8eb8814881bba946115dfb4cf7b1f49faba572bc857f7`.
+- `whole-backend-final`: the **one complete backend invocation** produced
+  **1,252 pass / 53 fail**, no skips/errors. Full JUnit is `whole-backend.xml`.
+  Failures were two stale catalogue-size assumptions, a generic stop-turn
+  assumption, an artifact-history isolation fixture and 49 validity-matrix
+  cases that replaced the task's exactly three bound actors. Rebinding the
+  fixture exposed one production defect: the observation reported the effective
+  message channel instead of preserving the declared communication flag when
+  channels were empty. The flag repair leaves actual send permissions enforced.
+- `whole-backend-failure-repairs`: Ruff/ty pass; **95 pass / 617 deselected**,
+  source `c03f7089a768e8892c329ddecdc185ba8c604112224bc2f9246593533faf20de`.
+  All 53 previously failing identities and all **42 dedicated T10 cases** pass.
+  The matrix retains exact three-actor bindings while still varying memory,
+  channels and horizon; deep isolation checks permitted artifact copies. No
+  assertion, independent oracle or required case was removed or weakened.
+- `final-inherited-controls-and-units`: **13 pass / 52 deselected**, including
+  successful/denied pure-read effort, run/comparison/export accounting, call-free
+  read/rejection replay, a real scripted control without provider construction
+  and all ten World observation-isolation cases. Other accepted T15 controls
+  passed in the whole-backend run and the two reference browser flows. The
+  final **111 frontend tests** and changed-component design detector pass.
+- Post-merge browser qualification covers **28 distinct configured flows** on
+  18123 across T10, both harnesses, solo artifact recovery, exposure, bounded
+  context, reference controls, environment reuse/editor and comparison/export.
+  Four stale export8 harness/exposure assertions and two stale export8 context
+  assertions failed, were updated to current export9 and passed their affected
+  reruns. Initial browser outputs and traces remain. A later reuse-save attempt
+  failed with **ENOSPC/HTTP500**; after packing only closed T10 outputs, both
+  reuse flows passed (`disk-retry-browser`). The shared command's grep did not
+  select uncertainty tests; `uncertainty-current-contract-browser` independently
+  ran all **four** comparison/export variants, passing.
+- Final review caught a personal abstention displayed as pending before terminal
+  settlement. `partial-abstention-browser-red` observes actual `{iris:null}` at
+  turn1 with the World unfinished, then fails on the rendered label. The repair
+  distinguishes an existing null choice from a missing choice. Final
+  `abstention-static-build-browser`: Ruff/ty/lint, TypeScript/build and all
+  **five T10 browser flows pass**. Final light1440/dark390 screenshots were
+  visually inspected; the nine-turn trajectory remains 9/8/7 and total24.
+
+`qualification/executable.json` independently joins both JUnit inventories:
+**1,305 distinct backend cases have observed passes**, including every previous
+failure. This is **not an uninterrupted all-green whole-backend run**. All
+production backend files except the one-line distributed communication flag are
+byte-identical to the full-run inputs; all production backend files match the
+95-case repair inputs. Final frontend files match the final successful build and
+five-flow browser inputs. Final documentation-source qualification repeats these
+comparisons, verifies both accepted ancestors and frozen runner/case bytes, and
+records runtime/dependency versions, lockfile hashes and all **58 private generated
+files** (dist, TypeScript and Vite caches, link count1). No dependency/cache was
+copied from another checkout. The seed does not add hidden randomness to this
+explicit-value/order World. No container, entrypoint or dependency change; accepted
+T09 production-container smoke is inherited, not freshly rerun.
+
+## Final frozen comparison and independent positive parity
+
+`frozen-merged` ran on the clean executable merge `209e198` and retains the same
+**exit1/four export-v4 failures/four failed flags**. `frozen-merged-comparison`
+also exits1 with zero regressions or improvements. Original runner/case/scores
+remain unchanged. `merged-parity-initial` correctly rejected unclassified T15
+additions. Its retained successor `merged-parity-qualified` independently checks
+those additive effort/configuration fields rather than ignoring them, and passes
+**five runs / 22 turns / 22 complete actual request payloads**. All **1,833 raw
+export differences** and the two rejection-description differences are classified;
+zero unexplained. Model-kind/reference configuration, attempted/sent/unknown usage
+and pure-read effort remain independently accounted. Usage stays **2,200 input /
+1,100 output / $0.00077 synthetic charges**, actual spending zero.
+
+Positive parity report: `parity-merged-final/report.json`. Audit helper SHA-256:
+`fe8597a373e675a095c2651086df390678619fc491bb1a86cfad7290945dd9a3`.
+These frozen executions precede the distributed-only communication-flag repair;
+none of their Worlds or other production files changed. This is a disclosed
+source gap, supported by final inventory comparison, not a claim of fresh final
+benchmark execution. Final current-contract API/browser tests positively check
+DB8/export9/capture1/comparison1/library5 and both participant harnesses separately
+from the frozen historical failures.
+
+## Evidence custody and review handoff
+
+Raw ignored evidence is **`data/t10/`**. `evidence-manifest.json` and its SHA-256
+index cover the entire stable corpus, including helper versions, failed attempts,
+source inventories/diffs, runtime/build input receipts, logs/JUnit, browser traces
+and synthetic outputs. Only the manifest and its own checksum are self-excluded.
+`qualification/archives-final.json` streams and verifies every archive, including
+the three nested frozen-source archives, member bytes/modes/link targets and ZIP
+integrity. No source snapshot is expanded or Git object copied during custody.
+The executable-stage audit verified **702 archives / 15,862 members / 13 ZIPs**;
+later closed-output packing and final documentation-source captures have their
+own final totals in that receipt and the manifest.
+
+Each source has `capture-context.json`: the recorded capture-base HEAD, complete
+changed paths, full tree blob/mode comparison, and text hunks applied in memory
+and matched against archived bytes. Identical source reuses one archive even
+across a commit; its diff remains against the **capture base**, which may differ
+from a later check's HEAD. This is verified explicitly, not inferred from status.
+Current and earlier helper versions are retained by SHA under `helpers/`.
+
+Archive mappings are adjacent `*.tar.gz.json` files, verified before removing
+closed expanded outputs. `archives/development-through-affected.tar.gz` and
+`development-final.tar.gz` preserve successive developmental outputs;
+`archives/frozen-{before,after,merged}.tar.gz` preserve the frozen evidence and
+nested original source archives. Early parity reports are similarly packed;
+the final positive parity report remains directly readable. `archives/` also
+contains per-case closed pytest databases. Disk fluctuated from hundreds of MiB
+to about1 MiB during concurrent work; only owned closed outputs were packed.
+
+Retained custody-helper failures: the first context proof omitted the conflicted
+merge's specially named capture, then passed after including it. The first archive
+verifier rejected two `.env` filenames belonging to the existing CLI's synthetic
+test fixtures; the corrected verifier hashes only those known archived fixtures,
+without printing their contents. Protected `pbcopy` was never inspected, read or
+archived. Two packing commands initially used unavailable `python` (exit127);
+they passed with `.venv/bin/python`. Other exploratory path misses are recorded
+in `helper-attempts-final.json`. Normal commit hooks/Gitleaks pass; no bypass.
+
+Owned browser/services were closed; connection to18123 is refused in the final
+qualification receipt. No push, PR/issue edits, watch, reset or stash operation.
+**Implementation acceptance status: ready for fresh merger review; not root
+accepted.** The whole-backend composite evidence and historical frozen failures
+must remain visible to that reviewer; no uninterrupted final all-green run is
+claimed. T11/T12 remain outside this implementation.
 
 No paid call or allocation was made. No live participant/Researcher competence,
 causal validity, population inference, runtime scaling or final held-out extension
