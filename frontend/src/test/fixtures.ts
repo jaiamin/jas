@@ -4,6 +4,7 @@ import type {
   ExposureReport,
   Parameters,
   RunDetail,
+  SavedEnvironment,
   State,
 } from "@/lib/types";
 export const parameters: Parameters = {
@@ -38,6 +39,7 @@ export const design: Design = {
   question: "Does oversight help?",
   hypothesis: "",
   environment: "institution",
+  environment_source: null,
   context: "",
   profiles: [
     { key: "a", name: "Alice", role: "Monitor", goal: "Observe", model: null },
@@ -105,9 +107,25 @@ export const state: State = {
 };
 
 export const catalog: Catalog = {
+  environment_schema: {},
   models: [],
   environments: [
     {
+      source: {
+        format: "jas-environment-v3",
+        id: "builtin:institution",
+        revision: 1,
+        updated: "4.0.0",
+        sha256: "0".repeat(64),
+        definition: {
+          version: 1,
+          name: "Institution",
+          description: "",
+          environment: "institution",
+          rule_version: "4.0.0",
+          examples: [],
+        },
+      } satisfies SavedEnvironment,
       key: "institution",
       name: "Institution",
       description: "Oversight and sanctions",

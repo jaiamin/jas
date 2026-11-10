@@ -1,4 +1,100 @@
-# T06 implementation checkpoint
+# T03 integration review — active writer (2026-11-10)
+
+Fresh merger owns only T03/#14 on `integration/research-harness`, starting at
+`ce7e801b409bf7982a1635b78dea371c466c9c2e`. Source is clean
+`c2b8ac15b259302786e6107a0074d93a96e82671` in `t3-6cea71e7` and stays intact.
+Before merging, preserved all **2,251 files / 470,287,451 bytes** and **602
+symlinks** under ignored `.tools/research-harness/evidence/T03/`; all 2,250
+child-indexed hashes and complete source/destination inventories match.
+File-inventory canonical SHA-256:
+`e38a459675aacb0d1579f740ea43fb6d7a39edb2ccf9a01b39e46febcf03ecc8`.
+The user explicitly authorized opaque hashing/copying of only the six indexed
+synthetic pytest `.env` fixtures; no contents are displayed or committed. All
+other configuration/credentials and root `pbcopy` remain excluded. Original
+stash and all pre-existing evidence/Sol artifacts remain protected.
+
+Acceptance plan: review mechanics-only sources and independent study/draft
+lifecycles; combine schema 6/library v3 with T06 failure-aware comparisons,
+frozen membership and export 6; preserve both live-discovery fixes and T04/T05;
+run fresh backend/static/frontend, keyless browser on **18214**, production
+smoke, clean-source frozen oracle and exact 22-turn parity; retain failures and
+commands, document acceptance, then commit without publication. Fresh evidence
+is separate in `.tools/research-harness/evidence/T03-integration/`.
+T07/T08 remain running and are not polled/modified. T09 waits for acceptance.
+No paid allocation: $0.611632 / 55 requests spent globally, $9.388368 remains.
+Root owns publication and draft PR #32; this merger makes no remote changes.
+
+# T06 integration checkpoint — accepted
+
+T06/#17 is accepted at no-ff merge
+`aaf3a1522b371e68af845243854d581d48d1fc39`, from source
+`20c7b020b88f64e153f8138adf59be7691b34f12` onto
+`ff1567453cc119824bb4b3c03ceee1d73acdb9fe`. Only progress prose conflicted.
+Both live-discovery repairs/tests and authoritative Sol/benchmark history remain;
+no product repair or substantive blocker was found. Read the
+[T06 acceptance report](docs/research/T06_UNCERTAINTY.md) and
+[progress](docs/RESEARCH_HARNESS_PROGRESS.md).
+
+Fresh observed: **1,007 backend**, **109 frontend**, **42 shared browser** and
+**two actual harness** tests pass, with Ruff/ty/lint/TypeScript/build. Six independent
+HTTP worked examples verify missing arms/repetitions, disjoint/no-eligible
+support, multiple contrasts, complete finite payoff and unsent-failure/Pause;
+failed/ready analysis membership remains frozen through late retry/Pause/revision
+and repeated exports. Fixed clusters never certify i.i.d. support; population
+intervals remain unsupported. Finite sensitivity bounds do not impute outcomes.
+
+Frozen T01 after/comparison retain exit **1**, four intentional `export-v4`
+failures and terminal failed flags. Positive schema **5** / export **6** /
+activation/snapshot checks pass. All **22 turns / five runs**, prompts, schemas,
+settings, outputs, effects and accounting match. All **475** report/export
+differences are classified, zero unexplained. The fresh after source is a clean
+tracked-only clone; before evidence is inherited. Production smoke is inherited
+from qualified `3f3cf5c`, with 12 relevant input hashes unchanged; frontend build
+is fresh. No held-out, live participant or broad competence claim.
+
+All **685 T06 files / 89,936,683 bytes**, including the final manifest itself,
+are copied without overwrites under `.tools/research-harness/evidence/T06/`.
+Every source/destination and both child-indexed hash sets match, with stable
+source HEAD/status/tracked/evidence bytes, reverified at closure. Copy inventory
+canonical SHA-256:
+`43db2a6e4ae3bc610e4d10d9eec3de2c0d0aced7017c3d5442f5479967702187`.
+The child final index covers 684 files; its canonical SHA-256 is
+`ec485f469e554e13b998a0c51de3a53ec2494a2da4ce73b1b8be3f033529a24c`.
+Fresh scripts/logs/raw results/source archives/oracles are in `T06-integration/`.
+Its immutable verification manifest covers **501 files / 26,133,953 bytes**,
+canonical SHA-256
+`6142ad78f81bc8a7cf5259a9bbc2c7d8cf80b5e8e8924495b4924fbe49b55f59`.
+Final documentation/source/commit records extend a separate checkpoint manifest.
+Keep all preserved evidence; the source worktree remains intact.
+
+All **1,745** indexed Sol artifacts and their final manifest are unchanged.
+Actual global spend remains **$0.611632 / 55 known-usage requests**;
+**$9.388368 remains**, no allocation active and no paid merger calls. The narrow
+tuned live successes leave participant/held-out/generalization gates open.
+Port 18217, both Playwright servers, copied-database server and owned preview
+are closed. `pbcopy` is the sole unrelated untracked file and was never
+read/added/copied/archived; stash `f771128ba1c9295262a4073df40cc25647b1370f`
+is untouched. No push, PR/issue, host/security/credential or other-worktree/process
+changes. Parent owns the single draft PR #32 and publication. T03 is complete,
+queued for fresh integration review; T07/T08 are in progress. T15 waits for T08,
+T19 for T07 and T14 for T13.
+
+T03 handoff: clean `t3/add-reusable-environments`, HEAD
+`c2b8ac15b259302786e6107a0074d93a96e82671`, source worktree
+`/home/agent/.t3/worktrees/workspace/t3-6cea71e7`. Read
+`docs/research/T03_ENVIRONMENTS.md`; preserve/hash-verify the complete ignored
+`data/t03/` before any cleanup (manifest indexes 2,250 files). It includes
+accepted integration `ff15674`, not T06. Fresh merger must combine T03 schema 6
+with T06 comparison/export-6 semantics, retain both live probe repairs and
+independently verify reuse/immutability, current contracts and exact 22-turn
+parity. Frozen v4 failures remain classified failures. Root owns publication;
+the merger gets sole integration write access and browser port 18214.
+
+Running T07 uses port 18118; running T08 uses 18119. Their fresh isolated tasks
+must include the latest accepted integration before handoff. Do not poll them.
+T09 becomes Ready only after T03 acceptance. No paid allocation is active.
+
+# T06 ticket-branch checkpoint (inherited)
 
 T06/#17 is complete on `t3/t06-uncertainty`, pending fresh merger review. Read
 [acceptance, decisions and all observed checks](docs/research/T06_UNCERTAINTY.md).
@@ -26,7 +122,7 @@ Stash `f771128ba1c9295262a4073df40cc25647b1370f` is untouched; no root `pbcopy`
 inspection, paid calls, descendants, extra checkout, push, PR/issue or security
 change. Only T06's ticket status was updated. Parent owns integration/publication.
 
-# T06 fresh integration review in progress
+# T06 merger starting checkpoint (historical)
 
 Exclusive writer: fresh T06 merger on `integration/research-harness`, starting
 `ff1567453cc119824bb4b3c03ceee1d73acdb9fe`. Source ticket HEAD
@@ -36,7 +132,7 @@ copied without overwrites and verified under `.tools/research-harness/evidence/T
 Copy canonical SHA-256: `43db2a6e4ae3bc610e4d10d9eec3de2c0d0aced7017c3d5442f5479967702187`.
 Fresh commands, source archives and independent oracles go in `T06-integration/`.
 
-Acceptance plan: independently review counts, matching, selection, finite-sample
+Completed acceptance plan: independently review counts, matching, selection, finite-sample
 bounds/nonidentification and frozen membership; preserve both live-discovery
 repairs and authoritative Sol history; run affected backend/static/frontend and
 keyless browser checks on 18217; classify frozen T01 v4 failures alongside
@@ -142,8 +238,8 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01/T02/T04/T05 accepted; T08 Ready; T09 waits on T03;
-T03 running; T06 complete awaiting fresh merger; draft PR #32.**
+**Current checkpoint: T01/T02/T04/T05/T06 accepted; T03 complete, queued for
+fresh integration review; T07/T08 running; T09 waits on T03; draft PR #32.**
 
 Fresh Sol DEVELOPMENT is complete for this checkpoint: read
 `docs/research/SOL_DEVELOPMENT.md`. The frozen original eight-case pair,
@@ -162,14 +258,15 @@ manifest and all prior failures. These are tuned, single-attempt development
 findings, not reliability or held-out/participant validation.
 Earlier zero-spending checkpoints describe their own past observations only.
 
-T06/#17 is complete on `t3/t06-uncertainty`, HEAD
-`20c7b020b88f64e153f8138adf59be7691b34f12`, including integration `350359f`.
-Fresh-merge after the root's live-driven repairs; preserve all ignored `data/t06/`
-from `/home/agent/.t3/worktrees/workspace/t3-df8b9bde` before cleanup. The report
-and 684-file final manifest index evidence. It intentionally advances export to
-v6 and retains four historical export-v4 oracle failures. Reported: 1,005 backend,
-109 frontend, 105 affected post-acceptance backend, 44 shared plus two harness
-browser checks, static/build passed. These are inherited, not root observations.
+T06/#17 is accepted at no-ff merge `aaf3a15` from clean ticket HEAD
+`20c7b020b88f64e153f8138adf59be7691b34f12`, including integration `350359f` and
+preserving both subsequent live-driven repairs. Its 684-file final index plus
+the manifest itself (685 files) are copied and reverified; the source worktree
+remains intact. Fresh merger checks and exact evidence digests are in the latest
+checkpoint above. Export intentionally advances to v6; schema 5 and T04 activation
+evidence remain. The ticket's earlier 1,005-backend/44-shared-browser observations
+remain attributed to its source, distinct from fresh merged 1,007-backend/42-shared
+and two actual harness browser results. No paid/live competence result is inferred.
 
 T02 source `07d6d9fa681bd5ce79777c480e0798b5d6fa6137` was integrated with
 no-ff merge `77f6014981754adefc954af51e06f9326ab95893`. The fresh merger
@@ -240,9 +337,10 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: T08/#19 is now Ready alongside T07/#18; T09/#20 still waits on
-T03/#14. T03/#14 runs in its isolated worktree; T06/#17 awaits its fresh merger.
-Start T08 when the root's live-driven repair checkpoint is handed off.
+Current frontier: T03/#14 is complete and queued for fresh integration review;
+T07/#18 and T08/#19 are running in isolated worktrees. T09/#20 still waits on
+T03 acceptance. T06/#17 is accepted. T15 waits for completed T08, T19 for T07 and
+T14 for T13; accepting T06 alone does not ready those tickets.
 Draft PR #32 is the single integration PR and
 was linked immediately. Refresh/link it on each push. Do not merge to main or
 close issues as if unverified work were complete. The default-branch PR merge
@@ -1800,6 +1898,33 @@ failures, with identical cases/harness/runtime and 22 scripted responses each.
 No paid calls or stash changes. Both production containers and owned browser
 backends are stopped. Preserve the complete ignored `data/t02/` directory;
 `checks.json` indexes evidence. No host/security/credential configuration changed.
+# T03 implementation handoff — ready for fresh integration review
+
+Worktree `/home/agent/.t3/worktrees/workspace/t3-6cea71e7`, branch
+`t3/add-reusable-environments`. Read `docs/research/T03_ENVIRONMENTS.md`.
+Executable checkpoint `a0a0d08d17c060f4ce84177d95139ebec6890c15` includes accepted
+integration `ff1567453cc119824bb4b3c03ceee1d73acdb9fe`; later changes only record
+evidence. Current contract: library v3, definition v1, schema/export v6, unchanged
+World rules. Complete sources pin immutable experiments; mechanics reuse excludes
+questions/populations/harnesses/memory/research commitments. Browser drafts keep
+library editing identity separately through World changes/reload.
+
+Fresh latest-source verification: 1,008 backend, 8 affected browser and 2 actual
+policy flows; Ruff/ty and actual non-root production smoke/containment/reuse pass.
+Full 178 browser and 108 frontend/lint/types/build checks passed at `4c5a745`;
+frontend inputs are hash-identical at the latest merge. Frozen T01 after/comparison
+exit 1 only for four intentional v4-export oracles and terminal flags under v6.
+Independent parity verifies all 22 recorded turns and usage. Full raw failures,
+archives, exports, workspaces, traces and captures remain in ignored `data/t03/`;
+`manifest.json` and `final-source/` identify final source/evidence. Preserve the
+whole directory before future cleanup; parent owns fresh integration acceptance.
+
+Port 18114 closed; owned browser backends, three production containers and image
+tags stopped/removed. No paid calls, stash/pbcopy access, other-worktree edits,
+cleanup, push, PR/issue changes, resets or security changes. T03 spend **$0**.
+No live/held-out competence claim or T09 solo-world implementation. The prepared
+worktree remains intact for sequential handoff.
+
 
 ### T04 participant harness implementation — ready for integration review
 Branch `t3/participant-policies` (prepared as `t3/19c753ac`). Implementation

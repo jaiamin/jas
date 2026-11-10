@@ -10,12 +10,25 @@ arbitrary simulator or a promise that model-generated experiments are always opt
    The planner may use an existing world, compose resource mechanics, or explain missing ones.
 2. Review the proposed protocol. The Conditions editor exposes resources, access, visibility,
    needs and incentives. Check experiment runs without model calls and highlights limits.
-3. Save custom environment to reuse the rules, roles, conditions and execution settings.
-   Environments lists these records separately from built-in templates. Edit & reuse updates
+3. Save custom environment to extract mechanical configuration examples. Questions,
+   participant identities/models/harnesses, condition arms, memory, replication and analysis
+   are excluded. Mechanical roles such as controllers remain unbound until an experiment
+   assigns its participants. Environments lists these records separately from built-in choices. Edit & reuse updates
    a record; Delete requires confirmation. Updates reject stale revisions instead of silently
    overwriting newer edits.
 4. Create experiment saves an independent immutable revision. Explicitly run it when ready.
    Editing/deleting the reusable environment cannot alter its experiments or evidence.
+
+Reuse starts a neutral experiment with one baseline condition. Choose a question and population
+independently; Conditions → Configuration examples applies another example with explicit role
+bindings. Review shows the source revision and installed rule version. Specification/export
+retain the full source definition and hash alongside the experiment's concrete rules. Library
+examples are provenance, not live links or assertions that the configured conditions are identical.
+Explicit built-in experiment templates remain available as a separate starting point.
+
+Drafts retain their original source revision when the library changes, so stale updates fail
+visibly instead of overwriting a newer entry. A draft remains recoverable after library deletion;
+Save as new custom environment creates a separate library identity when needed.
 
 Use **Hypothesis & analysis plan** for observable choice definitions, recorded fields,
 formulas, denominators and comparison rules. Additional calculations belong there rather
@@ -25,7 +38,14 @@ verify derived analyses against the recorded evidence.
 
 Custom environments are stored beside the SQLite workspace in `<database-stem>.environments/`.
 Back up that directory with the database. Browser-only reusable setups have been removed;
-there is no legacy importer. Existing saved experiments and their embedded evidence are retained.
+there is no legacy importer. Format `jas-environment-v3` contains `definition` (version 1,
+world/rule version, name/description and configuration examples), plus ID, optimistic revision,
+updated timestamp and definition hash. Examples contain mechanics parameters, optional tasks
+and unbound roles. Create/update accept `{definition, revision}`; selection and extraction use
+`POST /api/design/use-environment` and `POST /api/design/environment`.
+Unsupported library/definition/rule versions and content hashes fail explicitly. Schema/export
+v6 do not open older workspaces; no conversion, deletion or automatic reset occurs. Preserve
+older data separately if starting a fresh workspace. World rules themselves are unchanged.
 
 ## Resource primitives, rules 1.0.0
 
