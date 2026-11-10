@@ -1,5 +1,21 @@
 # T19 evidence-supported findings and read-only lenses
 
+Combined-source checkpoint: T09 became documented accepted at `12b35c9` during
+closure and was merged at `6567dc8`. Only handoff/progress prose conflicted; both
+histories were retained. The earlier DB6/export7 results below are frozen
+pre-merge evidence. Current combined contracts are DB7/export8/libraryv4 with
+unchanged capture1/comparison1/harness contracts. Final combined qualification
+is in progress; no unaccepted T15/T10/T16/T18 source is included.
+
+Additional independently specified DEVELOPMENT example, before execution:
+solo artifact investigator reads measurement31 v1, writes report31 v2 citing
+measurement v1, checks and submits. Four decisions, one retained write, one write
+remaining from allowance2, terminal success1. There are no utility balances, so
+an invented financial total0 must be unavailable, never fabricated. Retain exact
+artifact contents, versions, source references and history at the capture; lens
+reanalysis cannot alter them or the four participant requests. Success alone
+does not prove reading, inclusion, attention or intent.
+
 Ticket: T19 / #30. Implementation in `t3/research-claim-support`, assigned clean
 base `59e20935c17bd8ea0c44f712790ffeeb38ebb83b` on accepted
 `integration/research-harness`. This includes T07 merge `a92105f` and repair

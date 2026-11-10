@@ -91,6 +91,8 @@ def claim_client(tmp_path, monkeypatch, request):
                     promise=3 if prompt["round"] == 1 else None,
                     report=(prompt["your_private_signal"] + 1) % 101,
                 )
+            if actions := controls.get("artifact_actions"):
+                payload["action"] = next(actions)
         return ModelResponse(
             parts=[ToolCallPart(info.output_tools[0].name, payload)],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -719,3 +721,96 @@ def test_lens_reports_recorded_memory_windows_and_missing_history(claim_client, 
         "none": [0, 0, 0, 0],
         "missing_historical": [None, None, None, None],
     }[memory]
+
+
+def test_accepted_artifact_world_lens_retains_versions_without_financial_proxy(claim_client):
+    client, controls, _ = claim_client
+    value = next(
+        t["design"]
+        for t in client.get("/api/catalog").json()["templates"]
+        if t["id"] == "artifact_workspace"
+    )
+    rules = value["conditions"][0]["parameters"]["artifacts"]
+    rules["write_limit"] = 2
+    next(obj for obj in rules["objects"] if obj["key"] == "measurement")["content"] = {
+        "reading": 31
+    }
+    controls["artifact_actions"] = iter(
+        [
+            {"kind": "read_artifact", "artifact": "measurement", "version": 1},
+            {
+                "kind": "write_artifact",
+                "artifact": "report",
+                "expected_version": 1,
+                "content": {"reading": 31},
+                "sources": [{"artifact": "measurement", "version": 1}],
+            },
+            {"kind": "check_artifacts"},
+            {"kind": "submit_artifacts"},
+        ]
+    )
+    saved = client.post("/api/studies", json={"design": value})
+    assert saved.status_code == 201, saved.text
+    sid = saved.json()["id"]
+    rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+    assert run(client, rid)["status"] == "complete"
+    controls["claims"] = lambda _prompt, selected: [
+        {
+            "kind": "calculation",
+            "text": label,
+            "calculation_id": f"run:{selected}:{metric}",
+            "value": number,
+            "scope": "captured_run",
+        }
+        for label, metric, number in [
+            ("The utility total was zero", "total_utility", 0),
+            ("One write was retained", "artifact_writes", 1),
+            ("Recorded submission succeeded", "artifact_success", 1),
+        ]
+    ]
+    before = source(client.get(f"/api/studies/{sid}/export").json())
+    final = finish(
+        client,
+        client.post(
+            "/api/chats",
+            json={
+                "question": "Describe the recorded artifact work and assess the claimed financial zero.",
+                "context": f"run:{rid}",
+            },
+        ),
+    )
+    assert final["status"] == "complete", final
+    assert [c["status"] for c in final["output"]["support"]["claims"]] == [
+        "unavailable",
+        "checked",
+        "checked",
+    ]
+    fact = final["output"]["lens"]["facts"][0]
+    assert fact["balances"] is None
+    state = fact["artifact_state"]
+    assert state["writes_remaining"] == 1 and state["outcome"]["status"] == "success"
+    assert state["artifacts"]["report"]["versions"][-1]["content"] == {"reading": 31}
+    assert len(state["artifacts"]["report"]["versions"]) == 2
+    assert state["artifacts"]["report"]["versions"][-1]["sources"] == [
+        {"artifact": "measurement", "version": 1}
+    ]
+    assert len(state["artifact_history"]) == 4
+    account = final["output"]["lens"]["account"][0]["text"]
+    assert "1 retained writes" in account and "utility" not in account
+    assert source(client.get(f"/api/studies/{sid}/export").json()) == before
+    second = finish(
+        client,
+        client.post(
+            "/api/chats",
+            json={
+                "question": "Reanalyze this same artifact evidence.",
+                "context": f"run:{rid}",
+                "chat_id": final["chat_id"],
+                "source_analysis_id": final["id"],
+                "lens": "communication",
+            },
+        ),
+    )
+    assert second["output"]["lens"]["facts"] == final["output"]["lens"]["facts"]
+    assert source(client.get(f"/api/studies/{sid}/export").json()) == before
+    assert final["usage"]["requests"] == second["usage"]["requests"] == 2
