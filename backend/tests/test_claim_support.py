@@ -103,7 +103,7 @@ def run(client, rid, operation="start"):
         await client.app.state.engine.executions[rid].task
 
     client.portal.call(settled)
-    return client.get(f"/api/runs/{rid}").json()
+    return client.get(f"/api/runs/{rid}").json()["summary"]
 
 
 def finish(client, submitted):
