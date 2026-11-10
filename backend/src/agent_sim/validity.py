@@ -31,6 +31,11 @@ CAPABILITIES = {
             "relay; explicit actor permissions and private reviewer docket."
         )
     },
+    "distributed_coordination": {
+        "versioned_artifacts": "Actor-authorized local evidence and versioned shared drafts.",
+        "distributed_information": "Three individually valued alternatives, configurable ACL "
+        "sharing, addressed logical-time messages and declared sequential/phased settlement.",
+    },
     "artifact_workspace": {
         "versioned_artifacts": "Actor-authorized evidence reads and versioned work "
         "with optimistic writes.",
@@ -94,6 +99,7 @@ class Requirement(Strict):
     )
     capability: Literal[
         "versioned_artifacts",
+        "distributed_information",
         "artifact_verification",
         "allocation_budget",
         "allocation_power",
@@ -147,8 +153,12 @@ class Requirement(Strict):
 
 def capabilities(environment: str) -> dict[str, str]:
     available = {**COMMON, **CAPABILITIES[environment]}
-    if environment in {"artifact_workspace", "sealed_relay"}:
-        for key in ("messaging", "signal_disclosure"):
+    if environment in {"artifact_workspace", "sealed_relay", "distributed_coordination"}:
+        for key in (
+            ("signal_disclosure",)
+            if environment == "distributed_coordination"
+            else ("messaging", "signal_disclosure")
+        ):
             available.pop(key)
     return available
 
@@ -573,7 +583,7 @@ def _preflight(specification: str, runner=None) -> dict:
     baseline = design.conditions[0]
     # Endowment also sets incidental synthetic signal ranges in these worlds.
     active = set(get_environment(design.environment).parameters)
-    if design.environment not in {"artifact_workspace", "sealed_relay"}:
+    if design.environment not in {"artifact_workspace", "sealed_relay", "distributed_coordination"}:
         active |= {"private_signal", "endowment"}
     for c in design.conditions[1:]:
         changes = _differences(baseline.parameters.model_dump(), c.parameters.model_dump())

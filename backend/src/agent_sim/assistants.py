@@ -826,6 +826,16 @@ class Assistants:
                             if design.environment == "artifact_workspace"
                             else {}
                         ),
+                        **(
+                            {"coordination_outcome": state.get("outcome")}
+                            if design.environment == "distributed_coordination"
+                            else {}
+                        ),
+                        **(
+                            {"coordination_outcome": state.get("outcome")}
+                            if design.environment == "distributed_coordination"
+                            else {}
+                        ),
                     },
                     **(
                         {
@@ -839,7 +849,21 @@ class Assistants:
                                 )
                             }
                         }
-                        if design.environment == "artifact_workspace"
+                        if design.environment in {"artifact_workspace", "distributed_coordination"}
+                        else {}
+                    ),
+                    **(
+                        {
+                            "coordination_state": {
+                                "logical_time": state["logical_time"],
+                                "phase_actors": state["phase_actors"],
+                                "choices": state["choices"],
+                                "outcome": state["outcome"],
+                                "pending_proposals": len(state["pending_actions"]),
+                                "pending_deliveries": len(state["pending_deliveries"]),
+                            }
+                        }
+                        if design.environment == "distributed_coordination"
                         else {}
                     ),
                 }

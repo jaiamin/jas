@@ -38,13 +38,12 @@ verify derived analyses against the recorded evidence.
 
 Custom environments are stored beside the SQLite workspace in `<database-stem>.environments/`.
 Back up that directory with the database. Browser-only reusable setups have been removed;
-there is no legacy importer. Format `jas-environment-v4` contains `definition` (version 1,
+there is no legacy importer. Format `jas-environment-v5` contains `definition` (version 1,
 world/rule version, name/description and configuration examples), plus ID, optimistic revision,
 updated timestamp and definition hash. Examples contain mechanics parameters, optional tasks
 and unbound roles. Create/update accept `{definition, revision}`; selection and extraction use
 `POST /api/design/use-environment` and `POST /api/design/environment`.
-Unsupported library/definition/rule versions and content hashes fail explicitly. Schema/export
-v7 do not open older workspaces; no conversion, deletion or automatic reset occurs. Preserve
+Unsupported library/definition/rule versions and content hashes fail explicitly. Database schema 8 and export 9 reject incompatible workspaces; no conversion, deletion or automatic reset occurs. Preserve
 older data separately if starting a fresh workspace. Existing controlled-world rules themselves are unchanged.
 
 ## Artifact investigation, rules 1.0.0
@@ -63,8 +62,31 @@ conflict checking. Read, write, check, submit and stop remain executable permiss
 role names and model claims grant none. Sources and content are bounded data, never
 code. Submission is an enforced content/source result, not a model judgment. A
 recorded citation alone is not proof of reading; inspect delivered read receipts.
-Generated execution, collaboration/timing extensions and fallible adjudication are
-separate tickets. The historical unknown identifier `artifact` is not an alias.
+Generated execution and fallible adjudication are separate tickets. Three-person
+coordination has its own installed World below. The historical unknown identifier `artifact` is not an alias.
+
+## Distributed information, rules 1.0.0
+
+The built-in template supplies a distributed-evidence task and a shared-information
+control for three participants. Each participant has immutable local values for
+cedar, quartz and reed, can read permitted evidence, draft shared work, send addressed
+mail, wait, choose any alternative or stop personally. The all-match bonus is an
+explicit incentive; no participant must cooperate and no outcome is labeled success.
+
+Conditions expose sequential/phased timing, logical delay, activation/conflict orders,
+message-route checkboxes, bonus, artifact contents and ACLs. The Specification editor
+also edits alternatives, actor/value bindings and route ordering. Exactly three
+participants are required. Switching from a smaller draft adds neutral participants
+while retaining existing ones; additional unbound profiles must be removed before
+saving. Configuration examples extract/rebind all three mechanical roles, orders,
+routes and information bindings independently of participant names/goals/harnesses.
+
+Phased inputs freeze until the barrier; physical inference may be serial. Equal-time
+delivery follows the declared route order. Mailboxes persist across memory modes;
+queued mail is private to its author until delivery. Terminal runs retain future mail
+without flushing it. The run view is researcher-scoped: inspect choices/values,
+pending proposals, delivery times, conflicts, artifact versions and source links.
+Recorded-input inclusion requires a real request receipt; replay/restore do not sample.
 
 ## Resource primitives, rules 1.0.0
 

@@ -1,6 +1,7 @@
 import type {
   ArtifactRules,
   Design,
+  DistributedRules,
   Environment,
   EnvironmentId,
   ParticipantHarness,
@@ -111,8 +112,24 @@ export function changeEnvironment(
   design: Design,
   environment: Environment,
 ): Design {
+  const profiles = [...design.profiles];
+  if (environment.key === "distributed_coordination") {
+    while (profiles.length < 3) {
+      let n = profiles.length + 1;
+      while (profiles.some((profile) => profile.key === `agent-${n}`)) n++;
+      profiles.push({
+        key: `agent-${n}`,
+        name: `Agent ${n}`,
+        role: "Participant",
+        model: null,
+        goal: "Pursue your goals under the environment's rules.",
+      });
+    }
+  }
+  const coordination = distributedMechanics({ ...design, profiles });
   return {
     ...design,
+    profiles,
     environment: environment.key,
     environment_source: null,
     measures: environment.measures.slice(0, 3),
@@ -123,8 +140,9 @@ export function changeEnvironment(
         ...condition.harness,
         tools: condition.harness.tools.filter(
           (tool) =>
-            environment.key === "artifact_workspace" ||
-            tool !== "read_artifact",
+            ["artifact_workspace", "distributed_coordination"].includes(
+              environment.key,
+            ) || tool !== "read_artifact",
         ),
       },
       parameters: {
@@ -134,9 +152,15 @@ export function changeEnvironment(
             ? condition.parameters.relay
             : null,
         artifacts:
-          environment.key === "artifact_workspace"
-            ? (condition.parameters.artifacts ??
-              newArtifactRules(design.profiles[0].key))
+          environment.key === "distributed_coordination"
+            ? coordination.artifacts
+            : environment.key === "artifact_workspace"
+              ? (condition.parameters.artifacts ??
+                newArtifactRules(design.profiles[0].key))
+              : null,
+        coordination:
+          environment.key === "distributed_coordination"
+            ? coordination.coordination
             : null,
         composition:
           environment.key === "composed"
@@ -156,11 +180,62 @@ export function changeEnvironment(
 }
 
 export function minimumParticipants(environment: Design["environment"]) {
+  if (environment === "distributed_coordination") return 3;
   return ["commons", "trust_exchange", "institution", "bargaining"].includes(
     environment,
   )
     ? 2
     : 1;
+}
+
+function distributedMechanics(design: Design): {
+  artifacts: ArtifactRules;
+  coordination: DistributedRules;
+} {
+  const keys = design.profiles.slice(0, 3).map((p) => p.key);
+  const alternatives = ["cedar", "quartz", "reed"];
+  return {
+    artifacts: {
+      write_limit: 4,
+      requirements: [],
+      objects: [
+        ...keys.map((key, index) => ({
+          key: `values_${index + 1}`,
+          name: `Values for ${key}`,
+          owner: null,
+          readers: [key],
+          writers: [],
+          content: Object.fromEntries(
+            alternatives.map((a, i) => [a, i === index ? 9 : 0]),
+          ),
+        })),
+        {
+          key: "draft",
+          name: "Shared draft",
+          owner: null,
+          readers: keys,
+          writers: keys,
+          content: { proposal: "undecided" },
+        },
+      ],
+    },
+    coordination: {
+      timing: "phased_simultaneous",
+      turn_order: keys,
+      conflict_order: keys,
+      delivery_delay: 2,
+      alternatives,
+      information: Object.fromEntries(
+        keys.map((key, i) => [key, `values_${i + 1}`]),
+      ),
+      match_bonus: 3,
+      routes: keys.flatMap((sender) =>
+        keys
+          .filter((recipient) => recipient !== sender)
+          .map((recipient) => ({ sender, recipient })),
+      ),
+    },
+  };
 }
 
 export function newArtifactRules(owner: string): ArtifactRules {

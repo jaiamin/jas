@@ -51,6 +51,84 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### T10 fresh integration accepted; ownership returns to root (2026-11-10)
+
+**T01–T10, T15 and T19 are accepted for their documented deterministic scopes.**
+Fresh sole-writer Standards and Spec review merged exact clean T10
+`04e30a5087640fc2f32c803029481a46eafffce0` into accepted `8158fcc` without
+fast-forward at `02879c3c8b4dd51645953eb89741de8806f57c83`. Repair `7aec3f5`
+integrates T19 nonfinancial choice calculations and cutoff-scoped queue/delivery
+accounting while retaining frozen same-chat reanalysis, read-only evidence and
+separately billed Sol Analysis versus Luna Participant work. Atomic current
+contracts: **DB8/export9/library5**, capture1/comparison1/tool2.0/direct1.0.
+No aliases, adapters, migrations, resets or paid/live calls.
+
+Fresh combined backend **1,389 pass/0 fail/error/skip** in one complete run;
+126 targeted, final Ruff/ty, frontend lint,112 units/30 files and forced/new-empty-
+directory builds pass.54 build files match in bytes/modes. Executable/test/build
+inputs are unchanged after that full run; later differences are documentation.
+Browser qualification on18223 is explicitly composite:78 distinct configured
+flows across16 files have observed passes,93 executions/85 passes/eight retained
+fixture/workspace failures. Public editing/review/run/export, retained drafts,
+private mail, pinned reuse, failure/recovery and mobile/keyboard flows pass.
+Fresh production smoke/real containment under UID10001, new-process pending-phase
+restoration, logical timing, append-only prefixes and call-free replay pass.
+
+Frozen T01 is untouched: four export-v4 failures/four failed terminal flags,
+runner/comparator exit1 and no regressions/improvements. Independent positive
+current contracts and accepted-T19-attributed parity prove five runs/22 turns/
+22 identical complete bounded request inputs,98 HTTP operations and identical
+consequences/accounting;2,046 differences classified/zero unexplained. Fresh
+permuted-value/choice/null,36 priority/completion and48 topology/order challenges
+pass. Undefined financial utility is withheld, pending mail/proposals do not
+establish observation, prose is unassessed and causal/intent support unavailable.
+
+All18 fresh nonzero check attempts and the child's original53 full-suite failures
+plus subsequent repairs remain source-attributed. Child1,305 distinct passing is
+inherited composite coverage; it is not rewritten as a green final run. Source
+hardlinked custody remains1,848 regular files/1,846 indexed/108,372,210 bytes,
+manifest SHA256 `25fca245891c77dc8c3292711c1057e4299a411bb0249db1ecc74fc666908629`;
+initial/final streaming verifies bytes/modes/mtimes,706 archives, three nested
+source archives and13 ZIPs. These are immutable hardlinks, not independent physical
+copies. Fresh commands/source archives/diffs, all failures, closure audit and
+manifest/checksum are in `.tools/research-harness/evidence/T10-integration/`;
+packed logical paths resolve through its sidecar maps. See the
+[report](research/T10_COORDINATION.md) and [review](research/T10_INTEGRATION_REVIEW.md).
+Normal hooks/Gitleaks apply to the closure commit. Owned browsers/services are
+closed and18223 is closed; root resumes sole shared-checkout writing. No push,
+PR/issue edits, stash operation, `pbcopy` read or other-agent mutation.
+
+**T13 is complete but unaccepted, queued for a separate fresh reviewer after this
+ownership return.** Root-provided clean source is `75766baaf204a3ffdf21d11ec5dcf147c4cd7bf4`
+on `t3/implement-t13-researcher-designs`, checkout `t3-34d9f5cd`; it includes
+accepted `8158fcc` and excludes provisional T10. Do not treat it as reviewed here.
+Preserve all `data/t13/`, its1,145-entry manifest SHA256
+`526ea658d82c30ed1ad64b24256a1798d5cac6faf1deae08e3d4d59a48a1624a` and `closure.json`.
+Report `docs/research/T13_RESEARCHER_DESIGNS.md`; services/dependencies are reported
+closed/removed. T16 remains independent on18125; T18 is Ready. T11/T12 are now
+Ready for root scheduling; T14 waits for accepted T13, T17 for accepted T13/T16.
+
+### T10 implementation ready for fresh review (2026-11-10)
+
+T10/#21 is complete on isolated `t3/t10-distributed-information`, executable
+checkpoint `d529f97d77ff633ec9eefb17878925a35ccef5df`, with accepted published
+`14e8af90513d5e7ffa394daec31bcfd6d2730845` merged. No provisional T19 tip.
+Fresh merger acceptance remains pending. [Report](research/T10_COORDINATION.md)
+and ignored `data/t10/evidence-manifest.json` preserve all source/check attempts.
+Current branch contracts advance atomically to DB8/export9/library5; capture1,
+comparison1, tool2.0/direct1.0 and scripted1.0 remain. Three independent choices,
+shared-information control, phased/sequential delivery, actor ACLs and independent
+conflict/completion/restore oracles are implemented without T11/T12.
+
+One whole-backend run observed1,252 pass/53 fail; targeted95 pass cover every
+former failure, yielding1,305 distinct passing cases across stamped runs. Final
+13 effort/control/isolation checks,111 frontend units, static/build, five T10
+browser flows and inherited affected reruns pass. The report discloses the
+composite backend source gap, stale-contract/browser ENOSPC failures and repairs.
+Frozen T01 remains exit1/four export-v4 failures; separate five-run/22-turn actual
+request parity passes,1,833 differences classified/zero unexplained. No paid/live
+or held-out result; only later fresh review can accept this ticket.
+
 Statuses reflect accepted integration work, not automatic GitHub closure. Issues
 remain open until the tracker resolves them through draft PR #32. No
 default-branch merge, auto-merge or history rewrite is authorized.
@@ -476,10 +554,10 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Accepted after combined-contract review repairs | `a92105f`, `d5568c1` |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Integrated and accepted after cutoff receipt repair | `9750caf`, `de5556b`; [evidence](research/T08_PARTICIPANT_CONTEXT.md) |
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Integrated and accepted after fresh review repairs | `c357a3b`, `4ed18af`, `84867cc`; [report](research/T09_ARTIFACT_WORLD.md) |
-| T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Complete and preserved; assigned to fresh integration review (18223) | Unaccepted `04e30a5`; provisional DB8/export9/library5 |
-| T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Waiting | — |
-| T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Waiting | — |
-| T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Assigned to fresh isolated implementation (18124) | — |
+| T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Accepted after fresh Standards/Spec review and T19 integration repairs | No-ff `02879c3`; repair `7aec3f5`; DB8/export9/library5 |
+| T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Ready; root chooses launch | — |
+| T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Ready; root chooses launch | — |
+| T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Complete but unaccepted; queued for separate fresh review after ownership return | Unaccepted root-provided `75766ba`; not reviewed here |
 | T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Waiting on T13 | — |
 | T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Integrated and accepted after fresh review repair | `fa1c825`, `6e1a7c8`; [report](research/T15_BASELINES.md) |
 | T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Assigned to fresh isolated implementation (18125) | — |
@@ -554,13 +632,15 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. Publish accepted T19 and this coordination checkpoint to draft PR32, link
-   immediately, then launch isolated T16 implementation (18125) before fresh
-   sole-writer T10 review (18223). T10 source/custody is preserved; its proposed
-   DB8/export9/library5 must reconcile accepted T19 calculations and billing.
-2. T13 continues independently on18124; T18 remains Ready. T11/T12 wait on
-   accepted T10, T14 on T13, T17 on T13/T16. Do not poll running tasks or change
-   other environments. Root owns publication; no issue closes prematurely.
+1. Root resumes sole writing ownership, reads the T10 closure audit/manifest and
+   publishes accepted local changes to draft PR32 when appropriate. This reviewer
+   performed no publication. Preserve exact no-ff/source/repair identities and
+   observed versus inherited qualification.
+2. Assign a separate fresh sole-writer T13 review using root-provided clean
+   `75766ba` and its complete preserved evidence; do not infer acceptance from
+   completion. T16 remains independent on18125 and T18 is Ready. T11/T12 are Ready
+   for root scheduling; T14 waits on accepted T13, T17 on accepted T13/T16. Do not
+   poll running tasks or alter other environments. No issue closes prematurely.
 3. Preserve immutable hardlinked evidence and all compression maps. Serialize
    large checks with the shared flock file and archive closed own outputs before
    proceeding. Earlier outside-cache effects and prose support stay unassessed;

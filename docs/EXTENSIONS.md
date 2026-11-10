@@ -101,11 +101,12 @@ visible. Actual development and production evidence is recorded separately in
 
 Reviews live beside the workspace database in `<database>.extensions/`, like
 custom environment setups. They use `jas-extension-review-v1`, validate their
-candidate identity/hash on read, and publish only complete files. T16 advances the
-current contract atomically to DB8/export9/library5 because revisions, checkpoints,
+candidate identity/hash on read, and publish only complete files. After accepted
+T10's DB8/export9/library5, T16 advances the current contract atomically to
+DB9/export10/library6 because revisions, checkpoints,
 actions and reusable definitions may now contain an admitted executable package.
 Capture1/comparison1/tool2.0/direct1.0 and installed World rules retain their meanings.
-Older DB7 and library4 records are rejected explicitly; preserve their original
+Older DB7/8 and library4/5 records are rejected explicitly; preserve their original
 source/data for inspection. No migration, adapter or reset is provided. In-memory
 workspaces use an owned temporary directory. Include the sidecar with workspace
 backups; keep it out of Git. Review history describes its recorded runtime;

@@ -39,7 +39,8 @@ export function ArtifactFields({
       <FieldLegend>Artifact mechanics</FieldLegend>
       <FieldDescription>
         Evidence is immutable. Accepted edits create a version and consume one
-        write. Submission checks content and source references. Role
+        write. Solo investigation checks submitted content and source
+        references. Coordination uses declared choices and values. Role
         descriptions grant no access. The protocol JSON editor also supports
         adding objects, fields and requirements.
       </FieldDescription>

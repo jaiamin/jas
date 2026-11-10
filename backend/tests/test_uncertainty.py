@@ -163,7 +163,7 @@ def test_missing_arm_preserves_matrix_and_bounds_without_inventing_outcomes(
     assert failed["status"] == "failed" and failed["reason"]
     assert failed["metrics"] == {}
     exported = client.get(f"/api/studies/{sid}/export").json()
-    assert exported["version"] == 9
+    assert exported["version"] == 10
     assert exported["study"]["comparison"] == comparison
     assert exported["study"]["sha256"] == study["sha256"]
     for rid, record in before.items():

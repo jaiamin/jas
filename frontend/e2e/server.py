@@ -97,6 +97,36 @@ def deterministic_participants(app):
                 usage=RequestUsage(input_tokens=100, output_tokens=50),
                 model_name="t16-browser-deterministic-v1",
             )
+        if os.getenv("JAS_TEST_COORDINATION") == "1" and "coordination" in prompt:
+            actor = prompt["you"]["key"]
+            action = {"kind": "wait_coordination"}
+            if "[t10-browser-abstain]" in prompt["you"]["goal"]:
+                action = {"kind": "stop"}
+            elif prompt["round"] == 1 and actor == "iris":
+                action = {
+                    "kind": "send_message",
+                    "recipient": "moss",
+                    "text": "browser-private-cedar",
+                }
+            elif prompt["round"] == 3:
+                action = {
+                    "kind": "choose_alternative",
+                    "alternative": {"iris": "cedar", "moss": "quartz", "vale": "reed"}[actor],
+                }
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        info.output_tools[0].name,
+                        {
+                            "action": action,
+                            "memory": "",
+                            "rationale": "T10 keyless development fixture.",
+                            "forecast": None,
+                        },
+                    )
+                ],
+                usage=RequestUsage(input_tokens=100, output_tokens=50),
+            )
         if "artifacts" in prompt or "read_artifact" in prompt.get("limits", {}).get("tools", []):
             return ModelResponse(
                 parts=[ToolCallPart(info.output_tools[0].name, artifact_response(prompt))],

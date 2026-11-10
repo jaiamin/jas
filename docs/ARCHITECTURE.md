@@ -7,7 +7,7 @@ remain ordered. Only explicit user actions create paid work. Restart pauses inte
 ## Storage
 
 SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. Startup creates
-schema v7 for fresh workspaces and rejects incompatible schemas. Local transactions
+schema v9 for fresh workspaces and rejects incompatible schemas. Local transactions
 commit each turn's input, decision, consequences, metrics and checkpoint together.
 
 | Record | Purpose / invariant |
@@ -171,11 +171,11 @@ parameters and measurements. `World` owns common turn bookkeeping. Concrete worl
 checkpoint initialization, legal-action schema capabilities and derived environment measures;
 `decisions.py` builds schemas from those capabilities without selecting environments.
 `checkpoints.py` declares shared observations/actions and each world's state. Snapshots
-contain only that world's state. Institution uses rule version 4.1.0; composition and artifact investigation use 1.0.0;
+contain only that world's state. Institution uses rule version 4.1.0; composition, artifact investigation and distributed coordination use 1.0.0;
 the other controlled worlds use 4.0.0. Incompatible
 checkpoints fail explicitly. `environments.py` contains the catalog and three games;
 `mechanisms.py` implements four fixed worlds; `composed.py` interprets resource compositions;
-`artifacts.py` owns the artifact investigation rules.
+`artifacts.py` owns artifact investigation; `distributed.py` reuses its ACL/version seam for three-person choice tasks.
 
 Profiles describe goals; parameterized permissions enforce action affordances. Per-turn
 schemas constrain requests, and world rules validate transitions again before committing.
@@ -236,7 +236,7 @@ structural object/requirement edits also use the existing JSON editor. The revie
 shows requirements and ACLs; the run view links versions and terminal results to
 recorded turns. Reusable mechanics extract/rebind ACL roles and retain complete
 immutable source snapshots, independently of population, model, harness and memory.
-DB 8, export 9, comparison 1 and `jas-environment-v5` are the current contract.
+DB 9, export 10, comparison 1 and `jas-environment-v6` are the current contract.
 Older database/library versions fail explicitly; preserve them with their source.
 No migration, compatibility reader or reset is performed. Controlled-world rules
 remain unchanged; generated execution/admission and model adjudication remain out
@@ -261,6 +261,58 @@ relay transitions run off the API event loop. Candidate self-tests grant no auth
 Other semantics, imports, generation and adjudication remain unsupported. Finite
 qualification makes no claim about arbitrary-program correctness or intelligence.
 See [the contract](EXTENSIONS.md) and [T16 evidence](research/T16_EXTENSION_ADMISSION.md).
+
+
+## Distributed information and consequential choice
+
+`distributed_coordination` has exactly three participants and 2–6 finite alternatives.
+Each participant is bound to a distinct immutable integer-valued evidence artifact;
+additional read ACLs define a shared-information control. A final choice earns its
+local value plus a declared bonus only if all three choose the same alternative.
+Abstention and an unchosen horizon yield zero. These are task values, not balances
+or a judgment of social success. The installed two-condition template changes only
+evidence readers; independent choices can have higher total value than agreement.
+
+Each condition declares activation order, conflict priority, directed routes in
+delivery order, a positive logical delay, alternatives and value-artifact bindings.
+Sequential actions settle immediately and advance one tick. Phased simultaneous
+actions see one frozen committed phase; no proposed actions, notes, reads or writes
+of another actor become visible before the barrier. Settlement follows conflict
+priority, then advances one tick. Physical requests may be serial. Provider latency
+never advances logical time or chooses a write winner. Each actor's choice/stop is
+personal and final; other active actors continue until their choices or the horizon.
+
+Expected-version writes validate against the frozen state. At settlement, a stale
+version or exhausted shared write allowance produces an explicit conflict without
+consuming a write. Pure harness reads do not advance time; read actions retain the
+version observed at proposal time even when a higher-priority write settles first.
+The existing ACL and source-reference projection applies to shared artifact history.
+Document text cannot grant permissions or satisfy a local value by narration.
+
+Mail is a separate World action addressed through an enabled directed route. It is
+queued at t and delivered after settlement at t + delay; equal-time messages follow
+route order then route-local sequence. IDs and counters are scoped to the parties.
+Recipients cannot see queued mail. Each actor sees only its own inbox/outbox, with
+the last 64 entries as persistent current mailbox state in every memory mode. The
+terminal checkpoint preserves future mail without advancing time to flush it.
+The round horizon, active roster, pending proposals/reads, artifacts, mail and scoped
+counters all survive committed-boundary restoration without provider calls.
+
+Availability and exposure remain distinct. Actual inbox entries, settled choices
+and authorized artifact results receive source paths; only exact content in a final
+bounded provider request plus a response confirms inclusion. A compacted receipt,
+plan or descriptive memory cannot deliver the source. Researcher inspection/export
+includes private state with its scope labeled. Design/review and run views disclose
+ordering, topology, timing, choices, payoffs and mail; the Researcher index and copied
+probes expose choice outcomes without creating financial results or changing a run.
+Replay validates observations, settlements, measurements, checkpoints and actual
+read/rejection receipts using recorded proposals, without model sampling.
+
+DB9/export10/libraryv6 include T10 distributed coordination and T16 admitted packages.
+The typed mechanics/default parameter changes canonical serialized designs, mechanics hashes and legal schemas. Capture1,
+comparison1, tool-using 2.0.0 and direct-action 1.0.0 remain current. No old-data
+alias, migration or reset is performed. This World adds neither a general distributed
+runtime nor the commitment/institution workflows of T11/T12.
 
 ### Playback, consequence replay, restoration and sampling
 
@@ -324,7 +376,7 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v8 (`jas-study`)
+Every Analysis has an indexed conversation identity. Study export v10 (`jas-study`)
 includes every revision and its runs, actual recorded rule versions, exact turn evidence
 and provider traces; it batches
 journal queries.
@@ -455,11 +507,17 @@ appear to have sampled a model when its evidence is subsequently analyzed.
 Coverage retains bounded observation window sizes; missing historical fields and
 unknown delivery stay null/unavailable. Artifact Worlds retain exact contents, versions,
 source references, write allowance, history and outcome. Utility is unavailable where
-no balances exist; success remains null before termination. Applying a different lens changes its
+no balances exist; success remains null before termination. Coordination retains settled
+choices, local payoffs, logical time and pending-work counts separately. Its declared
+choice value and all-match measure remain unavailable until terminal settlement;
+they are neither financial balances nor solo artifact success. Communication counts
+queued messages and mailbox deliveries separately. Only bounded input plus a provider
+receipt establishes inclusion; pending proposals and queued mail cannot supply it.
+Applying a different lens changes its
 requirements/account without rewriting the source analysis. Unsupported lens
 versions are rejected without conversion; historical analyses without a lens
-remain unassessed and cannot supply lens inputs. Database7/export8/capture1/
-comparison1/libraryv4 and harness contracts retain their existing meanings;
+remain unassessed and cannot supply lens inputs. Database9/export10/capture1/
+comparison1/libraryv6 and harness contracts retain their existing meanings;
 this additive versioned analysis JSON requires no migration or reset.
 
 Agent replies lead with a deterministic source-linked account, then expose claim
@@ -503,7 +561,7 @@ continues to settle its own consequences independently of model prose.
 
 `EnvironmentLibrary` owns reusable custom setups as versioned JSON records in a sibling
 `<database-stem>.environments` directory. An in-memory workspace uses a temporary library.
-The v4 library contract stores an `EnvironmentMechanics` definition and named configuration
+The v5 library contract stores an `EnvironmentMechanics` definition and named configuration
 examples, independently of questions, participant/model/harness assignments, condition arms,
 replication and analysis. Examples declare unbound mechanic roles; experiment authors bind
 those roles to their own participants. Memory remains an experiment/harness choice.
@@ -525,7 +583,7 @@ the experiment adapts those examples. Editing/deleting a reusable environment ne
 or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
 12 recent definitions as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
-call or run. Database schema 7, export 8 and library v4 reject incompatible versions explicitly; there is
+call or run. Database schema 9, export 10 and library v6 reject incompatible versions explicitly; there is
 no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 ### Failure-aware comparisons (T06)
@@ -558,7 +616,7 @@ Analysis submissions synchronously freeze cutoffs, dispositions, terminal metric
 eligibility, revision/hash and calculations before the server task runs. Progress,
 reconnect, failure and export preserve that snapshot across later run completion or
 new revisions. Analysis reads do not append participant evidence or provider calls.
-Study export v8 includes this versioned comparison contract and persisted analysis
+Study export v10 includes this versioned comparison contract and persisted analysis
 snapshots, changing earlier consumer expectations. T06 changes no database columns and
 requires no data reset; historical evidence is never backfilled with invented states.
 
@@ -608,7 +666,7 @@ artifact. Inspection/export/replay remain
 read-only. Exposure-conditioned descriptions are post-treatment selections, not
 automatic causal effects; inclusion establishes no attention, belief or intent.
 
-Exposure capture v1 was introduced in export v7; current export v8 retains the
+Exposure capture v1 was introduced in export v7; current export v10 retains the
 exposure chain and frozen analysis artifacts alongside artifact work. T09 advances
-the database to schema 7; exposure provenance alone does not alter controlled-world
+the database to schema 7; T10 extends the typed mechanics contract to schema 8; T16 advances it to schema 9 for pinned executable packages. Exposure provenance alone does not alter controlled-world
 settlement, prompts or checkpoint replay. No migration or reset is performed.

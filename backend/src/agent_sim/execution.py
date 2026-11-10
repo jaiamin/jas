@@ -286,7 +286,8 @@ class Engine:
         checkpoints = {0: world.snapshot()}
         consequence_record = (
             self.research.run(run_id)
-            if design.environment in {"artifact_workspace", "sealed_relay"}
+            if design.environment
+            in {"artifact_workspace", "sealed_relay", "distributed_coordination"}
             else None
         )
         checked_events = checked_measures = 0
@@ -331,7 +332,7 @@ class Engine:
         ):
             raise ValueError("World consequences contain unrecorded turn references")
         result = {"verified_turns": len(turns), "model_requests": 0, "rule_version": world.version}
-        if design.environment in {"artifact_workspace", "sealed_relay"}:
+        if design.environment in {"artifact_workspace", "sealed_relay", "distributed_coordination"}:
             reads = rejections = 0
             for activation in self.research.activations(run_id):
                 prior = checkpoints.get(activation["turn"] - 1)

@@ -14,6 +14,7 @@ from .checkpoints import (
 )
 from .composed import Composed
 from .decisions import DecisionRules
+from .distributed import DistributedCoordination
 from .mechanisms import Bargaining, Information, Institution, RenewableResource
 from .world import World
 
@@ -473,6 +474,10 @@ class EnvironmentDefinition:
 
 
 MEASURE_DESCRIPTIONS = {
+    "coordination_match": "One terminal 0/1: all three chose the same alternative; "
+    "abstention/horizon is unmatched. This is not a required cooperative outcome.",
+    "coordination_value": "Terminal sum of declared local choice values and any all-match "
+    "bonuses; unchosen actors receive zero. No behavioral motive is inferred.",
     "artifact_success": "One terminal binary outcome: submitted work satisfies all executable "
     "content and source-version requirements. Stop or exhausted horizon is unsuccessful; "
     "this is task mechanics, not a judgment of intelligence.",
@@ -521,6 +526,15 @@ MEASURE_DESCRIPTIONS = {
 
 
 CATALOG = {
+    "distributed_coordination": EnvironmentDefinition(
+        "distributed_coordination",
+        "Distributed information",
+        "Three participants choose using scoped artifacts, declared phases and addressed mail.",
+        DistributedCoordination,
+        "coordination_match",
+        ("artifacts", "coordination", "communication", "memory"),
+        ("coordination_match", "coordination_value"),
+    ),
     "artifact_workspace": EnvironmentDefinition(
         "artifact_workspace",
         "Artifact investigation",

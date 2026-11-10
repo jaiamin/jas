@@ -150,3 +150,24 @@ dependency-install ENOSPC, intermediate type/static errors and an ENOSPC lifecyc
 (3 failures/14 setup errors). Evidence records every wrapped attempt's actual exit and
 source stability; cancelled/unstable sources are never counted as qualification.
 No paid/live participant, generation, adjudication or held-out evaluation has run.
+
+
+### Accepted T10 reconciliation (after initial qualification)
+
+The latest documented accepted integration advanced to `f9e87c2` during T16. Its
+HANDOFF explicitly accepts T01–T10/T15/T19 after fresh review of `04e30a5`, merge
+`02879c3` and T19 repair `7aec3f5`. Only this documented accepted integration is
+merged; no provisional T13/T17/T18 source is included. The first merge returned
+exit1 with13 ordinary additive conflicts; raw before/conflicted source is retained.
+Both World branches, action unions, population/bindings, replay receipts and UI
+views are retained, with no shared engine duplication.
+
+T10's accepted DB8/export9/library5 now has a real persisted meaning. T16's added
+package/relay forms therefore advance the combined current contract atomically
+to **DB9/export10/library6**. Capture1/comparison1/tool2.0/direct1.0 and existing
+World rule versions keep their meanings. Public compatibility reds prove that
+DB8 and library5 were previously accepted; the green must reject them without
+mutation or migration. Prior DB8/export9/library5 results above identify the
+pre-reconciliation snapshot only. All final executable checks are repeated after
+this merge. The production smoke's direct Decision fixture now explicitly supplies
+its required nullable forecast, found during self-review before running that smoke.

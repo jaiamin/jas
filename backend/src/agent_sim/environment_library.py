@@ -39,6 +39,16 @@ def bind_artifacts(parameters: dict, bindings: dict[str, str]) -> None:
         obj["owner"] = bindings[obj["owner"]] if obj["owner"] else None
         for field in ("readers", "writers"):
             obj[field] = [bindings[key] for key in obj[field]]
+    coordination = parameters.get("coordination")
+    if coordination:
+        for field in ("turn_order", "conflict_order"):
+            coordination[field] = [bindings[key] for key in coordination[field]]
+        coordination["information"] = {
+            bindings[actor]: artifact for actor, artifact in coordination["information"].items()
+        }
+        for route in coordination["routes"]:
+            for field in ("sender", "recipient"):
+                route[field] = bindings[route[field]]
 
 
 def validate_definition(definition: EnvironmentMechanics) -> None:
@@ -101,7 +111,7 @@ def validate_definition(definition: EnvironmentMechanics) -> None:
             if len(keys) >= min(
                 12,
                 max(1, len(example.roles))
-                if definition.environment == "artifact_workspace"
+                if definition.environment in {"artifact_workspace", "distributed_coordination"}
                 else max(2, len(example.roles) + 1),
             ):
                 break
@@ -226,7 +236,7 @@ def use_environment(
         count = min(
             12,
             max(1, len(example.roles))
-            if source.definition.environment == "artifact_workspace"
+            if source.definition.environment in {"artifact_workspace", "distributed_coordination"}
             else 2
             if source.definition.environment == "sealed_relay"
             else max(2, len(example.roles) + 1),
@@ -314,8 +324,8 @@ class EnvironmentLibrary:
             payload = json.loads(self._path(key).read_text())
         except FileNotFoundError:
             raise NoResultFound() from None
-        if not isinstance(payload, dict) or payload.get("format") != "jas-environment-v5":
-            raise ValueError("Unsupported custom environment format; expected jas-environment-v5")
+        if not isinstance(payload, dict) or payload.get("format") != "jas-environment-v6":
+            raise ValueError("Unsupported custom environment format; expected jas-environment-v6")
         record = SavedEnvironment.model_validate(payload)
         if record.id != key or record.sha256 != digest(record.definition.model_dump()):
             raise ValueError("Custom environment has an invalid identity or content hash")

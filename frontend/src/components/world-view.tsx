@@ -1,4 +1,5 @@
 import { ArtifactView } from "@/components/artifact-view";
+import { CoordinationView } from "@/components/coordination-view";
 import { Empty } from "@/components/feedback";
 import { Check, Circle, Clock3 } from "@/components/icons";
 import { MechanismView } from "@/components/mechanism-view";
@@ -100,6 +101,8 @@ export function WorldView({
       </section>
     );
   }
+  if (run.design.environment === "distributed_coordination")
+    return <CoordinationView run={run} state={state} events={events} />;
   if (run.design.environment === "artifact_workspace")
     return <ArtifactView run={run} state={state} />;
   if (run.design.environment === "coordination") {

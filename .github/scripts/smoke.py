@@ -157,7 +157,7 @@ source = post(
 design = post("/api/design/use-environment", {"source": source, "example": "relay", "bindings": {}})
 sid = post("/api/studies", {"design": design})["id"]
 exported = json.loads(get(f"/api/studies/{sid}/export"))
-assert exported["version"] == 9
+assert exported["version"] == 10
 assert (
     exported["revisions"][0]["design"]["environment_source"]["definition"]["extension"] == package
 )
@@ -189,6 +189,7 @@ try:
                 "action": {"kind": "relay", "operation": operation},
                 "rationale": "Synthetic fixture",
                 "memory": "",
+                "forecast": None,
             }
         )
         receipt = world.step(actor, decision)

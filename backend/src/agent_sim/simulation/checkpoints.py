@@ -69,6 +69,19 @@ class ArtifactCheckpoint(Checkpoint):
     outcome: dict[str, Any] | None
 
 
+class DistributedCheckpoint(ArtifactCheckpoint):
+    logical_time: int
+    phase_actors: list[str]
+    pending_actions: dict[str, dict[str, Any]]
+    choices: dict[str, str | None]
+    pending_deliveries: list[dict[str, Any]]
+    inboxes: dict[str, list[dict[str, Any]]]
+    outboxes: dict[str, list[dict[str, Any]]]
+    message_sequences: dict[str, int]
+    proposal_count: int
+    pending_reads: dict[str, dict[str, Any]]
+
+
 class CommonsCheckpoint(Checkpoint):
     pending: dict[str, ActionPayload]
     promises: dict[str, Promise]
@@ -146,7 +159,7 @@ class Observation(TypedDict):
     pie: NotRequired[int]
     offer: NotRequired[Offer | None]
     proposer: NotRequired[str]
-    choices: NotRequired[dict[str, int]]
+    choices: NotRequired[dict[str, int] | dict[str, str | None]]
     stock: NotRequired[float]
     resources: NotRequired[list[dict[str, Any]]]
     artifacts: NotRequired[list[dict[str, Any]]]
@@ -155,3 +168,7 @@ class Observation(TypedDict):
     last_result: NotRequired[dict[str, Any] | None]
     artifact_history: NotRequired[list[dict[str, Any]]]
     relay: NotRequired[dict[str, Any]]
+    logical_time: NotRequired[int]
+    coordination: NotRequired[dict[str, Any]]
+    inbox: NotRequired[list[dict[str, Any]]]
+    outbox: NotRequired[list[dict[str, Any]]]
