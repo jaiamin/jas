@@ -213,6 +213,10 @@ Only T07's completed synthetic case outputs were losslessly compressed to recove
 137,001,589 bytes: 499 JSON files, with raw/gzip digests and decompression checks
 in `compression-index.jsonl`. This changes storage representation, never evidence
 content. No other worktree, process or shared cache was changed. The unchanged full rerun passed all **182** tests; its source, tests and configuration remained identical. Both failed and recovered attempts remain.
+A closure-only assertion also retained its failure when concurrent T08 status
+changed from queued to review in progress. Both statuses remain unaccepted;
+closure now records the status explicitly and excludes the provisional repair
+`de5556b3da67a8d276ee8fb6d098760911dd03b2`. No product input changed.
 The early shared-preview navigation before its server existed is also retained;
 both owned preview tabs are closed.
 
