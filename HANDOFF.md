@@ -1,3 +1,17 @@
+# Latest resource boundary — T14 production headroom has priority (2026-11-10)
+
+Original T11 owner removed only its confirmed disposable `.tools/bin/uv` and
+`.tools/impeccable`, recovering50,323,456 shared net bytes and observing
+278,347,776 bytes free. Root reverified both targets absent, exact HEAD/clean
+tracked status and original manifest hash unchanged. Receipt:
+`/home/agent/.t3/worktrees/workspace/t3-95376a5f/.tools/t11-tool-resource-cleanup.json`.
+Preserve this headroom for T14's final-source production qualification under its
+unchanged268,435,456-byte preflight. T17 setup/cache-consumer writes and even the
+next T12 prepared checkout remain deferred until that production window is
+released; source-only T17 work continues. Shared space is not reserved: acquire
+actual flock and measure before every job. Root source/dependency state and all
+logical restoration maps in the following section remain current.
+
 # Current coordination — published T16; source-only frontier and resource recovery (2026-11-10)
 
 Accepted application source remains T16 `fde4bce`; published integration checkpoint
