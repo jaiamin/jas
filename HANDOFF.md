@@ -64,6 +64,128 @@ T17 plan/transcript; none is product evidence. Current accepted contracts remain
 DB10/export11/library7/capture1/comparison1/tool2.0/direct1.0. T17 is UNACCEPTED.
 Preserve all prior history/maps/stash/custody and unread root `pbcopy`; inherited
 ignored helpers are data only. Historical root checkpoint follows unchanged.
+# Latest boundary — T14 production verified; T17 Python stage released (2026-11-10)
+
+T14 implementation remains unaccepted. Root independently checked its completed
+production receipt, all438 protected-excluded tracked archive entries,44 deployed
+backend files and53 assets against the qualified source/current build. Every
+recorded production/teardown command exited0; the exact container, volume and tag
+are absent and18127/18128 closed. Later differences are documentation and browser
+test formatting; application/build inputs remain equal. Image qualification covers
+World restoration/replay; Engine lifecycle/accounting remain separately attributed
+actual-worker HTTP evidence. Root added no fresh product execution or acceptance.
+Receipt: `.tools/research-harness/maintenance/T14-production-boundary-root-verification-20261110.json`.
+T14 is completing final parity, source attribution and all-attempt evidence closure.
+
+Production priority is released. The SAME T17 implementer has an explicit
+Python-only setup/first-API-red continuation: under shared flock require
+268,435,456 free bytes before normal frozen uv hardlink sync from T14's coordinated
+exact cache into a distinct T17 `.venv`; verify its prefix and editable import.
+After release, bounded backend TDD/static/type/regression slices may proceed under
+the unchanged134,217,728-byte floor, releasing between jobs and forecasting new
+outputs. Frontend/browser/production/new installs/paid work remain separately held.
+Root observed269,979,648 bytes at production verification, shared and unreserved.
+This is an authorized stage, not an observed setup/test result. Preserve owner
+caches, working root uv bootstrap, all evidence/maps and opaque configurations.
+T12 source-only checkout follows T17's setup boundary; T18 remains Ready. Root
+retains sole shared tracked writing. Accepted contracts remain DB10/export11/
+library7; T14's combined DB11/export12 remain provisional until fresh review.
+
+# Earlier boundary — Git objects preserved; production headroom restored (2026-11-10)
+
+Root completed bounded project Git storage maintenance under shared flock. All
+18,027 BEFORE object IDs, including unreachable objects, remain; all references,
+HEAD, protected stash and root index are identical. Three original packs and four
+new incremental packs were verified. Only redundant loose storage already in
+verified packs was removed; no Git gc/prune, ref/reflog expiry, worktree pruning,
+source snapshot or history rewrite. Object storage recovered55,390,208 shared net
+bytes; final measurement280,485,888. Root released flock and the temporary
+staging/commit hold. Exact before/after inventories and proof:
+`.tools/research-harness/maintenance/git-object-packing-20261110T145854Z/result.json`.
+Official Git docs GET403 is retained; installed2.47.3 command help supplied options.
+
+T14 has priority for final-source production under unchanged268,435,456-byte
+preflight; no new environment consumer or checkout may consume this window.
+Its post-merge DEVELOPMENT report observes63 lifecycle+61 analysis/admitted-world
++715 contract cases in segmented jobs,116 frontend units/static/clean build and
+five real HTTP browser cases. Those are implementer-reported, unaccepted checks;
+root adds no product execution or fresh acceptance. Worker/cancellation/export
+service repairs and unavailable-utility preservation require fresh integration
+review after completion. T17 preparation reached its useful boundary with four
+staged files and one unrun API red; implementation remains incomplete/held. Resume
+that same implementer after concrete normal-manager setup/test release. T12/T18
+remain Ready and unassigned; T20 waits. All prior maps and dependency-state notes
+below stay applicable. No paid/live/held-out work or new allocation.
+
+# Latest resource boundary — T14 production headroom has priority (2026-11-10)
+
+Original T11 owner removed only its confirmed disposable `.tools/bin/uv` and
+`.tools/impeccable`, recovering50,323,456 shared net bytes and observing
+278,347,776 bytes free. Root reverified both targets absent, exact HEAD/clean
+tracked status and original manifest hash unchanged. Receipt:
+`/home/agent/.t3/worktrees/workspace/t3-95376a5f/.tools/t11-tool-resource-cleanup.json`.
+Preserve this headroom for T14's final-source production qualification under its
+unchanged268,435,456-byte preflight. T17 setup/cache-consumer writes and even the
+next T12 prepared checkout remain deferred until that production window is
+released; source-only T17 work continues. Shared space is not reserved: acquire
+actual flock and measure before every job. Root source/dependency state and all
+logical restoration maps in the following section remain current.
+
+# Current coordination — published T16; source-only frontier and resource recovery (2026-11-10)
+
+Accepted application source remains T16 `fde4bce`; published integration checkpoint
+is `b0446d9ea54b2e49fe93fc6d7a2bcdea6341af7b`. Draft PR32 now accurately lists
+T01–T11/T13/T15/T16/T19 accepted, DB10/export11/library7, and remaining gates.
+The exact hosted body was reverified; no live/held-out claim or allocation changed.
+Root retains sole shared tracked writing. T14 is merging that accepted checkpoint
+in its own tree; combined DB11/export12 is provisional until fresh acceptance.
+
+T17 is active in source-only planning/oracles on branch
+`t3/sol-generation-admission`, worktree `t3-8fed193f`, port18129 reserved.
+T12 gets the next fresh isolated source-only assignment; T18 stays Ready. No new
+consumer is authorized to use T14 caches or install/run checks yet. T14 alone
+continues its released bounded verification envelope with shared flock/128MiB
+floor. Root coordinates each new dependency setup against measured extra peaks.
+
+Root reclaimed only its disposable pypdf tooling/generated54-file frontend build
+and its now-closed `.venv` after T16 returned ownership. **Root `.venv`, `frontend/node_modules` and
+`frontend/dist` are absent**; the working root uv bootstrap remains.
+Recreate root Python dependencies via normal frozen manager/cache coordination
+before later tests; verify editable imports resolve to this checkout. Other
+owners' environments/caches are unchanged. `.venv` cleanup receipt observed
+55,877,632 net bytes recovered and194,084,864 bytes available, shared/unreserved.
+
+Root's174 closed public research-download responses now resolve via
+`.tools/research-harness/maintenance/closed-root-research-20261110T144922Z/mapping.jsonl`,
+SHA256 `15c14908709d1f806e88f5a910984f72eea6c9fc3c29593dcc15fbbacfd70847`.
+Actual restoration verified exact bytes/size/mode/integer-ns for each before raw
+relocation. Source helpers, PDFs, notes and custody/indexes were excluded. The
+research data's logical bytes remain intact; restore needed raw paths through the
+map before reading. Observed recovery35,495,936 bytes; root frontend dependency
+cleanup separately recovered29,044,736 bytes, leaving232,783,872 shared/unreserved.
+Original T11 owner is reclaiming only two verified disposable tool installs; no
+recovery result is assumed yet. Docker cache is a separate filesystem and was
+not pruned. Receipts are in ignored maintenance storage-frontier.json.
+
+T17 froze an independently authored120-input revocable permit/refund oracle and
+one unrun inert contract API regression. This is a narrow declared finite-synthesis
+prerequisite, not independent proof of natural-language intent or universal worlds.
+Model candidate code/prose/self-tests cannot author or relax its admission oracle.
+Its initial setup/check forecast225–245MB and T14 production268,435,456-byte
+preflight remain held until measured headroom; preserve T14's acknowledged normal
+uv-cache reuse into distinct environments under flock, with checkout import proof.
+No new consumer/install/check grant has been issued. T12 source-only launch waits
+for the operational cleanup slot; T18 remains Ready. All paid/held-out work held.
+
+Five returned CLOSED root T11 browser/witness outputs now resolve losslessly via
+`.tools/research-harness/maintenance/closed-root-t11-browser-20261110T143738Z/mapping.jsonl`,
+SHA256 `a5396b49c5fdd69b3a36e6542289f112656327c88155c470716b46f2f881f7f5`.
+Actual restores verified bytes/hash/mode/integer-ns timestamps before removing raw
+copies; source/custody/indexes and prior maps were untouched. Keep this map along
+with the795-path root, closed-root-T11-recovery and closed-T07 maps. Reconstruct
+only needed logical files, never mass-decompress on this disk. All source snapshots
+retain header-first protected exclusions; original root `pbcopy` remains unread,
+configurations opaque and stash unchanged. Historical sections follow.
 
 # Root coordination — T16 independently verified; frontier advances (2026-11-10)
 

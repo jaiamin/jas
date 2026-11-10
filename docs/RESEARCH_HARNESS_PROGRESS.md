@@ -78,6 +78,47 @@ Setup/check/capture/service/browser/Docker remain explicitly held for T14's fina
 production window. Cache coordination is not a setup grant. Current contracts
 remain DB10/export11/library7; T17 is unaccepted. There is no paid/provider/held-out
 work or publication, and no new intelligence/benchmark/containment claim.
+### T14 production boundary verified; T17 backend stage released (2026-11-10)
+
+T14 remains unaccepted pending completed evidence closure and a fresh independent
+merger. Root verified438 protected-excluded archive inputs,44 deployed backend
+files,53 matching assets and actual owned-resource closure against its completed
+production receipt. No application/build bytes changed afterward. The image's
+World smoke and separately source-matched HTTP Engine witnesses retain their
+distinct scopes. Final parity/composer/evidence reports are implementer evidence,
+not fresh root product execution or ticket acceptance.
+
+T17's same implementer is released for normal coordinated Python-cache reuse
+into its distinct environment, with a256MiB under-lock setup preflight, import
+proof and first previously frozen API red. Bounded backend TDD may then continue
+under unchanged128MiB check floors; frontend/browser/production remain staged.
+T12 source-only preparation follows that setup boundary; T18 is Ready. See
+HANDOFF/storage-frontier for exact records, protected exclusions and cache paths.
+
+### Production headroom restored without changing Git history (2026-11-10)
+
+Verified bounded incremental object packing recovered55,390,208 shared net bytes;
+all18,027 object IDs, references, root index, HEAD and protected stash remain.
+No source/custody, history or reflog pruning occurred. Final280,485,888-byte
+measurement supports T14's unchanged256MiB production preflight; preserve that
+window before T17 setup/T12 checkout. T17's four-file preparation and unrun API
+regression are incomplete implementation, not review readiness. No new product
+check or paid/live/held-out claim is added by root maintenance. HANDOFF links the
+exact preservation/floor/pack verification evidence.
+
+### Published T16 and resource-aware frontier coordination (2026-11-10)
+
+Accepted T16/root verification is published as `b0446d9`; PR32's checklist,
+contracts, observed qualification and limits are current. T14 is independently
+merging accepted work; its next contract is provisional. T17 has begun isolated
+source planning/oracles; T12's isolated source-only launch is next and T18 remains
+Ready. No new dependency-cache consumer or heavy setup is authorized yet.
+Root reclaimed its own disposable tooling/build/closed Python environment and
+losslessly compacted five returned closed T11 outputs; HANDOFF records the new
+maps and absent root `.venv`/`frontend/node_modules`/`frontend/dist`. The existing
+bootstrap, owner caches,
+source/custody/indexes and all older maps stay intact. This step ran no product
+test or paid call; live/held-out gates remain open.
 
 ### Root verifies accepted T16 and advances the ready frontier (2026-11-10)
 
@@ -823,12 +864,12 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Integrated and accepted after fresh review repairs | `c357a3b`, `4ed18af`, `84867cc`; [report](research/T09_ARTIFACT_WORLD.md) |
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Accepted after fresh Standards/Spec review and T19 integration repairs | No-ff `02879c3`; repair `7aec3f5`; DB8/export9/library5 |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Accepted for documented deterministic scope after independent recovery review | Exact source `4aac5a9`; accepted frontier`8df6c59`; introduced DB9/export10/library6; [review](research/T11_RECOVERY_REVIEW.md) |
-| T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Ready; root chooses launch | — |
+| T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Ready; isolated source-only launch scheduled | No dependency setup/check allocation yet |
 | T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Accepted for deterministic scope; live competence unassessed | Exact no-ff `5af3fbb`; scoping repair `5e86dfa`; [report](research/T13_INTEGRATION_REVIEW.md) |
-| T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Isolated implementation in progress; unaccepted | Public-API DEVELOPMENT cases and UI qualification in progress; no paid allocation |
+| T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Evidence closure in progress; unaccepted | Production records independently verified; fresh merger follows completion; no paid allocation |
 | T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Integrated and accepted after fresh review repair | `fa1c825`, `6e1a7c8`; [report](research/T15_BASELINES.md) |
 | T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Accepted for finite deterministic DEVELOPMENT scope | Exact no-ff`40ef0e59`/second parent`475bfc73`; repair`55d1a8c`; separate Standards/Spec pass; [review](research/T16_INTEGRATION_REVIEW.md); DB10/export11/library7 |
-| T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | Ready after accepted T16 final completion; not started | T13/T16 prerequisites accepted; generation and held-out acceptance remain unverified |
+| T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | Python setup/first-red and bounded backend stage released; unaccepted | Same implementer, distinct venv and coordinated exact cache; no setup/test success yet claimed |
 | T18 | [#29](https://github.com/jaiamin/ass/issues/29) Inspect a declared fallible adjudication and replay its consequences | T09 | Ready; root chooses launch | — |
 | T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Accepted: structured calculations; prose unassessed | No-ff `7e8647f`; reporting repair `716a44b`; tests `d448ea5` |
 | T20 | [#31](https://github.com/jaiamin/ass/issues/31) Demonstrate the small-population generalization milestone | T11, T12, T14, T15, T17, T18, T19 | Waiting | — |
@@ -899,12 +940,12 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. Publish root-verified accepted T16 `fde4bce` and the documentary coordination
-   checkpoint to draft PR32; immediately link the PR. Preserve exact source,
-   no-ff/repair and qualification identities. Root owns shared tracked writing.
-2. Send the documented accepted SHA to isolated T14 for its normal merge and
-   actual-worker save/probe review. Launch fresh isolated T12 and T17 work within
-   concurrency/storage limits; T18 remains Ready for the next slot. Give each
+1. Accepted T16 and documentary coordination are published through `375877c`;
+   all five hosted checks passed at that published source. Publish later coherent
+   root documentation and immediately link PR32. Root owns shared tracked writing.
+2. T14 is completing evidence closure after production qualification. Resume T17's
+   released Python/first-red/backend stage and launch isolated T12 source work
+   after its setup boundary. T18 remains Ready for the next slot. Give each
    completed implementation a fresh sequential integration review. T20 waits on
    T12/T14/T17/T18. Do not poll delegates or alter their environments.
 3. Preserve immutable hardlinked evidence and all compression maps. Serialize
