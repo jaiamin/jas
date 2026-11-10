@@ -14,6 +14,8 @@ from .domain import (
     ResourcePrimitive,
     ResourceRules,
     Treatment,
+    WorkflowRules,
+    WorkItem,
 )
 
 NAMES = ["Alex", "Morgan", "Sam", "Jordan", "Casey", "Taylor"]
@@ -481,6 +483,101 @@ def reliance_template() -> Design:
     return Design.model_validate(value)
 
 
+def workflow_template() -> Design:
+    actors = [p.key for p in profiles()]
+    work = [
+        WorkItem(
+            key="prepare",
+            artifact="draft",
+            workers=actors[:2],
+            dependencies=[],
+            handoff_to=actors[2:4],
+            resource_cost=3,
+            duration=2,
+        ),
+        WorkItem(
+            key="release",
+            artifact="release",
+            workers=actors[2:4],
+            dependencies=["prepare"],
+            handoff_to=actors[4:],
+            resource_cost=2,
+            duration=1,
+        ),
+        WorkItem(
+            key="audit",
+            artifact="audit",
+            workers=actors[4:],
+            dependencies=[],
+            handoff_to=actors[:2],
+            resource_cost=4,
+            duration=1,
+        ),
+    ]
+    return Design(
+        title="Owned work and dependent handoffs",
+        question="How do material constraints affect work and acknowledged handoffs?",
+        environment="institutional_workflow",
+        profiles=[
+            p.model_copy(update={"goal": "Inspect the available work and choose."})
+            for p in profiles()
+        ],
+        seeds=[7],
+        rounds=12,
+        openai_reasoning_effort="low",
+        conditions=[
+            Treatment(
+                key=key,
+                name=name,
+                parameters=Parameters(
+                    artifacts=ArtifactRules(
+                        write_limit=6,
+                        objects=[
+                            ArtifactObject(
+                                key=w.artifact,
+                                name=w.artifact.title(),
+                                readers=w.workers,
+                                writers=w.workers,
+                                content={"draft": "unstarted"},
+                            )
+                            for w in work
+                        ],
+                    ),
+                    workflow=WorkflowRules(
+                        timing="phased_simultaneous",
+                        turn_order=actors,
+                        conflict_order=actors,
+                        routes=[
+                            MessageRoute(sender=a, recipient=b)
+                            for a in actors
+                            for b in actors
+                            if a != b
+                        ],
+                        delivery_delay=2,
+                        resource_stock=stock,
+                        work_items=work,
+                    ),
+                ),
+            )
+            for key, name, stock in [
+                ("scarce", "Seven material units", 7),
+                ("sufficient", "Nine material units", 9),
+            ]
+        ],
+        measures=["workflow_completion"],
+        limitations=[
+            "Ownership, artifact ACLs and acknowledged prerequisite handoffs govern work; "
+            "participant role labels and prose cannot change procedures.",
+            "Starting owned work appends a version, spends materials and schedules readiness "
+            "atomically. Delayed completion spends nothing further.",
+            "Six to twelve participants share declared logical time and conflict priority; "
+            "provider requests may execute serially. Completion is optional.",
+            "This finite work queue has no physical geometry or external execution. "
+            "Researcher inspection includes private records.",
+        ],
+    )
+
+
 def templates() -> list[dict[str, object]]:
     examples = [
         commons_template(),
@@ -494,5 +591,6 @@ def templates() -> list[dict[str, object]]:
         artifact_template(),
         distributed_template(),
         reliance_template(),
+        workflow_template(),
     ]
     return [{"id": design.environment, "design": design.model_dump()} for design in examples]

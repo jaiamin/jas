@@ -419,6 +419,11 @@ class ResearchTools:
                     if design.environment in {"distributed_coordination", "reliance_commitments"}
                     else {}
                 ),
+                **(
+                    {"workflow_outcome": final.get("outcome")}
+                    if design.environment == "institutional_workflow"
+                    else {}
+                ),
             },
         )
         assert digest(initial) == data["source_checkpoint_hash"]

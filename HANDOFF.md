@@ -1,3 +1,325 @@
+# T12 implementation complete; UNACCEPTED (2026-11-10)
+
+Same `t3-190f8b94` / `t3/institutional-workflow`. Qualified code checkpoint
+**5a8b5b78687d25b258b4acd6855a9fb1981c2616** includes normal exact accepted
+**0527e737d93786d0f5579d5a13827c472cf370fa** merge atde49947c. Combined
+**DB12/export13/library8**, no provisional T17/T18 or compatibility/reset.
+The [implementation report](docs/research/T12_IMPLEMENTATION_REPORT.md) records
+acceptance mapping, personal Standards/Spec, exact source/case attribution,
+all failed attempts and remaining separately held gates.
+
+Native03 PASSED at sourcea46f5e74: keyless409 leaves the entire summary/checkpoint
+and zero-request ledger unchanged; source pin/export13 survive second-lifetime
+reopen and zero-turn public replay. Distinct local World30-turn/restoration/
+every-checkpoint replay passes. Both native servers returned exactly-15 after
+lifespan completion, with no worker/listener and PIDs reaped. Assets2,951,120
+bytes/manifestd44aed8c are unchanged. Native01/02 remain FAILED, no product-red
+attribution. No non-root-container or live-competence claim.
+
+Final Ruff/explicit helper+backend ty pass. Both new accepted-cutoff HTTP cases
+and workflow lens pass separately. Attribution proves45/46 backend files equal
+the earlier qualified source; sole research.py change equals accepted0527.
+All253 frontend inputs equal the post8329 affected-unit/build source. Earlier
+125 units/three browser witnesses and5-run/22-turn current-contract qualification
+keep their actual source attribution. Frozen T01 CURRENT remains exit1/four v4
+failures; original bytes/scores unchanged, no retired-reference comparison.
+
+Personal Standards/Spec complete; no open implementation finding. Remaining:
+ROOT's fresh independent merger/acceptance and separately authorized larger
+milestone/paid/live/held-out/container/final-product work. Own evidence/env/data
+are retained; latest retained59,507,062 bytes before closure docs/receipts, below
+96MiB. Own18130/services/browser/flock closed. No publication or descendants.
+Return sole writing ownership to ROOT after the final normal-hook docs commit.
+
+# Historical T12 native-runtime attempts01/02 failed; corrected03 released (2026-11-10)
+
+Same incomplete/unaccepted implementation at5049f3d8643cc3b54199f21b98994d59b1089242.
+Exact accepted0527e737d93786d0f5579d5a13827c472cf370fa normally merged atde49947c.
+Ruff and explicit backend/helper ty PASS at sourceabbb6275; the initial manifest
+type error remains retained. Both new cutoff HTTP cases and the affected workflow
+lens pass separately at that source. Native02 correctly observed literal409,
+unchanged full summary/checkpoint, zero requests and export13/source pin, plus
+the distinct local30-turn World/restoration/replay. It FAILED at the first
+SIGTERM's incorrect exit0 expectation, before second lifetime/reopen. Both
+native01 and02 stay FAILED; no product-red attribution. Native02 raw HTTP/log/
+SQLite/assets/result remain untouched; shutdown completed and18130/lock released.
+
+Own installed Uvicorn __version__ and frozen lock both say0.54.0; its
+capture_signals restores handlers and re-raises the received SIGTERM after
+lifespan.shutdown. The corrected oracle is frozen in the T12 plan before repair.
+ROOT released ONE native03 after helper Ruff/ty and coherent checkpoint: require
+exact -SIGTERM for each deliberate shutdown, lifespan-completion log, reaped own
+server/no worker/listener, reopen/export/replay. Same floor+128MiB peak/16MiB job/
+96MiB cap; current retained57,547,028 bytes. No active own resource. Next repair/
+static/checkpoint, this single smoke, personal review and durable closure report.
+
+# Historical T12 native-runtime attempt01 failed; corrected retry released (2026-11-10)
+
+Same incomplete/unaccepted T12, branch `t3/institutional-workflow`, HEAD
+**43c2fa5bf5d47388a3222a61cf57fc9e47914e05**. Exact accepted
+**8329cfc7883053620b7dafcc6de351a9bf30ee25** is normally merged. Post-merge
+18 affected units, forced TypeScript and clean Vite pass at source
+**a4a2f9cf26ece8ab5d8c87eb22a994170e8ba823b91d9dfc2fd97da571558383**.
+Earlier F2 and backend qualification below remains attributed to its actual source.
+
+The ONE native-runtime attempt exited1 at HTTP Step409; the helper incorrectly
+expected asynchronous zero-budget failure. Source diagnosis: Engine preflights
+the configured model before scheduling; a keyless model raises ProviderFailure,
+mapped to409. The original response body was not captured, so its exact detail
+is not an observed claim. All raw failure/server/assets/SQLite/checkpoint output
+remains in `.tools/t12/evidence/native-runtime-01/`. The local30-turn World,
+JSON restoration and every-checkpoint replay completed; public export/reopen
+were not reached. No whole-smoke PASS or product-red attribution.
+
+Entry free1,272,860,672; after1,271,988,224; retained increment477,360 bytes,
+total51,431,110 within96MiB. Own18130/server/browser/lock are closed. ROOT was
+notified. ROOT released ONE corrected native-runtime-02, conditional on normal
+exact **0527e737d93786d0f5579d5a13827c472cf370fa** merge and helper Ruff/ty PASS.
+The corrected literal keyless oracle is frozen in the T12 plan; helper repair is
+prepared, unrun. Next: checkpoint/merge, static gates, one retry, then personal
+Standards/Spec and durable report. No installs/Docker/providers/paid/held-out/
+publication/descendants. Attempt01 remains FAILED after any repair.
+
+# Historical T12 frontend qualified; native-runtime stage released (2026-11-10)
+
+Same incomplete/unaccepted T12. Latest accepted eaa47bb3 was normally merged at
+694c6cdc; ROOT now supersedes it with exact8329cfc7883053620b7dafcc6de351a9bf30ee25.
+F1 passed once. F2 passed125 units/33 files, lint233, forced TypeScript (including
+workflow browser config), clean Vite, backend Ruff/ty and three separate keyless
+browser cases: mobile/light editor draft/save error/cancel, desktop/dark actual
+contention/pause/handoff/horizon/replay, mobile/light tool failure/recovery.
+The initial browser fixture's expected200 versus declared201 is retained as a test
+failure, without product-red attribution. All prior failures remain retained.
+
+Frontend browser/units source61a020b66c954898d3b79e15457791180c7d889a1deda0018556ae9303792629;
+forced types/ty sourceb17fb03d189d87fde604a727a7a7af60441aa03365886ba25f205f6fb3f62a7e.
+All46 backend source files match the earlier qualified ada1b8f2 manifest exactly;
+this is attribution, not a new full backend execution. Current96MiB cap retains
+~50.4MB. Own18130/browser/lock are closed. No provider/paid/held-out work.
+
+Next: coherent normal-hook checkpoint, exact8329cfc7 merge preserving histories,
+affected checks/build, then ONE newly released native-runtime smoke under ordinary
+floor+128MiB peak/16MiB output. Prepared unrun script is
+`.github/scripts/t12_native_smoke.py`; it uses actual public API plus model-free
+World/restoration/replay, fresh own SQLite and built assets, zero budget/provider
+requests, one server at a time on18130. Restart/teardown are explicit. No Docker,
+non-root-container or live-competence claim. Finish personal Standards/Spec and
+durable report before returning ownership to ROOT's fresh independent merger.
+
+# Historical T12 frontend source checkpoint; browser qualification outstanding (2026-11-10)
+
+Same incomplete/unaccepted T12 implementer. F1 passed once; F2 is released.
+The narrow workflow editor/view now renders actual materials, owned delayed work,
+blocked dependencies and selected-recipient handoffs. Artifact/mail/history stay
+behind disclosures. Population edits preserve six-to-twelve identities, orders,
+routes and bound workers. Tool participants can select authorized artifact reads;
+unsupported signals/reports/promises are absent. Every feature slice observed RED
+before its repair; the intermediate parse failure and all initial failures remain.
+Latest frontend source d12d7f834dfe3637b28a9b4425fe840ceceb90944f270186eda4a17cbbba751e
+passes lint231 files, forced TypeScript and29 affected units. Initial wrong-cwd
+lint and missing-catalogue TypeScript failures are retained. Build/browser unrun.
+Next: coherent normal-hook checkpoint, normal merge exact accepted
+dd48bf31792ea9132e81ddff3fcc6e429041e011, then clean build and bounded keyless
+browser witnesses on own18130. No active service/browser. F2 floor+128MiB,
+16MiB output/job,96MiB own cap continue; production/providers remain held.
+
+# Historical T12 backend checkpoint; staged frontend release (2026-11-10)
+
+Same branch `t3/institutional-workflow`, assigned `t3-190f8b94`, base HEAD
+**077cb76429334b569e960c265cc52436713f4ca8** normally merges exact accepted
+**fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd**. Normal Gitleaks passed. Combined
+**DB12/export13/library8** rejects both schema11 intermediates and library7;
+no T17/T18 merge. T12 remains **incomplete/unaccepted**.
+
+Backend DEVELOPMENT qualification includes actual HTTP all-six completion:
+54 turns/requests, three accepted handoffs, logical9, materials0/spent9/writes17,
+1,890 synthetic microdollars and exact zero-provider replay. Work/handoff/mail
+input receipts, cutoff research lens and copied sequential probe each observed
+red before green; the first lens repair failure remains retained. Pause/repeated
+controls/reopening, killed-process recovery, zero-send budget denial, unknown
+read delivery, compacted input and tool cancellation/timeout pass individually.
+
+Fresh independently literal current-contract qualification passed5 runs/22 turns/
+22 requests, complete bounded inputs/actions/every checkpoint/privacy/cutoffs,
+per-request integer reserve/settle ledgers and zero-call replay. Totals2200 input/
+1100 output tokens/770 synthetic microdollars/0 paid requests. Frozen T01 CURRENT
+execution retains exit1 and exactly four export-v4 failures/four false terminal
+flags,5 runs/22 turns/22 requests/98 HTTP operations. Original runner/cases/scores
+are unchanged. No historical comparator, parity or improvement claim: ROOT's
+historical raw/custody/maps were user-retired, and no reference was reconstructed.
+See [literal oracle](docs/research/T12_CURRENT_CONTRACT_ORACLE.md).
+
+Latest source identity **ada1b8f22ef0dd8c88710007d9b3ff68ad140893ee93138275bb2792b309a20a**:
+Ruff/ty pass;31 World cases pass (18 deselected); both HTTP provider-delay cases,
+funded-write-allowance denial, direct/tool workflow harnesses, immutable role pins,
+T10 sequential/phased mail and shared-write contention, T11 public accounting/
+replay, DB12 reopen/schema11 rejection, library prior-format rejection and replay
+corruption checks pass in separate bounded jobs. Provider/settlement primary error,
+cancellation and success-then-settlement-error checks pass. This is source-scoped
+implementer qualification, never an uninterrupted full backend suite or acceptance.
+The initial newest-test Ruff failure is retained, followed by style repair/pass.
+
+F1 attempt01 PASSED at e6d155fc: immediately-before1,678,426,112 free,
+after1,480,257,536. Own modules359,652,711 logical/426,446,848 allocated; private
+metadata176,781,414 logical/177,963,008 allocated. Source/committed lock/store
+metadata identity unchanged; all imports/links/bins own. No payload/copy/retry.
+F2 is now released; UI tracer unrun. Detailed receipt/forecast in the plan.
+
+ROOT released F1 ONE normal frozen-store pnpm12 setup with task-private XDG cache,
+shared immutable store and own frontend/node_modules. Require939,524,096 free
+under shared checks.lock immediately before install,768MiB transient forecast,
+512MiB environment/256MiB private metadata/4MiB receipt bounds. No offline/policy
+bypass/copies/shared-store mutation/downloaded payload or retry. F2 UI TDD/checks/
+bounded existing-browser witnesses are conditional on F1 PASS and own imports.
+F2 uses floor134,217,728+128MiB peak,16MiB new output/job,96MiB own retained cap
+(dependencies/cache inventoried separately). Current backend retained41.7MB before
+this checkpoint. Production/Docker/providers/paid/held-out/publication remain held;
+18130 is reserved only. No descendants or other-owner mutation.
+
+Own evidence/source objects/environment/verified scratch archives/maps remain.
+Historical failed recorder126/pytest1 with91 pass/two failures is still FAILED;
+compaction03 and warm attempt01 preflight125 remain rejected. Warm Python attempt02
+passed normal owner-authorized hardlink reuse. Every indirect capture keeps the
+invocation-local tracked/protected/symlink/descendant guard before payload reads.
+
+# Historical T12 execution HOLD; accepted-frontier merge source resolved (2026-11-10)
+
+Own coherent checkpoint **1aa7798a11aed36ef5f88e197dc6faec93ca49e8** was committed
+with the normal Gitleaks hook (no findings). Branch `t3/institutional-workflow`
+then normally merged exact accepted **e76ef124e01274f9b8ddccfa343c51351149c0ee**
+using `--no-ff --no-commit`. That attempt exited1 with five conflicts; complete
+before/conflict source, raw command/output and resolution strategies remain in
+`.tools/t12/evidence/accepted-frontier-merge-01/`. Both documentary histories and
+T14's accepted investigation export fields are preserved. No provisional T17.
+
+Source resolution uses the genuine combined **DB12/export13/library8**, rejecting
+both incompatible schema11 intermediates and libraryv7. Current contract callers,
+backend expectations, minimal frontend literal types/fixtures/e2e expectations,
+runtime smoke expectation and documentation are updated. No new UI feature,
+frontend check, reset, alias, migration, setup or paid call. Merge commit and
+combined-source checks are **unrun**. Current HEAD remains1aa7798a with MERGE_HEAD
+e76ef124; T12 is **incomplete/unaccepted**.
+
+Own tiny compaction03 required full524,288-byte peak and rejected125 under lock
+at125,407,232 free, before content/archive/deletion. Receipt:
+`.tools/t12/evidence/closed-scratch-03/preflight.json`. Originals/maps are intact.
+Root explicitly renewed HOLD on **all checks/captures/hooks/commits/setup/
+compaction** until measured headroom release. No retry. Only bounded source
+resolution/inspection is permitted. Remaining backend gates include source-linked
+work/mail/handoff exposure, accounting/lifecycle/replay regressions, discovery/
+probe/lens integration, full current-contract/frozen T01 parity and personal review.
+Frontend/browser/runtime remain separately held;18130 reserved only.
+
+# Historical T12 backend TDD checkpoint boundary (2026-11-10)
+
+Checkpoint boundary: last one-case `workflow-contract-green` passes role binding,
+immutable source pins and prior-library rejection with zero requests. Later own
+slices cover frozen reads, terminal horizons/all-accepted/withdrawal, both720-order
+claim/resource priorities,16 atomic denials, four privacy/memory modes, actual
+tool instructions and separate cancellation/timeout cases. Ruff/ty passed at an
+earlier source; combined-source qualification remains open. No full-suite claim.
+Failed overrun remains recorder126/pytest1,91 pass/two catalog failures. Separate
+repairs and verified own-scratch archives/maps preserve every attempt. See plan.
+
+Root now accepted **e76ef124e01274f9b8ddccfa343c51351149c0ee** (T14DB11/export12/
+library7), superseding2ad967f. Make this own incomplete checkpoint, then normal
+merge that exact SHA and reconcile distinct same-number contracts by advancing
+the combined contract; no aliases/migrations/resets, no provisional T17. Renewed
+envelope permits World≤0.5MiB or ONE HTTP≤2MiB per job, scratch≤4MiB before own
+verified compaction and total retained≤20MiB. All held stages remain held.
+
+Same assigned `t3-190f8b94`, branch `t3/institutional-workflow`, HEAD29af3413.
+Renewed exact warm offline setup attempt02 passed; net shared decrease3,862,528
+bytes, own `.venv` prefix/import verified, final205,537,280 free. Attempt01's125
+before uv is retained. No additional install/fallback. First frozen public HTTP
+tracer observed red before production edits. Tracer, handoff, delegation and
+addressed-mail slices subsequently passed individually; these are not a final
+combined regression qualification. Complete attempts/source attribution live in
+`.tools/t12/evidence/`; see [T12 plan](docs/research/T12_INSTITUTIONAL_WORKFLOW.md).
+
+Backend slices alone are released: shared flock134,217,728-byte floor, disabled
+bytecode,20MiB cumulative new evidence cap, lock released between jobs. Latest
+retained evidence7,376,858 bytes. Static/types/affected regressions remain unrun.
+Next: frozen read receipt/restoration, contention/atomic denials, terminal and
+harness/privacy/reuse/contract integration. Every indirect snapshot producer
+must receive the own protected-excluded tracked-only Git wrapper/preflight.
+Frontend/browser/services/Docker/new installs/paid/live/held-out stay held;18130
+reserved only. No descendants/publication; preserve all existing custody/maps.
+Only exact accepted2ad967f is a later merge target, never provisional T14/T17.
+
+# Historical T12 warm setup boundary — floor rejected before uv (2026-11-10)
+
+Root accepted preparation only and released one warm offline Python setup/first
+frozen API red, then bounded backend TDD under the unchanged ordinary128MiB
+floor. Owner-cache permission was explicitly granted; root proved exact project/
+lock and same-device cache equality. The narrower setup required201,326,592 free
+bytes under the shared actual flock; it did not authorize cold/network fallback.
+
+At2026-11-10T15:31:25Z the setup preflight observed **187,224,064 bytes** and
+exited **125**, short **14,102,528 bytes**, **before uv was invoked**. Receipt:
+`.tools/t12/setup/attempt-01.json`. Shared flock is released. No dependency manager
+ran, no `.venv` exists, imports were not attempted and the one frozen HTTP tracer
+is still **unrun**. No implementation or product/static/type/regression result.
+No automatic retry, foreign environment, owner mutation or cache cleanup.
+
+T12 remains **incomplete/unaccepted**, branch `t3/institutional-workflow`, HEAD
+`29af3413c12c8b14f24bc0faae39933fe56e344d`, with the same four preparation files
+staged (plan/HANDOFF/PROGRESS and one tracer). Root must coordinate headroom and
+renew the setup release before the observed-red slot. Latest explicitly accepted
+normal merge target is `2ad967f325ad2fb4c2d842323944dd01c69f07ef`, application
+T16/DB10/export11/library7. Do not merge the moving root ref or provisional T14/
+T17. Frontend/browser/services/Docker/new installs/provider/paid/held-out work is
+held;18130 is reserved only. All prior protected source/custody/maps stay intact.
+
+# T12 source-only preparation — unrun tracer; setup/test grant pending (2026-11-10)
+
+Fresh T12/#23 implementer owns only the T3-prepared isolated checkout
+`/home/agent/.t3/worktrees/workspace/t3-190f8b94`, branch
+`t3/institutional-workflow`, starting/current HEAD
+`29af3413c12c8b14f24bc0faae39933fe56e344d`. Linux/cwd/AGENTS/clean start and
+accepted ancestry were reviewed. Accepted application T16 `fde4bce` is included;
+later root commits are documentary. Preserve **DB10/export11/library7** and all
+accepted work. No provisional T14/T17 merge. No descendants or extra checkout.
+
+Durable acceptance, concrete new mechanism, independently specified literal
+DEVELOPMENT oracles, inherited/check attribution, footprint forecasts and next
+steps: [T12 plan](docs/research/T12_INSTITUTIONAL_WORKFLOW.md). One unrun tracer
+is prepared in `backend/tests/test_institutional_workflow.py`, using the actual
+public save/step/inspect/export/verify API and the existing deterministic provider
+boundary. It expects an owned intake start to append v2/batch17, debit materials
+7→4/spent3, retain due3 at logical2 and replay12 turns with zero calls. These are
+expectations, not observed results. No application implementation exists yet.
+
+T12 is **incomplete/unaccepted**, held at source-only preparation. No install,
+dependency-cache use, test/static/build check, capture, service, browser, Docker,
+model/paid/live request, held-out case, publication or issue/PR action occurred.
+No commit/hooks run at this stage. Reserve18130 only; it has not been launched.
+Researcher/planner stays Sol; model participants Luna, with no fallback/policy
+replacement or prescribed cooperative outcome.
+
+Root must provide the concrete setup/first-red grant and coordinate exact normal
+frozen-manager cache reuse into this distinct `.venv`. Forecast16–32MiB Python
+environment/metadata, conservative128MiB combined setup/temp/evidence allowance;
+proposed268,435,456-byte under-lock setup floor. T17's measured3,874,816-byte
+increment is historical context, not a prediction. Ordinary future heavy jobs
+use the shared checks.lock, actual free-space measurement and unchanged
+134,217,728-byte floor plus job peak, releasing between bounded jobs.
+Frontend/browser/production need separate grants and measured forecasts.
+
+Original root unread `pbcopy`, opaque configurations, protected stash, source/
+custody immutable hardlinks, lossless maps, root uv bootstrap and other owners'
+environments/processes remain untouched. Source review used tracked Git
+selection with invocation-local protected/untracked-name and symlink/descendant
+guards. Two read-only selector guards stopped before reads on an empty magic-
+excluded selection; explicit tracked paths with local exclusions resolved it.
+No inherited ignored helper was executed. Continue useful read-only source
+review while waiting; after release retain the first observed API red before
+any implementation, then proceed one meaningful vertical slice at a time.
+
+# Latest boundary — T14 production verified; T17 Python stage released (2026-11-10)
+
+<!-- Incoming accepted ROOT documentary continuity, exact fdfb5f7a. -->
+
 # Current user direction and evidence retirement (2026-11-10)
 
 ROOT's first repeatable native HTTP runtime benchmark passes on accepted0527e737
@@ -66,6 +388,9 @@ Git selection and honest failures, plus independently frozen current-contract
 full-input/action/checkpoint/privacy/replay/integer-ledger qualification and
 affected regressions. No historical zero-regression/improvement claim is possible
 without the deleted input. This policy applies to remaining tickets/reviews/T20.
+
+<!-- End imported documentary continuity. -->
+
 
 # T14 independent recovery closure accepted locally (2026-11-10)
 
@@ -4101,4 +4426,3 @@ unavailable/no owned tab. Root independently verified the production source/asse
 and teardown, adding no product execution or T14 acceptance. Next: root's fresh
 integration merger/review. No push/PR/issue/watch was performed here.
 Historical handoffs below remain preserved.
-

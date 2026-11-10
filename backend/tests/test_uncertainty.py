@@ -163,7 +163,7 @@ def test_missing_arm_preserves_matrix_and_bounds_without_inventing_outcomes(
     assert failed["status"] == "failed" and failed["reason"]
     assert failed["metrics"] == {}
     exported = client.get(f"/api/studies/{sid}/export").json()
-    assert exported["version"] == 12
+    assert exported["version"] == 13
     assert exported["study"]["comparison"] == comparison
     assert exported["study"]["sha256"] == study["sha256"]
     for rid, record in before.items():
@@ -404,7 +404,7 @@ def test_execution_failure_before_provider_sending_is_attempted_without_spend(
     for rid in runs.values():
         assert client.post(f"/api/runs/{rid}/control", json={"action": "pause"}).status_code == 200
     paused = client.get(f"/api/studies/{sid}").json()
-    assert [
-        (c["attempted"], c["interrupted"])
-        for c in paused["comparison"]["conditions"]
-    ] == [(1, 1), (0, 1)]
+    assert [(c["attempted"], c["interrupted"]) for c in paused["comparison"]["conditions"]] == [
+        (1, 1),
+        (0, 1),
+    ]

@@ -20,6 +20,7 @@ from ..domain import (
     WaitCoordination,
     WriteArtifact,
 )
+from .addressed import deliver_messages, queue_message
 from .artifacts import ArtifactWorkspace
 from .checkpoints import DistributedCheckpoint, Observation
 
@@ -169,37 +170,7 @@ class DistributedCoordination(ArtifactWorkspace):
         )
 
     def deliver(self) -> list[Event]:
-        s = self.checkpoint
-        route_order = {(r.sender, r.recipient): i for i, r in enumerate(self.coordination.routes)}
-        ready = sorted(
-            (row for row in s["pending_deliveries"] if row["due_at"] <= s["logical_time"]),
-            key=lambda row: (
-                row["due_at"],
-                route_order[row["sender"], row["recipient"]],
-                row["sequence"],
-            ),
-        )
-        events = []
-        for row in ready:
-            delivered = {**row, "delivered_at": s["logical_time"]}
-            s["inboxes"][row["recipient"]].append(copy.deepcopy(delivered))
-            for sent in s["outboxes"][row["sender"]]:
-                if sent["id"] == row["id"]:
-                    sent["delivered_at"] = s["logical_time"]
-            events.append(
-                Event(
-                    kind="message_delivered",
-                    actor=row["sender"],
-                    target=row["recipient"],
-                    visibility="private",
-                    text=row["text"],
-                    data=delivered,
-                )
-            )
-        s["pending_deliveries"] = [
-            row for row in s["pending_deliveries"] if row["due_at"] > s["logical_time"]
-        ]
-        return events
+        return deliver_messages(self.checkpoint, self.coordination.routes)
 
     def settle_commitment_action(self, actor: str, decision: Decision) -> Event | None:
         return None
@@ -348,28 +319,7 @@ class DistributedCoordination(ArtifactWorkspace):
                     data=row,
                 )
             elif isinstance(action, SendMessage):
-                route = f"{participant}:{action.recipient}"
-                number = s["message_sequences"].get(route, 0) + 1
-                s["message_sequences"][route] = number
-                mail = {
-                    "id": f"{route}:{number}",
-                    "sequence": number,
-                    "sender": participant,
-                    "recipient": action.recipient,
-                    "text": action.text,
-                    "sent_at": s["logical_time"],
-                    "due_at": s["logical_time"] + self.coordination.delivery_delay,
-                    "delivered_at": None,
-                }
-                s["pending_deliveries"].append(copy.deepcopy(mail))
-                s["outboxes"][participant].append(copy.deepcopy(mail))
-                event = Event(
-                    kind="message_queued",
-                    actor=participant,
-                    visibility="private",
-                    text="Addressed message queued.",
-                    data=mail,
-                )
+                event = queue_message(s, participant, action, self.coordination.delivery_delay)
             else:
                 event = Event(
                     kind="coordination_wait",

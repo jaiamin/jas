@@ -21,6 +21,12 @@ import type { Environment, EnvironmentId } from "@/lib/types";
 
 const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
   {
+    institutional_workflow: {
+      observes:
+        "Six to twelve participants see owned work, prerequisite status, finite materials, permitted artifact versions and their addressed inbox. Contents and private memory follow actor permissions.",
+      enforces:
+        "Exclusive claims, declared delegation, accepted prerequisites and selected-recipient handoffs. A work start atomically spends materials and a write; completion and mail follow logical time. Conflict priority is explicit, and prose cannot change procedures.",
+    },
     reliance_commitments: {
       observes:
         "Four participants have local values, actor-scoped evidence, private commitment opportunities and addressed mail. Only a voluntary recipient can entrust its declared artifact's read access to the promisor.",

@@ -6,8 +6,10 @@ import type {
   Environment,
   EnvironmentId,
   ParticipantHarness,
+  Profile,
   ResourcePrimitive,
   TaskDefinition,
+  WorkflowRules,
 } from "./types";
 
 export function participantHarness(
@@ -60,6 +62,21 @@ export function removeProfile(design: Design, key: string): Design {
       ),
       parameters: {
         ...condition.parameters,
+        workflow: condition.parameters.workflow
+          ? {
+              ...condition.parameters.workflow,
+              turn_order: condition.parameters.workflow.turn_order.filter(
+                (actor) => actor !== key,
+              ),
+              conflict_order:
+                condition.parameters.workflow.conflict_order.filter(
+                  (actor) => actor !== key,
+                ),
+              routes: condition.parameters.workflow.routes.filter(
+                (route) => route.sender !== key && route.recipient !== key,
+              ),
+            }
+          : null,
         composition: condition.parameters.composition
           ? {
               ...condition.parameters.composition,
@@ -114,11 +131,19 @@ export function changeEnvironment(
   environment: Environment,
 ): Design {
   const profiles = [...design.profiles];
+  const workflow = environment.key === "institutional_workflow";
   const reliance = environment.key === "reliance_commitments";
   const distributed =
     environment.key === "distributed_coordination" || reliance;
-  if (distributed) {
-    while (profiles.length < (reliance ? 4 : 3)) {
+  if (distributed || workflow) {
+    while (
+      profiles.length <
+      (workflow
+        ? Math.max(6, environment.source.definition.examples[0].roles.length)
+        : reliance
+          ? 4
+          : 3)
+    ) {
       let n = profiles.length + 1;
       while (profiles.some((profile) => profile.key === `agent-${n}`)) n++;
       profiles.push({
@@ -131,11 +156,12 @@ export function changeEnvironment(
     }
   }
   const coordination = distributedMechanics({ ...design, profiles }, reliance);
+  const work = workflow ? workflowMechanics(profiles, environment) : null;
   return {
     ...design,
     profiles,
     environment: environment.key,
-    environment_source: null,
+    environment_source: workflow ? environment.source : null,
     measures: environment.measures.slice(0, 3),
     tasks: environment.key === "coordination" ? design.tasks : [],
     conditions: design.conditions.map((condition) => ({
@@ -148,6 +174,7 @@ export function changeEnvironment(
               "artifact_workspace",
               "distributed_coordination",
               "reliance_commitments",
+              "institutional_workflow",
             ].includes(environment.key) || tool !== "read_artifact",
         ),
       },
@@ -157,14 +184,17 @@ export function changeEnvironment(
           environment.key === "sealed_relay"
             ? condition.parameters.relay
             : null,
-        artifacts: distributed
-          ? coordination.artifacts
-          : environment.key === "artifact_workspace"
-            ? (condition.parameters.artifacts ??
-              newArtifactRules(design.profiles[0].key))
-            : null,
+        artifacts: work
+          ? work.artifacts
+          : distributed
+            ? coordination.artifacts
+            : environment.key === "artifact_workspace"
+              ? (condition.parameters.artifacts ??
+                newArtifactRules(design.profiles[0].key))
+              : null,
         coordination: distributed ? coordination.coordination : null,
         commitments: reliance ? coordination.commitments : null,
+        workflow: work?.workflow ?? null,
         composition:
           environment.key === "composed"
             ? (condition.parameters.composition ?? {
@@ -183,6 +213,7 @@ export function changeEnvironment(
 }
 
 export function minimumParticipants(environment: Design["environment"]) {
+  if (environment === "institutional_workflow") return 6;
   if (environment === "sealed_relay") return 2;
   if (environment === "reliance_commitments") return 4;
   if (environment === "distributed_coordination") return 3;
@@ -191,6 +222,54 @@ export function minimumParticipants(environment: Design["environment"]) {
   )
     ? 2
     : 1;
+}
+
+function workflowMechanics(
+  profiles: Profile[],
+  environment: Environment,
+): {
+  artifacts: ArtifactRules;
+  workflow: WorkflowRules;
+} {
+  const example = environment.source.definition.examples[0];
+  const artifacts = structuredClone(example.parameters.artifacts);
+  const rules = structuredClone(example.parameters.workflow);
+  if (!artifacts || !rules)
+    throw new Error("Workflow example requires work and artifact rules");
+  const bindings = new Map(
+    example.roles.map((role, index) => [role, profiles[index].key]),
+  );
+  const bind = (role: string) => {
+    const key = bindings.get(role);
+    if (!key) throw new Error("Workflow example has an unbound participant");
+    return key;
+  };
+  const extra = profiles.slice(example.roles.length).map((p) => p.key);
+  return {
+    artifacts: {
+      ...artifacts,
+      objects: artifacts.objects.map((obj) => ({
+        ...obj,
+        owner: obj.owner === null ? null : bind(obj.owner),
+        readers: obj.readers.map(bind),
+        writers: obj.writers.map(bind),
+      })),
+    },
+    workflow: {
+      ...rules,
+      turn_order: [...rules.turn_order.map(bind), ...extra],
+      conflict_order: [...rules.conflict_order.map(bind), ...extra],
+      routes: rules.routes.map((r) => ({
+        sender: bind(r.sender),
+        recipient: bind(r.recipient),
+      })),
+      work_items: rules.work_items.map((w) => ({
+        ...w,
+        workers: w.workers.map(bind),
+        handoff_to: w.handoff_to.map(bind),
+      })),
+    },
+  };
 }
 
 function distributedMechanics(

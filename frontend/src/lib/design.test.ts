@@ -1,7 +1,13 @@
 import { expect, test } from "vitest";
 import type { Environment } from "@/lib/types";
 import { catalog, design } from "@/test/fixtures";
-import { changeEnvironment, removeProfile, removeTask } from "./design";
+import { workflowRun } from "@/test/workflow";
+import {
+  changeEnvironment,
+  minimumParticipants,
+  removeProfile,
+  removeTask,
+} from "./design";
 
 test("removing an agent cleans dependent overrides and authorities without mutating the draft", () => {
   const changed = removeProfile(design, "a");
@@ -92,5 +98,74 @@ test("switching to reliance keeps existing agents and binds four real participan
   const left = changeEnvironment(changed, { ...environment, key: "commons" });
   expect(left.conditions[0].parameters.commitments).toBeNull();
   expect(left.conditions[0].parameters.coordination).toBeNull();
+  expect(design.profiles).toHaveLength(2);
+});
+
+test("workflow switching binds the installed example to six real agents and clears it when leaving", () => {
+  const source = {
+    ...catalog.environments[0].source,
+    definition: {
+      ...catalog.environments[0].source.definition,
+      environment: "institutional_workflow" as const,
+      examples: [
+        {
+          key: "scarce",
+          name: "Seven units",
+          roles: ["alder", "birch", "cedar", "dune", "elm", "fern"],
+          tasks: [],
+          parameters: workflowRun.parameters,
+        },
+      ],
+    },
+  };
+  const environment = {
+    ...catalog.environments[0],
+    key: "institutional_workflow" as const,
+    source,
+  };
+  const changed = changeEnvironment(design, environment);
+  expect(minimumParticipants("institutional_workflow")).toBe(6);
+  expect(changed.profiles.map((p) => p.key)).toEqual([
+    "a",
+    "b",
+    "agent-3",
+    "agent-4",
+    "agent-5",
+    "agent-6",
+  ]);
+  const rules = changed.conditions[0].parameters.workflow;
+  expect(rules?.turn_order).toEqual([
+    "a",
+    "b",
+    "agent-3",
+    "agent-4",
+    "agent-5",
+    "agent-6",
+  ]);
+  expect(rules?.conflict_order).toEqual([
+    "b",
+    "a",
+    "agent-4",
+    "agent-3",
+    "agent-6",
+    "agent-5",
+  ]);
+  expect(rules?.work_items[0]).toMatchObject({
+    workers: ["a", "b"],
+    handoff_to: ["agent-3", "agent-4"],
+    resource_cost: 3,
+    duration: 2,
+  });
+  expect(rules?.routes).toEqual([{ sender: "agent-5", recipient: "agent-6" }]);
+  expect(changed.conditions[0].parameters.artifacts?.objects[0]).toMatchObject({
+    readers: ["a", "b"],
+    writers: ["a", "b"],
+  });
+  expect(changed.environment_source).toEqual(source);
+  expect(
+    changeEnvironment(changed, catalog.environments[0]).conditions[0].parameters
+      .workflow,
+  ).toBeNull();
+  expect(workflowRun.parameters.workflow.turn_order[0]).toBe("alder");
   expect(design.profiles).toHaveLength(2);
 });

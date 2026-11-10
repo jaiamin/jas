@@ -354,6 +354,7 @@ class Engine:
             self.research.run(run_id)
             if design.environment
             in {
+                "institutional_workflow",
                 "artifact_workspace",
                 "sealed_relay",
                 "distributed_coordination",
@@ -404,6 +405,7 @@ class Engine:
             raise ValueError("World consequences contain unrecorded turn references")
         result = {"verified_turns": len(turns), "model_requests": 0, "rule_version": world.version}
         if design.environment in {
+            "institutional_workflow",
             "artifact_workspace",
             "sealed_relay",
             "distributed_coordination",

@@ -11,7 +11,65 @@ export type EnvironmentId =
   | "artifact_workspace"
   | "sealed_relay"
   | "distributed_coordination"
-  | "reliance_commitments";
+  | "reliance_commitments"
+  | "institutional_workflow";
+
+export interface WorkItem {
+  key: string;
+  artifact: string;
+  workers: string[];
+  dependencies: string[];
+  handoff_to: string[];
+  resource_cost: number;
+  duration: number;
+}
+export interface WorkflowRules {
+  timing: "sequential" | "phased_simultaneous";
+  turn_order: string[];
+  conflict_order: string[];
+  routes: { sender: string; recipient: string }[];
+  delivery_delay: number;
+  resource_stock: number;
+  work_items: WorkItem[];
+}
+export interface WorkRecord {
+  owner: string | null;
+  status:
+    | "unclaimed"
+    | "claimed"
+    | "in_progress"
+    | "ready"
+    | "handed_off"
+    | "accepted";
+  due_at: number | null;
+  ready_at?: number;
+  artifact_version: number | null;
+  handoff: {
+    sender: string;
+    recipient: string;
+    version: number;
+    sent_at: number;
+    accepted_at: number | null;
+  } | null;
+}
+export interface WorkflowOutcome {
+  status: "all_accepted" | "withdrawn" | "horizon";
+  accepted: string[];
+  unfinished: string[];
+}
+export type WorkflowAction =
+  | { kind: "claim_work"; work: string }
+  | {
+      kind: "perform_work";
+      work: string;
+      expected_version: number;
+      content: ArtifactObject["content"];
+      sources: ArtifactReference[];
+    }
+  | { kind: "delegate_work"; work: string; recipient: string }
+  | { kind: "handoff_work"; work: string; recipient: string; version: number }
+  | { kind: "accept_handoff"; work: string; version: number }
+  | { kind: "wait_workflow" };
 
 export interface CommitmentOpportunity {
   key: string;
@@ -148,7 +206,7 @@ export interface CompositionRules {
   controllers_first: boolean;
 }
 export interface SavedEnvironment {
-  format: "jas-environment-v7";
+  format: "jas-environment-v8";
   id: string;
   revision: number;
   updated: string;
@@ -202,6 +260,7 @@ export interface Parameters {
   relay: { submitter: string; reviewer: string; docket: string } | null;
   coordination: DistributedRules | null;
   commitments: CommitmentRules | null;
+  workflow: WorkflowRules | null;
   resource_schedule: { round: number; endowment: number }[];
 }
 export interface Profile {
@@ -526,6 +585,7 @@ export type Action =
   | ArtifactAction
   | CoordinationAction
   | CommitmentAction
+  | WorkflowAction
   | { kind: "relay"; operation: "lodge" | "release" | "wait" | "stop" };
 export interface Decision {
   action: Action;
@@ -609,8 +669,13 @@ export interface State {
         reason: "released" | "stopped" | "exhausted" | "horizon";
       }
     | CoordinationOutcome
+    | WorkflowOutcome
     | null;
   logical_time?: number;
+  resource_stock?: number;
+  resource_spent?: number;
+  work?: Record<string, WorkRecord>;
+  work_history?: Record<string, unknown>[];
   choices?: Record<string, string | null>;
   commitments?: Record<string, CommitmentRecord>;
   choice_times?: Record<string, number>;
