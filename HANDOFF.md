@@ -1,5 +1,124 @@
 # JAS handoff
 
+## Current task: evidence-led harness and simulation redesign (2026-11-10)
+
+**Implementation is paused at the user's requested research/plan checkpoint.**
+The user challenged the initial shallow review and asked for solid empirical
+evidence, including Olam Labs, before implementation. Do not resume production
+work automatically after this checkpoint. Earlier sections describe prior tasks.
+
+Latest steering: user explicitly invoked **grill-with-docs** to interview and plan
+first. Read its composed `grilling` and `domain-modeling` skills. Track the decision
+tree and answers in `docs/research/DESIGN_INTERVIEW.md`; first-round decisions are
+unsupported mechanics, adjudication authority, autonomous-investigation scope and
+participant baseline. **All four are now accepted:** the user explicitly chose
+the recommendations. They also require (1) equal participant-harness attention
+for planning/retrieval/investigation/verification, (2) separate validity checks
+for uncertainty/failure selection/exposure/baselines/claim support, (3) isolated
+probe copies and independent world authority, and (4) meaningful small-population
+validation before dedicated 1,000-agent scaling. Record these as requirements,
+not open questions or optional polish. Glossary updated; accepted boundary and
+participant-factor decisions are in `docs/adr/0001-*` and `0002-*`.
+
+**Q5–Q7 are also accepted:** user answered “yes to all.” The small milestone is
+solo evidence seeking, three-agent distributed information, four-agent reliance/
+commitments and a 6–12-agent institutional workflow. Participants choose when to
+plan/retrieve/investigate/verify within budgets; direct-action controls and
+ablations remain. At least one held-out genuinely absent mechanic must be
+generated and pass independent checks before scaling. Do not ask these again.
+The consolidated plan discloses remaining reversible execution/UI defaults;
+no further product-question frontier is open for this milestone. Present the
+final concise plan and confirm shared understanding as required by the invoked
+grilling skill before beginning production work.
+Two new read-only agents completed participant/validity inspections without
+edits, providers or tests. Facts: current participant policy is still single-call;
+preflight copy isolation is not generated-code isolation; completed-only estimates
+lack full selection assessment; citation checks enforce scope, not entailment.
+
+An additional read-only inventory found Docker/bubblewrap CLIs but no app runner
+or isolation runtime in the production image. Availability is not containment
+evidence. The first implementation checkpoint must prove fail-closed,
+credential-free isolation under permitted runtimes; failure keeps generation
+disabled and its gate unpassed. No host security/mount changes or credential
+expansion are allowed. Inventory changed no settings and executed no extensions.
+
+Workspace: isolated Linux Docker Sandbox,
+`/home/agent/.t3/worktrees/workspace/t3-fdf9bdeb`; branch
+`feat/research-harness`, base `50f705b` (latest origin/main when pulled).
+HEAD now includes the research-only documentation checkpoint.
+Research-only documentation checkpoint; no pushes or PR. Paused production
+changes are excluded from that checkpoint. Assigned checkout; no additional worktrees.
+
+User constraints: study AI-agent behavior, not human prediction; support one
+agent through 1,000 individually active agents where the question warrants it.
+Keep Pydantic AI; researcher/assistant/planner GPT-6.1 Sol, participants GPT-6
+Luna; future mixed-model/harness assignments must remain separate from worlds.
+Preserve current UI appearance where possible. Cost alone must not exclude
+large populations. Fresh Sol benchmark authorization is at most $10 total;
+**no paid calls have been made** during this task. A saved proposal/chat does
+not authorize paid participant execution. Do not reuse historical frozen
+benchmark families or claim new-source scores from historical checks.
+
+Research artifacts:
+- `docs/research/RESEARCH_DIRECTION.md`: current synthesis and proposed sequence.
+- `docs/RESEARCH_HARNESS_PLAN.md`: revised durable plan and acceptance criteria;
+  supersedes the initial universal-interpreter/mandatory-endpoint checklist.
+- `docs/research/ENVIRONMENT_REPRESENTATIONS.md`: full-methods/source review.
+- `docs/research/BEHAVIOR_AND_VALIDITY.md`: agent behavior, constructs and inference.
+- `docs/research/HARNESS_EVIDENCE.md`: researcher alternatives and evaluation.
+- `docs/research/COMPANIES_AND_TOOL_WORLDS.md`: Olam, tool-worlds, Petri/Bloom.
+- `docs/research/COMPANY_VALIDATION.md`: current Societies papers/code, Aaru,
+  Simile, Olam scheduling/internal-scale qualifications.
+- `docs/research/RESEARCH_REVIEW.md`: independent challenge and five source checks.
+- `docs/AGENT_RESEARCH_SOURCES.md`: explicitly preliminary survey with corrections.
+
+Main revision: one small declarative DSL is not justified as a universal world
+ontology. Prototype the existing controlled worlds and a real artifact/tool
+world through a revised existing `World` seam. Separate reusable environments,
+participant systems, experiment revisions, run evidence and analysis lenses.
+Timing is experimental semantics; sequential/simultaneous/event-driven choices
+are question-dependent. Module composition must demonstrate atomic effects,
+shared clock/identity/permissions and consistent restoration. Preserve complete
+checkpoints and exact action replay; playback-only external adapters are not
+admitted by this proposal. Lenses require captured-evidence eligibility and
+unknowns. Evaluate valid simple designs as well as rich ones.
+
+Company correction: current `societies.ai/publications` and research papers work.
+Initial 404s were a retrieval gap. Their public benchmark is substantial but
+its synthetic respondents do not interact; do not confuse it with validated
+multi-agent dynamics. Olam has useful persistent tool sessions and world/score
+separation, mixed phase timing and explicit fork limitations; its public methods
+do not independently validate internal multi-thousand-agent claims.
+
+Current-code findings: 2–12 profiles, 1–100 rounds, fixed action vocabulary;
+`EnvironmentLibrary` stores full designs. Execution restores full world state
+per decision; full-population observations, memory fan-out, repeated snapshots
+and eager evidence materialization need measured redesign for scale. Current
+provider accounting covers one request at a time; multi-request loops must
+reserve and settle every request separately.
+
+Paused preliminary code: `backend/src/agent_sim/assistants.py` has a small early
+research-tool prompt/type edit; untracked `backend/src/agent_sim/research_tools.py`
+is incomplete. These predate the research pause, are unverified, and mention an
+unimplemented interpreter. They must not be treated as approved or functioning
+architecture. No production edits were made during the deeper review. No tests
+or live benchmarks have run for those edits. No app services/browser sessions
+were started for this task. No external experiment was independently reproduced.
+
+Tooling: system uv fails with unsupported jemalloc page size; project-local
+`.tools/uv-bootstrap/bin/uv` and `.venv/bin/*` work. Frozen backend/frontend
+dependencies are installed. Ignored source downloads and disposable PDF reader
+are under `.tools/`. No credentials were inspected. All research delegates are
+finished; interrupted implementation delegates must remain inactive.
+
+Next: present the final consolidated plan and keep implementation paused until
+shared understanding is confirmed. Then implement the small vertical slice and its checks;
+do not claim universal generalization, enterprise readiness, or a 100× result.
+Latest design-interview verification: `git diff --check` passed; whitespace
+and all 26 local file links across fourteen research/decision/handoff documents passed.
+External links were not exhaustively rechecked. Application tests and live
+benchmarks were not run at this research checkpoint.
+
 ## Previous task: experiment validity (historical)
 
 The user authorized a general experiment-validity gate after reviewing the weak shortage

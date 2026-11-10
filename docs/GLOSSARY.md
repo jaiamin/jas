@@ -9,7 +9,7 @@
 | Condition | A named treatment applied to otherwise matched experiments. |
 | Agent profile | A declared identity, goals and preferences used to initialize an agent. |
 | Agent | One model-controlled participant in a specific run. |
-| Run | One realization of a condition, seed and repetition. The experimental unit. |
+| Run | One realization of a condition, seed and repetition, producing a behavioral trajectory. Runs are not automatically independent statistical replicates. |
 | Round | An environment-defined interaction cycle. |
 | Turn | One agent decision, distinguished from a full round. |
 | Observation | The information actually available to an agent before a decision. |
@@ -30,3 +30,47 @@
 | Private evidence | A signal sampled from a declared likelihood given researcher-known truth. |
 | Resource stock | Persistent shared inventory, distinct from a fresh per-round endowment. |
 | Benchmark case | A versioned question, split, expected mechanics and explicit assessment criteria. |
+
+## Research and participant roles
+
+**Researcher**:
+The app assistant that helps formulate questions, design experiments and interpret
+their evidence. It is distinct from the participants whose behavior is studied.
+
+**Researcher harness**:
+The instructions, tools and retained research context through which the researcher
+conducts its work.
+
+**Participant harness**:
+The instructions, memory, tools and decision process through which a participant
+acts in an experiment. Its configuration is part of the system being studied.
+
+**Investigation**:
+A bounded research workflow that develops a question, designs and checks an
+experiment, executes authorized trials and interprets their evidence.
+
+**Environment extension**:
+A versioned addition to world mechanics that introduces capabilities absent
+from the installed environment definitions.
+
+## Evidence and validity
+
+**Research validity**:
+The extent to which an experiment's design, execution and evidence justify a
+particular conclusion. It is specific to the claim being made.
+
+**Treatment exposure**:
+The realized application of an intervention to a participant's observations,
+available choices or action consequences. Assignment alone does not establish exposure.
+
+**Baseline policy**:
+A reference policy used to distinguish the behavior of a studied participant
+system from a simpler or otherwise controlled alternative.
+
+**Research probe**:
+A hypothetical inspection or test of world mechanics on an isolated world copy.
+It is distinct from a participant's actions in a recorded experimental run.
+
+**Authoritative world state**:
+The state established by accepted world transitions. An agent's statement or an
+analyst's explanation is not itself an established world fact.
