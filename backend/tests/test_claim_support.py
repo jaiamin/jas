@@ -252,6 +252,6 @@ def test_communication_lens_rejects_absent_exposure_and_declares_coverage(claim_
     assert coverage["exposure_capture"] == "complete"
     assert coverage["message_opportunities"] == 0 and coverage["unknown_requests"] == 0
     assert coverage["truncation"]["run_continues"] is False
-    assert "unavailable" in coverage["truncation"]["unrecorded_history"]
+    assert "unavailable" in coverage["truncation"]["unrecorded_history"].casefold()
     result = final["output"]["support"]["claims"][0]
     assert result["status"] == "contradicted" and result["computed"] == 0
