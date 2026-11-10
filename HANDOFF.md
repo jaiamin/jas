@@ -1,14 +1,15 @@
-# T14 implementation — accepted-T16 integration in progress
+# T14 implementation — ready for independent integration review
 
 Branch `t3/t14-investigation-workflow`; starting accepted ancestor
 `8df6c592c453e0595406711b9fe3387f8c385d26`. Only T14 is implemented here;
 root acceptance is separate. Accepted T16 `b0446d9` is integrated; the latest root-documented
 accepted documentary tip included is
-`d276b70a80656094862c304385baedd3752c3ec7` (includes published375877c).
+`29af3413c12c8b14f24bc0faae39933fe56e344d` (includes d276b70/published375877c).
 Combined current contract: **DB11/export12/library7**, with explicit historical
 rejections. Never merge provisional review tips.
 
 Read [T14 plan/oracles/decisions/chronology](docs/research/T14_INVESTIGATIONS.md).
+Implementation and qualification are complete; root acceptance is separate.
 Latest DEVELOPMENT: all27 T14 HTTP cases pass within63 lifecycle cases;61
 analysis/admitted-world and715 contract/World cases pass separately. Ruff/ty,
 frontend lint/116 units/33 files, forced TypeScript and clean Vite pass. Five
@@ -16,13 +17,27 @@ post-merge HTTP browser flows pass; a separately strengthened caveat-disclosure
 check passes. Actual worker completion/cancel-save/export/privacy/accounting
 witnesses pass. All reds and fixture/helper failures remain. Slice17 retains its
 unobserved-red/TDD sequencing gap;2135/2100 microdollars are scripted accounting.
-Frozen T01 before retains four export-v4 failures/failed flags/exit1. After,
-separate positive parity, final-source production and closure remain pending.
+Frozen T01 before/after retain four export-v4 failures/failed flags/exit1;
+unchanged comparison has zero regressions/improvements. Separate positive parity
+passes66 checks over five runs/22 turns/22 exact complete bounded requests and
+matching reserve/settle ledgers (770 synthetic microdollars, actual0). Its initial
+metadata-classifier failure and explicit post-output provenance amendment remain.
+Final-source
+production passes at canonical source3533412b: all44 backend files and53 clean-
+build assets match; non-root/keyless containment/admission/World replay pass;
+owned container/volume/image teardown succeeds and flock is released. Engine
+replay/accounting remain separately source-matched HTTP qualification. Four
+post-merge ordinary-composer browser cases also pass. Final Ruff/lint pass; the
+lint failure on caveat-test formatting is retained and repaired with whitespace.
+Exact memberships/input reuse, all attempts/failures and final source are indexed
+in `data/t14/closure/final-01/manifest.json` and `qualification.json`.
 
 All heavy phases use shared checks.lock and unchanged134217728-byte floor;
-production retains268435456. No new consumer/setup is authorized; root gives
-production priority while arranging headroom. Own uv/pnpm caches are preserved
-future coordinated package-cache resources, with no new consumer writes.
+production retained268435456. Production-priority window is released. Root has
+completed one coordinated normal-manager Python-only consumer of this exact
+uv-cache into T17's distinct venv; root reports its own-import proof and released
+flock. Own uv/pnpm caches
+are preserved coordinated package resources; no cleanup/move/manual tree reuse.
 Use only private `.venv`/node_modules; root's immutable uv CLI remains read-only.
 Root `.venv`/node_modules/dist were removed without affecting private imports.
 
@@ -34,7 +49,10 @@ verified hash/size/mode/integer-ns restoration. No inherited ignored helpers.
 No paid/held-out work, descendants, extra checkouts, push/PR/issue/publication.
 Browser18127 uses existing retained headless shell via
 `PLAYWRIGHT_BROWSERS_PATH=/home/agent/.cache/ms-playwright`; production uses18128.
-No own service/browser is running; preview reports unavailable/no owned tab.
+No own service/browser/container/volume/image is running; preview reports
+unavailable/no owned tab. Root independently verified the production source/assets
+and teardown, adding no product execution or T14 acceptance. Next: root's fresh
+integration merger/review. No push/PR/issue/watch was performed here.
 Historical handoffs below remain preserved.
 
 # Latest boundary — Git objects preserved; production headroom restored (2026-11-10)

@@ -1,6 +1,7 @@
 # T14 — bounded investigations
 
-Status: implementation in progress; root acceptance is separate.
+Status: implementation complete; ready for independent root integration review.
+This is an implementer handoff, not root acceptance.
 Ticket #25; spec `docs/RESEARCH_HARNESS_SPEC.md` and exact T14 ticket body.
 Assigned branch `t3/t14-investigation-workflow`, Linux aarch64 Docker Sandbox,
 starting clean HEAD `8df6c592c453e0595406711b9fe3387f8c385d26` (accepted
@@ -472,3 +473,91 @@ archive as build context, never a duplicate host tree; it records exact deployed
 backend/assets, non-root keyless smoke, and owned resource closure. Frozen T01
 after/separate positive parity, that production phase and final closure remain.
 No paid calls, held-out access, publication or root acceptance has occurred.
+
+### Final-source production boundary
+
+`production/final-01` passed at clean HEAD `74eaa3c`, including accepted
+documentary checkpoint `d276b70`. The canonical tracked-only source key is
+`3533412bae284706b72fb67a6339dae227c27bfab0f5b95d8af6b487bf95cb98`;
+archive SHA256 `57388146278f9a4ff664fa1adb251f94f1be5555c70c9e14ad753563eadf3a68`.
+The source was streamed directly to Docker, with protected-name/header preflight
+and no second host context. Under-lock free bytes were279998464 initially and
+279994368 before build, both above the unchanged268435456 production floor.
+Image `sha256:74e8000c64eae485d43c99c18687b135dd88a8e45174f8023386596fbeb83468`
+contains all44 exact backend source files and all53 assets from the private clean
+frontend build. The non-root, keyless smoke passed health/SPA/assets, actual worker
+containment, independent admission, source pinning, privacy and World restoration/
+replay. Engine lifecycle/replay and three-ceiling accounting remain separately
+qualified by the matching-source public HTTP witnesses; they are not relabeled
+as Engine execution in the production smoke.
+
+Owned container/volume/image teardown each returned0, port18128 was released and
+flock released. Final observed free278990848 bytes. Receipt and all build/smoke/
+deployed-source/assets/cleanup logs are retained under `data/t14/production/final-01`.
+Root received the boundary and can coordinate the next environment; no production
+resource is left running. Frozen AFTER, separate current-contract parity, four
+focused ordinary-composer regressions and documentary/evidence closure remain.
+
+### Completion evidence and remaining acceptance boundary
+
+All six T14 implementation criteria have DEVELOPMENT witnesses:
+
+| Criterion | Public evidence |
+| --- | --- |
+| Visible prior authorization and identities | Narrow completion and fixed-Sol HTTP cases retain exact scope, allowances, models/harnesses and decisions; browser authorization shows them before submit. |
+| Complete workflow and nested limits | The27 HTTP cases include narrow completion, per-participant-request parent limits, turn exhaustion, three-ceiling rollback and independent workspace contention. Every request retains separate reserve/settle evidence. |
+| Retained pilots, failures, repairs and frozen confirmation | HTTP pilot/adaptation and confirmatory-freeze cases, plus browser repair/freeze cases, preserve revisions, failed runs, feedback and the pre-trial decision record. Ambiguity/scope/operation exhaustion stop before unauthorized rollout. |
+| Server lifecycle and ordinary composition | HTTP pause/restart/cancel/unknown-usage witnesses and mobile browser lifecycle; ordinary chat/design/save add zero participant work. Four focused post-merge composer browser cases pass in `merged-composer-regressions`. |
+| Supported descriptive output | Source-linked cutoff analysis, retained missing/failed-run status, null unavailable utility and explicit small-sample/no-validity-certification disclosures. The separately strengthened browser disclosure case passes. |
+| Keyless API/UI and inherited comparison | Segmented63/61/715 backend cases,116 frontend units/33 files, static/types/clean build, five investigation browser flows plus the separate disclosure/composer jobs, source-matched production and separate before/after audits. |
+
+These are separate bounded jobs with exact commands, cases and sources in ignored
+`data/t14/`; their counts are never presented as one uninterrupted backend suite.
+The latest Ruff job is `final-backend-static`; final frontend lint is
+`final-frontend-lint-02`. The preceding lint attempt failed only on formatting the
+strengthened caveat assertions; the failure remains and only whitespace changed.
+Forced TypeScript is repeated for that added browser assertion; units/build are
+reused only where their complete source/configuration inputs remain equal.
+
+Frozen T01 AFTER at source tree
+`f549376ca3e33bb32d06fa6ab284cf6b3db62394c40d17c4a4c8970fb2171445`
+retains the original four `export-v4` failures, terminal failed flags and exit1.
+The unchanged comparator also exits1, with zero regressions and zero improvements.
+The after runner's original archive is the canonical archive for content key
+`7532d447071276b998b084dff2e32bd61f95344fc4ddf9a4b67498458569c752`;
+its SHA256 is `dd9e9d8868f406f3b76734bc83389f47dbcba8f247844b3b522dfd0dfb8cfa15`.
+No frozen runner/case/score was edited, and no failed case became passed.
+
+The separate positive current-contract audit `parity/final-02` passes66 checks:
+five complete runs,22 turns and22 literally identical complete bounded requests;
+2200 input/1100 output tokens,770 scripted microdollars charged and28231 reserved
+in each integer ledger. Workspace/study sums agree, with inactive investigation
+ownership in these ordinary workflows. Actual paid spending is0.
+
+The first classifier `parity/final-01` remains failed: its54 behavioral/accounting
+checks passed but894 differences were unclassified. The retained diagnosis proves
+that every full design differs solely by accepted T16's `parameters.relay=null`
+default and independently recomputes both recorded design hashes. The explicitly
+amended classifier recognizes only that null default, its proven hash pairs and
+exact evidence-reference syntax with previously paired application identities;
+turn/revision/evidence-kind text must remain equal. It accounts for1724 total
+metadata/default differences with zero unexplained differences. This amendment
+was made after outputs and is documented as such; it does not change the frozen
+behavioral oracle or score, and the initial failure is not retroactively rescored.
+
+Final source qualification is in `data/t14/closure/final-01/qualification.json`;
+all-attempt inventory, canonical source/archive references and closed-output
+restoration maps are indexed by that directory's manifest. Protected names and
+synthetic configuration contents/hashes remain excluded/opaque. Earliest pytest
+automatic temporary-data retention and early packing's missing nanosecond proof
+remain limitations, rather than invented recovery claims. Slice17's unobserved
+red/TDD sequencing gap remains; save shielding has no claimed cancellation red.
+
+Current contracts are DB11/export12/library7, with explicit historical rejection,
+no migrations/aliases and no reset performed. The included latest documented
+accepted integration is `29af3413c12c8b14f24bc0faae39933fe56e344d` (including
+`d276b70a80656094862c304385baedd3752c3ec7`); its application
+frontier remains accepted T16. All later T14 repairs require the root's independent
+integration review. No paid/live/held-out evaluation, research-validity or
+intelligence pass, publication or acceptance is claimed. Preserve private venv/
+node_modules and both normal package caches for coordinated manager reuse.
