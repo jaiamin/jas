@@ -180,7 +180,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Integrated and accepted | `aaf3a15`; [evidence](research/T06_UNCERTAINTY.md) |
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Accepted after combined-contract review repairs | `a92105f`, `d5568c1` |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Integrated and accepted after cutoff receipt repair | `9750caf`, `de5556b`; [evidence](research/T08_PARTICIPANT_CONTEXT.md) |
-| T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | In progress in isolated worktree | — |
+| T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Complete; assigned to fresh integration review | —; source `4e6b2ea` |
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Waiting on accepted T09 | — |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Waiting | — |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Waiting | — |
@@ -190,7 +190,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Waiting | — |
 | T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | Waiting | — |
 | T18 | [#29](https://github.com/jaiamin/ass/issues/29) Inspect a declared fallible adjudication and replay its consequences | T09 | Waiting | — |
-| T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Assigned to fresh isolated implementer | — |
+| T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | In progress in isolated worktree | — |
 | T20 | [#31](https://github.com/jaiamin/ass/issues/31) Demonstrate the small-population generalization milestone | T11, T12, T14, T15, T17, T18, T19 | Waiting | — |
 
 ## Preserved drafts and spending
@@ -261,11 +261,12 @@ those trials run, the live milestone remains unverified.
 
 1. T01/T02/T03/T04/T05/T06/T07/T08 are accepted with preserved evidence. Root
    resumes sole shared-checkout ownership for publication and the new frontier.
-   T19 is assigned to a fresh isolated implementer on accepted T06/T07/T08,
-   browser port 18122; T10 still waits on accepted T09, and T14 on accepted T13.
-2. T09/#20 and T15/#26 continue in isolated checkouts on 18120/18121, running and
-   unpolled. T07 review did not inspect or change either task; root owns the
-   subsequent T19 launch after publication.
+   T09 is complete on `4e6b2ea`, assigned to fresh sole-writer integration review
+   on 18220; preserve all ignored `data/t09/` and its verified archives first.
+   T10/T13/T16/T18 wait on accepted T09; T14 waits on accepted T13.
+2. T15/#26 and T19/#30 continue in isolated checkouts on 18121/18122, running and
+   unpolled. Root publishes the coordination checkpoint before handing shared
+   integration ownership to the fresh T09 merger.
 3. Root owns publication to https://github.com/jaiamin/ass/pull/32. The T07 merger
    made coherent local acceptance commits only; no hosted state, tracker edits,
    watches or cleanup. Retain all source worktrees, immutable manifests, failed

@@ -1,3 +1,23 @@
+# T09 integration review assignment (2026-11-10)
+
+T01–T08 are accepted. T09 is implemented and assigned to a fresh sole-writer
+integration review on port 18220. T15/T19 continue on 18121/18122 and must not be
+polled. T10/T13/T16/T18 become Ready only after T09 acceptance.
+
+Clean source: `t3/implement-t09-artifact-world`, HEAD
+`4e6b2eaed469b0844df3ff01db016e6be15788cc`, worktree
+`/home/agent/.t3/worktrees/workspace/t3-872f635b`, includes accepted integration
+`59e20935c17bd8ea0c44f712790ffeeb38ebb83b`. Read
+`docs/research/T09_ARTIFACT_WORLD.md`. Preserve all ignored `data/t09/` (about
+146 MiB), including four verified archives. Manifest indexes 1,145 files/links
+and verifies 3,948 packed members; file SHA-256
+`9f3dde334f10837db43735ef8074c5f93a4c8ed8c0a327d499c6a8601c02619f`.
+Source proposes DB7/export8/library-v4; current accepted DB6/export7/library-v3
+remains until review. Preserve T07/T08 repairs and exact controlled behavior.
+Root publishes before handoff, then stops tracked edits during the review.
+No paid allocation; Sol spend remains $0.611632/55 requests, $9.388368 remaining.
+All prior evidence/stash remain protected; root `pbcopy` remains unread/untouched.
+
 # T07 fresh integration checkpoint — accepted (2026-11-10)
 
 T07/#18 is accepted after fresh sole-writer Standards/Spec review, with no
@@ -589,8 +609,8 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01–T08 accepted; T09/T15 running; T19 assigned to fresh
-isolated implementation; draft PR #32.**
+**Current checkpoint: T01–T08 accepted; T09 complete, assigned to fresh
+integration review; T15/T19 running; draft PR #32.**
 
 Fresh Sol DEVELOPMENT is complete for this checkpoint: read
 `docs/research/SOL_DEVELOPMENT.md`. The frozen original eight-case pair,
@@ -690,12 +710,9 @@ task graph, acceptance gates, checkpoints and next actions are tracked in
 
 Current frontier: T07/#18 is accepted at merge `a92105f` plus exposure repair
 `d5568c1`; T08's merge `9750caf` and cutoff repair `de5556b` remain intact.
-T19 is assigned to a fresh isolated implementer; T09/T15 remain running and
-unpolled. T10 waits for accepted T09 and T14 for T13. T09/#20 remains assigned
-to its isolated implementer, based on the
-accepted T03/T06 integration, with browser port 18120 and report
-`docs/research/T09_ARTIFACT_WORLD.md`, raw evidence `data/t09/`. It must merge the
-latest documented accepted integration before handoff. No paid calls are allocated.
+T15/T19 remain running and unpolled. T09 is complete on `4e6b2ea`, assigned to
+fresh integration review; source/evidence pointers are at the top. T10/T13/T16/
+T18 wait for accepted T09 and T14 for T13. No paid calls are allocated.
 Draft PR #32 is the single integration PR and
 was linked immediately. Refresh/link it on each push. Do not merge to main or
 close issues as if unverified work were complete. The default-branch PR merge
