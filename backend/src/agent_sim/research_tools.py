@@ -64,12 +64,28 @@ class ProbeRequest(Strict):
     steps: list[ProbeStep] = Field(default_factory=list, max_length=8)
 
 
+class CandidateSource(Strict):
+    """Planner-only source: supplied validated draft, never a model-selected live run."""
+
+    kind: Literal["candidate"] = "candidate"
+    design_hash: str
+    condition_key: str
+    seed: int
+
+
+class CandidateProbeRequest(Strict):
+    kind: Literal["probe"] = "probe"
+    source: CandidateSource
+    steps: list[ProbeStep] = Field(default_factory=list, max_length=8)
+
+
 type ResearchRequest = CapabilityRequest | ContextRequest | ProbeRequest
 
 
 class ResearchTools:
     def __init__(self, row: Analysis, research: Research):
         self.research = research
+        self.analysis_id = row.id
         with research.db.session() as session:
             query = select(Analysis).where(
                 Analysis.chat_id == row.chat_id,
@@ -116,7 +132,7 @@ class ResearchTools:
         ]
         return matches[:limit]
 
-    def begin(self, request: ResearchRequest) -> dict:
+    def begin(self, request: ResearchRequest | CandidateProbeRequest) -> dict:
         payload = request.model_dump()
         for operation in self.record["operations"]:
             if operation["request"] == payload:
@@ -132,11 +148,16 @@ class ResearchTools:
         self.record["operations"].append(operation)
         return operation
 
-    def dispatch(self, request: ResearchRequest, operation: dict) -> dict:
+    def dispatch(
+        self,
+        request: ResearchRequest | CandidateProbeRequest,
+        operation: dict,
+        candidate: Design | None = None,
+    ) -> dict:
         operation["status"] = "complete"
-        if isinstance(request, ProbeRequest):
+        if isinstance(request, (ProbeRequest, CandidateProbeRequest)):
             try:
-                data, sources = self._probe(request)
+                data, sources = self._probe(request, candidate)
                 operation.update(
                     data=data,
                     sources=sources,
@@ -262,10 +283,21 @@ class ResearchTools:
             )
         return operation
 
-    def _probe(self, request: ProbeRequest) -> tuple[dict, list[dict]]:
+    def _probe(
+        self, request: ProbeRequest | CandidateProbeRequest, draft: Design | None = None
+    ) -> tuple[dict, list[dict]]:
         source = request.source
         state = None
-        if isinstance(source, TemplateSource):
+        if isinstance(source, CandidateSource):
+            if draft is None or digest(draft.model_dump()) != source.design_hash:
+                raise ValueError("Candidate does not match its copied source")
+            design = Design.model_validate(draft.model_dump())
+            condition = next((c for c in design.conditions if c.key == source.condition_key), None)
+            if condition is None or source.seed not in design.seeds:
+                raise ValueError("Unknown candidate condition or seed")
+            seed = source.seed
+            sources = [{"kind": "analysis", "id": self.analysis_id, "hash": source.design_hash}]
+        elif isinstance(source, TemplateSource):
             template = next((t for t in templates() if t["id"] == source.environment), None)
             if template is None:
                 raise ValueError("Unknown trusted template")

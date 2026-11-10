@@ -1,3 +1,30 @@
+# T13 isolated implementation — qualification in progress (2026-11-10)
+
+Assigned checkout `/home/agent/.t3/worktrees/workspace/t3-34d9f5cd`, branch
+`t3/implement-t13-researcher-designs`, accepted base `14e8af90513d5e7ffa394daec31bcfd6d2730845`
+(qualified inherited product `6e1a7c8`). No descendants or extra checkout. Shared
+integration `d448ea5` is explicitly T19 review-in-progress and is not adopted.
+
+Durable acceptance/decisions/report: `docs/research/T13_RESEARCHER_DESIGNS.md`.
+Ignored complete attempts, exact source archives/diffs and compressed synthetic
+outputs: `data/t13/`. Fresh frozen DEVELOPMENT questions/rubrics were committed
+before output in `d0e3d61`; historical T01 and held-out tasks remain unchanged.
+
+Implemented through the existing public question/proposal/review/edit/check/save
+path: solo exploration, declared intent, material clarification/narrower alternatives,
+real discovery and exact copied candidate probes, immutable discovered/prior source
+pins and explicit limits. No participant sampling from save; no T10/T14 implementation.
+Current contracts and Sol/Luna roles remain unchanged. No paid calls or publication.
+
+Observed: all 1,225 backend tests in 40 bounded sequential file checks; 111 frontend
+units; Ruff/ty/lint/build; 60 inherited browser flows plus two real keyless T13 flows
+at 18124, including pending/reload, edits and zero participant calls on save. Preview
+phone/dark and desktop/light inspections completed; owned manual service/tab closed.
+Remaining: frozen after/comparison, independent five-run/22-turn current-contract
+parity, final accepted-base check/commit and complete evidence custody verification.
+All live/held-out intelligence and validity gates remain unverified; T13 is not yet
+accepted. Production smoke is inherited because runtime/container inputs are unchanged.
+
 # Root coordination — T15 accepted; T13/T19 assigned (2026-11-10)
 
 Accepted integration: `d55f27032b3468ee1f5ad7399ca0d3b1827f4a81` (T01–T09,

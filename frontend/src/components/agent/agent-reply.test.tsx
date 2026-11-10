@@ -245,6 +245,7 @@ test("live activity stays open when the reply finishes so its content remains re
       planning: {
         sources: [],
         brief: {
+          intent: "exploratory",
           operationalization: "Compare cooperation under two resource levels.",
           size_rationale: "A small matched pilot.",
         },
@@ -266,6 +267,7 @@ test("live activity stays open when the reply finishes so its content remains re
   ).not.toBeInTheDocument();
   fireEvent.click(activity);
   fireEvent.click(screen.getByRole("button", { name: "Study scope" }));
+  expect(screen.getByText("Exploratory design")).toBeVisible();
   expect(
     screen.getByText("Compare cooperation under two resource levels."),
   ).toBeVisible();

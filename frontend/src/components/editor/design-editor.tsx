@@ -443,6 +443,14 @@ export function DesignEditor({
                     <p>{explanation}</p>
                     {planning && (
                       <>
+                        {planning.brief.intent && (
+                          <p>
+                            {planning.brief.intent === "exploratory"
+                              ? "Exploratory design"
+                              : "Confirmatory design"}
+                          </p>
+                        )}
+                        <p>{planning.brief.operationalization}</p>
                         <p>{planning.brief.size_rationale}</p>
                         <ul className="flex flex-col gap-2">
                           {planning.sources.map((source) => (

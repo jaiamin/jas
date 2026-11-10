@@ -177,6 +177,10 @@ if __name__ == "__main__":
         )
         if os.getenv("JAS_TEST_PARTICIPANTS") == "1":
             deterministic_participants(app)
+        if os.getenv("JAS_TEST_RESEARCHER") == "1":
+            from researcher_provider import deterministic_researcher
+
+            deterministic_researcher(app)
         uvicorn.run(
             app,
             host="127.0.0.1",

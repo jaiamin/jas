@@ -662,6 +662,7 @@ export interface Analysis {
     partial?: string;
     planning?: {
       brief: {
+        intent?: "exploratory" | "confirmatory";
         size_rationale: string;
         operationalization: string;
         requirements?: QuestionRequirement[];
