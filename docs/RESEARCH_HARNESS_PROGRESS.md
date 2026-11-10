@@ -6,6 +6,7 @@ accepted product and testing-seam decisions are not reopened.
 
 - Parent: [spec #11](https://github.com/jaiamin/ass/issues/11).
 - Integration branch: `integration/research-harness`, created from `7cb3279`.
+- Integration draft PR: [#32](https://github.com/jaiamin/ass/pull/32).
 - Contracts and acceptance: [spec](RESEARCH_HARNESS_SPEC.md),
   [ticket bodies](RESEARCH_HARNESS_TICKETS.md), [design plan](RESEARCH_HARNESS_PLAN.md).
 - GitHub publication verified all 20 bodies, labels, parent relationships and
@@ -50,17 +51,16 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 ## Task graph and checkpoints
 
 Statuses reflect accepted integration work, not automatic GitHub closure. Issues
-remain open until the tracker resolves them through the integration PR. A draft
-PR will be created after the first implementation merge; no default-branch
-merge, auto-merge or history rewrite is authorized.
+remain open until the tracker resolves them through draft PR #32. No
+default-branch merge, auto-merge or history rewrite is authorized.
 
 | Ticket | Issue and behavior | Blocked by | Status | Integrated commit |
 | --- | --- | --- | --- | --- |
 | T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Integrated | `bf3b76e` |
-| T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Ready | — |
+| T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Queued | — |
 | T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Ready | — |
-| T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Ready | — |
-| T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Ready | — |
+| T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Queued | — |
+| T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Queued | — |
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Ready | — |
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Ready | — |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Waiting | — |
@@ -125,9 +125,9 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. Parent: push the integration branch, open its one draft PR with closing
-   references and call `link_pull_request`; the merger has not published it.
-2. Start ready frontier T02–T07/#13–#18 in isolated ticket worktrees, respecting
-   runtime qualification before generated-code execution and one writer per branch.
+1. Implement T02/#13, T04/#15 and T05/#16 in isolated fresh-context worktrees;
+   T03/#14, T06/#17 and T07/#18 remain ready for available slots.
+2. Review and merge each accepted slice sequentially, then refresh/link draft
+   PR #32; qualification failure gates generated execution, not trusted worlds.
 3. Preserve source-stamped inherited and new-behavior evidence for each slice;
    keep live and held-out gates unverified until their required trials run.

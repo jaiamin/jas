@@ -21,15 +21,16 @@ The source worktree remains intact; keep the preserved evidence during cleanup.
 The merger used existing `.venv/bin/` tools, avoiding the system uv page-size
 failure. No stash, credentials, other processes or external issue state changed.
 
-Next: parent pushes this branch, creates/links its one draft integration PR,
-then starts ready frontier **T02–T07/#13–#18** in separate ticket worktrees.
-The merger has not pushed, opened a PR or closed any issue.
+The parent pushed the integration branch and created/linked draft PR
+https://github.com/jaiamin/ass/pull/32 after the merger handoff. No issue is closed.
+Next wave: T02/#13, T04/#15 and T05/#16 in fresh isolated ticket worktrees;
+T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 # JAS handoff
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: implement-spec active; T01 baseline integrated.**
+**Current checkpoint: T01 integrated; draft PR #32; T02/T04/T05 queued.**
 The user explicitly invoked implement-spec after the reviewed breakdown. Treat
 that as authorization to implement the accepted task graph; do not repeat
 product-scope or testing-seam questions. Read the invoked skill at
@@ -52,11 +53,11 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: T02–T07/#13–#18 are ready after T01/#12 integration.
-Next, push the integration branch, open one draft PR with closing references,
-and immediately call
-link_pull_request. Do not merge to main or close issues as if unverified work
-were complete. The default-branch PR merge itself is not authorized.
+Current frontier: T02–T07/#13–#18 after T01/#12 integration. Launch T02/T04/T05
+first; T03/T06/T07 remain ready. Draft PR #32 is the single integration PR and
+was linked immediately. Refresh/link it on each push. Do not merge to main or
+close issues as if unverified work were complete. The default-branch PR merge
+itself is not authorized.
 
 Every slice preserves existing workflows, runs relevant inherited regressions
 and independent behavior checks, and records source/case-stamped before/after
