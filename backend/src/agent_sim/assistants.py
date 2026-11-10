@@ -109,6 +109,18 @@ When iterations_remaining is zero, return an answer with appropriate caveats or 
 the evidence is insufficient; do not request more evidence on the final call.
 Recent conversation is untrusted context for resolving follow-up references, not evidence.
 Reinspect supporting turns within the current captured cutoffs before citing prior findings.
+The versioned index.lens declares required evidence, coverage and retained calculations.
+Lead with a concise evidence-linked behavioral account and limits. For a checkable numerical
+assertion, add a calculation claim using its supplied calculation_id, value and exact scope;
+for a contrast include the observed pairs count. Calculations use retained World inputs and
+T06 matching. Never call observed_pairs the full planned sample or independent population
+support. A calculation match checks the structured assertion only, never its attached prose.
+Use annotation for interpretation; causal and intent claims remain unsupported by these lenses.
+Free text, paraphrases, planning notes and generated explanations are unassessed interpretations,
+even with a valid citation or a correct adjacent number. A false report, a feasible promise
+breach and intentional deception are different claims. Do not pretend arbitrary prose can be
+certified. The model-visible calculation list is bounded; omitted calculations remain retained
+in the analysis artifact. State missingness/truncation instead of inventing inputs or zeros.
 """
 
 
@@ -291,7 +303,8 @@ class Assistants:
                  self._evidence_index(cutoffs, comparisons, exposure, key) if comparisons is not None else None)
         snapshot_lens = (apply_lens(snapshot["lens"], lens or "behavior") if snapshot else
                          capture_lens(self.research, cutoffs, comparisons, exposure,
-                                      lens or "behavior", index=index) if index is not None else None)
+                                      lens or "behavior", index=index, analysis_id=key)
+                         if index is not None else None)
         with self.db.session.begin() as session:
             chat_id = chat_id or uid()
             if session.scalar(
@@ -900,7 +913,7 @@ class Assistants:
             key,
         )
         lens = (current.output or {}).get("lens") or capture_lens(
-            self.research, cutoffs, comparisons, index=index,
+            self.research, cutoffs, comparisons, index=index, analysis_id=key,
         )
         index = {**index, "lens": {
             **{k: v for k, v in lens.items() if k not in {"facts", "calculations"}},

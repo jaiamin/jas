@@ -29,7 +29,7 @@ LENSES = {
 def capture_lens(
     research: Research, cutoffs: dict[str, int], comparisons: dict | None = None,
     exposure: dict | None = None, key: LensKey = "behavior",
-    *, index: dict,
+    *, index: dict, analysis_id: str,
 ) -> dict:
     """Retain the literal World inputs rather than trusting analyst arithmetic."""
     facts, calculations, coverage = [], [], []
@@ -64,6 +64,8 @@ def capture_lens(
             "events": [event_dict(e) for e in events],
             "input_membership": exposure[rid]["membership"],
             "source": {"href": f"/api/runs/{rid}/turns/{cutoff}", "pointer": "/checkpoint"},
+            "snapshot_source": {"href": f"/api/analyses/{analysis_id}",
+                                "pointer": f"/output/lens/facts/{len(facts)}"},
         }
         facts.append(fact)
         calculations.append({
@@ -97,7 +99,7 @@ def capture_lens(
                     "where actual < amount)",
                 }[name],
                 "inputs": {"fact_run_id": rid, "through_turn": cutoff},
-                "sources": [fact["source"]],
+                "sources": [fact["snapshot_source"]],
                 "assumptions": ["Only explicitly recorded World fields are measured. Free-text "
                                 "falsehood, voluntary reliance, causality and intent are unassessed."],
             })
@@ -109,8 +111,8 @@ def capture_lens(
                 "formula": "count(distinct eligible participants with confirmed exact input); "
                 "null if coverage or receipt is unavailable",
                 "inputs": {"summary": row, "membership": exposure[rid]["membership"]},
-                "sources": [{"href": f"/api/runs/{rid}/exposure?through_turn={cutoff}",
-                             "pointer": "/opportunities"}],
+                "sources": [{"href": f"/api/analyses/{analysis_id}",
+                             "pointer": f"/output/exposure/{rid}/opportunities"}],
                 "assumptions": exposure[rid]["interpretation"],
             })
         covered = {t.number for t in turns}
@@ -164,11 +166,11 @@ def capture_lens(
                 "coverage": {"pairs": effect["pairs"], "planned_pairs": effect["planned_pairs"],
                              "seed_clusters": effect["seeds"]},
                 "missing": effect["missing_pairs"], "sensitivity": effect["sensitivity"],
-                "sources": [by_run[c["run_id"]]["source"] for c in selected],
+                "sources": [by_run[c["run_id"]]["snapshot_source"] for c in selected],
                 "assumptions": [effect["selection_assumption"], effect["uncertainty_reason"]],
             })
     cells = [c for report in comparisons.values() for c in report["comparison"]["cells"]]
-    return {
+    frozen = {
         "version": VERSION, "key": key, **LENSES[key],
         "cutoffs": cutoffs, "facts": facts, "calculations": calculations,
         "coverage": {"runs": coverage, "planned_cells": len(cells),
@@ -183,12 +185,26 @@ def capture_lens(
             "Observed fixed seed clusters do not establish independent population support; "
             "T06 uncertainty withholding, selection assumptions and bounds apply."],
     }
+    return apply_lens(frozen, key)
 
 
 def apply_lens(frozen: dict, key: LensKey) -> dict:
     if frozen.get("version") != VERSION:
         raise ValueError("Unsupported analysis lens version; no conversion is available")
-    return {**frozen, "key": key, **LENSES[key]}
+    values = {c["id"]: c["value"] for c in frozen["calculations"]}
+    account = []
+    for row in frozen["coverage"]["runs"]:
+        rid = row["run_id"]
+        text = (f"{row['recorded_turns']} recorded decisions; cumulative utility "
+                f"{values[f'run:{rid}:total_utility']:g}.") if key == "behavior" else (
+                    f"{row['opportunities']['messages']} recorded messages; "
+                    f"{row['opportunities']['reports']} factual reports; "
+                    f"{row['opportunities']['feasible_commitment_breaches']} feasible breaches. "
+                    f"{row['message_opportunities']} message opportunities; "
+                    f"input capture {row['exposure_capture']}."
+                )
+        account.append({"run_id": rid, "turn": row["through_turn"], "text": text})
+    return {**frozen, "key": key, **LENSES[key], "account": account}
 
 
 def assess(answer: Finding, lens: dict) -> dict:
@@ -222,4 +238,5 @@ def assess(answer: Finding, lens: dict) -> dict:
         else "needs_review",
         "limitation": "Exact checks concern structured assertions only. Citations, schemas and "
         "model agreement do not certify wording, interpretation, causality or intent.",
+        "numeric_tolerance": {"relative": 1e-12, "absolute": 1e-12},
     }
