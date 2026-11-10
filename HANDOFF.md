@@ -1,4 +1,4 @@
-# Latest boundary — T14 production verified; T17 Python stage released (2026-11-10)
+# Latest boundary — T17 setup/first API red verified; T12 source preparation (2026-11-10)
 
 T14 implementation remains unaccepted. Root independently checked its completed
 production receipt, all438 protected-excluded tracked archive entries,44 deployed
@@ -18,10 +18,26 @@ exact cache into a distinct T17 `.venv`; verify its prefix and editable import.
 After release, bounded backend TDD/static/type/regression slices may proceed under
 the unchanged134,217,728-byte floor, releasing between jobs and forecasting new
 outputs. Frontend/browser/production/new installs/paid work remain separately held.
-Root observed269,979,648 bytes at production verification, shared and unreserved.
-This is an authorized stage, not an observed setup/test result. Preserve owner
-caches, working root uv bootstrap, all evidence/maps and opaque configurations.
-T12 source-only checkout follows T17's setup boundary; T18 remains Ready. Root
+Setup01 retained a preflight rejection before uv. After root recovered16,220,160
+bytes by losslessly packing six CLOSED public GitHub tree responses, setup02
+passed:51 packages,278,548,480→274,673,664 free bytes and the correct distinct
+T17 prefix/editable import. First inert contract API red returned405 versus201;
+its exit1/source-before-after/JUnit and setup receipts are independently verified
+in `maintenance/T17-setup-red-boundary-root-verification-20261110.json` under the
+root harness directory. This is recorded DEVELOPMENT evidence, not root rerun
+or T17 acceptance. Bounded backend TDD continues. Root explicitly superseded
+T17's accepted merge target to published29af3413 (only HANDOFF/PROGRESS differ
+fromd276); provisional T14 remains excluded.
+
+The six logical raw downloads now resolve through
+`.tools/research-harness/maintenance/closed-root-tree-responses-20261110T151900Z/mapping.jsonl`,
+SHA256 `9f1b66b7ac00f57d650952ffc2e2612be3c0e73c96038dfca4d7cf102753f97c`.
+Actual restores proved bytes/hash/mode/integer-ns before raw removal; no source,
+custody, configuration or original clipboard file was touched. Preserve this map,
+all prior maps, owner caches and the working root uv bootstrap.
+
+Fresh isolated T12 source-only preparation is active from accepted29af3413,
+with no install/check/capture grant; port18130 is reserved. T18 remains Ready. Root
 retains sole shared tracked writing. Accepted contracts remain DB10/export11/
 library7; T14's combined DB11/export12 remain provisional until fresh review.
 
