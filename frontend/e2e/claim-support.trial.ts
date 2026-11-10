@@ -283,7 +283,22 @@ test("artifact findings retain versions without inventing financial outcomes", a
   await expect(page.getByText("Wording unassessed")).toHaveCount(2);
   await expect(composer).toHaveValue("Keep this artifact follow-up");
   const after = await (await request.get(`/api/studies/${sid}/export`)).json();
-  expect(after.runs).toEqual(before.runs);
+  // Run summaries include analysis charges. Only those charges/request rows may change.
+  expect(before.runs[0].record.summary.usage.requests).toBe(4);
+  expect(after.runs[0].record.summary.usage.requests).toBe(8);
+  expect(after.runs[0].record.requests).toHaveLength(8);
+  const retainedRuns = structuredClone(after.runs);
+  for (const [index, run] of retainedRuns.entries()) {
+    expect(
+      run.record.requests.filter((call: { id: string }) =>
+        before.requests.some((old: { id: string }) => call.id === old.id),
+      ),
+    ).toEqual(before.runs[index].record.requests);
+    run.record.requests = before.runs[index].record.requests;
+    run.record.summary.usage = before.runs[index].record.summary.usage;
+  }
+  expect(retainedRuns).toEqual(before.runs);
+  expect(after.revisions).toEqual(before.revisions);
   expect(after.activations).toEqual(before.activations);
   expect(
     after.requests.filter(
