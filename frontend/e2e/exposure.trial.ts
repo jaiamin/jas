@@ -28,7 +28,7 @@ for (const { theme, width } of [
     design.conditions[0].parameters.multiplier = 1.5;
     design.conditions[0].harness = {
       kind: "tool_using",
-      version: "1.0.0",
+      version: "2.0.0",
       max_requests: 4,
       max_tool_operations: 3,
       tools: ["observe", "rules", "legal_options"],

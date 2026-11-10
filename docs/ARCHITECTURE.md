@@ -283,8 +283,9 @@ append-only operation journal records reads/results, rejected operations, propos
 pauses and settled turn hashes. Requests link to the activation, including failed
 or unknown calls with no committed turn. Effort counts inference attempts, including
 refused reservations; sent requests and charges remain separate ledger records.
-The saved activation observation is its permitted World snapshot; actual model
-deliveries are the provider prompts and executed read results. A turn, its final settlement operation
+The saved activation observation is its permitted World snapshot. Local operation
+results reach model input only when included in a later sent prompt; provider
+responses confirm receipt. A turn, its final settlement operation
 and activation completion commit atomically. Pause finishes the in-flight request:
 final decisions commit; otherwise the authorized transcript and consumed limits
 are retained for explicit resume. Restart pauses runs without requests and marks
@@ -423,6 +424,13 @@ without reservations remain unsent. Historical activations without capture have
 unavailable coverage, with null exposure counts rather than inferred zeros.
 Input source paths identify the recorded schema or JSON prompt; prompt suffixes
 select within its decoded JSON text. Whole inputs have no empty-key suffix.
+Tool-using 2.0 bindings inspect the final bounded prompt, not the unabridged
+operation journal. Investigation facets and retrieved observation sources bind
+only their actually included content to the current activation's permitted paths.
+Compacted receipts, self-authored plans, source references and verification
+metadata do not deliver original World content. Full-observation counts concern
+complete snapshots; retrieved fragments and investigation facets instead retain
+their rule, choice and event bindings. Direct action remains 1.0.0.
 
 Cutoffs restrict settled events and explicit historical activations. Current capture
 also retains unfinished boundary attempts. Analysis acceptance freezes the complete
