@@ -387,6 +387,68 @@ def test_cancellation_during_auxiliary_request_keeps_unknown_usage_and_failed_at
     assert exported["requests"][-1]["cost_usd"] > 0
 
 
+def test_cancellation_while_auxiliary_request_waits_for_capacity_sends_nothing(
+    harness_client, design, monkeypatch
+):
+    client, prompts = harness_client
+    models = client.app.state.models
+    provider = models.model("openai:gpt-6-luna")
+    respond = provider.function
+    entered, release = client.portal.call(asyncio.Event), client.portal.call(asyncio.Event)
+    blocker = None
+
+    async def hold_capacity():
+        acquired = 0
+        try:
+            async with asyncio.timeout(5):
+                for _ in range(models.concurrency):
+                    await models.capacity.acquire()
+                    acquired += 1
+                entered.set()
+                await release.wait()
+        finally:
+            for _ in range(acquired):
+                models.capacity.release()
+
+    async def respond_then_block(messages, info):
+        nonlocal blocker
+        blocker = asyncio.create_task(hold_capacity())
+        await asyncio.sleep(0)
+        return await respond(messages, info)
+
+    monkeypatch.setattr(provider, "function", respond_then_block)
+    _, run_id = save(client, protocol(design))
+    client.post(f"/api/runs/{run_id}/control", json={"action": "step"})
+
+    async def interrupt_waiting_request():
+        task = client.app.state.engine.executions[run_id].task
+        task.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await task
+
+    try:
+        client.portal.call(asyncio.wait_for, entered.wait(), 5)
+        client.portal.call(interrupt_waiting_request)
+    finally:
+        client.portal.call(release.set)
+        if blocker is not None:
+
+            async def settle_blocker():
+                assert blocker is not None
+                await blocker
+
+            client.portal.call(settle_blocker)
+    run = client.get(f"/api/runs/{run_id}").json()
+    assert run["summary"]["status"] == "paused" and run["summary"]["turn"] == 0
+    assert len(prompts) == 1
+    assert run["summary"]["usage"]["requests"] == 1
+    assert run["summary"]["usage"]["partial"] is False
+    assert run["requests"][0]["status"] == "complete"
+    assert run["activations"][0]["requests"] == 2
+    assert run["activations"][0]["status"] == "interrupted"
+    assert run["activations"][0]["stop_reason"] == "cancelled"
+
+
 @pytest.mark.parametrize("failure", [TimeoutError, asyncio.CancelledError])
 def test_auxiliary_settlement_failure_does_not_replace_primary_failure(
     harness_client, design, monkeypatch, failure
