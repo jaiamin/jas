@@ -198,3 +198,15 @@ The dedicated trial uses only an opt-in external-provider stand-in. Success, wro
 submission, stale-write rejection/recovery, both harnesses and mobile/draft behavior
 are development mechanics checks. They do not establish live intelligence or
 held-out generalization. See [T09 evidence](research/T09_ARTIFACT_WORLD.md).
+
+
+T16's finite extension browser trial runs with an explicit keyless provider stand-in
+in a separate temporary workspace, so its synthetic requests cannot contaminate
+zero-call browser controls:
+
+```sh
+JAS_TEST_PORT=18125 pnpm --dir frontend test:e2e --config playwright.extension.config.ts
+```
+
+This checks admission, reusable mechanics, normal Review/save/run and exact replay;
+it does not run generation or live participant intelligence.

@@ -171,3 +171,16 @@ mutation or migration. Prior DB8/export9/library5 results above identify the
 pre-reconciliation snapshot only. All final executable checks are repeated after
 this merge. The production smoke's direct Decision fixture now explicitly supplies
 its required nullable forecast, found during self-review before running that smoke.
+
+
+The accepted-source complete browser attempt ran184 flows:182 passed, two inherited
+copy/delete controls failed because the new relay trial's four synthetic requests
+preceded their workspace-wide zero-call oracle (expected0, observed4). The oracle
+is preserved unchanged. The relay is moved to `extension-admission.trial.ts` with
+`playwright.extension.config.ts`, following existing dedicated harness/coordination
+fixtures. It declares the deterministic provider explicitly and owns a fresh keyless
+workspace; normal browser discovery excludes it. Actual production smoke's first
+preflight attempt also failed before creating a container: ordinary TCP TIME_WAIT
+made a default bind report address-in-use after the browser server closed. A bounded
+connect check now rejects an actual active listener; Docker still owns bind safety.
+Both failures and original helper versions remain in raw evidence.
