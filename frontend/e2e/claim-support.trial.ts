@@ -182,3 +182,137 @@ for (const { theme, width } of [
     });
   }
 }
+
+test("artifact findings retain versions without inventing financial outcomes", async ({
+  page,
+  request,
+}, testInfo) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  const catalog = await (await request.get("/api/catalog")).json();
+  const design = catalog.templates.find(
+    (item: { id: string }) => item.id === "artifact_workspace",
+  ).design;
+  design.title = "T19 retained artifact evidence";
+  design.seeds = [7];
+  design.conditions[0].parameters.artifacts.write_limit = 2;
+  design.conditions[0].parameters.artifacts.objects[0].content.reading = 31;
+  const saved = await request.post("/api/studies", { data: { design } });
+  expect(saved.status()).toBe(201);
+  const sid = (await saved.json()).id;
+  const rid = (await (await request.get(`/api/studies/${sid}`)).json()).runs[0]
+    .id;
+  await request.post(`/api/runs/${rid}/control`, {
+    data: { action: "start" },
+  });
+  await expect
+    .poll(
+      async () =>
+        (await (await request.get(`/api/runs/${rid}`)).json()).summary.status,
+    )
+    .toBe("complete");
+  const before = await (await request.get(`/api/studies/${sid}/export`)).json();
+  await page.route("**/api/settings", async (route) => {
+    const settings = await (await route.fetch()).json();
+    await route.fulfill({
+      json: { ...settings, providers: { openai: true } },
+    });
+  });
+  await page.goto(`/agent?context=run:${rid}`);
+  const composer = page.getByLabel("Message Agent", { exact: true });
+  await composer.fill(
+    "Describe the retained writes and assess the claimed financial zero.",
+  );
+  await page.getByRole("button", { name: "Send message", exact: true }).click();
+  const evidence = page
+    .getByRole("region", { name: "Finding evidence" })
+    .first();
+  await expect(
+    evidence.getByText(
+      "4 recorded artifact decisions; retained writes 1; outcome success.",
+    ),
+  ).toBeVisible();
+  await evidence
+    .getByRole("button", { name: "Evidence & claim status", exact: true })
+    .click();
+  await expect(
+    evidence.getByText("Value checked", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    evidence.getByText("Unavailable", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    evidence.getByText("Claimed 1 · computed 1", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    evidence.getByText("Claimed 0 · computed unavailable", { exact: true }),
+  ).toBeVisible();
+  await evidence
+    .getByRole("button", {
+      name: "Calculation inputs · Recorded artifact writes",
+      exact: true,
+    })
+    .click();
+  await expect(evidence.getByText(/"reading": 31/)).toBeVisible();
+  await expect(evidence.getByText(/"writes_remaining": 1/)).toBeVisible();
+  await composer.fill("Keep this artifact follow-up");
+  await evidence
+    .getByRole("button", { name: "Reanalyze communication", exact: true })
+    .click();
+  await expect(
+    page.getByRole("region", { name: "Finding evidence" }),
+  ).toHaveCount(2);
+  await expect(composer).toHaveValue("Keep this artifact follow-up");
+  const chatId = new URL(page.url()).searchParams.get("chat");
+  const rows = await (await request.get(`/api/chats/${chatId}`)).json();
+  expect(rows).toHaveLength(2);
+  expect(rows[1].output.lens.facts).toEqual(rows[0].output.lens.facts);
+  expect(rows[1].output.lens.inputs_sha256).toBe(
+    rows[0].output.lens.inputs_sha256,
+  );
+  expect(rows[1].output.source_analysis_id).toBe(rows[0].id);
+  expect(rows[1].cutoffs).toEqual(rows[0].cutoffs);
+  expect(rows[0].output.lens.facts[0].balances).toBeNull();
+  const state = rows[0].output.lens.facts[0].artifact_state;
+  expect(state.artifacts.report.versions).toHaveLength(2);
+  expect(state.artifacts.report.versions[1].content).toEqual({ reading: 31 });
+  expect(state.artifacts.report.versions[1].sources).toEqual([
+    { artifact: "measurement", version: 1 },
+  ]);
+  await page.reload();
+  await expect(page.getByText("Wording unassessed")).toHaveCount(2);
+  await expect(composer).toHaveValue("Keep this artifact follow-up");
+  const after = await (await request.get(`/api/studies/${sid}/export`)).json();
+  expect(after.runs).toEqual(before.runs);
+  expect(after.activations).toEqual(before.activations);
+  expect(
+    after.requests.filter(
+      (call: { analysis_id: string | null }) => !call.analysis_id,
+    ),
+  ).toEqual(before.requests);
+  for (const row of rows) {
+    expect(
+      after.requests.filter(
+        (call: { analysis_id: string }) => call.analysis_id === row.id,
+      ),
+    ).toHaveLength(2);
+    expect(row.usage.requests).toBe(2);
+  }
+  await writeFile(
+    testInfo.outputPath("before.json"),
+    JSON.stringify(before, null, 2),
+  );
+  await writeFile(
+    testInfo.outputPath("after.json"),
+    JSON.stringify(after, null, 2),
+  );
+  await writeFile(
+    testInfo.outputPath("analyses.json"),
+    JSON.stringify(rows, null, 2),
+  );
+  await page.screenshot({
+    path: testInfo.outputPath("artifact-claim-support.png"),
+    fullPage: true,
+  });
+  expect(errors).toEqual([]);
+});
