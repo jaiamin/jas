@@ -29,13 +29,26 @@ export interface CompositionRules {
   controllers_first: boolean;
 }
 export interface SavedEnvironment {
-  format: "jas-environment-v2";
+  format: "jas-environment-v3";
   id: string;
   revision: number;
   updated: string;
-  rules: string;
   sha256: string;
-  design: Design;
+  definition: EnvironmentMechanics;
+}
+export interface EnvironmentMechanics {
+  version: 1;
+  name: string;
+  description: string;
+  environment: EnvironmentId;
+  rule_version: string;
+  examples: {
+    key: string;
+    name: string;
+    roles: string[];
+    parameters: Omit<Parameters, "memory">;
+    tasks: TaskDefinition[];
+  }[];
 }
 export interface Parameters {
   endowment: number;
@@ -101,6 +114,7 @@ export interface Design {
   question: string;
   hypothesis: string;
   environment: EnvironmentId;
+  environment_source: SavedEnvironment | null;
   context: string;
   profiles: Profile[];
   tasks: TaskDefinition[];
@@ -285,6 +299,7 @@ export interface StudyDetail extends ComparisonReport {
   usage: Usage;
 }
 export interface Environment {
+  source: SavedEnvironment;
   key: EnvironmentId;
   name: string;
   description: string;
@@ -295,6 +310,7 @@ export interface Environment {
   measure_definitions: Record<string, string>;
 }
 export interface Catalog {
+  environment_schema: Record<string, unknown>;
   models: {
     id: ModelId;
     input_per_million: number;
@@ -486,7 +502,7 @@ export interface ResearchArtifact {
   status: "pending" | "complete" | "rejected" | "failed";
   summary: string;
   sources: {
-    kind: "builtin" | "analysis" | "run";
+    kind: "builtin" | "environment" | "analysis" | "run";
     id: string;
     hash: string;
     turn?: number;

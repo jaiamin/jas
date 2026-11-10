@@ -335,3 +335,25 @@ host/security/credential change, other-worktree/process change or source disposa
 Parent retains the single draft PR #32 and publication. T03 is complete and
 queued for fresh integration review; T07/T08 are in progress. T15 waits on T08,
 T19 on T07, T14 on T13.
+
+
+## T03 implementation — ready for fresh integration review
+
+Ticket branch `t3/add-reusable-environments`, executable checkpoint `a0a0d08`,
+includes latest accepted integration `ff1567453cc119824bb4b3c03ceee1d73acdb9fe`.
+Library v3 separates mechanics/examples and unbound roles from study commitments;
+schema/export v6 pins complete sources. Public API witnesses use two questions
+and populations, retain independent rules after library deletion, and replay.
+Draft editing identity survives World changes/reload without changing provenance.
+No later worlds/harnesses, adapters, resets, paid calls or publication.
+
+Fresh latest-source checks: 1,008 backend, 8 affected browser, 2 actual policy
+flows, Ruff/ty and production smoke/containment pass. Full 178-browser suite,
+108 frontend tests, lint/types/build passed at `4c5a745`; all frontend inputs
+are hash-identical at the later merge. Frozen T01 retains only four intentional
+v4-export oracle failures and terminal flags under v6; all 22 recorded turns
+and usage match exactly. Failures remain explicit. Read
+[T03 report](research/T03_ENVIRONMENTS.md) and preserve all ignored `data/t03/`;
+`manifest.json` indexes source/case-stamped evidence and raw failures. Port 18114
+is closed and owned containers/image tags are removed. T03 spend $0. Parent owns
+fresh acceptance and preservation; this does not mark T03 integrated or T09 ready.

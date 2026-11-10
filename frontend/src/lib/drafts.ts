@@ -8,6 +8,7 @@ export interface Draft {
   design: unknown;
   json: string;
   mode: "visual" | "json";
+  environmentEdit?: { id: string; revision: number };
 }
 
 export function editorDraftPath(params: URLSearchParams): string {
@@ -18,6 +19,7 @@ export function editorDraftPath(params: URLSearchParams): string {
     "copy",
     "revision",
     "template",
+    "environment",
     "setup",
   ]) {
     const value = params.get(key);
@@ -53,6 +55,23 @@ export function readDraft(path: string): Draft | null {
     !("design" in value)
   )
     throw new Error("This draft could not be read.");
+  let environmentEdit: Draft["environmentEdit"];
+  if ("environmentEdit" in value && value.environmentEdit !== undefined) {
+    const target = value.environmentEdit;
+    if (
+      !target ||
+      typeof target !== "object" ||
+      !("id" in target) ||
+      typeof target.id !== "string" ||
+      !/^[a-f0-9]{16}$/.test(target.id) ||
+      !("revision" in target) ||
+      typeof target.revision !== "number" ||
+      !Number.isInteger(target.revision) ||
+      target.revision < 1
+    )
+      throw new Error("This draft could not be read.");
+    environmentEdit = { id: target.id, revision: target.revision };
+  }
   return {
     path: value.path,
     title: value.title,
@@ -60,6 +79,7 @@ export function readDraft(path: string): Draft | null {
     json: value.json,
     mode: value.mode,
     design: value.design,
+    environmentEdit,
   };
 }
 
@@ -89,6 +109,7 @@ export function writeDraft(
   design: Design,
   json: string,
   mode: "visual" | "json",
+  environmentEdit?: Draft["environmentEdit"],
 ) {
   localStorage.setItem(
     prefix + path,
@@ -98,6 +119,7 @@ export function writeDraft(
       design,
       json,
       mode,
+      environmentEdit,
       updated: new Date().toISOString(),
     } satisfies Draft),
   );

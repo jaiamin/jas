@@ -7,7 +7,7 @@ remain ordered. Only explicit user actions create paid work. Restart pauses inte
 ## Storage
 
 SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. Startup creates
-schema v5 for fresh workspaces and rejects incompatible schemas. Local transactions
+schema v6 for fresh workspaces and rejects incompatible schemas. Local transactions
 commit each turn's input, decision, consequences, metrics and checkpoint together.
 
 | Record | Purpose / invariant |
@@ -308,18 +308,30 @@ continues to settle its own consequences independently of model prose.
 
 `EnvironmentLibrary` owns reusable custom setups as versioned JSON records in a sibling
 `<database-stem>.environments` directory. An in-memory workspace uses a temporary library.
-Writes normalize and validate a complete protocol, run deterministic preflight, hash content,
-and atomically replace a file. Updates and deletions require the current record revision;
+The v3 library contract stores an `EnvironmentMechanics` definition and named configuration
+examples, independently of questions, participant/model/harness assignments, condition arms,
+replication and analysis. Examples declare unbound mechanic roles; experiment authors bind
+those roles to their own participants. Memory remains an experiment/harness choice.
+Writes validate examples against the installed world/rule version, run deterministic preflight,
+hash the definition and atomically replace a file. Updates/deletions require the current revision;
 stale writes return 409. Built-in templates are catalog constants and have no library IDs.
 The library is single-process, like the local app; it needs a transactional store/lock design
 before multiple server processes can write it.
 
-Saved study revisions embed the entire resource specification and have no mutable dependency
-on library records. Editing or deleting a reusable environment therefore never changes past
+Catalog entries expose the same versioned source contract for built-ins; explicit experiment
+templates remain a separate catalog collection. `/api/design/environment` extracts mechanics
+examples; `/api/design/use-environment` applies a selected example and explicit role bindings
+to a design, preserving its other commitments, or initializes a neutral experiment.
+
+Saved study revisions embed concrete parameters and the complete `environment_source` snapshot,
+including definition, source revision and hash, with no mutable dependency on library records.
+Source examples record provenance; concrete condition parameters remain authoritative when
+the experiment adapts those examples. Editing/deleting a reusable environment never changes past
 or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
-12 recent compatible setups as untrusted examples; new proposals still undergo scope mapping,
+12 recent definitions as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
-call or run. See [custom environments](CUSTOM_ENVIRONMENTS.md) for mechanics and limitations.
+call or run. Schema/export v6 and library v3 reject incompatible versions explicitly; there is
+no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 ### Failure-aware comparisons (T06)
 

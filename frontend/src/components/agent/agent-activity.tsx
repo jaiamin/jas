@@ -89,7 +89,9 @@ function ResearchOperation({
                     ? `/runs/${source.id}?turn=${source.turn}&tab=decisions`
                     : source.kind === "builtin"
                       ? `/environments?environment=${encodeURIComponent(source.id)}`
-                      : `/agent?chat=${research.scope.chat_id}#${source.id}`
+                      : source.kind === "environment"
+                        ? `/new?setup=${encodeURIComponent(source.id)}&step=conditions`
+                        : `/agent?chat=${research.scope.chat_id}#${source.id}`
                 }
               >
                 <TraceLine>
@@ -98,7 +100,9 @@ function ResearchOperation({
                       ? `Source turn ${source.turn}`
                       : source.kind === "builtin"
                         ? `Source environment: ${source.id}`
-                        : "Source research record"}
+                        : source.kind === "environment"
+                          ? `Source custom environment: ${source.id}`
+                          : "Source research record"}
                   </TraceTitle>
                   <TraceDescription>
                     {source.hash.slice(0, 12)}

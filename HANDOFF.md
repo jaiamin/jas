@@ -1,3 +1,29 @@
+# T03 integration review — active writer (2026-11-10)
+
+Fresh merger owns only T03/#14 on `integration/research-harness`, starting at
+`ce7e801b409bf7982a1635b78dea371c466c9c2e`. Source is clean
+`c2b8ac15b259302786e6107a0074d93a96e82671` in `t3-6cea71e7` and stays intact.
+Before merging, preserved all **2,251 files / 470,287,451 bytes** and **602
+symlinks** under ignored `.tools/research-harness/evidence/T03/`; all 2,250
+child-indexed hashes and complete source/destination inventories match.
+File-inventory canonical SHA-256:
+`e38a459675aacb0d1579f740ea43fb6d7a39edb2ccf9a01b39e46febcf03ecc8`.
+The user explicitly authorized opaque hashing/copying of only the six indexed
+synthetic pytest `.env` fixtures; no contents are displayed or committed. All
+other configuration/credentials and root `pbcopy` remain excluded. Original
+stash and all pre-existing evidence/Sol artifacts remain protected.
+
+Acceptance plan: review mechanics-only sources and independent study/draft
+lifecycles; combine schema 6/library v3 with T06 failure-aware comparisons,
+frozen membership and export 6; preserve both live-discovery fixes and T04/T05;
+run fresh backend/static/frontend, keyless browser on **18214**, production
+smoke, clean-source frozen oracle and exact 22-turn parity; retain failures and
+commands, document acceptance, then commit without publication. Fresh evidence
+is separate in `.tools/research-harness/evidence/T03-integration/`.
+T07/T08 remain running and are not polled/modified. T09 waits for acceptance.
+No paid allocation: $0.611632 / 55 requests spent globally, $9.388368 remains.
+Root owns publication and draft PR #32; this merger makes no remote changes.
+
 # T06 integration checkpoint — accepted
 
 T06/#17 is accepted at no-ff merge
@@ -1872,6 +1898,33 @@ failures, with identical cases/harness/runtime and 22 scripted responses each.
 No paid calls or stash changes. Both production containers and owned browser
 backends are stopped. Preserve the complete ignored `data/t02/` directory;
 `checks.json` indexes evidence. No host/security/credential configuration changed.
+# T03 implementation handoff — ready for fresh integration review
+
+Worktree `/home/agent/.t3/worktrees/workspace/t3-6cea71e7`, branch
+`t3/add-reusable-environments`. Read `docs/research/T03_ENVIRONMENTS.md`.
+Executable checkpoint `a0a0d08d17c060f4ce84177d95139ebec6890c15` includes accepted
+integration `ff1567453cc119824bb4b3c03ceee1d73acdb9fe`; later changes only record
+evidence. Current contract: library v3, definition v1, schema/export v6, unchanged
+World rules. Complete sources pin immutable experiments; mechanics reuse excludes
+questions/populations/harnesses/memory/research commitments. Browser drafts keep
+library editing identity separately through World changes/reload.
+
+Fresh latest-source verification: 1,008 backend, 8 affected browser and 2 actual
+policy flows; Ruff/ty and actual non-root production smoke/containment/reuse pass.
+Full 178 browser and 108 frontend/lint/types/build checks passed at `4c5a745`;
+frontend inputs are hash-identical at the latest merge. Frozen T01 after/comparison
+exit 1 only for four intentional v4-export oracles and terminal flags under v6.
+Independent parity verifies all 22 recorded turns and usage. Full raw failures,
+archives, exports, workspaces, traces and captures remain in ignored `data/t03/`;
+`manifest.json` and `final-source/` identify final source/evidence. Preserve the
+whole directory before future cleanup; parent owns fresh integration acceptance.
+
+Port 18114 closed; owned browser backends, three production containers and image
+tags stopped/removed. No paid calls, stash/pbcopy access, other-worktree edits,
+cleanup, push, PR/issue changes, resets or security changes. T03 spend **$0**.
+No live/held-out competence claim or T09 solo-world implementation. The prepared
+worktree remains intact for sequential handoff.
+
 
 ### T04 participant harness implementation — ready for integration review
 Branch `t3/participant-policies` (prepared as `t3/19c753ac`). Implementation

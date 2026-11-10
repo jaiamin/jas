@@ -31,6 +31,20 @@
 | Resource stock | Persistent shared inventory, distinct from a fresh per-round endowment. |
 | Benchmark case | A versioned question, split, expected mechanics and explicit assessment criteria. |
 
+## Reusable environments
+
+**Environment definition**:
+A reusable description of world mechanics and configuration examples, independent
+of an experiment's question, participants and research commitments.
+
+**Configuration example**:
+A named mechanical setup with any required unbound roles. An experiment assigns
+participants to those roles and may adapt the setup for its own question.
+
+**Environment source**:
+The complete source definition and revision retained with an experiment as the
+provenance of its chosen mechanics.
+
 ## Research and participant roles
 
 **Researcher**:
