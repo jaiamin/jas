@@ -2,7 +2,40 @@
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: to-spec publication complete.**
+**Current checkpoint: to-tickets draft complete; awaiting breakdown approval.**
+The user invoked to-tickets, then emphasized continuous benchmarking and
+iteration that protects existing workflows and strengthens generalization.
+Read `/home/agent/.agents/skills/to-tickets/SKILL.md` and the configured tracker
+and domain docs. Step 4 requires approval of the numbered breakdown before
+publishing children. **No child issues have been published and implementation
+must not start from this draft.** Do not ask again about approved product scope.
+
+Review draft: `docs/RESEARCH_HARNESS_TICKETS.md`, with 20 complete vertical
+slices and 33 blocking edges. Static validation passed: all blockers exist and
+precede dependents, no cycles or redundant transitive edges, required sections
+and acceptance criteria present. An independent read-only review found no
+missing essential blocker or horizontal slice; its participant-identity,
+reproducibility-label and adjudicator-quality gaps have been corrected.
+
+Every slice inherits relevant workflow regressions and a source/case-stamped
+before/after development comparison against the last accepted checkpoint.
+Researcher/participant checkpoints repeat relevant intelligence development
+comparisons; deterministic results must not be presented as live competence.
+Fresh independently authored held-out cases remain separate until validation;
+failures and repairs stay visible, and historical frozen scores stay unchanged.
+The early isolation checkpoint gates generated execution without blocking
+trusted-world/harness/validity improvements. Initial scope stays 1–12.
+
+Next: present the numbered titles, blockers and delivered behavior and ask
+whether granularity/dependencies need adjustment. After explicit approval,
+publish in dependency order to `jaiamin/ass`, label `ready-for-agent`, attach
+native child/blocking relationships where available and verify bodies/links.
+Use body files; leave parent #11 body, labels and state unchanged. Record every
+created issue URL immediately to avoid duplicates. No tests or paid model
+calls ran during ticket drafting. The $10 Sol allowance remains unused; live
+Luna trials still need their own explicit allowance.
+
+**Previous checkpoint: to-spec publication complete.**
 The user confirmed shared understanding of the consolidated plan with “Yes,”
 then explicitly requested to-spec before implementation. The research interview
 is complete; do not ask its questions or final confirmation again. Setup was
@@ -69,12 +102,12 @@ HEAD now includes the research-only documentation checkpoint.
 Research-only documentation checkpoint; no pushes or PR. Paused production
 changes are excluded from that checkpoint. Assigned checkout; no additional worktrees.
 
-User constraints: study AI-agent behavior, not human prediction; support one
-agent through 1,000 individually active agents where the question warrants it.
+User constraints: study AI-agent behavior, not human prediction; initially support
+1–12 active participants, with population chosen for the research question.
 Keep Pydantic AI; researcher/assistant/planner GPT-6.1 Sol, participants GPT-6
 Luna; future mixed-model/harness assignments must remain separate from worlds.
-Preserve current UI appearance where possible. Cost alone must not exclude
-large populations. Fresh Sol benchmark authorization is at most $10 total;
+Preserve current UI appearance where possible. Future expansion requires a
+concrete study and measured operating limits. Fresh Sol benchmark authorization is at most $10 total;
 **no paid calls have been made** during this task. A saved proposal/chat does
 not authorize paid participant execution. Do not reuse historical frozen
 benchmark families or claim new-source scores from historical checks.
