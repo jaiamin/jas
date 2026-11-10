@@ -11,11 +11,19 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from typing import TypedDict
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from agent_sim.domain import Decision, Design
 from agent_sim.simulation.environments import create_world
+
+
+class Asset(TypedDict):
+    path: str
+    size: int
+    sha256: str
+
 
 SERVER = """
 import sys
@@ -40,7 +48,7 @@ def main():
     build = root / "frontend/dist"
     assets = sorted(build.rglob("*"))
     assert not build.is_symlink() and all(not p.is_symlink() for p in assets)
-    manifest = [
+    manifest: list[Asset] = [
         {
             "path": str(p.relative_to(build)),
             "size": p.stat().st_size,
@@ -85,6 +93,13 @@ def main():
             except OSError:
                 time.sleep(0.1)
         raise TimeoutError("Owned native server readiness timed out")
+
+    def released():
+        with socket.socket() as listener:
+            assert listener.connect_ex(("127.0.0.1", 18130)) != 0, "Port still has a listener"
+        with socket.socket() as probe:
+            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            probe.bind(("127.0.0.1", 18130))
 
     def world_witness(payload):
         design = Design.model_validate(payload)
@@ -240,6 +255,7 @@ def main():
                 process.send_signal(signal.SIGTERM)
                 assert process.wait(timeout=15) == 0
                 process = None
+                released()
         result["status"] = "passed"
     except BaseException as error:
         result.update(error_type=type(error).__name__, error=str(error))
@@ -252,9 +268,7 @@ def main():
             except subprocess.TimeoutExpired:
                 process.kill()
                 process.wait(timeout=5)
-        with socket.socket() as probe:
-            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            probe.bind(("127.0.0.1", 18130))
+        released()
         result["port_released"] = True
         (out / "http-exchanges.json").write_text(json.dumps(exchanges, indent=2) + "\n")
         (out / "result.json").write_text(json.dumps(result, indent=2) + "\n")
