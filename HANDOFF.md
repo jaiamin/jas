@@ -1,3 +1,19 @@
+# T17 corrected-frontier continuation (2026-11-10)
+
+Same assigned T17 implementer, clean checkpoint2c272803; no extra checkout or
+descendants. Completed abrupt/graceful generation interruption witnesses and
+whole backend Ruff/global types have separate retained source identities in
+the [T17 plan](docs/research/T17_EXTENSION_GENERATION.md). Next normal checkpoint
+and exact accepted eaa47bb32c5c5c436586b5a49915aaf5eb25be56 merge, then bounded
+final-source backend regressions, frozen T01 CURRENT and independently specified
+current-contract5/22/22 qualification. No historical parity claim. Root's corrected
+navigation review withdraws its earlier product red/green diagnosis. Current
+T17 contracts DB13/export15/library8/definition2/research2/generationv2; own
+evidence remains under64MiB,16MiB maximum forecast per job, shared floor/lock
+unchanged. Frontend/services/browser/production/providers remain held; source
+preparation forecast450–650MiB peak/32MiB evidence was reported. Implementation
+is incomplete and UNACCEPTED pending a NEW fresh integration reviewer.
+
 # Current user direction and evidence retirement (2026-11-10)
 
 ROOT owns tracked writing at published accepted `e76ef124`. Continue remaining

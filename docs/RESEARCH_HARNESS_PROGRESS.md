@@ -1,5 +1,13 @@
 # Research harness implementation progress
 
+T17 continuation: clean2c272803, abrupt/graceful interruption and full Ruff/global
+types observed at their separately retained sources. Next exact accepted eaa47bb3
+normal merge (corrected shell-inclusive navigation review; no product repair
+claim), then released final-source backend/frozen T01 CURRENT/fresh independent
+5/22/22 qualification under64MiB retained/16MiB-perjob/floor134217728/shared lock.
+No provisional sibling merge or historical comparison. Frontend/services/browser/
+production/providers remain held. T17 remains incomplete/UNACCEPTED.
+
 T17 checkpoint boundary: explicit failed+repaired generation history and exact
 integer request ledgers now export under15; DB13/library8/definition2/research2/
 generationv2 unchanged. Both independent mechanisms have separately attributed

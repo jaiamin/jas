@@ -1112,3 +1112,41 @@ realistic preflight/guard/oracle before execution. Frontend/setup/services/brows
 production/providers remain held. Historical parity is still retired. Next normal
 checkpoint/merge jobs forecast4MiB each, then the separately forecast16MiB affected
 regression job. Source fixtures and both external contract meanings stay fixed.
+
+## Continuation at the corrected accepted frontier
+
+Resumed the same incomplete implementer on Linux in the assigned checkout,
+branch `t3/sol-generation-admission`, clean HEAD
+`2c2728034bb3b5be444664ccbffb4fb28918e5ff`. The assigned accepted base remains
+an ancestor. No descendant, additional checkout, setup, service or provider work
+was started. Re-read implement-spec/TDD and the current plan/continuity, exact
+T17 body, accepted correction report, runtime/generation boundaries and frozen
+T01 source/cases. Previous observed sources and every failed outcome remain.
+
+The exact authorized final merge is now
+`eaa47bb32c5c5c436586b5a49915aaf5eb25be56`. Its navigation audit explicitly
+withdraws the earlier mutation-key product diagnosis: real WorkspaceShell already
+remounts record pages. Incoming differences are documentary and shell-inclusive
+frontend tests; backend contracts remain unchanged. This checkpoint and merge
+each forecast4MiB; the following affected finite/generation/Engine/API regression
+job forecasts16MiB, under the unchanged134217728-byte floor/shared exclusive lock
+and64MiB cumulative retained-output envelope. Frozen T01 CURRENT and the fresh
+independent5/22/22 matrix are separate later jobs, not historical comparison.
+
+New own recorder v4 is standard-library source authored for this continuation;
+inherited ignored helpers are read as data, never executed. It preflights exact
+cached-only protected-excluded names/stages and every regular ancestor before
+opening source payloads, reuses verified content-addressed blobs, and optionally
+provides an invocation-local Git selector for the unchanged frozen benchmark's
+indirect snapshot. That selector excludes untracked `*` and protected names;
+backend provenance's Python descendants are also preflighted before import.
+No protected configuration/clipboard payload is read, hashed or captured.
+
+Frontend remains held. Preparation forecast, without installation: normal frozen
+pnpm12.18 using a coordinated manager store, DISTINCT local node_modules and
+private build/test outputs; initially450–650MiB peak with at most32MiB additional
+evidence. This estimate needs metadata refinement and a concrete release before
+any frontend setup/check/browser/service work. Production and actual provider,
+paid and held-out work remain held. No final-source runtime claim follows from
+the earlier full Ruff/global type passes. One initial append patch missed its
+context and applied no changes; the corrected patch preserves that attempt.
