@@ -846,6 +846,13 @@ export interface ClaimSupport {
 export interface Analysis {
   chat_id?: string | null;
   usage?: Usage | null;
+  generation?: {
+    authorization: GenerationAuthorization;
+    contract: ReviewedFiniteContract;
+    requests: number;
+    candidates: number;
+    charged_usd: number;
+  } | null;
   id: string;
   purpose: string;
   question: string;
@@ -1126,6 +1133,30 @@ export interface ReviewedFiniteContract {
   created: string;
   specification: FiniteContract;
   sha256: string;
+}
+
+export interface GenerationAuthorization {
+  contract_id: string;
+  max_candidates: number;
+  max_requests: number;
+  max_output_tokens: number;
+  max_input_bytes: number;
+  budget_usd: number;
+}
+
+export interface FiniteExtensionProfile {
+  profile: "reviewed-finite-v1";
+  prerequisite: string;
+  interpretation: string;
+  finite_input_limit: number;
+  invalid_inputs: (number | string)[];
+  supported: string[];
+  unsupported: string[];
+  candidate_self_tests_admit: false;
+  requires_current_runtime: true;
+  requires_separate_participant_execution: true;
+  contract_schema: Record<string, unknown>;
+  authorization_schema: Record<string, unknown>;
 }
 
 export interface FiniteExtensionPackage

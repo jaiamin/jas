@@ -22,6 +22,7 @@ const stages = {
   reading: "Reading recorded turns",
   calculating: "Calculating payoffs",
   discovering: "Inspecting available mechanics",
+  generating: "Generating checked mechanics",
   retrieving: "Retrieving research context",
   probing: "Probing a copied world",
   scoping: "Scoping the question",
@@ -47,6 +48,75 @@ const stopReasons: Record<string, string> = {
   server_stopped: "Server stopped",
   failed: "Request failed",
 };
+
+const extensionSources: Partial<
+  Record<
+    ResearchArtifact["sources"][number]["kind"],
+    { path: string; label: string }
+  >
+> = {
+  finite_contract: { path: "contracts", label: "Source finite contract" },
+  extension_generation: {
+    path: "generations",
+    label: "Source generation attempt",
+  },
+  extension_review: { path: "reviews", label: "Source executable review" },
+  finite_check: { path: "finite-checks", label: "Source external check" },
+  finite_admission: {
+    path: "finite-admissions",
+    label: "Source finite admission",
+  },
+};
+
+function ResearchSource({
+  source,
+  chatId,
+}: {
+  source: ResearchArtifact["sources"][number];
+  chatId: string;
+}) {
+  const extension = extensionSources[source.kind];
+  const content = (
+    <TraceLine>
+      <TraceTitle>
+        {extension?.label ??
+          (source.kind === "run"
+            ? `Source turn ${source.turn}`
+            : source.kind === "builtin"
+              ? `Source environment: ${source.id}`
+              : source.kind === "environment"
+                ? `Source custom environment: ${source.id}`
+                : "Source research record")}
+      </TraceTitle>
+      <TraceDescription>{source.hash.slice(0, 12)}</TraceDescription>
+    </TraceLine>
+  );
+  if (extension)
+    return (
+      <a
+        href={`/api/extensions/${extension.path}/${source.id}`}
+        title={`SHA-256 ${source.hash}`}
+      >
+        {content}
+      </a>
+    );
+  return (
+    <Link
+      title={`SHA-256 ${source.hash}`}
+      to={
+        source.kind === "run"
+          ? `/runs/${source.id}?turn=${source.turn}&tab=decisions`
+          : source.kind === "builtin"
+            ? `/environments?environment=${encodeURIComponent(source.id)}`
+            : source.kind === "environment"
+              ? `/new?setup=${encodeURIComponent(source.id)}&step=conditions`
+              : `/agent?chat=${chatId}#${source.id}`
+      }
+    >
+      {content}
+    </Link>
+  );
+}
 
 function ResearchOperation({
   operation,
@@ -82,34 +152,11 @@ function ResearchOperation({
           <div className="flex min-w-0 flex-col gap-3">
             <p>{operation.summary}</p>
             {operation.sources.map((source) => (
-              <Link
+              <ResearchSource
                 key={`${source.kind}:${source.id}:${source.turn ?? ""}`}
-                title={`SHA-256 ${source.hash}`}
-                to={
-                  source.kind === "run"
-                    ? `/runs/${source.id}?turn=${source.turn}&tab=decisions`
-                    : source.kind === "builtin"
-                      ? `/environments?environment=${encodeURIComponent(source.id)}`
-                      : source.kind === "environment"
-                        ? `/new?setup=${encodeURIComponent(source.id)}&step=conditions`
-                        : `/agent?chat=${research.scope.chat_id}#${source.id}`
-                }
-              >
-                <TraceLine>
-                  <TraceTitle>
-                    {source.kind === "run"
-                      ? `Source turn ${source.turn}`
-                      : source.kind === "builtin"
-                        ? `Source environment: ${source.id}`
-                        : source.kind === "environment"
-                          ? `Source custom environment: ${source.id}`
-                          : "Source research record"}
-                  </TraceTitle>
-                  <TraceDescription>
-                    {source.hash.slice(0, 12)}
-                  </TraceDescription>
-                </TraceLine>
-              </Link>
+                source={source}
+                chatId={research.scope.chat_id}
+              />
             ))}
             <CodeBlock size="sm">
               <CodeBlockContent wrap className="max-h-64">
@@ -162,6 +209,7 @@ function ActivityDetail({
 export function ReplyActivity({ row }: { row: Analysis }) {
   const [expanded, setExpanded] = useState(false);
   const planning = row.output?.planning;
+  const generation = row.generation;
   const activity = row.output?.activity ?? [];
   const research = row.output?.research;
   const sources = planning?.sources ?? [];
@@ -182,6 +230,7 @@ export function ReplyActivity({ row }: { row: Analysis }) {
     ).values(),
   ];
   const hasDetails =
+    !!generation ||
     !!planning?.brief ||
     sources.length > 0 ||
     examined.length > 0 ||
@@ -232,6 +281,39 @@ export function ReplyActivity({ row }: { row: Analysis }) {
         <div className="-ml-7">
           <TraceCollapsibleContent className="ml-2.5">
             <Trace>
+              {generation && (
+                <ActivityDetail title="Generation allowance">
+                  <div className="flex flex-col gap-2">
+                    <p>
+                      {generation.requests}/
+                      {generation.authorization.max_requests} model requests ·{" "}
+                      {generation.candidates}/
+                      {generation.authorization.max_candidates} candidate
+                      attempts
+                    </p>
+                    <p>
+                      ${generation.charged_usd.toFixed(6)} charged · $
+                      {generation.authorization.budget_usd} ceiling
+                    </p>
+                    <p>
+                      {generation.authorization.max_output_tokens} output tokens
+                      · {generation.authorization.max_input_bytes} input bytes
+                      per request
+                    </p>
+                    <a
+                      href={`/api/extensions/contracts/${generation.contract.id}`}
+                      title={`SHA-256 ${generation.contract.sha256}`}
+                      className="underline underline-offset-4"
+                    >
+                      Frozen generation contract
+                    </a>
+                    <p>
+                      Unknown usage keeps its reservation. Participant execution
+                      requires a separate action.
+                    </p>
+                  </div>
+                </ActivityDetail>
+              )}
               {activity.length > 0 && (
                 <Trace aria-label="Recorded activity">
                   {activity.map((recordedStage, index) => {

@@ -1499,3 +1499,407 @@ intended red at the actual WorkspaceShell + AgentPage HTTP boundary. The new UI
 slice cannot execute or be implemented before its own release/observed intended
 red. Browser/build/services/production/providers/paid/held-out work remain held.
 T17 is incomplete and UNACCEPTED pending a NEW fresh integration reviewer.
+
+
+## Explicit generation UI contract frozen, unrun (2026-11-10)
+
+Normal-hook finite-inspection checkpoint309ce7f1 passed Gitleaks. Exact accepted
+670ab3ee73b025ea0695ce941d219be980819a95 merged normally without conflicts as
+b6b605cd68ca6af5005f07c345db80ed408dc4de. Both histories remain; no provisional
+sibling was merged. Merge source2548c998... is recorded with before/after safe
+tracked-only selection, and no combined-source check is claimed from this merge.
+
+The [independent generation UI contract](T17_GENERATION_UI_CONTRACT.md) and its
+ONE intended actual-shell HTTP-dispatch test are frozen before any output.
+No generation UI implementation, candidate, WAT execution or new frontend check
+was run. Literal files:
+
+- `frontend/src/test/finite-authoring.ts`: SHA256 `4fe723a1cdcaca6cc9b77994751736bdcd37d2b22e9b63aca602487505e39d5f`, 4915 bytes.
+- `frontend/src/components/agent/generation-authorization.test.tsx`: SHA256 `c442a60e0199c71923c9bd64c4ed82ab5e4dc88e04e51b585d2f8f97257dbaa4`, 7099 bytes.
+- `docs/research/T17_GENERATION_UI_CONTRACT.md`: SHA256 `e7110f382fb25b0680443c8da9b4db0e58c5aa4945bd8553c8ca2342f114e537`, 8669 bytes.
+- `backend/tests/fixtures/t17_cosigned_escrow_contract.json`: SHA256 `eef4d9c9c7f23e3079d8ff140284be3792dd31496dc86e30c5cef477766a4407`, 2693 bytes.
+
+The exact supplied table remains unchanged. The UI fixture uses synthetic IDs,
+hashes/runtime readiness and public schema documentation; it cannot qualify a
+real freeze, runtime, admission, provider or intelligence. Intended red is the
+missing New mechanics entry after the actual shell/composer/settings load.
+Initial import/render/DTO failure would instead consume an authoring observation.
+Only the explicit bounded action may post generation to /api/chats; the contract
+freeze itself sends no other mutation. The full literal body, safety follow-ons
+and realistic separate red/green/browser forecasts are in the contract.
+
+Request ONE focused RED in existing dependencies at268435456-byte under-lock
+entry (unchanged134217728 floor+128MiB peak), <=4MiB new evidence inside frontend
+16MiB. Green/affected lint/forced types would be separate bounded jobs; later
+browser/build/service proposal is32MiB outputs/256MiB incremental peak plus floor
+(entry402653184), own18129/build/DB/existing headless shell. These are proposals,
+not releases. Production/non-root and actual providers/paid/held-out remain held.
+No descendants, service/browser, additional checkout or publication. T17 remains
+incomplete and UNACCEPTED; next stage awaits its concrete resource release.
+
+Generation-UI spec checkpoint01: exclusive flock -x -w45 timed out (exit1)
+before recorder/commit/hook/source capture; no retry. Source-frozen test/spec
+remain staged at HEADb6b605cd, while the completed finite-inspection checkpoint
+and exact accepted670ab3ee merge are committed. No owned active job or lock.
+The next boundary needs the normal spec checkpoint and separately released UI
+intended RED; no generation UI implementation/check/browser/service is implied.
+
+## Generation authorization observation01 — setup failure, no product red
+
+The single released `generation-authorization-red-01` exits1 (one failed/1.82s)
+at exact unchanged source
+`2f621226a05c9debfb01da7fb95a6a57e65b4b472a9d2d69b9f16607efb4453f`.
+It stops at the initial Agent heading, before the missing New mechanics seam:
+jsdom has no IntersectionObserver, and the real decorative AgentTarget uses it.
+The test author omitted that external browser API stub. This is an environment/
+fixture-authoring failure, not a product defect or intended red. No generation
+UI implementation, green, lint, forced types or follow-on safety check follows.
+No automatic rerun or broadening. The original test/source, raw log, before/after
+source selection and failure receipt remain retained unchanged.
+
+Entry691,040,256 bytes; immediately before command690,642,944; after689,643,520.
+The unchanged268435456 entry and134217728 floor+128MiB peak passed. New evidence
+430,257 bytes before receipt including353,553 deduplicated source-pool bytes;
+frontend local footprint696,537 before receipt. Flock released; no owned job,
+service/browser, provider/paid/held-out work. No inherited ignored helper ran.
+
+Source-only correction adds an IntersectionObserver no-layout stub at the browser
+boundary, without replacing AgentTarget, the actual shell/composer or any semantic
+assertion. It leaves the decorative target offscreen. The reviewed contract JSON,
+HTTP authority/limits, independent oracle, fixture and frozen UI contract remain
+byte-identical. Corrected intended-red test SHA256 `e49f283c93dd590271df355874a753ca1a88a80a9d553a4b815c2bfff9f656b2`;
+source-specifications/generation-authoring-ui-env-v2.json records its pre-output
+freeze and original c442a60e... identity. The correction is UNRUN. The original
+contract's UNRUN label remains immutable historical pre-output text; this record
+is its observation history.
+
+Concrete next proposal: ONE distinct generation-authorization-red-02 with this
+same focused actual-shell test and only the browser-API setup correction, existing
+private env, shared exclusive lock, >=268435456 under-lock entry, <=4MiB new
+outputs inside existing16MiB frontend. No automatic retry, fallback, setup or
+reduced floor. Only a genuine intended absence-of-control red can release its
+minimal product implementation and dependent green/static/safety slices. T17
+remains incomplete/UNACCEPTED. Normal source/failure checkpoint is the only
+remaining authorized stage-boundary hook job; no functional check is implied.
+
+Stage-boundary normal checkpoint generation-ui-environment-checkpoint-01 also
+retains an exclusive-flock45s acquisition timeout (exit1): no recorder, source
+capture, commit or Gitleaks hook starts. No retry/bypass; earlier timeout is
+unchanged. Corrected unrun test, immutable contract and diagnostic docs remain
+staged at HEADb6b605cd. No owned active job or flock. Proposed next functional
+observation remains distinct red02 after a concrete release; no product red yet.
+
+
+## Authorization intended red02 observed (2026-11-10)
+
+Frozen observer-only test e49f283c... reaches the intended absence-of-New-mechanics
+RED, exit1/735ms total, at unchanged source
+`c14655b55d4473777a63ead2df5ca54247ad81beabebb11f58871a4fb51cb26f`.
+The real unchanged AgentTarget/heading/composer/settings render first; the
+assertion fails at line106 for the absent named control. Original red01 remains
+an environment failure. Semantic assertions, external JSON, oracle and limits
+are unchanged. Entry656814080, pre-command656424960, after656240640; combined
+new evidence475540 bytes before receipt. Shared flock is released. This observed
+intended red now authorizes the minimal explicit authoring/allowance path, followed
+by same focused green and separate affected lint/forced types. Further safety
+slices remain test-first. No provider/build/browser/service/production grant.
+
+### Generation-authoring safety continuation (2026-11-10)
+
+The per-chat draft red02 at source `1bd580c862a294c400b95f05a986656adda63229a6f7383a03302b7fae5593ee`
+reached the intended empty-restored-input failure. The same navigation test is
+GREEN01 at `a98637f84bb8621fcf1bae9f38c08326e816dbabed2c4f8babfa7ef0ab822d44` (1 pass).
+The repair keeps raw JSON, five limits and frozen ID/hash/text in a distinct
+`jas-mechanics-authoring-draft-v1` browser-session record per existing Agent draft
+key. Unknown/incompatible browser draft meanings are explicitly rejected and kept
+until the user clears only that draft; no backend reset or compatibility reader.
+Restored IDs are read through the public contract endpoint and checked against
+the selected hash/format. Editing invalidates selection and an epoch rejects
+obsolete freeze callbacks. Source mutation after this green still needs final
+static/regression qualification.
+
+Next independent literal observation, frozen before output: submit one freeze
+from First chat; navigate to Second chat and enter the same external JSON plus
+one trailing newline and requests7; resolve the First-chat POST. Second chat must
+retain its exact text/requests7, have no selected contract link and disabled
+Authorize. The sole mutation is the original unchanged contract freeze. This is
+a late-response isolation check, not an additional authority or a model call.
+
+Late-chat observation01 passed first (source `bcbf608721cf02bc6f2afd4693004f7b9dbe77ba2c7a15f868752ca4d652d449`),
+so no isolation repair is claimed. Next literal blocker observation: qualified
+freeze is not model authority; for unqualified, failed or validation-disabled
+runtime, explicit generation is disabled with the containment-check reason/link.
+With wrong Researcher/planner identity or unavailable OpenAI, generation is
+disabled with the Sol-configuration reason. In all six cases only the one exact
+external-contract freeze POST is permitted; no qualification/model/participant
+operation is invoked. The synthetic DTOs do not qualify real containment.
+
+Blockers observation01 retained exit1: all three containment cases passed; three
+Sol cases already disabled correctly but the test requested role=alert for a
+stock default Alert which intentionally exposes role=status. This is a test
+authoring role error, not a product failure or authorization for implementation.
+Correct only that lookup to the existing stock status role, keeping the exact
+reason text, disabled-generation and sole-freeze assertions unchanged; freeze
+this distinct observation02 before output. No production change for this failure.
+
+Initial blockers observation02: 6 pass with no production change. Next frozen
+profile observation: scripted server identifies `reviewed-finite-v0`; freezing
+the unchanged contract may succeed, but Authorize stays disabled and an explicit
+unsupported-generation-profile error identifies that returned profile. Do not
+label an incompatible profile as failed containment or select a compatibility
+profile. Only the contract freeze POST is authorized.
+
+Profile RED01 reached the missing explicit incompatibility reason; GREEN01 passes
+with a distinct unsupported-profile error, without conflating it with containment.
+Next frozen stale-runtime observation: start qualified and freeze the contract;
+close the dialog, change the public runtime response to unqualified, reopen.
+Authorize must be disabled while freshness is established and remain disabled;
+a new GET runtime must occur and the containment reason must replace qualification.
+Exactly the original freeze POST remains; opening never calls qualification or a
+provider. Cached qualified data alone is insufficient authorization readiness.
+
+Stale-runtime red01 failed before its intended seam: frozen-link rendering
+precedes completion of the existing public contract GET, so the initial ready
+assertion ran before that restoration completed. Retain as test-timing failure,
+not a stale-runtime red. Correction only awaits the same initial enabled state;
+reopen still requires immediate disabled state/new GET/unqualified reason. Freeze
+this corrected red02 before output; no production change from red01.
+
+Stale-runtime red02 observed a still-enabled action after reopening; GREEN01 now
+passes with an explicit read refresh on dialog open and readiness blocked during
+fetch/error. It does not auto-run runtime qualification. Accepted ROOT update
+40c32ff60593ee195cd4df21289448e385a95f03 is recorded for normal merge at the next
+coherent boundary; this current UI slice is not interrupted. T12 accepted finite
+DEVELOPMENT/interaction repair requires combinedDB14/export16/library9 on merge,
+not intermediary meanings or compatibility aliases. Requalification remains next.
+
+Next frozen pending/reconnect observation: load a valid existing pending general
+chat with explicit generation allowance1/6/1024/32000/$0.25, immutable contract,
+requests1/candidates0/charged$0.001 and generating stage. Send is disabled. Trigger
+its EventSource error, observe the actual1500ms polling GET, unmount/remount the
+actual shell at that chat; the same question and disabled Send restore with zero
+POSTs and no PageBoundary error. No candidate output or participant authority.
+
+Pending reconnect observation01 retained a fixture lookup failure: the exact
+question correctly appeared both in the heading and conversation bubble, making
+findByText ambiguous. Correct only to the accessible heading with that identical
+question, retaining stream-close, real poll, remount, disabled Send and zero-POST
+assertions. This is not a product failure and authorizes no implementation.
+Freeze distinct observation02 before output.
+
+Pending reconnect observation02 passes first at its intended seam, with no
+production repair. Next independently literal inspectability slice: existing
+completed chat records5 requests of8,2 candidates of2, charged$0.012300 of$0.25,
+per-request output1024/input32000 and the frozen contract ID/hash. Under the
+stock closed Activity, a closed Generation allowance disclosure must expose
+those exact public recorded quantities, the unknown-usage reservation caveat
+and the immutable /api/extensions/contracts/2222222222222222 link/hash, with zero
+writes. Synthetic ledger values are UI inputs, not paid spend or runtime proof.
+
+Recorded allowance RED01 reached missing Generation allowance disclosure;
+GREEN01 passes with exact public quantities/source hash and no new mutation.
+Next frozen history/source observation uses two independently scripted public
+research-operation DTOs: rejected original external_check_failed and explicit
+repair referencing original8888888888888888, admitted_pending_review. Both
+summaries, stop/repair records and handoff remain inspectable. Source links must
+reach exact public contracts/generations/reviews/finite-checks/finite-admissions
+endpoints with their recorded64-hex hash, rather than chat anchors. No generation
+journal, worker or actual model is executed by these UI data. Original failure
+is not hidden or replaced by the repaired attempt.
+
+Attempt-source RED01 reached the existing generic/dead chat-anchor mapping;
+GREEN01 passes with real public record endpoints and both retained attempts.
+Next frozen pending-stage observation: existing pending generation stage
+`generating` must announce `Generating checked mechanics` in the public status,
+not a generic thinking stage. Send stays disabled, zero writes. This is status
+projection only, with no new executable/persisted meaning or sampling authority.
+
+Pending-stage RED01 observed Thinking for generating; GREEN01 passes after only
+the missing public label mapping. Next frozen restoration safety observation:
+old browser-draft format stays byte-identical and blocks authorizing until an
+explicit Clear mechanics draft action, which must leave another draft key
+untouched and issue no POST. A current-format restored selected ID with a
+mismatched GET hash keeps raw text, shows an identity error, suppresses the
+selected source link and blocks generation, with no mutation or alternate source.
+These observations qualify the earlier navigation-repair guards, not new features.
+
+Draft integrity observation01 passes both existing guards. One final
+per-chat-draft boundary is frozen before outputs: after a successful explicit
+freeze, leave Model requests blank or0 (unfinished/invalid, not an API allowance),
+navigate to Second chat and return. Preserve exact raw contract JSON and the
+unfinished limit instead of discarding them or silently restoring numeric defaults;
+Authorize remains disabled and no additional POST is allowed. Draft storage is
+not executable authority. Any change to the newly observed browser persisted
+meaning must receive a distinct current draft format and reject the old format;
+no compatibility reader, oracle change or backend contract change is authorized.
+
+Unfinished-limit RED01 observed both blank/zero drafts returning empty contract
+text. The minimal repair introduces current browser draftv2: exact same four
+fields, with finite numeric or explicit null (blank) draft limits. Out-of-range
+numbers remain editable, while valid range/integer checks gate authorization.
+Browser draftv1 is explicitly incompatible and stays preserved until explicit
+clear; no migration/defaulting or backend meaning changes. Current restoration
+fixture alone is updated to v2; historical v1 sources/outcomes remain immutable.
+The external JSON and generation API ranges/authority stay unchanged.
+
+Unfinished-limit GREEN01 passes both cases. Formatting01 safely formats6/11
+explicit affected files; it is not a behavioral check. Affected unit aggregate01
+retains33 pass/1 fail: original authorization test clicked while the restored
+contract GET still disabled Authorize, before the intended explicit-dispatch
+seam. No extra mutation occurred. Narrow timing correction waits for that same
+enabled action before clicking; all literal allowance/HTTP/independent JSON,
+no-duplicate and pending assertions stay unchanged. No production repair from
+this aggregate failure. Freeze distinct aggregate02 before output.
+
+Affected unit aggregate02 passes34/5files; affected lint01 passes11 files at
+source1aaf4451.... Forced types01 retains13 harness-only diagnostics:12 role-query
+`exact` properties unsupported by installed Testing Library declarations and one
+EventSource parameter property forbidden by erasableSyntaxOnly. Remove only the
+ignored unsupported properties (string accessible-name matching stays exact),
+and spell the same URL assignment as an erasable class field/constructor.
+No assertions, DTO meanings, provider/model, production code or dependency changes.
+The find-docs skill was read; its npx setup is outside the held setup scope,
+so the installed version's authoritative declarations were inspected directly.
+
+Forced types02 retains one remaining multiline exact-property diagnostic; the
+first narrow edit corrected inline occurrences but missed this single multiline
+field. Remove that same unsupported option only; distinct types03 is frozen
+before output. No type/check weakening or production change.
+
+## Completed generation UI UNIT boundary (2026-11-10)
+
+The approved immutable UI contract remains SHA256
+`e7110f382fb25b0680443c8da9b4db0e58c5aa4945bd8553c8ca2342f114e537`; the
+independent co-signature fixture remains `eef4d9c9c7f23e3079d8ff140284be3792dd31496dc86e30c5cef477766a4407`.
+The literal table, authority, ceilings and semantic assertions were not relaxed.
+The earlier UNRUN wording in that frozen contract is historical pre-output text.
+
+At exact source `0cb4411c8c787cb1055e2e367f54fcb81d41d9f3c724681bc923e462a488f654`,
+34 affected tests across5 files, affected11-file lint and global forced TypeScript
+all pass. These are jsdom actual-shell/public-HTTP-boundary observations, with
+real routing/TanStack state and synthetic external DTOs. They do not newly qualify
+actual Sol/admission/Engine, a browser, production, live competence or held-out work.
+The earlier backend DEVELOPMENT results retain their separate sources.
+
+The secondary New mechanics form accepts independent JSON, explicitly freezes
+it, exposes source ID/hash, and separately authorizes bounded generation. Saved
+authority never attaches to ordinary Send/Enter. Per-chat JSON/limits/frozen
+identity survive navigation; edits/late responses cannot reattach obsolete or
+other-chat identity. Incompatible drafts remain preserved until explicit clear;
+current browser formatv2 retains unfinished limits and blocks invalid authority.
+Old browserv1 is rejected explicitly, with no compatibility reader or migration.
+Runtime refresh, unsupported-profile/Sol blockers, pending/poll/remount without
+resubmission, exact recorded charges/allowances, failed/explicitly repaired attempts
+and immutable source links are covered. Inspecting/saving never authorizes
+participant execution. Stock controls, tokens, disclosures and remote-state owner
+are retained. Current backend meanings are unchanged by this unit stage.
+
+Every distinct attempt below retains its original log, receipt, exact source
+manifest and source restoration bytes in own ignored evidence. Formatter jobs
+are source mutations, not behavior passes. Pass-first properties are not repairs.
+Earlier spec/environment checkpoint lock timeouts remain failed and unchanged;
+no hook bypass or automatic retry occurred. The one metadata summary KeyError
+(no test or payload mutation) is separately retained.
+
+| Attempt | Exit / interpretation | Exact source before (and after when changed) |
+| --- | --- | --- |
+| `generation-ui-environment-checkpoint-01` | 1 / flock timeout; no command/hook | none; lock acquisition only |
+| `generation-authorization-red-01` | 1 / environment FAIL: missing IntersectionObserver | `2f621226a05c9debfb01da7fb95a6a57e65b4b472a9d2d69b9f16607efb4453f` |
+| `generation-authorization-red-02` | 1 / intended RED: New mechanics absent | `c14655b55d4473777a63ead2df5ca54247ad81beabebb11f58871a4fb51cb26f` |
+| `generation-authorization-green-01` | 1 / retained FAIL: profile text before loaded limit | `d36c25c5ae0fd5e201818fc60133ce78f1c48b3e8566c9bbc1b680169c180f79` |
+| `generation-authorization-green-02` | 0 / 1 PASS: explicit authority/pending | `8828a529ed535a7337bfcca6c7a70e37a2e76dd3786c4d563bac1168d0948431` |
+| `generation-authorization-format-01` | 0 / PASS: formatting only | `8828a529ed535a7337bfcca6c7a70e37a2e76dd3786c4d563bac1168d0948431` → `40d868f5af99fdef1bf1cb4c7680259fdf9414c96818c78a08eaa5ede0a90c75` |
+| `generation-authorization-lint-01` | 0 / PASS: affected lint | `40d868f5af99fdef1bf1cb4c7680259fdf9414c96818c78a08eaa5ede0a90c75` |
+| `generation-authorization-types-01` | 0 / PASS: forced TypeScript | `40d868f5af99fdef1bf1cb4c7680259fdf9414c96818c78a08eaa5ede0a90c75` |
+| `generation-ordinary-observation-01` | 0 / 2 PASS first observation; existing property | `b2d7a5d368da4a39475c61daa6f62a24985d99b835e6eb2bc1c0ef67db1eb376` |
+| `generation-freeze-failure-observation-01` | 0 / 2 PASS first observation; existing property | `706bacfd56844c7e25e2f963d3d91f97b413f7d7e73e4da657d6eecc639fa2a2` |
+| `generation-edit-red-01` | 1 / intended RED: obsolete selected identity | `cd8207c257704c71b83e55484fae6d9742545bf8463fc85ba0782c4b86cf83bb` |
+| `generation-edit-green-01` | 0 / 1 PASS: edit invalidates identity | `2a3c5e07988e41f168cb43a6da33fba5acfce6c655b099ac49420b3e612de6c9` |
+| `generation-late-edit-observation-01` | 0 / 1 PASS first observation after edit repair | `294a6b3b05c76cd793e3293ff7d2f0a97e0630a4995361d3ac3c7cdd58ede616` |
+| `generation-draft-red-01` | 1 / authoring FAIL: navigation/DTO setup | `1f54f34ee670d4a87681704766b6343ab1c2bf87e1c90e6549afa4ee2eda5ca7` |
+| `generation-draft-red-02` | 1 / intended RED: per-chat draft lost | `1bd580c862a294c400b95f05a986656adda63229a6f7383a03302b7fae5593ee` |
+| `generation-draft-green-01` | 0 / 1 PASS: per-chat draft restoration | `a98637f84bb8621fcf1bae9f38c08326e816dbabed2c4f8babfa7ef0ab822d44` |
+| `generation-late-chat-observation-01` | 0 / 1 PASS first observation; existing property | `bcbf608721cf02bc6f2afd4693004f7b9dbe77ba2c7a15f868752ca4d652d449` |
+| `generation-initial-blockers-observation-01` | 1 / 3 PASS; 3 authoring role lookup FAIL | `9179bf9c69b040d411d603a4b2cd0013a3040b6b4bff0598e62a5bf82e6d8ed7` |
+| `generation-initial-blockers-observation-02` | 0 / 6 PASS; no product repair | `241578ba1437cb194a68a9f97ec2dddf57e78b7388bc1a809ded7972c4389839` |
+| `generation-profile-red-01` | 1 / intended RED: unsupported reason absent | `0b61dc260b1b8c916093f161f1cf8d7c58fca31ec43826ba44b0406c84d81d60` |
+| `generation-profile-green-01` | 0 / 1 PASS: distinct profile error | `4e8d1ade790406ceae152187c3682937f8c45b9b2f97bffdcd02972ce0d84cde` |
+| `generation-stale-runtime-red-01` | 1 / timing FAIL before intended seam | `e4831b280c5e145ae40eea5140de77addc8bb3ae03ddaede329ef2040eefdf33` |
+| `generation-stale-runtime-red-02` | 1 / intended RED: cached readiness on reopen | `bd3a4b44058fc9c4270661f7d0464c15853fdc155b77f4dae6179ef3d0c6c206` |
+| `generation-stale-runtime-green-01` | 0 / 1 PASS: refresh and block during read/error | `1527df25180759e1bb8c135544e1ac2bbde1dd0ab2eefbcd50546e09c091d2dd` |
+| `generation-pending-reconnect-observation-01` | 1 / authoring FAIL: ambiguous question lookup | `da6cff8565e45efbbd5179199288111e15b1508d151ae2120e9cbb28646169a1` |
+| `generation-pending-reconnect-observation-02` | 0 / 1 PASS first intended observation; existing property | `e32b514626ccbafcacc9ad6230ea71c0cd6307615b4ca92bdd0fcc4f59fd360c` |
+| `generation-recorded-allowance-red-01` | 1 / intended RED: allowance disclosure absent | `ae156a33d4edf25fc90b032e06b03cda29f5de9fe2e5863f3a7a82628dc3f023` |
+| `generation-recorded-allowance-green-01` | 0 / 1 PASS: recorded limits/charges/source | `f5827f907fade93ecda9c6cf41b2b48681ff384d31a0b1ff6f4e3ffa072e6617` |
+| `generation-attempt-sources-red-01` | 1 / intended RED: generic chat-anchor source links | `88ada38af3f8b18f142fdf29edfc1a8d28cbd9793599865a8e1a950c5abc7854` |
+| `generation-attempt-sources-green-01` | 0 / 1 PASS: failed/repaired immutable record links | `8f259f7a127f2f9c745bc65c608e7f31d4786d07e4099e97344ee31ebc09bcb8` |
+| `generation-stage-red-01` | 1 / intended RED: Thinking for generating | `02aefb1eedc91fa3fb79412f33c695e36ec3a1dd2f605e7d7dd3249b90c945bd` |
+| `generation-stage-green-01` | 0 / 1 PASS: actual public stage | `776b7a23178966dadcd9b0165b5ff4946fc0f3dea43404d6349fcde46fe5cee9` |
+| `generation-draft-integrity-observation-01` | 0 / 2 PASS first observation; existing guards | `e431d8afc05bfa57e2df4c3b9d1dfe2217393ee41617b13902297188726758f8` |
+| `generation-unfinished-limit-red-01` | 1 / 2 intended RED: invalid limit discarded contract | `79b0e408e0f9769b0a7755a34d013828733fb93278b2b2dc012eab4baaec7028` |
+| `generation-unfinished-limit-green-01` | 0 / 2 PASS: nullable draftv2; valid authority only | `81e8dcc88e0a48d8f30eeb47fa2551a73103f49a3d868656961666c8506cf349` |
+| `generation-safety-format-01` | 0 / PASS: formatting only | `0327186d8d3edc53a34a218504ae05036d6a8bc52e92a73e20eca18106a0fd1e` → `61e4cd1fdd7a5bfb4c40ec74bdc0e084c0228a39062f109cf58f7d8e72f5c7e2` |
+| `generation-ui-affected-unit-01` | 1 / 33 PASS; 1 timing FAIL | `61e4cd1fdd7a5bfb4c40ec74bdc0e084c0228a39062f109cf58f7d8e72f5c7e2` |
+| `generation-ui-affected-unit-02` | 0 / 34 PASS / 5 files | `1aaf44516350af75027ae81c089eeef61c208f7158a5f05a02245f50eec2d88e` |
+| `generation-safety-lint-01` | 0 / PASS: affected lint | `1aaf44516350af75027ae81c089eeef61c208f7158a5f05a02245f50eec2d88e` |
+| `generation-safety-types-01` | 1 / FAIL: 13 harness type diagnostics | `1aaf44516350af75027ae81c089eeef61c208f7158a5f05a02245f50eec2d88e` |
+| `generation-safety-types-02` | 1 / FAIL: one missed multiline option | `61e42521266e2dcd726ce1f2c6d02634a0045564d6169a9982cd6f7b17a90b1d` |
+| `generation-safety-types-03` | 0 / PASS: global forced TypeScript | `5b0434532d761271479fd8a6ed6921ac5fdde025f6c6cdc85727562152b83a2a` |
+| `generation-safety-format-02` | 0 / PASS: formatting only | `5b0434532d761271479fd8a6ed6921ac5fdde025f6c6cdc85727562152b83a2a` → `0cb4411c8c787cb1055e2e367f54fcb81d41d9f3c724681bc923e462a488f654` |
+| `generation-safety-lint-02` | 0 / PASS: 11 affected files, final unit source | `0cb4411c8c787cb1055e2e367f54fcb81d41d9f3c724681bc923e462a488f654` |
+| `generation-safety-types-04` | 0 / PASS: global forced TypeScript, final unit source | `0cb4411c8c787cb1055e2e367f54fcb81d41d9f3c724681bc923e462a488f654` |
+| `generation-ui-affected-unit-03` | 0 / 34 PASS / 5 files, final unit source | `0cb4411c8c787cb1055e2e367f54fcb81d41d9f3c724681bc923e462a488f654` |
+
+All source captures used invocation-local cached-only Git selection with untracked
+'*' exclusions, protected-name rejection and pre-open symlink/descendant checks.
+New stage recorders were authored here; inherited ignored helpers were only read
+as data. Bytecode is disabled. The frontend footprint after the last test receipt
+is3,391,628 bytes of16MiB; backend source/evidence56,077,307 of64MiB. Remaining
+backend room is11,031,557 bytes before the stage inventory/checkpoint/merge. No
+source/custody hardlink or prior restoration map was altered. No output was
+compacted or deleted in this UI stage. Source blobs were byte-restored/verified
+by each recorder; earlier own closed-DB restoration map c0640877... is retained.
+ROOT historical raw remains retired; no restored BEFORE or historical-parity claim.
+
+Dependency measurements are logical, not exclusive shared usage: private venv
+180,513,935 bytes; distinct frontend modules376,692,192; private pnpm metadata
+176,781,363. Hardlinks mean these are not new shared-space allocations. The latest
+metadata-only free measurement751,820,800 bytes is shared/unreserved. No new
+install/cache consumer/store write was made. Flock releases between every job.
+
+Next coherent work: normal-hook checkpoint, exact accepted40c32ff60593ee195cd4df21289448e385a95f03
+merge after reading T12_INTEGRATION_REVIEW, preserve conflicts/both histories,
+combine current contracts asDB14/export16/library9 (workflow1.0.0 plus finite/
+generation). IntermediateDB12/13/export13/15/library8 must reject without alias,
+migration or reset. Source integration forecast<=1MiB retained output; measure
+remaining64MiB room before bounded final backend/matrix/frozen-T01-current jobs.
+Do not infer a combined-source pass from the current unit source.
+
+Separate proposed build/browser stage remains HELD: no new setup, existing
+private dependencies and headless shell, own build/DB/port18129; <=32MiB retained
+outputs and256MiB incremental disk peak plus134217728 floor, entry402653184.
+Actual keyless scripted Sol/Luna public lifecycle must join authoring/generation/
+admission/pending-review/save/explicit participant execution/replay;390/1440,
+both themes, keyboard/focus, navigation/drafts and reconnect. Non-root production
+containment/admission/Engine/replay requires its own later release. Provider/paid/
+live/held-out work remains held; historical actual spend is unchanged.
+T17 remains incomplete/UNACCEPTED, pending those gates and a NEW fresh integration
+reviewer; this is a unit-stage completion, not ticket/final-product acceptance.
+
+### UNIT evidence inventory and normal checkpoint
+
+`generation-ui-inventory-01` passes: own closed-output inventory
+`.tools/t17/frontend-evidence/unit-stage-inventory-10.jsonl`, SHA256
+`c0d178918b21db3bc0cca182d33d71a4296fc5240e730bf57ebed2e31a74e484`,
+2396 regular files/59,976,002 payload bytes plus69 symlink metadata entries.
+All names/ancestors were preflighted before regular-file hashes; symlink targets
+were neither read nor followed. Private pnpm cache, this open inventory job and
+the inventory/summary itself are explicit exclusions; later checkpoint/merge
+receipts are later additions. No evidence was removed. Original restoration
+mode/integer-ns values and per-attempt byte-restoration receipts remain intact.
+This is a bounded stage inventory, not the final closure seal.
+
+The34 tests comprise the actual-shell generation/finite workflow cases plus
+seven existing isolated AgentReply regression units; those7 do not exercise the
+shell. The passed lint/global types and these cases qualify their exact0cb4411c
+source, with later documentary-only changes separately source-stamped.

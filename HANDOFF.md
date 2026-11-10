@@ -1,3 +1,69 @@
+# T17 generation-authoring UNIT boundary (2026-11-10)
+
+At source0cb4411c...,34 affected tests/5 files, affected11-file lint
+and global forced TypeScript PASS. Explicit independent-contract freeze and
+bounded generation authority are separate from ordinary Send and participant
+execution. Test-first repairs cover stale frozen selection, per-chat/unfinished
+drafts (current browserv2 rejectsv1), incompatible profile/stale runtime and
+public allowance/attempt/source inspection. First-pass isolation/reconnect
+properties and every environment/authoring/type failure stay distinctly recorded
+in docs/research/T17_EXTENSION_GENERATION.md; no assertion/oracle relaxation.
+Backend56.1MB/64MiB, frontend3.4MB/16MiB; lock released. No new setup, provider,
+service/browser, build, production or paid/held-out work. Exact accepted40c32ff6
+is next normal merge, combinedDB14/export16/library9, not yet qualified here.
+Separate build/browser proposal: no setup, <=32MiB outputs,256MiB peak+floor,
+entry402653184, own18129/build/DB/existing headless shell. Held pending release.
+T17 incomplete/UNACCEPTED; a NEW fresh integration reviewer remains required.
+
+Stage-boundary normal checkpoint generation-ui-environment-checkpoint-01 also
+retains an exclusive-flock45s acquisition timeout (exit1): no recorder, source
+capture, commit or Gitleaks hook starts. No retry/bypass; earlier timeout is
+unchanged. Corrected unrun test, immutable contract and diagnostic docs remain
+staged at HEADb6b605cd. No owned active job or flock. Proposed next functional
+observation remains distinct red02 after a concrete release; no product red yet.
+
+# T17 generation UI environment boundary (2026-11-10)
+
+T17 generation authorization red01 is an ENVIRONMENT/AUTHORING FAILURE, not
+an intended product red: real AgentTarget needs IntersectionObserver, omitted
+from the jsdom setup. One failed/1.82s at exact source2f621226..., no product
+implementation or dependent checks, no retry. Failure/source/log retained. Only
+that browser API stub is source-corrected and independently frozen UNRUN; all
+literal assertions, reviewed JSON/oracle/authority/limits are unchanged. See T17
+plan for corrected test SHA and one-red02 proposal under unchanged268435456
+entry/4MiB-job/16MiB stage. Flock released, no owned active job/service/browser;
+providers/paid/held-out/build/production remain held. T17 incomplete/UNACCEPTED.
+
+Generation-UI spec checkpoint01: exclusive flock -x -w45 timed out (exit1)
+before recorder/commit/hook/source capture; no retry. Source-frozen test/spec
+remain staged at HEADb6b605cd, while the completed finite-inspection checkpoint
+and exact accepted670ab3ee merge are committed. No owned active job or lock.
+The next boundary needs the normal spec checkpoint and separately released UI
+intended RED; no generation UI implementation/check/browser/service is implied.
+
+# T17 generation UI source freeze (2026-11-10)
+
+T17 finite inspection is checkpointed309ce7f1 (normal Gitleaks PASS). Exact
+accepted670ab3ee merged normally without conflict asb6b605cd; no sibling merge.
+Qualified UI source remainsf5a1888f (actual-shell focused1 PASS, affected11-file
+lint and forced TypeScript PASS); backend dispatch03 passes as an existing T14
+property at0c025fbd, with wrap-only Ruff/globalty at70adfc59. These are segmented
+qualification, not fresh checks of the merged/full source. Backend/frontend
+all failures and source identities remain in the T17 plan; T01 CURRENT retains
+four export-v4 failures/false flags/exit1, with no historical parity claim.
+
+The explicit contract-authoring/generation authorization UI contract v1 is now
+source-frozen, with ONE UNRUN actual-shell HTTP-dispatch test and complete
+synthetic boundary fixtures. Test SHA c442a60e..., fixture4fe723a1..., contract
+e7110f38...; independently reviewed co-signature fixture remains eef4d9c9....
+No generation UI implementation or test output. Next requested slot: one focused
+RED, existing private env,268435456 under-lock entry (134217728 floor+128MiB
+peak), <=4MiB outputs inside frontend16MiB. Green/lint/forcedtypes are proposed
+as separate jobs; browser/build/services/production/providers/paid/held-out stay
+held. Draft/ordinary-send/current-runtime/late-response safety slices remain
+explicit next steps, not speculative implementation. T17 incomplete/UNACCEPTED;
+NEW fresh integration review is still required after completion.
+
 # T17 finite-inspection checkpoint (2026-11-10)
 
 T17 finite review passes through actual WorkspaceShell; affected11-file lint
