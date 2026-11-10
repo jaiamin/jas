@@ -55,6 +55,62 @@ Statuses reflect accepted integration work, not automatic GitHub closure. Issues
 remain open until the tracker resolves them through draft PR #32. No
 default-branch merge, auto-merge or history rewrite is authorized.
 
+### T09 fresh integration review — accepted (2026-11-10)
+
+No-ff merge `c357a3bb5d18ec0bea0a75cd4121dfc82383d0b9` joins assigned `4186d33`
+and exact clean source `4e6b2ea`. Fresh sole-writer Standards/Spec review repaired
+missing artifact content exposure and denied-read replay validation at `4ed18af`,
+then demonstrated and repaired read-operation identity corruption at `84867cc`.
+The harness browser config also now supplies its disclosure fixture flag. Public
+API red/green evidence and all failed attempts remain; no expectation was weakened.
+See the [acceptance report](research/T09_ARTIFACT_WORLD.md#fresh-integration-acceptance-2026-11-10).
+
+Current contracts: **DB7 / export8 / capture1 / comparison1 / libraryv4 /
+tool-using 2.0.0 / direct-action 1.0.0**; controlled World rules are unchanged.
+T07/T08 delivery/privacy/cutoff repairs, T03 mechanics-only immutable source reuse,
+T05 isolated probes/live-discovery regressions and T06 honest outcomes are retained.
+No migration/alias/reset, generated admission, phase scheduler or model judge.
+
+Final unchanged `84867cc` passes **1,185 backend tests**, Ruff/ty, **160 independent
+World/API checks** across six workflows/four memory modes, and fresh non-root
+production build/smoke/26 containment/artifact/corruption/replay/restoration checks.
+Frontend lint, **111 units**, TypeScript/build and **59 distinct browser flows +
+one passing repeat** pass at `4ed18af`; final frontend inputs are identical.
+All owned services/containers/image tags and the preview tab are closed; **18220
+is closed**. Final production image was
+`sha256:5c472c5dc0ac3f7fd0286c59796499cf7a0c3f8aca89722ed1eceb02dbfaacb3`.
+No fresh full uninterrupted browser suite or live competence is claimed.
+
+Frozen T01 remains **exit 1/four export-v4 failures/four failed terminal flags**,
+without score/case/runner edits. Positive DB7/export8/library4/capture checks and
+exact **22-turn/five-run** behavior/request/accounting parity pass. All **2,233 raw
+differences + 47 keyed catalog differences** are classified, zero unexplained;
+HTTP operations are 98→98. Raw exports differ. Scripted accounting is 22 requests,
+2,200/1,100 tokens and $0.000770; actual spend $0.
+
+Complete pre-merge `T09/` custody rechecks **1,147 files / 149,021,583 bytes**,
+all 1,145 indexed entries and 3,948 members in four archives. Fresh
+`T09-integration/verification-manifest.json` freezes **848 files / 70,856,059 bytes /
+59 check records / 19 nonzero attempts**, canonical SHA-256
+`7d65082e552662b28b7a442b1fb82c85c8e0bc82c651e821450d741790136a8e`,
+file SHA-256 `b4de2712f74a7ff7157101801298b78a88b9974c1a05f10218dae680d8568332`.
+Later exact-HEAD/hook/postcommit records are separate. Only closed fresh outputs
+were losslessly compressed, with all 2,822 member bytes/targets verified. Source,
+all prior evidence, 1,745 Sol artifacts and stash remain unchanged; no root pbcopy
+or real config was accessed. Child early slices 1–6 lack complete per-attempt dirty
+source archives; child 181 browser passes/ENOSPC/four focused successes remain
+inherited, not an uninterrupted full-suite success.
+
+**T10/T13/T16/T18 are Ready; root chooses launches. T15 is complete awaiting a
+separate fresh integration review**, per root coordination, source `0d026992` on
+`t3/t15-reference-policies`; no T15 files/evidence were inspected. **T19 remains
+running/unpolled.** Root resumes sole shared-checkout ownership and draft PR #32
+publication. Review spend $0; global Sol **$0.611632/55 known requests**,
+**$9.388368 remaining**, no paid Luna. No push/PR/issue edit/watch/closure or
+worktree disposal. Hosted checks/reviews were not queried.
+
+The earlier review checkpoints below retain their historical statuses and checks.
+
 ### T07 fresh integration review — accepted (2026-11-10)
 
 No-ff merge `a92105f` joins assigned accepted `e2d42c9` and exact clean T07 source
@@ -180,16 +236,16 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Integrated and accepted | `aaf3a15`; [evidence](research/T06_UNCERTAINTY.md) |
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Accepted after combined-contract review repairs | `a92105f`, `d5568c1` |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Integrated and accepted after cutoff receipt repair | `9750caf`, `de5556b`; [evidence](research/T08_PARTICIPANT_CONTEXT.md) |
-| T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Fresh sole-writer integration review in progress | source `4e6b2ea`; [report](research/T09_ARTIFACT_WORLD.md) |
-| T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Waiting on accepted T09 | — |
+| T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Integrated and accepted after fresh review repairs | `c357a3b`, `4ed18af`, `84867cc`; [report](research/T09_ARTIFACT_WORLD.md) |
+| T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Ready; root chooses launch | — |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Waiting | — |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Waiting | — |
-| T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Waiting | — |
+| T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Ready; root chooses launch | — |
 | T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Waiting on T13 | — |
-| T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | In progress in isolated worktree | — |
-| T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Waiting | — |
+| T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Complete awaiting separate fresh integration review; uninspected | source `0d026992` (root coordination) |
+| T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Ready; root chooses launch | — |
 | T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | Waiting | — |
-| T18 | [#29](https://github.com/jaiamin/ass/issues/29) Inspect a declared fallible adjudication and replay its consequences | T09 | Waiting | — |
+| T18 | [#29](https://github.com/jaiamin/ass/issues/29) Inspect a declared fallible adjudication and replay its consequences | T09 | Ready; root chooses launch | — |
 | T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | In progress in isolated worktree | — |
 | T20 | [#31](https://github.com/jaiamin/ass/issues/31) Demonstrate the small-population generalization milestone | T11, T12, T14, T15, T17, T18, T19 | Waiting | — |
 

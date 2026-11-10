@@ -1,50 +1,179 @@
 # T09: persistent artifact investigation
 
-## Fresh integration review in progress (2026-11-10)
+## Fresh integration acceptance (2026-11-10)
 
-The sole writer merged exact clean source `4e6b2ea` into assigned integration
-`4186d33` with no-ff merge `c357a3b`. Only progress coordination prose conflicted.
-No descendants, paid requests, publication or other-ticket inspection is authorized.
-Fresh evidence is separate at `.tools/research-harness/evidence/T09-integration/`.
+**T09/#20 is accepted** after a fresh sole-writer Standards/Spec review, without
+descendants. No-ff merge `c357a3bb5d18ec0bea0a75cd4121dfc82383d0b9` joins assigned
+parent `4186d33f925403049f7d6f61d8c90f778aa0ee68` and exact clean implementation
+`4e6b2eaed469b0844df3ff01db016e6be15788cc`. Only coordination prose conflicted.
+Review repairs are `4ed18af1ed45b1d4570c146319619818e9b00d56` and
+`84867cc776e94643b7266caf595287fafb5ea0e4`; the latter is the final qualified code.
+Only this report, progress and handoff prose follow qualification. Exact final
+HEAD, normal hook results and postcommit verification are recorded separately in
+`.tools/research-harness/evidence/T09-integration/acceptance-checkpoint/`.
 
-- [x] Preserve the complete ignored source before merge and verify stable source,
-  manifest, archive-member bytes and symlink targets without extracting archives.
-  The copy contains 1,147 files / 149,021,583 bytes, canonical inventory SHA-256
-  `986330bcc35668ca19358d0e1dbb09803acefe3201a89ce774978046a375d37f`.
-  All 1,145 indexed entries and all 3,948 packed members in four archives verify;
-  manifest SHA-256 remains `9f3dde334f10837db43735ef8074c5f93a4c8ed8c0a327d499c6a8601c02619f`.
-- [x] Review authoritative rules and the changed domain/request/persistence/replay
-  paths independently. The initial merged checkpoint passed 1,176 backend tests.
-- [x] Demonstrate and repair two integration defects through public API red/green:
-  artifact content delivery was absent from exposure bindings, and Verify ignored
-  corrupted rejected artifact-tool read receipts. Five valid delivery reds and
-  two rejection reds are retained. Direct-action last-result/history bindings and
-  pure-tool read bindings now name actual content in each final bounded request;
-  compacted receipts do not count, and missing provider receipts stay unknown.
-  Paused pure reads remain unexposed across restart until explicit continuation.
-  Verify checks actual rejection reason, applicable harness limits and atomicity.
-- [x] Run the affected artifact/lifecycle/T07/T08 group: 106 passed. Frontend
-  lint, 111 units and build pass. Ruff passes; an initial new-test typing error
-  was corrected and ty passes. The first five-case red had an invalid missing-goal
-  fixture; its corrected five-case red establishes the product failure.
-- [ ] Complete independent API/World witnesses and controlled before/after parity.
-- [ ] Complete fresh browser and production qualification on owned port 18220.
-- [ ] Run final combined-source backend/static checks, reverify protected evidence,
-  close owned resources and record final acceptance or concrete blockers.
+The concrete artifact World owns fixed object ACLs, immutable structured versions,
+legal operations, finite shared writes, accessible checks, submission and stopping.
+Role labels, source claims and model prose confer no authority. Both direct and
+capable policies work with one participant and no financial proxy, forced partner,
+mandatory investigation pipeline or privileged truth oracle. Source-linked checks
+compare the readable evidence v1 declared by their contract. Success can occur
+without reading; actual choices, reads and delivery remain separate evidence.
+Plans, notes and copied Researcher probes do not become World facts.
 
-The first harness-browser run passed nine flows and failed its two disclosure
-flows because its server command omitted the required disclosure fixture flag.
-The config now enables that fixture itself; targeted browser requalification is
-pending. No product expectation was weakened. All failed attempts remain retained.
-Closed fresh outputs alone are losslessly packed with verified member indexes.
-Historical implementation checks below remain inherited, including the early
-slices 1–6 provenance gap and interrupted full-browser chronology.
+Four demonstrated findings were repaired without weakening expectations:
+
+- Artifact content was missing from exposure. Pure reads now have operation-scoped
+  opportunities; direct reads bind actual last-result/history content. Inclusion
+  requires the final bounded request and that request's delivery receipt. Descriptive
+  memory alone and compacted receipts do not count; missing delivery stays unknown.
+  Paused reads remain unexposed across restart until explicit continuation.
+- Verify ignored corrupted denied-read receipts. It now recomputes rejection,
+  authorization and effort limits and checks unchanged state. Five valid delivery
+  reds and two rejected-read reds preceded the repair at `4ed18af`.
+- Verify accepted changed read-operation identities. Two further public-API reds
+  changed the request operation or journal kind while retaining the denied payload.
+  `84867cc` rejects either mismatch. Production also rejects both corruptions of a
+  completed read, with zero model calls and unchanged usage.
+- The harness-browser server command omitted its disclosure stand-in flag. Its
+  initial **9 pass / 2 fail** run is retained; the configuration repair passes both
+  affected flows without changing product assertions.
+
+Current contracts are **DB7 / export8 / capture1 / comparison1 /
+`jas-environment-v4` / tool-using 2.0.0 / direct-action 1.0.0**. Artifact rules are
+1.0.0; controlled-world rule versions remain unchanged. Incompatible versions reject
+explicitly, including DB6 without mutation. No migration, alias, compatibility
+adapter or reset exists. T07's `d5568c1` delivery fix, T08's actual capabilities and
+`de5556b` cutoff repair, T03 mechanics-only reuse/full source snapshots and T05
+copied probes/live-discovery fixes `0ea4064`/`a874f7c` remain protected. The accepted
+participant-context implementation is byte-identical to `de5556b`. T06 artifact
+comparisons introduce no invented financial zeros. Researcher/planner/assistant
+remain Pydantic AI Sol `openai:gpt-6.1-sol`; participants remain
+`openai:gpt-6-luna`. No T10 scheduler, T16 generated admission, T18 judge or T15/T19
+implementation was added.
+
+Fresh observed qualification (commands, exits, source maps and raw failures are
+under `T09-integration/checks/`):
+
+| Check | Observed result and source |
+| --- | --- |
+| Full backend | **1,185 passed**, unchanged `84867cc`; earlier unchanged `4ed18af` passed 1,183 |
+| Affected regressions | 106 artifact/lifecycle/T07/T08 tests; final 37 artifact tests include the two identity regressions |
+| Python static | Ruff and ty pass on final `84867cc` |
+| Frontend | Lint, **111 units / 30 files**, TypeScript and production build pass; final frontend inputs are identical to `4ed18af` |
+| Independent World/API | **160 checks, six public workflows, four memory modes** at final `84867cc`; novel `iris`/`amber`/`folio`, values **68/-37** |
+| Browser on 18220 | **60 passing executions / 59 distinct flows**: initial 9, repaired disclosure 2, T08 context 2, capability exposure 3, shared Researcher/reuse/editor/recovery/inspection/focus 44 |
+| Production | Fresh tracked-only non-root image at `84867cc`; SPA/assets/keyless runtime, **26 containment checks**, artifact success, corruption rejection, replay and restoration pass |
+
+The independent witnesses distinguish failed submission, unsuccessful stop,
+horizon and real success; reads from successful guesses; stale/competing/exhausted
+writes; false/foreign/future sources; hidden object/content/count/error/schema
+invariance; and atomic rejected operations. Fresh backend tests retain corrupted
+checkpoint/event/measurement/rejection detection, complete actor context, failed
+auxiliary work, pause/restart/unknown usage and primary-error accounting. Playback,
+consequence replay, restoration and explicit new sampling remain distinct public
+workflows. Horizon and terminal source/operation identities are checked.
+
+Browser success, failed submission and recovery use the real keyless workflows.
+Desktop/light and phone/dark screenshots were inspected, stock UI is preserved,
+the 390px editor does not overflow, and Impeccable reports `[]`. Browser results
+are from `4ed18af` with identical final frontend inputs; the final backend-only
+identity guard additionally passes HTTP/installed-package replay qualification.
+This is **not** a fresh uninterrupted full browser suite. The initial merged
+1,176-pass backend run changed source during execution and is not the final
+unchanged-source qualification.
+
+Final production image identity was
+`sha256:5c472c5dc0ac3f7fd0286c59796499cf7a0c3f8aca89722ed1eceb02dbfaacb3`.
+It ran as UID10001, bound only `127.0.0.1:18220`, with no mounts or credentials
+forwarded. Main HTTP saved/inspected/exported evidence **119** and verified with
+zero requests. The installed-package ASGI witness performed a pure read, report
+v2 and successful submission with three scripted requests; replay verifies two
+turns/one read with zero calls. App reopen preserves full actor/request/event/
+measurement records. An actual production server-process restart separately
+restores the ready HTTP study with zero calls. Logs and synthetic databases are
+preserved in `production-final.tar.gz` and the first image's separate closure
+archive. Both owned containers/image tags and the preview tab are closed; **18220
+is closed**. No worktree was disposed and no other-ticket resource was inspected.
+
+Frozen T01 uses clean tracked-only `4186d33` and `84867cc` snapshots, each with a
+complete source archive. The unchanged runner/cases/scores retain **exit 1, four
+export-v4 failures and four failed terminal flags**, with no regressions or
+improvements. Positive DB7/export8/library4/capture/current-source checks pass.
+The final independent audit verifies **five runs / 22 turns / 22 scripted
+requests**, including exact observations, decisions, checkpoints/hashes,
+consequences, metrics, prompts/schemas/settings/input bindings and accounting.
+All **2,233 raw JSON differences plus 47 keyed catalog differences** are classified,
+zero unexplained. HTTP operations are **98→98** and canonical workflows match.
+The earlier `4ed18af` audit retains its 2,240 differences and 98→97 polling result;
+it is not the final audit. Raw exports are not identical. Synthetic accounting is
+2,200 input / 1,100 output tokens and $0.000770; actual spend is $0.
+
+Complete source custody was established **before merge, without overwrites** at
+`.tools/research-harness/evidence/T09/`: **1,147 files / 149,021,583 bytes / zero
+loose symlinks**, canonical inventory SHA-256
+`986330bcc35668ca19358d0e1dbb09803acefe3201a89ce774978046a375d37f`.
+All **1,145 indexed entries** and **3,948 members in four archives** reverify;
+source manifest SHA-256
+`9f3dde334f10837db43735ef8074c5f93a4c8ed8c0a327d499c6a8601c02619f`.
+Source HEAD/index/status and complete source/copy bytes remain stable; its checkout
+stays intact. Archives were inspected as inert namespaces, never extracted over
+project files or followed through external links. Known synthetic test configuration
+was handled opaquely only after checking its tracked generator. No real config,
+credentials or root `pbcopy` was read/copied/archived.
+
+Fresh `T09-integration/verification-manifest.json` freezes **848 files /
+70,856,059 bytes / zero loose symlinks / 59 main check records**, including
+**19 nonzero attempts**. Canonical SHA-256
+`7d65082e552662b28b7a442b1fb82c85c8e0bc82c651e821450d741790136a8e`;
+manifest file SHA-256
+`b4de2712f74a7ff7157101801298b78a88b9974c1a05f10218dae680d8568332`.
+It excludes itself/checksum, clean-clone Git metadata and later acceptance records.
+Closed fresh outputs alone have **43 verified tar archives + four gzip mappings**,
+**2,822 members** (2,150 files / 672 links), **578,918,641 bytes saved**; raw bytes
+and link targets reverify. Prior/source evidence was never repacked or removed.
+Final acceptance records extend a separate checkpoint manifest.
+
+Protected prior evidence stays **26,449 files / 2,391,308,466 bytes / 1,558 links**,
+canonical SHA-256
+`5433bfba88afef72aedea15c36b1d30eb5271b83ee0820484fd93e550b382d09`.
+All **1,745 Sol artifacts / 28,228,835 bytes** verify, canonical
+`809deca0dc521829b6f18840daf926c0620e6f176a610bfd51f3926fcfa45d90`,
+manifest file SHA-256
+`286209af7b340d1c38766b4a2ed008a4a791d867bb3f6e195f5500ed5769d4c8`.
+Stash `f771128ba1c9295262a4073df40cc25647b1370f`, all 30 benchmark files,
+containment/runtime/dependencies/workflows and frozen comparisons remain unchanged.
+
+Retained attempts include the documentary merge conflict, invalid first delivery
+fixture then five valid reds, rejected-read and identity reds, initial Ruff/ty
+errors, browser disclosure failures, two witness-helper errors, four parity-helper
+errors and every frozen expected failure. No failed terminal flag was relabeled.
+The child's **181 browser passes + ENOSPC + four unchanged passing variants** are
+inherited, not one uninterrupted green suite. **Early child slices 1–6 lack full
+per-attempt dirty-source archives**; this gap is neither reconstructed nor erased.
+Historical implementation wording below is scoped to its actual checkpoints;
+this fresh final qualification supersedes it. No fresh ENOSPC occurred. Shared
+space remains limited and changing; the resource-closure check measured
+250,884,096 bytes free, with a later measurement in final closure records.
+
+Review spend is **$0**. Historical Sol stays **$0.611632 / 55 known requests**,
+**$9.388368 remaining**; no paid Luna, live competence, held-out or generalization
+claim. No push, PR/issue edit/watch/closure, reset, security change or publication
+was performed. **T10/T13/T16/T18 are Ready**; root chooses launches. Per root's
+coordination only, **T15 is complete awaiting fresh integration review** at
+`0d026992b4740675dac3afce54b17a785e3f73e9`; its files/evidence were not inspected.
+**T19 remains running/unpolled.** Root resumes sole shared-checkout ownership and
+publication of https://github.com/jaiamin/ass/pull/32. Hosted checks/reviews were
+not queried.
+
+## Original implementation record (historical)
 
 Ticket [#20](https://github.com/jaiamin/ass/issues/20). Implementation branch
 `t3/implement-t09-artifact-world`, assigned worktree
 `/home/agent/.t3/worktrees/workspace/t3-872f635b`, clean base
 `c2a7d5af53c8f2bd183731285936afac5076d632` on accepted
-`integration/research-harness`. This report does not imply root acceptance.
+`integration/research-harness`. This implementation record alone did not establish
+root acceptance; the fresh acceptance above does.
 
 ## Acceptance and progress
 
@@ -105,13 +234,13 @@ Its identity, content and versions must not leak through schemas or errors.
   Sol spend $0.611632/55 requests is historical, not a T09 allocation. Model
   labels remain Sol for Researcher and Luna for model-controlled participants.
 
-## Next steps
+## Implementation handoff next steps (historical)
 
-Root owns fresh merger review and acceptance. Preserve the entire ignored
-`data/t09/`, including its verified archives and member indexes, before any cleanup.
-The final manifest and closure identify the handoff HEAD and included integration;
-the implementation is not yet accepted. Live Luna work requires a separate concrete
-manifest/estimate and explicit allowance. No implementation decision remains open.
+At implementation handoff, root still owned fresh review and acceptance. That
+review and complete pre-merge preservation are now recorded above. The child's
+manifest and closure identify its handoff HEAD and included integration. Live Luna
+work requires a separate concrete manifest/estimate and explicit allowance. No
+implementation decision remains open.
 
 ## Development checkpoint (before accepted T08 merge)
 
@@ -219,7 +348,7 @@ manifests, design/catalog additions and catalog ordering). This is an interim
 source, not the final combined-source comparison. Final gates must include T07
 and export8 and will be recorded below without overwriting this evidence.
 
-## Final implementation and accepted-source qualification
+## Implementation handoff qualification (inherited)
 
 Merge `8a7b089` includes accepted integration `777a609` (its actual second parent),
 including the repaired binding of exposure to final bounded requests and real T08
@@ -250,7 +379,7 @@ Final vertical refinements retain their actual attempts:
   three counts to the nine installed worlds passes the unchanged loading/error/
   retry flow (`slice22-catalog-recovery-green`), committed at `fe0ba04`.
 
-Observed final checks (all exact commands, source maps, diffs and outputs are in
+Observed final child checks (all exact commands, source maps, diffs and outputs are in
 `data/t09/checks/`; names below are their record prefixes):
 
 | Check | Observed result | Record |
@@ -272,7 +401,7 @@ retained in `browser-full-fe0ba04/`; all four variants pass after storage recove
 without changing the application or assertions. The earlier catalog failure and
 all other failed attempts also remain preserved.
 
-Final production image identity is
+Child production image identity is
 `sha256:3af9cbff72fb63fc17c4876c324f773c50787406c74e6aa7b41db0277ad4f682`.
 Actual 390px/dark editor, researcher-scoped versions and call-free Verify captures
 are in `browser-production-final/`; initial state/export/database/logs are in
@@ -282,7 +411,7 @@ timed out; actual snapshots then confirmed the rendered surfaces. These are
 selector errors, not product failures. The owned tab, container, volume and image
 tag are closed/removed; final closure checks port 18120 and owned resources.
 
-## Final deterministic comparison
+## Implementation deterministic comparison (inherited)
 
 `before/` uses clean base `c2a7d5a`; `after-accepted-final/` uses clean `fe0ba04`.
 Both retain complete tracked-only source archives. Frozen T01 runner/cases/scores
@@ -307,7 +436,7 @@ first final audit that failed closed on one extra read-only status poll and its
 subsequent independently verified classification. Do not present an earlier source
 or that failed audit as the final result.
 
-## Evidence preservation, limits and handoff
+## Implementation evidence custody and provenance limits (inherited)
 
 Preserve **all `data/t09/`**, not only its passing logs. `artifact-manifest.json`
 indexes every remaining file/link and its hashes/targets; its external checksum
@@ -319,13 +448,15 @@ Shared-disk exhaustion required reversible packing. Four archives under `archive
 retain 1,459, 1,437, 638 and 414 files/symlinks respectively, with complete member
 indexes and byte/target verification before expanded copies were removed. Completed
 check paths temporarily packed in archive04 have been restored; the remaining
-pytest payloads stay packed. Restore any archive from the project root with
-`tar -xzf data/t09/archives/<archive>.tar.gz`. Final manifest generation rechecks
+pytest payloads stay packed. The child's earlier project-root extraction instruction
+is superseded: inspect archive namespaces as data and restore selected evidence
+only into owned scratch, never blindly over project files or through external
+links. The fresh review needed no extraction. Child manifest generation rechecks
 every member of all four archives. A first packer assertion failure is retained
 with its exact failed script; it is an evidence-tool failure, not a product red.
 Only disposable Python caches in this assigned checkout were otherwise removed.
 
-Early slices1–6 retain original red/green logs and case identities, but not a full
+Early slices 1–6 retain original red/green logs and case identities, but not a full
 per-attempt dirty-source hash/archive wrapper. Later checks do retain full source
 maps and binary diffs. This historical evidence gap is not reconstructed. Synthetic
 test configuration fixtures were verified against their tracked generator at
@@ -343,4 +474,5 @@ Actual paid spend is **$0**. Historical global Sol usage remains $0.611632/55 kn
 requests ($9.388368 of $10 remaining); it is not a T09 allocation. Live behavior,
 held-out generalization and research competence remain unverified. No push,
 publication, ticket closure, stash operation, data reset or security change was
-performed. Root must freshly review this branch before marking T09 accepted.
+performed. Fresh root review was required at that handoff; the acceptance at the
+top of this report now records its outcome.
