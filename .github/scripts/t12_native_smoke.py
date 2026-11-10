@@ -11,6 +11,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from agent_sim.domain import Decision, Design
@@ -51,10 +52,12 @@ def main():
     (out / "assets.json").write_text(json.dumps(manifest, indent=2) + "\n")
     result = {
         "qualification": "native-runtime",
+        "status": "failed",
         "paid_calls": 0,
         "assets_sha256": hashlib.sha256(json.dumps(manifest, sort_keys=True).encode()).hexdigest(),
         "assets_bytes": sum(row["size"] for row in manifest),
     }
+    exchanges = []
 
     def http(path, body=None, status=200, text=False):
         request = Request(
@@ -62,9 +65,14 @@ def main():
             data=None if body is None else json.dumps(body).encode(),
             headers={"Content-Type": "application/json"},
         )
-        with urlopen(request, timeout=10) as response:
-            assert response.status == status, (path, response.status)
+        try:
+            response = urlopen(request, timeout=10)
+        except HTTPError as error:
+            response = error
+        with response:
             content = response.read().decode()
+            exchanges.append({"path": path, "status": response.status, "response": content})
+            assert response.status == status, (path, response.status, content)
             return content if text else json.loads(content)
 
     def ready(process):
@@ -206,21 +214,24 @@ def main():
                     sid = http("/api/studies", {"design": design}, status=201)["id"]
                     study = http(f"/api/studies/{sid}")
                     rid = study["runs"][0]["id"]
-                    before = http(f"/api/runs/{rid}")["state"]
+                    before_run = http(f"/api/runs/{rid}")
+                    before = before_run["state"]
                     assert http(f"/api/runs/{rid}/verify", {})["verified_turns"] == 0
-                    http(f"/api/runs/{rid}/control", {"action": "step"})
-                    deadline = time.monotonic() + 10
-                    while time.monotonic() < deadline:
-                        run = http(f"/api/runs/{rid}")
-                        if run["summary"]["status"] == "failed":
-                            break
-                        time.sleep(0.1)
-                    assert run["summary"]["status"] == "failed" and run["summary"]["turn"] == 0
+                    rejected = http(f"/api/runs/{rid}/control", {"action": "step"}, status=409)
+                    assert rejected == {"detail": "OPENAI_API_KEY is not configured."}
+                    run = http(f"/api/runs/{rid}")
+                    assert run["summary"] == before_run["summary"]
                     assert run["state"] == before and run["summary"]["usage"]["requests"] == 0
+                    assert http("/api/settings")["usage"]["requests"] == 0
                     exported = http(f"/api/studies/{sid}/export")
                     assert exported["version"] == 13 and exported["requests"] == []
                     assert exported["revisions"][0]["design"]["environment_source"] == source
-                    result.update(study_id=sid, run_id=rid, public_replayed_turns=0)
+                    result.update(
+                        study_id=sid,
+                        run_id=rid,
+                        public_replayed_turns=0,
+                        control_rejection=rejected,
+                    )
                 else:
                     reopened = http(f"/api/runs/{rid}")
                     assert reopened["state"] == before and reopened["summary"] == run["summary"]
@@ -230,6 +241,9 @@ def main():
                 assert process.wait(timeout=15) == 0
                 process = None
         result["status"] = "passed"
+    except BaseException as error:
+        result.update(error_type=type(error).__name__, error=str(error))
+        raise
     finally:
         if process is not None and process.poll() is None:
             process.send_signal(signal.SIGTERM)
@@ -242,6 +256,7 @@ def main():
             probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             probe.bind(("127.0.0.1", 18130))
         result["port_released"] = True
+        (out / "http-exchanges.json").write_text(json.dumps(exchanges, indent=2) + "\n")
         (out / "result.json").write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps(result, sort_keys=True))
 

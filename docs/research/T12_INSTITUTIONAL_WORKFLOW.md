@@ -1,6 +1,43 @@
 # T12: institutional workflow with atomic work and resource effects
 
-## Current boundary: F2 qualified; native-runtime smoke released, unrun
+## Current boundary: native-runtime attempt01 FAILED; corrected retry released
+
+Exact accepted8329cfc7883053620b7dafcc6de351a9bf30ee25 normally merged at
+43c2fa5bf5d47388a3222a61cf57fc9e47914e05. Post-merge18 affected units,
+forced TypeScript and clean Vite pass at source
+a4a2f9cf26ece8ab5d8c87eb22a994170e8ba823b91d9dfc2fd97da571558383.
+The ONE native-runtime attempt exited1 at synchronous HTTP Step409, before public
+export/reopen. The helper assumed asynchronous budget failure. Source inspection
+shows Engine._preflight resolves model configuration first; missing key raises
+ProviderFailure, mapped to409. The first response body was not retained, so this
+diagnosis is source-derived rather than a claim about its observed exact body.
+This is a helper failure, without product-red attribution. Its original raw
+traceback/server logs/assets/SQLite/checkpoints/result remain untouched in
+`.tools/t12/evidence/native-runtime-01/`. Local World30-turn/restoration/replay
+completed; the overall runtime gate did not pass. Port18130 and lock are released.
+Entry1,272,860,672; after1,271,988,224 free;477,360 retained increment and51,431,110
+total. Same96MiB cap/floor+128MiB forecast apply to any separately renewed job.
+
+### Corrected native oracle, frozen before repair/output
+
+Keep the unchanged World30-turn, asset/SPA/source-pin/export13 and reopen checks.
+For the non-scripted installed Luna participant with no configured provider keys,
+Step must synchronously return409 and literal JSON
+`{"detail":"OPENAI_API_KEY is not configured."}`. Record every actual HTTP status
+and response body, including unexpected failures. The entire run summary and
+checkpoint must remain exactly unchanged; requests, workspace/run usage and
+exported requests remain zero. Reopen the same fresh SQLite and verify identical
+state/summary plus zero-turn public replay. This proves keyless preflight denial,
+not budget enforcement or HTTP participant progress; separate existing public
+API tests qualify budget enforcement. Preserve attempt01 FAILED and do not
+automatically retry. ROOT subsequently released ONE native-runtime-02 for this
+exact proposal, conditional on normal exact0527e737d93786d0f5579d5a13827c472cf370fa
+merge and helper Ruff/ty PASS. Both lifetimes require teardown and listener-safe
+reuse-address port proof. Next: checkpoint/merge/static gates, this one released
+retry, personal Standards/Spec and final durable implementation report. T12 remains
+incomplete/unaccepted; Docker/providers/paid/held-out/publication stay held.
+
+## Historical boundary: F2 qualified; native-runtime smoke released, unrun
 
 Same incomplete/unaccepted implementation. F2 passes125 units/33 files, lint233,
 forced TypeScript (including the workflow browser config), clean Vite, Ruff/ty

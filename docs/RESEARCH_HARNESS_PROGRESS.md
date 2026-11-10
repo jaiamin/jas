@@ -1,6 +1,17 @@
 # Research harness implementation progress
 
-T12 current boundary (2026-11-10): F2 passes125 units/33 files, lint233, forced
+T12 current boundary (2026-11-10): exact accepted8329cfc7883053620b7dafcc6de351a9bf30ee25
+normally merged at43c2fa5b. Post-merge18 affected units/forced TypeScript/clean
+Vite pass at sourcea4a2f9cf. Native-runtime attempt01 FAILED exit1: HTTP Step409
+contradicted the helper's asynchronous budget-failure assumption. Source shows
+missing-key preflight precedes scheduling; original error body was not captured.
+Local30-turn World/restoration/replay completed, but public export/reopen were
+not reached. Raw failure is retained; no product-red or whole-smoke PASS claim.
+Own18130/server/browser/lock closed. ONE corrected native-runtime-02 is now
+released after normal exact0527e737 merge and helper Ruff/ty PASS; corrected
+literal keyless oracle/repair is prepared, unrun. Incomplete/unaccepted.
+
+Historical T12 frontend boundary (2026-11-10): F2 passes125 units/33 files, lint233, forced
 TypeScript, clean Vite, Ruff/ty and separate editor/handoff/failure browser cases
 on own18130, light/mobile and dark/desktop. Initial browser HTTP201 fixture failure
 is retained without product-red attribution. Exact accepted8329cfc7 is the next

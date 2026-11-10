@@ -1,4 +1,31 @@
-# T12 frontend qualified; native-runtime stage released (2026-11-10)
+# T12 native-runtime attempt01 failed; corrected retry released (2026-11-10)
+
+Same incomplete/unaccepted T12, branch `t3/institutional-workflow`, HEAD
+**43c2fa5bf5d47388a3222a61cf57fc9e47914e05**. Exact accepted
+**8329cfc7883053620b7dafcc6de351a9bf30ee25** is normally merged. Post-merge
+18 affected units, forced TypeScript and clean Vite pass at source
+**a4a2f9cf26ece8ab5d8c87eb22a994170e8ba823b91d9dfc2fd97da571558383**.
+Earlier F2 and backend qualification below remains attributed to its actual source.
+
+The ONE native-runtime attempt exited1 at HTTP Step409; the helper incorrectly
+expected asynchronous zero-budget failure. Source diagnosis: Engine preflights
+the configured model before scheduling; a keyless model raises ProviderFailure,
+mapped to409. The original response body was not captured, so its exact detail
+is not an observed claim. All raw failure/server/assets/SQLite/checkpoint output
+remains in `.tools/t12/evidence/native-runtime-01/`. The local30-turn World,
+JSON restoration and every-checkpoint replay completed; public export/reopen
+were not reached. No whole-smoke PASS or product-red attribution.
+
+Entry free1,272,860,672; after1,271,988,224; retained increment477,360 bytes,
+total51,431,110 within96MiB. Own18130/server/browser/lock are closed. ROOT was
+notified. ROOT released ONE corrected native-runtime-02, conditional on normal
+exact **0527e737d93786d0f5579d5a13827c472cf370fa** merge and helper Ruff/ty PASS.
+The corrected literal keyless oracle is frozen in the T12 plan; helper repair is
+prepared, unrun. Next: checkpoint/merge, static gates, one retry, then personal
+Standards/Spec and durable report. No installs/Docker/providers/paid/held-out/
+publication/descendants. Attempt01 remains FAILED after any repair.
+
+# Historical T12 frontend qualified; native-runtime stage released (2026-11-10)
 
 Same incomplete/unaccepted T12. Latest accepted eaa47bb3 was normally merged at
 694c6cdc; ROOT now supersedes it with exact8329cfc7883053620b7dafcc6de351a9bf30ee25.
