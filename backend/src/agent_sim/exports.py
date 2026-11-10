@@ -18,6 +18,11 @@ from .simulation.environments import get_environment
 
 
 def export_study(research: Research, study_id: str) -> dict[str, object]:
+    with research.db.read_snapshot():
+        return _export_study(research, study_id)
+
+
+def _export_study(research: Research, study_id: str) -> dict[str, object]:
     detail = research.study(study_id)
     with research.db.session() as session:
         revisions = session.scalars(

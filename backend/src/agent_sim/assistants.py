@@ -783,11 +783,11 @@ class Assistants:
                         if revision.source.startswith("plan:")
                         else None,
                     )
-                decision_usage = usage_record(
+                participant_usage = usage_record(
                     session.execute(
                         select(*self.models.usage_columns()).where(
                             ProviderCall.run_id == run_id,
-                            ProviderCall.purpose == "decision",
+                            ProviderCall.purpose.in_(["decision", "participant_operation"]),
                             ProviderCall.turn <= cutoff,
                         )
                     )
@@ -870,7 +870,7 @@ class Assistants:
                     ),
                     "recorded_rule_version": state["rule_version"],
                     "state_hash": last_turn.state_hash if last_turn else None,
-                    "execution_usage": decision_usage,
+                    "execution_usage": participant_usage,
                     "experiment_budget_ceiling_usd": design.budget_usd,
                     "rules_at_last_observed_turn": last_turn.observation["rules"]
                     if last_turn

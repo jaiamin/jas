@@ -1,11 +1,14 @@
 import hashlib
 import json
+from collections.abc import Generator
+from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
 from sqlalchemy import JSON, ForeignKey, Index, UniqueConstraint, create_engine, event, text
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
 
 def uid() -> str:
@@ -263,8 +266,31 @@ class Database:
                 connection.execute("PRAGMA journal_mode=WAL")
                 connection.execute("PRAGMA busy_timeout=5000")
 
-        self.session = sessionmaker(self.engine, expire_on_commit=False)
+        self._session = sessionmaker(self.engine, expire_on_commit=False)
+        self._snapshot: ContextVar[sessionmaker[Session] | None] = ContextVar(
+            "database_snapshot", default=None
+        )
         self.initialize(ceiling)
+
+    @property
+    def session(self) -> sessionmaker[Session]:
+        snapshot = self._snapshot.get()
+        return self._session if snapshot is None else snapshot
+
+    @contextmanager
+    def read_snapshot(self) -> Generator[None]:
+        with self.engine.connect() as connection:
+            # sqlite3 SELECT does not begin a repeatable read transaction itself.
+            connection.exec_driver_sql("BEGIN")
+            token = self._snapshot.set(
+                sessionmaker(
+                    connection, expire_on_commit=False, join_transaction_mode="rollback_only"
+                )
+            )
+            try:
+                yield
+            finally:
+                self._snapshot.reset(token)
 
     def initialize(self, ceiling: int) -> None:
         with self.engine.begin() as connection:

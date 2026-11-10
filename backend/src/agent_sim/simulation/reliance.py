@@ -23,7 +23,7 @@ from .distributed import DistributedCoordination
 
 
 class RelianceCommitments(DistributedCoordination):
-    version = "1.0.0"
+    version = "1.0.1"
 
     @property
     def commitments(self) -> CommitmentRules:
@@ -171,7 +171,7 @@ class RelianceCommitments(DistributedCoordination):
         s = self.checkpoint
         o = next(o for o in self.commitments.opportunities if o.key == action.opportunity)
         if isinstance(action, MakeCommitment):
-            next_time = s["logical_time"] + (
+            interval = (
                 1
                 if self.coordination.timing == "phased_simultaneous"
                 else len(self.active_actors())
@@ -183,7 +183,10 @@ class RelianceCommitments(DistributedCoordination):
                 "promised_at": s["logical_time"],
                 "relied_at": None,
                 "feasible_at_promise": actor not in s["choices"]
-                and max(next_time, o.opens_at) < o.deadline,
+                and any(
+                    tick >= o.opens_at
+                    for tick in range(s["logical_time"] + interval, o.deadline, interval)
+                ),
                 "opportunities": [],
                 "fulfilled_at": None,
                 "status": "pending",
@@ -268,19 +271,17 @@ class RelianceCommitments(DistributedCoordination):
                 if s["choices"].get(o.promisor) == o.alternative:
                     row["fulfilled_at"] = time
             if s["logical_time"] >= o.deadline:
-                row["eligible"] = (
-                    row["feasible_at_promise"]
-                    and bool(row["opportunities"])
-                    and row["relied_at"] is not None
-                )
+                # Actual slots can change after others withdraw; they establish
+                # feasibility more strongly than the promise-time schedule forecast.
+                row["eligible"] = bool(row["opportunities"]) and row["relied_at"] is not None
                 row["status"] = (
                     "fulfilled"
                     if row["fulfilled_at"] is not None
-                    else "infeasible"
-                    if not row["feasible_at_promise"]
-                    else "absent_opportunity"
-                    if not row["opportunities"]
                     else "breached"
+                    if row["opportunities"]
+                    else "absent_opportunity"
+                    if row["feasible_at_promise"]
+                    else "infeasible"
                 )
                 row["resolved_at"] = s["logical_time"]
                 settled.append(

@@ -2116,3 +2116,34 @@ Distinct checkpoint02 corrects only that documented path assertion, preserving
 every code/test equality check and normal hooks. Its unchanged134217728 floor,
 4MiB disk peak and2MiB output forecast fit the remaining64MiB backend envelope;
 no functional check, browser/service/build or production release is inferred.
+
+## Exact accepted ROOT370 source integration (2026-11-10)
+
+Clean checkpoint4ed2f589 passed normal Gitleaks, scanning19307 staged bytes;
+tracked status is clean. Its sourcef1796260 has byte-identical application/test
+inputs to qualifiede19ee690 and only three documentary differences. The failed
+first checkpoint recorder remains independently identified; no functional test
+was rerun for that documentation correction.
+
+The newly documented accepted target is exactly
+370f835b45bdc7172de5c719aae1ffa1e185b3f5, not a moving ref or sibling. Read
+its FINAL_CODE_QUALITY_REVIEW and all16 incoming paths before integration.
+Normal no-ff merge retains one HANDOFF content conflict, all three index stages
+and the marker-bearing source2d829b50 in accepted-root370-merge-01. No product
+file conflicts. Resolution preserves both documentary histories. Accepted
+coherent connection-bound export snapshots, shared-input/cutoff authorization,
+immutable assignment citations, participant-operation execution usage and
+reliance1.0.1/checkpoint rejection combine with the existing T17 meanings.
+Current DB14/export16/library9/definition2 and T12 workflow1.0.0/interactions
+remain; no aliases, migration, reset or frozen-oracle modification is needed.
+
+Forecast: normal merge resolution/commit<=2MiB retained,4MiB disk peak; subsequent
+affected checks are separately bounded jobs, at most16MiB peak each. Preserve
+all old outcomes; newly qualify the changed public export/accounting/exposure
+paths, reliance rules and complete generated-proposal export, plus unchanged
+frozen T01 CURRENT and independent literal5/22/22. Use safe deduplicated source
+identities and only own closed-output packing with actual restoration proofs
+if needed to stay within64MiB. Backend58.1MB after the merge attempt leaves
+about9MB; preflight each job against that cumulative ceiling. Source integration
+is not execution qualification. Frontend inputs are unchanged; all build/browser/
+services/production/provider/live/held-out work remains held and T17 unaccepted.

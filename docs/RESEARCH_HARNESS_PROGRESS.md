@@ -1,3 +1,15 @@
+# T17 accepted ROOT370 source integration (2026-11-10)
+
+Normal exact370f835b merge follows clean4ed2f589; one HANDOFF conflict and
+all stages/history retained. Current DB14/export16/library9 remains, alongside
+accepted reliance1.0.1/checkpoint rejection, coherent active-export snapshots,
+authorized exposure/provenance and complete participant-operation accounting.
+Accepted T12 interactions and independent T17 contracts are preserved. Earlier
+74 backend/60 frontend passes belong to e19ee690, not this new combined source.
+Affected backend/static/current-contract checks remain within existing64MiB,
+16MiB-per-job release; frontend source is unchanged. Build/browser/services/
+production/provider/live/held-out remain HELD; T17 incomplete/UNACCEPTED.
+
 # T17 combined backend/UI UNIT boundary (2026-11-10)
 
 Exact accepted40c32ff6 is normally merged ascb379ee5,25 retained conflicts/stages,
