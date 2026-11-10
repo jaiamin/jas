@@ -60,7 +60,7 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Integrated; UI review follow-up pending | `77f6014` |
 | T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Ready | — |
 | T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | In progress | — |
-| T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | In progress | — |
+| T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Implemented on ticket branch; awaiting integration review | — |
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Ready | — |
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Ready | — |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Waiting | — |
@@ -78,6 +78,18 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | T20 | [#31](https://github.com/jaiamin/ass/issues/31) Demonstrate the small-population generalization milestone | T11, T12, T14, T15, T17, T18, T19 | Waiting | — |
 
 ## Preserved drafts and spending
+
+T05 ticket handoff: `t3/researcher-probes`, implementation `504d756`, tested
+combined source `5b70116` including latest integration `8f83a36`. Real bounded
+catalog/context/copied-world operations reach answers, planner handoff and
+durable streamed activity. The controlled development replay is 14 red → 14
+green; merged checks pass 961 backend, 108 frontend and 14 affected browser
+tests plus lint/types/build. The pre-merge full browser suite passed 169 tests.
+The identical inherited six-case comparison has no regressions/failures and
+unchanged 22 scripted requests. Read [T05 evidence](research/T05_RESEARCHER.md);
+preserve ignored `data/t05/` before cleanup. No paid calls, live competence claim,
+publication or tracker changes. Parent acceptance/fresh integration review is
+still pending; other ticket statuses and milestone gates are unchanged.
 
 T01 evidence: [baseline report and inherited comparison procedure](research/T01_BASELINE.md).
 Source `d5527c0b4cb57cb63f8d39cb74d335396042e711` on

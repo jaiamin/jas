@@ -1,3 +1,29 @@
+# T05 ticket handoff
+
+Branch `t3/researcher-probes`; implementation `504d7561dd36c1fbf19ba2f9bf7fc535551ccde9`.
+Latest integration `8f83a36bc0428abda418b93557f689657ce030ae` was merged cleanly
+as tested source `5b70116867410ae0d2b1cd17f6b3ef090e4bb6d7`. The final checkpoint
+only updates T05 evidence/progress/handoff documents. See
+[T05 report](docs/research/T05_RESEARCHER.md) for contracts, limits and exact
+source/case identities. No T05 integration acceptance or issue closure is claimed.
+
+Actual evidence: controlled API replay **14 failed → 14 passed**; combined
+source **961 backend, 108 frontend, 14 affected browser** tests and Ruff/ty/
+frontend lint/build pass. The full pre-merge browser suite passed **169**.
+Identical inherited cases/harness pass six cases before/after/after-merge with
+no regressions/failures and 22 scripted requests. Failed/interrupted attempts
+remain retained; the missing raw-capture directory was repaired by invocation.
+
+Preserve the entire ignored `data/t05/` before worktree cleanup: archives,
+manifests, raw analyses/run evidence, databases/exports, comparisons, XML/logs,
+browser screenshots/traces and the preserved check wrapper. `checks.json` and
+`artifact-manifest.json` index it. Parent owns evidence copying and a fresh
+merger into the existing draft PR #32. Port 18116 is closed; Playwright stopped
+its owned server/browser. Zero paid/live calls; live competence/held-out gates
+remain unverified. No push, PR creation, tracker edit, stash application/drop,
+credential or host-policy changes. T02's inherited pending UI follow-up remains
+parent-owned and unchanged below.
+
 # T01 integration checkpoint
 
 Baseline integrated on `integration/research-harness` with no-ff merge
