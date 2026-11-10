@@ -51,6 +51,19 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### T14 targeted incident recovery; independent closure pending (2026-11-10)
+
+The fresh product review passed bounded Spec checks and repaired three lifecycle
+defects, but withheld acceptance on an unsafe indirect snapshot invocation.
+ROOT's separately recorded minimal recovery removed only unintended generated
+protected members/digest entries, preserving all unaffected data, adverse records
+and the historical Standards FAIL. All823 original safe-index files remain
+unchanged. See [recovery](research/T14_INCIDENT_RECOVERY.md). No runtime, frozen
+baseline, reset, paid work or publication changed. A NEW independent closure
+review is required before acceptance; provisional T14 remains excluded from
+siblings' accepted merge targets. T12 has a renewed warm-offline setup and bounded
+backend release; T17's one generation green waits for that setup boundary.
+
 ### T14 review completed; acceptance held on review-protocol breach (2026-11-10)
 
 Personal Standards: **FAIL on reviewer protected-selection protocol**; all three

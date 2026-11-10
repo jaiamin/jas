@@ -1,8 +1,9 @@
-# ROOT T14 incident recovery in progress (2026-11-10)
+# ROOT T14 targeted recovery complete; closure review pending (2026-11-10)
 
 ROOT resumed sole tracked writing at08700e9265ca0805d264d98cde83587b8e516e61.
-T14 remains unaccepted and unpublished. The narrowly scoped disposition and
-acceptance criteria are in [the recovery plan](docs/research/T14_INCIDENT_RECOVERY.md).
+T14 remains unaccepted and unpublished. The narrowly scoped disposition,
+observed result and acceptance criteria are in
+[the recovery record](docs/research/T14_INCIDENT_RECOVERY.md).
 Metadata-only enumeration found three generated source archives and six source
 manifest/report records in the exact contract711 subtree, with no direct
 protected-name files or shared hardlinks. ROOT permits minimal header-filtered
@@ -10,9 +11,19 @@ removal of unintended generated protected copies/digest entries, preserving
 unaffected evidence and historical failures; original clipboard/configuration
 payloads remain outside the scope. The old opaque instruction below records the
 reviewer's handback state and is superseded only by this bounded ROOT disposition.
-No app/runtime/frozen-baseline change, reset, paid work or publication is allowed
-as part of this recovery. Fresh independent closure review remains required.
-T12/T17 still target the last published accepted frontier, excluding T14.
+ROOT removed six prohibited members from three generated archives and twelve
+digest entries from six generated source records, with no prohibited payload
+extraction/hash, original protected access or retained unredacted backup. Exact
+bytes/TarInfo/PAX for1,320 unaffected members and all48 other files were verified.
+All823 original safe-index files and the qualification hash remain unchanged.
+Root proofs: `maintenance/T14-incident-recovery-20261110/` under the harness;
+proof SHA badf64da004360f86e601ff4913258fa72c99e53e7ca888a5eedf85d3477333c.
+The historical Standards FAIL is preserved, not retrospectively relabeled pass.
+No app/runtime/frozen-baseline change, reset, paid work or publication occurred.
+Fresh independent closure review remains required. T12 has renewed ONE offline
+warm setup/first-red/bounded20MiB backend release (setup201326592; checks134217728).
+T17 next single generation-green4MiB remains held until setup releases. Both still
+target the last published accepted2ad967f3, excluding T14's moving frontier.
 
 # T14 review complete — acceptance held on reviewer protocol breach (2026-11-10)
 
