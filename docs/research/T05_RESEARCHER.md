@@ -13,15 +13,15 @@ historical/held-out suite edits, pushes or tracker changes are authorized.
   operations, exports and disposable database; all six cases passed. The
   inherited focused chat/stream/planning/research/accounting suite passed 36
   tests (`data/t05/checks/inherited-before.{log,xml}`).
-- [ ] Dispatch capability discovery and relevant prior context/artifact retrieval
+- [x] Dispatch capability discovery and relevant prior context/artifact retrieval
   through the existing Pydantic AI/Sol chat workflow, without creating a study.
-- [ ] Probe installed trusted worlds using isolated template/proposal/run state;
+- [x] Probe installed trusted worlds using isolated template/proposal/run state;
   report legal schemas, actor observations and explicit hypothetical steps.
   Preserve source hashes, cutoffs and records; never contact participants.
-- [ ] Persist bounded operations, public results, rejections and stop reasons
+- [x] Persist bounded operations, public results, rejections and stop reasons
   across streaming, reconnect, failures and planner handoff. Preserve question
   intent, drafts and one pending chat turn. Recorded prose stays inert.
-- [ ] Account every auxiliary request independently and enforce a finite loop.
+- [x] Account every auxiliary request independently and enforce a finite loop.
 - [ ] Verify fresh API behavior and inherited regressions, retain actual red/green
   attempts, compare the identical inherited harness/cases, and check browser UI.
 - [ ] Merge the latest integration tip, recheck warranted conflicts, commit and
@@ -45,7 +45,37 @@ reinterpret existing saved evidence or require a database reset. The planner
 receives operation results as untrusted context alongside the original question.
 Use installed World validation/settlement and fresh copied checkpoints only.
 
-Next: implement one API red/green slice at a time, then Activity/reconnect,
-failure/accounting coverage, paired evidence and final integration merge.
+Implemented: three operation batches (up to four operations each), then an
+answer-only fourth model request; each uses the existing reservation/settlement
+ledger. A probe applies up to eight supplied actions to trusted copied worlds.
+Context indexes 12 records and searches up to 50 eligible prior terminal turns,
+with eight search matches and explicit proposal/artifact retrieval. The planner
+receives retained results as `research_operations`, separately from web research.
+
+Observed development checks: 14 new real-API cases pass, including an advancing
+source run whose probe still uses its earlier recorded cutoff. The earlier full
+backend run passed 945 tests before the last four development variants were
+added; the next checkpoint will rerun the final set. Frontend unit tests pass
+108/108; all four new light/dark phone/desktop browser flows passed. An initial
+broader API run had 84 passes and two activity failures: removed a spurious
+post-writing stage and updated the one exact-output assertion for the additive
+artifact envelope; 94 tests then passed. No assertion/check was weakened.
+
+Actual red/green logs are in `data/t05/checks/`: discovery, context, probe,
+scoped-probe, handoff, limits/failure and UI activity. Intermediate failures
+remain: a context-edit indentation error; a corrected capability identifier in
+the new discovery oracle; a reserved pytest parameter name; an accessible-name
+locator; duplicate browser text matching summary and JSON. Four first browser
+traces remain in `data/t05/browser-first-failure/`. A later screenshot-only
+animation wait included unrelated ongoing animations and was interrupted after
+two timeouts; its artifacts remain in `data/t05/browser-animation-wait-failure/`.
+The screenshot wait now considers only the relevant collapsible animation.
+These are development/harness repairs, not live model results.
+
+Next: archive the final source/cases, repeat development red/green with exact
+source stamps, run the inherited paired comparison and final checks, then merge
+the integration tip and hand off. The earlier incremental logs identify their
+development failures but do not contain complete per-edit source archives; the
+final paired development recheck will supply those exact archives explicitly.
 System uv is avoided; `.tools/uv/bin/uv` 0.13.7 and project-local dependencies
 are installed under this checkout. The preserved stash is untouched.
