@@ -65,7 +65,7 @@ def test_scripted_condition_runs_without_a_provider_and_exports_real_work(refere
     assert turn["decision"]["action"]["amount"] == 5
     assert client.post(f"/api/runs/{run_id}/verify").json()["verified_turns"] == 1
     exported = client.get(f"/api/studies/{study['id']}/export").json()
-    assert exported["version"] == 7
+    assert exported["version"] == 8
     assert exported["requests"] == []
     assert exported["activations"] == run["activations"]
     assert exported["exposure"][0]["delivery"] == {
@@ -458,3 +458,51 @@ def test_effort_distinguishes_unsent_attempt_from_unknown_provider_usage(
         assert effort["stop_reasons"] == {"provider_failure": 1}
         exported = client.get(f"/api/studies/{study['id']}/export").json()
         assert exported["study"]["comparison"]["conditions"][0]["effort"] == effort
+
+
+@pytest.mark.parametrize("authorized", [True, False])
+def test_artifact_read_work_is_included_in_run_comparison_and_export_effort(
+    tmp_path, monkeypatch, authorized
+):
+    from test_artifact_exposure import artifact_protocol, decision, settle
+
+    async def respond(messages, info):
+        prompt = json.loads(messages[-1].parts[0].content)
+        reading = not prompt["operations"]
+        output = {
+            "operation": "read_artifact" if reading else "decide",
+            "read": {
+                "kind": "read_artifact",
+                "artifact": "thermometer" if authorized else "unavailable",
+                "version": 1,
+            }
+            if reading
+            else None,
+            "decision": None if reading else decision({"kind": "stop"}),
+        }
+        return ModelResponse(
+            parts=[ToolCallPart(info.output_tools[0].name, output)],
+            usage=RequestUsage(input_tokens=67, output_tokens=23),
+        )
+
+    app = create_app(f"sqlite:///{tmp_path}/artifact-effort.sqlite3")
+    provider = FunctionModel(function=respond)
+    monkeypatch.setattr(app.state.models, "model", lambda _: provider)
+    with TestClient(app, base_url="http://localhost") as client:
+        saved = client.post("/api/studies", json={"design": artifact_protocol()})
+        assert saved.status_code == 201, saved.text
+        sid = saved.json()["id"]
+        rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+        run = settle(client, rid)
+        assert run["summary"]["status"] == ("complete" if authorized else "failed")
+        assert run["effort"]["tool_attempts"] == 1
+        assert run["effort"]["tool_operations"] == int(authorized)
+        assert run["effort"]["usage"] == run["summary"]["usage"]
+        comparison = client.get(f"/api/studies/{sid}").json()["comparison"]
+        assert comparison["conditions"][0]["effort"]["tool_operations"] == int(authorized)
+        exported = client.get(f"/api/studies/{sid}/export").json()
+        assert exported["study"]["comparison"] == comparison
+        replay = client.post(f"/api/runs/{rid}/verify").json()
+        assert replay["verified_reads"] == int(authorized)
+        assert replay["verified_rejections"] == int(not authorized)
+        (tmp_path / "public-evidence.json").write_text(json.dumps(exported))

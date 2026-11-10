@@ -858,7 +858,13 @@ class Research:
                 effort["implementation_sources"].append(source)
         for op in journal:
             effort = result[allowed[op.activation_id].run_id]
-            if op.kind in {"observe", "rules", "legal_options", *OPERATION_CAPABILITY}:
+            if op.kind in {
+                "observe",
+                "rules",
+                "legal_options",
+                "read_artifact",
+                *OPERATION_CAPABILITY,
+            }:
                 effort["tool_attempts"] += 1
                 effort["tool_operations"] += op.status == "complete"
             elif op.kind == "reference":
