@@ -135,6 +135,53 @@ def test_general_catalog_supplies_usable_lookup_ids(client, monkeypatch):
     assert client.get("/api/studies").json() == []
 
 
+def test_capability_configuration_can_be_reused_for_a_template_probe(client, monkeypatch):
+    def respond(prompt):
+        operations = prompt.get("research", {}).get("operations", [])
+        if not operations:
+            return answer(
+                "Inspect the template configuration.",
+                requests=[{"kind": "capabilities", "environment": "bargaining"}],
+            )
+        if len(operations) == 1:
+            entry = operations[0]["data"]["environments"][0]
+            parameters = entry.get("template_parameters")
+            if parameters is None:
+                return answer("The lookup did not supply an executable example configuration.")
+            parameters["endowment"] = 17
+            parameters["bargaining"]["discount"] = 1
+            return answer(
+                "Inspect the requested configuration on a copy.",
+                requests=[
+                    {
+                        "kind": "probe",
+                        "source": {
+                            "kind": "template",
+                            "environment": entry["key"],
+                            "parameters": parameters,
+                        },
+                        "steps": [],
+                    }
+                ],
+            )
+        return answer("The copied world exposes the requested 17-credit pie.")
+
+    scripted(client, monkeypatch, respond)
+    final = finish(
+        client,
+        client.post(
+            "/api/chats", json={"question": "Inspect a 17-credit bargaining pie at discount 1."}
+        ).json(),
+    )
+    assert final["status"] == "complete", final
+    operations = final["output"]["research"]["operations"]
+    assert len(operations) == 2, operations
+    assert operations[1]["status"] == "complete", operations[1]
+    assert operations[1]["data"]["observation"]["legal_actions"][0]["amount_max"] == 17
+    assert operations[0]["data"]["environments"][0]["template_parameters"]["endowment"] == 20
+    assert client.get("/api/studies").json() == []
+
+
 def test_prior_artifacts_are_retrieved_by_source_only_in_the_same_conversation(client, monkeypatch):
     scripted(
         client,

@@ -1,7 +1,7 @@
 # Sol Researcher development comparison
 
-Status: first comparison complete; discovery repair verified deterministically;
-same-case live development repetition pending.
+Status: initial comparison and first repair repetition complete; configuration
+discovery repair verified deterministically; affected live probes pending.
 This is development evidence, not held-out validation or an intelligence score.
 
 Compare accepted pre-T05 `c546c857348cb433163d52f99efc07f790a17288` with
@@ -85,3 +85,30 @@ Allocate at most **$0.75** for a clearly labeled same-case development repetitio
 of the committed discovery repair. It is informed by these failures, so it is
 not fresh held-out evidence. The original two source results remain unchanged.
 The combined maximum allocation is now $2.25; no other paid work is allocated.
+
+## First repair repetition
+
+Archived `0ea40640fef9f2304c872afe31f444944899930d` completed all eight cases
+with **20 Sol requests / $0.220016**, no unknown usage, retries, external tools,
+saved studies or participant calls. Session charges now total **$0.537462**.
+Returned model names in the original pair are exactly `gpt-6.1-sol`.
+
+The canonical-key repair prevented the incorrect missing-world conclusion,
+but both required bargaining probes **still failed**. Sol had to invent a full
+parameter object from field descriptions and supplied a non-null composed-world
+resource block to bargaining. The independently validated configuration was
+correctly rejected. It reported this failure instead of inventing a probe result.
+Other case outcomes are retained separately; their completion is not used to
+cancel these mechanism failures. Evidence is in the ignored `repair/` directory.
+
+The next repair supplies actual public template parameters in capability results,
+with instructions to copy that example and change only requested factors.
+This preserves full validation and the existing configuration contract. An API
+regression verifies that the example produces the requested 17-credit copied
+world without mutating the catalog's 20-credit example. It changed from one
+failed to one passed; all **62 affected backend tests**, Ruff and ty passed.
+
+Allocate at most **$0.75** to repeat only the two affected probe cases on that
+committed repair. The maximum allocated across four phases is $3, within the
+$10 authorization. This repetition is tuned development evidence; the six
+unaffected cases will not be rerun without a reason.

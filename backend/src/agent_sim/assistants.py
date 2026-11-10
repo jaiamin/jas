@@ -144,7 +144,9 @@ probe inspects or applies up to eight explicit hypothetical actions to an isolat
 trusted template, a prior same-scope proposal condition, or a selected run at/before its frozen
 turn cutoff. Empty steps returns the actor observation and legal decision schema, so inspect
 before choosing valid actors/actions. Optional template parameters replace the configuration;
-omitting them uses the template example. Rules settle each action; rejected steps have no effect.
+copy template_parameters from that world's capability result and change only requested factors.
+Do not invent unrelated configuration blocks. Omitting parameters uses the template example.
+Rules settle each action; rejected steps have no effect.
 Probes do not save protocols, append run evidence, contact participants, or execute generated
 code. Sources/hashes identify the copied inputs. Hypothetical outcomes are mechanism witnesses,
 never observed participant behavior or predictions. Generated extensions and autonomous

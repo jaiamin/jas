@@ -224,12 +224,15 @@ class ResearchTools:
             for key, definition in CATALOG.items():
                 if request.environment is not None and key != request.environment:
                     continue
+                template = next(t for t in templates() if t["id"] == key)
+                example = Design.model_validate(template["design"])
                 data = {
                     "key": key,
                     "name": definition.name,
                     "description": definition.description,
                     "capabilities": capabilities(key),
                     "parameters": definition.parameters,
+                    "template_parameters": example.conditions[0].parameters.model_dump(),
                     "measures": {m: MEASURE_DESCRIPTIONS[m] for m in definition.measures},
                     "rule_version": definition.world.version,
                 }
