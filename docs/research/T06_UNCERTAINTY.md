@@ -1,5 +1,14 @@
 # T06 failure-aware comparisons and uncertainty
 
+Accepted by fresh integration review at no-ff merge
+`aaf3a1522b371e68af845243854d581d48d1fc39`, from ticket HEAD
+`20c7b020b88f64e153f8138adf59be7691b34f12` onto
+`ff1567453cc119824bb4b3c03ceee1d73acdb9fe`. The fresh merger observed 1,007
+backend tests, 109 frontend tests, 42 shared browser flows and two actual harness
+flows passing. The current contract is schema 5 / export 6. See
+[fresh acceptance and custody](#fresh-integration-acceptance-and-custody) below;
+earlier observations describe the ticket branch, not a fresh rerun.
+
 Ticket: [#17](https://github.com/jaiamin/ass/issues/17). Implementation branch:
 `t3/t06-uncertainty`, prepared at integration source
 `b7e5b1540ff9ccf63761a482a4288eed1ad8be4a`. Linux aarch64 Docker Sandbox,
@@ -190,9 +199,9 @@ imports, export versions, frozen-baseline assertions and current-contract docs.
 - Pre-merge checkpoint: 54 API/baseline/new tests and ty passed. Ruff found two
   newly long lines; wrapped them and reran successfully. Both logs retained.
 
-## Final observed verification
+## Ticket-branch verification (inherited by merger)
 
-Implementation is complete pending a fresh integration review. Latest included
+The ticket was handed off complete for fresh integration review. Latest included
 accepted integration tip is
 `350359fc2e9d3dce6ed157149ec50a3293e0f276`, merged at
 `11b7afa997f220f763b9c3c8554f029b969d2456`. That final integration addition freezes
@@ -296,13 +305,146 @@ world seeds/repetitions do not establish independent population support; small
 samples and outcome-dependent completion/eligibility limit generalization. Missing
 conditionally defined or unsupported-range endpoints remain explicitly unidentified.
 No T07 exposure, T15 comparison policies or T19 claim lenses were implemented.
-No implementation decision requires user attention; fresh merger review remains.
+At that ticket handoff, fresh merger review remained; its acceptance follows below.
+
+## Fresh integration acceptance and custody
+
+The merger worked alone in the assigned integration checkout. Only the progress
+row conflicted; it was resolved to preserve both branches' history. Accepted
+T01/T02/T04/T05, schema 5, activation journals and both live-discovery repairs
+(`0ea4064`, `a874f7c`) remain. The two live regression tests and research-tools
+source are byte-identical to the starting integration tip. The canonical-key
+catalog and actual `template_parameters` instructions are still present.
+`SOL_DEVELOPMENT.md` and every benchmark file are unchanged from that tip.
+No product defect or substantive blocker was found; no source repair, alias,
+conversion, reset or weakened check was needed.
+
+Independent HTTP worked examples used different seeds (23/47) and an external
+scripted provider, with model-network access disabled. They verify:
+
+- Missing arm: A=0.5, B=1 on selected marginal support, matched difference=1
+  from one pair, planned bounds=[0, 0.5], with the full failed/excluded/unmatched
+  count matrix retained.
+- Missing repetition: selected equal-seed difference=0.5 from three pairs in
+  two observed clusters; planned bounds=[0, 0.25].
+- Disjoint completed cells: marginal means 0/1, no observed pair or effect,
+  planned rate bounds=[0, 1]. Completed runs without eligible reports retain
+  null measurements and explicit nonidentification.
+- Three arms: only the two baseline contrasts count; unmatched counts=[1,0,0].
+  A fully observed payoff contrast has exact finite value/bounds=[20,20]
+  despite lacking an implemented global range. A missing payoff remains
+  unidentified; neither result identifies population uncertainty.
+- Frozen analysis: captured statuses complete/failed/ready survive a successful
+  retry, Pause of the ready arm and a new revision while the answer is pending.
+  Prompt, persisted response, reload and repeated exports retain identical old
+  matrix membership, revision/hash, reasons, cutoffs and calculations. Subsequent
+  reads/export add no requests or usage.
+- Failed unsent reservation then Pause: attempted/interrupted counts=[(1,1),
+  (0,1)], one retained activation, zero provider requests and zero cost.
+
+The full backend suite also covers one fixed seed with four repetitions, two
+seeds with two repetitions and three fixed seeds. None certifies i.i.d. sampling.
+Seed clusters describe observed support; interacting agents and decisions do not
+increase independent support. Selected terminal estimates require explicit
+selection assumptions. Finite planned-sample bounds are deterministic possible
+values, not confidence intervals; broad causal/population intervals remain unsupported.
+
+| Fresh merged-source check | Observed result |
+| --- | --- |
+| `.venv/bin/pytest -q` | **1,007 passed**, 106.64 s; API/comparisons/analysis, T04 policy, T05 Researcher, accounting/cancellation/lifecycle, privacy, replay and export included |
+| Ruff / ty | Passed, including backend, benchmarks and repository scripts |
+| Frontend lint / test / build | Passed; **109 tests / 29 files**, TypeScript and production build |
+| Shared browser on `JAS_TEST_PORT=18217` | **42 passed**, 73.42 s wrapper: results/export, comparisons, inspection, controls/revisions, Researcher reload, streaming/reconnect, recovery and drafts |
+| Actual two-harness browser lifecycle on 18217 | **2 passed**, 15.54 s wrapper, light/desktop and dark/phone |
+| Six independent finite/frozen HTTP scenarios | Passed; complete request/response transcripts retained |
+| Positive contract and direct-action parity | Schema **5**, export **6**, comparison **1**; all **22 turns / five runs** match, with exact prompts, schemas, settings, world evidence, output content and accounting |
+| Custody/live-history closure | All **685** T06 files and **1,745** indexed Sol files reverified; source HEAD/status/tracked/evidence bytes, protected inputs and stash stable; port 18217 closed |
+
+All fresh checks use merge `aaf3a15`, tracked working-source SHA-256
+`4d05847173e61381d42b5395e7cb51bec14beece566032fd837044e7a8271ec8`;
+the independent HTTP check ran on identical staged merge bytes before its commit.
+The clean-clone T01 after tree is
+`935bf2721db03658c3da276723e6407bac0afe694c8a797ca1ea20cc03602fbb`.
+The inherited before source is `b7e5b1540ff9ccf63761a482a4288eed1ad8be4a`;
+its observations were not rerun or relabeled fresh. Case/harness hashes above
+are unchanged. All six fresh after cases execute with **22 scripted requests /
+98 HTTP operations** and zero paid requests. The synthetic $0.00077 ledger
+matches before exactly; it is not a provider charge.
+
+The frozen v4 runner and comparator both intentionally exit **1**: four
+`export-v4` failed checks and their four terminal `passed=false` flags remain.
+The two expected schema-rejection cases pass. Positive verification independently
+checks schema-5 activation provenance/settlement/links and the complete export-6
+comparison grid, including null eligible outcomes. All **374 export differences
+and 101 report differences (475 total)** are retained and classified, with **zero
+unexplained differences**. SDK timestamps/IDs and added adapter/harness evidence
+are distinguished from unchanged actions, outputs and world effects. No failed
+flag was hidden to manufacture an all-green historical score.
+
+The rendered failed-arm results, selected effect, actual failure reasons,
+withheld uncertainty and 0–50% sensitivity were inspected through the shared
+preview. Light desktop and dark 390px views remain usable, with no page overflow;
+automated keyboard/disclosure/download/revision checks also pass. The first
+manual visit overlapped Playwright's normal server shutdown and showed loading
+then fetch failure. That attempt remains; inspection succeeded on an owned
+keyless server using a copied finite-evidence database. No test/assertion/timeout
+changed. Both Playwright servers, the copied-database server and owned preview
+are closed. Only owned services were stopped.
+
+Production smoke remains explicitly **inherited** from qualified T04 source
+`3f3cf5c72eda10a346a6bc4ff44c1c3a7ce6c148`. Twelve container/runtime/configuration,
+containment, lock and smoke inputs match its recorded bytes. No related input or
+repair changed; the merged frontend build is fresh. No new container, workflow,
+Actionlint or ShellCheck result is claimed.
+
+Before merging, every ignored `data/t06/` artifact was copied without overwrites
+to `.tools/research-harness/evidence/T06/data/t06/`: **685 files / 89,936,683 bytes**,
+including the final manifest itself. All source/destination hashes and both
+child indexes were verified, with stable source HEAD/status/tracked/evidence
+bytes, and reverified at closure. Copy inventory canonical SHA-256:
+`43db2a6e4ae3bc610e4d10d9eec3de2c0d0aced7017c3d5442f5479967702187`.
+The child's final index covers **684 files / 89,797,582 bytes**, canonical
+`ec485f469e554e13b998a0c51de3a53ec2494a2da4ce73b1b8be3f033529a24c`;
+its own file SHA-256 is
+`a5f1ec14af6a4e6e466256d4b6a504801d734ef09f9cb01c9633bda53e5f07a5`.
+`T06-copy-verification.json` records every copied artifact. Source worktree intact.
+
+Fresh logs, per-check tracked-source archives/identities, raw HTTP/database/export
+evidence, independent scripts, all differences, screenshots and custody records
+are in sibling `T06-integration/`. `check-index.json` retains all **13 wrappers**:
+11 exit 0 and the two intentional frozen-oracle exit-1 results; all source bytes
+were stable. Two initial read-only helper assumptions (a Sol manifest field name
+and the catalog comprehension variable) were corrected; their failures are
+retained separately and did not change product/evidence. The immutable
+`verification-manifest.json` covers **501 files / 26,133,953 bytes**, canonical
+SHA-256 `6142ad78f81bc8a7cf5259a9bbc2c7d8cf80b5e8e8924495b4924fbe49b55f59`.
+It excludes only itself, disposable clone Git internals and generated Python
+caches, all left on disk. A subsequent final checkpoint manifest adds the final
+documentation commit/source archive without rewriting this verification manifest.
+
+All **1,745 indexed Sol-development files** and its final manifest are intact;
+canonical SHA-256 remains
+`809deca0dc521829b6f18840daf926c0620e6f176a610bfd51f3926fcfa45d90`.
+Global actual spending is unchanged: **$0.611632 / 55 known-usage requests**,
+**$9.388368 remains** of $10, no active allocation and no paid merger calls.
+The tuned narrow Sol successes do not close participant, held-out, reliability
+or generalization gates. The original failures and authoritative live history stay.
+
+No root `pbcopy` content was read, added, copied or archived; tracked-only
+snapshots and the clean clone exclude it. Stash
+`f771128ba1c9295262a4073df40cc25647b1370f` is untouched. No descendants, source
+worktree disposal, push, PR/issue operation, host/security/credential change or
+other-worktree/process change occurred. Parent owns draft PR #32/publication.
+T03 and T08 remain in progress; T07 remains Ready. T15 still waits for completed
+T08, T19 for T07 and T14 for T13. No consequential decision is outstanding.
 
 ## Complete observed check inventory
 
 Every path is relative to `data/t06/`; the corresponding `check.json`,
 `source.json`, `source.tar.gz` and `command.log` are retained. Exit 1 includes
 intentional red/contract differences as detailed above.
+This is the inherited ticket-branch inventory; fresh merger checks are indexed
+separately by `T06-integration/check-index.json`.
 
 | Artifact directory | Observed exit |
 | --- | --- |
