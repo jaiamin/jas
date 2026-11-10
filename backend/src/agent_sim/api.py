@@ -17,6 +17,7 @@ from .db import Database
 from .domain import Strict
 from .environment_library import EnvironmentConflict
 from .execution import Engine
+from .extensions import Extensions
 from .llm import LanguageModels, ProviderFailure
 from .research import Research
 from .routes import router, web_router
@@ -73,6 +74,7 @@ def create_app(
         concurrent_runs if concurrent_runs is not None else int(setting("CONCURRENT_RUNS", "3")),
     )
     assistants = Assistants(db, research, models)
+    extensions = Extensions(db.engine.url.database)
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI):
@@ -81,6 +83,7 @@ def create_app(
         await assistants.close()
         await models.close()
         research.environments.close()
+        extensions.close()
         db.close()
 
     app = FastAPI(
@@ -93,6 +96,7 @@ def create_app(
     )
     app.state.db, app.state.models = db, models
     app.state.research, app.state.engine, app.state.assistants = research, engine, assistants
+    app.state.extensions = extensions
     app.add_middleware(GZipMiddleware, minimum_size=1000)
 
     app.state.frontend = Path(static_dir or setting("STATIC_DIR", "frontend/dist")).resolve()
