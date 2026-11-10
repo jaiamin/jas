@@ -96,3 +96,13 @@ $0.611632 / 55 known-usage requests, no paid Luna. No live competence,
 held-out generalization or universal semantic verification claim is possible.
 
 Next: capture before baseline; implement first numeric contradiction slice.
+
+Fresh explicit semantic statements are frozen in
+`benchmarks/claim-support-development-cases.json` before evaluating those candidates.
+Independent rationales deliberately include a supported paraphrase, ambiguity,
+unsupported interpretation and a correct number attached to a false story. Machine
+abstention is recorded alongside these independent assessments, never reported as
+measured semantic accuracy. The additional false-report/breach witness will report
+the opposite of each recorded signal on all four turns, promise 3 in round one,
+and contribute 0 in round two: **four false reports, two feasible breaches**.
+With contribution 2 in round one and 0 in round two, utility is **21 each / 42 total**.
