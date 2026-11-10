@@ -28,11 +28,11 @@ HEAD equals the accepted base (ancestry confirmed). No descendants or new checko
   Verify saving creates ready runs without participant inference.
 - [x] Existing UI review/edit/save, drafts/identity/late replies/activity/reconnect;
   keyless browser verification at 18124, narrow/dark and desktop/light inspection.
-- [ ] Inherited backend/static/frontend/build and appropriate browser regressions;
+- [x] Inherited backend/static/frontend/build and appropriate browser regressions;
   frozen T01 must still exit 1 with exactly four export-v4 failures. Independent
   current-contract five-run/22-turn behavior/input/accounting parity and complete
   classification of differences. Retain every failed attempt.
-- [ ] Merge only the latest DOCUMENTED ACCEPTED integration checkpoint before
+- [x] Merge only the latest DOCUMENTED ACCEPTED integration checkpoint before
   handoff, resolve without weakened checks, qualify final source and commit with
   normal hooks/scanning. Reverify complete evidence, stop owned services/browser,
   report exact clean branch/HEAD/base for a later fresh merger. No publication.
@@ -45,7 +45,9 @@ provider/accounting witnesses supplement it. Fake providers exercise orchestrati
 scripted answers and mechanical checks are not live Researcher intelligence.
 
 Current DB7/export8/capture1/comparison1/library4/tool2.0/direct1.0 contracts and
-independent World authority remain in force. No migrations, aliases, resets,
+independent World authority remain in force, including accepted T19 additive
+lens/support1, structured-calculation-only support, unassessed prose, cutoff
+reanalysis and separate participant/analysis billing. No migrations, aliases, resets,
 T14 investigation, generated extension/admission, parallel planner or participant
 engine. Sol remains the app Researcher/planner/assistant; Luna model participants.
 No paid calls, provider fallback, hidden rollout, host/security change, credential
@@ -170,6 +172,9 @@ clarification judgment or unsupported-case reliability.
 
 ## Observed qualification
 
+The following complete backend and affected browser checks ran before the accepted
+T19 merge. Postmerge qualification is recorded separately below.
+
 - `checks/backend-final-*`: **1,225 passed / 40 files**, sequential per-file checks,
   stable source `68487d360d3b23307a31287ee46db130e553f0c77d58aa21fef9ddd0c4295427`.
   Includes accepted independent World/privacy/replay, artifact content/exposure,
@@ -189,7 +194,8 @@ clarification judgment or unsupported-case reliability.
   light and 390px dark. Only the settings availability boolean is simulated; the
   public question, SSE/planner/discovery/World probes, checks and save use the real
   backend. Luna sampling is explicitly forbidden by the provider fixture. Proposal,
-  exact export and screenshots are retained in `browser-real-final-results/`.
+  exact export and screenshots are retained in `browser-real-final-results.tar.gz`
+  with its member proof.
   Both reload a pending proposal, retain record identity/activity, review/edit a
   draft, reload it, check the edit warning and save with no extra request.
 - Preview desktop/light and phone/dark inspection has no horizontal overflow;
@@ -200,10 +206,108 @@ clarification judgment or unsupported-case reliability.
   these are retained, not claimed as a clean uninterrupted console session. The
   actual automated flows have no page errors. The owned tab/service are closed.
 
-Use the committed lockfiles and own `.venv`/`frontend/node_modules`. Reproduce the
+Observed checks used the committed lockfiles and own `.venv`/`frontend/node_modules`.
+Recreate these project-local dependencies from the lockfiles to reproduce the
 narrow real flow with `JAS_TEST_PORT=18124 pnpm --dir frontend exec playwright test
 --config playwright.researcher.config.ts`. The explicit test-only provider flag
 keeps Pydantic AI real requests disabled; this command requires no provider key.
+For new large checks, use the shared `flock` command documented in `HANDOFF.md`,
+release it between bounded jobs and pack only closed task-owned synthetic outputs.
+
+## Accepted integration and final qualification
+
+T19 acceptance landed during this task. Merge `d2943e60199a4b1605610939e75e8513b4101bf9`
+includes exact documented accepted checkpoint
+`81f92a7b1718539cc47797bc1a301138df5b3ce4`. The handoff prose and test-server fixture
+selection conflicts preserve both tasks; the T13 fixture is imported as
+`deterministic_designs`, leaving accepted T19 claim fixtures and analysis billing
+intact. No test was weakened. Latest published accepted frontier
+`8158fccc01382b61d9efd3589d975119a6e7b8e2` is included by merge
+`89c0ee5`; its only changes beyond `81f92a7` are coordination/handoff documentation.
+The later handoff conflict retains both coordination and T13 progress. Provisional
+T10 code and its incompatible contracts are excluded.
+
+All **29 postmerge checks** pass at exact combined source
+`cbd2eb25e8574632e5b224e7c7baf0673a016b7f0259df4fea5eac06bd3ea0cc`:
+
+- **254 affected backend tests / 17 files**, including the 16 T13 cases, planning,
+  general answers, chats/streaming, real research tools, accepted T19 support,
+  research/export/accounting, reference controls, artifact/exposure/lifecycle and
+  private participant context.
+- Ruff, ty, frontend lint, **112 frontend tests**, TypeScript and production
+  frontend build.
+- **35 browser executions**: two real T13, seven streaming, four Researcher tools,
+  seven accepted T19 claim/billing, eleven harness/artifact/exposure, two private
+  actor-context and two reference-control flows. Passing real rows/exports/captures
+  are in `postmerge-browser-real-results.tar.gz` with its member proof.
+
+`checks/postmerge-*` and `postmerge-qualification.txt` retain every command/output.
+These results complement the complete premerge backend suite; they do not claim
+one uninterrupted full suite on the final combined source. The final source
+qualification compares every tracked byte and mode with that qualified source,
+allowing only final task report/handoff prose and the exact accepted progress
+document. It records the final clean branch/HEAD, accepted ancestry and closed
+18124 port in `final-source-qualification.json`. Runtime/container inputs remain
+unchanged, so production smoke is inherited from accepted T09.
+
+Self-review against accepted `8158fccc` covered the complete T13 product, fixture,
+test and documentation diff and all seven ticket criteria. Independent World
+authority, exact artifact ACL/content, both harnesses, private context, T07/T08/T09
+repairs, T15 effort accounting and accepted T19 boundaries are preserved. This is
+implementation review, not later independent merger acceptance.
+
+## Frozen T01 and independent current-contract parity
+
+The original frozen suite/runner/scores remain untouched. `frozen-before/` retains
+the before run at `d0e3d61`; `frozen-after/` retains the earlier premerge attempt;
+`frozen-after-accepted/` retains the final merged run at `d2943e6`. The final runner
+and comparator each **exit 1** with exactly four intentional export-v4 failures
+and four failed terminal flags: `simple-binding-split`, `three-signal-disclosure`,
+`four-feasible-promises`, `six-token-permissions`. The two unsupported-schema cases
+still pass; there are zero comparator regressions/improvements. Evidence is under
+`checks/frozen-after-accepted/` and `checks/frozen-comparison-accepted/`. These
+historical failures were not relabeled as passes.
+
+The independent, implementation-import-free audit in
+`current-contract-parity-accepted-7/` positively verifies DB7/export8/comparison1,
+five complete runs, **22 turns / 22 Luna FunctionModel requests**, exact delivered
+prompts/observations, schemas/settings, decisions, activation journals, consequences,
+checkpoint hashes and accounting. Both runs retain 98 HTTP operations, 2,200 input
+and 1,100 output tokens, and **770 synthetic integer microdollars; actual spend $0**.
+Source archives match their inventories, and all old benchmark files are unchanged.
+
+Every raw JSON/JSONL difference is retained in `differences.json`: **1,830 total,
+none unexplained**. Classification: 255 clocks, 542 generated IDs, 674 embedded
+IDs, 22 identity membership keys, 180 short request labels, 66 exact accepted T19
+request-inspection additions, 11 elapsed latencies and 80 source-inventory entries.
+ID correspondence is bijective; short labels resolve to their actual request and
+delivered pointer. T19 additions are independently checked as decision purpose,
+null analysis ID and Luna model. Actual behavior and provider input are not ignored.
+This proves scripted current-contract parity, not live intelligence.
+
+## Evidence custody and handoff
+
+Preserve the entire ignored `data/t13/` tree. `check-index.json` indexes completed,
+nonzero and incomplete attempts; `sources/<inventory-hash>/` retains the exact
+tracked archive/inventory/diff once per distinct source. Hash-named executed audit
+helpers and earlier versions remain under `harness/`. `*.compression.json` proves
+every compressed member's bytes/mode/link target; manual SQLite gzip has a raw
+byte proof. No preserved CLOSED evidence was modified.
+
+`closure.json` records final branch/HEAD/original and merged accepted bases.
+`evidence-manifest.json` and `.sha256` cover the complete evidence tree, with a
+fresh verification of each indexed byte, every source archive, all compressed
+members and command-output hashes. They exclude their own self-reference only.
+The final source and manifest checks run after the final documentation commit;
+those JSON records are the authoritative exact handoff identity. Owned services
+and preview tabs are closed. No push, publication, issue/PR edit or paid call.
+T13 is ready for a later fresh merger review; it is not accepted here.
+
+After qualification, only the task's disposable `.venv`, `frontend/node_modules`
+and `frontend/dist` are removed to release shared disk. `owned-generated-cleanup.json`
+records their boundaries/counts and unchanged Git state. No source, evidence,
+user data, other checkout or shared cache is removed. Final qualification and
+custody use the system Python standard library and do not depend on these outputs.
 
 ## Retained failures and operational limits
 
@@ -231,6 +335,14 @@ clipboard/stash, publication or user data were touched. Some early read-only
 exploration and wrapper-bootstrap failures predate the structured runner and are
 represented by the tool transcript and this disclosure, not fabricated command
 records. Final raw evidence indexing distinguishes incomplete attempts from passes.
+
+The independent parity helper's failed attempts are also retained: an incorrect
+hash-named command path; an incorrect assumption of an empty activation journal;
+checkpoint JSON whitespace; unrecognized provider UUIDs; unclassified raw changes;
+and nested delivered-input pointers. Each correction follows the recorded contract,
+retains its prior helper/exit and strengthens positive checks. The final audit uses
+the participant implementation file hash, separately from the whole-backend digest.
+No historical oracle was edited to make this audit pass.
 
 No live/held-out gate is verified. Scripted mechanics, response fluency and successful
 saving are not evidence of intelligence or scientific validity. T14 remains blocked
