@@ -1,7 +1,8 @@
 # T13 — Researcher artifact-world designs
 
-**Integration status (2026-11-10):** fresh review merged the exact source and
-repaired stale pre-T10 scoping; final UI qualification is pending. Read
+**Integration status (2026-11-10): accepted for deterministic T13 scope.** Fresh
+review merged the exact source, repaired stale pre-T10 scoping and completed
+segmented backend/frontend/browser qualification. Read
 [the integration report](T13_INTEGRATION_REVIEW.md) for current findings, fresh
 evidence and the remediated protected-source capture incident. The implementation
 history below describes the earlier DB7/export8/library4 source. Current accepted
@@ -12,6 +13,8 @@ Solo artifact work remains sequential; external Python/live camera execution
 remains unsupported. The historical question/ID `unsupported_coordination` stays
 unchanged, but its development expectation advances to supported coordination in
 manifest2. Historical source failures and earlier expectations remain attributable.
+
+## Historical isolated implementation record (retained)
 
 Task: T13 / #24 only. Implementation in the assigned isolated checkout on
 `t3/implement-t13-researcher-designs`. Starting and published accepted integration:

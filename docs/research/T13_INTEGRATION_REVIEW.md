@@ -1,5 +1,10 @@
 # T13 fresh integration review
 
+**Accepted for its deterministic T13 scope (2026-11-10).** The exact source was
+merged and its scoping defect repaired; the required bounded qualification and
+authorized protected-copy remediation are verified. Live Researcher competence,
+held-out validity, T14 investigation and T17 generation remain unassessed here.
+
 Sole writer: fresh integration reviewer, 2026-11-10. Assigned checkout is
 `integration/research-harness`, initially clean tracked HEAD
 `eb9c29a9490480a241489ec353abea3f64baa15a`. Exact proposed second parent is
@@ -22,16 +27,16 @@ handling requirement was violated, and no clean historical handling is claimed. 
 - [x] Qualify question fidelity, exact copied configurations, immutable provenance,
   exploratory/confirmatory intent, material clarification, useful general/simple
   answers, population/opportunities/replication/capture, and zero calls on saving.
-- [ ] Preserve T07/T08/T09 exact exposure/ACL/replay, T10 phase/mail/time/privacy,
+- [x] Preserve T07/T08/T09 exact exposure/ACL/replay, T10 phase/mail/time/privacy,
   T15 actual controls/read effort and T19 read-only cutoff calculations/billing.
-- [ ] Run combined backend/static/types, frontend lint/units/forced clean build,
+- [x] Run combined backend/static/types, frontend lint/units/forced clean build,
   relevant browser flows on18224, desktop/light and phone/dark, keyboard/loading/
   error/reconnect. Attribute inherited production qualification only after checking
   exact relevant runtime inputs; otherwise run fresh production smoke.
-- [ ] Retain frozen T01's four export-v4 failures, failed flags and exit1. Run
+- [x] Retain frozen T01's four export-v4 failures, failed flags and exit1. Run
   separate current-contract five-run/22-turn/22-request complete input/accounting
   parity from tracked-only sources. Classify every difference.
-- [ ] Close owned services/browser, retain all attempts and keyed tracked sources,
+- [x] Close owned services/browser, retain all attempts and keyed tracked sources,
   verify complete evidence index, hooks and final Git identity, update progress and
   HANDOFF, and explicitly return sole writing ownership to root. No publication.
 
@@ -96,8 +101,8 @@ Current contracts are DB8/export9/capture1/comparison1/library5/tool2.0/direct1.
 No paid calls, T14 investigation, T17 generation, migrations, aliases, resets,
 credential/security changes, publication or final held-out exposure is authorized.
 Sol stays $0.611632/55 prior requests, $9.388368 remaining; Luna is unallocated.
-T11/T16 remain running and unpolled; T12/T18 Ready. T14 depends on accepted T13;
-T17 on accepted T13/T16. Root owns draft PR32 publication.
+At assignment T11/T16 were running and unpolled; the final root-reported frontier
+is recorded below. Root owns draft PR32 publication.
 
 ## Review axes and progress
 
@@ -167,7 +172,7 @@ the honest unsupported result without weakening the new guard. One imported
 pytest fixture caused Ruff F811 and was corrected by explicit re-export; no lint
 rule was suppressed. Every red, mistaken fixture and static failure remains.
 
-## Qualification in progress
+## Observed qualification
 
 Repair `5e86dfac4daf5cb1e4f7a9998dcf767d15664e7a` passed normal Gitleaks hooks.
 Qualified tracked-source key is
@@ -176,8 +181,12 @@ All **1,413 distinct backend cases** have observed passes:1,412 across **44
 per-file jobs**, followed by all eight independent cases including the additional
 frozen simple31 case. There are no outstanding product failures/errors/skips.
 This is segmented coverage, not an
-uninterrupted suite. Ruff/ty and frontend lint pass. Full frontend units/build
-and browser qualification remain pending the root storage hold.
+uninterrupted suite. Final Ruff/ty and frontend lint pass. All112 frontend units
+in30 files pass. Forced TypeScript plus normal and new-empty-directory production
+builds pass;54 files match in bytes/modes. Current UI and eight-case source key is
+`39ac3d35a28cb79c53ad475f43f23f93debf89fe933faa748f8b145c087ea196`.
+Application bytes are unchanged from the complete segmented backend qualification;
+later differences are documentation and the independently frozen simple31 test.
 
 Fresh unchanged frozen T01 and its comparator both exit1: exactly four export-v4
 failures and four failed terminal flags, no regressions or improvements. The
@@ -234,3 +243,92 @@ Root's later pnpm storage-recovery provenance belongs to
 earlier closed-output maps and completed-owner cleanup receipts. Root dependencies
 and caches were not used as mutable shared outputs. Earlier T19 outside-cache
 effects remain unassessed. No publication is attempted by this reviewer.
+
+## Bounded UI qualification and final disposition
+
+Root lifted the I/O hold specifically for existing-dependency qualification; no
+install was needed or attempted. Thirteen serialized browser groups on18224
+pass **69 distinct configured cases across15 files**. Coverage includes the real
+pending proposal/reload/review/edit/save flow, public operation results, drafts,
+late replies, streaming/polling recovery, keyboard and loading/error states,
+both participant harnesses, exact exposure, artifact failures/replay, actual
+capability controls, reference effort, frozen claims/reanalysis, separate billing,
+and coordination phase/mail/restoration. These are segmented jobs, not a fresh
+uninterrupted full-browser suite. Expected artifact version conflicts and request
+limits remain recorded as tested failure/recovery outcomes.
+
+An owned incognito native preview additionally verified1440×900 light and390×844
+dark appearance, original-question/proposal identity, public scope disclosure,
+keyboard focus into the optional empty analysis plan and no phone page overflow
+(document/viewport width390). Its HTTP-seeded fixture used only FunctionModel;
+the real missing-provider UI remained intact. One chat record and zero runs
+remain after browsing. Automated T13 saves independently prove zero added calls,
+ready zero-turn runs and retained exact sources. The owned tab/service are closed.
+
+Manual evidence packing first raced SQLite shutdown: the listener had closed
+before its transient shm/WAL cleanup. That nonzero command and17-member partial
+archive remain in `manual-browser.tar.gz.partial` and
+`manual-browser-pack-failure.json`. The corrected operation waits for process exit,
+checks the final database read-only and verifies the complete24-member pack.
+This is a retained evidence-helper failure, not a failed browser assertion or an
+uninterrupted clean manual command. The final database/HTTP evidence is retained;
+no byte-identity claim is made for transient SQLite files during shutdown.
+
+Every new closed browser group is below40MiB; the largest is7,982,154 bytes.
+The minimum recorded frontend/browser preflight is129,019,904 available bytes;
+these are sampled shared-space observations, not reserved capacity or continuous
+peak measurements. Jobs hold the shared flock and release it between bounded
+phases. Mutable test/cache/build outputs are private nlink1 files. The final
+read-only custody pass still verifies all944 inherited files/203 directories and
+all147 checks/33 nonzero results, bootstrap failure and custody failure, without
+writing either immutable hardlinked tree or inventing missing provenance.
+
+The post-UI protected-copy audit covers156 containers/14 source records with zero
+remaining exact protected-name copies, including the retained partial archive.
+The authorized redaction still verifies all unaffected logical bytes/metadata;
+the scrubbed container hash is
+`764c90ea5b455c8ee6ee26548747ecaf2258e22d85b8301b3fd67372f26535ed`.
+`privacy-incident-final.json` connects incident, explicit authorization, mappings,
+independent audit and corrected capture. The historical indirect read/archive
+remains a handling violation; it is never called a clean pass. Subsequent source
+archives select only tracked paths and verify their exact member inventories.
+
+`qualification-summary.json` indexes coverage. `closure-qualified/` verifies126
+complete compression archives,22 keyed tracked sources and the separately retained
+partial archive. All14 qualification nonzero attempts remain classified: expected merge
+conflict; two genuine TDD reds; two mistaken fixtures; two static failures; four
+parity-helper mistakes; frozen runner/comparator; and the manual pack race.
+There is no outstanding product failure. The immutable qualification index covers
+**891 files /185 directories**, SHA256
+`1ec5c9f145cdca69e6a9b3f954ace62e02f338aa57de41e6f7347163334105de`,
+canonical entries
+`3b1b615b10951931cf20b76eff93cc8680b70c5a78c7b9e3c63d6bf186ec1433`.
+It describes qualified clean HEAD `8ffccefef2edc9587eec43fd4a1706ec20dcc59a`.
+The documentation-only acceptance commit's normal hooks, exact clean HEAD,
+source/resource equivalence and complete final index extend that immutable index
+in `closure-final/` and `evidence-final.json`/`.sha256`; no product requalification
+is inferred from prose edits.
+
+The first documentation-staging command also exits1: invocation-local Git
+exclusions rejected an explicitly named ignored parent. No commit was created;
+the exact command/source/output remain in `checks/acceptance-commit/`. The
+corrected command stages only tracked updates with `git add -u`, preserving the
+capture exclusion and ordinary hooks. A failed patch-context match made no edit
+and is recorded separately as a documentation-tool error.
+
+**Standards:** no unresolved documented-standard or module-design finding.
+**Spec:** the false unsupported decline/T10 discovery finding is repaired, with
+independent population-overreach reds retained; no unresolved deterministic
+acceptance finding. Prompts and scripted providers cannot prove semantic research
+quality, causal validity, live reliability or generalization. Current contracts
+remain DB8/export9/library5/capture1/comparison1/tool2.0/direct1.0, Sol app roles and
+Luna participants, no adapter/migration/reset or provider fallback.
+
+T13 acceptance makes **T14 Ready**; T12/T18 remain Ready. T17 still waits for
+accepted T16. Root reports T11 complete/clean but **unaccepted**, with custody
+preserved and fresh review queued; T16's original implementer resumed its
+incomplete admission guard and remains unaccepted. Neither environment was
+inspected, polled, changed or merged here. HANDOFF records the exact root-reported
+frontier and storage maps/cleanup receipts. This reviewer returns sole shared
+writing ownership to root only in the explicit completion handoff after final
+closure verification. No push/publication/PR action or paid request occurred.

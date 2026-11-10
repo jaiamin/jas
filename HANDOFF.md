@@ -1,3 +1,124 @@
+# T13 fresh integration accepted — completion returns sole ownership to root (2026-11-10)
+
+**T01–T10, T13, T15 and T19 are accepted for their documented deterministic
+scopes.** This reviewer alone wrote assigned `integration/research-harness` in
+`/home/agent/.t3/worktrees/workspace/t3-fdf9bdeb`, starting clean at published
+`eb9c29a9490480a241489ec353abea3f64baa15a`. Exact clean T13 source
+`75766baaf204a3ffdf21d11ec5dcf147c4cd7bf4` is the second parent of no-ff merge
+`5af3fbbb7e7b8221499bdf5e31e3a60ef7d34662`; both HANDOFF histories survive.
+Repair `5e86dfac4daf5cb1e4f7a9998dcf767d15664e7a` fixes a contradictory unsupported
+decline and accepted-T10 discovery/coordination guidance. Independent population
+reds prevent coercing one-/three-person bargaining into two participants; valid
+simple31 bargaining remains useful. The original question/ID survives development
+manifest2. No T14/T17 implementation, contract alias, migration, reset or fallback.
+Current **DB8/export9/library5/capture1/comparison1/tool2.0/direct1.0** remain.
+
+Read [the fresh review](docs/research/T13_INTEGRATION_REVIEW.md) and the clearly
+attributed [implementation history](docs/research/T13_RESEARCHER_DESIGNS.md).
+Standards and Spec were reviewed separately without descendants. Fresh observed
+qualification: **1,413 distinct backend cases** across44 per-file jobs plus the
+latest eight independent HTTP cases; Ruff/ty/lint, **112 frontend units/30 files**,
+forced TypeScript and normal/new-empty-directory builds pass,54 build files equal
+in bytes/modes. **69 configured browser cases/15 files** pass in13 bounded groups
+on18224. This is segmented qualification, not an uninterrupted suite. Owned native
+preview verifies desktop/light, phone/dark, keyboard focus and no page overflow;
+automated pending/reconnect/edit/save/error/loading/late-response flows pass.
+Saving adds zero calls and creates ready zero-turn runs. Production infrastructure
+inputs exactly match accepted T10 `7aec3f5`; its UID10001 smoke is **inherited**,
+not a fresh current-image claim. No runtime/dependency/container input changed.
+
+Frozen T01 cases/runner/scores remain unchanged: **four export-v4 failures/four
+failed flags, runner and comparator exit1**. Independent current-contract parity
+verifies five runs/22 turns/22 Luna stand-in requests,98 HTTP operations, complete
+bounded inputs/checkpoints/effort/integer accounting and1,763 classified raw
+differences, zero unexplained;770 synthetic microdollars/2,200 input/1,100 output
+tokens, actual spending0. Scripted checks do not establish live competence,
+semantic research quality, held-out validity or generalization.
+
+**Protected-source handling incident:** the initial backend wrapper indirectly
+read/archived protected untracked `pbcopy` in three internal T01 snapshots.
+The original was not manually inspected or mutated, but historical capture
+violated its handling rule. Root explicitly authorized removing only unintended
+private copies: three nested members/75,459 bytes and six generated source-digest
+entries were removed without inspecting/hashing their payloads. Verified atomic
+repacking preserves unaffected logical bytes/metadata; unredacted copies were
+unlinked, no sealed duplicate retained. The scrubbed container SHA256 is
+`764c90ea5b455c8ee6ee26548747ecaf2258e22d85b8301b3fd67372f26535ed`;
+container-byte identity is not claimed. The post-UI audit finds zero copies in156
+containers/14 source records; corrected capture passes four tests with three clean
+405-tracked-member snapshots. All later children preflight tracked-only Git
+selection through invocation-local exclusions. Preserve incident/redaction maps,
+`privacy-incident-final.json`, final audits and the historical failure chronology.
+Never open, hash, inspect, change or delete the original `pbcopy` going forward.
+
+Raw evidence is `.tools/research-harness/evidence/T13-integration/`. Its immutable
+qualification index covers **891 files/185 directories**, manifest SHA256
+`1ec5c9f145cdca69e6a9b3f954ace62e02f338aa57de41e6f7347163334105de`,
+canonical entries
+`3b1b615b10951931cf20b76eff93cc8680b70c5a78c7b9e3c63d6bf186ec1433`.
+Qualified clean HEAD is `8ffccefef2edc9587eec43fd4a1706ec20dcc59a`; application
+bytes remain unchanged from full segmented backend qualification. Later acceptance
+changes are documentation only. `closure-final/` and complete `evidence-final.json`
+with `.sha256` extend the index with the final commit/HEAD/status, normal hooks,
+source equivalence and closure. All14 qualification nonzero attempts remain classified.
+Manual browser assertions passed, but one evidence pack raced SQLite shutdown;
+its partial container/17 members and exact error remain. Process-exit/read-only
+integrity verification then produced the complete verified24-member pack. Do not
+call that historical command a clean pass. All owned browser/service resources
+are closed;18224 is closed. Private caches/builds were never manually shared.
+The first documentation-staging command also failed because invocation-local
+exclusions blocked an explicitly named parent; its exact attempt remains. Staging
+tracked updates with `git add -u` retains capture exclusions and normal hooks.
+
+Inherited immutable T13 custody remains **944 files/203 directories/106,152,423
+bytes**,942 indexed/1,145 entries, all944 inodes shared with source: **hardlinked
+custody, not independent physical copies**. Final read-only verification retains39
+source archives,112 compression proofs,147 checks/33 nonzero, one bootstrap without
+source and one custody failure. Manifest SHA256
+`526ea658d82c30ed1ad64b24256a1798d5cac6faf1deae08e3d4d59a48a1624a`,
+canonical inventory
+`436e91d78acbffa73bd9a811947ddd99645e04044a11d3b90da9a66f1e51d238`.
+Never write either custody/source evidence tree; no missing early provenance claim.
+
+Resolve root-maintained closed T07 logical paths through
+`.tools/research-harness/maintenance/closed-t07-json-20261110T092044Z/`
+`mapping.jsonl` and `verification.json`. Keep all completed-owner receipts in
+`.tools/research-harness/maintenance/completed-dependency-cleanups-20261110T0922/`,
+including T03 SHA256
+`9fe94a434e36a2e9e5c3ca27211166b61df5370611384694835c2a3645a1c916`,
+T07, and T11 SHA256
+`e0b4f242539e29a17b1ab72e1ac1085e5238098750daaf642cc33356bf2a8981`.
+Also preserve `maintenance/storage-frontier.json` and
+`maintenance/pnpm-storage-20261110T0949/` under `.tools/research-harness/`.
+`root-maintenance-references.json` records the observed receipt/map hashes.
+Concurrent space changes are not exclusive allocations. Root's specific hold lift
+authorized existing-dependency qualification only; no install occurred here and
+T11's separate install recovery was not independently checked. All new closed UI
+groups are below40MiB and use the shared flock; earlier T19 outside-cache effects
+remain unassessed.
+
+**Root-reported frontier, not reviewed here:** T11 is complete/clean **unaccepted**
+at `4aac5a9eb8e5ea4a0213d4fa37488e5251729fe8`; report
+`docs/research/T11_COMMITMENTS.md`, source qualification
+`data/t11/source-qualification.json`. Root preserved its entire evidence under
+`.tools/research-harness/evidence/T11/`:2,980 files/175 directories/192,456,565
+bytes,2,978 indexed, immutable hardlinks, not independent physical copies. Manifest
+SHA256 `3d9f0484bbd2d1b5dd1fcc7c6df892e98b48d69100327e870a310fc693058074`;
+sibling copy-verification canonical inventory
+`0cd466f155e6794ac0d73c6dac8c74f01b0136f307ce534f27848767268677fd`.
+Root reports six inherited formatting differences and19 early captures without
+after-inventory; fresh T11 review stays queued. T16's original implementer resumed
+the incomplete admission guard from `7383c13`; it remains unaccepted. Neither
+environment was inspected, polled, changed or merged by this reviewer.
+
+**T12/T14/T18 are Ready** for root scheduling; T17 still waits for accepted T16.
+No new live allocation: Sol remains **$0.611632/55 prior requests, $9.388368
+remaining**; Luna unallocated. Review provider spend0. Stash
+`f771128ba1c9295262a4073df40cc25647b1370f` is preserved; no stash operation,
+publication, push, PR/issue/watch or security/credential change. Root owns draft
+PR32 publication. Sole shared-checkout writing ownership returns to root only with
+the reviewer's explicit final completion message after the recorded closure checks.
+
 # Root coordination — T10 accepted; T13 review and T11 next (2026-11-10)
 
 Accepted integration is `f9e87c2b0cae14ca862ba2a051b2b95dffc3f78d`:
