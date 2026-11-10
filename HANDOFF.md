@@ -1,5 +1,16 @@
 # Current user direction and evidence retirement (2026-11-10)
 
+ROOT's first repeatable native HTTP runtime benchmark passes on accepted0527e737
+plus the staged helper at1c44e1f9 source. Declared2/12 non-model Commons
+participants complete4/24 turns, exact replay/export, zero provider requests and
+charges;20 warm reads per endpoint, wall times/memory/bytes are retained in
+current/runtime-baseline-01. Own18228 is closed/reaped and reuse-bound, lock
+released. This is a pre-integration platform baseline; final-source repeat and
+full product review remain open. T12 native-runtime-03 has separately passed;
+await its actual implementation-complete handback before fresh integration.
+T17 receives ONE private offline frontend setup and conditional first focused
+UI unit red only; later browser/service/build stages remain held.
+
 ROOT independently reproduced and fixed an analysis cutoff race: turn1 analysis
 could capture turn2 exposure after a concurrent step. Explicit cutoff propagation
 passes the same public HTTP witness; a separate in-flight input/settlement/export

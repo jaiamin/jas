@@ -52,6 +52,16 @@ fresh workspace running on port 8080 for manual testing.
   The analysis cutoff race has observed HTTP red→green; a separate in-flight
   capture preservation case and99 affected cases/Ruff/ty pass. Combined-source
   review and measurements remain open.
+  Runtime benchmark oracle, frozen before its first output: fresh native HTTP
+  workspaces,2 and12 Commons participants,2 rounds, one seed and one declared
+  `commons_half_v1` non-model control. Expect4/24 committed turns, zero provider
+  requests/charges and exact replay/export. Measure20 warm reads per health/run/
+  experiment endpoint, full response sizes, observed execution wall time and
+  server peak RSS. Record raw timings and environment; no latency target or
+  model-competence score is inferred. Repeat on the final combined source.
+  First pre-integration native HTTP run passes at1c44e1f9 source:4/24 turns,
+  zero provider work, exact replay/export and closed/reaped service18228.
+  Raw20-read samples, memory and bytes are recorded; final-source repeat remains.
 - [ ] Summarize final evidence, remove obsolete records and start port 8080.
 
 Operational constraints: preserve protected original clipboard/configuration
