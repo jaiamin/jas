@@ -16,6 +16,13 @@ artifact contents, versions, source references and history at the capture; lens
 reanalysis cannot alter them or the four participant requests. Success alone
 does not prove reading, inclusion, attention or intent.
 
+Additional turn-zero DEVELOPMENT expectation, declared before execution: the
+initial artifact run has a public checkpoint/hash, zero retained writes and no
+terminal outcome. A structured success value0 is unavailable, not observed
+failure. After one explicit scripted stop, frozen turn-zero reanalysis must
+retain the original checkpoint/hash, outcome null and cutoff0, with one unchanged
+participant request and two separately settled requests per analysis.
+
 Ticket: T19 / #30. Implementation in `t3/research-claim-support`, assigned clean
 base `59e20935c17bd8ea0c44f712790ffeeb38ebb83b` on accepted
 `integration/research-harness`. This includes T07 merge `a92105f` and repair

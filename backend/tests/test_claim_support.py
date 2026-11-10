@@ -43,7 +43,14 @@ def claim_client(tmp_path, monkeypatch, request):
             )
             if not prompt["evidence"]:
                 payload = {
-                    "requests": [{"kind": "history", "run_id": rid, "start": 1, "count": 20}],
+                    "requests": [
+                        {
+                            "kind": "history",
+                            "run_id": rid,
+                            "start": controls.get("evidence_start", 1),
+                            "count": 20,
+                        }
+                    ],
                     "answer": None,
                 }
             else:
@@ -51,7 +58,9 @@ def claim_client(tmp_path, monkeypatch, request):
                     "requests": [],
                     "answer": {
                         "answer": controls["answer"],
-                        "citations": [{"run_id": rid, "turn": 1}],
+                        "citations": [
+                            {"run_id": rid, "turn": controls.get("citation_turn", 1)}
+                        ],
                         "caveats": ["One fixed seed does not establish independent support."],
                         "claims": controls["claims"](prompt, rid)
                         if "claims" in controls
@@ -815,4 +824,71 @@ def test_accepted_artifact_world_lens_retains_versions_without_financial_proxy(c
     )
     assert second["output"]["lens"]["facts"] == final["output"]["lens"]["facts"]
     assert source(client.get(f"/api/studies/{sid}/export").json()) == before
+    assert final["usage"]["requests"] == second["usage"]["requests"] == 2
+
+
+def test_initial_artifact_lens_retains_checkpoint_and_unfinished_outcome(claim_client):
+    client, controls, _ = claim_client
+    value = next(
+        t["design"]
+        for t in client.get("/api/catalog").json()["templates"]
+        if t["id"] == "artifact_workspace"
+    )
+    sid = client.post("/api/studies", json={"design": value}).json()["id"]
+    rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+    initial = client.get(f"/api/runs/{rid}/turns/0").json()
+    controls.update(evidence_start=0, citation_turn=0)
+    controls["claims"] = lambda _prompt, selected: [
+        {
+            "kind": "calculation",
+            "text": text,
+            "calculation_id": f"run:{selected}:{metric}",
+            "value": number,
+            "scope": "captured_run",
+        }
+        for text, metric, number in (
+            ("No retained writes yet", "artifact_writes", 0),
+            ("Claimed terminal failure", "artifact_success", 0),
+        )
+    ]
+    before = source(client.get(f"/api/studies/{sid}/export").json())
+    final = finish(
+        client,
+        client.post(
+            "/api/chats",
+            json={"question": "Inspect the unfinished artifact run.", "context": f"run:{rid}"},
+        ),
+    )
+    assert final["status"] == "complete", final
+    fact = final["output"]["lens"]["facts"][0]
+    assert fact["state_hash"] == initial["state_hash"]
+    assert fact["through_turn"] == 0 and fact["turns"] == []
+    assert fact["artifact_state"]["outcome"] is None
+    assert [c["status"] for c in final["output"]["support"]["claims"]] == [
+        "checked",
+        "unavailable",
+    ]
+    assert source(client.get(f"/api/studies/{sid}/export").json()) == before
+    controls["artifact_actions"] = iter([{"kind": "stop"}])
+    assert run(client, rid)["status"] == "complete"
+    settled = source(client.get(f"/api/studies/{sid}/export").json())
+    assert len(settled["participant_requests"]) == 1
+    second = finish(
+        client,
+        client.post(
+            "/api/chats",
+            json={
+                "question": "Reanalyze the original unfinished evidence.",
+                "context": f"run:{rid}",
+                "chat_id": final["chat_id"],
+                "source_analysis_id": final["id"],
+                "lens": "communication",
+            },
+        ),
+    )
+    assert second["status"] == "complete", second
+    assert second["output"]["lens"]["facts"] == final["output"]["lens"]["facts"]
+    assert second["output"]["lens"]["inputs_sha256"] == final["output"]["lens"]["inputs_sha256"]
+    assert second["cutoffs"] == {rid: 0}
+    assert source(client.get(f"/api/studies/{sid}/export").json()) == settled
     assert final["usage"]["requests"] == second["usage"]["requests"] == 2
