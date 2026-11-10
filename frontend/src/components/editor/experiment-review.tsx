@@ -108,12 +108,28 @@ export function ExperimentReview({
                 </span>
                 <span className="block">
                   {condition.harness.max_requests} requests ·{" "}
-                  {condition.harness.max_tool_operations} reads per activation
+                  {condition.harness.max_tool_operations} operations per
+                  activation
                 </span>
                 {condition.harness.tools.length > 0 && (
                   <span className="block">
                     {condition.harness.tools.join(", ")}
                   </span>
+                )}
+                {condition.harness.kind === "tool_using" && (
+                  <>
+                    {Object.entries(condition.harness.capabilities).map(
+                      ([name, policy]) => (
+                        <span className="block" key={name}>
+                          {name}: {policy === "disabled" ? "Disabled" : policy}
+                        </span>
+                      ),
+                    )}
+                    <span className="block">
+                      {condition.harness.max_context_chars} context characters ·{" "}
+                      {condition.harness.max_memory_items} memory results
+                    </span>
+                  </>
                 )}
               </dd>
             </div>

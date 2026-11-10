@@ -9,13 +9,28 @@ import type {
 export function participantHarness(
   kind: ParticipantHarness["kind"],
 ): ParticipantHarness {
+  if (kind === "direct_action")
+    return {
+      kind: "direct_action",
+      version: "1.0.0",
+      max_requests: 1,
+      max_tool_operations: 0,
+      tools: [],
+    };
   return {
-    kind,
-    version: "1.0.0",
-    max_requests: kind === "direct_action" ? 1 : 4,
-    max_tool_operations: kind === "direct_action" ? 0 : 3,
-    tools:
-      kind === "direct_action" ? [] : ["observe", "rules", "legal_options"],
+    kind: "tool_using",
+    version: "2.0.0",
+    max_requests: 4,
+    max_tool_operations: 3,
+    tools: ["observe", "rules", "legal_options"],
+    capabilities: {
+      planning: "actor_plan_v1",
+      memory: "actor_sources_v1",
+      investigation: "actor_inspection_v1",
+      verification: "legal_evidence_v1",
+    },
+    max_context_chars: 16000,
+    max_memory_items: 8,
   };
 }
 

@@ -66,6 +66,32 @@ export function ActivationInspector({
                   </dd>
                 </div>
               </dl>
+              {activation.identity.harness.kind === "tool_using" && (
+                <dl className="grid gap-2 text-sm sm:grid-cols-2">
+                  {Object.entries(activation.identity.harness.capabilities).map(
+                    ([name, policy]) => (
+                      <div key={name}>
+                        <dt className="text-muted-foreground">{label(name)}</dt>
+                        <dd className="break-words">
+                          {policy === "disabled" ? "Disabled" : policy}
+                        </dd>
+                      </div>
+                    ),
+                  )}
+                  <div>
+                    <dt className="text-muted-foreground">Context limit</dt>
+                    <dd>
+                      {activation.identity.harness.max_context_chars} characters
+                    </dd>
+                  </div>
+                </dl>
+              )}
+              <p className="text-sm text-muted-foreground">
+                Plans and notes are participant self-reports. Source checks
+                confirm accessible text; action checks use legal options and do
+                not predict outcomes. Each result retains its source and cutoff
+                in the operation receipt.
+              </p>
               <Disclosure className="min-w-0">
                 <DisclosureTrigger>
                   Model, harness and inference identity

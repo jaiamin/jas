@@ -118,7 +118,7 @@ def test_two_policies_run_real_operations_with_individual_accounting(harness_cli
         "settle",
     ]
     assert activation["identity"]["model"] == "openai:gpt-6-luna"
-    assert activation["identity"]["harness"]["version"] == "1.0.0"
+    assert activation["identity"]["harness"]["version"] == "2.0.0"
     assert activation["identity"]["harness"]["max_requests"] == 4
     assert len(capable["requests"]) == 4
     assert all(r["activation_id"] == activation["id"] for r in capable["requests"])
