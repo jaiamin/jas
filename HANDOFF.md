@@ -1,6 +1,10 @@
 # JAS handoff
 
 2026-11-10. ROOT owns `integration/research-harness` in this checkout.
+The [merge-readiness repair report](docs/research/MERGE_READINESS_FIXES.md) and
+[repair verification](docs/research/MERGE_READINESS_VERIFICATION.json) supersede
+the earlier partial-suite merge gate below. Local complete verification passes;
+hosted CI must pass on the published repair commit before merge readiness.
 The compact [final review](docs/research/FINAL_PRODUCT_REVIEW.md),
 [verification manifest](docs/research/FINAL_VERIFICATION.json) and
 [numerical benchmarks](docs/research/FINAL_RUNTIME_RESULTS.json) replace the
@@ -28,12 +32,16 @@ restart publication/reconciliation defects.
 
 ## Qualification
 
-- Selected final backend100 cases pass on matching final application sources;
-  a separate13 generation/World/recovery cases pass with overlap. Do not add
-  these counts as distinct tests.
-- Frontend169 units, lint, forced TypeScript and native build pass. All182 unique
-  default browser cases have passing observations across a181-pass/1-fail full
-  run and a16-pass focused correction; no uninterrupted182-green run is claimed.
+- The complete backend suite passes1831 cases in568.25s on the repaired source;
+  whole Ruff and global types pass. Earlier partial runs and failed fixture
+  corrections remain separately attributed, not added to this count.
+- Frontend169 units, lint, forced TypeScript and a fresh isolated build pass.
+  The uninterrupted182-case default browser run and20 affected opt-in trial
+  cases pass. Local default tracing was disabled to fit shared disk; every
+  assertion ran, and hosted CI retains its normal failure tracing.
+- Admission now revokes containment after worker/cleanup failure. Public
+  regressions include launch denial, nonzero exit, incomplete cleanup and real
+  allocation/teardown exceptions, with immutable failures and fresh qualification.
 - Real browser observations cover desktop/phone, both themes, keyboard,
   generation/adjudication and GET-only recording playback. Settled dark/phone
   accessibility audit:0 violations/0 incomplete. Mechanical TSX scan:0 findings;
@@ -49,10 +57,12 @@ restart publication/reconciliation defects.
 
 ## Local application
 
-The fresh app runs at **http://localhost:8080**, PID474266, with empty studies,
-runs and chats, and zero provider usage. Launch/cleanup accounting is in the
-final review. Keep its active database, current assets and dependencies. The local
-launcher is `.tools/final/serve.py`; it consumes assigned configuration normally
+The app runs at **http://localhost:8080**; the current PID is recorded in
+`.tools/final/live/server.json` (507105 at the repair refresh). The workspace now
+contains a user conversation and recorded provider usage. The refresh preserved
+the same database inode, exact public state/conversation hashes and usage; it
+made no model calls. Keep this data, current assets and dependencies. The local
+launcher is `.tools/final/live/serve.py`; it consumes assigned configuration normally
 and explicitly selects this checkout's fresh `data/jas.sqlite3` after dotenv
 loading. Starting the server performs no paid work.
 

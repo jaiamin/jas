@@ -1028,12 +1028,28 @@ def test_work_handoff_and_delayed_mail_have_recipient_scoped_actual_input_receip
         rows = exposure["opportunities"]
         received = [r for r in rows if r["kind"] == "handoff_work" and r["participant"] == "cedar"]
         assert len(received) == 1 and received[0]["included"] is True
-        assert {r["participant"] for r in rows if r["kind"] == "handoff_work"} == {"alder", "cedar"}
+        handoffs = [r for r in rows if r["kind"] == "handoff_work"]
+        assert {(r["participant"], r["included"]) for r in handoffs} == {
+            ("alder", True),
+            ("birch", True),
+            ("cedar", True),
+            ("dune", True),
+        }
         starts = [r for r in rows if r["kind"] == "perform_work"]
-        assert len(starts) == 1 and starts[0]["included"] is True
+        assert {(r["participant"], r["included"]) for r in starts} == {
+            ("alder", True),
+            ("birch", True),
+            ("cedar", True),
+        }
+        before_handoff = client.get(f"/api/runs/{rid}/exposure?through_turn=18").json()
+        assert {
+            r["participant"]
+            for r in before_handoff["opportunities"]
+            if r["kind"] == "perform_work" and r["included"]
+        } == {"alder", "birch"}
         mail = [r for r in rows if r["kind"] == "message_delivered" and r["participant"] == "fern"]
         assert len(mail) == 1 and mail[0]["included"] is True
-        for row in [received[0], starts[0], mail[0]]:
+        for row in [*handoffs, *starts, mail[0]]:
             assert row["inputs"]
             for receipt in row["inputs"]:
                 request = client.get(receipt["source"]["href"]).json()["request"]

@@ -26,9 +26,14 @@ MATRIX = list(product(CATALOG, MEMORIES, range(4), (1, 4, 17)))
 
 def protocol(environment, agents=6, rounds=4):
     design = Design.model_validate(next(t["design"] for t in templates() if t["id"] == environment))
-    if environment in {"distributed_coordination", "reliance_commitments"}:
+    bound_populations = {
+        "distributed_coordination": 3,
+        "reliance_commitments": 4,
+        "institutional_workflow": 6,
+    }
+    if environment in bound_populations:
         # These tasks bind their actors explicitly, outside generic population sweeps.
-        assert len(design.profiles) == (4 if environment == "reliance_commitments" else 3)
+        assert len(design.profiles) == bound_populations[environment]
         design.rounds, design.seeds = rounds, [0, 7, 19]
         return Design.model_validate(design.model_dump())
     design.profiles = [

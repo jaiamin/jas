@@ -52,6 +52,7 @@ def test_observation_deep_isolation_and_terminal_guard(template):
         "artifact_workspace",
         "distributed_coordination",
         "reliance_commitments",
+        "institutional_workflow",
     }:
         assert obs["public_history"] == []
         from agent_sim.domain import ReadArtifact

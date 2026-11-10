@@ -1,8 +1,13 @@
 """T17 DEVELOPMENT oracles, independently fixed before executable candidate output."""
 
 import copy
+import subprocess
+import sys
+from contextlib import contextmanager
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
+import pytest
 from agent_sim.api import create_app
 from fastapi.testclient import TestClient
 
@@ -294,6 +299,70 @@ def checked_permit(client):
     ).json()
     assert check["passed"] is True, check
     return check
+
+
+@pytest.mark.parametrize(
+    "failure", ["unavailable", "exited", "cleanup", "scratch-allocation", "scratch-teardown"]
+)
+def test_finite_admission_worker_failure_requires_fresh_containment(
+    tmp_path, monkeypatch, failure
+):
+    app = create_app(f"sqlite:///{tmp_path}/admission-failure.sqlite3")
+    with TestClient(app, base_url="http://localhost") as client:
+        check = checked_permit(client)
+        original_popen = subprocess.Popen
+
+        def failed_worker(*args, **kwargs):
+            if failure == "unavailable":
+                raise PermissionError("Independent admission process-launch denial")
+            return original_popen(
+                [sys.executable, "-I", "-B", "-c", "raise SystemExit(1)"], **kwargs
+            )
+
+        @contextmanager
+        def unclean_scratch(**kwargs):
+            scratch = tmp_path / "unclean-worker"
+            scratch.mkdir()
+            yield str(scratch)
+
+        @contextmanager
+        def failed_scratch(**kwargs):
+            if failure == "scratch-allocation":
+                raise OSError("Independent scratch allocation failure")
+            with TemporaryDirectory(**kwargs) as scratch:
+                yield scratch
+            raise OSError("Independent scratch teardown failure")
+
+        with monkeypatch.context() as boundary:
+            if failure == "cleanup":
+                boundary.setattr(
+                    "agent_sim.extension_sandbox.TemporaryDirectory", unclean_scratch
+                )
+            elif failure.startswith("scratch-"):
+                boundary.setattr(
+                    "agent_sim.extension_sandbox.TemporaryDirectory", failed_scratch
+                )
+            else:
+                boundary.setattr(subprocess, "Popen", failed_worker)
+            response = client.post(f"/api/extensions/finite-checks/{check['id']}/admit")
+
+        assert response.status_code == 201, response.text
+        admission = response.json()
+        assert admission["runnable"] is False
+        runtime = client.get("/api/extensions/runtime").json()
+        assert runtime["status"] == "failed"
+        assert runtime["validation_enabled"] is False
+        assert runtime["execution_enabled"] is False
+        blocked = client.post(f"/api/extensions/finite-checks/{check['id']}/admit").json()
+        assert blocked["runnable"] is False
+        assert blocked["checks"][0]["status"] == "blocked"
+        saved = client.get(f"/api/extensions/finite-admissions/{admission['id']}").json()
+        assert saved == admission
+        assert client.post("/api/extensions/qualify").json()["status"] == "qualified"
+        assert client.post(f"/api/extensions/finite-checks/{check['id']}/admit").json()[
+            "runnable"
+        ] is True
+        assert client.get("/api/settings").json()["usage"]["requests"] == 0
 
 
 def admitted_permit_design(client):

@@ -145,9 +145,10 @@ ceilings together before send; a refused ceiling rolls all three back. Each
 request settles independently to actual usage or retains an unknown reservation.
 Work counters are durable and bounded separately. Pause commits an in-flight final
 decision; explicit resume continues from the committed cursor. Restart restores
-paused parents and retains accounting without automatic spending. These lifecycle
-and UI paths are under T14 development qualification; see the retained
-[T14 report](research/T14_INVESTIGATIONS.md) for observed checks and open cases.
+paused parents and retains accounting without automatic spending. The
+[product review](research/FINAL_PRODUCT_REVIEW.md) records lifecycle/UI qualification
+and its limits; the [T14 report](research/T14_INVESTIGATIONS.md) retains the earlier
+development history.
 
 The parent result reports recorded complete/failed/missing run counts and exact
 cutoffs with descriptive, missingness and small-sample limits. Separately billed
@@ -410,10 +411,10 @@ permissions, complete checkpoints and unsuccessful horizon/stop consequences.
 Generation and checking do not sample participants. The resulting experiment awaits
 review and separate execution. Each Researcher/generator/planner request reserves
 and settles separately; any investigation/study/workspace ceiling also applies in
-the same atomic reservation. This combined source still needs final qualification;
-the first scripted generation and its combined-source integration each passed at
-their recorded sources, with live competence unverified. See
-[the T17 plan](research/T17_EXTENSION_GENERATION.md).
+the same atomic reservation. Source-attributed deterministic qualification is
+recorded in the [product review](research/FINAL_PRODUCT_REVIEW.md), with current
+merge gates in [merge-readiness repairs](research/MERGE_READINESS_FIXES.md).
+Live competence and held-out generation remain unverified.
 
 
 ## Distributed information and consequential choice

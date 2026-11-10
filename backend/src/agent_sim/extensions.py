@@ -305,6 +305,13 @@ class Extensions:
                 # Re-execute at admission. Earlier examples or a copied claimed proof do not admit.
                 result = execute(review.candidate.source, check.inputs)
                 if (
+                    result["code"] in {"worker_failed", "worker_unavailable"}
+                    or not result["cleaned"]
+                ):
+                    self.runtime = ExtensionRuntime(
+                        status="failed", detail="Finite admission worker or cleanup failed."
+                    )
+                if (
                     result["code"] != "ok"
                     or not result["cleaned"]
                     or result["outputs"] != check.expected

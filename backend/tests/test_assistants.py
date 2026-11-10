@@ -59,7 +59,7 @@ def test_general_agent_keeps_history_separate_and_rejects_unselected_evidence(
                     "cutoffs": {},
                 }
             ]
-            assert len(prompt["environments"]) == 11
+            assert len(prompt["environments"]) == 12
             assert "index" not in prompt and "evidence" not in prompt
             return GeneralResponse(
                 answer="Matched seeds support more informative comparisons.",
@@ -871,7 +871,7 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
                 "examined": [],
                 "activity": ["answering", "writing"],
                 "research": {
-                    "version": 1,
+                    "version": 2,
                     "scope": {
                         "chat_id": "intent-chat",
                         "before": row["created"],

@@ -160,7 +160,7 @@ for (const { theme, width } of [
     const exported = await (
       await request.get(`/api/studies/${created.id}/export`)
     ).json();
-    expect(exported.version).toBe(17);
+    expect(exported.version).toBe(18);
     expect(exported.requests).toHaveLength(5);
     expect(exported.activations[0].operations).toEqual(
       resumed.activations[0].operations,

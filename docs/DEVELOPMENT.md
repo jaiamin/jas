@@ -136,8 +136,8 @@ JAS_TEST_PORT=18121 pnpm --dir frontend exec playwright test --config playwright
 Use distinct attempt/output paths. The scripted conditions themselves construct no
 provider and send zero requests. Compare actual effort as well as configured
 envelopes; no confidence interval or independent support is inferred from these
-small fixed-seed examples. DB6/export7/comparison1/library-v3 and the existing
-direct/tool harness versions remain current. See [T15 evidence](research/T15_BASELINES.md)
+small fixed-seed examples. These runners use the current contracts documented
+above. See [T15 evidence](research/T15_BASELINES.md)
 for source-stamped attempts, unchanged frozen T01 failures and positive parity checks.
 
 `JAS_ALLOWED_HOSTS` lists accepted hostnames/IPs without ports (comma-separated).

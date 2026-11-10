@@ -59,12 +59,12 @@ prior unversioned/v1 events are rejected explicitly. A resulting experiment rema
 human review and separately authorized participant execution; discussion and saving
 never sample participants. Copied probes are distinct from executable containment.
 
-T17 is incomplete and UNACCEPTED. Its first scripted Pydantic AI Sol-identity
-orchestration and its one combined-source integration check passed at the sources
-recorded in [the T17 plan](research/T17_EXTENSION_GENERATION.md). Second scripted
-generation/repair, actual World and Engine/private-tool/replay checks also pass at
-their recorded sources. Complete generation export and final UI/production checks
-remain unverified; live Sol competence remains unobserved.
+The [integration review](research/T17_INTEGRATION_REVIEW.md) and
+[product review](research/FINAL_PRODUCT_REVIEW.md) record deterministic generation,
+repair, export, World/Engine/replay and rendered UI qualification at their stated
+sources. Current merge gates are tracked in
+[merge-readiness repairs](research/MERGE_READINESS_FIXES.md). Live Sol competence
+and held-out generation remain unverified.
 
 After local containment and independent admission pass, **Save admitted environment**
 uses the normal reusable mechanics library. **Review an experiment** opens the

@@ -1,5 +1,9 @@
 # JAS final product review
 
+Follow-up repairs and complete-suite merge gates are recorded in the
+[merge-readiness report](MERGE_READINESS_FIXES.md). Results below retain their
+original source attribution; its empty-workspace snapshot predates user activity.
+
 2026-11-10. Integration branch `integration/research-harness`.
 **Standards PASS; Spec PASS for bounded deterministic DEVELOPMENT.** T12, T17
 and T18 are integrated and locally accepted within that scope. Live/held-out

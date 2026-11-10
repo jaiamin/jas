@@ -297,7 +297,7 @@ def test_replay_rejects_an_incompatible_checkpoint_without_recorded_turns(runtim
     with db.session.begin() as session:
         saved = session.get_one(Run, rid)
         saved.checkpoint = saved.checkpoint | {"rule_version": "incompatible"}
-    with pytest.raises(ValueError, match="different environment rule version"):
+    with pytest.raises(ValueError, match="Saved rule version is incompatible"):
         engine.replay(rid)
     assert llm.usage()["requests"] == 0
 
@@ -312,17 +312,18 @@ def test_bulk_start_preflights_every_checkpoint_before_queueing(runtime, design)
         saved.checkpoint = saved.checkpoint | {"rule_version": "incompatible"}
 
     async def exercise():
-        with pytest.raises(ValueError, match="different environment rule version"):
+        with pytest.raises(ValueError, match="Saved rule version is incompatible"):
             await engine.start_study(sid)
         assert not engine.executions
-        assert all(research.configuration(run.id)[0].status == "ready" for run in runs)
+        with db.session() as session:
+            assert all(session.get_one(Run, run.id).status == "ready" for run in runs)
         assert llm.usage()["requests"] == 0
 
     asyncio.run(exercise())
 
 
-def test_bulk_start_ignores_completed_runs_with_old_rules(runtime, design):
-    db, _, research, engine = runtime
+def test_bulk_start_rejects_completed_runs_with_incompatible_rules(runtime, design):
+    db, llm, research, engine = runtime
     design.seeds = [7, 8]
     sid = research.save_design(design)
     runs = research.operational_runs(sid)
@@ -332,13 +333,13 @@ def test_bulk_start_ignores_completed_runs_with_old_rules(runtime, design):
         saved.checkpoint = saved.checkpoint | {"rule_version": "historical"}
 
     async def exercise():
-        await engine.start_study(sid)
-        task = engine.executions[runs[1].id].task
-        await engine.start_study(sid)
-        assert engine.executions[runs[1].id].task is task
-        assert runs[0].id not in engine.executions
-        await engine.close()
-        assert research.configuration(runs[0].id)[0].status == "complete"
+        with pytest.raises(ValueError, match="Saved rule version is incompatible"):
+            await engine.start_study(sid)
+        assert not engine.executions
+        with db.session() as session:
+            assert session.get_one(Run, runs[0].id).status == "complete"
+            assert session.get_one(Run, runs[1].id).status == "ready"
+        assert llm.usage()["requests"] == 0
 
     asyncio.run(exercise())
 

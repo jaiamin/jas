@@ -218,9 +218,14 @@ def combined_client(tmp_path, monkeypatch, request):
     producer = World.exposure_paths
 
     def authorized_producer(world, event, observation):
-        if event["text"] == DISCLOSURE and event["target"]:
-            assert observation["you"]["key"] in {event["actor"], event["target"]}
-        return producer(world, event, observation)
+        paths = producer(world, event, observation)
+        if (
+            event["text"] == DISCLOSURE
+            and event["target"]
+            and observation["you"]["key"] not in {event["actor"], event["target"]}
+        ):
+            assert paths == []
+        return paths
 
     monkeypatch.setattr(World, "exposure_paths", authorized_producer)
     with TestClient(app, base_url="http://localhost") as client:
