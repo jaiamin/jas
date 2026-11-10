@@ -63,7 +63,12 @@ def deterministic_participants(app):
                     output = {
                         "operation": "retrieve",
                         "decision": None,
-                        "retrieval": {"query": "budget", "limit": 2},
+                        "retrieval": {
+                            "query": "t07-private-disclosure"
+                            if os.getenv("JAS_TEST_EXPOSURE") == "1"
+                            else "budget",
+                            "limit": 2,
+                        },
                     }
                 elif len(journal) == 3:
                     output = {
