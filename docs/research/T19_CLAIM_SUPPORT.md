@@ -274,6 +274,17 @@ The initial shared-preview navigation occurred before its server existed and
 returned `ERR_CONNECTION_REFUSED`; later real rendering succeeded. Small artifact
 reader/metadata query failures are recorded separately; they are not product reds.
 
+Closure found a dependency-setup mistake: copying installed dependencies with
+hardlinks also copied mutable TypeScript/Vite caches as hardlinks. Earlier build
+writes may have reached shared cache inodes; their effects outside this checkout
+were not inspected or repaired. Only this checkout's generated cache files were
+detached (42 shared files among43 inspected,17,608,852 bytes total), with matching
+before/after digests and link-count1 checks. Forced fresh TypeScript compilation
+then passed. The exact setup audit is retained under
+`cache-isolation-20261110T064712512773Z/`. Immutable package contents, source and
+research evidence were not intentionally changed outside the assigned checkout.
+This cache limitation qualifies any broader “untouched environment” statement.
+
 The last inspected integration tip `84867cc` explicitly documents T09 as still
 under fresh review. It is excluded. The latest documented accepted checkpoint is
 `59e20935c17bd8ea0c44f712790ffeeb38ebb83b`; the required merge command reports
@@ -287,8 +298,9 @@ full decompression checks. Unique scratch paths preserve failed evidence. The
 final `artifact-manifest.json` and `.sha256` index physical files, symlinks,
 source/case/check identities, all nonzero attempts and compression mappings;
 they exclude only their own self-referential entries. No external evidence,
-installed dependency tree, other worktree, real `.env`, clipboard, host mount,
-credential/security setting or valuable data was changed. Shared space was
+real `.env`, clipboard, host mount, credential/security setting or valuable data
+was changed. Other checkouts were not directly inspected or repaired; the mutable
+dependency-cache hardlink limitation above remains explicit. Shared space was
 constrained (about82MiB at one observed point), without a task ENOSPC failure.
 
 Next: finish the complete evidence inventory/closure record and commit this

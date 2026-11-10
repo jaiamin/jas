@@ -43,9 +43,17 @@ from accepted T03/6c290df; no fresh production/full-suite/hosted result is claim
 
 Last inspected integration tip `84867cc` still marks T09 under review and is
 excluded. Required merge of latest documented accepted `59e2093` reports
-Already up to date. No unaccepted child branch is included. T09/T15 worktrees,
-18120/18121 and processes were neither polled nor touched; only integration
+Already up to date. No unaccepted child branch is included. There was no direct
+T09/T15 checkout/18120/18121/process inspection or operation; only integration
 acceptance metadata was inspected. No descendants or extra checkout were used.
+
+Setup limitation: the initial dependency hardlink copy included mutable
+TypeScript/Vite caches. Earlier builds may have written shared cache inodes.
+Closure detached42 shared generated cache files in this checkout only, verified
+their digests/link-count1 and passed forced fresh TypeScript compilation. See
+`data/t19/cache-isolation-20261110T064712512773Z/`. Other checkout cache effects
+were not inspected or repaired; do not interpret “untouched” as a fresh audit
+of those environments. Source and research evidence stayed within task scope.
 
 Preserve complete ignored `data/t19/`, including source archives, case/provider/
 HTTP/export evidence, databases, screenshots and every failure. Closed task-owned
