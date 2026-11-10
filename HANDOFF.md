@@ -1,3 +1,37 @@
+# Current coordination — published T16; source-only frontier and resource recovery (2026-11-10)
+
+Accepted application source remains T16 `fde4bce`; published integration checkpoint
+is `b0446d9ea54b2e49fe93fc6d7a2bcdea6341af7b`. Draft PR32 now accurately lists
+T01–T11/T13/T15/T16/T19 accepted, DB10/export11/library7, and remaining gates.
+The exact hosted body was reverified; no live/held-out claim or allocation changed.
+Root retains sole shared tracked writing. T14 is merging that accepted checkpoint
+in its own tree; combined DB11/export12 is provisional until fresh acceptance.
+
+T17 is active in source-only planning/oracles on branch
+`t3/sol-generation-admission`, worktree `t3-8fed193f`, port18129 reserved.
+T12 gets the next fresh isolated source-only assignment; T18 stays Ready. No new
+consumer is authorized to use T14 caches or install/run checks yet. T14 alone
+continues its released bounded verification envelope with shared flock/128MiB
+floor. Root coordinates each new dependency setup against measured extra peaks.
+
+Root reclaimed only its disposable pypdf tooling/generated54-file frontend build
+and its now-closed `.venv` after T16 returned ownership. **Root `.venv` and
+`frontend/dist` are absent**; root uv bootstrap and frontend/node_modules remain.
+Recreate root Python dependencies via normal frozen manager/cache coordination
+before later tests; verify editable imports resolve to this checkout. Other
+owners' environments/caches are unchanged. `.venv` cleanup receipt observed
+55,877,632 net bytes recovered and194,084,864 bytes available, shared/unreserved.
+
+Five returned CLOSED root T11 browser/witness outputs now resolve losslessly via
+`.tools/research-harness/maintenance/closed-root-t11-browser-20261110T143738Z/mapping.jsonl`,
+SHA256 `a5396b49c5fdd69b3a36e6542289f112656327c88155c470716b46f2f881f7f5`.
+Actual restores verified bytes/hash/mode/integer-ns timestamps before removing raw
+copies; source/custody/indexes and prior maps were untouched. Keep this map along
+with the795-path root, closed-root-T11-recovery and closed-T07 maps. Reconstruct
+only needed logical files, never mass-decompress on this disk. All source snapshots
+retain header-first protected exclusions; original root `pbcopy` remains unread,
+configurations opaque and stash unchanged. Historical sections follow.
+
 # Root coordination — T16 independently verified; frontier advances (2026-11-10)
 
 Root has received sole shared-checkout writing back and independently verified
