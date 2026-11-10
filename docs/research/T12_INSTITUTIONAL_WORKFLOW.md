@@ -1,6 +1,33 @@
 # T12: institutional workflow with atomic work and resource effects
 
-## Current boundary: native01/02 FAILED; corrected native03 released
+## Current boundary: implementation complete; UNACCEPTED
+
+Qualified code5a8b5b78687d25b258b4acd6855a9fb1981c2616 normally includes exact
+accepted0527e737d93786d0f5579d5a13827c472cf370fa. Native03 PASSED at source
+a46f5e7426d63f9076e1a5e33515fed4b624fd681f4899a637b8e569ffef0f70:
+literal keyless409, full summary/checkpoint unchanged, zero run/workspace/export
+requests, second-lifetime reopen/full-export equality/zero-turn public replay;
+distinct actual local30-turn World/restoration/every-checkpoint replay. Both
+deliberate shutdowns returned-15 with lifespan-complete logs, no child worker/
+listener, reaped servers and reuse-address bind. Assets unchanged2,951,120 bytes,
+manifestd44aed8c59caa0b523af183549ff9fc0db522c3152c26d81b604f5490f71b924.
+Entry1,078,530,048; after1,076,514,816 free;1,676,411 retained increment.
+Native01/02 remain FAILED. Ruff/helper+backend ty pass; affected accepted-cutoff
+and workflow-lens checks pass separately. Source attribution proves45/46 backend
+files unchanged from qualified ada1b8f2, with research.py exactly accepted0527;
+all253 frontend files equal post8329 build/affected units. Original frozen T01
+runner/cases/scores remain unchanged. Personal Standards/Spec complete; see the
+[implementation report](T12_IMPLEMENTATION_REPORT.md) for acceptance, exact
+source/case attribution and all failures/limits. Latest retained59,507,062 before
+closure docs/receipts, within96MiB. Own18130/services/browser/lock closed.
+
+No remaining authorized implementation/check work. Final docs/normal-hook commit
+returns sole writing to ROOT's fresh independent merger. This is implementation
+completion, not ticket acceptance, Docker/non-root-container/live competence,
+paid/held-out or whole-product qualification. Historical boundaries below remain
+chronology; ROOT's deleted evidence/reference stays retired.
+
+## Historical boundary: native01/02 FAILED; corrected native03 released
 
 At coherent HEAD5049f3d8643cc3b54199f21b98994d59b1089242, normal exact accepted
 0527e737d93786d0f5579d5a13827c472cf370fa merge isde49947c. Native02 exited1
@@ -675,7 +702,7 @@ source/custody and every lossless restoration map remain untouched. Never run an
 inherited ignored evidence helper. Do not claim an uninterrupted full suite from
 segmented source-attributed checks.
 
-## Footprint forecast and staged release
+## Historical preparation footprint forecast and staged release
 
 No cache consumer is granted. Root coordinates exact owner-cache reuse via normal
 frozen managers, never manual dependency copying/linking. Preserve root's
@@ -750,9 +777,11 @@ No dependency, cache or resource claim follows from this observation.
   peak forecast to root; wait for its concrete setup/test grant.
 - [x] After grant, observe that tracer red, retain it, implement only its slice,
   observe green, then choose the next meaningful API/invariant slice.
-- [ ] Complete remaining acceptance, regression/parity/source/evidence review and
-  normal accepted-frontier merge, then hand implementation to root's fresh merger.
+- [x] Complete authorized deterministic feature/affected/current-contract checks,
+  source/evidence review, normal exact accepted-frontier merge and personal reviews;
+  return implementation to ROOT for fresh independent acceptance. Historical raw
+  BEFORE parity was explicitly retired, not passed.
 
-The source-only boundary above preceded root's renewed release and the observed
-backend slices recorded at the top. No frontend/build/browser/runtime/live or
-held-out result is claimed.
+That historical source-only boundary preceded ROOT's staged releases and the
+observed backend/frontend/browser/native results recorded at the top. It claimed
+none of those results at preparation time; live/held-out work remains unqualified.

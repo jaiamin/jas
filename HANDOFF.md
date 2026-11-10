@@ -1,4 +1,37 @@
-# T12 native-runtime attempts01/02 failed; corrected03 released (2026-11-10)
+# T12 implementation complete; UNACCEPTED (2026-11-10)
+
+Same `t3-190f8b94` / `t3/institutional-workflow`. Qualified code checkpoint
+**5a8b5b78687d25b258b4acd6855a9fb1981c2616** includes normal exact accepted
+**0527e737d93786d0f5579d5a13827c472cf370fa** merge atde49947c. Combined
+**DB12/export13/library8**, no provisional T17/T18 or compatibility/reset.
+The [implementation report](docs/research/T12_IMPLEMENTATION_REPORT.md) records
+acceptance mapping, personal Standards/Spec, exact source/case attribution,
+all failed attempts and remaining separately held gates.
+
+Native03 PASSED at sourcea46f5e74: keyless409 leaves the entire summary/checkpoint
+and zero-request ledger unchanged; source pin/export13 survive second-lifetime
+reopen and zero-turn public replay. Distinct local World30-turn/restoration/
+every-checkpoint replay passes. Both native servers returned exactly-15 after
+lifespan completion, with no worker/listener and PIDs reaped. Assets2,951,120
+bytes/manifestd44aed8c are unchanged. Native01/02 remain FAILED, no product-red
+attribution. No non-root-container or live-competence claim.
+
+Final Ruff/explicit helper+backend ty pass. Both new accepted-cutoff HTTP cases
+and workflow lens pass separately. Attribution proves45/46 backend files equal
+the earlier qualified source; sole research.py change equals accepted0527.
+All253 frontend inputs equal the post8329 affected-unit/build source. Earlier
+125 units/three browser witnesses and5-run/22-turn current-contract qualification
+keep their actual source attribution. Frozen T01 CURRENT remains exit1/four v4
+failures; original bytes/scores unchanged, no retired-reference comparison.
+
+Personal Standards/Spec complete; no open implementation finding. Remaining:
+ROOT's fresh independent merger/acceptance and separately authorized larger
+milestone/paid/live/held-out/container/final-product work. Own evidence/env/data
+are retained; latest retained59,507,062 bytes before closure docs/receipts, below
+96MiB. Own18130/services/browser/flock closed. No publication or descendants.
+Return sole writing ownership to ROOT after the final normal-hook docs commit.
+
+# Historical T12 native-runtime attempts01/02 failed; corrected03 released (2026-11-10)
 
 Same incomplete/unaccepted implementation at5049f3d8643cc3b54199f21b98994d59b1089242.
 Exact accepted0527e737d93786d0f5579d5a13827c472cf370fa normally merged atde49947c.

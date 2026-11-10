@@ -1,6 +1,17 @@
 # Research harness implementation progress
 
-T12 current boundary (2026-11-10): normal accepted0527e737 mergede49947c, own
+T12 implementation complete, UNACCEPTED (2026-11-10): qualified code5a8b5b78,
+normal exact0527e737 merge atde49947c, DB12/export13/library8. Native03 PASS:
+both deliberate-15 shutdowns with lifespan completion/no worker/listener/reaped
+PIDs; second-lifetime reopen/export equality/zero-request replay and distinct
+local30-turn World/restoration/replay. Native01/02 remain FAILED. Personal
+Standards/Spec complete; exact source attribution and acceptance mapping are in
+[T12 implementation report](research/T12_IMPLEMENTATION_REPORT.md). Final Ruff/
+explicit helper+backend ty and three affected cutoff HTTP checks pass separately.
+Own services/browser/18130/lock closed; active evidence/env/data preserved. ROOT's
+fresh independent merger and separately held competence/production gates remain.
+
+Historical T12 boundary (2026-11-10): normal accepted0527e737 mergede49947c, own
 HEAD5049f3d8. Ruff and explicit backend/helper ty PASS; both new cutoff HTTP cases
 and workflow lens pass separately. Native02 FAILED at the helper's exit0 assertion
 after deliberate SIGTERM; literal409/unchanged checkpoint+summary/zero requests/

@@ -423,7 +423,7 @@ T10's three-participant rule version and all controlled/solo consequences remain
 unchanged. Capture1/comparison1/tool2.0/direct1.0 remain current. T11 itself adds no
 institution, parallel engine, semantic judge or inferred intent mechanism.
 
-## Institutional workflow (T12, incomplete)
+## Institutional workflow (T12 implementation, unaccepted)
 
 `institutional_workflow` extends the existing artifact World for6–12 participants.
 Typed work items bind one artifact to declared workers, material cost, duration,
@@ -448,8 +448,10 @@ remain ordinary World checkpoints/events; there is no second engine.
 
 The task branch has source-scoped backend, exposure/research, accounting/lifecycle
 and current-contract qualification, plus frontend units/build and separate keyless
-editor/handoff/failure browser witnesses. Production/runtime qualification and
-independent integration review remain open; no live competence is claimed.
+editor/handoff/failure browser witnesses. Fresh keyless native-runtime qualification
+passes export/reopen/zero-call replay and distinct local World restoration. It is
+not non-root-container or live-competence qualification. Independent integration
+review remains open; see the [implementation report](research/T12_IMPLEMENTATION_REPORT.md).
 See the [T12 plan](research/T12_INSTITUTIONAL_WORKFLOW.md). DB12/export13/
 library8 combine this typed mechanics contract with accepted T14 investigation
 ownership; both distinct schema11 intermediates are rejected without conversion.
@@ -516,7 +518,7 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v12 (`jas-study`)
+Every Analysis has an indexed conversation identity. Study export v13 (`jas-study`)
 includes investigation authorization, decisions and attempts, every revision and its
 runs, actual recorded rule versions, exact turn evidence and provider traces; it batches
 journal queries.
@@ -756,7 +758,7 @@ Analysis submissions synchronously freeze cutoffs, dispositions, terminal metric
 eligibility, revision/hash and calculations before the server task runs. Progress,
 reconnect, failure and export preserve that snapshot across later run completion or
 new revisions. Analysis reads do not append participant evidence or provider calls.
-Study export v12 includes this versioned comparison contract and persisted analysis
+Study export v13 includes this versioned comparison contract and persisted analysis
 snapshots, changing earlier consumer expectations. T06 changes no database columns and
 requires no data reset; historical evidence is never backfilled with invented states.
 
