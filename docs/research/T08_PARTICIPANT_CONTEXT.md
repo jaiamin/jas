@@ -104,5 +104,34 @@ under `data/t08/`; none are overwritten or silently relabeled.
 Next: clean committed-source final comparisons, merged-build browser verification,
 positive v6/direct-action parity audit, final integration-tip check and manifest.
 
+## Accepted T03 integration
+
+Merge `2044686` includes the latest accepted integration tip
+`6c290df` (T03), after the 44 shared browser flows passed at `cc58bb6`.
+No source conflict occurred. T03 separates mechanics from participant factors,
+adds optional pinned environment provenance, advances the database to schema 6
+and the reusable-library format to v3. T08 introduces no database-schema change.
+The shared current-contract documentation now reflects schema 6/export v6.
+No existing database was opened with the new contract, converted, reset or deleted;
+verification uses new project-local disposable paths. The previously archived
+schema-5 evidence is retained as historical source evidence.
+
+At `cc58bb6`, the final 64 participant tests, all five neutral DEVELOPMENT cases
+(47 scripted requests, including the intentionally failed/unknown attempt), all
+five T04 cases, two capability browser flows and 44 shared browser flows pass.
+The frozen T01 comparison retains four export-v4 failures and terminal flags on
+both sources; it reports no regressions or improvements. Positive current-export
+and direct-action parity pass 489 finite checks over 22 actual decisions plus
+five initial checkpoints. The first independent audit miscounted initial turn 0
+as an inference; its failed output is retained unchanged alongside the corrected
+audit. Its earliest helper bytes were reconstructed from the recorded three-line
+repair, explicitly labeled; application/test source archives were captured at
+execution. Later independent audit scripts are captured directly.
+
+Final combined-source qualification after the T03 merge is pending. T03's
+production smoke/containment/reuse checks are inherited from its accepted report;
+this task has not run a new production image. No runtime/container/lockfile change
+is introduced by T08. No paid/Luna allocation is inferred from any of these checks.
+
 Observed actual paid spend: **$0**. Live competence and held-out gates remain
 unverified. Root's unrelated `pbcopy` and preserved stash are outside task scope.

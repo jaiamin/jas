@@ -89,7 +89,8 @@ T08 adds selectable planning, retrieval, investigation and accessible verificati
 policies to **tool-using harness 2.0.0**. Direct action remains 1.0.0. Unsupported
 tool-using 1.0.0 designs are explicitly rejected: preserve their source/data/exports
 for inspection with that contract; no migration, compatibility reader or automatic
-reset is performed. The database stays schema 5 and study exports remain v6.
+reset is performed. T08 adds no database schema change; the accepted T03 integration
+uses schema 6, and study exports remain v6.
 New runs must pin the current harness. Each capability can be explicitly disabled;
 there is no substitute policy. The same activation request/operation budgets apply.
 
