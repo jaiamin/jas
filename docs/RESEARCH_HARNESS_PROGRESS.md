@@ -51,6 +51,23 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### T14 implementation complete; independent evidence preservation verified (2026-11-10)
+
+Clean source `b304029e` includes accepted29af3413; T14 remains unaccepted until
+a NEW sequential shared-checkout merger completes independent review. Root
+verified1,481 indexed evidence files/seal and438 protected-excluded current source/
+archive inputs, preserving1,489 files including closure records in immutable
+shared hardlink custody. HANDOFF links exact hashes, limits and root proof.
+Segmented63/61/715 backend jobs,116 frontend units and separate browser/production/
+baseline/parity observations retain their original attribution; root reran no
+product check. All TDD/capture/classifier gaps and adverse attempts stay explicit.
+
+Owner permission now covers distinct ROOT-reviewer/T12 venv normal uv-cache reuse
+and staged ROOT pnpm policy-cache/store import. No manual dependency links/copies,
+cache cleanup or policy bypass; stop on missing metadata. Preserve128MiB shared
+check floor and stage frontend/production against measured peaks. T17 backend TDD
+and T12 source preparation continue; T18 awaits a slot.
+
 ### T14 production boundary verified; T17 backend stage released (2026-11-10)
 
 T14 remains unaccepted pending completed evidence closure and a fresh independent
@@ -841,7 +858,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Accepted for documented deterministic scope after independent recovery review | Exact source `4aac5a9`; accepted frontier`8df6c59`; introduced DB9/export10/library6; [review](research/T11_RECOVERY_REVIEW.md) |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Fresh isolated source-only preparation active | From accepted `29af3413`; no setup/check/capture allocation yet |
 | T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Accepted for deterministic scope; live competence unassessed | Exact no-ff `5af3fbb`; scoping repair `5e86dfa`; [report](research/T13_INTEGRATION_REVIEW.md) |
-| T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Evidence closure in progress; unaccepted | Production records independently verified; fresh merger follows completion; no paid allocation |
+| T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Complete and preserved; fresh merger next; unaccepted | Clean `b304029e`; final seal/source/custody verified; no paid allocation |
 | T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Integrated and accepted after fresh review repair | `fa1c825`, `6e1a7c8`; [report](research/T15_BASELINES.md) |
 | T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Accepted for finite deterministic DEVELOPMENT scope | Exact no-ff`40ef0e59`/second parent`475bfc73`; repair`55d1a8c`; separate Standards/Spec pass; [review](research/T16_INTEGRATION_REVIEW.md); DB10/export11/library7 |
 | T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | First API red observed; bounded backend TDD active; unaccepted | Setup02/import/retained setup01 and405/201 red records verified; frontend/production remain staged |
@@ -918,7 +935,7 @@ those trials run, the live milestone remains unverified.
 1. Accepted T16 and documentary coordination are published through `375877c`;
    all five hosted checks passed at that published source. Publish later coherent
    root documentation and immediately link PR32. Root owns shared tracked writing.
-2. T14 is completing evidence closure after production qualification. Continue
+2. Give complete preserved T14 a NEW independent merger/reviewer. Continue
    T17's bounded backend TDD and T12's isolated source preparation; coordinate each
    new setup/build forecast. T18 remains Ready for the next slot. Give each
    completed implementation a fresh sequential integration review. T20 waits on

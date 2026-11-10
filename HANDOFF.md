@@ -1,4 +1,38 @@
-# Latest boundary — T17 setup/first API red verified; T12 source preparation (2026-11-10)
+# Latest boundary — T14 complete, preserved and queued for fresh review (2026-11-10)
+
+T14 implementer returned clean `b304029e85aeb97ccb02a2151d4bb6101bf684fc`,
+including documented accepted29af3413. It remains **unaccepted**. Root verified
+all1,481 indexed evidence files (bytes/hash/mode/integer-ns), seven seal entries,
+all438 protected-excluded current tracked/archive inputs and exact archive SHA.
+The final seal SHA256 is
+`3ed39ace69006bb3656f50e5a8f9cb07dd9141588af86010e57ea2b2aa630a5c`.
+Preserved custody at `.tools/research-harness/evidence/T14/` holds1,489 files,
+198,433,400 logical bytes including eight closure files. They share immutable
+hardlinks with original source evidence; these are not independent physical
+copies. Source file modes/ns remain unchanged; custody directories are read-only.
+Root receipts: `maintenance/T14-final-seal-root-verification-20261110.json` and
+`maintenance/T14-custody-20261110.json` under the root harness directory.
+
+The next NEW shared-checkout merger/reviewer receives sole tracked writing from
+root, preserves exact no-ff source ancestry, and reviews Standards and Spec
+separately before acceptance. T14's provisional DB11/export12/library7 and its
+segmented qualification must remain explicit. Slice17's unobserved red, save
+shield chronology, historical timestamp gaps and every retained failure remain;
+image World smoke must not be relabeled Engine execution. Fresh review starts
+with source/backend work; frontend setup and production need staged forecasts.
+
+The T14 owner explicitly granted additional normal frozen hardlink uv-cache
+consumers for the ROOT reviewer and T12 in distinct environments. ROOT may also
+use its exact750-byte pnpm policy cache and immutable store for normal frozen
+import into distinct node_modules. Preserve caches and original dependencies;
+no cleanup/moves/manual package copies/links/policy bypass, and stop on missing
+policy metadata. Permission is recorded in
+`maintenance/T14-cache-owner-permission-20261110.json`. Ordinary shared flock/
+128MiB floor stays unchanged. Root measured236,044,288 bytes after custody,
+shared/unreserved. T17 bounded backend TDD and T12 source-only preparation remain
+independent; T18 waits for capacity. No paid/live/held-out work is allocated.
+
+# Earlier boundary — T17 setup/first API red verified; T12 source preparation (2026-11-10)
 
 T14 implementation remains unaccepted. Root independently checked its completed
 production receipt, all438 protected-excluded tracked archive entries,44 deployed
