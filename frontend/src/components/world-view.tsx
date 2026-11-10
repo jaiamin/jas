@@ -23,6 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { WorkflowView } from "@/components/workflow-view";
 import { label } from "@/lib/format";
 import type { Event, Profile, RunDetail, State } from "@/lib/types";
 
@@ -49,6 +50,10 @@ export function WorldView({
   onAgent: (key: string) => void;
 }) {
   const profiles = run.design.profiles;
+  if (run.design.environment === "institutional_workflow")
+    return (
+      <WorkflowView run={run} state={state} events={events} onAgent={onAgent} />
+    );
   if (run.design.environment === "sealed_relay") {
     const outcome =
       state.outcome && "success" in state.outcome ? state.outcome : null;

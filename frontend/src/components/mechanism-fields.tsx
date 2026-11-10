@@ -11,6 +11,7 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { WorkflowFields } from "@/components/workflow-fields";
 import type { EnvironmentId, Parameters, Profile } from "@/lib/types";
 
 interface NumericField {
@@ -204,11 +205,19 @@ export function MechanismFields({
       "artifact_workspace",
       "distributed_coordination",
       "reliance_commitments",
+      "institutional_workflow",
     ].includes(environment) &&
     parameters.artifacts
   ) {
     return (
       <div className="flex min-w-0 flex-col gap-6">
+        {parameters.workflow && (
+          <WorkflowFields
+            rules={parameters.workflow}
+            id={id}
+            onChange={(workflow) => onChange({ workflow })}
+          />
+        )}
         {["distributed_coordination", "reliance_commitments"].includes(
           environment,
         ) &&

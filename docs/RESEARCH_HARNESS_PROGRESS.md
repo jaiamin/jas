@@ -1,5 +1,12 @@
 # Research harness implementation progress
 
+T12 frontend source checkpoint (2026-11-10): F1 passed once, F2 released;
+workflow editor/view, population identity and tool-read slices each observed RED
+before GREEN. Lint231 files/forced TypeScript/29 affected units pass at source
+d12d7f834dfe3637b28a9b4425fe840ceceb90944f270186eda4a17cbbba751e. Build/browser
+remain unrun. Next normal final-source merge is exact accepted dd48bf31, followed
+by keyless18130 witnesses. Production/providers remain held; incomplete/unaccepted.
+
 T12 current implementer boundary (2026-11-10): base HEAD077cb764 normally merges
 exact accepted fdfb5f7a, Gitleaks PASS; sole DB12/export13/library8, no T17/T18.
 Backend current-source Ruff/ty and31 World cases pass; individual HTTP positive/

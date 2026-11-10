@@ -1,6 +1,19 @@
 # T12: institutional workflow with atomic work and resource effects
 
-## Current boundary: backend checkpoint; conditional frontend release
+## Current boundary: frontend source checkpoint; browser qualification outstanding
+
+F1 passed once and F2 is released. The workflow view/editor, participant population
+and authorized artifact-read controls passed separate observed-red-first slices.
+Current source d12d7f834dfe3637b28a9b4425fe840ceceb90944f270186eda4a17cbbba751e
+passes lint231 files, forced TypeScript and29 affected units. Initial wrong-cwd
+lint, missing catalogue entries and the intermediate handoff parse failure remain
+failed attempts. Build/browser remain unrun. Next accepted final merge target is
+exact dd48bf31792ea9132e81ddff3fcc6e429041e011; no provisional siblings. Finish
+the coherent UI checkpoint normally, merge that target, then qualify the actual
+keyless workflow on18130. Production/runtime/providers still require their grant.
+T12 remains incomplete/unaccepted. Earlier boundary text below is chronology.
+
+## Historical boundary: backend checkpoint; conditional frontend release
 
 Base HEAD **077cb76429334b569e960c265cc52436713f4ca8** normally merged exact
 accepted **fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd** through normal Gitleaks.
@@ -60,6 +73,37 @@ Historical FAILED overrun126/pytest1 (91 pass/two failures), compaction03 and wa
 attempt01 preflight125 stay failed/rejected. ROOT deleted historical custody is
 retired and cannot be claimed retained. Historical sections below are chronology;
 this current boundary and published retirement policy supersede their old grants.
+
+## F1 observed setup and F2 UI oracle (before UI output)
+
+F1 attempt01 passed normally at checkpoint **e6d155fc129871c37da98b2ad0bdf718608377d0**.
+Entry1,678,868,480; immediately-before-sync1,678,426,112; after-sync1,480,257,536
+free bytes. Own modules359,652,711 logical/426,446,848 allocated;23,400 hardlinked
+files. Private cache+state176,781,414 logical/177,963,008 allocated. Shared store
+metadata identity, tracked source and committed lock6097048683788686d8dde275af047a6acc7b10a5e0e37a8f1408fb681f085f58
+remain equal. React/TypeScript/Vite/Playwright imports, direct links and binaries
+resolve inside this checkout. No payload download/copy/policy bypass/retry. Lock
+released. Receipt `.tools/t12/setup/frontend-attempt-01/receipt.json`.
+
+F2 narrow direction: extend existing Conditions/Review and Environment/Record,
+stock shadcn/Geist/semantic tokens. First viewport shows materials/time and a
+short owned-work list; dependencies and actual selected-recipient handoffs use
+plain language. Versions, detailed timing/routes/history and privileged mail are
+progressive disclosures. No default technical tables, geometry, invented utility,
+installed cooperative policy or navigation redesign. Impeccable engine is absent;
+read existing DESIGN and craft floor directly, with no new installation/delegate.
+
+First literal public UI tracer, fixed before output: the same six-person stock7
+fixture at logical2 displays4 materials remaining/3 spent,0 of3 handoffs accepted,
+intake owned by Alder/in progress/due3 and release blocked on intake acceptance.
+Default view has zero tables. Artifact versions and addressed mail are closed,
+and neither sealed-development-431 nor private mail text renders before explicit
+privileged inspection. Clicking Alder selects that actual actor. A subsequent
+slice will expose the exact Cedar-selected pending handoffv2 without calling it
+accepted; resource/time/version/history remain the recorded checkpoint. Controls
+must preserve cost/duration/dependency/ACL rules and the existing validated-save
+and draft-lock behavior. Browser witnesses later use the real keyless API and
+explicit deterministic DEVELOPMENT proposals, never a production outcome policy.
 
 ## Historical boundary: execution HOLD; merge source resolved, unverified
 

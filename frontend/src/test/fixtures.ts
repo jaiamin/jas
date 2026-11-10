@@ -35,6 +35,7 @@ export const parameters: Parameters = {
   relay: null,
   coordination: null,
   commitments: null,
+  workflow: null,
   resource_schedule: [],
 };
 

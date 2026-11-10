@@ -1,4 +1,21 @@
-# T12 backend checkpoint; staged frontend release (2026-11-10)
+# T12 frontend source checkpoint; browser qualification outstanding (2026-11-10)
+
+Same incomplete/unaccepted T12 implementer. F1 passed once; F2 is released.
+The narrow workflow editor/view now renders actual materials, owned delayed work,
+blocked dependencies and selected-recipient handoffs. Artifact/mail/history stay
+behind disclosures. Population edits preserve six-to-twelve identities, orders,
+routes and bound workers. Tool participants can select authorized artifact reads;
+unsupported signals/reports/promises are absent. Every feature slice observed RED
+before its repair; the intermediate parse failure and all initial failures remain.
+Latest frontend source d12d7f834dfe3637b28a9b4425fe840ceceb90944f270186eda4a17cbbba751e
+passes lint231 files, forced TypeScript and29 affected units. Initial wrong-cwd
+lint and missing-catalogue TypeScript failures are retained. Build/browser unrun.
+Next: coherent normal-hook checkpoint, normal merge exact accepted
+dd48bf31792ea9132e81ddff3fcc6e429041e011, then clean build and bounded keyless
+browser witnesses on own18130. No active service/browser. F2 floor+128MiB,
+16MiB output/job,96MiB own cap continue; production/providers remain held.
+
+# Historical T12 backend checkpoint; staged frontend release (2026-11-10)
 
 Same branch `t3/institutional-workflow`, assigned `t3-190f8b94`, base HEAD
 **077cb76429334b569e960c265cc52436713f4ca8** normally merges exact accepted
@@ -33,6 +50,12 @@ corruption checks pass in separate bounded jobs. Provider/settlement primary err
 cancellation and success-then-settlement-error checks pass. This is source-scoped
 implementer qualification, never an uninterrupted full backend suite or acceptance.
 The initial newest-test Ruff failure is retained, followed by style repair/pass.
+
+F1 attempt01 PASSED at e6d155fc: immediately-before1,678,426,112 free,
+after1,480,257,536. Own modules359,652,711 logical/426,446,848 allocated; private
+metadata176,781,414 logical/177,963,008 allocated. Source/committed lock/store
+metadata identity unchanged; all imports/links/bins own. No payload/copy/retry.
+F2 is now released; UI tracer unrun. Detailed receipt/forecast in the plan.
 
 ROOT released F1 ONE normal frozen-store pnpm12 setup with task-private XDG cache,
 shared immutable store and own frontend/node_modules. Require939,524,096 free
