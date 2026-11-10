@@ -215,6 +215,7 @@ def condition_grid(design: Design) -> dict:
             {
                 "parameters": c.parameters.model_dump(),
                 "model": c.model,
+                "harness": c.harness.model_dump(),
                 "profiles": [p.model_dump() for p in design.resolve(c).profiles],
             }
         )
@@ -594,6 +595,9 @@ def _preflight(specification: str) -> dict:
                 "baseline": baseline.key,
                 "condition": c.key,
                 "changed_parameters": changes,
+                "changed_harness": _differences(
+                    baseline.harness.model_dump(), c.harness.model_dump()
+                ),
                 "agent_assignment_changed": assignment_changed,
                 "witnesses": witnesses,
             }

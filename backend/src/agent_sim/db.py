@@ -167,6 +167,9 @@ class ProviderCall(Base):
     study_id: Mapped[str | None] = mapped_column(ForeignKey("studies.id"), index=True)
     run_id: Mapped[str | None] = mapped_column(ForeignKey("runs.id"), index=True)
     analysis_id: Mapped[str | None] = mapped_column(ForeignKey("analyses.id"), index=True)
+    activation_id: Mapped[str | None] = mapped_column(
+        ForeignKey("participant_activations.id"), index=True
+    )
     purpose: Mapped[str]
     model: Mapped[str]
     created: Mapped[str] = mapped_column(default=now)
@@ -180,6 +183,37 @@ class ProviderCall(Base):
     output_tokens: Mapped[int] = mapped_column(default=0)
     reasoning_tokens: Mapped[int] = mapped_column(default=0)
     error: Mapped[str | None]
+
+
+class ParticipantActivation(Base):
+    __tablename__ = "participant_activations"
+    id: Mapped[str] = mapped_column(primary_key=True, default=uid)
+    run_id: Mapped[str] = mapped_column(ForeignKey("runs.id"), index=True)
+    turn: Mapped[int]
+    round: Mapped[int]
+    actor: Mapped[str]
+    created: Mapped[str] = mapped_column(default=now)
+    updated: Mapped[str] = mapped_column(default=now)
+    status: Mapped[str] = mapped_column(default="running")
+    stop_reason: Mapped[str | None]
+    error: Mapped[str | None]
+    checkpoint_hash: Mapped[str]
+    observation: Mapped[dict] = mapped_column(JSON)
+    identity: Mapped[dict] = mapped_column(JSON)
+    requests: Mapped[int] = mapped_column(default=0)
+
+
+class ParticipantOperation(Base):
+    __tablename__ = "participant_operations"
+    __table_args__ = (UniqueConstraint("activation_id", "number"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    activation_id: Mapped[str] = mapped_column(ForeignKey("participant_activations.id"), index=True)
+    number: Mapped[int]
+    created: Mapped[str] = mapped_column(default=now)
+    kind: Mapped[str]
+    status: Mapped[str]
+    request: Mapped[dict] = mapped_column(JSON)
+    result: Mapped[object] = mapped_column(JSON)
 
 
 class Database:
@@ -206,13 +240,13 @@ class Database:
                 text("CREATE TABLE IF NOT EXISTS schema_version (version INTEGER NOT NULL)")
             )
             version = connection.execute(text("SELECT version FROM schema_version")).scalar()
-            if version not in (None, 4):
+            if version not in (None, 5):
                 raise ValueError(
                     f"Unsupported database schema version: {version}; create a fresh workspace"
                 )
             if version is None:
                 Base.metadata.create_all(connection)
-                connection.execute(text("INSERT INTO schema_version VALUES (4)"))
+                connection.execute(text("INSERT INTO schema_version VALUES (5)"))
         with self.session.begin() as session:
             workspace = session.get(Workspace, 1)
             if workspace is None:

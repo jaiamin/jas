@@ -7,7 +7,7 @@ remain ordered. Only explicit user actions create paid work. Restart pauses inte
 ## Storage
 
 SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. Startup creates
-schema v4 for fresh workspaces and rejects incompatible schemas. Local transactions
+schema v5 for fresh workspaces and rejects incompatible schemas. Local transactions
 commit each turn's input, decision, consequences, metrics and checkpoint together.
 
 | Record | Purpose / invariant |
@@ -187,10 +187,33 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v4 (`jas-study`)
+Every Analysis has an indexed conversation identity. Study export v5 (`jas-study`)
 includes every revision and its runs, actual recorded rule versions, exact turn evidence
 and provider traces; it batches
 journal queries.
+Participant harnesses (`participants.py`, version 1.0.0) are condition factors,
+independent of provider/model assignments and World. Direct action preserves the
+single structured-decision request and its observation. Tool using owns a bounded
+application loop: each inference uses `LanguageModels.generate` once with its own
+atomic reservation/settlement. Only the active actor's observation, rules and legal
+options can be read; no operation accepts an actor or state selector. World.step
+independently validates the final decision. Reads never advance logical time.
+
+Participant activations are durable attempts, separate from committed turns.
+They pin model/provider adapter and package versions, harness/source digest,
+inference settings, profile, memory mode and per-activation limits. Their
+append-only operation journal records reads/results, rejected operations, proposals,
+pauses and settled turn hashes. Requests link to the activation, including failed
+or unknown calls with no committed turn. Effort counts inference attempts, including
+refused reservations; sent requests and charges remain separate ledger records.
+The saved activation observation is its permitted World snapshot; actual model
+deliveries are the provider prompts and executed read results. A turn, its final settlement operation
+and activation completion commit atomically. Pause finishes the in-flight request:
+final decisions commit; otherwise the authorized transcript and consumed limits
+are retained for explicit resume. Restart pauses runs without requests and marks
+unfinished in-flight attempts interrupted; it never resubmits unknown requests.
+Explicitly paused sessions retain their remaining effort. Failed/interrupted
+attempts remain inspectable when a user explicitly starts another activation.
 Full checkpoints favor auditability over storage efficiency. This is appropriate for small
 local studies; large deployments need retention/compaction and paginated evidence APIs.
 

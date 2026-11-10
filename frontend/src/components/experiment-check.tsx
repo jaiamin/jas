@@ -91,6 +91,8 @@ export function ExperimentCheckDetails({
             ? comparison.changed_parameters.join(", ")
             : "No parameter changes"}
           {comparison.agent_assignment_changed && "; agent assignments differ"}.{" "}
+          {comparison.changed_harness.length > 0 &&
+            `Harness changes: ${comparison.changed_harness.join(", ")}. `}
           {
             comparison.witnesses.filter(
               (w) => w.observation_difference || w.outcome_difference,

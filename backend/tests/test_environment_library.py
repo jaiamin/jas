@@ -28,6 +28,13 @@ def test_library_update_delete_and_corruption_are_explicit(tmp_path):
     with pytest.raises(ValueError, match="content hash"):
         library.get(saved.id)
     path.write_text(updated.model_dump_json())
+    content = json.loads(path.read_text())
+    assert content["format"] == "jas-environment-v2"
+    content["format"] = "jas-environment-v1"
+    path.write_text(json.dumps(content))
+    with pytest.raises(ValueError, match="unsupported format"):
+        library.get(saved.id)
+    path.write_text(updated.model_dump_json())
     library.delete(saved.id, 2)
     assert library.list() == []
     with pytest.raises(NoResultFound):

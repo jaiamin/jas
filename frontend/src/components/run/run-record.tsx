@@ -6,6 +6,7 @@ import {
 } from "@/components/disclosure";
 import { Alert } from "@/components/feedback";
 import { Check } from "@/components/icons";
+import { ActivationInspector } from "@/components/run/activation-inspector";
 import { RequestInspector } from "@/components/run/request-inspector";
 import { Json } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,14 @@ export function RunRecord({ run }: { run: RunDetail }) {
             <div>
               <dt>Model</dt>
               <dd>{summary.model}</dd>
+            </div>
+            <div>
+              <dt>Participant harness</dt>
+              <dd>
+                {label(run.harness.kind)} · v{run.harness.version} · up to{" "}
+                {run.harness.max_requests} requests and{" "}
+                {run.harness.max_tool_operations} reads per activation
+              </dd>
             </div>
             <div>
               <dt>Environment</dt>
@@ -95,6 +104,7 @@ export function RunRecord({ run }: { run: RunDetail }) {
           </Disclosure>
         </CardContent>
       </Card>
+      <ActivationInspector activations={run.activations} />
       <RequestInspector requests={run.requests} />
     </>
   );

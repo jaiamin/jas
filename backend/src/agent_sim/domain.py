@@ -184,11 +184,44 @@ class Parameters(Strict):
     resource_schedule: list[ResourceChange] = Field(default_factory=list, max_length=12)
 
 
+ParticipantTool = Literal["observe", "rules", "legal_options"]
+
+
+class DirectActionHarness(Strict):
+    kind: Literal["direct_action"] = "direct_action"
+    version: Literal["1.0.0"] = "1.0.0"
+    max_requests: Literal[1] = 1
+    max_tool_operations: Literal[0] = 0
+    tools: list[ParticipantTool] = Field(default_factory=list, max_length=0)
+
+
+class ToolUsingHarness(Strict):
+    kind: Literal["tool_using"] = "tool_using"
+    version: Literal["1.0.0"] = "1.0.0"
+    max_requests: int = Field(default=4, ge=1, le=8)
+    max_tool_operations: int = Field(default=3, ge=0, le=12)
+    tools: list[ParticipantTool] = Field(
+        default=["observe", "rules", "legal_options"], max_length=3
+    )
+
+    @model_validator(mode="after")
+    def unique_tools(self) -> Self:
+        if len(set(self.tools)) != len(self.tools):
+            raise ValueError("Participant tools must be unique")
+        return self
+
+
+ParticipantHarness = Annotated[
+    DirectActionHarness | ToolUsingHarness, Field(discriminator="kind")
+]
+
+
 class Treatment(Strict):
     key: str = Field(pattern=r"^[a-z][a-z0-9_-]{0,31}$")
     name: str = Field(min_length=1, max_length=80)
     description: str = Field(default="", max_length=1000)
     model: ModelId = "openai:gpt-6-luna"
+    harness: ParticipantHarness = Field(default_factory=DirectActionHarness)
     parameters: Parameters = Field(default_factory=Parameters)
     profile_overrides: list[Profile] = Field(default_factory=list, max_length=12)
 
