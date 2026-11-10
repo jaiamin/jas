@@ -1,16 +1,52 @@
-# T16 integration review in progress — sole writing retained (2026-11-10)
+# T16 accepted — final completion returns sole writing to root (2026-11-10)
 
-The fresh reviewer owns tracked writing on `integration/research-harness` from
-accepted `8df6c59`. Plan `548640e` freezes independent DEVELOPMENT expectations.
-Exact T16 `475bfc73` is being merged as the normal no-ff second parent; both
-documentary histories survive. Combined DB10/export11/library7 are provisional,
-not yet accepted. Read [the durable review](docs/research/T16_INTEGRATION_REVIEW.md).
-Initial custody/archive proofs pass independently; raw failures/gaps remain.
-Heavy checks/install/builds are held under root's storage coordination; no flock
-is held. T14 owns its separate environment and next bounded heavy slot. Do not
-touch its dependencies or the T07 owner's environment. No paid/live/held-out work,
-publication, reset, security or credential changes. Root receives sole writing
-only at this reviewer's explicit final completion. Historical headers follow.
+T16/#27 is accepted for finite deterministic DEVELOPMENT scope. Standards and
+Spec each have zero unresolved findings, reasoned separately and personally with
+no descendants/extra checkout. Started at published accepted `8df6c59`; plan
+`548640e` froze literal oracles. Exact source `475bfc73` remains second parent
+of no-ff `40ef0e59`, preserving both documentary histories and accepted T11.
+Repair `55d1a8c8a240fc56d9ba1a0b8bd0aa1e30772faa` fixes public lookup, turn0
+current-runtime checking, the fifth grounded design, pinned editor controls,
+source-preserving environment selection/keyboard activation and actual save
+validation off the API loop. Current **DB10/export11/library7** reject prior
+contracts explicitly; no aliases, migrations, resets or historical reinterpretation.
+
+Read [the durable independent review](docs/research/T16_INTEGRATION_REVIEW.md).
+Fresh qualification:417 distinct segmented backend cases, including latest91
+after final route repair; Ruff/ty; frontend lint/115 units; normal/forced clean
+54-file build parity;74 distinct browser cases in8 bounded groups. Earlier
+segments retain their actual sources, not an uninterrupted whole-suite claim.
+Fresh final-source non-root production build/smoke passes:26 containment witnesses,
+admission/pinning/sidecar-loss/restart guards and two-turn exact Engine replay;
+42 backend files/54 asset hashes match. All owned resources/18225 are closed.
+
+Frozen T01 runner/cases/scores remain unchanged with exactly four export-v4
+failures/four false flags and runner/comparator exit1. Separate positive parity
+passes5 runs/22 turns/22 requests/98 operations: literally equal bounded inputs,
+actions/evidence/checkpoints/effort/integer ledger;2,017 differences classified,
+zero unexplained. Ledger770 synthetic microdollars/2,200 input/1,100 output
+tokens; actual spending0. All26 wrapped review nonzero attempts and the unwrapped
+duplicate-name error remain. Corrected preflight/helper/test errors are retained.
+
+Final source/custody proofs preserve2,326 indexed entries/2,314 regular files/
+14 symlinks/333 directories/278,978,011 bytes as immutable hardlinks, not independent
+physical copies. All171 inherited attempts/all44 nonzero and historical capture
+gaps remain explicit. New evidence is
+`.tools/research-harness/evidence/T16-integration/`, sealed after the normal-hook
+documentation commit by `final-verification.json` and immutable
+`evidence-final.json`/checksum. Final HEAD/index identity accompanies completion.
+Original root `pbcopy` was never accessed/captured; configurations remain opaque.
+Stash `f771128ba1c9295262a4073df40cc25647b1370f`, earlier evidence and all maps
+remain, including root's795-path map and closed-root-T11/closed-T07 maps.
+
+Sole tracked writing returns only with this reviewer's explicit final completion;
+root owns publication. No push/PR/issue/watch, paid/live/held-out work or new
+allocation occurred. Sol remains$0.611632/55 requests, $9.388368 remaining; Luna
+unallocated. T17 becomes Ready after this accepted completion; T18 adjudication,
+generation, live competence and held-out/generalization remain unverified.
+T14 stays independent on18127: serialize heavy jobs under the shared flock with
+the128MiB floor, release between jobs, and retain private outputs. Do not change
+another owner's dependencies, evidence or environment. Historical headers follow.
 
 # Root coordination — T11 verified; T14 implementation and T16 review next (2026-11-10)
 
