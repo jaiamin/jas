@@ -1,3 +1,37 @@
+# Root coordination — T16 independently verified; frontier advances (2026-11-10)
+
+Root has received sole shared-checkout writing back and independently verified
+accepted `fde4bce1af2483a3249fde02c4f32a199c284ed7`. Every indexed regular file,
+symlink target and directory in the sealed T16 review index matches; its SHA256 is
+`5adbf30d90a47772f748741bc5bd3d980466b3b1fc7516ff77cd41f79c335a4d`.
+Canonical hashes recompute for both review and original custody manifests. All
+2,312 indexed original regular files retain source/custody inode identity;
+these are immutable hardlinked custody, not independent physical copies. Exact
+tracked membership and all 382 non-documentary inputs match final production
+qualification `757a18a2bc28957111cfe1373a713847729d807ddfdd0a3cc47d94168ac50e51`.
+Frozen files and protected stash remain unchanged. Root ran no fresh product test.
+Receipt: `.tools/research-harness/maintenance/T16-root-final-verification-20261110.json`.
+
+Accepted frontier is T01–T11/T13/T15/T16/T19, **DB10/export11/library7**.
+Publish this checkpoint to draft PR32 and immediately link it. T14 remains an
+isolated in-progress implementation on18127; provide the published exact accepted
+SHA for its normal merge and actual-worker save/probe review. T12, T17 and T18
+are Ready; assign fresh isolated implementers within concurrency/storage limits.
+T20 waits for those and accepted T14. Generation, adjudication and live/held-out
+competence remain unverified. No new paid allocation: Sol$0.611632/55 requests,
+$9.388368 remaining; Luna unallocated.
+
+Heavy jobs retain the shared flock and under-lock134,217,728-byte floor; forecast
+additional build/install peaks. Latest root verification observed151,756,800 bytes,
+not reserved. New isolated source work may proceed; coordinate dependency setup
+before any new consumer. Preserve T14's uv cache and tiny pnpm policy-verification
+cache for normal-manager reuse into distinct environments; exact paths/footprints
+are in ignored `maintenance/storage-frontier.json` and the T14 metadata receipt.
+Keep existing Chromium headless shell/FFmpeg; do not redownload full Chromium.
+Protect unread original `pbcopy`, opaque configurations, stash and all compression
+maps, including the795-path root map and closed-root-T11/closed-T07 logical maps.
+Never execute inherited ignored evidence helpers. Historical headers follow.
+
 # T16 accepted — final completion returns sole writing to root (2026-11-10)
 
 T16/#27 is accepted for finite deterministic DEVELOPMENT scope. Standards and

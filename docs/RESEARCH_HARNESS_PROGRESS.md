@@ -51,6 +51,18 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### Root verifies accepted T16 and advances the ready frontier (2026-11-10)
+
+Root independently rehashed all review/custody indexed files, checked symlinks,
+directories and source hardlinks, recomputed both canonical inventory digests,
+and matched every382 non-documentary tracked input to final production source.
+Review manifest SHA256 is
+`5adbf30d90a47772f748741bc5bd3d980466b3b1fc7516ff77cd41f79c335a4d`.
+Accepted code `fde4bce` is ready for root publication; this coordination adds no
+fresh product execution or live claim. T14 is in progress; T12/T17/T18 are Ready,
+with isolated setup coordinated against the unchanged shared128MiB check floor.
+See HANDOFF and the root verification receipt for cache/map/protected-data state.
+
 ### T16 independent integration review accepted (2026-11-10)
 
 Fresh separate personal Standards and Spec reviews each have zero unresolved
@@ -785,7 +797,7 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Accepted for documented deterministic scope after independent recovery review | Exact source `4aac5a9`; accepted frontier`8df6c59`; introduced DB9/export10/library6; [review](research/T11_RECOVERY_REVIEW.md) |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Ready; root chooses launch | — |
 | T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Accepted for deterministic scope; live competence unassessed | Exact no-ff `5af3fbb`; scoping repair `5e86dfa`; [report](research/T13_INTEGRATION_REVIEW.md) |
-| T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Ready; root chooses launch and explicit live allocation | — |
+| T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Isolated implementation in progress; unaccepted | Public-API DEVELOPMENT cases and UI qualification in progress; no paid allocation |
 | T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Integrated and accepted after fresh review repair | `fa1c825`, `6e1a7c8`; [report](research/T15_BASELINES.md) |
 | T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Accepted for finite deterministic DEVELOPMENT scope | Exact no-ff`40ef0e59`/second parent`475bfc73`; repair`55d1a8c`; separate Standards/Spec pass; [review](research/T16_INTEGRATION_REVIEW.md); DB10/export11/library7 |
 | T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | Ready after accepted T16 final completion; not started | T13/T16 prerequisites accepted; generation and held-out acceptance remain unverified |
@@ -859,15 +871,14 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. Root resumes sole writing ownership, reads the T10 closure audit/manifest and
-   publishes accepted local changes to draft PR32 when appropriate. This reviewer
-   performed no publication. Preserve exact no-ff/source/repair identities and
-   observed versus inherited qualification.
-2. Assign a separate fresh sole-writer T13 review using root-provided clean
-   `75766ba` and its complete preserved evidence; do not infer acceptance from
-   completion. T16 remains independent on18125 and T18 is Ready. T11/T12 are Ready
-   for root scheduling; T14 waits on accepted T13, T17 on accepted T13/T16. Do not
-   poll running tasks or alter other environments. No issue closes prematurely.
+1. Publish root-verified accepted T16 `fde4bce` and the documentary coordination
+   checkpoint to draft PR32; immediately link the PR. Preserve exact source,
+   no-ff/repair and qualification identities. Root owns shared tracked writing.
+2. Send the documented accepted SHA to isolated T14 for its normal merge and
+   actual-worker save/probe review. Launch fresh isolated T12 and T17 work within
+   concurrency/storage limits; T18 remains Ready for the next slot. Give each
+   completed implementation a fresh sequential integration review. T20 waits on
+   T12/T14/T17/T18. Do not poll delegates or alter their environments.
 3. Preserve immutable hardlinked evidence and all compression maps. Serialize
    large checks with the shared flock file and archive closed own outputs before
    proceeding. Earlier outside-cache effects and prose support stay unassessed;
