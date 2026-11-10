@@ -1,13 +1,14 @@
-# Draft tickets for the JAS research harness specification
+# Tickets for the JAS research harness specification
 
-Status: **draft for user review; no child issues published**.
+Status: **approved for implementation; all 20 child issues published and verified**.
 Parent: [spec #11](https://github.com/jaiamin/ass/issues/11).
 
 The user requested tracer-bullet tickets, then emphasized repeated benchmarking
 and iteration that strengthens generalization without breaking the platform.
-This is a review document for the configured GitHub tracker, not a local issue
-tracker. T01–T20 are temporary identifiers; approved tickets will receive real
-GitHub issue numbers and native blocking relationships.
+GitHub is the issue tracker; this document retains the accepted breakdown.
+T01–T20 identify the graph below. Each has a published child issue with native
+blocking relationships. See [implementation progress](RESEARCH_HARNESS_PROGRESS.md)
+for accepted checkpoints and remaining work.
 
 ## Delivery rules
 
@@ -44,11 +45,10 @@ GitHub issue numbers and native blocking relationships.
 - Runtime/container changes require the production smoke checks. Browser
   changes require appropriate keyless UI regression checks. Never weaken tests,
   change host security or spend beyond explicitly authorized allowances.
-- Parent body, labels and state remain unchanged. After approval, publish
-  children in dependency order with ready-for-agent and native links where
-  available, without appending or closing the parent.
+- Parent body, labels and state remain unchanged. Children were published in
+  dependency order with ready-for-agent and native parent/blocking links.
 
-## Proposed overview
+## Approved overview
 
 1. **Reproduce the current experiment workflow and freeze a regression baseline** — blocked by none. Run a known-good experiment through the existing workspace, inspect/export its evidence, and reproduce a source-stamped correctness and development-evaluation baseline before feature changes.
 2. **Inspect and qualify an isolated environment-extension candidate** — blocked by T01. Submit a minimal extension candidate for validation and see a truthful admission result in environment review, with actual credential-free containment qualified before execution is enabled.
@@ -71,7 +71,32 @@ GitHub issue numbers and native blocking relationships.
 19. **Assess evidence-supported claims and reanalyze through read-only lenses** — blocked by T06, T07. Ask about recorded runs and receive findings whose calculations, exposure, missingness, citations and interpretation status can be inspected, then apply a new lens without altering the runs.
 20. **Demonstrate the small-population generalization milestone** — blocked by T11, T12, T14, T15, T17, T18, T19. Inspect and reproduce a source-stamped end-to-end evaluation across the four agreed study families, including fresh live evidence and a held-out generated mechanic, with separate gate results and all failures retained.
 
-## Ticket drafts
+## Published issue index
+
+| Ticket | GitHub issue |
+| --- | --- |
+| T01 | [#12](https://github.com/jaiamin/ass/issues/12) |
+| T02 | [#13](https://github.com/jaiamin/ass/issues/13) |
+| T03 | [#14](https://github.com/jaiamin/ass/issues/14) |
+| T04 | [#15](https://github.com/jaiamin/ass/issues/15) |
+| T05 | [#16](https://github.com/jaiamin/ass/issues/16) |
+| T06 | [#17](https://github.com/jaiamin/ass/issues/17) |
+| T07 | [#18](https://github.com/jaiamin/ass/issues/18) |
+| T08 | [#19](https://github.com/jaiamin/ass/issues/19) |
+| T09 | [#20](https://github.com/jaiamin/ass/issues/20) |
+| T10 | [#21](https://github.com/jaiamin/ass/issues/21) |
+| T11 | [#22](https://github.com/jaiamin/ass/issues/22) |
+| T12 | [#23](https://github.com/jaiamin/ass/issues/23) |
+| T13 | [#24](https://github.com/jaiamin/ass/issues/24) |
+| T14 | [#25](https://github.com/jaiamin/ass/issues/25) |
+| T15 | [#26](https://github.com/jaiamin/ass/issues/26) |
+| T16 | [#27](https://github.com/jaiamin/ass/issues/27) |
+| T17 | [#28](https://github.com/jaiamin/ass/issues/28) |
+| T18 | [#29](https://github.com/jaiamin/ass/issues/29) |
+| T19 | [#30](https://github.com/jaiamin/ass/issues/30) |
+| T20 | [#31](https://github.com/jaiamin/ass/issues/31) |
+
+## Accepted ticket bodies
 
 ## T01 — Reproduce the current experiment workflow and freeze a regression baseline
 

@@ -2,38 +2,43 @@
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: to-tickets draft complete; awaiting breakdown approval.**
-The user invoked to-tickets, then emphasized continuous benchmarking and
-iteration that protects existing workflows and strengthens generalization.
-Read `/home/agent/.agents/skills/to-tickets/SKILL.md` and the configured tracker
-and domain docs. Step 4 requires approval of the numbered breakdown before
-publishing children. **No child issues have been published and implementation
-must not start from this draft.** Do not ask again about approved product scope.
+**Current checkpoint: implement-spec active; T01 baseline queued.**
+The user explicitly invoked implement-spec after the reviewed breakdown. Treat
+that as authorization to implement the accepted task graph; do not repeat
+product-scope or testing-seam questions. Read the invoked skill at
+`/home/agent/.agents/skills/implement-spec/SKILL.md`. Implement each ticket with a
+fresh-context TDD implementer in its own branch/worktree and integrate using a
+fresh merger. Use T3 delegate_task for separate worktrees/background agents;
+capabilities were read once in this thread. Follow returned next instructions;
+completion wakes the parent, so do not poll running tasks.
 
-Review draft: `docs/RESEARCH_HARNESS_TICKETS.md`, with 20 complete vertical
-slices and 33 blocking edges. Static validation passed: all blockers exist and
-precede dependents, no cycles or redundant transitive edges, required sections
-and acceptance criteria present. An independent read-only review found no
-missing essential blocker or horizontal slice; its participant-identity,
-reproducibility-label and adjudicator-quality gaps have been corrected.
+Integration branch: `integration/research-harness`, created from `7cb3279`.
+The incomplete early assistant/research-tools drafts were preserved in Git stash
+`f771128ba1c9295262a4073df40cc25647b1370f`, including the untracked file. The
+integration source is clean; never apply that stash wholesale over new work.
 
-Every slice inherits relevant workflow regressions and a source/case-stamped
-before/after development comparison against the last accepted checkpoint.
-Researcher/participant checkpoints repeat relevant intelligence development
-comparisons; deterministic results must not be presented as live competence.
-Fresh independently authored held-out cases remain separate until validation;
-failures and repairs stay visible, and historical frozen scores stay unchanged.
-The early isolation checkpoint gates generated execution without blocking
-trusted-world/harness/validity improvements. Initial scope stays 1–12.
+The 20 child issues are **published and verified** as #12–#31 under parent #11,
+with ready-for-agent, native parent links and all 33 native blocking edges.
+Remote bodies, labels and relationships were checked; parent body, state,
+labels and comments remained unchanged. Do not republish or duplicate them.
+The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
+task graph, acceptance gates, checkpoints and next actions are tracked in
+`docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Next: present the numbered titles, blockers and delivered behavior and ask
-whether granularity/dependencies need adjustment. After explicit approval,
-publish in dependency order to `jaiamin/ass`, label `ready-for-agent`, attach
-native child/blocking relationships where available and verify bodies/links.
-Use body files; leave parent #11 body, labels and state unchanged. Record every
-created issue URL immediately to avoid duplicates. No tests or paid model
-calls ran during ticket drafting. The $10 Sol allowance remains unused; live
-Luna trials still need their own explicit allowance.
+Current frontier: T01/#12 only. Merge its verified baseline before starting
+dependents. After the first implementation merge, push the integration branch,
+open one draft PR with closing references, and immediately call
+link_pull_request. Do not merge to main or close issues as if unverified work
+were complete. The default-branch PR merge itself is not authorized.
+
+Every slice preserves existing workflows, runs relevant inherited regressions
+and independent behavior checks, and records source/case-stamped before/after
+development evidence. Repeat relevant harness development benchmarks, retain
+failures and keep fresh held-out validation separate from tuning. Initial
+scope stays 1–12. No implementation checks or paid calls ran during publication.
+The session-wide $10 Sol allowance remains unused; implementers stay keyless
+without a specific coordinated allocation. Luna live trials need their own
+explicit allowance after a concrete manifest/estimate is prepared.
 
 **Previous checkpoint: to-spec publication complete.**
 The user confirmed shared understanding of the consolidated plan with “Yes,”
@@ -98,9 +103,9 @@ expansion are allowed. Inventory changed no settings and executed no extensions.
 Workspace: isolated Linux Docker Sandbox,
 `/home/agent/.t3/worktrees/workspace/t3-fdf9bdeb`; branch
 `feat/research-harness`, base `50f705b` (latest origin/main when pulled).
-HEAD now includes the research-only documentation checkpoint.
-Research-only documentation checkpoint; no pushes or PR. Paused production
-changes are excluded from that checkpoint. Assigned checkout; no additional worktrees.
+The earlier research-only branch is retained at `7cb3279`; active implementation
+uses the integration branch described above. No push or PR yet. Paused production
+changes are preserved separately, excluded from the baseline.
 
 User constraints: study AI-agent behavior, not human prediction; initially support
 1–12 active participants, with population chosen for the research question.

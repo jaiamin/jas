@@ -1,8 +1,10 @@
 # Research harness and simulation plan
 
-Status: **approved; shared understanding confirmed**. Updated 2026-11-10.
-The user then requested spec synthesis/publication before implementation.
-See [the implementation spec](RESEARCH_HARNESS_SPEC.md).
+Status: **approved; implementation active**. Updated 2026-11-10.
+The user requested spec synthesis and ticket review, then invoked implement-spec.
+See [the implementation spec](RESEARCH_HARNESS_SPEC.md),
+[accepted tickets](RESEARCH_HARNESS_TICKETS.md) and
+[implementation progress](RESEARCH_HARNESS_PROGRESS.md).
 Latest correction: target **1–12 active participants initially**. The user
 withdrew the dramatic population example as a requirement; there is no fixed
 large-population deliverable. Later expansion needs a concrete question and
@@ -17,7 +19,7 @@ rounds, including all seven recommendations and four explicit refinements.
 [The design interview](research/DESIGN_INTERVIEW.md) records the decisions and
 disclosed engineering defaults. The user answered “Yes” to the consolidated
 plan, completing that checkpoint. These questions are not reopened; the active
-step is the explicitly requested to-spec publication.
+step is implementation of the accepted task graph.
 
 ## Objective
 
