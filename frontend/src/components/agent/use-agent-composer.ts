@@ -3,7 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { api, useApi } from "@/lib/api";
 import type { AnalysisLensKey, Settings } from "@/lib/types";
 
-type Submission = { question: string; context: string; lens?: AnalysisLensKey; source_analysis_id?: string };
+type Submission = {
+  question: string;
+  context: string;
+  lens?: AnalysisLensKey;
+  source_analysis_id?: string;
+};
 type ChatCreated = { id: string; chat_id: string };
 
 export function useAgentComposer({

@@ -452,7 +452,8 @@ class Finding(Strict):
     citations: list[Citation]
     caveats: list[str]
     claims: list[ClaimProposal] = Field(
-        default_factory=list, max_length=24,
+        default_factory=list,
+        max_length=24,
         description="Optional assertions about selected recorded evidence. Omit for general "
         "answers. Calculation assertions reference supplied frozen calculation IDs; "
         "wording and annotations are not automatically certified.",

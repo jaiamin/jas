@@ -87,7 +87,11 @@ export const AgentReply = memo(function AgentReply({
           />
           <ReplyActivity row={row} />
         </MessageHeader>
-        <ClaimEvidence row={row} disabled={disabled} onReanalyze={onReanalyze} />
+        <ClaimEvidence
+          row={row}
+          disabled={disabled}
+          onReanalyze={onReanalyze}
+        />
         {messageText && (
           <AgentMarkdown
             text={messageText}

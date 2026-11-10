@@ -577,7 +577,11 @@ export interface AnalysisLens {
       exposure_capture: string;
       message_opportunities: number;
       unknown_requests: number;
-      truncation: { run_continues: boolean; unrecorded_history: string; note: string };
+      truncation: {
+        run_continues: boolean;
+        unrecorded_history: string;
+        note: string;
+      };
     }[];
   };
 }
@@ -595,7 +599,12 @@ export interface ClaimSupport {
     value?: number | null;
     pairs?: number | null;
     computed: number | null;
-    status: "checked" | "contradicted" | "unsupported" | "unavailable" | "unassessed";
+    status:
+      | "checked"
+      | "contradicted"
+      | "unsupported"
+      | "unavailable"
+      | "unassessed";
     reason: string;
   }[];
 }
