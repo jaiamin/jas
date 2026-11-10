@@ -4,10 +4,12 @@ Real HTTP/World/storage/accounting; only the external provider is deterministic.
 Matching values cannot certify generated wording or semantic reliability.
 """
 
+import asyncio
 import gzip
 import json
 import os
 from pathlib import Path
+from threading import Event
 from uuid import uuid4
 
 import pytest
@@ -27,6 +29,9 @@ def claim_client(tmp_path, monkeypatch, request):
         prompt = json.loads(messages[-1].parts[0].content)
         seen.append(prompt)
         if "index" in prompt:
+            if gate := controls.get("analysis_gate"):
+                controls["analysis_entered"].set()
+                assert await asyncio.to_thread(gate.wait, 10)
             indexed = prompt["index"]["runs"]
             rid = next((r["run_id"] for r in indexed if r["through_turn"] > 0), indexed[0]["run_id"])
             if not prompt["evidence"]:
@@ -255,3 +260,52 @@ def test_communication_lens_rejects_absent_exposure_and_declares_coverage(claim_
     assert "unavailable" in coverage["truncation"]["unrecorded_history"].casefold()
     result = final["output"]["support"]["claims"][0]
     assert result["status"] == "contradicted" and result["computed"] == 0
+
+
+def test_reanalysis_uses_frozen_inputs_after_resume_and_revision_without_participant_work(
+    claim_client, design,
+):
+    client, controls, _ = claim_client
+    sid, rid = save(client, design)
+    assert run(client, rid, "step")["turn"] == 1
+    controls.update(analysis_gate=Event(), analysis_entered=Event())
+    submitted = client.post("/api/chats", json={
+        "question": "What evidence is available at this boundary?", "context": f"run:{rid}",
+    })
+    assert submitted.status_code == 202
+    assert controls["analysis_entered"].wait(5)
+    frozen = client.get(f"/api/analyses/{submitted.json()['id']}").json()["output"]
+    assert frozen["lens"]["cutoffs"] == {rid: 1}
+    assert len(frozen["exposure"][rid]["membership"]["requests"]) == 1
+    assert run(client, rid)["turn"] == 4
+    revised = design.model_dump()
+    revised["title"] = "Later immutable revision"
+    assert client.post(f"/api/studies/{sid}/revisions", json={"design": revised}).status_code == 201
+    controls["analysis_gate"].set()
+    first = finish(client, submitted)
+    controls.pop("analysis_gate")
+    assert first["output"]["lens"] == frozen["lens"]
+    assert first["output"]["exposure"] == frozen["exposure"]
+    before = source(client.get(f"/api/studies/{sid}/export").json())
+    second = finish(client, client.post("/api/chats", json={
+        "question": "Apply the communication lens to the same frozen evidence.",
+        "context": f"run:{rid}", "chat_id": first["chat_id"],
+        "source_analysis_id": first["id"], "lens": "communication",
+    }))
+    assert second["status"] == "complete", second
+    assert second["id"] != first["id"] and second["cutoffs"] == {rid: 1}
+    assert second["output"]["lens"]["key"] == "communication"
+    assert second["output"]["lens"]["inputs_sha256"] == frozen["lens"]["inputs_sha256"]
+    assert second["output"]["exposure"] == frozen["exposure"]
+    assert second["output"]["comparisons"] == frozen["comparisons"]
+    assert client.get(f"/api/analyses/{first['id']}").json() == first
+    exported = client.get(f"/api/studies/{sid}/export").json()
+    assert source(exported) == before
+    for record in (first, second):
+        requests = [r for r in exported["requests"] if r["analysis_id"] == record["id"]]
+        assert len(requests) == record["usage"]["requests"] == 2
+        assert all(r["status"] == "complete" and r["activation_id"] is None for r in requests)
+    assert client.post("/api/chats", json={
+        "question": "Cross-chat retrieval", "context": f"run:{rid}",
+        "source_analysis_id": first["id"], "lens": "communication",
+    }).status_code == 400
