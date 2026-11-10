@@ -186,8 +186,11 @@ Adding an environment requires these explicit integration points:
 Models receive only their observations. Private facts stay private until an action discloses
 them. Researcher analysis can inspect complete recorded state, but its tools are read-only and
 scoped to selected run cutoffs. Recorded prose is evidence, never tool instructions. Rationale
-is self-report, not a faithful transcript of internal reasoning. No generated text is evaluated
-as code. The local app is for trusted networks; it is not an authenticated hosted SaaS.
+is self-report, not a faithful transcript of internal reasoning. Recorded/model prose is never
+evaluated as code. Explicit versioned Wasm candidates have a separate import-free, locally
+qualified validation worker and immutable reviews; they cannot run as experiment worlds.
+See [candidate review and containment](EXTENSIONS.md). The local app is for trusted networks;
+it is not an authenticated hosted SaaS.
 Host validation defaults to localhost and loopback addresses; additional LAN/proxy hostnames
 must be explicit in `JAS_ALLOWED_HOSTS`. Mutations with a foreign browser origin are rejected.
 

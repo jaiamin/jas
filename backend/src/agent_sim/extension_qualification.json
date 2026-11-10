@@ -1,0 +1,299 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "name": "safe-transition",
+      "source": "(module (func (export \"step\") (param i32) (result i32) local.get 0 i32.const 2 i32.mul i32.const 3 i32.add))",
+      "states": [
+        -4,
+        0,
+        8
+      ],
+      "expected": [
+        "ok",
+        [
+          -5,
+          3,
+          19
+        ]
+      ],
+      "qualification": null
+    },
+    {
+      "name": "fresh-checkpoints",
+      "source": "(module (global $n (mut i32) (i32.const 0)) (func (export \"step\") (param i32) (result i32) global.get $n i32.const 1 i32.add global.set $n global.get $n))",
+      "states": [
+        0,
+        0
+      ],
+      "expected": [
+        "ok",
+        [
+          1,
+          1
+        ]
+      ],
+      "qualification": null
+    },
+    {
+      "name": "filesystem",
+      "source": "(module (import \"host\" \"read_file\" (func)) (func (export \"step\") (param i32) (result i32) i32.const 0))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "imports_denied"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "wasi-filesystem",
+      "source": "(module (import \"wasi_snapshot_preview1\" \"path_open\" (func)) (func (export \"step\") (param i32) (result i32) i32.const 0))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "imports_denied"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "data",
+      "source": "(module (import \"host\" \"query_database\" (func)) (func (export \"step\") (param i32) (result i32) i32.const 0))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "imports_denied"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "credentials",
+      "source": "(module (import \"host\" \"get_secret\" (func)) (func (export \"step\") (param i32) (result i32) i32.const 0))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "imports_denied"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "wasi-credentials",
+      "source": "(module (import \"wasi_snapshot_preview1\" \"environ_get\" (func)) (func (export \"step\") (param i32) (result i32) i32.const 0))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "imports_denied"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "network",
+      "source": "(module (import \"host\" \"http_request\" (func)) (func (export \"step\") (param i32) (result i32) i32.const 0))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "imports_denied"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "wasi-network",
+      "source": "(module (import \"wasi_snapshot_preview1\" \"sock_open\" (func)) (func (export \"step\") (param i32) (result i32) i32.const 0))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "imports_denied"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "imported-memory",
+      "source": "(module (import \"host\" \"capability\" (memory 1)) (func (export \"step\") (param i32) (result i32) i32.const 0))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "imports_denied"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "imported-table",
+      "source": "(module (import \"host\" \"capability\" (table 1 funcref)) (func (export \"step\") (param i32) (result i32) i32.const 0))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "imports_denied"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "imported-global",
+      "source": "(module (import \"host\" \"capability\" (global i32)) (func (export \"step\") (param i32) (result i32) i32.const 0))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "imports_denied"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "fuel",
+      "source": "(module (func (export \"step\") (param i32) (result i32) (loop $forever br $forever) i32.const 0))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "fuel_exhausted"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "start-fuel",
+      "source": "(module (func $start (loop $forever br $forever)) (start $start) (func (export \"step\") (param i32) (result i32) i32.const 0))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "fuel_exhausted"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "initial-memory",
+      "source": "(module (memory 17) (func (export \"step\") (param i32) (result i32) i32.const 0))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "resource_limit"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "memory-growth",
+      "source": "(module (memory 1) (func (export \"step\") (param i32) (result i32) i32.const 16 memory.grow))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "ok",
+        [
+          -1
+        ]
+      ],
+      "qualification": null
+    },
+    {
+      "name": "table-growth",
+      "source": "(module (table 1 funcref) (func (export \"step\") (param i32) (result i32) ref.null func i32.const 128 table.grow))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "ok",
+        [
+          -1
+        ]
+      ],
+      "qualification": null
+    },
+    {
+      "name": "stack",
+      "source": "(module (func $f (param i32) (result i32) local.get 0 call $f i32.const 1 i32.add) (export \"step\" (func $f)))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "stack_exhausted"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "out-of-bounds",
+      "source": "(module (memory 1) (func (export \"step\") (param i32) (result i32) i32.const 65536 i32.load))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "trap"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "invalid-module",
+      "source": "not wasm",
+      "states": [
+        0
+      ],
+      "expected": [
+        "invalid_module"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "wrong-contract",
+      "source": "(module (func (export \"step\")))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "contract"
+      ],
+      "qualification": null
+    },
+    {
+      "name": "source-size",
+      "source": "",
+      "states": [
+        0
+      ],
+      "expected": [
+        "input_limit"
+      ],
+      "qualification": null,
+      "source_bytes": 65537
+    },
+    {
+      "name": "wall-termination",
+      "source": "(module (func (export \"step\") (param i32) (result i32) local.get 0 i32.const 2 i32.mul i32.const 3 i32.add))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "timeout"
+      ],
+      "qualification": "deadline"
+    },
+    {
+      "name": "output-limit",
+      "source": "(module (func (export \"step\") (param i32) (result i32) local.get 0 i32.const 2 i32.mul i32.const 3 i32.add))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "output_limit"
+      ],
+      "qualification": "output"
+    },
+    {
+      "name": "empty-credentials",
+      "source": "(module (func (export \"step\") (param i32) (result i32) local.get 0 i32.const 2 i32.mul i32.const 3 i32.add))",
+      "states": [
+        0
+      ],
+      "expected": [
+        "ok"
+      ],
+      "qualification": "environment"
+    }
+  ]
+}

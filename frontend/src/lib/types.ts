@@ -462,3 +462,44 @@ export interface Annotation {
   note: string;
   created: string;
 }
+
+export interface ExtensionCandidate {
+  format: "jas-extension-candidate-v1";
+  name: string;
+  provenance: string;
+  source: string;
+  examples: { state: number; expected: number }[];
+}
+
+export interface ExtensionRuntime {
+  status: "unqualified" | "qualified" | "failed";
+  validation_enabled: boolean;
+  execution_enabled: false;
+  detail: string;
+  fingerprint: string | null;
+  case_sha256: string | null;
+  wasmtime_version: string | null;
+  checks: {
+    name: string;
+    passed: boolean;
+    observed: (string | number[])[];
+    cleaned: boolean;
+  }[];
+}
+
+export interface ExtensionReview {
+  format: "jas-extension-review-v1";
+  id: string;
+  created: string;
+  candidate_sha256: string;
+  candidate: ExtensionCandidate;
+  admission: "blocked" | "rejected" | "needs_world_review";
+  runnable: false;
+  runtime: ExtensionRuntime;
+  activity: {
+    stage: string;
+    status: "passed" | "blocked" | "failed";
+    detail: string;
+  }[];
+  outputs: number[];
+}
