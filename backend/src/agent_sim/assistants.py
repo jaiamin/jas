@@ -9,7 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 
 from .config import setting
-from .claim_support import AnalysisFinding, assess, capture_lens
+from .claim_support import AnalysisFinding, LensKey, assess, capture_lens
 from .db import (
     Analysis,
     Condition,
@@ -244,6 +244,7 @@ class Assistants:
         study_id: str | None = None,
         run_id: str | None = None,
         chat_id: str | None = None,
+        lens: LensKey | None = None,
     ) -> str:
         loop = asyncio.get_running_loop()
         if self.closing:
@@ -254,6 +255,8 @@ class Assistants:
             raise ValueError("Unscoped requests cannot select a study or run")
         if purpose == "analysis" and bool(study_id) == bool(run_id):
             raise ValueError("Choose exactly one run or study for analysis")
+        if lens is not None and purpose != "analysis":
+            raise ValueError("Choose recorded evidence before applying an analysis lens")
         question = question.strip()
         if not question or len(question) > 4000:
             raise ValueError("Enter a question between 1 and 4,000 characters")
@@ -273,7 +276,7 @@ class Assistants:
         key = uid()
         exposure = self.research.capture_exposure(cutoffs) if comparisons is not None else None
         index = self._evidence_index(cutoffs, comparisons, exposure, key) if comparisons is not None else None
-        lens = capture_lens(self.research, cutoffs, comparisons) if comparisons is not None else None
+        lens = capture_lens(self.research, cutoffs, comparisons, exposure, lens or "behavior") if comparisons is not None else None
         with self.db.session.begin() as session:
             chat_id = chat_id or uid()
             if session.scalar(
@@ -374,7 +377,9 @@ class Assistants:
             usage = self.models.usage_by_analysis({row.id for row in rows})
             return [self.serialize(row, usage.get(row.id)) for row in rows]
 
-    def send(self, question: str, context: str, chat_id: str | None = None) -> dict:
+    def send(
+        self, question: str, context: str, chat_id: str | None = None, lens: LensKey | None = None,
+    ) -> dict:
         if chat_id:
             self.chat(chat_id)
         if context in ("general", "new"):
@@ -385,7 +390,7 @@ class Assistants:
         else:
             raise ValueError("Choose General, New experiment, an experiment, or a run")
         chat_id = chat_id or uid()
-        key = self.start(question, purpose=purpose, chat_id=chat_id, **scope)
+        key = self.start(question, purpose=purpose, chat_id=chat_id, lens=lens, **scope)
         return {"id": key, "chat_id": chat_id}
 
     async def _execute(self, key: str) -> None:

@@ -144,6 +144,7 @@ class ChatMessage(Strict):
     question: str = Field(min_length=1, max_length=4000)
     context: str = "general"
     chat_id: str | None = None
+    lens: Literal["behavior", "communication"] | None = None
 
 
 class Note(Strict):
@@ -451,7 +452,7 @@ async def chat_events(chat_id: str, *, assistants: AssistantsDep) -> StreamingRe
 
 @router.post("/api/chats", status_code=202)
 async def send_chat(body: ChatMessage, *, assistants: AssistantsDep) -> dict:
-    return assistants.send(body.question, body.context, body.chat_id)
+    return assistants.send(body.question, body.context, body.chat_id, body.lens)
 
 
 @web_router.get("/{path:path}", include_in_schema=False)
