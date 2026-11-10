@@ -1,8 +1,9 @@
 # T18 bounded backend implementation (2026-11-10)
 
-Exact accepted ROOT target `0527e737d93786d0f5579d5a13827c472cf370fa`
-merged normally at `02bd7237`, preserving both histories; no production edits
-since. Final 43 adjudication feature cases, 37 Engine/ledger cases and six API
+Exact accepted ROOT target `670ab3ee73b025ea0695ce941d219be980819a95`
+merged normally at `5d399594`, preserving both histories. The preceding0527e737
+merged at `02bd7237`; production bytes remain unchanged since that merge.
+Final 43 adjudication feature cases, 37 Engine/ledger cases and six API
 deletion cases pass. Separately frozen current-contract qualification passes
 seven cases: five runs/22 turns/22 complete requests plus alias/privacy guards,
 all checkpoints, cutoff preservation, integer ledger and zero-call replay.
@@ -25,8 +26,12 @@ ROOT keeps setup held: revised650MiB peak plus134217728 floor requires
 entry>=815792128. Future permission covers read-only Node24.22.2/pnpm12.18.0
 and coordinated store, DISTINCT modules and own policy metadata, never the T14
 750-byte cache. No pnpm/cache/store/setup preflight has run. Exact superseding
-ROOT benchmark/docs target is `670ab3ee73b025ea0695ce941d219be980819a95`;
-normal merge follows this coherent checkpoint. Application bytes equal0527e737.
+ROOT benchmark/docs target is normally merged above after qualified checkpoint
+`d1b72f05` (normal Gitleaks pass). Post-merge Ruff/global ty/diff pass; the
+compact final source seal verifies the same373 cases' application/test sources,
+T01 current backend bytes and unrun UI blob. See
+`.tools/t18/final-backend-seal.json` and the tracked T18 report. No native runtime
+benchmark or held setup was executed.
 
 Fresh T18/#29 implementer is in `t3/t18-fallible-adjudication`, assigned checkout
 `/home/agent/.t3/worktrees/workspace/t3-9a531151`, initially clean at exact

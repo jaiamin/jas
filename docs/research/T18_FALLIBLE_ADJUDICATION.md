@@ -795,3 +795,30 @@ rejecting old DB11/library7; no compatibility aliases, migration or reset.
 Backend deterministic correctness is finite. UI01 is unrun, frontend integration
 and browser/production qualification are held, live judgment accuracy remains
 unverified, and T18/#29 remains **incomplete/unaccepted**.
+
+Qualified checkpoint `d1b72f05` committed normally: Gitleaks scanned about1.54MB
+and reported no leaks. Exact superseding ROOT
+`670ab3ee73b025ea0695ce941d219be980819a95` then merged normally, without
+conflicts, at `5d3995948ac16a710331eaee9f325d7b21a20238`; both doc histories
+are preserved. `static-types-integrated-01` passes all backend/benchmarks/
+GitHub-script Ruff (including the newly merged runtime helper), global ty,
+diff checks, exact-target ancestry and application equality to d1b72f05.
+The runtime benchmark itself was never executed here.
+
+`backend-seal-01` verifies identical production maps across the373 selected
+cases, unchanged corresponding test/conftest hashes, identical T01 CURRENT
+backend bytes and the original UI01 blob. Its immutable compact attachment
+`.tools/t18/final-backend-seal.json` is1623 bytes, SHA256
+`04739690d7603dcbc766180a9d68a316e6f6b58bdfbcd7619dca0aed2829759b`.
+It anchors manifest01 and post-merge checks without replaying unchanged cases
+or calling the retired comparator. Last seal bookend:29,024,475 logical/
+31,277,056 allocated own output bytes,650,981,376 entry/650,874,880 minimum
+shared free; lock released. The following documentation-only checkpoint adds
+its own receipt; the seal's exact source boundary remains the merged head.
+
+The released backend/static/manifest work is complete at this finite boundary.
+No frontend manager/compiler/test/browser/service, store/cache consumer,
+production or live/provider work ran. Frontend setup still needs a concrete
+ROOT release with entry>=815792128 for the revised650MiB peak; future store
+permission alone is insufficient. UI01 remains frozen/unrun and production UI
+unchanged. Ticket completion/acceptance and live judgment accuracy remain open.

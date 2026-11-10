@@ -68,7 +68,9 @@ actual-shell UI tracer is frozen/unrun (blob987d829c), with no production UI
 edit. Setup remains held; revised650MiB peak +134217728 floor requires
 entry>=815792128. Future coordinated-store permission grants no execution or
 T14 policy-cache use. Exact superseding ROOT benchmark/docs target670ab3ee
-will normally merge after this coherent checkpoint; app bytes equal0527e737.
+normally merged at5d399594 after qualified d1b72f05 (normal Gitleaks pass);
+app bytes equal0527e737 plus T18's already qualified backend. Post-merge
+Ruff/global ty/diff and the final source/case seal pass. UI01 remains unrun.
 Earlier 25 artifact,13 library/reuse
 and676 validity/instrument/actual-worker cases remain explicitly pre-merge;
 segmented final inherited results and adverse attempts are in the T18 report.
