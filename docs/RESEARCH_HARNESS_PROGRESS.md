@@ -53,14 +53,27 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ### T18 bounded backend implementation (2026-11-10)
 
-Later bounded results: 41 feature, 25 Engine, 12 ledger, 25 artifact,13
-library/reuse and676 validity/instrument/actual-worker review cases pass.
-A subsequent judge-effort-only preflight contrast observed a genuine duplicate
-condition red and passes after the narrow comparison/grid repair. Exact
-integration target is now `0527e737`; final-source backend qualification is
-released but unrun. Frozen T01 CURRENT and separately frozen5/22/22 current
-contract qualification remain separate from retired historical parity.
-No frontend/provider stage or acceptance is granted.
+Exact accepted ROOT `0527e737` merged normally at `02bd7237`; no production
+edits since. Final 43 adjudication feature and 37 Engine/ledger cases pass,
+plus all six API deletion cases. Separately frozen current-contract qualification
+passes seven cases covering five runs/22 turns/22 complete requests, privacy,
+checkpoints, cutoff preservation, integer ledger and zero-call replay. Original
+v1/v2/v3 references reproduce unchanged. Frozen T01 CURRENT actually exits1:
+four `export-v4` checks fail; all other checks/rejections pass. Its original
+runner/cases/scoring stay unchanged and every snapshot/digest uses invocation-local
+safe Git selection. No historical comparator or retired BEFORE is used.
+Final Ruff/global ty/diff pass. Receipt/JUnit membership verifies373 distinct
+final-backend cases, including31 claim-support cases in32 executions. One
+actual-shell UI tracer is frozen/unrun (blob987d829c), with no production UI
+edit. Setup remains held; revised650MiB peak +134217728 floor requires
+entry>=815792128. Future coordinated-store permission grants no execution or
+T14 policy-cache use. Exact superseding ROOT benchmark/docs target670ab3ee
+will normally merge after this coherent checkpoint; app bytes equal0527e737.
+Earlier 25 artifact,13 library/reuse
+and676 validity/instrument/actual-worker cases remain explicitly pre-merge;
+segmented final inherited results and adverse attempts are in the T18 report.
+Frontend/provider stages remain held, live accuracy unverified and T18
+incomplete/unaccepted.
 
 T18/#29 has a fresh assigned branch at exact published `a4ed8743`, with frozen
 DEVELOPMENT oracles and the frozen public-HTTP tracer in
@@ -71,7 +84,7 @@ ROOT selected explicit Sol adjudication separately from Luna. Candidate
 contracts: DB12/export13/library8/artifact2.0.0; adverse/lifecycle qualification
 continues. No actual provider/paid/held-out work. Frontend/browser/services/
 production remain held; port18131 is unopened. Published `fdfb5f7a` policy was
-read directly; its normal merge is authorized after a qualified coherent slice.
+read directly and is preserved in the exact accepted ROOT merge above.
 
 ### Final product request and historical evidence retirement (2026-11-10)
 

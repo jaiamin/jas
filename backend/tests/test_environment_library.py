@@ -39,6 +39,7 @@ def test_library_update_delete_and_corruption_are_explicit(tmp_path):
         "jas-environment-v2",
         "jas-environment-v5",
         "jas-environment-v6",
+        "jas-environment-v7",
     ]:
         content["format"] = unsupported
         path.write_text(json.dumps(content))

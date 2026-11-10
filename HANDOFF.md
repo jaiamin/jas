@@ -1,17 +1,32 @@
 # T18 bounded backend implementation (2026-11-10)
 
-Continuation: 41 feature cases, 25 Engine, 12 ledger, 25 artifact, 13
-library/reuse and 676 validity/instrument/actual-worker review cases passed
-in bounded jobs. The judge-only condition contrast then exposed a genuine
-public-preflight duplicate-arm error; its frozen test passes after treating
-adjudicator configuration independently of participant assignment. See the T18
-report for adverse attempts, lifecycle/cancellation/provenance scope and closed
-output restoration maps. Live judgment accuracy is unverified; acceptance is
-withheld. Exact required normal-merge target is now
-`0527e737d93786d0f5579d5a13827c472cf370fa`. Final-source backend qualification
-is released: unchanged T01 CURRENT with invocation-local protected/symlink-safe
-Git selection plus separately frozen full-input current-contract 5/22/22.
-Neither has run here yet; no retired BEFORE reference is used.
+Exact accepted ROOT target `0527e737d93786d0f5579d5a13827c472cf370fa`
+merged normally at `02bd7237`, preserving both histories; no production edits
+since. Final 43 adjudication feature cases, 37 Engine/ledger cases and six API
+deletion cases pass. Separately frozen current-contract qualification passes
+seven cases: five runs/22 turns/22 complete requests plus alias/privacy guards,
+all checkpoints, cutoff preservation, integer ledger and zero-call replay.
+Independent reference reproduction preserves original v1/v2/v3 bytes. The
+unchanged frozen T01 CURRENT actually exits1 with exactly four `export-v4`
+failures; its scoring logic stays unchanged. Invocation-local Git selection
+protects every nested snapshot/digest. No retired BEFORE/comparator is used.
+Final Ruff/global ty and diff checks pass. The named-receipt manifest verifies
+373 distinct final-backend cases; claim-support segments contain32 executions
+but31 distinct cases. See the T18 report for
+segmented inherited results, adapter amendments, provenance gap, all adverse
+attempts and exact closed-output restoration maps. Earlier 25 artifact, 13
+library/reuse and 676 validity/instrument/actual-worker review cases are
+explicitly pre-merge results. Live judgment accuracy remains unverified;
+T18 is incomplete/unaccepted.
+
+One shell-inclusive UI tracer is frozen/unrun at
+`frontend/src/pages/adjudication.test.tsx` (blob987d829c); no production UI edit.
+ROOT keeps setup held: revised650MiB peak plus134217728 floor requires
+entry>=815792128. Future permission covers read-only Node24.22.2/pnpm12.18.0
+and coordinated store, DISTINCT modules and own policy metadata, never the T14
+750-byte cache. No pnpm/cache/store/setup preflight has run. Exact superseding
+ROOT benchmark/docs target is `670ab3ee73b025ea0695ce941d219be980819a95`;
+normal merge follows this coherent checkpoint. Application bytes equal0527e737.
 
 Fresh T18/#29 implementer is in `t3/t18-fallible-adjudication`, assigned checkout
 `/home/agent/.t3/worktrees/workspace/t3-9a531151`, initially clean at exact
@@ -28,10 +43,8 @@ contracts are DB12/export13/library8/artifact2.0.0; no migration/reset. Static
 qualification and adverse/lifecycle coverage continue under the shared lock.
 Frontend/browser/service/production/new dependencies/publication remain held;
 port18131 is unopened.
-Read the post-retirement qualification policy directly at published
-`fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd`; normal merge is authorized after a
-qualified coherent slice and required before completion. No deleted BEFORE
-reference is used.
+The post-retirement policy was read at `fdfb5f7a` and is included in the exact
+accepted ROOT merge above. No deleted BEFORE reference is used.
 
 # Current user direction and evidence retirement (2026-11-10)
 

@@ -478,3 +478,320 @@ At this coherent pre-merge checkpoint, `static-05` (all backend/benchmarks/
 GitHub-script Ruff) and `types-04` (global ty) pass after the contrast repair;
 `git diff --check` is clean. The frozen first tracer still has its original
 blob `bdf6a6630e1af096b6dd2272829414e1eb82fb36`.
+
+## Fresh current-contract oracle freeze (before candidate outputs)
+
+The exact accepted ROOT target0527e737 merged normally without conflicts after
+coherent e14ee886 (normal Gitleaks passed). Both documentary histories remain.
+Candidate versions remain DB12/export13/library8/artifact2.0.0. The merge is
+integration, not a passing application test. `compact-02` then compressed only
+closed own SQLite outputs: retained40,443,937→6,354,804 logical bytes; observed
+added peak24,576 bytes; exact restoration maps remain with all logs/JUnit.
+
+Before any candidate matrix output, `oracle-freeze-01` generated the tracked
+literal `backend/tests/fixtures/t18-current-contract.json` using independently
+authored stdlib-only `benchmarks/t18_current_reference.py`. It imports/calls no
+JAS model, World, schema generator, provider or deleted historical reference.
+Every one of22 observations/full JSON prompts, instructions, settings, raw
+schemas, decision, events, measures, initial/each final checkpoint, state hash,
+input-evidence binding and reserved/settled integer entry is enumerated.
+Only generated event identities normalize to per-run turn/event ordinals.
+Exact input JSON order matters to the byte-bound reservation. Per-request
+100/50 tokens and35 microdollars are fixed, totaling2200/1100/770; replay0.
+Finite rules/arithmetic/RNG seeding were read from source and independently
+expressed; this is current correctness, not a retained BEFORE comparison.
+
+The four public-HTTP matrix cases preserve4 studies/5 runs/22 turns/22 requests,
+including both private/public information arms. Save/preflight spends0. Each
+run steps to1, freezes evidence/exposure, resumes, and must preserve the cutoff
+and initial/complete checkpoints. All request payload fields, typed events,
+measurements and ledger rows are checked. A restored app with provider lookup
+that fails checks all committed runs without new sends or source mutations.
+A fixed scripted policy cannot demonstrate live competence or accuracy.
+
+Unsupported T01 fixture replacement is explicit before any T01 invocation:
+its single-actor commons and unrecognized `artifact` alias still reject; their
+historical claims of missing solo/artifact capability are obsolete. The frozen
+T18 tracer and inherited solo artifact case positively cover authorized reads,
+immutable source/versioned write/submit, exact restoration and replay. A new
+current alias-rejection case separately requires HTTP422 and zero spend. The
+unchanged T01 runner/cases/scores are never rebaselined to these capabilities.
+
+`benchmarks/t18_snapshot_guard.py` supplies invocation-local Git selection to
+EVERY frozen `snapshot()` call and substitutes only the backend digest's unsafe
+recursive discovery with the same protected/symlink-safe tracked selection.
+The frozen producer itself receives only curated backend/qualification source,
+not a whole checkout. Protected `.env*`/`pbcopy` components are excluded before
+lookup/read; every selected component is lstat-checked and symlink descendants
+are excluded. Guard tests use only empty synthetic protected names, never
+configuration payloads. No original ROOT protected file is touched. The
+separate direct digest is guarded too; outer recorder filtering alone is not
+considered sufficient. No application behavior or historical score is patched.
+
+These qualification cases and the privacy guard are staged/unrun at this
+freeze. Their exact Git blobs and literal-fixture SHA are recorded in the next
+source-only receipt. Any fixture/adapter mismatch or genuine failure will be
+retained and classified before an explicitly versioned correction; no observed
+output becomes a retroactive frozen oracle. T01 actual exit/checks remain a
+separate CURRENT execution, not a historical comparator invocation.
+
+Freeze identities: reference-generator Git3f6198cccccfde0d5f7ff25b76bb3d11b556ba74;
+guard6b5d27651c1195cd2a733a5a82c63f0a852a34df;
+literal fixture Git5cfdb486f45a4425ff332b58ffa9d73ca8dbb2d7,
+445,836 bytes, SHA256
+`028dd37bf5d84758a2db95283855442e44450cbc515f27f046fc108fb102a514`.
+Original pre-output qualification-test blob20d93e3cd3c7a17f84aba8266498c69446630243
+was strengthened with a synchronous forbidden provider-lookup trap before
+candidate execution. The literal reference is unchanged.
+
+`snapshot-guard-01` failed on a synthetic repo's missing HEAD, not on selection
+or product behavior. The frozen snapshot selected/archived only allowed.py.
+However, setup had used broad `git add backend` on empty synthetic protected
+names (no configuration values/payload ever existed). This unnecessary indexing
+was removed: guard02 uses name-only Git metadata, so no Git producer can index
+those protected names. This adverse setup is retained and privately disclosed
+to ROOT; original ROOT pbcopy and real credentials were never accessed.
+`snapshot-guard-02`:2 passed/0.14s. It checks the nested frozen producer and its
+indirect digest, archive membership and exclusion before filesystem lookup.
+
+`current-matrix-01`: alias replacement passed, bargaining stopped at turn0
+because the test incorrectly expected the *raw persisted* instructions to equal
+the provider-adapted instructions including the trailing newline. The complete
+prompt already matched. Installed Pydantic AI `_instructions.py` explicitly
+strips instruction outer whitespace in `_add_instruction_text`/`_add_instruction_part`.
+This is an oracle adapter omission, not a product red. The original445,836-byte
+v1 fixture remains unchanged. An explicit v2 fixture adds only the expected
+provider-instructions string (stripped); all raw request bytes, schemas,
+reservation integers, actions/evidence/checkpoints remain unchanged. This
+source-derived amendment is frozen before the second candidate attempt; the
+adverse attempt and original oracle are retained, never silently rebaselined.
+
+Current matrix v2 SHA256 is
+`c23eaf493b3b9ffcc377d9a274b8533abfaa51c07544ee48fa12ebd6ba38ecef`.
+`current-matrix-02` bargaining passes; `current-matrix-03` remaining3 cases
+(including both information arms) passes. Together4 cases cover5 runs/22 turns/
+22 complete stored request payloads, per-request integer reserves/settles,
+all observations/actions/events/measures/checkpoints and zero-call restored
+replay. The alias replacement passed in the retained first attempt. A later
+strengthening, declared before its next execution, additionally requires the
+actual FunctionModel tool schema to equal the already frozen raw schema. It
+changes no expectation or application behavior. The reference generator now
+contains the explicit v2 envelope transformation for reproducibility; v1/v2
+literal files stay byte-for-byte unchanged.
+
+`t01-current-01` executes the unchanged runner/cases on current backend source
+under invocation-local safe selection: actual exit1; exactly four failed checks,
+each `export-v4`, with their original failed flags/check-failure stops. All
+other checks pass; both schema-rejection fixtures pass with zero requests.
+Source unchanged=true;22 requests/2200 input/1100 output tokens/770 synthetic
+microdollars, actual live requests0. The failure is retained, not called green.
+Runner SHA256b6438d9fa3390d05f4f3c5583aa1e0e6f2095d1db653060257cdc817138a5826;
+suite SHA2566e4f138cf31d32b8a5e28e348edbccc2e9b1308b62f8b274d39cf0f24ba33a6e.
+No original score bytes changed and no historical comparator was invoked.
+
+The first standalone unit wrapper lacked checkout sys.path and failed import
+before collection (`inherited-baseline-unit-01`), not a product red. After
+explicitly selecting this checkout, units02/03 pass one each, including retained
+provider failure/unknown usage/no retry. Pytest warns that pre-imported anyio
+cannot be assertion-rewritten; this does not alter the frozen test. The third
+snapshot-producing unit remains queued, always inside the same guard.
+
+`static-06` found only two overlong reference-generator lines; global `types-05`
+passes. The attempted formatter label `format-02` already existed, so the
+recorder refused before acquiring a lock or executing a command. No prior
+attempt was overwritten. A unique format-current label records the real job.
+
+`current-matrix-schema-01` retained a second adapter mismatch: raw ledger schema
+has property titles; Pydantic AI `tools.GenerateToolJsonSchema` explicitly removes
+property titles in `_named_required_fields_schema`. The unchanged complete
+stored schema assertions already passed; no World/application failure occurred.
+The v3 source-derived envelope preserves v1/v2 and adds the literal actual tool
+schema/name/description/strict setting. Only property titles are removed; no
+constraint, legal action, ACL, observation, raw request or reservation changes.
+This v3 is frozen before further actual-tool-schema qualification. It now also
+checks no unrelated function tools/text-output channel are exposed.
+
+Sequencing disclosure: while oracle-amendment-03 waited for shared flock, the
+next shell prematurely tried to stage/hash the not-yet-created v3 file. Those
+commands failed. The first schema02 test was queued too early. Receipts prove
+that the independent generator completed/released at1794334604.8643062 and the
+candidate job acquired at1794334604.864339; schema02 passed. However, that first
+schema02 source list lacks the untracked v3 fixture's pre-run hash. This is a
+provenance gap, not retroactive source-frozen qualification. Preserve it. The
+v3 file is now explicitly staged/hashed before the new full matrix invocation;
+that forthcoming invocation supplies final qualification. No concurrent command
+wrote its bytes, and no application production edit was made.
+
+A source review found a coverage gap, not an observed product defect: the new
+scope/configuration had not independently exercised reusable-library deletion
+and later study-revision edits. Before its execution, new F07 freezes this:
+extract/save mechanics without model identity; automatic reuse lacking a judge
+must422/spend0; explicit reuse retains Sol/low/512. Change the library desk to
+north, delete revision2, then change the study's current judge effort to high.
+The original run must retain its v1 west/17 source, low configuration and two
+participant+one judge requests330 microdollars; export keeps both immutable
+revisions and original source; replay2 turns with0 requests. No production
+repair is proposed ahead of observing this preservation case.
+
+## Next UI source-only freeze; setup and execution held
+
+ROOT permits source preparation of exactly one first shell-inclusive UI tracer,
+`frontend/src/pages/adjudication.test.tsx`, before any frontend output. It uses
+the real WorkspaceProvider/WorkspaceShell, Study and Run pages with literal
+HTTP response fixtures; it supplements, never replaces, the real public-HTTP
+backend seam. No product UI edit precedes its separately released observed red.
+The shell is essential: ROOT withdrew an earlier navigation defect claim after
+the isolated fixtures had omitted that existing remount boundary.
+
+UI01 starts at the existing experiment review, opens its stock scope disclosure,
+and requires an accessible Fallible adjudication region before Run. Frozen
+values: pickup_note_actionability1.0.0; report.guidance; pickup version1 fields
+desk/closes_at; adjudicator1.0.0 openai:gpt-6.1-sol, low,512 tokens; participant
+openai:gpt-6-luna remains separate; one judge request per submission attempt;
+$2.00/million input and $10.00/million output tokens. The reviewer must see
+fallibility, allowed inputs, private-fact/response/belief limits and the sole
+terminal-submission-status consequence before the first POST.
+
+After that explicit Run action, existing Runs navigation opens turn2 evidence.
+The recorded fallible judgment and enforced consequence must have separately
+named regions. The literal judge accepts while its explanation claims
+"The book is guaranteed to be held tomorrow." Its exact asserted source facts
+remain west/17; World permits only submission success with hard_facts_passed.
+That unsupported explanation remains visibly raw/fallible and cannot appear as
+an enforced availability or participant response. Recorded request identity,
+Sol model,41/19 tokens and272 microdollars (currency display may round to
+$0.0003) stay with judge work. Two Luna calls101/37 tokens and29 microdollars
+each stay participant work; total330 microdollars. This known erroneous rubric
+acceptance is deliberate fallibility coverage, not measured semantic accuracy.
+
+ROOT superseded the earlier512MiB setup proposal; no pnpm/preflight was invoked.
+Future ONE metadata-enabled normal install would use read-only
+`/home/agent/.local/bin/node`24.22.2 and
+`/home/agent/.local/bin/pnpm`12.18.0 with owner-authorized coordinated
+`/home/agent/.local/share/pnpm/store`, DISTINCT frontend/node_modules and own
+`.tools/t18/pnpm-cache` policy metadata. Required flags are `--frozen-store
+--frozen-lockfile --package-import-method=hardlink`; the known private-metadata
+offline miss is not retried. No T14750-byte cache/other owner metadata access,
+manual copies/links, downloads, cache maintenance or policy bypass.
+
+Evidence-based future forecast: modules about373MB logical/426MB inode-allocated
+(largely shared hardlinks), private metadata about176.8MB; observed sibling net
+new198.5MB is shared/unreserved, not a private physical bound. Conservative
+incremental peak650MiB=681574400 plus ordinary floor134217728 requires
+entry>=815792128 under shared checks.lock. Setup log/receipt<=1MiB; stop on
+missing metadata, failed preflight or output/peak/floor breach. ROOT's observed
+714739712 free is below entry. Permission for the future store is not execution
+release: setup, frontend checks, service/browser18131, production and all live/
+provider/paid/held-out work remain held. No setup preflight or store read yet.
+
+UI01 frozen Git blob is `987d829cf685faaa1b84656c466ca6945184c80a`.
+`ui-source-freeze-01` records protected/symlink-safe source identities and a
+clean diff check only. It invokes no frontend runtime, compiler, test, formatter,
+manager or cache consumer. Its future expected failure is missing product
+declaration/ruling presentation after the real shell successfully loads, not
+fixture/resize/router/setup failure. It is not observed red or qualification.
+
+## Final released backend boundary (2026-11-10)
+
+Candidate application bytes have not changed since normal exact ROOT merge
+`02bd7237413970d68663a909497d4d87408dbe0f`. No provisional sibling was merged.
+ROOT's superseding target `670ab3ee73b025ea0695ce941d219be980819a95` adds the
+bounded native-HTTP benchmark and documentation, with no application changes
+from0527e737. Its normal merge follows the coherent qualified checkpoint.
+No container/service/browser/native benchmark or provider work is released here.
+
+The source-frozen full v3 matrix subsequently ran as
+`current-matrix-final-01`:7 passed/1.12s, including the four family cases
+(five runs/22 turns/22 requests), alias rejection and both snapshot guards.
+This is the new qualification after the disclosed schema02 pre-run source-gap;
+schema02 remains unqualified for that claim. V3 literal SHA256 is
+`0d359265e94d528083a061034e2b3d67760380f4eace3c1228724388995db77c`,
+Git blob `67c416815dcaf9f735fd52e478a9307ea3e6d666`. Original v1/v2 files remain.
+`references-final-02` regenerates all three independently and checks exact
+bytes/hashes, original frozen T01 runner/cases/scoring equality to a4ed8743,
+unchanged first-tracer blob and exact accepted ancestry. No candidate output
+is used to regenerate any oracle.
+
+F07's first `judge-pins-01` got405 because the fixture used nonexistent PUT
+study; this is a fixture failure, not product red. Correct POST `/revisions`
+passes in `judge-pins-02` and again within `feature-final-02`:
+**43 passed/6.48s**. The first tracer remains original bdf6a663 bytes. Actual
+restart, capacity/pause/settlement, budget ceilings, unknown usage/primary error,
+hard-fact/ACL/input scope, disagreement and replay/provenance cases stay intact.
+The earlier `feature-final-01`42-case pass remains attributed to its older
+test membership, not relabeled43.
+
+Closed `.tools/t18/backend-qualification-01.json` independently joins named
+receipts and JUnit membership: **373 distinct final-backend cases pass** with
+identical backend production source maps in all selected jobs. It retains
+exact case IDs, source identities, receipt/JUnit hashes, floor/peak/output
+bookends and every nonpass status. Group membership is:
+
+| Group | Distinct cases |
+| --- | ---: |
+| T18 adjudication | 43 |
+| Fresh current contract, alias and snapshot privacy | 7 |
+| Engine and ledger | 37 |
+| Artifact lifecycle | 3 |
+| Participant harnesses | 36 |
+| Exposure | 21 |
+| Claim support | 31 |
+| Domain/DB/library contracts | 18 |
+| Reference policies | 24 |
+| Researcher design | 8 |
+| Uncertainty | 10 |
+| Reliance commitments | 51 |
+| Reliance integration | 41 |
+| Public API, including all six deletion cases | 40 |
+| Guarded snapshot-producing T01 units | 3 |
+
+Claim segments execute32 cases with one duplicate; the manifest deduplicates
+31. Earlier25 artifact,13 library/reuse and676 validity/instrument/real-worker
+results are pre-merge checks; they are not added to this final-source total.
+The final three T01 units pass under invocation-local safe selection; the
+pre-imported-anyio assertion-rewrite warning remains retained. No comparator
+requiring deleted BEFORE was run; its synthetic unit is not a replacement for
+retired historical evidence.
+
+`t01-current-final-01` again runs the unchanged T01 CURRENT: actual exit1,
+exactly four failed `export-v4` checks with original false flags and
+check-failure stops. All other checks and both rejection fixtures pass;
+98 HTTP operations,22 scripted requests/2200 input/1100 output tokens,
+770 synthetic microdollars, source_unchanged=true, live0. Report SHA256 is
+`722830b2d134199256d38a4f9cc68c812c59b8c1a9059c8344469c389bae5610`.
+The prior T01 CURRENT attempt and its failure flags remain. The later generator
+source-line split changes no generated fixture bytes or application bytes;
+references-final-02 proves all three literal identities unchanged. No historical
+zero-regression/improvement or raw retained-reference claim follows.
+
+Adverse resource attempts remain explicit: `inherited-claims-01`,
+`inherited-uncertainty-01` and `inherited-api-02` refused their retained-output
+forecasts before testing. `inherited-claims-02` exceeded its16MiB output grant
+and was terminated with SIGTERM/exit-15 at roughly16.9MB; that job is
+unqualified. Smaller explicit claim segments pass, preserving the over-limit
+attempt and all its closed material. Static06 and static-types-final-01 found
+overlong reference-generator source strings; the latter stopped before ty.
+After a source-only string split, `static-types-final-02` passes whole backend/
+benchmarks/GitHub-script Ruff, global ty and diff checks. Formatting is not
+product red→green. A patch-context mismatch during documentation update made
+no edits; the corrected patch preserved both documentary histories.
+
+All actual jobs release shared checks.lock. Compact03..07 touch only CLOSED
+own SQLite outputs, verify gzip round trips and retain exact per-file
+restoration maps before removing originals. Compact07 added observed49,152
+bytes (grant8MiB) and reduced retained49,173,115→25,791,570 logical bytes.
+Manifest01 ends with28,845,267 logical/31,068,160 allocated retained bytes,
+entry658,612,224/minimum658,391,040 free; own environment remains180,513,935
+logical/201,515,008 allocated/7573 files. These are shared/unreserved
+bookends, not a future allocation. Every ordinary floor/peak is preserved;
+the over-limit output attempt above is not concealed by compaction. The former
+ce06dfef recorder is retained as own explicit source file before adding safe
+UI source selection and pinning the superseding integration target.
+
+The first private status steer was rejected because ROOT had no running turn;
+normal auto delivery then succeeded. It grants no extra execution. Current
+contract candidates remain DB12/export13/library8/artifact2.0.0, explicitly
+rejecting old DB11/library7; no compatibility aliases, migration or reset.
+Backend deterministic correctness is finite. UI01 is unrun, frontend integration
+and browser/production qualification are held, live judgment accuracy remains
+unverified, and T18/#29 remains **incomplete/unaccepted**.

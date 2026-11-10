@@ -14,7 +14,7 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 from sqlalchemy import select, text
-from test_fallible_adjudication import GUIDANCE, RULING, finished, protocol
+from test_fallible_adjudication import ADJUDICATOR, GUIDANCE, INPUTS, RULING, finished, protocol
 
 
 def response(info, value, *, judge=False):
@@ -108,6 +108,78 @@ def test_contradictory_accept_is_recorded_but_cannot_change_facts_or_settle(tmp_
         assert verified.json()["verified_rejections"] == 1
         assert verified.json()["model_requests"] == 0
         assert len(author) == 2 and len(judge) == 1
+
+
+def test_judgment_scope_and_configuration_remain_pinned_after_library_and_revision_edits(tmp_path):
+    with workflow(tmp_path) as (_, client, _, _, author, judge):
+        extracted = client.post("/api/design/environment", json={"design": protocol()})
+        assert extracted.status_code == 200, extracted.text
+        definition = extracted.json()
+        assert "adjudicator" not in json.dumps(definition)
+        saved = client.post("/api/environments", json={"definition": definition})
+        assert saved.status_code == 201, saved.text
+        source = saved.json()
+        example = source["definition"]["examples"][0]
+        # Reusable mechanics never invent an implicit spending identity.
+        missing = client.post(
+            "/api/design/use-environment",
+            json={
+                "source": source,
+                "example": example["key"],
+                "bindings": {},
+            },
+        )
+        assert missing.status_code == 422
+        assert "Declare the adjudicator" in missing.text
+        reused = client.post(
+            "/api/design/use-environment",
+            json={
+                "design": protocol(),
+                "source": source,
+                "example": example["key"],
+                "bindings": {example["roles"][0]: "author"},
+            },
+        )
+        assert reused.status_code == 200, reused.text
+        value = reused.json()
+        assert value["conditions"][0]["adjudicator"] == ADJUDICATOR
+        created = client.post("/api/studies", json={"design": value})
+        assert created.status_code == 201, created.text
+        sid = created.json()["id"]
+        rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+        changed = copy.deepcopy(definition)
+        changed["examples"][0]["parameters"]["artifacts"]["objects"][0]["content"]["desk"] = "north"
+        updated = client.put(
+            f"/api/environments/{source['id']}",
+            json={
+                "definition": changed,
+                "revision": 1,
+            },
+        )
+        assert updated.status_code == 200, updated.text
+        assert client.delete(f"/api/environments/{source['id']}?revision=2").status_code == 200
+        later = copy.deepcopy(value)
+        later["conditions"][0]["adjudicator"]["openai_reasoning_effort"] = "high"
+        revised = client.post(f"/api/studies/{sid}/revisions", json={"design": later})
+        assert revised.status_code == 201, revised.text
+        assert client.get("/api/settings").json()["usage"]["requests"] == 0
+        assert author == judge == []
+        result = start(client, rid)
+        assert result["summary"]["status"] == "complete", result["summary"]
+        assert result["state"]["outcome"]["status"] == "success"
+        assert result["design"] == value
+        assert judge == [INPUTS] and len(author) == 2
+        assert result["summary"]["usage"]["cost_usd"] == 0.000330
+        assert result["state"]["adjudications"][0]["adjudicator"] == ADJUDICATOR
+        exported = client.get(f"/api/studies/{sid}/export").json()
+        assert exported["revisions"][0]["design"] == value
+        assert exported["revisions"][1]["design"] == later
+        assert exported["revisions"][0]["design"]["environment_source"] == source
+        verified = client.post(f"/api/runs/{rid}/verify")
+        assert verified.status_code == 200, verified.text
+        assert verified.json()["verified_turns"] == 2
+        assert verified.json()["model_requests"] == 0
+        assert judge == [INPUTS] and len(author) == 2
 
 
 def test_pause_before_judgment_holds_the_decision_and_resume_does_not_resample(tmp_path):
