@@ -5,6 +5,7 @@ import os
 import signal
 import subprocess
 import sys
+from contextlib import suppress
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -46,7 +47,9 @@ def execute(source: str, states: list[int], *, qualification: str | None = None)
         finally:
             if process is not None:
                 if process.poll() is None:
-                    os.killpg(process.pid, signal.SIGKILL)
+                    # A worker can exit between the poll and the group signal.
+                    with suppress(ProcessLookupError):
+                        os.killpg(process.pid, signal.SIGKILL)
                 process.communicate()
                 result["reaped"] = process.returncode is not None
     result["cleaned"] = not Path(scratch).exists() and result.get("reaped", True)

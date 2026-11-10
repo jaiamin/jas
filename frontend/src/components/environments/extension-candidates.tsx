@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Alert, Empty } from "@/components/feedback";
 import { ErrorState } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -88,6 +88,7 @@ export function ExtensionCandidates({
   selectedId: string | null;
 }) {
   const client = useQueryClient();
+  const navigate = useNavigate();
   const runtime = useApi<ExtensionRuntime>("/extensions/runtime");
   const history = useApi<ExtensionReview[]>("/extensions/reviews");
   const [initial] = useState(() => {
@@ -109,7 +110,14 @@ export function ExtensionCandidates({
   const validate = useMutation({
     mutationFn: (candidate: unknown) =>
       api<ExtensionReview>("/extensions/validate", candidate),
-    onSuccess: () => {
+    onSuccess: (result) => {
+      client.setQueryData<ExtensionReview[]>(
+        ["/extensions/reviews"],
+        (records) => [
+          result,
+          ...(records ?? []).filter((record) => record.id !== result.id),
+        ],
+      );
       void client.invalidateQueries({ queryKey: ["/extensions/reviews"] });
       void client.invalidateQueries({ queryKey: ["/extensions/runtime"] });
     },
@@ -200,7 +208,15 @@ export function ExtensionCandidates({
           try {
             const candidate: unknown = JSON.parse(text);
             setError("");
-            validate.mutate(candidate);
+            const submittedURL = window.location.href;
+            validate.mutate(candidate, {
+              onSuccess: (result) => {
+                if (window.location.href !== submittedURL) return;
+                const params = new URLSearchParams(window.location.search);
+                params.set("review", result.id);
+                void navigate({ search: `?${params}` }, { replace: true });
+              },
+            });
           } catch {
             setError(
               "Candidate specification must be valid JSON. Your draft is retained.",
