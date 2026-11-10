@@ -54,11 +54,19 @@ class Checkpoint(TypedDict):
     round: int
     position: int
     done: bool
-    balances: dict[str, float]
+    balances: NotRequired[dict[str, float]]
     history: list[dict[str, Any]]
     notes: dict[str, str]
     experiences: dict[str, list[dict[str, Any]]]
-    signals: dict[str, int]
+    signals: NotRequired[dict[str, int]]
+
+
+class ArtifactCheckpoint(Checkpoint):
+    artifacts: dict[str, dict[str, Any]]
+    writes_remaining: int
+    last_results: dict[str, dict[str, Any]]
+    artifact_history: list[dict[str, Any]]
+    outcome: dict[str, Any] | None
 
 
 class CommonsCheckpoint(Checkpoint):
@@ -117,9 +125,9 @@ class Observation(TypedDict):
     rules: str
     context: str
     participants: list[dict[str, str]]
-    your_balance: float
-    your_private_signal: int
-    public_signals: dict[str, int]
+    your_balance: NotRequired[float]
+    your_private_signal: NotRequired[int]
+    public_signals: NotRequired[dict[str, int]]
     public_history: list[dict[str, Any]]
     your_experiences: list[dict[str, Any]]
     your_note: str
@@ -141,3 +149,8 @@ class Observation(TypedDict):
     choices: NotRequired[dict[str, int]]
     stock: NotRequired[float]
     resources: NotRequired[list[dict[str, Any]]]
+    artifacts: NotRequired[list[dict[str, Any]]]
+    artifact_requirements: NotRequired[list[dict[str, Any]]]
+    writes_remaining: NotRequired[int]
+    last_result: NotRequired[dict[str, Any] | None]
+    artifact_history: NotRequired[list[dict[str, Any]]]

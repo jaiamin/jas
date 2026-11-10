@@ -1,6 +1,14 @@
 from typing import Annotated, Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    StrictInt,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 
 ModelId = Annotated[str, Field(pattern=r"^(openai|anthropic):[a-zA-Z0-9._/-]+$")]
 EnvironmentId = Literal[
@@ -12,6 +20,7 @@ EnvironmentId = Literal[
     "information",
     "renewable_resource",
     "composed",
+    "artifact_workspace",
 ]
 
 
@@ -136,6 +145,61 @@ class CompositionRules(Strict):
         return self
 
 
+ArtifactKey = Annotated[str, Field(pattern=r"^[a-z][a-z0-9_-]{0,31}$")]
+ArtifactContent = Annotated[
+    dict[ArtifactKey, Annotated[str, Field(max_length=1000)] | StrictInt],
+    Field(min_length=1, max_length=12),
+]
+
+
+class ArtifactObject(Strict):
+    key: ArtifactKey
+    name: str = Field(min_length=1, max_length=100)
+    owner: ArtifactKey | None = None
+    readers: list[ArtifactKey] = Field(default_factory=list, max_length=12)
+    writers: list[ArtifactKey] = Field(default_factory=list, max_length=12)
+    content: ArtifactContent
+
+    @model_validator(mode="after")
+    def valid_access(self) -> Self:
+        if len(set(self.readers)) != len(self.readers) or len(set(self.writers)) != len(
+            self.writers
+        ):
+            raise ValueError("Artifact access lists must be unique")
+        if not set(self.writers) <= set(self.readers) | {self.owner}:
+            raise ValueError("Artifact writers must also have read access")
+        return self
+
+
+class ArtifactRequirement(Strict):
+    artifact: ArtifactKey
+    field: ArtifactKey
+    source: ArtifactKey
+    source_field: ArtifactKey
+
+
+class ArtifactRules(Strict):
+    objects: list[ArtifactObject] = Field(min_length=2, max_length=12)
+    requirements: list[ArtifactRequirement] = Field(min_length=1, max_length=12)
+    write_limit: int = Field(default=4, ge=1, le=100)
+
+    @model_validator(mode="after")
+    def valid_requirements(self) -> Self:
+        objects = {obj.key: obj for obj in self.objects}
+        if len(objects) != len(self.objects):
+            raise ValueError("Artifact keys must be unique")
+        fields = [(r.artifact, r.field) for r in self.requirements]
+        if len(set(fields)) != len(fields):
+            raise ValueError("Artifact requirements must use distinct output fields")
+        for requirement in self.requirements:
+            target, source = objects.get(requirement.artifact), objects.get(requirement.source)
+            if target is None or source is None or requirement.source_field not in source.content:
+                raise ValueError("Artifact requirements need existing objects and source fields")
+            if source.owner is not None or source.writers or not (target.owner or target.writers):
+                raise ValueError("Requirements need immutable evidence and writable work")
+        return self
+
+
 class MechanicsParameters(Strict):
     endowment: int = Field(
         default=10,
@@ -175,6 +239,7 @@ class MechanicsParameters(Strict):
     information: InformationRules = Field(default_factory=InformationRules)
     resource: ResourceRules = Field(default_factory=ResourceRules)
     composition: CompositionRules | None = None
+    artifacts: ArtifactRules | None = None
     resource_schedule: list[ResourceChange] = Field(default_factory=list, max_length=12)
 
 
@@ -187,7 +252,7 @@ class Parameters(MechanicsParameters):
     )
 
 
-ParticipantTool = Literal["observe", "rules", "legal_options"]
+ParticipantTool = Literal["observe", "rules", "legal_options", "read_artifact"]
 
 
 class DirectActionHarness(Strict):
@@ -204,7 +269,7 @@ class ToolUsingHarness(Strict):
     max_requests: int = Field(default=4, ge=1, le=8)
     max_tool_operations: int = Field(default=3, ge=0, le=12)
     tools: list[ParticipantTool] = Field(
-        default=["observe", "rules", "legal_options"], max_length=3
+        default=["observe", "rules", "legal_options"], max_length=4
     )
 
     @model_validator(mode="after")
@@ -262,7 +327,7 @@ class EnvironmentMechanics(Strict):
 
 
 class SavedEnvironment(Strict):
-    format: Literal["jas-environment-v3"] = "jas-environment-v3"
+    format: Literal["jas-environment-v4"] = "jas-environment-v4"
     id: str
     revision: int = Field(ge=1)
     updated: str
@@ -283,7 +348,7 @@ class DesignSpec(Strict):
     environment: EnvironmentId = "commons"
     environment_source: SavedEnvironment | None = None
     context: str = Field(default="", max_length=4000)
-    profiles: list[Profile] = Field(min_length=2, max_length=12)
+    profiles: list[Profile] = Field(min_length=1, max_length=12)
     tasks: list[TaskDefinition] = Field(default_factory=list, max_length=30)
     conditions: list[Treatment] = Field(min_length=1, max_length=6)
     seeds: list[Annotated[int, Field(ge=0, le=2**32 - 1)]] = Field(min_length=1, max_length=20)
@@ -300,6 +365,17 @@ class DesignSpec(Strict):
         "belong in hypothesis, not in this list; they are analysis plans, not engine metrics.",
     )
 
+    @field_validator("profiles")
+    @classmethod
+    def world_population(cls, profiles: list[Profile], info: ValidationInfo) -> list[Profile]:
+        if (
+            info.data.get("environment")
+            in {"commons", "trust_exchange", "institution", "bargaining"}
+            and len(profiles) < 2
+        ):
+            raise ValueError("This environment requires at least two participants")
+        return profiles
+
 
 class Design(DesignSpec):
     @model_validator(mode="after")
@@ -312,6 +388,24 @@ class Design(DesignSpec):
             if len(set(values)) != len(values):
                 raise ValueError(f"{label} identifiers must be unique")
         for condition in self.conditions:
+            artifacts = condition.parameters.artifacts
+            if self.environment == "artifact_workspace":
+                if artifacts is None:
+                    raise ValueError("Artifact workspace requires explicit artifact mechanics")
+                references = {
+                    key
+                    for obj in artifacts.objects
+                    for key in [*obj.readers, *obj.writers, *([obj.owner] if obj.owner else [])]
+                }
+                if not references <= {p.key for p in self.profiles}:
+                    raise ValueError("Artifact permissions must name existing participants")
+            elif artifacts is not None:
+                raise ValueError("Artifact mechanics require the artifact workspace")
+            if (
+                self.environment != "artifact_workspace"
+                and "read_artifact" in condition.harness.tools
+            ):
+                raise ValueError("Artifact read tools require the artifact workspace")
             composition = condition.parameters.composition
             if self.environment == "composed":
                 if composition is None:
@@ -400,8 +494,46 @@ class Action(Strict):
     promise: int | None = Field(ge=0, le=100)
 
 
+class ArtifactReference(Strict):
+    artifact: ArtifactKey
+    version: int = Field(ge=1, le=1201)
+
+
+class ReadArtifact(Strict):
+    kind: Literal["read_artifact"]
+    artifact: ArtifactKey
+    version: int | None = Field(default=None, ge=1, le=1201)
+
+
+class WriteArtifact(Strict):
+    kind: Literal["write_artifact"]
+    artifact: ArtifactKey
+    expected_version: int = Field(ge=1, le=1201)
+    content: ArtifactContent
+    sources: list[ArtifactReference] = Field(max_length=12)
+
+
+class CheckArtifacts(Strict):
+    kind: Literal["check_artifacts"]
+
+
+class SubmitArtifacts(Strict):
+    kind: Literal["submit_artifacts"]
+
+
+class StopArtifact(Strict):
+    kind: Literal["stop"]
+
+
+ArtifactAction = Annotated[
+    ReadArtifact | WriteArtifact | CheckArtifacts | SubmitArtifacts | StopArtifact,
+    Field(discriminator="kind"),
+]
+ActionRequest = Action | ArtifactAction
+
+
 class Decision(Strict):
-    action: Action
+    action: ActionRequest
     rationale: str = Field(max_length=1000)
     memory: str = Field(max_length=2000)
     forecast: float | None = Field(ge=0, le=1)

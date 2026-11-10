@@ -20,6 +20,8 @@ export interface AgentSuggestion {
 }
 
 const evidenceQuestions: Record<EnvironmentId, string> = {
+  artifact_workspace:
+    "Inspect authorized evidence, edit versioned work and decide when to submit or stop.",
   composed:
     "Trace resource allocations, consumption and unmet needs. Separate stock visibility " +
     "from allocation visibility and inferred information; compare enforced utility with private goals.",

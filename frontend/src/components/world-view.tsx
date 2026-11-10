@@ -180,7 +180,7 @@ export function WorldView({
                     : "—"}
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
-                  {state.balances[profile.key]?.toFixed(1)}
+                  {state.balances?.[profile.key]?.toFixed(1)}
                 </TableCell>
               </TableRow>
             ))}
@@ -226,7 +226,7 @@ function AgentBalances({
         >
           {profile.name}
           <span className="tabular-nums">
-            {state.balances[profile.key]?.toFixed(1)} credits
+            {state.balances?.[profile.key]?.toFixed(1)} credits
           </span>
         </Button>
       ))}

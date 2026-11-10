@@ -1,4 +1,7 @@
 from .domain import (
+    ArtifactObject,
+    ArtifactRequirement,
+    ArtifactRules,
     BargainingRules,
     CompositionRules,
     Design,
@@ -262,6 +265,68 @@ def composed_template() -> Design:
     )
 
 
+def artifact_template() -> Design:
+    return Design(
+        title="Evidence before submission",
+        question="How does one participant inspect evidence and revise work before submitting?",
+        environment="artifact_workspace",
+        profiles=[
+            Profile(
+                key="investigator",
+                name="Investigator",
+                goal="Produce a source-backed report, or stop if you choose.",
+            )
+        ],
+        seeds=[7],
+        rounds=8,
+        openai_reasoning_effort="low",
+        conditions=[
+            Treatment(
+                key="baseline",
+                name="Baseline",
+                parameters=Parameters(
+                    artifacts=ArtifactRules(
+                        write_limit=3,
+                        objects=[
+                            ArtifactObject(
+                                key="measurement",
+                                name="Measurement",
+                                readers=["investigator"],
+                                content={"reading": 17},
+                            ),
+                            ArtifactObject(
+                                key="report",
+                                name="Report",
+                                owner="investigator",
+                                content={"reading": 0},
+                            ),
+                            ArtifactObject(
+                                key="sealed", name="Sealed calibration", content={"reading": 91}
+                            ),
+                        ],
+                        requirements=[
+                            ArtifactRequirement(
+                                artifact="report",
+                                field="reading",
+                                source="measurement",
+                                source_field="reading",
+                            )
+                        ],
+                    ),
+                ),
+            )
+        ],
+        measures=["artifact_success"],
+        limitations=[
+            "Deterministic structured content/source checks, not semantic judgment "
+            "or evidence of intelligence.",
+            "Sequential access with fixed ACLs; no collaborative phases or model adjudication.",
+            "A citation validates source identity/version; actual reading is established "
+            "only by recorded operations.",
+        ],
+    )
+
+
 def templates() -> list[dict[str, object]]:
     examples = [
         commons_template(),
@@ -272,5 +337,6 @@ def templates() -> list[dict[str, object]]:
         information_template(),
         renewable_resource_template(),
         composed_template(),
+        artifact_template(),
     ]
     return [{"id": design.environment, "design": design.model_dump()} for design in examples]

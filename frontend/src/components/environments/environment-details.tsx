@@ -21,6 +21,12 @@ import type { Environment, EnvironmentId } from "@/lib/types";
 
 const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
   {
+    artifact_workspace: {
+      observes:
+        "Permitted document identities, versions, write allowance and actual read/check results. Contents require an authorized read; private sources stay scoped to their readers.",
+      enforces:
+        "Fixed access rules, immutable evidence, versioned work, atomic version conflicts and a finite write allowance. Submit checks content and source versions; stop or horizon ends unsuccessfully.",
+    },
     composed: {
       observes:
         "Own inventory, needs and utility. Stock and other inventories follow the selected visibility rules; controllers know the stocks they allocate.",

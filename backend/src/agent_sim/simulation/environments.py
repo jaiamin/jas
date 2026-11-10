@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import cast
 
 from ..domain import Action, Decision, Design, Event, Measure, Parameters
+from .artifacts import ArtifactWorkspace
 from .checkpoints import (
     ActionPayload,
     CommonsCheckpoint,
@@ -28,6 +29,8 @@ class Commons(World[CommonsCheckpoint]):
         self.state["pending"] = {}
 
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        if not isinstance(decision.action, Action):
+            raise ValueError("Expected a controlled-world action")
         endowment = self.parameters.endowment
         forecasts = self.state.setdefault("forecasts", {})
         forecasts[actor] = decision.forecast
@@ -164,6 +167,8 @@ class TrustExchange(World[TrustCheckpoint]):
         return {**self.common_state(), "promises": {}, "escrow": {}, "relations": {}}
 
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        if not isinstance(decision.action, Action):
+            raise ValueError("Expected a controlled-world action")
         forecasts = self.state.setdefault("forecasts", {})
         events, measures = self.apply(actor, decision.action)
         transfer = next(e for e in events if e.kind == "transfer")
@@ -312,6 +317,8 @@ class Coordination(World[CoordinationCheckpoint]):
     decision_rules = DecisionRules(allow_forecast=True)
 
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        if not isinstance(decision.action, Action):
+            raise ValueError("Expected a controlled-world action")
         forecasts = self.state.setdefault("forecasts", {})
         prior_coordination = forecasts.get("next_completion")
         events, measures = self.apply(actor, decision.action)
@@ -466,6 +473,9 @@ class EnvironmentDefinition:
 
 
 MEASURE_DESCRIPTIONS = {
+    "artifact_success": "One terminal binary outcome: submitted work satisfies all executable "
+    "content and source-version requirements. Stop or exhausted horizon is unsuccessful; "
+    "this is task mechanics, not a judgment of intelligence.",
     "unmet_need_rate": "Unconsumed required units / total required units at each round settlement; "
     "not a psychological measure. Inspect resource-specific consumption events.",
     "retention_rate": "Controller allocation received personally / actual stock allocated; "
@@ -511,6 +521,15 @@ MEASURE_DESCRIPTIONS = {
 
 
 CATALOG = {
+    "artifact_workspace": EnvironmentDefinition(
+        "artifact_workspace",
+        "Artifact investigation",
+        "Authorized evidence, persistent versioned work, bounded writes and explicit submission.",
+        ArtifactWorkspace,
+        "artifact_success",
+        ("artifacts", "memory"),
+        ("artifact_success",),
+    ),
     "composed": EnvironmentDefinition(
         "composed",
         "Custom resource economy",

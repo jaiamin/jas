@@ -131,6 +131,26 @@ export function ExperimentReview({
                     {condition.harness.tools.join(", ")}
                   </span>
                 )}
+                {condition.parameters.artifacts && (
+                  <div className="mt-2 flex flex-col gap-1">
+                    <span>
+                      {condition.parameters.artifacts.write_limit} writes
+                    </span>
+                    {condition.parameters.artifacts.objects.map((obj) => (
+                      <span key={obj.key}>
+                        {obj.name} ({obj.key}) · owner: {obj.owner ?? "none"} ·
+                        readers: {obj.readers.join(", ") || "none"} · writers:{" "}
+                        {obj.writers.join(", ") || "none"}
+                      </span>
+                    ))}
+                    {condition.parameters.artifacts.requirements.map((r) => (
+                      <span key={`${r.artifact}-${r.field}`}>
+                        {r.artifact}.{r.field} must match {r.source}.
+                        {r.source_field} at v1, with a source reference.
+                      </span>
+                    ))}
+                  </div>
+                )}
               </dd>
             </div>
           ))}

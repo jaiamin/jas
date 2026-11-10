@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Mapping
 from typing import Any, cast
 
-from ..domain import Action, Decision, Design, Event, Measure, Parameters
+from ..domain import Action, Decision, Design, Event, Measure, Parameters, ReadArtifact
 from .checkpoints import Checkpoint, LegalAction, Observation
 from .decisions import ActionOption, DecisionRules, decision_schema
 
@@ -218,6 +218,8 @@ class World[StateT: Checkpoint](ABC):
         )
 
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        if not isinstance(decision.action, Action):
+            raise ValueError("Expected a controlled-world action")
         return self.apply(actor, decision.action)
 
     def step(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
@@ -267,3 +269,6 @@ class World[StateT: Checkpoint](ABC):
 
     def snapshot(self) -> StateT:
         return copy.deepcopy(self.state)
+
+    def read(self, actor: str, request: ReadArtifact) -> dict[str, Any]:
+        raise ValueError("Artifact operation is unavailable")

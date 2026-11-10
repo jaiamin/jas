@@ -16,11 +16,13 @@ export function HarnessFields({
   id,
   index,
   value,
+  artifacts = false,
   onChange,
 }: {
   id: string;
   index: number;
   value: ParticipantHarness;
+  artifacts?: boolean;
   onChange: (value: ParticipantHarness) => void;
 }) {
   return (
@@ -88,30 +90,37 @@ export function HarnessFields({
             <FieldSet className="sm:col-span-full">
               <FieldLegend>Permitted reads</FieldLegend>
               <div className="flex flex-wrap gap-4">
-                {(["observe", "rules", "legal_options"] as const).map(
-                  (tool) => (
-                    <FieldLabel key={tool} htmlFor={`tool-${id}-${tool}`}>
-                      <Checkbox
-                        id={`tool-${id}-${tool}`}
-                        checked={value.tools.includes(tool)}
-                        onCheckedChange={(checked) =>
-                          onChange({
-                            ...value,
-                            tools:
-                              checked === true
-                                ? [...value.tools, tool]
-                                : value.tools.filter((item) => item !== tool),
-                          })
-                        }
-                      />
-                      {tool === "observe"
-                        ? "Own observation"
-                        : tool === "rules"
-                          ? "Current rules"
-                          : "Legal options"}
-                    </FieldLabel>
-                  ),
-                )}
+                {(
+                  [
+                    "observe",
+                    "rules",
+                    "legal_options",
+                    ...(artifacts ? ["read_artifact" as const] : []),
+                  ] as const
+                ).map((tool) => (
+                  <FieldLabel key={tool} htmlFor={`tool-${id}-${tool}`}>
+                    <Checkbox
+                      id={`tool-${id}-${tool}`}
+                      checked={value.tools.includes(tool)}
+                      onCheckedChange={(checked) =>
+                        onChange({
+                          ...value,
+                          tools:
+                            checked === true
+                              ? [...value.tools, tool]
+                              : value.tools.filter((item) => item !== tool),
+                        })
+                      }
+                    />
+                    {tool === "observe"
+                      ? "Own observation"
+                      : tool === "rules"
+                        ? "Current rules"
+                        : tool === "legal_options"
+                          ? "Legal options"
+                          : "Authorized artifacts"}
+                  </FieldLabel>
+                ))}
               </div>
               <FieldDescription>
                 Reads use the active participant's permissions. Exhausting a

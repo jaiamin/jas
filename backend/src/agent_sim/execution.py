@@ -132,7 +132,7 @@ class Engine:
                     try:
                         events, measures = world.step(actor, decision)
                     except ValueError as error:
-                        activation.append("reject", {}, str(error), "rejected")
+                        activation.append("reject", decision.model_dump(), str(error), "rejected")
                         activation.finish("failed", "world_rejected", str(error))
                         raise
                     checkpoint = world.snapshot()
