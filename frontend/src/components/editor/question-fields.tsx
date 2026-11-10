@@ -90,15 +90,16 @@ export function QuestionFields({
             </FieldLabel>
             <Textarea
               id="hypothesis"
-              placeholder="Expected pattern, observable outcomes and how you will compare them"
+              placeholder="Exploratory questions and evidence to retain, or a hypothesis and comparison plan"
               rows={4}
               maxLength={2000}
               value={design.hypothesis}
               onChange={(event) => update("hypothesis", event.target.value)}
             />
             <FieldDescription>
-              Define the outcomes you will compare. Agents do not receive this
-              plan.
+              Exploration can describe trajectories without a primary scalar
+              outcome. For confirmation, define outcomes and comparisons before
+              trials. Agents do not receive this plan.
             </FieldDescription>
           </Field>
         </DisclosureContent>

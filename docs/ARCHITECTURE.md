@@ -141,9 +141,13 @@ searches unselected conversations or runs. Retrieved prose is untrusted data.
 The planner receives dispatched results as `research_operations` alongside the
 unchanged original question and independently validates its proposal.
 
-Probes accept only installed trusted templates (optionally configured), eligible
-prior proposal conditions or selected recorded run checkpoints within the frozen
-cutoff. World constructors copy checkpoint JSON, and each of at most eight
+Model-requested probes accept only installed trusted templates (optionally configured),
+eligible prior proposal conditions or selected recorded run checkpoints within the frozen
+cutoff. The existing planner also discovers installed mechanics and probes each exact
+validated candidate condition, population and first seed before preflight and critique.
+This planner-only source binds the full proposed design hash; it cannot be selected by a
+general-answer tool request. Optional explicit candidate witnesses use the same dispatcher.
+World constructors copy checkpoint JSON, and each of at most eight
 explicit hypothetical actions settles on a fresh candidate through the normal
 legal decision schema and World rules. Rejected actions leave that probe state
 unchanged. Results include actor-projected observations, legal schemas, events,
@@ -151,6 +155,28 @@ measurements and checkpoint hashes; they do not append source evidence, save a
 study, access an Engine or contact participants. Generated code and autonomous
 participant rollouts are unavailable. Hypothetical consequences are mechanism
 witnesses, not participant observations or evidence of Researcher competence.
+
+Planner briefs distinguish exploratory and confirmatory intent. Exploration may retain
+trajectories and unsuccessful work without a hypothesis or scalar endpoint; confirmation
+requires a nonempty advance analysis plan and semantic review. The brief justifies 1–12
+participants, roles, conditions, opportunity-based horizon/stopping, replication and capture.
+Material clarification keeps the same conversation without an executable proposal. Unsupported
+questions retain their original text and may offer explicitly narrower installed alternatives.
+These additions are research artifacts, not World or database semantics; current DB8/export9/
+capture1/comparison1/library5/tool2.0/direct1.0 contracts remain unchanged. Installed
+three-participant distributed coordination includes phase/conflict rules and logical addressed
+mail; solo artifact investigation remains sequential. A decline whose direct requirements and
+population have an installed example witness receives a bounded, recorded scoping recheck.
+Examples witness feasibility without constraining other supported study populations. Genuine
+missing mechanics and incompatible populations retain honest narrower alternatives.
+
+Reviewed candidates pin a complete discovered builtin/library source, or a source from an
+eligible earlier same-chat proposal. Matching a definition hash alone cannot invent library
+identity/revision provenance. Concrete rules and participant/harness/inference configuration
+remain part of each immutable experiment revision, independent of later library edits/deletion.
+Edited proposals retain the original question, proposal and check lineage, with an explicit
+warning that semantic fit was not re-reviewed. Planning, copied probes, checking and saving
+never sample participants; saved runs remain ready until an explicit execution action.
 
 ## Environment seam
 

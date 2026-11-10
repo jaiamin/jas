@@ -111,7 +111,7 @@ export function ExperimentReview({
           )}
           {(design.hypothesis || design.context) && (
             <Disclosure>
-              <DisclosureTrigger>Hypothesis and context</DisclosureTrigger>
+              <DisclosureTrigger>Analysis plan and context</DisclosureTrigger>
               <DisclosureContent className="flex flex-col gap-3 pt-3 text-muted-foreground whitespace-pre-wrap break-words">
                 {design.hypothesis && <p>{design.hypothesis}</p>}
                 {design.context && <p>{design.context}</p>}

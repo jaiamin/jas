@@ -273,3 +273,34 @@ frozen/positive parity evidence; earlier source results remain separately retain
 
 
 The continuation merges only published documented accepted `eb9c29a9490480a241489ec353abea3f64baa15a`. It adds HANDOFF/progress custody documentation only; the initial HANDOFF conflict and resolution are retained. No T11/T13 provisional tip is merged. Accepted DB8/export9/library5 retain their coordination meanings; the combined T16 DB9/export10/library6 remain provisional. This draft guard repair changes no persisted contract or isolated capability.
+
+
+### Accepted T13 frontier reconciliation (continuation)
+
+Root now documents T13 accepted at `32a1247e286ee2d58ee105d5aeb7640222a619e2`
+(DB8/export9/library5). Only that exact documented accepted frontier is merged;
+T11 remains absent/unaccepted. Its copied-candidate probes execute before planner
+preflight, so the draft admission guard must also cover this newly accepted
+CandidateSource. Frozen additional DEVELOPMENT ordering oracle before this
+integration repair: a genuine saved relay source whose original synthetic
+admission sidecars disappear must not authorize a new copied-candidate probe.
+Through public chat/review with a deterministic Sol boundary stand-in selecting
+that existing artifact, require no worker execution, no saved study and a visible
+failed/rejected proposal. This is package selection, not T17 code generation.
+Pinned runs/replay must remain sidecar-independent. Existing finite fixture,
+privacy/consequence/resource/termination/restoration oracles remain unchanged.
+
+Before this frontier merge, source079efe / key82f6afdb passed all1,398 backend
+cases in eight segments, final static,59 fresh browser cases in seven bounded
+workspaces, preserved frozen four failures/exit1 and positive five-run/22-turn
+parity (1,953 classified differences/zero unexplained). Initial direct-file frozen
+invocation fails import before cases; its normal module invocation repairs only
+that harness setup. All commands/failures and closed-output byte proofs remain.
+These are pre-T13 results. T13 changes frontend inputs, so the final combined
+frontend requires a new build and affected qualification; old assets/results are
+retained with their exact older source. No additional persisted meaning is added
+by T13, so combined T16 DB9/export10/library6 remain genuine and provisional.
+
+- [ ] Public copied-candidate red/guard/green on the accepted T13 combination.
+- [ ] Qualify combined backend/static/frontend/build/browser/production and
+      untouched frozen plus independent positive parity; finish custody/closure.
