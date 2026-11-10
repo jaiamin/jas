@@ -51,6 +51,19 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### T18 bounded backend implementation (2026-11-10)
+
+T18/#29 has a fresh assigned branch at exact published `a4ed8743`, with frozen
+DEVELOPMENT oracles and the frozen public-HTTP tracer in
+[its plan](research/T18_FALLIBLE_ADJUDICATION.md). Incomplete/unaccepted: granted
+offline setup/own import passed, then the unchanged tracer observed HTTP422
+before production edits and passed after the first backend slice (1 test).
+ROOT selected explicit Sol adjudication separately from Luna. Candidate
+contracts: DB12/export13/library8/artifact2.0.0; adverse/lifecycle qualification
+continues. No actual provider/paid/held-out work. Frontend/browser/services/
+production remain held; port18131 is unopened. Published `fdfb5f7a` policy was
+read directly; its normal merge is authorized after a qualified coherent slice.
+
 ### Final product request and historical evidence retirement (2026-11-10)
 
 The user requests completion plus a minimalist full-product UX pass, frontend/

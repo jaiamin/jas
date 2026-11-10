@@ -17,6 +17,7 @@ from ..domain import (
     Event,
     Measure,
     ReadArtifact,
+    RecordedAdjudication,
     StopArtifact,
     SubmitArtifacts,
     WriteArtifact,
@@ -26,7 +27,7 @@ from .world import World
 
 
 class ArtifactWorkspace(World[ArtifactCheckpoint]):
-    version = "1.0.0"
+    version = "2.0.0"
 
     @property
     def rules(self) -> ArtifactRules:
@@ -60,6 +61,7 @@ class ArtifactWorkspace(World[ArtifactCheckpoint]):
             "last_results": {},
             "artifact_history": [],
             "outcome": None,
+            **({"adjudications": []} if self.rules.judgment else {}),
         }
 
     def new_round(self) -> None:
@@ -153,6 +155,9 @@ class ArtifactWorkspace(World[ArtifactCheckpoint]):
             "Checks compare required work fields with cited evidence v1; all relevant objects "
             "must be accessible to you. Check feedback is pass/fail, not a hidden-truth oracle. "
             "Submit ends the run, succeeding only if every content/source requirement passes. "
+            "When a judgment mechanism is declared, submission additionally requires its "
+            "fallible rubric acceptance after independent hard checks. The judge cannot "
+            "change facts, permissions or participant responses. "
             "Stop and the round horizon end unsuccessfully. Statements never establish success. "
             "A stale or unauthorized operation has no effect; there is no automatic retry.",
             "context": self.design.context,
@@ -248,6 +253,46 @@ class ArtifactWorkspace(World[ArtifactCheckpoint]):
         raise ValueError("Artifact workspace requires an artifact decision")
 
     def step(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        return self._step(actor, decision)
+
+    def adjudication_inputs(self, actor: str, decision: Decision) -> dict | None:
+        if not isinstance(decision.action, SubmitArtifacts) or self.rules.judgment is None:
+            return None
+        if self.actor() != actor or decision.forecast is not None:
+            raise ValueError("Adjudication requires the current actor and forecast=null")
+        if not self.check(actor)["passed"]:
+            return None
+        scope = self.rules.judgment
+        self.accessible(actor, scope.artifact, write=True)
+        work = self.state["artifacts"][scope.artifact]["versions"][-1]
+        if not isinstance(work["content"].get(scope.field), str):
+            raise ValueError("Adjudication requires a text guidance field")
+        evidence = []
+        content = {scope.field: work["content"][scope.field]}
+        for binding in scope.evidence:
+            source = self.read(
+                actor, ReadArtifact(kind="read_artifact", artifact=binding.artifact, version=1)
+            )
+            selected = {field: source["content"][field] for field in binding.fields}
+            content.update({field: work["content"][field] for field in binding.fields})
+            evidence.append({"artifact": binding.artifact, "version": 1, "content": selected})
+        return {
+            "mechanism": scope.mechanism,
+            "version": scope.version,
+            "artifact": scope.artifact,
+            "artifact_version": work["version"],
+            "content": content,
+            "evidence": evidence,
+        }
+
+    def settle_adjudication(
+        self, actor: str, decision: Decision, receipt: dict
+    ) -> tuple[list[Event], list[Measure]]:
+        return self._step(actor, decision, RecordedAdjudication.model_validate(receipt))
+
+    def _step(
+        self, actor: str, decision: Decision, adjudication: RecordedAdjudication | None = None
+    ) -> tuple[list[Event], list[Measure]]:
         if self.actor() != actor or actor is None:
             raise ValueError("Expected the current actor of an unfinished run")
         action = decision.action
@@ -278,6 +323,39 @@ class ArtifactWorkspace(World[ArtifactCheckpoint]):
             result = self.check(actor)
             if isinstance(action, SubmitArtifacts):
                 terminal = "success" if result["passed"] else "failure"
+                inputs = self.adjudication_inputs(actor, decision)
+                if inputs is not None:
+                    if adjudication is None:
+                        raise ValueError("Declared adjudication is required before submission")
+                    if (
+                        adjudication.inputs != inputs
+                        or adjudication.mechanism != inputs["mechanism"]
+                        or adjudication.version != inputs["version"]
+                    ):
+                        raise ValueError("Adjudication inputs do not match the declared scope")
+                    facts = {
+                        (source["artifact"], source["version"], field): value
+                        for source in inputs["evidence"]
+                        for field, value in source["content"].items()
+                    }
+                    asserted = adjudication.ruling.facts
+                    if len(asserted) != len(facts) or len(
+                        {(fact.artifact, fact.version, fact.field) for fact in asserted}
+                    ) != len(facts) or any(
+                        (fact.artifact, fact.version, fact.field) not in facts
+                        or type(fact.value)
+                        is not type(facts[(fact.artifact, fact.version, fact.field)])
+                        or fact.value != facts[(fact.artifact, fact.version, fact.field)]
+                        for fact in asserted
+                    ):
+                        raise ValueError("Adjudication contradicts or exceeds executable facts")
+                    terminal = "success" if adjudication.ruling.verdict == "accept" else "failure"
+                    result["judgment"] = {
+                        "verdict": adjudication.ruling.verdict,
+                        "fallible": True,
+                    }
+                elif adjudication is not None:
+                    raise ValueError("Adjudication is unavailable")
         elif isinstance(action, StopArtifact):
             result, terminal = {"stopped": True}, "stopped"
         else:
@@ -285,6 +363,26 @@ class ArtifactWorkspace(World[ArtifactCheckpoint]):
         # Everything that can reject precedes the first mutation.
         if decision.forecast is not None:
             raise ValueError("Artifact decisions require forecast=null")
+        if adjudication is not None and not isinstance(action, SubmitArtifacts):
+            raise ValueError("Adjudication is unavailable")
+        ruling_event = None
+        if adjudication is not None:
+            recorded = {
+                **adjudication.model_dump(),
+                "consequence": {
+                    "applied": True,
+                    "submission_status": terminal,
+                    "hard_facts_passed": True,
+                },
+            }
+            self.state.setdefault("adjudications", []).append(copy.deepcopy(recorded))
+            ruling_event = Event(
+                kind="adjudication",
+                actor=actor,
+                visibility="researcher",
+                text="Fallible judgment recorded; World checks enforced the submission result.",
+                data=recorded,
+            )
         if isinstance(action, WriteArtifact):
             self.state["artifacts"][action.artifact]["versions"].append(
                 copy.deepcopy({key: value for key, value in result.items() if key != "artifact"})
@@ -327,4 +425,4 @@ class ArtifactWorkspace(World[ArtifactCheckpoint]):
             measures.append(
                 Measure(key="artifact_success", value=float(terminal == "success"), denominator=1)
             )
-        return [event], measures
+        return [event, ruling_event] if ruling_event is not None else [event], measures

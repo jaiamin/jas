@@ -330,8 +330,8 @@ class EnvironmentLibrary:
             payload = json.loads(self._path(key).read_text())
         except FileNotFoundError:
             raise NoResultFound() from None
-        if not isinstance(payload, dict) or payload.get("format") != "jas-environment-v7":
-            raise ValueError("Unsupported custom environment format; expected jas-environment-v7")
+        if not isinstance(payload, dict) or payload.get("format") != "jas-environment-v8":
+            raise ValueError("Unsupported custom environment format; expected jas-environment-v8")
         record = SavedEnvironment.model_validate(payload)
         if record.id != key or record.sha256 != digest(record.definition.model_dump()):
             raise ValueError("Custom environment has an invalid identity or content hash")

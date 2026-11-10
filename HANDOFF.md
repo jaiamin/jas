@@ -1,3 +1,25 @@
+# T18 bounded backend implementation (2026-11-10)
+
+Fresh T18/#29 implementer is in `t3/t18-fallible-adjudication`, assigned checkout
+`/home/agent/.t3/worktrees/workspace/t3-9a531151`, initially clean at exact
+`a4ed87430040bfb19e554ab7721ec56412a075d5`. No provisional T12/T17 merge.
+See [T18 plan/oracles/stages](docs/research/T18_FALLIBLE_ADJUDICATION.md) and the
+frozen `backend/tests/test_fallible_adjudication.py` public-HTTP tracer.
+Incomplete/unaccepted. ROOT released S1 frozen offline hardlink setup through
+the owner-granted cache, S2 first red and conditional S3 backend work. Own import
+proof passed; the unchanged tracer observed HTTP422 before production edits,
+then passed (1 test) after the first backend slice. All attempts stay in owned
+`.tools/t18/`; no actual provider calls. ROOT explicitly permits declared Sol
+adjudication, separate from Luna; live evaluation remains held. Candidate
+contracts are DB12/export13/library8/artifact2.0.0; no migration/reset. Static
+qualification and adverse/lifecycle coverage continue under the shared lock.
+Frontend/browser/service/production/new dependencies/publication remain held;
+port18131 is unopened.
+Read the post-retirement qualification policy directly at published
+`fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd`; normal merge is authorized after a
+qualified coherent slice and required before completion. No deleted BEFORE
+reference is used.
+
 # Current user direction and evidence retirement (2026-11-10)
 
 ROOT owns tracked writing at published accepted `e76ef124`. Continue remaining

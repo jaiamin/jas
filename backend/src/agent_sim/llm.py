@@ -153,6 +153,7 @@ class LanguageModels:
         web_search: bool = False,
         on_partial: Callable[[dict], None] | None = None,
         input_evidence: dict | None = None,
+        on_reserved: Callable[[str], None] | None = None,
     ) -> T:
         if model not in PRICES:
             raise ProviderFailure("This model has no reviewed price configuration.")
@@ -222,6 +223,8 @@ class LanguageModels:
             self._reserve(call)
             messages, failure = [], None
             try:
+                if on_reserved is not None:
+                    on_reserved(call.id)
                 agent = Agent(
                     model_object,
                     output_type=str if web_search else ToolOutput(output, strict=True),

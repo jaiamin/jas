@@ -83,7 +83,7 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
     }
     return {
         "format": "jas-study",
-        "version": 12,
+        "version": 13,
         "investigations": [
             {
                 "id": i.id,
@@ -144,6 +144,7 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
                 "run_id": c.run_id,
                 "analysis_id": c.analysis_id,
                 "activation_id": c.activation_id,
+                "purpose": c.purpose,
                 "turn": c.turn,
                 "model": c.model,
                 "status": c.status,

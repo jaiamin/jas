@@ -207,10 +207,54 @@ class ArtifactRequirement(Strict):
     source_field: ArtifactKey
 
 
+class JudgmentEvidence(Strict):
+    artifact: ArtifactKey
+    version: Literal[1]
+    fields: list[ArtifactKey] = Field(min_length=1, max_length=12)
+
+
+class ArtifactJudgment(Strict):
+    mechanism: Literal["pickup_note_actionability"]
+    version: Literal["1.0.0"]
+    artifact: ArtifactKey
+    field: Literal["guidance"]
+    evidence: list[JudgmentEvidence] = Field(min_length=1, max_length=1)
+
+
+class Adjudicator(Strict):
+    version: Literal["1.0.0"]
+    model: Literal["openai:gpt-6.1-sol"]
+    openai_reasoning_effort: Literal["low", "medium", "high"]
+    response_tokens: int = Field(ge=512, le=2048)
+
+
+class JudgmentFact(Strict):
+    artifact: ArtifactKey
+    version: int = Field(ge=1, le=1201)
+    field: ArtifactKey
+    value: Annotated[str, Field(max_length=1000)] | StrictInt
+
+
+class AdjudicationRuling(Strict):
+    verdict: Literal["accept", "revise", "abstain"]
+    explanation: str = Field(min_length=1, max_length=1000)
+    facts: list[JudgmentFact] = Field(min_length=1, max_length=12)
+
+
+class RecordedAdjudication(Strict):
+    mechanism: Literal["pickup_note_actionability"]
+    version: Literal["1.0.0"]
+    adjudicator: Adjudicator
+    inputs: dict
+    ruling: AdjudicationRuling
+    request_id: str = Field(pattern=r"^[a-f0-9]{16}$")
+
+
 class ArtifactRules(Strict):
     objects: list[ArtifactObject] = Field(min_length=2, max_length=12)
     requirements: list[ArtifactRequirement] = Field(default_factory=list, max_length=12)
     write_limit: int = Field(default=4, ge=1, le=100)
+    judgment: ArtifactJudgment | None = None
 
     @model_validator(mode="after")
     def valid_requirements(self) -> Self:
@@ -226,6 +270,36 @@ class ArtifactRules(Strict):
                 raise ValueError("Artifact requirements need existing objects and source fields")
             if source.owner is not None or source.writers or not (target.owner or target.writers):
                 raise ValueError("Requirements need immutable evidence and writable work")
+        if self.judgment:
+            judgment = self.judgment
+            target = objects.get(judgment.artifact)
+            source = objects.get(judgment.evidence[0].artifact)
+            fields = judgment.evidence[0].fields
+            if (
+                target is None
+                or not isinstance(target.content.get(judgment.field), str)
+                or source is None
+                or source.owner is not None
+                or source.writers
+                or set(fields) != {"desk", "closes_at"}
+                or len(fields) != 2
+                or not isinstance(source.content.get("desk"), str)
+                or type(source.content.get("closes_at")) is not int
+                or not all(
+                    any(
+                        r.artifact == judgment.artifact
+                        and r.field == field
+                        and r.source == source.key
+                        and r.source_field == field
+                        for r in self.requirements
+                    )
+                    for field in fields
+                )
+            ):
+                raise ValueError(
+                    "Pickup-note judgment requires writable text and immutable desk/hour "
+                    "evidence with independent content/source requirements"
+                )
         return self
 
 
@@ -389,6 +463,7 @@ class Treatment(Strict):
     harness: ParticipantHarness = Field(default_factory=DirectActionHarness)
     parameters: Parameters = Field(default_factory=Parameters)
     profile_overrides: list[Profile] = Field(default_factory=list, max_length=12)
+    adjudicator: Adjudicator | None = None
 
 
 class TaskDefinition(Strict):
@@ -427,7 +502,7 @@ class EnvironmentMechanics(Strict):
 
 
 class SavedEnvironment(Strict):
-    format: Literal["jas-environment-v7"] = "jas-environment-v7"
+    format: Literal["jas-environment-v8"] = "jas-environment-v8"
     id: str
     revision: int = Field(ge=1)
     updated: str
@@ -488,6 +563,15 @@ class Design(DesignSpec):
             if len(set(values)) != len(values):
                 raise ValueError(f"{label} identifiers must be unique")
         for condition in self.conditions:
+            judgment = (
+                condition.parameters.artifacts.judgment
+                if condition.parameters.artifacts is not None
+                else None
+            )
+            if (judgment or condition.adjudicator) and self.environment != "artifact_workspace":
+                raise ValueError("Declared adjudication requires the artifact workspace")
+            if condition.adjudicator and judgment is None:
+                raise ValueError("An adjudicator requires an explicit judgment mechanism/scope")
             relay = condition.parameters.relay
             if self.environment == "sealed_relay":
                 if (
