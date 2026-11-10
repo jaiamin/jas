@@ -1,7 +1,7 @@
 # Architecture
 
 A single FastAPI process serves a built React app and a same-origin JSON API. Server-owned
-async tasks execute independent runs with bounded concurrency; decisions within one run
+async tasks execute separate runs with bounded concurrency; decisions within one run
 remain ordered. Only explicit user actions create paid work. Restart pauses interrupted work.
 
 ## Storage

@@ -87,7 +87,7 @@ per range; exact turn evidence includes the full actor observation and a checkpo
 duplicated retained history, notes and experiences. Inspect actor observations for memory use.
 For aggregate
 claims use the computed cutoff scope; for qualitative claims state which turns
-were examined. Never claim unexamined examples support you. Compare independent runs and
+were examined. Never claim unexamined examples support you. Compare separately executed runs and
 matched seeds;
 no causal certainty from one trajectory. Answer concisely in Markdown. Cite supporting run IDs
 and turns in the structured citations. Distinguish measured facts from interpretations. No

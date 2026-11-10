@@ -6,6 +6,97 @@ Ticket: [#15](https://github.com/jaiamin/ass/issues/15). Prepared branch
 Only T04 is in scope. No paid calls, historical/held-out suite edits, stash
 application, publication, T08 planning/memory or T09 world work is authorized.
 
+## Fresh integration acceptance
+
+T04/#15 is accepted at no-ff merge
+`48600d2982516210e6a4e28528d2e1c6f1fd155e`, with parents
+`39491def73da7334164ca6d98896eaa03a2e5bf5` (accepted integration tip) and
+`6a6c000ac87a44212f3da681dbd31497f9640982` (clean T04 source). Only the progress
+document conflicted; no product-code conflict or repair was required. The merge
+preserves accepted T02 history/worker-exit fixes and T05, with T03/T06 still in
+progress. Subsequent acceptance-document changes do not alter tested inputs.
+
+The independent merger reviewed actual policies, persistence and UI. Tool reads
+accept no actor/run/state selectors and use the active actor's World projection;
+final requests are independently validated and settled by World. Each inference
+uses the existing atomic ledger. Failed/refused/unknown requests, primary errors,
+pause/final-response commit, one writer and restored remaining effort are covered.
+Models and profile overrides stay independent of harness/world settings; goals
+and condition overrides remain explicit factors. No T08/T09 capability was added.
+
+Fresh observed checks on stable tracked merge `48600d2`:
+
+| Check | Result |
+| --- | --- |
+| Full backend suite | 995 passed, including 32 policy, 14 T05 Researcher, 13 extension and all accounting/lifecycle/World/privacy/replay/export cases |
+| Frontend unit tests | 108 passed |
+| Shared Chromium flows | 27 passed: five extensions (including both history fixes), four Researcher tools, seven streaming, three execution and eight inspection |
+| Actual two-policy Chromium workflow | Two passed: desktop/light and phone/dark; saved revisions, operations, individual accounting and exact replay |
+| Ruff, ty, frontend lint, TypeScript/production build | Passed |
+| Independent current-contract and direct-action oracle | All 22 turns in five completed runs pass exact parity and positive v5 activation/request checks; zero unexplained export/report differences |
+| T04 DEVELOPMENT v1 | Five expected-outcome cases passed; same checks/usage as the child's final trial; 30 scripted requests |
+
+The initial shared browser run retained **25 passes and two planning-stage timing
+failures**. No code, fixture, timeout or assertion changed. Both failed cases
+passed twice in isolation after the concurrent backend suite ended; all 27 then
+passed in a sequential shared run. Retained traces show delayed loading/polling
+and no page exceptions. `browser-timing-investigation.json` records the hypotheses,
+timings and limits; these failures are not discarded or counted as passing runs.
+The two policy-record theme/viewport captures were also visually inspected.
+
+The unchanged T01 runner ran from clean tracked-source clones, excluding the
+unrelated root `pbcopy` without reading/copying/archiving it. Before: six cases
+pass at `39491de`. After: the frozen oracle retains **four `export-v4` failures**,
+their `passed=false` / `check-failure` terminal flags and CLI/comparison exit **1**;
+the two unsupported-world/population cases remain unchanged. The independent
+oracle positively verifies export/schema 5, request-to-activation links, model/
+harness/inference identity and atomic settlement evidence. Every direct-action
+prompt, schema, setting, observation, decision, full checkpoint, event, final
+state, measurement, metric and usage matches across 22 turns. Its complete
+recursive difference record explicitly retains new v5 evidence, explicit harness
+configuration/design hashes, generated identities, timestamps/latency, polling,
+source identities and the four frozen-oracle failures. No historical score or
+terminal flag was relabeled. Schema 4 and setup v1 rejection tests pass; no data
+was reset or converted.
+
+The merger's tracked source archive is `T04-integration/merged-source.tar.gz`,
+SHA-256 `c31335f2b6a59d635af2d93fe94265ba9bde44e8f3dcb9133a9c58946bb1a161`.
+Raw logs, XML, HTTP attempts, full exports/databases, source/case identities,
+screenshots and independent oracles are in ignored
+`.tools/research-harness/evidence/T04-integration/`. Its immutable
+`verification-manifest.json` indexes **853 files, 23,326,665 bytes**, canonical
+file-manifest SHA-256
+`906110e27fe08f4813b7369ef0e2b74d2793400748e0caf102a7e86f53d0a9ce`;
+manifest-file SHA-256
+`a8350e170ad56939354c972e90ac7e3724471e71ee3f3b6f0ddadaee6c897689`.
+Final documentation/commit records are indexed separately by the final checkpoint
+manifest. Clone Git metadata and generated caches are excluded explicitly.
+
+All **2,329 source artifacts (71,129,333 bytes)** are preserved without overwrites
+under ignored `.tools/research-harness/evidence/T04/`: all 2,316 `data/t04/` files
+and 13 `.tools/t04-*` setup files. Every source/destination hash and all 2,328
+child-indexed hashes match; the remaining copied file is the child's manifest
+itself. Source HEAD/status/bytes were stable during copying and rechecked after
+verification. `T04-copy-verification.json` records canonical file-manifest SHA-256
+`df26099a7e31ee5efff8bd79027b9e22cdf67da2009a85216f2749c84e19d558`
+(verification-file SHA-256
+`0508e2976643379f4955391bc99958821532318860fed07a76705966c56ee46e`).
+The source worktree remains intact; retain both evidence directories.
+
+Production build/smoke is **inherited** from the child's qualified non-root
+`3f3cf5c` source and its preserved `handoff-production-*` evidence, including all
+26 containment checks. It was not rerun by the merger: runtime/container,
+containment/configuration, lockfiles and smoke script are byte-unchanged, and no
+executable merge conflict occurred. Child full browser suites remain inherited;
+the merger ran 29 relevant distinct flows, not a full combined browser suite.
+
+Port 18215 is closed, the owned preview and disposable servers are stopped,
+`pbcopy` is untouched/unread and stash
+`f771128ba1c9295262a4073df40cc25647b1370f` is unchanged. No paid/live requests,
+pushes, PR/issue edits or host/security/credential changes occurred. Actual spend
+is **$0**; live competence and held-out acceptance remain **unverified**. T08 is
+now Ready; T09 still waits on T03. The parent owns draft PR #32 and next actions.
+
 ## Acceptance and plan
 
 - [x] Check Linux/cwd/clean branch and integration ancestry; retain the clean
