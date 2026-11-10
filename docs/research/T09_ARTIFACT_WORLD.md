@@ -20,9 +20,9 @@ Ticket [#20](https://github.com/jaiamin/ass/issues/20). Implementation branch
   probes, immutable source snapshots and honest artifact-specific outcomes.
 - [x] Existing editor/review/history UI; browser success/failure/recovery,
   loading/error/draft identity, keyboard and mobile.
-- [ ] Merge latest accepted integration, final inherited/static/browser checks,
+- [x] Merge latest accepted integration, final inherited/static/browser checks,
   source-stamped after comparison and classification of every difference.
-- [ ] Commit coherent checkpoints, complete ignored evidence manifest and
+- [x] Commit coherent checkpoints, complete ignored evidence manifest and
   handoff. Parent owns review, publication and issue status.
 
 ## Approved seams and independent worked examples
@@ -67,12 +67,11 @@ Its identity, content and versions must not leak through schemas or errors.
 
 ## Next steps
 
-Finish final combined-source checks, clean-source comparison, production smoke
-and evidence manifest. Artifact/access/terminal/restoration oracles and browser
-success/failure/recovery are implemented. Use existing `.venv/bin` tooling; the own
-project-local uv bootstrap was removed to free shared disk after ENOSPC. Browser
-port **18120** is reserved for this task. Do not inspect real configuration,
-touch the preserved stash, other worktrees/processes or frozen T01 history.
+Root owns fresh merger review and acceptance. Preserve the entire ignored
+`data/t09/`, including its verified archives and member indexes, before any cleanup.
+The final manifest and closure identify the handoff HEAD and included integration;
+the implementation is not yet accepted. Live Luna work requires a separate concrete
+manifest/estimate and explicit allowance. No implementation decision remains open.
 
 ## Development checkpoint (before accepted T08 merge)
 
@@ -179,3 +178,127 @@ unexplained (633 raw export differences; the remainder includes reports,
 manifests, design/catalog additions and catalog ordering). This is an interim
 source, not the final combined-source comparison. Final gates must include T07
 and export8 and will be recorded below without overwriting this evidence.
+
+## Final implementation and accepted-source qualification
+
+Merge `8a7b089` includes accepted integration `777a609` (its actual second parent),
+including the repaired binding of exposure to final bounded requests and real T08
+capability delivery. Artifact-specific instructions and authorized read receipts are
+retained. The accepted exposure browser configuration supersedes the earlier
+tool-only compatibility fixture. Merge `14278e6` includes the latest observed
+accepted integration `32fa9fc9aa5080a87458ea22756478dbe8b4eda3`; that final merge
+changes only T07/progress/handoff documentation. Other ticket statuses are retained.
+
+The application checkpoint is `fe0ba04a87c2450b260dfa2232c1f505b69e2310`.
+Its backend source digest is
+`c5894f1af4cfe340c1c46b00f89edc24f054ab543ecb08168c68cd79144b648d`.
+Final closure compares actual application/test/build inputs with the recorded
+checks; later handoff and accepted-review prose does not change those inputs.
+Current contract remains **DB7 / export8 / comparison1 / jas-environment-v4**.
+
+Final vertical refinements retain their actual attempts:
+
+- Slice21: manual production inspection found unsupported communication-channel
+  controls in the artifact editor. `slice21-unsupported-channels-red` fails at the
+  browser seam; the minimal existing-capability gate passes the full 11-flow green
+  check and is committed at `db50ee3`. The final production phone/dark capture
+  confirms the controls are absent and artifact ACL/write controls remain usable.
+- Slice22: the inherited catalog recovery test still expected eight worlds.
+  `final-full-browser` records 181 passes and that assertion failure. Updating its
+  three counts to the nine installed worlds passes the unchanged loading/error/
+  retry flow (`slice22-catalog-recovery-green`), committed at `fe0ba04`.
+
+Observed final checks (all exact commands, source maps, diffs and outputs are in
+`data/t09/checks/`; names below are their record prefixes):
+
+| Check | Observed result | Record |
+| --- | --- | --- |
+| Full backend | 1,176 passed, including 28 artifact/lifecycle cases | `accepted-final-backend` |
+| Python static | Ruff and ty passed | `accepted-final-ruff`, `accepted-final-ty` |
+| Frontend | 111 tests / 30 files, lint and production build passed | `accepted-final-frontend-*` |
+| Inherited browser | 181 passed; one ENOSPC screenshot failure; all four affected Researcher variants then passed | `accepted-final-full-browser`, `accepted-final-researcher-storage-recovery` |
+| Artifact, harness and exposure browser | 11 passed, including both harnesses' failed submission/rejected-write recovery | `accepted-final-harness-browser` |
+| T08 context browser | Both pause/restore/receipt flows passed after final accepted merge | `accepted-final-context-browser` |
+| T07 with T08 capabilities | Both actual capability-delivery/exposure/export flows passed after final accepted merge | `accepted-final-capability-exposure-browser` |
+| Production | Fresh build; non-root/keyless SPA; all 26 containment checks, safe/denied/exhausted reviews; solo artifact export8 and Verify0; zero requests | `accepted-final-production-*` |
+
+Every inherited browser case has a passing result on the qualified application
+source across the completed run and focused rerun. **Do not describe this as one
+uninterrupted green full suite**: the full run exits 1 because storage filled while
+creating the light/1440 Researcher screenshot directory. Its failed output is
+retained in `browser-full-fe0ba04/`; all four variants pass after storage recovery,
+without changing the application or assertions. The earlier catalog failure and
+all other failed attempts also remain preserved.
+
+Final production image identity is
+`sha256:3af9cbff72fb63fc17c4876c324f773c50787406c74e6aa7b41db0277ad4f682`.
+Actual 390px/dark editor, researcher-scoped versions and call-free Verify captures
+are in `browser-production-final/`; initial state/export/database/logs are in
+`production-accepted-final/`. The original pre-fix inspection stays in
+`browser-production-manual/`. Two manual waits named the wrong tab/heading and
+timed out; actual snapshots then confirmed the rendered surfaces. These are
+selector errors, not product failures. The owned tab, container, volume and image
+tag are closed/removed; final closure checks port 18120 and owned resources.
+
+## Final deterministic comparison
+
+`before/` uses clean base `c2a7d5a`; `after-accepted-final/` uses clean `fe0ba04`.
+Both retain complete tracked-only source archives. Frozen T01 runner/cases/scores
+remain unchanged. `accepted-final-frozen-after` and its comparison both exit **1**
+with the same four intentional export-v4 failures and failed flags, no regressions
+or improvements. The two historical unsupported gap cases still reject, including
+the unknown `artifact` alias. This does not replace the independent artifact cases.
+
+The positive `accepted-final-current-contract` audit passes DB7/export8/comparison1/
+library4 and independently checks **22 turns / five runs / 22 provider stand-in
+requests**. Controlled decisions, actor observations, checkpoints, state hashes,
+metrics, actual prompts/schemas/settings and accounting retain parity. All 22
+additive T07 input bindings are independently checked. Both workflows make 98 HTTP
+operations. The audit classifies **1,220 raw JSON differences**, plus 47 keyed
+catalog differences, with **zero unexplained**. Differences include the required
+request/export metadata, explicit null artifact fields/hashes, accepted T08 schema,
+new world/library contract/order and volatile source/record/time identities.
+Raw exports are not byte-identical.
+
+Earlier after/comparison runs remain in their separate directories, including the
+first final audit that failed closed on one extra read-only status poll and its
+subsequent independently verified classification. Do not present an earlier source
+or that failed audit as the final result.
+
+## Evidence preservation, limits and handoff
+
+Preserve **all `data/t09/`**, not only its passing logs. `artifact-manifest.json`
+indexes every remaining file/link and its hashes/targets; its external checksum
+excludes only those two self-referential manifest files. `checks/final-closure.json`
+records the final clean branch/HEAD, accepted integration, exact input parity,
+protected benchmark hashes, preserved stash object and closed owned resources.
+
+Shared-disk exhaustion required reversible packing. Four archives under `archives/`
+retain 1,459, 1,437, 638 and 414 files/symlinks respectively, with complete member
+indexes and byte/target verification before expanded copies were removed. Completed
+check paths temporarily packed in archive04 have been restored; the remaining
+pytest payloads stay packed. Restore any archive from the project root with
+`tar -xzf data/t09/archives/<archive>.tar.gz`. Final manifest generation rechecks
+every member of all four archives. A first packer assertion failure is retained
+with its exact failed script; it is an evidence-tool failure, not a product red.
+Only disposable Python caches in this assigned checkout were otherwise removed.
+
+Early slices1–6 retain original red/green logs and case identities, but not a full
+per-attempt dirty-source hash/archive wrapper. Later checks do retain full source
+maps and binary diffs. This historical evidence gap is not reconstructed. Synthetic
+test configuration fixtures were verified against their tracked generator at
+`backend/tests/test_cli.py:19` and retained as opaque bytes only in ignored evidence;
+no real environment/credentials or unrelated root clipboard data was read/copied.
+
+The world deliberately uses executable typed content/source equality, fixed ACLs,
+version conflicts and a finite write allowance. Structural object/field/requirement
+changes use the existing JSON editor. T10 collaboration/timing, T18 model
+adjudication and T16 generated-world admission are not implemented here. T02
+containment still does not admit a runnable world. No financial outcome is invented
+for this task, and deterministic stand-ins establish mechanics only.
+
+Actual paid spend is **$0**. Historical global Sol usage remains $0.611632/55 known
+requests ($9.388368 of $10 remaining); it is not a T09 allocation. Live behavior,
+held-out generalization and research competence remain unverified. No push,
+publication, ticket closure, stash operation, data reset or security change was
+performed. Root must freshly review this branch before marking T09 accepted.
