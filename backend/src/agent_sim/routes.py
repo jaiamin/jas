@@ -15,6 +15,7 @@ from .db import Annotation, Database, ProviderCall, Workspace
 from .domain import Design, Strict
 from .execution import Engine
 from .exports import export_study
+from .extensions import ExtensionCandidate, ExtensionReview, ExtensionRuntime, Extensions
 from .llm import LanguageModels
 from .research import Research, RunSummary
 from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS
@@ -57,6 +58,40 @@ async def assistant_service(request: Request) -> Assistants:
 
 
 AssistantsDep = Annotated[Assistants, Depends(assistant_service)]
+
+
+async def extension_service(request: Request) -> Extensions:
+    return request.app.state.extensions
+
+
+ExtensionsDep = Annotated[Extensions, Depends(extension_service)]
+
+
+@router.get("/api/extensions/runtime")
+async def extension_runtime(*, extensions: ExtensionsDep) -> ExtensionRuntime:
+    return extensions.runtime
+
+
+@router.post("/api/extensions/validate", status_code=201)
+async def validate_extension(
+    body: ExtensionCandidate, *, extensions: ExtensionsDep
+) -> ExtensionReview:
+    return await asyncio.to_thread(extensions.validate, body)
+
+
+@router.post("/api/extensions/qualify")
+async def qualify_extensions(*, extensions: ExtensionsDep) -> ExtensionRuntime:
+    return await asyncio.to_thread(extensions.qualify)
+
+
+@router.get("/api/extensions/reviews")
+async def extension_reviews(*, extensions: ExtensionsDep) -> list[ExtensionReview]:
+    return await asyncio.to_thread(extensions.list)
+
+
+@router.get("/api/extensions/reviews/{key}")
+async def extension_review(key: str, *, extensions: ExtensionsDep) -> ExtensionReview:
+    return await asyncio.to_thread(extensions.get, key)
 
 
 async def static_directory(request: Request) -> Path:

@@ -57,10 +57,10 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | Ticket | Issue and behavior | Blocked by | Status | Integrated commit |
 | --- | --- | --- | --- | --- |
 | T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Integrated | `bf3b76e` |
-| T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Queued | — |
+| T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Integrated; UI review follow-up pending | `77f6014` |
 | T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Ready | — |
 | T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | In progress; keyless policy/API/UI slices implemented, final verification pending | — |
-| T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Queued | — |
+| T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | In progress | — |
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Ready | — |
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Ready | — |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Waiting | — |
@@ -125,9 +125,46 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. Implement T02/#13, T04/#15 and T05/#16 in isolated fresh-context worktrees;
-   T03/#14, T06/#17 and T07/#18 remain ready for available slots.
+1. Complete T02/#13's parent-owned history-URL submission correction and
+   red/green browser regression. T04/#15 and T05/#16 are running in isolated
+   worktrees; T03/#14, T06/#17 and T07/#18 remain Ready for available slots.
 2. Review and merge each accepted slice sequentially, then refresh/link draft
    PR #32; qualification failure gates generated execution, not trusted worlds.
 3. Preserve source-stamped inherited and new-behavior evidence for each slice;
    keep live and held-out gates unverified until their required trials run.
+
+## T02 integration — UI review follow-up pending
+
+The assigned ticket branch `t3/candidate-containment-review` implements immutable
+candidate reviews and the environment review UI. Import-free Wasm containment
+passed all 26 independent development checks in both development and the actual
+non-root production image, including the actual four-second worker deadline.
+Experiment execution remains disabled pending T16 world admission. See the
+[T02 evidence report](research/T02_CONTAINMENT.md) for source identities, retained
+failures/repairs, paired keyless baseline, observed checks and ignored artifacts.
+Implementation source is `74daeeb`; the browser response-wait repair is `b28f5b3`.
+Ticket HEAD `07d6d9fa681bd5ce79777c480e0798b5d6fa6137` is integrated with no-ff
+merge `77f6014981754adefc954af51e06f9326ab95893`, preserving T01's checkpoint.
+
+The independent merger observed 128 focused backend tests passing (12 new
+extension tests and 116 existing API, lifecycle, accounting, World/privacy,
+export and execution checks), Ruff/ty, frontend lint and TypeScript/production
+build. A fresh tracked-source production build and the real non-root smoke
+passed all 26 qualification checks plus independent safe/denied/exhausted
+candidate reviews. The unique disposable container was removed. The child's
+final 3 affected browser flows and full 168-flow suite are retained; no redundant
+merger browser suite or baseline was run. No paid calls or tracker/PR changes.
+
+All 531 ignored `data/t02/` artifacts (21,393,475 bytes) are preserved without
+overwrites under `.tools/research-harness/evidence/T02/`. Every copied SHA-256
+matches the stable source. The sibling `T02-copy-verification.json` records
+canonical manifest SHA-256
+`85b20d19b4e4c133e3eba3c0cf9add8973c8c6f55a65a0effe0457f559437ab7`.
+Fresh merger source, raw logs, command records and container proof are under
+`.tools/research-harness/evidence/T02-integration/`; the child worktree remains
+intact. The unrelated untracked `pbcopy` was not read, copied or archived.
+
+T02 review acceptance remains pending one parent-owned UI correction:
+submitting from a history URL retains the previous `selectedId`, hiding the
+new result. Add the browser regression before correcting selection. This does
+not enable world admission or clear the remaining global acceptance gates.

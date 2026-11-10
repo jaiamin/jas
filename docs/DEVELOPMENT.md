@@ -116,3 +116,10 @@ Reusable custom environments are versioned files beside the configured SQLite da
 `<database-stem>.environments/`; keep that directory when backing up a workspace. The app
 retains complete environment rules inside each immutable experiment, so library deletion
 never deletes run evidence. See [custom environments](CUSTOM_ENVIRONMENTS.md).
+
+Extension candidate validation uses pinned Wasmtime in a bounded import-free
+worker. It needs no Docker socket or host policy changes. Run local containment
+from Environments → Candidates or `POST /api/extensions/qualify`; every restart
+requires fresh qualification. The production smoke also qualifies the actual
+non-root image and exercises candidate denial/limits. See [extensions](EXTENSIONS.md)
+for the narrow contract, threat model, limits and review storage.

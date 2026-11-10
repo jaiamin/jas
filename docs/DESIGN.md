@@ -761,3 +761,12 @@ These guide composition; stock shadcn primitives and JAS tokens remain authorita
 The Environments heading marks the shared Layers2 glyph with `data-partial-fill="layers"`,
 reusing the sidebar selection rule to fill only its top layer. Keep the lower
 layer as an outline.
+
+Candidates extends the same Environments tabs without restyling installed rules.
+Show current containment status, an explicit keyless check, a locally retained
+specification and immutable review history. Disable executable validation until
+local qualification passes. A passed candidate still says Needs world review;
+experiment execution stays disabled. Keep public checks and pinned artifact
+provenance inspectable, errors recoverable, drafts intact, and late responses
+from changing the selected review or navigation. Compose existing stock fields,
+buttons and separators; retain mobile/theme/keyboard behavior.
