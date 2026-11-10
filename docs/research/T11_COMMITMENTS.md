@@ -141,6 +141,38 @@ Remaining: UI/browser, whole backend and final frontend/static/build checks,
 production smoke, frozen T01 after/positive parity, latest accepted-base merge,
 final custody/clean commit and fresh root acceptance.
 
+The first full backend attempt retained 54 failures/1,440 passes: catalog-wide
+fixtures still assumed ten environments, three bound actors, and the old
+artifact tool schema. All five distinct fixture assumptions were updated for
+the fourth actor/new artifact World; the affected catalog regressions then
+passed **757 tests**. A final whole-suite run remains required.
+
+The complete rerun then passed **1,494 tests / 0 failures** at source key
+`05207ddab00544b3406892c00619dfbb792dfa29ba81c21d013587428e372eb9`;
+before/after inventories match. This qualifies the backend source, not the
+unfinished UI. The first frontend test attempt could not start because its
+partially installed tree lacked tinyglobby; it is an infrastructure failure,
+not a behavioral red result.
+
+Frontend installation held the shared lock but hit ENOSPC after shared available
+space fell from 379,551,744 to 133,496,832 bytes before the phase. Its failed
+receipt/source qualification is retained. Removing only this checkout's
+disposable pnpm download cache recovered 107,180,032 bytes. An offline retry
+failed explicitly on absent registry metadata. The private partially populated
+package store is retained; an operational request for about 250 MiB additional
+headroom is pending. No other agent's resources/evidence were changed.
+
+Root subsequently authorized pnpm-managed immutable guest-store reuse with
+offline/frozen-store and private metadata/state. The failed private dependency
+trees alone were removed, restoring 318,382,080 available bytes. The locked
+recovery stopped on `ERR_PNPM_NO_OFFLINE_META` for `@babel/helper-plugin-utils`;
+all 24,681 guest-store files retained identical content hashes/modes/mtimes and
+the frozen lockfile stayed at SHA256
+`6097048683788686d8dde275af047a6acc7b10a5e0e37a8f1408fb681f085f58`.
+No fetch, force, skipped checks or store-write relaxation was attempted. Private
+metadata-cache recovery is now the operational request; normal source work and
+backend qualification continue.
+
 Retained failures include discovery ENOSPC, a canceled own queued check (143),
 test-oracle purpose/replay-key/endpoint mistakes and a missing temporary parent,
 lint/type findings, an initially refused pytest symlink during compression, and

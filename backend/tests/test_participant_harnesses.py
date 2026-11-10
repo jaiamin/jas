@@ -641,7 +641,11 @@ def test_tool_policy_runs_existing_worlds_and_keeps_profile_model_assignment_ind
             "operation": "decide" if read else "observe",
             "decision": decision_for(read[0]["result"]) if read else None,
         }
-        if template["id"] in {"artifact_workspace", "distributed_coordination"}:
+        if template["id"] in {
+            "artifact_workspace",
+            "distributed_coordination",
+            "reliance_commitments",
+        }:
             output["read"] = None
         return ModelResponse(
             parts=[ToolCallPart(info.output_tools[0].name, output)],

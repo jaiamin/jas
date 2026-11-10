@@ -287,9 +287,9 @@ probes expose choice outcomes without creating financial results or changing a r
 Replay validates observations, settlements, measurements, checkpoints and actual
 read/rejection receipts using recorded proposals, without model sampling.
 
-DB8/export9/libraryv5 are atomic because the typed mechanics/default parameter
+T10 introduced atomic DB8/export9/libraryv5 because the typed mechanics/default parameter
 changes canonical serialized designs, mechanics hashes and legal schemas. Capture1,
-comparison1, tool-using 2.0.0 and direct-action 1.0.0 remain current. No old-data
+comparison1, tool-using 2.0.0 and direct-action 1.0.0 retain their meanings. No old-data
 alias, migration or reset is performed. This World adds neither a general distributed
 runtime nor the commitment/institution workflows of T11/T12.
 
@@ -531,7 +531,7 @@ Applying a different lens changes its
 requirements/account without rewriting the source analysis. Unsupported lens
 versions are rejected without conversion; historical analyses without a lens
 remain unassessed and cannot supply lens inputs. Database9/export10/capture1/
-comparison1/libraryv5 and harness contracts retain their existing meanings;
+comparison1/libraryv6 and harness contracts retain their existing meanings;
 this additive versioned analysis JSON requires no migration or reset.
 
 Agent replies lead with a deterministic source-linked account, then expose claim
@@ -575,7 +575,7 @@ continues to settle its own consequences independently of model prose.
 
 `EnvironmentLibrary` owns reusable custom setups as versioned JSON records in a sibling
 `<database-stem>.environments` directory. An in-memory workspace uses a temporary library.
-The v5 library contract stores an `EnvironmentMechanics` definition and named configuration
+The v6 library contract stores an `EnvironmentMechanics` definition and named configuration
 examples, independently of questions, participant/model/harness assignments, condition arms,
 replication and analysis. Examples declare unbound mechanic roles; experiment authors bind
 those roles to their own participants. Memory remains an experiment/harness choice.
