@@ -9,7 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 
 from .config import setting
-from .claim_support import AnalysisFinding, LensKey, assess, capture_lens
+from .claim_support import LensKey, assess, capture_lens
 from .db import (
     Analysis,
     Condition,
@@ -215,14 +215,14 @@ class CommonsPayoffRequest(Strict):
 
 class EvidenceInvestigation(Strict):
     requests: list[HistoryRequest | TurnRequest | ResearchRequest] = Field(max_length=4)
-    answer: AnalysisFinding | None
+    answer: Finding | None
 
 
 class Investigation(Strict):
     requests: list[HistoryRequest | TurnRequest | CommonsPayoffRequest | ResearchRequest] = Field(
         max_length=4
     )
-    answer: AnalysisFinding | None
+    answer: Finding | None
 
 
 class Assistants:
@@ -898,7 +898,7 @@ class Assistants:
             self._progress(key, "investigating", examined)
             finalizing = iteration == 3
             result = await self.models.generate(
-                AnalysisFinding if finalizing else investigation,
+                Finding if finalizing else investigation,
                 model=setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol"),
                 instructions=INVESTIGATION + RESEARCH_OPERATIONS,
                 purpose="analysis",
@@ -948,7 +948,7 @@ class Assistants:
                     "comparisons": index["comparisons"],
                     "lens": lens,
                     "evidence_index": {k: v for k, v in index.items() if k != "lens"},
-                    "support": assess(AnalysisFinding.model_validate(answer.model_dump()), lens),
+                    "support": assess(answer, lens),
                 }
             assert isinstance(result, (Investigation, EvidenceInvestigation))
             if not result.requests:

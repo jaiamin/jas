@@ -438,10 +438,25 @@ class Citation(Strict):
     turn: int = Field(ge=0)
 
 
+class ClaimProposal(Strict):
+    kind: Literal["calculation", "annotation", "causal", "intent"]
+    text: str = Field(min_length=1, max_length=2000)
+    calculation_id: str | None = None
+    value: float | None = Field(default=None, allow_inf_nan=False)
+    scope: Literal["captured_run", "observed_pairs", "planned_sample"] = "captured_run"
+    pairs: int | None = Field(default=None, ge=0)
+
+
 class Finding(Strict):
     answer: str = Field(min_length=1)
     citations: list[Citation]
     caveats: list[str]
+    claims: list[ClaimProposal] = Field(
+        default_factory=list, max_length=24,
+        description="Optional assertions about selected recorded evidence. Omit for general "
+        "answers. Calculation assertions reference supplied frozen calculation IDs; "
+        "wording and annotations are not automatically certified.",
+    )
 
 
 class PlannedStudy(Strict):

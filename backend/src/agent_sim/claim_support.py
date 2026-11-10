@@ -3,12 +3,11 @@
 import math
 from typing import Literal
 
-from pydantic import Field
 from sqlalchemy import select
 
 from .comparisons import ComparisonRun, compare_runs
 from .db import Measurement, RecordedEvent, Turn, digest
-from .domain import Finding, Strict
+from .domain import Finding
 from .metrics import aggregate_metrics
 from .research import Research, event_dict
 
@@ -25,19 +24,6 @@ LENSES = {
         "feasible_commitment_resolution",
     ]},
 }
-
-
-class ClaimProposal(Strict):
-    kind: Literal["calculation", "annotation", "causal", "intent"]
-    text: str = Field(min_length=1, max_length=2000)
-    calculation_id: str | None = None
-    value: float | None = Field(default=None, allow_inf_nan=False)
-    scope: Literal["captured_run", "observed_pairs", "planned_sample"] = "captured_run"
-    pairs: int | None = Field(default=None, ge=0)
-
-
-class AnalysisFinding(Finding):
-    claims: list[ClaimProposal] = Field(default_factory=list, max_length=24)
 
 
 def capture_lens(
@@ -197,7 +183,7 @@ def capture_lens(
     }
 
 
-def assess(answer: AnalysisFinding, lens: dict) -> dict:
+def assess(answer: Finding, lens: dict) -> dict:
     calculations = {row["id"]: row for row in lens["calculations"]}
     assessed = []
     for claim in answer.claims:
