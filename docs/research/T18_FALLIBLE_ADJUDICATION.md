@@ -1,11 +1,21 @@
 # T18 / #29: declared fallible adjudication
 
-Status: **bounded BACKEND implementation; incomplete and unaccepted**.
-ROOT released S1 once, S2 conditionally and S3 after the intended red. Setup,
-own-import proof and the frozen first tracer red are recorded below. Frontend,
-browser/service/production, new dependencies, actual provider/paid/live/held-out
-work and publication remain held. Earlier preparation statements below record
-that source-only boundary; later observations supersede their pending status.
+Status: **bounded backend and unit UI implementation; incomplete and unaccepted**.
+Exact accepted ROOT `370f835b45bdc7172de5c719aae1ffa1e185b3f5` is normally
+merged at `7f77172e9a1f6575515a5a150422c65680c6c62a`. The combined contract is
+**DB13 / export14 / library9**, with artifact rule2.0.0 and reliance rule1.0.1.
+Backend qualification is partly complete at this source; UI05 has11 feature/
+safety passes plus affected lint and forced TypeScript. The earlier373-case
+manifest and36-case affected UI suite retain their original source boundaries.
+
+ROOT explicitly lifted its temporary resource hold after browser-slot closure.
+The prior bounded backend/unit/static/normal-hook release resumes; exact accepted
+`46d48d5e615eb22920219df26d42249ca2e5c0e0` is the next normal merge target.
+One existing-environment build is conditional on combined-source backend and
+affected UI/static/type passes plus evidence room. Browser/service18131/production,
+actual provider/paid/live/held-out work and publication remain separately held.
+No setup repeat is planned. Earlier statements below are chronological records;
+later observations supersede their pending status without relabeling old results.
 
 ## Authority and source identities
 
@@ -17,12 +27,13 @@ that source-only boundary; later observations supersede their pending status.
 - ROOT subsequently published the documentation-only policy frontier
   `fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd`, whose parent is `a4ed8743`.
   Its compact-report qualification section was read directly from that commit.
-  Normal merge is required before ticket completion, after the commit/hook
-  stage is released. It has not been merged during this preparation.
+  At the initial preparation boundary its normal merge was pending. It is now
+  included through the accepted normal integration history recorded below.
 - Accepted application repair remains
   `23de5e48ed1aab790d634ec434cf10e8f91c7d9b`. Source diff from that repair to
-  initial HEAD contains no `backend/src` or `frontend/src` changes. Current
-  contracts remain **DB11 / export12 / library7**. No provisional T12/T17 merge.
+  initial HEAD contains no `backend/src` or `frontend/src` changes. Contracts
+  at that initial frontier were **DB11 / export12 / library7**. No provisional
+  T12/T17 merge occurred; later exact accepted T12 integration is recorded below.
 - Read the explicitly invoked `implement-spec` and `tdd` skills, including
   TDD's test/mocking guidance; the spec, exact T18 ticket, current handoff and
   progress, compact historical report, final product plan, architecture, design,
@@ -151,7 +162,8 @@ Proposed minimal public declaration for the tracer:
 These are proposed public data fields, not a mandate for new Engine/adaptor
 hierarchies. Ordinary artifact tasks retain their deterministic meaning.
 
-**Model authority remains an explicit unknown.** The spec fixes Sol for the
+**Initial model-authority question (subsequently resolved by ROOT below).**
+The spec fixes Sol for the
 Researcher/planner/assistant and Luna for model participants; it does not name
 an adjudicator. The tracer uses an in-process scripted boundary under the
 already priced Sol identity solely to separate auxiliary work from Luna. That
@@ -1029,3 +1041,206 @@ globalty and a four-case real-HTTP/engine merge slice pass before the merge comm
 including original T18 tracer and both workflow generic fixtures. No provisional
 sibling enters ancestry. All upcoming root370f-prefixed jobs freshly hash source;
 pre370f results remain at their actual boundary.
+
+Personal source review identifies one additional identity boundary to freeze
+before outputs (UI05): a base profile assigned Sol with a full condition override
+whose model is explicitly null executes the condition's Luna. Review must show
+Participant Luna and the separate explicitly declared Sol judge; it must not fall
+through to the superseded base-profile model. A keyless public-HTTP oracle saves
+that exact protocol, checks immutable Study assignment versus actual Run model
+and zero requests/spend. Its shell Study fixture then verifies that same identity
+before any POST. This is configuration correctness, not model substitution or
+judgment-accuracy evidence.
+
+UI05's independent public-HTTP assignment oracle passes (2 cases includingCC03).
+`ui05-red-01` genuinely observes Participant Sol where actual execution is Luna.
+Minimal repair selects the complete override profile before its model fallback;
+it never falls back to the overridden base profile. UI05's read-count assertion
+is tightened to its actual frozen semantic requirement (zero control/execution
+POST), avoiding a dependency on polling frequency. Original red bytes/log retained.
+
+`ui05-green-01` passes all11 feature/safety cases; affected lint and forced
+TypeScript pass as separate jobs. The eight-file affected suite's36 earlier
+passes precede UI05; its final-source rerun remains pending, not presumed37.
+The assignment HTTP oracle and UI fixture keep Luna's actual participant identity
+independent of the declared Sol adjudicator. No provider work or judgment-accuracy
+measurement follows from these keyless cases.
+
+## ROOT370f qualification and temporary resource hold
+
+Fresh `root370f-` queue indices0–12 all pass: feature43, literal current-contract/
+privacy7, engine/ledger38, artifact lifecycle3, two participant segments, two
+exposure segments, four claim-support segments and domain/DB/library contracts.
+These executions have new source identities; the older373-case manifest is
+immutable and remains historical to its pre-T12 source. No combined final case
+total is claimed before source/case deduplication and the remaining groups.
+
+The last closed job, `root370f-inherited-contracts-01`, entered at389816320,
+observed minimum384933888 and exited at385232896 bytes free; its shared lock
+released. Own evidence immediately before final receipt serialization was
+50082008 logical /53514240 inode-allocated bytes. These are observations at that
+boundary, not a current allocation or a fresh measurement during the hold.
+
+ROOT then held every new check/capture/hook/heavy command for its sole browser
+slot. The own recorder's `root-resource-hold` guard now returns125 before attempt
+creation, capture, preflight, lock acquisition or command dispatch. This guard is
+source-prepared, not exercised during the hold. No new compaction, floor change,
+setup preflight, service or browser command was started. Prior recorder versions
+and every actual adverse/sequencing attempt remain retained.
+
+After explicit ROOT release, resume only unrun queue indices13–24 (reference
+policies, researcher design, uncertainty, reliance, API/deletion and protected
+T01 baseline units). Additional separately segmented current-source coverage
+must include both concurrent export-snapshot cases omitted by the older claim
+selectors, artifact exposure/shared-input cases, T12 workflow review/public
+interaction cases, assistant execution-usage cases, unchanged T01 CURRENT and
+the affected eight-file UI suite. Run final static checks only after the pending
+source additions; build a new source/case-deduplicated manifest and source seal.
+Original frozen T01 scores/bytes and literal v1–v4 references stay unchanged;
+no retired BEFORE/reference/comparator is reconstructed or claimed retained.
+
+The post-release forecast is unchanged: each backend job has at most128MiB
+incremental peak and16MiB new output, total own evidence64MiB; each UI job starts
+with4MiB output allowance and total frontend evidence16MiB. Shared flock entry
+must be at least268435456 bytes (134217728 floor plus128MiB forecast), with lock
+release between jobs. If needed after release, compact only closed own SQLite
+with exact restoration maps, independent full readback and at most8MiB added
+peak under the unchanged floor. No queued work is authorized by elapsed time or
+an unreserved free-space observation. T18 remains incomplete/unaccepted.
+
+ROOT subsequently explicitly lifted that temporary hold after its browser slot
+teardown. The marker may now be removed and only unrun qualification resumed.
+New exact accepted46d48d5e adds a Markdown image-link repair/docs after370f without
+persisted-meaning changes; normally merge it at the next coherent checkpoint.
+Conditional ONE existing-environment frontend build uses a fresh own output
+directory, entry>=268435456, at most128MiB incremental peak and16MiB output within
+the frontend16MiB cap, after backend/affected UI/static/type passes and proved
+evidence room. Retain its first result; no automatic rerun. Browser/service/
+production/provider/paid/live/held-out stages remain held.
+
+## Frozen Researcher adjudication-cost oracle RC01 (before outputs)
+
+ROOT's source-review concern is not yet a product-red observation. Public HTTP
+and FunctionModel are the existing approved seam. Save the original pickup
+protocol, execute its write at turn1, then accept an analysis at that cutoff.
+Hold its actual provider response while committing turn2's submission and judge.
+Complete that analysis, then ask a fresh analysis at turn2 after the earlier
+analysis itself has settled. Capture the actual JSON indices delivered to the
+Researcher provider, not a private index-method return or a fabricated DB row.
+
+Literal independently worked DEVELOPMENT expectations:
+
+| Accepted cutoff | Existing participant-only `execution_usage` | Separately discoverable `adjudication_usage` |
+| --- | --- | --- |
+| turn1 | 1 request;101 input/37 output;29µ;partial=false | 0 requests/tokens/cost;partial=false |
+| turn2 | 2 requests;202 input/74 output;58µ;partial=false | 1 request;41 input/19 output;272µ;partial=false |
+
+The two components describe330µ observed task work at turn2, without redefining
+participant effort or including any analysis request/reservation. The exact
+analysis charge is intentionally outside the literal task-work oracle: streamed
+FunctionModel analysis token accounting is real but is not a fixed-price fixture.
+Require actual settled analysis ledger rows with positive charge, while both
+provider-bound components stay at the literals above. The first saved/provider
+index retains cutoff1 and zero judge usage after the run reaches2; final output
+retains the same frozen cost fields. No implicit total alias, live spend or
+judgment-accuracy claim. If the complete current index already supplies both
+components, record pass-first preservation and make no product change. Otherwise
+observe the specific missing-component red before the minimal repair; preserve
+the existing participant-only field and explain both components to the Researcher.
+
+Resource sequencing adverse attempts remain separate: the first reliance
+integration admission refused its16MiB reservation before dispatch, and the
+subsequent8MiB reservation terminated the actual job at its output cap. Neither
+is a product red or complete regression pass. Closed own SQLite was independently
+read back and mapped before compaction; next selections must split this workload
+and keep the unchanged floor/peak/evidence ceilings. Recorder output overrides
+can only tighten a released ceiling; they never lower the free-space floor.
+
+RC01 attempt `researcher-judge-cost-red-01` completed the HTTP/judge/analysis
+sequence, then failed on the fixture's nonexistent `charged_usd` request-summary
+key before the intended missing-component assertion. The public key is
+`cost_usd`; this is not a product red. Its original test bytes and adverse output
+are retained. This newly authored test was also initially untracked, so that
+first receipt's tracked-source map does not identify its test body; preserve
+that attribution limit and stage the amended test before the next invocation.
+The frozen numeric/cutoff/exclusion oracle is unchanged. No production edit.
+
+`researcher-judge-cost-red-02` reaches the intended assertion: the actual turn2
+Researcher provider index has participant58µ but no separate judge272µ component.
+Both positive-charge analysis calls settle, participant literals and cutoff1/2
+pass first. This is the observed product red, preceding the minimal additional
+`adjudication_usage` query/field and Researcher instruction. Existing
+`execution_usage` remains participant-only; no total alias or ledger mutation.
+
+`researcher-judge-cost-green-01` passes the unchanged literal RC01 oracle. The
+new query uses the existing usage aggregate and excludes all analysis purposes;
+its cutoff condition is identical to the participant component. The existing
+candidate combined13/14/9 contract remains one meaning: participant usage is not
+redefined. No aliases, migration or reset are introduced. Ruff formatting follows.
+
+The broad API attempt also exceeded the tightened8MiB output cap and was
+terminated15; it is retained incomplete, not a product failure or full API pass.
+The older measured final API output was already slightly above8MiB; that cap was
+too tight. Subsequent API data/validation/chat selections and reliance World/
+design/HTTP/followup selections are explicitly split before execution. Deletion
+and three guarded frozen-baseline unit groups pass separately. Their source
+attribution includes the RC01 repair; the earlier root370f groups precede it.
+
+New receipts now deduplicate their safely selected source-metadata maps by a
+content-addressed own file, with path/length/SHA references and immutable-byte
+verification on reuse. This changes only future receipt representation; no old
+receipt/log/result/map is rewritten or removed. Source payloads still undergo
+protected-name and symlink-descendant rejection before any read. The final
+manifest must resolve and validate both original inline and new referenced maps.
+Closed own SQLite is still the only compacted payload class.
+
+ROOT explicitly extended compaction ONCE to closed own receipt metadata.
+`compact-closed-receipts-once-01` first froze70 exact metadata paths, then archived
+7595728 original bytes into2305242 bytes. SHA256 is
+`4d886c91a124c27a2233b8d4af5d142bb75b19c926ff25dc5e87770a922c084e`.
+Full independent member byte/hash/size/mode/owner verification and a complete
+gzip-trailer read preceded duplicate-original removal. Original atime/mtime and
+inode metadata are retained in `.tools/t18/receipt-compaction-01/restoration.json`;
+the exact metadata-only selection remains beside it. **Those70 old raw receipt
+paths now require that map/archive**; they are compacted, not retired or rewritten.
+Logs/JUnit/results, failures, source-map objects, env/caches and other owners stay
+unchanged. Observed shared added peak2322432 (<8MiB), unchanged floor, lock released;
+own retained61269825→56029142 logical bytes. No second receipt compaction is granted.
+
+Split reliance HTTP passes. Its separate four-followup regression fails on the
+fourth proposal after three complete proposals, with the enforced input-limit
+error, not a fixture-schema omission. Read-only closed-DB diagnostics identify
+the failed stage as `reviewing`; scoping/candidate validation completed. The
+three successful reviews' recorded outer request JSON sizes are173011,182611,
+192213 bytes (outer encoding differs from the actual bounded input). No provider
+retry, extra charge or limit change follows from this diagnosis.
+
+Before the next output, freeze the preservation oracle: all four HTTP proposals
+must retain identical full source identity, conditions and four participants;
+every provider-bound retained prior proposal must still carry the full same
+source. The existing180000-byte input guard stays unchanged. Compact JSON
+serialization in the planner call may remove separator whitespace only: no
+decoded field, schema, source pin, conversation member or quote is removed.
+The inherited failed case is the observed red before this one-line repair.
+
+`reliance-followup-compact-green-01` passes all four proposals and every new full
+source/profile preservation assertion. Exact reusable-source/captured-chat scope,
+simple two-person binding and library pin/edit/deletion/save cases pass separately.
+The combined two-case preservation attempt exceeded its4MiB output cap before
+completion; retain it unqualified, then use the two explicitly separated cases
+with8MiB ceilings. No limit is raised, no context is truncated and no automatic
+provider retry is added. The compact serializer changes encoded request bytes
+and their actual reservation size, not decoded protocol/history meaning.
+
+All remaining segmented API, new concurrent export-snapshot, artifact delivery/
+shared-input/cutoff/replay, workflow World/public engine/interactions and targeted
+assistant usage/scope/model cases pass at their recorded sources. Global Ruff
+and ty pass after the RC01/serializer repairs. The first RC01 type attempt lacked
+a fixture portal-None assertion; its diagnostic remains retained before the
+test-only narrowing and final type pass. The four-case original HTTP tracer/
+combined-assignment/RC01 group also passes. Source/case dedup remains pending:
+earlier root370f groups precede the two repaired modules and will not be called
+whole-tree final-source executions. Their exact deltas and affected followups
+must be recorded by the new manifest. Next coherent checkpoint precedes normal
+exact46d48d5e merge, final UI/matrix/T01/source identity qualification and the
+conditional single build; no held browser/provider work has begun.

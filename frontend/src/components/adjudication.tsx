@@ -27,13 +27,13 @@ export function AdjudicationReview({
     condition && design
       ? [
           ...new Set(
-            design.profiles.map(
-              (profile) =>
-                condition.profile_overrides.find((p) => p.key === profile.key)
-                  ?.model ??
-                profile.model ??
-                condition.model,
-            ),
+            design.profiles.map((profile) => {
+              const resolved =
+                condition.profile_overrides.find(
+                  (p) => p.key === profile.key,
+                ) ?? profile;
+              return resolved.model ?? condition.model;
+            }),
           ),
         ]
       : [];

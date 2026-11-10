@@ -1,4 +1,57 @@
-# T18 bounded UI qualified; new accepted ROOT merge next (2026-11-10)
+# T18 ROOT370f merged; bounded qualification resumed (2026-11-10)
+
+Current coherent checkpoint: RC01 actual Researcher-provider index red→green
+preserves participant58µ and separately exposes judge272µ at cutoff2, excluding
+analyses and retaining cutoff1. Four HTTP feature/assignment/tracer cases and
+global Ruff/ty pass. Four-followup inherited input-size red→compact JSON→green
+preserves complete source/history without changing180000 guard; separate source,
+pin/edit/deletion and simple-scope cases pass. New segmented export/exposure/
+workflow/assistant/API qualification passes with all cap/admission/type attempts
+retained.70 closed own receipts are losslessly archived once with exact map and
+independent readback; old raw receipt paths require
+`.tools/t18/receipt-compaction-01/restoration.json`. Logs/results are untouched.
+Next: normal exact46d48d5e merge; final affected UI/matrix/T01, source/case manifest
+and conditional ONE distinct-output build. Incomplete/unaccepted; no live accuracy.
+
+ROOT explicitly released its temporary resource hold after browser-slot teardown.
+Resume only unrun bounded backend/unit/static/normal-hook work. Exact accepted
+46d48d5e615eb22920219df26d42249ca2e5c0e0 supersedes370f as final normal-merge target;
+Markdown/docs repair adds no persisted meaning. ONE distinct-output existing-env
+frontend build is conditional on backend/affected UI/static/type passes and
+evidence room, entry>=268435456/128MiB peak,16MiB frontend total; no auto-rerun.
+All browser/services/production/provider/paid/live/held-out work stays held.
+
+Previous natural closed boundary:
+
+Same assigned checkout/branch and sole writer; no descendants. Exact accepted
+370f835b45bdc7172de5c719aae1ffa1e185b3f5 normally merged at7f77172e, preserving
+accepted T12 and ROOT repairs with both histories. Hooks/Gitleaks passed.
+Combined DB13/export14/library9, artifact2.0.0 and reliance1.0.1; no adapters,
+migration, reset or provisional sibling merge. Prior373-case manifest is
+historical to its pre-T12 source, never final-source qualification.
+
+UI05 observed a genuine review/actual-participant identity red: a null full
+override executes condition Luna, but review displayed superseded base Sol.
+Minimal resolution repair passes11 feature/safety cases, separate lint/forced
+types and two public-HTTP assignment/boundary cases. Prior affected36-case suite
+precedes UI05; final eight-file rerun remains pending. Fresh root370f backend
+queue indices0–12 pass through domain/DB/library;13–24 and newly affected export/
+exposure/workflow/assistant cases plus unchanged T01 CURRENT remain queued.
+Whole Ruff/global ty at the merge source passed before UI05's added HTTP test.
+
+ROOT's temporary hold now forbids all NEW checks/captures/hooks/compaction/heavy
+commands until explicit browser-closure release. All own jobs are closed and
+lock released; own recorder hold marker guards before attempts/captures/locks.
+Source-only edits may continue. No hold preflight or setup retry. After release,
+unchanged entry>=268435456 and128MiB peak/job,16MiB backend outputs/job,64MiB
+total; bounded UI initially4MiB/job,16MiB frontend evidence. Closed own SQLite
+compaction remains conditional on release, <=8MiB peak with exact maps/readback.
+Build/browser/services/18131/production/provider/paid/live/held-out/publication
+remain separately held. T18 incomplete/unaccepted; live accuracy unverified.
+See [T18 report](docs/research/T18_FALLIBLE_ADJUDICATION.md) for source attribution,
+frozen oracles, adverse attempts and next groups. No protected payload was read.
+
+# Historical T18 bounded UI checkpoint before ROOT370f merge
 
 Frozen actual-shell UI01 red preceded all product UI edits. UI01–04 now pass10
 feature/safety cases;8file affected suite passes36, affected10file Biome and

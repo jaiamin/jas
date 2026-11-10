@@ -681,3 +681,96 @@ test("abstention, untrusted explanation and unknown judge usage cannot become en
     true,
   );
 });
+
+test("Study review resolves an explicit null model override to Luna while Sol remains the judge", async () => {
+  const value = structuredClone(judgedDesign);
+  // The saved base profile and full override are distinct immutable assignments.
+  const profile = { ...value.profiles[0], model: "openai:gpt-6.1-sol" };
+  const conditions = [
+    {
+      ...value.conditions[0],
+      profile_overrides: [{ ...profile, model: null }],
+    },
+  ];
+  const fetcher = vi.fn(async (path: string, options?: RequestInit) => {
+    if (options?.method === "POST")
+      throw new Error("Unexpected execution request");
+    if (path === "/api/runs") return Response.json([]);
+    if (path === "/api/studies/judged-study")
+      return Response.json({
+        id: "judged-study",
+        design: { ...value, profiles: [profile], conditions },
+        revision: 1,
+        sha256: "fixture-assignment",
+        plan_id: null,
+        revisions: [
+          { number: 1, created: "2026-11-10", sha256: "fixture-assignment" },
+        ],
+        preflight,
+        runs: [readySummary],
+        results: [],
+        effects: [],
+        usage: readySummary.usage,
+        comparison: {
+          version: 1,
+          revision: 1,
+          design_sha256: "fixture-assignment",
+          matching_unit: "Immutable revision × seed × repetition",
+          inference_unit: "Seed cluster",
+          independent_support: null,
+          dependence: "Single fixture run",
+          uncertainty_reason: "No independent support",
+          selection_assumption: "Unverified",
+          conditions: [],
+          cells: [],
+        },
+      });
+    throw new Error(`Unexpected UI fixture HTTP request: ${path}`);
+  });
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => ({
+      matches: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })),
+  );
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      observe = vi.fn();
+      unobserve = vi.fn();
+      disconnect = vi.fn();
+    },
+  );
+  vi.stubGlobal("fetch", fetcher);
+  renderWithQueries(
+    <MemoryRouter initialEntries={["/studies/judged-study"]}>
+      <Routes>
+        <Route
+          element={
+            <WorkspaceProvider>
+              <WorkspaceShell />
+            </WorkspaceProvider>
+          }
+        >
+          <Route path="/studies/:id" element={<Study />} />
+        </Route>
+      </Routes>
+    </MemoryRouter>,
+  );
+  await screen.findByRole("heading", {
+    name: "Pickup note under fallible review",
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Review scope and question mapping" }),
+  );
+  const declaration = await screen.findByRole("region", {
+    name: "Fallible adjudication",
+  });
+  expect(declaration).toHaveTextContent("Participant: openai:gpt-6-luna");
+  expect(declaration).toHaveTextContent("Adjudicator openai:gpt-6.1-sol");
+  expect(
+    fetcher.mock.calls.filter(([, options]) => options?.method === "POST"),
+  ).toHaveLength(0);
+});

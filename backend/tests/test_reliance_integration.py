@@ -409,6 +409,11 @@ def test_four_role_followups_preserve_full_source_and_remain_reviewable(client, 
         assert proposal["conditions"] == Design.model_validate(design).model_dump()["conditions"]
         proposals.append(proposal)
     assert all(p["environment_source"] == proposals[0]["environment_source"] for p in proposals)
+    for request in calls:
+        for previous in request["prompt"].get("conversation", []):
+            if retained := previous.get("proposal"):
+                assert retained["environment_source"] == proposals[0]["environment_source"]
+                assert retained["profiles"] == design["profiles"]
     assert len(client.get(f"/api/chats/{chat_id}").json()) == 4
     assert client.get("/api/studies").json() == []
     assert all(row["model"] is not None for row in calls)

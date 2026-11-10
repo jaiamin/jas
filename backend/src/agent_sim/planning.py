@@ -330,7 +330,7 @@ class Planner:
             output,
             model=model,
             instructions=instruction,
-            prompt=json.dumps(data),
+            prompt=json.dumps(data, separators=(",", ":")),
             purpose="design",
             analysis_id=key,
             openai_reasoning_effort="medium",

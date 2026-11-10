@@ -1,5 +1,40 @@
 # Research harness implementation progress
 
+T18 RC01 public-HTTP/provider-bound index red→green now separates participant58µ
+and judge272µ with frozen cutoff/analysis exclusion; no relabeling/accuracy claim.
+Four focused HTTP cases, current Ruff/ty and segmented affected backend checks
+pass. Four-followup input-size regression passes after compact JSON preserving
+all decoded source/history and the180000 guard. All adverse attempts retained.
+ONE authorized70-receipt lossless compaction has exact restoration map/readback;
+raw old receipt paths require that map. Exact46d48d5e merge and final UI/matrix/
+T01/source-case manifest/conditional build remain. T18 incomplete/unaccepted.
+
+ROOT explicitly lifted the temporary T18 hold after browser-slot closure; prior
+bounded backend/unit/static/normal-hook release resumes. Final normal merge is
+exact46d48d5e615eb22920219df26d42249ca2e5c0e0 (Markdown/docs after370f, no persisted
+meaning changes). ONE fresh-output existing-env build is conditional on current
+backend/affected UI/static/types and evidence room; browser/services/providers
+remain held. The earlier natural closed boundary follows.
+
+T18 exact accepted370f835b normally merged at7f77172e with hooks/Gitleaks PASS;
+combinedDB13/export14/library9, artifact2.0.0/reliance1.0.1, accepted T12 preserved.
+UI05 genuine participant-identity red→minimal repair→11 feature/safety passes,
+separate affected lint/forced types and two public-HTTP assignment/boundary cases.
+Fresh root370f backend queue0–12 passes through domain/DB/library. Remaining
+groups13–24, affected concurrent-export/shared-exposure/workflow/assistant cases,
+unchanged T01 CURRENT, final eight-file UI rerun and source/case manifest remain.
+Older373 backend/36 UI passes retain their original source attribution.
+
+Temporary ROOT resource hold: all own jobs closed/lock released; no new checks,
+captures, hooks, compaction or heavy commands until explicit browser closure.
+Own recorder guard is source-prepared before attempts/captures/locks; not run
+during the hold. Source-only edits continue; unchanged128MiB/job peak/floors and
+64MiB own evidence cap apply after release. No setup repeats. Build/browser/
+services18131/production/providers/paid/live/held-out/publication stay held.
+T18 incomplete/unaccepted; live judgment accuracy unverified.
+
+Historical T18 pre370f merge boundary:
+
 T18 bounded UI10feature/safety and36affected units,10file Biome and forced types
 PASS after recorded actual-shell reds; original semantic oracle/adverse attempts
 retained. Exact40c32ff6 normally merged5250765e. CombinedDB13/export14/library9
