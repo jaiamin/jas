@@ -55,6 +55,66 @@ Statuses reflect accepted integration work, not automatic GitHub closure. Issues
 remain open until the tracker resolves them through draft PR #32. No
 default-branch merge, auto-merge or history rewrite is authorized.
 
+### T07 fresh integration review — accepted (2026-11-10)
+
+No-ff merge `a92105f` joins assigned accepted `e2d42c9` and exact clean T07 source
+`e7800d3`, preserving accepted T08 `9750caf` and cutoff repair `de5556b`. Fresh
+sole-writer Standards/Spec review found and repaired two request-delivery defects
+at `d5568c1`: T08 capability content was missed, while compacted-away observation
+content was falsely counted. Bindings now inspect exact authorized content in
+the final bounded request and use that request's own confirmed/unknown receipt.
+Supported browser fixture checkpoints are `0d1bb29` and `777a609`.
+
+- [x] Preserve complete source evidence before merge; verify indexed files,
+  symlinks/opaque fixtures, all compression mappings and stable source state.
+- [x] Merge actual T07/T08 contracts without losing discretionary capabilities,
+  privacy, cutoff metadata, accounting, source-pinned reuse or frozen comparisons.
+- [x] Independently exercise private actor/target/observer, public/absent controls,
+  utilities, all memory modes, capability delivery/compaction, failures, disabled
+  operations, source pointers, restore and frozen pending analysis membership.
+- [x] Run fresh combined backend/static/frontend/browser checks and current-
+  contract/22-turn parity while retaining the unchanged frozen oracle failures.
+- [x] Record evidence, findings/repairs/limits, accepted frontier and closed services.
+
+Current contracts: **DB6/export7/capture1/comparison1/libraryv3**, tool-using
+**2.0.0** and direct-action **1.0.0**. Fresh results: **1,094 full combined backend**,
+108 affected tests, **377 independent API/World checks**, **111 frontend tests**,
+Ruff/ty/lint/TypeScript/build, **61 distinct browser flows + one passing repeat**,
+five T08 neutral cases/47 scripted requests and five inherited T04 cases pass.
+Browser coverage includes actual T08+exposure capabilities and source pointers,
+pause/restore, both themes/desktop+phone, loading/retry and 52 shared workflows.
+Backend/full source is clean tracked-only `d5568c1`; later changes are browser
+fixtures and prose. Child 1,038-backend/182-browser results and accepted T03
+production smoke are inherited, not fresh combined-source/full-browser evidence.
+
+Frozen T01 keeps **exit 1/four export-v4 failures/four failed terminal flags**,
+zero new regressions/improvements. Positive current contracts and exact **22
+turns/five runs** pass; all **885 differences** are classified, zero unexplained.
+No attention/belief/intent, independent-unit, automatic causal, live or held-out
+competence claim follows. All benchmark files, Sol fixes/tests, copied probes,
+T02 isolation, T03 pinned mechanics and T06 frozen membership remain protected.
+
+Complete source copy: **2,164 files / 251,316,466 bytes / 176 symlinks**, canonical
+`94c1edfd1d132b8d93bcf287a24e95b80f40b60e4b358e2a7dbdb28fced627f8`;
+2,161 child-indexed files and 499 compression mappings verify. Fresh immutable
+manifest: **1,659 files / 93,761,566 bytes / 263 symlinks / 51 main checks**,
+11 nonzero attempts; file SHA-256
+`b0d3a0b83a67b17037f0c539d086eb600febdd9e4557fbe41387e476195667f3`.
+Later acceptance/manifest-helper records are separate. All prior evidence and
+1,745 Sol artifacts remain unchanged; source checkout/stash stay intact. Fresh
+closed outputs alone were losslessly compressed: 822 mappings/294,764,108 bytes
+saved. No valuable/frozen evidence or other-agent environment was altered.
+Retained failures include oracle/fixture corrections, valid compaction red,
+static/build/Ruff and timing failures, plus review-helper failures with corrected
+successes. See the [full fresh report](research/T07_EXPOSURE.md#fresh-integration-acceptance-2026-11-10)
+for exact attribution, manifests/digests and limitations.
+
+Owned 18218 services/browser are closed. Review spend **$0**, no paid Luna;
+global Sol remains **$0.611632/55 requests**, **$9.388368 remaining**. No descendants,
+publication, tracker/PR edits/watches/closure or worktree cleanup. **T19 is Ready**;
+**T10 waits for accepted T09**. T09/T15 remain running and unpolled. Root resumes
+shared-checkout ownership and owns draft PR #32 publication/new frontier.
+
 ### T08 fresh integration review — accepted (2026-11-10)
 
 Assigned sole-writer review starts at `6b7ad09`, source clean `b2ac25c`.
@@ -118,19 +178,19 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Integrated and accepted | `48600d2` |
 | T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Integrated and accepted | `a4ab9ee` |
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Integrated and accepted | `aaf3a15`; [evidence](research/T06_UNCERTAINTY.md) |
-| T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Fresh integration review in progress | —; source `e7800d3` |
+| T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Accepted after combined-contract review repairs | `a92105f`, `d5568c1` |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Integrated and accepted after cutoff receipt repair | `9750caf`, `de5556b`; [evidence](research/T08_PARTICIPANT_CONTEXT.md) |
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | In progress in isolated worktree | — |
-| T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Waiting | — |
+| T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Waiting on accepted T09 | — |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Waiting | — |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Waiting | — |
 | T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Waiting | — |
 | T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Waiting on T13 | — |
-| T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Assigned to fresh isolated implementer | — |
+| T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | In progress in isolated worktree | — |
 | T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Waiting | — |
 | T17 | [#28](https://github.com/jaiamin/ass/issues/28) Have the Researcher generate and validate a genuinely new mechanic | T13, T16 | Waiting | — |
 | T18 | [#29](https://github.com/jaiamin/ass/issues/29) Inspect a declared fallible adjudication and replay its consequences | T09 | Waiting | — |
-| T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Waiting on accepted T07 | — |
+| T19 | [#30](https://github.com/jaiamin/ass/issues/30) Assess evidence-supported claims and reanalyze through read-only lenses | T06, T07 | Ready | — |
 | T20 | [#31](https://github.com/jaiamin/ass/issues/31) Demonstrate the small-population generalization milestone | T11, T12, T14, T15, T17, T18, T19 | Waiting | — |
 
 ## Preserved drafts and spending
@@ -199,21 +259,16 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. T01/T02/T03/T04/T05/T06/T08 are accepted with preserved evidence. Parent
-   resumes sole shared-checkout ownership for publication, then assigns T07 to
-   a fresh sole-writer review on 18218 and T15 to a fresh isolated implementer
-   on 18121. T09/#20 remains running on 18120,
-   unpolled. T19 waits for accepted T07; T14 waits for T13.
-2. Parent queues a separate fresh T07 merger from clean
-   `t3/research-exposure-capture` at `e7800d3a400fc133a7b6a0204d5e03ed4d8bb79e`,
-   checkout `/home/agent/.t3/worktrees/workspace/t3-8e1a5746`. Parent reports
-   `data/t07/` has 2,161 indexed files, manifest SHA-256
-   `05790f34953d8b841c3ab66b17e8c466d863f61245dbb7beea69661f2e192841`;
-   preserve/verify it before merging and read `docs/research/T07_EXPOSURE.md`.
-   These are coordination pointers, not T08 review or preservation of T07.
-3. Parent owns draft PR #32 publication; no hosted state was queried by this
-   merger. Keep source-stamped inherited and new evidence, retained failures,
-   source worktrees and all manifests. Live and held-out gates stay unverified.
+1. T01/T02/T03/T04/T05/T06/T07/T08 are accepted with preserved evidence. Root
+   resumes sole shared-checkout ownership for publication and the new frontier.
+   **T19 is Ready**; T10 still waits on accepted T09, and T14 on accepted T13.
+2. T09/#20 and T15/#26 continue in isolated checkouts on 18120/18121, running and
+   unpolled. This T07 review did not inspect or change either task. No new
+   implementation was launched from the shared review checkout.
+3. Root owns publication to https://github.com/jaiamin/ass/pull/32. The T07 merger
+   made coherent local acceptance commits only; no hosted state, tracker edits,
+   watches or cleanup. Retain all source worktrees, immutable manifests, failed
+   attempts and exact source/case attribution. Live/held-out gates stay unverified.
 
 ## T02 integration — accepted after review fixes
 
