@@ -254,8 +254,6 @@ class Activation:
         output: type[OutputT],
         prompt: str,
         instructions: str,
-        *,
-        transcript: list[dict] | None = None,
     ) -> OutputT:
         if self.row.requests >= self.harness.max_requests:
             raise EffortLimit("request_limit")
@@ -278,7 +276,13 @@ class Activation:
             max_tokens=self.design.response_tokens,
             turn=self.run.turn + 1,
             openai_reasoning_effort=self.design.openai_reasoning_effort,
-            input_evidence=input_bindings(self.row.identity.get("exposure"), transcript),
+            input_evidence=input_bindings(
+                self.row.identity.get("exposure"),
+                cast(Observation, self.row.observation),
+                prompt,
+                activation_id=self.row.id,
+                tool_using=self.harness.kind == "tool_using",
+            ),
         )
 
     async def decide(self, paused: Callable[[], bool]) -> Decision | None:
@@ -450,7 +454,6 @@ class ToolUsing:
                 (ARTIFACT_TOOL_INSTRUCTIONS + TOOL_INSTRUCTIONS.removeprefix(INSTRUCTIONS))
                 if artifact_tools
                 else TOOL_INSTRUCTIONS,
-                transcript=transcript,
             )
             request = result.model_dump()
             kind = request["operation"]

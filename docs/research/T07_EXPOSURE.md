@@ -1,8 +1,9 @@
 # T07 treatment opportunity, delivery and observation
 
 Ticket: [#18](https://github.com/jaiamin/ass/issues/18). T07 implementation is
-complete on `t3/research-exposure-capture`, pending the parent's fresh integration
-review. No descendants, extra checkout, publication, tracker edit or paid call.
+complete on `t3/research-exposure-capture`. Its historical implementation evidence
+is retained below; fresh combined T07/T08 integration review follows at the end.
+No descendants, publication, tracker edit or paid call.
 
 ## Acceptance
 

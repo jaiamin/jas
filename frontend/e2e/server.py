@@ -115,7 +115,9 @@ def deterministic_participants(app):
                         "operation": "plan",
                         "decision": None,
                         "plan": {
-                            "text": "Check the observed budget before choosing an available amount.",
+                            "text": (
+                                "Check the observed budget before choosing an available amount."
+                            ),
                             "source_ids": [journal[0]["result"]["source"]["id"]],
                         },
                     }
@@ -123,7 +125,12 @@ def deterministic_participants(app):
                     output = {
                         "operation": "retrieve",
                         "decision": None,
-                        "retrieval": {"query": "budget", "limit": 2},
+                        "retrieval": {
+                            "query": "t07-private-disclosure"
+                            if os.getenv("JAS_TEST_EXPOSURE") == "1"
+                            else "budget",
+                            "limit": 2,
+                        },
                     }
                 elif len(journal) == 3:
                     output = {

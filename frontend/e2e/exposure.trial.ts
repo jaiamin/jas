@@ -2,11 +2,14 @@ import { writeFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 import { templateDesign } from "./helpers.js";
 
+const contextMode = process.env.JAS_TEST_CONTEXT === "1";
+const expectedRequests = contextMode ? 30 : 24;
+
 for (const { theme, width } of [
   { theme: "light", width: 1440 },
   { theme: "dark", width: 390 },
 ]) {
-  test(`inspect actual disclosure inputs and export · ${theme} · ${width}`, async ({
+  test(`inspect actual disclosure inputs and export · ${contextMode ? "capabilities" : "reads"} · ${theme} · ${width}`, async ({
     page,
     request,
   }, testInfo) => {
@@ -29,14 +32,14 @@ for (const { theme, width } of [
     design.conditions[0].harness = {
       kind: "tool_using",
       version: "2.0.0",
-      max_requests: 4,
-      max_tool_operations: 3,
+      max_requests: contextMode ? 5 : 4,
+      max_tool_operations: contextMode ? 4 : 3,
       tools: ["observe", "rules", "legal_options"],
       capabilities: {
-        planning: "disabled",
-        memory: "disabled",
-        investigation: "disabled",
-        verification: "disabled",
+        planning: "actor_plan_v1",
+        memory: "actor_sources_v1",
+        investigation: "actor_inspection_v1",
+        verification: "legal_evidence_v1",
       },
       max_context_chars: 16000,
       max_memory_items: 8,
@@ -53,16 +56,44 @@ for (const { theme, width } of [
       .poll(
         async () =>
           (await (await request.get(`/api/runs/${rid}`)).json()).summary.status,
+        // The context provider pauses one second in each of six activations.
+        { timeout: contextMode ? 15_000 : 5_000 },
       )
       .toBe("complete");
     const record = await (await request.get(`/api/runs/${rid}`)).json();
     const report = await (
       await request.get(`/api/runs/${rid}/exposure`)
     ).json();
-    expect(record.summary.usage.requests).toBe(24);
+    expect(record.summary.usage.requests).toBe(expectedRequests);
     expect(
       report.summary.find((c: { kind: string }) => c.kind === "message"),
     ).toMatchObject({ eligible_participants: 2, exposed_participants: 2 });
+    if (contextMode) {
+      const target = report.opportunities.find(
+        (opportunity: { kind: string; participant: string }) =>
+          opportunity.kind === "message" &&
+          opportunity.participant === "morgan",
+      );
+      expect(target.inputs.length).toBeGreaterThan(0);
+      expect(
+        target.inputs.every((input: { source: { pointer: string } }) =>
+          input.source.pointer.includes("/result/items/"),
+        ),
+      ).toBe(true);
+      expect(record.activations[0].identity.harness.version).toBe("2.0.0");
+      expect(
+        record.activations[0].operations.map(
+          (operation: { kind: string }) => operation.kind,
+        ),
+      ).toEqual([
+        "investigate",
+        "plan",
+        "retrieve",
+        "verify",
+        "decide",
+        "settle",
+      ]);
+    }
     await page.addInitScript(
       (theme) => localStorage.setItem("jas-theme", theme),
       theme,
@@ -116,7 +147,7 @@ for (const { theme, width } of [
     ).json();
     expect(downloaded.version).toBe(8);
     expect(downloaded.exposure).toEqual([report]);
-    expect(downloaded.requests).toHaveLength(24);
+    expect(downloaded.requests).toHaveLength(expectedRequests);
     await request.post(`/api/runs/${rid}/verify`);
     expect(
       (await (await request.get(`/api/runs/${rid}`)).json()).summary.usage,

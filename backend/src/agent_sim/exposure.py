@@ -4,7 +4,9 @@ Only researcher inspection consumes these records. Participant prompts are assem
 from actor projections as before; neither this index nor researcher sources enter them.
 """
 
+import json
 from collections.abc import Sequence
+from typing import Any
 
 from .db import ParticipantActivation, ProviderCall, RecordedEvent, Revision, Run, digest
 from .domain import Design, Treatment
@@ -62,49 +64,91 @@ def available_inputs(
     return {"version": VERSION, "items": items}
 
 
-def input_bindings(capture: dict | None, transcript: list[dict] | None) -> dict | None:
+def input_bindings(
+    capture: dict | None,
+    observation: Observation,
+    prompt: str,
+    *,
+    activation_id: str,
+    tool_using: bool,
+) -> dict | None:
     """Bind only the inputs actually used by the two current participant policies.
 
     A read result sitting in the operation journal is available locally, not yet
-    delivered. It becomes a candidate input when a subsequent prompt includes it.
+    delivered. Bind against the final bounded prompt, including current capability
+    source contents, rather than the unabridged local journal. Receipt references,
+    self-authored plans and verification metadata do not deliver original sources.
     A provider response is additionally required to confirm receipt.
     """
     if capture is None or capture.get("version") != VERSION:
         return None
+    payload = json.loads(prompt)
+    # Each surface maps a fragment of this activation's frozen observation to
+    # content actually present in this particular request. No producer or source
+    # lookup happens here: World recipient authorization already selected capture.
+    surfaces: list[tuple[list, list, Any, int | None]] = []
+    if not tool_using:
+        surfaces.append(([], [], payload, None))
+    else:
+        for index, operation in enumerate(payload["operations"]):
+            if operation["status"] != "complete" or "receipt" in operation:
+                continue
+            kind = operation["kind"]
+            root = ["operations", index, "result"]
+            result = operation["result"]
+            if kind in {"observe", "rules", "legal_options"}:
+                prefix = (
+                    [] if kind == "observe" else ["rules" if kind == "rules" else "legal_actions"]
+                )
+                surfaces.append((prefix, root, result, operation["number"]))
+            elif kind in {"investigate", "retrieve"}:
+                sources = (
+                    [(result["source"], [*root, "source", "content"])]
+                    if kind == "investigate"
+                    else [
+                        (source, [*root, "items", i, "content"])
+                        for i, source in enumerate(result["items"])
+                    ]
+                )
+                for source, target in sources:
+                    origin = source["origin"]
+                    if origin["activation_id"] != activation_id or "field" not in origin:
+                        continue
+                    field = origin["field"]
+                    prefix = [] if field == "state" else [field]
+                    if origin.get("index") is not None:
+                        prefix.append(origin["index"])
+                    surfaces.append((prefix, target, source["content"], operation["number"]))
+
+    def at(value: Any, path: list) -> tuple[bool, Any]:
+        try:
+            for part in path:
+                value = value[part]
+            return True, value
+        except (KeyError, IndexError, TypeError):
+            return False, None
+
     items = []
     for item in capture["items"]:
         key = item["key"]
         if key == "choices":
             items.append({"key": key, "surface": "schema", "path": [], "operation": None})
-        if transcript is None:
-            items.extend(
-                {"key": key, "surface": "prompt", "path": path, "operation": None}
-                for path in item["paths"]
-            )
-        else:
-            for index, operation in enumerate(transcript):
-                if operation["status"] != "complete":
+        for prefix, target, content, number in surfaces:
+            for path in item["paths"]:
+                if path[: len(prefix)] != prefix:
                     continue
-                for path in item["paths"]:
-                    kind = operation["kind"]
-                    if (
-                        kind == "observe"
-                        or (kind == "rules" and key == "rules")
-                        or (kind == "legal_options" and key == "choices")
-                    ):
-                        items.append(
-                            {
-                                "key": key,
-                                "surface": "prompt",
-                                "path": [
-                                    "operations",
-                                    index,
-                                    "result",
-                                    *(path if kind == "observe" else []),
-                                ],
-                                "operation": operation["number"],
-                            }
-                        )
+                relative = path[len(prefix) :]
+                present, actual = at(content, relative)
+                authorized, expected = at(observation, path)
+                if present and authorized and digest(actual) == digest(expected):
+                    items.append(
+                        {
+                            "key": key,
+                            "surface": "prompt",
+                            "path": [*target, *relative],
+                            "operation": number,
+                        }
+                    )
     return {"version": VERSION, "items": items}
 
 

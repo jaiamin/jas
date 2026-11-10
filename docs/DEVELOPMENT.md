@@ -89,7 +89,8 @@ T08 adds selectable planning, retrieval, investigation and accessible verificati
 policies to **tool-using harness 2.0.0**. Direct action remains 1.0.0. Unsupported
 tool-using 1.0.0 designs are explicitly rejected: preserve their source/data/exports
 for inspection with that contract; no migration, compatibility reader or automatic
-reset is performed. T08 itself added no database schema change. T09 advances the combined current
+reset is performed. T08 itself added no database schema change; T07 added exposure
+capture v1 in export v7. T09 advances the combined current
 contract to database schema 7, export 8 and environment-library v4 for typed artifact operations
 and complete versioned work/checkpoints.
 New runs must pin the current harness. Each capability can be explicitly disabled;

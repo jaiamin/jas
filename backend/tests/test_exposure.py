@@ -79,7 +79,7 @@ def exposure_client(tmp_path, monkeypatch, request):
     provider = FunctionModel(function=respond)
     monkeypatch.setattr(app.state.models, "model", lambda _: provider)
     with TestClient(app, base_url="http://localhost") as client:
-        output = Path("data/t07/cases") / uuid4().hex
+        output = Path(os.getenv("JAS_T07_EVIDENCE_DIR", "data/t07/cases")) / uuid4().hex
         output.mkdir(parents=True)
         transport = client.request
         operations = []
@@ -546,8 +546,9 @@ def test_current_inspection_and_export_share_source_linked_exposure_without_muta
     assert client.get(f"/api/runs/{rid}/exposure?through_turn=-1").status_code == 422
 
 
+@pytest.mark.parametrize("operation", ["observe", "retrieve"])
 def test_read_result_is_not_included_until_sent_after_pause_and_restore(
-    tmp_path, monkeypatch, design
+    tmp_path, monkeypatch, design, operation
 ):
     import asyncio
 
@@ -564,8 +565,13 @@ def test_read_result_is_not_included_until_sent_after_pause_and_restore(
             await release.wait()
         final = choice(prompt["actor"], disclose=prompt["round"] == 1)
         output = {
-            "operation": "decide" if prompt["operations"] else "observe",
+            "operation": "decide" if prompt["operations"] else operation,
             "decision": final if prompt["operations"] else None,
+            **(
+                {"retrieval": {"query": "disclosure"}}
+                if not prompt["operations"] and operation == "retrieve"
+                else {}
+            ),
         }
         return ModelResponse(
             parts=[ToolCallPart(info.output_tools[0].name, output)],
@@ -611,7 +617,7 @@ def test_read_result_is_not_included_until_sent_after_pause_and_restore(
         assert resumed["summary"]["usage"]["requests"] == 8
         assert PRIVATE in json.dumps(prompts[-1]["operations"])
         assert client.post(f"/api/runs/{rid}/verify").json()["verified_turns"] == 4
-        path = Path("data/t07/cases") / uuid4().hex
+        path = Path(os.getenv("JAS_T07_EVIDENCE_DIR", "data/t07/cases")) / uuid4().hex
         path.mkdir(parents=True)
         (path / "restore.json").write_text(
             json.dumps(
