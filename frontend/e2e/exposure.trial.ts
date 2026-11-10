@@ -145,7 +145,7 @@ for (const { theme, width } of [
     const downloaded = await (
       await request.get(`/api/studies/${sid}/export`)
     ).json();
-    expect(downloaded.version).toBe(11);
+    expect(downloaded.version).toBe(12);
     expect(downloaded.exposure).toEqual([report]);
     expect(downloaded.requests).toHaveLength(expectedRequests);
     await request.post(`/api/runs/${rid}/verify`);

@@ -34,7 +34,7 @@ def test_named_tasks_complete_early_and_replay(runtime, design):
     rid = research.study(sid)["runs"][0]["id"]
 
     async def exercise():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
 
     asyncio.run(exercise())

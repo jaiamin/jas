@@ -233,7 +233,7 @@ for (const { theme, width } of [
     const exported = await (
       await request.get(`/api/studies/${created.id}/export`)
     ).json();
-    expect(exported.version).toBe(11);
+    expect(exported.version).toBe(12);
     expect(
       exported.activations
         .filter((a: { run_id: string }) => a.run_id === scripted.id)

@@ -6,6 +6,7 @@ from sqlalchemy import select, update
 
 from .db import (
     Database,
+    InvestigationRecord,
     Measurement,
     ParticipantActivation,
     ParticipantOperation,
@@ -17,6 +18,7 @@ from .db import (
 )
 from .diagnostics import log_failure
 from .domain import Decision, ReadArtifact
+from .investigation_limits import InvestigationStopped, claim_turn, claim_work
 from .llm import LanguageModels, ProviderFailure
 from .participants import Activation
 from .participants import operations as activation_record_operations
@@ -40,6 +42,7 @@ class Engine:
             raise ValueError("Concurrent runs must be between 1 and 16")
         self.concurrency = concurrency
         self.capacity = asyncio.Semaphore(concurrency)
+        self.start_lock = asyncio.Lock()
         self.closing = False
         with db.session.begin() as session:
             session.execute(
@@ -62,13 +65,24 @@ class Engine:
             )
         models.recover()
 
-    def start(self, run_id: str, *, single: bool = False) -> None:
+    async def start(self, run_id: str, *, single: bool = False) -> None:
         """Enqueue a run on the current event loop without waiting for completion."""
         loop = asyncio.get_running_loop()
         if self.closing:
             raise ValueError("Server is stopping")
-        if self._preflight(run_id):
-            self._enqueue(loop, run_id, single=single)
+        async with self.start_lock:
+            existing = self.executions.get(run_id)
+            if existing and existing.task and not existing.task.done():
+                return
+            preparing = Execution()
+            self.executions[run_id] = preparing
+            try:
+                eligible = await asyncio.to_thread(self._preflight, run_id)
+                if eligible and not preparing.stop and not self.closing:
+                    self._enqueue(loop, run_id, single=single)
+            finally:
+                if self.executions.get(run_id) is preparing:
+                    del self.executions[run_id]
 
     def _preflight(self, run_id: str) -> bool:
         """Check eligibility without changing run state or scheduling work."""
@@ -78,6 +92,21 @@ class Engine:
         run, design, condition = self.research.configuration(run_id)
         if run.status == "complete":
             return False
+        if run.investigation_id:
+            with self.db.session() as session:
+                parent = session.get_one(InvestigationRecord, run.investigation_id)
+                if parent.status != "running":
+                    raise ValueError("Resume the investigation before starting its runs")
+                if session.scalar(
+                    select(ParticipantActivation.id)
+                    .where(
+                        ParticipantActivation.run_id == run_id,
+                        ParticipantActivation.turn == run.turn + 1,
+                        ParticipantActivation.status.in_(["failed", "interrupted"]),
+                    )
+                    .limit(1)
+                ):
+                    raise InvestigationStopped("interrupted_turn_requires_new_attempt")
         self.research.check_run(run_id)
         if run.checkpoint.get("rule_version") != get_environment(design.environment).world.version:
             raise ValueError("This saved run requires a different environment rule version")
@@ -91,6 +120,9 @@ class Engine:
     ) -> None:
         with self.db.session.begin() as session:
             saved = session.get_one(Run, run_id)
+            if not saved.investigation_started and saved.investigation_id:
+                claim_work(self.db, saved.investigation_id, "runs")
+                saved.investigation_started = True
             saved.status, saved.error = "queued", None
         execution = Execution()
         self.executions[run_id] = execution
@@ -120,6 +152,8 @@ class Engine:
                         self._status(run_id, "complete")
                         return
                     self._status(run_id, "running")
+                    if run.investigation_id:
+                        claim_turn(self.db, run_id)
                     observation = world.observe(actor)
                     profile = next(p for p in design.profiles if p.key == actor)
                     observation["you"] = profile.model_dump()
@@ -231,6 +265,8 @@ class Engine:
                 "Request interrupted; last committed checkpoint retained. Usage may be unknown.",
             )
             raise
+        except InvestigationStopped as error:
+            self._status(run_id, "failed", error.reason)
         except (ValueError, ProviderFailure) as error:
             if isinstance(error, ValueError):
                 log_failure(f"Run {run_id} failed", error)
@@ -260,15 +296,32 @@ class Engine:
                     )
                 )
 
-    def start_study(self, study_id: str) -> None:
+    async def start_study(self, study_id: str) -> None:
         loop = asyncio.get_running_loop()
         if self.closing:
             raise ValueError("Server is stopping")
-        candidates = [
-            run.id for run in self.research.operational_runs(study_id) if self._preflight(run.id)
-        ]
-        for run_id in candidates:
-            self._enqueue(loop, run_id)
+        async with self.start_lock:
+            preparing = {
+                run.id: Execution()
+                for run in self.research.operational_runs(study_id)
+                if not (
+                    (existing := self.executions.get(run.id))
+                    and existing.task
+                    and not existing.task.done()
+                )
+            }
+            self.executions.update(preparing)
+            try:
+                candidates = await asyncio.to_thread(
+                    lambda: [run_id for run_id in preparing if self._preflight(run_id)]
+                )
+                for run_id in candidates:
+                    if not preparing[run_id].stop and not self.closing:
+                        self._enqueue(loop, run_id)
+            finally:
+                for run_id, execution in preparing.items():
+                    if self.executions.get(run_id) is execution:
+                        del self.executions[run_id]
 
     def pause_study(self, study_id: str) -> None:
         for run in self.research.operational_runs(study_id):

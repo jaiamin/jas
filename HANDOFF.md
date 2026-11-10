@@ -1,3 +1,12 @@
+# T14 independent integration review in progress (2026-11-10)
+
+The fresh reviewer holds sole tracked writing. Frozen personal Standards/Spec plan:
+[review](docs/research/T14_INTEGRATION_REVIEW.md), checkpoint `c209d8a3`.
+The exact T14 source is being merged with its original second-parent identity;
+T14 remains unaccepted pending this review. All current root coordination below
+and the original T14 handoff at the end remain preserved. T12/T17 are excluded.
+No publication, paid work or milestone acceptance is authorized here.
+
 # Latest boundary — T14 complete, preserved and queued for fresh review (2026-11-10)
 
 T14 implementer returned clean `b304029e85aeb97ccb02a2151d4bb6101bf684fc`,
@@ -3786,3 +3795,63 @@ removed; port18120 is closed. No paid calls, real credential/clipboard access,
 stash operations, other-worktree changes, pushes or publication. T09 spend $0;
 no live/held-out claim, general generated execution, T10 timing or T18 adjudication.
 Root owns fresh acceptance and publication; this handoff does not accept T09.
+
+# Preserved source handoff at exact b304029e
+
+# T14 implementation — ready for independent integration review
+
+Branch `t3/t14-investigation-workflow`; starting accepted ancestor
+`8df6c592c453e0595406711b9fe3387f8c385d26`. Only T14 is implemented here;
+root acceptance is separate. Accepted T16 `b0446d9` is integrated; the latest root-documented
+accepted documentary tip included is
+`29af3413c12c8b14f24bc0faae39933fe56e344d` (includes d276b70/published375877c).
+Combined current contract: **DB11/export12/library7**, with explicit historical
+rejections. Never merge provisional review tips.
+
+Read [T14 plan/oracles/decisions/chronology](docs/research/T14_INVESTIGATIONS.md).
+Implementation and qualification are complete; root acceptance is separate.
+Latest DEVELOPMENT: all27 T14 HTTP cases pass within63 lifecycle cases;61
+analysis/admitted-world and715 contract/World cases pass separately. Ruff/ty,
+frontend lint/116 units/33 files, forced TypeScript and clean Vite pass. Five
+post-merge HTTP browser flows pass; a separately strengthened caveat-disclosure
+check passes. Actual worker completion/cancel-save/export/privacy/accounting
+witnesses pass. All reds and fixture/helper failures remain. Slice17 retains its
+unobserved-red/TDD sequencing gap;2135/2100 microdollars are scripted accounting.
+Frozen T01 before/after retain four export-v4 failures/failed flags/exit1;
+unchanged comparison has zero regressions/improvements. Separate positive parity
+passes66 checks over five runs/22 turns/22 exact complete bounded requests and
+matching reserve/settle ledgers (770 synthetic microdollars, actual0). Its initial
+metadata-classifier failure and explicit post-output provenance amendment remain.
+Final-source
+production passes at canonical source3533412b: all44 backend files and53 clean-
+build assets match; non-root/keyless containment/admission/World replay pass;
+owned container/volume/image teardown succeeds and flock is released. Engine
+replay/accounting remain separately source-matched HTTP qualification. Four
+post-merge ordinary-composer browser cases also pass. Final Ruff/lint pass; the
+lint failure on caveat-test formatting is retained and repaired with whitespace.
+Exact memberships/input reuse, all attempts/failures and final source are indexed
+in `data/t14/closure/final-01/manifest.json` and `qualification.json`.
+
+All heavy phases use shared checks.lock and unchanged134217728-byte floor;
+production retained268435456. Production-priority window is released. Root has
+completed one coordinated normal-manager Python-only consumer of this exact
+uv-cache into T17's distinct venv; root reports its own-import proof and released
+flock. Own uv/pnpm caches
+are preserved coordinated package resources; no cleanup/move/manual tree reuse.
+Use only private `.venv`/node_modules; root's immutable uv CLI remains read-only.
+Root `.venv`/node_modules/dist were removed without affecting private imports.
+
+Evidence only `data/t14/`, one canonical content-keyed tracked-only archive per
+tree. Every nested snapshot uses invocation-local protected exclusions. Never
+inspect/hash/copy protected pbcopy/real configuration or synthetic .env bytes.
+Preserve stash/source/custody/unique evidence/maps. Closed-output maps retain
+verified hash/size/mode/integer-ns restoration. No inherited ignored helpers.
+No paid/held-out work, descendants, extra checkouts, push/PR/issue/publication.
+Browser18127 uses existing retained headless shell via
+`PLAYWRIGHT_BROWSERS_PATH=/home/agent/.cache/ms-playwright`; production uses18128.
+No own service/browser/container/volume/image is running; preview reports
+unavailable/no owned tab. Root independently verified the production source/assets
+and teardown, adding no product execution or T14 acceptance. Next: root's fresh
+integration merger/review. No push/PR/issue/watch was performed here.
+Historical handoffs below remain preserved.
+
