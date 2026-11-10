@@ -1,3 +1,77 @@
+# T15 integration review in progress (2026-11-10)
+
+Sole writer: fresh review in assigned checkout, port 18221. Exact source
+`0d026992b4740675dac3afce54b17a785e3f73e9` merges into `5ef3abf`.
+Acceptance criteria: preserve DB7/export8/library4 and T07/T08/T09 repairs;
+prove no-provider reference execution, honest input/privacy/configuration,
+all-attempt effort/matching/frozen analysis, public editor/results/export and
+unchanged frozen T01 failed flags with positive 22-turn/five-run parity.
+Complete custody passes 10,198 files / 94 checks / 131 inner proofs without
+extraction. Review Standards and Spec separately; no delegation, paid calls,
+publication, reset, stash or pbcopy access. Evidence: ignored
+`.tools/research-harness/evidence/T15-integration/`, keyed verified source
+archives, every check command/exit and dirty-source identity.
+
+Next: commit coherent no-ff merge retaining artifact guards and controls;
+reproduce suspected omitted artifact-read effort at the public API, fix only
+concrete findings red/green, qualify combined backend/static/frontend/browser
+and frozen/current-contract behavior, pack closed outputs with full member
+verification, and return clean ownership to root. T10/T19 resources untouched.
+
+# T15 implementation handoff — fresh review pending (2026-11-10)
+
+T15/#26 is implemented on `t3/t15-reference-policies` in assigned checkout
+`/home/agent/.t3/worktrees/workspace/t3-42a04788`; it is not accepted or integrated.
+Read [the acceptance/evidence report](docs/research/T15_BASELINES.md). Final clean
+HEAD, exact source/check hashes and complete ignored evidence inventory are in
+`data/t15/manifest.json`, written after the handoff commit. Preserve all `data/t15/`.
+No push, PR/issue operation, descendant or additional checkout was used.
+
+Starting accepted integration was `e2d42c9`. Merge `0457e9a` includes documented
+accepted T07 `32fa9fc`; final merge `82a7e88` includes latest documented accepted
+base `59e20935c17bd8ea0c44f712790ffeeb38ebb83b` (frontier prose only). The local
+integration ref's provisional T09 merge remains excluded. Current contracts are
+DB6/export7/capture1/comparison1/library-v3/tool-using2.0.0/direct-action1.0.0;
+T15 adds self-versioned scripted1.0.0 without another bump, adapter or migration.
+
+Three actual non-model conditions choose zero contribution, half legal maximum,
+or the actor's own observed private signal. They use only authorized participant
+inputs/legal schema and construct/call no provider. Memory/tool/deliberation
+ablations save native factors, with no fallback. Revisions/reuse/export preserve
+configuration/source identity. Existing review/comparison/record/export flows show
+actual effort, different envelopes, missingness, selected support and uncertainty.
+Normal model participants stay Luna; app Researcher/planner/assistant stay Sol.
+Accepted T03/T04/T05/T06/T07/T08 semantics and T02 admission gate are protected.
+
+Observed checks: all **1,116 backend cases** pass on `832ae46`; after the narrow
+ledger-charge reporting repair, **120 affected tests** and Ruff/ty/lint pass on
+clean `f2ec318`. Earlier working-source runs are precisely attributed in the
+report and final manifest. Combined **111 frontend tests**, TypeScript/build pass; frontend
+sources are unchanged thereafter. Shared browser shards report **46 pass / one
+ENOSPC failure**, **54 pass**, **40 pass**, **41 pass**; the latter two use final
+runtime source. Final accepted-base checks pass **two flagged-flow repeats**, **two
+reference**, **five harness/exposure** and **two context** flows on owned 18121.
+No full all-green shared-browser run or post-repair full-backend run is claimed.
+Interrupted/ENOSPC/fixture-invocation failures remain preserved and classified.
+The inherited combined `test:harness` command requires `JAS_TEST_EXPOSURE=1` to
+generate its expected disclosure; unchanged assertions pass with that flag.
+
+All four neutral DEVELOPMENT cases pass: **32 planned runs**, 29 complete, one
+failed, one paused, one ready; 59 turns / 28 scripted decisions; controls make zero
+requests. FunctionModel records 46 synthetic provider-interface requests, 4,600
+input / 2,300 output tokens, 15 tool operations and $0.001610 ledger quote, actual
+spend $0. This establishes mechanics, not intelligence. Frozen T01 remains
+**exit 1 / four export-v4 failures / four failed flags**, zero regressions or
+improvements. Independent current-contract **22-turn / five-run** behavior and
+accounting parity passes; **812 differences classified**, none unexplained and
+zero canonical HTTP-operation differences. Historical/held-out files are unchanged.
+
+No fresh production smoke: deployment/runtime inputs are unchanged and accepted
+T03 smoke is inherited. Live/held-out gates remain unverified. No paid allocation;
+closed global Sol accounting stays $0.611632 / 55 known requests, $9.388368 remains.
+Luna still needs its own explicit allowance. Prior evidence/stash and credentials
+remain untouched; only owned services/browsers are closed. Parent owns fresh
+sole-writer merger review/publication to draft PR32.
 # Root coordination checkpoint — T09 accepted; next slice assigned (2026-11-10)
 
 Current accepted code: `12b35c9aafea3542cff5331ef521f9ed3f5ed3b6` on

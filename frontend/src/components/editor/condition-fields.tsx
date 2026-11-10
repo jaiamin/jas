@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Field,
+  FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldLegend,
@@ -121,7 +122,9 @@ export function ConditionFields({
                 {c.name || "Unnamed condition"}
               </span>
               <span className="ml-auto hidden max-w-48 truncate text-xs font-normal text-muted-foreground sm:inline">
-                {modelLabel(c.model)}
+                {c.harness.kind === "scripted"
+                  ? "Non-model control"
+                  : modelLabel(c.model)}
               </span>
             </AccordionTrigger>
             <AccordionContent>
@@ -153,6 +156,7 @@ export function ConditionFields({
                       id={`model-${c.key}`}
                       label={`Condition ${i + 1} model`}
                       value={c.model}
+                      disabled={c.harness.kind === "scripted"}
                       onValueChange={(v) =>
                         condition(i, { model: v as ModelId })
                       }
@@ -161,6 +165,11 @@ export function ConditionFields({
                         label: modelLabel(m.id),
                       }))}
                     />
+                    {c.harness.kind === "scripted" && (
+                      <FieldDescription>
+                        Configured model assignments are unused by this control.
+                      </FieldDescription>
+                    )}
                   </Field>
                   {environment.parameters.includes("endowment") && (
                     <>
@@ -254,6 +263,40 @@ export function ConditionFields({
                   index={i}
                   value={c.harness}
                   artifacts={design.environment === "artifact_workspace"}
+                  environment={design.environment}
+                  onAblation={(choice) => {
+                    if (c.harness.kind !== "tool_using") return;
+                    const harness = c.harness;
+                    condition(
+                      i,
+                      choice === "memory"
+                        ? {
+                            harness: {
+                              ...harness,
+                              capabilities: {
+                                ...harness.capabilities,
+                                memory: "disabled",
+                              },
+                            },
+                            parameters: { ...c.parameters, memory: "none" },
+                          }
+                        : choice === "tools"
+                          ? {
+                              harness: {
+                                ...harness,
+                                tools: [],
+                                max_tool_operations: 0,
+                                capabilities: {
+                                  planning: "disabled",
+                                  memory: "disabled",
+                                  investigation: "disabled",
+                                  verification: "disabled",
+                                },
+                              },
+                            }
+                          : { harness: { ...harness, max_requests: 1 } },
+                    );
+                  }}
                   onChange={(harness) => condition(i, { harness })}
                 />
                 <div className="flex flex-wrap gap-5">

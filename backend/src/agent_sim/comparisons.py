@@ -3,6 +3,7 @@
 import statistics
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+from decimal import Decimal
 
 from .domain import Design
 
@@ -51,6 +52,58 @@ class ComparisonRun:
     attempted: bool
     metrics: dict[str, float]
     error: str | None = None
+    effort: dict | None = None
+
+
+EFFORT_COUNTS = (
+    "activations",
+    "inference_attempts",
+    "tool_attempts",
+    "tool_operations",
+    "scripted_attempts",
+    "scripted_decisions",
+    "committed_decisions",
+    "reasoning_tokens",
+)
+
+
+def empty_effort() -> dict:
+    return {
+        "version": 1,
+        **dict.fromkeys(EFFORT_COUNTS, 0),
+        "usage": {
+            "requests": 0,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cost_usd": 0.0,
+            "partial": False,
+        },
+        "stop_reasons": {},
+        "request_statuses": {},
+        "implementation_sources": [],
+    }
+
+
+def total_effort(records: list[dict]) -> dict:
+    result = empty_effort()
+    result["captured_runs"] = len(records)
+    for effort in records:
+        for key in EFFORT_COUNTS:
+            result[key] += effort[key]
+        for key in ("requests", "input_tokens", "output_tokens"):
+            result["usage"][key] += effort["usage"][key]
+        result["usage"]["partial"] |= effort["usage"]["partial"]
+        for key in ("stop_reasons", "request_statuses"):
+            result[key] = dict(Counter(result[key]) + Counter(effort[key]))
+        for source in effort["implementation_sources"]:
+            if source not in result["implementation_sources"]:
+                result["implementation_sources"].append(source)
+    # Each run converts integer ledger microdollars once; preserve those decimal
+    # amounts while combining runs rather than accumulating binary float error.
+    result["usage"]["cost_usd"] = float(
+        sum((Decimal(str(e["usage"]["cost_usd"])) for e in records), Decimal(0))
+    )
+    return result
 
 
 def seed_mean(values: dict[int, list[float]]) -> float | None:
@@ -65,9 +118,7 @@ def sensitivity(metric: str, arms: list[list[dict]], design: Design) -> dict:
         for cell in arm
     )
     observed = all(
-        cell["status"] == "complete" and metric in cell["metrics"]
-        for arm in arms
-        for cell in arm
+        cell["status"] == "complete" and metric in cell["metrics"] for arm in arms for cell in arm
     )
     if not observed and (metric not in BOUNDED_ENDPOINTS or undefined):
         return {
@@ -128,6 +179,7 @@ def compare_runs(runs: list[ComparisonRun], design: Design) -> dict:
                     "attempted": run.attempted if run else False,
                     "reason": reason,
                     "metrics": run.metrics if run and status == "complete" else {},
+                    "effort": run.effort if run else None,
                 }
                 group.append(cell)
                 cells.append(cell)
@@ -150,6 +202,30 @@ def compare_runs(runs: list[ComparisonRun], design: Design) -> dict:
             {
                 "condition_key": condition.key,
                 "condition": condition.name,
+                "participant": {
+                    "version": 1,
+                    "kind": "non_model_control"
+                    if condition.harness.kind == "scripted"
+                    else "model_participant",
+                    "models": sorted(
+                        {p.model or condition.model for p in design.resolve(condition).profiles}
+                    )
+                    if condition.harness.kind != "scripted"
+                    else [],
+                    "configured_models": sorted(
+                        {p.model or condition.model for p in design.resolve(condition).profiles}
+                    ),
+                    "harness": condition.harness.model_dump(),
+                    "memory": condition.parameters.memory,
+                    "profiles": [p.model_dump() for p in design.resolve(condition).profiles],
+                    "inference": {
+                        "response_tokens": design.response_tokens,
+                        "openai_reasoning_effort": design.openai_reasoning_effort,
+                    }
+                    if condition.harness.kind != "scripted"
+                    else None,
+                },
+                "effort": total_effort([c["effort"] for c in group if c["effort"] is not None]),
                 "planned": len(group),
                 "attempted": sum(c["attempted"] for c in group),
                 "complete": statuses["complete"],
@@ -254,6 +330,13 @@ def compare_runs(runs: list[ComparisonRun], design: Design) -> dict:
             "independent population support is not established.",
             "uncertainty_reason": UNCERTAINTY,
             "selection_assumption": SELECTION,
+            "effort_scope": "Recorded work across every captured run and activation, including "
+            "failed, interrupted and unmatched attempts; not only outcome-eligible pairs. "
+            "Request limits are per activation; token limits are per request. "
+            "Reasoning tokens are included in output tokens, not additional tokens. "
+            "Partial usage retains pending/unknown ledger charges; unrecorded usage is not zero. "
+            "Configured model assignments are unused for declared non-model controls. "
+            "Different effort envelopes are experimental factors, not compute-matched evidence.",
             "conditions": conditions,
             "cells": cells,
         },

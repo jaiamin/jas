@@ -316,6 +316,16 @@ atomic reservation/settlement. Only the active actor's observation, rules and le
 options can be read; no operation accepts an actor or state selector. World.step
 independently validates the final decision. Reads never advance logical time.
 
+Scripted harness 1.0.0 runs declared non-model controls through that same activation,
+World settlement and replay path. `reference_policies.py` implements only keep credits,
+half the legal contribution maximum (rounded down), and choose the actor's private
+signal. Each accepts only the authorized actor observation and legal schema. The
+first two require commons; the last requires information. Unsupported policies/worlds
+are rejected. No provider is constructed, no request is sent and no model failure is
+replaced with a script. Identity records null actual model/provider/inference,
+separate unused configured assignments, implementation digest, input/schema hashes
+and a source/cutoff receipt. Scripts send no communication or self-authored memory.
+
 Tool-using conditions independently select versioned planning, memory retrieval,
 investigation and verification policies in `participant_context.py`, or explicitly
 disable each capability. Participants choose operations within the same inference/
@@ -485,6 +495,18 @@ new revisions. Analysis reads do not append participant evidence or provider cal
 Study export v8 includes this versioned comparison contract and persisted analysis
 snapshots, changing earlier consumer expectations. T06 changes no database columns and
 requires no data reset; historical evidence is never backfilled with invented states.
+
+T15 adds self-versioned participant configurations and effort captures to comparison1
+and run detail without changing matching or inference. They retain harness/capability
+policies, profiles, memory, inference limits and actual versus unused model assignments.
+Effort totals include every captured activation, even failed/interrupted/unmatched
+attempts: inference attempts, sent requests and statuses, successful/rejected tool
+work, scripted work, committed decisions, tokens, ledger charges, partial usage,
+stop reasons and implementation sources. Reasoning tokens are part of output tokens.
+Analysis freezes this evidence at submission alongside outcomes. Old frozen captures
+without effort remain explicitly uncaptured; they are never backfilled. Request
+limits apply per activation and output limits per request. Different envelopes are
+experimental factors, not evidence of a compute-matched comparison.
 
 ## Treatment exposure inspection
 

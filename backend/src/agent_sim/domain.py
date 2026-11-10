@@ -289,7 +289,20 @@ class ToolUsingHarness(Strict):
         return self
 
 
-ParticipantHarness = Annotated[DirectActionHarness | ToolUsingHarness, Field(discriminator="kind")]
+class ScriptedHarness(Strict):
+    """Declared non-model control; configured model assignments are not executed."""
+
+    kind: Literal["scripted"] = "scripted"
+    version: Literal["1.0.0"] = "1.0.0"
+    policy: Literal["commons_keep_v1", "commons_half_v1", "private_signal_v1"]
+    max_requests: Literal[0] = 0
+    max_tool_operations: Literal[0] = 0
+    tools: list[ParticipantTool] = Field(default_factory=list, max_length=0)
+
+
+ParticipantHarness = Annotated[
+    DirectActionHarness | ToolUsingHarness | ScriptedHarness, Field(discriminator="kind")
+]
 
 
 class Treatment(Strict):
@@ -416,6 +429,16 @@ class Design(DesignSpec):
                 and "read_artifact" in condition.harness.tools
             ):
                 raise ValueError("Artifact read tools require the artifact workspace")
+            if condition.harness.kind == "scripted":
+                required_world = (
+                    "information"
+                    if condition.harness.policy == "private_signal_v1"
+                    else "commons"
+                )
+                if self.environment != required_world:
+                    raise ValueError(
+                        f"This reference policy requires the {required_world} environment"
+                    )
             composition = condition.parameters.composition
             if self.environment == "composed":
                 if composition is None:

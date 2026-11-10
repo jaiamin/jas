@@ -61,6 +61,7 @@ export const metric = (key: string, value: number | null | undefined) =>
       : value.toFixed(1);
 
 export function runModelLabel(run: { models: string[] }) {
+  if (run.models.length === 0) return "Non-model control";
   return run.models.length > 1
     ? "Mixed models"
     : run.models.map(modelLabel).join(", ");

@@ -81,8 +81,9 @@ class Engine:
         self.research.check_run(run_id)
         if run.checkpoint.get("rule_version") != CATALOG[design.environment].world.version:
             raise ValueError("This saved run requires a different environment rule version")
-        for model in {p.model or condition.model for p in design.profiles}:
-            self.models.model(model)
+        if condition.harness.kind != "scripted":
+            for model in {p.model or condition.model for p in design.profiles}:
+                self.models.model(model)
         return True
 
     def _enqueue(
