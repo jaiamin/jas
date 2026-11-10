@@ -1,6 +1,31 @@
 # T12: institutional workflow with atomic work and resource effects
 
-## Current boundary: backend TDD released; incomplete and unaccepted
+## Current boundary: execution HOLD; merge source resolved, unverified
+
+Root's measured continuity update reports shared space below134,217,728 and
+explicitly holds **all checks/captures/hooks/commits/setup/compaction**. Only
+bounded source resolution/inspection continues; no retry. Own compaction03
+retained125 at125,407,232 free before content reads/archive/deletion. Its receipt
+is `.tools/t12/evidence/closed-scratch-03/preflight.json`; all original scratch
+and existing maps remain intact. No job or service was launched after the hold.
+
+Own checkpoint **1aa7798a11aed36ef5f88e197dc6faec93ca49e8** passed normal Gitleaks.
+The normal exact accepted **e76ef124e01274f9b8ddccfa343c51351149c0ee** merge
+(`--no-ff --no-commit`) retained exit1 and five conflicts. Source resolution keeps
+both documentary histories and accepted T14 investigation export fields. Current
+HEAD is1aa7798a; MERGE_HEAD is e76ef124; the merge commit is **held/unrun**.
+The combined source contract is **DB12/export13/library8**, rejecting both
+distinct schema11 intermediates and libraryv7 without aliases/migration/reset.
+Current caller expectations, including only minimal frontend contract literals,
+are reconciled; no UI feature work or frontend qualification is claimed.
+
+All results below precede this merge and are explicitly source-scoped. Combined
+source is unqualified. Next after a concrete measured release: finish the merge
+through normal hooks, run bounded static/type and one-case/World regression jobs,
+then continue remaining TDD slices. UI/browser/runtime/parity need their applicable
+future releases; T12 remains incomplete/unaccepted.
+
+## Historical released backend checkpoint boundary
 
 At root's acceptance notice, the last bounded job `workflow-contract-green`
 passed its one HTTP case. Root now authorizes exact accepted frontier

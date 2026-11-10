@@ -43,7 +43,7 @@ def test_export_keeps_own_provenance_and_evidence_without_unrelated_work(runtime
 
     async def exercise():
         for key in (rid, other_rid):
-            engine.start(key, single=True)
+            await engine.start(key, single=True)
             await engine.executions[key].task
         await engine.close()
 

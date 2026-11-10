@@ -949,7 +949,7 @@ def test_workflow_sources_rebind_all_six_roles_pin_revisions_and_reject_prior_co
         assert client.delete(f"/api/environments/{source['id']}?revision=2").status_code == 200
         assert client.get(f"/api/studies/{study['id']}").json()["design"] == reused
         exported = client.get(f"/api/studies/{study['id']}/export").json()
-        assert exported["version"] == 12
+        assert exported["version"] == 13
         assert exported["study"]["design"]["environment_source"] == source
         rejected = client.post(
             "/api/design/use-environment",

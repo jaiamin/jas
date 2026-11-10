@@ -424,7 +424,7 @@ def test_current_contract_and_four_role_pinned_reuse_reject_previous_formats(tmp
         assert (opportunity["promisor"], opportunity["recipient"]) == ("member_1", "member_2")
         assert value["environment_source"] == source
         study, _ = save(client, value)
-        assert client.get(f"/api/studies/{study['id']}/export").json()["version"] == 12
+        assert client.get(f"/api/studies/{study['id']}/export").json()["version"] == 13
         incompatible = {**source, "format": "jas-environment-v5"}
         denied = client.post(
             "/api/design/use-environment",

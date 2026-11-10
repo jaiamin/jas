@@ -2,7 +2,8 @@ import type { ResearchActivity } from "./types";
 
 interface ChatProgress {
   status: "pending" | "complete" | "failed";
-  purpose: "general" | "design" | "analysis";
+  purpose: "general" | "design" | "analysis" | "investigation";
+  investigation_id?: string;
   partial?: string;
   introduction?: string;
   stage?: string;
@@ -89,9 +90,18 @@ export function chatProgress(
     )
       return null;
     const purpose = "purpose" in row ? row.purpose : undefined;
-    if (purpose !== "general" && purpose !== "design" && purpose !== "analysis")
+    if (
+      purpose !== "general" &&
+      purpose !== "design" &&
+      purpose !== "analysis" &&
+      purpose !== "investigation"
+    )
       return null;
     const output = row.output;
+    const investigationId =
+      "investigation_id" in output ? output.investigation_id : undefined;
+    if (investigationId !== undefined && investigationId !== messageId)
+      return null;
     const partial = "partial" in output ? output.partial : undefined;
     const introduction =
       "introduction" in output ? output.introduction : undefined;
@@ -111,6 +121,9 @@ export function chatProgress(
       return null;
     return {
       ...(activity ? { activity } : {}),
+      ...(typeof investigationId === "string"
+        ? { investigation_id: investigationId }
+        : {}),
       ...(research ? { research } : {}),
       ...(introduction !== undefined ? { introduction } : {}),
       status: row.status,

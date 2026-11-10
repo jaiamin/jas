@@ -69,7 +69,7 @@ def test_general_agent_keeps_history_separate_and_rejects_unselected_evidence(
             )
 
         monkeypatch.setattr(llm, "generate", generate)
-        key = assistant.start(
+        key = await assistant.start(
             "How do they help comparisons?", purpose="general", chat_id="general-chat"
         )
         await assistant.tasks[key]
@@ -94,7 +94,7 @@ def test_assistant_scopes_history_to_frozen_cutoff_and_rejects_unread_citations(
     rid = research.study(sid)["runs"][0]["id"]
 
     async def exercise():
-        engine.start(rid, single=True)
+        await engine.start(rid, single=True)
         await engine.executions[rid].task
         assistant = Assistants(db, research, llm)
         from agent_sim.db import Analysis
@@ -214,11 +214,11 @@ def test_independent_questions_can_plan_concurrently_but_duplicates_are_blocked(
             await release.wait()
 
         monkeypatch.setattr(assistant, "_execute", execute)
-        first = assistant.start("Question one", purpose="design", chat_id="first-chat")
-        second = assistant.start("Question two", purpose="design")
+        first = await assistant.start("Question one", purpose="design", chat_id="first-chat")
+        second = await assistant.start("Question two", purpose="design")
         assert first != second
         with pytest.raises(ValueError, match="current request"):
-            assistant.start("Question one", purpose="design", chat_id="first-chat")
+            await assistant.start("Question one", purpose="design", chat_id="first-chat")
         release.set()
         await assistant.close()
 
@@ -250,7 +250,7 @@ def test_investigator_uses_shared_metric_rules_at_its_frozen_cutoff(runtime, mon
 
     async def exercise():
         for _ in range(2):
-            engine.start(rid, single=True)
+            await engine.start(rid, single=True)
             await engine.executions[rid].task
         with db.session.begin() as session:
             for turn, key, value in [
@@ -263,7 +263,7 @@ def test_investigator_uses_shared_metric_rules_at_its_frozen_cutoff(runtime, mon
                 session.add(Measurement(run_id=rid, turn=turn, round=1, key=key, value=value))
         assistant = Assistants(db, research, llm)
         monkeypatch.setattr(llm, "generate", answer)
-        key = assistant.start("What is the current stock?", purpose="analysis", run_id=rid)
+        key = await assistant.start("What is the current stock?", purpose="analysis", run_id=rid)
         await assistant.tasks[key]
         assert assistant.get(key)["status"] == "complete"
         await assistant.close()
@@ -307,7 +307,7 @@ def test_final_investigation_call_cannot_fetch_evidence_without_a_consumer(
 
     async def exercise():
         assistant = Assistants(db, research, llm)
-        key = assistant.start("Inspect everything", purpose="analysis", run_id=rid)
+        key = await assistant.start("Inspect everything", purpose="analysis", run_id=rid)
         await assistant.tasks[key]
         assert assistant.get(key)["status"] == "complete"
         assert assistant.get(key)["output"]["caveats"]
@@ -362,7 +362,7 @@ def test_internal_value_error_retains_assistant_diagnostics(runtime, monkeypatch
     monkeypatch.setattr(assistant, "_general", broken_general)
 
     async def exercise():
-        key = assistant.start("Explain matched seeds", purpose="general")
+        key = await assistant.start("Explain matched seeds", purpose="general")
         await assistant.tasks[key]
         assert assistant.get(key)["status"] == "failed"
         assert f"Analysis {key} failed (ValueError)" in caplog.text
@@ -410,7 +410,7 @@ def test_evidence_index_counts_opportunities_at_the_frozen_cutoff(runtime, desig
     rid = research.study(sid)["runs"][0]["id"]
 
     async def exercise():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
         assistant = Assistants(db, research, llm)
         index = assistant._evidence_index({rid: 2})
@@ -495,7 +495,7 @@ def test_composed_accounting_uses_frozen_evidence_not_later_consumption(runtime,
     monkeypatch.setattr(models, "generate", equal_sharing)
 
     async def exercise():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
         assistant = Assistants(db, research, models)
         before = assistant._evidence_index({rid: 1})["runs"][0]
@@ -536,7 +536,7 @@ def test_configured_assistant_model_is_used_without_substitution(runtime, monkey
 
     async def exercise():
         assistant = Assistants(db, research, llm)
-        key = assistant.start("How can I inspect behavior?", purpose="general")
+        key = await assistant.start("How can I inspect behavior?", purpose="general")
         await assistant.tasks[key]
         assert assistant.get(key)["status"] == "complete"
         await assistant.close()
@@ -551,7 +551,7 @@ def test_turn_tool_preserves_observation_and_outcomes_without_duplicating_memory
     rid = research.operational_runs(research.save_design(design))[0].id
 
     async def exercise():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
         assistant = Assistants(db, research, models)
         full = research.evidence(rid, 2)
@@ -585,7 +585,7 @@ def test_private_goal_conditions_share_the_original_protocol_and_matched_effects
 
     async def exercise():
         for identity in runs:
-            engine.start(identity.id)
+            await engine.start(identity.id)
         for identity in runs:
             task = engine.executions[identity.id].task
             assert task is not None
@@ -611,7 +611,7 @@ def test_index_execution_cost_is_cutoff_scoped_and_excludes_analysis_calls(runti
     rid = research.operational_runs(research.save_design(design))[0].id
 
     async def exercise():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
         with db.session.begin() as session:
             session.add(
@@ -650,7 +650,7 @@ def test_commons_counterfactuals_use_observed_rules_and_enforce_scope(runtime, d
     rid = research.operational_runs(research.save_design(design))[0].id
 
     async def exercise():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
         assistant = Assistants(db, research, models)
         request = CommonsPayoffRequest(
@@ -733,7 +733,7 @@ def test_investigation_only_exposes_calculations_supported_by_selected_world(
 
     async def exercise():
         assistant = Assistants(db, research, models)
-        key = assistant.start("Audit available evidence", purpose="analysis", run_id=rid)
+        key = await assistant.start("Audit available evidence", purpose="analysis", run_id=rid)
         await assistant.tasks[key]
         assert assistant.get(key)["status"] == "complete"
         assert len(seen) == 1
@@ -824,8 +824,12 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
         assert row["output"]["stage"] == "scoping"
         assert "partial" not in row["output"]
         assert row["output"]["introduction"] == "I can help with that."
-        with pytest.raises(ValueError, match="current request"):
-            assistant.send("Duplicate follow-up", "general", "intent-chat")
+        duplicate = assistant.send("Duplicate follow-up", "general", "intent-chat")
+        try:
+            with pytest.raises(ValueError, match="current request"):
+                duplicate.send(None)
+        finally:
+            duplicate.close()
         if route == "planner-unavailable":
             raise ProviderFailure("Configured planner provider unavailable")
         return FunctionModel(function=plan)
@@ -852,7 +856,7 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
     monkeypatch.setattr(models, "model", planner_model)
 
     async def exercise():
-        result = assistant.send(question, "general", "intent-chat")
+        result = await assistant.send(question, "general", "intent-chat")
         await assistant.tasks[result["id"]]
         row = assistant.get(result["id"])
         assert len(assistant.chat("intent-chat")) == 3
@@ -916,7 +920,7 @@ def test_public_activity_survives_completion_failure_and_reload(runtime, monkeyp
 
     async def exercise():
         assistant = Assistants(db, research, llm)
-        result = assistant.send("Explain matched seeds", "general")
+        result = await assistant.send("Explain matched seeds", "general")
         await assistant.tasks[result["id"]]
         saved = assistant.get(result["id"])
         assert saved["status"] == ("failed" if failed else "complete")

@@ -17,7 +17,7 @@ def test_complete_all_adapters_and_exact_replay(runtime, template):
     run_id = research.study(study_id)["runs"][0]["id"]
 
     async def run():
-        engine.start(run_id)
+        await engine.start(run_id)
         await engine.executions[run_id].task
         await engine.close()
 
@@ -56,10 +56,10 @@ def test_pause_finishes_current_request_and_double_click_has_one_writer(
         async with asyncio.timeout(10):
             try:
                 monkeypatch.setattr(llm, "generate", delayed)
-                engine.start(rid)
+                await engine.start(rid)
                 first = engine.executions[rid].task
                 await started.wait()
-                engine.start(rid)
+                await engine.start(rid)
                 assert engine.executions[rid].task is first
                 engine.pause(rid)
                 release.set()
@@ -67,7 +67,7 @@ def test_pause_finishes_current_request_and_double_click_has_one_writer(
                 record, _, _ = research.configuration(rid)
                 assert record.status == "paused" and record.turn == 1
                 assert llm.usage(run_id=rid)["requests"] == 1
-                engine.start(rid, single=True)
+                await engine.start(rid, single=True)
                 await engine.executions[rid].task
                 assert research.configuration(rid)[0].turn == 2
                 await engine.close()
@@ -97,7 +97,7 @@ def test_budget_is_atomic_and_no_fallback_executes(runtime, design):
         s.get_one(Workspace, 1).ceiling = 1
 
     async def exercise():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
 
     asyncio.run(exercise())
@@ -138,7 +138,7 @@ def test_composed_protocol_preserves_memory_privacy_and_replays_through_shock(ru
     rid = research.study(sid)["runs"][0]["id"]
 
     async def exercise():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
 
     asyncio.run(exercise())
@@ -162,7 +162,7 @@ def test_replay_rejects_corruption_without_requests_or_checkpoint_changes(runtim
     rid = research.operational_runs(sid)[0].id
 
     async def step():
-        engine.start(rid, single=True)
+        await engine.start(rid, single=True)
         await engine.executions[rid].task
 
     asyncio.run(step())
@@ -197,9 +197,9 @@ def test_capacity_one_and_pausing_queued_run_send_one_request(runtime, design, m
         async with asyncio.timeout(10):
             try:
                 monkeypatch.setattr(llm, "generate", delayed)
-                engine.start(runs[0].id, single=True)
+                await engine.start(runs[0].id, single=True)
                 await entered.wait()
-                engine.start(runs[1].id, single=True)
+                await engine.start(runs[1].id, single=True)
                 await asyncio.sleep(0)
                 assert calls == [runs[0].id]
                 assert research.configuration(runs[1].id)[0].status == "queued"
@@ -262,13 +262,13 @@ def test_concurrent_runs_cannot_reserve_above_shared_budget(runtime, design, mon
         async with asyncio.timeout(10):
             try:
                 monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=delayed))
-                engine.start(runs[0].id, single=True)
+                await engine.start(runs[0].id, single=True)
                 await entered.wait()
                 with db.session.begin() as session:
                     workspace = session.get_one(Workspace, 1)
                     workspace.ceiling = workspace.charged
                     reserved = workspace.charged
-                engine.start(runs[1].id, single=True)
+                await engine.start(runs[1].id, single=True)
                 await engine.executions[runs[1].id].task
                 assert research.configuration(runs[1].id)[0].status == "failed"
                 assert len(requests) == 1
@@ -310,7 +310,7 @@ def test_bulk_start_preflights_every_checkpoint_before_queueing(runtime, design)
 
     async def exercise():
         with pytest.raises(ValueError, match="different environment rule version"):
-            engine.start_study(sid)
+            await engine.start_study(sid)
         assert not engine.executions
         assert all(research.configuration(run.id)[0].status == "ready" for run in runs)
         assert llm.usage()["requests"] == 0
@@ -329,9 +329,9 @@ def test_bulk_start_ignores_completed_runs_with_old_rules(runtime, design):
         saved.checkpoint = saved.checkpoint | {"rule_version": "historical"}
 
     async def exercise():
-        engine.start_study(sid)
+        await engine.start_study(sid)
         task = engine.executions[runs[1].id].task
-        engine.start_study(sid)
+        await engine.start_study(sid)
         assert engine.executions[runs[1].id].task is task
         assert runs[0].id not in engine.executions
         await engine.close()
@@ -352,7 +352,7 @@ def test_internal_value_error_retains_worker_diagnostics(runtime, design, monkey
     monkeypatch.setattr(llm, "generate", broken_generation)
 
     async def exercise():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
         await engine.close()
 

@@ -6,9 +6,10 @@ from typing import Any, Literal
 from pydantic import Field, ValidationError
 
 from .config import setting
-from .db import Analysis, Database, digest
+from .db import Analysis, Database, InvestigationRecord, digest
 from .domain import Design, DesignSpec, EnvironmentId, PlannedStudy, Strict
 from .environment_library import builtin_environment
+from .investigation_limits import InvestigationStopped
 from .llm import LanguageModels
 from .research import Research
 from .research_tools import (
@@ -317,9 +318,12 @@ class Planner:
             # Candidate's typed output already supplies the complete design schema.
             omitted.add("design_schema")
         data = {name: value for name, value in data.items() if name not in omitted}
+        with self.db.session() as session:
+            row = session.get_one(Analysis, key)
+        model = self.models.research_model("design", row.investigation_id)
         return await self.models.generate(
             output,
-            model=setting("PLANNER_MODEL", "openai:gpt-6.1-sol"),
+            model=model,
             instructions=instruction,
             prompt=json.dumps(data),
             purpose="design",
@@ -430,6 +434,16 @@ class Planner:
         context = self._context(question, conversation)
         with self.db.session() as session:
             row = session.get_one(Analysis, key)
+            if row.investigation_id:
+                context["research_available"] = True
+                context["authorization"] = session.get_one(
+                    InvestigationRecord, row.investigation_id
+                ).authorization
+                context["adaptation"] = (
+                    session.get_one(InvestigationRecord, row.investigation_id)
+                    .attempts[-1]
+                    .get("adaptation")
+                )
         tools = ResearchTools(row, self.research)
         if row.output and "research" in row.output:
             tools.record = row.output["research"]
@@ -665,6 +679,8 @@ class Planner:
                                 i["message"] for i in check["issues"] if i["severity"] == "error"
                             )
                         )
+            except InvestigationStopped:
+                raise
             except (ValidationError, ValueError) as error:
                 feedback = [str(error)]
                 planning["reviews"].append({"kind": "validation", "issues": feedback})

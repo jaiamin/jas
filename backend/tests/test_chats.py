@@ -31,12 +31,12 @@ def test_chats_persist_followups_isolate_contexts_and_keep_proposals_reviewable(
 
     async def exercise():
         agent = Assistants(db, research, models)
-        first = agent.send("What is a matched seed?", "general")
+        first = await agent.send("What is a matched seed?", "general")
         await agent.tasks[first["id"]]
-        other = agent.send("An unrelated conversation", "general")
+        other = await agent.send("An unrelated conversation", "general")
         await agent.tasks[other["id"]]
         assert first["chat_id"] != other["chat_id"] and prompts[-1]["conversation"] == []
-        followup = agent.send("Why does that help?", "general", first["chat_id"])
+        followup = await agent.send("Why does that help?", "general", first["chat_id"])
         await agent.tasks[followup["id"]]
         assert [item["question"] for item in prompts[-1]["conversation"]] == [
             "What is a matched seed?"
@@ -54,14 +54,14 @@ def test_chats_persist_followups_isolate_contexts_and_keep_proposals_reviewable(
                     cutoffs={rid: 0},
                 )
             )
-        general = agent.send("Explain the method", "general", first["chat_id"])
+        general = await agent.send("Explain the method", "general", first["chat_id"])
         await agent.tasks[general["id"]]
         assert all(
             item["question"] != "Private recorded result" for item in prompts[-1]["conversation"]
         )
-        proposed = agent.send("Design a pilot", "new", first["chat_id"])
+        proposed = await agent.send("Design a pilot", "new", first["chat_id"])
         await agent.tasks[proposed["id"]]
-        revised = agent.send("Keep the pilot and shorten the title", "new", first["chat_id"])
+        revised = await agent.send("Keep the pilot and shorten the title", "new", first["chat_id"])
         await agent.tasks[revised["id"]]
         assert plans[-1]["conversation"][-1]["proposal"] == design.model_dump()
         assert len(research.studies()) == 1  # Proposals never save or execute themselves.
@@ -90,16 +90,16 @@ def test_chat_pending_guard_and_invalid_contexts_do_not_start_work(runtime, monk
             await release.wait()
 
         monkeypatch.setattr(agent, "_execute", execute)
-        first = agent.send("Same question", "general")
-        independent = agent.send("Same question", "general")
+        first = await agent.send("Same question", "general")
+        independent = await agent.send("Same question", "general")
         assert first["chat_id"] != independent["chat_id"]
         with pytest.raises(ValueError, match="current request"):
-            agent.send("A different question", "new", first["chat_id"])
+            await agent.send("A different question", "new", first["chat_id"])
         for context in ("", "run:", "study:", "unknown", "study:missing", "run:missing"):
             with pytest.raises((ValueError, NoResultFound)):
-                agent.send("Question", context)
+                await agent.send("Question", context)
         with pytest.raises(NoResultFound):
-            agent.send("Question", "general", "missing-chat")
+            await agent.send("Question", "general", "missing-chat")
         assert len(agent.chats()) == 2 and models.usage()["requests"] == 0
         release.set()
         await agent.close()

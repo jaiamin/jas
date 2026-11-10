@@ -220,7 +220,7 @@ def test_deterministic_participants_have_identical_results_at_run_concurrency_on
             study_id = research.save_design(design)
             runs = research.operational_runs(study_id)
             for identity in runs:
-                engine.start(identity.id)
+                await engine.start(identity.id)
             for identity in runs:
                 task = engine.executions[identity.id].task
                 assert task is not None

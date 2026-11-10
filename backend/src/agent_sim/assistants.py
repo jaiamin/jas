@@ -23,6 +23,7 @@ from .db import (
 )
 from .diagnostics import log_failure
 from .domain import Design, Finding, Strict
+from .investigation_limits import InvestigationStopped
 from .llm import LanguageModels, ProviderFailure, Usage, empty_usage, usage_record
 from .metrics import aggregate_metrics
 from .planning import Planner, public_activity, stream_partial
@@ -251,7 +252,7 @@ class Assistants:
                 row.error = "Server stopped. Request was not automatically retried."
                 row.output = stopped_research(row.output, "server_stopped")
 
-    def start(
+    async def start(
         self,
         question: str,
         *,
@@ -261,13 +262,14 @@ class Assistants:
         chat_id: str | None = None,
         lens: LensKey | None = None,
         source_analysis_id: str | None = None,
+        investigation_id: str | None = None,
     ) -> str:
         loop = asyncio.get_running_loop()
         if self.closing:
             raise ValueError("Server is stopping")
         if purpose not in ("design", "general", "analysis"):
             raise ValueError("Unknown assistant purpose")
-        if purpose in ("design", "general") and (study_id or run_id):
+        if purpose in ("design", "general") and (study_id or run_id) and not investigation_id:
             raise ValueError("Unscoped requests cannot select a study or run")
         if purpose == "analysis" and bool(study_id) == bool(run_id):
             raise ValueError("Choose exactly one run or study for analysis")
@@ -276,11 +278,7 @@ class Assistants:
         question = question.strip()
         if not question or len(question) > 4000:
             raise ValueError("Enter a question between 1 and 4,000 characters")
-        self.models.model(
-            setting("PLANNER_MODEL", "openai:gpt-6.1-sol")
-            if purpose == "design"
-            else setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol")
-        )
+        self.models.model(self.models.research_model(purpose, investigation_id))
         cutoffs = {}
         if run_id:
             run, _, _ = self.research.configuration(run_id)
@@ -305,42 +303,13 @@ class Assistants:
                 if source.status == "pending" or not (source.output or {}).get("lens"):
                     raise ValueError("Analysis source has no frozen lens inputs")
                 snapshot, cutoffs = source.output, source.cutoffs
-        comparisons = (
-            snapshot["comparisons"]
-            if snapshot
-            else self.research.capture_comparisons(cutoffs)
+        inputs = (
+            await asyncio.to_thread(self._analysis_inputs, cutoffs, snapshot, key, lens)
             if purpose == "analysis"
             else None
         )
-        exposure = (
-            snapshot["exposure"]
-            if snapshot
-            else self.research.capture_exposure(cutoffs)
-            if comparisons is not None
-            else None
-        )
-        index = (
-            snapshot["evidence_index"]
-            if snapshot
-            else self._evidence_index(cutoffs, comparisons, exposure, key)
-            if comparisons is not None
-            else None
-        )
-        snapshot_lens = (
-            apply_lens(snapshot["lens"], lens or "behavior")
-            if snapshot
-            else capture_lens(
-                self.research,
-                cutoffs,
-                comparisons,
-                exposure,
-                lens or "behavior",
-                index=index,
-                analysis_id=key,
-            )
-            if index is not None
-            else None
-        )
+        if inputs is not None:
+            inputs["source_analysis_id"] = source_analysis_id
         with self.db.session.begin() as session:
             chat_id = chat_id or uid()
             if session.scalar(
@@ -355,21 +324,52 @@ class Assistants:
                 run_id=run_id,
                 chat_id=chat_id,
                 cutoffs=cutoffs,
-                output={
-                    "comparisons": comparisons,
-                    "exposure": exposure,
-                    "evidence_index": index,
-                    "lens": snapshot_lens,
-                    "source_analysis_id": source_analysis_id,
-                }
-                if comparisons is not None
-                else None,
+                output=inputs,
+                investigation_id=investigation_id,
             )
             session.add(row)
             session.flush()
             key = row.id
         self.tasks[key] = loop.create_task(self._execute(key), name=f"assistant-{key}")
         return key
+
+    def _analysis_inputs(
+        self, cutoffs: dict[str, int], snapshot: dict | None, key: str, lens: LensKey | None
+    ) -> dict:
+        comparisons = (
+            snapshot["comparisons"]
+            if snapshot
+            else self.research.capture_comparisons(cutoffs)
+        )
+        exposure = (
+            snapshot["exposure"]
+            if snapshot
+            else self.research.capture_exposure(cutoffs)
+        )
+        index = (
+            snapshot["evidence_index"]
+            if snapshot
+            else self._evidence_index(cutoffs, comparisons, exposure, key)
+        )
+        snapshot_lens = (
+            apply_lens(snapshot["lens"], lens or "behavior")
+            if snapshot
+            else capture_lens(
+                self.research,
+                cutoffs,
+                comparisons,
+                exposure,
+                lens or "behavior",
+                index=index,
+                analysis_id=key,
+            )
+        )
+        return {
+            "comparisons": comparisons,
+            "exposure": exposure,
+            "evidence_index": index,
+            "lens": snapshot_lens,
+        }
 
     @staticmethod
     def serialize(row: Analysis, usage: Usage | None = None) -> dict:
@@ -422,6 +422,8 @@ class Assistants:
 
     @staticmethod
     def context(row) -> str:
+        if row.purpose == "investigation":
+            return "general"
         return (
             f"run:{row.run_id}"
             if row.run_id
@@ -442,7 +444,7 @@ class Assistants:
             usage = self.models.usage_by_analysis({row.id for row in rows})
             return [self.serialize(row, usage.get(row.id)) for row in rows]
 
-    def send(
+    async def send(
         self,
         question: str,
         context: str,
@@ -460,7 +462,7 @@ class Assistants:
         else:
             raise ValueError("Choose General, New experiment, an experiment, or a run")
         chat_id = chat_id or uid()
-        key = self.start(
+        key = await self.start(
             question,
             purpose=purpose,
             chat_id=chat_id,
@@ -522,6 +524,8 @@ class Assistants:
                     if isinstance(error, asyncio.CancelledError)
                     else ("provider_failure" if isinstance(error, ProviderFailure) else "failed"),
                 )
+                if isinstance(error, InvestigationStopped):
+                    saved.output = {**(saved.output or {}), "stop_reason": error.reason}
                 saved.error = (
                     str(error)
                     if isinstance(error, (ValueError, ProviderFailure))
@@ -569,9 +573,12 @@ class Assistants:
             )
             if row.purpose == "general":
                 query = query.where(
-                    Analysis.study_id.is_(None),
-                    Analysis.run_id.is_(None),
-                    Analysis.purpose.in_(("general", "design")),
+                    (Analysis.purpose == "investigation")
+                    | (
+                        Analysis.study_id.is_(None)
+                        & Analysis.run_id.is_(None)
+                        & Analysis.purpose.in_(("general", "design"))
+                    ),
                 )
             elif row.purpose != "design":
                 query = query.where(
@@ -598,6 +605,11 @@ class Assistants:
                     "question": item.question,
                     "answer": (item.output or {}).get("answer", "")[:3000],
                     "cutoffs": item.cutoffs,
+                    **(
+                        {"caveats": (item.output or {}).get("caveats", [])}
+                        if item.purpose == "investigation"
+                        else {}
+                    ),
                     **(
                         {
                             "proposal": (item.output or {}).get("design"),
@@ -1041,6 +1053,7 @@ class Assistants:
         self._progress(key, "indexing", [])
         with self.db.session() as session:
             current = session.get_one(Analysis, key)
+        model = self.models.research_model("analysis", current.investigation_id)
         conversation = self._conversation(current)
         comparisons = (current.output or {}).get("comparisons")
         tools = ResearchTools(current, self.research)
@@ -1085,7 +1098,7 @@ class Assistants:
             finalizing = iteration == 3
             result = await self.models.generate(
                 Finding if finalizing else investigation,
-                model=setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol"),
+                model=model,
                 instructions=INVESTIGATION + RESEARCH_OPERATIONS,
                 purpose="analysis",
                 study_id=study_id,

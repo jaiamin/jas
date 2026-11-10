@@ -148,7 +148,7 @@ export interface CompositionRules {
   controllers_first: boolean;
 }
 export interface SavedEnvironment {
-  format: "jas-environment-v7";
+  format: "jas-environment-v8";
   id: string;
   revision: number;
   updated: string;
@@ -840,6 +840,7 @@ export interface Analysis {
   question: string;
   status: string;
   output: {
+    investigation_id?: string;
     stage?: string;
     activity?: string[];
     research?: ResearchActivity;
@@ -881,6 +882,105 @@ export interface Analysis {
   created: string;
   study_id: string | null;
   run_id: string | null;
+}
+
+export interface InvestigationAuthorization {
+  question: string;
+  chat_id?: string | null;
+  researcher_model: "openai:gpt-6.1-sol";
+  participant_model: "openai:gpt-6-luna";
+  environments: string[];
+  harnesses: ("direct_action" | "tool_using")[];
+  budget_usd: number;
+  study_budget_usd: number;
+  max_requests: number;
+  max_runs: number;
+  max_turns: number;
+  max_agents: number;
+  max_rounds: number;
+  max_operations: number;
+  max_design_attempts: number;
+  intent: "exploratory" | "confirmatory";
+  pilot: boolean;
+  adapt_after_pilot: boolean;
+  stopping: "scope_ambiguity_allowance_or_failure";
+}
+
+export type InvestigationAllowance = Omit<
+  InvestigationAuthorization,
+  "question" | "chat_id"
+>;
+
+export interface InvestigationRecord {
+  id: string;
+  chat_id: string;
+  study_id: string;
+  authorization: InvestigationAuthorization;
+  status: string;
+  stage: string;
+  stop_reason: string | null;
+  clarification: string | null;
+  analysis: Analysis | null;
+  requests: number;
+  runs: number;
+  turns: number;
+  operations: number;
+  charged_usd: number;
+  study_charged_usd: number;
+  study_budget_usd: number;
+  usage: Usage;
+  attempts: {
+    design_id: string;
+    chat_id: string;
+    kind: string;
+    revision: number | null;
+    run_ids: string[];
+    status: string;
+    stop_reason?: string;
+    adaptation: unknown;
+  }[];
+  decisions: {
+    at: string;
+    decision: string;
+    reason?: string;
+    analysis_id?: string;
+    instruction?: string;
+    revision?: number;
+  }[];
+  confirmation: {
+    frozen_at: string;
+    revision: number;
+    design: Design;
+    design_hash: string;
+    run_ids: string[];
+    stopping: InvestigationAuthorization["stopping"];
+  } | null;
+  ledger: {
+    id: string;
+    purpose: string;
+    model: string;
+    study_id: string;
+    run_id: string | null;
+    analysis_id: string | null;
+    status: string;
+    reserved: number;
+    charged: number;
+    error: string | null;
+  }[];
+  result: {
+    planned: number;
+    complete: number;
+    failed: number;
+    missing: number;
+    research_validity: "unassessed";
+    limitations: string[];
+    runs: {
+      id: string;
+      status: string;
+      through_turn: number;
+      error: string | null;
+    }[];
+  } | null;
 }
 export interface Settings {
   planner_model: string;

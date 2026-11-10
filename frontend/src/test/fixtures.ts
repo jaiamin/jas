@@ -116,7 +116,7 @@ export const catalog: Catalog = {
   environments: [
     {
       source: {
-        format: "jas-environment-v7",
+        format: "jas-environment-v8",
         id: "builtin:institution",
         revision: 1,
         updated: "4.0.0",
