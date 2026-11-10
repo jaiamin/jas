@@ -9,6 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 
 from .config import setting
+from .claim_support import AnalysisFinding, assess, capture_lens
 from .db import (
     Analysis,
     Condition,
@@ -214,14 +215,14 @@ class CommonsPayoffRequest(Strict):
 
 class EvidenceInvestigation(Strict):
     requests: list[HistoryRequest | TurnRequest | ResearchRequest] = Field(max_length=4)
-    answer: Finding | None
+    answer: AnalysisFinding | None
 
 
 class Investigation(Strict):
     requests: list[HistoryRequest | TurnRequest | CommonsPayoffRequest | ResearchRequest] = Field(
         max_length=4
     )
-    answer: Finding | None
+    answer: AnalysisFinding | None
 
 
 class Assistants:
@@ -269,6 +270,10 @@ class Assistants:
         elif study_id:
             cutoffs = {r.id: r.turn for r in self.research.operational_runs(study_id)}
         comparisons = self.research.capture_comparisons(cutoffs) if purpose == "analysis" else None
+        key = uid()
+        exposure = self.research.capture_exposure(cutoffs) if comparisons is not None else None
+        index = self._evidence_index(cutoffs, comparisons, exposure, key) if comparisons is not None else None
+        lens = capture_lens(self.research, cutoffs) if comparisons is not None else None
         with self.db.session.begin() as session:
             chat_id = chat_id or uid()
             if session.scalar(
@@ -276,6 +281,7 @@ class Assistants:
             ):
                 raise ValueError("Wait for the current request to finish")
             row = Analysis(
+                id=key,
                 question=question,
                 purpose=purpose,
                 study_id=study_id,
@@ -284,7 +290,9 @@ class Assistants:
                 cutoffs=cutoffs,
                 output={
                     "comparisons": comparisons,
-                    "exposure": self.research.capture_exposure(cutoffs),
+                    "exposure": exposure,
+                    "evidence_index": index,
+                    "lens": lens,
                 }
                 if comparisons is not None
                 else None,
@@ -451,7 +459,7 @@ class Assistants:
                 **{
                     k: v
                     for k, v in (row.output or {}).items()
-                    if k in {"comparisons", "research", "exposure"}
+                    if k in {"comparisons", "research", "exposure", "evidence_index", "lens"}
                 },
                 "stage": stage,
                 "examined": examined,
@@ -860,13 +868,15 @@ class Assistants:
         comparisons = (current.output or {}).get("comparisons")
         tools = ResearchTools(current, self.research)
         self._research_progress(key, tools, "indexing")
-        index = await asyncio.to_thread(
+        index = (current.output or {}).get("evidence_index") or await asyncio.to_thread(
             self._evidence_index,
             cutoffs,
             comparisons,
             (current.output or {}).get("exposure"),
             key,
         )
+        lens = (current.output or {}).get("lens") or capture_lens(self.research, cutoffs)
+        index = {**index, "lens": lens}
         investigation = (
             Investigation
             if any(p["environment"] == "commons" for p in index["protocols"].values())
@@ -878,7 +888,7 @@ class Assistants:
             self._progress(key, "investigating", examined)
             finalizing = iteration == 3
             result = await self.models.generate(
-                Finding if finalizing else investigation,
+                AnalysisFinding if finalizing else investigation,
                 model=setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol"),
                 instructions=INVESTIGATION + RESEARCH_OPERATIONS,
                 purpose="analysis",
@@ -926,6 +936,9 @@ class Assistants:
                     **answer.model_dump(),
                     "examined": examined,
                     "comparisons": index["comparisons"],
+                    "lens": lens,
+                    "evidence_index": {k: v for k, v in index.items() if k != "lens"},
+                    "support": assess(AnalysisFinding.model_validate(answer.model_dump()), lens),
                 }
             assert isinstance(result, (Investigation, EvidenceInvestigation))
             if not result.requests:
