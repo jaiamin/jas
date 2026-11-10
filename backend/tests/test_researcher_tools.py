@@ -100,6 +100,49 @@ def test_general_question_discovers_implemented_mechanics_without_creating_a_stu
     assert client.get(f"/api/chats/{submitted['chat_id']}").json()[0] == final
 
 
+def test_capability_discovery_retains_reusable_definitions_without_importing_studies(
+    client, monkeypatch
+):
+    catalog = client.get("/api/catalog").json()
+    definition = next(
+        item["source"]["definition"]
+        for item in catalog["environments"]
+        if item["key"] == "composed"
+    )
+    definition["name"] = "Reusable allocated stock"
+    saved = client.post("/api/environments", json={"definition": definition}).json()
+
+    def respond(prompt):
+        if not prompt.get("research", {}).get("operations"):
+            return answer(
+                "Inspect reusable mechanics.",
+                requests=[{"kind": "capabilities", "environment": "composed"}],
+            )
+        return answer("These mechanics can support a separate question and population.")
+
+    scripted(client, monkeypatch, respond)
+    final = finish(
+        client,
+        client.post(
+            "/api/chats", json={"question": "Which saved allocation mechanics can I reuse?"}
+        ).json(),
+    )
+    assert final["status"] == "complete", final
+    operation = final["output"]["research"]["operations"][0]
+    assert operation["data"]["custom_environments"] == [saved]
+    assert operation["data"]["environments"][0]["source"]["definition"]["environment"] == "composed"
+    assert {"kind": "environment", "id": saved["id"], "hash": saved["sha256"]} in operation[
+        "sources"
+    ]
+    assert "profiles" not in operation["data"]["custom_environments"][0]["definition"]
+    assert client.delete(f"/api/environments/{saved['id']}?revision=1").status_code == 200
+    assert (
+        client.get(f"/api/analyses/{final['id']}").json()["output"]["research"]
+        == final["output"]["research"]
+    )
+    assert client.get("/api/studies").json() == []
+
+
 def test_general_catalog_supplies_usable_lookup_ids(client, monkeypatch):
     """Live Sol used the supplied display name when the catalog omitted lookup IDs."""
 

@@ -136,7 +136,7 @@ class CompositionRules(Strict):
         return self
 
 
-class Parameters(Strict):
+class MechanicsParameters(Strict):
     endowment: int = Field(
         default=10,
         ge=2,
@@ -159,12 +159,6 @@ class Parameters(Strict):
         description="Independently enabled channels when communication=true. "
         "Remove only messages to isolate messaging while keeping reports/promises available.",
     )
-    memory: Literal["episodic", "notes", "history", "none"] = Field(
-        default="episodic",
-        description="Episodic: bounded experiences, public history and note; "
-        "notes: public history and note; history: public history only; none: neither. "
-        "Authoritative current state stays visible.",
-    )
     private_signal: bool = Field(
         default=True,
         description="True: each agent sees only its own signal. "
@@ -182,6 +176,15 @@ class Parameters(Strict):
     resource: ResourceRules = Field(default_factory=ResourceRules)
     composition: CompositionRules | None = None
     resource_schedule: list[ResourceChange] = Field(default_factory=list, max_length=12)
+
+
+class Parameters(MechanicsParameters):
+    memory: Literal["episodic", "notes", "history", "none"] = Field(
+        default="episodic",
+        description="Episodic: bounded experiences, public history and note; "
+        "notes: public history and note; history: public history only; none: neither. "
+        "Authoritative current state stays visible.",
+    )
 
 
 ParticipantTool = Literal["observe", "rules", "legal_options"]
@@ -221,9 +224,7 @@ class ToolUsingHarness(Strict):
         return self
 
 
-ParticipantHarness = Annotated[
-    DirectActionHarness | ToolUsingHarness, Field(discriminator="kind")
-]
+ParticipantHarness = Annotated[DirectActionHarness | ToolUsingHarness, Field(discriminator="kind")]
 
 
 class Treatment(Strict):
@@ -243,6 +244,42 @@ class TaskDefinition(Strict):
     effort: int = Field(default=2, ge=1, le=20)
 
 
+class EnvironmentConfiguration(Strict):
+    key: str = Field(pattern=r"^[a-z][a-z0-9_-]{0,31}$")
+    name: str = Field(min_length=1, max_length=80)
+    roles: list[Annotated[str, Field(pattern=r"^[a-z][a-z0-9_-]{0,31}$")]] = Field(
+        default_factory=list,
+        max_length=12,
+        description="Unbound mechanic roles, not participant identities or model assignments.",
+    )
+    parameters: MechanicsParameters = Field(default_factory=MechanicsParameters)
+    tasks: list[TaskDefinition] = Field(default_factory=list, max_length=30)
+
+
+class EnvironmentMechanics(Strict):
+    version: Literal[1] = 1
+    name: str = Field(min_length=1, max_length=100)
+    description: str = Field(default="", max_length=2000)
+    environment: EnvironmentId
+    rule_version: str = Field(min_length=1, max_length=40)
+    examples: list[EnvironmentConfiguration] = Field(min_length=1, max_length=6)
+
+    @model_validator(mode="after")
+    def unique_examples(self) -> Self:
+        if len({example.key for example in self.examples}) != len(self.examples):
+            raise ValueError("Environment configuration example keys must be unique")
+        return self
+
+
+class SavedEnvironment(Strict):
+    format: Literal["jas-environment-v3"] = "jas-environment-v3"
+    id: str
+    revision: int = Field(ge=1)
+    updated: str
+    sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    definition: EnvironmentMechanics
+
+
 class DesignSpec(Strict):
     title: str = Field(min_length=1, max_length=100)
     question: str = Field(min_length=1, max_length=4000)
@@ -254,6 +291,7 @@ class DesignSpec(Strict):
         "This text is not sent to participants.",
     )
     environment: EnvironmentId = "commons"
+    environment_source: SavedEnvironment | None = None
     context: str = Field(default="", max_length=4000)
     profiles: list[Profile] = Field(min_length=2, max_length=12)
     tasks: list[TaskDefinition] = Field(default_factory=list, max_length=30)

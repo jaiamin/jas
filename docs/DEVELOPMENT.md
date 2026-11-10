@@ -61,16 +61,15 @@ its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
 `data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v6.
-This WIP uses only the current schema and rules; incompatible workspaces must be reset.
+Schema v6 and library format `jas-environment-v3` accept only the current contract.
+Older databases/library records receive explicit errors; no data is converted or reset.
+Use a separate fresh workspace path for the new contract and preserve existing evidence.
 
-T04 introduces database schema **5** for durable participant activations and
-per-request links. Schema 4 databases are explicitly rejected; preserve their
-data and use a separate fresh workspace for the current contract. There is no
-migration, compatibility reader or automatic reset. Do not delete/reset existing
-data without authorization.
-Reusable setup files use `jas-environment-v2` because their embedded protocol now
-pins the participant harness. Old v1 files are explicitly rejected; preserve
-them separately. No file conversion or deletion happens automatically.
+The current schema retains T04's durable participant activations and per-request
+links alongside T03's pinned environment sources. Old schema 4/5 databases and
+v1/v2 environment files are explicitly rejected; preserve them separately. No
+compatibility reader or automatic reset is provided. Reusable mechanics exclude
+participant harness settings; each experiment pins those separately.
 
 The dedicated participant-policy browser trial installs a deterministic external
 provider in the test server only. It exercises real configuration, immutable
@@ -134,7 +133,8 @@ pool can increase rate-limit failures; it does not give participants more inform
 
 Reusable custom environments are versioned files beside the configured SQLite database in
 `<database-stem>.environments/`; keep that directory when backing up a workspace. The app
-retains complete environment rules inside each immutable experiment, so library deletion
+retains concrete rules and a complete source definition/revision/hash inside each selected
+experiment, so library deletion
 never deletes run evidence. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 Extension candidate validation uses pinned Wasmtime in a bounded import-free

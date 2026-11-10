@@ -90,6 +90,7 @@ export function changeEnvironment(
   return {
     ...design,
     environment: environment.key,
+    environment_source: null,
     measures: environment.measures.slice(0, 3),
     tasks: environment.key === "coordination" ? design.tasks : [],
     conditions: design.conditions.map((condition) => ({

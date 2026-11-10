@@ -354,7 +354,7 @@ test("environment mechanics lead to editable reusable setups", async ({
     .click();
   await page.getByRole("tab", { name: "Question", exact: true }).click();
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
-    "Supply-chain recovery",
+    "Supply-chain recovery experiment",
   );
   await page
     .getByLabel("Experiment name", { exact: true })

@@ -11,7 +11,7 @@ from benchmarks.research_baseline import run_baseline
 
 def assert_current_workflow_with_frozen_v4_oracle(attempts):
     # Keep T01's case/harness bytes unchanged across the paired comparison.
-    # T04/T06 version the export contract; every other check must pass.
+    # T03/T04/T06 version the export contract; every other check must pass.
     for row in attempts:
         failures = {key for key, passed in row["checks"].items() if not passed}
         if "export-v4" in row["checks"]:
