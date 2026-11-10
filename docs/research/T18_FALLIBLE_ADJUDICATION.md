@@ -409,3 +409,72 @@ library8/artifact2.0.0, rejecting incompatible data without migration/reset.
 `static-01` found one import-spacing error; retained unchanged. `types-01`
 passed. Further affected and adverse checks, pre-execution review details,
 lifecycle safety and all held UI/qualification gates remain outstanding.
+
+## Backend continuation boundary (before final-source merge)
+
+`e16a7ebf` records the first qualified vertical slice; normal merge `1a7ad1d3`
+includes exact published `fdfb5f7a`. ROOT's superseding final target is now exact
+`0527e737d93786d0f5579d5a13827c472cf370fa`; its quality-review cutoff repair
+and navigation-audit correction were read directly at that tip. No sibling
+implementation or moving ref is an integration target.
+
+Subsequent independent DEVELOPMENT cases cover literal facts/typed scope,
+ACL/opaque object denial, inert prose, scripted accept/revise/abstain and
+unsupported-guarantee rubric errors; per-request integer accounting, atomic
+study/workspace ceilings, known/unknown/cancellation with a real SQLite
+settlement-failure trigger; actual-process crash before response and after
+recorded ruling but before turn commit; queued pause, duplicate in-flight Start,
+missing judge provider preflight, investigation authorization denial and
+cross-run ruling provenance. Successful replay/restoration calls no provider.
+Investigations explicitly reject adjudication: their current displayed
+researcher/participant authorization grants no judge identity or scope. This
+implementation does not add a new authorization flow or implicit judge.
+
+Observed product reds, each retained before its narrow repair: missing rejected
+ruling receipt; Pause before judge dispatch; Pause while judge waits for provider
+capacity; absent declaration in preflight; identical ruling borrowed from another
+run accepted by replay; investigation scope permitting participant work; missing
+judge provider allowing Start; and judge-effort-only conditions called duplicate
+arms. The last red `judge-contrast-red` failed HTTP preflight's empty-duplicates
+assertion; `judge-contrast-green` passes after adding adjudicator settings to the
+condition grid and a separate `changed_adjudicator` comparison. Participant
+assignment remains distinct. No live accuracy is inferred from any stand-in.
+
+Adverse fixture/check attempts are also retained: incorrect export activation
+path; six rubric fixtures lacking immutable source `operation:0`; two scope
+fixtures stopped by question-quote then researcher-token validation (not product
+reds); import spacing, Event polling lint, line lengths and JSON-inference types.
+The corrected preflight-scope attempt was the genuine red. The subsequent
+`static-04` whole backend/benchmark/script Ruff and `types-03` global ty passed.
+They predate the final contrast and integration and are not final-source checks.
+
+`feature-qualification-01`:41 passed/6.21s; `inherited-engine-01`:25/1.80s;
+`inherited-ledger-01`:12/0.43s; `inherited-artifact-01`:10/1.15s and
+`inherited-artifact-02`:15/1.16s; `inherited-library-01`:13/1.41s;
+`inherited-review-01`:676/52.52s. The last group includes the real accepted T14
+worker/save/Pause boundaries without replacing them with mocks. These results
+are finite preservation checks, not final ticket acceptance. The contrast test
+is additional to the41-feature result.
+
+Every job used the shared lock and released it. Environment remains180,513,935
+logical/201,515,008 allocated bytes. The last job entered at1,104,269,312 free,
+minimum1,084,129,280, observed shared net peak20,140,032; retained own output
+40,251,658 logical bytes. Earlier `compact-01` losslessly compressed CLOSED
+SQLite outputs, verified decompressed hashes and recorded exact per-file
+path/hash/size/mode/uid/gid/integer-ns restoration in
+`.tools/t18/sqlite-restoration.json` before removal. Added observed peak12,288
+bytes, within8MiB; logs/JUnit and adverse attempts remain. Further compaction
+will use only that own closed-output mechanism, never another owner's files.
+
+Final-source backend qualification is now released under the unchanged128MiB
+peak/16MiB output per job,64MiB total and entry>=268435456 rule. The literal
+22-request reference and invocation-local safe snapshot guard must be frozen
+before outputs. T01 runner/cases/scores remain untouched; obsolete unsupported
+capability descriptions need explicit current replacements. Frontend/browser/
+services/production/providers/live/held-out/publication remain held;18131 is
+unopened. No semantic-truth, generic-competence or live-rubric-accuracy claim.
+
+At this coherent pre-merge checkpoint, `static-05` (all backend/benchmarks/
+GitHub-script Ruff) and `types-04` (global ty) pass after the contrast repair;
+`git diff --check` is clean. The frozen first tracer still has its original
+blob `bdf6a6630e1af096b6dd2272829414e1eb82fb36`.

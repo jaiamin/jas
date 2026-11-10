@@ -221,6 +221,10 @@ class Investigations:
         ):
             raise InvestigationStopped("population_or_horizon_outside_scope")
         for condition in design.conditions:
+            # The current displayed authorization covers researcher and participant
+            # identities only. It grants no judge identity or judgment scope.
+            if condition.adjudicator is not None:
+                raise InvestigationStopped("adjudicator_outside_scope")
             resolved = design.resolve(condition)
             if condition.harness.kind not in authorization.harnesses or any(
                 (profile.model or condition.model) != authorization.participant_model

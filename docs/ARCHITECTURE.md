@@ -7,7 +7,7 @@ remain ordered. Only explicit user actions create paid work. Restart pauses inte
 ## Storage
 
 SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. Startup creates
-schema v11 for fresh workspaces and rejects incompatible schemas. Local transactions
+schema v12 for fresh workspaces and rejects incompatible schemas. Local transactions
 commit each turn's input, decision, consequences, metrics and checkpoint together.
 
 | Record | Purpose / invariant |
@@ -199,8 +199,8 @@ requires a nonempty advance analysis plan and semantic review. The brief justifi
 participants, roles, conditions, opportunity-based horizon/stopping, replication and capture.
 Material clarification keeps the same conversation without an executable proposal. Unsupported
 questions retain their original text and may offer explicitly narrower installed alternatives.
-These additions are research artifacts, not World or database semantics; current DB11/export12/
-capture1/comparison1/library7/tool2.0/direct1.0 contracts retain those semantics. Installed
+These additions are research artifacts, not World or database semantics; current DB12/export13/
+capture1/comparison1/library8/tool2.0/direct1.0 contracts retain those semantics. Installed
 three-participant distributed coordination includes phase/conflict rules and logical addressed
 mail; solo artifact investigation remains sequential. A decline whose direct requirements and
 population have an installed example witness receives a bounded, recorded scoping recheck.
@@ -234,8 +234,8 @@ parameters and measurements. `World` owns common turn bookkeeping. Concrete worl
 checkpoint initialization, legal-action schema capabilities and derived environment measures;
 `decisions.py` builds schemas from those capabilities without selecting environments.
 `checkpoints.py` declares shared observations/actions and each world's state. Snapshots
-contain only that world's state. Institution uses rule version 4.1.0; composition,
-artifact investigation, distributed coordination and reliance commitments use 1.0.0;
+contain only that world's state. Institution uses rule version 4.1.0; artifact
+investigation uses 2.0.0; composition, distributed coordination and reliance commitments use 1.0.0;
 the other controlled worlds use 4.0.0. Incompatible
 checkpoints fail explicitly. `environments.py` contains the catalog and three games;
 `mechanisms.py` implements four fixed worlds; `composed.py` interprets resource compositions;
@@ -302,11 +302,46 @@ structural object/requirement edits also use the existing JSON editor. The revie
 shows requirements and ACLs; the run view links versions and terminal results to
 recorded turns. Reusable mechanics extract/rebind ACL roles and retain complete
 immutable source snapshots, independently of population, model, harness and memory.
-DB 11, export 12, comparison 1 and `jas-environment-v7` are the current contract.
+DB 12, export 13, comparison 1 and `jas-environment-v8` are the current contract.
 Older database/library versions fail explicitly; preserve them with their source.
 No migration, compatibility reader or reset is performed. Controlled-world rules
-remain unchanged; generated execution/admission and model adjudication remain out
-of this World.
+remain unchanged. Generated execution uses its separate admission profile.
+
+### Declared fallible adjudication
+
+Artifact rule 2.0.0 optionally declares `pickup_note_actionability` rubric 1.0.0.
+It assesses whether a first-time visitor's library pickup note supplies a usable
+action and a concrete, explicitly uncertain fallback. Conditions must explicitly
+pin adjudicator configuration 1.0.0, `openai:gpt-6.1-sol`, reasoning effort and
+response-token limit. Luna remains the participant identity. Backend preflight
+returns the rubric, selected inputs, permitted effect, limits and unit prices
+without requesting judgment. T18 frontend qualification remains separately staged.
+
+Only an explicit submission whose independent content/source checks pass may
+request judgment. World code selects the current work's guidance/desk/hour and
+the declared immutable source's v1 desk/hour through the actor's ACLs. No private
+goals, unrelated documents, memories or participant responses enter the request.
+World validates the exact scope and complete typed source assertions before
+settling: accept permits terminal success; revise/abstain permits terminal failure.
+An invalid ruling commits no turn. Free explanation remains fallible prose; it
+cannot grant access, change facts, execute code or create a visitor response.
+
+The existing request ledger reserves and settles purpose `adjudication`, owned
+by the study/run/turn with no participant activation ID. Judge costs therefore
+remain separate from participant effort. Current investigation authorization
+has no displayed judge identity/scope and rejects adjudicated proposals and
+judge reservations; researcher identity does not authorize judge work.
+
+Pause before a judge reservation retains the recorded decision for explicit
+Resume without resampling the participant. Pause during a judge request lets
+its in-flight final result settle. Restart interrupts unfinished activations
+without dispatching anything. Committed receipts contain exact inputs, raw
+ruling, configuration, request ID and a distinct enforced consequence. Rejected
+typed rulings remain in the attempt journal and ledger. Replay uses recorded
+rulings only, verifies request ownership/configuration/inputs/response, then
+reapplies World checks and compares complete consequences/checkpoints. It
+never loads a provider. Defined rubric accuracy, semantic truth and generic
+competence are separate claims; keyless stand-ins establish no live accuracy.
 
 ### Independently admitted finite extensions
 
@@ -413,8 +448,8 @@ provider request confirms input inclusion, separately from availability or inten
 Frozen analysis lenses recompute nonfinancial reliance value/eligibility while
 financial utility remains null; Sol analysis is separately billed from Luna work.
 
-T11 introduced DB9/export10/library6 for typed commitment parameters. The current
-combined contract is DB11/export12/library7 for those mechanics, T16 admitted
+T11 introduced DB9/export10/library6 for typed commitment parameters. T14's
+combined contract was DB11/export12/library7 for those mechanics, T16 admitted
 packages and T14 durable investigation authorization/nested request ownership,
 including canonical designs/mechanics hashes. Older persisted formats
 are explicitly rejected with no compatibility reader, migration or reset.
@@ -624,8 +659,8 @@ receipt establishes inclusion; pending proposals and queued mail cannot supply i
 Applying a different lens changes its
 requirements/account without rewriting the source analysis. Unsupported lens
 versions are rejected without conversion; historical analyses without a lens
-remain unassessed and cannot supply lens inputs. Database11/export12/capture1/
-comparison1/libraryv7 and harness contracts retain their existing meanings;
+remain unassessed and cannot supply lens inputs. Database12/export13/capture1/
+comparison1/libraryv8 and harness contracts retain their existing meanings;
 this additive versioned analysis JSON requires no migration or reset.
 
 Agent replies lead with a deterministic source-linked account, then expose claim
@@ -669,7 +704,7 @@ continues to settle its own consequences independently of model prose.
 
 `EnvironmentLibrary` owns reusable custom setups as versioned JSON records in a sibling
 `<database-stem>.environments` directory. An in-memory workspace uses a temporary library.
-The v7 library contract stores an `EnvironmentMechanics` definition and named configuration
+The v8 library contract stores an `EnvironmentMechanics` definition and named configuration
 examples, independently of questions, participant/model/harness assignments, condition arms,
 replication and analysis. Examples declare unbound mechanic roles; experiment authors bind
 those roles to their own participants. Memory remains an experiment/harness choice.
@@ -691,7 +726,7 @@ the experiment adapts those examples. Editing/deleting a reusable environment ne
 or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
 12 recent definitions as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
-call or run. Database schema 11, export 12 and library v7 reject incompatible versions explicitly; there is
+call or run. Database schema 12, export 13 and library v8 reject incompatible versions explicitly; there is
 no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 ### Failure-aware comparisons (T06)
@@ -774,7 +809,7 @@ artifact. Inspection/export/replay remain
 read-only. Exposure-conditioned descriptions are post-treatment selections, not
 automatic causal effects; inclusion establishes no attention, belief or intent.
 
-Exposure capture v1 was introduced in export v7; current export v12 retains the
+Exposure capture v1 was introduced in export v7; current export v13 retains the
 exposure chain and frozen analysis artifacts alongside artifact work. T09 advances
 the database to schema 7; T10 extends the typed mechanics contract to schema 8;
 T11 adds typed commitments in schema 9; T16 advances it to schema 10 for pinned

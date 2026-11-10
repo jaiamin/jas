@@ -346,6 +346,17 @@ class Activation:
 
     async def decide(self, paused: Callable[[], bool]) -> Decision | None:
         try:
+            # A submission can await its separately budgeted judgment after Pause.
+            # Resume consumes the already recorded proposal, never another sample.
+            pending = [
+                op
+                for op in operations(self.models, self.row.id)
+                if op["kind"] == "decide" and op["status"] == "complete"
+            ]
+            if pending:
+                if len(pending) != 1:
+                    raise ValueError("Participant activation contains multiple final decisions")
+                return Decision.model_validate(pending[0]["request"])
             if self.harness.kind == "scripted":
                 observation = cast(Observation, self.row.observation)
                 schema = self.world.decision_schema(observation)

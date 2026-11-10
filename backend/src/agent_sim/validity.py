@@ -10,7 +10,9 @@ from typing import Literal
 
 from pydantic import Field, field_validator
 
+from .adjudication import INSTRUCTIONS as ADJUDICATION_INSTRUCTIONS
 from .domain import Action, Decision, Design, RelayAction, StopArtifact, Strict, Treatment
+from .llm import PRICES
 from .simulation.checkpoints import Observation
 from .simulation.environments import create_world, get_environment
 from .simulation.world import World
@@ -48,7 +50,8 @@ CAPABILITIES = {
         "versioned_artifacts": "Actor-authorized evidence reads and versioned work "
         "with optimistic writes.",
         "artifact_verification": "Executable content/source checks, explicit submit/stop "
-        "and bounded writes; no model adjudicator.",
+        "and bounded writes; an optional declared fallible pickup-note rubric affects "
+        "only submission status after hard checks.",
     },
     "commons": {
         "contributions": "Sealed contributions to a multiplied shared fund; fresh round budgets.",
@@ -267,6 +270,7 @@ def condition_grid(design: Design) -> dict:
             {
                 "parameters": c.parameters.model_dump(),
                 "harness": c.harness.model_dump(),
+                "adjudicator": c.adjudicator.model_dump() if c.adjudicator else None,
                 **participant_assignment(design, c),
             }
         )
@@ -584,6 +588,12 @@ def _preflight(specification: str, runner=None) -> dict:
             "and consequences require targeted checks.",
         )
     for c in design.conditions:
+        if c.adjudicator is not None:
+            issue(
+                "fallible_adjudication",
+                f"{c.name} [{c.key}]: declared pickup-note judgment is fallible. "
+                "Preflight stop witnesses do not assess rubric accuracy or future model behavior.",
+            )
         try:
             traces[c.key] = [_trace(design, c, variant, runner) for variant in range(3)]
         except (ValueError, AssertionError) as error:
@@ -670,6 +680,10 @@ def _preflight(specification: str, runner=None) -> dict:
                 "baseline": baseline.key,
                 "condition": c.key,
                 "changed_parameters": changes,
+                "changed_adjudicator": _differences(
+                    baseline.adjudicator.model_dump() if baseline.adjudicator else {},
+                    c.adjudicator.model_dump() if c.adjudicator else {},
+                ),
                 "changed_harness": _differences(
                     baseline.harness.model_dump(), c.harness.model_dump()
                 ),
@@ -700,6 +714,32 @@ def _preflight(specification: str, runner=None) -> dict:
         "issues": issues,
         "comparisons": comparisons,
         "condition_grid": grid,
+        "adjudications": [
+            {
+                "condition_key": c.key,
+                "scope": c.parameters.artifacts.judgment.model_dump(),
+                "adjudicator": c.adjudicator.model_dump(),
+                "fallible": True,
+                "rubric": ADJUDICATION_INSTRUCTIONS,
+                "permitted_consequence": "terminal_submission_status",
+                "max_requests_per_submission_attempt": 1,
+                "price_per_million_usd": {
+                    "input": PRICES[c.adjudicator.model][0],
+                    "output": PRICES[c.adjudicator.model][1],
+                },
+                "limits": "Only selected work fields and pinned immutable evidence fields; "
+                "no private goals, inaccessible objects, invented responses or beliefs. "
+                "Hard-fact and ACL checks precede dispatch and settlement. One separately "
+                "ledgered request per submission attempt; atomic study/workspace and applicable "
+                "investigation ceilings apply. Cost depends on input/output usage; unknown "
+                "usage retains its reservation. No retries or model substitution. "
+                "Acceptance is a fallible rubric ruling, not semantic truth or competence.",
+            }
+            for c in design.conditions
+            if c.adjudicator is not None
+            and c.parameters.artifacts is not None
+            and c.parameters.artifacts.judgment is not None
+        ],
         "probe_turns": sum(r["turns"] for rows in traces.values() for r in rows),
         "probe_limit_per_instrument": 96,
         "limits": f"Checks use current rules {get_environment(design.environment).world.version}. "

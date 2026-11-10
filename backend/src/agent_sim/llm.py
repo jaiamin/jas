@@ -154,6 +154,7 @@ class LanguageModels:
         on_partial: Callable[[dict], None] | None = None,
         input_evidence: dict | None = None,
         on_reserved: Callable[[str], None] | None = None,
+        before_reserve: Callable[[], None] | None = None,
     ) -> T:
         if model not in PRICES:
             raise ProviderFailure("This model has no reviewed price configuration.")
@@ -191,7 +192,11 @@ class LanguageModels:
                 study_id = owner.study_id
         await wait_ready(self.db, investigation_id)
         async with self.capacity:
+            if before_reserve is not None:
+                before_reserve()
             await wait_ready(self.db, investigation_id)
+            if before_reserve is not None:
+                before_reserve()
             call = ProviderCall(
                 investigation_id=investigation_id,
                 study_id=study_id,
@@ -281,6 +286,8 @@ class LanguageModels:
         with self.db.session.begin() as session:
             if call.investigation_id:
                 parent = session.get_one(InvestigationRecord, call.investigation_id)
+                if call.purpose == "adjudication":
+                    raise InvestigationStopped("adjudicator_outside_scope")
                 expected = parent.authorization[
                     "researcher_model" if call.analysis_id else "participant_model"
                 ]

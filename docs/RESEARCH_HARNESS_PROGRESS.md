@@ -53,6 +53,15 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ### T18 bounded backend implementation (2026-11-10)
 
+Later bounded results: 41 feature, 25 Engine, 12 ledger, 25 artifact,13
+library/reuse and676 validity/instrument/actual-worker review cases pass.
+A subsequent judge-effort-only preflight contrast observed a genuine duplicate
+condition red and passes after the narrow comparison/grid repair. Exact
+integration target is now `0527e737`; final-source backend qualification is
+released but unrun. Frozen T01 CURRENT and separately frozen5/22/22 current
+contract qualification remain separate from retired historical parity.
+No frontend/provider stage or acceptance is granted.
+
 T18/#29 has a fresh assigned branch at exact published `a4ed8743`, with frozen
 DEVELOPMENT oracles and the frozen public-HTTP tracer in
 [its plan](research/T18_FALLIBLE_ADJUDICATION.md). Incomplete/unaccepted: granted

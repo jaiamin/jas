@@ -1,5 +1,18 @@
 # T18 bounded backend implementation (2026-11-10)
 
+Continuation: 41 feature cases, 25 Engine, 12 ledger, 25 artifact, 13
+library/reuse and 676 validity/instrument/actual-worker review cases passed
+in bounded jobs. The judge-only condition contrast then exposed a genuine
+public-preflight duplicate-arm error; its frozen test passes after treating
+adjudicator configuration independently of participant assignment. See the T18
+report for adverse attempts, lifecycle/cancellation/provenance scope and closed
+output restoration maps. Live judgment accuracy is unverified; acceptance is
+withheld. Exact required normal-merge target is now
+`0527e737d93786d0f5579d5a13827c472cf370fa`. Final-source backend qualification
+is released: unchanged T01 CURRENT with invocation-local protected/symlink-safe
+Git selection plus separately frozen full-input current-contract 5/22/22.
+Neither has run here yet; no retired BEFORE reference is used.
+
 Fresh T18/#29 implementer is in `t3/t18-fallible-adjudication`, assigned checkout
 `/home/agent/.t3/worktrees/workspace/t3-9a531151`, initially clean at exact
 `a4ed87430040bfb19e554ab7721ec56412a075d5`. No provisional T12/T17 merge.

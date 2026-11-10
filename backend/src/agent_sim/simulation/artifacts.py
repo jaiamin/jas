@@ -339,14 +339,17 @@ class ArtifactWorkspace(World[ArtifactCheckpoint]):
                         for field, value in source["content"].items()
                     }
                     asserted = adjudication.ruling.facts
-                    if len(asserted) != len(facts) or len(
-                        {(fact.artifact, fact.version, fact.field) for fact in asserted}
-                    ) != len(facts) or any(
-                        (fact.artifact, fact.version, fact.field) not in facts
-                        or type(fact.value)
-                        is not type(facts[(fact.artifact, fact.version, fact.field)])
-                        or fact.value != facts[(fact.artifact, fact.version, fact.field)]
-                        for fact in asserted
+                    if (
+                        len(asserted) != len(facts)
+                        or len({(fact.artifact, fact.version, fact.field) for fact in asserted})
+                        != len(facts)
+                        or any(
+                            (fact.artifact, fact.version, fact.field) not in facts
+                            or type(fact.value)
+                            is not type(facts[(fact.artifact, fact.version, fact.field)])
+                            or fact.value != facts[(fact.artifact, fact.version, fact.field)]
+                            for fact in asserted
+                        )
                     ):
                         raise ValueError("Adjudication contradicts or exceeds executable facts")
                     terminal = "success" if adjudication.ruling.verdict == "accept" else "failure"

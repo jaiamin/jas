@@ -281,7 +281,7 @@ def test_t13_discovers_four_person_commitments_and_saves_exact_rules_without_cal
         proposal["conditions"][0]["parameters"]
         == Design.model_validate(design).conditions[0].parameters.model_dump()
     )
-    assert proposal["environment_source"]["format"] == "jas-environment-v7"
+    assert proposal["environment_source"]["format"] == "jas-environment-v8"
     assert any("scope_feedback" in row["prompt"] for row in calls)
     usage = client.get("/api/settings").json()["usage"]
     saved = client.post("/api/studies", json={"design": proposal, "plan_id": result["id"]})
@@ -289,7 +289,7 @@ def test_t13_discovers_four_person_commitments_and_saves_exact_rules_without_cal
     study = client.get(f"/api/studies/{saved.json()['id']}").json()
     assert all(r["status"] == "ready" and r["turn"] == 0 for r in study["runs"])
     assert client.get("/api/settings").json()["usage"] == usage
-    assert client.get(f"/api/studies/{study['id']}/export").json()["version"] == 12
+    assert client.get(f"/api/studies/{study['id']}/export").json()["version"] == 13
     retain("independent-t13", result=result, study=study, requests=calls)
 
 
