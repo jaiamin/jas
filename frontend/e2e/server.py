@@ -55,7 +55,9 @@ def deterministic_participants(app):
                         "operation": "plan",
                         "decision": None,
                         "plan": {
-                            "text": "Check the observed budget before choosing an available amount.",
+                            "text": (
+                                "Check the observed budget before choosing an available amount."
+                            ),
                             "source_ids": [journal[0]["result"]["source"]["id"]],
                         },
                     }

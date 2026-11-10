@@ -56,6 +56,8 @@ for (const { theme, width } of [
       .poll(
         async () =>
           (await (await request.get(`/api/runs/${rid}`)).json()).summary.status,
+        // The context provider pauses one second in each of six activations.
+        { timeout: contextMode ? 15_000 : 5_000 },
       )
       .toBe("complete");
     const record = await (await request.get(`/api/runs/${rid}`)).json();
