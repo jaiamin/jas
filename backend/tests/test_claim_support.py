@@ -27,7 +27,8 @@ def claim_client(tmp_path, monkeypatch, request):
         prompt = json.loads(messages[-1].parts[0].content)
         seen.append(prompt)
         if "index" in prompt:
-            rid = prompt["index"]["runs"][0]["run_id"]
+            indexed = prompt["index"]["runs"]
+            rid = next((r["run_id"] for r in indexed if r["through_turn"] > 0), indexed[0]["run_id"])
             if not prompt["evidence"]:
                 payload = {
                     "requests": [{"kind": "history", "run_id": rid, "start": 1, "count": 20}],
