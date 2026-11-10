@@ -12,7 +12,8 @@ from sqlalchemy import select, text
 from .assistants import Assistants
 from .config import setting
 from .db import Annotation, Database, ProviderCall, Workspace
-from .domain import Design, Strict
+from .domain import Design, EnvironmentMechanics, SavedEnvironment, Strict
+from .environment_library import builtin_environment, definition_from_design, use_environment
 from .execution import Engine
 from .exports import export_study
 from .extensions import ExtensionCandidate, ExtensionReview, ExtensionRuntime, Extensions
@@ -107,8 +108,36 @@ class SaveStudy(Strict):
 
 
 class SaveEnvironment(Strict):
-    design: Design
+    definition: EnvironmentMechanics
     revision: int | None = Field(default=None, ge=1)
+
+
+class UseEnvironment(Strict):
+    design: Design | None = None
+    source: SavedEnvironment
+    example: str
+    bindings: dict[str, str] = Field(default_factory=dict)
+
+
+@router.post("/api/design/use-environment")
+async def apply_environment(body: UseEnvironment, *, research: ResearchDep) -> Design:
+    design = await asyncio.to_thread(
+        use_environment, body.design, body.source, body.example, body.bindings
+    )
+    research.validate_design(design)
+    return design
+
+
+class ExtractEnvironment(Strict):
+    design: Design
+
+
+@router.post("/api/design/environment")
+async def extract_environment(
+    body: ExtractEnvironment, *, research: ResearchDep
+) -> EnvironmentMechanics:
+    research.validate_design(body.design)
+    return await asyncio.to_thread(definition_from_design, body.design)
 
 
 class ChatMessage(Strict):
@@ -151,12 +180,14 @@ async def catalog(*, models: LanguageModelsDep) -> dict[str, Any]:
                 "measures": list(a.measures),
                 "measure_definitions": {m: MEASURE_DESCRIPTIONS[m] for m in a.measures},
                 "rule_version": a.world.version,
+                "source": builtin_environment(a.key).model_dump(),
             }
             for a in CATALOG.values()
         ],
         "models": models.catalog(),
         "templates": templates(),
         "design_schema": Design.model_json_schema(),
+        "environment_schema": EnvironmentMechanics.model_json_schema(),
     }
 
 
@@ -172,15 +203,13 @@ async def custom_environment(key: str, *, research: ResearchDep) -> dict:
 
 @router.post("/api/environments", status_code=201)
 async def create_environment(body: SaveEnvironment, *, research: ResearchDep) -> dict:
-    research.validate_design(body.design)
-    return (await asyncio.to_thread(research.environments.save, body.design)).model_dump()
+    return (await asyncio.to_thread(research.environments.save, body.definition)).model_dump()
 
 
 @router.put("/api/environments/{key}")
 async def update_environment(key: str, body: SaveEnvironment, *, research: ResearchDep) -> dict:
-    research.validate_design(body.design)
     return (
-        await asyncio.to_thread(research.environments.save, body.design, key, body.revision)
+        await asyncio.to_thread(research.environments.save, body.definition, key, body.revision)
     ).model_dump()
 
 

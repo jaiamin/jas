@@ -597,6 +597,13 @@ Check/Create for direct contract editing. Saving a reusable environment is a
 single-line item in Experiment options, rather than a competing primary action.
 Agent proposals open on Review. Saving never launches paid model work.
 
+Reusable environments save only mechanics/configuration examples. Choosing a library or
+built-in environment starts an independent neutral experiment; explicit experiment templates
+remain separate. The existing Conditions layout adds a stock disclosure for selecting an
+example and binding mechanic roles to current agents. Review identifies the pinned source
+revision/rules; Specification retains its complete definition/hash. Preserve a recovered
+draft's embedded revision, including after library deletion, and reject stale updates visibly.
+
 Keep section content mounted when inactive so input DOM and disclosures retain
 their state. Validated JSON resets the affected uncontrolled fields to the new
 specification. Initialize the form only after loading and validating the current
@@ -730,7 +737,7 @@ Details retain the URL-addressable stock Sheet: full width on phones, at most
 the description. Keep title and footer actions fixed while the body scrolls.
 Preserve original observations, enforced mechanics, control/measurement accordions
 and rule version. Show the composition explanation only for that environment.
-Configure experiment opens its template; Design with Agent passes the existing
+Configure experiment opens a neutral experiment from its mechanics; Design with Agent passes the existing
 environment-specific request and uses the shared Target icon.
 
 Native links support opening details in another tab as well as normal navigation.

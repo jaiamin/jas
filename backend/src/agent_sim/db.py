@@ -206,13 +206,13 @@ class Database:
                 text("CREATE TABLE IF NOT EXISTS schema_version (version INTEGER NOT NULL)")
             )
             version = connection.execute(text("SELECT version FROM schema_version")).scalar()
-            if version not in (None, 4):
+            if version not in (None, 6):
                 raise ValueError(
                     f"Unsupported database schema version: {version}; create a fresh workspace"
                 )
             if version is None:
                 Base.metadata.create_all(connection)
-                connection.execute(text("INSERT INTO schema_version VALUES (4)"))
+                connection.execute(text("INSERT INTO schema_version VALUES (6)"))
         with self.session.begin() as session:
             workspace = session.get(Workspace, 1)
             if workspace is None:

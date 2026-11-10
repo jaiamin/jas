@@ -18,6 +18,7 @@ export function editorDraftPath(params: URLSearchParams): string {
     "copy",
     "revision",
     "template",
+    "environment",
     "setup",
   ]) {
     const value = params.get(key);

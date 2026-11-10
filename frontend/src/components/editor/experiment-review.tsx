@@ -69,6 +69,22 @@ export function ExperimentReview({
           </h2>
           <p className="leading-relaxed break-words">{design.question}</p>
           <p className="text-muted-foreground">{environment?.name}</p>
+          {design.environment_source && (
+            <section
+              aria-label="Environment source"
+              className="flex flex-col gap-1 text-muted-foreground"
+            >
+              <p>
+                {design.environment_source.definition.name} · Revision{" "}
+                {design.environment_source.revision} · Rules{" "}
+                {design.environment_source.definition.rule_version}
+              </p>
+              <p>
+                Based on a pinned mechanics example. This experiment keeps its
+                own configured rules.
+              </p>
+            </section>
+          )}
           {(design.hypothesis || design.context) && (
             <Disclosure>
               <DisclosureTrigger>Hypothesis and context</DisclosureTrigger>

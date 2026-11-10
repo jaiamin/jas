@@ -60,8 +60,10 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v4.
-This WIP uses only the current schema and rules; incompatible workspaces must be reset.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v6.
+Schema v6 and library format `jas-environment-v3` accept only the current contract.
+Older databases/library records receive explicit errors; no data is converted or reset.
+Use a separate fresh workspace path for the new contract and preserve existing evidence.
 
 `JAS_ALLOWED_HOSTS` lists accepted hostnames/IPs without ports (comma-separated).
 Defaults: `localhost,127.0.0.1,[::1]`. Add the explicit LAN/proxy host before using a
@@ -91,7 +93,8 @@ pool can increase rate-limit failures; it does not give participants more inform
 
 Reusable custom environments are versioned files beside the configured SQLite database in
 `<database-stem>.environments/`; keep that directory when backing up a workspace. The app
-retains complete environment rules inside each immutable experiment, so library deletion
+retains concrete rules and a complete source definition/revision/hash inside each selected
+experiment, so library deletion
 never deletes run evidence. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 Extension candidate validation uses pinned Wasmtime in a bounded import-free

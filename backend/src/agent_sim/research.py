@@ -21,7 +21,7 @@ from .db import (
     digest,
 )
 from .domain import Design, Treatment
-from .environment_library import EnvironmentLibrary
+from .environment_library import EnvironmentLibrary, validate_source
 from .llm import PRICES, LanguageModels, Usage, empty_usage
 from .metrics import RunMetrics, aggregate_metrics, condition_results, matched_effects
 from .simulation.environments import CATALOG, create_world
@@ -133,6 +133,10 @@ class Research:
 
     @staticmethod
     def validate_design(design: Design) -> None:
+        if design.environment_source:
+            if design.environment_source.definition.environment != design.environment:
+                raise ValueError("Pinned environment source must match the experiment's world")
+            validate_source(design.environment_source)
         if any(c.model not in PRICES for c in design.conditions) or any(
             p.model is not None and p.model not in PRICES
             for p in design.profiles + [p for c in design.conditions for p in c.profile_overrides]

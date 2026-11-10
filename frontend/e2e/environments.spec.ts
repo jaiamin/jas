@@ -147,7 +147,10 @@ for (const theme of ["light", "dark"]) {
             name: "Configure experiment",
             exact: true,
           }),
-        ).toHaveAttribute("href", `/new?template=${env.key}&step=conditions`);
+        ).toHaveAttribute(
+          "href",
+          `/new?environment=${env.key}&step=conditions`,
+        );
         await expect(
           panel.getByRole("link", { name: "Design with Agent", exact: true }),
         ).toHaveAttribute("href", "/agent");

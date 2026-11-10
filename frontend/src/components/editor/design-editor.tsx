@@ -13,6 +13,7 @@ import {
   EditorNavigation,
   editorSections,
 } from "@/components/editor/editor-layout";
+import { EnvironmentExamples } from "@/components/editor/environment-examples";
 import { ExecutionFields } from "@/components/editor/execution-fields";
 import { ExperimentReview } from "@/components/editor/experiment-review";
 import { QuestionFields } from "@/components/editor/question-fields";
@@ -62,6 +63,7 @@ import type {
   Catalog,
   Design,
   EnvironmentId,
+  EnvironmentMechanics,
   ExperimentPreflight,
   SavedEnvironment,
 } from "@/lib/types";
@@ -115,8 +117,12 @@ export function DesignEditor({
   const [error, setError] = useState("");
   const [setupNotice, setSetupNotice] = useState("");
   const [savedSetup, setSavedSetup] = useState({
-    id: setupId,
-    revision: setupRevision,
+    id:
+      initial.environment_source &&
+      /^[a-f0-9]{16}$/.test(initial.environment_source.id)
+        ? initial.environment_source.id
+        : setupId,
+    revision: initial.environment_source?.revision ?? setupRevision,
   });
   const [pendingEnvironment, setPendingEnvironment] =
     useState<EnvironmentId | null>(null);
@@ -152,21 +158,49 @@ export function DesignEditor({
     },
   });
   const saveEnvironment = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (asNew: boolean) => {
       const validated = await api<Design>("/design/validate", {
         design: mode === "json" ? JSON.parse(json) : design,
       });
-      return api<SavedEnvironment>(
-        savedSetup.id ? `/environments/${savedSetup.id}` : "/environments",
-        { design: validated, revision: savedSetup.revision ?? null },
-        savedSetup.id ? "PUT" : "POST",
+      const definition = await api<EnvironmentMechanics>(
+        "/design/environment",
+        { design: validated },
       );
+      const updating = !asNew && savedSetup.id;
+      const record = await api<SavedEnvironment>(
+        updating ? `/environments/${savedSetup.id}` : "/environments",
+        { definition, revision: updating ? savedSetup.revision : null },
+        updating ? "PUT" : "POST",
+      );
+      return { record, validated };
     },
-    onSuccess: (record) => {
+    onSuccess: ({ record, validated }) => {
       setSavedSetup({ id: record.id, revision: record.revision });
+      const pinned = { ...validated, environment_source: record };
+      setDesign(pinned);
+      if (mode === "json") setJson(JSON.stringify(pinned, null, 2));
       setSetupNotice(
         "Custom environment saved. Reuse, edit or delete it from Environments.",
       );
+    },
+  });
+  const reuse = useMutation({
+    mutationFn: ({
+      example,
+      bindings,
+    }: {
+      example: string;
+      bindings: Record<string, string>;
+    }) =>
+      api<Design>("/design/use-environment", {
+        design,
+        source: design.environment_source,
+        example,
+        bindings,
+      }),
+    onSuccess: (applied) => {
+      setDesign(applied);
+      setFormVersion((version) => version + 1);
     },
   });
   const snapshot = mode === "json" ? json : JSON.stringify(design);
@@ -185,6 +219,7 @@ export function DesignEditor({
     save.isPending ||
     validate.isPending ||
     saveEnvironment.isPending ||
+    reuse.isPending ||
     check.isPending;
   function changeMode(value: string) {
     if (busy) return;
@@ -271,13 +306,24 @@ export function DesignEditor({
                 disabled={busy}
                 onSelect={() => {
                   setSetupNotice("");
-                  saveEnvironment.mutate();
+                  saveEnvironment.mutate(false);
                 }}
               >
                 {savedSetup.id
                   ? "Update custom environment"
                   : "Save custom environment"}
               </DropdownMenuItem>
+              {savedSetup.id && (
+                <DropdownMenuItem
+                  disabled={busy}
+                  onSelect={() => {
+                    setSetupNotice("");
+                    saveEnvironment.mutate(true);
+                  }}
+                >
+                  Save as new custom environment
+                </DropdownMenuItem>
+              )}
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -334,6 +380,20 @@ export function DesignEditor({
               className="data-[state=inactive]:hidden"
             >
               <div className="flex min-w-0 flex-col gap-8">
+                {design.environment_source && (
+                  <EnvironmentExamples
+                    key={design.environment_source.sha256}
+                    design={design}
+                    source={design.environment_source}
+                    disabled={busy}
+                    onApply={(example, bindings) =>
+                      reuse.mutate({ example, bindings })
+                    }
+                  />
+                )}
+                {reuse.error && (
+                  <Alert variant="error">{reuse.error.message}</Alert>
+                )}
                 <ConditionFields
                   design={design}
                   catalog={catalog}

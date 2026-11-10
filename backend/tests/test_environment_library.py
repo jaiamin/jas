@@ -3,7 +3,11 @@ import json
 import pytest
 from agent_sim.api import create_app
 from agent_sim.domain import Design
-from agent_sim.environment_library import EnvironmentConflict, EnvironmentLibrary
+from agent_sim.environment_library import (
+    EnvironmentConflict,
+    EnvironmentLibrary,
+    definition_from_design,
+)
 from agent_sim.templates import composed_template
 from fastapi.testclient import TestClient
 from sqlalchemy.exc import NoResultFound
@@ -11,19 +15,19 @@ from sqlalchemy.exc import NoResultFound
 
 def test_library_update_delete_and_corruption_are_explicit(tmp_path):
     library = EnvironmentLibrary(str(tmp_path / "workspace.sqlite3"))
-    original = composed_template()
+    original = definition_from_design(composed_template())
     saved = library.save(original)
     assert EnvironmentLibrary(str(tmp_path / "workspace.sqlite3")).get(saved.id) == saved
-    updated = library.save(original.model_copy(update={"title": "Changed"}), saved.id, 1)
+    updated = library.save(original.model_copy(update={"name": "Changed"}), saved.id, 1)
     assert updated.revision == 2
-    assert original.title != "Changed"
+    assert original.name != "Changed"
     with pytest.raises(EnvironmentConflict):
         library.save(original, saved.id, 1)
     with pytest.raises(EnvironmentConflict):
         library.delete(saved.id, 1)
     path = library.root / f"{saved.id}.json"
     content = json.loads(path.read_text())
-    content["design"]["title"] = "Tampered"
+    content["definition"]["name"] = "Tampered"
     path.write_text(json.dumps(content))
     with pytest.raises(ValueError, match="content hash"):
         library.get(saved.id)
@@ -52,11 +56,14 @@ def test_environment_lifecycle_preserves_pinned_runs_and_replay(tmp_path, monkey
         design["hypothesis"] = plan
         design["rounds"] = 2
         design["seeds"] = [7]
-        created = client.post("/api/environments", json={"design": design})
+        definition = definition_from_design(Design.model_validate(design)).model_dump()
+        created = client.post("/api/environments", json={"definition": definition})
         assert created.status_code == 201, created.text
         record = created.json()
         key = record["id"]
-        pinned = record["design"]
+        pinned = client.post(
+            "/api/design/validate", json={"design": design | {"environment_source": record}}
+        ).json()
         study_id = client.post("/api/studies", json={"design": pinned}).json()["id"]
         run_id = client.get(f"/api/studies/{study_id}").json()["runs"][0]["id"]
         assert client.get("/api/settings").json()["usage"]["requests"] == 0
@@ -67,13 +74,14 @@ def test_environment_lifecycle_preserves_pinned_runs_and_replay(tmp_path, monkey
         assert composition is not None
         composition.resources[0].initial_stock = 9
         updated = client.put(
-            f"/api/environments/{key}", json={"design": changed.model_dump(), "revision": 1}
+            f"/api/environments/{key}",
+            json={"definition": definition_from_design(changed).model_dump(), "revision": 1},
         )
         assert updated.status_code == 200
         assert updated.json()["revision"] == 2
         assert (
             client.put(
-                f"/api/environments/{key}", json={"design": design, "revision": 1}
+                f"/api/environments/{key}", json={"definition": definition, "revision": 1}
             ).status_code
             == 409
         )
@@ -100,7 +108,7 @@ def test_environment_lifecycle_preserves_pinned_runs_and_replay(tmp_path, monkey
         assert (
             client.post(
                 "/api/environments",
-                json={"design": design},
+                json={"definition": definition},
                 headers={"Origin": "https://outside.example"},
             ).status_code
             == 403
@@ -111,14 +119,14 @@ def test_planner_receives_saved_mechanics_and_frozen_snapshot(runtime):
     from agent_sim.planning import Planner
 
     db, models, research, _ = runtime
-    record = research.environments.save(composed_template())
+    record = research.environments.save(definition_from_design(composed_template()))
     context = Planner(db, research, models)._context("Study shortage", [])
     examples = context["custom_environments"]
     assert isinstance(examples, list)
     assert examples[0]["id"] == record.id
-    assert examples[0]["design"] == record.design.model_dump()
+    assert examples[0]["definition"] == record.definition.model_dump()
     research.environments.delete(record.id, 1)
-    assert examples[0]["design"] == record.design.model_dump()
+    assert examples[0]["definition"] == record.definition.model_dump()
     assert Planner(db, research, models)._context("Study shortage", [])["custom_environments"] == []
 
 
@@ -126,7 +134,13 @@ def test_custom_environment_can_switch_supported_engine_without_altering_origina
     from agent_sim.templates import commons_template
 
     library = EnvironmentLibrary(str(tmp_path / "workspace.sqlite3"))
-    previous = library.save(commons_template())
-    changed = library.save(composed_template(), previous.id, previous.revision)
-    assert changed.rules == "1.0.0" and changed.design.environment == "composed"
-    assert previous.rules == "4.0.0" and previous.design.environment == "commons"
+    previous = library.save(definition_from_design(commons_template()))
+    changed = library.save(
+        definition_from_design(composed_template()), previous.id, previous.revision
+    )
+    assert (
+        changed.definition.rule_version == "1.0.0" and changed.definition.environment == "composed"
+    )
+    assert (
+        previous.definition.rule_version == "4.0.0" and previous.definition.environment == "commons"
+    )

@@ -149,7 +149,7 @@ export function EnvironmentDetails({
       <Separator />
       <SheetFooter className="gap-2 px-6 pt-0 pb-6">
         <Button asChild>
-          <Link to={`/new?template=${env.key}&step=conditions`}>
+          <Link to={`/new?environment=${env.key}&step=conditions`}>
             Configure experiment
             <ArrowRight data-icon="inline-end" />
           </Link>

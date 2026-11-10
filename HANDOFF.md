@@ -1663,3 +1663,17 @@ failures, with identical cases/harness/runtime and 22 scripted responses each.
 No paid calls or stash changes. Both production containers and owned browser
 backends are stopped. Preserve the complete ignored `data/t02/` directory;
 `checks.json` indexes evidence. No host/security/credential configuration changed.
+# T03 implementation handoff (active)
+
+Assigned worktree `/home/agent/.t3/worktrees/workspace/t3-6cea71e7`, branch
+`t3/add-reusable-environments`. Read `docs/research/T03_ENVIRONMENTS.md` for
+acceptance, decisions and evidence. Implement T03/#14 only; no delegates,
+publication, paid calls, stash access, worktree cleanup or changes to `pbcopy`.
+Library v3 separates mechanics/configuration examples and unbound roles from
+study commitments; schema/export v6 pin complete sources in immutable revisions.
+Before evidence and every red/green/failure attempt remain under ignored
+`data/t03/`. API reuse/privacy/atomic checks and desktop/light + phone/dark reuse
+flows pass; inherited/final verification and latest integration reconciliation
+are in progress. All runtime data/dependencies/builds are local to this checkout;
+owned browser port is 18114. Actual spend $0.
+

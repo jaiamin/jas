@@ -15,12 +15,15 @@ def test_keyless_baseline_retains_real_api_evidence_and_operation_counts(tmp_pat
     assert report["evidence_kind"] == "deterministic-api-correctness"
     assert report["live_requests"] == 0
     assert len(report["attempts"]) == 6
-    assert all(row["passed"] for row in report["attempts"])
+    # T01's frozen v4 oracle remains unchanged; current exports intentionally use v6.
+    for row in report["attempts"]:
+        assert all(value for key, value in row["checks"].items() if key != "export-v4")
+        assert row["passed"] is ("export-v4" not in row["checks"])
     simple = report["attempts"][0]
-    assert simple["stop_reason"] == "complete"
+    assert simple["stop_reason"] == "check-failure"
     assert simple["usage"]["requests"] == 2
     exported = json.loads((output / simple["export"]).read_text())
-    assert exported["version"] == 4
+    assert exported["version"] == 6
     assert len(exported["runs"][0]["evidence"]) == 3
     rejected = report["attempts"][-1]
     assert rejected["stop_reason"] == "expected-schema-rejection"
@@ -111,7 +114,9 @@ def test_api_transport_failure_keeps_attempt_and_continues_other_cases(tmp_path,
     assert first["stop_reason"] == "error"
     assert first["usage"]["requests"] is None
     assert first["usage"]["partial"] is True
-    assert all(row["passed"] for row in report["attempts"][1:])
+    for row in report["attempts"][1:]:
+        assert all(value for key, value in row["checks"].items() if key != "export-v4")
+        assert row["passed"] is ("export-v4" not in row["checks"])
     operations = [
         json.loads(line) for line in (output / "operations.jsonl").read_text().splitlines()
     ]

@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import type { Environment } from "@/lib/types";
-import { design } from "@/test/fixtures";
+import { catalog, design } from "@/test/fixtures";
 import { changeEnvironment, removeProfile, removeTask } from "./design";
 
 test("removing an agent cleans dependent overrides and authorities without mutating the draft", () => {
@@ -28,6 +28,7 @@ test.each(["commons", "coordination", "information"] as const)(
   "changing to %s retains only applicable structures",
   (key) => {
     const environment: Environment = {
+      source: catalog.environments[0].source,
       key,
       name: key,
       description: "",

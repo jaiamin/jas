@@ -58,20 +58,26 @@ export default function Editor() {
   });
   const catalog = useApi<Catalog>("/catalog");
   const setupId = params.get("setup");
+  const environmentId = params.get("environment");
+  const hasSourceDraft = Boolean(
+    draft.data?.saved && (setupId || environmentId),
+  );
   const setup = useQuery({
-    queryKey: ["setup", setupId],
-    enabled: !!setupId && !!catalog.data,
+    queryKey: ["setup", setupId, environmentId],
+    enabled:
+      !!(setupId || environmentId) &&
+      !!catalog.data &&
+      draft.isFetchedAfterMount &&
+      !hasSourceDraft,
     queryFn: async () => {
-      const saved = await api<SavedEnvironment>(`/environments/${setupId}`);
-      const environment = catalog.data?.environments.find(
-        (item) => item.key === saved.design.environment,
-      );
-      if (!environment || saved.rules !== environment.rule_version)
-        throw new Error(
-          "This setup uses incompatible environment rules. Create a fresh setup.",
-        );
-      const design = await api<Design>("/design/validate", {
-        design: saved.design,
+      const saved = setupId
+        ? await api<SavedEnvironment>(`/environments/${setupId}`)
+        : catalog.data?.environments.find((item) => item.key === environmentId)
+            ?.source;
+      if (!saved) throw new Error("Unknown reusable environment.");
+      const design = await api<Design>("/design/use-environment", {
+        source: saved,
+        example: saved.definition.examples[0].key,
       });
       return { design, revision: saved.revision };
     },
@@ -103,6 +109,7 @@ export default function Editor() {
       previous.error.status === 404,
   );
   const previousError = deletedSource ? null : previous.error;
+  const setupError = hasSourceDraft ? null : setup.error;
   function discardDraft() {
     try {
       removeDraft(draftPath);
@@ -124,11 +131,11 @@ export default function Editor() {
         )}
       </>
     );
-  if (catalog.error || plan.error || previousError || setup.error)
+  if (catalog.error || plan.error || previousError || setupError)
     return (
       <ErrorState
         error={
-          (catalog.error || plan.error || previousError || setup.error) as Error
+          (catalog.error || plan.error || previousError || setupError) as Error
         }
         onRetry={() =>
           Promise.all(
@@ -144,7 +151,7 @@ export default function Editor() {
     draft.isPending ||
     !draft.isFetchedAfterMount ||
     (sourceId && !previous.data && !deletedSource) ||
-    (setupId && !setup.data)
+    ((setupId || environmentId) && !hasSourceDraft && !setup.data)
   )
     return <EditorLoading revision={!!studyId} fromAgent={!!planId} />;
   if (draft.data?.error && !recoverDraft)
