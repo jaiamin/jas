@@ -55,7 +55,34 @@ and teardown, adding no product execution or T14 acceptance. Next: root's fresh
 integration merger/review. No push/PR/issue/watch was performed here.
 Historical handoffs below remain preserved.
 
-# Latest boundary — Git objects preserved; production headroom restored (2026-11-10)
+# Latest boundary — T14 production verified; T17 Python stage released (2026-11-10)
+
+T14 implementation remains unaccepted. Root independently checked its completed
+production receipt, all438 protected-excluded tracked archive entries,44 deployed
+backend files and53 assets against the qualified source/current build. Every
+recorded production/teardown command exited0; the exact container, volume and tag
+are absent and18127/18128 closed. Later differences are documentation and browser
+test formatting; application/build inputs remain equal. Image qualification covers
+World restoration/replay; Engine lifecycle/accounting remain separately attributed
+actual-worker HTTP evidence. Root added no fresh product execution or acceptance.
+Receipt: `.tools/research-harness/maintenance/T14-production-boundary-root-verification-20261110.json`.
+T14 is completing final parity, source attribution and all-attempt evidence closure.
+
+Production priority is released. The SAME T17 implementer has an explicit
+Python-only setup/first-API-red continuation: under shared flock require
+268,435,456 free bytes before normal frozen uv hardlink sync from T14's coordinated
+exact cache into a distinct T17 `.venv`; verify its prefix and editable import.
+After release, bounded backend TDD/static/type/regression slices may proceed under
+the unchanged134,217,728-byte floor, releasing between jobs and forecasting new
+outputs. Frontend/browser/production/new installs/paid work remain separately held.
+Root observed269,979,648 bytes at production verification, shared and unreserved.
+This is an authorized stage, not an observed setup/test result. Preserve owner
+caches, working root uv bootstrap, all evidence/maps and opaque configurations.
+T12 source-only checkout follows T17's setup boundary; T18 remains Ready. Root
+retains sole shared tracked writing. Accepted contracts remain DB10/export11/
+library7; T14's combined DB11/export12 remain provisional until fresh review.
+
+# Earlier boundary — Git objects preserved; production headroom restored (2026-11-10)
 
 Root completed bounded project Git storage maintenance under shared flock. All
 18,027 BEFORE object IDs, including unreachable objects, remain; all references,
