@@ -30,7 +30,36 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01 integrated; draft PR #32; T02/T04/T05 queued.**
+**Current checkpoint: T01/T02 integrated; T02 UI review follow-up pending;
+draft PR #32; T04/T05 running.**
+
+T02 source `07d6d9fa681bd5ce79777c480e0798b5d6fa6137` was integrated with
+no-ff merge `77f6014981754adefc954af51e06f9326ab95893`. The fresh merger
+observed 128 focused backend tests passing (12 extension and 116 existing
+API/lifecycle/accounting/privacy/replay checks), Ruff/ty, frontend lint/build,
+and a fresh non-root production build/smoke with all 26 containment checks.
+Raw merger logs, clean tracked-source archive and production identities are in
+ignored `.tools/research-harness/evidence/T02-integration/`; its disposable
+container was removed and port 18293 is closed. Child browser evidence remains
+168 passing flows and 3 passing affected flows after the deadline repair;
+the merger did not repeat that suite. No paid calls or external tracker changes.
+
+All 531 T02 evidence files (21,393,475 bytes) were copied without overwrites to
+ignored `.tools/research-harness/evidence/T02/`, with every source/destination
+SHA-256 verified and stable source bytes. `T02-copy-verification.json` records
+the manifest digest
+`85b20d19b4e4c133e3eba3c0cf9add8973c8c6f55a65a0effe0457f559437ab7`.
+The child worktree remains intact. The pre-existing untracked `pbcopy` was
+untouched/unread and excluded from the tracked-source archive. Keep both T01
+and T02 preserved evidence. No stash, host policy or credential changes.
+
+Parent-owned follow-up before completing T02 review acceptance: submitting a
+candidate from a history URL leaves `selectedId` on the old review and hides
+the new validation result. Add a red/green browser regression and correct that
+selection in the next change. Containment is qualified for the narrow
+import-free Wasm contract; experiment/world admission remains disabled until
+T16. See `docs/research/T02_CONTAINMENT.md` for the full integration record.
+
 The user explicitly invoked implement-spec after the reviewed breakdown. Treat
 that as authorization to implement the accepted task graph; do not repeat
 product-scope or testing-seam questions. Read the invoked skill at
@@ -53,8 +82,9 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: T02–T07/#13–#18 after T01/#12 integration. Launch T02/T04/T05
-first; T03/T06/T07 remain ready. Draft PR #32 is the single integration PR and
+Current frontier: complete the T02/#13 UI review follow-up while T04/#15 and
+T05/#16 run in their assigned worktrees; T03/#14, T06/#17 and T07/#18 remain
+Ready. Draft PR #32 is the single integration PR and
 was linked immediately. Refresh/link it on each push. Do not merge to main or
 close issues as if unverified work were complete. The default-branch PR merge
 itself is not authorized.

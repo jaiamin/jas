@@ -219,3 +219,55 @@ integration review. There is no remaining runtime blocker for this import-free
 Wasm contract. Native/Python extensions, full world admission (T16), live model
 competence, research validity and held-out generation remain unqualified.
 No pushes, PRs, issue edits/closures or other ticket status changes were made.
+
+## Independent integration checkpoint (2026-11-10)
+
+Ticket HEAD `07d6d9fa681bd5ce79777c480e0798b5d6fa6137` was integrated into
+`integration/research-harness` with no-ff merge
+`77f6014981754adefc954af51e06f9326ab95893`. The existing integration/T01
+checkpoint was preserved without conflicts. No product code changed during
+integration. The frozen dependency sync passed using the existing local
+`.tools/uv-bootstrap/bin/uv` workaround for the system uv page-size failure.
+
+Before merging, the fresh merger copied **all 531 ignored ticket artifacts,
+21,393,475 bytes**, from `data/t02/` into the newly created ignored integration
+directory `.tools/research-harness/evidence/T02/`, without overwrites. Every
+source and destination size/SHA-256 matches; source bytes and ticket HEAD stayed
+stable during copying. The sibling `T02-copy-verification.json` contains the
+per-file manifest with canonical SHA-256
+`85b20d19b4e4c133e3eba3c0cf9add8973c8c6f55a65a0effe0457f559437ab7`.
+The child worktree and T01 evidence remain intact.
+
+Fresh checks on the exact merge source:
+
+| Check | Observed result |
+| --- | --- |
+| Focused backend | `.venv/bin/pytest backend/tests/test_extensions.py backend/tests/test_api.py backend/tests/test_lifecycle.py backend/tests/test_llm.py backend/tests/test_worlds.py backend/tests/test_exports.py backend/tests/test_execution.py --junitxml=.tools/research-harness/evidence/T02-integration/backend.xml -q`: **128 passed**, 64.94s (12 extension, 116 existing) |
+| Backend lint/type | `.venv/bin/ruff check backend benchmarks .github/scripts` and `.venv/bin/ty check`: passed |
+| Frontend lint/build | `pnpm --dir frontend lint` and `pnpm --dir frontend build`: passed, including TypeScript |
+| Actual production | Fresh normal Dockerfile build and `.github/scripts/smoke.py` against the unique non-root container: passed; all **26** checks passed/cleaned, safe outputs `[20, -7]`, import/fuel denial, restored inert reviews and subsequent safe validation |
+
+The production build used `git archive --format=tar HEAD`, never a dirty-root
+snapshot. Source tree `095192c861bf990145e7a115e0cd5806d377650e`, archive SHA-256
+`0c58a041dcca221c9ef70b03b2f9697055e9633aa5fb6f88f1a8c022dfed4514`.
+The unrelated untracked `pbcopy` was left unread/untouched and excluded. Image
+`jas-t02-merge-fdf9bdeb:77f6014`, ID
+`sha256:bee49aa9f2ebef25b4034bceb5aa0dec350fa54d5b07bd408c5cc1a3ece6d881`;
+container `jas-t02-merge-fdf9bdeb-77f6014`, port 18293, user `10001:10001`, no
+mounts, added capabilities, security overrides or privileged mode. The container
+was stopped/removed after verification and its port is closed. Raw source,
+command/exit/hash records, XML, qualification, reviews, logs and cleanup proof
+are retained in `.tools/research-harness/evidence/T02-integration/`.
+
+The child's source-stamped comparison and final 3 affected browser flows were
+accepted without another baseline or browser-suite rerun; the evidence above
+distinguishes fresh merger observations from inherited results. No paid calls,
+pushes, PR/issue actions, stash changes or unrelated process changes occurred.
+
+**T02 UI review follow-up remains pending.** The parent identified that
+submitting from a history URL leaves `selectedId` pinned to the old review and
+hides the new validation result. The parent will add the red/green browser
+regression and correction after this merge. The narrow containment boundary is
+qualified; overall T02 review acceptance is not yet complete. T16 world
+admission, native/Python extensions, live competence and held-out generation
+remain unqualified.
