@@ -60,7 +60,7 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v7.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v8.
 Schema v7 and library format `jas-environment-v4` accept only the current contract.
 Older databases/library records receive explicit errors; no data is converted or reset.
 Use a separate fresh workspace path for the new contract and preserve existing evidence.
@@ -90,7 +90,7 @@ policies to **tool-using harness 2.0.0**. Direct action remains 1.0.0. Unsupport
 tool-using 1.0.0 designs are explicitly rejected: preserve their source/data/exports
 for inspection with that contract; no migration, compatibility reader or automatic
 reset is performed. T08 itself added no database schema change. T09 advances the combined current
-contract to schema/export 7 and environment-library v4 for typed artifact operations
+contract to database schema 7, export 8 and environment-library v4 for typed artifact operations
 and complete versioned work/checkpoints.
 New runs must pin the current harness. Each capability can be explicitly disabled;
 there is no substitute policy. The same activation request/operation budgets apply.

@@ -82,7 +82,7 @@ The institution now announces the actual sanction visibility in rules and a stru
 `sanction_visibility` observation. Institution rules are **4.1.0**; other worlds remain
 **4.0.0**. Historical evidence remains readable/exportable; incompatible runs cannot resume
 or replay under current rules. Save a new immutable revision for new trials. No data reset,
-legacy engine or conversion is provided. The current export **v7** lists actual recorded `rule_versions`
+legacy engine or conversion is provided. The current export **v8** lists actual recorded `rule_versions`
 across runs instead of falsely labeling mixed-version evidence with the current version.
 For incompatible engines it marks an unrecorded initial state unavailable and exports the
 recorded turns; it never reconstructs old evidence using new rules.

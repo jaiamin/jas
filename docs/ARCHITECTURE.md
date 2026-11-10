@@ -227,7 +227,7 @@ structural object/requirement edits also use the existing JSON editor. The revie
 shows requirements and ACLs; the run view links versions and terminal results to
 recorded turns. Reusable mechanics extract/rebind ACL roles and retain complete
 immutable source snapshots, independently of population, model, harness and memory.
-DB 7, export 7, comparison 1 and `jas-environment-v4` are the current contract.
+DB 7, export 8, comparison 1 and `jas-environment-v4` are the current contract.
 Older database/library versions fail explicitly; preserve them with their source.
 No migration, compatibility reader or reset is performed. Controlled-world rules
 remain unchanged; generated execution/admission and model adjudication remain out
@@ -295,7 +295,7 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v7 (`jas-study`)
+Every Analysis has an indexed conversation identity. Study export v8 (`jas-study`)
 includes every revision and its runs, actual recorded rule versions, exact turn evidence
 and provider traces; it batches
 journal queries.
@@ -472,7 +472,7 @@ Analysis submissions synchronously freeze cutoffs, dispositions, terminal metric
 eligibility, revision/hash and calculations before the server task runs. Progress,
 reconnect, failure and export preserve that snapshot across later run completion or
 new revisions. Analysis reads do not append participant evidence or provider calls.
-Study export v7 includes this versioned comparison contract and persisted analysis
+Study export v8 includes this versioned comparison contract and persisted analysis
 snapshots, changing earlier consumer expectations. T06 changes no database columns and
 requires no data reset; historical evidence is never backfilled with invented states.
 

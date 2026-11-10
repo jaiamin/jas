@@ -47,7 +47,8 @@ Its identity, content and versions must not leak through schemas or errors.
 ## Decisions and scope
 
 - Extend the existing World/execution/activation journal; no second engine,
-  generated execution, model judge, collaborative phase scheduler or T08 merge.
+  generated execution, model judge or collaborative phase scheduler. Accepted
+  T08 and T07 integration changes are retained without expanding their scope.
 - Concrete world key: `artifact_workspace`. Objects have fixed executable ACLs,
   structured content and append-only versions. Named roles/profile prose confer
   no access. A shared write allowance couples actual work to a finite resource;
@@ -66,9 +67,9 @@ Its identity, content and versions must not leak through schemas or errors.
 
 ## Next steps
 
-Continue actor contention, terminal/restart/accounting and replay oracles, then
-artifact inspection and browser success/failure/recovery. The configuration
-reload/save browser tracer passes. Use existing `.venv/bin` tooling; the own
+Finish final combined-source checks, clean-source comparison, production smoke
+and evidence manifest. Artifact/access/terminal/restoration oracles and browser
+success/failure/recovery are implemented. Use existing `.venv/bin` tooling; the own
 project-local uv bootstrap was removed to free shared disk after ENOSPC. Browser
 port **18120** is reserved for this task. Do not inspect real configuration,
 touch the preserved stash, other worktrees/processes or frozen T01 history.
@@ -144,3 +145,37 @@ JSON editor, while stock visual controls edit names, contents, ownership/access
 and finite write allowance. Review and run inspection name researcher scope and
 show actual versions/source links, outcomes and receipts. No new dependency,
 custom style system, model judge, generated execution or financial proxy exists.
+
+## Latest accepted integration and contract
+
+Merge `adf3c45` included accepted T08 retrieval filtering and documentation at
+`e2d42c9`; 1,133 backend tests, 109 frontend tests, Ruff/ty/lint/build, eight
+artifact/harness browser flows and the UI detector passed. The two accepted T08
+browser flows exposed their old export-6 assertion; the current-contract fixture
+repair passed both, with the original failures retained. Screenshots of actual
+artifact success/failure/recovery were inspected at desktop/light and phone/dark.
+
+Integration then advanced to `a92105fd2300de97e8668400a2174019e3f96788` with T07.
+Merge `1ba6f6e` preserves its exposure capture, source/input bindings and browser
+flows, alongside artifact instructions/read tools and accepted T08 capabilities.
+Three expected merge conflicts (imports/instructions, contract prose, browser
+suite membership) are retained in the command log and resolved by preserving
+both behaviors. No unaccepted ticket branch was read or merged.
+
+Current combined contract: **DB 7 / export 8 / comparison 1 /
+`jas-environment-v4`**. Accepted T07 already uses export 7; artifact requests,
+state and outcomes require a distinct current export. A public artifact workflow
+first failed expecting 8, then passed after the exporter/fixtures/docs update;
+76 artifact/lifecycle/context/exposure tests pass on the combined source.
+Controlled-world rule versions remain unchanged. There is no alias, migration,
+reset, paid call or model substitution.
+
+The first clean-source after comparison (before T07 arrived) is retained in
+`data/t09/after/`. Frozen T01 before/after and comparison exit 1 with the same
+four export-v4 failures and failed flags. Its independent audit verifies all
+22 turns/five runs, exact controlled request payloads and accounting, current
+DB7/export7/library4, and classifies all 1,117 JSON differences with none
+unexplained (633 raw export differences; the remainder includes reports,
+manifests, design/catalog additions and catalog ordering). This is an interim
+source, not the final combined-source comparison. Final gates must include T07
+and export8 and will be recorded below without overwriting this evidence.
