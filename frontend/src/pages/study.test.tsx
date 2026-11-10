@@ -22,6 +22,19 @@ const study: StudyDetail = {
   created: "2026-11-07",
   revisions: [{ number: 1, created: "2026-11-07", sha256: "fixture" }],
   runs: [],
+  comparison: {
+    version: 1,
+    revision: 1,
+    design_sha256: "fixture",
+    matching_unit: "Immutable revision × seed × repetition",
+    inference_unit: "Seed cluster",
+    independent_support: null,
+    dependence: "Agents share histories",
+    uncertainty_reason: "Sampling is not declared",
+    selection_assumption: "Outcome-independent selection is unverified",
+    conditions: [],
+    cells: [],
+  },
   results: [],
   effects: [],
   usage: runDetail.summary.usage,
@@ -115,4 +128,56 @@ test("a failed pause retains the active state and its retry control", async () =
   );
   expect(screen.getByText("Running", { exact: true })).toBeInTheDocument();
   expect(pause).toBeEnabled();
+});
+
+test("planned sample and lack of independent support remain inspectable without completed outcomes", async () => {
+  const missing = {
+    ...snapshot(["failed", "ready"]),
+    comparison: {
+      ...study.comparison,
+      conditions: [
+        {
+          condition_key: "a",
+          condition: "A",
+          planned: 2,
+          attempted: 1,
+          complete: 0,
+          failed: 1,
+          interrupted: 0,
+          ready: 1,
+          in_progress: 0,
+          not_captured: 0,
+          excluded: 2,
+          unmatched: 0,
+          reasons: { "Provider failed": 1 },
+        },
+      ],
+      cells: [
+        {
+          run_id: "run-0",
+          condition_key: "a",
+          seed: 7,
+          repetition: 1,
+          status: "failed",
+          through_turn: 0,
+          attempted: true,
+          reason: "Provider failed",
+          metrics: {},
+        },
+      ],
+    },
+  };
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(() => Promise.resolve(Response.json(missing))),
+  );
+  renderStudy();
+  expect(await screen.findByText("Complete / planned")).toBeInTheDocument();
+  expect(screen.getByText("0 / 2")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Sample & uncertainty" }));
+  expect(await screen.findByText("Provider failed")).toBeInTheDocument();
+  expect(
+    screen.getByText(/Independent support: not established/),
+  ).toBeInTheDocument();
+  expect(screen.getByText("Sampling is not declared")).toBeInTheDocument();
 });

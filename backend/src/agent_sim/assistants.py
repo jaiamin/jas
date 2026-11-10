@@ -23,7 +23,7 @@ from .db import (
 from .diagnostics import log_failure
 from .domain import Design, Finding, Strict
 from .llm import LanguageModels, ProviderFailure, Usage, empty_usage, usage_record
-from .metrics import RunMetrics, aggregate_metrics, matched_effects
+from .metrics import aggregate_metrics
 from .planning import Planner, public_activity, stream_partial
 from .research import Research, event_dict
 from .simulation.environments import CATALOG
@@ -59,7 +59,12 @@ costly behavior only after checking whether it actually reduces private payoff; 
 can value group outcomes too. Do not infer a preference or motive from a claimed calculation.
 Counts and effects cover the captured scope, while inspected turns are examples;
 state those different coverage levels. Missing opportunities are not perfect behavior.
-Average repetitions within seed; do not treat turns or repeated seeds as independent samples.
+Use comparisons for the full planned matrix, disposition reasons, selected estimates and bounds.
+Average repetitions within seed; do not treat turns, agents or repeated seeds as independent
+samples. Observed clusters do not certify independence. Confidence intervals are withheld without
+a declared sampling/randomization design, even with three or more seeds. Distinguish observed
+complete-pair differences from planned-sample bounds; bounds are not imputed outcomes or CIs.
+State outcome-independent selection assumptions, missing arms and undefined denominators.
 For a useful insight, report the measured finding, plausible competing explanations, limits,
 and one concrete next controlled comparison (factor, outcome, horizon, matched seeds and cost).
 Use environment_catalog to distinguish a currently executable follow-up from an engineering
@@ -104,7 +109,8 @@ The supplied environment catalog describes supported mechanics, not observed res
 Previous protocol proposals in this chat may explain the planned setup, never observed outcomes.
 JAS follows experiment -> run -> recorded decision -> comparison. Saved protocols have immutable
 revisions. Saving a protocol does not execute it. Conditions, matched seeds, and repetitions
-define independent runs; maximum decisions are runs times rounds times agents. Spending
+define planned runs; shared seeds and within-run histories can induce dependence.
+Maximum decisions are runs times rounds times agents. Spending
 ceilings limit model calls. Decide whether the user wants an answer or a reviewed experiment
 proposal. Set propose_experiment=true only when they ask to design/create an experiment or
 revise a prior protocol, including contextual follow-ups such as changing its conditions.
@@ -213,6 +219,7 @@ class Assistants:
             cutoffs = {run_id: run.turn}
         elif study_id:
             cutoffs = {r.id: r.turn for r in self.research.operational_runs(study_id)}
+        comparisons = self.research.capture_comparisons(cutoffs) if purpose == "analysis" else None
         with self.db.session.begin() as session:
             chat_id = chat_id or uid()
             if session.scalar(
@@ -226,6 +233,7 @@ class Assistants:
                 run_id=run_id,
                 chat_id=chat_id,
                 cutoffs=cutoffs,
+                output={"comparisons": comparisons} if comparisons is not None else None,
             )
             session.add(row)
             session.flush()
@@ -371,6 +379,11 @@ class Assistants:
         with self.db.session.begin() as session:
             row = session.get_one(Analysis, key)
             row.output = {
+                **(
+                    {"comparisons": row.output["comparisons"]}
+                    if row.output and "comparisons" in row.output
+                    else {}
+                ),
                 "stage": stage,
                 "examined": examined,
                 "activity": public_activity(row.output, stage),
@@ -457,9 +470,11 @@ class Assistants:
             )
         return {**answer.model_dump(exclude={"propose_experiment"}), "examined": []}
 
-    def _evidence_index(self, cutoffs: dict[str, int]) -> dict:
+    def _evidence_index(self, cutoffs: dict[str, int], comparisons: dict | None = None) -> dict:
         index, protocols, conditions = [], {}, {}
-        completed: dict[str, list[RunMetrics]] = {}
+        comparisons = (
+            comparisons if comparisons is not None else self.research.capture_comparisons(cutoffs)
+        )
         designs, checks = {}, {}
         for run_id, cutoff in cutoffs.items():
             run, design, condition = self.research.configuration(run_id)
@@ -537,10 +552,6 @@ class Assistants:
                     for measure in measures
                 ),
             }
-            if state["done"]:
-                completed.setdefault(protocol_id, []).append(
-                    RunMetrics(condition.key, condition.name, run.seed, run.repetition, metrics)
-                )
             index.append(
                 {
                     "run_id": run_id,
@@ -585,7 +596,7 @@ class Assistants:
                     },
                 }
             )
-        effects = {key: matched_effects(rows, designs[key]) for key, rows in completed.items()}
+        effects = {key: result["effects"] for key, result in comparisons.items()}
         return {
             "environment_catalog": {
                 key: {
@@ -602,6 +613,7 @@ class Assistants:
             "protocols": protocols,
             "conditions": conditions,
             "runs": index,
+            "comparisons": comparisons,
             "matched_effects": {key: rows for key, rows in effects.items() if rows},
         }
 
@@ -700,7 +712,8 @@ class Assistants:
         with self.db.session() as session:
             current = session.get_one(Analysis, key)
         conversation = self._conversation(current)
-        index = await asyncio.to_thread(self._evidence_index, cutoffs)
+        comparisons = (current.output or {}).get("comparisons")
+        index = await asyncio.to_thread(self._evidence_index, cutoffs, comparisons)
         investigation = (
             Investigation
             if any(p["environment"] == "commons" for p in index["protocols"].values())
@@ -752,7 +765,11 @@ class Assistants:
                         for r in examined
                     ):
                         raise ValueError("Assistant cited a turn it did not inspect")
-                return {**answer.model_dump(), "examined": examined}
+                return {
+                    **answer.model_dump(),
+                    "examined": examined,
+                    "comparisons": index["comparisons"],
+                }
             assert isinstance(result, (Investigation, EvidenceInvestigation))
             if not result.requests:
                 raise ValueError("Assistant returned neither evidence requests nor an answer")
