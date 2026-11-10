@@ -43,6 +43,15 @@ geometry assertions and passed10 repeated mobile/desktop checks. App bytes did
 not change. All3 suggestions cases, lint228files and forced TypeScript passed;
 the prior2/3 failed reproduction remains disclosed in the compact report.
 
+Post-cleanup gate: ROOT retires historical raw BEFORE→AFTER five-run/22-turn
+parity and dependent comparator invocations. No surviving reference is designated;
+do not reconstruct, search other owners or restore retired records. Follow the
+compact report's replacement: unchanged frozen T01 current execution with safe
+Git selection and honest failures, plus independently frozen current-contract
+full-input/action/checkpoint/privacy/replay/integer-ledger qualification and
+affected regressions. No historical zero-regression/improvement claim is possible
+without the deleted input. This policy applies to remaining tickets/reviews/T20.
+
 # T14 independent recovery closure accepted locally (2026-11-10)
 
 Current personal **Standards PASS / Spec PASS**, with zero unresolved current

@@ -23,6 +23,10 @@ fresh workspace running on port 8080 for manual testing.
 - Record source-stamped checks, measurements, failures and limits in a compact
   final report. Remove historical research evidence as explicitly authorized
   after its compact report exists; retire obsolete restore references.
+- Use the compact report's explicit post-cleanup qualification gate. The deleted
+  historical BEFORE comparison is retired; fresh independent current-contract
+  workflow, replay, privacy and accounting checks replace it. Never reconstruct
+  a reference and present it as retained historical evidence.
 - Reset old application records and leave only the newest compatible workspace.
   Start the final verified app on port 8080 with a documented launch command.
 
@@ -33,7 +37,7 @@ fresh workspace running on port 8080 for manual testing.
   [the compact report](RESEARCH_HARNESS_COMPACT_REPORT.md).
 - [x] Recover storage from ROOT's closed historical output; release bounded child work.
 - [x] Reproduce/fix mobile composer CI failure; 10 repeated cases, all three
-  suggestions cases, lint and forced TypeScript passed. Publication is next.
+  suggestions cases, lint and forced TypeScript passed. Published at `a4ed8743`.
 - [ ] Complete remaining ticket graph with staged, measured resource allowances.
 - [ ] Review and refine the full UI/UX using `docs/DESIGN.md` and browser evidence.
 - [ ] Complete end-to-end code review, relevant checks and meaningful benchmarks.
