@@ -605,12 +605,16 @@ revision/rules; Specification retains its complete definition/hash. Preserve a r
 draft's embedded revision, including after library deletion, and reject stale updates visibly.
 
 Conditions separate the participant harness from its model and world parameters.
-Direct action is the default. Tool using reveals request/read limits and permitted
-reads using the existing Field/Select/Checkbox patterns. Review lists the pinned
-harness version, effort and tools; private goals, roles and profile overrides are
+Direct action is the default. Tool using reveals request/operation limits, permitted
+reads, four capability policy selectors (including explicit Disabled choices),
+context characters and memory-result limits using existing Field/Select/Checkbox
+patterns. Use remains optional. Review lists the pinned
+harness version, effort, tools and capability policies; private goals, roles and profile overrides are
 declared study factors. The run Record tab lists participant activation attempts,
 including failures before a turn commits. Disclosures expose actual operations,
-results, stop reasons and complete identity; the existing model-request inspector
+results, source/cutoff receipts, selected capabilities, stop reasons and complete
+identity. Mark plans/notes as participant self-reports and source checks as text
+checks, with no privileged outcome prediction. The existing model-request inspector
 retains every inference, including unknown usage. Keep the default journal and
 current appearance, semantic tokens, mobile layout and keyboard disclosures.
 

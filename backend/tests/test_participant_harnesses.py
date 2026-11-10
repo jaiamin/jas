@@ -118,7 +118,7 @@ def test_two_policies_run_real_operations_with_individual_accounting(harness_cli
         "settle",
     ]
     assert activation["identity"]["model"] == "openai:gpt-6-luna"
-    assert activation["identity"]["harness"]["version"] == "1.0.0"
+    assert activation["identity"]["harness"]["version"] == "2.0.0"
     assert activation["identity"]["harness"]["max_requests"] == 4
     assert len(capable["requests"]) == 4
     assert all(r["activation_id"] == activation["id"] for r in capable["requests"])
@@ -341,6 +341,7 @@ def test_review_counts_harness_as_a_declared_factor_independent_of_model_and_wor
     "harness",
     [
         {"kind": "tool_using", "version": "0.9.0"},
+        {"kind": "tool_using", "version": "1.0.0"},
         {"kind": "tool_using", "max_requests": 9},
         {"kind": "tool_using", "max_tool_operations": 13},
         {"kind": "tool_using", "tools": ["observe", "observe"]},

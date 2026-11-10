@@ -12,6 +12,21 @@ import { Input } from "@/components/ui/input";
 import { participantHarness } from "@/lib/design";
 import type { ParticipantHarness } from "@/lib/types";
 
+const capabilities = [
+  { key: "planning", policy: "actor_plan_v1", label: "Plan artifacts" },
+  { key: "memory", policy: "actor_sources_v1", label: "Source-linked memory" },
+  {
+    key: "investigation",
+    policy: "actor_inspection_v1",
+    label: "World investigation",
+  },
+  {
+    key: "verification",
+    policy: "legal_evidence_v1",
+    label: "Action and source checks",
+  },
+] as const;
+
 export function HarnessFields({
   id,
   index,
@@ -44,7 +59,7 @@ export function HarnessFields({
           <FieldDescription>
             {value.kind === "direct_action"
               ? "One request receives the current observation and proposes an action."
-              : "The participant chooses permitted reads and an action within these limits. Each inference is charged separately."}
+              : "The participant chooses capabilities, reads and an action within these limits. Each inference is charged separately."}
           </FieldDescription>
         </Field>
         {value.kind === "tool_using" && (
@@ -81,6 +96,81 @@ export function HarnessFields({
                   onChange({
                     ...value,
                     max_tool_operations: Number(event.target.value),
+                  })
+                }
+              />
+            </Field>
+            <FieldSet className="sm:col-span-full">
+              <FieldLegend>Capabilities</FieldLegend>
+              <FieldGroup className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {capabilities.map(({ key, policy, label }) => (
+                  <Field key={key}>
+                    <FieldLabel htmlFor={`capability-${id}-${key}`}>
+                      {label}
+                    </FieldLabel>
+                    <OptionSelect
+                      id={`capability-${id}-${key}`}
+                      label={`Condition ${index + 1} ${label.toLowerCase()}`}
+                      value={value.capabilities[key]}
+                      options={[
+                        { value: policy, label: "Enabled · v1" },
+                        { value: "disabled", label: "Disabled" },
+                      ]}
+                      onValueChange={(choice) =>
+                        onChange({
+                          ...value,
+                          capabilities: {
+                            ...value.capabilities,
+                            [key]: choice,
+                          },
+                        })
+                      }
+                    />
+                  </Field>
+                ))}
+              </FieldGroup>
+              <FieldDescription>
+                Use is optional. Plans are private self-reports; checks use only
+                accessible evidence and legal options. Memory retention follows
+                this condition's memory mode. Disabled capabilities have no
+                fallback.
+              </FieldDescription>
+            </FieldSet>
+            <Field>
+              <FieldLabel htmlFor={`context-${id}`}>
+                Maximum context characters
+              </FieldLabel>
+              <Input
+                id={`context-${id}`}
+                type="number"
+                min={4000}
+                max={32000}
+                value={value.max_context_chars}
+                onChange={(event) =>
+                  onChange({
+                    ...value,
+                    max_context_chars: Number(event.target.value),
+                  })
+                }
+              />
+              <FieldDescription>
+                Full receipts remain inspectable when context is shortened.
+              </FieldDescription>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor={`memory-items-${id}`}>
+                Maximum memory results
+              </FieldLabel>
+              <Input
+                id={`memory-items-${id}`}
+                type="number"
+                min={1}
+                max={16}
+                value={value.max_memory_items}
+                onChange={(event) =>
+                  onChange({
+                    ...value,
+                    max_memory_items: Number(event.target.value),
                   })
                 }
               />

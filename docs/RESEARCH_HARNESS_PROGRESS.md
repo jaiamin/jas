@@ -63,7 +63,7 @@ default-branch merge, auto-merge or history rewrite is authorized.
 | T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Integrated and accepted | `a4ab9ee` |
 | T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Integrated and accepted | `aaf3a15`; [evidence](research/T06_UNCERTAINTY.md) |
 | T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | In progress in isolated worktree | — |
-| T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Complete; queued for fresh integration review | — |
+| T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Fresh integration review in progress | —; [evidence](research/T08_PARTICIPANT_CONTEXT.md) |
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | In progress in isolated worktree | — |
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Waiting | — |
 | T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Waiting | — |

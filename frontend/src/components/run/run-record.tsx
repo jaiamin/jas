@@ -44,7 +44,7 @@ export function RunRecord({ run }: { run: RunDetail }) {
               <dd>
                 {label(run.harness.kind)} · v{run.harness.version} · up to{" "}
                 {run.harness.max_requests} requests and{" "}
-                {run.harness.max_tool_operations} reads per activation
+                {run.harness.max_tool_operations} operations per activation
               </dd>
             </div>
             <div>
