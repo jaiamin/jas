@@ -11,7 +11,7 @@ contract, T15 reference policies, descendants or additional checkout creation.
 
 - [x] Read exact ticket/spec, progress, glossary, ADRs 0001/0002, architecture,
   design, T04 implementation/report, T01 procedure and Sol failure report.
-- [ ] Preserve clean source/case-stamped T01 before evidence and independent
+- [x] Preserve clean source/case-stamped T01 before evidence and independent
   neutral DEVELOPMENT cases under ignored `data/t08/`.
 - [x] Red/green at the approved public workflow API seam: replaceable planning,
   authorized memory retrieval, investigation and accessible verification.
@@ -21,11 +21,11 @@ contract, T15 reference policies, descendants or additional checkout creation.
   cutoffs, privacy across contents/metadata/errors/tools and all memory modes.
 - [x] Pause/restored context and receipts consistent with checkpoints; one
   writer, in-flight commits, restart, exact replay and per-inference accounting.
-- [ ] Existing configuration/review/inspection UI exposes real capabilities and
+- [x] Existing configuration/review/inspection UI exposes real capabilities and
   receipts; keyless desktop/light and phone/dark browser verification.
-- [ ] Same-case before/after, positive current-contract checks, affected inherited
+- [x] Same-case before/after, positive current-contract checks, affected inherited
   regressions, retained failures, source archives and artifact manifest.
-- [ ] Merge latest accepted integration tip, repair current callers/docs, commit
+- [x] Merge latest accepted integration tip, repair current callers/docs, commit
   coherent checkpoints with hooks/scanning; clean handoff and owned cleanup.
 
 ## Decisions and constraints
@@ -44,9 +44,9 @@ Only actor-projected evidence may enter retrieval/investigation/verification.
 
 The unchanged T01 oracle has four reviewed export-v4 failures on the starting
 export-v5 contract. Retain those failures and terminal flags; positively check the
-current export contract separately. T06 is being integrated concurrently and
-advances export to v6 without a database-schema change; merge only accepted
-integration commits. Do not alter historical/final held-out suites or
+current export contract separately. Accepted T06 advances export to v6 without
+a database-schema change; accepted T03 advances the database to schema 6 and
+the library to v3. Merge only accepted integration commits. Do not alter historical/final held-out suites or
 `benchmarks/researcher-development-cases.json`.
 
 All task evidence lives in ignored `data/t08/`; preserve it before any cleanup.
@@ -54,7 +54,7 @@ Use project-local uv 0.13.7 for the known system uv page-size crash and distinct
 `JAS_TEST_PORT=18119`. No actual paid requests or spend are authorized. The parent's
 historical $0.611632 Sol spending is inherited, not a child allocation.
 
-## Checks, failures and next steps
+## Development checks and retained failures
 
 Setup: local uv installation and frozen dependency sync passed. Clean T01 before
 at `ff156745` completed with the four inherited export-v4 failures retained.
@@ -81,9 +81,9 @@ denial cases pass separately; no product repair was needed for them.
 The first dedicated browser trial passed two flows (desktop/light, phone/dark),
 including real capability configuration, pause during inference, reload/resume,
 same activation/remaining effort, receipts and exact replay. That first run served
-the pre-T06 frontend build, so it is not final merged-build evidence. The current
-merged frontend has since built successfully; final browser captures and shared
-regressions are pending. Configuration was visually inspected. The detector
+the pre-T06 frontend build, so it is not final merged-build evidence. The final
+merged frontend build and browser qualification below supersede its build
+attribution. Configuration was visually inspected. The detector
 returned no findings for the four changed UI components.
 
 Five independent neutral DEVELOPMENT cases pass in `development-attempt1/raw/`:
@@ -92,7 +92,7 @@ immediate choice with disabled capabilities, inaccessible source and controlled
 unknown auxiliary usage. All attempts, failures, requests and exports are retained.
 The archived initial application's same-case comparison rejects the new v2
 capability configuration before inference; all five failed attempts are retained in
-`development-before/`. Final same-harness versions will also retain complete
+`development-before/`. Final same-harness versions also retain complete
 validation-error bodies. No script result establishes model competence.
 
 `red-unused-payload/` exposed a real gap: an extra plan alongside decide was
@@ -101,12 +101,11 @@ action or fallback (62 focused tests passed). A second failed patch application
 changed no source. All red/green, test-oracle errors and setup/static failures stay
 under `data/t08/`; none are overwritten or silently relabeled.
 
-Next: clean committed-source final comparisons, merged-build browser verification,
-positive v6/direct-action parity audit, final integration-tip check and manifest.
+The final combined-source qualification and evidence handoff are recorded below.
 
 ## Accepted T03 integration
 
-Merge `2044686` includes the latest accepted integration tip
+Merge `2044686` includes the then-latest accepted integration tip
 `6c290df` (T03), after the 44 shared browser flows passed at `cc58bb6`.
 No source conflict occurred. T03 separates mechanics from participant factors,
 adds optional pinned environment provenance, advances the database to schema 6
@@ -128,7 +127,7 @@ audit. Its earliest helper bytes were reconstructed from the recorded three-line
 repair, explicitly labeled; application/test source archives were captured at
 execution. Later independent audit scripts are captured directly.
 
-Final combined-source qualification after the T03 merge is pending. T03's
+T03's
 production smoke/containment/reuse checks are inherited from its accepted report;
 this task has not run a new production image. No runtime/container/lockfile change
 is introduced by T08. No paid/Luna allocation is inferred from any of these checks.
@@ -140,8 +139,9 @@ preserves the test's existing harness/memory preservation assertions; the focuse
 green passes. Both sources/logs remain in `merged-full-backend/` and
 `green-merged-environment-harness/`. The first concurrently launched frontend
 test attempt retained three worker-start timeouts (94 tests passed), and the
-build process exited 137. Resource contention is the working classification;
-bounded/sequential reruns are required, without changing any product check.
+build process exited 137. Resource contention is the working classification,
+but the precise kill cause was not observed. The unchanged frontend passes all
+109 tests with two workers and its sequential build passes. No check was weakened.
 
 Merged-source frozen T01 still exits 1 with exactly the inherited four export-v4
 failures and failed terminal flags, with no regressions/improvements. The positive
@@ -151,6 +151,67 @@ provenance. All **11 neutral comparison checks** pass, including identical
 case/harness/runtime/effort, exact old/current application sources, all five
 outcomes and **47 scripted requests / zero paid requests**. All five inherited
 T04 cases also pass on the combined source. Raw failures remain unchanged.
+
+## Final qualification and handoff
+
+Executable/test checkpoint `80966eecb8b20a121038a2fc48052dc8cf215bb6`
+includes the one-line current-contract fixture repair. All six T08 acceptance
+criteria are implemented and mechanically verified; parent-owned fresh integration
+review remains required. This is not acceptance of the live/held-out research gates.
+
+| Observed check | Result and retained evidence |
+| --- | --- |
+| Full backend | **1,050 passed**, `merged-backend-final/` (including participant privacy/accounting/restart and independent World invariants) |
+| Frontend units | **109 passed / 29 files**, `merged-frontend-bounded/`; only worker concurrency changed |
+| Static and build | Ruff, ty, Biome, TypeScript and production frontend build pass, `merged-ruff/`, `merged-ty/`, `merged-lint/`, `merged-build-sequential/` |
+| Capability UI | **2 passed**, `merged-context-browser/`; desktop/light and phone/dark configuration, keyboard selection, pause/reload/resume, same activation/effort, real receipts, export and exact replay |
+| Inherited real policies | **2 browser flows passed**, `merged-harness-browser/`; five T04 DEVELOPMENT cases pass in `merged-inherited-participant-trial/raw/` |
+| Shared workflows/T03 integration | **48 browser flows passed**, `merged-shared-browser/`; workspace, drafts, recovery, execution, inspection, streaming, uncertainty and environment reuse; zero skipped/flaky/unexpected |
+| Frozen T01 | `before/` → `after-integration/`, same cases/harness/runtime, stable clean sources; exit **1** on unchanged four export-v4 failures plus terminal flags, zero regressions/improvements |
+| Positive current contract/direct action | **494 checks passed**, `baseline-positive-parity-merged.json`; export v6, null T03 provenance and all 22 decisions/five initial checkpoints, prompts/schemas/settings/observations/effects/accounting |
+| Neutral capability DEVELOPMENT | **5 cases / 11 comparison checks passed / 47 scripted requests**, `neutral-before-final/` → `merged-neutral-after/`, `neutral-comparison-merged.json`; the initial source rejects the absent capability version before inference |
+| Protected benchmark inputs | `protected-benchmark-check.json`: all **28** pre-existing benchmark files audited; only the inherited T04 current-contract trial caller changed. Historical/final/development cases, oracles and published results remain byte-identical |
+
+Current UI captures were visually inspected, including the narrow configuration,
+policy summary and internally scrollable receipt JSON. No visual redesign was
+introduced. Existing evidence primitives remain in use. Independent tests vary
+hidden contents/counts, private recipient deliveries and restored sessions across
+all four memory modes; real foreign artifact IDs in another actor/run produce the
+same generic denial without content or metadata access.
+
+Final merge `4fa3772` includes accepted integration
+`c2a7d5af53c8f2bd183731285936afac5076d632`; its additions after accepted
+`6c290df` are documentation only. No unaccepted branch was merged. The final
+source-attribution audit compares executable inputs against every directly
+observed combined-source check; final documentary changes require no repeated
+application evaluation. Commits use normal hooks and redacted secret scanning.
+
+Preserve the complete ignored **`data/t08/`** before any future cleanup.
+`checks-final.json` indexes exact commands/exits/source trees and classifies each
+retained failed check; per-check archives capture dirty sources as such. The
+closure records are `final-source/`, `final-source-attribution.json` and
+`artifact-manifest.json` (file hashes/sizes, canonical inventory hash and explicit
+exclusions). The manifest excludes only disposable `tmp/`, Python/test caches
+and itself; raw logs, source/helper archives, ledgers, exports, comparisons,
+initial application code and screenshots remain indexed. The final handoff gives
+the exact clean HEAD and manifest digest. No evidence/worktree cleanup is authorized.
+
+Limits: verification checks the legal schema and literal quotes in accessible
+serialized sources; it does not predict consequences or establish semantic truth.
+Retrieval is bounded by the current actor observation and latest permitted plan;
+earlier cutoffs do not reconstruct older observations. Capabilities remain
+participant-selected model operations; deterministic scripts prove execution and
+access/accounting behavior only. Pydantic AI, Sol Researcher and Luna participant
+assignments remain intact. Existing worlds still reject solo experiments until
+T09; T15 reference policies are not implemented. T03's actual non-root production
+smoke/containment/reuse is inherited, not freshly run by T08. No product failure
+remains unexplained; the exact environmental process-kill cause remains unknown
+and its failed attempt is preserved alongside the passing unchanged-source retry.
+
+Playwright owns and stops its disposable servers/browser contexts. Port **18119**
+is checked closed at handoff. There were no pushes, PR/issue edits, global installs,
+data resets, security/credential changes, descendants, extra checkouts or changes
+to other agents' processes/worktrees.
 
 Observed actual paid spend: **$0**. Live competence and held-out gates remain
 unverified. Root's unrelated `pbcopy` and preserved stash are outside task scope.
