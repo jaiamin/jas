@@ -1,3 +1,44 @@
+# T04 integration checkpoint
+
+T04/#15 is accepted at no-ff merge
+`48600d2982516210e6a4e28528d2e1c6f1fd155e` from clean ticket HEAD
+`6a6c000ac87a44212f3da681dbd31497f9640982` onto
+`39491def73da7334164ca6d98896eaa03a2e5bf5`. Only progress prose conflicted;
+accepted T02 fixes and T05 remain intact, with no product repair. Read
+[T04's report](docs/research/T04_PARTICIPANT_HARNESSES.md) and
+[progress](docs/RESEARCH_HARNESS_PROGRESS.md).
+
+Fresh observed: 995 backend tests, 108 frontend tests, Ruff/ty/lint/build,
+27 shared browser flows and two actual policy flows pass. Both earlier planning
+timing failures are retained: unchanged isolated repetitions passed four cases,
+then the full affected shared run passed sequentially. No assertions/timeouts
+changed. All 22 direct-action turns, prompts, schemas, settings, effects,
+checkpoints, metrics and usage match exactly; every report/export difference is
+classified. Frozen T01 retains four intentional `export-v4` failures, failed
+terminal flags and after/comparison exit 1. Positive v5 checks and all five T04
+DEVELOPMENT cases pass. Production smoke is inherited from qualified `3f3cf5c`,
+with runtime/containment/config/lock/smoke bytes independently verified unchanged.
+Live competence and held-out acceptance remain unverified; actual spend is $0.
+
+All 2,329 source artifacts (71,129,333 bytes), including every `data/t04/` file
+and 13 `.tools/t04-*` setup files, are preserved without overwrites under
+`.tools/research-harness/evidence/T04/`. All source/destination and child-indexed
+hashes match, with stable source HEAD/status/bytes. Verification is in
+`T04-copy-verification.json`, canonical manifest SHA-256
+`df26099a7e31ee5efff8bd79027b9e22cdf67da2009a85216f2749c84e19d558`.
+Fresh logs, raw results, archives and independent oracles are in sibling
+`T04-integration/`; its immutable 853-file verification manifest has canonical
+SHA-256 `906110e27fe08f4813b7369ef0e2b74d2793400748e0caf102a7e86f53d0a9ce`.
+Final documentation/commit/archive records have a separate final checkpoint
+manifest. Preserve both ignored directories; the source worktree remains intact.
+
+Port 18215 and the owned preview are closed. The unrelated `pbcopy` was never
+read/copied/archived; stash `f771128ba1c9295262a4073df40cc25647b1370f` is unchanged.
+No paid calls, pushes, PR/issue edits, host/security/credential changes or
+other-worktree/process changes occurred. Parent owns the single draft PR #32
+and publication/next actions. T08/#19 is Ready; T09/#20 still waits on T03/#14.
+T03/#14 and T06/#17 remain in progress and were not polled or contacted.
+
 # T05 integration checkpoint
 
 T05/#16 is accepted at no-ff merge
@@ -17,8 +58,8 @@ Fresh source archives/logs/raw results are in sibling `T05-integration/`.
 The child worktree remains intact. Browser port 18216 is closed. The unrelated
 untracked `pbcopy` was never read/copied/archived, and the stash remains intact.
 No paid calls, pushes, PR/tracker edits, security changes or unrelated-service
-changes. Next: fresh-merge T04; T03/#14 and T06/#17 are in progress in isolated
-worktrees. T04 remains unmerged.
+changes. At that handoff T04 remained unmerged; its later acceptance is recorded
+above. T03/#14 and T06/#17 remain in progress in isolated worktrees.
 
 # T01 integration checkpoint
 
@@ -52,7 +93,7 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01/T02/T05 accepted; T04 complete awaiting fresh merger;
+**Current checkpoint: T01/T02/T04/T05 accepted; T08 Ready; T09 waits on T03;
 T03/T06 in progress in isolated worktrees; draft PR #32.**
 
 T02 source `07d6d9fa681bd5ce79777c480e0798b5d6fa6137` was integrated with
@@ -94,15 +135,13 @@ manifest (262 files total) are all preserved and verified; keep both ignored
 T05 evidence directories. Full child suites and production smoke remain
 attributed to their observed source; no paid/live validation is claimed.
 
-T04/#15 completed on `t3/participant-policies` at
-`6a6c000ac87a44212f3da681dbd31497f9640982`, including `c546c85`.
-Preserve `data/t04/` from `/home/agent/.t3/worktrees/workspace/t3-19c753ac` before
-cleanup. See `docs/research/T04_PARTICIPANT_HARNESSES.md`. Reported: 981 backend,
-106 frontend, 165 inherited browser tests, 2 policy flows, 5 integration browser
-checks, static/build/production checks passed. Four expected export-v4 baseline
-failures are retained under the intentional v5 contract; independently inspect
-those and the exact direct-action parity evidence before acceptance. Fresh-merge
-T04 onto the accepted T05 tip. Neither establishes live competence.
+T04/#15 source `6a6c000ac87a44212f3da681dbd31497f9640982` is integrated and
+accepted at `48600d2982516210e6a4e28528d2e1c6f1fd155e`. Its complete ignored
+source artifacts and setup logs are preserved and verified; the child worktree
+is intact. The current checkpoint above and T04 report distinguish fresh merged
+checks from inherited full-browser/production evidence, preserve all four frozen
+v4 failures and prove exact 22-turn direct-action parity under the positive v5
+contract. No live competence or paid-provider claim is made.
 
 The user explicitly invoked implement-spec after the reviewed breakdown. Treat
 that as authorization to implement the accepted task graph; do not repeat
@@ -126,8 +165,9 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: fresh-merge completed T04/#15 onto the accepted T05 tip.
-T03/#14 and T06/#17 are in progress in isolated worktrees; T07/#18 remains Ready.
+Current frontier: T08/#19 is now Ready alongside T07/#18; T09/#20 still waits on
+T03/#14. T03/#14 and T06/#17 are in progress in isolated worktrees; merge each
+only after its own fresh review and evidence preservation.
 Draft PR #32 is the single integration PR and
 was linked immediately. Refresh/link it on each push. Do not merge to main or
 close issues as if unverified work were complete. The default-branch PR merge

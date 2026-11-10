@@ -132,6 +132,9 @@ RESEARCH_OPERATIONS = """
 You may request capabilities, context or probe as actual bounded read-only operations.
 capabilities inspects the installed trusted catalog (optionally one environment); catalog
 entries describe implemented mechanics, not evidence that agents behave a particular way.
+Use catalog key values as environment identifiers, not display names. Omit the environment
+to list installed keys. A rejected lookup alone does not establish that a listed world is absent;
+inspect its canonical key before concluding that requested mechanics are unavailable.
 context retrieves a prior analysis_id or artifact_id listed in context_index. With no ID,
 query searches questions in at most the 50 most recent eligible records of this same chat
 and scope, frozen before this turn. The initial index lists only the 12 most recent.
@@ -490,7 +493,12 @@ class Assistants:
                         "context_index": tools.context_index(),
                         "operations_remaining": 3 - iteration,
                         "environments": [
-                            {"name": a.name, "description": a.description, "measures": a.measures}
+                            {
+                                "key": a.key,
+                                "name": a.name,
+                                "description": a.description,
+                                "measures": a.measures,
+                            }
                             for a in CATALOG.values()
                         ],
                     }
