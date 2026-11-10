@@ -1,10 +1,21 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { afterEach, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { catalog, design } from "@/test/fixtures";
 import { deferredResponse, renderWithQueries } from "@/test/queries";
 import { DesignEditor } from "./design-editor";
 
+// Native form checkboxes use ResizeObserver; jsdom does not implement layout.
+beforeEach(() =>
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    },
+  ),
+);
 afterEach(() => localStorage.clear());
 
 for (const mode of ["visual", "json"]) {
@@ -32,6 +43,10 @@ for (const mode of ["visual", "json"]) {
           </Routes>
         </MemoryRouter>,
       );
+      fireEvent.mouseDown(screen.getByRole("tab", { name: "Question" }), {
+        button: 0,
+        ctrlKey: false,
+      });
       fireEvent.change(screen.getByLabelText("Experiment name"), {
         target: { value: "Submitted snapshot" },
       });
@@ -44,6 +59,11 @@ for (const mode of ["visual", "json"]) {
           },
         );
       }
+      if (mode === "visual")
+        fireEvent.mouseDown(screen.getByRole("tab", { name: "Review" }), {
+          button: 0,
+          ctrlKey: false,
+        });
       const field = screen.getByLabelText(
         mode === "json" ? "Complete JSON specification" : "Experiment name",
       );
@@ -56,7 +76,9 @@ for (const mode of ["visual", "json"]) {
         expect(
           screen.getByRole("combobox", { name: "Environment" }),
         ).toBeDisabled();
-        expect(screen.getByRole("button", { name: "Continue" })).toBeDisabled();
+        expect(
+          screen.getByRole("button", { name: "Check experiment" }),
+        ).toBeDisabled();
       }
       fireEvent.click(create);
       expect(fetcher).toHaveBeenCalledTimes(1);
@@ -85,6 +107,11 @@ for (const mode of ["visual", "json"]) {
         expect(field).toBeEnabled();
         expect(create).toBeEnabled();
         expect(localStorage.getItem("jas:draft:/new")).not.toBeNull();
+        if (mode === "visual")
+          fireEvent.mouseDown(screen.getByRole("tab", { name: "Question" }), {
+            button: 0,
+            ctrlKey: false,
+          });
         fireEvent.change(field, {
           target: {
             value:
@@ -131,6 +158,10 @@ test("free mechanics checks block invalid saves and become stale after editing",
       />
     </MemoryRouter>,
   );
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Review" }), {
+    button: 0,
+    ctrlKey: false,
+  });
   const create = screen.getByRole("button", { name: "Create experiment" });
   fireEvent.click(screen.getByRole("button", { name: "Check experiment" }));
   expect(
@@ -139,6 +170,10 @@ test("free mechanics checks block invalid saves and become stale after editing",
   expect(create).toBeDisabled();
   expect(fetcher).toHaveBeenCalledTimes(1);
   expect(fetcher.mock.calls[0][0]).toBe("/api/design/preflight");
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Question" }), {
+    button: 0,
+    ctrlKey: false,
+  });
   fireEvent.change(screen.getByLabelText("Experiment name"), {
     target: { value: "Edited protocol" },
   });
@@ -148,6 +183,12 @@ test("free mechanics checks block invalid saves and become stale after editing",
   expect(
     screen.queryByText("Changed setting is inactive."),
   ).not.toBeInTheDocument();
-  expect(create).toBeEnabled();
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Review" }), {
+    button: 0,
+    ctrlKey: false,
+  });
+  expect(
+    screen.getByRole("button", { name: "Create experiment" }),
+  ).toBeEnabled();
   expect(fetcher).toHaveBeenCalledTimes(1);
 });

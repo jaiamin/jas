@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AgentComposer } from "@/components/agent/agent-composer";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
@@ -17,7 +17,7 @@ import {
   Play,
   Plus,
 } from "@/components/icons";
-import { ErrorState, Loading, Status } from "@/components/shared";
+import { ErrorState, Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -38,6 +38,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useNow } from "@/hooks/use-now";
 import { agentSuggestions } from "@/lib/agent-suggestions";
 import { useApi } from "@/lib/api";
@@ -64,13 +65,6 @@ const suggestionDescriptions = [
 export default function Home() {
   const now = useNow();
   const navigate = useNavigate();
-  const mounted = useRef(true);
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
   const studies = useApi<StudySummary[]>("/studies", true);
   const runs = useApi<RunSummary[]>("/runs", true);
   const state = useAgentComposer({
@@ -78,7 +72,7 @@ export default function Home() {
     draftKey: "jas:agent-draft:home",
     onSent: (result) => {
       // A lazy destination may keep Home mounted while navigation is pending.
-      if (mounted.current && window.location.pathname === "/")
+      if (window.location.pathname === "/")
         navigate(`/agent?chat=${result.chat_id}`);
     },
   });
@@ -93,7 +87,9 @@ export default function Home() {
       };
     }
   });
-  const recentDrafts = drafts.items.slice(0, 3);
+  const [showAllDrafts, setShowAllDrafts] = useState(false);
+  const [draftsOpen, setDraftsOpen] = useState(true);
+  const recentDrafts = showAllDrafts ? drafts.items : drafts.items.slice(0, 3);
   const recent = [...(studies.data ?? [])]
     .sort((a, b) => b.created.localeCompare(a.created))
     .slice(0, 4);
@@ -122,30 +118,30 @@ export default function Home() {
         </h1>
         <div className="relative col-start-1 row-start-2 row-end-4 min-w-0 px-4 sm:px-6">
           <AgentComposer
+            variant="home"
             className="mx-auto w-full max-w-2xl"
             state={state}
             placeholder="Ask a question or describe an experiment…"
           />
         </div>
       </section>
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pt-8 pb-6 sm:px-6 sm:pt-10 sm:pb-8">
+      <div className="mx-auto flex w-full max-w-232 flex-col gap-8 px-4 pt-8 pb-6 sm:px-6 sm:pt-10 sm:pb-8">
         <section
-          aria-label="Experiment suggestions"
+          aria-labelledby="experiment-ideas-title"
           className="flex flex-col gap-3"
         >
-          <h2 className="text-xs font-medium">Suggestions</h2>
+          <h2 id="experiment-ideas-title" className="text-xs font-medium">
+            Experiment ideas
+          </h2>
           <ItemGroup className="gap-0 overflow-hidden rounded-xl border xl:flex-row">
             {suggestions.map(({ title, prompt }, index) => {
               return (
                 <Fragment key={title}>
                   <Button
                     variant="ghost"
-                    className="h-auto w-full min-w-0 flex-1 items-center justify-start gap-3 rounded-none border-0 p-4 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-4 xl:flex-col xl:items-start"
+                    className="h-auto w-full min-w-0 flex-1 items-center justify-start gap-3 rounded-none border-0 p-4 pr-3.5 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-4 xl:flex-col xl:items-start"
                     disabled={state.send.isPending}
-                    onClick={() => {
-                      state.setQuestion(prompt);
-                      state.composer.current?.focus();
-                    }}
+                    onClick={() => state.chooseSuggestion(prompt)}
                   >
                     <img
                       src={`/illustrations/suggestions/${suggestionIllustrations[index]}.webp`}
@@ -226,7 +222,11 @@ export default function Home() {
             aria-labelledby="drafts-title"
             className="flex flex-col gap-3"
           >
-            <Disclosure defaultOpen className="flex flex-col gap-1.5">
+            <Disclosure
+              open={draftsOpen}
+              onOpenChange={setDraftsOpen}
+              className="flex flex-col gap-1.5"
+            >
               <div className="flex items-center justify-between gap-3">
                 <h2
                   id="drafts-title"
@@ -240,12 +240,14 @@ export default function Home() {
                     Drafts
                   </DisclosureTrigger>
                 </h2>
-                {drafts.items.length > recentDrafts.length && (
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link to="/studies#drafts">
-                      View all drafts
-                      <ArrowUpRight data-icon="inline-end" />
-                    </Link>
+                {draftsOpen && drafts.items.length > 3 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-expanded={showAllDrafts}
+                    onClick={() => setShowAllDrafts((current) => !current)}
+                  >
+                    {showAllDrafts ? "Show fewer drafts" : "View all drafts"}
                   </Button>
                 )}
               </div>
@@ -254,12 +256,15 @@ export default function Home() {
                 {(drafts.error || drafts.unreadable.length > 0) && (
                   <Alert variant="error">
                     {drafts.error || "Some drafts could not be read."}{" "}
-                    <Link
-                      to="/studies"
-                      className="underline underline-offset-4"
-                    >
-                      Review drafts
-                    </Link>
+                    {drafts.unreadable.map((path) => (
+                      <Link
+                        key={path}
+                        to={path}
+                        className="block underline underline-offset-4"
+                      >
+                        Review unreadable draft · {path}
+                      </Link>
+                    ))}
                   </Alert>
                 )}
                 {recentDrafts.length > 0 && (
@@ -305,11 +310,9 @@ export default function Home() {
                     New
                   </Link>
                 </Button>
-                {recent.length > 0 && (
-                  <Button variant="outline" size="sm" asChild>
-                    <Link to="/studies">View all</Link>
-                  </Button>
-                )}
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/studies">View all</Link>
+                </Button>
               </div>
             </div>
             <DisclosureContent className="flex flex-col">
@@ -317,12 +320,27 @@ export default function Home() {
               {studies.error ? (
                 <ErrorState error={studies.error} onRetry={studies.refetch} />
               ) : !studies.data ? (
-                <Loading />
+                <div role="status" aria-label="Loading recent experiments">
+                  {["first", "second", "third"].map((row, index) => (
+                    <Fragment key={row}>
+                      <div
+                        aria-hidden="true"
+                        className="flex h-11 items-center gap-2.5 px-1.75"
+                      >
+                        <Skeleton className="size-3.5 shrink-0" />
+                        <Skeleton className="h-4 w-2/5" />
+                        <Skeleton className="ml-auto h-3 w-14" />
+                        <Skeleton className="size-3.5 shrink-0" />
+                      </div>
+                      {index < 2 && <Separator />}
+                    </Fragment>
+                  ))}
+                </div>
               ) : recent.length ? (
                 <ItemGroup className="has-data-[size=sm]:gap-0">
                   {recent.map((study, index) => (
                     <Fragment key={study.id}>
-                      <div className="flex min-w-0 items-center gap-2.5 pl-1.75 transition-colors hover:bg-muted/50">
+                      <div className="flex min-w-0 items-center gap-2.5 pl-1.75 pr-1 transition-colors hover:bg-muted/50">
                         <Item
                           size="sm"
                           className="min-w-0 flex-1 rounded-none border-0 px-0 py-3 [a]:hover:bg-transparent"
@@ -358,7 +376,7 @@ export default function Home() {
                               <Button
                                 variant="ghost"
                                 size="icon-sm"
-                                className="text-foreground/60 hover:bg-transparent aria-expanded:bg-transparent dark:hover:bg-transparent [&_svg:not([class*='size-'])]:size-3.5"
+                                className="text-foreground/60 [&_svg:not([class*='size-'])]:size-3.5"
                                 aria-label={`More options for ${study.title}`}
                               >
                                 <Ellipsis aria-hidden="true" />

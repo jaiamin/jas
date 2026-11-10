@@ -34,6 +34,7 @@ for (const theme of ["light", "dark"]) {
           .first()
           .fill("9");
       }
+      await page.getByRole("tab", { name: "Review", exact: true }).click();
       await page
         .getByRole("button", { name: "Create experiment", exact: true })
         .click();

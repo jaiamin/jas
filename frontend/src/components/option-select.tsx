@@ -9,6 +9,7 @@ import {
 import { cn } from "@/lib/utils";
 
 export function OptionSelect<Value extends string>({
+  id,
   value,
   onValueChange,
   options,
@@ -16,6 +17,7 @@ export function OptionSelect<Value extends string>({
   disabled,
   className,
 }: {
+  id?: string;
   value: Value;
   onValueChange: (value: Value) => void;
   options: { value: Value; label: string }[];
@@ -32,7 +34,11 @@ export function OptionSelect<Value extends string>({
       }}
       disabled={disabled}
     >
-      <SelectTrigger aria-label={label} className={cn("min-w-0", className)}>
+      <SelectTrigger
+        id={id}
+        aria-label={label}
+        className={cn("min-w-0", className)}
+      >
         <SelectValue />
       </SelectTrigger>
       <SelectContent position="popper">

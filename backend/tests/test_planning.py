@@ -11,7 +11,12 @@ def test_planner_reviews_and_repairs_design_before_returning(runtime, design, mo
 
     db, llm, research, _ = runtime
     with db.session.begin() as session:
-        row = Analysis(purpose="design", question="Compare cooperation", cutoffs={})
+        row = Analysis(
+            purpose="design",
+            question="Compare cooperation",
+            cutoffs={},
+            output={"introduction": "I will prepare a matched comparison."},
+        )
         session.add(row)
         session.flush()
         key = row.id
@@ -44,11 +49,16 @@ def test_planner_reviews_and_repairs_design_before_returning(runtime, design, mo
             Candidate(
                 explanation="Repaired", design=DesignSpec.model_validate(design.model_dump())
             ),
-            DesignReview(issues=["Use a shorter descriptive title"]),
+            DesignReview(
+                summary="Compare matched conditions using observable outcomes.",
+                issues=["Use a shorter descriptive title"],
+            ),
             Candidate(
                 explanation="Reviewed", design=DesignSpec.model_validate(design.model_dump())
             ),
-            DesignReview(issues=[]),
+            DesignReview(
+                summary="Compare matched conditions using observable outcomes.", issues=[]
+            ),
         ]
     )
     prompts = []
@@ -57,6 +67,12 @@ def test_planner_reviews_and_repairs_design_before_returning(runtime, design, mo
         import json
 
         prompts.append(json.loads(kwargs["prompt"]))
+        assert kwargs.get("on_partial") is None
+        with db.session() as session:
+            assert (
+                session.get_one(Analysis, key).output["introduction"]
+                == "I will prepare a matched comparison."
+            )
         return next(answers)
 
     monkeypatch.setattr(llm, "generate", generate)
@@ -65,6 +81,13 @@ def test_planner_reviews_and_repairs_design_before_returning(runtime, design, mo
     assert "Seed identifiers must be unique" in prompts[2]["feedback"][0]
     assert prompts[4]["feedback"] == ["Use a shorter descriptive title"]
     assert len(result["planning"]["reviews"]) == 3
+    assert result["summary"] == "Compare matched conditions using observable outcomes."
+    assert result["explanation"] == "Reviewed"
+    assert result["planning"]["preflight"] == prompts[-1]["preflight"]
+    assert len(prompts) == 6  # No additional summary-generation request.
+    with db.session() as session:
+        activity = session.get_one(Analysis, key).output["activity"]
+    assert activity.index("checking") < activity.index("reviewing")
     assert "role" in prompts[0]["design_schema"]["$defs"]["Profile"]["properties"]
     assert "events" in prompts[0]["evidence"]
     assert research.studies() == []
@@ -141,7 +164,10 @@ def test_planner_rejects_unresolved_review(runtime, design, monkeypatch):
             return Candidate(
                 explanation="Draft", design=DesignSpec.model_validate(design.model_dump())
             )
-        return DesignReview(issues=["The treatment does not manipulate the question's variable"])
+        return DesignReview(
+            summary="Compare matched conditions using observable outcomes.",
+            issues=["The treatment does not manipulate the question's variable"],
+        )
 
     monkeypatch.setattr(llm, "generate", generate)
     with pytest.raises(ValueError, match="unresolved issues"):
@@ -194,7 +220,9 @@ def test_planner_validates_revised_capability_and_counts(runtime, design, monkey
                 explanation="Capability unavailable" if declined else "One condition",
                 design=None if declined else design,
             )
-        return DesignReview(issues=[])
+        return DesignReview(
+            summary="Compare matched conditions using observable outcomes.", issues=[]
+        )
 
     monkeypatch.setattr(llm, "generate", generate)
     planner = Planner(db, research, llm)
@@ -258,7 +286,9 @@ def test_scoping_quote_repair_is_bounded_and_retains_review_evidence(
             )
         if output is Candidate:
             return Candidate(explanation="Protocol", design=design)
-        return DesignReview(issues=[])
+        return DesignReview(
+            summary="Compare matched conditions using observable outcomes.", issues=[]
+        )
 
     monkeypatch.setattr(llm, "generate", generate)
     if repair:
@@ -371,7 +401,9 @@ def test_direct_unavailable_mapping_gets_one_correction_and_never_a_false_declin
         if output is Candidate:
             candidates += 1
             return Candidate(explanation="Protocol", design=design)
-        return DesignReview(issues=[])
+        return DesignReview(
+            summary="Compare matched conditions using observable outcomes.", issues=[]
+        )
 
     monkeypatch.setattr(models, "generate", generate)
     if repair:
@@ -463,7 +495,9 @@ def test_declared_factorial_is_repaired_or_rejected_before_model_review(
             )
         assert output is DesignReview
         reviews += 1
-        return DesignReview(issues=[])
+        return DesignReview(
+            summary="Compare matched conditions using observable outcomes.", issues=[]
+        )
 
     monkeypatch.setattr(llm, "generate", generate)
     if repair:

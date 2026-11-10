@@ -210,6 +210,27 @@ async def get_study(
     return await asyncio.to_thread(research.study, study_id, revision)
 
 
+@router.delete("/api/studies/{study_id}")
+async def delete_study(
+    study_id: str,
+    *,
+    research: ResearchDep,
+    engine: EngineDep,
+    assistants: AssistantsDep,
+) -> dict[str, bool]:
+    # Keep this on the owning event loop: task creation and deletion cannot race.
+    research.delete_study(
+        study_id,
+        active_runs={
+            key
+            for key, execution in engine.executions.items()
+            if execution.task and not execution.task.done()
+        },
+        active_analyses={key for key, task in assistants.tasks.items() if not task.done()},
+    )
+    return {"ok": True}
+
+
 @router.post("/api/studies/{study_id}/revisions", status_code=201)
 async def revise_study(study_id: str, body: SaveStudy, *, research: ResearchDep) -> dict[str, Any]:
     await asyncio.to_thread(research.preflight, body.design, body.plan_id)

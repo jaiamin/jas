@@ -1,163 +1,143 @@
-import { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { useId, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { Alert } from "@/components/feedback";
-import { Plus } from "@/components/icons";
+import { History, MessageSquare } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { Empty, EmptyDescription, EmptyHeader } from "@/components/ui/empty";
 import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuBadge,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
+  Popover,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCompact } from "@/hooks/use-compact";
-import { useApi } from "@/lib/api";
+import { Spinner } from "@/components/ui/spinner";
+import { useNow } from "@/hooks/use-now";
+import { api } from "@/lib/api";
+import { relativeTime } from "@/lib/format";
 import type { ChatSummary } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
 export function AgentHistory() {
-  const chats = useApi<ChatSummary[]>("/chats", true);
-  const [params] = useSearchParams();
-  const navigate = useNavigate();
-  const current = params.get("chat") ?? "";
-  const compact = useCompact(1100);
+  const now = useNow();
   const [open, setOpen] = useState(false);
-  function newChat() {
-    setOpen(false);
-    navigate(`/agent?new=${crypto.randomUUID()}`);
-  }
-  const content = (
-    <>
-      <SidebarHeader
-        className={cn(
-          "flex-row items-center justify-between px-4 py-3",
-          compact && "pr-14",
-        )}
-      >
-        <h2 className="text-sm font-medium">Conversations</h2>
+  const titleId = useId();
+  const [params] = useSearchParams();
+  const current = params.get("chat");
+  const chats = useQuery({
+    queryKey: ["/chats"],
+    queryFn: () => api<ChatSummary[]>("/chats"),
+    enabled: open,
+    refetchInterval: open ? 1500 : false,
+  });
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
         <Button
-          variant="ghost"
-          size="icon-sm"
-          aria-label="New chat"
-          title="New chat"
-          onClick={newChat}
+          variant="outline"
+          size="icon"
+          aria-label="Chat history"
+          title="Chat history"
         >
-          <Plus />
+          <History aria-hidden="true" />
         </Button>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          {chats.error ? (
-            <Alert variant="error">
-              Could not load chats.
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => chats.refetch()}
-              >
-                Retry
-              </Button>
-            </Alert>
-          ) : !chats.data ? (
+      </PopoverTrigger>
+      <PopoverContent
+        align="end"
+        collisionPadding={16}
+        className="w-80 max-w-[calc(100vw-2rem)] gap-1.5"
+        aria-labelledby={titleId}
+      >
+        <PopoverHeader className="-mx-2.5 gap-1.5">
+          <PopoverTitle
+            id={titleId}
+            className="px-2.5 text-xs text-muted-foreground"
+          >
+            Recent chats
+          </PopoverTitle>
+          <Separator />
+        </PopoverHeader>
+        {chats.error && (
+          <Alert variant="error">
+            Could not {chats.data ? "refresh" : "load"} chats.
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => chats.refetch()}
+            >
+              Retry
+            </Button>
+          </Alert>
+        )}
+        {!chats.data ? (
+          !chats.error && (
             <div
-              className="flex flex-col gap-3 p-2"
               role="status"
               aria-label="Loading chats"
+              className="flex flex-col gap-1"
             >
-              <Skeleton className="h-8" />
-              <Skeleton className="h-8" />
-              <Skeleton className="h-8" />
+              <Skeleton className="h-6.5" />
+              <Skeleton className="h-6.5" />
+              <Skeleton className="h-6.5" />
             </div>
-          ) : !chats.data.length ? (
-            <Empty>
-              <EmptyHeader>
-                <EmptyTitle>No chats yet</EmptyTitle>
-                <EmptyDescription>
-                  Start a conversation to design an experiment or explore
-                  evidence.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          ) : (
-            <nav aria-label="Past chats">
-              <SidebarMenu>
-                {chats.data.map((chat) => (
-                  <SidebarMenuItem key={chat.id}>
-                    <SidebarMenuButton asChild isActive={current === chat.id}>
-                      <Link
-                        to={`/agent?chat=${chat.id}`}
-                        title={chat.title}
-                        aria-current={current === chat.id ? "page" : undefined}
-                        onClick={() => setOpen(false)}
-                      >
-                        <span>{chat.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
+          )
+        ) : chats.data.length ? (
+          <ScrollArea className="-mx-2.5 min-w-0 [&_[data-slot=scroll-area-viewport]>div]:block! [&_[data-slot=scroll-area-viewport]]:max-h-[min(20rem,calc(var(--radix-popover-content-available-height)-3.5rem))]">
+            <nav aria-label="Past chats" className="flex flex-col gap-1 px-1">
+              {chats.data.map((chat) => (
+                <Button
+                  key={chat.id}
+                  size="sm"
+                  variant={current === chat.id ? "secondary" : "ghost"}
+                  className="h-6.5 w-full justify-start gap-1.5 border-0 px-1.5 has-data-[icon=inline-start]:pl-1.5"
+                  asChild
+                >
+                  <Link
+                    to={`/agent?chat=${chat.id}`}
+                    title={chat.title}
+                    aria-current={current === chat.id ? "page" : undefined}
+                    onClick={() => setOpen(false)}
+                  >
+                    <MessageSquare
+                      data-icon="inline-start"
+                      aria-hidden="true"
+                      className="text-muted-foreground"
+                    />
+                    <span className="min-w-0 flex-1 truncate font-normal">
+                      {chat.title}
+                    </span>
                     {chat.status === "pending" && (
-                      <SidebarMenuBadge role="img" aria-label="In progress">
-                        …
-                      </SidebarMenuBadge>
+                      <Spinner aria-label="In progress" />
                     )}
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
+                    <time
+                      dateTime={chat.updated}
+                      title={`Last message ${new Date(chat.updated).toLocaleString()}`}
+                      className="shrink-0 text-xs font-normal text-muted-foreground"
+                    >
+                      <span aria-hidden="true">
+                        {relativeTime(chat.updated, now, "compact")}
+                      </span>
+                      <span className="sr-only">
+                        Last message {relativeTime(chat.updated, now)}
+                      </span>
+                    </time>
+                  </Link>
+                </Button>
+              ))}
             </nav>
-          )}
-        </SidebarGroup>
-      </SidebarContent>
-    </>
-  );
-  if (compact)
-    return (
-      <div className="flex shrink-0 items-center justify-between border-b px-4 py-2">
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="sm">
-              Conversations
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="flex flex-col gap-0">
-            <SheetHeader className="sr-only">
-              <SheetTitle>Agent conversations</SheetTitle>
-            </SheetHeader>
-            {content}
-          </SheetContent>
-        </Sheet>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          aria-label="New chat"
-          onClick={newChat}
-        >
-          <Plus />
-        </Button>
-      </div>
-    );
-  return (
-    <Sidebar
-      collapsible="none"
-      role="complementary"
-      className="w-56 shrink-0 border-r"
-      aria-label="Chat history"
-    >
-      {content}
-    </Sidebar>
+          </ScrollArea>
+        ) : (
+          <Empty className="p-4">
+            <EmptyHeader>
+              <EmptyDescription>No chats yet</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        )}
+      </PopoverContent>
+    </Popover>
   );
 }

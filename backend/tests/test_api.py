@@ -419,3 +419,136 @@ def test_recorded_institution_runs_remain_readable_after_rule_upgrade(client):
     archived = next(r for r in exported["runs"] if r["record"]["summary"]["id"] == rid)
     assert not archived["initial_state_available"]
     assert archived["evidence"][0] == before
+
+
+def test_delete_experiment_removes_all_revisions_and_evidence_but_preserves_accounting(
+    client, design
+):
+    from agent_sim.db import Analysis, ProviderCall
+    from sqlalchemy import select
+
+    sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    original = client.get(f"/api/studies/{sid}").json()
+    rid = original["runs"][0]["id"]
+    step_run(client, rid)
+    client.post(
+        f"/api/runs/{rid}/annotations", json={"turn": 1, "label": "Note", "note": "Evidence"}
+    )
+    client.post(f"/api/studies/{sid}/revisions", json={"design": design.model_dump()})
+    other = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    with client.app.state.db.session.begin() as session:
+        scoped = Analysis(
+            study_id=sid,
+            run_id=rid,
+            chat_id="mixed",
+            purpose="analysis",
+            question="Inspect",
+            status="complete",
+        )
+        unrelated = Analysis(
+            chat_id="mixed", purpose="general", question="Unrelated", status="complete"
+        )
+        session.add_all([scoped, unrelated])
+        session.flush()
+        scoped_id, unrelated_id = scoped.id, unrelated.id
+        call = session.scalars(select(ProviderCall).where(ProviderCall.run_id == rid)).one()
+        call.analysis_id = scoped_id
+        # Unknown usage remains reserved and visible even when its experiment is deleted.
+        call.status = "unknown"
+        call_id = call.id
+    before = client.get("/api/settings").json()
+    assert client.delete(f"/api/studies/{sid}").status_code == 200
+    assert client.get(f"/api/studies/{sid}").status_code == 404
+    assert client.get(f"/api/runs/{rid}").status_code == 404
+    assert [study["id"] for study in client.get("/api/studies").json()] == [other]
+    assert all(run["study_id"] == other for run in client.get("/api/runs").json())
+    assert client.get(f"/api/studies/{other}/export").status_code == 200
+    assert client.get(f"/api/analyses/{scoped_id}").status_code == 404
+    assert client.get(f"/api/analyses/{unrelated_id}").status_code == 200
+    after = client.get("/api/settings").json()
+    assert after["usage"] == before["usage"]
+    assert after["charged_usd"] == before["charged_usd"]
+    with client.app.state.db.session() as session:
+        call = session.get_one(ProviderCall, call_id)
+        assert call.study_id is None and call.run_id is None and call.analysis_id is None
+        assert call.status == "unknown"
+        assert call.request_payload is None and call.response_payload is None
+    assert client.delete(f"/api/studies/{sid}").status_code == 404
+
+
+@pytest.mark.parametrize("status", ["queued", "running", "pausing"])
+def test_delete_experiment_rejects_active_runs_without_partial_deletion(client, design, status):
+    from agent_sim.db import Run
+
+    sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+    with client.app.state.db.session.begin() as session:
+        session.get_one(Run, rid).status = status
+    response = client.delete(f"/api/studies/{sid}")
+    assert response.status_code == 422
+    assert "Pause all runs" in response.json()["detail"]
+    assert client.get(f"/api/studies/{sid}").status_code == 200
+    with client.app.state.db.session.begin() as session:
+        session.get_one(Run, rid).status = "paused"
+    assert client.delete(f"/api/studies/{sid}").status_code == 200
+
+
+def test_delete_experiment_rejects_pending_chat_and_unsettled_call(client, design):
+    from agent_sim.db import Analysis, ProviderCall
+
+    sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    with client.app.state.db.session.begin() as session:
+        scoped = Analysis(
+            study_id=sid, chat_id="mixed", purpose="analysis", question="Inspect", status="complete"
+        )
+        pending = Analysis(
+            chat_id="mixed", purpose="general", question="Follow-up", status="pending"
+        )
+        session.add_all([scoped, pending])
+        session.flush()
+        pending_id = pending.id
+    response = client.delete(f"/api/studies/{sid}")
+    assert response.status_code == 422
+    assert "chats to finish" in response.json()["detail"]
+    with client.app.state.db.session.begin() as session:
+        session.get_one(Analysis, pending_id).status = "complete"
+        call = ProviderCall(
+            study_id=sid, purpose="analysis", model="openai:gpt-6-luna", reserved=0, charged=0
+        )
+        session.add(call)
+        session.flush()
+        call_id = call.id
+    response = client.delete(f"/api/studies/{sid}")
+    assert response.status_code == 422
+    assert "requests to settle" in response.json()["detail"]
+    with client.app.state.db.session.begin() as session:
+        session.get_one(ProviderCall, call_id).status = "complete"
+    assert client.delete(f"/api/studies/{sid}").status_code == 200
+
+
+def test_delete_experiment_respects_live_task_ownership_even_if_status_is_paused(client, design):
+    import asyncio
+
+    from agent_sim.execution import Execution
+
+    sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+
+    async def own():
+        client.app.state.engine.executions[rid] = Execution(
+            task=asyncio.create_task(asyncio.Event().wait())
+        )
+
+    async def release():
+        task = client.app.state.engine.executions.pop(rid).task
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
+
+    client.portal.call(own)
+    try:
+        response = client.delete(f"/api/studies/{sid}")
+        assert response.status_code == 422
+        assert client.get(f"/api/runs/{rid}").status_code == 200
+    finally:
+        client.portal.call(release)
+    assert client.delete(f"/api/studies/{sid}").status_code == 200

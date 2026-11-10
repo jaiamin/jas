@@ -1,8 +1,30 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { expect, test, vi } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import type { Analysis } from "@/lib/types";
+import { design } from "@/test/fixtures";
 import { AgentReply } from "./agent-reply";
+
+// jsdom has no media/visibility APIs; real animation is exercised in browser tests.
+beforeEach(() => {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => ({
+      matches: true,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })),
+  );
+  vi.stubGlobal(
+    "IntersectionObserver",
+    class {
+      observe = vi.fn();
+      disconnect = vi.fn();
+    },
+  );
+});
+afterEach(() => vi.unstubAllGlobals());
 
 const row: Analysis = {
   id: "answer",
@@ -25,7 +47,9 @@ test("only completion replaces pending prose and publishes citation links", () =
   const onRetry = vi.fn();
   const view = render(
     <MemoryRouter>
-      <AgentReply row={row} disabled={false} onRetry={onRetry} />
+      <TooltipProvider>
+        <AgentReply row={row} disabled={false} onRetry={onRetry} />
+      </TooltipProvider>
     </MemoryRouter>,
   );
   expect(screen.getByText("Unvalidated draft")).toBeInTheDocument();
@@ -35,11 +59,13 @@ test("only completion replaces pending prose and publishes citation links", () =
   ).not.toBeInTheDocument();
   view.rerender(
     <MemoryRouter>
-      <AgentReply
-        row={{ ...row, status: "complete" }}
-        disabled={false}
-        onRetry={onRetry}
-      />
+      <TooltipProvider>
+        <AgentReply
+          row={{ ...row, status: "complete" }}
+          disabled={false}
+          onRetry={onRetry}
+        />
+      </TooltipProvider>
     </MemoryRouter>,
   );
   expect(screen.queryByText("Unvalidated draft")).not.toBeInTheDocument();
@@ -50,14 +76,164 @@ test("only completion replaces pending prose and publishes citation links", () =
   );
   view.rerender(
     <MemoryRouter>
-      <AgentReply
-        row={{ ...row, status: "failed", error: "Interrupted" }}
-        disabled={false}
-        onRetry={onRetry}
-      />
+      <TooltipProvider>
+        <AgentReply
+          row={{ ...row, status: "failed", error: "Interrupted" }}
+          disabled={false}
+          onRetry={onRetry}
+        />
+      </TooltipProvider>
     </MemoryRouter>,
   );
   expect(screen.queryByText("Unvalidated draft")).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Try again" }));
   expect(onRetry).toHaveBeenCalledOnce();
+});
+
+test("completed replies retain their recorded public activity in a collapsed disclosure", () => {
+  render(
+    <MemoryRouter>
+      <TooltipProvider>
+        <AgentReply
+          row={{
+            ...row,
+            purpose: "general",
+            status: "complete",
+            output: {
+              answer: "Validated answer",
+              activity: ["answering", "writing"],
+            },
+          }}
+          disabled={false}
+          onRetry={() => {}}
+        />
+      </TooltipProvider>
+    </MemoryRouter>,
+  );
+  const activity = screen.getByRole("button", { name: "Activity" });
+  expect(activity).toHaveAttribute("aria-expanded", "false");
+  fireEvent.click(activity);
+  expect(screen.getByText("Thinking")).toBeVisible();
+  expect(screen.getByText("Writing")).toBeVisible();
+});
+
+test("proposal draft notes stay out of the answer and remain available in activity", () => {
+  const notes =
+    "Supported: finite_stock maps directly. No preflight evidence was supplied.";
+  const summary =
+    "Compare resource conditions using matched seeds before reviewing the protocol.";
+  render(
+    <MemoryRouter>
+      <TooltipProvider>
+        <AgentReply
+          row={{
+            ...row,
+            purpose: "design",
+            status: "complete",
+            output: {
+              supported: true,
+              design,
+              summary,
+              explanation: notes,
+              activity: ["scoping", "drafting", "checking", "reviewing"],
+            },
+          }}
+          disabled={false}
+          onRetry={() => {}}
+        />
+      </TooltipProvider>
+    </MemoryRouter>,
+  );
+  expect(screen.getByText(summary)).toBeVisible();
+  expect(screen.queryByText(notes)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Protocol reviewed" }));
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Draft notes (before checks)",
+    }),
+  );
+  expect(screen.getByText(notes)).toBeVisible();
+});
+
+test("design drafting does not publish unvalidated notes as answer prose", () => {
+  render(
+    <MemoryRouter>
+      <TooltipProvider>
+        <AgentReply
+          row={{
+            ...row,
+            purpose: "design",
+            output: {
+              stage: "drafting",
+              partial: "No preflight tool was supplied.",
+            },
+          }}
+          disabled={false}
+          onRetry={() => {}}
+        />
+      </TooltipProvider>
+    </MemoryRouter>,
+  );
+  expect(
+    screen.queryByText("No preflight tool was supplied."),
+  ).not.toBeInTheDocument();
+  expect(screen.getByText("Drafting the protocol")).toBeVisible();
+});
+
+test("live activity stays open when the reply finishes so its content remains readable", () => {
+  const pending: Analysis = {
+    ...row,
+    purpose: "design",
+    output: {
+      stage: "checking",
+      activity: ["scoping", "drafting", "checking"],
+      planning: {
+        sources: [],
+        brief: {
+          operationalization: "Compare cooperation under two resource levels.",
+          size_rationale: "A small matched pilot.",
+        },
+      },
+    },
+  };
+  const reply = (value: Analysis) => (
+    <MemoryRouter>
+      <TooltipProvider>
+        <AgentReply row={value} disabled={false} onRetry={() => {}} />
+      </TooltipProvider>
+    </MemoryRouter>
+  );
+  const view = render(reply(pending));
+  const activity = screen.getByRole("button", { name: "Checking mechanics" });
+  expect(activity).toHaveAttribute("aria-expanded", "false");
+  expect(
+    screen.queryByRole("button", { name: "Study scope" }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(activity);
+  fireEvent.click(screen.getByRole("button", { name: "Study scope" }));
+  expect(
+    screen.getByText("Compare cooperation under two resource levels."),
+  ).toBeVisible();
+  view.rerender(
+    reply({
+      ...pending,
+      status: "complete",
+      output: {
+        ...pending.output,
+        supported: true,
+        design,
+        summary: "A reviewed comparison.",
+      },
+    }),
+  );
+  expect(
+    screen.getByText("Compare cooperation under two resource levels."),
+  ).toBeVisible();
+  expect(
+    screen.getByRole("button", { name: "Protocol reviewed" }),
+  ).toHaveAttribute("aria-expanded", "true");
+  fireEvent.click(screen.getByRole("button", { name: "Protocol reviewed" }));
+  expect(
+    screen.queryByText("Compare cooperation under two resource levels."),
+  ).not.toBeInTheDocument();
 });

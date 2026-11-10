@@ -1,11 +1,12 @@
 import { expect, test } from "@playwright/test";
-import { templateDesign } from "./helpers.js";
+import { selectText, templateDesign } from "./helpers.js";
 
-for (const path of ["/", "/studies#drafts"]) {
-  test(`draft deletion is confirmed, persistent and shared between lists · ${path}`, async ({
+for (const width of [390, 1440]) {
+  test(`draft deletion is confirmed, persistent across navigation · ${width}`, async ({
     page,
     request,
   }) => {
+    await page.setViewportSize({ width, height: 900 });
     const catalog = await (await request.get("/api/catalog")).json();
     await page.goto("/");
     await page.evaluate((design) => {
@@ -28,7 +29,7 @@ for (const path of ["/", "/studies#drafts"]) {
         );
       }
     }, templateDesign(catalog));
-    await page.goto(path);
+    await page.goto("/");
     const draft = page.getByRole("link", {
       name: "Draft to delete",
       exact: true,
@@ -49,6 +50,16 @@ for (const path of ["/", "/studies#drafts"]) {
     await remove.click();
     const dialog = page.getByRole("alertdialog", { name: "Delete draft?" });
     await expect(dialog).toContainText("Draft to delete");
+    await selectText(
+      page,
+      dialog.getByRole("button", { name: "Delete draft", exact: true }),
+    );
+    await expect(dialog).toBeVisible();
+    expect(
+      await page.evaluate(() =>
+        localStorage.getItem("jas:draft:/new?template=commons"),
+      ),
+    ).not.toBeNull();
     await dialog.getByRole("button", { name: "Cancel", exact: true }).click();
     await expect(draft).toBeVisible();
     await remove.click();
@@ -65,7 +76,12 @@ for (const path of ["/", "/studies#drafts"]) {
     await expect(
       page.getByRole("link", { name: "Keep this draft", exact: true }),
     ).toBeVisible();
-    await page.goto(path === "/" ? "/studies#drafts" : "/");
+    await page.goto("/studies");
+    await expect(page.getByRole("button", { name: /^Drafts/ })).toHaveCount(0);
+    await expect(
+      page.getByRole("link", { name: "Keep this draft", exact: true }),
+    ).toHaveCount(0);
+    await page.goto("/");
     await expect(draft).toHaveCount(0);
     await expect(
       page.getByRole("link", { name: "Keep this draft", exact: true }),
@@ -87,10 +103,11 @@ for (const path of ["/", "/studies#drafts"]) {
     ).toEqual([]);
   });
 
-  test(`a failed draft deletion keeps the draft and confirmation recoverable · ${path}`, async ({
+  test(`a failed draft deletion keeps the draft and confirmation recoverable · ${width}`, async ({
     page,
     request,
   }) => {
+    await page.setViewportSize({ width, height: 900 });
     const catalog = await (await request.get("/api/catalog")).json();
     await page.goto("/");
     await page.evaluate((design) => {
@@ -106,7 +123,7 @@ for (const path of ["/", "/studies#drafts"]) {
         }),
       );
     }, templateDesign(catalog));
-    await page.goto(path);
+    await page.goto("/");
     await page.evaluate(() => {
       const original = Storage.prototype.removeItem;
       Storage.prototype.removeItem = function (key) {

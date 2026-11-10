@@ -172,7 +172,13 @@ class StudyBrief(Strict):
 
 
 class Candidate(Strict):
-    explanation: str = Field(max_length=2000)
+    explanation: str = Field(
+        max_length=2000,
+        description="Public design rationale before validation, not private reasoning. "
+        "Explain material design choices concisely. Do not repeat capability identifiers or "
+        "requirement mappings already in the brief. Do not claim checks ran, passed or were "
+        "unavailable: the orchestrator performs them after this draft.",
+    )
     design: DesignSpec | None = Field(
         description="Complete protocol, or null if essential capabilities are unavailable."
     )
@@ -180,6 +186,15 @@ class Candidate(Strict):
 
 class DesignReview(Strict):
     issues: list[str] = Field(max_length=6)
+    summary: str = Field(
+        min_length=1,
+        max_length=600,
+        description="User-facing summary in 1–3 short sentences, written after the supplied "
+        "checks. Describe the experiment's comparison and observable outcome, plus a material "
+        "limitation if needed. Use plain language, without capability mappings, internal "
+        "identifiers, validation narration or repeated counts. Never claim trials ran or "
+        "results exist. If unsupported, explain the missing capability plainly.",
+    )
 
 
 class Planner:
@@ -189,8 +204,16 @@ class Planner:
     def progress(self, key: str, stage: str, **details: object) -> None:
         with self.db.session.begin() as session:
             row = session.get_one(Analysis, key)
-            partial = (row.output or {}).get("partial") if stage == "reviewing" else None
-            row.output = {"stage": stage, **details, **({"partial": partial} if partial else {})}
+            row.output = {
+                "stage": stage,
+                "activity": public_activity(row.output, stage),
+                **(
+                    {"introduction": row.output["introduction"]}
+                    if row.output and "introduction" in row.output
+                    else {}
+                ),
+                **details,
+            }
 
     async def _call[T](
         self,
@@ -212,9 +235,6 @@ class Planner:
             openai_reasoning_effort="medium",
             max_tokens=max_tokens,
             web_search=web_search,
-            on_partial=(lambda value: stream_partial(self.db, key, value.get("explanation")))
-            if output is Candidate
-            else None,
         )
 
     def _context(self, question: str, conversation: Sequence[dict]) -> dict[str, object]:
@@ -422,6 +442,9 @@ class Planner:
             planning["research"] = notes
         feedback = []
         for attempt in range(3):
+            planning.pop("draft_notes", None)
+            planning.pop("preflight", None)
+            context.pop("preflight", None)
             self.progress(key, "drafting" if attempt == 0 else "revising", planning=planning)
             candidate = await self._call(
                 key,
@@ -433,6 +456,8 @@ class Planner:
                 max_tokens=16384,
             )
             context["candidate"] = candidate.model_dump()
+            planning["draft_notes"] = candidate.explanation
+            self.progress(key, "checking", planning=planning)
             try:
                 design = self._validate_candidate(candidate, brief)
                 if design:
@@ -489,7 +514,12 @@ class Planner:
                 "design choices; do not force a favorable outcome or require every contrast "
                 "to affect every scripted strategy. "
                 "goals avoid prescribing the behavior under study, and unsupported realism "
-                "claims are absent. Do not invent statistical power or add unnecessary complexity.",
+                "claims are absent. Do not invent statistical power or add unnecessary complexity. "
+                "Write summary for the user after considering the actual supplied checks. "
+                "Keep it to 1–3 short sentences about the comparison and observable outcome, "
+                "with a material limitation if needed. Do not copy the candidate's technical "
+                "audit narrative, enumerate capability mappings, repeat counts, narrate tool "
+                "availability or imply that participant runs have executed.",
                 context,
                 max_tokens=8192,
             )
@@ -497,18 +527,28 @@ class Planner:
             planning["reviews"].append({"kind": "review", "issues": feedback})
             self.progress(key, "reviewing", planning=planning)
             if not feedback:
+                planning.pop("draft_notes", None)
                 return {
                     **PlannedStudy(
                         supported=design is not None,
                         explanation=candidate.explanation,
                         design=design,
                     ).model_dump(),
+                    "summary": review.summary,
                     "planning": planning,
                 }
         raise ValueError(
             "Design review still has unresolved issues. No experiment was created: "
             + "; ".join(feedback)
         )
+
+
+def public_activity(output: dict | None, stage: str) -> list[str]:
+    """Retain observed public stages, never provider reasoning or draft prose."""
+    activity = list((output or {}).get("activity", []))
+    if not activity or activity[-1] != stage:
+        activity.append(stage)
+    return activity
 
 
 def stream_partial(db: Database, key: str, text: object) -> None:
@@ -518,4 +558,8 @@ def stream_partial(db: Database, key: str, text: object) -> None:
     with db.session.begin() as session:
         row = session.get_one(Analysis, key)
         if row.status == "pending" and (row.output or {}).get("partial") != text:
-            row.output = {**(row.output or {}), "partial": text}
+            row.output = {
+                **(row.output or {}),
+                "partial": text,
+                "activity": public_activity(row.output, "writing"),
+            }

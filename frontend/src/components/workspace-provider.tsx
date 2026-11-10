@@ -13,6 +13,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   return (
     <TooltipProvider>
       <SidebarProvider
+        className="h-dvh min-h-0 overflow-hidden"
         open={open}
         onOpenChange={(next) => {
           setOpen(next);

@@ -37,6 +37,10 @@ for (const theme of ["light", "dark"]) {
     });
     await expect(resources).toHaveCount(2);
     await resources.nth(1).getByLabel("Resource name").fill("Water");
+    const key = resources.nth(1).getByLabel("Resource key");
+    await key.fill("water");
+    await key.blur();
+    await expect(resources.nth(1).getByLabel("Resource name")).toBeVisible();
     await resources
       .nth(1)
       .getByRole("button", { name: "Remove resource", exact: true })
@@ -46,19 +50,26 @@ for (const theme of ["light", "dark"]) {
     const title = `Custom shortage ${theme}`;
     await page.getByLabel("Experiment name", { exact: true }).fill(title);
     await page
-      .getByRole("button", { name: "Hypothesis & analysis plan", exact: true })
+      .getByRole("button", {
+        name: "Hypothesis and analysis plan",
+        exact: true,
+      })
       .click();
     const analysisPlan =
       "Compare allocations to others and unallocated stock across conditions.";
     await page
-      .getByLabel("Hypothesis & analysis plan", { exact: true })
+      .getByLabel("Hypothesis and analysis plan", { exact: true })
       .fill(analysisPlan);
     await page
-      .getByRole("button", { name: "Save custom environment", exact: true })
+      .getByRole("button", { name: "Experiment options", exact: true })
+      .click();
+    await page
+      .getByRole("menuitem", { name: "Save custom environment", exact: true })
       .click();
     await expect(
       page.getByText("Custom environment saved.", { exact: false }),
     ).toBeVisible();
+    await page.getByRole("tab", { name: "Review", exact: true }).click();
     await page
       .getByRole("button", { name: "Create experiment", exact: true })
       .click();
@@ -80,7 +91,7 @@ for (const theme of ["light", "dark"]) {
         "Researcher view includes private inventories and consumption.",
       ),
     ).toBeVisible();
-    await page.goto("/environments");
+    await page.goto("/environments?view=custom");
     await page
       .locator("[data-slot=item-group]")
       .getByRole("link", { name: title, exact: true })
@@ -90,18 +101,27 @@ for (const theme of ["light", "dark"]) {
       .getByLabel("Experiment name", { exact: true })
       .fill(`${title} updated`);
     await page
-      .getByRole("button", { name: "Update custom environment", exact: true })
+      .getByRole("button", { name: "Experiment options", exact: true })
+      .click();
+    await page
+      .getByRole("menuitem", { name: "Update custom environment", exact: true })
       .click();
     await expect(
       page.getByText("Custom environment saved.", { exact: false }),
     ).toBeVisible();
-    await page.goto("/environments");
+    await page.goto("/environments?view=custom");
     const row = page
       .locator("[data-slot=item-group] > [data-slot=item]")
       .filter({
         has: page.getByRole("link", { name: `${title} updated`, exact: true }),
       });
-    await row.getByRole("button", { name: "Delete", exact: true }).click();
+    await row
+      .getByRole("button", {
+        name: `Actions for ${title} updated`,
+        exact: true,
+      })
+      .click();
+    await page.getByRole("menuitem", { name: "Delete", exact: true }).click();
     await expect(page.getByRole("alertdialog")).toContainText(
       "Saved experiments keep their own rules and evidence",
     );

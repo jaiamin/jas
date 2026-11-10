@@ -38,6 +38,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Spinner } from "@/components/ui/spinner";
 import { useApi } from "@/lib/api";
 import type { RunSummary } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -79,6 +80,7 @@ export default function WorkspaceShell() {
   const location = useLocation();
   const isAgent = location.pathname === "/agent";
   const isHome = location.pathname === "/";
+  const isRecordList = ["/studies", "/runs"].includes(location.pathname);
   const runs = useApi<RunSummary[]>("/runs", true);
   const active =
     runs.data?.filter((r) =>
@@ -196,7 +198,7 @@ export default function WorkspaceShell() {
             ].map((group, index) => (
               <Fragment key={group.label ?? "primary"}>
                 {index > 0 && (
-                  <SidebarSeparator className="mx-4 group-data-[collapsible=icon]:hidden" />
+                  <SidebarSeparator className="mx-4 group-data-[collapsible=icon]:mx-3" />
                 )}
                 <SidebarGroup>
                   {group.label && (
@@ -268,9 +270,9 @@ export default function WorkspaceShell() {
           <LocalWorkspaceMenu dark={dark} onThemeChange={changeTheme} />
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset className="min-w-0">
+      <SidebarInset className="min-h-0 min-w-0 overflow-hidden">
         <header
-          className="flex h-(--workspace-header-height) shrink-0 items-center gap-2 border-b px-2.5"
+          className="flex h-(--workspace-header-height) shrink-0 items-center gap-2 border-b bg-background px-2.5"
           data-slot="workspace-header"
         >
           {isMobile && (
@@ -298,22 +300,45 @@ export default function WorkspaceShell() {
           </div>
         </header>
         <div
-          id="main"
+          key={location.pathname}
+          data-slot="workspace-content"
           className={cn(
-            "min-w-0 w-full",
+            "min-h-0 flex-1",
             isAgent
-              ? "h-[calc(100svh-var(--workspace-header-height))] min-h-0"
-              : isHome
-                ? "pb-10"
-                : "mx-auto max-w-7xl p-4 pb-10 sm:p-6 lg:p-8",
+              ? "overflow-hidden"
+              : "overflow-x-hidden overflow-y-auto overscroll-contain scroll-py-4 [scrollbar-gutter:stable]",
           )}
-          tabIndex={-1}
         >
-          <Suspense fallback={<Loading />}>
-            <PageBoundary key={location.pathname}>
-              <Outlet />
-            </PageBoundary>
-          </Suspense>
+          <div
+            id="main"
+            className={cn(
+              "min-w-0 w-full",
+              isAgent
+                ? "h-full min-h-0"
+                : isHome
+                  ? "pb-10"
+                  : isRecordList
+                    ? "pb-10"
+                    : "mx-auto max-w-7xl p-4 pb-10 sm:p-6 lg:p-8",
+            )}
+            tabIndex={-1}
+          >
+            <Suspense
+              fallback={
+                isAgent ? (
+                  <div className="flex h-full items-center justify-center">
+                    <Spinner aria-label="Loading Agent" />
+                  </div>
+                ) : (
+                  <Loading />
+                )
+              }
+            >
+              <PageBoundary key={location.pathname}>
+                <Outlet />
+              </PageBoundary>
+            </Suspense>
+          </div>
         </div>
       </SidebarInset>
     </>

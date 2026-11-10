@@ -43,3 +43,19 @@ test.each([
     );
   },
 );
+
+test.each([
+  ["2026-11-09T11:59:30Z", "now"],
+  ["2026-11-09T11:55:00Z", "5m"],
+  ["2026-11-09T10:00:00Z", "2h"],
+  ["2026-11-06T12:00:00Z", "3d"],
+  ["2026-11-01T12:00:00Z", "Nov 1"],
+  ["2025-11-01T12:00:00Z", "Nov 1, 2025"],
+])(
+  "compact chat age %s retains time and older date meaning",
+  (timestamp, expected) => {
+    expect(
+      relativeTime(timestamp, Date.parse("2026-11-09T12:00:00Z"), "compact"),
+    ).toBe(expected);
+  },
+);

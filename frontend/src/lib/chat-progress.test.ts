@@ -8,7 +8,12 @@ test("chat events expose only the current message's live progress", () => {
         id: "current",
         status: "pending",
         purpose: "general",
-        output: { partial: "Draft", stage: "answering", design: "unvalidated" },
+        output: {
+          partial: "Draft",
+          stage: "answering",
+          activity: ["answering"],
+          design: "unvalidated",
+        },
       }),
       "current",
     ),
@@ -17,6 +22,7 @@ test("chat events expose only the current message's live progress", () => {
     purpose: "general",
     partial: "Draft",
     stage: "answering",
+    activity: ["answering"],
   });
   expect(
     chatProgress(
@@ -33,7 +39,15 @@ test("malformed events cannot enter the analysis cache", () => {
     "[]",
     "{}",
     JSON.stringify({ id: "current", status: "pending", output: {} }),
-    ...[null, [], { partial: 3 }, { stage: {} }].map((output) =>
+    ...[
+      null,
+      [],
+      { partial: 3 },
+      { introduction: [] },
+      { stage: {} },
+      { activity: "thinking" },
+      { activity: [{}] },
+    ].map((output) =>
       JSON.stringify({
         id: "current",
         status: "pending",
@@ -53,11 +67,20 @@ test("purpose transitions expose public planning stages without unvalidated prop
         id: "current",
         status: "pending",
         purpose: "design",
-        output: { stage: "scoping", design: { unvalidated: true } },
+        output: {
+          stage: "scoping",
+          introduction: "I will prepare a protocol for review.",
+          design: { unvalidated: true },
+        },
       }),
       "current",
     ),
-  ).toEqual({ status: "pending", purpose: "design", stage: "scoping" });
+  ).toEqual({
+    status: "pending",
+    purpose: "design",
+    stage: "scoping",
+    introduction: "I will prepare a protocol for review.",
+  });
   expect(
     chatProgress(
       JSON.stringify({

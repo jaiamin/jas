@@ -1,4 +1,85 @@
 import { expect, test } from "@playwright/test";
+import { createStudy } from "./helpers.js";
+
+for (const width of [390, 1280]) {
+  test(`workspace header stays visible above scrolling pages · ${width}`, async ({
+    page,
+    request,
+  }) => {
+    await page.setViewportSize({ width, height: 480 });
+    const { study, run } = await createStudy(request);
+    for (const path of [
+      "/",
+      "/new?template=commons",
+      "/settings",
+      "/environments",
+      "/studies",
+      "/runs",
+      `/studies/${study.id}`,
+      `/runs/${run.summary.id}`,
+      "/compare",
+      "/agent",
+    ]) {
+      await page.goto(path);
+      const header = page.locator('[data-slot="workspace-header"]');
+      await expect(header).toBeVisible();
+      await expect(
+        page.getByRole("status", { name: "Loading", exact: true }),
+      ).toHaveCount(0);
+      await page.mouse.move(width - 16, 440);
+      await page.mouse.wheel(0, 800);
+      const content = page.locator('[data-slot="workspace-content"]');
+      if (
+        path !== "/agent" &&
+        (await content.evaluate(
+          (element) => element.scrollHeight > element.clientHeight,
+        ))
+      ) {
+        await expect
+          .poll(() => content.evaluate((element) => element.scrollTop))
+          .toBeGreaterThan(0);
+      }
+      // The viewport itself must not scroll; a sticky document header can still bounce.
+      expect(await page.evaluate(() => scrollY)).toBe(0);
+      await expect.poll(async () => (await header.boundingBox())?.y).toBe(0);
+      if (path.startsWith("/new")) {
+        const next = page.getByRole("button", {
+          name: "Continue",
+          exact: true,
+        });
+        await next.scrollIntoViewIfNeeded();
+        await expect(next).toBeInViewport({ ratio: 1 });
+      }
+      expect(
+        await header.evaluate((element) => {
+          const bounds = element.getBoundingClientRect();
+          return element.contains(
+            document.elementFromPoint(bounds.right - 20, bounds.top + 20),
+          );
+        }),
+      ).toBe(true);
+      const theme = header.getByRole("button", { name: /Switch to .* mode/ });
+      const name = await theme.getAttribute("aria-label");
+      await theme.click();
+      await expect(theme).not.toHaveAccessibleName(name ?? "");
+    }
+    if (width === 390) {
+      await page.goto("/");
+      await page
+        .getByRole("region", { name: "Recent experiments" })
+        .scrollIntoViewIfNeeded();
+      await page
+        .getByRole("button", { name: "Open menu", exact: true })
+        .click();
+      await expect(page.getByRole("dialog")).toBeVisible();
+      await page
+        .getByRole("link", { name: "Experiments", exact: true })
+        .click();
+      await expect(page).toHaveURL(/\/studies$/);
+      await expect(page.getByRole("dialog")).toHaveCount(0);
+    }
+  });
+}
 
 test("narrow navigation keeps the brand and collapse control on one row", async ({
   page,
@@ -116,7 +197,7 @@ test("Home is the entry point; AI creation stays available without a key", async
   await page.getByRole("link", { name: "Agent", exact: true }).click();
   await expect(
     page.getByRole("combobox", { name: "Message context" }),
-  ).toContainText("No experiment");
+  ).toContainText("Add context");
   await page
     .getByLabel("Message Agent")
     .fill("Does communication improve teamwork?");
@@ -151,7 +232,7 @@ test("Agent navigation preserves incomplete editor state and one recoverable dra
     .click();
   await expect(
     page.getByRole("combobox", { name: "Message context" }),
-  ).toContainText("No experiment");
+  ).toContainText("Add context");
   await expect(
     page.getByLabel("Message Agent", { exact: true }),
   ).not.toHaveValue("");
@@ -266,7 +347,7 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
     nav: 15,
     github: 16,
     theme: 16,
-    trigger: 15,
+    trigger: 14,
     left: 16,
     right: 16,
   });
@@ -283,8 +364,8 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
   await expect(context).toHaveCSS("cursor", "pointer");
   await context.click();
   await expect(
-    page.getByRole("option", { name: "No experiment", exact: true }),
-  ).toHaveCSS("cursor", "pointer");
+    page.getByRole("combobox", { name: "Search context", exact: true }),
+  ).toHaveCSS("cursor", "text");
   await page.keyboard.press("Escape");
   const previous = await page.locator("html").getAttribute("class");
   await theme.click();
@@ -308,6 +389,8 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
   const footer = page.locator('[data-slot="sidebar-footer"]');
   const avatar = footer.locator('[data-slot="avatar"]');
   const avatarBefore = await avatar.boundingBox();
+  const separators = page.locator('[data-slot="sidebar-separator"]');
+  const sectionLineBefore = await separators.first().boundingBox();
   const settingsBefore = await footer
     .getByRole("link", { name: "Settings", exact: true })
     .boundingBox();
@@ -319,9 +402,11 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
     exact: true,
   });
   await expect(expand).toHaveCSS("opacity", "0");
-  const separators = page.locator('[data-slot="sidebar-separator"]');
   await expect(separators).toHaveCount(2);
-  await expect(separators.first()).toBeHidden();
+  await expect(separators.first()).toBeVisible();
+  expect((await separators.first().boundingBox())?.y).toBe(
+    sectionLineBefore?.y,
+  );
   await expect(separators.last()).toBeVisible();
   await expect(footer.getByRole("button")).toHaveCSS("height", "48px");
   expect((await avatar.boundingBox())?.y).toBe(avatarBefore?.y);
@@ -356,3 +441,46 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
     .click();
   await expect(page).toHaveTitle("JAS");
 });
+
+for (const theme of ["light", "dark"]) {
+  test(`focus decoration follows keyboard navigation, not pointer clicks · ${theme}`, async ({
+    page,
+  }) => {
+    await page.addInitScript(
+      (value) => localStorage.setItem("jas-theme", value),
+      theme,
+    );
+    await page.goto("/studies");
+    const search = page.getByRole("textbox", { name: "Search experiments" });
+    const group = search.locator("..");
+    const ring = (locator: typeof group) =>
+      locator.evaluate((element) =>
+        getComputedStyle(element).getPropertyValue("--tw-ring-shadow").trim(),
+      );
+    await search.click();
+    const noRing = await ring(group);
+    await search.pressSequentially("example");
+    expect(await ring(group)).toBe(noRing);
+    await search.press("Shift+Tab");
+    await page.keyboard.press("Tab");
+    await expect(search).toBeFocused();
+    expect(await ring(group)).not.toBe(noRing);
+    await search.click();
+    expect(await ring(group)).toBe(noRing);
+    const create = page.getByRole("link", {
+      name: "New experiment",
+      exact: true,
+    });
+    await page.keyboard.press("Tab");
+    await expect(create).toBeFocused();
+    const keyboardRing = await ring(create);
+    await create.click({ modifiers: ["Control"] });
+    expect(await ring(create)).not.toBe(keyboardRing);
+    await page.goto("/agent");
+    const composer = page.getByRole("textbox").first();
+    await composer.click();
+    const textareaRing = await ring(composer);
+    await composer.pressSequentially("A question");
+    expect(await ring(composer)).toBe(textareaRing);
+  });
+}

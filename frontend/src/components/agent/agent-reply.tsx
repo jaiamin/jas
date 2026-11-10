@@ -1,17 +1,15 @@
 import { memo } from "react";
 import { Link } from "react-router-dom";
-import { AgentActivity } from "@/components/agent/agent-activity";
+import { ReplyActivity } from "@/components/agent/agent-activity";
 import { AgentMarkdown } from "@/components/agent/agent-markdown";
-import { PlanningActivity } from "@/components/agent/planning-progress";
+import { AgentTarget } from "@/components/agent/agent-target";
 import {
   Disclosure,
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
-import { ExperimentCheck } from "@/components/experiment-check";
 import { Alert } from "@/components/feedback";
-import { ArrowUpRight, BookOpen, Check } from "@/components/icons";
-import { Badge } from "@/components/ui/badge";
+import { ArrowUpRight } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,6 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { CodeBlockCopyButton } from "@/components/ui/code-block";
 import {
   Message,
   MessageContent,
@@ -28,16 +27,10 @@ import {
   MessageHeader,
 } from "@/components/ui/message";
 import {
-  Trace,
-  TraceCollapsible,
-  TraceCollapsibleContent,
-  TraceCollapsibleTrigger,
-  TraceDescription,
-  TraceIcon,
-  TraceLine,
-  TraceTitle,
-} from "@/components/ui/trace";
-import { money } from "@/lib/format";
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { Analysis } from "@/lib/types";
 
 export const AgentReply = memo(function AgentReply({
@@ -49,18 +42,53 @@ export const AgentReply = memo(function AgentReply({
   disabled: boolean;
   onRetry: () => void;
 }) {
-  const examined = [
-    ...new Map(
-      (row.output?.examined ?? []).map((range) => [
-        JSON.stringify(range),
-        range,
-      ]),
-    ).values(),
-  ];
+  const pending = row.status === "pending";
+  const complete = row.status === "complete";
+  const design = row.output?.design;
+  const introduction = row.output?.introduction;
+  const text =
+    row.purpose === "design"
+      ? pending
+        ? ""
+        : row.output?.supported
+          ? (row.output?.summary ?? "")
+          : (row.output?.explanation ?? "")
+      : pending
+        ? (row.output?.partial ?? "")
+        : (row.output?.answer ?? "");
+  const messageText = introduction ?? (row.status === "failed" ? "" : text);
+  const answerText = [introduction, text].filter(Boolean).join("\n\n");
+  const copyText =
+    row.purpose === "design" && design && row.output?.supported
+      ? [
+          answerText,
+          design.title,
+          design.question,
+          `${design.profiles.length} agents · ${design.conditions.length} conditions · ${design.conditions.length * design.seeds.length * design.repetitions} runs`,
+          "Ready for review. Nothing has run.",
+        ]
+          .filter(Boolean)
+          .join("\n\n")
+      : [answerText, ...(row.output?.caveats ?? [])]
+          .filter(Boolean)
+          .join("\n\n");
   return (
     <Message>
       <MessageContent>
-        <MessageHeader>Agent</MessageHeader>
+        <MessageHeader className="min-h-6 items-start gap-2 px-0">
+          <AgentTarget
+            animated={pending}
+            className="size-5"
+            aria-label="Assistant"
+          />
+          <ReplyActivity row={row} />
+        </MessageHeader>
+        {messageText && (
+          <AgentMarkdown
+            text={messageText}
+            streaming={pending && !introduction}
+          />
+        )}
         {row.status === "failed" ? (
           <Alert variant="error" title="Request stopped">
             <p>{row.error}</p>
@@ -73,187 +101,132 @@ export const AgentReply = memo(function AgentReply({
               Try again
             </Button>
           </Alert>
-        ) : row.purpose === "design" ? (
-          <DesignReply row={row} />
         ) : (
           <>
-            <Trace>
-              {row.status === "pending" ? (
-                <AgentActivity
-                  stage={
-                    row.output?.partial
-                      ? "writing"
-                      : (row.output?.stage ??
-                        (row.purpose === "general"
-                          ? "answering"
-                          : "investigating"))
-                  }
-                />
-              ) : null}
-              {examined.length > 0 && (
-                <TraceCollapsible>
-                  <TraceCollapsibleTrigger>
-                    <TraceLine>
-                      <TraceIcon>
-                        <Check />
-                      </TraceIcon>
-                      <TraceTitle>
-                        Inspected {examined.length} evidence range
-                        {examined.length === 1 ? "" : "s"}
-                      </TraceTitle>
-                    </TraceLine>
-                  </TraceCollapsibleTrigger>
-                  <TraceCollapsibleContent>
-                    <Trace>
-                      {examined.map((range) => (
-                        <Link
-                          key={JSON.stringify(range)}
-                          to={`/runs/${range.run_id}?turn=${range.start}&tab=decisions`}
-                        >
-                          <TraceLine>
-                            <TraceIcon>
-                              <BookOpen />
-                            </TraceIcon>
-                            <TraceTitle>
-                              Turns {range.start}–{range.end}
-                            </TraceTitle>
-                            <TraceDescription>
-                              {range.run_id.slice(0, 6)}
-                            </TraceDescription>
-                          </TraceLine>
-                        </Link>
-                      ))}
-                    </Trace>
-                  </TraceCollapsibleContent>
-                </TraceCollapsible>
-              )}
-            </Trace>
-            {row.status === "pending" && row.output?.partial && (
-              <AgentMarkdown text={row.output.partial} streaming />
+            {introduction && text && (
+              <AgentMarkdown text={text} streaming={pending} />
             )}
-            {row.status === "complete" && (
-              <>
-                <AgentMarkdown text={row.output?.answer ?? ""} />
-                {!!row.output?.citations?.length && (
-                  <div className="my-3 flex flex-wrap items-center gap-2">
-                    <span>Sources</span>
-                    {row.output.citations.map((citation) => (
-                      <Button
-                        key={`${citation.run_id}-${citation.turn}`}
-                        variant="secondary"
-                        size="sm"
-                        asChild
-                      >
-                        <Link
-                          to={`/runs/${citation.run_id}?turn=${citation.turn}&tab=decisions`}
-                        >
-                          Turn {citation.turn}
-                          {Object.keys(row.cutoffs).length > 1 &&
-                            ` · ${citation.run_id.slice(0, 5)}`}
-                        </Link>
-                      </Button>
+            {complete &&
+              row.purpose === "design" &&
+              (design && row.output?.supported ? (
+                <Card className="mx-px my-4">
+                  <CardHeader className="gap-2">
+                    <CardTitle>
+                      <h2>{design.title}</h2>
+                    </CardTitle>
+                    <CardDescription>{design.question}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <dl
+                      aria-label="Protocol summary"
+                      className="flex flex-wrap gap-x-6 gap-y-3"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <dt className="text-xs text-muted-foreground">
+                          Agents
+                        </dt>
+                        <dd className="font-medium tabular-nums">
+                          {design.profiles.length}
+                        </dd>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <dt className="text-xs text-muted-foreground">
+                          Conditions
+                        </dt>
+                        <dd className="font-medium tabular-nums">
+                          {design.conditions.length}
+                        </dd>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <dt className="text-xs text-muted-foreground">
+                          Planned runs
+                        </dt>
+                        <dd className="font-medium tabular-nums">
+                          {design.conditions.length *
+                            design.seeds.length *
+                            design.repetitions}
+                        </dd>
+                      </div>
+                    </dl>
+                  </CardContent>
+                  <CardFooter className="flex-col items-stretch gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
+                    <Button asChild>
+                      <Link to={`/new?plan=${row.id}`}>
+                        Review protocol
+                        <ArrowUpRight data-icon="inline-end" />
+                      </Link>
+                    </Button>
+                    <p className="text-center text-xs text-muted-foreground sm:text-left">
+                      Ready for review. Nothing has run.
+                    </p>
+                  </CardFooter>
+                </Card>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="self-start"
+                  asChild
+                >
+                  <Link to="/environments">Browse environments</Link>
+                </Button>
+              ))}
+            {complete && !!row.output?.citations?.length && (
+              <div className="flex flex-wrap items-center gap-2">
+                {row.output.citations.map((citation) => (
+                  <Button
+                    key={`${citation.run_id}-${citation.turn}`}
+                    variant="secondary"
+                    size="sm"
+                    asChild
+                  >
+                    <Link
+                      to={`/runs/${citation.run_id}?turn=${citation.turn}&tab=decisions`}
+                    >
+                      Turn {citation.turn}
+                      {Object.keys(row.cutoffs).length > 1 &&
+                        ` · ${citation.run_id.slice(0, 5)}`}
+                    </Link>
+                  </Button>
+                ))}
+              </div>
+            )}
+            {complete && !!row.output?.caveats?.length && (
+              <Disclosure className="min-w-0">
+                <DisclosureTrigger>Limitations & uncertainty</DisclosureTrigger>
+                <DisclosureContent>
+                  <ul>
+                    {row.output.caveats.map((caveat) => (
+                      <li key={caveat}>{caveat}</li>
                     ))}
-                  </div>
-                )}
-                {!!row.output?.caveats?.length && (
-                  <Disclosure className="min-w-0">
-                    <DisclosureTrigger>
-                      Limitations & uncertainty
-                    </DisclosureTrigger>
-                    <DisclosureContent>
-                      <ul>
-                        {row.output.caveats.map((caveat) => (
-                          <li key={caveat}>{caveat}</li>
-                        ))}
-                      </ul>
-                    </DisclosureContent>
-                  </Disclosure>
-                )}
-              </>
+                  </ul>
+                </DisclosureContent>
+              </Disclosure>
             )}
+            <MessageFooter className="-mt-1 -ml-1 min-h-6 flex-wrap gap-2 px-0">
+              {complete && copyText && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <CodeBlockCopyButton
+                      value={copyText}
+                      title="Copy response"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>Copy response</TooltipContent>
+                </Tooltip>
+              )}
+              {row.purpose === "analysis" &&
+                Object.keys(row.cutoffs).length > 0 && (
+                  <span>
+                    {Object.keys(row.cutoffs).length === 1
+                      ? `Evidence through turn ${Object.values(row.cutoffs)[0]}`
+                      : `${Object.keys(row.cutoffs).length} captured runs`}
+                  </span>
+                )}
+            </MessageFooter>
           </>
-        )}
-        {(row.purpose === "analysis" || !!row.usage?.cost_usd) && (
-          <MessageFooter>
-            {row.purpose === "analysis" &&
-              (Object.keys(row.cutoffs).length === 1
-                ? `Evidence through turn ${Object.values(row.cutoffs)[0]}`
-                : `${Object.keys(row.cutoffs).length} captured runs`)}
-            {!!row.usage?.cost_usd &&
-              `${row.purpose === "analysis" ? " · " : ""}${money(row.usage.cost_usd)}${row.usage.partial ? "*" : ""}`}
-          </MessageFooter>
         )}
       </MessageContent>
     </Message>
   );
 });
-
-function DesignReply({ row }: { row: Analysis }) {
-  if (row.status === "pending")
-    return (
-      <>
-        <PlanningActivity plan={row} />
-        {row.output?.partial && (
-          <AgentMarkdown text={row.output.partial} streaming />
-        )}
-      </>
-    );
-  const design = row.output?.design;
-  return (
-    <>
-      {row.output?.planning && <PlanningActivity plan={row} />}
-      <AgentMarkdown text={row.output?.explanation ?? ""} />
-      {design && row.output?.supported ? (
-        <Card className="my-4">
-          <CardHeader>
-            <CardTitle>
-              <h2>{design.title}</h2>
-            </CardTitle>
-            <CardDescription>{design.question}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">{design.profiles.length} agents</Badge>
-              <Badge variant="secondary">
-                {design.conditions.length} conditions
-              </Badge>
-              <Badge variant="secondary">
-                {design.conditions.length *
-                  design.seeds.length *
-                  design.repetitions}{" "}
-                independent runs
-              </Badge>
-              <Badge variant="outline">
-                {money(design.budget_usd)} ceiling
-              </Badge>
-            </div>
-            {row.output?.planning?.preflight && (
-              <ExperimentCheck
-                report={{
-                  ...row.output.planning.preflight,
-                  original_question: row.question,
-                  question_mapping: row.output.planning.brief.requirements,
-                }}
-              />
-            )}
-          </CardContent>
-          <CardFooter className="flex-wrap justify-between gap-3">
-            <p className="text-xs text-muted-foreground">
-              Ready for review. Nothing has run.
-            </p>
-            <Button size="sm" asChild>
-              <Link to={`/new?plan=${row.id}`}>
-                Review protocol
-                <ArrowUpRight data-icon="inline-end" />
-              </Link>
-            </Button>
-          </CardFooter>
-        </Card>
-      ) : (
-        <Button size="sm" variant="outline" asChild>
-          <Link to="/environments">Browse environments</Link>
-        </Button>
-      )}
-    </>
-  );
-}

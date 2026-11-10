@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { Alert } from "@/components/feedback";
 import { Plus, Trash2 } from "@/components/icons";
 import { OptionSelect as Select } from "@/components/option-select";
@@ -7,7 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -20,13 +21,13 @@ export function AgentFields({
   design,
   catalog,
   onChange,
-  hidden,
 }: {
   design: Design;
   catalog: Catalog;
   onChange: (design: Design) => void;
-  hidden: boolean;
 }) {
+  const [open, setOpen] = useState<string[]>([design.profiles[0]?.key ?? ""]);
+  const addedInput = useRef<string | null>(null);
   function update<K extends keyof Design>(key: K, value: Design[K]) {
     onChange({ ...design, [key]: value });
   }
@@ -37,10 +38,10 @@ export function AgentFields({
     );
   }
   return (
-    <section className="mb-6 flex flex-col gap-6" hidden={hidden}>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
+    <section className="flex min-w-0 flex-col gap-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold">
+          <h2 className="text-base font-medium">
             Agents{" "}
             <span className="text-muted-foreground">
               {design.profiles.length}
@@ -48,12 +49,15 @@ export function AgentFields({
           </h2>
         </div>
         <Button
+          type="button"
           variant="outline"
           size="sm"
           disabled={design.profiles.length >= 12}
           onClick={() => {
             let n = design.profiles.length + 1;
             while (design.profiles.some((p) => p.key === `agent-${n}`)) n++;
+            addedInput.current = `agent-agent-${n}-name`;
+            setOpen((open) => [...open, `agent-${n}`]);
             update("profiles", [
               ...design.profiles,
               {
@@ -70,31 +74,45 @@ export function AgentFields({
           Add agent
         </Button>
       </div>
-      <Accordion type="multiple">
+      <Accordion type="multiple" value={open} onValueChange={setOpen}>
         {design.profiles.map((p, i) => (
           <AccordionItem value={p.key} key={p.key}>
-            <AccordionTrigger className="w-full justify-start gap-3">
-              <Avatar>
-                <AvatarFallback>{p.name.slice(0, 1)}</AvatarFallback>
-              </Avatar>
-              <span className="flex min-w-0 flex-col items-start gap-1 [&>span]:text-xs [&>span]:text-muted-foreground">
-                <strong>{p.name || "Unnamed agent"}</strong>
-                <span>{p.role}</span>
+            <AccordionTrigger className="min-w-0 items-center justify-start gap-3 hover:no-underline">
+              <Badge variant="outline" className="shrink-0">
+                {i + 1}
+              </Badge>
+              <span className="flex min-w-0 flex-1 flex-col items-start gap-0.5">
+                <span
+                  title={p.name}
+                  className="max-w-full truncate text-sm font-medium text-foreground"
+                >
+                  {p.name || "Unnamed agent"}
+                </span>
+                <span className="max-w-full text-xs font-normal text-muted-foreground break-words">
+                  {p.role}
+                </span>
               </span>
-              <span className="ml-auto hidden truncate sm:inline">
+              <span className="ml-auto hidden max-w-48 truncate text-xs font-normal text-muted-foreground sm:inline">
                 {p.model ? modelLabel(p.model) : "Condition model"}
               </span>
             </AccordionTrigger>
             <AccordionContent>
-              <div className="flex items-start gap-3 p-4">
-                <FieldGroup className="grid min-w-0 flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-4 pb-2 pt-2">
+                <FieldGroup className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
                   <Field>
                     <FieldLabel htmlFor={`agent-${p.key}-name`}>
                       Name
                     </FieldLabel>
                     <Input
                       id={`agent-${p.key}-name`}
+                      ref={(element) => {
+                        if (element && addedInput.current === element.id) {
+                          addedInput.current = null;
+                          element.focus();
+                        }
+                      }}
                       value={p.name}
+                      maxLength={60}
                       onChange={(e) => profile(i, { name: e.target.value })}
                     />
                   </Field>
@@ -105,12 +123,16 @@ export function AgentFields({
                     <Input
                       id={`agent-${p.key}-role`}
                       value={p.role}
+                      maxLength={80}
                       onChange={(e) => profile(i, { role: e.target.value })}
                     />
                   </Field>
-                  <Field>
-                    <FieldLabel>Model</FieldLabel>
+                  <Field className="col-span-full">
+                    <FieldLabel htmlFor={`agent-${p.key}-model`}>
+                      Model
+                    </FieldLabel>
                     <Select
+                      id={`agent-${p.key}-model`}
                       label={`Model for ${p.name}`}
                       value={p.model ?? "inherit"}
                       onValueChange={(value) =>
@@ -139,18 +161,22 @@ export function AgentFields({
                       id={`agent-${p.key}-goal`}
                       rows={2}
                       value={p.goal}
+                      maxLength={2000}
                       onChange={(e) => profile(i, { goal: e.target.value })}
                     />
                   </Field>
                 </FieldGroup>
                 <Button
+                  type="button"
                   variant="ghost"
-                  size="icon"
+                  className="self-start"
+                  size="sm"
                   aria-label={`Remove ${p.name}`}
                   disabled={design.profiles.length <= 2}
                   onClick={() => onChange(removeProfile(design, p.key))}
                 >
-                  <Trash2 />
+                  <Trash2 data-icon="inline-start" />
+                  Remove agent
                 </Button>
               </div>
             </AccordionContent>

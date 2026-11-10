@@ -99,7 +99,7 @@ export function RequestInspector({
               </h3>
               {!request.data.request ? (
                 <p className="text-muted-foreground">
-                  This pilot request predates payload tracing.
+                  No request payload was recorded.
                 </p>
               ) : (
                 <Disclosure className="min-w-0">

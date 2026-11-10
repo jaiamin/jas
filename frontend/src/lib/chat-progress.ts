@@ -2,7 +2,9 @@ interface ChatProgress {
   status: "pending" | "complete" | "failed";
   purpose: "general" | "design" | "analysis";
   partial?: string;
+  introduction?: string;
   stage?: string;
+  activity?: string[];
 }
 
 /** Decode live prose/activity only; persisted queries own the complete analysis record. */
@@ -38,10 +40,23 @@ export function chatProgress(
       return null;
     const output = row.output;
     const partial = "partial" in output ? output.partial : undefined;
+    const introduction =
+      "introduction" in output ? output.introduction : undefined;
     const stage = "stage" in output ? output.stage : undefined;
     if (partial !== undefined && typeof partial !== "string") return null;
+    if (introduction !== undefined && typeof introduction !== "string")
+      return null;
     if (stage !== undefined && typeof stage !== "string") return null;
+    const activity = "activity" in output ? output.activity : undefined;
+    if (
+      activity !== undefined &&
+      (!Array.isArray(activity) ||
+        activity.some((stage) => typeof stage !== "string"))
+    )
+      return null;
     return {
+      ...(activity ? { activity } : {}),
+      ...(introduction !== undefined ? { introduction } : {}),
       status: row.status,
       partial,
       stage,

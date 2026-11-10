@@ -1,4 +1,9 @@
-import type { APIRequestContext } from "@playwright/test";
+import {
+  type APIRequestContext,
+  expect,
+  type Locator,
+  type Page,
+} from "@playwright/test";
 import type {
   Catalog,
   Design,
@@ -32,4 +37,26 @@ export async function createStudy(request: APIRequestContext) {
     await request.get(`/api/runs/${study.runs[0]?.id}`)
   ).json();
   return { study, run };
+}
+
+export async function selectText(page: Page, text: Locator) {
+  await text.scrollIntoViewIfNeeded();
+  const bounds = await text.evaluate((element) => {
+    const node = document
+      .createTreeWalker(element, NodeFilter.SHOW_TEXT)
+      .nextNode();
+    if (!node) throw new Error("Control has no text");
+    const range = document.createRange();
+    range.setStart(node, 0);
+    range.setEnd(node, Math.min(12, node.textContent?.length ?? 0));
+    const rect = range.getBoundingClientRect();
+    return { x: rect.x, y: rect.y + rect.height / 2, width: rect.width };
+  });
+  await page.mouse.move(bounds.x + 1, bounds.y);
+  await page.mouse.down();
+  await page.mouse.move(bounds.x + bounds.width - 1, bounds.y, { steps: 10 });
+  await page.mouse.up();
+  expect(
+    await page.evaluate(() => document.getSelection()?.toString().length),
+  ).toBeGreaterThan(0);
 }

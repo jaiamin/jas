@@ -1,3 +1,9 @@
+import { useRef, useState } from "react";
+import {
+  Disclosure,
+  DisclosureContent,
+  DisclosureTrigger,
+} from "@/components/disclosure";
 import { ProfileOverridesEditor } from "@/components/editor/profile-overrides-editor";
 import { ResourceScheduleEditor } from "@/components/editor/resource-schedule-editor";
 import { Plus, Trash2 } from "@/components/icons";
@@ -20,6 +26,7 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { modelLabel } from "@/lib/format";
 import type {
   Catalog,
@@ -33,13 +40,13 @@ export function ConditionFields({
   design,
   catalog,
   onChange,
-  hidden,
 }: {
   design: Design;
   catalog: Catalog;
   onChange: (design: Design) => void;
-  hidden: boolean;
 }) {
+  const [open, setOpen] = useState<string[]>([design.conditions[0]?.key ?? ""]);
+  const addedInput = useRef<string | null>(null);
   function update<K extends keyof Design>(key: K, value: Design[K]) {
     onChange({ ...design, [key]: value });
   }
@@ -62,10 +69,10 @@ export function ConditionFields({
     if (c) condition(index, { parameters: { ...c.parameters, [key]: value } });
   }
   return (
-    <section className="mb-6 flex flex-col gap-6" hidden={hidden}>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
+    <section className="flex min-w-0 flex-col gap-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold">
+          <h2 className="text-base font-medium">
             Conditions{" "}
             <span className="text-muted-foreground">
               {design.conditions.length}
@@ -73,6 +80,7 @@ export function ConditionFields({
           </h2>
         </div>
         <Button
+          type="button"
           variant="outline"
           size="sm"
           disabled={design.conditions.length >= 6}
@@ -82,6 +90,8 @@ export function ConditionFields({
               n++;
             const base = design.conditions[0];
             if (!base) return;
+            addedInput.current = `condition-condition-${n}-name`;
+            setOpen((open) => [...open, `condition-${n}`]);
             update("conditions", [
               ...design.conditions,
               structuredClone({
@@ -96,47 +106,50 @@ export function ConditionFields({
           Add condition
         </Button>
       </div>
-      <Accordion
-        type="multiple"
-        defaultValue={[design.conditions[0]?.key ?? ""]}
-      >
+      <Accordion type="multiple" value={open} onValueChange={setOpen}>
         {design.conditions.map((c, i) => (
           <AccordionItem value={c.key} key={c.key}>
-            <AccordionTrigger className="w-full justify-start gap-3">
-              <Badge variant="secondary">{String.fromCharCode(65 + i)}</Badge>
-              <strong>{c.name || "Unnamed condition"}</strong>
-              <span>{modelLabel(c.model)}</span>
+            <AccordionTrigger className="min-w-0 items-center justify-start gap-3 hover:no-underline">
+              <Badge variant="outline" className="shrink-0">
+                {String.fromCharCode(65 + i)}
+              </Badge>
+              <span
+                title={c.name}
+                className="min-w-0 flex-1 truncate font-medium"
+              >
+                {c.name || "Unnamed condition"}
+              </span>
+              <span className="ml-auto hidden max-w-48 truncate text-xs font-normal text-muted-foreground sm:inline">
+                {modelLabel(c.model)}
+              </span>
             </AccordionTrigger>
             <AccordionContent>
-              <div className="flex flex-col gap-6 p-4">
-                <div className="flex items-center gap-3">
-                  <Badge variant="secondary">
-                    {String.fromCharCode(65 + i)}
-                  </Badge>
-                  <Input
-                    aria-label={`Condition ${i + 1} name`}
-                    value={c.name}
-                    onChange={(e) => condition(i, { name: e.target.value })}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={`Remove condition ${i + 1}`}
-                    disabled={design.conditions.length <= 1}
-                    onClick={() =>
-                      update(
-                        "conditions",
-                        design.conditions.filter((_, index) => index !== i),
-                      )
-                    }
-                  >
-                    <Trash2 />
-                  </Button>
-                </div>
+              <div className="flex min-w-0 flex-col gap-6 pb-2 pt-2">
                 <FieldGroup className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
                   <Field>
-                    <FieldLabel>Model</FieldLabel>
+                    <FieldLabel htmlFor={`condition-${c.key}-name`}>
+                      Condition name
+                    </FieldLabel>
+                    <Input
+                      id={`condition-${c.key}-name`}
+                      ref={(element) => {
+                        if (element && addedInput.current === element.id) {
+                          addedInput.current = null;
+                          element.focus();
+                        }
+                      }}
+                      aria-label={`Condition ${i + 1} name`}
+                      value={c.name}
+                      maxLength={80}
+                      onChange={(event) =>
+                        condition(i, { name: event.target.value })
+                      }
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor={`model-${c.key}`}>Model</FieldLabel>
                     <Select
+                      id={`model-${c.key}`}
                       label={`Condition ${i + 1} model`}
                       value={c.model}
                       onValueChange={(v) =>
@@ -204,8 +217,11 @@ export function ConditionFields({
                     </Field>
                   )}
                   <Field>
-                    <FieldLabel>Retained memory</FieldLabel>
+                    <FieldLabel htmlFor={`memory-${c.key}`}>
+                      Retained memory
+                    </FieldLabel>
                     <Select
+                      id={`memory-${c.key}`}
                       label={`Condition ${i + 1} memory`}
                       value={c.parameters.memory}
                       onValueChange={(v) =>
@@ -232,6 +248,30 @@ export function ConditionFields({
                     />
                   </Field>
                 </FieldGroup>
+                <div className="flex flex-wrap gap-5">
+                  <FieldLabel htmlFor={`communication-${c.key}`}>
+                    <Checkbox
+                      id={`communication-${c.key}`}
+                      checked={c.parameters.communication}
+                      onCheckedChange={(checked) =>
+                        parameter(i, "communication", checked === true)
+                      }
+                    />
+                    Communication
+                  </FieldLabel>
+                  {environment.parameters.includes("private_signal") && (
+                    <FieldLabel htmlFor={`private-signal-${c.key}`}>
+                      <Checkbox
+                        id={`private-signal-${c.key}`}
+                        checked={c.parameters.private_signal}
+                        onCheckedChange={(checked) =>
+                          parameter(i, "private_signal", checked === true)
+                        }
+                      />
+                      Private signals
+                    </FieldLabel>
+                  )}
+                </div>
                 {c.parameters.communication && (
                   <FieldSet className="col-span-full flex flex-wrap gap-4">
                     <FieldLegend>Communication channels</FieldLegend>
@@ -298,6 +338,25 @@ export function ConditionFields({
                     }
                   />
                 )}
+                <Disclosure>
+                  <DisclosureTrigger>Condition notes</DisclosureTrigger>
+                  <DisclosureContent className="pt-4">
+                    <Field>
+                      <FieldLabel htmlFor={`condition-${c.key}-description`}>
+                        Description (optional)
+                      </FieldLabel>
+                      <Textarea
+                        id={`condition-${c.key}-description`}
+                        rows={2}
+                        value={c.description}
+                        maxLength={1000}
+                        onChange={(event) =>
+                          condition(i, { description: event.target.value })
+                        }
+                      />
+                    </Field>
+                  </DisclosureContent>
+                </Disclosure>
                 <ProfileOverridesEditor
                   id={c.key}
                   name={c.name}
@@ -307,28 +366,23 @@ export function ConditionFields({
                     condition(i, { profile_overrides: overrides })
                   }
                 />
-                <div className="flex flex-wrap gap-5">
-                  <FieldLabel htmlFor={`communication-${c.key}`}>
-                    <Checkbox
-                      id={`communication-${c.key}`}
-                      checked={c.parameters.communication}
-                      onCheckedChange={(checked) =>
-                        parameter(i, "communication", checked === true)
-                      }
-                    />
-                    Communication
-                  </FieldLabel>
-                  <FieldLabel htmlFor={`private-signal-${c.key}`}>
-                    <Checkbox
-                      id={`private-signal-${c.key}`}
-                      checked={c.parameters.private_signal}
-                      onCheckedChange={(checked) =>
-                        parameter(i, "private_signal", checked === true)
-                      }
-                    />
-                    Private signals
-                  </FieldLabel>
-                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="self-start"
+                  aria-label={`Remove condition ${i + 1}`}
+                  disabled={design.conditions.length <= 1}
+                  onClick={() =>
+                    update(
+                      "conditions",
+                      design.conditions.filter((_, index) => index !== i),
+                    )
+                  }
+                >
+                  <Trash2 data-icon="inline-start" />
+                  Remove condition
+                </Button>
               </div>
             </AccordionContent>
           </AccordionItem>

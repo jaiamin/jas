@@ -30,6 +30,20 @@ objects into an unqueryable single blob or duplicate transient UI state in the d
 Claims, commitments and exchanges are typed events with explicit payloads, not separate
 mutable truth sources. Relationship views and behavioral summaries are derived from them.
 
+## Experiment deletion
+
+`DELETE /api/studies/{id}` removes an entire experiment, all immutable revisions, its
+matched runs, annotations, measurements, events, turns and participants in one transaction.
+It removes only chat messages scoped to that experiment, preserving unrelated conversation
+turns and unscoped design proposals. There is no individual-run deletion or mutation endpoint.
+The route stays synchronous on the owning engine/assistant event loop; it checks live task
+ownership, run status, pending chat turns and unsettled calls before deletion. Acquire the
+study write lock before reading dependents. Block deletion until runs stop and related chats
+and requests settle; roll back every change on rejection. Provider-call usage/status/cost
+records survive with deleted foreign keys detached and request/response payloads cleared;
+workspace charges and ceilings never reset. This requires no schema change. UI deletion
+requires explicit confirmation; local browser drafts remain recoverable.
+
 ## Experiment design
 
 The planner scopes the question and justifies agents, conditions, seeds, repetitions and
@@ -67,6 +81,17 @@ Provider streaming uses the existing budget reservation, single-request limit, t
 trace accounting. Partial prose is stored under `Analysis.output.partial`; it is pending
 content, not a validated finding or protocol. Final schema, citation and design checks still
 gate completion; failures remove partial prose. No private model reasoning is exposed.
+Design candidates do not stream their technical explanations into answer prose.
+The existing post-preflight DesignReview call produces a bounded user-facing `summary`
+alongside its issues. Only an approved review publishes it; candidate `explanation`
+remains public pre-check rationale under activity. Structured mappings and computed
+check results remain the authoritative evidence. This adds no provider request.
+Public stage names persist in `output.activity`, including checks and payoff calculations;
+slow read-only tools publish their stage before executing off the event loop. Live tool
+results and saved records use the same scope/source/preflight/inspected-range evidence.
+A general-to-design handoff persists the public acknowledgement in `output.introduction`,
+retains it through every planner stage and terminal status, and transports it in live events;
+it stays separate from the reviewed proposal summary and never represents private reasoning.
 Conversation identity is an indexed Analysis field, with no duplicate message store.
 One pending turn per chat prevents overlapping follow-ups; independent chats can run
 concurrently. Failed turns stay inspectable and retry as a new turn in their original context.

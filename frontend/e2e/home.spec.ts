@@ -7,6 +7,90 @@ const settings = {
   assistant_model: "openai:gpt-6.1-sol",
 };
 
+test("Home keeps immediate content usable while only database rows show skeletons", async ({
+  page,
+}) => {
+  let releaseStudies = () => {};
+  let releaseSettings = () => {};
+  const pendingStudies = new Promise<void>((resolve) => {
+    releaseStudies = resolve;
+  });
+  const pendingSettings = new Promise<void>((resolve) => {
+    releaseSettings = resolve;
+  });
+  await page.addInitScript(() => {
+    const path = "/new";
+    localStorage.setItem(
+      `jas:draft:${path}`,
+      JSON.stringify({
+        path,
+        title: "A local unfinished experiment",
+        updated: new Date().toISOString(),
+        design: {},
+        json: "{}",
+        mode: "json",
+      }),
+    );
+  });
+  await page.route("**/api/settings", async (route) => {
+    await pendingSettings;
+    await route.fulfill({ json: settings });
+  });
+  await page.route("**/api/studies", async (route) => {
+    await pendingStudies;
+    await route.fulfill({ json: [] });
+  });
+  await page.route("**/api/runs", (route) => route.fulfill({ json: [] }));
+  await page.goto("/");
+  const recent = page.getByRole("region", { name: "Recent experiments" });
+  const loading = recent.getByRole("status", {
+    name: "Loading recent experiments",
+  });
+  await expect(loading).toBeVisible();
+  const placeholders = loading.locator('[data-slot="skeleton"]');
+  expect(await placeholders.count()).toBeGreaterThan(0);
+  await expect(page.locator('[data-slot="skeleton"]')).toHaveCount(
+    await placeholders.count(),
+  );
+  await expect(
+    page
+      .getByRole("region", { name: "Drafts", exact: true })
+      .getByRole("link", {
+        name: "A local unfinished experiment",
+      }),
+  ).toBeVisible();
+  for (const label of ["New", "View all"]) {
+    await expect(
+      recent.getByRole("link", { name: label, exact: true }),
+    ).toBeVisible();
+  }
+  const suggestions = page
+    .getByRole("region", { name: "Experiment ideas" })
+    .getByRole("button");
+  await expect(suggestions).toHaveCount(4);
+  await suggestions.first().click();
+  const input = page.getByLabel("Message Agent", { exact: true });
+  await expect(input).toHaveValue(/public messages/);
+  const send = page.getByRole("button", { name: "Send message" });
+  await expect(send).toBeDisabled();
+  const newPosition = await recent
+    .getByRole("link", { name: "New", exact: true })
+    .boundingBox();
+  releaseSettings();
+  await expect(send).toBeEnabled();
+  await expect(loading).toBeVisible();
+  releaseStudies();
+  await expect(loading).toHaveCount(0);
+  await expect(
+    recent.getByText("Your experiments will appear here"),
+  ).toBeVisible();
+  expect(
+    await recent.getByRole("link", { name: "New", exact: true }).boundingBox(),
+  ).toEqual(newPosition);
+  await recent.getByRole("link", { name: "View all", exact: true }).click();
+  await expect(page).toHaveURL(/\/studies$/);
+});
+
 test("the grid ecosystem evolves only while visible and motion is enabled", async ({
   page,
 }) => {
@@ -25,6 +109,24 @@ test("the grid ecosystem evolves only while visible and motion is enabled", asyn
           )
           .join("|"),
       );
+  // Provider availability and fonts affect the hero height. Measure the settled
+  // keyless layout before checking motion; a resize legitimately rebuilds cells.
+  await expect(
+    page.getByRole("link", { name: "Configure a provider", exact: true }),
+  ).toBeVisible();
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  await expect
+    .poll(() =>
+      grid.evaluate((element) => {
+        const svg = element as SVGSVGElement;
+        const bounds = svg.getBoundingClientRect();
+        return Math.max(
+          Math.abs(svg.viewBox.baseVal.width - bounds.width),
+          Math.abs(svg.viewBox.baseVal.height - bounds.height),
+        );
+      }),
+    )
+    .toBeLessThan(18);
   await expect(grid).toHaveAttribute("data-paused", "true");
   expect(await grid.locator("rect").count()).toBeLessThanOrEqual(3456);
   const still = await frame();
@@ -56,20 +158,18 @@ test("Composer's manual editor link preserves the message without submitting", a
     if (request.url().endsWith("/api/chats") && request.method() === "POST")
       submissions++;
   });
-  for (const path of ["/", "/agent"]) {
-    await page.goto(path);
-    const input = page.getByLabel("Message Agent", { exact: true });
-    await input.fill("Compare cooperation with and without messages");
-    await page
-      .getByRole("form", { name: "Agent composer" })
-      .getByRole("link", { name: "start from scratch" })
-      .click();
-    await expect(page).toHaveURL(/\/new$/);
-    await page.goBack();
-    await expect(input).toHaveValue(
-      "Compare cooperation with and without messages",
-    );
-  }
+  await page.goto("/");
+  const input = page.getByLabel("Message Agent", { exact: true });
+  await input.fill("Compare cooperation with and without messages");
+  await page
+    .getByRole("form", { name: "Agent composer" })
+    .getByRole("link", { name: "start from scratch" })
+    .click();
+  await expect(page).toHaveURL(/\/new$/);
+  await page.goBack();
+  await expect(input).toHaveValue(
+    "Compare cooperation with and without messages",
+  );
   expect(submissions).toBe(0);
 });
 
@@ -89,7 +189,14 @@ test("Home submits once, opens the saved Agent conversation and never resubmits 
     if (route.request().method() !== "POST")
       return route.fulfill({
         json: submissions
-          ? [{ id: "home-chat", title: question, status: "complete" }]
+          ? [
+              {
+                id: "home-chat",
+                title: question,
+                updated: new Date().toISOString(),
+                status: "complete",
+              },
+            ]
           : [],
       });
     submissions++;
@@ -142,11 +249,11 @@ test("Home submits once, opens the saved Agent conversation and never resubmits 
     "1",
   );
   const suggestions = page
-    .getByRole("region", { name: "Experiment suggestions" })
+    .getByRole("region", { name: "Experiment ideas" })
     .getByRole("button");
   await expect(suggestions).toHaveCount(4);
   await expect(
-    page.getByRole("heading", { name: "Suggestions", exact: true }),
+    page.getByRole("heading", { name: "Experiment ideas", exact: true }),
   ).toBeVisible();
   await suggestions.last().click();
   await expect(page.getByLabel("Message Agent", { exact: true })).toHaveValue(
@@ -259,6 +366,7 @@ test("late Home responses keep the user's destination and leave the chat in hist
               {
                 id: "late-home-chat",
                 title: "A question sent from Home",
+                updated: new Date().toISOString(),
                 status: "pending",
               },
             ]
@@ -280,6 +388,7 @@ test("late Home responses keep the user's destination and leave the chat in hist
   release();
   await expect(page).toHaveTitle("JAS");
   await page.getByRole("link", { name: "Agent", exact: true }).click();
+  await page.getByRole("button", { name: "Chat history", exact: true }).click();
   await expect(
     page
       .getByRole("navigation", { name: "Past chats" })
@@ -437,8 +546,8 @@ for (const width of [390, 1440])
         ],
       );
       await expect(
-        draftSection.getByRole("link", { name: "View all drafts" }),
-      ).toHaveAttribute("href", "/studies#drafts");
+        draftSection.getByRole("button", { name: "View all drafts" }),
+      ).toHaveAttribute("aria-expanded", "false");
       await expect(
         page
           .getByRole("region", { name: "Recent experiments" })
@@ -446,7 +555,7 @@ for (const width of [390, 1440])
       ).toHaveAttribute("href", "/new");
       await expect(
         page
-          .getByRole("region", { name: "Experiment suggestions" })
+          .getByRole("region", { name: "Experiment ideas" })
           .getByRole("link"),
       ).toHaveCount(0);
       await expect(
@@ -498,6 +607,9 @@ for (const width of [390, 1440])
       await draftToggle.click();
       await expect(continueDraft).toHaveCount(0);
       await expect(draftToggle).toHaveAttribute("aria-expanded", "false");
+      await expect(
+        draftSection.getByRole("button", { name: "View all drafts" }),
+      ).toHaveCount(0);
       await expect(draftSection.locator('[data-slot="separator"]')).toHaveCount(
         0,
       );
@@ -541,6 +653,14 @@ for (const width of [390, 1440])
         "background-color",
         "rgba(0, 0, 0, 0)",
       );
+      const deleteDraft = draftSection.getByRole("button", {
+        name: "Delete Continue the latest protocol draft",
+      });
+      await deleteDraft.hover();
+      await expect(deleteDraft).not.toHaveCSS(
+        "background-color",
+        /(?:\/\s*0|,\s*0)\)$/,
+      );
       const firstExperiment = experiments
         .getByRole("link", { name: /^Experiment \d/ })
         .first();
@@ -549,12 +669,29 @@ for (const width of [390, 1440])
         "background-color",
         "rgba(0, 0, 0, 0)",
       );
+      await experimentOptions.first().hover();
+      await expect(experimentOptions.first()).not.toHaveCSS(
+        "background-color",
+        /(?:\/\s*0|,\s*0)\)$/,
+      );
+      for (const action of [deleteDraft, experimentOptions.first()]) {
+        const inset = await action.evaluate((button) => {
+          const row = button.parentElement?.parentElement;
+          if (!row) throw new Error("Missing record row");
+          return (
+            row.getBoundingClientRect().right -
+            button.getBoundingClientRect().right
+          );
+        });
+        expect(inset).toBeGreaterThan(0);
+        expect(inset).toBeLessThan(8);
+      }
       await page.screenshot({
         path: testInfo.outputPath(`home-record-hover-${theme}-${width}.png`),
         fullPage: true,
       });
       const suggestionSection = page.getByRole("region", {
-        name: "Experiment suggestions",
+        name: "Experiment ideas",
       });
       const illustrations = suggestionSection.locator("img");
       await expect(illustrations).toHaveCount(4);
@@ -641,15 +778,25 @@ for (const width of [390, 1440])
         await page
           .getByRole("button", { name: "Close menu", exact: true })
           .click();
-      await draftSection.getByRole("link", { name: "View all drafts" }).click();
-      await expect(page).toHaveURL(/\/studies#drafts$/);
+      await draftSection
+        .getByRole("button", { name: "View all drafts" })
+        .click();
+      await expect(page).toHaveURL(/\/$/);
       await expect(
-        page.getByRole("button", { name: "Drafts · 5", exact: true }),
+        draftSection.getByRole("button", { name: "Show fewer drafts" }),
       ).toHaveAttribute("aria-expanded", "true");
       await expect(
-        page.getByRole("link", { name: "The oldest draft", exact: true }),
+        draftSection.getByRole("link", {
+          name: "The oldest draft",
+          exact: true,
+        }),
       ).toBeVisible();
-      await page.goBack();
+      await draftSection
+        .getByRole("button", { name: "Show fewer drafts" })
+        .click();
+      await expect(
+        draftSection.locator('[data-slot="item-title"]'),
+      ).toHaveCount(3);
       await continueDraft.click();
       await expect(page).toHaveURL(/\/new\?template=commons$/);
       await expect(

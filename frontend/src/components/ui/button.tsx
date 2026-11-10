@@ -1,10 +1,10 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 import { Slot } from "radix-ui";
-import type * as React from "react";
+import * as React from "react";
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-text focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -40,17 +40,42 @@ const buttonVariants = cva(
   },
 );
 
+function selectableText(children: React.ReactNode) {
+  // Preserve nested asChild elements and keep adjacent text as one label.
+  if (React.isValidElement(children)) return children;
+  const content: React.ReactNode[] = [];
+  for (const child of React.Children.toArray(children)) {
+    const previous = content.at(-1);
+    if (typeof child === "string" || typeof child === "number") {
+      if (typeof previous === "string")
+        content[content.length - 1] = previous + String(child);
+      else content.push(String(child));
+    } else content.push(child);
+  }
+  return React.Children.map(content, (child) =>
+    typeof child === "string" ? (
+      <span className="select-text">{child}</span>
+    ) : (
+      child
+    ),
+  );
+}
+
 function Button({
   className,
   variant = "default",
   size = "default",
   asChild = false,
+  onClickCapture,
+  onPointerDownCapture,
+  children,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
   }) {
   const Comp = asChild ? Slot.Root : "button";
+  const pointerStart = React.useRef<{ x: number; y: number } | null>(null);
 
   return (
     <Comp
@@ -58,8 +83,43 @@ function Button({
       data-variant={variant}
       data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
+      draggable={false}
       {...props}
-    />
+      onPointerDownCapture={(event) => {
+        pointerStart.current = { x: event.clientX, y: event.clientY };
+        onPointerDownCapture?.(event);
+      }}
+      onClickCapture={(event) => {
+        const start = pointerStart.current;
+        pointerStart.current = null;
+        const selection = event.currentTarget.ownerDocument.getSelection();
+        // Dragging to copy a label must not activate the button or child link.
+        if (
+          event.detail > 0 &&
+          start &&
+          Math.hypot(event.clientX - start.x, event.clientY - start.y) > 3 &&
+          selection &&
+          !selection.isCollapsed &&
+          selection.rangeCount > 0 &&
+          selection.getRangeAt(0).intersectsNode(event.currentTarget)
+        ) {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+        onClickCapture?.(event);
+      }}
+    >
+      {asChild
+        ? React.isValidElement<{ children?: React.ReactNode }>(children)
+          ? React.cloneElement(
+              children,
+              undefined,
+              selectableText(children.props.children),
+            )
+          : children
+        : selectableText(children)}
+    </Comp>
   );
 }
 

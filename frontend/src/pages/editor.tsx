@@ -3,9 +3,10 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { PlanningProgress } from "@/components/agent/planning-progress";
 import { DesignEditor } from "@/components/editor/design-editor";
+import { EditorLoading } from "@/components/editor/editor-layout";
 import { Alert, Empty } from "@/components/feedback";
 import { ArrowRight } from "@/components/icons";
-import { ErrorState, Loading, PageHeading } from "@/components/shared";
+import { ErrorState, PageHeading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { ApiError, api, useApi } from "@/lib/api";
 import {
@@ -51,6 +52,8 @@ export default function Editor() {
       }
     },
     gcTime: 0,
+    // Local edits can change while this query is cached during route transitions.
+    refetchOnMount: "always",
     refetchOnWindowFocus: false,
   });
   const catalog = useApi<Catalog>("/catalog");
@@ -75,6 +78,8 @@ export default function Editor() {
   });
   const planId = params.get("plan");
   const studyId = params.get("study");
+  const copyId = params.get("copy");
+  const sourceId = studyId ?? copyId;
   const plan = useQuery({
     queryKey: ["/analyses", planId],
     queryFn: () => api<Analysis>(`/analyses/${planId}`),
@@ -84,14 +89,20 @@ export default function Editor() {
   });
   const previous = useQuery({
     queryKey: [
-      `/studies/${studyId}${params.get("revision") ? `?revision=${params.get("revision")}` : ""}`,
+      `/studies/${sourceId}${params.get("revision") ? `?revision=${params.get("revision")}` : ""}`,
     ],
     queryFn: () =>
       api<StudyDetail>(
-        `/studies/${studyId}${params.get("revision") ? `?revision=${params.get("revision")}` : ""}`,
+        `/studies/${sourceId}${params.get("revision") ? `?revision=${params.get("revision")}` : ""}`,
       ),
-    enabled: !!studyId,
+    enabled: !!sourceId,
   });
+  const deletedSource = Boolean(
+    draft.data?.saved &&
+      previous.error instanceof ApiError &&
+      previous.error.status === 404,
+  );
+  const previousError = deletedSource ? null : previous.error;
   function discardDraft() {
     try {
       removeDraft(draftPath);
@@ -113,14 +124,11 @@ export default function Editor() {
         )}
       </>
     );
-  if (catalog.error || plan.error || previous.error || setup.error)
+  if (catalog.error || plan.error || previousError || setup.error)
     return (
       <ErrorState
         error={
-          (catalog.error ||
-            plan.error ||
-            previous.error ||
-            setup.error) as Error
+          (catalog.error || plan.error || previousError || setup.error) as Error
         }
         onRetry={() =>
           Promise.all(
@@ -134,10 +142,11 @@ export default function Editor() {
   if (
     !catalog.data ||
     draft.isPending ||
-    (studyId && !previous.data) ||
+    !draft.isFetchedAfterMount ||
+    (sourceId && !previous.data && !deletedSource) ||
     (setupId && !setup.data)
   )
-    return <Loading />;
+    return <EditorLoading revision={!!studyId} fromAgent={!!planId} />;
   if (draft.data?.error && !recoverDraft)
     return (
       <>
@@ -196,40 +205,57 @@ export default function Editor() {
   const initial =
     draft.data?.design ??
     plan.data?.output?.design ??
-    previous.data?.design ??
+    (copyId && previous.data
+      ? {
+          ...previous.data.design,
+          title: `${previous.data.design.title.slice(0, 93)} (copy)`,
+        }
+      : previous.data?.design) ??
     setup.data?.design ??
     catalog.data.templates.find((t) => t.id === params.get("template"))
       ?.design ??
     catalog.data.templates[0]?.design;
-  if (!initial) return <Loading />;
+  if (!initial)
+    return <EditorLoading revision={!!studyId} fromAgent={!!planId} />;
   return (
-    <DesignEditor
-      key={draftPath}
-      initial={initial}
-      setupId={setupId}
-      setupRevision={setup.data?.revision}
-      initialStep={
-        params.get("step") === "conditions" ? "conditions" : "question"
-      }
-      catalog={catalog.data}
-      studyId={studyId}
-      planId={planId}
-      agentChatId={plan.data?.chat_id}
-      explanation={plan.data?.output?.explanation}
-      planning={plan.data?.output?.planning}
-      draftPath={draftPath}
-      draft={
-        recoverDraft && draft.data
-          ? {
-              ...draft.data.saved,
-              mode: "json",
-              json:
-                draft.data.saved.mode === "json"
-                  ? draft.data.saved.json
-                  : JSON.stringify(draft.data.saved.design, null, 2),
-            }
-          : draft.data?.saved
-      }
-    />
+    <>
+      {deletedSource && (
+        <Alert title="Original experiment deleted">
+          Your draft is safe. It will save as a new experiment.
+        </Alert>
+      )}
+      <DesignEditor
+        key={draftPath}
+        initial={initial}
+        setupId={setupId}
+        setupRevision={setup.data?.revision}
+        initialStep={
+          planId
+            ? "review"
+            : params.get("step") === "conditions"
+              ? "conditions"
+              : "question"
+        }
+        catalog={catalog.data}
+        studyId={deletedSource ? null : studyId}
+        planId={planId}
+        agentChatId={plan.data?.chat_id}
+        explanation={plan.data?.output?.explanation}
+        planning={plan.data?.output?.planning}
+        draftPath={draftPath}
+        draft={
+          recoverDraft && draft.data
+            ? {
+                ...draft.data.saved,
+                mode: "json",
+                json:
+                  draft.data.saved.mode === "json"
+                    ? draft.data.saved.json
+                    : JSON.stringify(draft.data.saved.design, null, 2),
+              }
+            : draft.data?.saved
+        }
+      />
+    </>
   );
 }

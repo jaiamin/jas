@@ -11,14 +11,15 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Browser QA · scarcity");
-  await page.getByRole("tab", { name: "Execution", exact: true }).click();
+  await page.getByRole("tab", { name: "Run plan", exact: true }).click();
   await page.getByLabel("Rounds per run").fill("3");
-  await page.getByText(/^Replication ·/).click();
   await page.getByLabel("Matched seeds").fill("7");
   await page.getByLabel("Matched seeds").blur();
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
+  await expect(page).toHaveURL(/\/studies\//);
   await expect(
     page.getByRole("heading", { name: "Browser QA · scarcity" }),
   ).toBeVisible();
@@ -27,9 +28,11 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Browser QA · tuned");
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page
     .getByRole("button", { name: "Save new revision", exact: true })
     .click();
+  await expect(page).toHaveURL(/\/studies\//);
   await expect(
     page.getByRole("heading", { name: "Browser QA · tuned" }),
   ).toBeVisible();
@@ -42,7 +45,7 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   ).toBeVisible();
   await page.goto(studyURL);
   await page.getByRole("tab", { name: "Runs", exact: true }).click();
-  const boxes = page.getByRole("checkbox");
+  const boxes = page.getByRole("table").locator("tbody").getByRole("checkbox");
   await boxes.nth(0).check();
   await boxes.nth(1).check();
   await page.getByRole("link", { name: "Compare 2 runs" }).click();
@@ -141,10 +144,11 @@ test("removing agents removes condition overrides and environment changes need c
     .fill(JSON.stringify(design));
   await page.getByRole("tab", { name: "Question", exact: true }).click();
   await page.getByRole("tab", { name: /^Agents/ }).click();
-  await page
-    .locator("[data-slot=accordion-trigger]:visible")
-    .filter({ hasText: removed.name })
-    .click();
+  await expect(
+    page
+      .locator("[data-slot=accordion-trigger]:visible")
+      .filter({ hasText: removed.name }),
+  ).toHaveAttribute("aria-expanded", "true");
   await page
     .getByRole("button", { name: `Remove ${removed.name}`, exact: true })
     .click();
@@ -209,6 +213,7 @@ test("AI design progress opens a reviewable protocol with design notes", async (
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
     templateDesign(catalog).title,
   );
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page.getByText("Protocol notes", { exact: true }).click();
   await expect(
     page.getByRole("link", { name: "Methods", exact: true }),
@@ -263,7 +268,11 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
     '{"unfinished":',
   );
   await page.goto("/studies");
-  await page.getByText(/^Drafts ·/).click();
+  await expect(
+    page.getByRole("region", { name: "Drafts", exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
+  await page.goto("/");
   await page
     .getByRole("link", { name: "Recovered protocol", exact: true })
     .click();
@@ -271,7 +280,11 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
     '{"unfinished":',
   );
   await page.goto("/studies");
-  await page.getByText(/^Drafts ·/).click();
+  await expect(
+    page.getByRole("region", { name: "Drafts", exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
+  await page.goto("/");
   await page
     .getByRole("button", { name: "Delete Recovered protocol draft" })
     .click();
@@ -279,7 +292,9 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
     .getByRole("alertdialog")
     .getByRole("button", { name: "Delete draft", exact: true })
     .click();
-  await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
+  await expect(
+    page.getByRole("region", { name: "Drafts", exact: true }),
+  ).toHaveCount(0);
   await page.goto("/new?template=commons");
   await page.getByLabel("Experiment name", { exact: true }).fill("");
   await expect(page.getByRole("status")).toContainText("Draft saved");
@@ -295,21 +310,24 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
+  await expect(page).toHaveURL(/\/studies\//);
   await expect(page.getByRole("heading", { name: design.title })).toBeVisible();
-  await page.goto("/studies");
-  await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
+  await page.goto("/");
+  await expect(
+    page.getByRole("region", { name: "Drafts", exact: true }),
+  ).toHaveCount(0);
 });
 
 test("environment mechanics lead to editable reusable setups", async ({
   page,
 }, testInfo) => {
   await page.goto("/environments");
+  await page
+    .getByRole("link", { name: "Explore Team coordination", exact: true })
+    .click();
   await expect(
     page.getByRole("heading", { name: "What agents observe" }),
   ).toBeVisible();
-  await page
-    .getByRole("tab", { name: "Team coordination", exact: false })
-    .click();
   await page
     .getByRole("link", { name: "Configure experiment", exact: true })
     .click();
@@ -322,12 +340,15 @@ test("environment mechanics lead to editable reusable setups", async ({
     .getByLabel("Experiment name", { exact: true })
     .fill("Supply-chain recovery");
   await page
-    .getByRole("button", { name: "Save custom environment", exact: true })
+    .getByRole("button", { name: "Experiment options", exact: true })
+    .click();
+  await page
+    .getByRole("menuitem", { name: "Save custom environment", exact: true })
     .click();
   await expect(
     page.getByText("Custom environment saved.", { exact: false }),
   ).toBeVisible();
-  await page.goto("/environments");
+  await page.goto("/environments?view=custom");
   await page
     .getByRole("link", { name: "Supply-chain recovery", exact: true })
     .click();
@@ -339,12 +360,15 @@ test("environment mechanics lead to editable reusable setups", async ({
     .getByLabel("Experiment name", { exact: true })
     .fill("Revised recovery");
   await page
-    .getByRole("button", { name: "Update custom environment", exact: true })
+    .getByRole("button", { name: "Experiment options", exact: true })
+    .click();
+  await page
+    .getByRole("menuitem", { name: "Update custom environment", exact: true })
     .click();
   await expect(
     page.getByText("Custom environment saved.", { exact: false }),
   ).toBeVisible();
-  await page.goto("/environments");
+  await page.goto("/environments?view=custom");
   await expect(
     page.getByRole("link", { name: "Revised recovery", exact: true }),
   ).toBeVisible();
@@ -353,8 +377,9 @@ test("environment mechanics lead to editable reusable setups", async ({
     .filter({
       has: page.getByRole("link", { name: "Revised recovery", exact: true }),
     })
-    .getByRole("button", { name: "Delete", exact: true })
+    .getByRole("button", { name: "Actions for Revised recovery", exact: true })
     .click();
+  await page.getByRole("menuitem", { name: "Delete", exact: true }).click();
   await expect(page.getByRole("alertdialog")).toContainText("Revised recovery");
   await page.screenshot({
     path: testInfo.outputPath("setup-removal.png"),
@@ -370,8 +395,9 @@ test("environment mechanics lead to editable reusable setups", async ({
     .filter({
       has: page.getByRole("link", { name: "Revised recovery", exact: true }),
     })
-    .getByRole("button", { name: "Delete", exact: true })
+    .getByRole("button", { name: "Actions for Revised recovery", exact: true })
     .click();
+  await page.getByRole("menuitem", { name: "Delete", exact: true }).click();
   await page
     .getByRole("button", { name: "Delete environment", exact: true })
     .click();

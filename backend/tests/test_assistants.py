@@ -153,6 +153,15 @@ def test_assistant_scopes_history_to_frozen_cutoff_and_rejects_unread_citations(
             return next(responses)
 
         monkeypatch.setattr(llm, "generate", generate)
+        read_evidence = assistant._requested_evidence
+
+        def observed_read(request, cutoffs):
+            progress = assistant.get(key)["output"]
+            assert progress["stage"] == "reading"
+            assert progress["examined"] == []
+            return read_evidence(request, cutoffs)
+
+        monkeypatch.setattr(assistant, "_requested_evidence", observed_read)
         with db.session.begin() as session:
             analysis = Analysis(
                 purpose="analysis",
@@ -754,6 +763,7 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
             "cutoffs": {},
             "proposal": design.model_dump(mode="json"),
             "explanation": "An earlier reviewed proposal.",
+            "summary": "Compare contribution choices under matched conditions.",
         }
     ]
     with db.session.begin() as session:
@@ -768,6 +778,7 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
                     output={
                         "design": design.model_dump(mode="json"),
                         "explanation": conversation[0]["explanation"],
+                        "summary": conversation[0]["summary"],
                     },
                 ),
                 Analysis(
@@ -812,6 +823,7 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
         assert row["purpose"] == "design" and row["status"] == "pending"
         assert row["output"]["stage"] == "scoping"
         assert "partial" not in row["output"]
+        assert row["output"]["introduction"] == "I can help with that."
         with pytest.raises(ValueError, match="current request"):
             assistant.send("Duplicate follow-up", "general", "intent-chat")
         if route == "planner-unavailable":
@@ -853,6 +865,7 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
                 "citations": [],
                 "caveats": [],
                 "examined": [],
+                "activity": ["answering", "writing"],
             }
         elif route == "proposal":
             assert row["purpose"] == "design" and row["status"] == "complete"
@@ -861,6 +874,8 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
             assert row["purpose"] == "design" and row["status"] == "failed"
             assert row["error"] == "Configured planner provider unavailable"
         assert "partial" not in row["output"]
+        if route != "answer":
+            assert row["output"]["introduction"] == "I can help with that."
         with db.session() as session:
             calls = session.scalars(select(ProviderCall)).all()
             assert len(calls) == (2 if route == "proposal" else 1)
@@ -873,3 +888,32 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
 
     asyncio.run(exercise())
     assert len(planner_calls) == (1 if route == "proposal" else 0)
+
+
+@pytest.mark.parametrize("failed", [False, True])
+def test_public_activity_survives_completion_failure_and_reload(runtime, monkeypatch, failed):
+    db, llm, research, _ = runtime
+
+    async def generate(output, **kwargs):
+        kwargs["on_partial"]({"answer": "First draft"})
+        kwargs["on_partial"]({"answer": "Updated draft"})
+        if failed:
+            raise ValueError("Provider stopped")
+        return GeneralResponse(answer="Validated answer", citations=[], caveats=[])
+
+    monkeypatch.setattr(llm, "generate", generate)
+
+    async def exercise():
+        assistant = Assistants(db, research, llm)
+        result = assistant.send("Explain matched seeds", "general")
+        await assistant.tasks[result["id"]]
+        saved = assistant.get(result["id"])
+        assert saved["status"] == ("failed" if failed else "complete")
+        assert saved["output"]["activity"] == ["answering", "writing"]
+        assert "partial" not in saved["output"]
+        await assistant.close()
+        restored = Assistants(db, research, llm)
+        assert restored.get(result["id"])["output"]["activity"] == ["answering", "writing"]
+        await restored.close()
+
+    asyncio.run(exercise())

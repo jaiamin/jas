@@ -1,4 +1,4 @@
-import { act, fireEvent, screen } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { expect, test, vi } from "vitest";
 import { runDetail } from "@/test/fixtures";
@@ -35,15 +35,37 @@ test("an unavailable run list retries without losing comparison selection on ref
 
   failing = false;
   fireEvent.click(screen.getByRole("button", { name: "Retry" }));
-  const checkboxes = await screen.findAllByRole("checkbox");
-  fireEvent.click(checkboxes[0]);
+  const first = await screen.findByRole("checkbox", {
+    name: /^Select Baseline,.*run$/,
+  });
+  fireEvent.click(first);
   running = true;
   await act(() => client.refetchQueries({ queryKey: ["/runs"] }));
   expect(await screen.findByText("Running")).toBeInTheDocument();
-  expect(screen.getAllByRole("checkbox")[0]).toBeChecked();
-  fireEvent.click(screen.getAllByRole("checkbox")[1]);
+  expect(first).toBeChecked();
+  fireEvent.click(
+    screen.getByRole("checkbox", { name: /^Select Baseline,.*second$/ }),
+  );
   expect(screen.getByRole("link", { name: "Compare 2 runs" })).toHaveAttribute(
     "href",
     "/compare?runs=run,second",
   );
+  failing = true;
+  await act(() => client.refetchQueries({ queryKey: ["/runs"] }));
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "Run list unavailable",
+  );
+  expect(
+    screen.getByRole("checkbox", { name: /^Select Baseline,.*run$/ }),
+  ).toBe(first);
+  expect(first).toBeChecked();
+  expect(
+    screen.getByRole("link", { name: "Compare 2 runs" }),
+  ).toBeInTheDocument();
+  failing = false;
+  await act(() => client.refetchQueries({ queryKey: ["/runs"] }));
+  await waitFor(() =>
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument(),
+  );
+  expect(first).toBeChecked();
 });

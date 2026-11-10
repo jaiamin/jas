@@ -66,3 +66,35 @@ test("an incomplete comparison points back to selection without requesting absen
   );
   expect(fetcher).not.toHaveBeenCalled();
 });
+
+test("a comparison without recorded outcomes has no empty measurement selector", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn((path: string) =>
+      Promise.resolve(
+        Response.json({
+          ...runDetail,
+          summary: {
+            ...runDetail.summary,
+            id: path.endsWith("two") ? "two" : "one",
+          },
+          metrics: {},
+          measurements: [],
+        }),
+      ),
+    ),
+  );
+  renderWithQueries(
+    <MemoryRouter initialEntries={["/compare?runs=one,two"]}>
+      <Compare />
+    </MemoryRouter>,
+  );
+  expect(await screen.findByText("No measurements yet")).toBeInTheDocument();
+  expect(
+    screen.queryByRole("combobox", { name: "Comparison measurement" }),
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Choose runs" })).toHaveAttribute(
+    "href",
+    "/runs",
+  );
+});

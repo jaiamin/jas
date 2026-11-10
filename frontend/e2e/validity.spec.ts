@@ -7,6 +7,7 @@ test("checks expose institution incentive limits without spending and invalidate
 }) => {
   const before = await (await request.get("/api/settings")).json();
   await page.goto("/new?template=institution");
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page
     .getByRole("button", { name: "Check experiment", exact: true })
     .click();
@@ -15,6 +16,7 @@ test("checks expose institution incentive limits without spending and invalidate
   await report.getByRole("button", { name: /Review \d+ findings/ }).click();
   await expect(report.getByText(/Work earns 2 personal credits/)).toBeVisible();
   await expect(report.getByText(/no finite resource stock/)).toBeVisible();
+  await page.getByRole("tab", { name: "Question", exact: true }).click();
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Changed check snapshot");
@@ -55,6 +57,7 @@ test("mobile check, save and overview show the same real report", async ({
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/new?template=commons");
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page
     .getByRole("button", { name: "Check experiment", exact: true })
     .click();

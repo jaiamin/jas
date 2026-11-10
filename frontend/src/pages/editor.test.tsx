@@ -1,12 +1,51 @@
-import { fireEvent, screen } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { writeDraft } from "@/lib/drafts";
 import { catalog, design } from "@/test/fixtures";
-import { renderWithQueries } from "@/test/queries";
+import { deferredResponse, renderWithQueries } from "@/test/queries";
 import Editor from "./editor";
 
+// Native form checkboxes use ResizeObserver; jsdom does not implement layout.
+beforeEach(() =>
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    },
+  ),
+);
 afterEach(() => localStorage.clear());
+
+test("returning to the editor validates the latest draft before initializing the form", async () => {
+  const saved = { ...design, title: "Preserved while asking AI" };
+  writeDraft("/new", saved, "", "visual");
+  const validation = deferredResponse();
+  vi.stubGlobal(
+    "fetch",
+    vi.fn((path: string) =>
+      path === "/api/catalog"
+        ? Promise.resolve(Response.json(catalog))
+        : validation.promise,
+    ),
+  );
+  const view = renderWithQueries(<MemoryRouter />);
+  // A fast back navigation may reuse the draft query before its GC timer runs.
+  view.client.setQueryDefaults(["draft"], { staleTime: 1000 });
+  view.client.setQueryData(["draft", "/new"], null);
+  view.rerender(
+    <MemoryRouter>
+      <Editor />
+    </MemoryRouter>,
+  );
+  expect(screen.queryByLabelText("Experiment name")).not.toBeInTheDocument();
+  await act(async () => validation.resolve(Response.json(saved)));
+  expect(await screen.findByLabelText("Experiment name")).toHaveValue(
+    saved.title,
+  );
+});
 
 test("a validation outage retries the saved draft without classifying it as corrupt", async () => {
   writeDraft("/new", design, "", "visual");

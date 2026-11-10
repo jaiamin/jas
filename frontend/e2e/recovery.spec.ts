@@ -6,7 +6,8 @@ test("a corrupt draft leaves valid drafts available with targeted recovery", asy
   request,
 }) => {
   const catalog = await (await request.get("/api/catalog")).json();
-  await page.addInitScript((design) => {
+  await page.goto("/");
+  await page.evaluate((design) => {
     localStorage.setItem(
       "jas:draft:/new?template=commons",
       JSON.stringify({
@@ -20,20 +21,27 @@ test("a corrupt draft leaves valid drafts available with targeted recovery", asy
     );
     localStorage.setItem("jas:draft:/new?template=broken", "{unfinished");
   }, templateDesign(catalog));
-  await page.goto("/studies");
+  await page.reload();
   await expect(page.getByRole("alert")).toContainText(
     "Some drafts could not be read",
   );
-  await page.getByText(/^Drafts ·/).click();
   await expect(
     page.getByRole("link", { name: "Preserved draft", exact: true }),
   ).toBeVisible();
   await page
-    .getByRole("button", {
-      name: "Discard unreadable draft · /new?template=broken",
+    .getByRole("link", {
+      name: "Review unreadable draft · /new?template=broken",
       exact: true,
     })
     .click();
+  await expect(page).toHaveURL(/\/new\?template=broken$/);
+  await page
+    .getByRole("button", { name: "Discard unreadable draft", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Discard unreadable draft", exact: true }),
+  ).toHaveCount(0);
+  await page.goto("/");
   await expect(page.getByRole("alert")).toHaveCount(0);
   await expect(
     page.getByRole("link", { name: "Preserved draft", exact: true }),
@@ -161,7 +169,7 @@ test("pending validation locks the submitted specification until its response", 
   await page.getByRole("tab", { name: "Question", exact: true }).click();
   await expect(text).toBeDisabled();
   await expect(
-    page.getByRole("tab", { name: "Execution", exact: true }),
+    page.getByRole("tab", { name: "Run plan", exact: true }),
   ).toBeDisabled();
   await expect(
     page.getByRole("button", { name: "Create experiment", exact: true }),
@@ -190,6 +198,7 @@ test("a delayed save locks editing and a failed save keeps the draft editable", 
       json: { detail: "Save temporarily unavailable" },
     });
   });
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   const save = page.getByRole("button", {
     name: "Create experiment",
     exact: true,
@@ -197,13 +206,17 @@ test("a delayed save locks editing and a failed save keeps the draft editable", 
   await save.click();
   await expect(name).toBeDisabled();
   await expect(
-    page.getByRole("combobox", { name: "Environment", exact: true }),
+    page.getByRole("combobox", {
+      name: "Environment",
+      exact: true,
+      includeHidden: true,
+    }),
   ).toBeDisabled();
   await expect(
     page.getByRole("tab", { name: "Specification", exact: true }),
   ).toBeDisabled();
   await expect(
-    page.getByRole("button", { name: "Continue", exact: true }),
+    page.getByRole("button", { name: "Check experiment", exact: true }),
   ).toBeDisabled();
   release();
   await expect(page.getByRole("alert")).toContainText(
@@ -211,10 +224,12 @@ test("a delayed save locks editing and a failed save keeps the draft editable", 
   );
   await expect(name).toBeEnabled();
   await expect(name).toHaveValue("Save recovery snapshot");
+  await page.getByRole("tab", { name: "Question", exact: true }).click();
   await name.fill("Recovered after failed save");
   await page.reload();
   await expect(name).toHaveValue("Recovered after failed save");
   await page.unroute("**/api/studies");
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   await save.click();
   await expect(page).toHaveURL(/\/studies\//);
   await expect(
@@ -240,7 +255,8 @@ test("chat history failures have a local retry", async ({ page }) => {
     ),
   );
   await page.goto("/agent");
-  const history = page.getByRole("complementary", { name: "Chat history" });
+  await page.getByRole("button", { name: "Chat history", exact: true }).click();
+  const history = page.getByRole("dialog", { name: "Recent chats" });
   await expect(history.getByRole("alert")).toContainText(
     "Could not load chats",
   );

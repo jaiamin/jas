@@ -21,6 +21,7 @@ import {
   Settings2,
 } from "@/components/icons";
 import { OptionSelect as Select } from "@/components/option-select";
+import { RecordSearch } from "@/components/record-list-heading";
 import { RunTable } from "@/components/run-table";
 import {
   ErrorState,
@@ -39,12 +40,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useRecordFilters } from "@/hooks/use-record-filters";
 import { api, invalidateResources, useApi } from "@/lib/api";
 import { label, metric, money } from "@/lib/format";
 import type { StudyDetail } from "@/lib/types";
 
 export default function Study() {
   const { id } = useParams();
+  const runFilters = useRecordFilters();
   const location = useLocation();
   const [params, setParams] = useSearchParams();
   const path = `/studies/${id}${params.get("revision") ? `?revision=${params.get("revision")}` : ""}`;
@@ -352,7 +355,14 @@ export default function Study() {
           )}
         </TabsContent>
         <TabsContent value="runs">
-          <RunTable runs={study.runs} selectable />
+          <div className="mb-3 w-full sm:max-w-72">
+            <RecordSearch
+              label="Search runs"
+              value={runFilters.search}
+              onChange={runFilters.setSearch}
+            />
+          </div>
+          <RunTable runs={study.runs} filters={runFilters} selectable />
         </TabsContent>
         <TabsContent value="design">
           <div className="grid min-w-0 items-start gap-8 xl:grid-cols-2">

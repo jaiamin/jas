@@ -33,8 +33,8 @@ export function ResourceScheduleEditor({
         Resource changes during the run
         {schedule.length > 0 && ` · ${schedule.length}`}
       </DisclosureTrigger>
-      <DisclosureContent>
-        <p className="p-4 text-xs leading-relaxed text-muted-foreground">
+      <DisclosureContent className="flex flex-col gap-5 pt-4">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Changes take effect at the start of a round and persist. Agents see
           the new budget when it changes; future changes are hidden.
         </p>
@@ -81,7 +81,10 @@ export function ResourceScheduleEditor({
               />
             </Field>
             <Button
+              type="button"
               variant="ghost"
+              size="sm"
+              className="self-start"
               onClick={() => onChange(schedule.filter((_, k) => k !== j))}
             >
               Remove change
@@ -89,7 +92,9 @@ export function ResourceScheduleEditor({
           </FieldGroup>
         ))}
         <Button
+          type="button"
           size="sm"
+          className="self-start"
           variant="outline"
           disabled={rounds < 2 || schedule.length >= 12}
           onClick={() =>

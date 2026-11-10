@@ -109,7 +109,9 @@ def test_real_planner_routes_and_paired_engine_arms(tmp_path, monkeypatch, fake_
         if output is Candidate:
             return Candidate(explanation="Matched pilot", design=case.design())
         if output is DesignReview:
-            return DesignReview(issues=[])
+            return DesignReview(
+                summary="Compare matched conditions using observable outcomes.", issues=[]
+            )
         return await generate(output, **kwargs)
 
     monkeypatch.setattr(app.state.models, "generate", responses)

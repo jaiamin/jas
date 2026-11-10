@@ -18,7 +18,7 @@ for (const width of [390, 834, 1280, 1440]) {
           ).toBeVisible();
         else
           await expect(
-            page.getByRole("heading", { name: "What agents observe" }),
+            page.getByRole("article", { name: "Shared commons", exact: true }),
           ).toBeVisible();
         expect(
           await page.evaluate(
@@ -30,20 +30,30 @@ for (const width of [390, 834, 1280, 1440]) {
             name: "Environments",
             exact: true,
           });
-          await expect(index).toHaveAttribute(
-            "aria-orientation",
-            width <= 700 ? "horizontal" : "vertical",
-          );
-          const first = page.getByRole("tab", {
-            name: "Shared commons",
-            exact: false,
+          await expect(index).toHaveAttribute("aria-orientation", "horizontal");
+          const builtIn = index.getByRole("tab", {
+            name: "Built-in",
+            exact: true,
           });
-          await first.focus();
-          await first.press(width <= 700 ? "ArrowRight" : "ArrowDown");
+          await builtIn.focus();
+          await builtIn.press("ArrowRight");
           await expect(
-            page.getByRole("tab", { name: "Trust exchange", exact: false }),
+            index.getByRole("tab", { name: "Custom", exact: true }),
           ).toBeFocused();
-          await first.click();
+          await builtIn.click();
+          await page
+            .getByRole("link", {
+              name: "Explore Shared commons",
+              exact: true,
+            })
+            .click();
+          await expect(
+            page.getByRole("heading", { name: "What agents observe" }),
+          ).toBeVisible();
+          await page
+            .getByRole("button", { name: "Close", exact: true })
+            .click();
+          await expect(page.getByRole("dialog")).toHaveCount(0);
         }
         await page.screenshot({
           path: testInfo.outputPath(`${route}-${theme}-${width}.png`),

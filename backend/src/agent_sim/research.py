@@ -3,11 +3,12 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import TypedDict
 
-from sqlalchemy import select
+from sqlalchemy import delete, or_, select, update
 
 from .db import (
     Agent,
     Analysis,
+    Annotation,
     Condition,
     Database,
     Measurement,
@@ -218,6 +219,85 @@ class Research:
                             ]
                         )
             return study.id
+
+    def delete_study(
+        self,
+        study_id: str,
+        *,
+        active_runs: set[str],
+        active_analyses: set[str],
+    ) -> None:
+        """Delete a whole experiment, never individual cells of its matched matrix.
+
+        The caller runs this synchronously on the engine/assistant event loop, so
+        no new task can start between checking live ownership and committing.
+        Keep provider-call accounting, including unknown usage, after deletion.
+        """
+        with self.db.session.begin() as session:
+            # Take the write lock before reading dependents (also on SQLite).
+            session.execute(
+                update(Study)
+                .where(Study.id == study_id)
+                .values(title=Study.title)
+                .returning(Study.id)
+            ).scalar_one()
+            runs = session.scalars(select(Run).where(Run.study_id == study_id)).all()
+            run_ids = {run.id for run in runs}
+            if run_ids & active_runs or any(
+                run.status in ("running", "queued", "pausing") for run in runs
+            ):
+                raise ValueError("Pause all runs and wait for them to stop before deleting.")
+            chat_ids = set(
+                session.scalars(
+                    select(Analysis.chat_id).where(
+                        or_(Analysis.study_id == study_id, Analysis.run_id.in_(run_ids))
+                    )
+                )
+            )
+            chat_turns = session.scalars(
+                select(Analysis).where(Analysis.chat_id.in_(chat_ids))
+            ).all()
+            if any(turn.id in active_analyses or turn.status == "pending" for turn in chat_turns):
+                raise ValueError("Wait for related chats to finish before deleting.")
+            # Preserve unrelated messages/proposals in conversations with mixed contexts.
+            analysis_ids = {
+                turn.id
+                for turn in chat_turns
+                if turn.study_id == study_id or turn.run_id in run_ids
+            }
+            calls = or_(
+                ProviderCall.study_id == study_id,
+                ProviderCall.run_id.in_(run_ids),
+                ProviderCall.analysis_id.in_(analysis_ids),
+            )
+            if session.scalar(
+                select(ProviderCall.id).where(calls, ProviderCall.status == "pending").limit(1)
+            ):
+                raise ValueError("Wait for pending requests to settle before deleting.")
+            session.execute(
+                update(ProviderCall)
+                .where(calls)
+                .values(request_payload=None, response_payload=None)
+            )
+            session.execute(
+                update(ProviderCall).where(ProviderCall.study_id == study_id).values(study_id=None)
+            )
+            session.execute(
+                update(ProviderCall).where(ProviderCall.run_id.in_(run_ids)).values(run_id=None)
+            )
+            session.execute(
+                update(ProviderCall)
+                .where(ProviderCall.analysis_id.in_(analysis_ids))
+                .values(analysis_id=None)
+            )
+            session.execute(delete(Analysis).where(Analysis.id.in_(analysis_ids)))
+            for record in (Annotation, Measurement, RecordedEvent, Turn, Agent):
+                session.execute(delete(record).where(record.run_id.in_(run_ids)))
+            session.execute(delete(Run).where(Run.id.in_(run_ids)))
+            revisions = select(Revision.id).where(Revision.study_id == study_id)
+            session.execute(delete(Condition).where(Condition.revision_id.in_(revisions)))
+            session.execute(delete(Revision).where(Revision.study_id == study_id))
+            session.execute(delete(Study).where(Study.id == study_id))
 
     def check_run(self, run_id: str) -> None:
         with self.db.session() as session:
