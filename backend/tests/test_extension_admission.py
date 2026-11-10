@@ -106,6 +106,24 @@ def test_admitted_package_runs_through_normal_revision_evidence_and_replay(tmp_p
         )
         assert updated.status_code == 200, updated.text
         assert client.delete(f"/api/environments/{source['id']}?revision=2").status_code == 200
+        # Simulate losing the documented review sidecar after pinning the pending run.
+        # Its executable/proof must be self-contained, while a new save still needs
+        # the actual admission record. Only this fixture's synthetic files disappear.
+        review_files = list((tmp_path / "vertical.extensions").rglob("*.json"))
+        assert len(review_files) == 2
+        for path in review_files:
+            path.unlink()
+        assert client.get("/api/extensions/reviews").json() == []
+        assert client.get("/api/extensions/admissions").json() == []
+        assert client.post("/api/environments", json={"definition": definition}).status_code == 404
+        pending_export = client.get(f"/api/studies/{sid}/export").json()
+        assert (
+            pending_export["revisions"][0]["design"]["environment_source"]["definition"][
+                "extension"
+            ]
+            == admitted["package"]
+        )
+        assert client.get("/api/settings").json()["usage"]["requests"] == 0
 
         async def respond(messages, info):
             observation = json.loads(messages[-1].parts[0].content)
@@ -265,7 +283,8 @@ def test_restart_and_runtime_loss_never_sample_or_change_pinned_evidence(tmp_pat
         assert client.get("/api/settings").json()["usage"]["requests"] == 2
 
 
-def test_unsupported_profiles_and_forged_packages_are_visible_fail_closed(tmp_path):
+def test_unsupported_profiles_and_forged_packages_are_visible_fail_closed(tmp_path, monkeypatch):
+    import agent_sim.extensions as isolated
     from agent_sim.db import digest
 
     with TestClient(
@@ -284,8 +303,6 @@ def test_unsupported_profiles_and_forged_packages_are_visible_fail_closed(tmp_pa
             f"/api/extensions/reviews/{review['id']}/admit", json={"profile": "sealed-relay-v1"}
         ).json()
         forged = admission["package"]
-        forged["admission_id"] = "0" * 16
-        forged["sha256"] = digest({key: value for key, value in forged.items() if key != "sha256"})
         definition = {
             "name": "Forged proof",
             "environment": "sealed_relay",
@@ -300,10 +317,39 @@ def test_unsupported_profiles_and_forged_packages_are_visible_fail_closed(tmp_pa
                 }
             ],
         }
+        saved = client.post("/api/environments", json={"definition": definition})
+        assert saved.status_code == 201, saved.text
+        source = saved.json()
+        applied = client.post(
+            "/api/design/use-environment",
+            json={"source": source, "example": "relay", "bindings": {}},
+        )
+        assert applied.status_code == 200, applied.text
+        design = applied.json()
+        assert client.delete(f"/api/environments/{source['id']}?revision=1").status_code == 200
+        forged["admission_id"] = "0" * 16
+        forged["sha256"] = digest({key: value for key, value in forged.items() if key != "sha256"})
+        design["environment_source"]["definition"]["extension"] = forged
+        design["environment_source"]["sha256"] = digest(
+            design["environment_source"]["definition"]
+        )
+        worker_calls = []
+        execute = isolated.execute
+
+        def observed(source, states, **kwargs):
+            worker_calls.append(states)
+            return execute(source, states, **kwargs)
+
+        monkeypatch.setattr(isolated, "execute", observed)
         assert client.post("/api/environments", json={"definition": definition}).status_code in (
             404,
             422,
         )
+        for endpoint in ("/api/design/preflight", "/api/studies"):
+            rejected = client.post(endpoint, json={"design": design})
+            assert rejected.status_code in (404, 422), (endpoint, rejected.text, worker_calls)
+            assert worker_calls == [], "A self-reported package cannot authorize World preflight"
+        assert client.get("/api/studies").json() == []
         assert client.get("/api/environments").json() == []
         assert client.get("/api/settings").json()["usage"]["requests"] == 0
 

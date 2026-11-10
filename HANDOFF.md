@@ -1,3 +1,45 @@
+# T16 implementation checkpoint — admission regression pending (2026-11-10)
+
+T16/#27 owns `t3/t16-extension-admission` in assigned `t3-653eb2ec`, port18125.
+No descendants/extra checkout/publication/paid calls/reset/security changes.
+Accepted ancestry includes published8158fccc and documented accepted T10
+`f9e87c2b0cae14ca862ba2a051b2b95dffc3f78d`, merged at2b30043. T13 remains
+unaccepted at this checkpoint; never merge an undocumented/unaccepted tip.
+Current genuine combined contracts are **DB9/export10/library6**, with capture1,
+comparison1/tool2.0/direct1.0 unchanged. T16 is **not yet independently accepted**.
+
+The finite sealed-relay implementation is at832ff9a, with complete backend1,398
+passing/43 files in eight segments; frontend lint/112 units/build, actual non-root
+production containment/smoke, positive five-run/22-turn parity and preserved frozen
+exit1/four export-v4 failures. Browser main184 retains182 passes/two control failures;
+unchanged controls2/2, dedicated extension2/2, coordination5/5 and harness11/11 pass.
+These are source-attributed composite/segmented observations, not uninterrupted
+all-green suites. All raw sources/commands/exits/failures and byte proofs remain in
+ignored `data/t16/`; report/plan is `docs/research/T16_EXTENSION_ADMISSION.md`.
+
+Current resource holds defer new large installs/builds/full checks. All our expanded
+Python/frontend dependencies and54 compiled assets are member-verified and parked
+under `data/t16/tooling/`; no owned service/container/browser18125 is running. Never
+write another checkout/environment, immutable root custody or the shared pnpm store.
+Use the required shared checks.lock for bounded heavy jobs and release between jobs.
+
+Self-review strengthens two existing public API tests: a pinned pending run must
+survive loss of review/admission sidecars, while a new package/save still needs an
+actual admission record; forged package manifests must not reach the World worker
+through draft preflight or study creation. These new assertions are **not yet run**.
+Code review found routes preflight untrusted drafts before save's record guard.
+No application implementation change has yet been made for that ordering gap.
+Next: run the public red once resources permit, guard untrusted draft preflight
+before execution while preserving trusted pinned reads/replay, then green and
+requalify final source (backend/static, frontend input/build attribution, browser,
+actual production, frozen/positive parity). Reference/context/claims browser reruns
+also remain. Only then recheck/merge latest documented accepted integration,
+finalize archive/case/check indexes/source equivalence/manifest and clean handoff.
+
+Deterministic mechanics only: no live intelligence, T17 generation, T18 adjudication,
+held-out task access or T01 runner/case/score changes. Preserve T19 structured-only
+scope/cutoffs/billing716a44b, T15 zero-call controls/effort6e1a7c8 and T09 repairs.
+
 # T10 fresh integration accepted — sole ownership returns to root (2026-11-10)
 
 **T01–T10, T15 and T19 accepted for their documented deterministic scopes.**

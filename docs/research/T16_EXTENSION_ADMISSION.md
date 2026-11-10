@@ -71,12 +71,12 @@ this frozen specification, never copied candidate self-tests.
 - [x] Public-API red/green: independent admission and fail-closed review.
 - [x] Pin admitted package/capabilities/proof in normal library/design/run workflow.
 - [x] Independent World/privacy/resource/termination/restore/replay qualification.
-- [ ] Existing UI review/use/inspection with mobile/theme/keyboard/browser checks.
-- [ ] Static/backend/frontend/build and actual non-root production smoke/containment.
-- [ ] Frozen T01 exit1/four export-v4 failures preserved; separate five-run/22-turn
+- [x] Existing UI review/use/inspection with mobile/theme/keyboard/browser checks.
+- [x] Static/backend/frontend/build and actual non-root production smoke/containment.
+- [x] Frozen T01 exit1/four export-v4 failures preserved; separate five-run/22-turn
       current-contract parity, with every difference retained/classified.
-- [ ] Merge latest **documented accepted** integration, reconcile actual version
-      meanings (T10 DB8/export9/library5 remains provisional), qualify final source.
+- [x] Merge **documented accepted** integration `f9e87c2`, reconcile T10
+      DB8/export9/library5 with T16 DB9/export10/library6; recheck before handoff.
 - [ ] Coherent scanned commits, raw member-verified source archives/inventories,
       failures retained, clean branch and closed owned services/browser18125.
 
@@ -113,12 +113,14 @@ immutable source/revision, evidence/export and replay paths consume the admitted
 Only new saves require the original admission record; pinned runs use their own exact
 package and current local qualification. Library edit/deletion is explicitly tested.
 
-Current serialized meanings become **DB8/export9/library5**: admitted package/provenance
+At pre-merge implementation snapshot `375a1dd`, serialized meanings were
+**DB8/export9/library5**: admitted package/provenance
 in reusable definitions and revisions, new relay action/checkpoint forms and explicit
 relay parameters. Capture1/comparison1/tool2.0/direct1.0 retain accepted meanings.
 Older workspaces/library files reject explicitly, with no migration, adapter or reset.
-T10's independently proposed same numbers remain unaccepted; no T10 source is included.
-The latest documented accepted integration remains an ancestor; recheck before handoff.
+T10 was then unaccepted and absent from this snapshot. The accepted T10
+reconciliation below supersedes those provisional version numbers. Source identities
+keep these historical results separate from final combined qualification.
 
 `scoped-world` passes **8** public workflows: independent admission vs weak self-tests,
 normal save/run/evidence/export/call-free replay after library edit/deletion, restart
@@ -184,3 +186,67 @@ preflight attempt also failed before creating a container: ordinary TCP TIME_WAI
 made a default bind report address-in-use after the browser server closed. A bounded
 connect check now rejects an actual active listener; Docker still owns bind safety.
 Both failures and original helper versions remain in raw evidence.
+
+
+### Observed combined qualification; resource coordination in progress
+
+Application/build source `832ff9a` / inventory
+`8becb84a8403ae12d39464017d8b807d6c5942ce348bec4f3357fca22f04650b`
+passes frontend lint214 files,112 unit tests/30 files, fresh TypeScript/Vite and
+normal Docker builds, and actual non-root production smoke/containment. Production
+UID/GID10001/Wasmtime50.0.1 verifies95 deployed source/assets against host inputs,
+26 real boundary witnesses, independent admission/save/pin/export10 and literal
+World/restoration/replay with zero provider creation/requests. Full deterministic
+Engine/provider/API/browser witnesses are separately attributed, not represented
+as production live-provider work. Complete backend coverage at byte-equivalent
+merged application source `e9511286` is1,398 distinct passing/43 files in eight
+sequential batches, zero failures/errors/skips; this is segmented coverage.
+
+The accepted-source main browser attempt retains184 executions/182 passes/two
+zero-call control failures. The unchanged controls now pass2/2 in their own fresh
+workspace. The isolated extension trial passes2/2, coordination5/5, and the resumed
+harness11/11. This is composite qualification. Reference/context/claim browser
+reruns remain pending during root's temporary disk/I/O hold; reference preflight
+retains exit1 at122,380,288 free bytes, before any dependency restore/browser test.
+Only our inactive tooling is parked, member/link/mode verified, and removed from
+expanded form; all owned services/browser18125 are closed. Bounded job restoration
+uses private TMPDIR/caches and parks unchanged tooling between jobs. No package
+store/config, other environment, root custody or security setting was changed.
+
+Final-source frozen runner/comparator preserve expected exit1, four export-v4
+failures and four terminal failed flags, zero regressions/improvements; all33
+benchmark files remain byte-identical. The separately attributed positive check
+compares fresh832ff9a with retained accepted T10 `7aec3f5` evidence (not rerun):
+five runs/22 turns/22 synthetic requests, exact bounded inputs/consequences/
+checkpoints and integer-ledger accounting,98 HTTP operations each,1,949 differences
+classified and zero unexplained. Earlier375a1dd→T19 parity remains historical.
+`fixture-byte-equivalence.json` proves frozen oracles unchanged since76b11a8 and
+identical1,512-byte WAT from the first pre-implementation public red through
+backend/browser/actual production. A custody helper initially assumed the WAT was
+committed with the prose specification; that failed command is retained. The
+specification was frozen first and the artifact captured as untracked source in
+the first public red, then committed with375a1dd; no oracle/artifact was retuned.
+
+Self-review additionally strengthens the existing public vertical test to remove
+its documented synthetic review/admission sidecars before starting a pinned run,
+while rejecting a new save without its original admission record. This test-only
+addition has valid syntax but **is not yet executed**; application source is
+unchanged. Remaining work: execute that eight-case module/static check and the
+three browser batches after resource recovery, recheck documented accepted
+integration, then finalize source equivalence, all archive/case/check indexes,
+manifest, tracked HANDOFF and normal scanned commit. T16 remains unaccepted and
+unintegrated; no paid/live generation/adjudication or held-out trial has run.
+
+
+A further source review finds that untrusted draft preflight reaches the isolated
+World runner before checking its package against an actual immutable admission
+record; save itself already rejects the forged package afterward. Containment
+and per-step consequences remain bounded/checked, but this admission ordering
+needs a public regression and guard before draft preflight. The existing forged-
+package test now requires zero worker calls for library save, draft preflight and
+study creation with a nonexistent admission ID and otherwise coherent hashes.
+This red is written but not executed during the resource hold; no application
+implementation has changed yet. Preserve trusted pinned reads/replay when original
+review records disappear. After the red/guard/green, requalify final application
+source and refresh backend/static, frontend attribution, browser, production and
+frozen/positive parity evidence; earlier source results remain separately retained.
