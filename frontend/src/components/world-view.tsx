@@ -1,3 +1,4 @@
+import { ArtifactView } from "@/components/artifact-view";
 import { Empty } from "@/components/feedback";
 import { Check, Circle, Clock3 } from "@/components/icons";
 import { MechanismView } from "@/components/mechanism-view";
@@ -46,6 +47,8 @@ export function WorldView({
   onAgent: (key: string) => void;
 }) {
   const profiles = run.design.profiles;
+  if (run.design.environment === "artifact_workspace")
+    return <ArtifactView run={run} state={state} />;
   if (run.design.environment === "coordination") {
     const tasks = state.tasks;
     if (!tasks) throw new Error("Coordination checkpoint is missing tasks");

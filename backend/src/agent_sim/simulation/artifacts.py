@@ -270,12 +270,12 @@ class ArtifactWorkspace(World[ArtifactCheckpoint]):
             self.state["writes_remaining"] -= 1
         self.state["last_results"][actor] = copy.deepcopy(result)
         row = {
+            **copy.deepcopy(result),
             "operation": len(self.state["artifact_history"]) + 1,
             "round": self.state["round"],
             "actor": actor,
             "kind": action.kind,
             "request": action.model_dump(),
-            **copy.deepcopy(result),
         }
         self.state["artifact_history"].append(row)
         self.state["notes"][actor] = decision.memory

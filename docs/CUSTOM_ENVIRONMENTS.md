@@ -38,14 +38,33 @@ verify derived analyses against the recorded evidence.
 
 Custom environments are stored beside the SQLite workspace in `<database-stem>.environments/`.
 Back up that directory with the database. Browser-only reusable setups have been removed;
-there is no legacy importer. Format `jas-environment-v3` contains `definition` (version 1,
+there is no legacy importer. Format `jas-environment-v4` contains `definition` (version 1,
 world/rule version, name/description and configuration examples), plus ID, optimistic revision,
 updated timestamp and definition hash. Examples contain mechanics parameters, optional tasks
 and unbound roles. Create/update accept `{definition, revision}`; selection and extraction use
 `POST /api/design/use-environment` and `POST /api/design/environment`.
 Unsupported library/definition/rule versions and content hashes fail explicitly. Schema/export
-v6 do not open older workspaces; no conversion, deletion or automatic reset occurs. Preserve
-older data separately if starting a fresh workspace. World rules themselves are unchanged.
+v7 do not open older workspaces; no conversion, deletion or automatic reset occurs. Preserve
+older data separately if starting a fresh workspace. Existing controlled-world rules themselves are unchanged.
+
+## Artifact investigation, rules 1.0.0
+
+Reusable artifact mechanics describe objects, structured initial contents, owner and
+read/write ACL roles, a finite write allowance and content/source requirements.
+They contain no investigator, role prose, model, harness or memory policy. Applying
+an example creates one participant when only one binding is required; it never adds
+a fabricated partner. Additional participants can be configured up to the overall
+limit of 12. Study revisions retain the full source definition and concrete bound
+parameters even if the library entry is later changed or deleted.
+
+Immutable evidence fields are the reference for deterministic checks. Each accepted
+write appends a version with exact source/version references and expected-version
+conflict checking. Read, write, check, submit and stop remain executable permissions;
+role names and model claims grant none. Sources and content are bounded data, never
+code. Submission is an enforced content/source result, not a model judgment. A
+recorded citation alone is not proof of reading; inspect delivered read receipts.
+Generated execution, collaboration/timing extensions and fallible adjudication are
+separate tickets. The historical unknown identifier `artifact` is not an alias.
 
 ## Resource primitives, rules 1.0.0
 

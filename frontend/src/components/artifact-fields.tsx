@@ -72,7 +72,7 @@ export function ArtifactFields({
                 <Input
                   id={`${id}-${obj.key}-name`}
                   value={obj.name}
-                  maxLength={60}
+                  maxLength={100}
                   onChange={(event) =>
                     patch(index, { name: event.target.value })
                   }
@@ -182,46 +182,19 @@ export function ArtifactFields({
         <FieldDescription>
           Each work field must match the cited immutable evidence version 1.
         </FieldDescription>
-        {rules.requirements.map((requirement, index) => (
-          <FieldGroup
+        {rules.requirements.map((requirement) => (
+          <p
+            className="text-sm break-words"
             key={`${requirement.artifact}-${requirement.field}`}
-            className="grid grid-cols-1 gap-4 sm:grid-cols-2"
           >
-            {(["artifact", "field", "source", "source_field"] as const).map(
-              (key) => (
-                <Field key={key}>
-                  <FieldLabel htmlFor={`${id}-requirement-${index}-${key}`}>
-                    {
-                      [
-                        "Work object",
-                        "Work field",
-                        "Evidence object",
-                        "Evidence field",
-                      ][
-                        ["artifact", "field", "source", "source_field"].indexOf(
-                          key,
-                        )
-                      ]
-                    }
-                  </FieldLabel>
-                  <Input
-                    id={`${id}-requirement-${index}-${key}`}
-                    defaultValue={requirement[key]}
-                    maxLength={24}
-                    onBlur={(event) =>
-                      onChange({
-                        ...rules,
-                        requirements: rules.requirements.map((r, i) =>
-                          i === index ? { ...r, [key]: event.target.value } : r,
-                        ),
-                      })
-                    }
-                  />
-                </Field>
-              ),
-            )}
-          </FieldGroup>
+            {requirement.artifact}.{requirement.field} must match{" "}
+            {requirement.source}.{requirement.source_field} at version 1, with a
+            source reference.
+          </p>
         ))}
+        <FieldDescription>
+          Edit object/field references in the protocol JSON editor.
+        </FieldDescription>
       </FieldSet>
     </FieldSet>
   );
