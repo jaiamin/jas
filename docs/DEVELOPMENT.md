@@ -60,21 +60,36 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v13.
-Schema v12 and library format `jas-environment-v8` accept only the current contract.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v14.
+Schema v13 and library format `jas-environment-v9` accept only the current contract.
 Older databases/library records receive explicit errors; no data is converted or reset.
 Use a separate fresh workspace path for the new contract and preserve existing evidence.
 T11 introduced typed commitment mechanics as DB9/export10/library6. T16 integration
 adds admitted packages as DB10/export11/library7. T14 adds durable investigation
-authorization and nested request ownership as DB11/export12/library7. T18 advances
-the combined contract to DB12/export13/library8 and artifact rule2.0.0 for explicit
-fallible pickup-note adjudication and auxiliary judge request provenance.
+authorization and nested request ownership as DB11/export12/library7. T12 and T18
+independently used DB12/export13/library8. Their combination advances the contract
+to DB13/export14/library9, including institutional workflow mechanics and artifact
+rule2.0.0 fallible pickup-note adjudication with auxiliary judge request provenance.
 Capture1/comparison1/tool2.0/direct1.0 remain current;
 controlled-world mechanics and undeclared artifact submissions keep their behavior.
 
 The current schema retains T04's durable participant activations and per-request
+links alongside T03's pinned environment sources. Prior schema versions through12
+and library formats throughv8 are explicitly rejected; preserve them separately.
+There is no migration, compatibility reader or workspace reset. Controlled-world
+mechanics and undeclared artifact submissions retain their behavior.
+
+T12's keyless browser witnesses use the opt-in DEVELOPMENT-only workflow provider,
+fresh owned data and the already installed headless shell. Set `JAS_TEST_PORT`,
+`JAS_TEST_DATA_DIR`, `PLAYWRIGHT_BROWSERS_PATH`, `T12_BROWSER_EXECUTABLE` and
+`T12_BROWSER_OUTPUT`, then run `pnpm --dir frontend exec playwright test --config
+playwright.workflow.config.ts -g '<one case name>'`. The cases separately cover
+editor draft/save recovery, actual contention/pause/handoff/replay, and tool failure
+with explicit recovery. They do not establish live participant competence.
+
+The current schema retains T04's durable participant activations and per-request
 links alongside T03's pinned environment sources. Old schema 4/5/6/7/8/9/10/11 databases and
-v1/v2/v3/v4/v5/v6 environment files are explicitly rejected; preserve them separately. No
+v1/v2/v3/v4/v5/v6/v7 environment files are explicitly rejected; preserve them separately. No
 compatibility reader or automatic reset is provided. Reusable mechanics exclude
 participant harness settings; each experiment pins those separately.
 
@@ -114,6 +129,8 @@ the contract to DB10/export11/library7
 for immutable admitted executable packages and sealed-relay checkpoints/actions.
 T14 advances the combined contract to DB11/export12/library7 for durable bounded
 investigations and nested request accounting.
+T12 added institutional workflow mechanics as DB12/export13/library8. Combining
+accepted T12 with T18 uses DB13/export14/library9; T18 combined qualification is pending.
 See [extension admission](EXTENSIONS.md); preserve older workspaces without resetting them.
 New runs must pin the current harness. Each capability can be explicitly disabled;
 there is no substitute policy. The same activation request/operation budgets apply.

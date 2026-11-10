@@ -156,7 +156,7 @@ def test_solo_evidence_work_is_versioned_consequential_and_replayable(tmp_path, 
         assert replay["verified_turns"] == 4 and replay["model_requests"] == 0
         assert client.get("/api/settings").json()["usage"] == before
         exported = client.get(f"/api/studies/{study['id']}/export").json()
-        assert exported["version"] == 13
+        assert exported["version"] == 14
         assert len(exported["requests"]) == 4
         assert exported["runs"][0]["evidence"][-1]["checkpoint"] == run["state"]
 
@@ -380,7 +380,7 @@ def test_artifact_mechanics_are_reusable_without_importing_the_original_investig
         installed = next(
             e for e in catalog.json()["environments"] if e["key"] == "artifact_workspace"
         )
-        assert installed["source"]["format"] == "jas-environment-v8"
+        assert installed["source"]["format"] == "jas-environment-v9"
         extracted = client.post("/api/design/environment", json={"design": protocol()})
         assert extracted.status_code == 200, extracted.text
         definition = extracted.json()

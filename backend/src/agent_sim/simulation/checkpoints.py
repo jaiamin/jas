@@ -92,6 +92,23 @@ class RelianceCheckpoint(DistributedCheckpoint):
     withdrawn: list[str]
 
 
+class WorkflowCheckpoint(ArtifactCheckpoint):
+    logical_time: int
+    phase_actors: list[str]
+    pending_actions: dict[str, dict[str, Any]]
+    pending_reads: dict[str, dict[str, Any]]
+    withdrawn: list[str]
+    resource_stock: int
+    resource_spent: int
+    work: dict[str, dict[str, Any]]
+    work_history: list[dict[str, Any]]
+    read_grants: dict[str, list[str]]
+    pending_deliveries: list[dict[str, Any]]
+    inboxes: dict[str, list[dict[str, Any]]]
+    outboxes: dict[str, list[dict[str, Any]]]
+    message_sequences: dict[str, int]
+
+
 class CommonsCheckpoint(Checkpoint):
     pending: dict[str, ActionPayload]
     promises: dict[str, Promise]
@@ -186,3 +203,4 @@ class Observation(TypedDict):
     reliance_effect: NotRequired[int]
     commitment_history: NotRequired[list[dict[str, Any]]]
     withdrawn: NotRequired[list[str]]
+    workflow: NotRequired[dict[str, Any]]

@@ -553,6 +553,20 @@ def provider_schema_envelope(value):
     return value
 
 
+def combined_contract_envelope(value):
+    """Explicit v4: accepted T12 plus T18 has a distinct persisted contract."""
+    value = provider_schema_envelope(value)
+    value["version"] = 4
+    value["combined_contract_amendment"] = (
+        "Accepted T12 and T18 separately used database12/export13/library8. "
+        "Their combined meaning is database13/export14/library9. All literal "
+        "neutral-world inputs/actions/evidence/checkpoints/privacy/cutoffs and "
+        "integer ledgers are unchanged from v3; this is fresh qualification."
+    )
+    value["contracts"] = {"database": 13, "export": 14, "library": 9}
+    return value
+
+
 if __name__ == "__main__":
     with Path(sys.argv[1]).open("x") as output:
         value = freeze()
@@ -560,4 +574,6 @@ if __name__ == "__main__":
             value = provider_envelope(value)
         elif sys.argv[2:] == ["--provider-schema-envelope"]:
             value = provider_schema_envelope(value)
+        elif sys.argv[2:] == ["--combined-contract-envelope"]:
+            value = combined_contract_envelope(value)
         output.write(json.dumps(value, indent=2) + "\n")

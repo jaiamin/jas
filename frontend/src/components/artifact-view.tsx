@@ -21,7 +21,7 @@ export function ArtifactView({ run, state }: { run: RunDetail; state: State }) {
   const name = (key: string) =>
     run.design.profiles.find((p) => p.key === key)?.name ?? key;
   const outcome =
-    state.outcome && "status" in state.outcome ? state.outcome : null;
+    state.outcome && "operation" in state.outcome ? state.outcome : null;
   return (
     <section className="flex min-w-0 flex-col gap-4">
       <div>
@@ -70,73 +70,99 @@ export function ArtifactView({ run, state }: { run: RunDetail; state: State }) {
           </CardContent>
         </Card>
       )}
-      {Object.values(state.artifacts).map((obj) => (
-        <section key={obj.key} aria-label={`${obj.name} versions`}>
-          <Card size="sm" id={`artifact-${obj.key}`}>
-            <CardHeader>
-              <CardTitle className="break-words">{obj.name}</CardTitle>
-              <CardDescription className="break-words">
-                {obj.key} · owner: {obj.owner ? name(obj.owner) : "none"} ·
-                readers: {obj.readers.map(name).join(", ") || "none"} · writers:{" "}
-                {obj.writers.map(name).join(", ") || "none"}. Owners can read
-                and write.
-                {state.read_grants?.[obj.key]?.length
-                  ? ` Additional read grants: ${state.read_grants[obj.key].map(name).join(", ")}.`
-                  : ""}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex min-w-0 flex-col gap-3">
-              {obj.versions.map((version) => (
-                <Disclosure
-                  key={version.version}
-                  id={`artifact-${obj.key}-v${version.version}`}
-                  defaultOpen={version.version === obj.versions.length}
-                >
-                  <DisclosureTrigger>
-                    Version {version.version} ·{" "}
-                    {version.author ? name(version.author) : "Initial content"}
-                  </DisclosureTrigger>
-                  <DisclosureContent className="flex min-w-0 flex-col items-start gap-3 pt-3">
-                    <dl className="grid w-full min-w-0 gap-2 text-sm [&>div]:grid [&>div]:gap-1 [&>div]:sm:grid-cols-2 [&_dt]:text-muted-foreground [&_dd]:break-words [&_dd]:whitespace-pre-wrap">
-                      {Object.entries(version.content).map(([field, value]) => (
-                        <div key={field}>
-                          <dt>{field}</dt>
-                          <dd>{value}</dd>
+      {Object.values(state.artifacts).map((obj) => {
+        const grants =
+          run.design.environment === "institutional_workflow"
+            ? Object.entries(state.read_grants ?? {})
+                .filter(([, keys]) => keys.includes(obj.key))
+                .map(([actor]) => actor)
+            : (state.read_grants?.[obj.key] ?? []);
+        return (
+          <section key={obj.key} aria-label={`${obj.name} versions`}>
+            <Card size="sm" id={`artifact-${obj.key}`}>
+              <CardHeader>
+                <CardTitle className="break-words">{obj.name}</CardTitle>
+                <CardDescription className="break-words">
+                  {obj.key} · owner: {obj.owner ? name(obj.owner) : "none"} ·
+                  readers: {obj.readers.map(name).join(", ") || "none"} ·
+                  writers: {obj.writers.map(name).join(", ") || "none"}. Owners
+                  can read and write.
+                  {grants.length
+                    ? ` Additional read grants: ${grants.map(name).join(", ")}.`
+                    : ""}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex min-w-0 flex-col gap-3">
+                {obj.versions.map((version) => {
+                  const turn =
+                    run.design.environment === "institutional_workflow"
+                      ? run.events.find(
+                          (event) =>
+                            event.kind === "perform_work" &&
+                            event.data.artifact === obj.key &&
+                            event.data.version === version.version &&
+                            event.data.operation === version.operation,
+                        )?.turn
+                      : version.operation;
+                  return (
+                    <Disclosure
+                      key={version.version}
+                      id={`artifact-${obj.key}-v${version.version}`}
+                      defaultOpen={version.version === obj.versions.length}
+                    >
+                      <DisclosureTrigger>
+                        Version {version.version} ·{" "}
+                        {version.author
+                          ? name(version.author)
+                          : "Initial content"}
+                      </DisclosureTrigger>
+                      <DisclosureContent className="flex min-w-0 flex-col items-start gap-3 pt-3">
+                        <dl className="grid w-full min-w-0 gap-2 text-sm [&>div]:grid [&>div]:gap-1 [&>div]:sm:grid-cols-2 [&_dt]:text-muted-foreground [&_dd]:break-words [&_dd]:whitespace-pre-wrap">
+                          {Object.entries(version.content).map(
+                            ([field, value]) => (
+                              <div key={field}>
+                                <dt>{field}</dt>
+                                <dd>{value}</dd>
+                              </div>
+                            ),
+                          )}
+                        </dl>
+                        <div className="flex flex-wrap items-center gap-2 text-sm">
+                          <span className="text-muted-foreground">
+                            Sources:
+                          </span>
+                          {version.sources.length ? (
+                            version.sources.map((source) => (
+                              <a
+                                className="underline underline-offset-4"
+                                key={`${source.artifact}-${source.version}`}
+                                href={`#artifact-${source.artifact}-v${source.version}`}
+                              >
+                                {source.artifact} v{source.version}
+                              </a>
+                            ))
+                          ) : (
+                            <span>None recorded</span>
+                          )}
                         </div>
-                      ))}
-                    </dl>
-                    <div className="flex flex-wrap items-center gap-2 text-sm">
-                      <span className="text-muted-foreground">Sources:</span>
-                      {version.sources.length ? (
-                        version.sources.map((source) => (
-                          <a
-                            className="underline underline-offset-4"
-                            key={`${source.artifact}-${source.version}`}
-                            href={`#artifact-${source.artifact}-v${source.version}`}
-                          >
-                            {source.artifact} v{source.version}
-                          </a>
-                        ))
-                      ) : (
-                        <span>None recorded</span>
-                      )}
-                    </div>
-                    {version.operation > 0 && (
-                      <Button variant="link" size="sm" asChild>
-                        <Link
-                          to={`/runs/${run.summary.id}?tab=decisions&turn=${version.operation}`}
-                        >
-                          Inspect turn {version.operation}
-                        </Link>
-                      </Button>
-                    )}
-                  </DisclosureContent>
-                </Disclosure>
-              ))}
-            </CardContent>
-          </Card>
-        </section>
-      ))}
+                        {turn !== undefined && turn > 0 && (
+                          <Button variant="link" size="sm" asChild>
+                            <Link
+                              to={`/runs/${run.summary.id}?tab=decisions&turn=${turn}`}
+                            >
+                              Inspect turn {turn}
+                            </Link>
+                          </Button>
+                        )}
+                      </DisclosureContent>
+                    </Disclosure>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          </section>
+        );
+      })}
     </section>
   );
 }

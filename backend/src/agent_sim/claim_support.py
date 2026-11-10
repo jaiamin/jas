@@ -111,6 +111,11 @@ def capture_lens(
                 if "reliance_state" in recorded
                 else {}
             ),
+            **(
+                {"workflow_state": recorded["workflow_state"]}
+                if "workflow_state" in recorded
+                else {}
+            ),
             "measurements": raw_measurements,
             "rule_version": recorded["recorded_rule_version"],
             "turns": [
@@ -152,7 +157,7 @@ def capture_lens(
                     "sum(len(artifact.versions) - 1): initial versions are not writes",
                 ),
             ]
-            if "coordination_state" not in fact:
+            if "coordination_state" not in fact and "workflow_state" not in fact:
                 artifact_calculations.append(
                     (
                         "artifact_success",
@@ -173,6 +178,45 @@ def capture_lens(
                         "assumptions": [
                             "Executable artifact outcomes are distinct from utility, actual "
                             "reading, input inclusion, attention or private intent."
+                        ],
+                    }
+                )
+        if workflow := fact.get("workflow_state"):
+            for name, value, formula in (
+                (
+                    "workflow_materials_remaining",
+                    workflow["resource_stock"],
+                    "recorded shared material stock at cutoff",
+                ),
+                (
+                    "workflow_materials_spent",
+                    workflow["resource_spent"],
+                    "recorded cumulative material debits at cutoff",
+                ),
+                (
+                    "workflow_accepted",
+                    sum(w["status"] == "accepted" for w in workflow["work"].values()),
+                    "count(work.status == accepted): only selected recipient acceptance counts",
+                ),
+                (
+                    "workflow_unfinished",
+                    sum(w["status"] != "accepted" for w in workflow["work"].values()),
+                    "count(work.status != accepted): ownership, writes and readiness "
+                    "do not finish work",
+                ),
+            ):
+                calculations.append(
+                    {
+                        "id": f"run:{rid}:{name}",
+                        "label": name.replace("_", " ").capitalize(),
+                        "scope": "captured_run",
+                        "value": value,
+                        "formula": formula,
+                        "inputs": workflow,
+                        "sources": [fact["snapshot_source"]],
+                        "assumptions": [
+                            "Materials and handoffs are executable World facts, "
+                            "not utility or intent."
                         ],
                     }
                 )
@@ -241,7 +285,7 @@ def capture_lens(
                     "messages_queued": sum(e.kind == "message_queued" for e in events),
                     "messages_delivered": sum(e.kind == "message_delivered" for e in events),
                 }
-                if "coordination_state" in fact
+                if "coordination_state" in fact or "workflow_state" in fact
                 else {}
             ),
             "reports": len(claims),
@@ -319,7 +363,11 @@ def capture_lens(
                     r["eligible_opportunities"]
                     for r in exposure[rid]["summary"]
                     if r["kind"]
-                    == ("message_delivered" if "coordination_state" in fact else "message")
+                    == (
+                        "message_delivered"
+                        if "coordination_state" in fact or "workflow_state" in fact
+                        else "message"
+                    )
                 ),
                 "unknown_requests": exposure[rid]["delivery"]["unknown_requests"],
                 "opportunities": counters,
@@ -449,6 +497,7 @@ def apply_lens(frozen: dict, key: LensKey) -> dict:
         fact = next(f for f in frozen["facts"] if f["run_id"] == rid)
         artifact = fact.get("artifact_state")
         coordination = fact.get("coordination_state")
+        workflow = fact.get("workflow_state")
         if key == "communication":
             messages = row["opportunities"]
             text = (
@@ -458,12 +507,23 @@ def apply_lens(frozen: dict, key: LensKey) -> dict:
                 f"{row['message_opportunities']} message opportunities; "
                 f"input capture {row['exposure_capture']}."
             )
-            if coordination:
+            if coordination or workflow:
                 text += (
                     f" {messages['messages_queued']} queued; "
                     f"{messages['messages_delivered']} delivered to mailboxes. "
                     "Queued mail and mailbox arrival alone do not establish model input."
                 )
+        elif workflow:
+            accepted = values[f"run:{rid}:workflow_accepted"]
+            text = (
+                f"{row['recorded_turns']} recorded proposals; "
+                f"materials remaining {workflow['resource_stock']}; "
+                f"spent {workflow['resource_spent']}; "
+                f"accepted {accepted}/{len(workflow['work'])}; "
+                f"unfinished {values[f'run:{rid}:workflow_unfinished']}; "
+                f"logical time {workflow['logical_time']}. "
+                "Financial utility unavailable; completion is not a required social outcome."
+            )
         elif reliance := fact.get("reliance_state"):
             value = values[f"run:{rid}:reliance_value"]
             text = (

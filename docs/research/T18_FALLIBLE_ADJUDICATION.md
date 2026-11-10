@@ -822,3 +822,72 @@ production or live/provider work ran. Frontend setup still needs a concrete
 ROOT release with entry>=815792128 for the revised650MiB peak; future store
 permission alone is insufficient. UI01 remains frozen/unrun and production UI
 unchanged. Ticket completion/acceptance and live judgment accuracy remain open.
+
+## F1 and accepted T12 integration; combined contract freeze
+
+F1 ran exactly once at41ba330b, normal frozen-store/frozen-lockfile/hardlink
+install into DISTINCT own modules and policy cache. The618-entry supply-chain
+policy check passed, lock/resolution stayed frozen,555 packages reused/added
+and0 downloaded. Node24.22.2/pnpm12.18.0 and own-prefix React19.3.1/TanStack
+imports passed. No tests, browser, services or provider work were part of setup.
+Entry/dispatch828,833,792, minimum/exit629,493,760, observed shared net
+peak199,340,032; floor134,217,728 and650MiB forecast preserved; lock released.
+Unique regular-file modules359,652,711 logical/426,446,848 allocated, of which
+425,459,712 allocated have multiple hardlinks. Private policy metadata is
+176,800,695 logical/178,188,288 allocated across599 files. Private state/home/
+xdg/tmp are empty; Python environment unchanged. These are inode/metadata and
+shared free-space measurements, not an isolated physical bound. Final serialized
+F1 logs/receipt total69,589 logical/81,920 allocated bytes, sealed separately in
+closed-accounting.json; the original receipt's early after.logs_receipt field
+predates its own final serialization. Original bytes are retained; no setup
+retry, fallback or cleanup.
+
+ROOT conditionally releases frozen UI01 red→minimal green, independently frozen
+negative/safety units, affected lint and forced types, each shared lock,
+entry>=268435456,128MiB peak/initial4MiB output and16MiB frontend evidence.
+Build/browser/service18131/production/live/provider/paid/held-out remain held.
+Policy metadata is separately typed retained setup state, never test evidence;
+the recorder excludes only those explicit own setup directories from evidence
+accounting and retains the prior055ba992 recorder bytes. No cache payload is
+captured or other owner's metadata read.
+
+Exact accepted T12 `40c32ff60593ee195cd4df21289448e385a95f03` is the required
+normal integration target. Its first merge attempt retained five conflicts:
+four documentation files and validity imports. The latter keeps both the
+adjudication imports/price catalogue and T12 WaitWorkflow import. Documentation
+resolution retains both histories. No provisional sibling is merged.
+
+Before combined-source outputs, freeze CC01–CC03: the genuinely combined schema
+must be DB13/export14/library9, because the two isolated sibling meanings both
+used12/13/8. CC01 fresh/reopened DB must be13 and old12 must be rejected without
+migration or data changes. CC02 newly saved library envelopes must be v9 and v8
+must reject without adaptation. CC03 a saved explicit adjudicated study exports
+version14 with no requests/spend before execution. No alias, reset, migration or
+silent compatibility reader. Original T01 runner/cases/scores stay untouched.
+The original T18 tracer bdf6a663 and matrix v1–v3 retain their historical frozen
+identities; any combined contract expectation amendment is explicit and frozen
+before its corresponding combined output, not retroactive qualification.
+
+CC01–CC03 first execution `combined-contract-red-01` reached actual APIs/storage:
+four intended failures,12 passes. DB12 reopened/was accepted, library emittedv8,
+and explicit adjudicated export emitted13, contradicting the frozen combined
+13/9/14 expectations. No import/setup error established red. The receipt records
+entry596,623,360/minimum592,244,736,4,378,624 observed shared peak, exit1 and
+released lock. Closed output3,519,242 bytes is retained under the frontend cap
+because that first contract command used the UI recorder stage; it is backend
+contract coverage, not an observed UI red.
+
+V4 amendment is frozen before any combined-current matrix output: retain every
+v1/v2/v3 byte and generator path; derive v4 independently from v3 only by changing
+the declared database/export/library envelope to13/14/9, version to4 and adding
+an explicit combined-contract explanation. The full5run/22turn/22request literal
+inputs/actions/evidence/checkpoints/privacy/cutoffs/770-integer-microdollar ledger
+and zero-call replay oracles are unchanged. No candidate output feeds this
+amendment. Original tracer blob bdf6a663 remains unchanged (it makes no literal
+export-version assertion); original frozen T01 runner/cases/scores stay unchanged.
+
+The minimal version repair passes all16 same CC cases in
+`combined-contract-green-01` (entry566808576/min562397184,4,411,392 observed shared
+peak, released lock). Whole backend/benchmarks/GitHub-script Ruff and global ty
+pass in separate `combined-static-01`/`combined-types-01` jobs. These establish
+the version boundary, not a full combined-source behavioral qualification.
