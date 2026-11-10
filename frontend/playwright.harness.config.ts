@@ -5,7 +5,11 @@ const baseURL = `http://127.0.0.1:${process.env.JAS_TEST_PORT ?? "8094"}`;
 
 export default defineConfig({
   ...base,
-  testMatch: ["participant-harness.trial.ts", "artifact-world.trial.ts"],
+  testMatch: [
+    "participant-harness.trial.ts",
+    "exposure.trial.ts",
+    "artifact-world.trial.ts",
+  ],
   use: { ...base.use, baseURL },
   webServer: {
     command: "JAS_TEST_PARTICIPANTS=1 ../.venv/bin/python e2e/server.py",

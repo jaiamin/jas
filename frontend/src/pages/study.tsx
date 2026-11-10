@@ -12,6 +12,7 @@ import {
   DisclosureTrigger,
 } from "@/components/disclosure";
 import { ExperimentCheck } from "@/components/experiment-check";
+import { ExposureInspection } from "@/components/exposure-inspection";
 import { Alert, Empty } from "@/components/feedback";
 import {
   AgentIcon,
@@ -191,6 +192,9 @@ export default function Study() {
                 </div>
               </div>
               <ComparisonEvidence report={study} />
+              <ExposureInspection
+                path={`/studies/${id}/exposure?revision=${study.revision}`}
+              />
               {!study.results.some((r) => r.runs > 0) ? (
                 <Empty
                   title={active ? "Runs in progress" : "No results yet"}

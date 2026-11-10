@@ -69,6 +69,7 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
         "rule_versions": sorted({run.checkpoint["rule_version"] for run in runs}),
         "study": detail,
         "activations": [a for run in runs for a in research.activations(run.id)],
+        "exposure": [research.exposure(run.id) for run in runs],
         "annotations": [
             {
                 "run_id": a.run_id,

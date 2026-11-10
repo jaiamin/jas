@@ -16,7 +16,7 @@ from agent_sim.domain import (
 )
 from agent_sim.simulation.environments import CATALOG, create_world
 from agent_sim.templates import templates
-from agent_sim.validity import Requirement, exposure, preflight, requirement_issues
+from agent_sim.validity import Requirement, preflight, realized_opportunities, requirement_issues
 from sqlalchemy import func, select
 
 MEMORIES = ("none", "history", "notes", "episodic")
@@ -368,11 +368,16 @@ def test_cutoff_exposure_cannot_see_later_actions_or_invent_opportunities(runtim
     assert "resource" in catalog["renewable_resource"]["active_parameters"]
     assert catalog["institution"]["rule_version"] == "4.1.0"
     full = assistant._evidence_index({rid: 6})["runs"][0]
-    assert sum(first["treatment_exposure"]["action_counts"].values()) == 1
-    assert sum(full["treatment_exposure"]["action_counts"].values()) == 6
-    assert full["treatment_exposure"]["warnings"]
+    assert sum(first["realized_opportunities"]["action_counts"].values()) == 1
+    assert sum(full["realized_opportunities"]["action_counts"].values()) == 6
+    assert full["realized_opportunities"]["warnings"]
     assert full["recorded_rule_version"] == "4.1.0"
-    assert exposure("institution", [{"kind": "sanction"}, {"kind": "wait"}], [])["warnings"] == []
+    assert (
+        realized_opportunities("institution", [{"kind": "sanction"}, {"kind": "wait"}], [])[
+            "warnings"
+        ]
+        == []
+    )
 
 
 @pytest.mark.parametrize(
