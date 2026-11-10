@@ -1,28 +1,24 @@
-# T05 ticket handoff
+# T05 integration checkpoint
 
-Branch `t3/researcher-probes`; implementation `504d7561dd36c1fbf19ba2f9bf7fc535551ccde9`.
-Latest integration `8f83a36bc0428abda418b93557f689657ce030ae` was merged cleanly
-as tested source `5b70116867410ae0d2b1cd17f6b3ef090e4bb6d7`. The final checkpoint
-only updates T05 evidence/progress/handoff documents. See
-[T05 report](docs/research/T05_RESEARCHER.md) for contracts, limits and exact
-source/case identities. No T05 integration acceptance or issue closure is claimed.
+T05/#16 is accepted at no-ff merge
+`a4ab9ee07f32ff7c5bb9014d4cfd0a495226dc3e` from ticket HEAD
+`14101d005d4a46ac13362350d086817cca8ec064`, preserving the latest T02 fixes.
+Read [T05's report](docs/research/T05_RESEARCHER.md) and
+[progress](docs/RESEARCH_HARNESS_PROGRESS.md). The fresh merger observed 196
+backend, 108 frontend and 16 affected browser tests plus Ruff/ty/lint/build
+passing. A clean-clone T01 baseline passed six cases with 22 scripted participant
+requests and no regressions/failures. No live competence or held-out acceptance.
 
-Actual evidence: controlled API replay **14 failed → 14 passed**; combined
-source **961 backend, 108 frontend, 14 affected browser** tests and Ruff/ty/
-frontend lint/build pass. The full pre-merge browser suite passed **169**.
-Identical inherited cases/harness pass six cases before/after/after-merge with
-no regressions/failures and 22 scripted requests. Failed/interrupted attempts
-remain retained; the missing raw-capture directory was repaired by invocation.
-
-Preserve the entire ignored `data/t05/` before worktree cleanup: archives,
-manifests, raw analyses/run evidence, databases/exports, comparisons, XML/logs,
-browser screenshots/traces and the preserved check wrapper. `checks.json` and
-`artifact-manifest.json` index it. Parent owns evidence copying and a fresh
-merger into the existing draft PR #32. Port 18116 is closed; Playwright stopped
-its owned server/browser. Zero paid/live calls; live competence/held-out gates
-remain unverified. No push, PR creation, tracker edit, stash application/drop,
-credential or host-policy changes. T02's inherited pending UI follow-up remains
-parent-owned and unchanged below.
+All 262 actual ignored T05 source artifacts (37,716,120 bytes), including the
+child manifest itself, are verified and preserved under
+`.tools/research-harness/evidence/T05/`; verification digest:
+`41a3fd1f0c6cc4138deff04285f8b8509a35e69bd4416700adb3bb286bf9866d`.
+Fresh source archives/logs/raw results are in sibling `T05-integration/`.
+The child worktree remains intact. Browser port 18216 is closed. The unrelated
+untracked `pbcopy` was never read/copied/archived, and the stash remains intact.
+No paid calls, pushes, PR/tracker edits, security changes or unrelated-service
+changes. Next: fresh-merge T04; T03/#14 and T06/#17 are in progress in isolated
+worktrees. T04 remains unmerged.
 
 # T01 integration checkpoint
 
@@ -56,8 +52,8 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01/T02 accepted; T05 integration verification in progress;
-T04 complete awaiting fresh merger; T03/T06 in progress; draft PR #32.**
+**Current checkpoint: T01/T02/T05 accepted; T04 complete awaiting fresh merger;
+T03/T06 in progress in isolated worktrees; draft PR #32.**
 
 T02 source `07d6d9fa681bd5ce79777c480e0798b5d6fa6137` was integrated with
 no-ff merge `77f6014981754adefc954af51e06f9326ab95893`. The fresh merger
@@ -90,14 +86,13 @@ removed and ports 18213/18313 closed. T02 is accepted for its narrow import-free
 Wasm contract; experiment/world admission stays disabled until T16. See
 `docs/research/T02_CONTAINMENT.md` for source identities and limitations.
 
-T05/#16 completed on `t3/researcher-probes` at
-`14101d005d4a46ac13362350d086817cca8ec064`, including integration `8f83a36`.
-Preserve all 261 ignored `data/t05/` files from
-`/home/agent/.t3/worktrees/workspace/t3-4f00062b` before cleanup; its manifest and
-`docs/research/T05_RESEARCHER.md` index the evidence. Reported: 961 backend,
-108 frontend, 14 affected browser tests passed; pre-merge full browser 169
-passed, lint/type/build and unchanged baseline passed. Controlled API cases
-improved from 14 failed to 14 passed. This is deterministic evidence only.
+T05/#16 source `14101d005d4a46ac13362350d086817cca8ec064` is integrated and
+accepted at `a4ab9ee07f32ff7c5bb9014d4cfd0a495226dc3e`. The fresh checks and
+preserved evidence are indexed in the current T05 checkpoint above and
+`docs/research/T05_RESEARCHER.md`. The reported 261 child artifacts plus their
+manifest (262 files total) are all preserved and verified; keep both ignored
+T05 evidence directories. Full child suites and production smoke remain
+attributed to their observed source; no paid/live validation is claimed.
 
 T04/#15 completed on `t3/participant-policies` at
 `6a6c000ac87a44212f3da681dbd31497f9640982`, including `c546c85`.
@@ -107,7 +102,7 @@ cleanup. See `docs/research/T04_PARTICIPANT_HARNESSES.md`. Reported: 981 backend
 checks, static/build/production checks passed. Four expected export-v4 baseline
 failures are retained under the intentional v5 contract; independently inspect
 those and the exact direct-action parity evidence before acceptance. Fresh-merge
-T05 first, then T04 onto the resulting tip. Neither establishes live competence.
+T04 onto the accepted T05 tip. Neither establishes live competence.
 
 The user explicitly invoked implement-spec after the reviewed breakdown. Treat
 that as authorization to implement the accepted task graph; do not repeat
@@ -131,7 +126,7 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: finish T05/#16 integration verification, then fresh-merge T04/#15.
+Current frontier: fresh-merge completed T04/#15 onto the accepted T05 tip.
 T03/#14 and T06/#17 are in progress in isolated worktrees; T07/#18 remains Ready.
 Draft PR #32 is the single integration PR and
 was linked immediately. Refresh/link it on each push. Do not merge to main or

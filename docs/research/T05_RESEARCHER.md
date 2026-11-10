@@ -9,6 +9,64 @@ conflicts as `5b70116867410ae0d2b1cd17f6b3ef090e4bb6d7`; combined-source checks
 below qualify that clean commit. The final handoff commit changes documentation
 only. No publication, tracker changes or spending occurred.
 
+## Fresh integration acceptance
+
+T05 is accepted on `integration/research-harness`. Ticket HEAD
+`14101d005d4a46ac13362350d086817cca8ec064` was integrated onto
+`b7e5b1540ff9ccf63761a482a4288eed1ad8be4a` with no-ff merge
+`a4ab9ee07f32ff7c5bb9014d4cfd0a495226dc3e`. Only the progress document
+conflicted; the latest T02 history-selection and worker-exit fixes remain
+byte-unchanged. Review found no blocking implementation issue and required no
+product-code repair. T04 was not merged; T03/#14 and T06/#17 are in progress
+in their isolated worktrees.
+
+The fresh merger checked same-chat/exact-scope eligibility and compatible prior
+cutoffs, copied checkpoints, atomic rejected steps, normal World legal schemas
+and rules, request limits/deduplication, per-request accounting and failure
+retention, persisted public activity and the original-question planner handoff.
+The dispatcher has no engine/save/participant-provider/generated-execution path.
+These checks qualify deterministic orchestration, not live Researcher competence.
+
+Fresh observed checks on clean tracked merge `a4ab9ee`:
+
+| Check | Result |
+| --- | --- |
+| Affected backend API/planner/chat/streaming/accounting/lifecycle/World/privacy/replay/export/extension/baseline regressions | 196 passed, including all 14 T05 development cases and 13 extension checks |
+| Frontend unit tests | 108 passed |
+| Keyless Chromium: Researcher tools, streaming, extensions | 16 passed, including both newer T02 history-selection fixes |
+| Ruff, ty, frontend lint, TypeScript/production build | Passed |
+| Untouched T01 DEVELOPMENT v1 workflow and comparison with the retained pre-T05 baseline | Six cases passed; 22 scripted participant requests; 99 HTTP operations; no regressions, improvements or before/after failures |
+
+Each check retained a command, exit, log hash and stable tracked-source manifest.
+The 961-test full backend and 169-flow full browser results below are inherited
+ticket evidence, not fresh full-suite integration runs. T02's production smoke
+at `c546c85` is inherited; T05 adds no runtime/container/workflow dependency.
+Phone/light and desktop/dark Researcher-operation screenshots were visually
+inspected. Playwright shut down its keyless temporary backend; port 18216 was
+confirmed closed. No paid calls, publication, tracker edits or other-process
+changes occurred.
+
+All **262 actual source files (37,716,120 bytes)** are preserved without
+overwrites in ignored `.tools/research-harness/evidence/T05/`. The child's
+reported 261 files exclude `artifact-manifest.json` itself. Every indexed child
+hash and every copied source/destination SHA-256 matched, and the source stayed
+stable during copying. The sibling `T05-copy-verification.json` records canonical
+manifest SHA-256
+`41a3fd1f0c6cc4138deff04285f8b8509a35e69bd4416700adb3bb286bf9866d`.
+The ticket worktree remains intact.
+
+Fresh logs, XML/raw development analyses, screenshots, baseline database/exports,
+comparison and review records are under
+`.tools/research-harness/evidence/T05-integration/`. `merged-source.tar.gz` is a
+tracked-only Git archive with SHA-256
+`e1f29104e09a12b9a0eec76d6f5b14c43d436dce60eb60653680ca244fb4a79b`.
+The unchanged T01 runner ran in a clean local Git clone of that merge, with
+imports explicitly rooted in the clone, because its snapshot includes untracked
+files. The integration root's unrelated `pbcopy` was never opened, copied or
+archived; both fresh source archives were checked for its absence. Stash
+`f771128ba1c9295262a4073df40cc25647b1370f` remains untouched. Preserve both
+evidence directories; live and held-out acceptance remain unverified.
+
 ## Acceptance
 
 - [x] Capture an unchanged source/case-stamped keyless baseline before edits.
