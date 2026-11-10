@@ -404,6 +404,83 @@ def distributed_template() -> Design:
     )
 
 
+def reliance_template() -> Design:
+    """All four have the same optional affordances; nobody is assigned to breach."""
+    value = distributed_template().model_dump()
+    actors = ["iris", "moss", "vale", "nova"]
+    value.update(
+        title="Voluntary reliance and observable commitments",
+        question="When do participants rely on promises, and what follows at the deadline?",
+        environment="reliance_commitments",
+        rounds=7,
+        profiles=[
+            Profile(key=a, name=a.title(), goal="Inspect and choose as you prefer.").model_dump()
+            for a in actors
+        ],
+        measures=["reliance_fulfillment", "reliance_value"],
+        limitations=[
+            "Promises, reliance and alternatives are voluntary; no participant is "
+            "assigned to breach.",
+            "Reliance grants irrevocable read access for this run and accepts declared "
+            "recipient effects.",
+            "A breach is an executable deadline result, not evidence of deception or betrayal.",
+            "Phased requests can be sampled serially; logical time and declared priority "
+            "own settlement.",
+            "Private evidence remains actor scoped; researcher inspection includes "
+            "private records.",
+        ],
+    )
+    condition = value["conditions"][0]
+    condition.update(key="voluntary", name="Voluntary reliance")
+    params = condition["parameters"]
+    params["artifacts"]["objects"] = [
+        *[
+            {
+                "key": f"values_{a}",
+                "name": f"Values for {a.title()}",
+                "readers": [a],
+                "content": {"share": i + 1, "keep": 7 - i},
+            }
+            for i, a in enumerate(actors)
+        ],
+        *[
+            {
+                "key": f"sealed_{a}",
+                "name": f"Evidence owned by {a.title()}",
+                "owner": a,
+                "content": {"reading": 17 + i},
+            }
+            for i, a in enumerate(actors)
+        ],
+    ]
+    params["coordination"].update(
+        turn_order=actors,
+        conflict_order=["vale", "iris", "nova", "moss"],
+        alternatives=["share", "keep"],
+        match_bonus=0,
+        information={a: f"values_{a}" for a in actors},
+        routes=[{"sender": a, "recipient": b} for a in actors for b in actors if a != b],
+    )
+    params["commitments"] = {
+        "opportunities": [
+            {
+                "key": f"promise_{i + 1}",
+                "promisor": a,
+                "recipient": actors[(i + 1) % 4],
+                "artifact": f"sealed_{actors[(i + 1) % 4]}",
+                "alternative": "share",
+                "opens_at": 2,
+                "deadline": 5,
+                "fulfilled_value": 9,
+                "unfulfilled_value": -5,
+            }
+            for i, a in enumerate(actors)
+        ]
+    }
+    value["conditions"] = [condition]
+    return Design.model_validate(value)
+
+
 def templates() -> list[dict[str, object]]:
     examples = [
         commons_template(),
@@ -416,5 +493,6 @@ def templates() -> list[dict[str, object]]:
         composed_template(),
         artifact_template(),
         distributed_template(),
+        reliance_template(),
     ]
     return [{"id": design.environment, "design": design.model_dump()} for design in examples]

@@ -133,7 +133,7 @@ def test_two_policies_run_real_operations_with_individual_accounting(harness_cli
     for run_id in [direct_id, tool_id]:
         assert client.post(f"/api/runs/{run_id}/verify").json()["verified_turns"] == 1
     exported = client.get(f"/api/studies/{study['id']}/export").json()
-    assert exported["version"] == 9
+    assert exported["version"] == 10
     assert len(exported["activations"]) == 2
     assert len(exported["requests"]) == 5
 

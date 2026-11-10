@@ -82,6 +82,15 @@ class DistributedCheckpoint(ArtifactCheckpoint):
     pending_reads: dict[str, dict[str, Any]]
 
 
+class RelianceCheckpoint(DistributedCheckpoint):
+    commitments: dict[str, dict[str, Any]]
+    choice_times: dict[str, int]
+    read_grants: dict[str, list[str]]
+    reliance_effects: dict[str, int]
+    commitment_history: list[dict[str, Any]]
+    withdrawn: list[str]
+
+
 class CommonsCheckpoint(Checkpoint):
     pending: dict[str, ActionPayload]
     promises: dict[str, Promise]
@@ -171,3 +180,7 @@ class Observation(TypedDict):
     coordination: NotRequired[dict[str, Any]]
     inbox: NotRequired[list[dict[str, Any]]]
     outbox: NotRequired[list[dict[str, Any]]]
+    commitment_opportunities: NotRequired[list[dict[str, Any]]]
+    reliance_effect: NotRequired[int]
+    commitment_history: NotRequired[list[dict[str, Any]]]
+    withdrawn: NotRequired[list[str]]

@@ -7,7 +7,7 @@ remain ordered. Only explicit user actions create paid work. Restart pauses inte
 ## Storage
 
 SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. Startup creates
-schema v8 for fresh workspaces and rejects incompatible schemas. Local transactions
+schema v9 for fresh workspaces and rejects incompatible schemas. Local transactions
 commit each turn's input, decision, consequences, metrics and checkpoint together.
 
 | Record | Purpose / invariant |
@@ -236,7 +236,7 @@ structural object/requirement edits also use the existing JSON editor. The revie
 shows requirements and ACLs; the run view links versions and terminal results to
 recorded turns. Reusable mechanics extract/rebind ACL roles and retain complete
 immutable source snapshots, independently of population, model, harness and memory.
-DB 8, export 9, comparison 1 and `jas-environment-v5` are the current contract.
+DB 9, export 10, comparison 1 and `jas-environment-v6` are the current contract.
 Older database/library versions fail explicitly; preserve them with their source.
 No migration, compatibility reader or reset is performed. Controlled-world rules
 remain unchanged; generated execution/admission and model adjudication remain out
@@ -292,6 +292,41 @@ changes canonical serialized designs, mechanics hashes and legal schemas. Captur
 comparison1, tool-using 2.0.0 and direct-action 1.0.0 remain current. No old-data
 alias, migration or reset is performed. This World adds neither a general distributed
 runtime nor the commitment/institution workflows of T11/T12.
+
+## Voluntary reliance and observable commitments
+
+`reliance_commitments` extends the same artifact, phased/sequential timing and
+addressed-mail World to exactly four participants. Each declared opportunity
+names distinct parties, a promised alternative, a recipient-owned artifact,
+logical opening/deadline and independent recipient effects. Nobody is assigned
+to promise, rely, cooperate or breach. Typed `make_commitment` and
+`rely_on_commitment` are available only through enabled promise communication.
+Reliance grants irrevocable read access to the named object for this run and
+opts that recipient into the declared fulfilled/unfulfilled effect. Participant
+prose never grants permissions. Pure harness reads preserve time and state.
+
+Fulfillment requires a settled final choice at `opens_at <= logical_time <
+deadline`. The World records issuance feasibility, actual decision opportunities,
+reliance, actions and deadline resolution. Infeasible, absent-opportunity,
+unrelied and unresolved cases remain inspectable. An unfinished deadline at a
+terminal horizon settles no effect. A breach never proves deliberate deception
+or betrayal. Choices remain final after personal withdrawal; messaging/reads/
+waits may continue after a choice so later responses can be observed.
+
+Checkpointed grants, commitments, choice times, withdrawals, private consequence
+receipts and pending proposals/mail restore and replay without calls. Participant
+observations/schemas expose only their own opportunity/receipt scope; researcher
+inspection is privileged and labeled. Exact receipt content in a bounded
+provider request confirms input inclusion, separately from availability or intent.
+Frozen analysis lenses recompute nonfinancial reliance value/eligibility while
+financial utility remains null; Sol analysis is separately billed from Luna work.
+
+The current combined contract is DB9/export10/library6 because new typed
+parameters change canonical designs/mechanics hashes. Older persisted formats
+are explicitly rejected with no compatibility reader, migration or reset.
+T10's three-participant rule version and all controlled/solo consequences remain
+unchanged. Capture1/comparison1/tool2.0/direct1.0 remain current. This adds no
+institution, parallel engine, semantic judge or inferred intent mechanism.
 
 ### Playback, consequence replay, restoration and sampling
 
@@ -355,7 +390,7 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v9 (`jas-study`)
+Every Analysis has an indexed conversation identity. Study export v10 (`jas-study`)
 includes every revision and its runs, actual recorded rule versions, exact turn evidence
 and provider traces; it batches
 journal queries.
@@ -495,7 +530,7 @@ receipt establishes inclusion; pending proposals and queued mail cannot supply i
 Applying a different lens changes its
 requirements/account without rewriting the source analysis. Unsupported lens
 versions are rejected without conversion; historical analyses without a lens
-remain unassessed and cannot supply lens inputs. Database8/export9/capture1/
+remain unassessed and cannot supply lens inputs. Database9/export10/capture1/
 comparison1/libraryv5 and harness contracts retain their existing meanings;
 this additive versioned analysis JSON requires no migration or reset.
 
@@ -562,7 +597,7 @@ the experiment adapts those examples. Editing/deleting a reusable environment ne
 or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
 12 recent definitions as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
-call or run. Database schema 8, export 9 and library v5 reject incompatible versions explicitly; there is
+call or run. Database schema 9, export 10 and library v6 reject incompatible versions explicitly; there is
 no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 ### Failure-aware comparisons (T06)
@@ -595,7 +630,7 @@ Analysis submissions synchronously freeze cutoffs, dispositions, terminal metric
 eligibility, revision/hash and calculations before the server task runs. Progress,
 reconnect, failure and export preserve that snapshot across later run completion or
 new revisions. Analysis reads do not append participant evidence or provider calls.
-Study export v9 includes this versioned comparison contract and persisted analysis
+Study export v10 includes this versioned comparison contract and persisted analysis
 snapshots, changing earlier consumer expectations. T06 changes no database columns and
 requires no data reset; historical evidence is never backfilled with invented states.
 
@@ -645,7 +680,7 @@ artifact. Inspection/export/replay remain
 read-only. Exposure-conditioned descriptions are post-treatment selections, not
 automatic causal effects; inclusion establishes no attention, belief or intent.
 
-Exposure capture v1 was introduced in export v7; current export v9 retains the
+Exposure capture v1 was introduced in export v7; current export v10 retains the
 exposure chain and frozen analysis artifacts alongside artifact work. T09 advances
 the database to schema 7; T10 extends the typed mechanics contract to schema 8. Exposure provenance alone does not alter controlled-world
 settlement, prompts or checkpoint replay. No migration or reset is performed.
