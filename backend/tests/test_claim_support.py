@@ -172,7 +172,7 @@ def test_inspected_citation_cannot_validate_invented_total(claim_client, design)
 def test_condition_contrast_is_recomputed_in_declared_direction(
     claim_client, design, asserted, expected,
 ):
-    client, controls, _ = claim_client
+    client, controls, seen = claim_client
     value = design.model_dump()
     value.update(rounds=1, seeds=[7], profiles=value["profiles"][:2])
     first = value["conditions"][0]
@@ -271,7 +271,7 @@ def test_communication_lens_rejects_absent_exposure_and_declares_coverage(claim_
 def test_reanalysis_uses_frozen_inputs_after_resume_and_revision_without_participant_work(
     claim_client, design,
 ):
-    client, controls, _ = claim_client
+    client, controls, seen = claim_client
     sid, rid = save(client, design)
     assert run(client, rid, "step")["turn"] == 1
     controls.update(analysis_gate=Event(), analysis_entered=Event())
@@ -292,6 +292,11 @@ def test_reanalysis_uses_frozen_inputs_after_resume_and_revision_without_partici
     controls.pop("analysis_gate")
     assert first["output"]["lens"] == frozen["lens"]
     assert first["output"]["exposure"] == frozen["exposure"]
+    later = finish(client, client.post("/api/chats", json={
+        "question": "Later evidence at turn four must stay outside an older reanalysis.",
+        "context": f"run:{rid}", "chat_id": first["chat_id"],
+    }))
+    assert later["cutoffs"] == {rid: 4}
     before = source(client.get(f"/api/studies/{sid}/export").json())
     second = finish(client, client.post("/api/chats", json={
         "question": "Apply the communication lens to the same frozen evidence.",
@@ -307,7 +312,8 @@ def test_reanalysis_uses_frozen_inputs_after_resume_and_revision_without_partici
     assert client.get(f"/api/analyses/{first['id']}").json() == first
     exported = client.get(f"/api/studies/{sid}/export").json()
     assert source(exported) == before
-    for record in (first, second):
+    assert all(item["question"] != later["question"] for item in seen[-1]["conversation"])
+    for record in (first, later, second):
         requests = [r for r in exported["requests"] if r["analysis_id"] == record["id"]]
         assert len(requests) == record["usage"]["requests"] == 2
         assert all(r["status"] == "complete" and r["activation_id"] is None for r in requests)
