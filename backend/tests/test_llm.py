@@ -17,7 +17,7 @@ def test_study_budget_failure_rolls_back_workspace_reservation(runtime, design):
         session.get_one(Study, sid).ceiling = 1
 
     async def exercise():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
 
     asyncio.run(exercise())
@@ -41,7 +41,7 @@ def test_invalid_model_output_retains_trace_and_known_usage(runtime, design, mon
     rid = research.study(sid)["runs"][0]["id"]
 
     async def exercise():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
 
     asyncio.run(exercise())
@@ -64,7 +64,7 @@ def test_unknown_usage_keeps_reservation_without_retry(runtime, design, monkeypa
     rid = research.study(sid)["runs"][0]["id"]
 
     async def exercise():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
 
     asyncio.run(exercise())
@@ -90,7 +90,7 @@ def test_agent_specific_models_are_used_and_recorded(runtime, design, monkeypatc
     rid = research.study(sid)["runs"][0]["id"]
 
     async def exercise():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
 
     asyncio.run(exercise())

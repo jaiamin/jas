@@ -12,10 +12,15 @@ def test_submission_requires_a_running_loop_before_persisting_work(runtime, desi
     sid = research.save_design(design)
     rid = research.study(sid)["runs"][0]["id"]
     assistants = Assistants(db, research, llm)
-    with pytest.raises(RuntimeError, match="no running event loop"):
-        engine.start(rid)
-    with pytest.raises(RuntimeError, match="no running event loop"):
-        assistants.start("Inspect this run", purpose="analysis", run_id=rid)
+    for submission in (
+        engine.start(rid),
+        assistants.start("Inspect this run", purpose="analysis", run_id=rid),
+    ):
+        try:
+            with pytest.raises(RuntimeError, match="no running event loop"):
+                submission.send(None)
+        finally:
+            submission.close()
     assert research.configuration(rid)[0].status == "ready"
     assert not engine.executions
     assert not assistants.tasks
@@ -50,10 +55,10 @@ def test_cancellation_retains_one_unknown_reservation_and_no_turn(
         )
         assistant = Assistants(db, research, llm)
         if purpose == "decision":
-            engine.start(rid)
+            await engine.start(rid)
             task = engine.executions[rid].task
         else:
-            key = assistant.start("Inspect this run", purpose="analysis", run_id=rid)
+            key = await assistant.start("Inspect this run", purpose="analysis", run_id=rid)
             task = assistant.tasks[key]
         await asyncio.wait_for(started.wait(), timeout=5)
         task.cancel()

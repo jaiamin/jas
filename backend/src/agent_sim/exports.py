@@ -14,7 +14,7 @@ from .db import (
     Turn,
 )
 from .research import Research, event_dict
-from .simulation.environments import CATALOG
+from .simulation.environments import get_environment
 
 
 def export_study(research: Research, study_id: str) -> dict[str, object]:
@@ -78,11 +78,12 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
         run.id: research.evidence(run.id, 0)
         for run in runs
         if run.turn == 0
-        or run.checkpoint["rule_version"] == CATALOG[environments[run.condition_id]].world.version
+        or run.checkpoint["rule_version"]
+        == get_environment(environments[run.condition_id]).world.version
     }
     return {
         "format": "jas-study",
-        "version": 11,
+        "version": 12,
         "investigations": [
             {
                 "id": i.id,

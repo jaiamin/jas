@@ -58,7 +58,9 @@ export function AgentFields({
               ? 4
               : design.environment === "distributed_coordination"
                 ? 3
-                : 12)
+                : design.environment === "sealed_relay"
+                  ? 2
+                  : 12)
           }
           onClick={() => {
             let n = design.profiles.length + 1;

@@ -490,9 +490,10 @@ def apply_lens(frozen: dict, key: LensKey) -> dict:
                 f"{artifact['outcome']['status'] if artifact['outcome'] else 'unfinished'}."
             )
         else:
+            utility = values[f"run:{rid}:total_utility"]
             text = (
                 f"{row['recorded_turns']} recorded decisions; cumulative utility "
-                f"{values[f'run:{rid}:total_utility']:g}."
+                f"{format(utility, 'g') if utility is not None else 'unavailable'}."
             )
         account.append({"run_id": rid, "turn": row["through_turn"], "text": text})
     return {**frozen, "key": key, **LENSES[key], "account": account}

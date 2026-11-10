@@ -85,6 +85,29 @@ export function ExperimentReview({
                 Based on a pinned mechanics example. This experiment keeps its
                 own configured rules.
               </p>
+              {design.environment_source.definition.extension && (
+                <details className="text-sm">
+                  <summary>Admitted extension and independent checks</summary>
+                  <p className="mt-3 break-all">
+                    Package v
+                    {design.environment_source.definition.extension.version} ·
+                    SHA-256{" "}
+                    {design.environment_source.definition.extension.sha256}
+                  </p>
+                  <p className="mt-3">
+                    {design.environment_source.definition.extension.capabilities.join(
+                      " · ",
+                    )}
+                  </p>
+                  <ul className="mt-3 flex flex-col gap-2">
+                    {design.environment_source.definition.extension.checks.map(
+                      (check) => (
+                        <li key={check.stage}>{check.detail}</li>
+                      ),
+                    )}
+                  </ul>
+                </details>
+              )}
             </section>
           )}
           {(design.hypothesis || design.context) && (
@@ -145,6 +168,13 @@ export function ExperimentReview({
                   <span className="block">
                     {condition.harness.tools.join(", ")}
                   </span>
+                )}
+                {condition.parameters.relay && (
+                  <p className="text-sm text-muted-foreground">
+                    Sealed relay · Submitter{" "}
+                    {condition.parameters.relay.submitter} · Reviewer{" "}
+                    {condition.parameters.relay.reviewer} · Three action credits
+                  </p>
                 )}
                 {condition.parameters.artifacts && (
                   <div className="mt-2 flex flex-col gap-1">

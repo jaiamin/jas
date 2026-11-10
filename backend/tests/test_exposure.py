@@ -506,7 +506,7 @@ def test_current_inspection_and_export_share_source_linked_exposure_without_muta
     assert response.status_code == 200, response.text
     assert response.json()["runs"] == [exposure]
     exported = client.get(f"/api/studies/{sid}/export").json()
-    assert exported["version"] == 11
+    assert exported["version"] == 12
     assert exported["exposure"] == [exposure]
     assert exported["runs"][0]["record"] == before
     assert client.get(f"/api/runs/{rid}").json() == before

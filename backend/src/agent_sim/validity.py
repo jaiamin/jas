@@ -10,9 +10,9 @@ from typing import Literal
 
 from pydantic import Field, field_validator
 
-from .domain import Action, Decision, Design, StopArtifact, Strict, Treatment
+from .domain import Action, Decision, Design, RelayAction, StopArtifact, Strict, Treatment
 from .simulation.checkpoints import Observation
-from .simulation.environments import CATALOG, create_world
+from .simulation.environments import create_world, get_environment
 from .simulation.world import World
 
 COMMON = {
@@ -32,6 +32,12 @@ CAPABILITIES = {
         "commitments": "Typed optional promises, voluntary reliance, declared windows/deadlines, "
         "independent recipient effects and explicit infeasible/absent/unresolved "
         "outcomes; no intent judge.",
+    },
+    "sealed_relay": {
+        "finite_stock": (
+            "Three action credits coupled to an independently checked finite "
+            "relay; explicit actor permissions and private reviewer docket."
+        )
     },
     "distributed_coordination": {
         "versioned_artifacts": "Actor-authorized local evidence and versioned shared drafts.",
@@ -155,11 +161,16 @@ class Requirement(Strict):
 
 def capabilities(environment: str) -> dict[str, str]:
     available = {**COMMON, **CAPABILITIES[environment]}
-    if environment in {"artifact_workspace", "distributed_coordination", "reliance_commitments"}:
+    if environment in {
+        "artifact_workspace",
+        "sealed_relay",
+        "distributed_coordination",
+        "reliance_commitments",
+    }:
         for key in (
-            ("messaging", "signal_disclosure")
-            if environment == "artifact_workspace"
-            else ("signal_disclosure",)
+            ("signal_disclosure",)
+            if environment in {"distributed_coordination", "reliance_commitments"}
+            else ("messaging", "signal_disclosure")
         ):
             available.pop(key)
     return available
@@ -302,6 +313,15 @@ def factorial_issues(grid: dict) -> list[dict]:
 
 def _instrument(world: World, actor: str, observation: Observation, variant: int) -> Decision:
     """Legal diagnostic choices only. Never used by participant execution."""
+    if "relay" in observation:
+        choices = [option["kind"] for option in observation["legal_actions"]]
+        operation = choices[0] if variant == 0 else "wait" if variant == 1 else "stop"
+        return Decision(
+            action=RelayAction.model_validate({"operation": operation}),
+            rationale="Independent preflight mechanics witness, not model behavior.",
+            memory="",
+            forecast=None,
+        )
     if "artifacts" in observation:
         return Decision(
             action=StopArtifact(kind="stop"),
@@ -366,9 +386,9 @@ def _instrument(world: World, actor: str, observation: Observation, variant: int
     )
 
 
-def _trace(design: Design, condition: Treatment, variant: int) -> dict:
+def _trace(design: Design, condition: Treatment, variant: int, runner=None) -> dict:
     resolved = design.resolve(condition)
-    world = create_world(resolved, condition.parameters, design.seeds[0])
+    world = create_world(resolved, condition.parameters, design.seeds[0], runner=runner)
     observations, outcomes = [], []
     for _ in range(min(design.turn_count, 96)):
         actor = world.actor()
@@ -401,7 +421,9 @@ def _trace(design: Design, condition: Treatment, variant: int) -> dict:
     }
 
 
-def preflight(design: Design) -> dict:
+def preflight(design: Design, *, runner=None) -> dict:
+    if design.environment == "sealed_relay":
+        return _preflight.__wrapped__(design.model_dump_json(), runner)
     return copy.deepcopy(_preflight(design.model_dump_json()))
 
 
@@ -412,7 +434,7 @@ def require_valid(report: dict) -> None:
 
 
 @lru_cache(maxsize=64)
-def _preflight(specification: str) -> dict:
+def _preflight(specification: str, runner=None) -> dict:
     design = Design.model_validate_json(specification)
     issues, comparisons = [], []
 
@@ -563,7 +585,7 @@ def _preflight(specification: str) -> dict:
         )
     for c in design.conditions:
         try:
-            traces[c.key] = [_trace(design, c, variant) for variant in range(3)]
+            traces[c.key] = [_trace(design, c, variant, runner) for variant in range(3)]
         except (ValueError, AssertionError) as error:
             issue(
                 "invalid_witness",
@@ -573,9 +595,10 @@ def _preflight(specification: str) -> dict:
             )
     baseline = design.conditions[0]
     # Endowment also sets incidental synthetic signal ranges in these worlds.
-    active = set(CATALOG[design.environment].parameters)
+    active = set(get_environment(design.environment).parameters)
     if design.environment not in {
         "artifact_workspace",
+        "sealed_relay",
         "distributed_coordination",
         "reliance_commitments",
     }:
@@ -679,7 +702,7 @@ def _preflight(specification: str) -> dict:
         "condition_grid": grid,
         "probe_turns": sum(r["turns"] for rows in traces.values() for r in rows),
         "probe_limit_per_instrument": 96,
-        "limits": f"Checks use current rules {CATALOG[design.environment].world.version}. "
+        "limits": f"Checks use current rules {get_environment(design.environment).world.version}. "
         "Three legal scripted instruments on the first seed, up to 96 turns each. "
         "These are mechanism witnesses, not predictions, exhaustive strategy search "
         "or certification of question fidelity.",

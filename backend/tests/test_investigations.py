@@ -6,7 +6,7 @@ import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from threading import Barrier, Event
+from threading import Barrier, Event, get_ident
 
 import pytest
 from agent_sim.api import create_app
@@ -14,6 +14,8 @@ from fastapi.testclient import TestClient
 from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import DeltaToolCall, FunctionModel
 from pydantic_ai.usage import RequestUsage
+
+from backend.tests.test_extension_integration import admitted as admitted
 
 
 @pytest.fixture
@@ -140,6 +142,184 @@ def wait_for(client, key, *, statuses=("complete", "stopped", "cancelled", "fail
             return row
         time.sleep(0.01)
     pytest.fail(f"Investigation did not settle: {row}")
+
+
+def test_installed_admitted_world_is_available_with_an_explicit_zero_spend_allowance(
+    admitted, monkeypatch
+):
+    client, _source = admitted
+    sent, _ = stand_in(client, monkeypatch)
+    assert "sealed_relay" in {
+        world["key"] for world in client.get("/api/catalog").json()["environments"]
+    }
+    submitted = client.post(
+        "/api/investigations",
+        json=authorization(
+            question="Describe the admitted sealed relay within zero spending allowance.",
+            environments=["sealed_relay"],
+            budget_usd=0,
+            study_budget_usd=0,
+            max_agents=2,
+        ),
+    )
+    assert submitted.status_code == 202, submitted.text
+    row = wait_for(client, submitted.json()["id"])
+    assert row["authorization"]["environments"] == ["sealed_relay"]
+    assert row["status"] == "stopped"
+    assert row["stop_reason"] == "spending_allowance_exhausted"
+    assert row["requests"] == row["runs"] == row["turns"] == 0
+    assert sent == []
+
+
+@pytest.mark.parametrize("cancel_save", [False, True])
+def test_complete_admitted_investigation_keeps_real_worker_off_the_api_loop(
+    admitted, monkeypatch, cancel_save
+):
+    import agent_sim.extensions as extensions
+
+    client, source = admitted
+    design = client.post(
+        "/api/design/use-environment", json={"source": source, "example": "independent"}
+    ).json()
+    question = "Can a submitter lodge and a reviewer release the admitted sealed relay?"
+    design.update(question=question, seeds=[347], rounds=1, budget_usd=2, response_tokens=4096)
+    design["conditions"][0]["harness"] = {"kind": "direct_action", "version": "1.0.0"}
+
+    async def relay(fields, prompt):
+        if "operationalization" in fields:
+            return {
+                "supported": True,
+                "intent": "exploratory",
+                "explanation": "Describe a literal finite relay.",
+                "operationalization": "Record whether authorized lodge/release completes.",
+                "size_rationale": "Two permissions, one opportunity each, one fixed seed.",
+                "agents": 2,
+                "conditions": 1,
+                "seeds": 1,
+                "repetitions": 1,
+                "rounds": 1,
+                "research_query": None,
+                "requirements": [
+                    {
+                        "source": "sealed relay",
+                        "capability": "finite_stock",
+                        "mapping": "direct",
+                        "explanation": "Three finite credits and explicit actor permissions.",
+                    }
+                ],
+            }
+        if "design" in fields:
+            return {
+                "design": design,
+                "explanation": "One independently admitted fixed relay.",
+                "probes": [
+                    {
+                        "condition_key": design["conditions"][0]["key"],
+                        "steps": [
+                            {
+                                "actor": design["profiles"][0]["key"],
+                                "action": {"kind": "relay", "operation": "lodge"},
+                            }
+                        ],
+                    }
+                ],
+            }
+        if "action" in fields:
+            return {
+                "action": {
+                    "kind": "relay",
+                    "operation": "lodge" if prompt["relay"]["phase"] == 0 else "release",
+                },
+                "memory": "",
+                "rationale": "Scripted DEVELOPMENT relay decision.",
+                "forecast": None,
+            }
+
+    sent, _ = stand_in(client, monkeypatch, override=relay)
+    assert client.portal is not None
+    api_thread = client.portal.call(get_ident)
+    worker_threads = []
+    execute = extensions.execute
+    identity = {}
+    save_entered, release_save = Event(), Event()
+
+    def observed(*args, **kwargs):
+        worker_threads.append(get_ident())
+        result = execute(*args, **kwargs)
+        if cancel_save and identity and not save_entered.is_set():
+            progress = client.get(f"/api/investigations/{identity['id']}").json()
+            if progress["attempts"] and progress["attempts"][-1]["revision"] is None:
+                proposal = client.get(
+                    f"/api/analyses/{progress['attempts'][-1]['design_id']}"
+                ).json()
+                if proposal["status"] == "complete":
+                    save_entered.set()
+                    assert release_save.wait(10)
+        return result
+
+    monkeypatch.setattr(extensions, "execute", observed)
+    submitted = client.post(
+        "/api/investigations",
+        json=authorization(
+            question=question,
+            environments=["sealed_relay"],
+            max_agents=2,
+            max_turns=2,
+        ),
+    )
+    assert submitted.status_code == 202, submitted.text
+    identity.update(submitted.json())
+    if cancel_save:
+        try:
+            assert save_entered.wait(10)
+            for _ in range(2):
+                cancelled = client.post(
+                    f"/api/investigations/{identity['id']}/control", json={"action": "cancel"}
+                )
+                assert cancelled.status_code == 200, cancelled.text
+            assert cancelled.json()["status"] == "cancelling"
+            assert not any("you" in call["prompt"] for call in sent)
+        finally:
+            release_save.set()
+    row = wait_for(client, submitted.json()["id"])
+    if cancel_save:
+        assert row["status"] == "cancelled", row
+        assert row["runs"] == row["turns"] == 0
+        attempt = row["attempts"][0]
+        assert attempt["revision"] == 1 and attempt["status"] == "cancelled"
+        run_id = attempt["run_ids"][0]
+        assert client.get(f"/api/runs/{run_id}").json()["summary"]["status"] == "ready"
+        refused = client.post(f"/api/runs/{run_id}/control", json={"action": "start"})
+        assert refused.status_code == 422
+        exported = client.get(f"/api/studies/{row['study_id']}/export").json()
+        assert exported["revisions"][0]["design"]["environment_source"] == source
+        assert row["requests"] == len(sent) == 3
+        assert round(row["charged_usd"] * 1_000_000) == 2100
+        assert row["charged_usd"] == row["study_charged_usd"]
+        assert client.get("/api/settings").json()["usage"]["cost_usd"] == row["charged_usd"]
+        assert worker_threads and api_thread not in worker_threads
+        return
+    assert row["status"] == "complete", row
+    utility = row["analysis"]["output"]["lens"]["calculations"][0]
+    assert utility["value"] is None
+    assert "unavailable" in row["analysis"]["output"]["lens"]["account"][0]["text"]
+    run_id = row["attempts"][0]["run_ids"][0]
+    initial = client.get(f"/api/runs/{run_id}/turns/0").json()["checkpoint"]
+    final = client.get(f"/api/runs/{run_id}").json()
+    assert (initial["phase"], initial["credits"]) == (0, 3)
+    assert (final["state"]["phase"], final["state"]["credits"]) == (2, 0)
+    assert final["state"]["outcome"] == {"success": True, "reason": "released"}
+    assert final["summary"]["turn"] == row["turns"] == 2
+    assert final["design"]["environment_source"] == source
+    participant = [call["prompt"] for call in sent if "you" in call["prompt"]]
+    assert len(participant) == 2
+    assert "seal-42" not in json.dumps(participant[0])
+    assert participant[1]["relay"]["docket"] == "seal-42"
+    assert client.post(f"/api/runs/{run_id}/verify", json={}).json()["verified_turns"] == 2
+    exported = client.get(f"/api/studies/{row['study_id']}/export").json()
+    assert exported["investigations"][0]["status"] == "complete"
+    assert client.get(f"/api/studies/{row['study_id']}/exposure").status_code == 200
+    assert worker_threads and api_thread not in worker_threads
 
 
 def test_one_explicit_action_completes_narrow_investigation_with_durable_scope(client, monkeypatch):

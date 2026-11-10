@@ -145,7 +145,7 @@ async def participant_trial(app, case, mode: str, repetition: int, arm: int, stu
     )
     params = data["conditions"][arm]["parameters"]
     initial = app.state.research.evidence(run_id, 0)["checkpoint"]
-    app.state.engine.start(run_id)
+    await app.state.engine.start(run_id)
     await app.state.engine.executions[run_id].task
     record, _, _ = app.state.research.configuration(run_id)
     replay = app.state.engine.replay(run_id)

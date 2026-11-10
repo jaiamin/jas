@@ -26,11 +26,12 @@ from .db import (
 from .domain import Design, Treatment
 from .environment_library import EnvironmentLibrary, validate_source
 from .exposure import exposure_report
+from .extensions import Extensions
 from .llm import PRICES, LanguageModels, Usage, empty_usage
 from .metrics import aggregate_metrics
 from .participant_context import OPERATION_CAPABILITY
 from .participants import activation_record, operation_record
-from .simulation.environments import CATALOG, create_world
+from .simulation.environments import create_world, get_environment
 from .validity import Requirement, factorial_issues, preflight, require_valid, requirement_issues
 
 
@@ -92,10 +93,26 @@ class OperationalRun:
 class Research:
     def __init__(self, db: Database, models: LanguageModels):
         self.db, self.models = db, models
-        self.environments = EnvironmentLibrary(db.engine.url.database)
+        self.extensions = Extensions(db.engine.url.database)
+        self.environments = EnvironmentLibrary(db.engine.url.database, self.extensions)
+
+    def world(self, design: Design, parameters, seed: int, state: dict | None = None):
+        return create_world(design, parameters, seed, state, runner=self.extensions.transition)
+
+    def review_design(self, design: Design, plan_id: str | None = None) -> dict:
+        """Authorize an untrusted draft before any executable preflight witness."""
+        self.validate_design(design)
+        if design.environment == "sealed_relay":
+            source = design.environment_source
+            if source is None or source.definition.extension is None:
+                raise ValueError("Independent extension admission is required")
+            self.extensions.check_package(source.definition.extension)
+        return self.preflight(design, plan_id)
 
     def preflight(self, design: Design, plan_id: str | None = None) -> dict:
-        result = preflight(design)
+        # Persisted revisions carry their exact package and provenance. Their checks
+        # must remain possible after loss of the original review/admission sidecars.
+        result = preflight(design, runner=self.extensions.transition)
         result["question_mapping"] = []
         result["original_question"] = None
         if plan_id:
@@ -148,7 +165,7 @@ class Research:
             for p in design.profiles + [p for c in design.conditions for p in c.profile_overrides]
         ):
             raise ValueError("Choose a model in the reviewed provider catalog")
-        environment_definition = CATALOG[design.environment]
+        environment_definition = get_environment(design.environment)
         unsupported = sorted(set(design.measures) - set(environment_definition.measures))
         if unsupported:
             raise ValueError(
@@ -164,8 +181,7 @@ class Research:
         plan_id: str | None = None,
         investigation_id: str | None = None,
     ) -> str:
-        self.validate_design(design)
-        require_valid(self.preflight(design, plan_id))
+        require_valid(self.review_design(design, plan_id))
         payload = design.model_dump()
         with self.db.session.begin() as session:
             if plan_id:
@@ -218,7 +234,7 @@ class Research:
                 for seed in design.seeds:
                     for repetition in range(1, design.repetitions + 1):
                         resolved = design.resolve(condition)
-                        world = create_world(resolved, condition.parameters, seed)
+                        world = self.world(resolved, condition.parameters, seed)
                         run = Run(
                             study_id=study.id,
                             condition_id=record.id,
@@ -535,7 +551,7 @@ class Research:
                 .join(Condition, Run.condition_id == Condition.id)
                 .where(Condition.revision_id == revision.id)
             ).all()
-        current_version = CATALOG[revision.design["environment"]].world.version
+        current_version = get_environment(revision.design["environment"]).world.version
         incompatible = [
             (status, version) for status, version in versions if version != current_version
         ]
@@ -594,6 +610,18 @@ class Research:
             measurements = session.scalars(
                 select(Measurement).where(Measurement.run_id == run_id).order_by(Measurement.id)
             ).all()
+        blocked = None
+        if run.checkpoint["rule_version"] != get_environment(design.environment).world.version:
+            blocked = (
+                "Saved rules differ from this engine. Inspect evidence or save a new revision; "
+                "this run cannot resume or replay here."
+            )
+        elif design.environment == "sealed_relay":
+            assert design.environment_source and design.environment_source.definition.extension
+            try:
+                self.extensions.check_runtime(design.environment_source.definition.extension)
+            except ValueError as error:
+                blocked = str(error)
         return {
             "summary": self.run_summary(run, design, condition, revision),
             "design": design.model_dump(),
@@ -601,15 +629,10 @@ class Research:
             "harness": condition.harness.model_dump(),
             "activations": self.activations(run_id),
             "effort": self.participant_effort({run_id: run.turn + 1})[run_id],
-            "next_actor": create_world(
-                design, condition.parameters, run.seed, run.checkpoint
-            ).actor()
-            if run.checkpoint["rule_version"] == CATALOG[design.environment].world.version
+            "next_actor": self.world(design, condition.parameters, run.seed, run.checkpoint).actor()
+            if run.checkpoint["rule_version"] == get_environment(design.environment).world.version
             else None,
-            "execution_blocked": None
-            if run.checkpoint["rule_version"] == CATALOG[design.environment].world.version
-            else "Saved rules differ from this engine. Inspect evidence or save a new revision; "
-            "this run cannot resume or replay here.",
+            "execution_blocked": blocked,
             "requests": [
                 {
                     "id": c.id,
@@ -748,13 +771,16 @@ class Research:
             if number == 0:
                 if run.turn == 0:
                     checkpoint = run.checkpoint
-                elif run.checkpoint["rule_version"] != CATALOG[design.environment].world.version:
+                elif (
+                    run.checkpoint["rule_version"]
+                    != get_environment(design.environment).world.version
+                ):
                     raise ValueError(
                         "Initial state cannot be reconstructed with different rules; "
                         "inspect recorded turns"
                     )
                 else:
-                    checkpoint = create_world(design, condition.parameters, run.seed).snapshot()
+                    checkpoint = self.world(design, condition.parameters, run.seed).snapshot()
                 return {
                     "round": checkpoint["round"],
                     "number": 0,

@@ -176,6 +176,7 @@ class Observation(TypedDict):
     writes_remaining: NotRequired[int]
     last_result: NotRequired[dict[str, Any] | None]
     artifact_history: NotRequired[list[dict[str, Any]]]
+    relay: NotRequired[dict[str, Any]]
     logical_time: NotRequired[int]
     coordination: NotRequired[dict[str, Any]]
     inbox: NotRequired[list[dict[str, Any]]]

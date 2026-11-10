@@ -32,6 +32,7 @@ export const parameters: Parameters = {
   },
   composition: null,
   artifacts: null,
+  relay: null,
   coordination: null,
   commitments: null,
   resource_schedule: [],
@@ -115,7 +116,7 @@ export const catalog: Catalog = {
   environments: [
     {
       source: {
-        format: "jas-environment-v6",
+        format: "jas-environment-v7",
         id: "builtin:institution",
         revision: 1,
         updated: "4.0.0",
@@ -125,6 +126,7 @@ export const catalog: Catalog = {
           name: "Institution",
           description: "",
           environment: "institution",
+          extension: null,
           rule_version: "4.0.0",
           examples: [],
         },

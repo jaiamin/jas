@@ -27,6 +27,12 @@ const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
       enforces:
         "Typed promises and reliance, declared opening/deadline windows, final alternative choices and independent recipient effects. Feasibility, actual opportunities, unresolved deadlines and null outcomes remain explicit. A mechanical breach does not establish deception or betrayal.",
     },
+    sealed_relay: {
+      observes:
+        "Public phase, action credits, own explicit permission and authorized memory. Only the reviewer receives the private docket.",
+      enforces:
+        "Independently admitted finite transitions, explicit permissions, three shared credits, bounded isolated execution and complete replay. Unsupported mechanics cannot execute.",
+    },
     distributed_coordination: {
       observes:
         "An explicit directory and topology, actor-scoped evidence, shared draft versions and addressed inbox. The shared-information control opens evidence readers; private value content requires an authorized read.",

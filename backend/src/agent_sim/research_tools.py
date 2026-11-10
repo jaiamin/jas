@@ -10,7 +10,7 @@ from .domain import ActionRequest, Decision, Design, Parameters, Strict
 from .environment_library import builtin_environment
 from .investigation_limits import claim_work
 from .research import Research
-from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, create_world
+from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS
 from .templates import templates
 from .validity import capabilities
 
@@ -238,13 +238,24 @@ class ResearchTools:
                     data=data,
                     sources=[{"kind": "analysis", "id": item.id, "hash": digest(data)}],
                 )
-        elif request.environment is not None and request.environment not in CATALOG:
-            operation.update(
-                status="rejected",
-                summary="This environment is not implemented in the trusted catalog.",
-                data=None,
-            )
         else:
+            custom = [
+                record.model_dump()
+                for record in self.research.environments.list()
+                if request.environment is None
+                or record.definition.environment == request.environment
+            ][:12]
+            if (
+                request.environment is not None
+                and request.environment not in CATALOG
+                and not custom
+            ):
+                operation.update(
+                    status="rejected",
+                    summary="This environment is not implemented in the trusted catalog.",
+                    data=None,
+                )
+                return operation
             environments = []
             for key, definition in CATALOG.items():
                 if request.environment is not None and key != request.environment:
@@ -264,18 +275,13 @@ class ResearchTools:
                 }
                 environments.append(data)
                 operation["sources"].append({"kind": "builtin", "id": key, "hash": digest(data)})
-            custom = [
-                record.model_dump()
-                for record in self.research.environments.list()
-                if request.environment is None
-                or record.definition.environment == request.environment
-            ][:12]
             operation["sources"].extend(
                 {"kind": "environment", "id": record["id"], "hash": record["sha256"]}
                 for record in custom
             )
             operation.update(
-                summary=f"Inspected {len(environments)} implemented environment definitions.",
+                summary=f"Inspected {len(environments)} installed and {len(custom)} saved "
+                "environment definitions.",
                 data={
                     "environments": environments,
                     "custom_environments": custom,
@@ -334,9 +340,12 @@ class ResearchTools:
                 {"kind": "run", "id": source.run_id, "turn": source.turn, "hash": digest(state)}
             ]
         design = Design.model_validate(design.model_dump()).resolve(condition)
-        self.research.validate_design(design)
+        if isinstance(source, (CandidateSource, ProposalSource)):
+            self.research.review_design(design)
+        else:
+            self.research.validate_design(design)
         # World copies the JSON checkpoint. Never use an Engine, save, or provider here.
-        world = create_world(design, condition.parameters, seed, state)
+        world = self.research.world(design, condition.parameters, seed, state)
         initial = world.snapshot()
         actor = world.actor()
         observation = world.observe(actor) if actor else None
@@ -361,7 +370,7 @@ class ResearchTools:
                 break
             observed = world.observe(current_actor)
             # A fresh candidate makes even a rejected transition atomic for the probe.
-            candidate = create_world(design, condition.parameters, seed, world.snapshot())
+            candidate = self.research.world(design, condition.parameters, seed, world.snapshot())
             try:
                 events, measures = candidate.step(
                     step.actor,

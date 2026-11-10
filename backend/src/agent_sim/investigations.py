@@ -8,7 +8,8 @@ from sqlalchemy import select
 
 from .assistants import Assistants
 from .db import Analysis, Database, InvestigationRecord, ProviderCall, Study, digest, now, uid
-from .domain import Design, Strict
+from .diagnostics import log_failure
+from .domain import Design, EnvironmentId, Strict
 from .execution import Engine
 from .investigation_limits import InvestigationStopped, wait_ready
 from .llm import LanguageModels, ProviderFailure
@@ -21,7 +22,7 @@ class InvestigationAuthorization(Strict):
     chat_id: str | None = Field(default=None, max_length=80)
     researcher_model: Literal["openai:gpt-6.1-sol"] = "openai:gpt-6.1-sol"
     participant_model: Literal["openai:gpt-6-luna"] = "openai:gpt-6-luna"
-    environments: list[str] = Field(min_length=1, max_length=12)
+    environments: list[EnvironmentId] = Field(min_length=1, max_length=12)
     harnesses: list[Literal["direct_action", "tool_using"]] = Field(min_length=1, max_length=2)
     budget_usd: float = Field(ge=0, le=10, allow_inf_nan=False)
     study_budget_usd: float = Field(ge=0, le=10, allow_inf_nan=False)
@@ -42,8 +43,8 @@ class InvestigationAuthorization(Strict):
     @model_validator(mode="after")
     def supported_scope(self):
         self.question = self.question.strip()
-        if not self.question or not set(self.environments) <= CATALOG.keys():
-            raise ValueError("Choose a question and installed environments")
+        if not self.question:
+            raise ValueError("Choose a question")
         if self.adapt_after_pilot and not self.pilot:
             raise ValueError("Adaptation after a pilot requires a pilot allowance")
         return self
@@ -76,6 +77,11 @@ class Investigations:
     def start(self, authorization: InvestigationAuthorization) -> dict:
         if self.closing:
             raise ValueError("Server is stopping")
+        available = set(CATALOG) | {
+            source.definition.environment for source in self.research.environments.list()
+        }
+        if not set(authorization.environments) <= available:
+            raise ValueError("Choose installed environments with actual admission")
         scope = authorization.model_dump()
         chat_id, key = authorization.chat_id or uid(), uid()
         if authorization.chat_id:
@@ -310,7 +316,7 @@ class Investigations:
         scope = row["authorization"]
         if len(row["attempts"]) >= scope["max_design_attempts"]:
             raise InvestigationStopped("design_attempt_allowance_exhausted")
-        design_id = self.assistants.start(
+        design_id = await self.assistants.start(
             scope["question"],
             purpose="design",
             study_id=row["study_id"],
@@ -382,10 +388,22 @@ class Investigations:
                     },
                 ],
             )
-        self._save(key, design_id, design)
+        await self._save(key, design_id, design)
         await self._runs(key)
 
-    def _save(self, key: str, design_id: str, design: Design) -> None:
+    async def _save(self, key: str, design_id: str, design: Design) -> None:
+        work = asyncio.create_task(asyncio.to_thread(self._commit_design, key, design_id, design))
+        cancelled = False
+        while True:
+            try:
+                await asyncio.shield(work)
+                break
+            except asyncio.CancelledError:
+                cancelled = True
+        if cancelled:
+            raise asyncio.CancelledError
+
+    def _commit_design(self, key: str, design_id: str, design: Design) -> None:
         row = self.get(key)
         self.research.save_design(
             design,
@@ -432,7 +450,7 @@ class Investigations:
                 run = self.research.configuration(run_id)[0]
                 if run.status == "complete":
                     break
-                self.engine.start(run_id)
+                await self.engine.start(run_id)
                 execution = self.engine.executions.get(run_id)
                 if execution and execution.task:
                     await execution.task
@@ -461,7 +479,7 @@ class Investigations:
         if previous:
             analysis_id = previous["analysis_id"]
         else:
-            analysis_id = self.assistants.start(
+            analysis_id = await self.assistants.start(
                 "Describe recorded outcomes and failures only. State missing-run and small-sample "
                 "limits; do not infer causal effects, intent, intelligence or research validity.",
                 purpose="analysis",
@@ -555,7 +573,7 @@ class Investigations:
                         }
                     ],
                 )
-                self._save(key, design_id, design)
+                await self._save(key, design_id, design)
             if row["stage"] == "design":
                 if row["attempts"]:
                     design_id = row["attempts"][-1]["design_id"]
@@ -565,7 +583,7 @@ class Investigations:
                     design = self._scope(key, proposal["output"])
                 else:
                     design_id, design = await self._design(key)
-                self._save(key, design_id, design)
+                await self._save(key, design_id, design)
             if self.get(key)["stage"] == "runs":
                 await self._runs(key)
                 if self.get(key)["attempts"][-1]["kind"] == "pilot":
@@ -583,6 +601,7 @@ class Investigations:
         except (ValueError, ProviderFailure) as error:
             self._finish(key, "stopped", str(error))
         except Exception as error:
+            log_failure(f"Investigation {key} failed", error)
             self._finish(key, "failed", f"{type(error).__name__}; no retry or substitute")
 
     async def close(self):

@@ -81,6 +81,15 @@ test("explicit scope completes through HTTP and reload without resubmission", as
     await request.get(`/api/investigations/${identity.id}`)
   ).json();
   expect(record.status).toBe("complete");
+  await page
+    .getByRole("button", { name: "Limitations & uncertainty", exact: true })
+    .click();
+  await expect(
+    page.getByText(/small samples do not establish population or causal effects/),
+  ).toBeVisible();
+  await expect(
+    page.getByText(/Completion does not certify intelligence or research validity/),
+  ).toBeVisible();
   expect(record.requests).toBe(5);
   expect(record.result.research_validity).toBe("unassessed");
   expect(record.authorization.max_turns).toBe(1);

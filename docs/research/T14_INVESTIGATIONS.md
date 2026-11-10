@@ -389,3 +389,86 @@ checkpoint, merge only that accepted frontier, resolve current contracts beyond
 both independently changed schemas, independently exercise reachable T14 worker
 paths, finish frozen T01 after/separate positive parity and final qualification.
 No paid/live/held-out work, publication or root acceptance has occurred.
+
+Before new integration outputs, freeze the reachable admitted-world oracle:
+public catalog discovery followed by explicit zero-spend authorization must
+accept installed `sealed_relay`, retain that scope, and stop at the allowance
+without provider sends. A separately authorized one-round/two-actor investigation
+must preserve the actual admitted package, lodge for1 credit and release for2,
+ending phase2/credits0 after exactly two Luna decisions. The submitter's bounded
+request must lack the private reviewer docket. Every real contained worker call
+on its design/probe/save/start/step/analysis path must run outside the API loop;
+observe the real worker boundary without faking it or asserting private call order.
+Cancellation during a worker-backed save must retain the completed immutable
+revision/attempt and never begin a participant request. No retry or lost accounting.
+Combined contract is DB11/export12/library7; reject historical DB10 explicitly.
+
+
+### Accepted T16 merge and actual-worker qualification
+
+The normal merge of documented accepted `b0446d9` is resolved in source; the
+latest root-documented documentary frontier is now `d276b70` (including published
+`375877c`). The combined current contract is **DB11/export12/library7**. DB10 is
+explicitly rejected alongside earlier versions; no migration, alias or reset.
+Root's later preservation/coordination headers add no application qualification.
+
+The independent admitted-world HTTP oracle first rejected a catalog-listed
+`sealed_relay`. Authorization now accepts only typed installed worlds, including
+actual saved admissions. Its zero-allowance witness stops with zero requests.
+The full relay initially hit the stand-in's response limit; only that fixture's
+response allowance was corrected, retaining its failure. It then exposed a real
+analysis failure: formatting unavailable financial utility as a number. Utility
+now remains null and its descriptive account says unavailable, without inventing
+financial outcomes.
+
+Once that failure was repaired, the same complete public workflow exposed real
+contained-worker execution on the API loop. Diagnostic traces localize the
+remaining start preflight. Existing Assistants/Engine submission methods now
+await their read-only preparation through `asyncio.to_thread`; immutable analysis
+inputs are still captured before acceptance. A serialized startup boundary and
+pending execution stop flag preserve one writer and Pause during validation.
+All service callers, including the non-frozen live evaluation caller, now await
+submission. Frozen T01 runner/cases/scores are unchanged and were not executed
+against live or held-out tasks.
+
+The investigation's entire immutable save/attempt operation runs on the same
+thread boundary and is shielded until its commit finishes; cancellation then
+stops before participant execution. Its shield was added with the offload before
+the cancellation-specific check, so there is no claimed cancellation red for that
+code. The subsequent public cancellation witness exposed synchronous export
+preflight; complete export and study-exposure operations now use the existing
+thread boundary too. Both parameter cases pass: one complete lodge/release relay
+ends phase2/credits0 after exactly two Luna decisions, preserves exact admitted
+source and reviewer privacy, and replays both turns; cancellation during actual
+save retains revision1/its ready run, three completed Sol requests and2100
+scripted microdollars across all ceilings, zero Luna sends, repeated cancellation
+and a rejected external run start. Every actual observed worker on the tested
+save/probe/start/step/analysis/export path remains outside the API loop. No private
+call order is asserted and the contained worker is never faked.
+
+Latest source-stamped DEVELOPMENT checks before documentary closure:
+`merged-http-lifecycle`63, `merged-analysis-regressions`61 and
+`merged-contract-regressions`715 cases all pass in three separate jobs. The last
+job includes parametrized World validity checks; these counts are not a whole
+backend suite. All27 investigation HTTP cases are in the first job. Full Ruff
+and ty pass; their initial import/line-length and synchronous-fixture await errors
+remain retained. Frontend lint,116 units/33 files, forced TypeScript and empty-
+output Vite build pass. Five post-merge real-HTTP browser flows pass together;
+a separate strengthened completion check exposes the small-sample and no-validity-
+certification caveats through the existing disclosure and passes without product
+changes. Desktop completion/mobile paused captures were visually reviewed.
+The five-flow source key is
+`f2bad858b59e7b2082325e3cbe47f07cb8f1030d78ad94e7630a93a85036013f`;
+the later case-only caveat addition has its own exact source archive. Earlier
+four ordinary-composer flows retain their prior-source attribution until the
+remaining focused check. All failures and successful attempts remain indexed.
+
+Own closed-output maps05/06 retain actual restoration/hash/size/mode/integer-ns
+proof. Root's independent object-packing maintenance preserved every object/ref/
+index/HEAD/stash and released staging/commits; it is root evidence, not a T14
+product check. Production still requires its unchanged268435456-byte under-lock
+preflight. The owned production driver streams the canonical tracked-only source
+archive as build context, never a duplicate host tree; it records exact deployed
+backend/assets, non-root keyless smoke, and owned resource closure. Frozen T01
+after/separate positive parity, that production phase and final closure remain.
+No paid calls, held-out access, publication or root acceptance has occurred.

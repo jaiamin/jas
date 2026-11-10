@@ -23,7 +23,7 @@ from .llm import LanguageModels, ProviderFailure
 from .participants import Activation
 from .participants import operations as activation_record_operations
 from .research import Research
-from .simulation.environments import CATALOG, create_world
+from .simulation.environments import get_environment
 
 
 @dataclass
@@ -42,6 +42,7 @@ class Engine:
             raise ValueError("Concurrent runs must be between 1 and 16")
         self.concurrency = concurrency
         self.capacity = asyncio.Semaphore(concurrency)
+        self.start_lock = asyncio.Lock()
         self.closing = False
         with db.session.begin() as session:
             session.execute(
@@ -64,13 +65,24 @@ class Engine:
             )
         models.recover()
 
-    def start(self, run_id: str, *, single: bool = False) -> None:
+    async def start(self, run_id: str, *, single: bool = False) -> None:
         """Enqueue a run on the current event loop without waiting for completion."""
         loop = asyncio.get_running_loop()
         if self.closing:
             raise ValueError("Server is stopping")
-        if self._preflight(run_id):
-            self._enqueue(loop, run_id, single=single)
+        async with self.start_lock:
+            existing = self.executions.get(run_id)
+            if existing and existing.task and not existing.task.done():
+                return
+            preparing = Execution()
+            self.executions[run_id] = preparing
+            try:
+                eligible = await asyncio.to_thread(self._preflight, run_id)
+                if eligible and not preparing.stop and not self.closing:
+                    self._enqueue(loop, run_id, single=single)
+            finally:
+                if self.executions.get(run_id) is preparing:
+                    del self.executions[run_id]
 
     def _preflight(self, run_id: str) -> bool:
         """Check eligibility without changing run state or scheduling work."""
@@ -96,7 +108,7 @@ class Engine:
                 ):
                     raise InvestigationStopped("interrupted_turn_requires_new_attempt")
         self.research.check_run(run_id)
-        if run.checkpoint.get("rule_version") != CATALOG[design.environment].world.version:
+        if run.checkpoint.get("rule_version") != get_environment(design.environment).world.version:
             raise ValueError("This saved run requires a different environment rule version")
         if condition.harness.kind != "scripted":
             for model in {p.model or condition.model for p in design.profiles}:
@@ -132,7 +144,9 @@ class Engine:
             async with self.capacity:
                 while not execution.stop:
                     run, design, condition = self.research.configuration(run_id)
-                    world = create_world(design, condition.parameters, run.seed, run.checkpoint)
+                    world = self.research.world(
+                        design, condition.parameters, run.seed, run.checkpoint
+                    )
                     actor = world.actor()
                     if actor is None:
                         self._status(run_id, "complete")
@@ -153,7 +167,10 @@ class Engine:
                         return
                     # A final response commits even when Pause arrived while awaiting it.
                     try:
-                        events, measures = world.step(actor, decision)
+                        if design.environment == "sealed_relay":
+                            events, measures = await asyncio.to_thread(world.step, actor, decision)
+                        else:
+                            events, measures = world.step(actor, decision)
                     except ValueError as error:
                         activation.append("reject", decision.model_dump(), str(error), "rejected")
                         activation.finish("failed", "world_rejected", str(error))
@@ -279,15 +296,32 @@ class Engine:
                     )
                 )
 
-    def start_study(self, study_id: str) -> None:
+    async def start_study(self, study_id: str) -> None:
         loop = asyncio.get_running_loop()
         if self.closing:
             raise ValueError("Server is stopping")
-        candidates = [
-            run.id for run in self.research.operational_runs(study_id) if self._preflight(run.id)
-        ]
-        for run_id in candidates:
-            self._enqueue(loop, run_id)
+        async with self.start_lock:
+            preparing = {
+                run.id: Execution()
+                for run in self.research.operational_runs(study_id)
+                if not (
+                    (existing := self.executions.get(run.id))
+                    and existing.task
+                    and not existing.task.done()
+                )
+            }
+            self.executions.update(preparing)
+            try:
+                candidates = await asyncio.to_thread(
+                    lambda: [run_id for run_id in preparing if self._preflight(run_id)]
+                )
+                for run_id in candidates:
+                    if not preparing[run_id].stop and not self.closing:
+                        self._enqueue(loop, run_id)
+            finally:
+                for run_id, execution in preparing.items():
+                    if self.executions.get(run_id) is execution:
+                        del self.executions[run_id]
 
     def pause_study(self, study_id: str) -> None:
         for run in self.research.operational_runs(study_id):
@@ -295,7 +329,12 @@ class Engine:
 
     def replay(self, run_id: str) -> dict:
         run, design, condition = self.research.configuration(run_id)
-        world = create_world(design, condition.parameters, run.seed)
+        if design.environment == "sealed_relay":
+            assert design.environment_source and design.environment_source.definition.extension
+            # Even an empty replay needs the matching current runtime. The trusted
+            # revision carries its admission; original sidecars are not required.
+            self.research.extensions.check_runtime(design.environment_source.definition.extension)
+        world = self.research.world(design, condition.parameters, run.seed)
         if run.checkpoint["rule_version"] != world.version:
             raise ValueError("This saved run requires a different environment rule version")
         with self.db.session() as session:
@@ -303,10 +342,15 @@ class Engine:
                 select(Turn).where(Turn.run_id == run_id).order_by(Turn.number)
             ).all()
         checkpoints = {0: world.snapshot()}
-        artifact_record = (
+        consequence_record = (
             self.research.run(run_id)
             if design.environment
-            in {"artifact_workspace", "distributed_coordination", "reliance_commitments"}
+            in {
+                "artifact_workspace",
+                "sealed_relay",
+                "distributed_coordination",
+                "reliance_commitments",
+            }
             else None
         )
         checked_events = checked_measures = 0
@@ -318,26 +362,26 @@ class Engine:
             if observed != turn.observation:
                 raise ValueError(f"Observation mismatch at turn {turn.number}")
             events, measures = world.step(turn.actor, Decision.model_validate(turn.decision))
-            if artifact_record is not None:
+            if consequence_record is not None:
                 recorded_events = [
                     {
                         key: event[key]
                         for key in ("kind", "actor", "target", "visibility", "text", "data")
                     }
-                    for event in artifact_record["events"]
+                    for event in consequence_record["events"]
                     if event["turn"] == turn.number and event["round"] == turn.round
                 ]
                 recorded_measures = [
                     {key: measure[key] for key in ("key", "value", "denominator", "agent")}
-                    for measure in artifact_record["measurements"]
+                    for measure in consequence_record["measurements"]
                     if measure["turn"] == turn.number
                     and measure["round"] == turn.round
                     and measure["version"] == 1
                 ]
                 if recorded_events != [event.model_dump() for event in events]:
-                    raise ValueError(f"Artifact consequence mismatch at turn {turn.number}")
+                    raise ValueError(f"World consequence mismatch at turn {turn.number}")
                 if recorded_measures != [measure.model_dump() for measure in measures]:
-                    raise ValueError(f"Artifact measurement mismatch at turn {turn.number}")
+                    raise ValueError(f"World measurement mismatch at turn {turn.number}")
                 checked_events += len(recorded_events)
                 checked_measures += len(recorded_measures)
             if digest(world.snapshot()) != turn.state_hash or world.snapshot() != turn.checkpoint:
@@ -345,14 +389,15 @@ class Engine:
             checkpoints[turn.number] = world.snapshot()
         if len(turns) != run.turn or world.snapshot() != run.checkpoint:
             raise ValueError("Run checkpoint does not match recorded consequences")
-        if artifact_record is not None and (
-            checked_events != len(artifact_record["events"])
-            or checked_measures != len(artifact_record["measurements"])
+        if consequence_record is not None and (
+            checked_events != len(consequence_record["events"])
+            or checked_measures != len(consequence_record["measurements"])
         ):
-            raise ValueError("Artifact consequences contain unrecorded turn references")
+            raise ValueError("World consequences contain unrecorded turn references")
         result = {"verified_turns": len(turns), "model_requests": 0, "rule_version": world.version}
         if design.environment in {
             "artifact_workspace",
+            "sealed_relay",
             "distributed_coordination",
             "reliance_commitments",
         }:
@@ -361,7 +406,7 @@ class Engine:
                 prior = checkpoints.get(activation["turn"] - 1)
                 if prior is None or digest(prior) != activation["checkpoint_hash"]:
                     raise ValueError("Activation checkpoint mismatch")
-                restored = create_world(design, condition.parameters, run.seed, prior)
+                restored = self.research.world(design, condition.parameters, run.seed, prior)
                 actor = activation["actor"]
                 if restored.actor() != actor:
                     raise ValueError("Activation actor mismatch")
@@ -440,9 +485,9 @@ class Engine:
                             restored.step(actor, Decision.model_validate(operation["request"]))
                         except ValueError as error:
                             if str(error) != operation["result"] or restored.snapshot() != prior:
-                                raise ValueError("Artifact rejection receipt mismatch") from error
+                                raise ValueError("World rejection receipt mismatch") from error
                         else:
-                            raise ValueError("Recorded artifact rejection was not rejected")
+                            raise ValueError("Recorded World rejection was not rejected")
                         rejections += 1
             result["verified_reads"] = reads
             result["verified_rejections"] = rejections

@@ -61,7 +61,7 @@ def test_manual_design_step_evidence_and_export(client, design):
     assert client.get("/api/openapi.json").json()["info"]["title"] == "JAS"
     export = response.json()
     assert export["format"] == "jas-study"
-    assert export["version"] == 11
+    assert export["version"] == 12
     assert export["rule_versions"] == ["4.0.0"]
     assert export["runs"][0]["evidence"][1] == evidence
     assert client.post(f"/api/runs/{rid}/verify", json={}).json()["verified_turns"] == 1

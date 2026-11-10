@@ -17,7 +17,6 @@ from .db import Database
 from .domain import Strict
 from .environment_library import EnvironmentConflict
 from .execution import Engine
-from .extensions import Extensions
 from .investigations import Investigations
 from .llm import LanguageModels, ProviderFailure
 from .research import Research
@@ -76,7 +75,7 @@ def create_app(
     )
     assistants = Assistants(db, research, models)
     investigations = Investigations(db, research, models, assistants, engine)
-    extensions = Extensions(db.engine.url.database)
+    extensions = research.extensions
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI):

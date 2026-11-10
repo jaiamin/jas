@@ -1,43 +1,125 @@
-# T14 implementation — active isolated writer
+# T14 implementation — accepted-T16 integration in progress
 
-Branch `t3/t14-investigation-workflow`; coherent pre-integration checkpoint starts
-from accepted `8df6c592c453e0595406711b9fe3387f8c385d26`. Implementation remains
-in progress/unaccepted. Root has now authorized documented accepted T16 frontier
-`b0446d9ea54b2e49fe93fc6d7a2bcdea6341af7b`; do not merge any provisional tips.
-Full plan/oracles/decisions/chronology:
-[the T14 report](docs/research/T14_INVESTIGATIONS.md).
+Branch `t3/t14-investigation-workflow`; starting accepted ancestor
+`8df6c592c453e0595406711b9fe3387f8c385d26`. Only T14 is implemented here;
+root acceptance is separate. Normal accepted `b0446d9` merge is resolved in
+source; latest root-documented accepted documentary tip is
+`d276b70a80656094862c304385baedd3752c3ec7` (includes published375877c).
+Combined current contract: **DB11/export12/library7**, with explicit historical
+rejections. Never merge provisional review tips.
 
-All24 new HTTP cases pass together;113 core,54 design/privacy,8 export-contract
-and7 focused assistant cases passed in separate source-stamped jobs. Ruff/ty
-pass. Frontend lint/116 units pass, forced TypeScript/clean Vite pass. Five new
-actual-HTTP browser flows pass together plus four ordinary composer regressions.
-A later paused-label browser red led to a small heading/animation repair; its
-first green used stale dist and failed, then passed after clean build. Final
-frontend checks and accepted-T16 integration/actual-worker qualification remain.
-Frozen T01 before retains four export-v4 failures/failed flags/exit1; after and
-separate positive current-contract parity remain pending. Never rescore.
-Slice17 remains passing verification with an unobserved-red/TDD sequencing gap.
-Slice18's2135 microdollars are scripted accounting, not paid spend.
+Read [T14 plan/oracles/decisions/chronology](docs/research/T14_INVESTIGATIONS.md).
+Latest DEVELOPMENT: all27 T14 HTTP cases pass within63 lifecycle cases;61
+analysis/admitted-world and715 contract/World cases pass separately. Ruff/ty,
+frontend lint/116 units/33 files, forced TypeScript and clean Vite pass. Five
+post-merge HTTP browser flows pass; a separately strengthened caveat-disclosure
+check passes. Actual worker completion/cancel-save/export/privacy/accounting
+witnesses pass. All reds and fixture/helper failures remain. Slice17 retains its
+unobserved-red/TDD sequencing gap;2135/2100 microdollars are scripted accounting.
+Frozen T01 before retains four export-v4 failures/failed flags/exit1. After,
+separate positive parity, final-source production and closure remain pending.
 
-Heavy work is fully released under shared checks.lock with unchanged
-134217728-byte under-lock floor, release between bounded jobs. Space is tight;
-root is coordinating only owner recovery. Preserve private `.venv`, installed
-`frontend/node_modules`, `.tools/t14/uv-cache` and `.tools/t14/pnpm-cache/pnpm`
-(including750-byte verification entry). No new cache consumer. Prior offline,
-ENOSPC, helper and unsupported-cache-command install failures remain; successful
-normal frozen import is `checks/frontend-install-recovery-02`. No isolated overlay
-cost claim. Root immutable uv CLI may be invoked read-only.
+All heavy phases use shared checks.lock and unchanged134217728-byte floor;
+production retains268435456. No new consumer/setup is authorized; root gives
+production priority while arranging headroom. Own uv/pnpm caches are preserved
+future coordinated package-cache resources, with no new consumer writes.
+Use only private `.venv`/node_modules; root's immutable uv CLI remains read-only.
+Root `.venv`/node_modules/dist were removed without affecting private imports.
 
-Evidence only `data/t14/`, one content-keyed tracked-only archive per source tree;
-all child snapshots enforce invocation-local protected exclusions. Never inspect,
-hash, copy or change protected pbcopy/real configuration or synthetic .env bytes.
-Preserve stash, source/custody, maps and every failure. Own closed-output maps
-retain verified hash/size/mode/integer-ns restoration. No inherited helper execution.
-No paid/held-out work, descendants, extra checkouts or publication. Browser
-checks use18127 and retained headless shell through
-`PLAYWRIGHT_BROWSERS_PATH=/home/agent/.cache/ms-playwright`; no download.
-No service/check is running; the owned blank preview tab still needs closure.
-Historical handoffs below remain preserved; root acceptance is separate.
+Evidence only `data/t14/`, one canonical content-keyed tracked-only archive per
+tree. Every nested snapshot uses invocation-local protected exclusions. Never
+inspect/hash/copy protected pbcopy/real configuration or synthetic .env bytes.
+Preserve stash/source/custody/unique evidence/maps. Closed-output maps retain
+verified hash/size/mode/integer-ns restoration. No inherited ignored helpers.
+No paid/held-out work, descendants, extra checkouts, push/PR/issue/publication.
+Browser18127 uses existing retained headless shell via
+`PLAYWRIGHT_BROWSERS_PATH=/home/agent/.cache/ms-playwright`; production uses18128.
+No own service/browser is running; preview reports unavailable/no owned tab.
+Historical handoffs below remain preserved.
+
+# Root coordination — T16 independently verified; frontier advances (2026-11-10)
+
+Root has received sole shared-checkout writing back and independently verified
+accepted `fde4bce1af2483a3249fde02c4f32a199c284ed7`. Every indexed regular file,
+symlink target and directory in the sealed T16 review index matches; its SHA256 is
+`5adbf30d90a47772f748741bc5bd3d980466b3b1fc7516ff77cd41f79c335a4d`.
+Canonical hashes recompute for both review and original custody manifests. All
+2,312 indexed original regular files retain source/custody inode identity;
+these are immutable hardlinked custody, not independent physical copies. Exact
+tracked membership and all 382 non-documentary inputs match final production
+qualification `757a18a2bc28957111cfe1373a713847729d807ddfdd0a3cc47d94168ac50e51`.
+Frozen files and protected stash remain unchanged. Root ran no fresh product test.
+Receipt: `.tools/research-harness/maintenance/T16-root-final-verification-20261110.json`.
+
+Accepted frontier is T01–T11/T13/T15/T16/T19, **DB10/export11/library7**.
+Publish this checkpoint to draft PR32 and immediately link it. T14 remains an
+isolated in-progress implementation on18127; provide the published exact accepted
+SHA for its normal merge and actual-worker save/probe review. T12, T17 and T18
+are Ready; assign fresh isolated implementers within concurrency/storage limits.
+T20 waits for those and accepted T14. Generation, adjudication and live/held-out
+competence remain unverified. No new paid allocation: Sol$0.611632/55 requests,
+$9.388368 remaining; Luna unallocated.
+
+Heavy jobs retain the shared flock and under-lock134,217,728-byte floor; forecast
+additional build/install peaks. Latest root verification observed151,756,800 bytes,
+not reserved. New isolated source work may proceed; coordinate dependency setup
+before any new consumer. Preserve T14's uv cache and tiny pnpm policy-verification
+cache for normal-manager reuse into distinct environments; exact paths/footprints
+are in ignored `maintenance/storage-frontier.json` and the T14 metadata receipt.
+Keep existing Chromium headless shell/FFmpeg; do not redownload full Chromium.
+Protect unread original `pbcopy`, opaque configurations, stash and all compression
+maps, including the795-path root map and closed-root-T11/closed-T07 logical maps.
+Never execute inherited ignored evidence helpers. Historical headers follow.
+
+# T16 accepted — final completion returns sole writing to root (2026-11-10)
+
+T16/#27 is accepted for finite deterministic DEVELOPMENT scope. Standards and
+Spec each have zero unresolved findings, reasoned separately and personally with
+no descendants/extra checkout. Started at published accepted `8df6c59`; plan
+`548640e` froze literal oracles. Exact source `475bfc73` remains second parent
+of no-ff `40ef0e59`, preserving both documentary histories and accepted T11.
+Repair `55d1a8c8a240fc56d9ba1a0b8bd0aa1e30772faa` fixes public lookup, turn0
+current-runtime checking, the fifth grounded design, pinned editor controls,
+source-preserving environment selection/keyboard activation and actual save
+validation off the API loop. Current **DB10/export11/library7** reject prior
+contracts explicitly; no aliases, migrations, resets or historical reinterpretation.
+
+Read [the durable independent review](docs/research/T16_INTEGRATION_REVIEW.md).
+Fresh qualification:417 distinct segmented backend cases, including latest91
+after final route repair; Ruff/ty; frontend lint/115 units; normal/forced clean
+54-file build parity;74 distinct browser cases in8 bounded groups. Earlier
+segments retain their actual sources, not an uninterrupted whole-suite claim.
+Fresh final-source non-root production build/smoke passes:26 containment witnesses,
+admission/pinning/sidecar-loss/restart guards and two-turn exact Engine replay;
+42 backend files/54 asset hashes match. All owned resources/18225 are closed.
+
+Frozen T01 runner/cases/scores remain unchanged with exactly four export-v4
+failures/four false flags and runner/comparator exit1. Separate positive parity
+passes5 runs/22 turns/22 requests/98 operations: literally equal bounded inputs,
+actions/evidence/checkpoints/effort/integer ledger;2,017 differences classified,
+zero unexplained. Ledger770 synthetic microdollars/2,200 input/1,100 output
+tokens; actual spending0. All26 wrapped review nonzero attempts and the unwrapped
+duplicate-name error remain. Corrected preflight/helper/test errors are retained.
+
+Final source/custody proofs preserve2,326 indexed entries/2,314 regular files/
+14 symlinks/333 directories/278,978,011 bytes as immutable hardlinks, not independent
+physical copies. All171 inherited attempts/all44 nonzero and historical capture
+gaps remain explicit. New evidence is
+`.tools/research-harness/evidence/T16-integration/`, sealed after the normal-hook
+documentation commit by `final-verification.json` and immutable
+`evidence-final.json`/checksum. Final HEAD/index identity accompanies completion.
+Original root `pbcopy` was never accessed/captured; configurations remain opaque.
+Stash `f771128ba1c9295262a4073df40cc25647b1370f`, earlier evidence and all maps
+remain, including root's795-path map and closed-root-T11/closed-T07 maps.
+
+Sole tracked writing returns only with this reviewer's explicit final completion;
+root owns publication. No push/PR/issue/watch, paid/live/held-out work or new
+allocation occurred. Sol remains$0.611632/55 requests, $9.388368 remaining; Luna
+unallocated. T17 becomes Ready after this accepted completion; T18 adjudication,
+generation, live competence and held-out/generalization remain unverified.
+T14 stays independent on18127: serialize heavy jobs under the shared flock with
+the128MiB floor, release between jobs, and retain private outputs. Do not change
+another owner's dependencies, evidence or environment. Historical headers follow.
 
 # Root coordination — T11 verified; T14 implementation and T16 review next (2026-11-10)
 
@@ -221,6 +303,134 @@ flock; preserve all evidence/compression maps, stash and unread `pbcopy`.
 No new product tests or paid calls for this coordination step. Sol remains
 $0.611632/55 requests, $9.388368 remaining; Luna unallocated. Live competence,
 held-out generalization and final whole-branch review remain outstanding.
+
+# T16 implementation complete — fresh acceptance pending (2026-11-10)
+
+Original assigned `t3-653eb2ec` / `t3/t16-extension-admission`, port18125.
+No descendants/extra checkout. Only documented accepted`32a1247e286ee2d58ee105d5aeb7640222a619e2`
+is merged, including original8158fccc ancestry; T11`4aac5a9` is absent/unaccepted.
+Combined DB9/export10/library6 remain provisional until T16 fresh review.
+
+Read [the final implementation report](docs/research/T16_EXTENSION_ADMISSION.md).
+`review_design` now guards every untrusted draft/proposal/copied-candidate path
+before worker execution, while trusted pinned runs/inspection/export/replay survive
+original sidecar loss. Public six-call and one-call ordering reds are retained.
+Final application/build source`6556a8a` / key`18372fd7…`;1,423 distinct backend
+passes are composite across nine original segments plus the full8-case version-
+assertion repair module. Two original library-version failures remain; only3
+current-contract assertion literals changed. Ruff/ty pass. Frontend lint216 files,
+112 units/30 files, forced TypeScript and exact54-file normal/new-empty builds pass.
+All61 fresh configured browser cases/15 files pass in8 bounded workspaces. Actual
+non-root UID10001 production verifies95 deployed bytes sets,26 containment cases,
+admission guards and literal World/restoration/replay; no provider used there.
+
+Frozen T01 runner/cases/scores remain unchanged: four export-v4 failures/four failed
+flags, runner/comparator exit1. Separate current-contract parity:5 runs/22 turns/
+22 stand-in requests,98 HTTP operations,1,985 classified differences/zero unexplained;
+actual spend0. Finite independent relay mechanics only, no arbitrary-program or
+live intelligence claim. No T17/T18/held-out access or new paid allocation.
+
+Raw entry points are`data/t16/qualification-index-final.json`, backend case index,
+failure ledger, final source equivalence, archive/nested audits, closure-final.json
+and evidence-final.json with checksum. Preserve all44 wrapped nonzero attempts,
+other setup/maintenance failures and historical pre-read capture gaps. Recursive
+audit verifies17 nested source archives/6,873 members, zero protected copies. V3
+preflights tracked-only source and all child snapshots; protected root pbcopy is
+never touched.8 own synthetic CLI-test.env files remain deliberately unread/unhashed
+with name/size-only exclusions. No valuable evidence was deleted.
+
+All owned services/browser18125 are closed; original tooling and new54 assets are
+member/mode/link verified and parked separately. Temporary heavy-check slot released;
+T11 may resume. Final parking returned about175MB, immediate headroom273,494,016
+bytes shared/unreserved. No push/PR/issues/watch/reset/stash/clipboard, global
+store/config/security/credential changes. Root owns a later FRESH acceptance and
+publication; this implementation handoff does not accept or integrate T16.
+
+Historical checkpoints below keep their source and scope attributions.
+
+# T16 final frontier qualification — backend composite green (2026-11-10)
+
+Accepted32a1247 remains merged, T11 absent. Nine final backend segments execute
+1,423 cases/45 files:1,421 pass/two old T13 library-format assertions fail. Only
+three current-contract literals are reconciled; all8 integration cases and Ruff/ty
+then pass, application bytes unchanged. Preserve composite attribution and the
+original failures. Next park inactive own verified tooling, rebuild combined
+frontend and actual production; final browser/frozen-positive parity/custody remain.
+T16 DB9/export10/library6 are provisional, not accepted. No paid calls, held-out,
+publication, extra checkout or descendants.
+
+# T16 continuation — accepted T13 merged, final qualification pending (2026-11-10)
+
+Only documented accepted32a1247 was merged at6dca092; T11 is still absent.
+Combined DB9/export10/library6 remain provisional. The new copied-candidate HTTP
+red records one worker call before missing admission rejection; the same draft
+guard now covers CandidateSource and ProposalSource. All9 extension workflows
+pass, including lost-sidecar pending execution/replay; Ruff/ty pass after one
+retained formatting failure. Final combined static/backend/frontend/build/browser/
+actual production/frozen-positive parity and full evidence closure remain.
+Capture v3 enforces pre-read tracked-only selection for all subprocess snapshots,
+with invocation-local exclusions only. Earlier v2 inner-snapshot proof gaps remain
+explicit; root pbcopy is never selected or touched. Tooling is own/verified only,
+with Python and three small Playwright packages currently restored. Pre-T13 assets
+must be parked and the combined frontend rebuilt. No service/browser18125 is active.
+No descendants, new checkout, paid calls, T17/held-out, publication or reset.
+
+Historical checkpoints below retain their original source/scope attributions.
+
+# T16 implementation checkpoint — admission guard repaired (2026-11-10)
+
+Continuation observes the public red at7383c13: forged draft preflight returns200
+and six real isolated worker calls. `review_design` now requires actual admission
+before any untrusted draft witness (routes, planner and proposal probes), while
+pinned revisions retain self-contained runtime checks. Same-eight-workflow green
+passes, including pinned start/evidence/export/replay after sidecar loss; Ruff/ty
+pass. Genuine lost-sidecar draft/create/revise assertions and actual production
+HTTP guard witnesses are added for final qualification. Source captures now use
+tracked-only pre-read selection proofs; older captures retain their historical
+preselection gap. Own verified Python restored under shared flock; about190MiB
+remains shared at this point. Accepted eb9c29a is now merged; next final static/
+backend/browser/actual production/frozen-positive parity and custody closure.
+The existing evidence and older qualification paragraphs below remain historical.
+
+T16/#27 owns `t3/t16-extension-admission` in assigned `t3-653eb2ec`, port18125.
+No descendants/extra checkout/publication/paid calls/reset/security changes.
+Accepted ancestry includes published8158fccc and documented accepted T10
+`f9e87c2b0cae14ca862ba2a051b2b95dffc3f78d`, merged at2b30043. T13 remains
+unaccepted at this checkpoint; never merge an undocumented/unaccepted tip.
+Current genuine combined contracts are **DB9/export10/library6**, with capture1,
+comparison1/tool2.0/direct1.0 unchanged. T16 is **not yet independently accepted**.
+
+The finite sealed-relay implementation is at832ff9a, with complete backend1,398
+passing/43 files in eight segments; frontend lint/112 units/build, actual non-root
+production containment/smoke, positive five-run/22-turn parity and preserved frozen
+exit1/four export-v4 failures. Browser main184 retains182 passes/two control failures;
+unchanged controls2/2, dedicated extension2/2, coordination5/5 and harness11/11 pass.
+These are source-attributed composite/segmented observations, not uninterrupted
+all-green suites. All raw sources/commands/exits/failures and byte proofs remain in
+ignored `data/t16/`; report/plan is `docs/research/T16_EXTENSION_ADMISSION.md`.
+
+Current resource holds defer new large installs/builds/full checks. All our expanded
+Python/frontend dependencies and54 compiled assets are member-verified and parked
+under `data/t16/tooling/`; no owned service/container/browser18125 is running. Never
+write another checkout/environment, immutable root custody or the shared pnpm store.
+Use the required shared checks.lock for bounded heavy jobs and release between jobs.
+
+Self-review strengthens two existing public API tests: a pinned pending run must
+survive loss of review/admission sidecars, while a new package/save still needs an
+actual admission record; forged package manifests must not reach the World worker
+through draft preflight or study creation. These new assertions are **not yet run**.
+Code review found routes preflight untrusted drafts before save's record guard.
+No application implementation change has yet been made for that ordering gap.
+Next: run the public red once resources permit, guard untrusted draft preflight
+before execution while preserving trusted pinned reads/replay, then green and
+requalify final source (backend/static, frontend input/build attribution, browser,
+actual production, frozen/positive parity). Reference/context/claims browser reruns
+also remain. Only then recheck/merge latest documented accepted integration,
+finalize archive/case/check indexes/source equivalence/manifest and clean handoff.
+
+Deterministic mechanics only: no live intelligence, T17 generation, T18 adjudication,
+held-out task access or T01 runner/case/score changes. Preserve T19 structured-only
+scope/cutoffs/billing716a44b, T15 zero-call controls/effort6e1a7c8 and T09 repairs.
 
 # T13 fresh integration accepted — completion returns sole ownership to root (2026-11-10)
 

@@ -16,11 +16,17 @@ from .domain import Design, EnvironmentMechanics, SavedEnvironment, Strict
 from .environment_library import builtin_environment, definition_from_design, use_environment
 from .execution import Engine
 from .exports import export_study
-from .extensions import ExtensionCandidate, ExtensionReview, ExtensionRuntime, Extensions
+from .extensions import (
+    ExtensionAdmission,
+    ExtensionCandidate,
+    ExtensionReview,
+    ExtensionRuntime,
+    Extensions,
+)
 from .investigations import InvestigationAuthorization, Investigations
 from .llm import LanguageModels
 from .research import Research, RunSummary
-from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS
+from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, get_environment
 from .templates import templates
 
 router = APIRouter()
@@ -135,12 +141,33 @@ async def qualify_extensions(*, extensions: ExtensionsDep) -> ExtensionRuntime:
 
 @router.get("/api/extensions/reviews")
 async def extension_reviews(*, extensions: ExtensionsDep) -> list[ExtensionReview]:
-    return await asyncio.to_thread(extensions.list)
+    return await asyncio.to_thread(extensions.reviews)
 
 
 @router.get("/api/extensions/reviews/{key}")
 async def extension_review(key: str, *, extensions: ExtensionsDep) -> ExtensionReview:
     return await asyncio.to_thread(extensions.get, key)
+
+
+class AdmitExtension(Strict):
+    profile: str = Field(min_length=1, max_length=80)
+
+
+@router.post("/api/extensions/reviews/{key}/admit", status_code=201)
+async def admit_extension(
+    key: str, body: AdmitExtension, *, extensions: ExtensionsDep
+) -> ExtensionAdmission:
+    return await asyncio.to_thread(extensions.admit, key, body.profile)
+
+
+@router.get("/api/extensions/admissions")
+async def extension_admissions(*, extensions: ExtensionsDep) -> list[ExtensionAdmission]:
+    return await asyncio.to_thread(extensions.admissions)
+
+
+@router.get("/api/extensions/admissions/{key}")
+async def extension_admission(key: str, *, extensions: ExtensionsDep) -> ExtensionAdmission:
+    return await asyncio.to_thread(extensions.admission, key)
 
 
 async def static_directory(request: Request) -> Path:
@@ -218,7 +245,18 @@ async def health(*, db: DatabaseDep) -> dict[str, Any]:
 
 
 @router.get("/api/catalog")
-async def catalog(*, models: LanguageModelsDep) -> dict[str, Any]:
+async def catalog(*, models: LanguageModelsDep, research: ResearchDep) -> dict[str, Any]:
+    sources = [builtin_environment(key) for key in CATALOG]
+    admitted = next(
+        (
+            source
+            for source in research.environments.list()
+            if source.definition.environment == "sealed_relay"
+        ),
+        None,
+    )
+    if admitted:
+        sources.append(admitted)
     return {
         "environments": [
             {
@@ -230,9 +268,10 @@ async def catalog(*, models: LanguageModelsDep) -> dict[str, Any]:
                 "measures": list(a.measures),
                 "measure_definitions": {m: MEASURE_DESCRIPTIONS[m] for m in a.measures},
                 "rule_version": a.world.version,
-                "source": builtin_environment(a.key).model_dump(),
+                "source": source.model_dump(),
             }
-            for a in CATALOG.values()
+            for source in sources
+            for a in [get_environment(source.definition.environment)]
         ],
         "models": models.catalog(),
         "templates": templates(),
@@ -307,14 +346,13 @@ async def validate_design(body: SaveStudy, *, research: ResearchDep) -> dict[str
 
 @router.post("/api/design/preflight")
 async def check_design(body: SaveStudy, *, research: ResearchDep) -> dict[str, Any]:
-    research.validate_design(body.design)
-    return await asyncio.to_thread(research.preflight, body.design, body.plan_id)
+    return await asyncio.to_thread(research.review_design, body.design, body.plan_id)
 
 
 @router.post("/api/studies", status_code=201)
 async def create_study(body: SaveStudy, *, research: ResearchDep) -> dict[str, Any]:
-    await asyncio.to_thread(research.preflight, body.design, body.plan_id)
-    return {"id": research.save_design(body.design, plan_id=body.plan_id)}
+    saved = await asyncio.to_thread(research.save_design, body.design, plan_id=body.plan_id)
+    return {"id": saved}
 
 
 @router.get("/api/studies/{study_id}")
@@ -347,14 +385,16 @@ async def delete_study(
 
 @router.post("/api/studies/{study_id}/revisions", status_code=201)
 async def revise_study(study_id: str, body: SaveStudy, *, research: ResearchDep) -> dict[str, Any]:
-    await asyncio.to_thread(research.preflight, body.design, body.plan_id)
-    return {"id": research.save_design(body.design, study_id=study_id, plan_id=body.plan_id)}
+    saved = await asyncio.to_thread(
+        research.save_design, body.design, study_id=study_id, plan_id=body.plan_id
+    )
+    return {"id": saved}
 
 
 @router.post("/api/studies/{study_id}/control")
 async def control_study(study_id: str, body: StudyControl, *, engine: EngineDep) -> dict[str, Any]:
     if body.action == "start":
-        engine.start_study(study_id)
+        await engine.start_study(study_id)
     else:
         engine.pause_study(study_id)
     return {"ok": True}
@@ -364,7 +404,7 @@ async def control_study(study_id: str, body: StudyControl, *, engine: EngineDep)
 async def study_exposure(
     study_id: str, revision: int | None = None, *, research: ResearchDep
 ) -> dict[str, Any]:
-    detail = research.study(study_id, revision)
+    detail = await asyncio.to_thread(research.study, study_id, revision)
     return {
         "revision": detail["revision"],
         "runs": [research.exposure(run["id"]) for run in detail["runs"]],
@@ -374,7 +414,7 @@ async def study_exposure(
 @router.get("/api/studies/{study_id}/export")
 async def download_study(study_id: str, *, research: ResearchDep) -> JSONResponse:
     return JSONResponse(
-        export_study(research, study_id),
+        await asyncio.to_thread(export_study, research, study_id),
         headers={"Content-Disposition": f'attachment; filename="jas-{study_id}.json"'},
     )
 
@@ -425,13 +465,13 @@ async def control_run(run_id: str, body: RunControl, *, engine: EngineDep) -> di
     if body.action == "pause":
         engine.pause(run_id)
     else:
-        engine.start(run_id, single=body.action == "step")
+        await engine.start(run_id, single=body.action == "step")
     return {"ok": True}
 
 
 @router.post("/api/runs/{run_id}/verify")
 async def verify_run(run_id: str, *, engine: EngineDep) -> dict[str, Any]:
-    return engine.replay(run_id)
+    return await asyncio.to_thread(engine.replay, run_id)
 
 
 @router.get("/api/runs/{run_id}/annotations")
@@ -504,7 +544,7 @@ async def chat_events(chat_id: str, *, assistants: AssistantsDep) -> StreamingRe
 
 @router.post("/api/chats", status_code=202)
 async def send_chat(body: ChatMessage, *, assistants: AssistantsDep) -> dict:
-    return assistants.send(
+    return await assistants.send(
         body.question, body.context, body.chat_id, body.lens, body.source_analysis_id
     )
 

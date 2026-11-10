@@ -690,7 +690,35 @@ CATALOG = {
 }
 
 
+def get_environment(key: str) -> EnvironmentDefinition:
+    if key == "sealed_relay":
+        from .extension import SealedRelay
+
+        return EnvironmentDefinition(
+            "sealed_relay",
+            "Admitted sealed relay",
+            "Independently checked finite relay; explicit package required.",
+            SealedRelay,
+            "relay_success",
+            ("relay", "memory"),
+            ("relay_success",),
+        )
+    return CATALOG[key]
+
+
+MEASURE_DESCRIPTIONS["relay_success"] = (
+    "One terminal binary result: the independently enforced relay "
+    "reached released phase2; no inference about intelligence or "
+    "intent."
+)
+
+
 def create_world(
-    design: Design, parameters: Parameters, seed: int, state: dict | None = None
+    design: Design, parameters: Parameters, seed: int, state: dict | None = None, *, runner=None
 ) -> World:
-    return CATALOG[design.environment].world(design, parameters, seed, state)
+    world = get_environment(design.environment).world(design, parameters, seed, state)
+    from .extension import SealedRelay
+
+    if isinstance(world, SealedRelay):
+        world.runner = runner
+    return world

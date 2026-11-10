@@ -252,7 +252,7 @@ class Assistants:
                 row.error = "Server stopped. Request was not automatically retried."
                 row.output = stopped_research(row.output, "server_stopped")
 
-    def start(
+    async def start(
         self,
         question: str,
         *,
@@ -303,42 +303,13 @@ class Assistants:
                 if source.status == "pending" or not (source.output or {}).get("lens"):
                     raise ValueError("Analysis source has no frozen lens inputs")
                 snapshot, cutoffs = source.output, source.cutoffs
-        comparisons = (
-            snapshot["comparisons"]
-            if snapshot
-            else self.research.capture_comparisons(cutoffs)
+        inputs = (
+            await asyncio.to_thread(self._analysis_inputs, cutoffs, snapshot, key, lens)
             if purpose == "analysis"
             else None
         )
-        exposure = (
-            snapshot["exposure"]
-            if snapshot
-            else self.research.capture_exposure(cutoffs)
-            if comparisons is not None
-            else None
-        )
-        index = (
-            snapshot["evidence_index"]
-            if snapshot
-            else self._evidence_index(cutoffs, comparisons, exposure, key)
-            if comparisons is not None
-            else None
-        )
-        snapshot_lens = (
-            apply_lens(snapshot["lens"], lens or "behavior")
-            if snapshot
-            else capture_lens(
-                self.research,
-                cutoffs,
-                comparisons,
-                exposure,
-                lens or "behavior",
-                index=index,
-                analysis_id=key,
-            )
-            if index is not None
-            else None
-        )
+        if inputs is not None:
+            inputs["source_analysis_id"] = source_analysis_id
         with self.db.session.begin() as session:
             chat_id = chat_id or uid()
             if session.scalar(
@@ -353,15 +324,7 @@ class Assistants:
                 run_id=run_id,
                 chat_id=chat_id,
                 cutoffs=cutoffs,
-                output={
-                    "comparisons": comparisons,
-                    "exposure": exposure,
-                    "evidence_index": index,
-                    "lens": snapshot_lens,
-                    "source_analysis_id": source_analysis_id,
-                }
-                if comparisons is not None
-                else None,
+                output=inputs,
                 investigation_id=investigation_id,
             )
             session.add(row)
@@ -369,6 +332,44 @@ class Assistants:
             key = row.id
         self.tasks[key] = loop.create_task(self._execute(key), name=f"assistant-{key}")
         return key
+
+    def _analysis_inputs(
+        self, cutoffs: dict[str, int], snapshot: dict | None, key: str, lens: LensKey | None
+    ) -> dict:
+        comparisons = (
+            snapshot["comparisons"]
+            if snapshot
+            else self.research.capture_comparisons(cutoffs)
+        )
+        exposure = (
+            snapshot["exposure"]
+            if snapshot
+            else self.research.capture_exposure(cutoffs)
+        )
+        index = (
+            snapshot["evidence_index"]
+            if snapshot
+            else self._evidence_index(cutoffs, comparisons, exposure, key)
+        )
+        snapshot_lens = (
+            apply_lens(snapshot["lens"], lens or "behavior")
+            if snapshot
+            else capture_lens(
+                self.research,
+                cutoffs,
+                comparisons,
+                exposure,
+                lens or "behavior",
+                index=index,
+                analysis_id=key,
+            )
+        )
+        return {
+            "comparisons": comparisons,
+            "exposure": exposure,
+            "evidence_index": index,
+            "lens": snapshot_lens,
+        }
 
     @staticmethod
     def serialize(row: Analysis, usage: Usage | None = None) -> dict:
@@ -443,7 +444,7 @@ class Assistants:
             usage = self.models.usage_by_analysis({row.id for row in rows})
             return [self.serialize(row, usage.get(row.id)) for row in rows]
 
-    def send(
+    async def send(
         self,
         question: str,
         context: str,
@@ -461,7 +462,7 @@ class Assistants:
         else:
             raise ValueError("Choose General, New experiment, an experiment, or a run")
         chat_id = chat_id or uid()
-        key = self.start(
+        key = await self.start(
             question,
             purpose=purpose,
             chat_id=chat_id,
