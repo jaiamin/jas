@@ -289,7 +289,7 @@ def test_t13_discovers_four_person_commitments_and_saves_exact_rules_without_cal
     study = client.get(f"/api/studies/{saved.json()['id']}").json()
     assert all(r["status"] == "ready" and r["turn"] == 0 for r in study["runs"])
     assert client.get("/api/settings").json()["usage"] == usage
-    assert client.get(f"/api/studies/{study['id']}/export").json()["version"] == 10
+    assert client.get(f"/api/studies/{study['id']}/export").json()["version"] == 11
     retain("independent-t13", result=result, study=study, requests=calls)
 
 

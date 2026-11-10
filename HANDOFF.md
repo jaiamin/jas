@@ -1,3 +1,44 @@
+# T14 implementation — active isolated writer
+
+Branch `t3/t14-investigation-workflow`; coherent pre-integration checkpoint starts
+from accepted `8df6c592c453e0595406711b9fe3387f8c385d26`. Implementation remains
+in progress/unaccepted. Root has now authorized documented accepted T16 frontier
+`b0446d9ea54b2e49fe93fc6d7a2bcdea6341af7b`; do not merge any provisional tips.
+Full plan/oracles/decisions/chronology:
+[the T14 report](docs/research/T14_INVESTIGATIONS.md).
+
+All24 new HTTP cases pass together;113 core,54 design/privacy,8 export-contract
+and7 focused assistant cases passed in separate source-stamped jobs. Ruff/ty
+pass. Frontend lint/116 units pass, forced TypeScript/clean Vite pass. Five new
+actual-HTTP browser flows pass together plus four ordinary composer regressions.
+A later paused-label browser red led to a small heading/animation repair; its
+first green used stale dist and failed, then passed after clean build. Final
+frontend checks and accepted-T16 integration/actual-worker qualification remain.
+Frozen T01 before retains four export-v4 failures/failed flags/exit1; after and
+separate positive current-contract parity remain pending. Never rescore.
+Slice17 remains passing verification with an unobserved-red/TDD sequencing gap.
+Slice18's2135 microdollars are scripted accounting, not paid spend.
+
+Heavy work is fully released under shared checks.lock with unchanged
+134217728-byte under-lock floor, release between bounded jobs. Space is tight;
+root is coordinating only owner recovery. Preserve private `.venv`, installed
+`frontend/node_modules`, `.tools/t14/uv-cache` and `.tools/t14/pnpm-cache/pnpm`
+(including750-byte verification entry). No new cache consumer. Prior offline,
+ENOSPC, helper and unsupported-cache-command install failures remain; successful
+normal frozen import is `checks/frontend-install-recovery-02`. No isolated overlay
+cost claim. Root immutable uv CLI may be invoked read-only.
+
+Evidence only `data/t14/`, one content-keyed tracked-only archive per source tree;
+all child snapshots enforce invocation-local protected exclusions. Never inspect,
+hash, copy or change protected pbcopy/real configuration or synthetic .env bytes.
+Preserve stash, source/custody, maps and every failure. Own closed-output maps
+retain verified hash/size/mode/integer-ns restoration. No inherited helper execution.
+No paid/held-out work, descendants, extra checkouts or publication. Browser
+checks use18127 and retained headless shell through
+`PLAYWRIGHT_BROWSERS_PATH=/home/agent/.cache/ms-playwright`; no download.
+No service/check is running; the owned blank preview tab still needs closure.
+Historical handoffs below remain preserved; root acceptance is separate.
+
 # Root coordination — T11 verified; T14 implementation and T16 review next (2026-11-10)
 
 Root independently reverified all156 files/35 directories/20,111,779 bytes in

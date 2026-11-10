@@ -242,7 +242,7 @@ for (const theme of ["light", "dark"]) {
       const exported = await (
         await request.get(`/api/studies/${study.id}/export`)
       ).json();
-      expect(exported.version).toBe(10);
+      expect(exported.version).toBe(11);
       expect(exported.study.design).toEqual(study.design);
       expect(exported.revisions[0].design.environment_source).toEqual(source);
       await testInfo.attach(`${study.id}-export.json`, {

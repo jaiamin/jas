@@ -17,6 +17,7 @@ from .environment_library import builtin_environment, definition_from_design, us
 from .execution import Engine
 from .exports import export_study
 from .extensions import ExtensionCandidate, ExtensionReview, ExtensionRuntime, Extensions
+from .investigations import InvestigationAuthorization, Investigations
 from .llm import LanguageModels
 from .research import Research, RunSummary
 from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS
@@ -59,6 +60,53 @@ async def assistant_service(request: Request) -> Assistants:
 
 
 AssistantsDep = Annotated[Assistants, Depends(assistant_service)]
+
+
+async def investigation_service(request: Request) -> Investigations:
+    return request.app.state.investigations
+
+
+InvestigationsDep = Annotated[Investigations, Depends(investigation_service)]
+
+
+@router.post("/api/investigations", status_code=202)
+async def investigate(
+    body: InvestigationAuthorization, *, investigations: InvestigationsDep
+) -> dict:
+    return investigations.start(body)
+
+
+@router.get("/api/investigations/{key}")
+async def investigation(key: str, *, investigations: InvestigationsDep) -> dict:
+    return investigations.get(key)
+
+
+class InvestigationControl(Strict):
+    action: Literal["pause", "resume", "cancel"]
+
+
+@router.post("/api/investigations/{key}/control")
+async def control_investigation(
+    key: str,
+    body: InvestigationControl,
+    *,
+    investigations: InvestigationsDep,
+) -> dict:
+    return investigations.control(key, body.action)
+
+
+class InvestigationAdaptation(Strict):
+    instruction: str = Field(min_length=1, max_length=2000)
+
+
+@router.post("/api/investigations/{key}/adapt", status_code=202)
+async def adapt_investigation(
+    key: str,
+    body: InvestigationAdaptation,
+    *,
+    investigations: InvestigationsDep,
+) -> dict:
+    return investigations.adapt(key, body.instruction)
 
 
 async def extension_service(request: Request) -> Extensions:

@@ -43,7 +43,7 @@ world/rule version, name/description and configuration examples), plus ID, optim
 updated timestamp and definition hash. Examples contain mechanics parameters, optional tasks
 and unbound roles. Create/update accept `{definition, revision}`; selection and extraction use
 `POST /api/design/use-environment` and `POST /api/design/environment`.
-Unsupported library/definition/rule versions and content hashes fail explicitly. Database schema 9 and export 10 reject incompatible workspaces; no conversion, deletion or automatic reset occurs. Preserve
+Unsupported library/definition/rule versions and content hashes fail explicitly. Database schema 10 and export 11 reject incompatible workspaces; no conversion, deletion or automatic reset occurs. Preserve
 older data separately if starting a fresh workspace. Existing controlled-world rules themselves are unchanged.
 
 ## Artifact investigation, rules 1.0.0
