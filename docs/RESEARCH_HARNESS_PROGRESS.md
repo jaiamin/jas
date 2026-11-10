@@ -51,6 +51,31 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### T13 fresh review in progress — UI qualification under storage hold (2026-11-10)
+
+Exact source `75766ba` is merged without fast-forward at `5af3fbb`; repair
+`5e86dfa` reconciles T10 discovery/scoping while preserving honest missing mechanics
+and incompatible populations. Standards and Spec were reviewed separately by the
+sole writer. Eight independent HTTP cases and1,413 distinct backend cases have
+observed passes across segmented jobs; Ruff/ty/frontend lint pass. Frozen T01
+retains four export-v4 failures/four failed flags and exit1. Independent accepted-
+T10-attributed parity verifies five runs/22 turns/22 bounded requests, complete
+inputs/accounting and1,763 classified differences, zero unexplained. Production
+infrastructure inputs match accepted T10; its production smoke is inherited.
+
+The initial backend wrapper indirectly captured protected untracked `pbcopy` in
+three internal T01 snapshots. Root-authorized, verified atomic redaction removed
+only the private copies and generated digest entries; all unaffected evidence
+remains. A metadata-only audit found zero remaining copies and the four affected
+regressions passed again with tracked-only selection. This handling incident is
+explicit and cannot be rewritten as a clean historical pass. See the
+[fresh report](research/T13_INTEGRATION_REVIEW.md) and private redaction mappings.
+
+T13 is **not yet accepted**: units/forced build/browser checks await the root I/O
+hold. Sole writing ownership remains with this reviewer. T11/T16 continue running
+as reported by root, unpolled; T12/T18 remain Ready. T14 waits for accepted T13;
+T17 waits for accepted T13/T16. No paid calls or publication.
+
 ### Root coordination — T13 custody verified; next frontier (2026-11-10)
 
 T01–T10, T15 and T19 are accepted at `f9e87c2`; root rehashed all1,286 fresh
@@ -573,9 +598,9 @@ publication, reset, other-agent changes or live/held-out acceptance.
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Integrated and accepted after cutoff receipt repair | `9750caf`, `de5556b`; [evidence](research/T08_PARTICIPANT_CONTEXT.md) |
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Integrated and accepted after fresh review repairs | `c357a3b`, `4ed18af`, `84867cc`; [report](research/T09_ARTIFACT_WORLD.md) |
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Accepted after fresh Standards/Spec review and T19 integration repairs | No-ff `02879c3`; repair `7aec3f5`; DB8/export9/library5 |
-| T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Ready; root chooses launch | — |
+| T11 | [#22](https://github.com/jaiamin/ass/issues/22) Study four-agent reliance and feasible commitment breaches | T10 | Running independently on18126, as reported by root; unpolled | — |
 | T12 | [#23](https://github.com/jaiamin/ass/issues/23) Run a small institutional workflow with atomic work/resource effects | T10 | Ready; root chooses launch | — |
-| T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Complete but unaccepted; queued for separate fresh review after ownership return | Unaccepted root-provided `75766ba`; not reviewed here |
+| T13 | [#24](https://github.com/jaiamin/ass/issues/24) Have the Researcher produce a reviewable artifact-world experiment | T05, T09 | Fresh review in progress; frontend/browser qualification under storage hold | Exact no-ff `5af3fbb`; scoping repair `5e86dfa`; [report](research/T13_INTEGRATION_REVIEW.md) |
 | T14 | [#25](https://github.com/jaiamin/ass/issues/25) Run one explicitly budgeted end-to-end investigation | T06, T13 | Waiting on T13 | — |
 | T15 | [#26](https://github.com/jaiamin/ass/issues/26) Compare actual reference policies and participant-harness ablations | T06, T08 | Integrated and accepted after fresh review repair | `fa1c825`, `6e1a7c8`; [report](research/T15_BASELINES.md) |
 | T16 | [#27](https://github.com/jaiamin/ass/issues/27) Admit a verified extension as a runnable versioned environment | T02, T09 | Assigned to fresh isolated implementation (18125) | — |
