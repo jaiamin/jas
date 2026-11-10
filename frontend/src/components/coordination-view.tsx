@@ -69,7 +69,9 @@ export function CoordinationView({
                 <TableCell>
                   {outcome
                     ? (outcome.choices[p.key] ?? "Abstained / unchosen")
-                    : (state.choices?.[p.key] ?? "Pending")}
+                    : state.choices && Object.hasOwn(state.choices, p.key)
+                      ? (state.choices[p.key] ?? "Abstained")
+                      : "Pending"}
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
                   {outcome?.payoffs[p.key] ?? "Pending"}

@@ -34,6 +34,47 @@ test("switching a solo draft creates three bound participants without losing the
   expect(study.usage.requests).toBe(0);
 });
 
+test("settled personal abstention stays distinct from pending choices", async ({
+  page,
+  request,
+}, testInfo) => {
+  const catalog = await (await request.get("/api/catalog")).json();
+  const design = catalog.templates.find(
+    (t: { id: string }) => t.id === "distributed_coordination",
+  ).design;
+  design.conditions = design.conditions.slice(0, 1);
+  design.conditions[0].parameters.coordination.timing = "sequential";
+  design.profiles[0].goal = "[t10-browser-abstain] Abstain personally.";
+  const created = await (
+    await request.post("/api/studies", { data: { design } })
+  ).json();
+  const study = await (await request.get(`/api/studies/${created.id}`)).json();
+  const runId = study.runs[0].id;
+  await page.goto(`/runs/${runId}?tab=live`);
+  await page.getByRole("button", { name: "Step", exact: true }).click();
+  await expect
+    .poll(
+      async () =>
+        (await (await request.get(`/api/runs/${runId}`)).json()).summary.turn,
+    )
+    .toBe(1);
+  const run = await (await request.get(`/api/runs/${runId}`)).json();
+  expect(run.state.choices).toEqual({ iris: null });
+  expect(run.state.done).toBe(false);
+  expect(run.state.outcome).toBeNull();
+  const choices = page.getByLabel("Coordination choices");
+  await expect(
+    choices.getByRole("row").filter({ hasText: "Iris" }),
+  ).toContainText("Abstained");
+  await expect(
+    choices.getByRole("row").filter({ hasText: "Moss" }),
+  ).toContainText("Pending");
+  await testInfo.attach("partial-abstention-record", {
+    body: JSON.stringify(run),
+    contentType: "application/json",
+  });
+});
+
 test("coordination timing and topology edits survive reload and review", async ({
   page,
   request,

@@ -95,7 +95,7 @@ class DistributedCoordination(ArtifactWorkspace):
         enabled = (
             self.parameters.communication and "messages" in self.parameters.communication_channels
         )
-        observation["communication"] = enabled
+        observation["communication"] = self.parameters.communication
         observation["communication_channels"] = ["messages"] if enabled else []
         if enabled and routes:
             observation["legal_actions"].append({"kind": "send_message", "targets": routes})

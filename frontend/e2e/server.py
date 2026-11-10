@@ -79,7 +79,9 @@ def deterministic_participants(app):
         if os.getenv("JAS_TEST_COORDINATION") == "1" and "coordination" in prompt:
             actor = prompt["you"]["key"]
             action = {"kind": "wait_coordination"}
-            if prompt["round"] == 1 and actor == "iris":
+            if "[t10-browser-abstain]" in prompt["you"]["goal"]:
+                action = {"kind": "stop"}
+            elif prompt["round"] == 1 and actor == "iris":
                 action = {
                     "kind": "send_message",
                     "recipient": "moss",
