@@ -163,7 +163,7 @@ def provider(client, monkeypatch, design, *, brief=None, candidate=None, review=
                 )
             )(prompt)
         else:
-            payload = brief or scope(design)
+            payload = brief(prompt) if callable(brief) else brief or scope(design)
         if inspect.isawaitable(payload):
             payload = await payload
         return ModelResponse(
@@ -347,6 +347,14 @@ def test_unsupported_mechanics_retain_original_question_and_narrower_supported_a
             supported=False,
             explanation="Live internet browsing and downloaded Python execution "
             "are not implemented.",
+            requirements=[
+                {
+                    "source": "executes downloaded Python",
+                    "capability": "unavailable",
+                    "mapping": "missing",
+                    "explanation": "No admitted arbitrary-code execution or live browser tool.",
+                }
+            ],
             alternatives=[alternative],
         ),
     )
@@ -675,25 +683,32 @@ def test_general_explanation_uses_discovery_without_forcing_a_proposal(client, m
     assert client.get("/api/studies").json() == []
 
 
-def test_unaccepted_coordination_is_an_honest_gap_with_no_executable_substitute(
+def test_accepted_coordination_preserves_the_original_phase_and_delivery_question(
     client, monkeypatch
 ):
-    design = artifact_design(client)
+    design = next(
+        t["design"]
+        for t in client.get("/api/catalog").json()["templates"]
+        if t["id"] == "distributed_coordination"
+    )
+    design["question"] = CASES["unsupported_coordination"]["question"]
     provider(
         client,
         monkeypatch,
         design,
         brief=scope(
             design,
-            supported=False,
-            explanation="Simultaneous artifact conflicts and delayed private delivery "
-            "are unavailable.",
-            alternatives=[
+            explanation="Installed phased artifact conflicts and addressed logical-time delivery.",
+            operationalization="Inspect conflicts, private mail and voluntary final choices.",
+            size_rationale="Three independently active peers, eight phase opportunities with "
+            "early stopping and two matched information arms. Capture actual observations, "
+            "mail, conflicts and outcomes; one seed is not population inference.",
+            requirements=[
                 {
-                    "question": "How does a solo investigator revise a preloaded report?",
-                    "environment": "artifact_workspace",
-                    "limitation": "One actor with fixed ACLs; no distributed timing "
-                    "or conflict resolution.",
+                    "source": "distributed-information",
+                    "capability": "distributed_information",
+                    "mapping": "direct",
+                    "explanation": "Three actors, declared phase conflicts and delayed mail.",
                 }
             ],
         ),
@@ -703,12 +718,22 @@ def test_unaccepted_coordination_is_an_honest_gap_with_no_executable_substitute(
         client.post("/api/chats", json={"question": CASES["unsupported_coordination"]["question"]}),
     )
     assert row["status"] == "complete", row
-    assert not row["output"]["supported"] and row["output"]["design"] is None
+    assert row["output"]["supported"]
     assert row["question"] == CASES["unsupported_coordination"]["question"]
-    assert row["output"]["alternatives"][0]["environment"] == "artifact_workspace"
-    assert not any(
-        op["request"]["kind"] == "probe" for op in row["output"]["research"]["operations"]
-    )
+    proposed = row["output"]["design"]
+    assert proposed["question"] == design["question"]
+    assert proposed["environment"] == "distributed_coordination"
+    assert len(proposed["profiles"]) == 3
+    for expected, actual in zip(design["conditions"], proposed["conditions"], strict=True):
+        assert actual["parameters"]["coordination"] == expected["parameters"]["coordination"]
+        assert actual["parameters"]["artifacts"] == expected["parameters"]["artifacts"]
+    probes = [
+        op
+        for op in row["output"]["research"]["operations"]
+        if op["request"].get("source", {}).get("kind") == "candidate"
+    ]
+    assert len(probes) == 2 and all(p["status"] == "complete" for p in probes)
+    assert all(p["data"]["stop_reason"] == "inspected" for p in probes)
     assert client.get("/api/studies").json() == []
 
 

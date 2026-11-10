@@ -164,9 +164,15 @@ The installed artifact_workspace supports fixed ACLs, structured evidence/work c
 immutable versions, finite writes, source references, accessible deterministic checks and
 submit/stop. It does not execute external tools, arbitrary code, live web retrieval, semantic
 adjudication, delayed messages or phased/simultaneous collaborative conflict resolution.
-The older public-task coordination world does not add those absent artifact/timing mechanics.
-Do not advertise unaccepted extensions or coordination work. Offer a clearly narrower supported
-alternative when essential mechanics are absent, retaining the original unsupported question.
+The installed distributed_coordination World supports exactly three independent choice makers,
+actor-scoped artifacts, phased or sequential settlement, explicit write-conflict priority and
+addressed messages with logical delivery delays. Its alternatives, local values, routes and
+shared-information control are configurable; agreement is optional. Use discovery and exact
+copied conditions to check that it implements the requested combination. The older public-task
+coordination World is a separate mechanic. External execution, live retrieval and semantic
+adjudication remain absent. Do not advertise unaccepted extensions. Offer a clearly narrower
+supported alternative when essential mechanics are absent, retaining the original unsupported
+question.
 Preloaded conflicting evidence is possible, but checks compare explicitly declared source v1
 fields; this is not semantic truth arbitration. Record that assumption. Public history is
 empty in this World; authorized artifact operations and actual model-input delivery establish
@@ -474,7 +480,18 @@ class Planner:
 
             planning["brief"] = brief.model_dump()
             self.progress(key, "scoping", planning=planning)
-            if brief.clarification or not brief.supported:
+            declined_available = (
+                not brief.supported
+                and bool(brief.requirements)
+                and all(r.mapping == "direct" for r in brief.requirements)
+                and any(
+                    # An example witnesses feasibility; its counts never limit other studies.
+                    len(example.profiles) == brief.agents
+                    and not requirement_issues(example.environment, brief.requirements, example)
+                    for example in (Design.model_validate(t["design"]) for t in templates())
+                )
+            )
+            if brief.clarification or (not brief.supported and not declined_available):
                 return {
                     **PlannedStudy(
                         supported=False,
@@ -498,9 +515,15 @@ class Planner:
                 for r in brief.requirements
                 if r.capability == "unavailable" and r.mapping == "direct"
             ]
-            if brief.requirements and not unquoted and not inconsistent:
+            if brief.requirements and not unquoted and not inconsistent and not declined_available:
                 break
             feedback = []
+            if declined_available:
+                feedback.append(
+                    "The declared direct requirements are available together in an installed "
+                    "environment. Preserve the original question: identify an actual missing "
+                    "essential mechanic, or scope the supported study."
+                )
             if not brief.requirements or unquoted:
                 feedback.append(
                     "Map essential mechanics to actual contiguous user phrases; "
@@ -515,6 +538,8 @@ class Planner:
             planning["reviews"].append({"kind": "scope_validation", "issues": feedback})
             self.progress(key, "scoping", planning=planning)
             if attempt:
+                if declined_available:
+                    raise ValueError("Question mapping still declines available declared mechanics")
                 raise ValueError(
                     "Question mapping still has inconsistent capability declarations"
                     if inconsistent and brief.requirements and not unquoted

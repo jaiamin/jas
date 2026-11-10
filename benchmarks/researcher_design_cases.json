@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "split": "DEVELOPMENT",
   "ticket": "T13",
   "assessment": "Frozen before outputs. Scripted-provider tests establish workflow and mechanical/provenance fidelity, never live design competence. Rubrics are independent task expectations; do not grade prompt wording.",
@@ -38,7 +38,8 @@
       "id": "unsupported_coordination",
       "question": "Design three-agent distributed-information work with simultaneous claims on one report, delayed private messages, and enforced conflict resolution independent of API response order.",
       "intent": "exploratory",
-      "rubric": ["does not advertise unaccepted T10 timing/delivery", "honest gap", "supported solo/sequential alternative clearly narrower", "no pretend three-agent scheduler"]
+      "rubric": ["accepted distributed_coordination with three active peers", "original simultaneous-conflict and delayed-private-mail semantics preserved", "real capability discovery and exact copied conditions", "logical priority independent of provider response order", "no compulsory agreement or solo substitution"],
+      "integration_note": "Historical case ID and original question retained. The pre-T10 unsupported expectation is superseded by accepted library5 coordination; the other genuine missing-mechanics case stays unsupported."
     },
     {
       "id": "material_ambiguity",
