@@ -308,4 +308,4 @@ def test_reanalysis_uses_frozen_inputs_after_resume_and_revision_without_partici
     assert client.post("/api/chats", json={
         "question": "Cross-chat retrieval", "context": f"run:{rid}",
         "source_analysis_id": first["id"], "lens": "communication",
-    }).status_code == 400
+    }).status_code == 422
