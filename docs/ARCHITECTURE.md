@@ -486,11 +486,17 @@ appear to have sampled a model when its evidence is subsequently analyzed.
 Coverage retains bounded observation window sizes; missing historical fields and
 unknown delivery stay null/unavailable. Artifact Worlds retain exact contents, versions,
 source references, write allowance, history and outcome. Utility is unavailable where
-no balances exist; success remains null before termination. Applying a different lens changes its
+no balances exist; success remains null before termination. Coordination retains settled
+choices, local payoffs, logical time and pending-work counts separately. Its declared
+choice value and all-match measure remain unavailable until terminal settlement;
+they are neither financial balances nor solo artifact success. Communication counts
+queued messages and mailbox deliveries separately. Only bounded input plus a provider
+receipt establishes inclusion; pending proposals and queued mail cannot supply it.
+Applying a different lens changes its
 requirements/account without rewriting the source analysis. Unsupported lens
 versions are rejected without conversion; historical analyses without a lens
-remain unassessed and cannot supply lens inputs. Database7/export8/capture1/
-comparison1/libraryv4 and harness contracts retain their existing meanings;
+remain unassessed and cannot supply lens inputs. Database8/export9/capture1/
+comparison1/libraryv5 and harness contracts retain their existing meanings;
 this additive versioned analysis JSON requires no migration or reset.
 
 Agent replies lead with a deterministic source-linked account, then expose claim

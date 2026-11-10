@@ -95,12 +95,17 @@ def capture_lens(
             }
             for row in measurements
         ]
-        fact = {
+        fact: dict = {
             "run_id": rid,
             "through_turn": cutoff,
             "state_hash": recorded["state_hash"],
             "balances": balances,
             "artifact_state": recorded.get("artifact_state"),
+            **(
+                {"coordination_state": recorded["coordination_state"]}
+                if "coordination_state" in recorded
+                else {}
+            ),
             "measurements": raw_measurements,
             "rule_version": recorded["recorded_rule_version"],
             "turns": [
@@ -135,18 +140,22 @@ def capture_lens(
         )
         if artifact_state := fact["artifact_state"]:
             outcome = artifact_state["outcome"]
-            for name, value, formula in (
+            artifact_calculations = [
                 (
                     "artifact_writes",
                     sum(len(obj["versions"]) - 1 for obj in artifact_state["artifacts"].values()),
                     "sum(len(artifact.versions) - 1): initial versions are not writes",
                 ),
-                (
-                    "artifact_success",
-                    int(outcome["status"] == "success") if outcome is not None else None,
-                    "1 if recorded terminal outcome is success else 0; null before termination",
-                ),
-            ):
+            ]
+            if "coordination_state" not in fact:
+                artifact_calculations.append(
+                    (
+                        "artifact_success",
+                        int(outcome["status"] == "success") if outcome is not None else None,
+                        "1 if recorded terminal outcome is success else 0; null before termination",
+                    )
+                )
+            for name, value, formula in artifact_calculations:
                 calculations.append(
                     {
                         "id": f"run:{rid}:{name}",
@@ -162,11 +171,49 @@ def capture_lens(
                         ],
                     }
                 )
+        if coordination := fact.get("coordination_state"):
+            outcome = coordination["outcome"]
+            for name, value, formula in (
+                (
+                    "coordination_value",
+                    sum(outcome["payoffs"].values()) if outcome is not None else None,
+                    "sum(recorded terminal choice payoffs); null before terminal settlement",
+                ),
+                (
+                    "coordination_match",
+                    int(outcome["matched"]) if outcome is not None else None,
+                    "1 if all three terminal choices match, else 0; null before termination",
+                ),
+            ):
+                calculations.append(
+                    {
+                        "id": f"run:{rid}:{name}",
+                        "label": name.replace("_", " ").capitalize(),
+                        "scope": "captured_run",
+                        "value": value,
+                        "formula": formula,
+                        "inputs": coordination,
+                        "sources": [fact["snapshot_source"]],
+                        "assumptions": [
+                            "Declared choice payoffs are nonfinancial World outcomes, not "
+                            "utility balances, a preferred social result or evidence of motive. "
+                            "Pending proposals are not settled choices; queued mail is not input."
+                        ],
+                    }
+                )
         claims = [e for e in events if e.kind == "claim" and e.data.get("eligible")]
         resolutions = [e for e in events if e.kind == "commitment_resolved"]
         counters = {
             "decisions": len(turns),
-            "messages": sum(e.kind == "message" for e in events),
+            "messages": sum(e.kind in {"message", "message_queued"} for e in events),
+            **(
+                {
+                    "messages_queued": sum(e.kind == "message_queued" for e in events),
+                    "messages_delivered": sum(e.kind == "message_delivered" for e in events),
+                }
+                if "coordination_state" in fact
+                else {}
+            ),
             "reports": len(claims),
             "false_reports": sum(e.data["reported"] != e.data["known_truth"] for e in claims),
             "feasible_commitments": sum(bool(e.data.get("eligible")) for e in resolutions),
@@ -184,7 +231,11 @@ def capture_lens(
                     "value": value,
                     "formula": {
                         "decisions": "count(recorded turns <= cutoff)",
-                        "messages": "count(events.kind == message)",
+                        "messages": "count(events.kind in {message, message_queued}); "
+                        "a queued message does not establish recipient delivery",
+                        "messages_queued": "count(events.kind == message_queued)",
+                        "messages_delivered": "count(events.kind == message_delivered); "
+                        "mailbox arrival does not establish model input",
                         "reports": "count(events.kind == claim and data.eligible)",
                         "false_reports": "count(eligible claims where reported != known_truth)",
                         "feasible_commitments": "count(commitment_resolved where data.eligible)",
@@ -227,10 +278,11 @@ def capture_lens(
                 "missing_turns": sorted(set(range(1, cutoff + 1)) - covered),
                 "event_records": len(events),
                 "exposure_capture": exposure[rid]["capture"],
-                "message_opportunities": next(
+                "message_opportunities": sum(
                     r["eligible_opportunities"]
                     for r in exposure[rid]["summary"]
-                    if r["kind"] == "message"
+                    if r["kind"]
+                    == ("message_delivered" if "coordination_state" in fact else "message")
                 ),
                 "unknown_requests": exposure[rid]["delivery"]["unknown_requests"],
                 "opportunities": counters,
@@ -357,27 +409,43 @@ def apply_lens(frozen: dict, key: LensKey) -> dict:
     account = []
     for row in frozen["coverage"]["runs"]:
         rid = row["run_id"]
-        artifact = next(f.get("artifact_state") for f in frozen["facts"] if f["run_id"] == rid)
-        text = (
-            (
+        fact = next(f for f in frozen["facts"] if f["run_id"] == rid)
+        artifact = fact.get("artifact_state")
+        coordination = fact.get("coordination_state")
+        if key == "communication":
+            messages = row["opportunities"]
+            text = (
+                f"{messages['messages']} recorded messages; "
+                f"{messages['reports']} factual reports; "
+                f"{messages['feasible_commitment_breaches']} feasible breaches. "
+                f"{row['message_opportunities']} message opportunities; "
+                f"input capture {row['exposure_capture']}."
+            )
+            if coordination:
+                text += (
+                    f" {messages['messages_queued']} queued; "
+                    f"{messages['messages_delivered']} delivered to mailboxes. "
+                    "Queued mail and mailbox arrival alone do not establish model input."
+                )
+        elif coordination:
+            value = values[f"run:{rid}:coordination_value"]
+            text = (
+                f"{row['recorded_turns']} recorded proposals; "
+                f"{len(coordination['choices'])} settled choices; declared choice value "
+                f"{value if value is not None else 'pending'}. "
+                "Financial balances unavailable; agreement is not a required outcome."
+            )
+        elif artifact:
+            text = (
                 f"{row['recorded_turns']} recorded artifact decisions; retained writes "
                 f"{values[f'run:{rid}:artifact_writes']}; outcome "
                 f"{artifact['outcome']['status'] if artifact['outcome'] else 'unfinished'}."
             )
-            if key == "behavior" and artifact
-            else (
+        else:
+            text = (
                 f"{row['recorded_turns']} recorded decisions; cumulative utility "
                 f"{values[f'run:{rid}:total_utility']:g}."
             )
-            if key == "behavior"
-            else (
-                f"{row['opportunities']['messages']} recorded messages; "
-                f"{row['opportunities']['reports']} factual reports; "
-                f"{row['opportunities']['feasible_commitment_breaches']} feasible breaches. "
-                f"{row['message_opportunities']} message opportunities; "
-                f"input capture {row['exposure_capture']}."
-            )
-        )
         account.append({"run_id": rid, "turn": row["through_turn"], "text": text})
     return {**frozen, "key": key, **LENSES[key], "account": account}
 
