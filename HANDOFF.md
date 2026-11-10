@@ -1,25 +1,42 @@
-# T18 ROOT370f merged; bounded qualification resumed (2026-11-10)
+# T18 final bounded source/build handoff (2026-11-10)
 
-Current coherent checkpoint: RC01 actual Researcher-provider index red→green
-preserves participant58µ and separately exposes judge272µ at cutoff2, excluding
-analyses and retaining cutoff1. Four HTTP feature/assignment/tracer cases and
-global Ruff/ty pass. Four-followup inherited input-size red→compact JSON→green
-preserves complete source/history without changing180000 guard; separate source,
-pin/edit/deletion and simple-scope cases pass. New segmented export/exposure/
-workflow/assistant/API qualification passes with all cap/admission/type attempts
-retained.70 closed own receipts are losslessly archived once with exact map and
-independent readback; old raw receipt paths require
-`.tools/t18/receipt-compaction-01/restoration.json`. Logs/results are untouched.
-Next: normal exact46d48d5e merge; final affected UI/matrix/T01, source/case manifest
-and conditional ONE distinct-output build. Incomplete/unaccepted; no live accuracy.
+Exact accepted46d48d5e615eb22920219df26d42249ca2e5c0e0 normally merged at9275a052;
+both histories and accepted T12 interactions remain. Application source is fixed
+there; the final checkpoint changes only this handoff, progress and T18 report.
+CombinedDB13/export14/library9, artifact2.0.0/reliance1.0.1; no adapters/reset.
+T18 remains incomplete/unaccepted, with no live judgment accuracy claim.
 
-ROOT explicitly released its temporary resource hold after browser-slot teardown.
-Resume only unrun bounded backend/unit/static/normal-hook work. Exact accepted
-46d48d5e615eb22920219df26d42249ca2e5c0e0 supersedes370f as final normal-merge target;
-Markdown/docs repair adds no persisted meaning. ONE distinct-output existing-env
-frontend build is conditional on backend/affected UI/static/type passes and
-evidence room, entry>=268435456/128MiB peak,16MiB frontend total; no auto-rerun.
-All browser/services/production/provider/paid/live/held-out work stays held.
+Final manifest `.tools/t18/current-qualification-03.json` records423 distinct
+backend cases across their source phases,45 at exact final backend/test sources,
+42 affected UI cases,12-file lint/forced TypeScript and prior global Ruff/ty.
+Unchanged frozen T01 CURRENT exits1: four export-v4 failures,98HTTP/22 synthetic
+requests/770µ. Separate frozen fresh current-contract5runs/22turns/22requests,
+full inputs/evidence/checkpoints/integer ledgers/privacy/cutoffs/zero-call replay
+pass. RC01 participant58µ/judge272µ separation and compact-JSON full-source
+preservation remain narrow observed results, not ticket acceptance.
+
+ONE normal existing-env build PASS; complete added4519859 bytes exceeded the
+proposed4MiB log/tmp monitor. Preserve that incomplete recorder boundary and
+first outputs; ROOT confirms parent16MiB frontend/64MiB feature ceilings held.
+No rerun. Manifest03 also records complete-output reservation attribution; the
+final seal adds actual accounting for its separately written metadata file.
+All adverse attempts, immutable source maps and the70-receipt restoration map
+remain. Old raw receipt paths require that map; no second receipt compaction.
+
+Cleanup01 stopped without unlink at +32768 allocated bytes versus F1. ROOT's
+distinct cleanup02 explicitly allows that difference and passes: complete
+metadata freeze/recheck,599 own single-link files/176800695 logical bytes,
+zero cache payload reads/hashes, tracked members0/active own consumers0.
+Shared free284266496→462401536; lock returned. Only own pnpm-cache was retired;
+selection/receipts are separate maintenance evidence under own pnpm-state.
+F1/setup, env/modules/build/assets/logs/results/maps and shared store stay intact.
+
+ROOT owns final combined browser/runtime qualification; no further implementer
+browser/service release is requested. Port18131 remains unopened. Concrete held
+browser plan and source-phase limits are in the T18 report; final source seal is
+`.tools/t18/final-current-seal-02.json`. No setup/build repeats, providers, paid/
+live/held-out work, production or publication. Sole tracked writing returns to
+ROOT at closed handoff; do not start new jobs without a concrete stage.
 
 Previous natural closed boundary:
 

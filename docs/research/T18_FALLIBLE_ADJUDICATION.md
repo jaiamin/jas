@@ -1,21 +1,27 @@
 # T18 / #29: declared fallible adjudication
 
-Status: **bounded backend and unit UI implementation; incomplete and unaccepted**.
-Exact accepted ROOT `370f835b45bdc7172de5c719aae1ffa1e185b3f5` is normally
-merged at `7f77172e9a1f6575515a5a150422c65680c6c62a`. The combined contract is
-**DB13 / export14 / library9**, with artifact rule2.0.0 and reliance rule1.0.1.
-Backend qualification is partly complete at this source; UI05 has11 feature/
-safety passes plus affected lint and forced TypeScript. The earlier373-case
-manifest and36-case affected UI suite retain their original source boundaries.
+Status: **bounded implementation and build qualified; incomplete and unaccepted**.
+Exact accepted ROOT `46d48d5e615eb22920219df26d42249ca2e5c0e0` is normally
+merged at `9275a0529407b4077fc9c1bd667142b921a1547a`, preserving both histories.
+The combined contract remains **DB13 / export14 / library9**, artifact rule2.0.0
+and reliance rule1.0.1. No further moving-root merge is required for this stage.
 
-ROOT explicitly lifted its temporary resource hold after browser-slot closure.
-The prior bounded backend/unit/static/normal-hook release resumes; exact accepted
-`46d48d5e615eb22920219df26d42249ca2e5c0e0` is the next normal merge target.
-One existing-environment build is conditional on combined-source backend and
-affected UI/static/type passes plus evidence room. Browser/service18131/production,
-actual provider/paid/live/held-out work and publication remain separately held.
-No setup repeat is planned. Earlier statements below are chronological records;
-later observations supersede their pending status without relabeling old results.
+The current manifest deduplicates423 backend cases across their actual source
+phases, including45 against the exact final backend and complete backend test
+tree. Affected final UI passes42 cases in9 files,12-file lint and forced types;
+ONE normal existing-env build passes. Its complete4519859-byte output exceeded
+the proposed4MiB log/tmp reservation: that recorder boundary is **not clean**,
+although ROOT confirms the parent16MiB frontend/64MiB feature ceilings held.
+Frozen T01 CURRENT exits1 with exactly four export-v4 failures; the separate
+fresh current-contract5-run/22-turn/22-request qualification passes.
+
+Distinct cleanup02 retires only the explicitly authorized disposable own pnpm
+policy metadata after a persisted metadata freeze and independent recheck.
+Cleanup01's stop and all original setup/evidence/restoration records remain.
+ROOT owns final combined browser/runtime qualification. No own browser/service
+or port18131 was opened; production, provider/paid/live/held-out work and
+publication remain held. No setup or build repeat occurred. Earlier statements
+below are chronological records, never relabeled as later-source executions.
 
 ## Authority and source identities
 
@@ -1244,3 +1250,143 @@ whole-tree final-source executions. Their exact deltas and affected followups
 must be recorded by the new manifest. Next coherent checkpoint precedes normal
 exact46d48d5e merge, final UI/matrix/T01/source identity qualification and the
 conditional single build; no held browser/provider work has begun.
+
+## Final bounded source/build boundary and ROOT handoff
+
+Normal checkpoint `50dda948182d1f96ce30d6a27c864fe1bf0d4668` retains the RC01
+and compact-JSON repairs, with observed normal Gitleaks PASS. Exact accepted
+`46d48d5e615eb22920219df26d42249ca2e5c0e0` is then merged normally at
+`9275a0529407b4077fc9c1bd667142b921a1547a`, without conflicts. Both documentation
+histories, accepted T12 interactions and ROOT370f repairs remain. The merge
+output does not independently report another scanner invocation; none is claimed.
+No provisional sibling, moving target, compatibility adapter or reset is used.
+No application/test source changes follow this merge; the closing tracked
+checkpoint is documentation only.
+
+`.tools/t18/current-qualification-03.json` is the current source/case manifest.
+It preserves predecessor02, all raw/mapped receipt identities and every adverse
+attempt rather than rewriting them. It counts **423 distinct backend case IDs**
+across their actual phases. **45** ran against the exact final backend and entire
+backend test tree. Earlier source maps differ only in `assistants.py` and/or
+`planning.py`, plus explicitly identified test-source changes. Their passes remain
+earlier-phase preservation; affected followups separately exercise both repairs.
+There is no claim that423 cases all ran against the final whole tree. Within
+groups, claim support has32 executions/31 distinct cases and Researcher design
+11 executions/9 distinct cases; cross-group repeats are also deduplicated.
+
+The final independent current-contract cases run as four split parameter jobs
+plus three alias/privacy guards: **5 runs,22 turns,22 requests**. Complete literal
+provider prompts, instructions, tool schemas/settings, decisions, observations,
+events, measures, every checkpoint, cutoff immutability, per-request integer
+reserves/charges and restored zero-provider replay pass unchanged. No old raw
+BEFORE, historical comparator or reconstructed retained reference is used.
+`final-reference-identities-02` passes independent reference/ancestry reproduction;
+original tracer blob `bdf6a6630e1af096b6dd2272829414e1eb82fb36`, original T01
+runner/case/scoring bytes and v1–v4 fixture identities stay preserved.
+
+The unchanged frozen **T01 CURRENT** actually exits **1** through the invocation-
+local protected-name/symlink-safe Git wrapper. Exactly four attempts fail only
+`export-v4`; both unsupported-fixture guards pass and all attempt errors are null.
+Observed totals:98 HTTP operations,22 requests,2200 input/1100 output tokens,
+770 synthetic microdollars, live requests0. This remains failed frozen scoring,
+separate from fresh current-contract qualification, with no historical parity,
+zero-regression, improvement or generic competence claim.
+
+Final affected UI03 passes **42 cases in9 files**, including11 adjudication
+feature/safety cases, real WorkspaceShell routing and ROOT's image-link repair.
+Affected12-file Biome and forced `tsc -b --force` pass in separate jobs. Backend
+global Ruff/ty source identities remain identical after the doc/Markdown merge;
+the manifest verifies that attribution. Personal source review preserves RC01's
+participant-only definition, separate same-cutoff judge component and analysis
+exclusion, and the serializer's decoded full-history/schema preservation.
+
+The single `ui-build-final-01` uses the existing environment and normal
+`pnpm build --outDir …/.tools/t18/ui/build-final-01`, with a fresh distinct output.
+Process PASS; entry332517376/min327061504; observed shared net peak5455872;
+flock released. The full frontend evidence delta is **4519859 logical bytes**;
+the receipt samples frontend10300735 logical/10964992 allocated and overall
+66041583 logical/71143424 allocated before final receipt serialization.
+
+**The build recorder boundary is not clean.** Its proposed4MiB monitor watched
+only log/tmp, omitting the separate build directory; the complete delta exceeded
+that reservation. ROOT explicitly confirms the parent16MiB frontend/64MiB feature
+ceilings held. The first result, warning about the external fresh output directory
+and all assets remain unchanged; no build rerun occurred. Manifest03 similarly
+writes metadata outside log/tmp: its complete605404-byte delta exceeds its tighter
+524288-byte reservation. The closing seal records both attribution gaps instead
+of treating recorder PASS as complete-output enforcement. Parent feature limits
+still hold. At `final-helper-static-04`, feature evidence is66717570 logical/
+71860224 allocated; the final seal records the later exact footprint.
+
+The first helper-only Ruff invocation reports37 style findings, including an
+unused import and long lines. Its already-executed manifest02 producer and
+artifact remain byte-identical. New producer v3 and the unrun sealer/cleanup01
+are formatted and pass their separate check; the final cleanup02/sealer check
+also passes. This is an adverse tooling result, not an application red. Original
+matrix02 output-cap termination, UI02 retained-reservation refusal, incomplete
+spawn closure and premature integration-log lookup remain distinct from passes.
+Incidental source-only lookups of nonexistent `PROGRESS.md`, optional pre-commit
+configuration and `reference_identities.py` found no payload; no qualification
+or product-red claim follows from these discovery misses.
+
+### Owner-only disposable metadata retirement
+
+ROOT's separately released cleanup01 stops125 before any unlink. The immutable
+F1 receipt/closed-accounting hash,599 files and176800695 logical bytes match, but
+current allocation178221056 differs from F1's178188288 by32768. Its initial helper
+compares that aggregate before persisting the full selection, so **no durable
+complete membership freeze is claimed for01**. The receipt and source remain;
+payload reads/hashes0, no cleanup retry or identity claim.
+
+ROOT then explicitly disposes of that known allocation difference and releases
+distinct cleanup02 for the exact entire own `.tools/t18/pnpm-cache` subtree.
+Before comparison or deletion,02 persists complete242971-byte metadata selection
+`pnpm-state/policy-cleanup-02/selection.json`, SHA256
+`2f6d5e4733b66c183ba1bd2b1b3ab2e7918feea255c70833e9aaef0a491e31d4`.
+An independent load and complete current re-enumeration match it. All599 files
+are own regular single-link files; protected/symlink ancestors are refused,
+tracked members0 and active own Node/pnpm consumers0. Process inspection reads
+only cwd/executable metadata for the assigned checkout, never command lines,
+environment or configuration. Cache payload reads/hashes remain **0**.
+
+Cleanup02 PASS: shared free284266496→462401536, minimum284016640, recovered
+bookend178135040; unchanged134217728 floor/flock, lock returned. Its inventories
+and receipts use a separate4MiB maintenance allowance under own `pnpm-state`;
+no feature cap increases. F1/01 receipts, source maps, restoration records,
+env/modules/assets/logs/JUnit/results and shared store/other owners are preserved.
+This is authorized retirement of disposable setup metadata, not lossless
+compaction or proof of old cache payload identity. No install/setup repeats.
+
+### Held browser plan and remaining acceptance
+
+ROOT owns final combined browser/runtime qualification and receives sole tracked
+writing at closed handoff. No further implementer browser/service stage is
+requested. If ROOT elects to use the prepared T18 flow, a concrete bounded plan is:
+
+1. Under the shared lock, propose ordinary134217728 floor plus256MiB peak,
+   entry>=402653184; retain at most4MiB new compact browser evidence. This needs
+   a separate combined-output allowance: own feature evidence is near64MiB.
+2. Serve the one retained build from a distinct keyless app/database; port18131
+   is proposed but remains unopened. Bind FunctionModel Luna participant/Sol
+   judge identities with external requests disabled; create the synthetic pickup
+   protocol only through HTTP. Saving/review must produce zero ledger requests.
+3. Inspect real-shell Study and direct Run review at desktop/dark and phone/light:
+   explicit Sol config1.0.0/low/512, Luna participant, rubric/scope/allowed inputs,
+   $2/$10 per-million prices and fallibility limits before execution POST.
+4. Explicit Step writes turn1, second Step submits at turn2; controlled101/37
+   participant and41/19 judge usage yields participant58µ plus judge272µ,330µ
+   synthetic task cost. Inspect separate raw ruling and enforced success/hard-fact
+   receipt in Environment/Record/request views. No text claims live accuracy,
+   participant beliefs, actual pickup or general semantic truth.
+5. Check navigation/record identity, narrow loading/error gating, keyboard/mobile
+   overflow and replay/export without extra calls. Close/detach the browser as
+   supported, stop/reap only the owned server, prove port reusable and return
+   flock. This is an unexecuted plan, not a retained browser/runtime PASS.
+
+Backend and unit/build observations establish bounded deterministic DEVELOPMENT
+behavior. Browser/runtime, live judgment accuracy, held-out/competence and
+production/product acceptance remain unverified or separately held. No actual
+external-provider/paid work, publication, new dependency or additional checkout
+occurred. The compact final seal `.tools/t18/final-current-seal-02.json` links the
+source/case manifest, first build/assets, both cleanup dispositions and docs-only
+checkpoint to the exact closing HEAD. T18 remains **incomplete and unaccepted**.

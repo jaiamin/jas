@@ -1,13 +1,24 @@
 # Research harness implementation progress
 
-T18 RC01 public-HTTP/provider-bound index red→green now separates participant58µ
-and judge272µ with frozen cutoff/analysis exclusion; no relabeling/accuracy claim.
-Four focused HTTP cases, current Ruff/ty and segmented affected backend checks
-pass. Four-followup input-size regression passes after compact JSON preserving
-all decoded source/history and the180000 guard. All adverse attempts retained.
-ONE authorized70-receipt lossless compaction has exact restoration map/readback;
-raw old receipt paths require that map. Exact46d48d5e merge and final UI/matrix/
-T01/source-case manifest/conditional build remain. T18 incomplete/unaccepted.
+T18 final bounded source/build boundary: exact accepted46d48d5e normally merged
+at9275a052, combinedDB13/export14/library9, artifact2.0.0/reliance1.0.1. Manifest03
+deduplicates423 backend cases across actual phases (45 exact final backend/test
+tree);42 affected UI cases,12-file lint/forced types and ONE build PASS. Complete
+build delta4519859 bytes exceeds the incomplete4MiB log/tmp monitor; ROOT confirms
+parent frontend16MiB/feature64MiB ceilings held. First result retained, no rerun.
+Frozen T01 CURRENT remains exit1/four export-v4 failures,98HTTP/22requests/770µ;
+separate fresh current-contract5runs/22turns/22requests/privacy/replay passes.
+
+RC01 participant58µ/judge272µ cutoff separation and compact-JSON full-history
+preservation remain narrow observed red→green results. All adverse/source phases
+and70-receipt restoration map stay retained. Cleanup01 stop is preserved; distinct
+ROOT-released cleanup02 retires only599 own disposable policy-metadata files,
+176800695 logical bytes, after durable metadata freeze/independent recheck,
+zero payload reads/hashes. Shared free284266496→462401536; lock released.
+F1 receipts, env/modules/assets/evidence/maps/shared store preserved. Final
+docs-only checkpoint/seal hands sole writing to ROOT, who owns final combined
+browser/runtime qualification.18131 unopened; no provider/paid/live/held-out/
+production/publication. T18 remains incomplete/unaccepted; live accuracy unverified.
 
 ROOT explicitly lifted the temporary T18 hold after browser-slot closure; prior
 bounded backend/unit/static/normal-hook release resumes. Final normal merge is
