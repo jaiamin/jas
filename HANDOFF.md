@@ -1,25 +1,35 @@
-# T01 implementation checkpoint
+# T01 integration checkpoint
 
-Branch `t3/t01-research-baseline`, starting at integration `b02536c`.
-T01 only; no production code changes, paid requests, stash application or subagents.
+Baseline integrated on `integration/research-harness` with no-ff merge
+`bf3b76eb626db625b4476a8d436e67e2cfc95df9` from T01 source
+`d5527c0b4cb57cb63f8d39cb74d335396042e711` (`t3/t01-research-baseline`).
 Read [baseline report/procedure](docs/research/T01_BASELINE.md) and
-[progress](docs/RESEARCH_HARNESS_PROGRESS.md). Fresh DEVELOPMENT v1 cases and a
-keyless real-API evidence/comparison runner are committed. Four TDD checks pass;
-inherited/final backend 931/935 tests, frontend 106 tests/lint/build and all 165
-owned keyless Chromium tests pass. Qualified baseline at source `5d9ecf9`:
-six passing cases, five runs, 22 scripted requests, 98 HTTP operations, zero live
-calls. Preserve raw attempts, exact source archives and check logs under ignored
-`data/research-baseline/` before worktree disposal. System uv fails on 16 KiB
-pages; project-local `.tools/uv/bin/uv` 0.13.7 works with unchanged locks.
-Latest integration-tip merge was already up to date at `b02536c`; parent owns
-acceptance/merger/draft PR. No other ticket status or GitHub issue was changed.
-Final before/after comparison is recorded in the report and raw artifacts.
+[progress](docs/RESEARCH_HARNESS_PROGRESS.md). Production code and historical
+suites remain unchanged. Ticket evidence records 935 backend, 106 frontend
+and 165 keyless browser tests passing, with frontend lint/build. At the clean
+merge, the fresh merger observed 76 focused backend tests, Ruff and ty passing;
+six real-API cases passed with 22 scripted requests and 98 HTTP operations.
+The inherited comparison had no regressions or failures. Zero live calls/spend;
+live competence and held-out acceptance remain unverified.
+
+All 159 raw ticket files (13,343,424 bytes) are preserved byte-for-byte under
+ignored `.tools/research-harness/evidence/T01/`. The sibling
+`T01-copy-verification.json` records every SHA-256; its canonical manifest digest
+is `dde18508e88dfa92571455a789f72589b2f3bde5dabd5d5059a0a35126b28388`.
+Fresh merger artifacts are in `.tools/research-harness/evidence/T01-integration/`.
+The source worktree remains intact; keep the preserved evidence during cleanup.
+The merger used existing `.venv/bin/` tools, avoiding the system uv page-size
+failure. No stash, credentials, other processes or external issue state changed.
+
+Next: parent pushes this branch, creates/links its one draft integration PR,
+then starts ready frontier **T02–T07/#13–#18** in separate ticket worktrees.
+The merger has not pushed, opened a PR or closed any issue.
 
 # JAS handoff
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: implement-spec active; T01 baseline queued.**
+**Current checkpoint: implement-spec active; T01 baseline integrated.**
 The user explicitly invoked implement-spec after the reviewed breakdown. Treat
 that as authorization to implement the accepted task graph; do not repeat
 product-scope or testing-seam questions. Read the invoked skill at
@@ -42,9 +52,9 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: T01/#12 only. Merge its verified baseline before starting
-dependents. After the first implementation merge, push the integration branch,
-open one draft PR with closing references, and immediately call
+Current frontier: T02–T07/#13–#18 are ready after T01/#12 integration.
+Next, push the integration branch, open one draft PR with closing references,
+and immediately call
 link_pull_request. Do not merge to main or close issues as if unverified work
 were complete. The default-branch PR merge itself is not authorized.
 

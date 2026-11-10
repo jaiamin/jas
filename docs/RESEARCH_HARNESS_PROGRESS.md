@@ -33,7 +33,7 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 ## Acceptance gates
 
 - [x] Existing workflow baseline is reproducible, with retained failures (T01
-  ticket-branch evidence; integration acceptance remains with the parent).
+  integrated at `bf3b76e`; deterministic correctness evidence only).
 - [ ] Authoritative worlds, privacy, copied probes, exact replay and generated
   execution isolation independently pass the required checks.
 - [ ] Both participant harnesses and discretionary planning, retrieval,
@@ -56,13 +56,13 @@ merge, auto-merge or history rewrite is authorized.
 
 | Ticket | Issue and behavior | Blocked by | Status | Integrated commit |
 | --- | --- | --- | --- | --- |
-| T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Verified in ticket branch; pending integration acceptance | — |
-| T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Waiting | — |
-| T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Waiting | — |
-| T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Waiting | — |
-| T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Waiting | — |
-| T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Waiting | — |
-| T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Waiting | — |
+| T01 | [#12](https://github.com/jaiamin/ass/issues/12) Reproduce the current experiment workflow and freeze a regression baseline | None | Integrated | `bf3b76e` |
+| T02 | [#13](https://github.com/jaiamin/ass/issues/13) Inspect and qualify an isolated environment-extension candidate | T01 | Ready | — |
+| T03 | [#14](https://github.com/jaiamin/ass/issues/14) Reuse environment mechanics without importing an experiment | T01 | Ready | — |
+| T04 | [#15](https://github.com/jaiamin/ass/issues/15) Select and run a bounded participant harness on an existing world | T01 | Ready | — |
+| T05 | [#16](https://github.com/jaiamin/ass/issues/16) Let the Researcher answer with real capabilities and isolated probes | T01 | Ready | — |
+| T06 | [#17](https://github.com/jaiamin/ass/issues/17) Show failure-aware estimates and honest small-sample uncertainty | T01 | Ready | — |
+| T07 | [#18](https://github.com/jaiamin/ass/issues/18) Trace treatment opportunity, delivery and observation | T01 | Ready | — |
 | T08 | [#19](https://github.com/jaiamin/ass/issues/19) Give participants source-linked memory, plans and accessible verification | T04 | Waiting | — |
 | T09 | [#20](https://github.com/jaiamin/ass/issues/20) Run a solo evidence-seeking task in a persistent artifact world | T03, T04 | Waiting | — |
 | T10 | [#21](https://github.com/jaiamin/ass/issues/21) Observe three-agent coordination with explicit phase and delivery semantics | T07, T09 | Waiting | — |
@@ -80,14 +80,35 @@ merge, auto-merge or history rewrite is authorized.
 ## Preserved drafts and spending
 
 T01 evidence: [baseline report and inherited comparison procedure](research/T01_BASELINE.md).
-Ticket branch `t3/t01-research-baseline` adds only development fixtures, keyless
-evaluation/test tooling and documentation. Product source remains at `b02536c`.
-The real API baseline has six passing cases and 22 scripted provider responses;
-935 backend tests, 106 frontend tests, frontend lint/build and all 165 keyless
-browser tests pass. Runtime setup and initial new-runner failures are retained
-and classified in the report. No paid trial or live competence claim is made.
-Raw source archives, attempt/operation ledgers, exports and check logs are under
-ignored `data/research-baseline/`; preserve them before disposing of this worktree.
+Source `d5527c0b4cb57cb63f8d39cb74d335396042e711` on
+`t3/t01-research-baseline` was integrated with no-ff merge
+`bf3b76eb626db625b4476a8d436e67e2cfc95df9`. It adds only development fixtures,
+keyless evaluation/test tooling and documentation; production source and
+historical suites remain byte-unchanged from `b02536c`.
+
+The ticket-branch evidence records 935 backend tests, 106 frontend tests,
+frontend lint/build and all 165 keyless browser tests passing. Runtime setup
+and initial new-runner failures are retained and classified in the report.
+At the clean integration merge, the merger observed **76 focused backend tests**
+passing across baseline, API, exports, execution, lifecycle and streaming,
+plus Ruff and ty checks. Its fresh real API baseline passed all six cases with
+22 scripted responses and 98 HTTP operations; comparison with the preserved
+qualified-after report had no regressions, improvements or before/after
+failures. Source stability passed. The unchanged UI suite was inherited without
+a redundant merger rerun. No paid trial or live competence claim is made.
+
+All raw ticket artifacts were copied without overwrites from the T01 worktree's
+`data/research-baseline/` into the integration checkout's ignored
+`.tools/research-harness/evidence/T01/`: **159 files, 13,343,424 bytes**.
+Every copied SHA-256 matches the source, which stayed stable during copying.
+The per-file verification record is
+`.tools/research-harness/evidence/T01-copy-verification.json`; its canonical
+file-manifest SHA-256 is
+`dde18508e88dfa92571455a789f72589b2f3bde5dabd5d5059a0a35126b28388`.
+Fresh integration logs, source archive, attempts and comparison are separately
+preserved in `.tools/research-harness/evidence/T01-integration/`.
+The source worktree remains intact. Keep these ignored evidence directories
+when cleaning up ticket worktrees.
 
 The incomplete pre-spec changes to the assistant and research tools are preserved
 in local Git stash `f771128ba1c9295262a4073df40cc25647b1370f` (including the
@@ -104,7 +125,9 @@ those trials run, the live milestone remains unverified.
 
 ## Next actions
 
-1. Review and accept T01/#12 using its committed source and retained evidence.
-2. Merge its accepted checkpoint and open the integration draft PR.
-3. Start the newly ready frontier, respecting runtime qualification before
-   generated-code execution and one writer per branch.
+1. Parent: push the integration branch, open its one draft PR with closing
+   references and call `link_pull_request`; the merger has not published it.
+2. Start ready frontier T02–T07/#13–#18 in isolated ticket worktrees, respecting
+   runtime qualification before generated-code execution and one writer per branch.
+3. Preserve source-stamped inherited and new-behavior evidence for each slice;
+   keep live and held-out gates unverified until their required trials run.
