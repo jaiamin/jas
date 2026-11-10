@@ -1,3 +1,26 @@
+# Current user direction and evidence retirement (2026-11-10)
+
+ROOT owns tracked writing at published accepted `e76ef124`. Continue remaining
+T12/T17/T18/T20, then complete whole-product UI/UX and frontend/backend review,
+benchmark and iterate, reset app data and run the final app on port8080. See
+[final product plan](docs/research/FINAL_PRODUCT_PLAN.md).
+
+The user explicitly authorized removal of historical research evidence after a
+compact report. [That report](docs/research/RESEARCH_HARNESS_COMPACT_REPORT.md)
+now records accepted checkpoints, observed outcomes, historical failures and
+unverified gates. ROOT's closed raw evidence/snapshots/custody and obsolete
+restoration data may be retired. Older local artifact links below are historical
+and must not be treated as currently verifiable after deletion. Active T12/T17
+work, shared caches, source history and protected original payloads remain outside
+ROOT cleanup. Cleanup recovered1,752,023,040 shared net bytes (111,607,808 to
+1,863,630,848 free). T12/T17 have renewed bounded backend releases under unchanged
+134217728 floors/lock; frontend/production/providers remain separately staged.
+The hosted composer failure reproduced2/3 locally. It was the delayed provider
+notice changing form height; a test wait for that visible state preserves exact
+geometry assertions and passed10 repeated mobile/desktop checks. App bytes did
+not change. All3 suggestions cases, lint228files and forced TypeScript passed;
+the prior2/3 failed reproduction remains disclosed in the compact report.
+
 # T14 independent recovery closure accepted locally (2026-11-10)
 
 Current personal **Standards PASS / Spec PASS**, with zero unresolved current

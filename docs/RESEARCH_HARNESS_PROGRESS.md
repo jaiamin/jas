@@ -51,6 +51,18 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### Final product request and historical evidence retirement (2026-11-10)
+
+The user requests completion plus a minimalist full-product UX pass, frontend/
+backend quality audit, benchmarks, obsolete-data removal and final service on
+port8080. See [the final plan](research/FINAL_PRODUCT_PLAN.md). Historical raw
+research evidence may be removed after [its compact report](research/RESEARCH_HARNESS_COMPACT_REPORT.md),
+as explicitly confirmed by the user. Former local artifact references below
+become historical, not a claim of retained independent verification. Accepted
+source remains published `e76ef124`; current contracts DB11/export12/library7.
+T12/T17 remain incomplete in their own worktrees; T18/T20 and final gates are open.
+Storage recovery precedes new checks; the ordinary134217728-byte floor stands.
+
 ### T14 independent recovery closure accepted locally (2026-11-10)
 
 NEW personal current **Standards PASS / Spec PASS**, zero unresolved current
