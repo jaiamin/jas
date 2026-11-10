@@ -106,3 +106,11 @@ measured semantic accuracy. The additional false-report/breach witness will repo
 the opposite of each recorded signal on all four turns, promise 3 in round one,
 and contribute 0 in round two: **four false reports, two feasible breaches**.
 With contribution 2 in round one and 0 in round two, utility is **21 each / 42 total**.
+
+Review DEVELOPMENT window oracle (declared before this check): two sealed
+commons decisions per round, no communication. Turns 1/2 precede settlement;
+turns 3/4 follow one public round summary and two public contribution events.
+Thus episodic observations retain public-history lengths **0,0,1,1** and
+experience lengths **0,0,2,2**. Memory `none` has explicit empty windows, so
+both are **0,0,0,0**. Removing a field from a known synthetic historical fixture
+means unavailable/null, never an inferred empty window.

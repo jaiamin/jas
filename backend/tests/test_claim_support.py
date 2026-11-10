@@ -680,3 +680,42 @@ def test_inflight_receipt_stays_unknown_in_frozen_lens_after_settlement(claim_cl
     assert second["output"]["exposure"] == captured["exposure"]
     assert source(client.get(f"/api/studies/{sid}/export").json()) == before
     assert first["usage"]["requests"] == second["usage"]["requests"] == 2
+
+
+@pytest.mark.parametrize("memory", ["episodic", "none", "missing_historical"])
+def test_lens_reports_recorded_memory_windows_and_missing_history(claim_client, design, memory):
+    client, _, _ = claim_client
+    design.conditions[0].parameters.memory = "none" if memory == "none" else "episodic"
+    _, rid = save(client, design)
+    run(client, rid)
+    if memory == "missing_historical":
+        from agent_sim.db import Turn
+        from sqlalchemy import select
+
+        # Known synthetic historical fixture only; the analysis cannot fill this gap.
+        with client.app.state.db.session.begin() as session:
+            for turn in session.scalars(select(Turn).where(Turn.run_id == rid)):
+                turn.observation = {
+                    k: v
+                    for k, v in turn.observation.items()
+                    if k not in {"public_history", "your_experiences"}
+                }
+    final = finish(
+        client,
+        client.post(
+            "/api/chats",
+            json={"question": "Which memory windows were recorded?", "context": f"run:{rid}"},
+        ),
+    )
+    assert final["status"] == "complete", final
+    windows = final["output"]["lens"]["coverage"]["runs"][0]["truncation"]["observation_windows"]
+    assert [w["history_records"] for w in windows] == {
+        "episodic": [0, 0, 1, 1],
+        "none": [0, 0, 0, 0],
+        "missing_historical": [None, None, None, None],
+    }[memory]
+    assert [w["experience_records"] for w in windows] == {
+        "episodic": [0, 0, 2, 2],
+        "none": [0, 0, 0, 0],
+        "missing_historical": [None, None, None, None],
+    }[memory]
