@@ -1,6 +1,7 @@
 # T14 independent integration review
 
-Status: review in progress; neither review axis is accepted.
+Status: three material lifecycle findings repaired; final qualification in progress.
+Neither review axis is accepted yet.
 
 ## Frozen review plan (v1, 2026-11-10)
 
@@ -115,14 +116,142 @@ free space: 225,562,624 bytes, shared and unreserved.
 
 ## Standards findings and verdict
 
-Pending.
+S1 (material, repaired; expanded verification pending): the existing Run Pause
+could be undone by the investigation controller, sending another participant
+request. This breaches AGENTS' pause/in-flight-commit invariant and ARCHITECTURE's
+explicit continuation rule. Independent HTTP `run-pause-red-03` observed the
+second send after Pause; `run-pause-green-01` commits one turn, retains four
+separate charges (700/700/700/35 scripted microdollars), waits, then explicitly
+resumes and replays both turns. Engine.pause now pauses its owning investigation
+in the same transaction. The Experiment pause path shares that operation and
+has an additional, not-yet-run parameter case. No smell-only finding so far.
+Final verdict pending completed source review and qualification.
+
+S2 (material, repair under verification): the worker-backed immutable save wrote
+an earlier decisions list over an already accepted Pause decision. Public HTTP
+`save-pause-red-01` reproduces the exact accepted entry disappearing after save.
+This violates durable progress and append-only stopping decisions. Decision
+updates now append from the current record after acquiring the database write
+lock; save no longer writes any stale list. The analogous awaited analysis
+preparation path uses the same append operation.
+
+S3 (material, repair under verification): Pause accepted while the investigation
+waited for another Run's actual worker/startup lock became a terminal preflight
+error. `queued-start-pause-red-01` independently observes stopped instead of
+paused. Engine preflight now reports the typed parent state; the controller
+retains only paused/pausing as a waiting continuation. Other preflight failures
+still stop. The green case additionally requires explicit Resume to use the
+same saved run, one design attempt and one participant decision.
+
+All three repairs pass the five-case independent HTTP job
+`independent-http-final-01`, including actual contained workers and explicit
+resume. Its canonical source key is
+`40c7e84f2dcf29d6d3cd2319f865e0dc3db9fb3f8a68b51e9ebb14eedaf25de4`,
+archive SHA256 `0f40989d2bf097f89b7989a1df3754722f3a64a85627786a0a42a22b2e9b1d5d`.
+Full Ruff and ty pass; Ruff's first attempt caught one reviewer-test line length
+and remains retained. Runtime source is frozen for affected regression/baseline/
+browser/production qualification unless a new concrete failure requires repair.
 
 ## Spec findings and verdict
 
-Pending.
+P1 (material, repaired; verification pending): #25 requires preserving pause
+without duplicate submissions/spending. The Run Pause path failed that criterion
+even though the investigation's own Pause control worked. This is reviewed
+independently on the Spec axis; S1 records the Standards breach. No scope creep
+identified. Final verdict pending.
+
+P2 (material, repair under verification): #25 requires recording stopping
+decisions and preserving pause/reconnect. The accepted Pause was absent from
+later progress after a save, despite status remaining paused. The independent
+worker/HTTP red establishes this separately from P1's extra-send failure.
+
+P3 (material, repair under verification): #25's pause/resume promise failed when
+startup was queued behind another Run. The public control was accepted but its
+continuation stopped. The same actual-worker HTTP red establishes this case;
+no worker/provider replacement or new scope is introduced by the repair.
 
 ## Observed verification, decisions and next steps
 
 Plan frozen before merge, dependency setup and independent product outputs.
 Initial OS/cwd/branch/HEAD/clean tracked status and protected stash match the
-handoff. Next: bounded source/custody review and exact no-ff merge.
+handoff. Exact no-ff merge `463f14f2f8146bfe38d122e699113129b7b64566` has
+parents `c209d8a399fc5acd5c4aef555007412e1397fe95` and the exact source
+`b304029e85aeb97ccb02a2151d4bb6101bf684fc`. Only HANDOFF conflicted; both
+histories and latest root coordination are retained.
+
+Independent custody verification passed 1,481 indexed files, seven seal entries,
+1,489 hardlink identities/198,433,400 logical bytes and 438 source/archive inputs.
+All 130 standard attempts (46 nonzero) and 79 maps remain. This verifies custody,
+not product correctness. No inherited ignored helper was executed.
+
+Normal offline frozen Python setup installed 51 packages in a distinct ROOT
+environment, 210,366,464→206,327,808 free bytes. sys.prefix and agent_sim import
+resolve to this checkout. The one authorized pnpm12 offline frozen-store/frozen-
+lockfile import used normal hardlinks, 555 reused packages, zero downloads and
+211,116,032→191,029,248 free bytes. Policy verification passed. The metadata
+parser first rejected the two-document lockfile; that tooling failure is retained
+and corrected using safe_load_all. The owner policy file had been observed at
+750 bytes before import; normal pnpm appended another verification entry (1,501
+bytes afterward). No manual cache mutation or policy bypass occurred.
+
+Independent red attempts are retained: red-01 lacked the pytest basetemp parent;
+red-02 exposed a provider-fixture grounding error (its quoted capability phrase
+was absent from its question). The corrected question retains the same literal
+behavioral oracle. Red-03 is the actual product failure; green-01 passes. The
+first red case was untracked during its source inventory; its explicit unchanged
+case identity is recorded separately. Subsequent cases are staged for tracked-
+only snapshots. No uninterrupted-success or retroactive-red claim is made.
+
+ROOT requested a hold on NEW heavy jobs during shared recovery. At the closed
+boundary, explicitly authorized cleanup removed only 1,341 newly generated,
+reproducible, nlink1 private ROOT dependency .pyc files after complete preflight,
+hash/mode/ns inventory and no live own importer. Source/evidence/HEAD were
+unchanged; free space increased 143,998,976→167,411,712 bytes. Future checks use
+PYTHONDONTWRITEBYTECODE=1. Owner caches/payloads are preserved. The Engine repair
+requires fresh production qualification at the unchanged 268,435,456-byte floor;
+no new heavy job will begin until ROOT releases the recovery boundary.
+
+Next: complete source review, expand lifecycle/actual-worker witnesses, refresh
+affected final checks/baseline/parity and production, then seal/return ownership.
+
+Additional frozen oracle before further outputs: while an actual admitted-world
+worker-backed save is held after its design proposal completed, accept Pause
+through public HTTP. Its exact accepted pause decision must survive the eventual
+immutable save; revision 1 and ready runs remain, with three Sol requests and no
+participant send. A complete independent admitted relay must separately produce
+phase 2/credits 0, two participant decisions, no submitter docket disclosure,
+null/unavailable utility, cutoff 2 and exact zero-request replay. Observe the
+actual worker unchanged and require every invocation outside the API loop.
+
+ROOT released bounded backend checks at the unchanged floor, at most 8 MiB
+additional output per job and no new frontend/production grant. The first save
+Pause red ran at 187,879,424 free bytes before command; exit1 is the product
+failure, not a fixture failure. ROOT disclosed and retained its unrelated
+all-object packing/rollback incident; no reviewer source/evidence write error
+was observed at that boundary. T17's preflight pointer was checked independently:
+this T14 source already offloads Engine.start and start_study preflight with
+asyncio.to_thread and serializes them through start_lock; no sibling code used.
+
+Additional pre-output startup oracle: hold an unrelated admitted Run's actual
+World worker during public start, so the single Engine startup lock is occupied.
+Let an artifact investigation finish saving and wait to start, then accept its
+Pause and pause the unrelated start before releasing the worker. The accepted
+Pause must retain a nonterminal paused continuation, three design requests,
+zero participant sends and zero started runs/turns, rather than converting the
+control into a terminal preflight failure. All worker execution remains real.
+
+Independent attribution checked every declared input of all13 final inherited
+components and their archive/receipt/case identities. Only execution.py and
+investigations.py differ in backend/browser/production inputs. All frontend
+lint/type/unit/build input memberships remain byte-equal;116 units/33files retain
+implementer attribution, not a reviewer rerun. Exactly two literal formatter
+transformations after the strengthened disclosure were verified independently.
+Frozen T01 runner/cases remain946afbc-equal. New backend/static/type and all
+affected lifecycle/browser/production/baseline checks receive reviewer identities.
+
+Recorder v1 retained exact before/after input hashes but no new canonical source
+archive. Starting the final independent HTTP job, recorder v2 also archives each
+unique tracked-only protected-excluded source before execution. Earlier capture
+limits remain explicit; source stamps are not retroactively labeled pre-output
+archives. Both recorder versions and all adverse attempts are retained. One
+documentary patch failed context matching before any mutation; it was corrected.

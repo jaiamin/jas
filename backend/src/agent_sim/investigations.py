@@ -4,7 +4,7 @@ import asyncio
 from typing import Literal
 
 from pydantic import Field, model_validator
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from .assistants import Assistants
 from .db import Analysis, Database, InvestigationRecord, ProviderCall, Study, digest, now, uid
@@ -187,11 +187,20 @@ class Investigations:
                 ],
             }
 
-    def _update(self, key: str, **changes):
+    def _update(self, key: str, *, decision: dict | None = None, **changes):
         with self.db.session.begin() as session:
+            if decision is not None:
+                # Serialize read/append with API controls while a worker saves a revision.
+                session.execute(
+                    update(InvestigationRecord)
+                    .where(InvestigationRecord.id == key)
+                    .values(stage=InvestigationRecord.stage)
+                )
             row = session.get_one(InvestigationRecord, key)
             for name, value in changes.items():
                 setattr(row, name, value)
+            if decision is not None:
+                row.decisions = [*row.decisions, decision]
             parent = session.get_one(Analysis, key)
             parent.output = {**(parent.output or {}), "stage": row.stage}
 
@@ -229,7 +238,7 @@ class Investigations:
             self._update(
                 key,
                 status="pausing",
-                decisions=[*row["decisions"], {"at": now(), "decision": "pause_requested"}],
+                decision={"at": now(), "decision": "pause_requested"},
             )
             for attempt in row["attempts"]:
                 for run_id in attempt["run_ids"]:
@@ -245,7 +254,7 @@ class Investigations:
                 key,
                 status="running",
                 stop_reason=None,
-                decisions=[*row["decisions"], {"at": now(), "decision": "resumed"}],
+                decision={"at": now(), "decision": "resumed"},
             )
             if key not in self.tasks or self.tasks[key].done():
                 self.tasks[key] = asyncio.create_task(
@@ -420,7 +429,7 @@ class Investigations:
             status="checked",
         )
         confirmation = row["confirmation"]
-        decisions = row["decisions"]
+        decision = None
         if attempts[-1]["kind"] == "confirmatory":
             confirmation = {
                 "frozen_at": now(),
@@ -430,16 +439,13 @@ class Investigations:
                 "run_ids": attempts[-1]["run_ids"],
                 "stopping": row["authorization"]["stopping"],
             }
-            decisions = [
-                *decisions,
-                {
-                    "at": now(),
-                    "decision": "confirmation_frozen",
-                    "design_hash": confirmation["design_hash"],
-                },
-            ]
+            decision = {
+                "at": now(),
+                "decision": "confirmation_frozen",
+                "design_hash": confirmation["design_hash"],
+            }
         self._update(
-            key, attempts=attempts, confirmation=confirmation, decisions=decisions, stage="runs"
+            key, attempts=attempts, confirmation=confirmation, decision=decision, stage="runs"
         )
 
     async def _runs(self, key: str) -> None:
@@ -450,7 +456,13 @@ class Investigations:
                 run = self.research.configuration(run_id)[0]
                 if run.status == "complete":
                     break
-                await self.engine.start(run_id)
+                try:
+                    await self.engine.start(run_id)
+                except InvestigationStopped as error:
+                    if error.reason not in {"pausing", "paused"}:
+                        raise
+                    # Pause may arrive while start waits for another run's preflight.
+                    continue
                 execution = self.engine.executions.get(run_id)
                 if execution and execution.task:
                     await execution.task
@@ -486,16 +498,16 @@ class Investigations:
                 study_id=row["study_id"],
                 investigation_id=key,
             )
-            decisions = [
-                *row["decisions"],
-                {
+            self._update(
+                key,
+                stage="analysis",
+                decision={
                     "at": now(),
                     "decision": "read_only_analysis",
                     "analysis_id": analysis_id,
                     "revision": row["attempts"][-1]["revision"],
                 },
-            ]
-            self._update(key, stage="analysis", decisions=decisions)
+            )
         if analysis_id in self.assistants.tasks:
             await self.assistants.tasks[analysis_id]
         await wait_ready(self.db, key)
@@ -545,7 +557,7 @@ class Investigations:
             stop_reason=reason,
             result=result,
             attempts=attempts,
-            decisions=[*row["decisions"], {"at": now(), "decision": status, "reason": reason}],
+            decision={"at": now(), "decision": status, "reason": reason},
         )
         with self.db.session.begin() as session:
             parent = session.get_one(Analysis, key)

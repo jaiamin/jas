@@ -51,6 +51,18 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
 
 ## Task graph and checkpoints
 
+### T14 independent review: lifecycle repairs, qualification pending (2026-11-10)
+
+Exact source b304029e was merged with no-ff second-parent ancestry at463f14f2.
+The fresh reviewer personally separated Standards and Spec, found and reproduced
+three pause lifecycle defects, and repaired them in Engine/Investigations. Five
+independent public-HTTP witnesses pass, including actual admitted workers;
+full Ruff/ty pass. All findings/adverse attempts and capture limits are retained
+in [the review report](research/T14_INTEGRATION_REVIEW.md). Runtime is frozen for
+affected checks/baseline/parity/browser/fresh production; no acceptance yet.
+Unchanged116frontend units and build retain explicit source-verified inherited
+attribution. Sole shared tracked writing has not been returned to ROOT.
+
 ### T14 implementation complete; independent evidence preservation verified (2026-11-10)
 
 Clean source `b304029e` includes accepted29af3413; T14 remains unaccepted until

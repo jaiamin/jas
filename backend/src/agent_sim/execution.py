@@ -96,7 +96,7 @@ class Engine:
             with self.db.session() as session:
                 parent = session.get_one(InvestigationRecord, run.investigation_id)
                 if parent.status != "running":
-                    raise ValueError("Resume the investigation before starting its runs")
+                    raise InvestigationStopped(parent.status)
                 if session.scalar(
                     select(ParticipantActivation.id)
                     .where(
@@ -138,6 +138,14 @@ class Engine:
             run = session.get_one(Run, run_id)
             if run.status != "complete":
                 run.status = "pausing" if run.status == "running" else "paused"
+                if run.investigation_id:
+                    parent = session.get_one(InvestigationRecord, run.investigation_id)
+                    if parent.status == "running":
+                        parent.status = "pausing"
+                        parent.decisions = [
+                            *parent.decisions,
+                            {"at": now(), "decision": "pause_requested", "run_id": run_id},
+                        ]
 
     async def _run(self, run_id: str, execution: Execution, single: bool) -> None:
         try:

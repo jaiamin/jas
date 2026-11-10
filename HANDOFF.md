@@ -1,5 +1,19 @@
 # T14 independent integration review in progress (2026-11-10)
 
+Reviewer runtime checkpoint: exact no-ff merge463f14f2 retained b304029e as its
+second parent. Three personally reproduced lifecycle findings are repaired:
+child Run/Study Pause no longer permits parent restart/spending; accepted Pause
+decisions survive worker-backed saves; queued startup Pause remains resumable.
+Five independent real-HTTP cases pass on the repaired runtime, including actual
+admitted workers/privacy/null utility/export/replay. Full Ruff/ty pass after one
+retained test-format failure. Runtime inputs are frozen for affected final checks;
+T14 is still unaccepted and sole tracked writing stays with this reviewer.
+ROOT released only bounded backend jobs (8MiB forecast, unchanged128MiB floor,
+PYTHONDONTWRITEBYTECODE=1 and shared flock). Frontend/browser/production remain
+held pending staged resource release, with production floor268435456 unchanged.
+See the review report/evidence for exact source/archive/attempt identities and
+honest inherited attribution; no T12/T17 source, paid work or publication.
+
 The fresh reviewer holds sole tracked writing. Frozen personal Standards/Spec plan:
 [review](docs/research/T14_INTEGRATION_REVIEW.md), checkpoint `c209d8a3`.
 The exact T14 source is being merged with its original second-parent identity;
