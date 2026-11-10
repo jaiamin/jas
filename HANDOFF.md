@@ -1,3 +1,42 @@
+# Root coordination — T15 accepted; T13/T19 assigned (2026-11-10)
+
+Accepted integration: `d55f27032b3468ee1f5ad7399ca0d3b1827f4a81` (T01–T09,
+T15; qualified code `6e1a7c8`). Root rehashed all 1,032 files in the T15 fresh
+manifest; normal hooks and accepted checks are recorded below. Publish this
+checkpoint to draft PR #32 and link immediately after push. T10 continues
+independently on 18123, unpolled. Assign T13/#24 to a fresh isolated TDD
+implementer on 18124, then T19/#30 to a separate fresh sole shared-writer
+integration reviewer on 18222. Root stops edits during that review. T16/T18
+remain Ready; T11/T12 wait on T10, T14 on T13, T17 on T13/T16.
+
+Complete closed T19 evidence is now preserved under
+`.tools/research-harness/evidence/T19/`; sibling `T19-copy-verification.json`
+records **3,244 complete regular files / 672 links**, including all 3,242
+child-indexed files, manifest/checksum, and **2,447 verified gzip raw hashes**.
+Manifest SHA-256:
+`eb64fef96962f010929f21358d4ba78ce713e6c6b4b43408f7578a14ddd3f04a`.
+Source remains clean at `1d8d9774a9dccb2e32f8171da7264185040c44c1` on
+`t3/research-claim-support`, `/home/agent/.t3/worktrees/workspace/t3-95af26a2`.
+Preservation is a hardlinked copy of immutable completed evidence, not a second
+physical byte copy; never modify either data tree. All bytes/modes/mtimes and
+literal link targets match stable source; no link was followed. Preserved
+regular files survive later source-path removal. T19 remains unaccepted until
+fresh Standards/Spec review; generated prose and earlier outside-cache effects
+remain unassessed. Generated caches must be private and checks recomputed.
+
+Root reclaimed space without changing recorded evidence contents.
+`maintenance/closed-databases-20261110T073015Z/verification.json` maps 349 more
+closed synthetic DB copies (138,805,248 bytes → 6,267,825), excluding T01/live
+work. Original hashes verify by decompression. `maintenance/immutable-evidence-20261110T073248Z/verification.json`
+records **6,109 identical closed evidence files** shared with completed source
+copies. All **10,753 affected entries** retain paths/bytes/modes/mtimes/owners/
+link targets; inode link counts/ctimes change by design. No active dependencies,
+build caches or source code were shared or altered. These immutable records
+must never be modified in place; keep previous gzip mappings. Free disk after
+T19 preservation was 909,156,352 bytes, varying with concurrent work. Sol/T01,
+stash and unread `pbcopy` remain untouched; no paid calls or new product tests
+were run by root in this coordination step.
+
 # T15 fresh integration checkpoint — accepted (2026-11-10)
 
 **T01–T09 and T15 are accepted. Root resumes sole assigned-checkout ownership.**
@@ -873,8 +912,8 @@ T03/#14, T06/#17 and T07/#18 remain ready for the next available slots.
 
 ## Current task: evidence-led harness and simulation redesign (2026-11-10)
 
-**Current checkpoint: T01–T09 accepted; T10 assigned next; T15 complete,
-assigned to fresh integration review; T19 running; draft PR #32.**
+**Current checkpoint: T01–T09 and T15 accepted; T10 running; T13 assigned next;
+T19 complete with preserved evidence, assigned to fresh review; draft PR #32.**
 
 Fresh Sol DEVELOPMENT is complete for this checkpoint: read
 `docs/research/SOL_DEVELOPMENT.md`. The frozen original eight-case pair,
@@ -972,12 +1011,12 @@ The accepted bodies/index are in `docs/RESEARCH_HARNESS_TICKETS.md`; the live
 task graph, acceptance gates, checkpoints and next actions are tracked in
 `docs/RESEARCH_HARNESS_PROGRESS.md`.
 
-Current frontier: T01–T09 are accepted at `12b35c9`, including T09 repairs
-`4ed18af` and `84867cc`, T07 repair `d5568c1` and T08 repair `de5556b`.
-T10 is assigned next in isolation; completed T15 is assigned to a separate fresh
-sole-writer integration review; T19 remains running and unpolled. T13/T16/T18
-are Ready and T14 waits on T13. Current source/evidence pointers and storage
-preservation maps are at the top. No paid calls are allocated.
+Current frontier: T01–T09 and T15 are accepted at `d55f270`, including T15
+effort repair `6e1a7c8`, T09 `4ed18af`/`84867cc`, T07 `d5568c1` and T08 `de5556b`.
+T10 runs independently/unpolled; T13 is assigned next in isolation; completed
+T19 is preserved and assigned to a separate fresh sole-writer review. T16/T18
+are Ready; T11/T12 wait on T10, T14 on T13 and T17 on T13/T16. Current evidence
+and immutable storage mappings are at the top. No paid calls are allocated.
 Draft PR #32 is the single integration PR and
 was linked immediately. Refresh/link it on each push. Do not merge to main or
 close issues as if unverified work were complete. The default-branch PR merge
