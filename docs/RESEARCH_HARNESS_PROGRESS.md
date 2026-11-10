@@ -1,6 +1,16 @@
 # Research harness implementation progress
 
-T12 current boundary (2026-11-10): exact accepted8329cfc7883053620b7dafcc6de351a9bf30ee25
+T12 current boundary (2026-11-10): normal accepted0527e737 mergede49947c, own
+HEAD5049f3d8. Ruff and explicit backend/helper ty PASS; both new cutoff HTTP cases
+and workflow lens pass separately. Native02 FAILED at the helper's exit0 assertion
+after deliberate SIGTERM; literal409/unchanged checkpoint+summary/zero requests/
+export and local30-turn World had completed, second lifetime had not. Native01/02
+raw failures retained, no product-red attribution. Own installed Uvicorn0.54.0
+re-raises SIGTERM after lifespan shutdown. Corrected exact-signal oracle frozen;
+ONE native03 released after helper static gates/coherent checkpoint. Current
+retained57,547,028 within96MiB; own18130/server/browser/lock closed. Unaccepted.
+
+Historical T12 boundary (2026-11-10): exact accepted8329cfc7883053620b7dafcc6de351a9bf30ee25
 normally merged at43c2fa5b. Post-merge18 affected units/forced TypeScript/clean
 Vite pass at sourcea4a2f9cf. Native-runtime attempt01 FAILED exit1: HTTP Step409
 contradicted the helper's asynchronous budget-failure assumption. Source shows

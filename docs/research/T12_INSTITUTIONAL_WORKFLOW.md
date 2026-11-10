@@ -1,6 +1,41 @@
 # T12: institutional workflow with atomic work and resource effects
 
-## Current boundary: native-runtime attempt01 FAILED; corrected retry released
+## Current boundary: native01/02 FAILED; corrected native03 released
+
+At coherent HEAD5049f3d8643cc3b54199f21b98994d59b1089242, normal exact accepted
+0527e737d93786d0f5579d5a13827c472cf370fa merge isde49947c. Native02 exited1
+at the first deliberate SIGTERM's incorrect exit0 assertion. Earlier checks in
+that attempt reached literal missing-key409, exact unchanged summary/checkpoint,
+zero workspace/run/export requests and export13/source pin. The distinct local
+World30-turn/restoration/replay completed. Second lifetime/reopen was not reached.
+Native01 and02 remain FAILED, without product-red attribution. Raw outputs are
+retained in their separate attempt directories. Entry1,116,995,584; after
+1,114,988,544 free;1,566,517 added retained,57,547,028 total. Own18130/lock closed.
+
+### Native03 signal/reopen oracle, frozen before repair/output
+
+Exact own installed `uvicorn/__init__.py` and frozen uv.lock both specify0.54.0.
+Installed `server.py` calls lifespan.shutdown after task completion, then
+capture_signals restores the original handlers and re-raises every received
+signal (lines332–349). Therefore each directly owned child, deliberately sent
+SIGTERM once, must return exactly `-signal.SIGTERM` (-15), with the actual return
+code retained. Require its explicit Application shutdown complete and Finished
+server process log markers, reap that server, require no owned child worker and
+prove no listener plus reuse-address bind. Arbitrary nonzero exits, forced kill,
+shutdown errors or timeouts fail. Neither earlier attempt recorded that actual
+return code; do not retrospectively turn either into a pass.
+
+Keep the native02 keyless/public/local-World oracle below. Reopen the same fresh
+SQLite in a second lifetime, require identical summary/checkpoint and full export,
+zero requests, zero-turn public replay, then the same exact shutdown proof. Both
+lifetimes must pass. Hash existing built assets before/after for equality; use
+the enclosing safe tracked-source recorder. ROOT released ONE native03 after
+helper Ruff/ty and coherent checkpoint, ordinary floor+128MiB peak,16MiB output/
+96MiB total, own18130/existing env/assets only. No provider/policy substitution,
+installation/Docker/paid/held-out or broader rerun. Finish personal review/report
+after the observed result; implementation is still incomplete/unaccepted here.
+
+## Historical boundary: native-runtime attempt01 FAILED; corrected retry released
 
 Exact accepted8329cfc7883053620b7dafcc6de351a9bf30ee25 normally merged at
 43c2fa5bf5d47388a3222a61cf57fc9e47914e05. Post-merge18 affected units,

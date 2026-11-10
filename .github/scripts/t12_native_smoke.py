@@ -15,6 +15,7 @@ from typing import TypedDict
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
+import uvicorn
 from agent_sim.domain import Decision, Design
 from agent_sim.simulation.environments import create_world
 
@@ -43,24 +44,31 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     out = parser.parse_args().output.resolve()
     root = Path.cwd()
+    assert uvicorn.__version__ == "0.54.0"
     assert out.is_relative_to(root / ".tools/t12/evidence")
     out.mkdir()  # Preserve every attempt; no overwriting or deleting evidence.
     build = root / "frontend/dist"
-    assets = sorted(build.rglob("*"))
-    assert not build.is_symlink() and all(not p.is_symlink() for p in assets)
-    manifest: list[Asset] = [
-        {
-            "path": str(p.relative_to(build)),
-            "size": p.stat().st_size,
-            "sha256": hashlib.sha256(p.read_bytes()).hexdigest(),
-        }
-        for p in assets
-        if p.is_file()
-    ]
+
+    def asset_manifest() -> list[Asset]:
+        assets = sorted(build.rglob("*"))
+        assert not build.is_symlink() and all(not p.is_symlink() for p in assets)
+        return [
+            {
+                "path": str(p.relative_to(build)),
+                "size": p.stat().st_size,
+                "sha256": hashlib.sha256(p.read_bytes()).hexdigest(),
+            }
+            for p in assets
+            if p.is_file()
+        ]
+
+    manifest = asset_manifest()
     (out / "assets.json").write_text(json.dumps(manifest, indent=2) + "\n")
     result = {
         "qualification": "native-runtime",
         "status": "failed",
+        "uvicorn_version": uvicorn.__version__,
+        "lifetimes": [],
         "paid_calls": 0,
         "assets_sha256": hashlib.sha256(json.dumps(manifest, sort_keys=True).encode()).hexdigest(),
         "assets_bytes": sum(row["size"] for row in manifest),
@@ -252,10 +260,30 @@ def main():
                     assert reopened["state"] == before and reopened["summary"] == run["summary"]
                     assert http(f"/api/runs/{rid}/verify", {})["verified_turns"] == 0
                     assert http(f"/api/studies/{sid}")["usage"]["requests"] == 0
+                    assert http(f"/api/studies/{sid}/export") == exported
+                children = Path(f"/proc/{process.pid}/task/{process.pid}/children").read_text()
+                lifetime = {
+                    "lifetime": attempt + 1,
+                    "pid": process.pid,
+                    "children_before_shutdown": [int(pid) for pid in children.split()],
+                }
+                result["lifetimes"].append(lifetime)
+                assert lifetime["children_before_shutdown"] == [], "Unexpected owned worker"
                 process.send_signal(signal.SIGTERM)
-                assert process.wait(timeout=15) == 0
+                code = process.wait(timeout=15)
+                lifetime["exit_code"] = code
+                assert code == -signal.SIGTERM, f"Unexpected shutdown exit {code}"
+                shutdown = (out / f"server-{attempt}.log").read_text()
+                assert "Application shutdown complete." in shutdown
+                assert f"Finished server process [{process.pid}]" in shutdown
+                assert not Path(f"/proc/{process.pid}").exists(), "Owned server was not reaped"
+                lifetime["lifespan_shutdown_complete"] = True
+                lifetime["server_reaped"] = True
                 process = None
                 released()
+                lifetime["port_released"] = True
+        assert asset_manifest() == manifest
+        result["assets_unchanged"] = True
         result["status"] = "passed"
     except BaseException as error:
         result.update(error_type=type(error).__name__, error=str(error))

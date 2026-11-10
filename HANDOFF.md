@@ -1,4 +1,26 @@
-# T12 native-runtime attempt01 failed; corrected retry released (2026-11-10)
+# T12 native-runtime attempts01/02 failed; corrected03 released (2026-11-10)
+
+Same incomplete/unaccepted implementation at5049f3d8643cc3b54199f21b98994d59b1089242.
+Exact accepted0527e737d93786d0f5579d5a13827c472cf370fa normally merged atde49947c.
+Ruff and explicit backend/helper ty PASS at sourceabbb6275; the initial manifest
+type error remains retained. Both new cutoff HTTP cases and the affected workflow
+lens pass separately at that source. Native02 correctly observed literal409,
+unchanged full summary/checkpoint, zero requests and export13/source pin, plus
+the distinct local30-turn World/restoration/replay. It FAILED at the first
+SIGTERM's incorrect exit0 expectation, before second lifetime/reopen. Both
+native01 and02 stay FAILED; no product-red attribution. Native02 raw HTTP/log/
+SQLite/assets/result remain untouched; shutdown completed and18130/lock released.
+
+Own installed Uvicorn __version__ and frozen lock both say0.54.0; its
+capture_signals restores handlers and re-raises the received SIGTERM after
+lifespan.shutdown. The corrected oracle is frozen in the T12 plan before repair.
+ROOT released ONE native03 after helper Ruff/ty and coherent checkpoint: require
+exact -SIGTERM for each deliberate shutdown, lifespan-completion log, reaped own
+server/no worker/listener, reopen/export/replay. Same floor+128MiB peak/16MiB job/
+96MiB cap; current retained57,547,028 bytes. No active own resource. Next repair/
+static/checkpoint, this single smoke, personal review and durable closure report.
+
+# Historical T12 native-runtime attempt01 failed; corrected retry released (2026-11-10)
 
 Same incomplete/unaccepted T12, branch `t3/institutional-workflow`, HEAD
 **43c2fa5bf5d47388a3222a61cf57fc9e47914e05**. Exact accepted
