@@ -100,6 +100,41 @@ def test_general_question_discovers_implemented_mechanics_without_creating_a_stu
     assert client.get(f"/api/chats/{submitted['chat_id']}").json()[0] == final
 
 
+def test_general_catalog_supplies_usable_lookup_ids(client, monkeypatch):
+    """Live Sol used the supplied display name when the catalog omitted lookup IDs."""
+
+    def respond(prompt):
+        operations = prompt.get("research", {}).get("operations", [])
+        if not operations:
+            entry = next(e for e in prompt["environments"] if "bargain" in e["name"].casefold())
+            return answer(
+                "Inspect the supplied bargaining entry.",
+                requests=[
+                    {"kind": "capabilities", "environment": entry.get("key", entry["name"])}
+                ],
+            )
+        operation = operations[0]
+        return answer(
+            "The installed world supports binding acceptance."
+            if operation["status"] == "complete"
+            else "The supplied catalog entry was rejected as unavailable."
+        )
+
+    scripted(client, monkeypatch, respond)
+    final = finish(
+        client,
+        client.post(
+            "/api/chats", json={"question": "Inspect the installed binding bargaining mechanics."}
+        ).json(),
+    )
+    assert final["status"] == "complete", final
+    operation = final["output"]["research"]["operations"][0]
+    assert operation["status"] == "complete", operation
+    assert operation["request"]["environment"] == "bargaining"
+    assert operation["data"]["environments"][0]["key"] == "bargaining"
+    assert client.get("/api/studies").json() == []
+
+
 def test_prior_artifacts_are_retrieved_by_source_only_in_the_same_conversation(client, monkeypatch):
     scripted(
         client,

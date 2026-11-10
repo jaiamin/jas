@@ -15,7 +15,11 @@ from .validity import capabilities
 
 class CapabilityRequest(Strict):
     kind: Literal["capabilities"]
-    environment: str | None = Field(default=None, max_length=80)
+    environment: str | None = Field(
+        default=None,
+        max_length=80,
+        description="Canonical catalog key, not display name; omit to discover all installed keys.",
+    )
 
 
 class ContextRequest(Strict):
@@ -27,7 +31,7 @@ class ContextRequest(Strict):
 
 class TemplateSource(Strict):
     kind: Literal["template"]
-    environment: str = Field(max_length=80)
+    environment: str = Field(max_length=80, description="Canonical installed catalog key.")
     seed: int = Field(default=0, ge=0, le=2**31 - 1)
     parameters: Parameters | None = Field(
         default=None,

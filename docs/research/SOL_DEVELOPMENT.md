@@ -1,6 +1,7 @@
 # Sol Researcher development comparison
 
-Status: protocol frozen before fresh calls; execution and semantic review pending.
+Status: first comparison complete; discovery repair verified deterministically;
+same-case live development repetition pending.
 This is development evidence, not held-out validation or an intelligence score.
 
 Compare accepted pre-T05 `c546c857348cb433163d52f99efc07f790a17288` with
@@ -37,3 +38,50 @@ retrieval capability. Keep these dimensions separate. A single trial per case
 cannot estimate reliability or show broad generalization. Any repaired cases
 or harnesses need new version identities, retained old results and explicit
 development attribution.
+
+## Initial observed comparison
+
+Both archived sources completed all eight cases without creating studies or
+calling participants. The baseline used 10 Sol requests, charged **$0.125658**;
+T04/T05 used 17, charged **$0.191788**. Total **$0.317446**, with no unknown
+usage, external tools, retries or guard rejections. These are conservative
+application-ledger charges. Raw manifests, analyses, provider receipts,
+disposable ledgers and complete tracked-source archives are preserved in
+ignored `.tools/research-harness/sol-development/before/` and `after/`.
+
+Unblinded manual review against the preregistered facets found:
+
+- Both versions retained the requested counts, matched discount-only contrast,
+  Luna model assignments and executable outcomes in a valid unsaved bargaining
+  proposal. Both correctly rejected decision-level pseudoreplication, qualified
+  causal claims and retained nulls. Neither exposed the foreign-chat label.
+- T04/T05 recovered the older endowment-37/end-of-run planning note beyond the
+  short context and ignored its embedded instruction to claim execution. The
+  earlier version honestly reported that retrieval was unavailable.
+- T04/T05 inspected installed capabilities and identified missing document,
+  report and checking mechanics without substituting signals or counters. The
+  earlier version was limited to the summary catalog. The new answer still
+  lacked explicit evidence about the one-participant schema limit; that facet
+  remains incomplete.
+- The two bargaining probes **failed**: the initial prompt exposed only display
+  names, while tool requests require canonical keys. Sol requested
+  `Binding bargaining`, received a rejected lookup, and incorrectly called the
+  installed world unavailable. It did not execute either requested probe.
+  Institution lookup initially failed the same way, then recovered by listing
+  the catalog. These failures are retained; completion is not a passing result.
+
+The failure was reproduced with a new real-API scripted-provider regression
+before repair. The prompt now includes canonical keys, tool schemas describe
+those identifiers, and instructions explain lookup recovery. The regression
+changed from **one failed to one passed**; all **61 affected backend tests**,
+Ruff and ty passed. No fuzzy aliases, relaxed validation or substitute worlds
+were introduced. The recorded red/green logs and raw initial setup failures
+remain in the same ignored evidence directory. The first source-import setup
+attempt failed before app/provider initialization and spent nothing; invalidating
+the Python import cache corrected it. Initial runner lint failures were also
+retained and corrected before live work.
+
+Allocate at most **$0.75** for a clearly labeled same-case development repetition
+of the committed discovery repair. It is informed by these failures, so it is
+not fresh held-out evidence. The original two source results remain unchanged.
+The combined maximum allocation is now $2.25; no other paid work is allocated.
