@@ -53,6 +53,10 @@ experiment, executes authorized trials and interprets their evidence.
 A versioned addition to world mechanics that introduces capabilities absent
 from the installed environment definitions.
 
+**Extension candidate**:
+An explicit versioned executable artifact submitted for containment and behavior
+review. A successful example check does not admit it as a runnable environment.
+
 ## Evidence and validity
 
 **Research validity**:
