@@ -129,11 +129,13 @@ not been represented as implemented capabilities. Do not drop the stash or
 apply it wholesale over newer work; inspect it only when the relevant ticket
 needs prior art.
 
-Fresh Sol development charges so far: **$0.537462**, 47 known-usage requests.
+Fresh Sol development charges so far: **$0.611632**, 55 known-usage requests.
 The session-wide Sol cap is **$10**. The frozen eight-case comparison exposed
 real discovery/probe-configuration failures; both are retained and repaired with
-API red/green evidence. At most $0.75 is allocated to repeat only the two affected
-probes on the committed second repair. See [live development](research/SOL_DEVELOPMENT.md).
+API red/green evidence. Both affected live probes passed their finite outcome
+checks on the second repair. All paid phases are closed; **$9.388368 remains**.
+See [live development](research/SOL_DEVELOPMENT.md) for sources, all retained
+failures, narrow successes and limits. No other paid work is allocated.
 Implementer agents must remain keyless unless given a specific coordinated trial
 allocation. Luna participant trials need an explicit separate allowance; prepare
 the concrete manifest and estimate after deterministic qualification. Until
