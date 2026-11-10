@@ -11,8 +11,9 @@ from typing import Any, Literal, TypeVar, cast
 from pydantic import create_model
 from sqlalchemy import select, update
 
-from .db import ParticipantActivation, ParticipantOperation, Run, digest, now
+from .db import ParticipantActivation, ParticipantOperation, RecordedEvent, Run, digest, now
 from .domain import Decision, Design, Profile, Strict, Treatment
+from .exposure import available_inputs, input_bindings
 from .llm import LanguageModels, ProviderFailure
 from .participant_context import (
     CAPABILITY_POLICIES,
@@ -150,6 +151,11 @@ class Activation:
                 self.row = saved
             else:
                 adapter = models.model(self.model)
+                prior_events = session.scalars(
+                    select(RecordedEvent)
+                    .where(RecordedEvent.run_id == run.id, RecordedEvent.turn <= run.turn)
+                    .order_by(RecordedEvent.id)
+                ).all()
                 self.row = ParticipantActivation(
                     run_id=run.id,
                     turn=run.turn + 1,
@@ -194,6 +200,7 @@ class Activation:
                         "profile": profile.model_dump(),
                         "environment": design.environment,
                         "rule_version": world.version,
+                        "exposure": available_inputs(world, observation, actor, prior_events),
                     },
                 )
                 session.add(self.row)
@@ -221,7 +228,14 @@ class Activation:
                 .values(status=status, stop_reason=reason, error=error, updated=now())
             )
 
-    async def generate(self, output: type[OutputT], prompt: str, instructions: str) -> OutputT:
+    async def generate(
+        self,
+        output: type[OutputT],
+        prompt: str,
+        instructions: str,
+        *,
+        transcript: list[dict] | None = None,
+    ) -> OutputT:
         if self.row.requests >= self.harness.max_requests:
             raise EffortLimit("request_limit")
         self.row.requests += 1
@@ -243,6 +257,7 @@ class Activation:
             max_tokens=self.design.response_tokens,
             turn=self.run.turn + 1,
             openai_reasoning_effort=self.design.openai_reasoning_effort,
+            input_evidence=input_bindings(self.row.identity.get("exposure"), transcript),
         )
 
     async def decide(self, paused: Callable[[], bool]) -> Decision | None:
@@ -388,6 +403,7 @@ class ToolUsing:
                     activation.row.id,
                 ),
                 TOOL_INSTRUCTIONS,
+                transcript=transcript,
             )
             request = result.model_dump()
             kind = request["operation"]

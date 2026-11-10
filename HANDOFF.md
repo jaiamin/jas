@@ -1,3 +1,29 @@
+# T07 fresh integration review — in progress (2026-11-10)
+
+Sole writer: fresh T07/#18 reviewer, assigned integration HEAD `e2d42c9`.
+Merge the exact clean source `e7800d3` with `--no-ff`, retaining accepted T08
+`9750caf` and cutoff repair `de5556b`. No descendants, publication, issue edits,
+other worktree/process changes or paid calls. T09/T15 remain running/unpolled.
+
+Acceptance work:
+- [x] Read approved spec/full ticket and current T07/T08 contracts.
+- [x] Preserve complete source `data/t07/` without overwrites: 2,164 files,
+  251,316,466 bytes, 176 symlinks; all 2,161 indexed files and 499 gzip mappings
+  verify. Source HEAD/index/status stayed stable. Copy canonical SHA-256
+  `94c1edfd1d132b8d93bcf287a24e95b80f40b60e4b358e2a7dbdb28fced627f8`.
+- [ ] Review exact sent inputs and receipts across T08 capabilities/compaction,
+  privacy, disabled/no-read/failure/restore paths; repair demonstrated defects.
+- [ ] Fresh bounded backend/static/frontend/browser checks on 18218; independent
+  API/World cases, unchanged frozen failures, current-contract 22-turn parity.
+- [ ] Record findings, evidence custody/limits, acceptance/frontier and close services.
+
+Fresh immutable evidence is separate in `.tools/research-harness/evidence/T07-integration/`;
+complete source copy is `../T07/`, source worktree stays intact. Prior evidence and
+all 1,745 Sol files were verified before merge. Retain every attempt. Never touch
+root untracked `pbcopy`, real configuration, or stash `f771128ba1c9295262a4073df40cc25647b1370f`.
+The child T07 statements about provisional T08 below are historical; T08 is now
+accepted. Root owns publication to https://github.com/jaiamin/ass/pull/32.
+
 # T08 fresh integration checkpoint — accepted (2026-11-10)
 
 T08/#19 is accepted after independent sole-writer review. No-ff merge
@@ -99,6 +125,45 @@ latest accepted integration before handoff. Root publishes before launching the
 new review/implementation batch, then performs no tracked edits while T07 owns
 integration. Current free space at handoff publication is about 831 MiB; T07's
 source evidence is about 250 MB. Keep evidence lossless and services bounded.
+
+# T07 implementation handoff (historical child report, 2026-11-10)
+
+T07/#18 is implemented on `t3/research-exposure-capture`; acceptance is pending
+parent fresh review. Read [T07 acceptance and evidence](docs/research/T07_EXPOSURE.md).
+Final product checks use clean `3749ce4f807a64cde5fb06557f2198ba49b89443`;
+closure-only merge `b2aeecc020f2b82ff7bf8a70de4a56c603eb367b` includes latest
+accepted integration `6b7ad09248f915320bdaf1aa4d2ba10d5e6d0789`. The observed
+`9750cafea48120ceec11530ed11a214661a374b3` T08 merge is provisional and excluded;
+its handoff still says not accepted. Final docs/HEAD, executable-input parity
+and source identities are in ignored `data/t07/closure.json` and `manifest.json`.
+
+Current contract: DB **6** / export **7** / exposure **1** / comparison **1** /
+library **v3**. Run Record and experiment Overview expose source-linked assignment,
+configuration, opportunities, available observations, actual inputs and confirmed
+receipts with eligible/included denominators. Analysis acceptance freezes values
+and membership. Local tool reads, unavailable capture, unknown/unsent delivery and
+confirmed input remain distinct; participant recipients/memory stay independent
+of privileged research inspection. No T10/T19 implementation or World-rule change.
+
+Fresh checks: **1,038 backend**, **111 frontend**, **182 full browser** and **5
+actual-policy/exposure browser** flows pass, plus Ruff/ty/lint/TypeScript/build.
+Frozen T01 retains exit 1/four export-v4 failures and terminal flags. Positive
+schema6/export7 checks and exact 22-turn/five-run parity pass; all 1,058 differences
+are classified, zero unclassified. Retain 68 stable-source check wrappers and all
+29 nonzero attempts, including red tracers, oracle corrections, source-link bugs
+and the 175-pass/seven-ENOSPC browser attempt; unchanged rerun passes all 182.
+
+Preserve **all ignored `data/t07/`** before any worktree cleanup: immutable manifest,
+source archives, before/after, raw attempts/inputs/operations, case IDs, exports,
+SQLite workspaces and inspected screenshots. Lossless compression preserves 499
+synthetic JSON files with both raw and gzip digests in `compression-index.jsonl`.
+No evidence content was discarded. Full report distinguishes fresh from inherited
+production/CI/live claims and records tuned Sol-development limits. No live or
+held-out competence is established. Port **18118** and owned browser services are
+closed. No descendants, extra checkout, publication, paid calls, other-worktree/
+process changes, stash/pbcopy access or security changes. Ticket spend **$0**;
+inherited Sol $0.611632/55 requests, $9.388368 remaining, no active allocation.
+Root owns fresh acceptance/publication; T07 does not close any tracker issue.
 
 # T08 integration review assignment (historical, 2026-11-10)
 

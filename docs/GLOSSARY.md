@@ -79,7 +79,25 @@ particular conclusion. It is specific to the claim being made.
 
 **Treatment exposure**:
 The realized application of an intervention to a participant's observations,
-available choices or action consequences. Assignment alone does not establish exposure.
+available choices or action consequences, distinct from assignment or mere availability
+to the participant's harness. Information inclusion establishes neither attention,
+belief nor intent.
+
+**Exposure opportunity**:
+A participant's eligibility to receive an input or record under its information rules,
+whether or not scheduling, memory and chosen operations lead to actual delivery.
+
+**Input inclusion**:
+The presence of information in a model input, with a provider receipt confirming
+delivery. A stored observation or local read result alone does not confirm delivery.
+
+**Assignment-based description**:
+A description retaining assigned runs, including absent opportunities, missing inputs
+and failures.
+
+**Exposure-conditioned description**:
+A description restricted to participants or runs selected by realized exposure after
+assignment. That selection does not automatically identify a causal effect.
 
 **Baseline policy**:
 A reference policy used to distinguish the behavior of a studied participant

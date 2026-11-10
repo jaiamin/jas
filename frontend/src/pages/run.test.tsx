@@ -1,7 +1,7 @@
 import { act, fireEvent, screen } from "@testing-library/react";
 import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
 import { expect, test, vi } from "vitest";
-import { runDetail } from "@/test/fixtures";
+import { exposureReport, runDetail } from "@/test/fixtures";
 import { deferredResponse, renderWithQueries } from "@/test/queries";
 import Run from "./run";
 
@@ -19,17 +19,19 @@ for (const late of [false, true]) {
     vi.stubGlobal(
       "fetch",
       vi.fn((path: string) =>
-        path.endsWith("/verify")
-          ? verification.promise
-          : Promise.resolve(
-              Response.json({
-                ...runDetail,
-                summary: {
-                  ...runDetail.summary,
-                  id: path.endsWith("/second") ? "second" : "run",
-                },
-              }),
-            ),
+        path.endsWith("/exposure")
+          ? Promise.resolve(Response.json(exposureReport))
+          : path.endsWith("/verify")
+            ? verification.promise
+            : Promise.resolve(
+                Response.json({
+                  ...runDetail,
+                  summary: {
+                    ...runDetail.summary,
+                    id: path.endsWith("/second") ? "second" : "run",
+                  },
+                }),
+              ),
       ),
     );
     const view = renderWithQueries(
