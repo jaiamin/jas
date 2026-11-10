@@ -1,41 +1,55 @@
-# T12 active backend release; exact accepted merge complete (2026-11-10)
+# T12 backend checkpoint; staged frontend release (2026-11-10)
 
-Branch `t3/institutional-workflow`, HEAD **20ed804a83c24c156d531a88d52ea71cdd12f34f**,
-normally merges exact accepted **e76ef124e01274f9b8ddccfa343c51351149c0ee**.
-Normal Gitleaks passed. Combined contract **DB12/export13/library8** rejects both
-incompatible schema11 intermediates and library7; no provisional T17 merged.
-Merge Ruff/ty passed; bounded World regressions passed30, deselected6. Those are
-source-attributed affected checks, not full backend qualification or acceptance.
+Same branch `t3/institutional-workflow`, assigned `t3-190f8b94`, base HEAD
+**077cb76429334b569e960c265cc52436713f4ca8** normally merges exact accepted
+**fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd**. Normal Gitleaks passed. Combined
+**DB12/export13/library8** rejects both schema11 intermediates and library7;
+no T17/T18 merge. T12 remains **incomplete/unaccepted**.
 
-Root released bounded backend TDD/static/types: shared checks.lock, floor134,217,728
-plus projected peak, each job at most16MiB and own retained outputs at most64MiB.
-No grouped unknown-size SQLite jobs. Bytecode off; every indirect source capture
-uses tracked-only/protected/symlink/descendant preflight and the invocation wrapper.
-Only CLOSED own outputs may be losslessly compacted with independently verified
-maps and at most8MiB additional peak. Frontend/browser/runtime/install/provider/
-paid/live/held-out stages remain held;18130 is reserved only. No descendants.
+Backend DEVELOPMENT qualification includes actual HTTP all-six completion:
+54 turns/requests, three accepted handoffs, logical9, materials0/spent9/writes17,
+1,890 synthetic microdollars and exact zero-provider replay. Work/handoff/mail
+input receipts, cutoff research lens and copied sequential probe each observed
+red before green; the first lens repair failure remains retained. Pause/repeated
+controls/reopening, killed-process recovery, zero-send budget denial, unknown
+read delivery, compacted input and tool cancellation/timeout pass individually.
 
-New HTTP work/handoff/mail receipt slice observed RED then GREEN, including
-30-turn zero-call replay. Separate compacted-read and unknown-input negatives
-pass. Cutoff workflow lens observed RED, first repair failed on missing mail
-counters (retained), then GREEN; exact materials4/spent3/accepted0/unfinished3,
-immutable source and frozen reanalysis after later progress. Discovery/sequential
-copied probe observed RED then GREEN. Pause/repeated-start/reopen, zero-send
-budget denial and actual killed-process restart checks pass individually.
-Ruff style failures are retained; final static/types/regressions remain open.
+Fresh independently literal current-contract qualification passed5 runs/22 turns/
+22 requests, complete bounded inputs/actions/every checkpoint/privacy/cutoffs,
+per-request integer reserve/settle ledgers and zero-call replay. Totals2200 input/
+1100 output tokens/770 synthetic microdollars/0 paid requests. Frozen T01 CURRENT
+execution retains exit1 and exactly four export-v4 failures/four false terminal
+flags,5 runs/22 turns/22 requests/98 HTTP operations. Original runner/cases/scores
+are unchanged. No historical comparator, parity or improvement claim: ROOT's
+historical raw/custody/maps were user-retired, and no reference was reconstructed.
+See [literal oracle](docs/research/T12_CURRENT_CONTRACT_ORACLE.md).
 
-ROOT explicitly retired historical BEFORE→AFTER parity and any comparator needing
-deleted BEFORE. Its published policy at exact accepted **fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd**
-was read from committed Git source. Next checkpoint normally merges that exact
-target. Replacement gate preserves frozen T01 bytes/scores, records its actual
-CURRENT result, and freezes fresh full current-contract5-run/22-turn/22-request
-literal oracles before outputs. No historical parity or zero-regression claim.
-No historical reference search or reconstruction. T12 remains incomplete.
+Latest source identity **ada1b8f22ef0dd8c88710007d9b3ff68ad140893ee93138275bb2792b309a20a**:
+Ruff/ty pass;31 World cases pass (18 deselected); both HTTP provider-delay cases,
+funded-write-allowance denial, direct/tool workflow harnesses, immutable role pins,
+T10 sequential/phased mail and shared-write contention, T11 public accounting/
+replay, DB12 reopen/schema11 rejection, library prior-format rejection and replay
+corruption checks pass in separate bounded jobs. Provider/settlement primary error,
+cancellation and success-then-settlement-error checks pass. This is source-scoped
+implementer qualification, never an uninterrupted full backend suite or acceptance.
+The initial newest-test Ruff failure is retained, followed by style repair/pass.
 
-User retired ROOT historical raw evidence/custody/maps after ROOT's compact report;
-do not restore or claim them retained. Own T12 attempts, source objects, environment,
-archives and restoration maps remain preserved. Earlier failed overrun126/pytest1,
-91 pass/two failures remains FAILED; compaction03 floor125 remains rejected.
+ROOT released F1 ONE normal frozen-store pnpm12 setup with task-private XDG cache,
+shared immutable store and own frontend/node_modules. Require939,524,096 free
+under shared checks.lock immediately before install,768MiB transient forecast,
+512MiB environment/256MiB private metadata/4MiB receipt bounds. No offline/policy
+bypass/copies/shared-store mutation/downloaded payload or retry. F2 UI TDD/checks/
+bounded existing-browser witnesses are conditional on F1 PASS and own imports.
+F2 uses floor134,217,728+128MiB peak,16MiB new output/job,96MiB own retained cap
+(dependencies/cache inventoried separately). Current backend retained41.7MB before
+this checkpoint. Production/Docker/providers/paid/held-out/publication remain held;
+18130 is reserved only. No descendants or other-owner mutation.
+
+Own evidence/source objects/environment/verified scratch archives/maps remain.
+Historical failed recorder126/pytest1 with91 pass/two failures is still FAILED;
+compaction03 and warm attempt01 preflight125 remain rejected. Warm Python attempt02
+passed normal owner-authorized hardlink reuse. Every indirect capture keeps the
+invocation-local tracked/protected/symlink/descendant guard before payload reads.
 
 # Historical T12 execution HOLD; accepted-frontier merge source resolved (2026-11-10)
 

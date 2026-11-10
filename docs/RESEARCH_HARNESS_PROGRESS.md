@@ -1,12 +1,20 @@
 # Research harness implementation progress
 
-T12 current implementer boundary (2026-11-10): normal exact accepted e76ef124 merge
-is **20ed804a83c24c156d531a88d52ea71cdd12f34f**, normal Gitleaks PASS, combined
-DB12/export13/library8. Ruff/ty and bounded World30-pass/6-deselected checks passed.
-New HTTP handoff exposure test observed RED; backend TDD continues under shared
-flock/floor134,217,728 plus projected peak,16MiB/job and64MiB own retained cap.
-Frontend/browser/runtime/providers remain held; no provisional T17. ROOT historical
-raw/custody/maps are user-retired; own T12 evidence remains. T12 incomplete/unaccepted.
+T12 current implementer boundary (2026-11-10): base HEAD077cb764 normally merges
+exact accepted fdfb5f7a, Gitleaks PASS; sole DB12/export13/library8, no T17/T18.
+Backend current-source Ruff/ty and31 World cases pass; individual HTTP positive/
+negative/accounting/lifecycle/replay/reuse checks pass. Fresh independently literal
+current-contract5-run/22-turn/22-request qualification passes770 synthetic
+microdollars/zero paid calls/zero-call replay. Frozen unchanged T01 CURRENT exits1
+with exactly four export-v4 failures/four false terminal flags. No retired BEFORE
+comparison or historical parity claim. All current failures stay retained. T12
+remains incomplete/unaccepted. See [current plan](research/T12_INSTITUTIONAL_WORKFLOW.md).
+
+Root released ONE F1 normal frozen-store pnpm setup, private XDG cache/own modules,
+939,524,096-byte under-lock entry floor and768MiB transient forecast. Conditional
+F2 releases UI TDD/checks/existing-browser witnesses at ordinary floor+128MiB,
+16MiB output/job and96MiB own retained evidence. Production/Docker/providers/paid/
+held-out/publication remain held; no descendants. Own18130 is reserved only.
 
 Status: **active**. The user invoked `implement-spec` after reviewing the
 20-ticket breakdown. This authorizes implementation of that graph; previously

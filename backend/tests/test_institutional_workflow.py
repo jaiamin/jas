@@ -1,6 +1,7 @@
 """T12 DEVELOPMENT tracer; literal expectations precede implementation in the report."""
 
 import asyncio
+import copy
 import itertools
 import json
 import os
@@ -97,7 +98,7 @@ def protocol():
                     },
                     "workflow": {
                         "timing": "phased_simultaneous",
-                        "turn_order": ACTORS,
+                        "turn_order": ACTORS.copy(),
                         "conflict_order": ["birch", "alder", "dune", "cedar", "fern", "elm"],
                         "routes": [
                             {"sender": sender, "recipient": recipient}
@@ -1536,3 +1537,240 @@ with TestClient(app, base_url="http://localhost") as client:
         assert client.post(f"/api/runs/{rid}/verify").json()["verified_turns"] == 12
         assert client.get("/api/settings").json()["usage"] == usage
         assert client.get(f"/api/studies/{ids['study_id']}/export").json() == exported
+
+
+def test_public_validation_keeps_six_to_twelve_and_rejects_invalid_work_contracts(tmp_path):
+    app = create_app(f"sqlite:///{tmp_path}/validation.sqlite3", static_dir=tmp_path / "static")
+    with TestClient(app, base_url="http://localhost") as client:
+        for population in (6, 12):
+            value = protocol()
+            added = [f"actor{i}" for i in range(population - 6)]
+            value["profiles"].extend(
+                {"key": a, "name": a, "goal": "Choose available actions."} for a in added
+            )
+            for key in ("turn_order", "conflict_order"):
+                value["conditions"][0]["parameters"]["workflow"][key] += added
+            result = client.post("/api/design/validate", json={"design": value})
+            assert result.status_code == 200, result.text
+        for case in (
+            "five",
+            "thirteen",
+            "cycle",
+            "foreign_worker",
+            "duplicate_order",
+            "zero_duration",
+            "zero_cost",
+            "duplicate_artifact",
+            "unknown_rule",
+        ):
+            value = copy.deepcopy(protocol())
+            rules = value["conditions"][0]["parameters"]["workflow"]
+            if case == "five":
+                value["profiles"].pop()
+            elif case == "thirteen":
+                value["profiles"].extend(
+                    {"key": f"extra{i}", "name": str(i), "goal": "Choose."} for i in range(7)
+                )
+            elif case == "cycle":
+                rules["work_items"][0]["dependencies"] = ["release"]
+            elif case == "foreign_worker":
+                rules["work_items"][0]["workers"] = ["outsider"]
+            elif case == "duplicate_order":
+                rules["conflict_order"][0] = "alder"
+            elif case in {"zero_duration", "zero_cost"}:
+                rules["work_items"][0][
+                    "duration" if case == "zero_duration" else "resource_cost"
+                ] = 0
+            elif case == "duplicate_artifact":
+                rules["work_items"][1]["artifact"] = "intake_record"
+            else:
+                rules["execute_procedure_prose"] = True
+            rejected = client.post("/api/design/validate", json={"design": value})
+            assert rejected.status_code == 422, (case, rejected.text)
+        assert client.get("/api/studies").json() == []
+        assert client.get("/api/settings").json()["usage"]["requests"] == 0
+
+
+@pytest.mark.parametrize("slow_actor", ["alder", "birch"])
+def test_actual_http_claim_conflict_uses_priority_despite_provider_delay(
+    tmp_path, monkeypatch, slow_actor
+):
+    async def respond(messages, info):
+        observed = json.loads(messages[-1].parts[0].content)
+        actor = observed["you"]["key"]
+        if actor == slow_actor:
+            await asyncio.sleep(0.02)
+        action = (
+            {"kind": "claim_work", "work": "intake"}
+            if actor in {"alder", "birch"}
+            else {"kind": "wait_workflow"}
+        )
+        return ModelResponse(
+            parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+            usage=RequestUsage(input_tokens=100, output_tokens=50),
+        )
+
+    value = protocol()
+    value["rounds"] = 1
+    app = create_app(f"sqlite:///{tmp_path}/conflict.sqlite3", static_dir=tmp_path / "static")
+    monkeypatch.setattr(app.state.models, "model", lambda _: FunctionModel(function=respond))
+    with TestClient(app, base_url="http://localhost") as client:
+        _, rid = save(client, value)
+        assert run_control(client, rid)["status"] == "complete"
+        run = client.get(f"/api/runs/{rid}").json()
+        assert run["state"]["work"]["intake"]["owner"] == "birch"
+        assert (
+            run["state"]["resource_stock"],
+            run["state"]["resource_spent"],
+            run["state"]["logical_time"],
+        ) == (7, 0, 1)
+        assert len(run["state"]["artifacts"]["intake_record"]["versions"]) == 1
+        conflicts = [e for e in run["events"] if e["kind"] == "workflow_conflict"]
+        assert len(conflicts) == 1 and conflicts[0]["actor"] == "alder"
+        assert len(run["requests"]) == 6
+        before = client.get("/api/settings").json()["usage"]
+        verified = client.post(f"/api/runs/{rid}/verify").json()
+        assert verified["verified_turns"] == 6 and verified["model_requests"] == 0
+        assert client.get("/api/settings").json()["usage"] == before
+
+
+def test_shared_write_allowance_denial_keeps_funded_audit_and_all_work_state_unchanged():
+    value = protocol()
+    value["conditions"][0]["parameters"]["artifacts"]["write_limit"] = 1
+    world = workflow_world(value)
+    settle_phase(
+        world,
+        {
+            "alder": {"kind": "claim_work", "work": "intake"},
+            "elm": {"kind": "claim_work", "work": "audit"},
+        },
+    )
+    settle_phase(
+        world,
+        {
+            "alder": {
+                "kind": "perform_work",
+                "work": "intake",
+                "expected_version": 1,
+                "content": {"batch": 17},
+                "sources": [],
+            }
+        },
+    )
+    before = world.snapshot()
+    assert (before["resource_stock"], before["writes_remaining"]) == (4, 0)
+    with pytest.raises(ValueError):
+        world.step(
+            "elm",
+            Decision.model_validate(
+                decision(
+                    {
+                        "kind": "perform_work",
+                        "work": "audit",
+                        "expected_version": 1,
+                        "content": {"batch": 29},
+                        "sources": [],
+                    }
+                )
+            ),
+        )
+    assert world.snapshot() == before
+
+
+def test_public_nine_material_alternative_records_all_six_actual_participants_and_handoffs(
+    tmp_path, monkeypatch
+):
+    selected = {
+        (0, "alder"): {"kind": "claim_work", "work": "intake"},
+        (0, "elm"): {"kind": "claim_work", "work": "audit"},
+        (1, "alder"): {
+            "kind": "perform_work",
+            "work": "intake",
+            "expected_version": 1,
+            "content": {"batch": 17},
+            "sources": [],
+        },
+        (1, "elm"): {
+            "kind": "perform_work",
+            "work": "audit",
+            "expected_version": 1,
+            "content": {"batch": 29},
+            "sources": [],
+        },
+        (2, "elm"): {"kind": "handoff_work", "work": "audit", "recipient": "birch", "version": 2},
+        (3, "birch"): {"kind": "accept_handoff", "work": "audit", "version": 2},
+        (3, "alder"): {
+            "kind": "handoff_work",
+            "work": "intake",
+            "recipient": "cedar",
+            "version": 2,
+        },
+        (4, "cedar"): {"kind": "accept_handoff", "work": "intake", "version": 2},
+        (5, "dune"): {"kind": "claim_work", "work": "release"},
+        (6, "dune"): {
+            "kind": "perform_work",
+            "work": "release",
+            "expected_version": 1,
+            "content": {"batch": -6},
+            "sources": [{"artifact": "intake_record", "version": 2}],
+        },
+        (7, "dune"): {"kind": "handoff_work", "work": "release", "recipient": "fern", "version": 2},
+        (8, "fern"): {"kind": "accept_handoff", "work": "release", "version": 2},
+    }
+
+    async def respond(messages, info):
+        observed = json.loads(messages[-1].parts[0].content)
+        action = selected.get(
+            (observed["logical_time"], observed["you"]["key"]), {"kind": "wait_workflow"}
+        )
+        return ModelResponse(
+            parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+            usage=RequestUsage(input_tokens=100, output_tokens=50),
+        )
+
+    value = protocol()
+    value["rounds"] = 12
+    value["conditions"][0]["parameters"]["workflow"]["resource_stock"] = 9
+    # Dune's source citation has an explicit initial ACL, never a prose grant.
+    value["conditions"][0]["parameters"]["artifacts"]["objects"][0]["readers"].append("dune")
+    app = create_app(f"sqlite:///{tmp_path}/all-six.sqlite3", static_dir=tmp_path / "static")
+    monkeypatch.setattr(app.state.models, "model", lambda _: FunctionModel(function=respond))
+    with TestClient(app, base_url="http://localhost") as client:
+        study, rid = save(client, value)
+        assert run_control(client, rid)["status"] == "complete"
+        run = client.get(f"/api/runs/{rid}").json()
+        state = run["state"]
+        assert state["outcome"] == {
+            "status": "all_accepted",
+            "accepted": ["intake", "release", "audit"],
+            "unfinished": [],
+        }
+        assert (
+            state["logical_time"],
+            state["resource_stock"],
+            state["resource_spent"],
+            state["writes_remaining"],
+        ) == (9, 0, 9, 17)
+        assert {t["actor"] for t in run["turns"] if t["action"]["kind"] != "wait_workflow"} == set(
+            ACTORS
+        )
+        assert [
+            state["artifacts"][f"{key}_record"]["versions"][1]["content"]
+            for key in ["intake", "release", "audit"]
+        ] == [{"batch": 17}, {"batch": -6}, {"batch": 29}]
+        assert state["artifacts"]["release_record"]["versions"][1]["sources"] == [
+            {"artifact": "intake_record", "version": 2}
+        ]
+        assert len(run["requests"]) == run["summary"]["turn"] == 54
+        assert run["summary"]["usage"]["cost_usd"] == 0.001890
+        assert run["summary"]["usage"]["input_tokens"] == 5400
+        assert run["summary"]["usage"]["output_tokens"] == 2700
+        before = client.get("/api/settings").json()["usage"]
+        exported = client.get(f"/api/studies/{study['id']}/export").json()
+        assert len(exported["runs"][0]["evidence"]) == 55
+        assert len([e for e in run["events"] if e["kind"] == "handoff_work"]) == 3
+        assert len([e for e in run["events"] if e["kind"] == "accept_handoff"]) == 3
+        verified = client.post(f"/api/runs/{rid}/verify").json()
+        assert verified["verified_turns"] == 54 and verified["model_requests"] == 0
+        assert client.get("/api/settings").json()["usage"] == before
+        assert client.get(f"/api/studies/{study['id']}/export").json() == exported

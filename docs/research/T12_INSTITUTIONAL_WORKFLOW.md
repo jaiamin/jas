@@ -1,47 +1,65 @@
 # T12: institutional workflow with atomic work and resource effects
 
-## Current boundary: exact accepted merge complete; backend TDD released
+## Current boundary: backend checkpoint; conditional frontend release
 
-HEAD **20ed804a83c24c156d531a88d52ea71cdd12f34f** normally merges exact accepted
-**e76ef124e01274f9b8ddccfa343c51351149c0ee** with normal Gitleaks PASS. No
-provisional T17. Combined **DB12/export13/library8** is now the sole contract;
-both schema11 intermediates/library7 reject explicitly. Merge Ruff and ty pass;
-source-qualified World regression job passes30/deselects6, not a full suite.
+Base HEAD **077cb76429334b569e960c265cc52436713f4ca8** normally merged exact
+accepted **fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd** through normal Gitleaks.
+No provisional T17/T18. Sole combined contract is **DB12/export13/library8**;
+both incompatible schema11 intermediates and library7 reject explicitly.
+T12 is incomplete/unaccepted; these are implementer DEVELOPMENT results.
 
-Renewed concrete release is backend only: shared flock/floor134,217,728 plus full
-forecast; jobs at most16MiB, own retained outputs at most64MiB. No grouped
-unknown-size SQLite jobs. Bytecode off and indirect tracked/protected/symlink/
-descendant capture guard always active. Only closed own output compaction with
-exact independently verified restoration maps, additional peak at most8MiB.
-Frontend/browser/runtime/new setup/providers/paid/live/held-out remain held.
+Backend work, handoff and mail provenance, cutoff lens and copied sequential
+probe each observed red before green. Initial lens repair failed for missing
+mail counters; retained. Actual all-six optional completion passed54 turns/
+requests, all six non-wait actors, three accepted handoffs, logical9, stock0/
+spent9/writes17,5400/2700 tokens/1,890 synthetic microdollars/zero-call replay.
+Separate lifecycle/unknown/cancellation/budget/privacy/compacted-input checks pass.
 
-The next literal exposure oracle is fixed before its implementation: in five
-phases/30 direct requests, Alder claims at0, starts intake at1, hands v2 to Cedar
-at3, Cedar accepts at4; Elm sends Fern mail at0/delay2. Cedar must have exactly
-one recipient-authorized handoff opportunity confirmed in its actual next input;
-only Alder/Cedar are eligible. Alder's performed content and Fern's delivered mail
-must resolve to real request receipts, exclude the sealed marker, replay exactly
-30 turns with zero calls and preserve usage. `workflow-exposure-red` observed1
-failure because Cedar had zero handoff opportunities; source stable,1,182,955
-incremental bytes within4MiB. Repair only after that RED.
+Fresh current-contract literal oracles were frozen before outputs in
+[T12_CURRENT_CONTRACT_ORACLE.md](T12_CURRENT_CONTRACT_ORACLE.md) and its independent
+test tables. All five public-workflow jobs passed with22 turns/requests, full
+bounded inputs/actions/checkpoints/privacy/cutoffs and exact integer ledgers:
+2200/1100 tokens,770 synthetic microdollars,0 paid calls. Frozen unchanged T01
+CURRENT execution exited1, preserving exactly four export-v4 failures and four
+false terminal flags (5 runs/22 turns/22 requests/98 HTTP operations). The first
+qualification totals attempt rejected duplicate pytest convenience-symlink paths;
+the corrected symlink-excluded totals pass remains a separate attempt. No oracle
+was weakened. ROOT retired deleted historical BEFORE comparison; no comparator,
+reference search/reconstruction, historical parity or improvement claim occurred.
 
-ROOT historical raw/custody/maps are retired after user-authorized compact report
-and deletion. ROOT explicitly retired the inherited historical BEFORE→AFTER raw
-parity/comparator requirement; this is a policy retirement, never a passing
-comparison. Exact published policy fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd was
-read from committed Git source and is the next normal merge target. No surviving
-reference is authorized and none may be searched for or reconstructed. Own T12
-raw attempts/source objects/verified archives/maps/environment remain. Preserve
-frozen T01 files/scores unchanged; record actual CURRENT exit/checks and fresh
-independently literal5-run/22-turn/22-request current-contract qualification.
-The inherited parity criterion below is superseded by this replacement, not
-silently marked passed. Frontend/live/held-out gates remain open and held.
+Current backend source identity
+**ada1b8f22ef0dd8c88710007d9b3ff68ad140893ee93138275bb2792b309a20a** passes Ruff/ty,
+31 World cases (18 deselected), separate direct/tool tracers, both delay witnesses,
+immutable workflow source pins, T10 phased/sequential mail/shared-write conflict,
+T11 HTTP accounting/replay, DB12 reopen/schema11 rejection, library prior-format
+rejection and replay corruption. Three separate settlement/primary-error/
+cancellation witnesses pass. Newest-test initial Ruff28-error result is retained;
+normal formatting/import/lambda-style repairs precede the pass. API validation's
+first fixture-isolation failure remains retained; fresh protocol data passes6/12
+and rejects5/13 plus malformed rules. No whole-suite or acceptance claim.
 
-Observed backend slices after merge: work/handoff/mail input provenance red→green;
-compacted and unknown pure-read input negatives each pass; cutoff lens red→first
-repair failure (mail counters)→green; copied sequential probe/discovery red→green.
-Pause/repeated-start/reopening, zero-send budget denial and killed-process restart
-each pass. Every attempt source-stable within forecast, no full-suite claim.
+Root's staged F1 release is one normal pnpm12 frozen-store install using shared
+immutable `/home/agent/.local/share/pnpm/store`, task-private XDG metadata and
+own node_modules. Under shared flock require939,524,096 free immediately before
+install: ordinary134,217,728 floor+768MiB total transient forecast. Environment
+inventory<=512MiB, private metadata<=256MiB, receipts<=4MiB. Stop without retry on
+missing policy metadata, payload download, copy need, manager or floor failure.
+Use `pnpm cache path`, no offline/trust-lockfile/policy bypass/manual linking.
+
+F2 is conditional on F1 PASS/own prefix/import: existing stock shadcn surfaces,
+progressive disclosure, relevant UI TDD/lint/types/units/clean build and bounded
+existing-headless-browser witnesses. Each job needs ordinary floor+128MiB peak,
+new output<=16MiB; total own evidence<=96MiB including backend, dependencies/cache
+inventoried separately. Use own18130/keyless data, explicit existing browser path,
+no browser download. Close owned resources between groups. Production/Docker/
+providers/paid/live/held-out/publication remain held. Next: normal backend
+checkpoint, F1 measured setup boundary, then one UI tracer red before UI edits.
+
+All own attempts/source objects/environment/verified archives/maps are preserved.
+Historical FAILED overrun126/pytest1 (91 pass/two failures), compaction03 and warm
+attempt01 preflight125 stay failed/rejected. ROOT deleted historical custody is
+retired and cannot be claimed retained. Historical sections below are chronology;
+this current boundary and published retirement policy supersede their old grants.
 
 ## Historical boundary: execution HOLD; merge source resolved, unverified
 
@@ -326,7 +344,8 @@ actor sessions at each committed boundary.
   grants; retain every raw failure, attempt, source identity and limitation.
   Run the frozen original T01 files unchanged, preserving precisely four export-v4
   failures, four false terminal flags and exit1; independently prove current-contract
-  five-run/22-turn complete-input, behavioral and accounting parity.
+  fresh five-run/22-turn complete-input, behavioral and integer-ledger correctness
+  against independently frozen current-contract oracles, not deleted BEFORE.
 - [ ] Review Standards and Spec personally, merge only the documented accepted
   root frontier, commit coherent checkpoints through normal hooks/Gitleaks,
   close owned resources, finish HANDOFF/PROGRESS/report and return exact HEAD for
@@ -447,14 +466,13 @@ specified here independently.
 
 Accepted T10/T11/T16 report counts and production receipts are historical,
 separately attributed evidence. None is a T12 pass. Frozen original runner,
-cases and comparator plus a separately verified before execution must be selected
-from tracked Git source after grant; never execute inherited ignored helpers.
-Keep the four historical export-v4 failures/flags/exit1 as failures. The positive
-current-contract gate independently compares all five runs,22 turns,22 complete
-bounded requests,98 HTTP operations, actions/effects/checkpoints and integer
-accounting against source-matched inherited evidence. Preserve all raw differences
-and explicit injective identity/source/hash proofs; normalize no substantive
-input, opportunity, behavior or cost difference away.
+cases and scores remain unchanged. ROOT retired comparisons requiring the deleted
+BEFORE; do not search for or reconstruct a historical reference. Current frozen
+execution records actual checks/exit. Fresh current-contract qualification uses
+independently frozen literal5-run/22-turn/22-request full-input/action/checkpoint/
+evidence/privacy/cutoff/replay/integer-ledger expectations. Preserve all current
+failures and source/case identities; do not claim historical parity or improvement.
+Never execute inherited ignored helpers.
 
 Each future bounded job records exact invocation/exit, source HEAD and protected-
 excluded tracked inventory/diff, case identity and before/after source stability.
@@ -536,9 +554,9 @@ No dependency, cache or resource claim follows from this observation.
 - [x] Durable plan, acceptance criteria and independent literal DEVELOPMENT
   expectations written before the tracer or implementation.
 - [x] Stage exactly one unrun public HTTP tracer. No implementation in preparation.
-- [ ] Report exact branch/HEAD/staged files, narrow mechanism/oracles and setup/
+- [x] Report exact branch/HEAD/staged files, narrow mechanism/oracles and setup/
   peak forecast to root; wait for its concrete setup/test grant.
-- [ ] After grant, observe that tracer red, retain it, implement only its slice,
+- [x] After grant, observe that tracer red, retain it, implement only its slice,
   observe green, then choose the next meaningful API/invariant slice.
 - [ ] Complete remaining acceptance, regression/parity/source/evidence review and
   normal accepted-frontier merge, then hand implementation to root's fresh merger.
