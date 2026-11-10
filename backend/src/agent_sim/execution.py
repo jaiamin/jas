@@ -1,15 +1,18 @@
 import asyncio
+import json
 import time
 from dataclasses import dataclass
 
 from sqlalchemy import select, update
 
+from .adjudication import INSTRUCTIONS as ADJUDICATION_INSTRUCTIONS
 from .db import (
     Database,
     InvestigationRecord,
     Measurement,
     ParticipantActivation,
     ParticipantOperation,
+    ProviderCall,
     RecordedEvent,
     Run,
     Turn,
@@ -17,7 +20,7 @@ from .db import (
     now,
 )
 from .diagnostics import log_failure
-from .domain import Decision, ReadArtifact
+from .domain import AdjudicationRuling, Decision, ReadArtifact, RecordedAdjudication, Treatment
 from .investigation_limits import InvestigationStopped, claim_turn, claim_work
 from .llm import LanguageModels, ProviderFailure
 from .participants import Activation
@@ -30,6 +33,10 @@ from .simulation.environments import get_environment
 class Execution:
     task: asyncio.Task | None = None
     stop: bool = False
+
+
+class AdjudicationPaused(Exception):
+    """No judge reservation or request has started; retain the proposed decision."""
 
 
 class Engine:
@@ -113,6 +120,8 @@ class Engine:
         if condition.harness.kind != "scripted":
             for model in {p.model or condition.model for p in design.profiles}:
                 self.models.model(model)
+        if condition.adjudicator is not None:
+            self.models.model(condition.adjudicator.model)
         return True
 
     def _enqueue(
@@ -174,13 +183,61 @@ class Engine:
                         self._status(run_id, "paused")
                         return
                     # A final response commits even when Pause arrived while awaiting it.
+                    receipt = None
                     try:
-                        if design.environment in {"sealed_relay", "reviewed_finite"}:
+                        inputs = world.adjudication_inputs(actor, decision)
+                        if inputs is not None:
+                            if execution.stop:
+                                activation.finish("paused", "user_pause")
+                                self._status(run_id, "paused")
+                                return
+                            adjudicator = condition.adjudicator
+                            if adjudicator is None:
+                                raise ValueError("Declare the adjudicator before execution")
+                            request_ids: list[str] = []
+
+                            def before_reserve() -> None:
+                                if execution.stop:
+                                    raise AdjudicationPaused
+
+                            ruling = await self.models.generate(
+                                AdjudicationRuling,
+                                model=adjudicator.model,
+                                prompt=json.dumps(inputs),
+                                instructions=ADJUDICATION_INSTRUCTIONS,
+                                purpose="adjudication",
+                                study_id=run.study_id,
+                                run_id=run_id,
+                                turn=run.turn + 1,
+                                max_tokens=adjudicator.response_tokens,
+                                openai_reasoning_effort=adjudicator.openai_reasoning_effort,
+                                on_reserved=request_ids.append,
+                                before_reserve=before_reserve,
+                            )
+                            receipt = RecordedAdjudication(
+                                mechanism=inputs["mechanism"],
+                                version=inputs["version"],
+                                adjudicator=adjudicator,
+                                inputs=inputs,
+                                ruling=ruling,
+                                request_id=request_ids[0],
+                            ).model_dump()
+                            events, measures = world.settle_adjudication(actor, decision, receipt)
+                        elif design.environment in {"sealed_relay", "reviewed_finite"}:
                             events, measures = await asyncio.to_thread(world.step, actor, decision)
                         else:
                             events, measures = world.step(actor, decision)
+                    except AdjudicationPaused:
+                        activation.finish("paused", "user_pause")
+                        self._status(run_id, "paused")
+                        return
                     except ValueError as error:
-                        activation.append("reject", decision.model_dump(), str(error), "rejected")
+                        rejected = (
+                            {"decision": decision.model_dump(), "adjudication": receipt}
+                            if receipt is not None
+                            else decision.model_dump()
+                        )
+                        activation.append("reject", rejected, str(error), "rejected")
                         activation.finish("failed", "world_rejected", str(error))
                         raise
                     checkpoint = world.snapshot()
@@ -335,6 +392,50 @@ class Engine:
         for run in self.research.operational_runs(study_id):
             self.pause(run.id)
 
+    def _check_adjudication(
+        self, run: Run, turn: int, condition: Treatment, receipt: RecordedAdjudication
+    ) -> None:
+        """Verify recorded provenance only; never load a provider for replay."""
+        if receipt.adjudicator != condition.adjudicator:
+            raise ValueError("Adjudicator configuration mismatch")
+        with self.db.session() as session:
+            call = session.get(ProviderCall, receipt.request_id)
+            if (
+                call is None
+                or call.run_id != run.id
+                or call.study_id != run.study_id
+                or call.turn != turn
+                or call.purpose != "adjudication"
+                or call.model != receipt.adjudicator.model
+                or call.activation_id is not None
+                or call.status != "complete"
+                or call.request_payload is None
+            ):
+                raise ValueError("Adjudication request provenance mismatch")
+            payload = call.request_payload
+            try:
+                rulings = [
+                    AdjudicationRuling.model_validate(
+                        json.loads(part["args"]) if isinstance(part["args"], str) else part["args"]
+                    )
+                    for response in call.response_payload or []
+                    for part in response["parts"]
+                    if part.get("part_kind") == "tool-call"
+                ]
+                matches = (
+                    json.loads(payload["prompt"]) == receipt.inputs
+                    and payload["instructions"] == ADJUDICATION_INSTRUCTIONS
+                    and payload["schema"] == AdjudicationRuling.model_json_schema()
+                    and payload["settings"]["max_tokens"] == receipt.adjudicator.response_tokens
+                    and payload["settings"].get("openai_reasoning_effort")
+                    == receipt.adjudicator.openai_reasoning_effort
+                    and rulings == [receipt.ruling]
+                )
+            except (KeyError, TypeError, ValueError):
+                matches = False
+            if not matches:
+                raise ValueError("Adjudication request provenance mismatch")
+
     def replay(self, run_id: str) -> dict:
         run, design, condition = self.research.configuration(run_id)
         if design.environment in {"sealed_relay", "reviewed_finite"}:
@@ -371,7 +472,26 @@ class Engine:
             observed["you"] = next(p.model_dump() for p in design.profiles if p.key == turn.actor)
             if observed != turn.observation:
                 raise ValueError(f"Observation mismatch at turn {turn.number}")
-            events, measures = world.step(turn.actor, Decision.model_validate(turn.decision))
+            decision = Decision.model_validate(turn.decision)
+            adjudications = [
+                event["data"]
+                for event in (consequence_record or {}).get("events", [])
+                if event["turn"] == turn.number and event["kind"] == "adjudication"
+            ]
+            if world.adjudication_inputs(turn.actor, decision) is not None:
+                if len(adjudications) != 1:
+                    raise ValueError(f"Adjudication receipt mismatch at turn {turn.number}")
+                receipt = RecordedAdjudication.model_validate(
+                    {k: v for k, v in adjudications[0].items() if k != "consequence"}
+                )
+                self._check_adjudication(run, turn.number, condition, receipt)
+                events, measures = world.settle_adjudication(
+                    turn.actor, decision, receipt.model_dump()
+                )
+            else:
+                if adjudications:
+                    raise ValueError(f"Unexpected adjudication at turn {turn.number}")
+                events, measures = world.step(turn.actor, decision)
             if consequence_record is not None:
                 recorded_events = [
                     {
@@ -493,8 +613,22 @@ class Engine:
                         if restored.snapshot() != prior:
                             raise ValueError("Artifact read changed the checkpoint")
                     elif operation["kind"] == "reject" and operation["status"] == "rejected":
+                        rejected = operation["request"]
                         try:
-                            restored.step(actor, Decision.model_validate(operation["request"]))
+                            if "adjudication" in rejected:
+                                receipt = RecordedAdjudication.model_validate(
+                                    rejected["adjudication"]
+                                )
+                                self._check_adjudication(
+                                    run, activation["turn"], condition, receipt
+                                )
+                                restored.settle_adjudication(
+                                    actor,
+                                    Decision.model_validate(rejected["decision"]),
+                                    receipt.model_dump(),
+                                )
+                            else:
+                                restored.step(actor, Decision.model_validate(rejected))
                         except ValueError as error:
                             if str(error) != operation["result"] or restored.snapshot() != prior:
                                 raise ValueError("World rejection receipt mismatch") from error

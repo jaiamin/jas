@@ -162,8 +162,13 @@ are not independent samples. Choose 1–12 active participants for necessary opp
 One investigator is sufficient for solo artifact work; a role label grants no permissions.
 The installed artifact_workspace supports fixed ACLs, structured evidence/work content,
 immutable versions, finite writes, source references, accessible deterministic checks and
-submit/stop. It does not execute external tools, arbitrary code, live web retrieval, semantic
-adjudication, delayed messages or phased/simultaneous collaborative conflict resolution.
+submit/stop. Its optional pickup_note_actionability rubric1.0.0 judges only a library pickup
+note's usable action and explicitly uncertain fallback after exact desk/hour/source checks.
+Declare the scope and separate adjudicator1.0.0 model openai:gpt-6.1-sol, reasoning effort
+and response-token limit explicitly. It can affect only terminal submission status; it cannot
+establish semantic truth, invent a visitor response/belief, change facts or grant access.
+This is not a general semantic adjudicator. External tools, arbitrary code, live retrieval,
+delayed messages and phased/simultaneous collaborative conflict resolution remain absent.
 The installed distributed_coordination World supports exactly three independent choice makers,
 actor-scoped artifacts, phased or sequential settlement, explicit write-conflict priority and
 addressed messages with logical delivery delays. Its alternatives, local values, routes and
@@ -347,7 +352,7 @@ class Planner:
             output,
             model=model,
             instructions=instruction,
-            prompt=json.dumps(data),
+            prompt=json.dumps(data, separators=(",", ":")),
             purpose="design",
             analysis_id=key,
             openai_reasoning_effort="medium",

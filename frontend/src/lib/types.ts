@@ -156,6 +156,53 @@ export interface ArtifactRules {
     source: string;
     source_field: string;
   }[];
+  judgment?: JudgmentScope | null;
+}
+export interface JudgmentScope {
+  mechanism: "pickup_note_actionability";
+  version: "1.0.0";
+  artifact: string;
+  field: "guidance";
+  evidence: { artifact: string; version: 1; fields: string[] }[];
+}
+export interface Adjudicator {
+  version: "1.0.0";
+  model: "openai:gpt-6.1-sol";
+  openai_reasoning_effort: "low" | "medium" | "high";
+  response_tokens: number;
+}
+export interface AdjudicationDeclaration {
+  condition_key: string;
+  scope: JudgmentScope;
+  adjudicator: Adjudicator;
+  fallible: true;
+  rubric: string;
+  permitted_consequence: "terminal_submission_status";
+  max_requests_per_submission_attempt: 1;
+  price_per_million_usd: { input: number; output: number };
+  limits: string;
+}
+export interface RecordedAdjudication {
+  mechanism: JudgmentScope["mechanism"];
+  version: "1.0.0";
+  adjudicator: Adjudicator;
+  request_id: string;
+  inputs: Record<string, unknown>;
+  ruling: {
+    verdict: "accept" | "revise" | "abstain";
+    explanation: string;
+    facts: {
+      artifact: string;
+      version: number;
+      field: string;
+      value: string | number;
+    }[];
+  };
+  consequence: {
+    applied: boolean;
+    submission_status: "success" | "failure";
+    hard_facts_passed: boolean;
+  };
 }
 export interface ArtifactReference {
   artifact: string;
@@ -207,7 +254,7 @@ export interface CompositionRules {
   controllers_first: boolean;
 }
 export interface SavedEnvironment {
-  format: "jas-environment-v9";
+  format: "jas-environment-v10";
   id: string;
   revision: number;
   updated: string;
@@ -311,6 +358,7 @@ export interface Treatment {
   harness: ParticipantHarness;
   parameters: Parameters;
   profile_overrides: Profile[];
+  adjudicator?: Adjudicator | null;
 }
 export interface TaskDefinition {
   key: string;
@@ -525,6 +573,7 @@ export interface ExperimentPreflight {
   limits: string;
   question_mapping?: QuestionRequirement[];
   original_question?: string | null;
+  adjudications?: AdjudicationDeclaration[];
 }
 export interface StudyDetail extends ComparisonReport {
   preflight: ExperimentPreflight;

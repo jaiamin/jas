@@ -367,7 +367,7 @@ def test_cosigned_engine_tools_keep_docket_private_and_replay_without_sampling(
             assert marker not in json.dumps(run["activations"][1])
             assert client.get(f"/api/studies/{sid}").json()["revisions"] == study["revisions"]
             exported = client.get(f"/api/studies/{sid}/export").json()
-            assert exported["version"] == 16
+            assert exported["version"] == 17
             assert (
                 exported["revisions"][0]["design"]["environment_source"]
                 == payload["environment_source"]

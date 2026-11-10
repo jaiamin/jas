@@ -156,6 +156,13 @@ class Research:
 
     @staticmethod
     def validate_design(design: Design) -> None:
+        if any(
+            c.parameters.artifacts
+            and c.parameters.artifacts.judgment
+            and c.adjudicator is None
+            for c in design.conditions
+        ):
+            raise ValueError("Declare the adjudicator model/configuration before execution")
         if design.environment_source:
             if design.environment_source.definition.environment != design.environment:
                 raise ValueError("Pinned environment source must match the experiment's world")

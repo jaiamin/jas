@@ -64,7 +64,7 @@ def test_environment_record_is_reusable_mechanics_not_an_experiment(tmp_path):
         response = client.post("/api/environments", json={"definition": mechanics()})
         assert response.status_code == 201, response.text
         saved = response.json()
-        assert saved["format"] == "jas-environment-v9"
+        assert saved["format"] == "jas-environment-v10"
         assert set(saved) == {"format", "id", "revision", "updated", "sha256", "definition"}
         assert saved["definition"]["environment"] == "composed"
         example = saved["definition"]["examples"][0]
@@ -176,7 +176,7 @@ def test_two_questions_and_populations_reuse_pinned_mechanics_without_importing_
             retained = client.get(f"/api/studies/{study['id']}").json()
             assert retained["design"] == study["design"]
             exported = client.get(f"/api/studies/{study['id']}/export").json()
-            assert exported["version"] == 16
+            assert exported["version"] == 17
             assert exported["revisions"][0]["design"]["environment_source"] == saved
             assert exported["rule_versions"] == ["1.0.0"]
             for request in exported["requests"]:

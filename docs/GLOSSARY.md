@@ -165,6 +165,18 @@ Viewing saved observations, decisions and consequences without executing them.
 Reapplying recorded actions to verify deterministic consequences and authorized
 read receipts, without new model sampling.
 
+**Adjudicator**:
+A separately declared model assigned a bounded judgment scope and rubric for an
+explicitly judgment-dependent outcome.
+
+**Fallible adjudication**:
+A recorded rubric ruling whose permitted consequence is independently constrained
+by the environment; its explanation does not establish facts, responses or beliefs.
+
+**Enforced consequence**:
+The actual result settled by environment rules after validating facts, permissions
+and any declared fallible ruling.
+
 **Process restoration**:
 Recovering committed work and unfinished attempt records after a server restart.
 It does not itself resume participant sampling.

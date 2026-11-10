@@ -106,7 +106,7 @@ for (const theme of ["light", "dark"]) {
     const response = await savedResponse;
     expect(response.status()).toBe(201);
     const source = await response.json();
-    expect(source.format).toBe("jas-environment-v9");
+    expect(source.format).toBe("jas-environment-v10");
     expect(JSON.stringify(source)).not.toContain(originalQuestion);
     await testInfo.attach("source-v1.json", {
       body: JSON.stringify(source, null, 2),
@@ -242,7 +242,7 @@ for (const theme of ["light", "dark"]) {
       const exported = await (
         await request.get(`/api/studies/${study.id}/export`)
       ).json();
-      expect(exported.version).toBe(16);
+      expect(exported.version).toBe(17);
       expect(exported.study.design).toEqual(study.design);
       expect(exported.revisions[0].design.environment_source).toEqual(source);
       await testInfo.attach(`${study.id}-export.json`, {

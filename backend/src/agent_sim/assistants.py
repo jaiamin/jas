@@ -66,6 +66,8 @@ The index lists run cutoffs, computed opportunity counts, actual balances and ma
 comparisons. Budget ceilings cover the WHOLE experiment across conditions, seeds and repetitions;
 they are not per-run prices or expected costs. execution_usage measures recorded participant
 requests through the cutoff; its cost is charged or conservatively reserved, not an invoice.
+adjudication_usage separately measures recorded judge requests through that same cutoff.
+Use both components when estimating whole-experiment work; neither includes analysis calls.
 Estimate future spending only from observed usage with explicit assumptions, otherwise leave
 it unestimated. Apply each condition's profile overrides when interpreting goals.
 For hypothetical commons payoffs, request commons_payoffs with the desired scenarios; use its
@@ -794,6 +796,17 @@ class Assistants:
                     .mappings()
                     .one()
                 )
+                adjudication_usage = usage_record(
+                    session.execute(
+                        select(*self.models.usage_columns()).where(
+                            ProviderCall.run_id == run_id,
+                            ProviderCall.purpose == "adjudication",
+                            ProviderCall.turn <= cutoff,
+                        )
+                    )
+                    .mappings()
+                    .one()
+                )
                 last_turn = session.scalars(
                     select(Turn)
                     .where(Turn.run_id == run_id, Turn.number <= cutoff)
@@ -871,6 +884,7 @@ class Assistants:
                     "recorded_rule_version": state["rule_version"],
                     "state_hash": last_turn.state_hash if last_turn else None,
                     "execution_usage": participant_usage,
+                    "adjudication_usage": adjudication_usage,
                     "experiment_budget_ceiling_usd": design.budget_usd,
                     "rules_at_last_observed_turn": last_turn.observation["rules"]
                     if last_turn

@@ -226,7 +226,7 @@ def main():
                         for e in http("/api/catalog")["environments"]
                         if e["key"] == "institutional_workflow"
                     )["source"]
-                    assert source["format"] == "jas-environment-v9" and source["revision"] == 1
+                    assert source["format"] == "jas-environment-v10" and source["revision"] == 1
                     design = http(
                         "/api/design/use-environment",
                         {"source": source, "example": source["definition"]["examples"][0]["key"]},
@@ -247,7 +247,7 @@ def main():
                     assert run["state"] == before and run["summary"]["usage"]["requests"] == 0
                     assert http("/api/settings")["usage"]["requests"] == 0
                     exported = http(f"/api/studies/{sid}/export")
-                    assert exported["version"] == 16 and exported["requests"] == []
+                    assert exported["version"] == 17 and exported["requests"] == []
                     assert exported["revisions"][0]["design"]["environment_source"] == source
                     result.update(
                         study_id=sid,

@@ -1,3 +1,26 @@
+# ROOT combined T17/T18 integration (2026-11-10)
+
+Exact T18f49e5ad2 is normally integrated into T17/root for independent review,
+not yet acceptance. Current DB15/export17/library10/definition2/research2/
+generation-eventv2 explicitly rejects isolated persisted contracts. No adapters,
+migrations, automatic reset or provider retries. All34 merge conflicts have full
+pre-resolution working/stage custody in current/t18-merge-custody-01.
+
+Independent north-desk HTTP cases pass: pending real judge/actual commit during
+export assembly stays on one snapshot; subsequent export settles participant58µ
+and judge272µ separately. Contradictory hour fails before judge dispatch. Both
+reopen/replay twice without providers. Initial pending-charge test assumption
+failure retained. Combined71-case backend group had70 passes and one stale schema
+assertion; corrected16-case schema group passes. Ruff/globalty pass before that
+one test-only correction. Details: docs/research/T18_INTEGRATION_REVIEW.md.
+
+Remaining acceptance: combined generation regression/full UI/static/build,
+browser desktop/mobile/light/dark and production runtime, actual benchmark v2,
+compact final report/authorized obsolete evidence/data retirement, fresh8080 app.
+T17/T18 live competence/held-out/paid gates stay open. ROOT is sole writer; no own
+service/browser active. Protected pbcopy and stash remain untouched. Histories
+below remain until the explicitly authorized compact final retirement.
+
 # T17 distinct documentary closure02 (2026-11-10)
 
 One new docs-only checkpoint is released with300-second bounded flock acquisition,
@@ -276,6 +299,76 @@ accepted29af3413 docs-only merge; provisional T14 stays excluded. Frontend,
 browser/services/production/live/paid/held-out work remains unreleased.
 
 <!-- Accepted T12 documentary history, retained at exact40c32ff6. -->
+
+T18 final bounded source/build boundary: exact accepted46d48d5e normally merged
+at9275a052, combinedDB13/export14/library9, artifact2.0.0/reliance1.0.1. Manifest03
+deduplicates423 backend cases across actual phases (45 exact final backend/test
+tree);42 affected UI cases,12-file lint/forced types and ONE build PASS. Complete
+build delta4519859 bytes exceeds the incomplete4MiB log/tmp monitor; ROOT confirms
+parent frontend16MiB/feature64MiB ceilings held. First result retained, no rerun.
+Frozen T01 CURRENT remains exit1/four export-v4 failures,98HTTP/22requests/770µ;
+separate fresh current-contract5runs/22turns/22requests/privacy/replay passes.
+
+RC01 participant58µ/judge272µ cutoff separation and compact-JSON full-history
+preservation remain narrow observed red→green results. All adverse/source phases
+and70-receipt restoration map stay retained. Cleanup01 stop is preserved; distinct
+ROOT-released cleanup02 retires only599 own disposable policy-metadata files,
+176800695 logical bytes, after durable metadata freeze/independent recheck,
+zero payload reads/hashes. Shared free284266496→462401536; lock released.
+F1 receipts, env/modules/assets/evidence/maps/shared store preserved. Final
+docs-only checkpoint/seal hands sole writing to ROOT, who owns final combined
+browser/runtime qualification.18131 unopened; no provider/paid/live/held-out/
+production/publication. T18 remains incomplete/unaccepted; live accuracy unverified.
+
+ROOT explicitly lifted the temporary T18 hold after browser-slot closure; prior
+bounded backend/unit/static/normal-hook release resumes. Final normal merge is
+exact46d48d5e615eb22920219df26d42249ca2e5c0e0 (Markdown/docs after370f, no persisted
+meaning changes). ONE fresh-output existing-env build is conditional on current
+backend/affected UI/static/types and evidence room; browser/services/providers
+remain held. The earlier natural closed boundary follows.
+
+T18 exact accepted370f835b normally merged at7f77172e with hooks/Gitleaks PASS;
+combinedDB13/export14/library9, artifact2.0.0/reliance1.0.1, accepted T12 preserved.
+UI05 genuine participant-identity red→minimal repair→11 feature/safety passes,
+separate affected lint/forced types and two public-HTTP assignment/boundary cases.
+Fresh root370f backend queue0–12 passes through domain/DB/library. Remaining
+groups13–24, affected concurrent-export/shared-exposure/workflow/assistant cases,
+unchanged T01 CURRENT, final eight-file UI rerun and source/case manifest remain.
+Older373 backend/36 UI passes retain their original source attribution.
+
+Temporary ROOT resource hold: all own jobs closed/lock released; no new checks,
+captures, hooks, compaction or heavy commands until explicit browser closure.
+Own recorder guard is source-prepared before attempts/captures/locks; not run
+during the hold. Source-only edits continue; unchanged128MiB/job peak/floors and
+64MiB own evidence cap apply after release. No setup repeats. Build/browser/
+services18131/production/providers/paid/live/held-out/publication stay held.
+T18 incomplete/unaccepted; live judgment accuracy unverified.
+
+Historical T18 pre370f merge boundary:
+
+T18 bounded UI10feature/safety and36affected units,10file Biome and forced types
+PASS after recorded actual-shell reds; original semantic oracle/adverse attempts
+retained. Exact40c32ff6 normally merged5250765e. CombinedDB13/export14/library9
+passes16 boundary cases, v4 fresh matrix7, feature43 and engine/ledger38 at that
+pre370f source. Further queue stopped on inherited workflow read=null fixture
+omission. ROOT's exact370f835b independently corrects both generic fixtures plus
+exposure/accounting/citation/reliance1.0.1/active-export; normal merge and current
+affected qualification are next. No held build/browser/service/provider work.
+T18 incomplete/unaccepted; live judgment accuracy unverified.
+
+T18 F1 passed once normally at41ba330b: policy618 PASS,555 reused/added,
+downloaded0, own Node/React/TanStack proof; entry828833792/min629493760 and lock
+released. Exact accepted40c32ff6 normal merge is in progress, preserving T12's
+interaction fix. Frozen combined-contract CC01–03 reached four product reds/12
+passes; minimal DB13/export14/library9 repair follows. Prior12/13/8 meanings
+reject without adaptation/reset. Literal current-contract v4 changes only
+contract metadata, preserving v1–v3 and original T01/tracer identities.
+UI01 remains unrun at this boundary; bounded unit/lint/forced-types continuation
+is released. Build/browser/services/18131/production/providers remain held.
+T18 incomplete/unaccepted; previous373 cases are pre-T12-source qualification.
+
+Historical accepted T12 review at its own source:
+
 T12 independent integration review ACCEPTED for bounded deterministic DEVELOPMENT
 (2026-11-10). Normal exact376b01bc merge66b3b460 preserves ROOT670ab3ee and the
 implementation history. Personal Standards and Spec PASS after independently
@@ -412,6 +505,43 @@ world mechanics and study factors separate. Initial range: 1–12 active agents.
   disposable worktrees/services are cleaned up.
 
 ## Task graph and checkpoints
+
+### T18 bounded backend implementation (2026-11-10)
+
+Exact accepted ROOT `0527e737` merged normally at `02bd7237`; no production
+edits since. Final 43 adjudication feature and 37 Engine/ledger cases pass,
+plus all six API deletion cases. Separately frozen current-contract qualification
+passes seven cases covering five runs/22 turns/22 complete requests, privacy,
+checkpoints, cutoff preservation, integer ledger and zero-call replay. Original
+v1/v2/v3 references reproduce unchanged. Frozen T01 CURRENT actually exits1:
+four `export-v4` checks fail; all other checks/rejections pass. Its original
+runner/cases/scoring stay unchanged and every snapshot/digest uses invocation-local
+safe Git selection. No historical comparator or retired BEFORE is used.
+Final Ruff/global ty/diff pass. Receipt/JUnit membership verifies373 distinct
+final-backend cases, including31 claim-support cases in32 executions. One
+actual-shell UI tracer is frozen/unrun (blob987d829c), with no production UI
+edit. Setup remains held; revised650MiB peak +134217728 floor requires
+entry>=815792128. Future coordinated-store permission grants no execution or
+T14 policy-cache use. Exact superseding ROOT benchmark/docs target670ab3ee
+normally merged at5d399594 after qualified d1b72f05 (normal Gitleaks pass);
+app bytes equal0527e737 plus T18's already qualified backend. Post-merge
+Ruff/global ty/diff and the final source/case seal pass. UI01 remains unrun.
+Earlier 25 artifact,13 library/reuse
+and676 validity/instrument/actual-worker cases remain explicitly pre-merge;
+segmented final inherited results and adverse attempts are in the T18 report.
+Frontend/provider stages remain held, live accuracy unverified and T18
+incomplete/unaccepted.
+
+T18/#29 has a fresh assigned branch at exact published `a4ed8743`, with frozen
+DEVELOPMENT oracles and the frozen public-HTTP tracer in
+[its plan](research/T18_FALLIBLE_ADJUDICATION.md). Incomplete/unaccepted: granted
+offline setup/own import passed, then the unchanged tracer observed HTTP422
+before production edits and passed after the first backend slice (1 test).
+ROOT selected explicit Sol adjudication separately from Luna. Candidate
+contracts: DB12/export13/library8/artifact2.0.0; adverse/lifecycle qualification
+continues. No actual provider/paid/held-out work. Frontend/browser/services/
+production remain held; port18131 is unopened. Published `fdfb5f7a` policy was
+read directly and is preserved in the exact accepted ROOT merge above.
 
 ### T12 execution HOLD; exact accepted-frontier source resolution (2026-11-10)
 

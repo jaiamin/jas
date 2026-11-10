@@ -181,7 +181,7 @@ export default function Study() {
           <TabsTrigger value="design">Protocol</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
-          <ExperimentCheck report={study.preflight} />
+          <ExperimentCheck report={study.preflight} design={study.design} />
           <div className="flex min-w-0 flex-col gap-6">
             <section>
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">

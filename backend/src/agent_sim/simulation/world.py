@@ -287,3 +287,12 @@ class World[StateT: Checkpoint](ABC):
 
     def read(self, actor: str, request: ReadArtifact) -> dict[str, Any]:
         raise ValueError("Artifact operation is unavailable")
+
+    def adjudication_inputs(self, actor: str, decision: Decision) -> dict | None:
+        """A pure, explicitly permitted external-result input; ordinary worlds need none."""
+        return None
+
+    def settle_adjudication(
+        self, actor: str, decision: Decision, receipt: dict
+    ) -> tuple[list[Event], list[Measure]]:
+        raise ValueError("Adjudication is unavailable")

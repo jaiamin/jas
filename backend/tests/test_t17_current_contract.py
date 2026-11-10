@@ -263,7 +263,7 @@ def test_literal_current_contract_five_runs_22_complete_inputs_ledgers_restore_a
         for record in records:
             sid = record["study_id"]
             exported[sid] = client.get(f"/api/studies/{sid}/export").json()
-            assert exported[sid]["version"] == 16
+            assert exported[sid]["version"] == 17
             requests = [
                 request
                 for request in exported[sid]["requests"]

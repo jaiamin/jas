@@ -162,7 +162,7 @@ source = post(
 design = post("/api/design/use-environment", {"source": source, "example": "relay", "bindings": {}})
 sid = post("/api/studies", {"design": design})["id"]
 exported = json.loads(get(f"/api/studies/{sid}/export"))
-assert exported["version"] == 16
+assert exported["version"] == 17
 assert (
     exported["revisions"][0]["design"]["environment_source"]["definition"]["extension"] == package
 )

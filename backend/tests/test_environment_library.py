@@ -33,7 +33,7 @@ def test_library_update_delete_and_corruption_are_explicit(tmp_path):
         library.get(saved.id)
     path.write_text(updated.model_dump_json())
     content = json.loads(path.read_text())
-    assert content["format"] == "jas-environment-v9"
+    assert content["format"] == "jas-environment-v10"
     for unsupported in [
         "jas-environment-v1",
         "jas-environment-v2",
@@ -43,6 +43,7 @@ def test_library_update_delete_and_corruption_are_explicit(tmp_path):
         "jas-environment-v6",
         "jas-environment-v7",
         "jas-environment-v8",
+        "jas-environment-v9",
     ]:
         content["format"] = unsupported
         path.write_text(json.dumps(content))

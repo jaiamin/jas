@@ -51,3 +51,43 @@ Jobs use shared checks.lock,134217728-byte floor and explicit bounded forecasts;
 exclude protected names/symlink ancestors before payload reads, including indirect
 captures. Preserve opaque pbcopy, protected stash and other-owner data/caches.
 Final production/benchmark/8080 gates and live/held-out competence remain separate.
+
+## Source review amendment before the first independent output
+
+The exact final candidate is f49e5ad25ac16f0335c7453f1ad70e71f4913102.
+Normal integration preserves both histories, finite dispatch/runtime checks and
+ROOT's journal repairs. All34 conflicts have complete pre-resolution custody in
+current/t18-merge-custody-01 (archive SHA256
+88cb6fcff32f7179cbe61560018ce396dd572f5e2dc65a49193878e034497fef).
+The combined contract is DB15/export17/library10; the fresh v5 envelope changes
+only version metadata from preserved v4, SHA256
+96a99598d9a8137f89d42e41db1467b86dc486044806019b4c1fb592970c405c.
+
+The originally proposed contradictory-report/settled-judge combination is
+unreachable through Engine: independent content/source checks reject that work
+before requesting a judge. No artificial database linkage or direct settlement
+will manufacture this public outcome. Before any independent output, split the
+witness into two public cases: valid north/19:00 work gets the separately paid
+raw accept and a successful enforced consequence while export assembly overlaps
+the actual commit; north/20:00 work fails the hard facts with two participant
+requests and zero judge requests. Both must keep evidence19 unchanged, exclude
+private goal/sealed material and reopen/replay twice without providers. This is
+a source-based correction to the proposed oracle, not a product red or repair.
+
+Independent attempt01 retained one test-authoring failure: it expected a pending
+request's charged field to be zero. Existing conservative accounting charges its
+full reservation until settlement; the actual pending judge holds21025µ, while
+the two settled participants total58µ. Correct only that literal assertion before
+attempt02; the concurrent snapshot and settled272µ oracle remain unchanged. The
+contradictory-work case already passed. No product repair follows this failure.
+
+## Independent backend observations
+
+Attempt02 passes both public cases at source1b8aea8d. Snapshot equality includes
+all exported detail/evidence/requests/activations/exposure; the actual next turn
+committed before assembly finished. Later export charges330µ (participant58 +
+judge272), pinned notice remains19:00, and both cases reopen/replay twice without
+providers. Combined selected group passed70/71; only a missed schema-reopen
+literal13 failed. Correcting it to the already frozen15 passes all16 schema
+cases. No product defect or repair is inferred from either test-authoring error.
+Whole Ruff/globalty pass; final shared browser/runtime/benchmark gates remain open.

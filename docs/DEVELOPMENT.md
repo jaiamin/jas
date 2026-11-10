@@ -60,15 +60,15 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v16.
-Schema14 and library format `jas-environment-v9`/definition2 accept only the current contract.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v17.
+Schema15 and library format `jas-environment-v10`/definition2 accept only the current contract.
 Older databases/library records receive explicit errors; no data is converted or reset.
 Use a separate fresh workspace path for the new contract and preserve existing evidence.
 T11 introduced typed commitment mechanics as DB9/export10/library6. T16 integration
 adds admitted packages as DB10/export11/library7. T14 adds durable investigation
 authorization and nested request ownership as DB11/export12/library7. Accepted
 T12 added typed institutional workflow as DB12/export13/library8. The current
-T17 combined contract is DB14/export16/library9/definition2/research-operation2,
+T17 combined contract is DB15/export17/library10/definition2/research-operation2,
 retaining those rules plus externally reviewed finite packages, generation
 allowances and per-question request/candidate/charge counters. T12 DB12/export13/
 library8 and T17-only DB13/export15/library8 have incompatible meanings and are
@@ -127,7 +127,7 @@ and complete versioned work/checkpoints. T10 advances these to DB8/export9/libra
 the contract to DB10/export11/library7
 for immutable admitted executable packages and sealed-relay checkpoints/actions.
 T14 introduced DB11/export12/library7 for durable bounded investigations and nested
-request accounting. Current T17 combined semantics are DB14/export16/library9/
+request accounting. Current T17 combined semantics are DB15/export17/library10/
 definition2/research-operation2; no incompatible intermediate format is accepted.
 See [extension admission](EXTENSIONS.md); preserve older workspaces without resetting them.
 New runs must pin the current harness. Each capability can be explicitly disabled;

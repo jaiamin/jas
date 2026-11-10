@@ -67,6 +67,7 @@ class ArtifactCheckpoint(Checkpoint):
     last_results: dict[str, dict[str, Any]]
     artifact_history: list[dict[str, Any]]
     outcome: dict[str, Any] | None
+    adjudications: NotRequired[list[dict[str, Any]]]
 
 
 class DistributedCheckpoint(ArtifactCheckpoint):

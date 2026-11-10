@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
+import { AdjudicationReview } from "@/components/adjudication";
 import { MetricChart } from "@/components/charts";
 import { Alert, Empty } from "@/components/feedback";
 import {
@@ -29,7 +30,7 @@ import {
 } from "@/components/world-view";
 import { api, invalidateResources, useApi } from "@/lib/api";
 import { label, money, runModelLabel } from "@/lib/format";
-import type { Evidence, RunDetail, State } from "@/lib/types";
+import type { Evidence, RunDetail, State, StudyDetail } from "@/lib/types";
 
 export default function Run() {
   const { id } = useParams();
@@ -41,6 +42,15 @@ export default function Run() {
     Record<string, string>
   >({});
   const query = useApi<RunDetail>(`/runs/${id}`, true);
+  const needsDeclaration =
+    !!query.data?.parameters.artifacts?.judgment &&
+    query.data.summary.status !== "complete";
+  const declarationPath = `/studies/${query.data?.summary.study_id}?revision=${query.data?.summary.revision}`;
+  const review = useQuery({
+    queryKey: [declarationPath],
+    queryFn: () => api<Pick<StudyDetail, "preflight">>(declarationPath),
+    enabled: needsDeclaration,
+  });
   const client = useQueryClient();
   const tab =
     ["live", "decisions", "relationships", "settings"].find(
@@ -107,6 +117,20 @@ export default function Run() {
   if (!query.data) return <Loading />;
   const run = query.data;
   const summary = run.summary;
+  const condition = run.design.conditions.find(
+    (c) => c.key === summary.condition_key,
+  );
+  const declaration = review.data?.preflight.adjudications?.find(
+    (item) => item.condition_key === summary.condition_key,
+  );
+  const declarationMatches =
+    !!declaration &&
+    review.data?.preflight.status !== "blocked" &&
+    JSON.stringify(declaration.adjudicator) ===
+      JSON.stringify(condition?.adjudicator) &&
+    JSON.stringify(declaration.scope) ===
+      JSON.stringify(run.parameters.artifacts?.judgment);
+  const adjudicationBlocked = needsDeclaration && !declarationMatches;
   const active = ["running", "queued", "pausing"].includes(summary.status);
   const state: State =
     pinned && evidence.data ? evidence.data.checkpoint : run.state;
@@ -175,7 +199,12 @@ export default function Run() {
           <>
             <Button
               variant="outline"
-              disabled={active || control.isPending || !!run.execution_blocked}
+              disabled={
+                active ||
+                control.isPending ||
+                !!run.execution_blocked ||
+                adjudicationBlocked
+              }
               onClick={() => control.mutate("step")}
             >
               <SkipForward data-icon="inline-start" />
@@ -185,7 +214,7 @@ export default function Run() {
               disabled={
                 control.isPending ||
                 summary.status === "pausing" ||
-                (!active && !!run.execution_blocked)
+                (!active && (!!run.execution_blocked || adjudicationBlocked))
               }
               onClick={() => {
                 control.mutate(active ? "pause" : "start");
@@ -206,6 +235,26 @@ export default function Run() {
           </>
         )}
       </PageHeading>
+      {needsDeclaration &&
+        (declarationMatches && declaration ? (
+          <div className="mb-6">
+            <AdjudicationReview declaration={declaration} design={run.design} />
+          </div>
+        ) : (
+          <Alert title="Review adjudication before execution">
+            {review.isPending
+              ? "Loading the pinned adjudicator declaration and prices…"
+              : review.error
+                ? "The pinned adjudicator declaration could not be loaded."
+                : "The pinned revision is blocked or has no matching explicit adjudicator declaration. Run and Step remain unavailable."}
+            <Link
+              to={`/studies/${summary.study_id}?revision=${summary.revision}`}
+              className="ml-1 underline underline-offset-4"
+            >
+              Review experiment
+            </Link>
+          </Alert>
+        ))}
       <section
         aria-label="Run progress"
         className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground"

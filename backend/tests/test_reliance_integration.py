@@ -281,7 +281,7 @@ def test_t13_discovers_four_person_commitments_and_saves_exact_rules_without_cal
         proposal["conditions"][0]["parameters"]
         == Design.model_validate(design).conditions[0].parameters.model_dump()
     )
-    assert proposal["environment_source"]["format"] == "jas-environment-v9"
+    assert proposal["environment_source"]["format"] == "jas-environment-v10"
     assert any("scope_feedback" in row["prompt"] for row in calls)
     usage = client.get("/api/settings").json()["usage"]
     saved = client.post("/api/studies", json={"design": proposal, "plan_id": result["id"]})
@@ -289,7 +289,7 @@ def test_t13_discovers_four_person_commitments_and_saves_exact_rules_without_cal
     study = client.get(f"/api/studies/{saved.json()['id']}").json()
     assert all(r["status"] == "ready" and r["turn"] == 0 for r in study["runs"])
     assert client.get("/api/settings").json()["usage"] == usage
-    assert client.get(f"/api/studies/{study['id']}/export").json()["version"] == 16
+    assert client.get(f"/api/studies/{study['id']}/export").json()["version"] == 17
     retain("independent-t13", result=result, study=study, requests=calls)
 
 
@@ -409,6 +409,11 @@ def test_four_role_followups_preserve_full_source_and_remain_reviewable(client, 
         assert proposal["conditions"] == Design.model_validate(design).model_dump()["conditions"]
         proposals.append(proposal)
     assert all(p["environment_source"] == proposals[0]["environment_source"] for p in proposals)
+    for request in calls:
+        for previous in request["prompt"].get("conversation", []):
+            if retained := previous.get("proposal"):
+                assert retained["environment_source"] == proposals[0]["environment_source"]
+                assert retained["profiles"] == design["profiles"]
     assert len(client.get(f"/api/chats/{chat_id}").json()) == 4
     assert client.get("/api/studies").json() == []
     assert all(row["model"] is not None for row in calls)

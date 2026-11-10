@@ -1,0 +1,1392 @@
+# T18 / #29: declared fallible adjudication
+
+Status: **bounded implementation and build qualified; incomplete and unaccepted**.
+Exact accepted ROOT `46d48d5e615eb22920219df26d42249ca2e5c0e0` is normally
+merged at `9275a0529407b4077fc9c1bd667142b921a1547a`, preserving both histories.
+The combined contract remains **DB13 / export14 / library9**, artifact rule2.0.0
+and reliance rule1.0.1. No further moving-root merge is required for this stage.
+
+The current manifest deduplicates423 backend cases across their actual source
+phases, including45 against the exact final backend and complete backend test
+tree. Affected final UI passes42 cases in9 files,12-file lint and forced types;
+ONE normal existing-env build passes. Its complete4519859-byte output exceeded
+the proposed4MiB log/tmp reservation: that recorder boundary is **not clean**,
+although ROOT confirms the parent16MiB frontend/64MiB feature ceilings held.
+Frozen T01 CURRENT exits1 with exactly four export-v4 failures; the separate
+fresh current-contract5-run/22-turn/22-request qualification passes.
+
+Distinct cleanup02 retires only the explicitly authorized disposable own pnpm
+policy metadata after a persisted metadata freeze and independent recheck.
+Cleanup01's stop and all original setup/evidence/restoration records remain.
+ROOT owns final combined browser/runtime qualification. No own browser/service
+or port18131 was opened; production, provider/paid/live/held-out work and
+publication remain held. No setup or build repeat occurred. Earlier statements
+below are chronological records, never relabeled as later-source executions.
+
+## Authority and source identities
+
+- Assigned Linux Docker Sandbox checkout:
+  `/home/agent/.t3/worktrees/workspace/t3-9a531151`, branch
+  `t3/t18-fallible-adjudication`. Initial tracked tree was clean; initial HEAD
+  equals published frontier `a4ed87430040bfb19e554ab7721ec56412a075d5`.
+  No ancestor AGENTS file was present; the checkout's `AGENTS.md` applies.
+- ROOT subsequently published the documentation-only policy frontier
+  `fdfb5f7a2768d159c4b523e02dfdaaecfe1bc0bd`, whose parent is `a4ed8743`.
+  Its compact-report qualification section was read directly from that commit.
+  At the initial preparation boundary its normal merge was pending. It is now
+  included through the accepted normal integration history recorded below.
+- Accepted application repair remains
+  `23de5e48ed1aab790d634ec434cf10e8f91c7d9b`. Source diff from that repair to
+  initial HEAD contains no `backend/src` or `frontend/src` changes. Contracts
+  at that initial frontier were **DB11 / export12 / library7**. No provisional
+  T12/T17 merge occurred; later exact accepted T12 integration is recorded below.
+- Read the explicitly invoked `implement-spec` and `tdd` skills, including
+  TDD's test/mocking guidance; the spec, exact T18 ticket, current handoff and
+  progress, compact historical report, final product plan, architecture, design,
+  glossary, both ADRs and the relevant production/test paths below.
+- Scope: [T18](../RESEARCH_HARNESS_TICKETS.md#t18--inspect-a-declared-fallible-adjudication-and-replay-its-consequences),
+  [spec](../RESEARCH_HARNESS_SPEC.md), parent #11 and child #29. This is one
+  implementation sub-agent in the assigned branch: no descendants or checkout.
+
+Git blob identities at the initial frontier (Git object IDs, not run evidence):
+
+| Source | Blob |
+| --- | --- |
+| `docs/RESEARCH_HARNESS_SPEC.md` | `1e9eff9a2b54664ad909a8db2029a078c13e614f` |
+| `docs/RESEARCH_HARNESS_TICKETS.md` | `9e530396d86f38ac650f3fee8a375de5bb675d89` |
+| `docs/ARCHITECTURE.md` | `02fd4de830471477c952190e4a2a03c4c0a58e1c` |
+| `docs/DESIGN.md` | `171597fbbffe26b507a918913da04533373420a6` |
+| `docs/GLOSSARY.md` | `bc12f9638220760fe7b75805a3f0bf95338da652` |
+| `simulation/artifacts.py` | `12acc6c0b0be95c08cb6ce3d65c1cbc2d174c562` |
+| `simulation/world.py` | `75049fd8c830f93c981925e434e55eeb78f5c246` |
+| `simulation/checkpoints.py` | `d3e20bf9a7fced31634afbfbf9a5a85c8b5c9331` |
+| `domain.py` | `c781ffe962c95888a47dfcc8faab32b7980c411c` |
+| `execution.py` | `305e8a9078197a9f69b1a9d15e7c5ab9a68cea3d` |
+| `llm.py` | `052d2f71c99daa672f8656fa1624bc80e19c1aa5` |
+| `research.py` | `1b81ee70618f8241302a27afdd7156b93f725c61` |
+| `exports.py` | `22af4ab6256022a6d257c4abe7b7b3652d44a4d6` |
+| `extensions.py` | `527fb44900cea512bbad3f3b0d5826259d94497e` |
+| `investigations.py` | `b76b7afa80916dffdfc0584901ec0ca997fc0cc5` |
+| `backend/tests/conftest.py` | `1ed7487fe83c7ca5a0ebae3b864bb571b0902022` |
+| `backend/tests/test_artifact_workspace.py` | `ded96358d510bae8154fde4df3624e60e8fe5da4` |
+| `backend/tests/test_artifact_lifecycle.py` | `c67eb4e4f442542785993154cc6143fd75dadb37` |
+| `backend/tests/test_investigation_review.py` | `8e7b6a0acb5b3cc9103b679af9df3d42ab95b028` |
+| `backend/tests/test_research_baseline.py` | `f90155933499f1e735506fd43ccc8a04cfbf9cca` |
+| `backend/tests/test_llm.py` | `269e7b29935e2ece22e3e16aed326b83500f9bfb` |
+| `backend/tests/test_extension_admission.py` | `2e8a929344a57d55dcd4b236a7d0aeb7498de7cd` |
+| `benchmarks/research-cases.json` | `1f7d1d21fddefd82b19974868d51064b1b8eec01` |
+| `benchmarks/research_baseline.py` | `2bcb346da02533b91e61d85a7d224c0272df8e71` |
+| `benchmarks/results/score-history.json` | `0a07b132e1b57eaf65449af6f860e610a0ea319a` |
+| `benchmarks/results/REPORT.md` | `2738e6ed5d3ea189c71acb26e07cc19f491bb652` |
+| `pyproject.toml` | `234a69f56644441a3422d8beee9a4a24f7039a48` |
+| `uv.lock` | `d3fbd99f1e488a10c96afe9caac81d955c8c6506` |
+
+Unqualified source names in this table are under `backend/src/agent_sim/`.
+The new tracer's staged blob is recorded below after source preparation. The
+policy compact-report blob at `fdfb5f7a` is
+`a4a07d24ea56fc5231a2f1242179b63866bcda2b`. No historical raw artifact was
+opened, recovered or used as a reference.
+
+## Acceptance criteria and limits
+
+- [ ] Review declares a versioned narrow mechanism, rubric, exact permitted
+  inputs, model, inference/response limits and allowed effect before Run/Step.
+  Saving, checking, catalog discovery and ordinary chat never call a judge.
+- [ ] Immutable revisions pin that declaration independently of later library
+  edits/deletion. Version affected persisted/canonical/export contracts together;
+  reject incompatibility explicitly, with no aliases, migration or data reset.
+- [ ] Record exact bounded inputs, raw fallible ruling/explanation, request and
+  source identities, configuration, usage, errors and the distinct enforced result.
+- [ ] World code checks actor/ACLs, artifact/source versions, every literal
+  requirement, ruling scope and fact assertions before any permitted mutation.
+  No prose, participant role or judgment can grant access, alter executable
+  facts, invent a participant response or establish private belief/intent.
+- [ ] Every judge request uses the existing atomic reserve/settle ledger and
+  correct ownership/ceilings, including known failure, unknown usage,
+  cancellation, settlement failure and primary-error preservation. No retry,
+  substitution or duplicate send. Judge work is not participant inference.
+- [ ] Preserve one Engine/writer, append-only attempts/evidence, pause/queued
+  pause/reconnect and restart semantics. Committed rulings restore and replay
+  without providers. Incomplete attempts remain visible and never auto-resubmit.
+- [ ] Review, existing run Environment/Record/request inspection and export
+  distinguish raw judgment from enforced consequence, with normal mobile/theme/
+  keyboard/loading/error states. No new technical dashboard.
+- [ ] Observe one red before production edits, then implement/verify one slice
+  at a time. Run affected/inherited regressions and fresh current-contract
+  qualification under ROOT's separate grants; retain all actual failures.
+- [ ] Assess executable correctness separately from defined rubric accuracy,
+  semantic uncertainty, disagreement and live competence. Deterministic provider
+  stand-ins establish orchestration/evidence only; no live/held-out gate passes.
+
+The already approved primary seam is the **real public HTTP workflow**. Existing
+World/provider/accounting/privacy/replay seams supply independent oracles. This
+does not ask to re-approve any testing seam.
+
+## Frozen DEVELOPMENT task and public tracer contract
+
+Case family `t18-pickup-note-development-v1`, seed **18131**, one author and two
+decision opportunities. This is a deliberately small writing judgment, not
+extension generation, human validity or a general semantic oracle.
+
+Immutable readable artifact `pickup` v1 contains exactly
+`{"desk": "west", "closes_at": 17}`. Writable `report` begins at v1 with
+`{"desk": "", "closes_at": 0, "guidance": ""}`. The author has one write.
+An unrelated unreadable `sealed` object and private goal have synthetic canaries.
+No judge receives either canary, profile/goal, notes, history, other objects,
+database access, researcher context or provider reasoning.
+
+`pickup_note_actionability` **1.0.0** judges only whether `report.guidance` gives
+a first-time visitor a coherent next action and distinguishes confirmed pickup
+facts from an unconfirmed fallback. It is not a keyword/exact-string check.
+World code separately requires `report.desk == "west"` (string),
+`report.closes_at == 17` (integer, not bool/string) and citation of `pickup` v1.
+
+Proposed minimal public declaration for the tracer:
+
+- `parameters.artifacts.judgment`: mechanism/version, target `report`, field
+  `guidance`, and `pickup` v1 evidence restricted to `desk` and `closes_at`.
+- Condition `adjudicator`: version `1.0.0`, explicit model, low reasoning effort,
+  512 response tokens. Keep this auxiliary identity separate from Luna's
+  participant model/harness and reusable World mechanics.
+- Only explicit `submit_artifacts` with passing hard checks can request judgment.
+  `check_artifacts` remains a pure literal check. Hard-check failure sends no
+  judge request and retains the existing unsuccessful submission semantics.
+- Ruling fields: `verdict` (`accept`, `revise`, `abstain`), bounded explanation,
+  and exact typed fact assertions naming the declared source/version/field/value.
+  Require the complete declared assertion set once each. Unknown fields,
+  sources, duplicate/missing assertions and mismatched facts cannot settle.
+- The only effect is the submitted task's terminal result. Valid `accept` plus
+  passing World checks permits `success`; valid `revise`/`abstain` permits
+  `failure`. An invalid ruling fails the attempt without committing that turn.
+  It cannot write documents, spend write units, grant ACLs, create messages or
+  responses, change the closing hour or claim a visitor actually collected a book.
+- Retain a researcher-scoped `adjudication` event with mechanism/version,
+  adjudicator configuration, exact inputs, raw ruling, request ID and a separate
+  `consequence` receipt (`applied`, `submission_status`, `hard_facts_passed`).
+  Failed/incomplete requests retain ledger/attempt evidence even without a turn.
+
+These are proposed public data fields, not a mandate for new Engine/adaptor
+hierarchies. Ordinary artifact tasks retain their deterministic meaning.
+
+**Initial model-authority question (subsequently resolved by ROOT below).**
+The spec fixes Sol for the
+Researcher/planner/assistant and Luna for model participants; it does not name
+an adjudicator. The tracer uses an in-process scripted boundary under the
+already priced Sol identity solely to separate auxiliary work from Luna. That
+fixture is not a live model selection, default or spending permission. ROOT
+must resolve adjudicator model authority before enabling live judge work.
+Existing investigation authorizations also have no adjudicator identity/scope;
+they must reject such work until the displayed authorization explicitly covers
+it. Never relabel a judge as an analyst/participant to bypass the guard.
+
+## Independent oracles frozen before any T18 outputs
+
+The following inputs/expectations are authored from this task/rubric and the
+accepted invariants before provider/candidate outputs. They are DEVELOPMENT,
+not held-out cases. Literal World outcomes are separate from fallible reference
+labels. No recorded second reviewer, model disagreement or accuracy is claimed.
+
+| Case | Input / change from fixed facts | Independent expectation |
+| --- | --- | --- |
+| J01 clear | “Collect the reserved book at the west desk before 17:00. If you cannot get there in time, ask the library about another pickup date; availability is not confirmed.” | Defined rubric reference: `accept`. Under a valid scripted accept, two turns, report v2, no writes remaining, terminal success and `artifact_success=1`; source remains unchanged. |
+| J02 opaque | “There is the place and the time. The other thing can probably be arranged.” | Defined rubric reference: `revise`; it gives neither an identifiable pickup action nor a qualified concrete fallback. A valid revise produces unsuccessful submission even though the two literal fields pass. |
+| J03 borderline | “West desk, 17:00. Another day might work; ask first.” | No uniquely scored label. Accept/revise/abstain may reflect different readings of actionability. Preserve observed rulings/reasons and report disagreement/abstention separately; do not post-select a reference label. |
+| J04 unsupported | “Collect at the west desk before 17:00. If late, your book is guaranteed to be held tomorrow.” | Defined rubric reference: `revise`; the fallback guarantee is unsupported by the allowed evidence. A judge accepting it is a rubric error, not a new executable guarantee. |
+| F01 mismatch | Work has `desk="north"`, or closing hour `18`, `"17"` or `true`; source citation otherwise valid. | World hard-check failure; no judge send and no success. Report versions/remaining allowance are not changed by submission. |
+| F02 contradiction | Correct work, but raw accept asserts source `closes_at=18`. | Reject the ruling at the World fact boundary; preserve raw ruling and charge; no submission turn/state mutation or retry. |
+| F03 unsupported source | Raw accept references `pickup` v2, unknown field/object, duplicated/missing fact, or `sealed`. | Reject scope/assertions; no hidden object lookup, fact disclosure or state mutation. Same generic inaccessible-object error for missing/forbidden targets. |
+| F04 denied authority | Participant or judge asks to write/read `sealed`, replace an ACL, fabricate a recipient response, private belief, effect or code execution. | Actor/world/schema denies; no protected names/payloads in actor/judge input, schema, errors or memory; raw prose remains inert. |
+| F05 wrong pin | Stale work version, other run/turn/actor/configuration/input receipt, or changed mechanism/rule version. | No settlement with the wrong ruling; complete checkpoint/evidence immutable. Incompatibility is explicit. |
+| F06 unsuccessful | Valid `revise` and `abstain` on the same otherwise correct work. | Terminal failure, `artifact_success=0`, no invented response or rewritten literal facts; raw ruling and enforced failure both inspectable. |
+| L01 accounting | Each of two Luna replies: 101 input / 37 output tokens. One scripted Sol ruling: 41 input / 19 output. | Charges **29 + 29 + 272 = 330 microdollars**; 3 requests, 243 input / 93 output, known usage. Participant effort is only 2 requests / 58 microdollars. Actual paid spend is zero. |
+| L02 failure/cancel | Judge fails before usage, fails after known usage, or cancellation races settlement; second settlement failure. | No fabricated ruling or consequence; unknown reservation retained, known usage settled once, primary provider/cancellation error preserved. No silent retry/substitute. Independently frozen failure schedules precede each later slice. |
+| L03 lifecycle | Pause before request vs while judge in flight; duplicate start; crash with pending vs completed ruling. | No new judge send after a queued pause; in-flight final work respects the declared commit boundary. Restart pauses/interrupts without resubmission; completed evidence stays append-only. A completed response without committed turn is an interrupted attempt, not an auto-applied consequence. |
+| R01 restore/replay | Committed J01, then a new app with providers that fail on any request. | Identical recorded inputs/ruling, versions, facts, events, measurements and checkpoint; verify two turns with **0 model requests**, unchanged ledger; corrupted ruling/input/consequence must fail verification. |
+
+Reference rubric accuracy is defined only for **J01/J02/J04**, with denominator
+three and each result retained separately. J03 is an uncertainty/disagreement
+case and never enters that accuracy denominator. Unsupported and contradiction
+paths F01–F06 measure enforcement, not judgment quality. A scripted correct
+answer cannot establish measured live accuracy. Free explanations can be false:
+World validation checks explicit fact assertions and permitted effects; it does
+not certify semantic truth of explanations or participant text. Such prose stays
+visibly fallible/unassessed and cannot replace literal facts.
+
+Exactly one new test is staged:
+`backend/tests/test_fallible_adjudication.py::test_declared_judgment_is_recorded_enforced_and_replayed_without_sampling`.
+Its prepared Git blob is `bdf6a6630e1af096b6dd2272829414e1eb82fb36`.
+It is the single J01 vertical tracer: review/validate/save without spending,
+explicit execution with real Engine/accounting, distinct ruling/consequence,
+private-input boundaries, export, app restoration and zero-call replay. It is
+**unrun**, neither skipped nor claimed red/green. Additional cases remain this
+frozen table until a concrete subsequent slice is released.
+
+## Existing boundaries inspected; no repair proposed without a red
+
+- `execution.py`: one start lock and per-run execution record; `_preflight`
+  offloads through `asyncio.to_thread`; study startup checks every candidate;
+  sealed-relay `World.step` is offloaded. Final accepted responses commit after
+  Pause. The turn/checkpoint/events/measures/activation settlement share the
+  optimistic single-writer transaction. `Engine.pause` also pauses its owning
+  investigation, preventing the parent from restarting the child.
+- `investigations.py`: worker-backed save runs off-loop and is shielded through
+  cancellation before returning it; decision append reads the current record
+  after obtaining the database write lock. Queued startup treats only
+  paused/pausing parent state as a waiting continuation. These are the accepted
+  T14 repairs, not T18 defects to rediscover or duplicate.
+- `extensions.py`/`extension_sandbox.py`: current qualified runtime is required
+  for every execution and even empty replay; source/runtime mismatch, restart
+  and worker/cleanup failure revoke authority. Worker inputs are copied bounded
+  integers with no credentials. T18 adds no generated executable path.
+- `llm.py`: Pydantic AI, one request per reservation, retries disabled, atomic
+  study/workspace/investigation reserves, independent settlement, unknown usage
+  retained, primary errors/cancellation preserved. The current investigation
+  model guard chooses researcher versus participant by ownership, so it cannot
+  silently authorize a new adjudicator role.
+- `research.py`/`exports.py`/routes and frontend review, `ArtifactView`,
+  `RunRecord`, `RequestInspector`: immutable source and complete turn evidence
+  are exposed already. Current request UI labels non-analysis work Participant;
+  judge work needs its own existing-table label. Participant effort queries
+  activation-linked calls, so auxiliary judge charges must not enter that count.
+  Export currently omits a request's `purpose`; adding judge provenance must
+  make its actual role identifiable. These are inspected integration needs,
+  not implemented findings or freshly verified behavior.
+- Relevant inherited tests cover artifact ACL/version checks, actual process
+  restart/unknown usage, provider/settlement cancellation, independent T14 HTTP
+  actual-worker Pause/startup/save, admitted-runtime loss and exact replay.
+  Their source was read; none was executed in this branch.
+
+## Post-retirement qualification contract
+
+The section **Qualification after historical evidence retirement** at published
+`fdfb5f7a` governs. No historical raw BEFORE is designated. Do not search other
+owners, recover retired snapshots, reconstruct a purported retained reference,
+invoke a comparator requiring deleted BEFORE, or claim historical zero
+regressions/improvements. Older raw-evidence links are historical narratives.
+
+Preserve original frozen T01 case/runner/score bytes. A later granted invocation
+must record the **current-source actual** exit/checks, including whether its
+four historical export-v4 failures recur. The baseline's own `snapshot()` uses
+`git ls-files --others`; its four unit invocations are indirect producers.
+Every invocation must select safe tracked regular files before any hashing/read,
+including synthetic test descendants. Recorder-only filtering is insufficient.
+
+The replacement is **fresh current-contract qualification** plus affected/new
+feature regressions. Freeze full literal bounded inputs/actions/evidence/
+checkpoints/privacy/cutoffs/replay/integer ledgers before that qualification's
+outputs. Committed `benchmarks/research-cases.json` supplies these still-applicable
+finite expectations, not deleted data or current candidate outputs:
+
+| Case / runs | Turns and requests | Literal expected result |
+| --- | --- | --- |
+| `simple-binding-split` / 1 | 2 | Offer 5 from pie 14 then accept; balances sorted `[5,9]`. |
+| `three-signal-disclosure` / 2 | 3 each | Own-signal choice at reward 7, accuracy 1; `[7,7,7]`; public-signal counts 0/private and 3/disclosed. |
+| `four-feasible-promises` / 1 | 8 | Round 1 all contribute 2/promise 3; round 2 a=0, others=3; `[15.5,15.5,15.5,18.5]`, 4 eligible/3 fulfilled. |
+| `six-token-permissions` / 1 | 6 | Only a allocates 4 to b, five workers work; `[2,2,2,2,6,8]`, shared output 10, role labels confer no authority. |
+
+Total: **5 runs / 22 turns / 22 scripted requests**, each 100 input / 50 output
+Luna tokens and 35 microdollars; total **2,200 / 1,100 tokens, 770 microdollars**.
+Reservation expectations must use the exact frozen complete request bytes and
+the declared price/input-bound rule, checked as integer ledger entries rather
+than accepting aggregate rounded floats. Private facts must be absent from
+public/unauthorized projections; cutoff inspection/export cannot add later
+evidence, mutate source or spend. Restart/replay require zero new sends.
+
+**Not yet prepared/released:** the independent fully enumerated 22-request
+normalized-input/checkpoint/ledger manifest and source-keyed collector. They
+must be frozen before that matrix runs, independently of application outputs;
+this table alone does not claim full-input coverage. Neither obsolete T01
+unsupported case (`commons` with one actor / environment `artifact`) is a
+T18 semantic test. Any fixture made inapplicable needs an explicit frozen
+coverage replacement first. Do not alter/rebaseline T01 to conceal failures.
+
+## Private setup, output and peak forecast for ROOT
+
+Forecasts only, not measurements or allocation. ROOT last reported approximately
+1.84 GB shared free, **unreserved**; no own disk/cache/environment probe has run.
+Use the shared lock for every later job:
+`/home/agent/.t3/worktrees/workspace/t3-fdf9bdeb/.tools/research-harness/checks.lock`.
+Retain ordinary **134217728**, setup **201326592**, production **268435456**
+free-byte floors throughout each stage, with additional forecast headroom at
+entry. Stop on missing dependencies/headroom; do not change floors or bypass
+policy, fetch unapproved packages, clean owner caches or choose another owner.
+
+1. **Proposed S1, one backend-only normal-manager setup, held.** Existing ROOT
+   `/home/agent/.t3/worktrees/workspace/t3-fdf9bdeb/.tools/uv-bootstrap/bin/uv`
+   may be used read-only only with ROOT's grant.
+   Distinct environment `.venv`, managed Python under `.tools/t18/python`,
+   temporary/build data under `.tools/t18/tmp`, no sibling installed-tree reuse.
+   Prefer `uv sync --frozen --offline --python 3.13` against the exact owner-
+   confirmed T14 uv cache through uv only. **T18 has no cache-consumer grant.**
+   Required: ROOT coordination and T14 cache owner's explicit normal-manager
+   reuse permission, including normal cache metadata/locking; exact cache and
+   interpreter source must be confirmed without inspecting their payloads.
+   No pnpm/store/browser allocation is requested. Conservative incremental
+   setup ceiling **512 MiB peak**, **256 MiB retained environment/Python**,
+   **1 MiB receipts/logs**; require at least **738197504 bytes** free at entry
+   (setup floor + peak). No assumption that hardlink import has zero physical
+   cost. Missing offline metadata/interpreter stops; online/private-cache
+   fallback needs a separately concrete forecast/grant.
+2. **Proposed S2, ONE first-red tracer invocation, separately held.** Use only
+   this checkout's environment and task-local pytest temp/cache. Retain a
+   compact source-input list, command, exit, log/JUnit and test data, at most
+   **4 MiB output**, **64 MiB incremental peak**; entry at least **201326592
+   bytes** (ordinary floor + peak). No other test or production edit before
+   its actual observed failure. A source/runtime setup error is not a red.
+   Proposed payload after the grant (not run):
+   `.venv/bin/python -m pytest -q backend/tests/test_fallible_adjudication.py::test_declared_judgment_is_recorded_enforced_and_replayed_without_sampling`,
+   with `--basetemp=.tools/t18/tmp/first-red`,
+   `-o cache_dir=.tools/t18/pytest-cache` and JUnit/log output beneath
+   `.tools/t18/attempts/first-red/`. No `uv run` sync is implicit in this stage.
+3. **Later stages remain held.** Bounded backend slices need fresh forecasts
+   (initial estimate: 16 MiB output / 128 MiB peak per segment). Frontend setup,
+   browser/production, full current qualification, hooks/commit and provider/
+   held-out work each need concrete ROOT release. Browser port **18131** is
+   proposed only: no socket was opened or process started. New dependency or
+   production footprints are unknown and cannot be inferred from historical
+   hardlink counts.
+
+If later evidence requires a recorder, author a transparent own compact source
+collector in this checkout; do not execute inherited ignored helpers. Prefer
+explicit relevant source lists and Git blob IDs over a whole-checkout archive.
+Before any payload read, enumerate names, reject **every `pbcopy` / `.env*`
+component and configuration/credential file**, reject symlinks and descendants
+using `lstat`, require tracked regular files, then allow only approved inputs.
+Apply the same policy at the Git-selection boundary of every nested producer,
+including frozen T01 unit tests. Never open/hash/copy/capture/change/delete the
+original ROOT untracked `pbcopy`, real configuration or synthetic `.env` content.
+No inherited snapshot is safe merely because the outer recorder filters it.
+
+## Preparation handoff / next decisions
+
+- Prepared paths only: this document, the single unrun tracer, minimal
+  `HANDOFF.md` and `docs/RESEARCH_HARNESS_PROGRESS.md` notes. All product source,
+  frozen baselines, environments and services are unchanged.
+- Remaining unknowns: live adjudicator identity/authority; explicit investigation
+  judge authorization; final version bumps coordinated with ROOT (no provisional
+  T12/T17 imports); granted cache/interpreter path and actual peak; full literal
+  current-contract manifest; observed red/green; lifecycle/adverse coverage;
+  browser/production qualification and live rubric accuracy. No fresh test,
+  benchmark, semantic, health or acceptance score exists.
+- Some broad source reads truncated and were followed by bounded source reads.
+  Mistyped source-only artifact/snapshot lookup paths returned missing-file
+  errors; the actual artifact tests and baseline snapshot source were then read.
+  These are exploration attempts, not product failures or executed checks.
+- Next boundary: ROOT's concrete S1/cache-owner release, then separately S2.
+  Continue the implementation only through released stages; normal-merge the
+  exact published policy frontier before final ticket completion. No commit,
+  push, PR, watch, paid/provider call or acceptance is claimed.
+
+## ROOT backend release and observed boundaries
+
+ROOT explicitly selected `openai:gpt-6.1-sol` as the initial permitted explicit
+adjudicator configuration, separate from Luna. This resolves the implementation
+model-choice unknown; no implicit judge/default/substitution or actual provider
+work is authorized. Investigation work must reject a judge not explicitly
+covered by its displayed authorization. Coherent checkpoint hooks/commits and
+normal merge of published `fdfb5f7a` are permitted after a qualified slice.
+
+S1 `setup-01` passed once: exact ROOT uv, owner-granted T14 cache, frozen/offline/
+hardlink sync with `/usr/bin/python3.13`, distinct `.venv`, task-local temporary
+files, bytecode disabled. Own import proof reports this checkout's `sys.prefix`
+and `backend/src/agent_sim/__init__.py`, base executable `/usr/bin/python3.13`.
+Environment: 180,513,935 logical / 201,515,008 allocated bytes across 7,573
+regular entries (not a claim of isolated physical allocation). Shared free was
+1,753,100,288 at entry / 1,749,229,568 minimum and exit; observed shared net peak
+3,870,720 bytes. Receipts/log/proof before the closing source list were 11,335
+logical bytes. No retry/fallback/download/cache maintenance; lock released.
+
+S2 `first-red` ran the exact frozen tracer blob
+`bdf6a6630e1af096b6dd2272829414e1eb82fb36`, without a prior production edit.
+Pytest exit1: **1 failed in 0.27s**, expected 200 versus actual HTTP422 on
+`parameters.artifacts.judgment` and condition `adjudicator` extra-forbidden
+fields. This is the intended product/API failure, not a setup error. Shared
+free: 1,748,373,504 entry / 1,747,746,816 minimum; output footprint after the job
+289,734 logical bytes, unchanged environment, lock released. No model boundary
+was reached. Compact receipts, source lists, original log/JUnit and temporary
+database stay under owned `.tools/t18/`; no source archive was produced.
+
+S3 is now released: one backend vertical slice at a time, then the independently
+frozen boundary/lifecycle/accounting cases and affected backend/static/type
+checks. Per job: 128 MiB peak / 16 MiB new output, 64 MiB retained total,
+ordinary134217728 floor plus forecast at entry, shared lock released between
+jobs. The transparent own recorder `.tools/t18/record.py` captures only curated
+safe source identities and command/resource outcomes; no inherited helper is
+executed. Frozen T01 and full current-contract qualification remain separately
+source-frozen work, never a comparison to deleted BEFORE data.
+
+S3 `first-green-01`: unchanged first tracer **1 passed in 0.36s**, exit0.
+Entry/minimum free 1,701,691,392 / 1,700,700,160; observed shared net peak
+991,232 bytes. Retained own output 621,254 logical bytes at that boundary;
+environment unchanged, lock released. Explicit Sol call uses the existing
+ledger with purpose `adjudication` and no participant activation ownership.
+Raw receipt and World consequence persist separately; restored replay consumes
+the ruling and makes zero provider calls. This is an orchestration result,
+not live judgment accuracy. Candidate contract versions are DB12/export13/
+library8/artifact2.0.0, rejecting incompatible data without migration/reset.
+`static-01` found one import-spacing error; retained unchanged. `types-01`
+passed. Further affected and adverse checks, pre-execution review details,
+lifecycle safety and all held UI/qualification gates remain outstanding.
+
+## Backend continuation boundary (before final-source merge)
+
+`e16a7ebf` records the first qualified vertical slice; normal merge `1a7ad1d3`
+includes exact published `fdfb5f7a`. ROOT's superseding final target is now exact
+`0527e737d93786d0f5579d5a13827c472cf370fa`; its quality-review cutoff repair
+and navigation-audit correction were read directly at that tip. No sibling
+implementation or moving ref is an integration target.
+
+Subsequent independent DEVELOPMENT cases cover literal facts/typed scope,
+ACL/opaque object denial, inert prose, scripted accept/revise/abstain and
+unsupported-guarantee rubric errors; per-request integer accounting, atomic
+study/workspace ceilings, known/unknown/cancellation with a real SQLite
+settlement-failure trigger; actual-process crash before response and after
+recorded ruling but before turn commit; queued pause, duplicate in-flight Start,
+missing judge provider preflight, investigation authorization denial and
+cross-run ruling provenance. Successful replay/restoration calls no provider.
+Investigations explicitly reject adjudication: their current displayed
+researcher/participant authorization grants no judge identity or scope. This
+implementation does not add a new authorization flow or implicit judge.
+
+Observed product reds, each retained before its narrow repair: missing rejected
+ruling receipt; Pause before judge dispatch; Pause while judge waits for provider
+capacity; absent declaration in preflight; identical ruling borrowed from another
+run accepted by replay; investigation scope permitting participant work; missing
+judge provider allowing Start; and judge-effort-only conditions called duplicate
+arms. The last red `judge-contrast-red` failed HTTP preflight's empty-duplicates
+assertion; `judge-contrast-green` passes after adding adjudicator settings to the
+condition grid and a separate `changed_adjudicator` comparison. Participant
+assignment remains distinct. No live accuracy is inferred from any stand-in.
+
+Adverse fixture/check attempts are also retained: incorrect export activation
+path; six rubric fixtures lacking immutable source `operation:0`; two scope
+fixtures stopped by question-quote then researcher-token validation (not product
+reds); import spacing, Event polling lint, line lengths and JSON-inference types.
+The corrected preflight-scope attempt was the genuine red. The subsequent
+`static-04` whole backend/benchmark/script Ruff and `types-03` global ty passed.
+They predate the final contrast and integration and are not final-source checks.
+
+`feature-qualification-01`:41 passed/6.21s; `inherited-engine-01`:25/1.80s;
+`inherited-ledger-01`:12/0.43s; `inherited-artifact-01`:10/1.15s and
+`inherited-artifact-02`:15/1.16s; `inherited-library-01`:13/1.41s;
+`inherited-review-01`:676/52.52s. The last group includes the real accepted T14
+worker/save/Pause boundaries without replacing them with mocks. These results
+are finite preservation checks, not final ticket acceptance. The contrast test
+is additional to the41-feature result.
+
+Every job used the shared lock and released it. Environment remains180,513,935
+logical/201,515,008 allocated bytes. The last job entered at1,104,269,312 free,
+minimum1,084,129,280, observed shared net peak20,140,032; retained own output
+40,251,658 logical bytes. Earlier `compact-01` losslessly compressed CLOSED
+SQLite outputs, verified decompressed hashes and recorded exact per-file
+path/hash/size/mode/uid/gid/integer-ns restoration in
+`.tools/t18/sqlite-restoration.json` before removal. Added observed peak12,288
+bytes, within8MiB; logs/JUnit and adverse attempts remain. Further compaction
+will use only that own closed-output mechanism, never another owner's files.
+
+Final-source backend qualification is now released under the unchanged128MiB
+peak/16MiB output per job,64MiB total and entry>=268435456 rule. The literal
+22-request reference and invocation-local safe snapshot guard must be frozen
+before outputs. T01 runner/cases/scores remain untouched; obsolete unsupported
+capability descriptions need explicit current replacements. Frontend/browser/
+services/production/providers/live/held-out/publication remain held;18131 is
+unopened. No semantic-truth, generic-competence or live-rubric-accuracy claim.
+
+At this coherent pre-merge checkpoint, `static-05` (all backend/benchmarks/
+GitHub-script Ruff) and `types-04` (global ty) pass after the contrast repair;
+`git diff --check` is clean. The frozen first tracer still has its original
+blob `bdf6a6630e1af096b6dd2272829414e1eb82fb36`.
+
+## Fresh current-contract oracle freeze (before candidate outputs)
+
+The exact accepted ROOT target0527e737 merged normally without conflicts after
+coherent e14ee886 (normal Gitleaks passed). Both documentary histories remain.
+Candidate versions remain DB12/export13/library8/artifact2.0.0. The merge is
+integration, not a passing application test. `compact-02` then compressed only
+closed own SQLite outputs: retained40,443,937→6,354,804 logical bytes; observed
+added peak24,576 bytes; exact restoration maps remain with all logs/JUnit.
+
+Before any candidate matrix output, `oracle-freeze-01` generated the tracked
+literal `backend/tests/fixtures/t18-current-contract.json` using independently
+authored stdlib-only `benchmarks/t18_current_reference.py`. It imports/calls no
+JAS model, World, schema generator, provider or deleted historical reference.
+Every one of22 observations/full JSON prompts, instructions, settings, raw
+schemas, decision, events, measures, initial/each final checkpoint, state hash,
+input-evidence binding and reserved/settled integer entry is enumerated.
+Only generated event identities normalize to per-run turn/event ordinals.
+Exact input JSON order matters to the byte-bound reservation. Per-request
+100/50 tokens and35 microdollars are fixed, totaling2200/1100/770; replay0.
+Finite rules/arithmetic/RNG seeding were read from source and independently
+expressed; this is current correctness, not a retained BEFORE comparison.
+
+The four public-HTTP matrix cases preserve4 studies/5 runs/22 turns/22 requests,
+including both private/public information arms. Save/preflight spends0. Each
+run steps to1, freezes evidence/exposure, resumes, and must preserve the cutoff
+and initial/complete checkpoints. All request payload fields, typed events,
+measurements and ledger rows are checked. A restored app with provider lookup
+that fails checks all committed runs without new sends or source mutations.
+A fixed scripted policy cannot demonstrate live competence or accuracy.
+
+Unsupported T01 fixture replacement is explicit before any T01 invocation:
+its single-actor commons and unrecognized `artifact` alias still reject; their
+historical claims of missing solo/artifact capability are obsolete. The frozen
+T18 tracer and inherited solo artifact case positively cover authorized reads,
+immutable source/versioned write/submit, exact restoration and replay. A new
+current alias-rejection case separately requires HTTP422 and zero spend. The
+unchanged T01 runner/cases/scores are never rebaselined to these capabilities.
+
+`benchmarks/t18_snapshot_guard.py` supplies invocation-local Git selection to
+EVERY frozen `snapshot()` call and substitutes only the backend digest's unsafe
+recursive discovery with the same protected/symlink-safe tracked selection.
+The frozen producer itself receives only curated backend/qualification source,
+not a whole checkout. Protected `.env*`/`pbcopy` components are excluded before
+lookup/read; every selected component is lstat-checked and symlink descendants
+are excluded. Guard tests use only empty synthetic protected names, never
+configuration payloads. No original ROOT protected file is touched. The
+separate direct digest is guarded too; outer recorder filtering alone is not
+considered sufficient. No application behavior or historical score is patched.
+
+These qualification cases and the privacy guard are staged/unrun at this
+freeze. Their exact Git blobs and literal-fixture SHA are recorded in the next
+source-only receipt. Any fixture/adapter mismatch or genuine failure will be
+retained and classified before an explicitly versioned correction; no observed
+output becomes a retroactive frozen oracle. T01 actual exit/checks remain a
+separate CURRENT execution, not a historical comparator invocation.
+
+Freeze identities: reference-generator Git3f6198cccccfde0d5f7ff25b76bb3d11b556ba74;
+guard6b5d27651c1195cd2a733a5a82c63f0a852a34df;
+literal fixture Git5cfdb486f45a4425ff332b58ffa9d73ca8dbb2d7,
+445,836 bytes, SHA256
+`028dd37bf5d84758a2db95283855442e44450cbc515f27f046fc108fb102a514`.
+Original pre-output qualification-test blob20d93e3cd3c7a17f84aba8266498c69446630243
+was strengthened with a synchronous forbidden provider-lookup trap before
+candidate execution. The literal reference is unchanged.
+
+`snapshot-guard-01` failed on a synthetic repo's missing HEAD, not on selection
+or product behavior. The frozen snapshot selected/archived only allowed.py.
+However, setup had used broad `git add backend` on empty synthetic protected
+names (no configuration values/payload ever existed). This unnecessary indexing
+was removed: guard02 uses name-only Git metadata, so no Git producer can index
+those protected names. This adverse setup is retained and privately disclosed
+to ROOT; original ROOT pbcopy and real credentials were never accessed.
+`snapshot-guard-02`:2 passed/0.14s. It checks the nested frozen producer and its
+indirect digest, archive membership and exclusion before filesystem lookup.
+
+`current-matrix-01`: alias replacement passed, bargaining stopped at turn0
+because the test incorrectly expected the *raw persisted* instructions to equal
+the provider-adapted instructions including the trailing newline. The complete
+prompt already matched. Installed Pydantic AI `_instructions.py` explicitly
+strips instruction outer whitespace in `_add_instruction_text`/`_add_instruction_part`.
+This is an oracle adapter omission, not a product red. The original445,836-byte
+v1 fixture remains unchanged. An explicit v2 fixture adds only the expected
+provider-instructions string (stripped); all raw request bytes, schemas,
+reservation integers, actions/evidence/checkpoints remain unchanged. This
+source-derived amendment is frozen before the second candidate attempt; the
+adverse attempt and original oracle are retained, never silently rebaselined.
+
+Current matrix v2 SHA256 is
+`c23eaf493b3b9ffcc377d9a274b8533abfaa51c07544ee48fa12ebd6ba38ecef`.
+`current-matrix-02` bargaining passes; `current-matrix-03` remaining3 cases
+(including both information arms) passes. Together4 cases cover5 runs/22 turns/
+22 complete stored request payloads, per-request integer reserves/settles,
+all observations/actions/events/measures/checkpoints and zero-call restored
+replay. The alias replacement passed in the retained first attempt. A later
+strengthening, declared before its next execution, additionally requires the
+actual FunctionModel tool schema to equal the already frozen raw schema. It
+changes no expectation or application behavior. The reference generator now
+contains the explicit v2 envelope transformation for reproducibility; v1/v2
+literal files stay byte-for-byte unchanged.
+
+`t01-current-01` executes the unchanged runner/cases on current backend source
+under invocation-local safe selection: actual exit1; exactly four failed checks,
+each `export-v4`, with their original failed flags/check-failure stops. All
+other checks pass; both schema-rejection fixtures pass with zero requests.
+Source unchanged=true;22 requests/2200 input/1100 output tokens/770 synthetic
+microdollars, actual live requests0. The failure is retained, not called green.
+Runner SHA256b6438d9fa3390d05f4f3c5583aa1e0e6f2095d1db653060257cdc817138a5826;
+suite SHA2566e4f138cf31d32b8a5e28e348edbccc2e9b1308b62f8b274d39cf0f24ba33a6e.
+No original score bytes changed and no historical comparator was invoked.
+
+The first standalone unit wrapper lacked checkout sys.path and failed import
+before collection (`inherited-baseline-unit-01`), not a product red. After
+explicitly selecting this checkout, units02/03 pass one each, including retained
+provider failure/unknown usage/no retry. Pytest warns that pre-imported anyio
+cannot be assertion-rewritten; this does not alter the frozen test. The third
+snapshot-producing unit remains queued, always inside the same guard.
+
+`static-06` found only two overlong reference-generator lines; global `types-05`
+passes. The attempted formatter label `format-02` already existed, so the
+recorder refused before acquiring a lock or executing a command. No prior
+attempt was overwritten. A unique format-current label records the real job.
+
+`current-matrix-schema-01` retained a second adapter mismatch: raw ledger schema
+has property titles; Pydantic AI `tools.GenerateToolJsonSchema` explicitly removes
+property titles in `_named_required_fields_schema`. The unchanged complete
+stored schema assertions already passed; no World/application failure occurred.
+The v3 source-derived envelope preserves v1/v2 and adds the literal actual tool
+schema/name/description/strict setting. Only property titles are removed; no
+constraint, legal action, ACL, observation, raw request or reservation changes.
+This v3 is frozen before further actual-tool-schema qualification. It now also
+checks no unrelated function tools/text-output channel are exposed.
+
+Sequencing disclosure: while oracle-amendment-03 waited for shared flock, the
+next shell prematurely tried to stage/hash the not-yet-created v3 file. Those
+commands failed. The first schema02 test was queued too early. Receipts prove
+that the independent generator completed/released at1794334604.8643062 and the
+candidate job acquired at1794334604.864339; schema02 passed. However, that first
+schema02 source list lacks the untracked v3 fixture's pre-run hash. This is a
+provenance gap, not retroactive source-frozen qualification. Preserve it. The
+v3 file is now explicitly staged/hashed before the new full matrix invocation;
+that forthcoming invocation supplies final qualification. No concurrent command
+wrote its bytes, and no application production edit was made.
+
+A source review found a coverage gap, not an observed product defect: the new
+scope/configuration had not independently exercised reusable-library deletion
+and later study-revision edits. Before its execution, new F07 freezes this:
+extract/save mechanics without model identity; automatic reuse lacking a judge
+must422/spend0; explicit reuse retains Sol/low/512. Change the library desk to
+north, delete revision2, then change the study's current judge effort to high.
+The original run must retain its v1 west/17 source, low configuration and two
+participant+one judge requests330 microdollars; export keeps both immutable
+revisions and original source; replay2 turns with0 requests. No production
+repair is proposed ahead of observing this preservation case.
+
+## Next UI source-only freeze; setup and execution held
+
+ROOT permits source preparation of exactly one first shell-inclusive UI tracer,
+`frontend/src/pages/adjudication.test.tsx`, before any frontend output. It uses
+the real WorkspaceProvider/WorkspaceShell, Study and Run pages with literal
+HTTP response fixtures; it supplements, never replaces, the real public-HTTP
+backend seam. No product UI edit precedes its separately released observed red.
+The shell is essential: ROOT withdrew an earlier navigation defect claim after
+the isolated fixtures had omitted that existing remount boundary.
+
+UI01 starts at the existing experiment review, opens its stock scope disclosure,
+and requires an accessible Fallible adjudication region before Run. Frozen
+values: pickup_note_actionability1.0.0; report.guidance; pickup version1 fields
+desk/closes_at; adjudicator1.0.0 openai:gpt-6.1-sol, low,512 tokens; participant
+openai:gpt-6-luna remains separate; one judge request per submission attempt;
+$2.00/million input and $10.00/million output tokens. The reviewer must see
+fallibility, allowed inputs, private-fact/response/belief limits and the sole
+terminal-submission-status consequence before the first POST.
+
+After that explicit Run action, existing Runs navigation opens turn2 evidence.
+The recorded fallible judgment and enforced consequence must have separately
+named regions. The literal judge accepts while its explanation claims
+"The book is guaranteed to be held tomorrow." Its exact asserted source facts
+remain west/17; World permits only submission success with hard_facts_passed.
+That unsupported explanation remains visibly raw/fallible and cannot appear as
+an enforced availability or participant response. Recorded request identity,
+Sol model,41/19 tokens and272 microdollars (currency display may round to
+$0.0003) stay with judge work. Two Luna calls101/37 tokens and29 microdollars
+each stay participant work; total330 microdollars. This known erroneous rubric
+acceptance is deliberate fallibility coverage, not measured semantic accuracy.
+
+ROOT superseded the earlier512MiB setup proposal; no pnpm/preflight was invoked.
+Future ONE metadata-enabled normal install would use read-only
+`/home/agent/.local/bin/node`24.22.2 and
+`/home/agent/.local/bin/pnpm`12.18.0 with owner-authorized coordinated
+`/home/agent/.local/share/pnpm/store`, DISTINCT frontend/node_modules and own
+`.tools/t18/pnpm-cache` policy metadata. Required flags are `--frozen-store
+--frozen-lockfile --package-import-method=hardlink`; the known private-metadata
+offline miss is not retried. No T14750-byte cache/other owner metadata access,
+manual copies/links, downloads, cache maintenance or policy bypass.
+
+Evidence-based future forecast: modules about373MB logical/426MB inode-allocated
+(largely shared hardlinks), private metadata about176.8MB; observed sibling net
+new198.5MB is shared/unreserved, not a private physical bound. Conservative
+incremental peak650MiB=681574400 plus ordinary floor134217728 requires
+entry>=815792128 under shared checks.lock. Setup log/receipt<=1MiB; stop on
+missing metadata, failed preflight or output/peak/floor breach. ROOT's observed
+714739712 free is below entry. Permission for the future store is not execution
+release: setup, frontend checks, service/browser18131, production and all live/
+provider/paid/held-out work remain held. No setup preflight or store read yet.
+
+UI01 frozen Git blob is `987d829cf685faaa1b84656c466ca6945184c80a`.
+`ui-source-freeze-01` records protected/symlink-safe source identities and a
+clean diff check only. It invokes no frontend runtime, compiler, test, formatter,
+manager or cache consumer. Its future expected failure is missing product
+declaration/ruling presentation after the real shell successfully loads, not
+fixture/resize/router/setup failure. It is not observed red or qualification.
+
+## Final released backend boundary (2026-11-10)
+
+Candidate application bytes have not changed since normal exact ROOT merge
+`02bd7237413970d68663a909497d4d87408dbe0f`. No provisional sibling was merged.
+ROOT's superseding target `670ab3ee73b025ea0695ce941d219be980819a95` adds the
+bounded native-HTTP benchmark and documentation, with no application changes
+from0527e737. Its normal merge follows the coherent qualified checkpoint.
+No container/service/browser/native benchmark or provider work is released here.
+
+The source-frozen full v3 matrix subsequently ran as
+`current-matrix-final-01`:7 passed/1.12s, including the four family cases
+(five runs/22 turns/22 requests), alias rejection and both snapshot guards.
+This is the new qualification after the disclosed schema02 pre-run source-gap;
+schema02 remains unqualified for that claim. V3 literal SHA256 is
+`0d359265e94d528083a061034e2b3d67760380f4eace3c1228724388995db77c`,
+Git blob `67c416815dcaf9f735fd52e478a9307ea3e6d666`. Original v1/v2 files remain.
+`references-final-02` regenerates all three independently and checks exact
+bytes/hashes, original frozen T01 runner/cases/scoring equality to a4ed8743,
+unchanged first-tracer blob and exact accepted ancestry. No candidate output
+is used to regenerate any oracle.
+
+F07's first `judge-pins-01` got405 because the fixture used nonexistent PUT
+study; this is a fixture failure, not product red. Correct POST `/revisions`
+passes in `judge-pins-02` and again within `feature-final-02`:
+**43 passed/6.48s**. The first tracer remains original bdf6a663 bytes. Actual
+restart, capacity/pause/settlement, budget ceilings, unknown usage/primary error,
+hard-fact/ACL/input scope, disagreement and replay/provenance cases stay intact.
+The earlier `feature-final-01`42-case pass remains attributed to its older
+test membership, not relabeled43.
+
+Closed `.tools/t18/backend-qualification-01.json` independently joins named
+receipts and JUnit membership: **373 distinct final-backend cases pass** with
+identical backend production source maps in all selected jobs. It retains
+exact case IDs, source identities, receipt/JUnit hashes, floor/peak/output
+bookends and every nonpass status. Group membership is:
+
+| Group | Distinct cases |
+| --- | ---: |
+| T18 adjudication | 43 |
+| Fresh current contract, alias and snapshot privacy | 7 |
+| Engine and ledger | 37 |
+| Artifact lifecycle | 3 |
+| Participant harnesses | 36 |
+| Exposure | 21 |
+| Claim support | 31 |
+| Domain/DB/library contracts | 18 |
+| Reference policies | 24 |
+| Researcher design | 8 |
+| Uncertainty | 10 |
+| Reliance commitments | 51 |
+| Reliance integration | 41 |
+| Public API, including all six deletion cases | 40 |
+| Guarded snapshot-producing T01 units | 3 |
+
+Claim segments execute32 cases with one duplicate; the manifest deduplicates
+31. Earlier25 artifact,13 library/reuse and676 validity/instrument/real-worker
+results are pre-merge checks; they are not added to this final-source total.
+The final three T01 units pass under invocation-local safe selection; the
+pre-imported-anyio assertion-rewrite warning remains retained. No comparator
+requiring deleted BEFORE was run; its synthetic unit is not a replacement for
+retired historical evidence.
+
+`t01-current-final-01` again runs the unchanged T01 CURRENT: actual exit1,
+exactly four failed `export-v4` checks with original false flags and
+check-failure stops. All other checks and both rejection fixtures pass;
+98 HTTP operations,22 scripted requests/2200 input/1100 output tokens,
+770 synthetic microdollars, source_unchanged=true, live0. Report SHA256 is
+`722830b2d134199256d38a4f9cc68c812c59b8c1a9059c8344469c389bae5610`.
+The prior T01 CURRENT attempt and its failure flags remain. The later generator
+source-line split changes no generated fixture bytes or application bytes;
+references-final-02 proves all three literal identities unchanged. No historical
+zero-regression/improvement or raw retained-reference claim follows.
+
+Adverse resource attempts remain explicit: `inherited-claims-01`,
+`inherited-uncertainty-01` and `inherited-api-02` refused their retained-output
+forecasts before testing. `inherited-claims-02` exceeded its16MiB output grant
+and was terminated with SIGTERM/exit-15 at roughly16.9MB; that job is
+unqualified. Smaller explicit claim segments pass, preserving the over-limit
+attempt and all its closed material. Static06 and static-types-final-01 found
+overlong reference-generator source strings; the latter stopped before ty.
+After a source-only string split, `static-types-final-02` passes whole backend/
+benchmarks/GitHub-script Ruff, global ty and diff checks. Formatting is not
+product red→green. A patch-context mismatch during documentation update made
+no edits; the corrected patch preserved both documentary histories.
+
+All actual jobs release shared checks.lock. Compact03..07 touch only CLOSED
+own SQLite outputs, verify gzip round trips and retain exact per-file
+restoration maps before removing originals. Compact07 added observed49,152
+bytes (grant8MiB) and reduced retained49,173,115→25,791,570 logical bytes.
+Manifest01 ends with28,845,267 logical/31,068,160 allocated retained bytes,
+entry658,612,224/minimum658,391,040 free; own environment remains180,513,935
+logical/201,515,008 allocated/7573 files. These are shared/unreserved
+bookends, not a future allocation. Every ordinary floor/peak is preserved;
+the over-limit output attempt above is not concealed by compaction. The former
+ce06dfef recorder is retained as own explicit source file before adding safe
+UI source selection and pinning the superseding integration target.
+
+The first private status steer was rejected because ROOT had no running turn;
+normal auto delivery then succeeded. It grants no extra execution. Current
+contract candidates remain DB12/export13/library8/artifact2.0.0, explicitly
+rejecting old DB11/library7; no compatibility aliases, migration or reset.
+Backend deterministic correctness is finite. UI01 is unrun, frontend integration
+and browser/production qualification are held, live judgment accuracy remains
+unverified, and T18/#29 remains **incomplete/unaccepted**.
+
+Qualified checkpoint `d1b72f05` committed normally: Gitleaks scanned about1.54MB
+and reported no leaks. Exact superseding ROOT
+`670ab3ee73b025ea0695ce941d219be980819a95` then merged normally, without
+conflicts, at `5d3995948ac16a710331eaee9f325d7b21a20238`; both doc histories
+are preserved. `static-types-integrated-01` passes all backend/benchmarks/
+GitHub-script Ruff (including the newly merged runtime helper), global ty,
+diff checks, exact-target ancestry and application equality to d1b72f05.
+The runtime benchmark itself was never executed here.
+
+`backend-seal-01` verifies identical production maps across the373 selected
+cases, unchanged corresponding test/conftest hashes, identical T01 CURRENT
+backend bytes and the original UI01 blob. Its immutable compact attachment
+`.tools/t18/final-backend-seal.json` is1623 bytes, SHA256
+`04739690d7603dcbc766180a9d68a316e6f6b58bdfbcd7619dca0aed2829759b`.
+It anchors manifest01 and post-merge checks without replaying unchanged cases
+or calling the retired comparator. Last seal bookend:29,024,475 logical/
+31,277,056 allocated own output bytes,650,981,376 entry/650,874,880 minimum
+shared free; lock released. The following documentation-only checkpoint adds
+its own receipt; the seal's exact source boundary remains the merged head.
+
+The released backend/static/manifest work is complete at this finite boundary.
+No frontend manager/compiler/test/browser/service, store/cache consumer,
+production or live/provider work ran. Frontend setup still needs a concrete
+ROOT release with entry>=815792128 for the revised650MiB peak; future store
+permission alone is insufficient. UI01 remains frozen/unrun and production UI
+unchanged. Ticket completion/acceptance and live judgment accuracy remain open.
+
+## F1 and accepted T12 integration; combined contract freeze
+
+F1 ran exactly once at41ba330b, normal frozen-store/frozen-lockfile/hardlink
+install into DISTINCT own modules and policy cache. The618-entry supply-chain
+policy check passed, lock/resolution stayed frozen,555 packages reused/added
+and0 downloaded. Node24.22.2/pnpm12.18.0 and own-prefix React19.3.1/TanStack
+imports passed. No tests, browser, services or provider work were part of setup.
+Entry/dispatch828,833,792, minimum/exit629,493,760, observed shared net
+peak199,340,032; floor134,217,728 and650MiB forecast preserved; lock released.
+Unique regular-file modules359,652,711 logical/426,446,848 allocated, of which
+425,459,712 allocated have multiple hardlinks. Private policy metadata is
+176,800,695 logical/178,188,288 allocated across599 files. Private state/home/
+xdg/tmp are empty; Python environment unchanged. These are inode/metadata and
+shared free-space measurements, not an isolated physical bound. Final serialized
+F1 logs/receipt total69,589 logical/81,920 allocated bytes, sealed separately in
+closed-accounting.json; the original receipt's early after.logs_receipt field
+predates its own final serialization. Original bytes are retained; no setup
+retry, fallback or cleanup.
+
+ROOT conditionally releases frozen UI01 red→minimal green, independently frozen
+negative/safety units, affected lint and forced types, each shared lock,
+entry>=268435456,128MiB peak/initial4MiB output and16MiB frontend evidence.
+Build/browser/service18131/production/live/provider/paid/held-out remain held.
+Policy metadata is separately typed retained setup state, never test evidence;
+the recorder excludes only those explicit own setup directories from evidence
+accounting and retains the prior055ba992 recorder bytes. No cache payload is
+captured or other owner's metadata read.
+
+Exact accepted T12 `40c32ff60593ee195cd4df21289448e385a95f03` is the required
+normal integration target. Its first merge attempt retained five conflicts:
+four documentation files and validity imports. The latter keeps both the
+adjudication imports/price catalogue and T12 WaitWorkflow import. Documentation
+resolution retains both histories. No provisional sibling is merged.
+
+Before combined-source outputs, freeze CC01–CC03: the genuinely combined schema
+must be DB13/export14/library9, because the two isolated sibling meanings both
+used12/13/8. CC01 fresh/reopened DB must be13 and old12 must be rejected without
+migration or data changes. CC02 newly saved library envelopes must be v9 and v8
+must reject without adaptation. CC03 a saved explicit adjudicated study exports
+version14 with no requests/spend before execution. No alias, reset, migration or
+silent compatibility reader. Original T01 runner/cases/scores stay untouched.
+The original T18 tracer bdf6a663 and matrix v1–v3 retain their historical frozen
+identities; any combined contract expectation amendment is explicit and frozen
+before its corresponding combined output, not retroactive qualification.
+
+CC01–CC03 first execution `combined-contract-red-01` reached actual APIs/storage:
+four intended failures,12 passes. DB12 reopened/was accepted, library emittedv8,
+and explicit adjudicated export emitted13, contradicting the frozen combined
+13/9/14 expectations. No import/setup error established red. The receipt records
+entry596,623,360/minimum592,244,736,4,378,624 observed shared peak, exit1 and
+released lock. Closed output3,519,242 bytes is retained under the frontend cap
+because that first contract command used the UI recorder stage; it is backend
+contract coverage, not an observed UI red.
+
+V4 amendment is frozen before any combined-current matrix output: retain every
+v1/v2/v3 byte and generator path; derive v4 independently from v3 only by changing
+the declared database/export/library envelope to13/14/9, version to4 and adding
+an explicit combined-contract explanation. The full5run/22turn/22request literal
+inputs/actions/evidence/checkpoints/privacy/cutoffs/770-integer-microdollar ledger
+and zero-call replay oracles are unchanged. No candidate output feeds this
+amendment. Original tracer blob bdf6a663 remains unchanged (it makes no literal
+export-version assertion); original frozen T01 runner/cases/scores stay unchanged.
+
+The minimal version repair passes all16 same CC cases in
+`combined-contract-green-01` (entry566808576/min562397184,4,411,392 observed shared
+peak, released lock). Whole backend/benchmarks/GitHub-script Ruff and global ty
+pass in separate `combined-static-01`/`combined-types-01` jobs. These establish
+the version boundary, not a full combined-source behavioral qualification.
+
+Normal exact40c32ff6 merge completed at5250765e (parents41ba330b/40c32ff6),
+normal Gitleaks PASS. UI01 original987d829c reached real WorkspaceShell/Study
+and the intended missing Fallible adjudication region in `ui01-red-01`, before
+any product UI edit. Its receipt records entry538722304/min536911872,1,810,432
+observed shared peak and released lock. Initial minimal review/evidence display
+then passed all declaration/no-POST assertions but stopped at Runs navigation:
+`ui01-green-01` used click alone while existing Radix tabs activate on primary
+mousedown. This is a test browser-event omission, not another product defect or
+a green result. Amendment UI01a supplies primary mousedown and removes invalid
+ByRoleOptions `exact` keys (string names are already exact). Every semantic
+oracle, literal wrong explanation and exactly-one-POST expectation is unchanged;
+original blob and adverse logs/JUnit remain retained.
+
+`ui01-green-02` passes the amended actual-shell flow: declaration/prices/limits
+before exactly one explicit POST, navigation into turn2, wrong raw explanation
+separate from submission success/hard-facts pass, Sol41/19/272µ distinct from
+Luna. Entry504438784/min504250368,188416 observed shared peak, lock released.
+No provider was available or invoked.
+
+Freeze UI02 before its output: on the existing Run Record tab, the row whose
+request ID iscccccccccccccccc and model is Sol must say Adjudication, never
+Participant. Its41/19 tokens and272µ stay separate from exactly two Luna
+Participant rows101/37/29µ each. Run usage must explain that adjudication is
+separately billed and excluded from participant effort. Inspecting the tab
+sends no control POST. This is literal accounting presentation, not a live
+accuracy or independent ledger claim (the backend tests supply that oracle).
+
+UI02 first output `ui02-red-01` reaches the Record table and fails genuinely:
+the Sol judge row reads Participant (41/19,$0.0003). The minimal repair labels
+purpose=adjudication in both the table and selected-request evidence, including
+requests owned by an analysis, and explains its exclusion from participant effort.
+
+UI02 green passes both shell cases in `ui02-green-01`; no control POST from
+inspection. Freeze UI03 before output: direct opening of a resumable judged Run
+must keep Run/Step disabled until the exact pinned study revision's explicit
+adjudication declaration and prices arrive. If that preflight omits the condition's
+judge, controls stay disabled with an honest missing-declaration message; no
+default judge is synthesized from participant identity or an undeclared price.
+An arriving matching declaration visibly exposes Sol/config/scope/prices before
+controls enable; reading it never posts control or makes provider calls. This
+extends the same existing Run view, with no additional confirmation dashboard.
+
+`ui03-red-01` observes the intended product gap: direct resumable Run's control
+was enabled before any pinned declaration/price read. The minimal repair reads
+only that immutable study revision, requires matching explicit configuration and
+scope, shows its preflight prices/limits and blocks new execution while missing.
+Pause stays available for active work. No backend schema/API change or provider
+default is added. UI03's accidentally repeated unsupported ByRoleOptions `exact`
+key is removed as a fixture type correction, with its original attempt retained.
+
+UI03 green passes3 shell cases in `ui03-green-01`. Freeze UI04 negative/safety
+expectations before adding/running them: an absent, configuration-mismatched,
+scope-mismatched or blocked pinned preflight keeps Run/Step disabled; a failed
+declaration GET also keeps controls disabled with its loading failure. Missing
+declarations never synthesize a judge. An active run can still Pause even if the
+declaration is missing, preserving cancellation. A recorded abstain remains raw
+fallible prose and enforces only the separately recorded submission failure;
+HTML-looking explanation text creates no DOM image/script or control request.
+Unknown judge usage shows its actual reservation/status, never complete/zero cost
+or Participant work. Each fixture remains independent literal display evidence;
+it cannot establish live judgment accuracy or replace the backend denial/ledger
+and cancellation oracles.
+
+`ui04-safety-01` has8 passes and2 failures. Blocked preflight still displayed
+the matched declaration instead of denial: genuine UI gate red, minimally
+repaired by requiring nonblocked preflight as well as identical scope/config.
+The other failure is a formatting oracle error: existing currency formatting
+uses at most4 decimals and prints the literal10000µ reservation as$0.01, not
+$0.0100. UI04a corrects only that display expectation, preserving the amount,
+unknown-status/no-zero-cost rule and the adverse attempt. No product rounding
+or ledger behavior changes.
+
+UI04a passes all10 feature/safety cases. `ui-affected-01` passes36 distinct
+cases across8files, including shell remount/navigation, editor drafts, Study/Run
+cutoffs, annotations and request late-response isolation. Biome affects10files
+and passes separately; forced `tsc -b --force` passes separately. No build,
+browser, service or provider was run. These are unit/static results only.
+
+Combined backend qualification uses newly named jobs against current source;
+the prior373-case manifest remains immutable and historical to its source.
+V4 SHA256 is bb4e14ca093661b52deab89b68268e25d0e613f6665731eaa68bf4ba9b575813.
+The snapshot guard adds only this explicit tracked fixture path to its existing
+invocation-local protected/symlink-safe selection before T01 payload reads.
+Original T01 source/scoring and all v1–v3 literal reference bytes stay unchanged.
+
+`combined-references-01` independently reproduces all four reference versions,
+original T01 bytes/scoring, first tracer and exact accepted ancestry. Before any
+queued combined tests, own queue attempt `compact-combined-0` failed to spawn:
+it mistakenly placed --stage after the positional label, so the recorder tried
+to execute the literal --stage. No compactor or test child ran. The original
+initial receipt/empty log and explicit closure addendum are retained unqualified.
+The selection was also unnecessary because the queue passed a relative path
+to metadata accounting, inadvertently counting own setup metadata as evidence;
+the recorder's absolute-path accounting was correct. The original queue source
+is retained, then options/order and absolute HERE are repaired. The Python
+process exited and closed its flock descriptor; the next acquisition supplies
+independent release proof. No install or cache mutation/retry occurred.
+
+Combined feature43 and fresh matrix7 pass, including v4 full5/22/22 and both
+snapshot guards. `combined-engine-ledger-final-01` passes37 and fails one newly
+included T12 template member: its inherited generic test expects the12-turn
+horizon, but unchanged conftest literally returns stop for every artifact actor.
+The builtin workflow has six actors; explicit stop withdraws one, and all six
+withdrawn terminates after six requests/210µ with exact replay. Distributed and
+reliance templates already have the same per-population stop expectations. This
+is an inherited fixture expectation omission exposed by template expansion, not
+a product failure. Before a corrected run, freeze the literal six-stop result;
+keep every replay/request/integer-charge assertion. Conftest and production
+behavior remain unchanged. Current smoke/e2e assertions also follow CC's14/v9
+envelope; they are source-prepared only while runtime/browser stages stay held.
+
+The amended engine/ledger group passes38 cases. Artifact lifecycle passes3,
+first participant segment passes18. Second participant segment retains18 passes
+and one failure: its newly included workflow fixture omitted required read=null
+from the typed tool reply, producing a recorded provider schema error. No product
+claim follows. ROOT independently corrected both generic workflow fixture omissions
+in newly published exact370f835b45bdc7172de5c719aae1ffa1e185b3f5; that supersedes
+40c32ff6 as the next normal merge target. The queue stopped at this actual failure;
+never-started exposure/remaining jobs stay unrun. These partial results belong
+to pre370f source and will not be relabeled final qualification.
+
+ROOT370f also repairs authorized shared artifact/workflow exposure/cutoff grants,
+participant_operation execution accounting, immutable assignment citations after
+reads, reliance cadence/withdrawal and concurrent active-export read snapshots.
+Reliance rule1.0.1 rejects older checkpoints. Its rootDB12/export13/library8 and
+T18's combined13/14/9 must remain distinct; preserve combined versions and all
+accepted repairs during normal merge, then newly qualify affected behavior.
+
+UI checkpointeda4056c was committed normally with Gitleaks PASS. Normal370f merge
+retains two conflicts: HANDOFF's independent histories and the identical six-stop
+expectation with T18's explanatory comment. Both resolve without removing either
+history or the accepted fixture repair. DB read_snapshot/export and all five
+accepted repair paths merge intact; combined versions remain13/14/9. Whole Ruff,
+globalty and a four-case real-HTTP/engine merge slice pass before the merge commit,
+including original T18 tracer and both workflow generic fixtures. No provisional
+sibling enters ancestry. All upcoming root370f-prefixed jobs freshly hash source;
+pre370f results remain at their actual boundary.
+
+Personal source review identifies one additional identity boundary to freeze
+before outputs (UI05): a base profile assigned Sol with a full condition override
+whose model is explicitly null executes the condition's Luna. Review must show
+Participant Luna and the separate explicitly declared Sol judge; it must not fall
+through to the superseded base-profile model. A keyless public-HTTP oracle saves
+that exact protocol, checks immutable Study assignment versus actual Run model
+and zero requests/spend. Its shell Study fixture then verifies that same identity
+before any POST. This is configuration correctness, not model substitution or
+judgment-accuracy evidence.
+
+UI05's independent public-HTTP assignment oracle passes (2 cases includingCC03).
+`ui05-red-01` genuinely observes Participant Sol where actual execution is Luna.
+Minimal repair selects the complete override profile before its model fallback;
+it never falls back to the overridden base profile. UI05's read-count assertion
+is tightened to its actual frozen semantic requirement (zero control/execution
+POST), avoiding a dependency on polling frequency. Original red bytes/log retained.
+
+`ui05-green-01` passes all11 feature/safety cases; affected lint and forced
+TypeScript pass as separate jobs. The eight-file affected suite's36 earlier
+passes precede UI05; its final-source rerun remains pending, not presumed37.
+The assignment HTTP oracle and UI fixture keep Luna's actual participant identity
+independent of the declared Sol adjudicator. No provider work or judgment-accuracy
+measurement follows from these keyless cases.
+
+## ROOT370f qualification and temporary resource hold
+
+Fresh `root370f-` queue indices0–12 all pass: feature43, literal current-contract/
+privacy7, engine/ledger38, artifact lifecycle3, two participant segments, two
+exposure segments, four claim-support segments and domain/DB/library contracts.
+These executions have new source identities; the older373-case manifest is
+immutable and remains historical to its pre-T12 source. No combined final case
+total is claimed before source/case deduplication and the remaining groups.
+
+The last closed job, `root370f-inherited-contracts-01`, entered at389816320,
+observed minimum384933888 and exited at385232896 bytes free; its shared lock
+released. Own evidence immediately before final receipt serialization was
+50082008 logical /53514240 inode-allocated bytes. These are observations at that
+boundary, not a current allocation or a fresh measurement during the hold.
+
+ROOT then held every new check/capture/hook/heavy command for its sole browser
+slot. The own recorder's `root-resource-hold` guard now returns125 before attempt
+creation, capture, preflight, lock acquisition or command dispatch. This guard is
+source-prepared, not exercised during the hold. No new compaction, floor change,
+setup preflight, service or browser command was started. Prior recorder versions
+and every actual adverse/sequencing attempt remain retained.
+
+After explicit ROOT release, resume only unrun queue indices13–24 (reference
+policies, researcher design, uncertainty, reliance, API/deletion and protected
+T01 baseline units). Additional separately segmented current-source coverage
+must include both concurrent export-snapshot cases omitted by the older claim
+selectors, artifact exposure/shared-input cases, T12 workflow review/public
+interaction cases, assistant execution-usage cases, unchanged T01 CURRENT and
+the affected eight-file UI suite. Run final static checks only after the pending
+source additions; build a new source/case-deduplicated manifest and source seal.
+Original frozen T01 scores/bytes and literal v1–v4 references stay unchanged;
+no retired BEFORE/reference/comparator is reconstructed or claimed retained.
+
+The post-release forecast is unchanged: each backend job has at most128MiB
+incremental peak and16MiB new output, total own evidence64MiB; each UI job starts
+with4MiB output allowance and total frontend evidence16MiB. Shared flock entry
+must be at least268435456 bytes (134217728 floor plus128MiB forecast), with lock
+release between jobs. If needed after release, compact only closed own SQLite
+with exact restoration maps, independent full readback and at most8MiB added
+peak under the unchanged floor. No queued work is authorized by elapsed time or
+an unreserved free-space observation. T18 remains incomplete/unaccepted.
+
+ROOT subsequently explicitly lifted that temporary hold after its browser slot
+teardown. The marker may now be removed and only unrun qualification resumed.
+New exact accepted46d48d5e adds a Markdown image-link repair/docs after370f without
+persisted-meaning changes; normally merge it at the next coherent checkpoint.
+Conditional ONE existing-environment frontend build uses a fresh own output
+directory, entry>=268435456, at most128MiB incremental peak and16MiB output within
+the frontend16MiB cap, after backend/affected UI/static/type passes and proved
+evidence room. Retain its first result; no automatic rerun. Browser/service/
+production/provider/paid/live/held-out stages remain held.
+
+## Frozen Researcher adjudication-cost oracle RC01 (before outputs)
+
+ROOT's source-review concern is not yet a product-red observation. Public HTTP
+and FunctionModel are the existing approved seam. Save the original pickup
+protocol, execute its write at turn1, then accept an analysis at that cutoff.
+Hold its actual provider response while committing turn2's submission and judge.
+Complete that analysis, then ask a fresh analysis at turn2 after the earlier
+analysis itself has settled. Capture the actual JSON indices delivered to the
+Researcher provider, not a private index-method return or a fabricated DB row.
+
+Literal independently worked DEVELOPMENT expectations:
+
+| Accepted cutoff | Existing participant-only `execution_usage` | Separately discoverable `adjudication_usage` |
+| --- | --- | --- |
+| turn1 | 1 request;101 input/37 output;29µ;partial=false | 0 requests/tokens/cost;partial=false |
+| turn2 | 2 requests;202 input/74 output;58µ;partial=false | 1 request;41 input/19 output;272µ;partial=false |
+
+The two components describe330µ observed task work at turn2, without redefining
+participant effort or including any analysis request/reservation. The exact
+analysis charge is intentionally outside the literal task-work oracle: streamed
+FunctionModel analysis token accounting is real but is not a fixed-price fixture.
+Require actual settled analysis ledger rows with positive charge, while both
+provider-bound components stay at the literals above. The first saved/provider
+index retains cutoff1 and zero judge usage after the run reaches2; final output
+retains the same frozen cost fields. No implicit total alias, live spend or
+judgment-accuracy claim. If the complete current index already supplies both
+components, record pass-first preservation and make no product change. Otherwise
+observe the specific missing-component red before the minimal repair; preserve
+the existing participant-only field and explain both components to the Researcher.
+
+Resource sequencing adverse attempts remain separate: the first reliance
+integration admission refused its16MiB reservation before dispatch, and the
+subsequent8MiB reservation terminated the actual job at its output cap. Neither
+is a product red or complete regression pass. Closed own SQLite was independently
+read back and mapped before compaction; next selections must split this workload
+and keep the unchanged floor/peak/evidence ceilings. Recorder output overrides
+can only tighten a released ceiling; they never lower the free-space floor.
+
+RC01 attempt `researcher-judge-cost-red-01` completed the HTTP/judge/analysis
+sequence, then failed on the fixture's nonexistent `charged_usd` request-summary
+key before the intended missing-component assertion. The public key is
+`cost_usd`; this is not a product red. Its original test bytes and adverse output
+are retained. This newly authored test was also initially untracked, so that
+first receipt's tracked-source map does not identify its test body; preserve
+that attribution limit and stage the amended test before the next invocation.
+The frozen numeric/cutoff/exclusion oracle is unchanged. No production edit.
+
+`researcher-judge-cost-red-02` reaches the intended assertion: the actual turn2
+Researcher provider index has participant58µ but no separate judge272µ component.
+Both positive-charge analysis calls settle, participant literals and cutoff1/2
+pass first. This is the observed product red, preceding the minimal additional
+`adjudication_usage` query/field and Researcher instruction. Existing
+`execution_usage` remains participant-only; no total alias or ledger mutation.
+
+`researcher-judge-cost-green-01` passes the unchanged literal RC01 oracle. The
+new query uses the existing usage aggregate and excludes all analysis purposes;
+its cutoff condition is identical to the participant component. The existing
+candidate combined13/14/9 contract remains one meaning: participant usage is not
+redefined. No aliases, migration or reset are introduced. Ruff formatting follows.
+
+The broad API attempt also exceeded the tightened8MiB output cap and was
+terminated15; it is retained incomplete, not a product failure or full API pass.
+The older measured final API output was already slightly above8MiB; that cap was
+too tight. Subsequent API data/validation/chat selections and reliance World/
+design/HTTP/followup selections are explicitly split before execution. Deletion
+and three guarded frozen-baseline unit groups pass separately. Their source
+attribution includes the RC01 repair; the earlier root370f groups precede it.
+
+New receipts now deduplicate their safely selected source-metadata maps by a
+content-addressed own file, with path/length/SHA references and immutable-byte
+verification on reuse. This changes only future receipt representation; no old
+receipt/log/result/map is rewritten or removed. Source payloads still undergo
+protected-name and symlink-descendant rejection before any read. The final
+manifest must resolve and validate both original inline and new referenced maps.
+Closed own SQLite is still the only compacted payload class.
+
+ROOT explicitly extended compaction ONCE to closed own receipt metadata.
+`compact-closed-receipts-once-01` first froze70 exact metadata paths, then archived
+7595728 original bytes into2305242 bytes. SHA256 is
+`4d886c91a124c27a2233b8d4af5d142bb75b19c926ff25dc5e87770a922c084e`.
+Full independent member byte/hash/size/mode/owner verification and a complete
+gzip-trailer read preceded duplicate-original removal. Original atime/mtime and
+inode metadata are retained in `.tools/t18/receipt-compaction-01/restoration.json`;
+the exact metadata-only selection remains beside it. **Those70 old raw receipt
+paths now require that map/archive**; they are compacted, not retired or rewritten.
+Logs/JUnit/results, failures, source-map objects, env/caches and other owners stay
+unchanged. Observed shared added peak2322432 (<8MiB), unchanged floor, lock released;
+own retained61269825→56029142 logical bytes. No second receipt compaction is granted.
+
+Split reliance HTTP passes. Its separate four-followup regression fails on the
+fourth proposal after three complete proposals, with the enforced input-limit
+error, not a fixture-schema omission. Read-only closed-DB diagnostics identify
+the failed stage as `reviewing`; scoping/candidate validation completed. The
+three successful reviews' recorded outer request JSON sizes are173011,182611,
+192213 bytes (outer encoding differs from the actual bounded input). No provider
+retry, extra charge or limit change follows from this diagnosis.
+
+Before the next output, freeze the preservation oracle: all four HTTP proposals
+must retain identical full source identity, conditions and four participants;
+every provider-bound retained prior proposal must still carry the full same
+source. The existing180000-byte input guard stays unchanged. Compact JSON
+serialization in the planner call may remove separator whitespace only: no
+decoded field, schema, source pin, conversation member or quote is removed.
+The inherited failed case is the observed red before this one-line repair.
+
+`reliance-followup-compact-green-01` passes all four proposals and every new full
+source/profile preservation assertion. Exact reusable-source/captured-chat scope,
+simple two-person binding and library pin/edit/deletion/save cases pass separately.
+The combined two-case preservation attempt exceeded its4MiB output cap before
+completion; retain it unqualified, then use the two explicitly separated cases
+with8MiB ceilings. No limit is raised, no context is truncated and no automatic
+provider retry is added. The compact serializer changes encoded request bytes
+and their actual reservation size, not decoded protocol/history meaning.
+
+All remaining segmented API, new concurrent export-snapshot, artifact delivery/
+shared-input/cutoff/replay, workflow World/public engine/interactions and targeted
+assistant usage/scope/model cases pass at their recorded sources. Global Ruff
+and ty pass after the RC01/serializer repairs. The first RC01 type attempt lacked
+a fixture portal-None assertion; its diagnostic remains retained before the
+test-only narrowing and final type pass. The four-case original HTTP tracer/
+combined-assignment/RC01 group also passes. Source/case dedup remains pending:
+earlier root370f groups precede the two repaired modules and will not be called
+whole-tree final-source executions. Their exact deltas and affected followups
+must be recorded by the new manifest. Next coherent checkpoint precedes normal
+exact46d48d5e merge, final UI/matrix/T01/source identity qualification and the
+conditional single build; no held browser/provider work has begun.
+
+## Final bounded source/build boundary and ROOT handoff
+
+Normal checkpoint `50dda948182d1f96ce30d6a27c864fe1bf0d4668` retains the RC01
+and compact-JSON repairs, with observed normal Gitleaks PASS. Exact accepted
+`46d48d5e615eb22920219df26d42249ca2e5c0e0` is then merged normally at
+`9275a0529407b4077fc9c1bd667142b921a1547a`, without conflicts. Both documentation
+histories, accepted T12 interactions and ROOT370f repairs remain. The merge
+output does not independently report another scanner invocation; none is claimed.
+No provisional sibling, moving target, compatibility adapter or reset is used.
+No application/test source changes follow this merge; the closing tracked
+checkpoint is documentation only.
+
+`.tools/t18/current-qualification-03.json` is the current source/case manifest.
+It preserves predecessor02, all raw/mapped receipt identities and every adverse
+attempt rather than rewriting them. It counts **423 distinct backend case IDs**
+across their actual phases. **45** ran against the exact final backend and entire
+backend test tree. Earlier source maps differ only in `assistants.py` and/or
+`planning.py`, plus explicitly identified test-source changes. Their passes remain
+earlier-phase preservation; affected followups separately exercise both repairs.
+There is no claim that423 cases all ran against the final whole tree. Within
+groups, claim support has32 executions/31 distinct cases and Researcher design
+11 executions/9 distinct cases; cross-group repeats are also deduplicated.
+
+The final independent current-contract cases run as four split parameter jobs
+plus three alias/privacy guards: **5 runs,22 turns,22 requests**. Complete literal
+provider prompts, instructions, tool schemas/settings, decisions, observations,
+events, measures, every checkpoint, cutoff immutability, per-request integer
+reserves/charges and restored zero-provider replay pass unchanged. No old raw
+BEFORE, historical comparator or reconstructed retained reference is used.
+`final-reference-identities-02` passes independent reference/ancestry reproduction;
+original tracer blob `bdf6a6630e1af096b6dd2272829414e1eb82fb36`, original T01
+runner/case/scoring bytes and v1–v4 fixture identities stay preserved.
+
+The unchanged frozen **T01 CURRENT** actually exits **1** through the invocation-
+local protected-name/symlink-safe Git wrapper. Exactly four attempts fail only
+`export-v4`; both unsupported-fixture guards pass and all attempt errors are null.
+Observed totals:98 HTTP operations,22 requests,2200 input/1100 output tokens,
+770 synthetic microdollars, live requests0. This remains failed frozen scoring,
+separate from fresh current-contract qualification, with no historical parity,
+zero-regression, improvement or generic competence claim.
+
+Final affected UI03 passes **42 cases in9 files**, including11 adjudication
+feature/safety cases, real WorkspaceShell routing and ROOT's image-link repair.
+Affected12-file Biome and forced `tsc -b --force` pass in separate jobs. Backend
+global Ruff/ty source identities remain identical after the doc/Markdown merge;
+the manifest verifies that attribution. Personal source review preserves RC01's
+participant-only definition, separate same-cutoff judge component and analysis
+exclusion, and the serializer's decoded full-history/schema preservation.
+
+The single `ui-build-final-01` uses the existing environment and normal
+`pnpm build --outDir …/.tools/t18/ui/build-final-01`, with a fresh distinct output.
+Process PASS; entry332517376/min327061504; observed shared net peak5455872;
+flock released. The full frontend evidence delta is **4519859 logical bytes**;
+the receipt samples frontend10300735 logical/10964992 allocated and overall
+66041583 logical/71143424 allocated before final receipt serialization.
+
+**The build recorder boundary is not clean.** Its proposed4MiB monitor watched
+only log/tmp, omitting the separate build directory; the complete delta exceeded
+that reservation. ROOT explicitly confirms the parent16MiB frontend/64MiB feature
+ceilings held. The first result, warning about the external fresh output directory
+and all assets remain unchanged; no build rerun occurred. Manifest03 similarly
+writes metadata outside log/tmp: its complete605404-byte delta exceeds its tighter
+524288-byte reservation. The closing seal records both attribution gaps instead
+of treating recorder PASS as complete-output enforcement. Parent feature limits
+still hold. At `final-helper-static-04`, feature evidence is66717570 logical/
+71860224 allocated; the final seal records the later exact footprint.
+
+The first helper-only Ruff invocation reports37 style findings, including an
+unused import and long lines. Its already-executed manifest02 producer and
+artifact remain byte-identical. New producer v3 and the unrun sealer/cleanup01
+are formatted and pass their separate check; the final cleanup02/sealer check
+also passes. This is an adverse tooling result, not an application red. Original
+matrix02 output-cap termination, UI02 retained-reservation refusal, incomplete
+spawn closure and premature integration-log lookup remain distinct from passes.
+Incidental source-only lookups of nonexistent `PROGRESS.md`, optional pre-commit
+configuration and `reference_identities.py` found no payload; no qualification
+or product-red claim follows from these discovery misses.
+
+### Owner-only disposable metadata retirement
+
+ROOT's separately released cleanup01 stops125 before any unlink. The immutable
+F1 receipt/closed-accounting hash,599 files and176800695 logical bytes match, but
+current allocation178221056 differs from F1's178188288 by32768. Its initial helper
+compares that aggregate before persisting the full selection, so **no durable
+complete membership freeze is claimed for01**. The receipt and source remain;
+payload reads/hashes0, no cleanup retry or identity claim.
+
+ROOT then explicitly disposes of that known allocation difference and releases
+distinct cleanup02 for the exact entire own `.tools/t18/pnpm-cache` subtree.
+Before comparison or deletion,02 persists complete242971-byte metadata selection
+`pnpm-state/policy-cleanup-02/selection.json`, SHA256
+`2f6d5e4733b66c183ba1bd2b1b3ab2e7918feea255c70833e9aaef0a491e31d4`.
+An independent load and complete current re-enumeration match it. All599 files
+are own regular single-link files; protected/symlink ancestors are refused,
+tracked members0 and active own Node/pnpm consumers0. Process inspection reads
+only cwd/executable metadata for the assigned checkout, never command lines,
+environment or configuration. Cache payload reads/hashes remain **0**.
+
+Cleanup02 PASS: shared free284266496→462401536, minimum284016640, recovered
+bookend178135040; unchanged134217728 floor/flock, lock returned. Its inventories
+and receipts use a separate4MiB maintenance allowance under own `pnpm-state`;
+no feature cap increases. F1/01 receipts, source maps, restoration records,
+env/modules/assets/logs/JUnit/results and shared store/other owners are preserved.
+This is authorized retirement of disposable setup metadata, not lossless
+compaction or proof of old cache payload identity. No install/setup repeats.
+
+### Held browser plan and remaining acceptance
+
+ROOT owns final combined browser/runtime qualification and receives sole tracked
+writing at closed handoff. No further implementer browser/service stage is
+requested. If ROOT elects to use the prepared T18 flow, a concrete bounded plan is:
+
+1. Under the shared lock, propose ordinary134217728 floor plus256MiB peak,
+   entry>=402653184; retain at most4MiB new compact browser evidence. This needs
+   a separate combined-output allowance: own feature evidence is near64MiB.
+2. Serve the one retained build from a distinct keyless app/database; port18131
+   is proposed but remains unopened. Bind FunctionModel Luna participant/Sol
+   judge identities with external requests disabled; create the synthetic pickup
+   protocol only through HTTP. Saving/review must produce zero ledger requests.
+3. Inspect real-shell Study and direct Run review at desktop/dark and phone/light:
+   explicit Sol config1.0.0/low/512, Luna participant, rubric/scope/allowed inputs,
+   $2/$10 per-million prices and fallibility limits before execution POST.
+4. Explicit Step writes turn1, second Step submits at turn2; controlled101/37
+   participant and41/19 judge usage yields participant58µ plus judge272µ,330µ
+   synthetic task cost. Inspect separate raw ruling and enforced success/hard-fact
+   receipt in Environment/Record/request views. No text claims live accuracy,
+   participant beliefs, actual pickup or general semantic truth.
+5. Check navigation/record identity, narrow loading/error gating, keyboard/mobile
+   overflow and replay/export without extra calls. Close/detach the browser as
+   supported, stop/reap only the owned server, prove port reusable and return
+   flock. This is an unexecuted plan, not a retained browser/runtime PASS.
+
+Backend and unit/build observations establish bounded deterministic DEVELOPMENT
+behavior. Browser/runtime, live judgment accuracy, held-out/competence and
+production/product acceptance remain unverified or separately held. No actual
+external-provider/paid work, publication, new dependency or additional checkout
+occurred. The compact final seal `.tools/t18/final-current-seal-02.json` links the
+source/case manifest, first build/assets, both cleanup dispositions and docs-only
+checkpoint to the exact closing HEAD. T18 remains **incomplete and unaccepted**.
