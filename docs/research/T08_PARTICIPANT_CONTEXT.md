@@ -133,5 +133,24 @@ production smoke/containment/reuse checks are inherited from its accepted report
 this task has not run a new production image. No runtime/container/lockfile change
 is introduced by T08. No paid/Luna allocation is inferred from any of these checks.
 
+The first combined-source backend run at `c2196e8` exposed one current-caller
+fixture mismatch: T03's environment-reuse preservation test explicitly submitted
+tool-using 1.0.0. The other **1,049 tests passed**. Updating that fixture to 2.0.0
+preserves the test's existing harness/memory preservation assertions; the focused
+green passes. Both sources/logs remain in `merged-full-backend/` and
+`green-merged-environment-harness/`. The first concurrently launched frontend
+test attempt retained three worker-start timeouts (94 tests passed), and the
+build process exited 137. Resource contention is the working classification;
+bounded/sequential reruns are required, without changing any product check.
+
+Merged-source frozen T01 still exits 1 with exactly the inherited four export-v4
+failures and failed terminal flags, with no regressions/improvements. The positive
+current-contract/direct-action audit now passes **494 checks** over all **22
+decisions / five initial checkpoints**, explicitly checking T03's null built-in
+provenance. All **11 neutral comparison checks** pass, including identical
+case/harness/runtime/effort, exact old/current application sources, all five
+outcomes and **47 scripted requests / zero paid requests**. All five inherited
+T04 cases also pass on the combined source. Raw failures remain unchanged.
+
 Observed actual paid spend: **$0**. Live competence and held-out gates remain
 unverified. Root's unrelated `pbcopy` and preserved stash are outside task scope.
