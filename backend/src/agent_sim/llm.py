@@ -135,6 +135,7 @@ class LanguageModels:
         study_id: str | None = None,
         run_id: str | None = None,
         analysis_id: str | None = None,
+        activation_id: str | None = None,
         max_tokens: int = 4096,
         turn: int | None = None,
         openai_reasoning_effort: Literal["low", "medium", "high"] | None = None,
@@ -168,6 +169,7 @@ class LanguageModels:
                 study_id=study_id,
                 run_id=run_id,
                 analysis_id=analysis_id,
+                activation_id=activation_id,
                 purpose=purpose,
                 model=model,
                 turn=turn,
@@ -178,6 +180,13 @@ class LanguageModels:
                     "web_search": web_search,
                     "settings": settings,
                     "price_per_million": [input_rate, output_rate],
+                    "provider_adapter": {
+                        "class": (
+                            f"{type(model_object).__module__}.{type(model_object).__qualname__}"
+                        ),
+                        "model_name": model_object.model_name,
+                        "system": model_object.system,
+                    },
                 },
                 reserved=reserved,
                 charged=reserved,

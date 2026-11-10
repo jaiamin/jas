@@ -12,6 +12,8 @@ from .db import (
     Condition,
     Database,
     Measurement,
+    ParticipantActivation,
+    ParticipantOperation,
     ProviderCall,
     RecordedEvent,
     Revision,
@@ -24,6 +26,7 @@ from .domain import Design, Treatment
 from .environment_library import EnvironmentLibrary
 from .llm import PRICES, LanguageModels, Usage, empty_usage
 from .metrics import RunMetrics, aggregate_metrics, condition_results, matched_effects
+from .participants import activation_record, operation_record
 from .simulation.environments import CATALOG, create_world
 from .validity import Requirement, factorial_issues, preflight, require_valid, requirement_issues
 
@@ -277,7 +280,7 @@ class Research:
             session.execute(
                 update(ProviderCall)
                 .where(calls)
-                .values(request_payload=None, response_payload=None)
+                .values(request_payload=None, response_payload=None, activation_id=None)
             )
             session.execute(
                 update(ProviderCall).where(ProviderCall.study_id == study_id).values(study_id=None)
@@ -293,6 +296,17 @@ class Research:
             session.execute(delete(Analysis).where(Analysis.id.in_(analysis_ids)))
             for record in (Annotation, Measurement, RecordedEvent, Turn, Agent):
                 session.execute(delete(record).where(record.run_id.in_(run_ids)))
+            activation_ids = select(ParticipantActivation.id).where(
+                ParticipantActivation.run_id.in_(run_ids)
+            )
+            session.execute(
+                delete(ParticipantOperation).where(
+                    ParticipantOperation.activation_id.in_(activation_ids)
+                )
+            )
+            session.execute(
+                delete(ParticipantActivation).where(ParticipantActivation.run_id.in_(run_ids))
+            )
             session.execute(delete(Run).where(Run.id.in_(run_ids)))
             revisions = select(Revision.id).where(Revision.study_id == study_id)
             session.execute(delete(Condition).where(Condition.revision_id.in_(revisions)))
@@ -539,6 +553,8 @@ class Research:
             "summary": self.run_summary(run, design, condition, revision),
             "design": design.model_dump(),
             "parameters": condition.parameters.model_dump(),
+            "harness": condition.harness.model_dump(),
+            "activations": self.activations(run_id),
             "next_actor": create_world(
                 design, condition.parameters, run.seed, run.checkpoint
             ).actor()
@@ -551,6 +567,7 @@ class Research:
             "requests": [
                 {
                     "id": c.id,
+                    "activation_id": c.activation_id,
                     "turn": c.turn,
                     "status": c.status,
                     "error": c.error,
@@ -589,6 +606,23 @@ class Research:
             "metrics": self.metrics(run_id),
             "relationships": self.relationships(events),
         }
+
+    def activations(self, run_id: str) -> list[dict]:
+        with self.db.session() as session:
+            rows = session.scalars(
+                select(ParticipantActivation)
+                .where(ParticipantActivation.run_id == run_id)
+                .order_by(ParticipantActivation.created, ParticipantActivation.id)
+            ).all()
+            journals: dict[str, list[dict]] = {row.id: [] for row in rows}
+            if rows:
+                for op in session.scalars(
+                    select(ParticipantOperation)
+                    .where(ParticipantOperation.activation_id.in_(journals))
+                    .order_by(ParticipantOperation.number)
+                ):
+                    journals[op.activation_id].append(operation_record(op))
+            return [activation_record(row, journals[row.id]) for row in rows]
 
     def evidence(self, run_id: str, number: int) -> dict:
         run, design, condition = self.configuration(run_id)

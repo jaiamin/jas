@@ -60,8 +60,31 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v4.
+`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v5.
 This WIP uses only the current schema and rules; incompatible workspaces must be reset.
+
+T04 introduces database schema **5** for durable participant activations and
+per-request links. Schema 4 databases are explicitly rejected; preserve their
+data and use a separate fresh workspace for the current contract. There is no
+migration, compatibility reader or automatic reset. Do not delete/reset existing
+data without authorization.
+Reusable setup files use `jas-environment-v2` because their embedded protocol now
+pins the participant harness. Old v1 files are explicitly rejected; preserve
+them separately. No file conversion or deletion happens automatically.
+
+The dedicated participant-policy browser trial installs a deterministic external
+provider in the test server only. It exercises real configuration, immutable
+revision saves, execution, accounting, inspection and replay in both themes:
+
+```sh
+JAS_TEST_PORT=18115 pnpm --dir frontend test:harness
+uv run python -m benchmarks.participant_harness_trial --output data/t04/development
+```
+
+The ordinary `test:e2e` server keeps providers unavailable for its inherited
+keyless regressions. Neither test server loads `.env` or permits paid requests.
+The trial runner retains source/case/harness hashes, all attempts and complete
+exports. Its scripted choices establish mechanics, not participant intelligence.
 
 `JAS_ALLOWED_HOSTS` lists accepted hostnames/IPs without ports (comma-separated).
 Defaults: `localhost,127.0.0.1,[::1]`. Add the explicit LAN/proxy host before using a

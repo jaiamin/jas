@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "split": "DEVELOPMENT",
+  "limits": "Deterministic mechanics only; no live competence or held-out claim.",
+  "cases": [
+    {"id": "matched-two-policy-credits", "mode": "matched", "expected_requests": 10, "expected_turns": 4, "expected_balances": {"a": 12.0, "b": 12.0}},
+    {"id": "bounded-incomplete-investigation", "mode": "request_limit", "expected_requests": 1, "expected_turns": 0, "expected_stop": "request_limit"},
+    {"id": "forbidden-actor-observation", "mode": "forbidden_actor", "expected_requests": 1, "expected_turns": 0, "expected_stop": "provider_failure"},
+    {"id": "auxiliary-unknown-usage", "mode": "unknown_usage", "expected_requests": 2, "expected_turns": 0, "expected_stop": "provider_failure"},
+    {"id": "no-retained-memory", "mode": "no_memory", "rounds": 2, "expected_requests": 16, "expected_turns": 4, "expected_balances": {"a": 24.0, "b": 24.0}}
+  ]
+}

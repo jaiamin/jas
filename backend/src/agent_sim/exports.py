@@ -65,9 +65,10 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
     }
     return {
         "format": "jas-study",
-        "version": 4,
+        "version": 5,
         "rule_versions": sorted({run.checkpoint["rule_version"] for run in runs}),
         "study": detail,
+        "activations": [a for run in runs for a in research.activations(run.id)],
         "annotations": [
             {
                 "run_id": a.run_id,
@@ -106,6 +107,7 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
                 "id": c.id,
                 "run_id": c.run_id,
                 "analysis_id": c.analysis_id,
+                "activation_id": c.activation_id,
                 "turn": c.turn,
                 "model": c.model,
                 "status": c.status,

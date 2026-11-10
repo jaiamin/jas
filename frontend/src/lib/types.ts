@@ -29,7 +29,7 @@ export interface CompositionRules {
   controllers_first: boolean;
 }
 export interface SavedEnvironment {
-  format: "jas-environment-v1";
+  format: "jas-environment-v2";
   id: string;
   revision: number;
   updated: string;
@@ -74,11 +74,19 @@ export interface Profile {
   role: string;
   model: ModelId | null;
 }
+export interface ParticipantHarness {
+  kind: "direct_action" | "tool_using";
+  version: "1.0.0";
+  max_requests: number;
+  max_tool_operations: number;
+  tools: ("observe" | "rules" | "legal_options")[];
+}
 export interface Treatment {
   key: string;
   name: string;
   description: string;
   model: ModelId;
+  harness: ParticipantHarness;
   parameters: Parameters;
   profile_overrides: Profile[];
 }
@@ -170,6 +178,7 @@ export interface ExperimentPreflight {
     baseline: string;
     condition: string;
     changed_parameters: string[];
+    changed_harness: string[];
     agent_assignment_changed: boolean;
     witnesses: {
       instrument: number;
@@ -316,6 +325,7 @@ export interface Relationship {
 }
 export interface RequestSummary {
   id: string;
+  activation_id: string | null;
   turn: number | null;
   status: string;
   error: string | null;
@@ -326,6 +336,7 @@ export interface RequestSummary {
 }
 export interface RequestEvidence {
   id: string;
+  activation_id: string | null;
   run_id: string;
   turn: number | null;
   request: unknown;
@@ -340,12 +351,43 @@ export interface RunDetail {
   summary: RunSummary;
   design: Design;
   parameters: Parameters;
+  harness: ParticipantHarness;
+  activations: ParticipantActivation[];
   state: State;
   turns: Turn[];
   events: Event[];
   measurements: Measurement[];
   metrics: Record<string, number | null>;
   relationships: Relationship[];
+}
+export interface ParticipantOperation {
+  number: number;
+  kind: string;
+  status: string;
+  request: unknown;
+  result: unknown;
+  created: string;
+}
+export interface ParticipantActivation {
+  id: string;
+  run_id: string;
+  turn: number;
+  round: number;
+  actor: string;
+  created: string;
+  updated: string;
+  status: string;
+  stop_reason: string | null;
+  error: string | null;
+  checkpoint_hash: string;
+  observation: Record<string, unknown>;
+  identity: {
+    model: ModelId;
+    harness: ParticipantHarness;
+    [key: string]: unknown;
+  };
+  requests: number;
+  operations: ParticipantOperation[];
 }
 export interface Evidence {
   number: number;

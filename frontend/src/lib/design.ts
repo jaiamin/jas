@@ -1,9 +1,23 @@
 import type {
   Design,
   Environment,
+  ParticipantHarness,
   ResourcePrimitive,
   TaskDefinition,
 } from "./types";
+
+export function participantHarness(
+  kind: ParticipantHarness["kind"],
+): ParticipantHarness {
+  return {
+    kind,
+    version: "1.0.0",
+    max_requests: kind === "direct_action" ? 1 : 4,
+    max_tool_operations: kind === "direct_action" ? 0 : 3,
+    tools:
+      kind === "direct_action" ? [] : ["observe", "rules", "legal_options"],
+  };
+}
 
 export function removeProfile(design: Design, key: string): Design {
   return {

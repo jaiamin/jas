@@ -16,7 +16,7 @@ from .validity import preflight, require_valid
 
 
 class SavedEnvironment(Strict):
-    format: str = "jas-environment-v1"
+    format: str = "jas-environment-v2"
     id: str
     revision: int = Field(ge=1)
     updated: str
@@ -55,7 +55,7 @@ class EnvironmentLibrary:
             raise NoResultFound() from None
         if (
             record.id != key
-            or record.format != "jas-environment-v1"
+            or record.format != "jas-environment-v2"
             or record.sha256 != digest(record.design.model_dump())
         ):
             raise ValueError("Custom environment has an unsupported format or invalid content hash")

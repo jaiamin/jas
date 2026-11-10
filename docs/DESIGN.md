@@ -597,6 +597,16 @@ Check/Create for direct contract editing. Saving a reusable environment is a
 single-line item in Experiment options, rather than a competing primary action.
 Agent proposals open on Review. Saving never launches paid model work.
 
+Conditions separate the participant harness from its model and world parameters.
+Direct action is the default. Tool using reveals request/read limits and permitted
+reads using the existing Field/Select/Checkbox patterns. Review lists the pinned
+harness version, effort and tools; private goals, roles and profile overrides are
+declared study factors. The run Record tab lists participant activation attempts,
+including failures before a turn commits. Disclosures expose actual operations,
+results, stop reasons and complete identity; the existing model-request inspector
+retains every inference, including unknown usage. Keep the default journal and
+current appearance, semantic tokens, mobile layout and keyboard disclosures.
+
 Keep section content mounted when inactive so input DOM and disclosures retain
 their state. Validated JSON resets the affected uncontrolled fields to the new
 specification. Initialize the form only after loading and validating the current

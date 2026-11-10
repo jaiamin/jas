@@ -97,6 +97,11 @@ export function RequestInspector({
               <h3 className="text-sm font-medium">
                 Request {request.data.id.slice(0, 8)}
               </h3>
+              {request.data.activation_id && (
+                <p className="mt-1 break-all text-xs text-muted-foreground">
+                  Participant activation {request.data.activation_id}
+                </p>
+              )}
               {!request.data.request ? (
                 <p className="text-muted-foreground">
                   No request payload was recorded.
