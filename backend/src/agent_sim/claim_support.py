@@ -4,8 +4,13 @@ import math
 from typing import Literal
 
 from pydantic import Field
+from sqlalchemy import select
 
+from .comparisons import ComparisonRun, compare_runs
+from .db import Measurement, RecordedEvent, Turn
 from .domain import Finding, Strict
+from .metrics import aggregate_metrics
+from .research import Research, event_dict
 
 VERSION = 1
 
@@ -22,17 +27,27 @@ class AnalysisFinding(Finding):
     claims: list[ClaimProposal] = Field(default_factory=list, max_length=24)
 
 
-def capture_lens(research, cutoffs: dict[str, int]) -> dict:
+def capture_lens(
+    research: Research, cutoffs: dict[str, int], comparisons: dict | None = None,
+) -> dict:
     """Retain the literal World inputs rather than trusting analyst arithmetic."""
     facts, calculations = [], []
     for rid, cutoff in cutoffs.items():
         evidence = research.evidence(rid, cutoff)
         balances = evidence["checkpoint"]["balances"]
+        with research.db.session() as session:
+            measurements = session.scalars(select(Measurement).where(
+                Measurement.run_id == rid, Measurement.turn <= cutoff,
+            ).order_by(Measurement.id)).all()
+        raw_measurements = [{"turn": row.turn, "key": row.key, "value": row.value,
+                             "denominator": row.denominator, "version": row.version}
+                            for row in measurements]
         fact = {
             "run_id": rid,
             "through_turn": cutoff,
             "state_hash": evidence["state_hash"],
             "balances": balances,
+            "measurements": raw_measurements,
             "source": {"href": f"/api/runs/{rid}/turns/{cutoff}", "pointer": "/checkpoint"},
         }
         facts.append(fact)
@@ -43,6 +58,42 @@ def capture_lens(research, cutoffs: dict[str, int]) -> dict:
             "sources": [fact["source"]],
             "assumptions": ["Utility balances are World accounting, not evidence of motive."],
         })
+    by_run = {row["run_id"]: row for row in facts}
+    for revision, report in (comparisons or research.capture_comparisons(cutoffs)).items():
+        cells = report["comparison"]["cells"]
+        selected = [c for c in cells if c["run_id"] in by_run]
+        _, design, _ = research.configuration(selected[0]["run_id"])
+        # Reuse T06's metric aggregation and matching; raw measurements are retained.
+        # No analyst-supplied outcome or reimplemented statistical engine participates.
+        computed = compare_runs([
+            ComparisonRun(
+                run_id=c["run_id"], condition_key=c["condition_key"], seed=c["seed"],
+                repetition=c["repetition"], status=c["status"], through_turn=c["through_turn"],
+                attempted=c["attempted"], error=c["reason"],
+                metrics=aggregate_metrics((m["key"], m["value"])
+                                          for m in by_run[c["run_id"]]["measurements"]),
+            ) for c in selected
+        ], design)
+        for effect in computed["effects"]:
+            calculations.append({
+                "id": f"contrast:{revision}:{effect['condition_key']}:{effect['metric']}",
+                "label": f"{effect['condition']} minus {effect['baseline']} · {effect['metric']}",
+                "scope": "observed_pairs", "value": effect["mean"],
+                "formula": "T06 comparison v1: condition - baseline per matched terminal cell; "
+                "mean repetitions within seed, then mean observed seed clusters",
+                "inputs": {
+                    "condition_key": effect["condition_key"], "baseline_key": effect["baseline_key"],
+                    "metric": effect["metric"], "design": design.model_dump(), "cells": cells,
+                    "measurements": {c["run_id"]: [m for m in by_run[c["run_id"]]["measurements"]
+                                                     if m["key"] == effect["metric"]]
+                                     for c in selected},
+                },
+                "coverage": {"pairs": effect["pairs"], "planned_pairs": effect["planned_pairs"],
+                             "seed_clusters": effect["seeds"]},
+                "missing": effect["missing_pairs"], "sensitivity": effect["sensitivity"],
+                "sources": [by_run[c["run_id"]]["source"] for c in selected],
+                "assumptions": [effect["selection_assumption"], effect["uncertainty_reason"]],
+            })
     return {
         "version": VERSION, "key": "behavior", "name": "Recorded behavior",
         "requirements": ["Cutoff checkpoint and its recorded utility balances"],

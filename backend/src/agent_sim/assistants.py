@@ -273,7 +273,7 @@ class Assistants:
         key = uid()
         exposure = self.research.capture_exposure(cutoffs) if comparisons is not None else None
         index = self._evidence_index(cutoffs, comparisons, exposure, key) if comparisons is not None else None
-        lens = capture_lens(self.research, cutoffs) if comparisons is not None else None
+        lens = capture_lens(self.research, cutoffs, comparisons) if comparisons is not None else None
         with self.db.session.begin() as session:
             chat_id = chat_id or uid()
             if session.scalar(
@@ -875,8 +875,13 @@ class Assistants:
             (current.output or {}).get("exposure"),
             key,
         )
-        lens = (current.output or {}).get("lens") or capture_lens(self.research, cutoffs)
-        index = {**index, "lens": lens}
+        lens = (current.output or {}).get("lens") or capture_lens(self.research, cutoffs, comparisons)
+        index = {**index, "lens": {
+            **{k: v for k, v in lens.items() if k not in {"facts", "calculations"}},
+            "calculations": [{k: v for k, v in c.items() if k != "inputs"}
+                             for c in lens["calculations"][:96]],
+            "calculations_omitted": max(0, len(lens["calculations"]) - 96),
+        }}
         investigation = (
             Investigation
             if any(p["environment"] == "commons" for p in index["protocols"].values())
