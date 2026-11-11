@@ -1,6 +1,6 @@
 # JAS handoff
 
-2026-11-10. ROOT owns `integration/research-harness` in this checkout.
+2026-11-11. ROOT owns `fix/agent-protocol-maps` in this checkout.
 The [merge-readiness repair report](docs/research/MERGE_READINESS_FIXES.md) and
 [repair verification](docs/research/MERGE_READINESS_VERIFICATION.json) supersede
 the earlier partial-suite merge gate. Complete local qualification at `885f3846`
@@ -33,11 +33,15 @@ rewriting the failed attempt. Two existing real browser creation flows pass
 Whole Ruff and global ty pass. No paid/live call or participant sample occurred.
 The scoped checks do not establish live drafting reliability for all questions.
 
-The hosted backend run at `fcd8506d` passed1831 cases but failed one restart test:
+The hosted backend run at `fcd8506d` passed 1831 cases but failed one restart test:
 the parent could kill its child between readiness-file creation and completed
 JSON writing. The fixture now atomically publishes that signal; both restart
 boundaries and its investigation gate pass without weakening any assertion.
 Hosted checks on the repair commit remain the merge gate.
+PR32 was already squash-merged at `a7390924` before this bug report. Its source
+tree exactly matches `fcd8506d`; the repair is a separate follow-up branch based
+on that current `main`. The tested production and regression sources are
+byte-identical after transfer. No PR merge or shared-history rewrite was done.
 
 The local app was refreshed at PID578290. The database inode, full public
 study/run/chat hashes and usage match before/after exactly; failed requests were
