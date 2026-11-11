@@ -294,37 +294,27 @@ Decisions and evidence stack below 1440px.
 Home’s experiment ideas, drafts, active runs and recent experiments share a centered
 58rem maximum-width content column below the composer. Keep their edges aligned.
 
-Home uses a full-width composer section with a living 18-unit grid, the
-explicit decorative exception requested for this surface. A single local ecosystem
-replaces the old ripple: up to 48 red/blue foragers seek eight or fewer renewable
-resource islands, leave fading paths, and pause for purple encounters. Harvests
-and encounters seed at most eight expanding, fading cell blooms. Depleted patches
-send agents onward so activity travels across the field. A fresh seed varies each
-visit; no application data, model calls, packages or external requests are involved.
-Logo red (#ff5757), blue (#4d8dff), and their purple blend remain scoped to Home;
-controls retain preset tokens. Soft, inset trail tiles stay below 34% opacity;
-small illuminated agents travel continuously between cell centers. Their three
-concentric circles give a crisp center and soft surround without filters or
-large animated blurs. Dark mode lifts the same red/blue hues for visibility.
-Fade only the grid horizontally across the outer 14% on each side, with softer
-intermediate stops. Keep the central 72% fully visible, square corners and the
-bottom section divider unchanged; the heading and composer are outside the mask.
-The SVG fits whole rows and columns without cropped cells, capped at 144 × 24
-cells. Quiet internal grid lines sit behind the moving agents; header and section
-separators provide the perimeter without doubled edges. Rounded trail tiles have
-a two-unit inset. Advance the world once every 700ms, with linear transforms
-across each complete step and 650ms trail/color transitions. Agent identity and
-coordinates come from the same seeded world as trails and encounters; no second
-particle system runs. Simulation frames update SVG attributes without rerendering
-React. Stop the timer and transitions when offscreen, hidden or reduced motion
-is requested, holding this same world in place. There is one renderer and no
-retained ripple or alternate scene.
-A slight 3px backdrop blur and feathered surface tint sit directly behind the
-heading’s text span; the heading stays opaque and the remaining grid stays sharp.
-The tint uses 12% of the surface color. The blur mask falls continuously through
-100/80/35/0% opacity, with no opaque plateau or abrupt edge.
-It never captures input and has no visible
-pause control.
+Home uses two enlarged environment diagrams to frame the composer. They reuse
+`EnvironmentMark`, including its exact mechanism geometry, quiet matrix and focal
+cells. A fixed composition leaves the center open; container queries bring the
+diagrams inward on narrow content areas. The artwork is decorative, does not
+capture input and never represents live runs or participant activity.
+
+Four environment pairs crossfade on a 48-second cycle: resources (green),
+exchange/information (blue), work (amber), and institutions/commitments (violet).
+Each holds for most of its 12-second phase, with a 2.4-second crossfade. Only
+opacity changes; diagrams never drift, orbit or zoom. Colors are scoped to the
+artwork and controls keep their preset tokens. Overall artwork opacity is 55%
+in light mode and 70% in dark mode, with a horizontal fade at the outer edges.
+Reduced motion displays the static resource pair. Offscreen and hidden tabs
+pause the CSS timeline and resume its existing phase when visible. There is no
+simulation timer, particle renderer, external imagery or extra data request.
+
+The header and bottom section divider remain intact. A slight 3px backdrop blur
+and feathered surface tint protect the heading text where narrow diagrams
+approach it. The tint uses 12% of the surface color; its radial mask falls through
+100/80/35/0% opacity without a hard edge. The opaque composer keeps artwork out
+of the text field. There is no visible background control.
 The Home composer has a 672px maximum width and 88px minimum text-entry height.
 Heading top spacing is 80px on mobile and 96px on desktop. A 3:2 grid split
 places three fifths of the composer within the backdrop and two fifths below its
@@ -697,7 +687,7 @@ normal click/keyboard interaction. Layout and requested compact spacing live in
 those compositions, semantic theme tokens live
 in `src/index.css`, and app glyphs pass through `src/components/icons.tsx`.
 
-The deliberate visual exceptions are the JAS logo/wordmark, Home ecosystem and
+The deliberate visual exceptions are the JAS logo/wordmark, Home environment artwork and
 heading fade, the shared Target scan/focus/rest animation, CC0 3dicons suggestion images, partial selected navigation glyphs,
 white/graphite surfaces, blue selection, and composer sizing, backing and focus
 appearance. They are not all controlled by a preset. A preset changes the shared

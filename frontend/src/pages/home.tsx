@@ -9,7 +9,7 @@ import {
 } from "@/components/disclosure";
 import { DraftList } from "@/components/draft-list";
 import { Alert } from "@/components/feedback";
-import { HomeGrid } from "@/components/home-grid";
+import { HomeEnvironments } from "@/components/home-environments";
 import {
   ArrowUpRight,
   Ellipsis,
@@ -104,9 +104,9 @@ export default function Home() {
       >
         <div
           data-slot="home-backdrop"
-          className="relative col-start-1 row-start-1 row-end-3 overflow-hidden border-b"
+          className="@container relative col-start-1 row-start-1 row-end-3 overflow-hidden border-b"
         >
-          <HomeGrid />
+          <HomeEnvironments />
         </div>
         <h1
           id="home-title"

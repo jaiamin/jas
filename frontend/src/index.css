@@ -164,14 +164,8 @@
 }
 
 /* Home's requested brand decoration stays separate from preset control colors. */
-.home-grid {
-  --home-grid-red: #ff5757;
-  --home-grid-blue: #4d8dff;
-  --home-grid-purple: color-mix(
-    in oklch,
-    var(--home-grid-red),
-    var(--home-grid-blue)
-  );
+.home-environments {
+  opacity: 0.55;
   mask-image: linear-gradient(
     to right,
     transparent,
@@ -202,33 +196,47 @@
   );
 }
 
-.home-grid-cell {
+.home-environment-world {
   opacity: 0;
-  transition:
-    opacity 650ms ease-in-out,
-    fill 650ms ease-in-out;
+  animation: home-environment-cycle 48s linear infinite;
 }
 
-.home-grid-agent {
-  transition:
-    transform var(--home-grid-step) linear,
-    fill 650ms ease-in-out;
+.home-environments[data-paused="true"] .home-environment-world {
+  animation-play-state: paused;
 }
 
-.dark .home-grid {
-  --home-grid-red: #ff7676;
-  --home-grid-blue: #6ca8ff;
+.dark .home-environments {
+  opacity: 0.7;
 }
 
-.home-grid[data-paused="true"] .home-grid-cell,
-.home-grid[data-paused="true"] .home-grid-agent {
-  transition: none;
+@container (max-width: 48rem) {
+  .home-environment-west {
+    transform: translate(300px, -24px) scale(0.75);
+  }
+  .home-environment-east {
+    transform: translate(610px, -24px) scale(0.75);
+  }
+}
+
+@keyframes home-environment-cycle {
+  0%,
+  20%,
+  100% {
+    opacity: 1;
+  }
+  25%,
+  95% {
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .home-grid-cell,
-  .home-grid-agent {
-    transition: none;
+  .home-environment-world {
+    animation: none;
+    opacity: 0;
+  }
+  .home-environment-world:first-child {
+    opacity: 1;
   }
 }
 

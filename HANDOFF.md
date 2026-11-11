@@ -13,15 +13,27 @@ in Git; retired raw evidence cannot be independently reread.
 
 ## Current state
 
-2026-11-11 Home refinement: continuous agent transforms now lead the existing
-seeded ecosystem, with soft inset trails, quieter grid lines and brighter
-red/blue colors in dark mode. Reduced-motion, hidden and offscreen states stop
-both the timer and transitions. All169 frontend units,12 Home browser cases,
-affected lint, forced TypeScript and production build pass; desktop/phone and
-both themes were visually checked. Four earlier browser failures expected the
-old flush tile geometry; updated assertions require the intended two-unit inset
-and rounded corners. The local8080 app serves the new build without restarting
-or modifying user data. Hosted CI on the new publication remains pending.
+2026-11-11 Home backdrop: the existing environment diagrams now frame the
+composer and crossfade between four environment pairs. Restrained green, blue,
+amber and violet accents stay scoped to artwork. Shapes remain stationary;
+reduced motion holds a static pair, and hidden/offscreen states pause the CSS
+timeline. The obsolete Home particle renderer, local simulation and its seven
+specific unit cases are removed. No compatibility scene or simulation timer
+remains. The shared EnvironmentMark has explicit SVG viewport dimensions for
+nested use; catalogue artwork retains its geometry and default 40px size.
+
+Current 162 frontend units, 12 Home browser cases, affected lint, forced TypeScript
+and production build pass. Browser cases cover both diagrams remaining visible
+at phone/desktop widths, both themes, cycle/pause/reduced-motion behavior and
+exact artwork equality with the catalogue. Two earlier browser attempts failed
+on asynchronous pause settlement and reading a catalogue query before it loaded;
+those test timing issues were corrected and the final complete Home file passes.
+The initial SVG-size and blue self-referencing color issues caught during visual
+inspection are fixed. A fresh independent finish review reports SHIP for this
+scoped backdrop from four settled desktop/phone light/dark captures and source;
+it does not claim whole-product or model competence. Mechanical scan: 0 findings.
+The local 8080 app serves the new build. This task did not reset user data, restart
+the app or make provider calls. Hosted CI on the next publication remains pending.
 
 The cleanup removes two confirmed unused frontend modules and consolidates49
 superseded documents into the compact historical report. Current guides and links

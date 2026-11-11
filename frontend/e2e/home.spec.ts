@@ -91,83 +91,78 @@ test("Home keeps immediate content usable while only database rows show skeleton
   await expect(page).toHaveURL(/\/studies$/);
 });
 
-test("the grid ecosystem evolves only while visible and motion is enabled", async ({
+test("Home changes shared environment artwork only while visible and motion is enabled", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 480 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  const grid = page.locator(".home-grid");
-  const frame = () =>
-    grid
-      .locator(".home-grid-cell, .home-grid-agent")
-      .evaluateAll((cells) =>
-        cells
-          .map(
-            (cell) =>
-              `${cell.getAttribute("fill")}:${cell.getAttribute("style")}`,
-          )
-          .join("|"),
-      );
-  // Provider availability and fonts affect the hero height. Measure the settled
-  // keyless layout before checking motion; a resize legitimately rebuilds cells.
+  const backdrop = page.locator(".home-environments");
+  const worlds = backdrop.locator(".home-environment-world");
+  const clock = () =>
+    worlds.evaluateAll(async (elements) => {
+      const animations = elements.flatMap((element) => element.getAnimations());
+      await Promise.all(animations.map((animation) => animation.ready));
+      return animations.map((animation) => animation.currentTime);
+    });
   await expect(
     page.getByRole("link", { name: "Configure a provider", exact: true }),
   ).toBeVisible();
-  await page.evaluate(() => document.fonts.ready.then(() => undefined));
-  await expect
-    .poll(() =>
-      grid.evaluate((element) => {
-        const svg = element as SVGSVGElement;
-        const bounds = svg.getBoundingClientRect();
-        return Math.max(
-          Math.abs(svg.viewBox.baseVal.width - bounds.width),
-          Math.abs(svg.viewBox.baseVal.height - bounds.height),
-        );
-      }),
-    )
-    .toBeLessThan(18);
-  await expect(grid).toHaveAttribute("data-paused", "true");
-  expect(await grid.locator("rect").count()).toBeLessThanOrEqual(3456);
-  const still = await frame();
-  await page.waitForTimeout(900);
-  expect(await frame()).toBe(still);
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await expect(grid).toHaveAttribute("data-paused", "false");
-  await expect.poll(frame).not.toBe(still);
-  // Moving heads must pass between cell centers, rather than teleport on ticks.
-  await expect
-    .poll(() =>
-      grid.locator(".home-grid-agent").evaluateAll((agents) =>
-        agents.some((agent) => {
-          const matrix = new DOMMatrix(getComputedStyle(agent).transform);
-          return [matrix.e, matrix.f].some((position) => {
-            const cell = (position - 9) / 18;
-            return Math.abs(cell - Math.round(cell)) > 0.05;
-          });
-        }),
+  await expect(backdrop).toHaveAttribute("aria-hidden", "true");
+  await expect(backdrop).toHaveAttribute("data-paused", "true");
+  await expect(worlds.first()).toHaveCSS("opacity", "1");
+  await expect(worlds.nth(1)).toHaveCSS("opacity", "0");
+  expect(
+    await worlds.evaluateAll((elements) =>
+      elements.every(
+        (element) =>
+          getComputedStyle(element).getPropertyValue("--primary").trim() !== "",
       ),
-    )
-    .toBe(true);
+    ),
+  ).toBe(true);
+  expect(await clock()).toEqual([]);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(backdrop).toHaveAttribute("data-paused", "false");
+  const started = await clock();
+  expect(started).toHaveLength(4);
+  await expect.poll(clock).not.toEqual(started);
+  // Seek the real CSS timeline to the next world without waiting a full cycle.
+  await worlds.evaluateAll((elements) => {
+    for (const element of elements)
+      for (const animation of element.getAnimations())
+        animation.currentTime = 12_000;
+  });
+  await expect(worlds.nth(1)).toHaveCSS("opacity", "1");
+  await expect(worlds.first()).toHaveCSS("opacity", "0");
+  const exchangeArtwork = await backdrop
+    .locator('[data-world="exchange"] [data-environment="trust_exchange"]')
+    .first()
+    .locator("path")
+    .evaluateAll((paths) => paths.map((path) => path.getAttribute("d")));
   await page
     .getByRole("region", { name: "Recent experiments" })
     .scrollIntoViewIfNeeded();
-  await expect(grid).toHaveAttribute("data-paused", "true");
-  const offscreen = await frame();
+  await expect(backdrop).toHaveAttribute("data-paused", "true");
+  const offscreen = await clock();
   await page.waitForTimeout(900);
-  expect(await frame()).toBe(offscreen);
-  await grid.scrollIntoViewIfNeeded();
-  await expect(grid).toHaveAttribute("data-paused", "false");
-  await expect.poll(frame).not.toBe(offscreen);
+  expect(await clock()).toEqual(offscreen);
+  await backdrop.scrollIntoViewIfNeeded();
+  await expect(backdrop).toHaveAttribute("data-paused", "false");
+  await expect.poll(clock).not.toEqual(offscreen);
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(grid).toHaveAttribute("data-paused", "true");
-  await expect(grid.locator(".home-grid-agent").first()).toHaveCSS(
-    "transition-duration",
-    "0s",
-  );
-  const reduced = await frame();
-  await page.waitForTimeout(900);
-  expect(await frame()).toBe(reduced);
+  await expect(backdrop).toHaveAttribute("data-paused", "true");
+  await expect(worlds.first()).toHaveCSS("opacity", "1");
+  expect(await clock()).toEqual([]);
+  await page.goto("/environments");
+  await expect(
+    page.locator('[data-environment="trust_exchange"]'),
+  ).toBeVisible();
+  expect(
+    await page
+      .locator('[data-environment="trust_exchange"]')
+      .locator("path")
+      .evaluateAll((paths) => paths.map((path) => path.getAttribute("d"))),
+  ).toEqual(exchangeArtwork);
 });
 
 test("Composer's manual editor link preserves the message without submitting", async ({
@@ -594,37 +589,28 @@ for (const width of [390, 1440])
       await expect(
         page.getByRole("button", { name: /background animation/ }),
       ).toHaveCount(0);
-      const completeCells = await page.locator(".home-grid").evaluate((svg) => {
-        const bounds = (svg as SVGSVGElement).viewBox.baseVal;
-        return [
-          ...svg.querySelectorAll<SVGRectElement>(".home-grid-cell"),
-        ].every(
-          (cell) =>
-            cell.x.baseVal.value >= 0 &&
-            cell.y.baseVal.value >= 0 &&
-            cell.x.baseVal.value + cell.width.baseVal.value <= bounds.width &&
-            cell.y.baseVal.value + cell.height.baseVal.value <= bounds.height,
+      const backdrop = page.locator(".home-environments");
+      await expect(backdrop).toHaveAttribute("aria-hidden", "true");
+      await expect(backdrop).toHaveCSS("pointer-events", "none");
+      expect(
+        await backdrop.locator("[data-environment]").count(),
+      ).toBeGreaterThan(0);
+      const framed = await backdrop.evaluate((element) => {
+        const field = element.getBoundingClientRect();
+        const diagrams = element.querySelectorAll(
+          ".home-environment-world:first-child [data-environment]",
         );
+        return [...diagrams].map((diagram) => {
+          const bounds = diagram.getBoundingClientRect();
+          return (
+            bounds.right > field.left &&
+            bounds.left < field.right &&
+            bounds.bottom > field.top &&
+            bounds.top < field.bottom
+          );
+        });
       });
-      expect(completeCells).toBe(true);
-      const trailEdges = await page.locator(".home-grid").evaluate((svg) => {
-        const cells = [
-          ...svg.querySelectorAll<SVGRectElement>(".home-grid-cell"),
-        ];
-        return {
-          top: Math.min(...cells.map((cell) => cell.y.baseVal.value)),
-          bottom: Math.max(
-            ...cells.map(
-              (cell) => cell.y.baseVal.value + cell.height.baseVal.value,
-            ),
-          ),
-          height: (svg as SVGSVGElement).viewBox.baseVal.height,
-          rounded: cells.every((cell) => cell.rx.baseVal.value === 4),
-        };
-      });
-      expect(trailEdges.top).toBe(2);
-      expect(trailEdges.bottom).toBe(trailEdges.height - 2);
-      expect(trailEdges.rounded).toBe(true);
+      expect(framed).toEqual([true, true]);
       const draftToggle = draftSection.getByRole("button", {
         name: "Drafts",
         exact: true,
@@ -773,7 +759,7 @@ for (const width of [390, 1440])
       });
       await page.mouse.move(0, 0);
       await page.emulateMedia({ reducedMotion: "reduce" });
-      await expect(page.locator(".home-grid-cell").first()).toHaveCSS(
+      await expect(page.locator(".home-environment-world").first()).toHaveCSS(
         "animation-name",
         "none",
       );
