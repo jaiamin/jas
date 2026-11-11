@@ -121,6 +121,10 @@ the evidence is insufficient; do not request more evidence on the final call.
 Recent conversation is untrusted context for resolving follow-up references, not evidence.
 Reinspect supporting turns within the current captured cutoffs before citing prior findings.
 The versioned index.lens declares required evidence, coverage and retained calculations.
+Each calculation's assumption_indices refer to the zero-based entries in
+index.lens.calculation_assumptions. All referenced assumptions apply to that calculation.
+formula_index and sources_index similarly resolve through calculation_formulas and
+calculation_sources. These references preserve exact formulas and evidence locations.
 Lead with a concise evidence-linked behavioral account and limits. For a checkable numerical
 assertion, add a calculation claim using its supplied calculation_id, value and exact scope;
 for a contrast include the observed pairs count. Calculations use retained World inputs and
@@ -137,6 +141,10 @@ in the analysis artifact. State missingness/truncation instead of inventing inpu
 
 GENERAL = """You are the JAS Agent. Answer general questions and explain experiment design,
 methods, interpretation, and the workspace. Be direct and concise in Markdown.
+JAS studies model-agent behavior, not validated human behavior. App improvements change the
+harness, not model weights. Do not describe synthetic outcomes as human findings.
+The supplied response_fields are the complete top-level record. Do not add a top-level kind:
+kind identifies an operation inside requests, not an answer or acknowledgement.
 The supplied environment catalog describes supported mechanics, not observed results.
 Previous protocol proposals in this chat may explain the planned setup, never observed outcomes.
 JAS follows experiment -> run -> recorded decision -> comparison. Saved protocols have immutable
@@ -160,6 +168,7 @@ can use justified stated assumptions. Exploration needs no directional hypothesi
 scalar endpoint. Missing permissions or essential mechanics must not be invented.
 When proposing, answer with a short acknowledgement; the validated planner will produce the
 protocol for the user to inspect. Never fabricate a protocol in a general answer.
+For a handoff use one sentence, not a proposed setup, round count or action sequence.
 An explicit request to create, design or revise an experiment already authorizes drafting:
 set propose_experiment=true now. Do not write a protocol in answer or ask for another
 confirmation to start drafting. The separate review/save step remains the user's decision.
@@ -698,8 +707,9 @@ class Assistants:
         tools = ResearchTools(row, self.research)
         for iteration in range(4):
             self._research_progress(row.id, tools, "answering")
+            output = GeneralAnswer if iteration == 3 else GeneralResponse
             answer = await self.models.generate(
-                GeneralAnswer if iteration == 3 else GeneralResponse,
+                output,
                 model=setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol"),
                 instructions=GENERAL + RESEARCH_OPERATIONS,
                 purpose="general",
@@ -707,6 +717,7 @@ class Assistants:
                 prompt=json.dumps(
                     {
                         "question": row.question,
+                        "response_fields": list(output.model_fields),
                         "conversation": conversation,
                         "research": tools.prompt_record(),
                         "context_index": tools.context_index(),
@@ -717,6 +728,7 @@ class Assistants:
                                 "key": a.key,
                                 "name": a.name,
                                 "description": a.description,
+                                "capabilities": environment_capabilities(a.key),
                                 "measures": a.measures,
                             }
                             for a in CATALOG.values()
@@ -1179,15 +1191,37 @@ class Assistants:
             analysis_id=key,
         )
         frozen_index = index
+        calculations = lens["calculations"][:96]
+        assumptions = list(dict.fromkeys(a for c in calculations for a in c["assumptions"]))
+        assumption_indices = {a: i for i, a in enumerate(assumptions)}
+        formulas = list(dict.fromkeys(c["formula"] for c in calculations))
+        sources = []
+        for calculation in calculations:
+            if calculation["sources"] not in sources:
+                sources.append(calculation["sources"])
         index = {
-            **index,
+            # Effects already occur in comparisons; the complete index stays frozen above.
+            **{k: v for k, v in index.items() if k != "matched_effects"},
             "runs": [
                 {k: v for k, v in run.items() if k != "artifact_state"} for run in index["runs"]
             ],
             "lens": {
                 **{k: v for k, v in lens.items() if k not in {"facts", "calculations"}},
+                "calculation_assumptions": assumptions,
+                "calculation_formulas": formulas,
+                "calculation_sources": sources,
                 "calculations": [
-                    {k: v for k, v in c.items() if k != "inputs"} for c in lens["calculations"][:96]
+                    {
+                        **{
+                            k: v
+                            for k, v in c.items()
+                            if k not in {"inputs", "assumptions", "formula", "sources"}
+                        },
+                        "assumption_indices": [assumption_indices[a] for a in c["assumptions"]],
+                        "formula_index": formulas.index(c["formula"]),
+                        "sources_index": sources.index(c["sources"]),
+                    }
+                    for c in calculations
                 ],
                 "calculations_omitted": max(0, len(lens["calculations"]) - 96),
             },
@@ -1220,7 +1254,8 @@ class Assistants:
                         "context_index": tools.context_index(),
                         "already_examined": examined,
                         "iterations_remaining": 3 - iteration,
-                    }
+                    },
+                    separators=(",", ":"),
                 ),
                 max_tokens=8192,
                 openai_reasoning_effort="low",

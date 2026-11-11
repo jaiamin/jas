@@ -97,7 +97,9 @@ CAPABILITIES = {
         "allocation_budget": "Fresh authority budget, not finite stock or unmet physical needs.",
     },
     "bargaining": {
-        "binding_negotiation": "Dyadic offers, acceptance, delay discount and outside options.",
+        "binding_negotiation": "Two actors negotiate a configurable initial pie (endowment) "
+        "with offers, binding acceptance, delay discount and outside options; no allocation "
+        "authority permission is required.",
     },
     "information": {
         "noisy_evidence": "Binary evidence accuracy; hidden truth redraws each round.",

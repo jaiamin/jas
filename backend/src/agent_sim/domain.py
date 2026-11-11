@@ -701,7 +701,7 @@ class Design(DesignSpec):
                 "institutional_workflow",
             }:
                 if artifacts is None:
-                    raise ValueError("Artifact workspace requires explicit artifact mechanics")
+                    raise ValueError(f"{self.environment} requires explicit artifact mechanics")
                 references = {
                     key
                     for obj in artifacts.objects
@@ -712,7 +712,10 @@ class Design(DesignSpec):
                 if self.environment == "artifact_workspace" and not artifacts.requirements:
                     raise ValueError("Artifact investigation requires content/source requirements")
             elif artifacts is not None:
-                raise ValueError("Artifact mechanics require the artifact workspace")
+                raise ValueError(
+                    "Artifact mechanics require artifact_workspace, distributed_coordination, "
+                    "reliance_commitments or institutional_workflow"
+                )
             if (
                 self.environment
                 not in {
@@ -723,7 +726,7 @@ class Design(DesignSpec):
                 }
                 and "read_artifact" in condition.harness.tools
             ):
-                raise ValueError("Artifact read tools require the artifact workspace")
+                raise ValueError("Artifact read tools require an artifact-enabled environment")
             coordination = condition.parameters.coordination
             if self.environment in {"distributed_coordination", "reliance_commitments"}:
                 ids = {p.key for p in self.profiles}

@@ -1,0 +1,536 @@
+{
+  "format": "jas-platform-development-results-v1",
+  "baseline": "efb486208c7674c554b6f50cdbf991c9500e7d56",
+  "split": "public-development",
+  "assistant_model": "openai:gpt-6.1-sol",
+  "participant_model": "openai:gpt-6-luna",
+  "historical_model": "anthropic:claude-haiku-4-5",
+  "unique_settled_requests": 521,
+  "charged_microdollars": 937294,
+  "authorization_microdollars": 20000000,
+  "pending_unknown": 0,
+  "final_affected_tests": 199,
+  "attempts": [
+    {
+      "id": "browser-offline01",
+      "passed": false,
+      "usage": {
+        "requests": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cost_usd": 0,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "9e75871bd06d58753aafedd65df3340aada5b3ad1f0b418ac02880edbdf7b1cd",
+      "frozen_sha256": "1a075375466030dd05e99e66782618c4fa1c223f8faa0aacccd3df92a85cbc72",
+      "production_source_manifest_sha256": "d707d82f1de8db43cbd21bb389c0029212d2fd6e4da7659f2967c0668eb13447"
+    },
+    {
+      "id": "browser-offline02",
+      "passed": false,
+      "usage": {
+        "requests": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cost_usd": 0,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "d54c6bc775456513eba780bb19262fbe5fd3889982228a25f60c24ec6820540d",
+      "frozen_sha256": "f062e0ccd49c45b475748eb618807c1074673c6dd0b7f38daec3628aae842e5d",
+      "production_source_manifest_sha256": "d707d82f1de8db43cbd21bb389c0029212d2fd6e4da7659f2967c0668eb13447"
+    },
+    {
+      "id": "browser-offline03",
+      "passed": true,
+      "usage": {
+        "requests": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cost_usd": 0.0,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "a35a843ccc938d1379352e838e1604df55ec6a4c93c95a49489baa1aca24c0b1",
+      "frozen_sha256": "ef54ab1f30708e06a2de1e7ec27d9b8ee45ba50fe2432b14597b4451f1b91756",
+      "production_source_manifest_sha256": "d707d82f1de8db43cbd21bb389c0029212d2fd6e4da7659f2967c0668eb13447"
+    },
+    {
+      "id": "deep-workflow-luna01",
+      "passed": false,
+      "usage": {
+        "requests": 40,
+        "input_tokens": 53605,
+        "output_tokens": 5834,
+        "cost_usd": 0.008294,
+        "partial": false
+      },
+      "original_partial": true,
+      "reconciliation": ".tools/platform-e2e/deep-workflow-luna01/steering-settled-reconciliation.json",
+      "result_sha256": "40bd055e9ae4b4f1c484dfd86ac02331a1233348033433abc07abd0191758b53",
+      "frozen_sha256": "be5e3f33384f4d6c058f602de5cbba23dd62f235ebdf8107e22e782d27e18781",
+      "production_source_manifest_sha256": "af6a3f4b97879e6a6b7b6201acb97ed15849e36ffa5877c002d9a1274649fb37"
+    },
+    {
+      "id": "deep-workflow-luna02",
+      "passed": true,
+      "usage": {
+        "requests": 71,
+        "input_tokens": 112001,
+        "output_tokens": 11105,
+        "cost_usd": 0.016784,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "68d04e9768d3f0de6da5bda204f9261f0b3232a25a3cbbac1fe5cab8b05d6193",
+      "frozen_sha256": "10080c76b199f6a6f2d32c3489bb63795bb10bb43d18c61a1a19096f6efbfbc4",
+      "production_source_manifest_sha256": "61db88d478631c48c5ba4da2a5a24caa139fcb397970a13411e9400640058016"
+    },
+    {
+      "id": "finite-sol-luna01",
+      "passed": true,
+      "usage": {
+        "requests": 6,
+        "input_tokens": 98641,
+        "output_tokens": 1340,
+        "cost_usd": 0.204316,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "75f1b8703f889bf8a1ea0f42792c6bd5b91bc551dcf3403133210975c53c5479",
+      "frozen_sha256": "56fb10a488397be982ae94b8b6d1ff254ac3720ce23bd21fbc316b26358a3814",
+      "production_source_manifest_sha256": "af6a3f4b97879e6a6b7b6201acb97ed15849e36ffa5877c002d9a1274649fb37"
+    },
+    {
+      "id": "insight-sol-luna01",
+      "passed": false,
+      "usage": {
+        "requests": 54,
+        "input_tokens": 55046,
+        "output_tokens": 11742,
+        "cost_usd": 0.0114,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "6b0d7541b8a3366a7295df264b42499f6cca3df237e89fcd4cc7f68e26198a66",
+      "frozen_sha256": "851a2f017d4ecf8454bede03ca0db7461c526048747c3c7428e3309acb7df416",
+      "production_source_manifest_sha256": "db9105264f1f8b581b188bf6e1ff6939abccf3201a747345947bbc75910b37bc"
+    },
+    {
+      "id": "insight-sol-luna02",
+      "passed": true,
+      "usage": {
+        "requests": 2,
+        "input_tokens": 71607,
+        "output_tokens": 1203,
+        "cost_usd": 0.155244,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "3b92e65b5a1c85efdfcdcd91912b1b0f57374898968cad4b8cd1795957ed5418",
+      "frozen_sha256": "c39ee27863d4ae658ea8c8f9d5b710158acbd63ed6bf22afd95209d774dc3f6a",
+      "production_source_manifest_sha256": "af6a3f4b97879e6a6b7b6201acb97ed15849e36ffa5877c002d9a1274649fb37"
+    },
+    {
+      "id": "installed-commons",
+      "passed": true,
+      "usage": {
+        "requests": 24,
+        "input_tokens": 55561,
+        "output_tokens": 8815,
+        "cost_usd": 0.099636,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "c105d88d828462141e1003df088b0dd2b3ca21461d98b8a0df97bdd519f03ace",
+      "frozen_sha256": "3e23a93df87b6ac5ca7a432ced489ab92bd466631a0c3ecb585674456bcfb6b6",
+      "production_source_manifest_sha256": "4f03e3dc75ff63743e8459a9bd3f7bc55f3e46b0484058e7e411f5d292a185ff"
+    },
+    {
+      "id": "installed-coordination",
+      "passed": false,
+      "usage": {
+        "requests": 18,
+        "input_tokens": 56478,
+        "output_tokens": 6258,
+        "cost_usd": 0.087768,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "fc1caaf2b93d8f2389b237236757ffa178c4953e46aa10a5cdddb53c78c17e76",
+      "frozen_sha256": "4ebe67e453d5f7bf813cada988d41435238ed9fccdf3d19efc04c62b66bac91f",
+      "production_source_manifest_sha256": "4f03e3dc75ff63743e8459a9bd3f7bc55f3e46b0484058e7e411f5d292a185ff"
+    },
+    {
+      "id": "installed-trust_exchange",
+      "passed": true,
+      "usage": {
+        "requests": 24,
+        "input_tokens": 48648,
+        "output_tokens": 8416,
+        "cost_usd": 0.090728,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "ec0fd1f12f12fae48b861c0fd5450d5a38f13b0498b7fc599543d85e4f33c630",
+      "frozen_sha256": "31fcceaf3562f21c0742ba51567bc3c62767511cbd1ba14e8d4cfda9a00e6161",
+      "production_source_manifest_sha256": "4f03e3dc75ff63743e8459a9bd3f7bc55f3e46b0484058e7e411f5d292a185ff"
+    },
+    {
+      "id": "installed02-bargaining",
+      "passed": true,
+      "usage": {
+        "requests": 4,
+        "input_tokens": 8218,
+        "output_tokens": 1389,
+        "cost_usd": 0.015163,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "4392f4c4f466d28c72ee2fbd66745dedda000b73cc3f45e1ffdad6b84f8736e7",
+      "frozen_sha256": "6406387782b0d70f00c911829d5a8f6ae299ac8b15c6937b1f707c804b30a387",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "installed02-coordination",
+      "passed": false,
+      "usage": {
+        "requests": 13,
+        "input_tokens": 34535,
+        "output_tokens": 3667,
+        "cost_usd": 0.05287,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "8f4b7877163709216adad253dfa44c8887bd91013e91510283da9c52e20a6a43",
+      "frozen_sha256": "38c3ca740ade69149c6d744f8e6d06746de69a9cb556028e4fc0cf4668893689",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "installed02-information",
+      "passed": false,
+      "usage": {
+        "requests": 12,
+        "input_tokens": 26091,
+        "output_tokens": 3665,
+        "cost_usd": 0.044416,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "9dc5c4893a943563c0417636182119241ff5379b0cbd35c3b48af9aec2b39897",
+      "frozen_sha256": "b664fe694fa5b0d7b61d6595de899c6f36cde6cf83a42c04374fb0cb27d3724d",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "installed02-institution",
+      "passed": true,
+      "usage": {
+        "requests": 16,
+        "input_tokens": 44244,
+        "output_tokens": 5828,
+        "cost_usd": 0.073384,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "45478c60023691e6dfc5cbd2f160b4b161676f7be193088dcc3fcd234b81d492",
+      "frozen_sha256": "e314dce4bd33933e5fd970932f41a6fcac52a370ada80db4e997e7dc63d8dd93",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "installed02-renewable_resource",
+      "passed": false,
+      "usage": {
+        "requests": 3,
+        "input_tokens": 4866,
+        "output_tokens": 1035,
+        "cost_usd": 0.010041,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": ".tools/platform-e2e/installed02-renewable_resource/steering-settled-reconciliation.json",
+      "result_sha256": "f81087845192a5d6012157674754ce2a9aa2b8c98c0eac1bba6caa31205980a4",
+      "frozen_sha256": "3e094a5d3a225e2c0cde5b7ca0f4a7150017eeb96093fd082659b1f924af9a1f",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "luna-default01-renewable_resource",
+      "passed": true,
+      "usage": {
+        "requests": 24,
+        "input_tokens": 30090,
+        "output_tokens": 13992,
+        "cost_usd": 0.010018,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "d2f740b9a9202d325d3db4c7cc8246d591ac72c41b8388d431d4d41dbd73bb71",
+      "frozen_sha256": "9f3333d35a5a92047b8a3563e5394da17c30985b09ef085c9284102c975ec888",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "luna01-artifact_workspace",
+      "passed": true,
+      "usage": {
+        "requests": 4,
+        "input_tokens": 4533,
+        "output_tokens": 327,
+        "cost_usd": 0.000618,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "14625b4b58a018adf5ef6fdfa4243f9744f370e1be04baf9d5115585c79f6cac",
+      "frozen_sha256": "19a2655e18a15ce99d276cbd7e4bc37881fd347372cb15a63b1c24e20bdedb21",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "luna01-bargaining",
+      "passed": true,
+      "usage": {
+        "requests": 6,
+        "input_tokens": 6391,
+        "output_tokens": 2415,
+        "cost_usd": 0.001849,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "dd2afc510c41fe1f8fd139021e8d69113077adb79284666cbadc0aa8fee01cd1",
+      "frozen_sha256": "e01fc4ad19bc0c2e39c588b3ba895b867ab6b4b614f00bf59b11e97a1d849157",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "luna01-commons",
+      "passed": true,
+      "usage": {
+        "requests": 24,
+        "input_tokens": 23587,
+        "output_tokens": 5038,
+        "cost_usd": 0.004887,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "bbc0e7285fe2cd039ec1290fdf555d735e1efc30382150ed85961f62701ba9fb",
+      "frozen_sha256": "25ff471875e989cfb27efde68266ee681bb72d59219c90cdcfa3cd4518489217",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "luna01-composed",
+      "passed": true,
+      "usage": {
+        "requests": 16,
+        "input_tokens": 25255,
+        "output_tokens": 3665,
+        "cost_usd": 0.004365,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "791e8c2f8b3c5167a1db96c4bfb510be767350b0d52372aa5cc11ec0a4caf978",
+      "frozen_sha256": "8e6076a14ffaa672b71eeb7da9a409b5bd5cf88a0d13fbf3bd4aef3d00e8a9e8",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "luna01-coordination",
+      "passed": true,
+      "usage": {
+        "requests": 24,
+        "input_tokens": 45725,
+        "output_tokens": 4948,
+        "cost_usd": 0.00706,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "23884e150628715b515ed8ec722797c90fe94ae85b737f7d2f4e141cd337a53c",
+      "frozen_sha256": "d98251d8c33f14bbe947a1be573a20a656356a0f5c3bf079b40c26064880af61",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "luna01-distributed_coordination",
+      "passed": true,
+      "usage": {
+        "requests": 12,
+        "input_tokens": 16061,
+        "output_tokens": 1208,
+        "cost_usd": 0.002214,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "368b84fd89ab2d63e15442d564399ddd3651614e18b9bd7f714949da1753f313",
+      "frozen_sha256": "e0d09d71670e2cbe23f99995394ac3789e8f2ae93eb9d59eb9664bc7237c2711",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "luna01-information",
+      "passed": true,
+      "usage": {
+        "requests": 16,
+        "input_tokens": 19381,
+        "output_tokens": 4804,
+        "cost_usd": 0.004346,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "59ab114cd95fbf2026adb254033ed74a7f240c815d5af33af3e70aebc21c6842",
+      "frozen_sha256": "51300dca514d2dad355121e80223db52d4134e3b1e0bd82fd9991ae0354202a8",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "luna01-institution",
+      "passed": true,
+      "usage": {
+        "requests": 16,
+        "input_tokens": 20260,
+        "output_tokens": 3717,
+        "cost_usd": 0.003893,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "06f716edd1b873e9ed87ed574c76d659ad09321b3bd057d3b1eb8b277efc8ac9",
+      "frozen_sha256": "94792b082a126f209da2e4c778de0371b94fa91a783e29d8956344caed34c996",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "luna01-institutional_workflow",
+      "passed": true,
+      "usage": {
+        "requests": 24,
+        "input_tokens": 30142,
+        "output_tokens": 3430,
+        "cost_usd": 0.004744,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "cd772a14504dd87d666afbb537654625561dc9a2e725a467d8cd93003ff1f953",
+      "frozen_sha256": "8a480e49286d0458eba4e41b14f6e3abed24de34d0bef7137446f51f0bb6f203",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "luna01-reliance_commitments",
+      "passed": true,
+      "usage": {
+        "requests": 8,
+        "input_tokens": 14128,
+        "output_tokens": 1009,
+        "cost_usd": 0.001922,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "d8a5e19c5e7e75cdec56de2e4807aba21a90f40dd408ef426d7b50ca9ccb11af",
+      "frozen_sha256": "437f33c8ecc8ca683c9725ba617f0d40f20aef9b0acfcd280a8acdaa879928f9",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "luna01-renewable_resource",
+      "passed": false,
+      "usage": {
+        "requests": 15,
+        "input_tokens": 16418,
+        "output_tokens": 9794,
+        "cost_usd": 0.006544,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "65edf42b6c2965edd0401324810f04714a46da9070db3a91e4b078d8019be934",
+      "frozen_sha256": "9a1a8973c1029e1ff1cf126b1a67b92a04a68ca240eb23a0dcfc0d5e5c5ef8de",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "luna01-trust_exchange",
+      "passed": true,
+      "usage": {
+        "requests": 24,
+        "input_tokens": 27357,
+        "output_tokens": 7623,
+        "cost_usd": 0.006559,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "e3a3e28121627cc588bfcb80da0d31a11dc9c0d085e982a97285ec9beaac19c3",
+      "frozen_sha256": "7b5ebd0bf6240435d06d19ba73a56a0961bd8a563dbe85cfb88ad3a83b57c383",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "reuse-luna01",
+      "passed": true,
+      "usage": {
+        "requests": 10,
+        "input_tokens": 15286,
+        "output_tokens": 2462,
+        "cost_usd": 0.002763,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "b5c9223470c431db201d5dc3264818a94abeda9ed6efb93fc5d6b87dd88e43bc",
+      "frozen_sha256": "cf9b6ae24fd05ba6a56db57b5554af97fc5413c04136a04aa9e27bcb53b49e8f",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "tool-judge-sol-luna01",
+      "passed": false,
+      "usage": {
+        "requests": 2,
+        "input_tokens": 5570,
+        "output_tokens": 106,
+        "cost_usd": 0.000611,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "ac25d5b573bd9c7226a72b01041510ab512ebcfd2b898a61097c372d8712c306",
+      "frozen_sha256": "b8ee5bf68f238cc63137fa62748ee97b15de43b171cd771c5ff6c5629c301197",
+      "production_source_manifest_sha256": "4dacc456859e54f607f75d97e48063701e69473a554dd5003f036586d80b744c"
+    },
+    {
+      "id": "tool-judge-sol-luna02",
+      "passed": true,
+      "usage": {
+        "requests": 9,
+        "input_tokens": 25601,
+        "output_tokens": 752,
+        "cost_usd": 0.004857,
+        "partial": false
+      },
+      "original_partial": false,
+      "reconciliation": null,
+      "result_sha256": "30394331f62f64bb0e734bf54f52630e2a1f3e2dd7ccc1c9925bf8b64385d2f0",
+      "frozen_sha256": "9e7f1f9d19494908fbd1eda56b3b744bfe51531fde8af728d02ff3de27cca1f2",
+      "production_source_manifest_sha256": "db9105264f1f8b581b188bf6e1ff6939abccf3201a747345947bbc75910b37bc"
+    }
+  ],
+  "limitations": [
+    "Original installed matrix omitted explicit environment_source; that planned gate is incomplete. Later source-pinned stages are separately attributed.",
+    "Counterpart cap/model/error corrections are distinct fresh attempts; originals remain failed.",
+    "No held-out, human-validity, general-intelligence, model-training or judge-accuracy claim.",
+    "Recorded prices are app accounting estimates, not provider invoice.",
+    "No fresh frontend build or production container check; frontend assets/source unchanged.",
+    "Only live phases with their exact frozen source were exercised; no aggregate final-source live pass rate.",
+    "Browser export download completed; temporary bytes unavailable after closing tab. API export equality checked separately."
+  ]
+}

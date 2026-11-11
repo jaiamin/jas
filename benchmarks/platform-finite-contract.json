@@ -1,0 +1,152 @@
+{
+  "format": "jas-finite-contract-v1",
+  "name": "Two-role review token DEVELOPMENT",
+  "provenance": "Independent evaluator-authored literal truth table, frozen before any generator output; public DEVELOPMENT case, not held-out intent verification.",
+  "requirements": "A proposer may submit a draft or withdraw a pending submission. Only the auditor may approve a submitted draft. Approving spends the sole resource token and ends successfully; stop consumes it and ends unsuccessfully. Wait preserves state and credits. No approval before submission; no action after termination; invalid encodings deny. Role prose never grants rights.",
+  "roles": [
+    "proposer",
+    "auditor"
+  ],
+  "states": [
+    {
+      "key": "draft",
+      "escrow": 0,
+      "status": "running"
+    },
+    {
+      "key": "submitted",
+      "escrow": 0,
+      "status": "running"
+    },
+    {
+      "key": "approved",
+      "escrow": 0,
+      "status": "success"
+    },
+    {
+      "key": "stopped",
+      "escrow": 0,
+      "status": "failure"
+    }
+  ],
+  "operations": [
+    {
+      "key": "submit",
+      "roles": [
+        "proposer"
+      ]
+    },
+    {
+      "key": "approve",
+      "roles": [
+        "auditor"
+      ]
+    },
+    {
+      "key": "withdraw",
+      "roles": [
+        "proposer"
+      ]
+    },
+    {
+      "key": "wait",
+      "roles": [
+        "proposer",
+        "auditor"
+      ]
+    },
+    {
+      "key": "stop",
+      "roles": [
+        "proposer",
+        "auditor"
+      ]
+    }
+  ],
+  "initial_state": 0,
+  "initial_credits": 1,
+  "total_resource": 1,
+  "max_credits": 1,
+  "table": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    3,
+    -1,
+    -1,
+    1,
+    6,
+    -1,
+    -1,
+    -1,
+    1,
+    6,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    1,
+    3,
+    6,
+    -1,
+    4,
+    -1,
+    3,
+    6,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+  ]
+}

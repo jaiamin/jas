@@ -113,6 +113,10 @@ Investigation history matches the chat,
 exact scope and purpose, and citations still require inspected turns within frozen cutoffs.
 The model receives up to three completed prior turns; design refinements include previous
 proposals and revalidate all rules. Complete transcripts remain saved and visible.
+Planner prompts store repeated protocol structures once with explicit hash references.
+All referenced values remain in that same request; saved proposals and public transcripts
+remain complete. This reduces follow-up input without truncating protocol fields or
+raising the request allowance.
 
 Ordinary assistant submissions use `POST /api/chats`. The protocol editor reads individual
 proposals through `GET /api/analyses/{id}`. Provider availability is reported without keys;
@@ -180,6 +184,10 @@ explicit retrieval reads a selected proposal or operation artifact. It never
 searches unselected conversations or runs. Retrieved prose is untrusted data.
 The planner receives dispatched results as `research_operations` alongside the
 unchanged original question and independently validates its proposal.
+Repeated prior protocols and catalog template parameters use request-local shared
+base objects plus complete top-level field overrides when this reduces payload size.
+Every value remains in the same provider request; stored/public evidence stays complete.
+Invalid or requirement-incompatible candidates cannot narrow subsequent discovery.
 
 Model-requested probes accept only installed trusted templates (optionally configured),
 eligible prior proposal conditions or selected recorded run checkpoints within the frozen
@@ -187,6 +195,10 @@ cutoff. The existing planner also discovers installed mechanics and probes each 
 validated candidate condition, population and first seed before preflight and critique.
 This planner-only source binds the full proposed design hash; it cannot be selected by a
 general-answer tool request. Optional explicit candidate witnesses use the same dispatcher.
+Drafting defaults to automatic condition inspection and computed preflight witnesses;
+explicit probe actions are reserved for a needed additional mechanism check. The planning
+context separately identifies distributed choice finality, logical mail timestamps and
+terminal payoffs, so recorded observation does not require an unrelated capability.
 World constructors copy checkpoint JSON, and each of at most eight
 explicit hypothetical actions settles on a fresh candidate through the normal
 legal decision schema and World rules. Rejected actions leave that probe state
@@ -211,6 +223,14 @@ mail; solo artifact investigation remains sequential. A decline whose direct req
 population have an installed example witness receives a bounded, recorded scoping recheck.
 Examples witness feasibility without constraining other supported study populations. Genuine
 missing mechanics and incompatible populations retain honest narrower alternatives.
+
+Typed output bounds remain enforced locally. Draft instructions keep outcome calculations
+separate from the brief's size rationale and the platform's accounting procedures, leaving
+headroom inside bounded prose fields. A rejected provider response is retained and charged;
+common text-limit errors identify only known schema fields and bounds, never the rejected
+contents. No retry or substitute model is dispatched. General answers receive the installed
+capability descriptions and exact top-level response fields before choosing an operation
+or planner handoff.
 
 Reviewed candidates pin a complete discovered builtin/library source, or a source from an
 eligible earlier same-chat proposal. Matching a definition hash alone cannot invent library

@@ -242,6 +242,74 @@ def test_inspected_citation_cannot_validate_invented_total(claim_client, design)
     assert final["usage"]["requests"] == 2
 
 
+def test_six_run_interpretation_fits_without_losing_calculation_assumptions(claim_client):
+    import copy
+
+    client, controls, seen = claim_client
+    catalog = client.get("/api/catalog").json()
+    value = copy.deepcopy(next(t["design"] for t in catalog["templates"] if t["id"] == "commons"))
+    value.update(
+        title="Communication and contributions DEVELOPMENT",
+        question="How does public message availability change contributions across matched seeds?",
+        hypothesis="Exploratory: subtract messages-unavailable from messages-available "
+        "within each seed; retain all three differences and failures. No human-valid inference.",
+        profiles=value["profiles"][:3],
+        rounds=3,
+        seeds=[17, 83, 241],
+        repetitions=1,
+        environment_source=next(
+            e["source"] for e in catalog["environments"] if e["key"] == "commons"
+        ),
+    )
+    first = value["conditions"][0]
+    first.update(key="messages", name="Messages available")
+    first["parameters"].update(
+        communication=True, communication_channels=["messages", "reports", "promises"]
+    )
+    second = copy.deepcopy(first)
+    second.update(key="no_messages", name="Messages unavailable")
+    second["parameters"]["communication_channels"] = ["reports", "promises"]
+    value["conditions"] = [first, second]
+    saved = client.post("/api/studies", json={"design": value})
+    assert saved.status_code == 201, saved.text
+    sid = saved.json()["id"]
+    for record in client.get(f"/api/studies/{sid}").json()["runs"]:
+        assert run(client, record["id"])["status"] == "complete"
+    before = source(client.get(f"/api/studies/{sid}/export").json())
+    controls.update(value=198, answer="Each scripted trajectory settled total utility 198.")
+    final = finish(
+        client,
+        client.post(
+            "/api/chats",
+            json={"question": "Compare all three matched seeds.", "context": f"study:{sid}"},
+        ),
+    )
+    assert final["status"] == "complete", final.get("error")
+    assert final["usage"]["requests"] == 2
+    assert final["output"]["support"]["claims"][0]["status"] == "checked"
+    full = final["output"]["lens"]
+    assert full["coverage"]["planned_cells"] == 6
+    calculations = {c["id"]: c for c in full["calculations"]}
+    for prompt in (p for p in seen if "index" in p):
+        lens = prompt["index"]["lens"]
+        for calculation in lens["calculations"]:
+            assumptions = [
+                lens["calculation_assumptions"][i] for i in calculation["assumption_indices"]
+            ]
+            assert assumptions == calculations[calculation["id"]]["assumptions"]
+            assert calculation["value"] == calculations[calculation["id"]]["value"]
+            assert (
+                lens["calculation_formulas"][calculation["formula_index"]]
+                == calculations[calculation["id"]]["formula"]
+            )
+            assert (
+                lens["calculation_sources"][calculation["sources_index"]]
+                == calculations[calculation["id"]]["sources"]
+            )
+    assert all(c["inputs"] for c in calculations.values())
+    assert source(client.get(f"/api/studies/{sid}/export").json()) == before
+
+
 @pytest.mark.parametrize(
     "amount,asserted,expected,computed",
     [(10, -1, "contradicted", 1), (10, 1, "checked", 1), (0, 0, "checked", 0)],

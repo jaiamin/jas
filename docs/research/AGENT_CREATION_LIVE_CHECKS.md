@@ -1,5 +1,8 @@
 # Agent creation repair and live checks
 
+This is the source-attributed repair history. For the current live evaluation and
+remaining gates, see [Agent live evaluation](AGENT_EXTENSIVE_EVALUATION.md).
+
 2026-11-11. Follow-up on `fix/agent-protocol-maps`, PR33. The reported input-bound
 failure is repaired. Real Anthropic requests now reach validated drafts and saving;
 this is bounded workflow qualification, not a reliability or scientific-validity benchmark.
@@ -116,3 +119,116 @@ stream/reconnect/request-count checks, complete checkpoints and accounting remai
 API/T17/T18/streaming/provider-adapter regression groups pass62 cases (6.68s); affected Ruff,
 formatting and diff checks pass. No production change or additional live spending. Full CI
 must pass the new head; the earlier hosted failure remains recorded.
+
+## Reopened: revision context overflow (2026-11-11)
+
+The user observed the same input-limit failure twice after PR33's green CI. Exact new
+analyses `dc58bc3c7b5f4f42` and `8b6c36fe533b4160` stop at the first revision. Retained
+public records are captured under `.tools/agent-revision-limit/`; user attempts are unchanged.
+The offline direct-planner replay reproduces the exact error: review fits124,890 bytes,
+then revision expands to236,889 against the unchanged180,000-byte bound. The draft already
+submitted a null built-in source; the review mistakenly criticized the server-pinned copy.
+The first replay harness lacked a stream mock and failed before planning; that authoring
+failure is retained separately. Corrected `reproduce.py … red02` reaches the intended failure.
+
+Acceptance for this continuation: revisions must receive scoped discovery/rule examples and
+only current copied probes in full, with explicit hash references to retained older results;
+all original records remain complete. Cover zero, one and two revisions, including a changed
+probe on the same design and a changed design. Tell review which source normalization the
+server performed, preserve exact provenance validation, and verify the reported retained
+inputs plus a bounded fresh live path. Do not increase the input bound, silently retry a
+provider, replace a model, mutate failed user attempts or claim scientific competence.
+
+The repair is on `fix/agent-revision-context`, based on merged PR33's exact source
+(`ce269cd6`). PR33's successful checks did not cover this revision path. This continuation
+changes internal prompt projections only; persisted contracts and provider input limits remain
+unchanged. Current probes retain every observation, action, event and measure. Repeated rules
+and legal schemas use exact shared-input hash references, with values supplied once. Older
+candidate probes retain their envelopes, status, sources and digest while original records stay
+complete. Revisions scope discovery and examples to the selected environment. Review receives
+the fact that the server expanded a null built-in source into immutable pinned provenance.
+
+Final-source offline replay completes both captured cases with five scripted requests each:
+
+| Captured analysis | Initial draft bound | Revision bound | Final review bound |
+| --- | ---: | ---: | ---: |
+| `8b6c36fe533b4160` | 165,348 | 162,821 | 109,602 |
+| `dc58bc3c7b5f4f42` | 165,090 | 162,818 | 109,200 |
+
+These are complete serialized input bounds including instructions, schema and the4,096-byte
+margin. The180,000-byte limit is unchanged. Scripted replay is not a new real-model success.
+The98-case affected suite passes in15.04s, including zero/one/two revisions with changed
+witnesses on the same design and a changed design, exact reconstruction of current probe
+results, bounded quote corrections and corrected/still-incompatible capability combinations.
+Whole backend/benchmarks/scripts Ruff, globalty, changed-file formatting and diff checks pass.
+Full hosted CI remains pending; no whole-suite local pass is claimed for this source.
+
+### Fresh live results and remaining gate
+
+Seven dispatched Haiku4.5 cases used23 requests/$0.706613. A numbered live06 stopped before
+sending because disk was below its8MiB preflight. Total own Anthropic diagnosis, including the
+prior73 calls, is96 requests/$2.709143 under the announced$3 ceiling. All usage is known;
+no participant was sampled. `.tools/agent-revision-limit/live-accounting.json` retains the
+individual costs/statuses. All test services were torn down and18143 passed reuse-bind checks.
+
+- Live01 failed after repeating a noncontiguous requirement quotation. Scope feedback now
+  supplies an exact whole-question option when it fits, while quotation validation and the
+  existing two-scope limit remain strict.
+- Live02/03 failed typed validation on zero delivery delay and an overlong title. Live05
+  reached two revisions without overflow, then failed on an overlong explanation. Drafting
+  now receives the exact canonical JSON Schema bounds in a compact projection, including
+  nested fields, instead of relying on provider enforcement or vague brevity instructions.
+  Bounds are not relaxed and invalid output is never installed or silently retried.
+- Live04 completed with a false capability decline. Scoping now uses its one existing
+  correction for a declaration that all capabilities are direct although no environment
+  implements their combination. Tests preserve rejection when the conflict is not corrected.
+- Final-source live07 still declined by inventing a binding/reconsideration requirement.
+  Live08, an explicitly clarified direct-planner variant, still wrongly required artifact
+  verification for recorded message-arrival evidence. These are retained content failures.
+  Final canonical-bound prompts did not receive a fresh live drafting qualification because
+  those runs stopped before drafting.
+
+**Fresh live creation/save/export qualification has not passed.** The reported overflow has
+an observed failing and passing replay, but this does not establish reliable generation or
+accurate capability interpretation. Earlier successful live cases remain attributed to their
+earlier sources. Do not call this continuation a clean Agent E2E or scientific/content gate.
+The runner's early `all_calls_settled` label meant all calls completed successfully; failed
+provider calls still had known settled usage (`partial=false`). No accounting loss is claimed.
+
+The quote-hint and incompatible-capability regressions were observed red before repair.
+The first capability-test setup omitted required research_query and failed before the intended
+assertion; corrected red02 proves the actual premature decline. Constraint-prompt tests were
+also observed red before repair. Earlier disk-full and harness/mock/type/format failures are
+retained separately; none is reclassified as a product success.
+
+The user's idle app was refreshed to PID642941. Exact public study/run/chat hashes, usage and
+database inode match before/after; no failed request was replayed. Only this checkout's
+rebuildable bytecode caches and superseded visual renders were retired, with inventories.
+Closed own SQLite families have lossless archives, full independent readback and restoration
+maps; live01's earlier archive stop remains recorded. Original data, source assets, dependencies,
+shared caches and other worktrees remain intact. Shared disk reached zero earlier; no historical
+floor-preservation claim. Refresh observed46,747,648→50,860,032 shared/unreserved free bytes.
+
+## PR34 hosted CI follow-up
+
+At `b459314d`, full hosted backend testing passed1846 cases and failed the two existing
+four-role follow-up regressions. Both reproduce locally: the10,540-byte canonical bound
+projection pushes the third follow-up's initial draft above180,000 bytes. That stage has
+no current candidate yet, so it previously kept every World's illustrative rule examples.
+The latest complete prior proposal now scopes those examples for initial follow-up drafts,
+just as the current candidate scopes revision examples. Full prior proposals, immutable
+sources and the complete discovery catalog remain available; no evidence or validation
+assertion is removed. Both unchanged regressions now pass2/2. The other98 affected cases,
+whole Ruff/globalty, changed formatting and diff checks also pass. Hosted CI must qualify
+the correction; the earlier full run is still a failure.
+
+Frontend lint,162 unit cases/37 files and build passed. Ubuntu mirror DNS failed at
+Chromium system-package installation, before browser tests. A same-head frontend rerun was
+accepted after workflow completion; a new correction push starts full CI again. `verify`
+failed because its backend/frontend dependencies failed, with container/workflows passing.
+No workflow checks or browser assertions were changed.
+
+The idle local app was refreshed from PID642941 to645747. Full public records, usage and
+database inode match exactly before/after; no failed user request was replayed. Receipt:
+`.tools/agent-revision-limit/ci-b459314/user-refresh/receipt.json`. No new provider spending.
+Fresh live Agent content qualification remains NOT PASS as documented above.
