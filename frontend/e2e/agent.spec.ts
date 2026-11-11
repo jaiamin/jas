@@ -4,9 +4,9 @@ for (const width of [320, 1440]) {
   test(`context selection keeps the composer anchored and clearable · ${width}`, async ({
     page,
     request,
-  }) => {
+  }, testInfo) => {
     const catalog = await (await request.get("/api/catalog")).json();
-    const title = `Cooperation across changing resource constraints and communication rules (${width})`;
+    const title = `Cooperation across changing resource constraints and communication rules (${width}; repeat ${testInfo.repeatEachIndex})`;
     await request.post("/api/studies", {
       data: { design: { ...catalog.templates[0].design, title } },
     });
@@ -18,6 +18,9 @@ for (const width of [320, 1440]) {
     const composer = page
       .getByRole("form", { name: "Agent composer" })
       .locator('[data-slot="input-group"]');
+    await expect(
+      page.getByRole("link", { name: "Configure a provider", exact: true }),
+    ).toBeVisible();
     const initial = await composer.boundingBox();
     await context.click();
     const search = page.getByRole("combobox", {
@@ -920,8 +923,18 @@ for (const width of [320, 1440]) {
 
 test("last reply clears the composer and its copy hover stays inside the message", async ({
   page,
+  request,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  const settings = await request.get("/api/settings");
+  let revealSettings = () => {};
+  const settingsReady = new Promise<void>((resolve) => {
+    revealSettings = resolve;
+  });
+  await page.route("**/api/settings", async (route) => {
+    await settingsReady;
+    await route.fulfill({ response: settings });
+  });
   await page.route("**/api/chats/long-response", (route) =>
     route.fulfill({
       json: [
@@ -946,10 +959,33 @@ test("last reply clears the composer and its copy hover stays inside the message
       ],
     }),
   );
-  await page.goto("/agent?chat=long-response");
-  await page
-    .getByRole("button", { name: "Scroll to end", exact: true })
-    .click();
+  const viewport = page.getByRole("region", { name: "Agent conversation" });
+  let initialHeight = 0;
+  try {
+    await page.goto("/agent?chat=long-response");
+    initialHeight = await viewport.evaluate((node) => node.clientHeight);
+    await expect(
+      viewport.getByText("Explain this experiment", { exact: true }),
+    ).toBeInViewport({ ratio: 1 });
+    await page
+      .getByRole("button", { name: "Scroll to end", exact: true })
+      .click();
+    await expect
+      .poll(() =>
+        viewport.evaluate(
+          (node) => node.scrollHeight - node.scrollTop - node.clientHeight,
+        ),
+      )
+      .toBeLessThanOrEqual(1);
+  } finally {
+    revealSettings();
+  }
+  await expect(
+    page.getByRole("link", { name: "Configure a provider", exact: true }),
+  ).toBeVisible();
+  await expect
+    .poll(() => viewport.evaluate((node) => node.clientHeight))
+    .toBeLessThan(initialHeight);
   const copy = page.getByTitle("Copy response", { exact: true });
   await expect(copy).toBeInViewport();
   await copy.hover();
@@ -968,4 +1004,27 @@ test("last reply clears the composer and its copy hover stays inside the message
   expect(
     input && footer && input.y - footer.y - footer.height,
   ).toBeGreaterThanOrEqual(24);
+  await viewport.hover();
+  await page.mouse.wheel(0, -400);
+  await expect
+    .poll(() =>
+      viewport.evaluate(
+        (node) => node.scrollHeight - node.scrollTop - node.clientHeight,
+      ),
+    )
+    .toBeGreaterThan(200);
+  await page
+    .getByRole("textbox", { name: "Message Agent", exact: true })
+    .fill(
+      Array.from({ length: 12 }, (_, index) => `Unsent line ${index + 1}`).join(
+        "\n",
+      ),
+    );
+  await expect
+    .poll(() =>
+      viewport.evaluate(
+        (node) => node.scrollHeight - node.scrollTop - node.clientHeight,
+      ),
+    )
+    .toBeGreaterThan(200);
 });

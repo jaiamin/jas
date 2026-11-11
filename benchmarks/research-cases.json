@@ -1,0 +1,80 @@
+{
+  "id": "research-harness-development",
+  "version": 1,
+  "split": "DEVELOPMENT",
+  "authorship": "T01: specified from the accepted small-study requirements and worked arithmetic before baseline execution; not generated from model outputs or historical benchmark cases.",
+  "limitations": "Public development checks, not held-out validation or live model competence. Unsupported cases test API rejection only; fluent recognition of unsupported natural-language requests remains unmeasured.",
+  "cases": [
+    {
+      "id": "simple-binding-split",
+      "request": "Describe one two-person negotiation over fourteen credits with an offer of five accepted immediately. One condition is sufficient; do not infer a treatment effect.",
+      "environment": "bargaining",
+      "participants": 2,
+      "rounds": 2,
+      "seed": 53,
+      "parameters": {"endowment": 14, "bargaining": {"discount": 1}},
+      "policy": "offer-five-accept",
+      "expected": {"turns": 2, "balances_sorted": [5, 9]},
+      "current_limit": "Installed binding two-party bargaining; no population inference."
+    },
+    {
+      "id": "three-signal-disclosure",
+      "request": "Three participants each receive a perfectly accurate binary signal. Compare private signals with disclosure of all three signals, holding rewards, communication and horizon fixed.",
+      "environment": "information",
+      "participants": 3,
+      "rounds": 1,
+      "seed": 61,
+      "parameters": {"information": {"accuracy": 1, "correct_reward": 7}},
+      "contrasts": [{"private_signal": true}, {"private_signal": false}],
+      "policy": "choose-own-signal",
+      "expected": {"turns": 3, "balances_sorted": [7, 7, 7], "public_signal_counts": [0, 3]},
+      "current_limit": "Installed sequential prediction/disclosure; no shared artifacts, phased collaboration or genuine distributed evidence-seeking task."
+    },
+    {
+      "id": "four-feasible-promises",
+      "request": "Four participants receive six credits per round in a two-round shared fund with multiplier two. Each first contributes two and promises three next round. Participant a then contributes zero and the other three contribute three. Distinguish a feasible breach from infeasibility and intent.",
+      "environment": "commons",
+      "participants": 4,
+      "rounds": 2,
+      "seed": 67,
+      "parameters": {"endowment": 6, "multiplier": 2},
+      "policy": "one-feasible-breach",
+      "expected": {"turns": 8, "balances_sorted": [15.5, 15.5, 15.5, 18.5], "eligible_commitments": 4, "fulfilled_commitments": 3},
+      "current_limit": "Nonbinding contribution promises with observable deadlines; no persistent artifacts or richer voluntary reliance mechanism."
+    },
+    {
+      "id": "six-token-permissions",
+      "request": "Six participants have the role label Authority but only participant a has allocation permission. With twelve credits, a allocates four to b and retains eight. Five workers each work once for two credits and two shared-output units.",
+      "environment": "institution",
+      "participants": 6,
+      "rounds": 1,
+      "seed": 71,
+      "parameters": {"endowment": 12, "institution": {"authorities": ["a"], "oversight": 1}},
+      "policy": "allocate-four-workers-work",
+      "expected": {"turns": 6, "balances_sorted": [2, 2, 2, 2, 6, 8], "shared_output": 10},
+      "current_limit": "Token allocation/permissions only; no coupled resource-consuming artifact/dependency workflow."
+    },
+    {
+      "id": "solo-evidence-gap",
+      "request": "One participant inspects a persistent laboratory notebook, retrieves an earlier permitted measurement, checks its source and updates an artifact before deciding.",
+      "environment": "commons",
+      "participants": 1,
+      "rounds": 1,
+      "seed": 73,
+      "parameters": {},
+      "expected": {"validation_status": 422, "error_location": ["body", "design", "profiles"]},
+      "current_limit": "Current design schema requires at least two participants; a commons is not a substitute for the requested artifact world."
+    },
+    {
+      "id": "persistent-artifact-gap",
+      "request": "Two participants edit versioned laboratory documents under owner-specific read/write permissions, with exact restoration of document contents.",
+      "environment": "artifact",
+      "participants": 2,
+      "rounds": 1,
+      "seed": 79,
+      "parameters": {},
+      "expected": {"validation_status": 422, "error_location": ["body", "design", "environment"]},
+      "current_limit": "No installed artifact environment; rejection does not demonstrate extension generation or natural-language capability recognition."
+    }
+  ]
+}

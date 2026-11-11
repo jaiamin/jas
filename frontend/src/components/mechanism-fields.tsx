@@ -1,4 +1,7 @@
+import { ArtifactFields } from "@/components/artifact-fields";
+import { CommitmentFields } from "@/components/commitment-fields";
 import { CompositionFields } from "@/components/composition-fields";
+import { DistributedFields } from "@/components/distributed-fields";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Field,
@@ -8,6 +11,7 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { WorkflowFields } from "@/components/workflow-fields";
 import type { EnvironmentId, Parameters, Profile } from "@/lib/types";
 
 interface NumericField {
@@ -196,6 +200,54 @@ export function MechanismFields({
   onChange: (patch: Partial<Parameters>) => void;
 }) {
   const config = mechanismFields(environment, parameters, onChange);
+  if (
+    [
+      "artifact_workspace",
+      "distributed_coordination",
+      "reliance_commitments",
+      "institutional_workflow",
+    ].includes(environment) &&
+    parameters.artifacts
+  ) {
+    return (
+      <div className="flex min-w-0 flex-col gap-6">
+        {parameters.workflow && (
+          <WorkflowFields
+            rules={parameters.workflow}
+            id={id}
+            onChange={(workflow) => onChange({ workflow })}
+          />
+        )}
+        {["distributed_coordination", "reliance_commitments"].includes(
+          environment,
+        ) &&
+          parameters.coordination && (
+            <DistributedFields
+              rules={parameters.coordination}
+              profiles={profiles}
+              id={id}
+              onChange={(coordination) => onChange({ coordination })}
+            />
+          )}
+        {parameters.commitments && parameters.coordination && (
+          <CommitmentFields
+            rules={parameters.commitments}
+            coordination={parameters.coordination}
+            artifacts={parameters.artifacts}
+            profiles={profiles}
+            id={id}
+            onChange={(commitments) => onChange({ commitments })}
+          />
+        )}
+        <ArtifactFields
+          rules={parameters.artifacts}
+          profiles={profiles}
+          id={id}
+          onChange={(artifacts) => onChange({ artifacts })}
+        />
+      </div>
+    );
+  }
   if (environment === "composed" && parameters.composition) {
     return (
       <CompositionFields

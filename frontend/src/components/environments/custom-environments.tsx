@@ -55,7 +55,7 @@ export function CustomEnvironments({
   const query = search.trim().toLowerCase();
   const visibleSetups =
     setups.data?.filter((item) =>
-      `${item.design.title} ${environments.find((env) => env.key === item.design.environment)?.name ?? label(item.design.environment)}`
+      `${item.definition.name} ${item.definition.description} ${environments.find((env) => env.key === item.definition.environment)?.name ?? label(item.definition.environment)}`
         .toLowerCase()
         .includes(query),
     ) ?? [];
@@ -104,7 +104,7 @@ export function CustomEnvironments({
             <Fragment key={item.id}>
               <Item className="gap-3 rounded-none border-0 px-3 py-4">
                 <ItemMedia className="group-has-data-[slot=item-description]/item:self-center group-has-data-[slot=item-description]/item:translate-y-0">
-                  <EnvironmentMark environment={item.design.environment} />
+                  <EnvironmentMark environment={item.definition.environment} />
                 </ItemMedia>
                 <ItemContent className="min-w-0">
                   <ItemTitle className="max-w-full">
@@ -112,13 +112,13 @@ export function CustomEnvironments({
                       className="truncate hover:underline"
                       to={`/new?setup=${item.id}&step=conditions`}
                     >
-                      {item.design.title}
+                      {item.definition.name}
                     </Link>
                   </ItemTitle>
                   <ItemDescription>
                     {environments.find(
-                      (env) => env.key === item.design.environment,
-                    )?.name ?? label(item.design.environment)}{" "}
+                      (env) => env.key === item.definition.environment,
+                    )?.name ?? label(item.definition.environment)}{" "}
                     · Revision {item.revision}
                   </ItemDescription>
                 </ItemContent>
@@ -129,7 +129,7 @@ export function CustomEnvironments({
                         variant="outline"
                         size="icon-xs"
                         className="text-muted-foreground"
-                        aria-label={`Actions for ${item.design.title}`}
+                        aria-label={`Actions for ${item.definition.name}`}
                       >
                         <Ellipsis />
                       </Button>
@@ -190,7 +190,7 @@ export function CustomEnvironments({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Delete “{pendingRemoval?.design.title}”?
+              Delete “{pendingRemoval?.definition.name}”?
             </AlertDialogTitle>
             <AlertDialogDescription>
               This deletes the custom environment from your workspace library.

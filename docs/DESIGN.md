@@ -100,7 +100,7 @@ selected item keeps its full accent on hover. Both are shared semantic tokens.
 Send and New experiment use the primary Button variant. Primary actions use a
 shared blue primary token with a light foreground in both themes; secondary surfaces, muted text,
 borders, focus and destructive states use their corresponding semantic tokens.
-Keep foreground/background pairs together when composing components.
+Keep foreground/background pairs together when composing components. Link variants and inline link hover use the shared accent-foreground token so small blue text remains readable on both themes; filled primary buttons keep their primary foreground/background pair.
 Shared cursor rules give enabled actions, links, labels and portalled menu/select
 items a pointer. Text entry keeps its text cursor; disabled controls are excluded.
 Focus decoration follows input modality throughout the app, including portals:
@@ -252,6 +252,10 @@ the scroller item’s paint boundary. Leave at least 24px between the final repl
 and composer at the scroll end. Keep transcript top padding compact. Its 12px stock fade
 overlaps the composer top by 12px, avoiding a faded gap above the input. Preserve citations,
 limitations and captured evidence cutoffs.
+Measure the newest reply eagerly so the initial question anchor uses its real
+height. At the end, follow viewport changes such as provider notices and composer
+growth; scrolling upward keeps the reader's position instead of pulling them
+back to the newest reply. Older messages keep deferred rendering.
 
 Supported proposals show a short summary written by the existing review call after
 mechanical checks, using 1–3 sentences (at most 600 characters). Draft explanations
@@ -262,6 +266,17 @@ off to planning, through live events, completion, failure and reload. Keep its M
 node mounted while switching from the streamed acknowledgement to that introduction.
 Unsupported requests keep their direct capability explanation. No extra summary request
 or model-generated intermediate reasoning is needed.
+
+Study scope in Activity and Protocol notes in Review show declared exploratory/confirmatory
+intent, operationalization and the population/opportunity/replication/capture rationale.
+Exploration may describe trajectories and failed or unverified work without inventing a primary
+scalar endpoint. The existing hypothesis/analysis field remains optional for exploration;
+confirmatory outcomes and comparisons are declared before trials. Material clarification and
+clearly narrower supported alternatives stay in the same conversation, without a substitute
+protocol. Discovery and copied candidate probes are retained as real research operations;
+their outcomes describe mechanics, never participant intelligence. The proposal Card remains
+unavailable until validation and critique complete. Review/edit/check/save uses the existing
+draft identity and reconnect behavior; saving creates ready runs without participant requests.
 
 The generated protocol Card uses a title/question, a compact content-width definition
 list (Agents, Conditions, Planned runs), using 24px horizontal gaps, muted labels
@@ -279,37 +294,50 @@ Decisions and evidence stack below 1440px.
 Home’s experiment ideas, drafts, active runs and recent experiments share a centered
 58rem maximum-width content column below the composer. Keep their edges aligned.
 
-Home uses a full-width composer section with a living 18-unit pixel grid, the
-explicit decorative exception requested for this surface. A single local ecosystem
-replaces the old ripple: up to 48 red/blue foragers seek eight or fewer renewable
-resource islands, leave fading paths, and pause for purple encounters. Harvests
-and encounters seed at most eight expanding, fading cell blooms. Depleted patches
-send agents onward so activity travels across the field. A fresh seed varies each
-visit; no application data, model calls, packages or external requests are involved.
-Logo red (#ff5757), blue (#4d8dff), and their purple blend remain scoped to Home;
-controls retain preset tokens. Filled-cell opacity stays at or below 48%.
-Fade only the grid horizontally across the outer 14% on each side, with softer
-intermediate stops. Keep the central 72% fully visible, square corners and the
-bottom section divider unchanged; the heading and composer are outside the mask.
-The SVG fits whole rows and columns without cropped cells, capped at 144 × 24
-cells. Only internal grid lines are drawn; header and section separators provide
-the perimeter without doubled edges. Fills meet boundaries without inset gaps.
-Advance the world once every 700ms, with 650ms fill/opacity transitions. Only
-changed SVG attributes update; simulation frames do not rerender React. Stop the
-timer when offscreen, hidden or reduced motion is requested, holding this same
-world in place. There is one renderer and no retained ripple or alternate scene.
-A slight 3px backdrop blur and feathered surface tint sit directly behind the
-heading’s text span; the heading stays opaque and the remaining grid stays sharp.
-The tint uses 12% of the surface color. The blur mask falls continuously through
-100/80/35/0% opacity, with no opaque plateau or abrupt edge.
-It never captures input and has no visible
-pause control.
-The Home composer has a 672px maximum width and 88px minimum text-entry height.
-Heading top spacing is 80px on mobile and 96px on desktop. A 3:2 grid split
-places three fifths of the composer within the backdrop and two fifths below its
-bottom edge; the opaque surface keeps the grid out of the text field. A stock
+Home’s backdrop uses the user's replacement city GIF, stored as `city.gif`,
+with `city.webp` derived from a decoded frame. The superseded GIF and poster,
+procedural town, route generator and map-only styles are removed. Environment
+catalogue illustrations are unchanged.
+
+Keep the backdrop 320px tall at all widths. The image fills the available width
+with CSS `object-fit: cover`, centered horizontally with a 35% vertical focal
+point that favors the skyline. Narrow windows crop the sides; wide windows can
+crop excess sky and water. No viewport JavaScript or fixed media width is needed.
+Its top edge, upper corners and central column are uninterrupted. Only the lower corners
+dissolve along broad, asymmetric rounded contours inspired by the supplied recording.
+All strips are opaque. Their coverage decreases gradually toward the corner edges,
+with varied lengths, stepped ends, detached pixels and irregular 1–4px row pitches.
+Correlated patches mix thicker clusters with fine filaments. The full
+image becomes increasingly sparse shreds rather than a translucent or blurred veil.
+The rounded contours reach a little farther toward the lower middle, following
+the final refinement; their upper extent stays unchanged. Regenerate the single SVG
+with `python3 frontend/scripts/generate_home_dissolve.py`. Twelve coverage bands
+per corner carry seamless repeating ribbon textures at varied speeds with gentle,
+forward-only speed changes.
+The left corner flows left and the right corner flows right, without reversing.
+Each 12.8–20.48-second loop advances exactly one 256px repeat, so its reset is
+visually continuous. The rounded coverage contours, top and core stay still.
+One mask asset contains an explicit still view. The React component
+selects it and the poster for reduced motion, hidden documents or an offscreen
+backdrop; there is no JavaScript animation clock or duplicate GIF layer.
+
+Light mode preserves the GIF's color and opacity. Dark mode uses 67% brightness
+and 90% saturation; the dissolve itself uses no opacity animation or blur.
+The heading stays above the composer, with dark neutral lettering in both themes.
+A localized 75% white tint and 6px backdrop blur sit behind the full title.
+A broad oval mask extends 8rem beyond each end and 2rem vertically, with multiple
+falloff stops for a gradual transition into the city. There is no dark scrim or hard-edged plate.
+The text itself stays sharp. The artwork
+is decorative, hidden from assistive technology and pointer-inert; it does not
+represent current experiments or provider activity. There is no bottom divider.
+
+The Home composer retains a 672px maximum width and 88px minimum text-entry height.
+Heading top spacing is 152px on mobile and 156px on desktop, with a 16px gap to
+the composer. The composer overlaps the artwork and extends below the fixed
+backdrop, keeping imagery out of
+the text field. A stock
 `shadow-lg` gives the composer's gray backing Card a compact blended shadow along its sides and
-bottom, separating it from the animated grid.
+bottom, separating it from the decorative background.
 Every unscoped entry point uses the same server intent routing: Agent answers a
 question or creates a validated experiment proposal from the prompt, without a
 manual creation mode. Home has no selector. Agent has an optional experiment/run
@@ -570,6 +598,16 @@ protocol proposals appear in a Card for review before saving or running. Preserv
 draft identity, pending output, evidence scope and recoverable errors when
 changing presentation. Saving a protocol never executes it.
 
+### Run recordings
+
+Keep one stock **Play recording / Pause recording** button beside the saved-turn
+slider. It watches committed turns through the boundary selected when Play was
+clicked; it never executes agents or follows newly committed turns. From Latest,
+start at turn0. Load each checkpoint before advancing. Manual turn/actor selection,
+Latest, page hiding, errors and record navigation stop playback. Run/Step/Pause
+execution actions remain in the page heading. Playback starts only on an explicit
+click and uses the same Environment, Decisions and Interactions views.
+
 ### Experiment editor
 
 Use the compact page-heading geometry shared by record lists: a 36px muted,
@@ -597,6 +635,38 @@ Check/Create for direct contract editing. Saving a reusable environment is a
 single-line item in Experiment options, rather than a competing primary action.
 Agent proposals open on Review. Saving never launches paid model work.
 
+Reusable environments save only mechanics/configuration examples. Choosing a library or
+built-in environment starts an independent neutral experiment; explicit experiment templates
+remain separate. The existing Conditions layout adds a stock disclosure for selecting an
+example and binding mechanic roles to current agents. Review identifies the pinned source
+revision/rules; Specification retains its complete definition/hash. Preserve a recovered
+draft's embedded revision, including after library deletion, and reject stale updates visibly.
+
+Conditions separate the participant harness from its model and world parameters.
+Direct action is the default. Tool using reveals request/operation limits, permitted
+reads, four capability policy selectors (including explicit Disabled choices),
+context characters and memory-result limits using existing Field/Select/Checkbox
+patterns. Use remains optional. Review lists the pinned
+harness version, effort, tools and capability policies; private goals, roles and profile overrides are
+declared study factors. The run Record tab lists participant activation attempts,
+including failures before a turn commits. Disclosures expose actual operations,
+results, source/cutoff receipts, selected capabilities, stop reasons and complete
+identity. Mark plans/notes as participant self-reports and source checks as text
+checks, with no privileged outcome prediction. The existing model-request inspector
+retains every inference, including unknown usage. Keep the default journal and
+current appearance, semantic tokens, mobile layout and keyboard disclosures.
+
+Scripted control is an explicit non-model harness choice with a concrete reference
+policy selector. Disable its unused model selector and identify zero provider work
+on Review, run Record and comparisons. Tool-using's Apply ablation menu edits the
+visible, saved configuration: disable retained memory, disable tools/capabilities,
+or limit inference to one request. These remain editable declarations; exhausting
+a limit can fail without a final action. Results disclose complete participant
+factors, per-activation/per-request envelopes, measured work across all attempts,
+stop reasons and recorded sources beside T06 matching/missingness/uncertainty.
+Selected-run comparisons link to exact-revision Results for the planned matrix;
+the selected runs alone do not establish independent support.
+
 Keep section content mounted when inactive so input DOM and disclosures retain
 their state. Validated JSON resets the affected uncontrolled fields to the new
 specification. Initialize the form only after loading and validating the current
@@ -616,6 +686,11 @@ and [React state structure](https://react.dev/learn/choosing-the-state-structure
 
 ### Stock components and customizations
 
+Model-authored Markdown images render as explicit **Open image** links, with the
+image description when supplied. Opening one uses a separate tab without opener
+or referrer access. Prose never initiates an image request; executable URLs remain
+filtered. Keep the same selectable, keyboard-accessible link style as citations.
+
 This is a shadcn-based interface, not a byte-for-byte unmodified registry copy.
 `src/components/ui` owns the shared shadcn primitives, including the small
 accessibility and correctness patches listed below. Checkbox outlines use 90% of
@@ -629,7 +704,7 @@ normal click/keyboard interaction. Layout and requested compact spacing live in
 those compositions, semantic theme tokens live
 in `src/index.css`, and app glyphs pass through `src/components/icons.tsx`.
 
-The deliberate visual exceptions are the JAS logo/wordmark, Home ecosystem and
+The deliberate visual exceptions are the JAS logo/wordmark, Home environment artwork and
 heading fade, the shared Target scan/focus/rest animation, CC0 3dicons suggestion images, partial selected navigation glyphs,
 white/graphite surfaces, blue selection, and composer sizing, backing and focus
 appearance. They are not all controlled by a preset. A preset changes the shared
@@ -657,7 +732,7 @@ pnpm dlx shadcn@latest apply --preset <code>
    Avoid a runtime icon resolver.
 3. Preserve nonvisual fixes if regeneration overwrites them: Progress bounds and
    custom maximum, selectable Button labels/link text and their drag guard, softer Checkbox outline, Slider
-   thumb labels, Tabs orientation, Breadcrumb current-item semantics, Chart style children and stable keys, valid Field/Item/InputGroup
+   thumb labels, Tabs orientation, Chart style children and stable keys, valid Field/Item/InputGroup
    roles, CodeBlock keyboard scrolling and source-position key annotations,
    SidebarSeparator horizontal width respecting its edge insets,
    InputGroup disabled styling scoped to its input control (a disabled
@@ -670,8 +745,8 @@ pnpm dlx shadcn@latest apply --preset <code>
    unless superseded. The wordmark retains the foreground color.
 4. Keep app behavior outside regeneratable helpers: domain formatters live in
    `src/lib/format.ts`; `src/lib/utils.ts` only exports `cn`. Workspace persistence
-   lives in `workspace-provider.tsx`; app breakpoints use `hooks/use-compact.ts`,
-   separate from the generated `hooks/use-mobile.ts`.
+   lives in `workspace-provider.tsx`; sidebar breakpoint state uses
+   `hooks/use-mobile.ts`. Responsive app layouts use the shared CSS breakpoints.
 5. Run frontend lint, unit tests, build and keyless browser tests with a distinct
    `JAS_TEST_PORT`; see [Development](DEVELOPMENT.md). Check both themes, keyboard
    focus, narrow layouts, conversation history and draft/proposal flows. Refresh
@@ -730,7 +805,7 @@ Details retain the URL-addressable stock Sheet: full width on phones, at most
 the description. Keep title and footer actions fixed while the body scrolls.
 Preserve original observations, enforced mechanics, control/measurement accordions
 and rule version. Show the composition explanation only for that environment.
-Configure experiment opens its template; Design with Agent passes the existing
+Configure experiment opens a neutral experiment from its mechanics; Design with Agent passes the existing
 environment-specific request and uses the shared Target icon.
 
 Native links support opening details in another tab as well as normal navigation.
@@ -751,3 +826,55 @@ These guide composition; stock shadcn primitives and JAS tokens remain authorita
 The Environments heading marks the shared Layers2 glyph with `data-partial-fill="layers"`,
 reusing the sidebar selection rule to fill only its top layer. Keep the lower
 layer as an outline.
+
+Candidates extends the same Environments tabs without restyling installed rules.
+Show current containment status, an explicit keyless check, a locally retained
+specification and immutable review history. Disable executable validation until
+local qualification passes. A passed candidate still says Needs world review;
+experiment execution stays disabled. Keep public checks and pinned artifact
+provenance inspectable, errors recoverable, drafts intact, and late responses
+from changing the selected review or navigation. Compose existing stock fields,
+buttons and separators; retain mobile/theme/keyboard behavior.
+
+### Treatment exposure
+
+Experiment Overview leads with results or the current run state. Keep the full
+planned comparison, participant effort, missingness, uncertainty and treatment
+exposure inside the stock **Comparison & evidence** disclosure. It starts closed
+so an unrun experiment does not lead with empty statistical tables. Retain all
+counts, limitations and immutable source links when opened; do not summarize an
+absent outcome as zero. The main Run/Pause action stays visible in the heading.
+
+Run Record and experiment Overview compose a compact disclosure for assigned
+configuration, eligible recipients, available observations and confirmed input.
+Use the existing Table, Disclosure, Alert/Empty/Skeleton and semantic tokens;
+keep counts labeled included/eligible with unknown capture distinct from zero.
+Source links open immutable revision, turn and model-request evidence. Detailed
+observations, candidate input bindings and cutoff membership stay behind keyboard
+operable disclosures. Retain cached evidence and a local retry on refresh errors;
+polling cannot replace another selected record. Phone tables scroll internally.
+Inclusion is not attention/belief/intent, and exposure-conditioned filtering is
+post-treatment selection rather than an automatic causal estimate.
+
+### Three-participant coordination
+
+Keep coordination on the existing Conditions, Review and run Environment surfaces.
+Timing, logical delay, activation/conflict priority and directed routes use stock
+fields; structural alternatives/bindings remain editable in Specification. Disclose
+directory and ordering assumptions beside the controls and in run inspection.
+Researcher-scoped choices/values and addressed mail use compact tables, with null
+or unchosen outcomes named explicitly. Keep settlements, conflicts and artifact
+versions source-linked behind disclosures. Preserve internal table scrolling,
+keyboard controls and phone/light/dark behavior. Agreement is optional; the UI
+must not turn the agreement measure into a success label.
+
+### Institutional workflow
+
+Reuse Conditions/Review and run Environment/Record. Materials, logical time,
+owned work, blocked prerequisites and the selected handoff recipient lead the
+readable work list. Accepted means an actual recorded recipient acceptance.
+Dependencies/permissions/timing, artifact versions/access, private addressed mail
+and source-linked settlements use stock disclosures. Label researcher inspection;
+mailbox arrival does not confirm participant input. Keep ordinary tables and
+spatial diagrams out of the default work view. Material cost/duration edits retain
+draft/save locking; population edits preserve bound workers and complete orders.

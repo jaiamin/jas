@@ -1,3 +1,4 @@
+import { AdjudicationReview } from "@/components/adjudication";
 import {
   Disclosure,
   DisclosureContent,
@@ -5,9 +6,15 @@ import {
 } from "@/components/disclosure";
 import { Alert } from "@/components/feedback";
 import { Badge } from "@/components/ui/badge";
-import type { ExperimentPreflight } from "@/lib/types";
+import type { Design, ExperimentPreflight } from "@/lib/types";
 
-export function ExperimentCheck({ report }: { report: ExperimentPreflight }) {
+export function ExperimentCheck({
+  report,
+  design,
+}: {
+  report: ExperimentPreflight;
+  design?: Design;
+}) {
   const blocked = report.status === "blocked";
   return (
     <section className="my-4 min-w-0 break-words" aria-label="Experiment check">
@@ -32,7 +39,7 @@ export function ExperimentCheck({ report }: { report: ExperimentPreflight }) {
               : "Review scope and question mapping"}
           </DisclosureTrigger>
           <DisclosureContent>
-            <ExperimentCheckDetails report={report} />
+            <ExperimentCheckDetails report={report} design={design} />
           </DisclosureContent>
         </Disclosure>
       </Alert>
@@ -43,8 +50,10 @@ export function ExperimentCheck({ report }: { report: ExperimentPreflight }) {
 /** Shared check evidence without a surrounding callout or extra outer spacing. */
 export function ExperimentCheckDetails({
   report,
+  design,
 }: {
   report: ExperimentPreflight;
+  design?: Design;
 }) {
   return (
     <div className="flex min-w-0 flex-col gap-3 break-words">
@@ -82,6 +91,13 @@ export function ExperimentCheckDetails({
           only.
         </p>
       )}
+      {report.adjudications?.map((declaration) => (
+        <AdjudicationReview
+          key={declaration.condition_key}
+          declaration={declaration}
+          design={design}
+        />
+      ))}
       {report.comparisons.map((comparison) => (
         <p key={comparison.condition}>
           <strong>
@@ -91,6 +107,8 @@ export function ExperimentCheckDetails({
             ? comparison.changed_parameters.join(", ")
             : "No parameter changes"}
           {comparison.agent_assignment_changed && "; agent assignments differ"}.{" "}
+          {comparison.changed_harness.length > 0 &&
+            `Harness changes: ${comparison.changed_harness.join(", ")}. `}
           {
             comparison.witnesses.filter(
               (w) => w.observation_difference || w.outcome_difference,

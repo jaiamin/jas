@@ -10,6 +10,7 @@ __pycache__/
 *.sqlite3*
 .env
 .env.*
+pbcopy
 !.env.example
 .impeccable/
 data/
@@ -31,3 +32,4 @@ frontend/test-results/
 !/benchmarks/results/score-history.json
 !/benchmarks/results/aggregate-cost.json
 *.environments/
+*.extensions/

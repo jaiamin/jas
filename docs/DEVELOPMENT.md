@@ -60,8 +60,85 @@ work without keys. Settings reports provider availability, storage, budget and u
 its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
-`data/jas.sqlite3`, Compose stores it in `jas-data`, and exports use `jas-study` v4.
-This WIP uses only the current schema and rules; incompatible workspaces must be reset.
+`data/jas.sqlite3`; Compose stores it in `jas-data`.
+The sole current contract is database15, `jas-study` export18,
+`jas-environment-v10`/definition2, research-operation2 and generation-event-v2.
+Incompatible databases, library records and rule checkpoints are rejected on
+inspection, export, execution and replay. There are no migrations, compatibility
+readers or automatic resets. Start with a fresh database when changing contracts;
+removing existing data requires an explicit user decision.
+Capture1/comparison1/tool2.0/direct1.0 remain current.
+
+T12's keyless browser witnesses use the opt-in DEVELOPMENT-only workflow provider,
+fresh owned data and the already installed headless shell. Set `JAS_TEST_PORT`,
+`JAS_TEST_DATA_DIR`, `PLAYWRIGHT_BROWSERS_PATH`, `T12_BROWSER_EXECUTABLE` and
+`T12_BROWSER_OUTPUT`, then run `pnpm --dir frontend exec playwright test --config
+playwright.workflow.config.ts -g '<one case name>'`. The cases separately cover
+editor draft/save recovery, actual contention/pause/handoff/replay, and tool failure
+with explicit recovery. They do not establish live participant competence.
+
+The schema retains durable participant activations, per-request links and pinned
+environment sources. Reusable mechanics exclude participant harness settings;
+each experiment pins those separately.
+
+The keyless T10 browser trial uses an opt-in deterministic test provider and an
+isolated temporary database. Use a private dependency tree/cache and distinct port:
+
+```sh
+JAS_TEST_PORT=18123 pnpm --dir frontend exec playwright test --config playwright.coordination.config.ts
+uv run pytest backend/tests/test_distributed_coordination.py
+```
+
+These checks establish mechanics, UI, input accounting and replay, not live intelligence.
+
+The dedicated participant-policy browser trial installs a deterministic external
+provider in the test server only. It exercises real configuration, immutable
+revision saves, execution, accounting, inspection and replay in both themes:
+
+```sh
+JAS_TEST_PORT=18115 pnpm --dir frontend test:harness
+uv run python -m benchmarks.participant_harness_trial --output data/t04/development
+```
+
+The ordinary `test:e2e` server keeps providers unavailable for its inherited
+keyless regressions. Neither test server loads `.env` or permits paid requests.
+The trial runner retains source/case/harness hashes, all attempts and complete
+exports. Its scripted choices establish mechanics, not participant intelligence.
+
+The **tool-using harness 2.0.0** has selectable planning, retrieval, investigation
+and accessible verification policies. Direct action remains 1.0.0. New runs pin
+the current harness; incompatible versions are rejected. Each capability can be explicitly disabled;
+there is no substitute policy. The same activation request/operation budgets apply.
+See [extension admission](EXTENSIONS.md) for executable package boundaries.
+
+The neutral DEVELOPMENT runner and dedicated keyless UI flow exercise actual
+capabilities, source receipts, private plans, pause/reload/resume and replay:
+
+```sh
+uv run python -m benchmarks.participant_context_trial --output data/t08/development
+JAS_TEST_PORT=18119 pnpm --dir frontend exec playwright test --config playwright.context.config.ts
+```
+
+Use a new output path for each trial. These external-provider stand-ins make no
+paid calls and do not establish intelligence. See the
+[compact development history](research/RESEARCH_HARNESS_COMPACT_REPORT.md).
+
+Scripted controls (harness 1.0.0) are independent of model identity,
+plus declared memory/tool/request ablations. Model conditions remain Luna. The
+neutral DEVELOPMENT cases allow null contrasts, request-limit failure and a
+simpler-policy win; external-provider stand-ins test mechanics only:
+
+```sh
+uv run python -m benchmarks.reference_policy_trial --output data/t15/development-UNIQUE
+JAS_TEST_PORT=18121 pnpm --dir frontend exec playwright test --config playwright.reference.config.ts
+```
+
+Use distinct attempt/output paths. The scripted conditions themselves construct no
+provider and send zero requests. Compare actual effort as well as configured
+envelopes; no confidence interval or independent support is inferred from these
+small fixed-seed examples. These runners use the current contracts documented
+above. The [compact history](research/RESEARCH_HARNESS_COMPACT_REPORT.md)
+summarizes earlier source-scoped outcomes and unchanged frozen T01 failures.
 
 `JAS_ALLOWED_HOSTS` lists accepted hostnames/IPs without ports (comma-separated).
 Defaults: `localhost,127.0.0.1,[::1]`. Add the explicit LAN/proxy host before using a
@@ -91,5 +168,44 @@ pool can increase rate-limit failures; it does not give participants more inform
 
 Reusable custom environments are versioned files beside the configured SQLite database in
 `<database-stem>.environments/`; keep that directory when backing up a workspace. The app
-retains complete environment rules inside each immutable experiment, so library deletion
+retains concrete rules and a complete source definition/revision/hash inside each selected
+experiment, so library deletion
 never deletes run evidence. See [custom environments](CUSTOM_ENVIRONMENTS.md).
+
+Extension candidate validation uses pinned Wasmtime in a bounded import-free
+worker. It needs no Docker socket or host policy changes. Run local containment
+from Environments → Candidates or `POST /api/extensions/qualify`; every restart
+requires fresh qualification. The production smoke also qualifies the actual
+non-root image and exercises candidate denial/limits. See [extensions](EXTENSIONS.md)
+for the narrow contract, threat model, limits and review storage.
+
+## Artifact investigation development checks
+
+The installed `artifact_workspace` template has one investigator, permitted evidence,
+writable work and a sealed object. Configure initial contents, access and write limits
+in Conditions; edit structural references in the protocol JSON. The run's Environment
+view shows versions/source links and enforced submission outcomes. The recorded-turn
+slider is playback; Verify reapplies consequences/authorized read receipts with no
+model requests. Restart restores and pauses; Run or Step explicitly samples again.
+
+```sh
+uv run pytest backend/tests/test_artifact_workspace.py backend/tests/test_artifact_lifecycle.py
+JAS_TEST_PORT=18120 pnpm --dir frontend exec playwright test --config playwright.harness.config.ts artifact-world.trial.ts
+```
+
+The dedicated trial uses only an opt-in external-provider stand-in. Success, wrong
+submission, stale-write rejection/recovery, both harnesses and mobile/draft behavior
+are development mechanics checks. They do not establish live intelligence or
+held-out generalization. See the [compact history](research/RESEARCH_HARNESS_COMPACT_REPORT.md).
+
+
+T16's finite extension browser trial runs with an explicit keyless provider stand-in
+in a separate temporary workspace, so its synthetic requests cannot contaminate
+zero-call browser controls:
+
+```sh
+JAS_TEST_PORT=18125 pnpm --dir frontend test:e2e --config playwright.extension.config.ts
+```
+
+This checks admission, reusable mechanics, normal Review/save/run and exact replay;
+it does not run generation or live participant intelligence.

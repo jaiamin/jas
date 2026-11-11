@@ -1,10 +1,74 @@
+import type { ResearchActivity } from "./types";
+
 interface ChatProgress {
   status: "pending" | "complete" | "failed";
-  purpose: "general" | "design" | "analysis";
+  purpose: "general" | "design" | "analysis" | "investigation";
+  investigation_id?: string;
   partial?: string;
   introduction?: string;
   stage?: string;
   activity?: string[];
+  research?: ResearchActivity;
+}
+
+function object(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function researchActivity(value: unknown): value is ResearchActivity {
+  if (
+    !object(value) ||
+    value.version !== 2 ||
+    !object(value.scope) ||
+    typeof value.scope.chat_id !== "string" ||
+    typeof value.scope.before !== "string" ||
+    typeof value.scope.context_limit !== "number" ||
+    !object(value.scope.cutoffs) ||
+    Object.values(value.scope.cutoffs).some(
+      (cutoff) =>
+        typeof cutoff !== "number" || !Number.isInteger(cutoff) || cutoff < 0,
+    ) ||
+    (value.stop_reason !== null && typeof value.stop_reason !== "string") ||
+    !Array.isArray(value.operations) ||
+    value.operations.length > 12
+  )
+    return false;
+  return value.operations.every(
+    (operation) =>
+      object(operation) &&
+      typeof operation.id === "string" &&
+      typeof operation.summary === "string" &&
+      object(operation.request) &&
+      ["capabilities", "context", "probe", "generate_extension"].includes(
+        String(operation.request.kind),
+      ) &&
+      ["pending", "complete", "rejected", "failed"].includes(
+        String(operation.status),
+      ) &&
+      (operation.data === null || object(operation.data)) &&
+      Array.isArray(operation.sources) &&
+      operation.sources.every(
+        (source: unknown) =>
+          object(source) &&
+          [
+            "builtin",
+            "environment",
+            "analysis",
+            "run",
+            "finite_contract",
+            "extension_generation",
+            "extension_review",
+            "finite_check",
+            "finite_admission",
+          ].includes(String(source.kind)) &&
+          typeof source.id === "string" &&
+          typeof source.hash === "string" &&
+          (source.turn === undefined ||
+            (typeof source.turn === "number" &&
+              Number.isInteger(source.turn) &&
+              source.turn >= 0)),
+      ),
+  );
 }
 
 /** Decode live prose/activity only; persisted queries own the complete analysis record. */
@@ -36,9 +100,18 @@ export function chatProgress(
     )
       return null;
     const purpose = "purpose" in row ? row.purpose : undefined;
-    if (purpose !== "general" && purpose !== "design" && purpose !== "analysis")
+    if (
+      purpose !== "general" &&
+      purpose !== "design" &&
+      purpose !== "analysis" &&
+      purpose !== "investigation"
+    )
       return null;
     const output = row.output;
+    const investigationId =
+      "investigation_id" in output ? output.investigation_id : undefined;
+    if (investigationId !== undefined && investigationId !== messageId)
+      return null;
     const partial = "partial" in output ? output.partial : undefined;
     const introduction =
       "introduction" in output ? output.introduction : undefined;
@@ -48,6 +121,8 @@ export function chatProgress(
       return null;
     if (stage !== undefined && typeof stage !== "string") return null;
     const activity = "activity" in output ? output.activity : undefined;
+    const research = "research" in output ? output.research : undefined;
+    if (research !== undefined && !researchActivity(research)) return null;
     if (
       activity !== undefined &&
       (!Array.isArray(activity) ||
@@ -56,6 +131,10 @@ export function chatProgress(
       return null;
     return {
       ...(activity ? { activity } : {}),
+      ...(typeof investigationId === "string"
+        ? { investigation_id: investigationId }
+        : {}),
+      ...(research ? { research } : {}),
       ...(introduction !== undefined ? { introduction } : {}),
       status: row.status,
       partial,

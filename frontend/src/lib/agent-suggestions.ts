@@ -20,6 +20,18 @@ export interface AgentSuggestion {
 }
 
 const evidenceQuestions: Record<EnvironmentId, string> = {
+  reviewed_finite:
+    "Inspect the frozen external contract, actual finite transitions, actor permissions, credits and escrow, stopping and exact replay. Keep private facts scoped and do not infer intent or general generation competence.",
+  institutional_workflow:
+    "Trace actual work claims, material spending, delayed completion and selected-recipient handoffs. Inspect blocked dependencies, competing claims and feasible alternatives without treating prose as completed work.",
+  reliance_commitments:
+    "Trace voluntary promises, reliance, actual access grants, feasible alternatives and declared deadlines. Inspect recipient consequences and later responses, retaining infeasible, absent-opportunity and null outcomes without inferring intent.",
+  sealed_relay:
+    "Inspect the admitted finite relay, its explicit permissions, action credits and exact replay without inferring intent.",
+  distributed_coordination:
+    "Trace local evidence, addressed delivery, phase conflicts and independent alternatives. Compare shared information and preserve unmatched or abstaining outcomes.",
+  artifact_workspace:
+    "Inspect authorized evidence, edit versioned work and decide when to submit or stop.",
   composed:
     "Trace resource allocations, consumption and unmet needs. Separate stock visibility " +
     "from allocation visibility and inferred information; compare enforced utility with private goals.",
@@ -172,7 +184,7 @@ export function agentSuggestions({
       action: run ? "trace" : "compare",
       prompt: run
         ? `For ${identity}, how did the recorded outcomes change across rounds? Identify turning points with cited decisions, and state what this single run cannot establish.`
-        : `${comparison} for ${identity} using independent runs and matched seeds where available. Which differences are supported, and how much uncertainty remains? Do not treat turns as independent replicates.`,
+        : `${comparison} for ${identity} using planned runs and matched seeds where available. Which differences are supported, and how much uncertainty remains? Do not treat turns as independent replicates.`,
     },
     {
       title: "Trace decisions",

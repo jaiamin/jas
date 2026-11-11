@@ -4,6 +4,12 @@ These sources inform experiment design. They do not establish that model partici
 reproduce human behavior. [Evaluation tooling](../benchmarks/README.md) checks application
 workflows and mechanics; it does not validate human predictions.
 
+See [experiment validity](EXPERIMENT_VALIDITY.md) for operational checks, the
+[accepted specification](RESEARCH_HARNESS_SPEC.md) for requirements and open live
+evaluation gates, and the [product review](research/FINAL_PRODUCT_REVIEW.md) for
+observed implementation results. Superseded surveys and task reports are
+consolidated in the [historical summary](research/RESEARCH_HARNESS_COMPACT_REPORT.md).
+
 | Primary source | What it supports | Product consequence |
 | --- | --- | --- |
 | [Generative Agents, Park et al.](https://arxiv.org/abs/2304.03442) ([full text](https://arxiv.org/html/2304.03442)) | Experience retrieval, planning and reflection improve perceived believability; memory can introduce embellishments. | Persist original experiences; distinguish retrieved events from self-authored notes. Compare memory conditions rather than assuming reflection is universally beneficial. |
@@ -40,5 +46,5 @@ workflows and mechanics; it does not validate human predictions.
 Seed controls environment randomization, not LLM sampling. Model/version, settings,
 rule versions, requests, outputs and estimated costs remain part of each saved run.
 
-See [experiment validity](EXPERIMENT_VALIDITY.md) for the later primary-source review,
-implemented preflight, capability limits and post-checkpoint verification.
+See [experiment validity](EXPERIMENT_VALIDITY.md) for preflight, capability limits
+and interpretation of recorded evidence.

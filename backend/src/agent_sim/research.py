@@ -4,7 +4,9 @@ from dataclasses import dataclass
 from typing import TypedDict
 
 from sqlalchemy import delete, or_, select, update
+from sqlalchemy.orm import defer
 
+from .comparisons import ComparisonRun, compare_runs, empty_effort
 from .db import (
     Agent,
     Analysis,
@@ -12,6 +14,8 @@ from .db import (
     Condition,
     Database,
     Measurement,
+    ParticipantActivation,
+    ParticipantOperation,
     ProviderCall,
     RecordedEvent,
     Revision,
@@ -21,10 +25,14 @@ from .db import (
     digest,
 )
 from .domain import Design, Treatment
-from .environment_library import EnvironmentLibrary
+from .environment_library import EnvironmentLibrary, validate_source
+from .exposure import exposure_report
+from .extensions import Extensions
 from .llm import PRICES, LanguageModels, Usage, empty_usage
-from .metrics import RunMetrics, aggregate_metrics, condition_results, matched_effects
-from .simulation.environments import CATALOG, create_world
+from .metrics import aggregate_metrics
+from .participant_context import OPERATION_CAPABILITY
+from .participants import activation_record, operation_record
+from .simulation.environments import create_world, get_environment
 from .validity import Requirement, factorial_issues, preflight, require_valid, requirement_issues
 
 
@@ -63,7 +71,7 @@ class RunSummary(TypedDict):
     condition: str
     condition_key: str
     environment: str
-    model: str
+    model: str | None
     models: list[str]
     status: str
     turn: int
@@ -86,10 +94,26 @@ class OperationalRun:
 class Research:
     def __init__(self, db: Database, models: LanguageModels):
         self.db, self.models = db, models
-        self.environments = EnvironmentLibrary(db.engine.url.database)
+        self.extensions = Extensions(db.engine.url.database)
+        self.environments = EnvironmentLibrary(db.engine.url.database, self.extensions)
+
+    def world(self, design: Design, parameters, seed: int, state: dict | None = None):
+        return create_world(design, parameters, seed, state, runner=self.extensions.transition)
+
+    def review_design(self, design: Design, plan_id: str | None = None) -> dict:
+        """Authorize an untrusted draft before any executable preflight witness."""
+        self.validate_design(design)
+        if design.environment in {"sealed_relay", "reviewed_finite"}:
+            source = design.environment_source
+            if source is None or source.definition.extension is None:
+                raise ValueError("Independent extension admission is required")
+            self.extensions.check_package(source.definition.extension)
+        return self.preflight(design, plan_id)
 
     def preflight(self, design: Design, plan_id: str | None = None) -> dict:
-        result = preflight(design)
+        # Persisted revisions carry their exact package and provenance. Their checks
+        # must remain possible after loss of the original review/admission sidecars.
+        result = preflight(design, runner=self.extensions.transition)
         result["question_mapping"] = []
         result["original_question"] = None
         if plan_id:
@@ -133,12 +157,21 @@ class Research:
 
     @staticmethod
     def validate_design(design: Design) -> None:
+        if any(
+            c.parameters.artifacts and c.parameters.artifacts.judgment and c.adjudicator is None
+            for c in design.conditions
+        ):
+            raise ValueError("Declare the adjudicator model/configuration before execution")
+        if design.environment_source:
+            if design.environment_source.definition.environment != design.environment:
+                raise ValueError("Pinned environment source must match the experiment's world")
+            validate_source(design.environment_source)
         if any(c.model not in PRICES for c in design.conditions) or any(
             p.model is not None and p.model not in PRICES
             for p in design.profiles + [p for c in design.conditions for p in c.profile_overrides]
         ):
             raise ValueError("Choose a model in the reviewed provider catalog")
-        environment_definition = CATALOG[design.environment]
+        environment_definition = get_environment(design.environment)
         unsupported = sorted(set(design.measures) - set(environment_definition.measures))
         if unsupported:
             raise ValueError(
@@ -147,10 +180,14 @@ class Research:
             )
 
     def save_design(
-        self, design: Design, *, study_id: str | None = None, plan_id: str | None = None
+        self,
+        design: Design,
+        *,
+        study_id: str | None = None,
+        plan_id: str | None = None,
+        investigation_id: str | None = None,
     ) -> str:
-        self.validate_design(design)
-        require_valid(self.preflight(design, plan_id))
+        require_valid(self.review_design(design, plan_id))
         payload = design.model_dump()
         with self.db.session.begin() as session:
             if plan_id:
@@ -163,9 +200,15 @@ class Research:
                     raise ValueError("Choose a completed, supported AI design")
             if study_id:
                 study = session.get_one(Study, study_id)
+                if study.investigation_id != investigation_id:
+                    raise ValueError("Investigation revisions must use its bounded workflow")
                 study.revision += 1
                 study.title, study.question = design.title, design.question
-                study.ceiling = round(design.budget_usd * 1_000_000)
+                study.ceiling = (
+                    min(study.ceiling, round(design.budget_usd * 1_000_000))
+                    if investigation_id
+                    else round(design.budget_usd * 1_000_000)
+                )
                 if study.ceiling < study.charged:
                     raise ValueError("Study budget cannot be below already committed usage")
             else:
@@ -197,13 +240,14 @@ class Research:
                 for seed in design.seeds:
                     for repetition in range(1, design.repetitions + 1):
                         resolved = design.resolve(condition)
-                        world = create_world(resolved, condition.parameters, seed)
+                        world = self.world(resolved, condition.parameters, seed)
                         run = Run(
                             study_id=study.id,
                             condition_id=record.id,
                             seed=seed,
                             repetition=repetition,
                             checkpoint=world.snapshot(),
+                            investigation_id=investigation_id,
                         )
                         session.add(run)
                         session.flush()
@@ -241,6 +285,8 @@ class Research:
                 .values(title=Study.title)
                 .returning(Study.id)
             ).scalar_one()
+            if session.get_one(Study, study_id).investigation_id:
+                raise ValueError("Investigation evidence and attempts must be retained")
             runs = session.scalars(select(Run).where(Run.study_id == study_id)).all()
             run_ids = {run.id for run in runs}
             if run_ids & active_runs or any(
@@ -277,7 +323,7 @@ class Research:
             session.execute(
                 update(ProviderCall)
                 .where(calls)
-                .values(request_payload=None, response_payload=None)
+                .values(request_payload=None, response_payload=None, activation_id=None)
             )
             session.execute(
                 update(ProviderCall).where(ProviderCall.study_id == study_id).values(study_id=None)
@@ -293,6 +339,17 @@ class Research:
             session.execute(delete(Analysis).where(Analysis.id.in_(analysis_ids)))
             for record in (Annotation, Measurement, RecordedEvent, Turn, Agent):
                 session.execute(delete(record).where(record.run_id.in_(run_ids)))
+            activation_ids = select(ParticipantActivation.id).where(
+                ParticipantActivation.run_id.in_(run_ids)
+            )
+            session.execute(
+                delete(ParticipantOperation).where(
+                    ParticipantOperation.activation_id.in_(activation_ids)
+                )
+            )
+            session.execute(
+                delete(ParticipantActivation).where(ParticipantActivation.run_id.in_(run_ids))
+            )
             session.execute(delete(Run).where(Run.id.in_(run_ids)))
             revisions = select(Revision.id).where(Revision.study_id == study_id)
             session.execute(delete(Condition).where(Condition.revision_id.in_(revisions)))
@@ -318,7 +375,13 @@ class Research:
             condition = session.get_one(Condition, run.condition_id)
             revision = session.get_one(Revision, condition.revision_id)
             treatment = Treatment.model_validate(condition.specification)
-            return run, Design.model_validate(revision.design).resolve(treatment), treatment
+            design = Design.model_validate(revision.design).resolve(treatment)
+            if (
+                run.checkpoint.get("rule_version")
+                != get_environment(design.environment).world.version
+            ):
+                raise ValueError("Saved rule version is incompatible; create a fresh experiment")
+            return run, design, treatment
 
     def run_summary(
         self,
@@ -336,10 +399,12 @@ class Research:
             "condition": condition.name,
             "condition_key": condition.key,
             "environment": design.environment,
-            "model": condition.model,
+            "model": None if condition.harness.kind == "scripted" else condition.model,
             "models": sorted(
                 {p.model or condition.model for p in design.resolve(condition).profiles}
-            ),
+            )
+            if condition.harness.kind != "scripted"
+            else [],
             "status": run.status,
             "turn": run.turn,
             "round": run.round,
@@ -385,7 +450,9 @@ class Research:
 
     def studies(self) -> list[dict]:
         with self.db.session() as session:
-            records = session.scalars(select(Study).order_by(Study.created.desc())).all()
+            records = session.scalars(
+                select(Study).where(Study.revision > 0).order_by(Study.created.desc())
+            ).all()
             revisions = session.scalars(
                 select(Revision)
                 .join(Study, Study.id == Revision.study_id)
@@ -453,45 +520,52 @@ class Research:
             ).all()
         selected_ids = {run.id for run in self.operational_runs(study_id, revision.number)}
         summaries = self.runs(study_id, run_ids=selected_ids)
+        with self.db.session() as session:
+            attempted = set(
+                session.scalars(
+                    select(ParticipantActivation.run_id)
+                    .where(ParticipantActivation.run_id.in_(selected_ids))
+                    .distinct()
+                )
+            )
         completed = [run for run in summaries if run["status"] == "complete"]
         metrics = self.metrics_many({run["id"] for run in completed})
-        samples = [
-            RunMetrics(
-                condition_key=run["condition_key"],
-                condition=run["condition"],
-                seed=run["seed"],
-                repetition=run["repetition"],
-                metrics=metrics[run["id"]],
-            )
-            for run in completed
-        ]
+        effort = self.participant_effort({run["id"]: run["turn"] + 1 for run in summaries})
+        comparison = compare_runs(
+            [
+                ComparisonRun(
+                    run_id=run["id"],
+                    condition_key=run["condition_key"],
+                    seed=run["seed"],
+                    repetition=run["repetition"],
+                    status=run["status"],
+                    through_turn=run["turn"],
+                    attempted=run["turn"] > 0
+                    or run["id"] in attempted
+                    or run["status"] == "failed",
+                    metrics=metrics.get(run["id"], {}),
+                    error=run["error"],
+                    effort=effort[run["id"]],
+                )
+                for run in summaries
+            ],
+            Design.model_validate(revision.design),
+        )
+        comparison["comparison"]["revision"] = revision.number
+        comparison["comparison"]["design_sha256"] = revision.sha256
         check = self.preflight(
             Design.model_validate(revision.design),
             revision.source.removeprefix("plan:") if revision.source.startswith("plan:") else None,
         )
         with self.db.session() as session:
-            versions = session.execute(
-                select(Run.status, Run.checkpoint["rule_version"].as_string())
+            versions = session.scalars(
+                select(Run.checkpoint["rule_version"].as_string())
                 .join(Condition, Run.condition_id == Condition.id)
                 .where(Condition.revision_id == revision.id)
             ).all()
-        current_version = CATALOG[revision.design["environment"]].world.version
-        incompatible = [
-            (status, version) for status, version in versions if version != current_version
-        ]
-        if incompatible:
-            blocked = any(status != "complete" for status, _ in incompatible)
-            check["issues"].append(
-                {
-                    "code": "historical_rules",
-                    "severity": "error" if blocked else "warning",
-                    "message": "Saved runs use a different rule version. Evidence stays readable; "
-                    "replay/resume requires its original engine. "
-                    "Save a new revision for current rules. "
-                    "The mechanical checks below use current rules.",
-                }
-            )
-            check["status"] = "blocked" if blocked or check["status"] == "blocked" else "review"
+        current_version = get_environment(revision.design["environment"]).world.version
+        if any(version != current_version for version in versions):
+            raise ValueError("Saved rule version is incompatible; create a fresh experiment")
         return {
             "id": study_id,
             "design": revision.design,
@@ -505,8 +579,7 @@ class Research:
                 {"number": r.number, "created": r.created, "sha256": r.sha256} for r in revisions
             ],
             "runs": summaries,
-            "results": condition_results(samples),
-            "effects": matched_effects(samples, Design.model_validate(revision.design)),
+            **comparison,
             "usage": self.models.usage(study_id=study_id),
             "preflight": check,
         }
@@ -522,10 +595,14 @@ class Research:
             calls = session.scalars(
                 select(ProviderCall)
                 .where(ProviderCall.run_id == run_id)
+                .options(defer(ProviderCall.request_payload), defer(ProviderCall.response_payload))
                 .order_by(ProviderCall.created)
             ).all()
             turns = session.scalars(
-                select(Turn).where(Turn.run_id == run_id).order_by(Turn.number)
+                select(Turn)
+                .where(Turn.run_id == run_id)
+                .options(defer(Turn.observation), defer(Turn.checkpoint))
+                .order_by(Turn.number)
             ).all()
             events = session.scalars(
                 select(RecordedEvent)
@@ -535,22 +612,31 @@ class Research:
             measurements = session.scalars(
                 select(Measurement).where(Measurement.run_id == run_id).order_by(Measurement.id)
             ).all()
+        blocked = None
+        if design.environment in {"sealed_relay", "reviewed_finite"}:
+            assert design.environment_source and design.environment_source.definition.extension
+            try:
+                self.extensions.check_runtime(design.environment_source.definition.extension)
+            except ValueError as error:
+                blocked = str(error)
         return {
             "summary": self.run_summary(run, design, condition, revision),
             "design": design.model_dump(),
             "parameters": condition.parameters.model_dump(),
-            "next_actor": create_world(
+            "harness": condition.harness.model_dump(),
+            "activations": self.activations(run_id),
+            "effort": self.participant_effort({run_id: run.turn + 1})[run_id],
+            "next_actor": self.world(
                 design, condition.parameters, run.seed, run.checkpoint
-            ).actor()
-            if run.checkpoint["rule_version"] == CATALOG[design.environment].world.version
-            else None,
-            "execution_blocked": None
-            if run.checkpoint["rule_version"] == CATALOG[design.environment].world.version
-            else "Saved rules differ from this engine. Inspect evidence or save a new revision; "
-            "this run cannot resume or replay here.",
+            ).actor(),
+            "execution_blocked": blocked,
             "requests": [
                 {
                     "id": c.id,
+                    "activation_id": c.activation_id,
+                    "analysis_id": c.analysis_id,
+                    "purpose": c.purpose,
+                    "model": c.model,
                     "turn": c.turn,
                     "status": c.status,
                     "error": c.error,
@@ -590,6 +676,103 @@ class Research:
             "relationships": self.relationships(events),
         }
 
+    def capture_exposure(self, cutoffs: dict[str, int]) -> dict:
+        # Analysis capture runs off the API loop: the Engine can advance while
+        # these reads run, so always carry the accepted turn into the reader.
+        return {
+            rid: self.exposure(rid, cutoff, include_pending=True) for rid, cutoff in cutoffs.items()
+        }
+
+    def exposure(
+        self, run_id: str, through_turn: int | None = None, *, include_pending: bool = False
+    ) -> dict:
+        run, design, condition = self.configuration(run_id)
+        cutoff = run.turn if through_turn is None else through_turn
+        if cutoff < 0 or cutoff > run.turn:
+            raise ValueError("Exposure cutoff is outside recorded evidence")
+        # Explicit historical turn cutoffs exclude later activations, including
+        # observations made after the last event at that boundary. Current capture
+        # also retains uncommitted attempts, with exact frozen membership.
+        attempt_cutoff = cutoff + (through_turn is None or (include_pending and cutoff == run.turn))
+        with self.db.session() as session:
+            revision = session.scalars(
+                select(Revision)
+                .join(Condition, Condition.revision_id == Revision.id)
+                .where(Condition.id == run.condition_id)
+            ).one()
+            activations = session.scalars(
+                select(ParticipantActivation)
+                .where(
+                    ParticipantActivation.run_id == run_id,
+                    ParticipantActivation.turn <= attempt_cutoff,
+                )
+                .order_by(ParticipantActivation.created, ParticipantActivation.id)
+            ).all()
+            ids = [a.id for a in activations]
+            calls = session.scalars(
+                select(ProviderCall)
+                .where(ProviderCall.activation_id.in_(ids))
+                .order_by(ProviderCall.created, ProviderCall.id)
+            ).all()
+            events = session.scalars(
+                select(RecordedEvent)
+                .where(RecordedEvent.run_id == run_id, RecordedEvent.turn <= cutoff)
+                .order_by(RecordedEvent.id)
+            ).all()
+            read_grants: dict[str, list[str]] = {}
+            if cutoff and design.environment in {"reliance_commitments", "institutional_workflow"}:
+                grants = session.execute(
+                    select(Turn.checkpoint["read_grants"]).where(
+                        Turn.run_id == run_id, Turn.number == cutoff
+                    )
+                ).scalar_one()
+                if design.environment == "reliance_commitments":
+                    read_grants = grants
+                else:
+                    for actor, artifacts in grants.items():
+                        for artifact in artifacts:
+                            read_grants.setdefault(artifact, []).append(actor)
+            operations: dict[str, list[int]] = {key: [] for key in ids}
+            artifact_reads = []
+            for operation in session.scalars(
+                select(ParticipantOperation)
+                .where(ParticipantOperation.activation_id.in_(ids))
+                .order_by(ParticipantOperation.number)
+            ):
+                operations[operation.activation_id].append(operation.number)
+                if operation.kind == "read_artifact" and operation.status == "complete":
+                    artifact_reads.append(operation)
+        return exposure_report(
+            run,
+            design,
+            condition,
+            revision,
+            activations,
+            calls,
+            events,
+            operations,
+            through_turn=cutoff,
+            read_grants=read_grants,
+            artifact_reads=artifact_reads,
+        )
+
+    def activations(self, run_id: str) -> list[dict]:
+        with self.db.session() as session:
+            rows = session.scalars(
+                select(ParticipantActivation)
+                .where(ParticipantActivation.run_id == run_id)
+                .order_by(ParticipantActivation.created, ParticipantActivation.id)
+            ).all()
+            journals: dict[str, list[dict]] = {row.id: [] for row in rows}
+            if rows:
+                for op in session.scalars(
+                    select(ParticipantOperation)
+                    .where(ParticipantOperation.activation_id.in_(journals))
+                    .order_by(ParticipantOperation.number)
+                ):
+                    journals[op.activation_id].append(operation_record(op))
+            return [activation_record(row, journals[row.id]) for row in rows]
+
     def evidence(self, run_id: str, number: int) -> dict:
         run, design, condition = self.configuration(run_id)
         if number < 0 or number > run.turn:
@@ -598,13 +781,8 @@ class Research:
             if number == 0:
                 if run.turn == 0:
                     checkpoint = run.checkpoint
-                elif run.checkpoint["rule_version"] != CATALOG[design.environment].world.version:
-                    raise ValueError(
-                        "Initial state cannot be reconstructed with different rules; "
-                        "inspect recorded turns"
-                    )
                 else:
-                    checkpoint = create_world(design, condition.parameters, run.seed).snapshot()
+                    checkpoint = self.world(design, condition.parameters, run.seed).snapshot()
                 return {
                     "round": checkpoint["round"],
                     "number": 0,
@@ -637,6 +815,130 @@ class Research:
     def metrics(self, run_id: str) -> dict[str, float]:
         return self.metrics_many({run_id})[run_id]
 
+    def capture_comparisons(self, cutoffs: dict[str, int]) -> dict:
+        """Freeze sample membership, run disposition and terminal metrics together."""
+        with self.db.session() as session:
+            rows = session.execute(
+                select(Run, Condition, Revision)
+                .join(Condition, Run.condition_id == Condition.id)
+                .join(Revision, Condition.revision_id == Revision.id)
+                .where(Run.id.in_(cutoffs))
+            ).all()
+            measures = session.scalars(
+                select(Measurement).where(Measurement.run_id.in_(cutoffs)).order_by(Measurement.id)
+            ).all()
+            activations = session.execute(
+                select(ParticipantActivation.run_id, ParticipantActivation.turn).where(
+                    ParticipantActivation.run_id.in_(cutoffs)
+                )
+            ).all()
+        effort = self.participant_effort(
+            {run.id: cutoffs[run.id] + (run.turn == cutoffs[run.id]) for run, _, _ in rows}
+        )
+        values: dict[str, list[tuple[str, float | None]]] = defaultdict(list)
+        for measure in measures:
+            if measure.turn <= cutoffs[measure.run_id]:
+                values[measure.run_id].append((measure.key, measure.value))
+        attempted = {rid for rid, turn in activations if turn <= cutoffs[rid] + 1}
+        groups: dict[str, list[ComparisonRun]] = defaultdict(list)
+        revisions = {}
+        for run, condition, revision in rows:
+            cutoff = cutoffs[run.id]
+            state = (
+                run.checkpoint
+                if run.turn == cutoff
+                else self.evidence(run.id, cutoff)["checkpoint"]
+            )
+            terminal = state["done"]
+            status = "complete" if terminal else run.status if run.turn == cutoff else "cutoff"
+            groups[revision.id].append(
+                ComparisonRun(
+                    run_id=run.id,
+                    condition_key=condition.key,
+                    seed=run.seed,
+                    repetition=run.repetition,
+                    status=status,
+                    through_turn=cutoff,
+                    attempted=cutoff > 0 or run.id in attempted or status == "failed",
+                    metrics=aggregate_metrics(values[run.id]) if terminal else {},
+                    error=run.error if run.turn == cutoff else None,
+                    effort=effort[run.id],
+                )
+            )
+            revisions[revision.id] = revision
+        comparisons = {}
+        for key, group in groups.items():
+            revision = revisions[key]
+            result = compare_runs(group, Design.model_validate(revision.design))
+            result["comparison"].update(revision=revision.number, design_sha256=revision.sha256)
+            comparisons[key] = result
+        return comparisons
+
+    def participant_effort(self, through_turns: dict[str, int]) -> dict[str, dict]:
+        """Capture all recorded attempts/charges, independently of terminal eligibility."""
+        result = {run_id: empty_effort() for run_id in through_turns}
+        charges = dict.fromkeys(through_turns, 0)
+        with self.db.session() as session:
+            activations = session.scalars(
+                select(ParticipantActivation)
+                .where(ParticipantActivation.run_id.in_(through_turns))
+                .options(defer(ParticipantActivation.observation))
+            ).all()
+            allowed = {a.id: a for a in activations if a.turn <= through_turns[a.run_id]}
+            journal = session.scalars(
+                select(ParticipantOperation)
+                .where(ParticipantOperation.activation_id.in_(allowed))
+                .options(defer(ParticipantOperation.request), defer(ParticipantOperation.result))
+            ).all()
+            calls = session.scalars(
+                select(ProviderCall)
+                .where(ProviderCall.activation_id.in_(allowed))
+                .options(defer(ProviderCall.request_payload), defer(ProviderCall.response_payload))
+            ).all()
+        for activation in allowed.values():
+            effort = result[activation.run_id]
+            effort["activations"] += 1
+            effort["inference_attempts"] += activation.requests
+            effort["committed_decisions"] += activation.status == "committed"
+            reason = activation.stop_reason or "in_progress"
+            effort["stop_reasons"][reason] = effort["stop_reasons"].get(reason, 0) + 1
+            source = {
+                key: value
+                for key, value in activation.identity.items()
+                if key.endswith("implementation_sha256") or key == "versions"
+            }
+            if source not in effort["implementation_sources"]:
+                effort["implementation_sources"].append(source)
+        for op in journal:
+            effort = result[allowed[op.activation_id].run_id]
+            if op.kind in {
+                "observe",
+                "rules",
+                "legal_options",
+                "read_artifact",
+                *OPERATION_CAPABILITY,
+            }:
+                effort["tool_attempts"] += 1
+                effort["tool_operations"] += op.status == "complete"
+            elif op.kind == "reference":
+                effort["scripted_attempts"] += 1
+                effort["scripted_decisions"] += op.status == "complete"
+        for call in calls:
+            assert call.activation_id is not None
+            effort = result[allowed[call.activation_id].run_id]
+            usage = effort["usage"]
+            usage["requests"] += 1
+            usage["input_tokens"] += call.input_tokens
+            usage["output_tokens"] += call.output_tokens
+            charges[allowed[call.activation_id].run_id] += call.charged
+            usage["partial"] |= call.status in {"pending", "unknown"}
+            effort["reasoning_tokens"] += call.reasoning_tokens
+            statuses = effort["request_statuses"]
+            statuses[call.status] = statuses.get(call.status, 0) + 1
+        for run_id, charged in charges.items():
+            result[run_id]["usage"]["cost_usd"] = charged / 1_000_000
+        return result
+
     def metrics_many(self, run_ids: set[str]) -> dict[str, dict[str, float]]:
         with self.db.session() as session:
             measures = session.scalars(
@@ -655,7 +957,16 @@ class Research:
                 not event.actor
                 or not event.target
                 or event.kind
-                not in ("transfer", "resource_transfer", "message", "claim", "commitment_resolved")
+                not in (
+                    "transfer",
+                    "resource_transfer",
+                    "message",
+                    "claim",
+                    "commitment_resolved",
+                    "message_delivered",
+                    "handoff_work",
+                    "accept_handoff",
+                )
             ):
                 continue
             row = pairs.setdefault(

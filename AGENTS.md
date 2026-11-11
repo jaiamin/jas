@@ -74,3 +74,14 @@ document configuration in `.env.example`. Data resets require explicit authoriza
 Use task branches and Conventional Commits; do not merge or push to main without approval.
 Report observed checks and limitations; never claim fresh benchmark or health scores
 without running the corresponding evaluation.
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues in jaiamin/ass. See docs/agents/issue-tracker.md.
+
+### Domain docs
+
+Single context: docs/GLOSSARY.md and docs/adr/.
+See docs/agents/domain.md.

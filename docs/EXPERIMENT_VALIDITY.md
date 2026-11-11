@@ -1,198 +1,114 @@
-# From a question to evidence
+# From questions to evidence
 
-JAS should produce a faithful, inspectable experiment or explain which mechanics are
-missing. An eloquent transcript, more agents, or a nonzero treatment difference cannot
-establish that an experiment answers its question. These changes follow the published
-frozen evaluation checkpoint; its historical scores do not measure this implementation.
+JAS creates inspectable experiments about model behavior under declared rules.
+A plausible transcript, more participants or a nonzero treatment difference does
+not establish that an experiment answers its question. Application improvements
+change the harness and available evidence; they do not train model weights.
 
-## Research and decisions
+## Designing a supported experiment
 
-Primary sources reviewed on 2026-11-08:
+The Researcher preserves the original question and maps required constructs to
+installed world capabilities. Missing mechanics or an unsupported proxy must be
+reported before an executable proposal is accepted. Quotes and capability names
+make this mapping inspectable; semantic fidelity still needs judgment.
 
-| Source | What it supports | Decision for JAS |
-| --- | --- | --- |
-| [Concordia game-engine design](https://arxiv.org/html/2507.08892), [implementation](https://github.com/google-deepmind/concordia) | Composable entities and components; actor decisions and game-master adjudication serve different purposes. Evaluation, simulation and drama have different objectives. | Preserve rule-owned settlement. Describe capabilities explicitly; prose cannot install economic rights or new state transitions. Do not use dramatic behavior as an evaluation target. |
-| [OpenSpiel](https://github.com/google-deepmind/open_spiel) | Explicit game rules, information structures and strategy evaluation. | Check enforced affordances, payoff incentives and treatment opportunities before asking models to play. |
-| [AgentSociety](https://arxiv.org/html/2502.08691), [OASIS](https://github.com/camel-ai/oasis) | Large simulations depend on domain-specific economic/social systems and action mechanisms. | Additional agents cannot repair an absent mechanism. Keep bounded interpretable studies; implement a new world only with its own state, actions and independent tests. |
-| [ODD protocol](https://www.jasss.org/23/2/7.html) | Specify purpose, entities/state, process scheduling, assumptions, rationale and evaluation for fitness for purpose. | Retain the original question and a construct-to-mechanism mapping. Show checks, changes, limits and evidence before execution and interpretation. |
-| [SOTOPIA](https://arxiv.org/html/2310.11667) | Social performance has multiple dimensions; model judgments need independent validation and can diverge from humans. | Keep utility, violations and opportunity counts separate. Computed evidence must constrain narrative interpretation; no universal insight or realism score. |
-| [TinyTroupe](https://github.com/microsoft/TinyTroupe), [grounded agents, current abstract](https://arxiv.org/abs/2411.10109) | Synthetic insights require validation; empirical grounding and held-out evaluation are substantive work. | Do not promise predictions about humans from uncalibrated synthetic agents, or confuse retained context with model-weight learning. |
+Reusable mechanics, participant profiles/harnesses and experiment conditions are
+separate. Inspect resources, permissions, private information, legal actions,
+timing, stopping and actual consequences. Scenario prose cannot grant a right,
+create a hidden state transition or install a new measurement. Use the
+[custom-environment guide](CUSTOM_ENVIRONMENTS.md) for composition and the
+[extension contract](EXTENSIONS.md) for independently admitted new mechanics.
 
-JAS keeps its existing simulator instead of adding a generic simulation dependency.
-A natural-language game master would add adjudication uncertainty to experiments with
-independently computable consequences. Domain-specific extensions remain possible through
-the documented environment seam, with privacy, solvability and replay tests.
+Before execution, review population, horizon, seeds, matched conditions, effort
+limits and analysis choices. Population resolution is different from independent
+replication. Exploratory work need not invent a hypothesis or scalar endpoint;
+confirmatory decisions must be frozen before validation outcomes are opened.
+Saving or discussing a protocol does not authorize paid participant execution.
 
-## Implemented checks
+## Mechanical checks
 
-The planner quotes essential constructs and maps each to a capability in a single world.
-Required missing/proxy mappings cannot become an executable proposal. Candidate generation
-and review receive a computed preflight report. Construct selection and semantic fidelity
-still depend on model judgment: a quote and a capability identifier are not proof that the
-mapping is complete or correct.
+`POST /api/design/preflight` sends no model requests and mutates no saved run.
+It checks inactive or bundled interventions, known payoff/effort bounds and
+identical conditions. Replications, placebos and unwitnessed delayed contrasts
+can require review without being invalid. Confirmed errors block save/execution.
 
-Capabilities are enumerated in the output schema so environment names, metric names and
-invented qualified identifiers cannot silently become missing mechanics. The mapper separates
-world requirements from counts, pilot/reporting limits and instructions. It normalizes quote
-delimiters and whitespace without accepting paraphrases; a missing or unquoted mapping gets
-one explicit correction step, recorded with its feedback and cost. Provider failures are not
-retried. Exhausted mapping/design reviews retain their final findings for inspection.
-One development attempt implemented history versus notes correctly but exhausted all reviews
-because the critic demanded a duplicate comparator quotation in the fixed brief. Review now
-explicitly judges the executable contrast and requests material protocol corrections; one
-capability mapping may cover both implemented levels. The failed attempt remains evidence.
+Three legal scripted probes per condition compare observations and consequences
+on the first seed, capped at96 turns each. These are bounded mechanism witnesses,
+not strategy predictions, exhaustive solvability proofs or power calculations.
+A missing nonzero witness cannot establish that a valid treatment has no effect.
+The report is keyed by the full protocol and copied before being returned.
 
-`POST /api/design/preflight` makes no provider calls or persistent mutations. It checks
-inactive parameter contrasts, bundled interventions/memory changes, known incentive ceilings,
-coordination effort bounds and identical arms. Identical replication/placebo arms and pilots
-are warnings, not invalid experiments. Save and execution reject confirmed errors; manual
-protocols can be mechanically checked without pretending their question was model-reviewed.
+Checks also disclose interpretation limits. Generic coordination work is public,
+can be performed by every actor and can pay personally; successful completion
+therefore need not establish communication or specialization. Sanction visibility
+may change announced framing even without a realized sanction. With only two
+parties there may be no additional audience to receive a wider disclosure.
 
-Coordination checks disclose that task state is public, all agents can perform all tasks,
-and useful work pays personally. For feasible graphs with spare turns, an independent
-effort bound shows that a greedy no-message strategy can finish. Completion timing and
-blocked/duplicate work may distinguish strategies when final completion saturates. This
-does not force communication to help or reject legitimate null-effect studies. Private
-expertise, hidden task state and enforced specialization are absent mechanics.
+The [architecture](ARCHITECTURE.md) defines the sole current persistence and rule
+contracts. Incompatible saved rules reject explicitly for inspection, export,
+execution and replay, including completed runs. JAS does not reconstruct old
+records under new rules or silently migrate/reset a workspace. Preserve an
+incompatible database separately when explicitly starting fresh work.
 
-Three legal scripted instruments per condition exercise low/high choices and additional
-sanction/appeal or delayed-negotiation paths. They compare observation and consequence hashes
-on the first seed, capped at 96 turns each (at most 1,728 decisions). These are witnesses,
-not strategy predictions, exhaustive solvability proofs, power calculations or a guarantee
-of a non-null model effect. Hidden/delayed contrasts without a witness require review, not
-automatic rejection. Results are cached by complete protocol and copied on return.
+## Reading outcomes
 
-The Agent's evidence index includes the original mapping when available, static mechanical
-checks, cutoff-scoped action/commitment counts, sanction opportunities and work ceilings.
-An announced sanction-visibility rule can influence anticipation even without sanctions;
-no realized sanctions means there were no sanction records to disclose. Recorded observations
-remain authoritative for historical runs; current static checks do not describe an old engine.
-Two-agent visibility contrasts also flag the absence of an additional audience: both parties
-already see their sanction record. Different announcements can test framing, but cannot
-establish an effect of wider disclosure in that setup.
+Analysis is read-only and pinned to accepted evidence cutoffs. Its index supplies
+installed capabilities, active controls, recorded actions, feasible opportunities,
+actual-input exposure and independent checkable totals. A read receipt is evidence
+of delivered content; a citation, delivery or context inclusion does not establish
+attention, belief or intent. Model rationale remains self-report.
 
-## Shortage failure and upgrade
+Keep participant execution, adjudication and analysis costs separate. Counts and
+integer ledgers include each settled request, including tool operations. Unknown
+usage, failures, interruptions and missing arms remain visible. Completed-run-only
+summaries cannot silently stand in for all assigned attempts.
 
-The reviewed shortage experiment used an institution with renewable allocation credits,
-privately profitable work and a sanction-record visibility contrast. It had no finite stock,
-consumption needs or allocation-visibility manipulation. Its 108/108 worker work choices and
-zero sanctions could not establish the claimed generic transparency effect.
+Report observable utility, work, permissions, communication and commitments
+separately. A false statement is not sufficient evidence of deception; a breach
+needs a feasible scheduled opportunity before its exclusive deadline. Raw judge
+rulings and world-enforced consequences are distinct. A valid citation does not
+prove that a qualitative claim follows from it.
 
-The institution now announces the actual sanction visibility in rules and a structured
-`sanction_visibility` observation. Institution rules are **4.1.0**; other worlds remain
-**4.0.0**. Historical evidence remains readable/exportable; incompatible runs cannot resume
-or replay under current rules. Save a new immutable revision for new trials. No data reset,
-legacy engine or conversion is provided. Export **v4** lists actual recorded `rule_versions`
-across runs instead of falsely labeling mixed-version evidence with the current version.
-For incompatible engines it marks an unrecorded initial state unavailable and exports the
-recorded turns; it never reconstructs old evidence using new rules.
+JAS does not infer population confidence intervals from a count of seeds alone.
+Matching, randomization, repeated model sampling, clustered participants and
+failure selection need a declared design and an appropriate uncertainty method.
+No single realism, morality or general-intelligence score is produced.
 
-At that checkpoint, a stock-shortage question combining unequal allocation powers and
-configurable resource transparency remained unsupported. The subsequent
-[custom-environment composition engine](CUSTOM_ENVIRONMENTS.md) now implements those joint
-mechanics through finite stocks, controlled allocation, consumption needs and separate
-stock/record visibility. The historical institution protocol still cannot answer that question;
-create a new experiment using the appropriate mechanics.
+## Verification and open evaluation
 
-## Verification and limits
+The backend validity matrix covers the installed worlds, channel/memory/horizon
+combinations, independent payoff arithmetic, privacy, delayed interventions,
+placebos, provenance, exposure cutoffs and spending gates. Browser checks exercise
+preflight, edits, rejected protocols and saved review flows. Current observed
+results are in the [product review](research/FINAL_PRODUCT_REVIEW.md).
 
-`backend/tests/test_validity.py` includes 336 cross-environment/channel/memory/horizon cases,
-55 independent marginal-payoff expectations, privacy/visibility checks, delayed interventions,
-placebos, maximum matrices, provenance, cutoff exposure and save/run spending gates.
-Existing environment, replay, budget, export and planner tests remain required.
+Frozen benchmark declarations and historical failures remain separate from later
+development diagnostics. [Benchmark instructions](../benchmarks/README.md) describe
+case selection, attempt accounting and paid-run gates. The
+[compact historical report](research/RESEARCH_HARNESS_COMPACT_REPORT.md) preserves
+superseded development results without presenting them as current measurements.
 
-Browser tests exercise check results, stale findings, invalid protocols and both editing modes.
-The separate development planner evaluation records its expectations before calls, every
-attempt, exact source snapshots, model/settings and the existing aggregate spending ledger.
-It does not modify or reopen the frozen held-out evaluation. Development improvements are
-not new generalization scores. See the development results for observed failures and costs.
+Live researcher/participant competence, held-out mechanic generation and judge
+accuracy remain open under the [accepted specification](RESEARCH_HARNESS_SPEC.md)
+and [T20](https://github.com/jaiamin/ass/issues/31). Freeze fresh cases and rubrics
+before evaluation, retain every attempt and cost, and obtain the appropriate
+explicit spending authorization. Human predictive claims additionally require
+consented reference data, held-out participants and independent validation.
 
-## Development history
+## Primary methodological references
 
-Thirty requests, each repeated twice with `openai:gpt-6-luna`, include 16 supported questions
-and 14 missing-capability questions. The pre-change run used the same questions in two batches;
-their manifests match the later combined set. Settings, concurrency and acceptance rules stay
-the same. Completion, support/decline, environment and required executable factor must all pass;
-errors and false rejections remain in the denominator. No desired model behavior is scored.
+- [Concordia](https://arxiv.org/html/2507.08892) separates actor decisions from
+  environment adjudication; [OpenSpiel](https://github.com/google-deepmind/open_spiel)
+  makes rules, information structure and strategy evaluation explicit.
+- [ODD](https://www.jasss.org/23/2/7.html) requires purpose, entities, scheduling,
+  assumptions and evaluation appropriate to the intended use.
+- [SOTOPIA](https://arxiv.org/abs/2310.11667) motivates separate social dimensions
+  and independent assessment of model judgments.
+- [AgentSociety](https://arxiv.org/abs/2502.08691) and
+  [OASIS](https://github.com/camel-ai/oasis) rely on concrete domain mechanisms;
+  increasing population cannot supply a missing mechanism.
+- [Grounded agents](https://arxiv.org/abs/2411.10109) and
+  [TinyTroupe](https://github.com/microsoft/TinyTroupe) distinguish empirical
+  grounding and held-out validation from convincing synthetic responses.
 
-| Checkpoint | All attempts | Supported requests | Unsupported requests | Calls | Charged/reserved |
-| --- | --- | --- | --- | --- | --- |
-| Before validity checks | 54/60 | 32/32 | 22/28 | 148 | $0.185460 |
-| First strict mapping | 46/60 | 18/32 | 28/28 | 112 | $0.179538 |
-| Corrected mapper | 59/60 | 31/32 | 28/28 | 140 | $0.228114 |
-| Final review and preflight | 60/60 | 32/32 | 28/28 | 137 | $0.222692 |
-
-The original planner sometimes accepted missing mechanisms as narrower token proxies. The
-first strict mapping fixed those decisions but regressed on supported requests through invented
-capability IDs, decorative quotes and reporting constraints mistaken for mechanics. The
-corrected mapper fixed those failures; its remaining failure was the redundant comparator
-quotation requested repeatedly by the critic. Both failed iterations are retained.
-The final checkpoint also includes the public-task and missing-disclosure-audience warnings.
-An explicit-count/isolation audit passed for all 32 accepted final protocols. Responses remain
-stochastic; these small development differences are descriptive, not a significance claim.
-
-Artifacts live outside the OSS benchmark directory in `data/quality/`: `validity-before`,
-`validity-before-broad`, `validity-after`, `validity-corrected` and `validity-final`. Each contains a manifest,
-exact backend source archive, every attempt and sanitized provider traces. The evaluator
-uses the existing aggregate ledger; no ledger or unknown reservation is reset.
-The final backend source fingerprint is
-`22eefac5b0eb38500e1b9698074d7a7ba2dc4767f03a8d8f62c071a42026616c`
-(code checkpoint `4d552c0`); every archived source file matched the current backend.
-All five development batches cost **$0.815804** in total. Through the final planner checkpoint,
-the aggregate ledger records **$14.423961 charged/reserved of $75**, including earlier unknown
-reservations. Historical published costs and held-out scores are unchanged.
-
-Fresh validation passed 735 backend tests, 69 frontend tests, 68 browser tests, lint/types/build
-and the keyless non-root production smoke check. The final-source environment gate passed
-5,208 invariant checks across 288 executable cases / 576 arms, plus all privacy/memory,
-communication and disclosure probes. GitHub's backend, frontend, container, workflows and
-aggregate verification jobs passed on the code checkpoint. Secret scanning found no leaks.
-
-An additional six-response analysis diagnostic uses only the existing `independent-oversight`
-development study: two 48-turn runs, no sanctions, 48 work choices and no wait choices; oversight
-varies 0/1 while sanction visibility stays fixed. Its questions and expected interpretations are
-declared before calls in `data/quality/validity-analysis/manifest.json`, with at most $0.50 more
-within the same ledger. It checks current analysis of recorded 4.0.0 evidence, not new participant
-behavior or a new held-out score.
-
-The initial six analysis responses completed with valid citations/caveats; both numeric audits
-returned exactly 0 sanctions, 48 work and 0 wait. They correctly rejected the broad causal
-claims, but some follow-ups suggested unavailable mechanics without a clear engineering label,
-or missed the need for a third participant in a wider-disclosure study. One also treated a
-null inactive stock parameter as evidence that a stock was absent. Those responses remain
-in `validity-analysis` ($0.035939, 22 calls).
-
-The subsequent analysis-only change supplies the capability catalog, active controls, measures
-and current rule versions. Instructions distinguish executable follow-ups from required
-environment extensions, explain the two-party disclosure limit and distinguish inactive
-parameters from world mechanics. Only `assistants.py` changed after the final planner source;
-the planner and all world/validity code remain identical. A repeat of the same six questions
-is recorded separately, without changing the original outcomes or planner scores.
-The second six responses completed for $0.013842 (14 calls), again returning exact count
-audits and rejecting unsupported causal claims. Advice more clearly separated available
-resource worlds from needs/deprivation extensions and required a third party for wider
-disclosure. However, one qualitative example reversed the oversight condition labels despite
-correct aggregate facts. The index now gives each run its condition key and name directly,
-reducing lookup through opaque identifiers. This does not certify prose: citation-range
-validation cannot prove that every sentence accurately describes its cited turn.
-
-The final labeled-index retest (`validity-analysis-labeled`) completed all six responses for
-$0.027713 (16 calls). Both numeric audits again returned 0 sanctions, 48 work and 0 wait;
-all responses retained citations and uncertainty and rejected the unsupported causal claims.
-Manual trace review still found an internally contradictory allocation comparison in
-`transparency`, repetition 0: it first reversed the oversight conditions, then described
-their examples correctly. This is a retained narrative error, not an insight-quality pass.
-The observed ground truth is self-allocation **1.0 under oversight 1** and **0.890625 under
-oversight 0**, with authority/worker balances **384/48** and **342/90**, respectively.
-Generated prose therefore still needs review against computed facts and inspected evidence.
-
-All follow-up diagnostics together cost **$0.893298**. The final aggregate reconciliation is
-**27,277 Luna-only calls, $14.501455 charged/reserved of $75**, with 11 earlier unknown calls
-retained and no pending calls. Sum of provider charges equals the workspace ledger exactly.
-`data/quality/validity-comparison.json` records each phase, artifact hashes, costs and remaining
-weaknesses; source snapshots and complete sanitized traces remain beside each phase.
-
-These are public development requests and mechanical acceptance scores. They do not establish
-independent insight quality, calibrated human behavior, statistical power or unseen-family
-generalization. A further explicit-count/isolation audit is supplemental: it examines accepted
-protocols and does not remove failed attempts or change these primary scores.
+Further primary sources and interpretation rules are in [Research](RESEARCH.md).

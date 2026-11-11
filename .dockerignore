@@ -1,5 +1,7 @@
 .git
 .env*
+pbcopy
+**/pbcopy
 .venv
 .tools
 .agents

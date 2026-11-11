@@ -124,6 +124,10 @@ for (const path of ["/", "/agent"]) {
       name: path === "/" ? "Experiment ideas" : "Suggested questions",
     });
     await expect(suggestions.getByRole("button")).toHaveCount(4);
+    // The provider notice changes layout; measure the drag after it is visible.
+    await expect(
+      page.getByRole("link", { name: "Configure a provider", exact: true }),
+    ).toBeVisible();
     const first = suggestions.getByRole("button").first();
     const text = first.locator("span").last();
     await selectText(page, text);

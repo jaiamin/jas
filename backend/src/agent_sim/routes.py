@@ -12,12 +12,28 @@ from sqlalchemy import select, text
 from .assistants import Assistants
 from .config import setting
 from .db import Annotation, Database, ProviderCall, Workspace
-from .domain import Design, Strict
+from .domain import Design, EnvironmentMechanics, SavedEnvironment, Strict
+from .environment_library import builtin_environment, definition_from_design, use_environment
 from .execution import Engine
 from .exports import export_study
+from .extensions import (
+    ExtensionAdmission,
+    ExtensionCandidate,
+    ExtensionReview,
+    ExtensionRuntime,
+    Extensions,
+    FiniteAdmission,
+)
+from .finite_contract import (
+    FiniteArtifactCheck,
+    FiniteContract,
+    GenerationAuthorization,
+    ReviewedFiniteContract,
+)
+from .investigations import InvestigationAuthorization, Investigations
 from .llm import LanguageModels
 from .research import Research, RunSummary
-from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS
+from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, get_environment
 from .templates import templates
 
 router = APIRouter()
@@ -59,6 +75,203 @@ async def assistant_service(request: Request) -> Assistants:
 AssistantsDep = Annotated[Assistants, Depends(assistant_service)]
 
 
+async def investigation_service(request: Request) -> Investigations:
+    return request.app.state.investigations
+
+
+InvestigationsDep = Annotated[Investigations, Depends(investigation_service)]
+
+
+@router.post("/api/investigations", status_code=202)
+async def investigate(
+    body: InvestigationAuthorization, *, investigations: InvestigationsDep
+) -> dict:
+    return investigations.start(body)
+
+
+@router.get("/api/investigations/{key}")
+async def investigation(key: str, *, investigations: InvestigationsDep) -> dict:
+    return investigations.get(key)
+
+
+class InvestigationControl(Strict):
+    action: Literal["pause", "resume", "cancel"]
+
+
+@router.post("/api/investigations/{key}/control")
+async def control_investigation(
+    key: str,
+    body: InvestigationControl,
+    *,
+    investigations: InvestigationsDep,
+) -> dict:
+    return investigations.control(key, body.action)
+
+
+class InvestigationAdaptation(Strict):
+    instruction: str = Field(min_length=1, max_length=2000)
+
+
+@router.post("/api/investigations/{key}/adapt", status_code=202)
+async def adapt_investigation(
+    key: str,
+    body: InvestigationAdaptation,
+    *,
+    investigations: InvestigationsDep,
+) -> dict:
+    return investigations.adapt(key, body.instruction)
+
+
+async def extension_service(request: Request) -> Extensions:
+    return request.app.state.extensions
+
+
+ExtensionsDep = Annotated[Extensions, Depends(extension_service)]
+
+
+@router.post("/api/extensions/contracts", status_code=201)
+async def freeze_finite_contract(
+    body: FiniteContract, *, extensions: ExtensionsDep
+) -> ReviewedFiniteContract:
+    return await asyncio.to_thread(extensions.freeze_contract, body)
+
+
+@router.get("/api/extensions/contracts")
+async def finite_contracts(*, extensions: ExtensionsDep) -> list[ReviewedFiniteContract]:
+    return await asyncio.to_thread(extensions.contracts)
+
+
+@router.get("/api/extensions/contracts/{key}")
+async def finite_contract(key: str, *, extensions: ExtensionsDep) -> ReviewedFiniteContract:
+    return await asyncio.to_thread(extensions.contract, key)
+
+
+class CheckFiniteArtifact(Strict):
+    review_id: str = Field(pattern=r"^[a-f0-9]{16}$")
+
+
+@router.post("/api/extensions/contracts/{key}/checks", status_code=201)
+async def check_finite_artifact(
+    key: str, body: CheckFiniteArtifact, *, extensions: ExtensionsDep
+) -> FiniteArtifactCheck:
+    return await asyncio.to_thread(extensions.check_finite_artifact, key, body.review_id)
+
+
+@router.get("/api/extensions/finite-checks")
+async def finite_checks(*, extensions: ExtensionsDep) -> list[FiniteArtifactCheck]:
+    return await asyncio.to_thread(extensions.finite_checks)
+
+
+@router.get("/api/extensions/finite-checks/{key}")
+async def finite_check(key: str, *, extensions: ExtensionsDep) -> FiniteArtifactCheck:
+    return await asyncio.to_thread(extensions.finite_check, key)
+
+
+@router.post("/api/extensions/finite-checks/{key}/admit", status_code=201)
+async def admit_finite(key: str, *, extensions: ExtensionsDep) -> FiniteAdmission:
+    return await asyncio.to_thread(extensions.admit_finite, key)
+
+
+@router.get("/api/extensions/finite-admissions")
+async def finite_admissions(*, extensions: ExtensionsDep) -> list[FiniteAdmission]:
+    return await asyncio.to_thread(extensions.finite_admissions)
+
+
+@router.get("/api/extensions/finite-admissions/{key}")
+async def finite_admission(key: str, *, extensions: ExtensionsDep) -> FiniteAdmission:
+    return await asyncio.to_thread(extensions.finite_admission, key)
+
+
+@router.get("/api/extensions/generations")
+async def extension_generations(*, extensions: ExtensionsDep) -> list[dict]:
+    return await asyncio.to_thread(extensions.generations.list)
+
+
+@router.get("/api/extensions/generations/{key}")
+async def extension_generation(key: str, *, extensions: ExtensionsDep) -> dict:
+    return await asyncio.to_thread(extensions.generations.get, key)
+
+
+@router.get("/api/extensions/profile")
+async def extension_profile() -> dict:
+    return {
+        "profile": "reviewed-finite-v1",
+        "prerequisite": "Independently user-authored, reviewed, frozen exhaustive finite table.",
+        "interpretation": "Conformance to an external finite table, "
+        "not independently understood intent.",
+        "finite_input_limit": 256,
+        "invalid_inputs": [-1, "domain_size", 2147483647, -2147483648],
+        "supported": [
+            "deterministic role/state/credit transitions",
+            "conserved resource/escrow",
+            "static actor-private facts",
+            "fixed role order",
+            "terminal or bounded horizon",
+        ],
+        "unsupported": [
+            "dynamic information policy",
+            "richer world semantics",
+            "host imports",
+            "external systems",
+            "native code",
+            "arbitrary programs",
+        ],
+        "candidate_self_tests_admit": False,
+        "requires_current_runtime": True,
+        "requires_separate_participant_execution": True,
+        "contract_schema": FiniteContract.model_json_schema(),
+        "authorization_schema": GenerationAuthorization.model_json_schema(),
+    }
+
+
+@router.get("/api/extensions/runtime")
+async def extension_runtime(*, extensions: ExtensionsDep) -> ExtensionRuntime:
+    return extensions.runtime
+
+
+@router.post("/api/extensions/validate", status_code=201)
+async def validate_extension(
+    body: ExtensionCandidate, *, extensions: ExtensionsDep
+) -> ExtensionReview:
+    return await asyncio.to_thread(extensions.validate, body)
+
+
+@router.post("/api/extensions/qualify")
+async def qualify_extensions(*, extensions: ExtensionsDep) -> ExtensionRuntime:
+    return await asyncio.to_thread(extensions.qualify)
+
+
+@router.get("/api/extensions/reviews")
+async def extension_reviews(*, extensions: ExtensionsDep) -> list[ExtensionReview]:
+    return await asyncio.to_thread(extensions.reviews)
+
+
+@router.get("/api/extensions/reviews/{key}")
+async def extension_review(key: str, *, extensions: ExtensionsDep) -> ExtensionReview:
+    return await asyncio.to_thread(extensions.get, key)
+
+
+class AdmitExtension(Strict):
+    profile: str = Field(min_length=1, max_length=80)
+
+
+@router.post("/api/extensions/reviews/{key}/admit", status_code=201)
+async def admit_extension(
+    key: str, body: AdmitExtension, *, extensions: ExtensionsDep
+) -> ExtensionAdmission:
+    return await asyncio.to_thread(extensions.admit, key, body.profile)
+
+
+@router.get("/api/extensions/admissions")
+async def extension_admissions(*, extensions: ExtensionsDep) -> list[ExtensionAdmission]:
+    return await asyncio.to_thread(extensions.admissions)
+
+
+@router.get("/api/extensions/admissions/{key}")
+async def extension_admission(key: str, *, extensions: ExtensionsDep) -> ExtensionAdmission:
+    return await asyncio.to_thread(extensions.admission, key)
+
+
 async def static_directory(request: Request) -> Path:
     return request.app.state.frontend
 
@@ -72,14 +285,45 @@ class SaveStudy(Strict):
 
 
 class SaveEnvironment(Strict):
-    design: Design
+    definition: EnvironmentMechanics
     revision: int | None = Field(default=None, ge=1)
+
+
+class UseEnvironment(Strict):
+    design: Design | None = None
+    source: SavedEnvironment
+    example: str
+    bindings: dict[str, str] = Field(default_factory=dict)
+
+
+@router.post("/api/design/use-environment")
+async def apply_environment(body: UseEnvironment, *, research: ResearchDep) -> Design:
+    design = await asyncio.to_thread(
+        use_environment, body.design, body.source, body.example, body.bindings
+    )
+    research.validate_design(design)
+    return design
+
+
+class ExtractEnvironment(Strict):
+    design: Design
+
+
+@router.post("/api/design/environment")
+async def extract_environment(
+    body: ExtractEnvironment, *, research: ResearchDep
+) -> EnvironmentMechanics:
+    research.validate_design(body.design)
+    return await asyncio.to_thread(definition_from_design, body.design)
 
 
 class ChatMessage(Strict):
     question: str = Field(min_length=1, max_length=4000)
     context: str = "general"
     chat_id: str | None = None
+    lens: Literal["behavior", "communication"] | None = None
+    source_analysis_id: str | None = Field(default=None, min_length=1, max_length=80)
+    generation: GenerationAuthorization | None = None
 
 
 class Note(Strict):
@@ -104,7 +348,18 @@ async def health(*, db: DatabaseDep) -> dict[str, Any]:
 
 
 @router.get("/api/catalog")
-async def catalog(*, models: LanguageModelsDep) -> dict[str, Any]:
+async def catalog(*, models: LanguageModelsDep, research: ResearchDep) -> dict[str, Any]:
+    sources = [builtin_environment(key) for key in CATALOG]
+    admitted = next(
+        (
+            source
+            for source in research.environments.list()
+            if source.definition.environment in {"sealed_relay", "reviewed_finite"}
+        ),
+        None,
+    )
+    if admitted:
+        sources.append(admitted)
     return {
         "environments": [
             {
@@ -116,12 +371,15 @@ async def catalog(*, models: LanguageModelsDep) -> dict[str, Any]:
                 "measures": list(a.measures),
                 "measure_definitions": {m: MEASURE_DESCRIPTIONS[m] for m in a.measures},
                 "rule_version": a.world.version,
+                "source": source.model_dump(),
             }
-            for a in CATALOG.values()
+            for source in sources
+            for a in [get_environment(source.definition.environment)]
         ],
         "models": models.catalog(),
         "templates": templates(),
         "design_schema": Design.model_json_schema(),
+        "environment_schema": EnvironmentMechanics.model_json_schema(),
     }
 
 
@@ -137,15 +395,13 @@ async def custom_environment(key: str, *, research: ResearchDep) -> dict:
 
 @router.post("/api/environments", status_code=201)
 async def create_environment(body: SaveEnvironment, *, research: ResearchDep) -> dict:
-    research.validate_design(body.design)
-    return (await asyncio.to_thread(research.environments.save, body.design)).model_dump()
+    return (await asyncio.to_thread(research.environments.save, body.definition)).model_dump()
 
 
 @router.put("/api/environments/{key}")
 async def update_environment(key: str, body: SaveEnvironment, *, research: ResearchDep) -> dict:
-    research.validate_design(body.design)
     return (
-        await asyncio.to_thread(research.environments.save, body.design, key, body.revision)
+        await asyncio.to_thread(research.environments.save, body.definition, key, body.revision)
     ).model_dump()
 
 
@@ -193,14 +449,13 @@ async def validate_design(body: SaveStudy, *, research: ResearchDep) -> dict[str
 
 @router.post("/api/design/preflight")
 async def check_design(body: SaveStudy, *, research: ResearchDep) -> dict[str, Any]:
-    research.validate_design(body.design)
-    return await asyncio.to_thread(research.preflight, body.design, body.plan_id)
+    return await asyncio.to_thread(research.review_design, body.design, body.plan_id)
 
 
 @router.post("/api/studies", status_code=201)
 async def create_study(body: SaveStudy, *, research: ResearchDep) -> dict[str, Any]:
-    await asyncio.to_thread(research.preflight, body.design, body.plan_id)
-    return {"id": research.save_design(body.design, plan_id=body.plan_id)}
+    saved = await asyncio.to_thread(research.save_design, body.design, plan_id=body.plan_id)
+    return {"id": saved}
 
 
 @router.get("/api/studies/{study_id}")
@@ -233,23 +488,36 @@ async def delete_study(
 
 @router.post("/api/studies/{study_id}/revisions", status_code=201)
 async def revise_study(study_id: str, body: SaveStudy, *, research: ResearchDep) -> dict[str, Any]:
-    await asyncio.to_thread(research.preflight, body.design, body.plan_id)
-    return {"id": research.save_design(body.design, study_id=study_id, plan_id=body.plan_id)}
+    saved = await asyncio.to_thread(
+        research.save_design, body.design, study_id=study_id, plan_id=body.plan_id
+    )
+    return {"id": saved}
 
 
 @router.post("/api/studies/{study_id}/control")
 async def control_study(study_id: str, body: StudyControl, *, engine: EngineDep) -> dict[str, Any]:
     if body.action == "start":
-        engine.start_study(study_id)
+        await engine.start_study(study_id)
     else:
         engine.pause_study(study_id)
     return {"ok": True}
 
 
+@router.get("/api/studies/{study_id}/exposure")
+async def study_exposure(
+    study_id: str, revision: int | None = None, *, research: ResearchDep
+) -> dict[str, Any]:
+    detail = await asyncio.to_thread(research.study, study_id, revision)
+    return {
+        "revision": detail["revision"],
+        "runs": [research.exposure(run["id"]) for run in detail["runs"]],
+    }
+
+
 @router.get("/api/studies/{study_id}/export")
 async def download_study(study_id: str, *, research: ResearchDep) -> JSONResponse:
     return JSONResponse(
-        export_study(research, study_id),
+        await asyncio.to_thread(export_study, research, study_id),
         headers={"Content-Disposition": f'attachment; filename="jas-{study_id}.json"'},
     )
 
@@ -259,9 +527,17 @@ async def runs(study_id: str | None = None, *, research: ResearchDep) -> list[Ru
     return research.runs(study_id)
 
 
-@router.get("/api/runs/{run_id}")
-async def get_run(run_id: str, *, research: ResearchDep) -> dict[str, Any]:
-    return research.run(run_id)
+@router.get("/api/runs/{run_id}", response_model=dict[str, Any])
+def get_run(run_id: str, *, research: ResearchDep) -> JSONResponse:
+    with research.db.read_snapshot():
+        return JSONResponse(research.run(run_id))
+
+
+@router.get("/api/runs/{run_id}/exposure")
+async def get_exposure(
+    run_id: str, through_turn: int | None = None, *, research: ResearchDep
+) -> dict[str, Any]:
+    return research.exposure(run_id, through_turn)
 
 
 @router.get("/api/requests/{call_id}")
@@ -271,6 +547,10 @@ async def request_evidence(call_id: str, *, db: DatabaseDep) -> dict[str, Any]:
         return {
             "id": call.id,
             "run_id": call.run_id,
+            "activation_id": call.activation_id,
+            "analysis_id": call.analysis_id,
+            "purpose": call.purpose,
+            "model": call.model,
             "turn": call.turn,
             "request": call.request_payload,
             "response": call.response_payload,
@@ -289,13 +569,13 @@ async def control_run(run_id: str, body: RunControl, *, engine: EngineDep) -> di
     if body.action == "pause":
         engine.pause(run_id)
     else:
-        engine.start(run_id, single=body.action == "step")
+        await engine.start(run_id, single=body.action == "step")
     return {"ok": True}
 
 
 @router.post("/api/runs/{run_id}/verify")
 async def verify_run(run_id: str, *, engine: EngineDep) -> dict[str, Any]:
-    return engine.replay(run_id)
+    return await asyncio.to_thread(engine.replay, run_id)
 
 
 @router.get("/api/runs/{run_id}/annotations")
@@ -368,7 +648,38 @@ async def chat_events(chat_id: str, *, assistants: AssistantsDep) -> StreamingRe
 
 @router.post("/api/chats", status_code=202)
 async def send_chat(body: ChatMessage, *, assistants: AssistantsDep) -> dict:
-    return assistants.send(body.question, body.context, body.chat_id)
+    return await assistants.send(
+        body.question,
+        body.context,
+        body.chat_id,
+        body.lens,
+        body.source_analysis_id,
+        body.generation,
+    )
+
+
+@router.get("/api/analyses/{key}/requests")
+async def analysis_requests(key: str, *, assistants: AssistantsDep, db: DatabaseDep) -> list[dict]:
+    assistants.get(key)
+    with db.session() as session:
+        return [
+            {
+                "id": call.id,
+                "model": call.model,
+                "purpose": call.purpose,
+                "status": call.status,
+                "reserved": call.reserved,
+                "charged": call.charged,
+                "error": call.error,
+                "input_tokens": call.input_tokens,
+                "output_tokens": call.output_tokens,
+            }
+            for call in session.scalars(
+                select(ProviderCall)
+                .where(ProviderCall.analysis_id == key)
+                .order_by(ProviderCall.created, ProviderCall.id)
+            )
+        ]
 
 
 @web_router.get("/{path:path}", include_in_schema=False)

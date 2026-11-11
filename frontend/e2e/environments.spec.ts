@@ -147,7 +147,10 @@ for (const theme of ["light", "dark"]) {
             name: "Configure experiment",
             exact: true,
           }),
-        ).toHaveAttribute("href", `/new?template=${env.key}&step=conditions`);
+        ).toHaveAttribute(
+          "href",
+          `/new?environment=${env.key}&step=conditions`,
+        );
         await expect(
           panel.getByRole("link", { name: "Design with Agent", exact: true }),
         ).toHaveAttribute("href", "/agent");
@@ -269,7 +272,7 @@ test("environment data loads independently and errors retain cached content", as
     await expect(page.getByRole("status")).toHaveCount(0);
     await page.getByRole("tab", { name: "Built-in", exact: true }).click();
     releaseCatalog();
-    await expect(page.getByRole("article")).toHaveCount(8);
+    await expect(page.getByRole("article")).toHaveCount(12);
     await expect(page.getByRole("status")).toHaveCount(0);
     const loadedRow = await page
       .getByRole("article")
@@ -291,14 +294,14 @@ test("environment data loads independently and errors retain cached content", as
     await expect(page.getByRole("alert")).toContainText(
       "Catalogue unavailable",
     );
-    await expect(page.getByRole("article")).toHaveCount(8);
+    await expect(page.getByRole("article")).toHaveCount(12);
     await expect(
       page.getByRole("status", { name: "Loading environments", exact: true }),
     ).toHaveCount(0);
     failCatalog = false;
     await page.getByRole("button", { name: "Retry", exact: true }).click();
     await expect(page.getByRole("alert")).toHaveCount(0);
-    await expect(page.getByRole("article")).toHaveCount(8);
+    await expect(page.getByRole("article")).toHaveCount(12);
     await page.goto("/environments?environment=missing");
     await expect(
       page.getByText("Environment not found", { exact: true }),

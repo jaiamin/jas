@@ -61,8 +61,10 @@ def test_manual_design_step_evidence_and_export(client, design):
     assert client.get("/api/openapi.json").json()["info"]["title"] == "JAS"
     export = response.json()
     assert export["format"] == "jas-study"
-    assert export["version"] == 4
+    assert export["version"] == 18
     assert export["rule_versions"] == ["4.0.0"]
+    assert all("initial_state_available" not in row for row in export["runs"])
+    assert export["runs"][0]["evidence"][0]["number"] == 0
     assert export["runs"][0]["evidence"][1] == evidence
     assert client.post(f"/api/runs/{rid}/verify", json={}).json()["verified_turns"] == 1
 
@@ -83,6 +85,46 @@ def test_validation_and_origin_guard_do_not_spend(client, design):
     assert "test-not-a-real-key" not in client.get("/api/settings").text
     assert client.get("/api/not-an-endpoint").status_code == 404
     assert client.get("/api/analyses/missing").status_code == 404
+
+
+def test_disconnected_asset_request_does_not_become_a_server_error(client, tmp_path):
+    assets = tmp_path / "static" / "assets"
+    assets.mkdir(parents=True)
+    (assets / "example.js").write_text("export default 1;")
+    sent = []
+
+    async def disconnected():
+        return {"type": "http.disconnect"}
+
+    async def send(message):
+        sent.append(message)
+
+    client.portal.call(
+        client.app,
+        {
+            "type": "http",
+            "asgi": {"version": "3.0", "spec_version": "2.3"},
+            "http_version": "1.1",
+            "method": "GET",
+            "scheme": "http",
+            "path": "/assets/example.js",
+            "raw_path": b"/assets/example.js",
+            "query_string": b"",
+            "headers": [(b"host", b"localhost")],
+            "server": ("localhost", 80),
+            "client": ("127.0.0.1", 1234),
+            "root_path": "",
+        },
+        disconnected,
+        send,
+    )
+    assert not any(row.get("status", 200) >= 500 for row in sent)
+    response = client.get("/assets/example.js")
+    assert response.status_code == 200
+    assert response.text == "export default 1;"
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    assert response.headers["Referrer-Policy"] == "same-origin"
+    assert client.get("/api/settings").json()["usage"]["requests"] == 0
 
 
 def test_untrusted_host_cannot_read_or_write_with_a_matching_origin(client, design):
@@ -395,30 +437,47 @@ def test_experiment_checks_are_free_and_invalid_changes_cannot_be_saved(client, 
     assert client.get("/api/settings").json()["usage"]["requests"] == 0
 
 
-def test_recorded_institution_runs_remain_readable_after_rule_upgrade(client):
-    from agent_sim.db import Run
+@pytest.mark.parametrize("complete", [False, True])
+def test_incompatible_rule_records_are_rejected_without_adaptation(client, complete):
+    from agent_sim.db import Run, Turn
+    from sqlalchemy import select
 
     catalog = client.get("/api/catalog").json()
     design = next(t["design"] for t in catalog["templates"] if t["id"] == "institution")
+    design.update(rounds=1, seeds=[7], repetitions=1)
     sid = client.post("/api/studies", json={"design": design}).json()["id"]
     rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
-    step_run(client, rid)
+    for _ in range(len(design["profiles"]) if complete else 1):
+        step_run(client, rid)
     before = client.get(f"/api/runs/{rid}/turns/1").json()
+    usage = client.get("/api/settings").json()["usage"]
     with client.app.state.db.session.begin() as session:
         run = session.get_one(Run, rid)
         run.checkpoint = {**run.checkpoint, "rule_version": "4.0.0"}
-    current = client.get(f"/api/runs/{rid}")
-    assert current.status_code == 200
-    assert current.json()["execution_blocked"]
-    assert current.json()["next_actor"] is None
-    assert client.get(f"/api/runs/{rid}/turns/1").json() == before
-    assert client.get(f"/api/studies/{sid}").json()["preflight"]["status"] == "blocked"
-    assert client.post(f"/api/runs/{rid}/control", json={"action": "start"}).status_code == 422
-    exported = client.get(f"/api/studies/{sid}/export").json()
-    assert exported["rule_versions"] == ["4.0.0", "4.1.0"]
-    archived = next(r for r in exported["runs"] if r["record"]["summary"]["id"] == rid)
-    assert not archived["initial_state_available"]
-    assert archived["evidence"][0] == before
+        checkpoint, status = run.checkpoint, run.status
+    assert status == ("complete" if complete else "paused")
+    for path in (
+        f"/api/runs/{rid}",
+        f"/api/runs/{rid}/turns/0",
+        f"/api/runs/{rid}/turns/1",
+        f"/api/runs/{rid}/exposure",
+        f"/api/studies/{sid}",
+        f"/api/studies/{sid}/export",
+    ):
+        response = client.get(path)
+        assert response.status_code == 422, path
+        assert "rule version" in response.json()["detail"].lower()
+    for path, body in (
+        (f"/api/runs/{rid}/control", {"action": "start"}),
+        (f"/api/runs/{rid}/verify", {}),
+    ):
+        assert client.post(path, json=body).status_code == 422
+    assert client.get("/api/settings").json()["usage"] == usage
+    with client.app.state.db.session() as session:
+        run = session.get_one(Run, rid)
+        assert (run.checkpoint, run.status) == (checkpoint, status)
+        turn = session.scalars(select(Turn).where(Turn.run_id == rid, Turn.number == 1)).one()
+        assert turn.checkpoint == before["checkpoint"]
 
 
 def test_delete_experiment_removes_all_revisions_and_evidence_but_preserves_accounting(

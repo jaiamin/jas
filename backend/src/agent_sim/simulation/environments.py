@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import cast
 
 from ..domain import Action, Decision, Design, Event, Measure, Parameters
+from .artifacts import ArtifactWorkspace
 from .checkpoints import (
     ActionPayload,
     CommonsCheckpoint,
@@ -13,7 +14,10 @@ from .checkpoints import (
 )
 from .composed import Composed
 from .decisions import DecisionRules
+from .distributed import DistributedCoordination
 from .mechanisms import Bargaining, Information, Institution, RenewableResource
+from .reliance import RelianceCommitments
+from .workflow import InstitutionalWorkflow
 from .world import World
 
 
@@ -28,6 +32,8 @@ class Commons(World[CommonsCheckpoint]):
         self.state["pending"] = {}
 
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        if not isinstance(decision.action, Action):
+            raise ValueError("Expected a controlled-world action")
         endowment = self.parameters.endowment
         forecasts = self.state.setdefault("forecasts", {})
         forecasts[actor] = decision.forecast
@@ -164,6 +170,8 @@ class TrustExchange(World[TrustCheckpoint]):
         return {**self.common_state(), "promises": {}, "escrow": {}, "relations": {}}
 
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        if not isinstance(decision.action, Action):
+            raise ValueError("Expected a controlled-world action")
         forecasts = self.state.setdefault("forecasts", {})
         events, measures = self.apply(actor, decision.action)
         transfer = next(e for e in events if e.kind == "transfer")
@@ -312,6 +320,8 @@ class Coordination(World[CoordinationCheckpoint]):
     decision_rules = DecisionRules(allow_forecast=True)
 
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        if not isinstance(decision.action, Action):
+            raise ValueError("Expected a controlled-world action")
         forecasts = self.state.setdefault("forecasts", {})
         prior_coordination = forecasts.get("next_completion")
         events, measures = self.apply(actor, decision.action)
@@ -466,6 +476,20 @@ class EnvironmentDefinition:
 
 
 MEASURE_DESCRIPTIONS = {
+    "workflow_completion": "Accepted completed-work handoffs / all declared work items; "
+    "not self-reported productivity, intelligence or a required cooperative outcome.",
+    "reliance_fulfillment": "Fulfilled / due relied promises with feasible and actual "
+    "opportunities; "
+    "null without eligible promises. Breach never establishes deception or betrayal.",
+    "reliance_value": "Terminal sum of local choice values, optional agreement bonus and "
+    "independent recipient reliance effects; not financial balances.",
+    "coordination_match": "One terminal 0/1: all three chose the same alternative; "
+    "abstention/horizon is unmatched. This is not a required cooperative outcome.",
+    "coordination_value": "Terminal sum of declared local choice values and any all-match "
+    "bonuses; unchosen actors receive zero. No behavioral motive is inferred.",
+    "artifact_success": "One terminal binary outcome: submitted work satisfies all executable "
+    "content and source-version requirements. Stop or exhausted horizon is unsuccessful; "
+    "this is task mechanics, not a judgment of intelligence.",
     "unmet_need_rate": "Unconsumed required units / total required units at each round settlement; "
     "not a psychological measure. Inspect resource-specific consumption events.",
     "retention_rate": "Controller allocation received personally / actual stock allocated; "
@@ -511,6 +535,49 @@ MEASURE_DESCRIPTIONS = {
 
 
 CATALOG = {
+    "institutional_workflow": EnvironmentDefinition(
+        "institutional_workflow",
+        "Institutional workflow",
+        "Owned artifact work, finite materials and explicit logical-time settlement.",
+        InstitutionalWorkflow,
+        "workflow_completion",
+        ("artifacts", "workflow", "communication", "communication_channels", "memory"),
+        ("workflow_completion",),
+    ),
+    "reliance_commitments": EnvironmentDefinition(
+        "reliance_commitments",
+        "Reliance and commitments",
+        "Four voluntary participants, entrusted access, deadlines and recipient consequences.",
+        RelianceCommitments,
+        "reliance_fulfillment",
+        (
+            "artifacts",
+            "coordination",
+            "commitments",
+            "communication",
+            "communication_channels",
+            "memory",
+        ),
+        ("reliance_fulfillment", "reliance_value"),
+    ),
+    "distributed_coordination": EnvironmentDefinition(
+        "distributed_coordination",
+        "Distributed information",
+        "Three participants choose using scoped artifacts, declared phases and addressed mail.",
+        DistributedCoordination,
+        "coordination_match",
+        ("artifacts", "coordination", "communication", "memory"),
+        ("coordination_match", "coordination_value"),
+    ),
+    "artifact_workspace": EnvironmentDefinition(
+        "artifact_workspace",
+        "Artifact investigation",
+        "Authorized evidence, persistent versioned work, bounded writes and explicit submission.",
+        ArtifactWorkspace,
+        "artifact_success",
+        ("artifacts", "memory"),
+        ("artifact_success",),
+    ),
     "composed": EnvironmentDefinition(
         "composed",
         "Custom resource economy",
@@ -635,7 +702,52 @@ CATALOG = {
 }
 
 
+def get_environment(key: str) -> EnvironmentDefinition:
+    if key == "reviewed_finite":
+        from .finite import ReviewedFinite
+
+        return EnvironmentDefinition(
+            "reviewed_finite", "Reviewed finite extension",
+            "Requires an external exhaustive finite contract and independently admitted WAT; "
+            "not natural-language understanding or support for arbitrary rich worlds.",
+            ReviewedFinite, "finite_success", ("finite", "memory"), ("finite_success",),
+        )
+    if key == "sealed_relay":
+        from .extension import SealedRelay
+
+        return EnvironmentDefinition(
+            "sealed_relay",
+            "Admitted sealed relay",
+            "Independently checked finite relay; explicit package required.",
+            SealedRelay,
+            "relay_success",
+            ("relay", "memory"),
+            ("relay_success",),
+        )
+    return CATALOG[key]
+
+
+MEASURE_DESCRIPTIONS["relay_success"] = (
+    "One terminal binary result: the independently enforced relay "
+    "reached released phase2; no inference about intelligence or "
+    "intent."
+)
+MEASURE_DESCRIPTIONS["finite_success"] = (
+    "One terminal 0/1: reached a success state of the externally reviewed finite contract; "
+    "zero available credits or horizon is unsuccessful otherwise. No competence inference."
+)
+
+
 def create_world(
-    design: Design, parameters: Parameters, seed: int, state: dict | None = None
+    design: Design, parameters: Parameters, seed: int, state: dict | None = None, *, runner=None
 ) -> World:
-    return CATALOG[design.environment].world(design, parameters, seed, state)
+    world = get_environment(design.environment).world(design, parameters, seed, state)
+    from .extension import SealedRelay
+
+    if isinstance(world, SealedRelay):
+        world.runner = runner
+    from .finite import ReviewedFinite
+
+    if isinstance(world, ReviewedFinite):
+        world.runner = runner
+    return world

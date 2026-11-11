@@ -1,11 +1,14 @@
 import hashlib
 import json
+from collections.abc import Generator
+from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
 from sqlalchemy import JSON, ForeignKey, Index, UniqueConstraint, create_engine, event, text
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
 
 def uid() -> str:
@@ -40,6 +43,27 @@ class Study(Base):
     revision: Mapped[int] = mapped_column(default=1)
     charged: Mapped[int] = mapped_column(default=0)
     ceiling: Mapped[int]
+    investigation_id: Mapped[str | None] = mapped_column(ForeignKey("investigations.id"))
+
+
+class InvestigationRecord(Base):
+    __tablename__ = "investigations"
+    id: Mapped[str] = mapped_column(primary_key=True, default=uid)
+    created: Mapped[str] = mapped_column(default=now)
+    authorization: Mapped[dict] = mapped_column(JSON)
+    status: Mapped[str] = mapped_column(default="running")
+    stage: Mapped[str] = mapped_column(default="design")
+    stop_reason: Mapped[str | None]
+    ceiling: Mapped[int]
+    charged: Mapped[int] = mapped_column(default=0)
+    requests: Mapped[int] = mapped_column(default=0)
+    runs: Mapped[int] = mapped_column(default=0)
+    turns: Mapped[int] = mapped_column(default=0)
+    operations: Mapped[int] = mapped_column(default=0)
+    attempts: Mapped[list] = mapped_column(JSON, default=list)
+    decisions: Mapped[list] = mapped_column(JSON, default=list)
+    confirmation: Mapped[dict | None] = mapped_column(JSON)
+    result: Mapped[dict | None] = mapped_column(JSON)
 
 
 class Revision(Base):
@@ -79,6 +103,9 @@ class Run(Base):
     round: Mapped[int] = mapped_column(default=0)
     error: Mapped[str | None]
     checkpoint: Mapped[dict] = mapped_column(JSON)
+    investigation_id: Mapped[str | None] = mapped_column(ForeignKey("investigations.id"))
+    investigation_started: Mapped[bool] = mapped_column(default=False)
+    investigation_turn: Mapped[int] = mapped_column(default=0)
 
 
 class Agent(Base):
@@ -149,6 +176,11 @@ class Analysis(Base):
     cutoffs: Mapped[dict] = mapped_column(JSON, default=dict)
     output: Mapped[dict | None] = mapped_column(JSON)
     error: Mapped[str | None]
+    generation: Mapped[dict | None] = mapped_column(JSON)
+    generation_requests: Mapped[int] = mapped_column(default=0)
+    generation_candidates: Mapped[int] = mapped_column(default=0)
+    generation_charged: Mapped[int] = mapped_column(default=0)
+    investigation_id: Mapped[str | None] = mapped_column(ForeignKey("investigations.id"))
 
 
 class Annotation(Base):
@@ -167,6 +199,9 @@ class ProviderCall(Base):
     study_id: Mapped[str | None] = mapped_column(ForeignKey("studies.id"), index=True)
     run_id: Mapped[str | None] = mapped_column(ForeignKey("runs.id"), index=True)
     analysis_id: Mapped[str | None] = mapped_column(ForeignKey("analyses.id"), index=True)
+    activation_id: Mapped[str | None] = mapped_column(
+        ForeignKey("participant_activations.id"), index=True
+    )
     purpose: Mapped[str]
     model: Mapped[str]
     created: Mapped[str] = mapped_column(default=now)
@@ -180,6 +215,40 @@ class ProviderCall(Base):
     output_tokens: Mapped[int] = mapped_column(default=0)
     reasoning_tokens: Mapped[int] = mapped_column(default=0)
     error: Mapped[str | None]
+    investigation_id: Mapped[str | None] = mapped_column(
+        ForeignKey("investigations.id"), index=True
+    )
+
+
+class ParticipantActivation(Base):
+    __tablename__ = "participant_activations"
+    id: Mapped[str] = mapped_column(primary_key=True, default=uid)
+    run_id: Mapped[str] = mapped_column(ForeignKey("runs.id"), index=True)
+    turn: Mapped[int]
+    round: Mapped[int]
+    actor: Mapped[str]
+    created: Mapped[str] = mapped_column(default=now)
+    updated: Mapped[str] = mapped_column(default=now)
+    status: Mapped[str] = mapped_column(default="running")
+    stop_reason: Mapped[str | None]
+    error: Mapped[str | None]
+    checkpoint_hash: Mapped[str]
+    observation: Mapped[dict] = mapped_column(JSON)
+    identity: Mapped[dict] = mapped_column(JSON)
+    requests: Mapped[int] = mapped_column(default=0)
+
+
+class ParticipantOperation(Base):
+    __tablename__ = "participant_operations"
+    __table_args__ = (UniqueConstraint("activation_id", "number"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    activation_id: Mapped[str] = mapped_column(ForeignKey("participant_activations.id"), index=True)
+    number: Mapped[int]
+    created: Mapped[str] = mapped_column(default=now)
+    kind: Mapped[str]
+    status: Mapped[str]
+    request: Mapped[dict] = mapped_column(JSON)
+    result: Mapped[object] = mapped_column(JSON)
 
 
 class Database:
@@ -197,8 +266,31 @@ class Database:
                 connection.execute("PRAGMA journal_mode=WAL")
                 connection.execute("PRAGMA busy_timeout=5000")
 
-        self.session = sessionmaker(self.engine, expire_on_commit=False)
+        self._session = sessionmaker(self.engine, expire_on_commit=False)
+        self._snapshot: ContextVar[sessionmaker[Session] | None] = ContextVar(
+            "database_snapshot", default=None
+        )
         self.initialize(ceiling)
+
+    @property
+    def session(self) -> sessionmaker[Session]:
+        snapshot = self._snapshot.get()
+        return self._session if snapshot is None else snapshot
+
+    @contextmanager
+    def read_snapshot(self) -> Generator[None]:
+        with self.engine.connect() as connection:
+            # sqlite3 SELECT does not begin a repeatable read transaction itself.
+            connection.exec_driver_sql("BEGIN")
+            token = self._snapshot.set(
+                sessionmaker(
+                    connection, expire_on_commit=False, join_transaction_mode="rollback_only"
+                )
+            )
+            try:
+                yield
+            finally:
+                self._snapshot.reset(token)
 
     def initialize(self, ceiling: int) -> None:
         with self.engine.begin() as connection:
@@ -206,13 +298,13 @@ class Database:
                 text("CREATE TABLE IF NOT EXISTS schema_version (version INTEGER NOT NULL)")
             )
             version = connection.execute(text("SELECT version FROM schema_version")).scalar()
-            if version not in (None, 4):
+            if version not in (None, 15):
                 raise ValueError(
                     f"Unsupported database schema version: {version}; create a fresh workspace"
                 )
             if version is None:
                 Base.metadata.create_all(connection)
-                connection.execute(text("INSERT INTO schema_version VALUES (4)"))
+                connection.execute(text("INSERT INTO schema_version VALUES (15)"))
         with self.session.begin() as session:
             workspace = session.get(Workspace, 1)
             if workspace is None:

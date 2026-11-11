@@ -16,7 +16,7 @@ from agent_sim.domain import (
 )
 from agent_sim.simulation.environments import CATALOG, create_world
 from agent_sim.templates import templates
-from agent_sim.validity import Requirement, exposure, preflight, requirement_issues
+from agent_sim.validity import Requirement, preflight, realized_opportunities, requirement_issues
 from sqlalchemy import func, select
 
 MEMORIES = ("none", "history", "notes", "episodic")
@@ -26,6 +26,16 @@ MATRIX = list(product(CATALOG, MEMORIES, range(4), (1, 4, 17)))
 
 def protocol(environment, agents=6, rounds=4):
     design = Design.model_validate(next(t["design"] for t in templates() if t["id"] == environment))
+    bound_populations = {
+        "distributed_coordination": 3,
+        "reliance_commitments": 4,
+        "institutional_workflow": 6,
+    }
+    if environment in bound_populations:
+        # These tasks bind their actors explicitly, outside generic population sweeps.
+        assert len(design.profiles) == bound_populations[environment]
+        design.rounds, design.seeds = rounds, [0, 7, 19]
+        return Design.model_validate(design.model_dump())
     design.profiles = [
         Profile(key=f"p{i}", name=f"Agent {i}", goal="Earn credits.")
         for i in range(2 if environment == "bargaining" else agents)
@@ -36,6 +46,11 @@ def protocol(environment, agents=6, rounds=4):
         if condition.parameters.composition:
             for resource in condition.parameters.composition.resources:
                 resource.controllers = ["p0"]
+        if condition.parameters.artifacts:
+            for obj in condition.parameters.artifacts.objects:
+                obj.owner = "p0" if obj.owner else None
+                obj.readers = ["p0"] if obj.readers else []
+                obj.writers = ["p0"] if obj.writers else []
     return Design.model_validate(design.model_dump())
 
 
@@ -59,6 +74,11 @@ def test_simple_and_complex_protocols(environment, memory, channel_index, rounds
         params["resource"].update(initial_stock=5, regeneration=0.1)
     baseline = Parameters.model_validate(params)
     treatment = baseline.model_copy(update={"communication": True})
+    if environment == "artifact_workspace":
+        # Artifact worlds have no messaging; vary their actual work allowance.
+        treatment = baseline.model_copy(deep=True)
+        assert treatment.artifacts is not None
+        treatment.artifacts.write_limit += 1
     design.conditions = [
         Treatment(key="off", name="Communication off", parameters=baseline),
         Treatment(key="on", name="Communication on", parameters=treatment),
@@ -291,7 +311,7 @@ def test_checks_gate_saving_and_execution_before_providers_or_mutations(
 
     async def start():
         with pytest.raises(ValueError, match="inactive"):
-            engine.start_study(sid)
+            await engine.start_study(sid)
         assert not engine.executions
 
     asyncio.run(start())
@@ -342,7 +362,7 @@ def test_cutoff_exposure_cannot_see_later_actions_or_invent_opportunities(runtim
     rid = selected_run["id"]
 
     async def run():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
 
     asyncio.run(run())
@@ -358,11 +378,16 @@ def test_cutoff_exposure_cannot_see_later_actions_or_invent_opportunities(runtim
     assert "resource" in catalog["renewable_resource"]["active_parameters"]
     assert catalog["institution"]["rule_version"] == "4.1.0"
     full = assistant._evidence_index({rid: 6})["runs"][0]
-    assert sum(first["treatment_exposure"]["action_counts"].values()) == 1
-    assert sum(full["treatment_exposure"]["action_counts"].values()) == 6
-    assert full["treatment_exposure"]["warnings"]
+    assert sum(first["realized_opportunities"]["action_counts"].values()) == 1
+    assert sum(full["realized_opportunities"]["action_counts"].values()) == 6
+    assert full["realized_opportunities"]["warnings"]
     assert full["recorded_rule_version"] == "4.1.0"
-    assert exposure("institution", [{"kind": "sanction"}, {"kind": "wait"}], [])["warnings"] == []
+    assert (
+        realized_opportunities("institution", [{"kind": "sanction"}, {"kind": "wait"}], [])[
+            "warnings"
+        ]
+        == []
+    )
 
 
 @pytest.mark.parametrize(
@@ -504,7 +529,7 @@ def test_factorial_intent_is_rechecked_on_save_and_run(runtime, monkeypatch):
 
     async def start():
         with pytest.raises(ValueError, match="Declared factorial"):
-            engine.start_study(sid)
+            await engine.start_study(sid)
         assert not engine.executions
 
     asyncio.run(start())

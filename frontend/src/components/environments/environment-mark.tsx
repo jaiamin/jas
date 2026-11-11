@@ -4,6 +4,72 @@ import type { EnvironmentId } from "@/lib/types";
 // authority, negotiation, private signals, replenishment and modular resources.
 // 0 = quiet grid; 1 = structure; 2 = the mechanism's focal cells.
 const grids: Record<EnvironmentId, readonly string[]> = {
+  reviewed_finite: [
+    "111000111",
+    "121000121",
+    "111000111",
+    "010000010",
+    "011111110",
+    "000010000",
+    "000111000",
+    "000121000",
+    "000111000",
+  ],
+  institutional_workflow: [
+    "111000111",
+    "121111121",
+    "111000111",
+    "000010000",
+    "011222110",
+    "000010000",
+    "111000111",
+    "121111121",
+    "111000111",
+  ],
+  reliance_commitments: [
+    "111000111",
+    "121111121",
+    "111010111",
+    "010010010",
+    "011222110",
+    "010010010",
+    "111010111",
+    "121111121",
+    "111000111",
+  ],
+  sealed_relay: [
+    "111000111",
+    "121000121",
+    "111000111",
+    "010000010",
+    "011111110",
+    "000010000",
+    "001111100",
+    "001020100",
+    "001111100",
+  ],
+  distributed_coordination: [
+    "111000111",
+    "121111121",
+    "111010111",
+    "000010000",
+    "000010000",
+    "000111000",
+    "000121000",
+    "000111000",
+    "000000000",
+  ],
+  artifact_workspace: [
+    "111111000",
+    "100001000",
+    "102101110",
+    "101101010",
+    "100001210",
+    "111111010",
+    "001000210",
+    "001000010",
+    "001111110",
+  ],
   commons: [
     "000111000",
     "001000100",
@@ -112,14 +178,18 @@ const paths = Object.fromEntries(
 /** Decorative brand artwork, never a replacement for the environment's name. */
 export function EnvironmentMark({
   environment,
+  size = 40,
 }: {
   environment: EnvironmentId;
+  size?: number;
 }) {
   return (
     <svg
       aria-hidden="true"
       viewBox="-3 -3 43 43"
-      className="size-10 shrink-0"
+      width={size}
+      height={size}
+      className="shrink-0"
       data-environment={environment}
     >
       <path d={paths[environment][0]} className="fill-muted-foreground/15" />

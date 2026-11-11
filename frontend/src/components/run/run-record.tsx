@@ -4,8 +4,10 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { ExposureInspection } from "@/components/exposure-inspection";
 import { Alert } from "@/components/feedback";
 import { Check } from "@/components/icons";
+import { ActivationInspector } from "@/components/run/activation-inspector";
 import { RequestInspector } from "@/components/run/request-inspector";
 import { Json } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -36,8 +38,22 @@ export function RunRecord({ run }: { run: RunDetail }) {
             </div>
             <div>
               <dt>Model</dt>
-              <dd>{summary.model}</dd>
+              <dd>{summary.model ?? "Non-model control"}</dd>
             </div>
+            <div>
+              <dt>Participant harness</dt>
+              <dd>
+                {label(run.harness.kind)} · v{run.harness.version} · up to{" "}
+                {run.harness.max_requests} requests and{" "}
+                {run.harness.max_tool_operations} operations per activation
+              </dd>
+            </div>
+            {run.harness.kind === "scripted" && (
+              <div>
+                <dt>Reference policy</dt>
+                <dd>{run.harness.policy} · actor-authorized input only</dd>
+              </div>
+            )}
             <div>
               <dt>Environment</dt>
               <dd>
@@ -45,7 +61,7 @@ export function RunRecord({ run }: { run: RunDetail }) {
               </dd>
             </div>
             <div>
-              <dt>Usage</dt>
+              <dt>Run usage</dt>
               <dd>
                 {summary.usage.input_tokens.toLocaleString()} input /{" "}
                 {summary.usage.output_tokens.toLocaleString()} output tokens
@@ -61,9 +77,31 @@ export function RunRecord({ run }: { run: RunDetail }) {
             </div>
             <div>
               <dt>Response limit</dt>
-              <dd>{run.design.response_tokens} tokens including reasoning</dd>
+              <dd>
+                {run.harness.kind === "scripted"
+                  ? "No model inference"
+                  : `${run.design.response_tokens} tokens including reasoning`}
+              </dd>
             </div>
           </dl>
+          {run.requests.some((call) => call.analysis_id) && (
+            <p className="text-sm text-muted-foreground">
+              Run usage includes separately billed analysis. Participant effort
+              below excludes analysis requests.
+            </p>
+          )}
+          {run.requests.some((call) => call.purpose === "adjudication") && (
+            <p className="text-sm text-muted-foreground">
+              Run usage includes separately billed adjudication. Participant
+              effort below excludes adjudication requests.
+            </p>
+          )}
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            The turn slider plays saved evidence. Verify reapplies recorded
+            actions locally to check consequences. After a server restart, saved
+            work is restored and active runs pause. Run or Step explicitly
+            requests new model sampling and may spend budget.
+          </p>
           <Button
             variant="outline"
             disabled={verify.isPending}
@@ -95,6 +133,8 @@ export function RunRecord({ run }: { run: RunDetail }) {
           </Disclosure>
         </CardContent>
       </Card>
+      <ExposureInspection path={`/runs/${summary.id}/exposure`} />
+      <ActivationInspector activations={run.activations} />
       <RequestInspector requests={run.requests} />
     </>
   );

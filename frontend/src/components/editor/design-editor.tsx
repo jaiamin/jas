@@ -13,6 +13,7 @@ import {
   EditorNavigation,
   editorSections,
 } from "@/components/editor/editor-layout";
+import { EnvironmentExamples } from "@/components/editor/environment-examples";
 import { ExecutionFields } from "@/components/editor/execution-fields";
 import { ExperimentReview } from "@/components/editor/experiment-review";
 import { QuestionFields } from "@/components/editor/question-fields";
@@ -62,6 +63,7 @@ import type {
   Catalog,
   Design,
   EnvironmentId,
+  EnvironmentMechanics,
   ExperimentPreflight,
   SavedEnvironment,
 } from "@/lib/types";
@@ -100,24 +102,36 @@ export function DesignEditor({
   const [step, setStep] = useState(initialStep);
   const [formVersion, setFormVersion] = useState(0);
   const [draftStatus, setDraftStatus] = useState(draft ? "Draft saved" : "");
-  const lastSnapshot = useRef(JSON.stringify({ design, json, mode }));
+  // The library editing target survives changes that clear scientific provenance.
+  const [savedSetup, setSavedSetup] = useState<Draft["environmentEdit"]>(
+    () =>
+      draft?.environmentEdit ??
+      (initial.environment_source &&
+      /^[a-f0-9]{16}$/.test(initial.environment_source.id)
+        ? {
+            id: initial.environment_source.id,
+            revision: initial.environment_source.revision,
+          }
+        : setupId && setupRevision !== undefined
+          ? { id: setupId, revision: setupRevision }
+          : undefined),
+  );
+  const lastSnapshot = useRef(
+    JSON.stringify({ design, json, mode, savedSetup }),
+  );
   useEffect(() => {
-    const snapshot = JSON.stringify({ design, json, mode });
+    const snapshot = JSON.stringify({ design, json, mode, savedSetup });
     if (snapshot === lastSnapshot.current) return;
     try {
-      writeDraft(draftPath, design, json, mode);
+      writeDraft(draftPath, design, json, mode, savedSetup);
       lastSnapshot.current = snapshot;
       setDraftStatus("Draft saved");
     } catch {
       setDraftStatus("Draft could not be saved in this browser");
     }
-  }, [design, json, mode, draftPath]);
+  }, [design, json, mode, draftPath, savedSetup]);
   const [error, setError] = useState("");
   const [setupNotice, setSetupNotice] = useState("");
-  const [savedSetup, setSavedSetup] = useState({
-    id: setupId,
-    revision: setupRevision,
-  });
   const [pendingEnvironment, setPendingEnvironment] =
     useState<EnvironmentId | null>(null);
   const navigate = useNavigate();
@@ -137,10 +151,34 @@ export function DesignEditor({
       navigate(`/studies/${result.id}`, { state: { notice } });
     },
   });
-  const environment = catalog.environments.find(
-    (e) => e.key === design.environment,
-  );
-  if (!environment) throw new Error("Unknown environment in protocol");
+  // A saved revision owns its relay package even after library deletion. This
+  // metadata keeps its controls available; the API still checks actual admission.
+  const editorCatalog: Catalog =
+    design.environment === "sealed_relay" &&
+    design.environment_source &&
+    !catalog.environments.some((item) => item.key === "sealed_relay")
+      ? {
+          ...catalog,
+          environments: [
+            ...catalog.environments,
+            {
+              key: "sealed_relay",
+              name: "Pinned admitted sealed relay",
+              description:
+                "Finite two-participant relay with a pinned package.",
+              primary_metric: "relay_success",
+              parameters: ["relay", "memory"],
+              measures: ["relay_success"],
+              measure_definitions: {
+                relay_success:
+                  "Whether the relay was released before termination.",
+              },
+              rule_version: design.environment_source.definition.rule_version,
+              source: design.environment_source,
+            },
+          ],
+        }
+      : catalog;
   const validate = useMutation({
     mutationFn: (specification: unknown) =>
       api<Design>("/design/validate", { design: specification }),
@@ -152,21 +190,51 @@ export function DesignEditor({
     },
   });
   const saveEnvironment = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (asNew: boolean) => {
       const validated = await api<Design>("/design/validate", {
         design: mode === "json" ? JSON.parse(json) : design,
       });
-      return api<SavedEnvironment>(
-        savedSetup.id ? `/environments/${savedSetup.id}` : "/environments",
-        { design: validated, revision: savedSetup.revision ?? null },
-        savedSetup.id ? "PUT" : "POST",
+      const definition = await api<EnvironmentMechanics>(
+        "/design/environment",
+        { design: validated },
       );
+      const updating = !asNew && savedSetup;
+      const record = await api<SavedEnvironment>(
+        updating ? `/environments/${updating.id}` : "/environments",
+        { definition, revision: updating ? updating.revision : null },
+        updating ? "PUT" : "POST",
+      );
+      return { record, validated };
     },
-    onSuccess: (record) => {
+    onSuccess: ({ record, validated }) => {
       setSavedSetup({ id: record.id, revision: record.revision });
+      const pinned = { ...validated, environment_source: record };
+      setDesign(pinned);
+      if (mode === "json") setJson(JSON.stringify(pinned, null, 2));
       setSetupNotice(
         "Custom environment saved. Reuse, edit or delete it from Environments.",
       );
+    },
+  });
+  const reuse = useMutation({
+    mutationFn: ({
+      example,
+      bindings,
+      source = design.environment_source,
+    }: {
+      example: string;
+      bindings: Record<string, string>;
+      source?: SavedEnvironment | null;
+    }) =>
+      api<Design>("/design/use-environment", {
+        design,
+        source,
+        example,
+        bindings,
+      }),
+    onSuccess: (applied) => {
+      setDesign(applied);
+      setFormVersion((version) => version + 1);
     },
   });
   const snapshot = mode === "json" ? json : JSON.stringify(design);
@@ -185,6 +253,7 @@ export function DesignEditor({
     save.isPending ||
     validate.isPending ||
     saveEnvironment.isPending ||
+    reuse.isPending ||
     check.isPending;
   function changeMode(value: string) {
     if (busy) return;
@@ -271,13 +340,24 @@ export function DesignEditor({
                 disabled={busy}
                 onSelect={() => {
                   setSetupNotice("");
-                  saveEnvironment.mutate();
+                  saveEnvironment.mutate(false);
                 }}
               >
-                {savedSetup.id
+                {savedSetup?.id
                   ? "Update custom environment"
                   : "Save custom environment"}
               </DropdownMenuItem>
+              {savedSetup?.id && (
+                <DropdownMenuItem
+                  disabled={busy}
+                  onSelect={() => {
+                    setSetupNotice("");
+                    saveEnvironment.mutate(true);
+                  }}
+                >
+                  Save as new custom environment
+                </DropdownMenuItem>
+              )}
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -290,6 +370,7 @@ export function DesignEditor({
       {saveEnvironment.error && (
         <Alert variant="error">{saveEnvironment.error.message}</Alert>
       )}
+      {reuse.error && <Alert variant="error">{reuse.error.message}</Alert>}
       <Tabs
         value={activeSection}
         onValueChange={(value) => {
@@ -311,9 +392,13 @@ export function DesignEditor({
             >
               <QuestionFields
                 design={design}
-                catalog={catalog}
+                catalog={editorCatalog}
                 onChange={setDesign}
-                onEnvironmentChange={setPendingEnvironment}
+                onEnvironmentChange={(value) => {
+                  // Finish the select's Enter activation before moving focus to
+                  // the dialog, where its default click would otherwise cancel.
+                  requestAnimationFrame(() => setPendingEnvironment(value));
+                }}
                 disabled={busy}
               />
             </TabsContent>
@@ -334,9 +419,20 @@ export function DesignEditor({
               className="data-[state=inactive]:hidden"
             >
               <div className="flex min-w-0 flex-col gap-8">
+                {design.environment_source && (
+                  <EnvironmentExamples
+                    key={design.environment_source.sha256}
+                    design={design}
+                    source={design.environment_source}
+                    disabled={busy}
+                    onApply={(example, bindings) =>
+                      reuse.mutate({ example, bindings })
+                    }
+                  />
+                )}
                 <ConditionFields
                   design={design}
-                  catalog={catalog}
+                  catalog={editorCatalog}
                   onChange={setDesign}
                 />
                 <TaskFields
@@ -354,7 +450,7 @@ export function DesignEditor({
               <ExecutionFields
                 key={formVersion}
                 design={design}
-                catalog={catalog}
+                catalog={editorCatalog}
                 onChange={setDesign}
               />
             </TabsContent>
@@ -365,7 +461,7 @@ export function DesignEditor({
             >
               <ExperimentReview
                 design={design}
-                catalog={catalog}
+                catalog={editorCatalog}
                 onEdit={setStep}
               />
               {explanation && (
@@ -375,6 +471,14 @@ export function DesignEditor({
                     <p>{explanation}</p>
                     {planning && (
                       <>
+                        {planning.brief.intent && (
+                          <p>
+                            {planning.brief.intent === "exploratory"
+                              ? "Exploratory design"
+                              : "Confirmatory design"}
+                          </p>
+                        )}
+                        <p>{planning.brief.operationalization}</p>
                         <p>{planning.brief.size_rationale}</p>
                         <ul className="flex flex-col gap-2">
                           {planning.sources.map((source) => (
@@ -534,6 +638,27 @@ export function DesignEditor({
             <AlertDialogDescription>
               Measurements will reset. Tasks and resource schedules that do not
               apply will be removed.
+              {pendingEnvironment === "sealed_relay" && (
+                <>
+                  {" "}
+                  This relay requires exactly two existing agents. The selected
+                  example binds its roles to those agents in order; review the
+                  bindings in Conditions before saving.
+                </>
+              )}
+              {(pendingEnvironment === "distributed_coordination" ||
+                pendingEnvironment === "reliance_commitments") && (
+                <>
+                  {" "}
+                  This task binds the first{" "}
+                  {pendingEnvironment === "reliance_commitments"
+                    ? "four"
+                    : "three"}{" "}
+                  agents to local evidence and adds neutral agents if needed.
+                  Existing agents are retained; remove any extra unbound agents
+                  before saving.
+                </>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -547,7 +672,19 @@ export function DesignEditor({
                   (item) => item.key === value,
                 );
                 if (!env) return;
-                setDesign((design) => changeEnvironment(design, env));
+                if (value === "sealed_relay") {
+                  const example = env.source.definition.examples[0];
+                  reuse.mutate({
+                    source: env.source,
+                    example: example.key,
+                    bindings: Object.fromEntries(
+                      example.roles.map((role, index) => [
+                        role,
+                        design.profiles[index]?.key ?? "",
+                      ]),
+                    ),
+                  });
+                } else setDesign((design) => changeEnvironment(design, env));
                 setPendingEnvironment(null);
               }}
             >

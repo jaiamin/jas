@@ -1,3 +1,5 @@
+import { ArtifactView } from "@/components/artifact-view";
+import { CoordinationView } from "@/components/coordination-view";
 import { Empty } from "@/components/feedback";
 import { Check, Circle, Clock3 } from "@/components/icons";
 import { MechanismView } from "@/components/mechanism-view";
@@ -21,6 +23,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { WorkflowView } from "@/components/workflow-view";
+import { label } from "@/lib/format";
 import type { Event, Profile, RunDetail, State } from "@/lib/types";
 
 function isContributions(value: unknown): value is Record<string, number> {
@@ -46,6 +50,70 @@ export function WorldView({
   onAgent: (key: string) => void;
 }) {
   const profiles = run.design.profiles;
+  if (run.design.environment === "institutional_workflow")
+    return (
+      <WorkflowView run={run} state={state} events={events} onAgent={onAgent} />
+    );
+  if (run.design.environment === "sealed_relay") {
+    const outcome =
+      state.outcome && "success" in state.outcome ? state.outcome : null;
+    const rules = run.parameters.relay;
+    return (
+      <section
+        aria-label="Sealed relay state"
+        className="flex min-w-0 flex-col gap-4"
+      >
+        <h2 className="text-base font-semibold">Sealed relay</h2>
+        <p className="text-sm text-muted-foreground">
+          Researcher view of enforced mechanics. Participant observations use
+          their explicit permissions; explanations cannot settle a transition.
+        </p>
+        <dl className="grid gap-3 text-sm">
+          <div>
+            <dt className="text-muted-foreground">Phase</dt>
+            <dd>
+              {["Sealed", "Lodged", "Released", "Stopped"][state.phase ?? 0]}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-muted-foreground">Action credits</dt>
+            <dd>{state.credits} of 3 remaining</dd>
+          </div>
+          {rules && (
+            <div>
+              <dt className="text-muted-foreground">Permissions</dt>
+              <dd>
+                Submitter {rules.submitter} · Reviewer {rules.reviewer}
+              </dd>
+            </div>
+          )}
+          {outcome && (
+            <div>
+              <dt className="text-muted-foreground">Terminal result</dt>
+              <dd>
+                {label(outcome.reason)} ·{" "}
+                {outcome.success ? "Success" : "Unsuccessful"}
+              </dd>
+            </div>
+          )}
+        </dl>
+        <details className="min-w-0 text-sm">
+          <summary>Pinned executable package</summary>
+          <p className="mt-3 break-all text-muted-foreground">
+            SHA-256 {state.package_sha256}
+          </p>
+        </details>
+      </section>
+    );
+  }
+  if (
+    ["distributed_coordination", "reliance_commitments"].includes(
+      run.design.environment,
+    )
+  )
+    return <CoordinationView run={run} state={state} events={events} />;
+  if (run.design.environment === "artifact_workspace")
+    return <ArtifactView run={run} state={state} />;
   if (run.design.environment === "coordination") {
     const tasks = state.tasks;
     if (!tasks) throw new Error("Coordination checkpoint is missing tasks");
@@ -180,7 +248,7 @@ export function WorldView({
                     : "—"}
                 </TableCell>
                 <TableCell className="text-right tabular-nums">
-                  {state.balances[profile.key]?.toFixed(1)}
+                  {state.balances?.[profile.key]?.toFixed(1)}
                 </TableCell>
               </TableRow>
             ))}
@@ -226,7 +294,7 @@ function AgentBalances({
         >
           {profile.name}
           <span className="tabular-nums">
-            {state.balances[profile.key]?.toFixed(1)} credits
+            {state.balances?.[profile.key]?.toFixed(1)} credits
           </span>
         </Button>
       ))}
@@ -251,7 +319,13 @@ export function InteractionTable({
       !event.actor ||
       !event.target ||
       !profiles.some((p) => p.key === event.target) ||
-      !["transfer", "message"].includes(event.kind)
+      ![
+        "transfer",
+        "message",
+        "message_delivered",
+        "handoff_work",
+        "accept_handoff",
+      ].includes(event.kind)
     )
       continue;
     const key = `${event.actor}:${event.target}`;

@@ -2,6 +2,7 @@ import { type ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
 import { AgentMarkdown } from "@/components/agent/agent-markdown";
 import { ExperimentCheckDetails } from "@/components/experiment-check";
+import { CodeBlock, CodeBlockContent } from "@/components/ui/code-block";
 import {
   Trace,
   TraceCollapsible,
@@ -11,7 +12,7 @@ import {
   TraceLine,
   TraceTitle,
 } from "@/components/ui/trace";
-import type { Analysis } from "@/lib/types";
+import type { Analysis, ResearchActivity, ResearchArtifact } from "@/lib/types";
 
 const stages = {
   answering: "Thinking",
@@ -20,6 +21,10 @@ const stages = {
   investigating: "Investigating the evidence",
   reading: "Reading recorded turns",
   calculating: "Calculating payoffs",
+  discovering: "Inspecting available mechanics",
+  generating: "Generating checked mechanics",
+  retrieving: "Retrieving research context",
+  probing: "Probing a copied world",
   scoping: "Scoping the question",
   researching: "Researching methods",
   drafting: "Drafting the protocol",
@@ -27,6 +32,147 @@ const stages = {
   reviewing: "Reviewing the design",
   revising: "Refining the protocol",
 };
+
+const operationTitles = {
+  capabilities: "Implemented mechanics",
+  context: "Research context",
+  probe: "World probe",
+  generate_extension: "Generate checked mechanics",
+};
+const stopReasons: Record<string, string> = {
+  answered: "Answer complete",
+  planner_handoff: "Passed to protocol review",
+  request_limit: "Request limit reached",
+  provider_failure: "Provider request failed",
+  interrupted: "Request interrupted",
+  server_stopped: "Server stopped",
+  failed: "Request failed",
+};
+
+const extensionSources: Partial<
+  Record<
+    ResearchArtifact["sources"][number]["kind"],
+    { path: string; label: string }
+  >
+> = {
+  finite_contract: { path: "contracts", label: "Source finite contract" },
+  extension_generation: {
+    path: "generations",
+    label: "Source generation attempt",
+  },
+  extension_review: { path: "reviews", label: "Source executable review" },
+  finite_check: { path: "finite-checks", label: "Source external check" },
+  finite_admission: {
+    path: "finite-admissions",
+    label: "Source finite admission",
+  },
+};
+
+function ResearchSource({
+  source,
+  chatId,
+}: {
+  source: ResearchArtifact["sources"][number];
+  chatId: string;
+}) {
+  const extension = extensionSources[source.kind];
+  const content = (
+    <TraceLine>
+      <TraceTitle>
+        {extension?.label ??
+          (source.kind === "run"
+            ? `Source turn ${source.turn}`
+            : source.kind === "builtin"
+              ? `Source environment: ${source.id}`
+              : source.kind === "environment"
+                ? `Source custom environment: ${source.id}`
+                : "Source research record")}
+      </TraceTitle>
+      <TraceDescription>{source.hash.slice(0, 12)}</TraceDescription>
+    </TraceLine>
+  );
+  if (extension)
+    return (
+      <a
+        href={`/api/extensions/${extension.path}/${source.id}`}
+        title={`SHA-256 ${source.hash}`}
+      >
+        {content}
+      </a>
+    );
+  return (
+    <Link
+      title={`SHA-256 ${source.hash}`}
+      to={
+        source.kind === "run"
+          ? `/runs/${source.id}?turn=${source.turn}&tab=decisions`
+          : source.kind === "builtin"
+            ? `/environments?environment=${encodeURIComponent(source.id)}`
+            : source.kind === "environment"
+              ? `/new?setup=${encodeURIComponent(source.id)}&step=conditions`
+              : `/agent?chat=${chatId}#${source.id}`
+      }
+    >
+      {content}
+    </Link>
+  );
+}
+
+function ResearchOperation({
+  operation,
+  research,
+}: {
+  operation: ResearchArtifact;
+  research: ResearchActivity;
+}) {
+  const [open, setOpen] = useState(false);
+  const title = operationTitles[operation.request.kind];
+  const line = (
+    <TraceLine
+      status={
+        operation.status === "pending"
+          ? "running"
+          : operation.status === "complete"
+            ? undefined
+            : "error"
+      }
+    >
+      <TraceTitle>{title}</TraceTitle>
+      <TraceDescription>{operation.status}</TraceDescription>
+    </TraceLine>
+  );
+  if (operation.status === "pending") return line;
+  return (
+    <TraceCollapsible open={open} onOpenChange={setOpen}>
+      <TraceCollapsibleTrigger aria-label={title}>
+        {line}
+      </TraceCollapsibleTrigger>
+      <TraceCollapsibleContent>
+        {open && (
+          <div className="flex min-w-0 flex-col gap-3">
+            <p>{operation.summary}</p>
+            {operation.sources.map((source) => (
+              <ResearchSource
+                key={`${source.kind}:${source.id}:${source.turn ?? ""}`}
+                source={source}
+                chatId={research.scope.chat_id}
+              />
+            ))}
+            <CodeBlock size="sm">
+              <CodeBlockContent wrap className="max-h-64">
+                {JSON.stringify(
+                  { scope: research.scope, ...operation },
+                  null,
+                  2,
+                )}
+              </CodeBlockContent>
+            </CodeBlock>
+          </div>
+        )}
+      </TraceCollapsibleContent>
+    </TraceCollapsible>
+  );
+}
 
 export function AgentActivity({ stage }: { stage?: string }) {
   const label = stages[stage as keyof typeof stages] ?? stages.answering;
@@ -63,7 +209,9 @@ function ActivityDetail({
 export function ReplyActivity({ row }: { row: Analysis }) {
   const [expanded, setExpanded] = useState(false);
   const planning = row.output?.planning;
+  const generation = row.generation;
   const activity = row.output?.activity ?? [];
+  const research = row.output?.research;
   const sources = planning?.sources ?? [];
   const draftNotes =
     row.purpose === "design"
@@ -82,6 +230,7 @@ export function ReplyActivity({ row }: { row: Analysis }) {
     ).values(),
   ];
   const hasDetails =
+    !!generation ||
     !!planning?.brief ||
     sources.length > 0 ||
     examined.length > 0 ||
@@ -89,6 +238,7 @@ export function ReplyActivity({ row }: { row: Analysis }) {
     !!draftNotes ||
     limitations.length > 0 ||
     corrections.length > 0 ||
+    !!research?.operations.length ||
     activity.length > 0;
   const pending = row.status === "pending";
   const stage =
@@ -131,6 +281,39 @@ export function ReplyActivity({ row }: { row: Analysis }) {
         <div className="-ml-7">
           <TraceCollapsibleContent className="ml-2.5">
             <Trace>
+              {generation && (
+                <ActivityDetail title="Generation allowance">
+                  <div className="flex flex-col gap-2">
+                    <p>
+                      {generation.requests}/
+                      {generation.authorization.max_requests} model requests ·{" "}
+                      {generation.candidates}/
+                      {generation.authorization.max_candidates} candidate
+                      attempts
+                    </p>
+                    <p>
+                      ${generation.charged_usd.toFixed(6)} charged · $
+                      {generation.authorization.budget_usd} ceiling
+                    </p>
+                    <p>
+                      {generation.authorization.max_output_tokens} output tokens
+                      · {generation.authorization.max_input_bytes} input bytes
+                      per request
+                    </p>
+                    <a
+                      href={`/api/extensions/contracts/${generation.contract.id}`}
+                      title={`SHA-256 ${generation.contract.sha256}`}
+                      className="underline underline-offset-4"
+                    >
+                      Frozen generation contract
+                    </a>
+                    <p>
+                      Unknown usage keeps its reservation. Participant execution
+                      requires a separate action.
+                    </p>
+                  </div>
+                </ActivityDetail>
+              )}
               {activity.length > 0 && (
                 <Trace aria-label="Recorded activity">
                   {activity.map((recordedStage, index) => {
@@ -156,10 +339,35 @@ export function ReplyActivity({ row }: { row: Analysis }) {
               {planning?.brief && (
                 <ActivityDetail title="Study scope">
                   <div className="flex flex-col gap-2">
+                    {planning.brief.intent && (
+                      <p>
+                        {planning.brief.intent === "exploratory"
+                          ? "Exploratory design"
+                          : "Confirmatory design"}
+                      </p>
+                    )}
                     <p>{planning.brief.operationalization}</p>
                     <p>{planning.brief.size_rationale}</p>
                   </div>
                 </ActivityDetail>
+              )}
+              {research && research.operations.length > 0 && (
+                <Trace aria-label="Research operations">
+                  {research.operations.map((operation) => (
+                    <ResearchOperation
+                      key={operation.id}
+                      operation={operation}
+                      research={research}
+                    />
+                  ))}
+                  {research.stop_reason && (
+                    <TraceLine>
+                      <TraceTitle>
+                        {stopReasons[research.stop_reason] ?? "Work stopped"}
+                      </TraceTitle>
+                    </TraceLine>
+                  )}
+                </Trace>
               )}
               {!!sources.length && (
                 <ActivityDetail

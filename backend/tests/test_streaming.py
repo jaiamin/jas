@@ -42,7 +42,7 @@ def test_streamed_prose_precedes_completion_and_preserves_validation_and_cost(
             partial_observed.set()
 
         monkeypatch.setattr(agent, "_partial", observe)
-        result = agent.send("Explain matched seeds", "general")
+        result = await agent.send("Explain matched seeds", "general")
         await agent.tasks[result["id"]]
         final = agent.get(result["id"])
         assert any(

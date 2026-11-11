@@ -1,7 +1,9 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { expect, test, vi } from "vitest";
 import type { Event } from "@/lib/types";
 import { runDetail, state } from "@/test/fixtures";
+import { workflowRun, workflowState } from "@/test/workflow";
 import { InteractionTable, RelationshipTable, WorldView } from "./world-view";
 
 function event(
@@ -141,4 +143,173 @@ test("relationships aggregate directed transfers and exclude ineligible promises
   expect(
     screen.getByRole("row", { name: "Bob No reports No eligible promises 2" }),
   ).toBeInTheDocument();
+});
+
+test("workflow interactions count delivered messages and settled handoffs, with actor inspection", () => {
+  const onAgent = vi.fn();
+  const queued = event("message_queued", "a", "b", {});
+  const rejected = event("workflow_conflict", "b", "a", {});
+  const { rerender } = render(
+    <InteractionTable
+      profiles={runDetail.design.profiles}
+      events={[queued, rejected]}
+      onAgent={onAgent}
+    />,
+  );
+  expect(screen.getByText("No interactions yet")).toBeInTheDocument();
+  rerender(
+    <InteractionTable
+      profiles={runDetail.design.profiles}
+      events={[
+        queued,
+        rejected,
+        event("message_delivered", "a", "b", {}),
+        event("handoff_work", "a", "b", {}),
+        event("accept_handoff", "b", "a", {}),
+      ]}
+      onAgent={onAgent}
+    />,
+  );
+  const table = screen.getByRole("table", {
+    name: "Directed agent interactions",
+  });
+  const sent = within(table).getByRole("row", { name: "Alice Bob 0 2" });
+  expect(
+    within(table).getByRole("row", { name: "Bob Alice 0 1" }),
+  ).toBeInTheDocument();
+  fireEvent.click(within(sent).getByRole("button", { name: "Bob" }));
+  expect(onAgent).toHaveBeenCalledWith("b");
+});
+
+test("institutional work shows real materials, owned delay and blocked dependencies without tables", () => {
+  const onAgent = vi.fn();
+  render(
+    <MemoryRouter>
+      <WorldView
+        run={workflowRun}
+        state={workflowState}
+        events={[]}
+        onAgent={onAgent}
+      />
+    </MemoryRouter>,
+  );
+  expect(
+    screen.getByRole("heading", { name: "Institutional workflow" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText("4 materials remaining · 3 spent"),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText("Logical time 2 · 0 of 3 handoffs accepted"),
+  ).toBeInTheDocument();
+  const intake = screen.getByRole("region", { name: "Intake work" });
+  expect(intake).toHaveTextContent("In progress");
+  expect(intake).toHaveTextContent("Ready at logical time 3");
+  expect(
+    screen.getByRole("region", { name: "Release work" }),
+  ).toHaveTextContent("Waiting for intake acceptance");
+  expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  expect(screen.queryByText("private-mail-431")).not.toBeInTheDocument();
+  fireEvent.click(within(intake).getByRole("button", { name: "Alder" }));
+  expect(onAgent).toHaveBeenCalledWith("alder");
+});
+
+test("selected handoffs, privileged mail and artifact history stay explicit and cutoff scoped", () => {
+  const handoff = {
+    sender: "alder",
+    recipient: "cedar",
+    version: 2,
+    sent_at: 3,
+    accepted_at: null,
+  };
+  const checkpoint = {
+    ...workflowState,
+    logical_time: 4,
+    read_grants: { cedar: ["intake_record"] },
+    work: {
+      ...workflowState.work,
+      intake: {
+        ...workflowState.work.intake,
+        status: "handed_off" as const,
+        handoff,
+      },
+    },
+  };
+  const conflict = {
+    ...event("workflow_conflict", "birch", null, {
+      reason: "Work already has an owner",
+      request: { work: "intake" },
+    }),
+    visibility: "private",
+    turn: 6,
+  };
+  render(
+    <MemoryRouter>
+      <WorldView
+        run={workflowRun}
+        state={checkpoint}
+        events={[conflict]}
+        onAgent={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  const intake = screen.getByRole("region", { name: "Intake work" });
+  expect(intake).toHaveTextContent(
+    "Awaiting acceptance from Cedar · Version 2",
+  );
+  expect(
+    screen.getByText("Logical time 4 · 0 of 3 handoffs accepted"),
+  ).toBeInTheDocument();
+  expect(screen.queryByText("private-mail-431")).not.toBeInTheDocument();
+  expect(screen.queryByText("batch")).not.toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Artifact versions and access" }),
+  );
+  const record = screen.getByRole("region", { name: "Intake record versions" });
+  expect(record).toHaveTextContent("Version 2");
+  expect(record).toHaveTextContent("17");
+  expect(record).toHaveTextContent("Additional read grants: Cedar");
+  fireEvent.click(screen.getByRole("button", { name: "Addressed messages" }));
+  expect(screen.getByText("private-mail-431")).toBeInTheDocument();
+  expect(
+    screen.getByText("Elm → Fern · Sent 0 · Delivered 2"),
+  ).toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Settlements and conflicts" }),
+  );
+  expect(
+    screen.getByRole("link", { name: "Turn 6 · Birch · Workflow conflict" }),
+  ).toHaveAttribute("href", expect.stringContaining("turn=6"));
+  expect(screen.getByText("Work already has an owner")).toBeInTheDocument();
+});
+
+test("workflow artifact links use the actual settlement turn rather than operation priority", () => {
+  const performed = {
+    ...event("perform_work", "alder", null, {
+      artifact: "intake_record",
+      version: 2,
+      operation: 8,
+    }),
+    turn: 12,
+  };
+  render(
+    <MemoryRouter>
+      <WorldView
+        run={{ ...workflowRun, events: [performed] }}
+        state={workflowState}
+        events={[performed]}
+        onAgent={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Artifact versions and access" }),
+  );
+  const record = screen.getByRole("region", { name: "Intake record versions" });
+  expect(
+    within(record).getByRole("link", { name: "Inspect turn 12" }),
+  ).toHaveAttribute("href", expect.stringContaining("turn=12"));
+  expect(
+    within(record).queryByRole("link", { name: "Inspect turn 8" }),
+  ).not.toBeInTheDocument();
 });

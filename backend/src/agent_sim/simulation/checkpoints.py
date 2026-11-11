@@ -54,11 +54,59 @@ class Checkpoint(TypedDict):
     round: int
     position: int
     done: bool
-    balances: dict[str, float]
+    balances: NotRequired[dict[str, float]]
     history: list[dict[str, Any]]
     notes: dict[str, str]
     experiences: dict[str, list[dict[str, Any]]]
-    signals: dict[str, int]
+    signals: NotRequired[dict[str, int]]
+
+
+class ArtifactCheckpoint(Checkpoint):
+    artifacts: dict[str, dict[str, Any]]
+    writes_remaining: int
+    last_results: dict[str, dict[str, Any]]
+    artifact_history: list[dict[str, Any]]
+    outcome: dict[str, Any] | None
+    adjudications: NotRequired[list[dict[str, Any]]]
+
+
+class DistributedCheckpoint(ArtifactCheckpoint):
+    logical_time: int
+    phase_actors: list[str]
+    pending_actions: dict[str, dict[str, Any]]
+    choices: dict[str, str | None]
+    pending_deliveries: list[dict[str, Any]]
+    inboxes: dict[str, list[dict[str, Any]]]
+    outboxes: dict[str, list[dict[str, Any]]]
+    message_sequences: dict[str, int]
+    proposal_count: int
+    pending_reads: dict[str, dict[str, Any]]
+
+
+class RelianceCheckpoint(DistributedCheckpoint):
+    commitments: dict[str, dict[str, Any]]
+    choice_times: dict[str, int]
+    read_grants: dict[str, list[str]]
+    reliance_effects: dict[str, int]
+    commitment_history: list[dict[str, Any]]
+    withdrawn: list[str]
+
+
+class WorkflowCheckpoint(ArtifactCheckpoint):
+    logical_time: int
+    phase_actors: list[str]
+    pending_actions: dict[str, dict[str, Any]]
+    pending_reads: dict[str, dict[str, Any]]
+    withdrawn: list[str]
+    resource_stock: int
+    resource_spent: int
+    work: dict[str, dict[str, Any]]
+    work_history: list[dict[str, Any]]
+    read_grants: dict[str, list[str]]
+    pending_deliveries: list[dict[str, Any]]
+    inboxes: dict[str, list[dict[str, Any]]]
+    outboxes: dict[str, list[dict[str, Any]]]
+    message_sequences: dict[str, int]
 
 
 class CommonsCheckpoint(Checkpoint):
@@ -117,9 +165,9 @@ class Observation(TypedDict):
     rules: str
     context: str
     participants: list[dict[str, str]]
-    your_balance: float
-    your_private_signal: int
-    public_signals: dict[str, int]
+    your_balance: NotRequired[float]
+    your_private_signal: NotRequired[int]
+    public_signals: NotRequired[dict[str, int]]
     public_history: list[dict[str, Any]]
     your_experiences: list[dict[str, Any]]
     your_note: str
@@ -138,6 +186,23 @@ class Observation(TypedDict):
     pie: NotRequired[int]
     offer: NotRequired[Offer | None]
     proposer: NotRequired[str]
-    choices: NotRequired[dict[str, int]]
+    choices: NotRequired[dict[str, int] | dict[str, str | None]]
     stock: NotRequired[float]
     resources: NotRequired[list[dict[str, Any]]]
+    artifacts: NotRequired[list[dict[str, Any]]]
+    artifact_requirements: NotRequired[list[dict[str, Any]]]
+    writes_remaining: NotRequired[int]
+    last_result: NotRequired[dict[str, Any] | None]
+    artifact_history: NotRequired[list[dict[str, Any]]]
+    relay: NotRequired[dict[str, Any]]
+    finite: NotRequired[dict[str, Any]]
+    private_information: NotRequired[dict[str, str]]
+    logical_time: NotRequired[int]
+    coordination: NotRequired[dict[str, Any]]
+    inbox: NotRequired[list[dict[str, Any]]]
+    outbox: NotRequired[list[dict[str, Any]]]
+    commitment_opportunities: NotRequired[list[dict[str, Any]]]
+    reliance_effect: NotRequired[int]
+    commitment_history: NotRequired[list[dict[str, Any]]]
+    withdrawn: NotRequired[list[str]]
+    workflow: NotRequired[dict[str, Any]]

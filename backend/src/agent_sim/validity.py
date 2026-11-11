@@ -10,9 +10,21 @@ from typing import Literal
 
 from pydantic import Field, field_validator
 
-from .domain import Action, Decision, Design, Strict, Treatment
+from .adjudication import INSTRUCTIONS as ADJUDICATION_INSTRUCTIONS
+from .domain import (
+    Action,
+    Decision,
+    Design,
+    FiniteAction,
+    RelayAction,
+    StopArtifact,
+    Strict,
+    Treatment,
+    WaitWorkflow,
+)
+from .llm import PRICES
 from .simulation.checkpoints import Observation
-from .simulation.environments import CATALOG, create_world
+from .simulation.environments import create_world, get_environment
 from .simulation.world import World
 
 COMMON = {
@@ -25,6 +37,45 @@ COMMON = {
     "repeated_interaction": "Finite repeated model decisions, not calibrated human prediction.",
 }
 CAPABILITIES = {
+    "reviewed_finite": {
+        "reviewed_finite_transitions": "Pinned explicit role/state/credit transitions against an "
+        "external exhaustive reviewed table; no proof of natural-language understanding. "
+        "Static actor-private fields, fixed role order, conservation and horizon.",
+    },
+    "institutional_workflow": {
+        "versioned_artifacts": "Owned work appends authorized immutable artifact versions.",
+        "finite_stock": "Work starts atomically consume their declared shared material cost.",
+        "task_dependencies": "Exclusive claims/delegation, delayed artifact work and selected "
+        "recipient acceptance enforce prerequisite handoffs; prose cannot edit procedures.",
+        "messaging": "Explicit sender/recipient routes deliver mail after declared logical "
+        "delay; no ambient broadcast or synthetic signals.",
+    },
+    "reliance_commitments": {
+        "versioned_artifacts": "Actor-authorized artifacts and voluntary read-access entrusting.",
+        "distributed_information": "Four local-value participants, addressed mail and "
+        "logical phases.",
+        "commitments": "Typed optional promises, voluntary reliance, declared windows/deadlines, "
+        "independent recipient effects and explicit infeasible/absent/unresolved "
+        "outcomes; no intent judge.",
+    },
+    "sealed_relay": {
+        "finite_stock": (
+            "Three action credits coupled to an independently checked finite "
+            "relay; explicit actor permissions and private reviewer docket."
+        )
+    },
+    "distributed_coordination": {
+        "versioned_artifacts": "Actor-authorized local evidence and versioned shared drafts.",
+        "distributed_information": "Three individually valued alternatives, configurable ACL "
+        "sharing, addressed logical-time messages and declared sequential/phased settlement.",
+    },
+    "artifact_workspace": {
+        "versioned_artifacts": "Actor-authorized evidence reads and versioned work "
+        "with optimistic writes.",
+        "artifact_verification": "Executable content/source checks, explicit submit/stop "
+        "and bounded writes; an optional declared fallible pickup-note rubric affects "
+        "only submission status after hard checks.",
+    },
     "commons": {
         "contributions": "Sealed contributions to a multiplied shared fund; fresh round budgets.",
         "capacity_shocks": "Scheduled per-round credit capacity changes, not physical needs.",
@@ -81,6 +132,10 @@ class Requirement(Strict):
         "exclude behavioral outcome labels.",
     )
     capability: Literal[
+        "reviewed_finite_transitions",
+        "versioned_artifacts",
+        "distributed_information",
+        "artifact_verification",
         "allocation_budget",
         "allocation_power",
         "binding_negotiation",
@@ -132,7 +187,27 @@ class Requirement(Strict):
 
 
 def capabilities(environment: str) -> dict[str, str]:
-    return {**COMMON, **CAPABILITIES[environment]}
+    available = {**COMMON, **CAPABILITIES[environment]}
+    if environment in {
+        "institutional_workflow",
+        "artifact_workspace",
+        "sealed_relay",
+        "reviewed_finite",
+        "distributed_coordination",
+        "reliance_commitments",
+    }:
+        for key in (
+            ("signal_disclosure",)
+            if environment
+            in {
+                "institutional_workflow",
+                "distributed_coordination",
+                "reliance_commitments",
+            }
+            else ("messaging", "signal_disclosure")
+        ):
+            available.pop(key)
+    return available
 
 
 def requirement_issues(
@@ -189,6 +264,17 @@ def _differences(left: dict, right: dict, prefix: str = "") -> list[str]:
     return result
 
 
+def participant_assignment(design: Design, condition: Treatment) -> dict:
+    scripted = condition.harness.kind == "scripted"
+    return {
+        "model": None if scripted else condition.model,
+        "profiles": [
+            p.model_dump() | ({"model": None} if scripted else {})
+            for p in design.resolve(condition).profiles
+        ],
+    }
+
+
 def condition_grid(design: Design) -> dict:
     """Crossing of executable settings; perfectly coupled fields form one bundle."""
 
@@ -214,8 +300,9 @@ def condition_grid(design: Design) -> dict:
         fields(
             {
                 "parameters": c.parameters.model_dump(),
-                "model": c.model,
-                "profiles": [p.model_dump() for p in design.resolve(c).profiles],
+                "harness": c.harness.model_dump(),
+                "adjudicator": c.adjudicator.model_dump() if c.adjudicator else None,
+                **participant_assignment(design, c),
             }
         )
         for c in design.conditions
@@ -261,6 +348,39 @@ def factorial_issues(grid: dict) -> list[dict]:
 
 def _instrument(world: World, actor: str, observation: Observation, variant: int) -> Decision:
     """Legal diagnostic choices only. Never used by participant execution."""
+    if "finite" in observation:
+        choices = [option["kind"] for option in observation["legal_actions"]]
+        if not choices:
+            raise ValueError("Reviewed finite contract has no operation for its current actor")
+        return Decision(
+            action=FiniteAction(operation=choices[variant % len(choices)]),
+            rationale="External finite preflight witness, not model behavior.",
+            memory="",
+            forecast=None,
+        )
+    if "workflow" in observation:
+        return Decision(
+            action=WaitWorkflow(kind="wait_workflow"),
+            rationale="Preflight wait witness.",
+            memory="",
+            forecast=None,
+        )
+    if "relay" in observation:
+        choices = [option["kind"] for option in observation["legal_actions"]]
+        operation = choices[0] if variant == 0 else "wait" if variant == 1 else "stop"
+        return Decision(
+            action=RelayAction.model_validate({"operation": operation}),
+            rationale="Independent preflight mechanics witness, not model behavior.",
+            memory="",
+            forecast=None,
+        )
+    if "artifacts" in observation:
+        return Decision(
+            action=StopArtifact(kind="stop"),
+            rationale="Preflight stop witness.",
+            memory="",
+            forecast=None,
+        )
     options = observation["legal_actions"]
     option = options[0] if variant < 2 else options[-1]
     kind = option["kind"]
@@ -318,9 +438,9 @@ def _instrument(world: World, actor: str, observation: Observation, variant: int
     )
 
 
-def _trace(design: Design, condition: Treatment, variant: int) -> dict:
+def _trace(design: Design, condition: Treatment, variant: int, runner=None) -> dict:
     resolved = design.resolve(condition)
-    world = create_world(resolved, condition.parameters, design.seeds[0])
+    world = create_world(resolved, condition.parameters, design.seeds[0], runner=runner)
     observations, outcomes = [], []
     for _ in range(min(design.turn_count, 96)):
         actor = world.actor()
@@ -339,7 +459,7 @@ def _trace(design: Design, condition: Treatment, variant: int) -> dict:
                     {
                         "events": [e.model_dump() for e in events],
                         "measures": [m.model_dump() for m in measures],
-                        "balances": world.state["balances"],
+                        "balances": world.state.get("balances"),
                     },
                     sort_keys=True,
                 ).encode()
@@ -353,7 +473,9 @@ def _trace(design: Design, condition: Treatment, variant: int) -> dict:
     }
 
 
-def preflight(design: Design) -> dict:
+def preflight(design: Design, *, runner=None) -> dict:
+    if design.environment in {"sealed_relay", "reviewed_finite"}:
+        return _preflight.__wrapped__(design.model_dump_json(), runner)
     return copy.deepcopy(_preflight(design.model_dump_json()))
 
 
@@ -364,7 +486,7 @@ def require_valid(report: dict) -> None:
 
 
 @lru_cache(maxsize=64)
-def _preflight(specification: str) -> dict:
+def _preflight(specification: str, runner=None) -> dict:
     design = Design.model_validate_json(specification)
     issues, comparisons = [], []
 
@@ -514,8 +636,14 @@ def _preflight(specification: str) -> dict:
             "and consequences require targeted checks.",
         )
     for c in design.conditions:
+        if c.adjudicator is not None:
+            issue(
+                "fallible_adjudication",
+                f"{c.name} [{c.key}]: declared pickup-note judgment is fallible. "
+                "Preflight stop witnesses do not assess rubric accuracy or future model behavior.",
+            )
         try:
-            traces[c.key] = [_trace(design, c, variant) for variant in range(3)]
+            traces[c.key] = [_trace(design, c, variant, runner) for variant in range(3)]
         except (ValueError, AssertionError) as error:
             issue(
                 "invalid_witness",
@@ -525,12 +653,20 @@ def _preflight(specification: str) -> dict:
             )
     baseline = design.conditions[0]
     # Endowment also sets incidental synthetic signal ranges in these worlds.
-    active = set(CATALOG[design.environment].parameters) | {"private_signal", "endowment"}
+    active = set(get_environment(design.environment).parameters)
+    if design.environment not in {
+        "institutional_workflow",
+        "artifact_workspace",
+        "sealed_relay",
+        "reviewed_finite",
+        "distributed_coordination",
+        "reliance_commitments",
+    }:
+        active |= {"private_signal", "endowment"}
     for c in design.conditions[1:]:
         changes = _differences(baseline.parameters.model_dump(), c.parameters.model_dump())
-        assignment_changed = (
-            baseline.model != c.model
-            or design.resolve(baseline).profiles != design.resolve(c).profiles
+        assignment_changed = participant_assignment(design, baseline) != participant_assignment(
+            design, c
         )
         inactive = [p for p in changes if p.split(".")[0] not in active]
         if design.tasks and "task_count" in changes:
@@ -594,6 +730,13 @@ def _preflight(specification: str) -> dict:
                 "baseline": baseline.key,
                 "condition": c.key,
                 "changed_parameters": changes,
+                "changed_adjudicator": _differences(
+                    baseline.adjudicator.model_dump() if baseline.adjudicator else {},
+                    c.adjudicator.model_dump() if c.adjudicator else {},
+                ),
+                "changed_harness": _differences(
+                    baseline.harness.model_dump(), c.harness.model_dump()
+                ),
                 "agent_assignment_changed": assignment_changed,
                 "witnesses": witnesses,
             }
@@ -621,16 +764,42 @@ def _preflight(specification: str) -> dict:
         "issues": issues,
         "comparisons": comparisons,
         "condition_grid": grid,
+        "adjudications": [
+            {
+                "condition_key": c.key,
+                "scope": c.parameters.artifacts.judgment.model_dump(),
+                "adjudicator": c.adjudicator.model_dump(),
+                "fallible": True,
+                "rubric": ADJUDICATION_INSTRUCTIONS,
+                "permitted_consequence": "terminal_submission_status",
+                "max_requests_per_submission_attempt": 1,
+                "price_per_million_usd": {
+                    "input": PRICES[c.adjudicator.model][0],
+                    "output": PRICES[c.adjudicator.model][1],
+                },
+                "limits": "Only selected work fields and pinned immutable evidence fields; "
+                "no private goals, inaccessible objects, invented responses or beliefs. "
+                "Hard-fact and ACL checks precede dispatch and settlement. One separately "
+                "ledgered request per submission attempt; atomic study/workspace and applicable "
+                "investigation ceilings apply. Cost depends on input/output usage; unknown "
+                "usage retains its reservation. No retries or model substitution. "
+                "Acceptance is a fallible rubric ruling, not semantic truth or competence.",
+            }
+            for c in design.conditions
+            if c.adjudicator is not None
+            and c.parameters.artifacts is not None
+            and c.parameters.artifacts.judgment is not None
+        ],
         "probe_turns": sum(r["turns"] for rows in traces.values() for r in rows),
         "probe_limit_per_instrument": 96,
-        "limits": f"Checks use current rules {CATALOG[design.environment].world.version}. "
+        "limits": f"Checks use current rules {get_environment(design.environment).world.version}. "
         "Three legal scripted instruments on the first seed, up to 96 turns each. "
         "These are mechanism witnesses, not predictions, exhaustive strategy search "
         "or certification of question fidelity.",
     }
 
 
-def exposure(environment: str, actions: list[dict], events: list[dict]) -> dict:
+def realized_opportunities(environment: str, actions: list[dict], events: list[dict]) -> dict:
     counts = Counter(a["kind"] for a in actions)
     warnings = []
     if environment == "institution":

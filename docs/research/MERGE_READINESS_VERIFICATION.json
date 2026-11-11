@@ -1,0 +1,983 @@
+{
+  "date": "2026-11-10",
+  "worktree_parent": "78877e1f8b566f9f05572db13d14f575bdfc2df3",
+  "qualification": "Complete local repair suites at885f3846; scoped cleanup/navigation follow-up below; current hosted CI remains the merge gate.",
+  "current_contract": {
+    "database": 15,
+    "export": 18,
+    "library": 10,
+    "definition": 2,
+    "research_operation": 2,
+    "generation_event": 2
+  },
+  "checks": [
+    {
+      "attempt": "backend-full-03",
+      "command": [
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "-o",
+        "tmp_path_retention_policy=failed",
+        "--basetemp=.tools/merge-review/backend-full-03/tmp",
+        "--junitxml=.tools/merge-review/backend-full-03/junit.xml",
+        "--durations=25",
+        "--tb=short"
+      ],
+      "head": "78877e1f8b566f9f05572db13d14f575bdfc2df3",
+      "source_sha256": "6045438b42c1be0fe751b61411218baa4f46a44a9ce3b9e904379c8e23f92d14",
+      "exit_code": 0,
+      "stop_reason": null,
+      "seconds": 571.079466398005,
+      "free_before": 435245056,
+      "minimum_free": 395419648,
+      "free_after": 402595840,
+      "receipt_sha256": "191905ff31fd37c52e12a6940d04c2ef1070e8d6ced7309387ac0dd72b71ce55",
+      "output_log_sha256": "424a6b175d14d4f11604d2e290a9a1f5a4e258dbf9996b6111b3ab10853a1a7f"
+    },
+    {
+      "attempt": "backend-static-03",
+      "command": [
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "ruff",
+        "check",
+        "backend",
+        "benchmarks",
+        ".github/scripts"
+      ],
+      "head": "78877e1f8b566f9f05572db13d14f575bdfc2df3",
+      "source_sha256": "6045438b42c1be0fe751b61411218baa4f46a44a9ce3b9e904379c8e23f92d14",
+      "exit_code": 0,
+      "stop_reason": null,
+      "seconds": 0.5031511669949396,
+      "free_before": 435412992,
+      "minimum_free": 435396608,
+      "free_after": 435277824,
+      "receipt_sha256": "a5c30457c429cd82cd3f97f69fae3b0de47df267161c7818864e0c7f873dd5c4",
+      "output_log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "attempt": "backend-types-02",
+      "command": [
+        ".venv/bin/ty",
+        "check"
+      ],
+      "head": "78877e1f8b566f9f05572db13d14f575bdfc2df3",
+      "source_sha256": "6045438b42c1be0fe751b61411218baa4f46a44a9ce3b9e904379c8e23f92d14",
+      "exit_code": 0,
+      "stop_reason": null,
+      "seconds": 0.5059551669983193,
+      "free_before": 435273728,
+      "minimum_free": 435269632,
+      "free_after": 435249152,
+      "receipt_sha256": "84316ed607670e88e53cf2ea7f1a9af948146097991bc93bb52062bd812b12a2",
+      "output_log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "attempt": "frontend-lint-01",
+      "command": [
+        "pnpm",
+        "--dir",
+        "frontend",
+        "lint"
+      ],
+      "head": "78877e1f8b566f9f05572db13d14f575bdfc2df3",
+      "source_sha256": "09945e91d8e043a62b85199c000b29ea3785a91ae6baaed5401a0e8597e04ef1",
+      "exit_code": 0,
+      "stop_reason": null,
+      "seconds": 0.50595112600422,
+      "free_before": 479010816,
+      "minimum_free": 478994432,
+      "free_after": 478953472,
+      "receipt_sha256": "51124210e7992bd35ae078778aff55b2614a6080421ab2c68030d1eebed1dc87",
+      "output_log_sha256": "9b063487967d463f813e9bcc4a00d91a5d37d04806909fead447a49b7f6f9a2b"
+    },
+    {
+      "attempt": "frontend-units-01",
+      "command": [
+        "pnpm",
+        "--dir",
+        "frontend",
+        "test"
+      ],
+      "head": "78877e1f8b566f9f05572db13d14f575bdfc2df3",
+      "source_sha256": "09945e91d8e043a62b85199c000b29ea3785a91ae6baaed5401a0e8597e04ef1",
+      "exit_code": 0,
+      "stop_reason": null,
+      "seconds": 12.526499090003199,
+      "free_before": 478949376,
+      "minimum_free": 478863360,
+      "free_after": 478838784,
+      "receipt_sha256": "30272e2b9aaca1fb7e950f567b6161d67955874cb33ae781c7e7fe82523e4e01",
+      "output_log_sha256": "1d2da43163a94fe2ceb85743f36a7386bb877584b666c56b63919f76d46efbbe"
+    },
+    {
+      "attempt": "frontend-types-01",
+      "command": [
+        "pnpm",
+        "--dir",
+        "frontend",
+        "exec",
+        "tsc",
+        "-b",
+        "--force"
+      ],
+      "head": "78877e1f8b566f9f05572db13d14f575bdfc2df3",
+      "source_sha256": "09945e91d8e043a62b85199c000b29ea3785a91ae6baaed5401a0e8597e04ef1",
+      "exit_code": 0,
+      "stop_reason": null,
+      "seconds": 1.0062152500031516,
+      "free_before": 478834688,
+      "minimum_free": 478806016,
+      "free_after": 478601216,
+      "receipt_sha256": "8688ee91bd41b2a4ab748399d75cced33758c934e024400cfb171e828f1383cc",
+      "output_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "attempt": "frontend-build-01",
+      "command": [
+        "pnpm",
+        "--dir",
+        "frontend",
+        "exec",
+        "vite",
+        "build",
+        "--outDir",
+        "../.tools/merge-review/frontend-build-01/dist"
+      ],
+      "head": "78877e1f8b566f9f05572db13d14f575bdfc2df3",
+      "source_sha256": "09945e91d8e043a62b85199c000b29ea3785a91ae6baaed5401a0e8597e04ef1",
+      "exit_code": 0,
+      "stop_reason": null,
+      "seconds": 0.5016369580116589,
+      "free_before": 478597120,
+      "minimum_free": 478400512,
+      "free_after": 475164672,
+      "receipt_sha256": "1845cb9d43af0cd84e91c0ab824c719cbb95308c98fc6bf4248f3e09455d86d2",
+      "output_log_sha256": "4ab2f5a12b04a2c1fbae81d2b9a0e582646cf4a95bf7775fd518ffdc6eba90aa"
+    },
+    {
+      "attempt": "browser-full-02",
+      "command": [
+        "pnpm",
+        "--dir",
+        "frontend",
+        "test:e2e",
+        "--trace=off",
+        "--reporter=line",
+        "--output=../.tools/merge-review/browser-full-02/results"
+      ],
+      "head": "78877e1f8b566f9f05572db13d14f575bdfc2df3",
+      "source_sha256": "6045438b42c1be0fe751b61411218baa4f46a44a9ce3b9e904379c8e23f92d14",
+      "exit_code": 0,
+      "stop_reason": null,
+      "seconds": 429.9749868709914,
+      "free_before": 445693952,
+      "minimum_free": 431005696,
+      "free_after": 435417088,
+      "receipt_sha256": "d7f2e4a38c407459a205e6969f500454ecaa283a98ee724020f3d58615bf76cf",
+      "output_log_sha256": "ed74cc24cf1ebf406921dab0a943e026ff9ca6b3e455ff4639bd729753fe8894"
+    },
+    {
+      "attempt": "browser-harness-01",
+      "command": [
+        "pnpm",
+        "--dir",
+        "frontend",
+        "exec",
+        "playwright",
+        "test",
+        "--config",
+        "playwright.harness.config.ts",
+        "--reporter=line",
+        "--output=../.tools/merge-review/browser-harness-01/results"
+      ],
+      "head": "78877e1f8b566f9f05572db13d14f575bdfc2df3",
+      "source_sha256": "6045438b42c1be0fe751b61411218baa4f46a44a9ce3b9e904379c8e23f92d14",
+      "exit_code": 0,
+      "stop_reason": null,
+      "seconds": 44.083489270997234,
+      "free_before": 462835712,
+      "minimum_free": 412897280,
+      "free_after": 453226496,
+      "receipt_sha256": "9d93fc0b355a806e99a057828aef3b4d088d81a03dd3178e196e49e13b25e694",
+      "output_log_sha256": "9ed4a7a40494b991cc195d97010cbe1601b5a71a3ed80063c3d19f581bf83368"
+    },
+    {
+      "attempt": "browser-context-01",
+      "command": [
+        "pnpm",
+        "--dir",
+        "frontend",
+        "exec",
+        "playwright",
+        "test",
+        "--config",
+        "playwright.context.config.ts",
+        "--reporter=line",
+        "--output=../.tools/merge-review/browser-context-01/results"
+      ],
+      "head": "78877e1f8b566f9f05572db13d14f575bdfc2df3",
+      "source_sha256": "6045438b42c1be0fe751b61411218baa4f46a44a9ce3b9e904379c8e23f92d14",
+      "exit_code": 0,
+      "stop_reason": null,
+      "seconds": 17.546816008005408,
+      "free_before": 453222400,
+      "minimum_free": 436772864,
+      "free_after": 451911680,
+      "receipt_sha256": "765c2f82048718822399dbea9cd0297f2cf6cd9e12eb40440a993b2ca84dac59",
+      "output_log_sha256": "2e1e96fa7284d13da69e565ae2ac0927243584ac97bcde8bf91fdae5ac186177"
+    },
+    {
+      "attempt": "browser-reference-01",
+      "command": [
+        "pnpm",
+        "--dir",
+        "frontend",
+        "exec",
+        "playwright",
+        "test",
+        "--config",
+        "playwright.reference.config.ts",
+        "--reporter=line",
+        "--output=../.tools/merge-review/browser-reference-01/results"
+      ],
+      "head": "78877e1f8b566f9f05572db13d14f575bdfc2df3",
+      "source_sha256": "6045438b42c1be0fe751b61411218baa4f46a44a9ce3b9e904379c8e23f92d14",
+      "exit_code": 0,
+      "stop_reason": null,
+      "seconds": 16.53375467499427,
+      "free_before": 451907584,
+      "minimum_free": 431927296,
+      "free_after": 450592768,
+      "receipt_sha256": "1c464fb81a77afba072b8b4c2a9f6db97939c7be2d13172d66ba1e3253219772",
+      "output_log_sha256": "beca3f6b23cf9cdfeb0fb2c8919ec074e941ef342199be8b0ef439c10c0cab13"
+    },
+    {
+      "attempt": "browser-reliance-01",
+      "command": [
+        "pnpm",
+        "--dir",
+        "frontend",
+        "exec",
+        "playwright",
+        "test",
+        "--config",
+        "playwright.reliance.config.ts",
+        "--reporter=line",
+        "--output=../.tools/merge-review/browser-reliance-01/results"
+      ],
+      "head": "78877e1f8b566f9f05572db13d14f575bdfc2df3",
+      "source_sha256": "6045438b42c1be0fe751b61411218baa4f46a44a9ce3b9e904379c8e23f92d14",
+      "exit_code": 0,
+      "stop_reason": null,
+      "seconds": 18.53850171699014,
+      "free_before": 450588672,
+      "minimum_free": 415019008,
+      "free_after": 445698048,
+      "receipt_sha256": "77c33b0d7512a83a1633adbbf125c7e94aca8619392aaeeff6452f5520370b85",
+      "output_log_sha256": "8388e413c4d9d37126cf4fe86bf52730bc37d3b24c9197f62b968a50b2e686ac"
+    }
+  ],
+  "backend": {
+    "cases": 1831,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "junit_sha256": "452ddd19a3021a6aa952c35d138528b7fe699266e17dc95cc67d542990e70fc4"
+  },
+  "frontend_units": 169,
+  "default_browser": {
+    "passed": 182,
+    "retries": 0,
+    "local_trace": "off; assertions/cases unchanged; CI retains failure tracing"
+  },
+  "additional_scripted_browser_trials": {
+    "browser-harness-01": 11,
+    "browser-context-01": 2,
+    "browser-reference-01": 2,
+    "browser-reliance-01": 5
+  },
+  "frontend_source_attribution": {
+    "current_source_sha256": "6045438b42c1be0fe751b61411218baa4f46a44a9ce3b9e904379c8e23f92d14",
+    "earlier_frontend_check_source_sha256": "09945e91d8e043a62b85199c000b29ea3785a91ae6baaed5401a0e8597e04ef1",
+    "only_difference": "backend/tests/test_validity.py",
+    "frontend_inputs_identical": true,
+    "checks": [
+      "frontend-lint-01",
+      "frontend-units-01",
+      "frontend-types-01",
+      "frontend-build-01"
+    ]
+  },
+  "rebuilt_assets": {
+    "same_as_served": true,
+    "files": 54,
+    "bytes": 2972817,
+    "inventory_record_sha256": "de57fe3270790a611462005c09ae51a3513b0a4efb8d06d19270fc50e1866b0e"
+  },
+  "preview_refresh": {
+    "old_pid": 474266,
+    "new_pid": 507105,
+    "same_database_inode": true,
+    "public_state_and_usage_unchanged": true,
+    "counts": {
+      "studies": 0,
+      "runs": 0,
+      "chats": 1
+    },
+    "receipt_sha256": "9212650e092a39df79827a6a47c0c059f0a7e4f1b11357375ee417d89ba77f60"
+  },
+  "retained_adverse_attempts": [
+    {
+      "attempt": "finite-admission-red-01",
+      "outcome": "expected three product regressions",
+      "exit_code": 1,
+      "receipt_sha256": "c3d8bb5fdb43a9afe074b7d5309a067584e85375be1a1c8a8ad0a4e7abd6455c"
+    },
+    {
+      "attempt": "scratch-lifecycle-red-01",
+      "outcome": "expected two scratch lifecycle exceptions",
+      "exit_code": 1,
+      "receipt_sha256": "bdde36144be17300267495964c02e5a113caf9bc8bd6513a371513c164fd05fa"
+    },
+    {
+      "attempt": "backend-full-01",
+      "outcome": "manually interrupted to repair independently found lifecycle exception",
+      "exit_code": 2,
+      "receipt_sha256": "8f5e4f7f7e6ee8ad7347d58990a96bba485fb4f01805c72e1863f6a49a3caec2"
+    },
+    {
+      "attempt": "backend-full-02",
+      "outcome": "49 invalid workflow fixture cases; 1782 pass",
+      "exit_code": 1,
+      "receipt_sha256": "20a0f7b6daf3bf86122b8f72af6f9d095960a2bdd28b1eb2fedb56783050b89e"
+    },
+    {
+      "attempt": "browser-full-01",
+      "outcome": "manually interrupted for temporary trace growth; 70 pass; one interrupted",
+      "exit_code": -2,
+      "receipt_sha256": "926c9562b24a924d451ed27ce34cd84fcd23949f30c682d6e7d92f12f776ce35"
+    },
+    {
+      "attempt": "backend-static-01",
+      "outcome": "one overlong test line; repaired",
+      "exit_code": 1,
+      "receipt_sha256": "fa4ddd204094a720dcd70b303dc8d03613c03f3294ffc87aed975c786c88a5f4"
+    },
+    {
+      "attempt": "workflow-exposure-green-01",
+      "outcome": "incorrect test expectation omitted handoff-granted reader; repaired",
+      "exit_code": 1,
+      "receipt_sha256": "28d1eb2257095f276f87dfaf726648f4eaa54e91b3986de70305ab7dd1b401a5"
+    },
+    {
+      "attempt": "selection-repro-01",
+      "outcome": "19 pass/one pointer-selection failure",
+      "exit_code": 1,
+      "receipt_sha256": "f844aa4adff93a39e900c45f30e7a48ffec9a5c164a60c11e913fa3cc3f5b928"
+    },
+    {
+      "attempt": "selection-probe-01",
+      "outcome": "29 pass/one selection failure; layout movement measured",
+      "exit_code": 1,
+      "receipt_sha256": "c4cda52eae88695b5510c848c98a3447fbf3531cc2bd04a3af2f2bae7f9efb4b"
+    }
+  ],
+  "limitations": [
+    "One middleware No response returned traceback during draft reload/navigation; all assertions and subsequent case pass; triggering request not captured, no cause or repair claimed.",
+    "Frozen T01 retains historical export-v4 failures; benchmark source unchanged.",
+    "No external model requests made by these checks; existing user usage preserved.",
+    "No fresh live/held-out competence, judgment accuracy or numerical runtime benchmark claim.",
+    "Normal hooks and hosted CI remain publication gates."
+  ],
+  "repair_source_sha256": "6045438b42c1be0fe751b61411218baa4f46a44a9ce3b9e904379c8e23f92d14",
+  "cleanup_followup": {
+    "comparison_commit": "885f38468c775454fb5c3a8070942828e60eaa61",
+    "source_sha256": "86101657dff12504af7e9342a30491e7d1e51b926a421b142adcfca8769d486d",
+    "scope": "Unused-module/document consolidation plus independently reproduced scrolling and asset-disconnect repairs. No persisted contract change.",
+    "removed_documents": {
+      "count": 49,
+      "bytes": 1486805,
+      "paths": [
+        "docs/research/ENVIRONMENT_REPRESENTATIONS.md",
+        "docs/research/FINAL_PRODUCT_PLAN.md",
+        "docs/research/T12_INSTITUTIONAL_WORKFLOW.md",
+        "docs/research/T13_RESEARCHER_DESIGNS.md",
+        "docs/research/T14_INVESTIGATIONS.md",
+        "docs/research/T15_BASELINES.md",
+        "docs/research/T12_INTEGRATION_RECEIPTS.json",
+        "docs/research/RESEARCH_DIRECTION.md",
+        "docs/research/HARNESS_EVIDENCE.md",
+        "docs/research/T11_COMMITMENTS.md",
+        "docs/research/DESIGN_INTERVIEW.md",
+        "docs/research/T17_GENERATION_UI_CONTRACT.md",
+        "docs/research/T18_FALLIBLE_ADJUDICATION.md",
+        "docs/research/T16_EXTENSION_ADMISSION.md",
+        "docs/research/T10_COORDINATION.md",
+        "docs/research/T16_INTEGRATION_REVIEW.md",
+        "docs/research/COMPANY_VALIDATION.md",
+        "docs/research/T08_PARTICIPANT_CONTEXT.md",
+        "docs/research/T11_RECOVERY_REVIEW.md",
+        "docs/research/T17_INTEGRATION_REVIEW.md",
+        "docs/research/RESEARCH_REVIEW.md",
+        "docs/research/T14_RECOVERY_CLOSURE.md",
+        "docs/research/T10_INTEGRATION_REVIEW.md",
+        "docs/research/T03_ENVIRONMENTS.md",
+        "docs/research/T11_INTEGRATION_REVIEW.md",
+        "docs/research/T09_ARTIFACT_WORLD.md",
+        "docs/research/COMPANIES_AND_TOOL_WORLDS.md",
+        "docs/research/BEHAVIOR_AND_VALIDITY.md",
+        "docs/research/T07_EXPOSURE.md",
+        "docs/research/T02_CONTAINMENT.md",
+        "docs/research/T14_INTEGRATION_REVIEW.md",
+        "docs/research/T13_INTEGRATION_REVIEW.md",
+        "docs/research/T18_INTEGRATION_REVIEW.md",
+        "docs/research/T12_IMPLEMENTATION_REPORT.md",
+        "docs/research/T06_UNCERTAINTY.md",
+        "docs/research/T14_INCIDENT_RECOVERY.md",
+        "docs/research/T17_EXTENSION_GENERATION.md",
+        "docs/research/T19_CLAIM_SUPPORT.md",
+        "docs/research/SOL_DEVELOPMENT.md",
+        "docs/research/T12_INTEGRATION_REVIEW.md",
+        "docs/research/T01_BASELINE.md",
+        "docs/research/T05_RESEARCHER.md",
+        "docs/research/T17_DOCUMENTARY_CLOSURE.md",
+        "docs/research/T04_PARTICIPANT_HARNESSES.md",
+        "docs/AGENT_RESEARCH_SOURCES.md",
+        "docs/RESEARCH_HARNESS_PLAN.md",
+        "docs/RESEARCH_HARNESS_TICKETS.md",
+        "docs/RESEARCH_HARNESS_PROGRESS.md",
+        "docs/research/FINAL_VERIFICATION.json"
+      ],
+      "exact_last_contents": "Git at885f38468c775454fb5c3a8070942828e60eaa61",
+      "compact_report": "docs/research/RESEARCH_HARNESS_COMPACT_REPORT.md"
+    },
+    "removed_unused_modules": [
+      "frontend/src/components/ui/breadcrumb.tsx",
+      "frontend/src/hooks/use-compact.ts"
+    ],
+    "audit_limits": "Imports, literal references, test/config uses and static dynamic targets audited; no computed dynamic imports found. Python reference scan found no unused top-level/private-helper candidates. This is not an exhaustive dead-code or scanner-health proof. Desloppify was not installed.",
+    "checks": [
+      {
+        "attempt": "cleanup-final-ruff-01",
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "backend",
+          "benchmarks",
+          ".github/scripts"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "86101657dff12504af7e9342a30491e7d1e51b926a421b142adcfca8769d486d",
+        "exit_code": 0,
+        "stop_reason": null,
+        "seconds": 0.5092031259991927,
+        "free_before": 366694400,
+        "minimum_free": 366690304,
+        "free_after": 366686208,
+        "receipt_sha256": "cfc95dffd6e97d134640e9e23c9662ad08cd8709d7d025e15a08099be752c259",
+        "output_log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      {
+        "attempt": "cleanup-final-ty-01",
+        "command": [
+          ".venv/bin/ty",
+          "check"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "86101657dff12504af7e9342a30491e7d1e51b926a421b142adcfca8769d486d",
+        "exit_code": 0,
+        "stop_reason": null,
+        "seconds": 0.5090419170010136,
+        "free_before": 366678016,
+        "minimum_free": 366673920,
+        "free_after": 366608384,
+        "receipt_sha256": "8719ba7d2552d8e2f511b252602c2f1939f9516c009db0772a9940f298f6b92a",
+        "output_log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      {
+        "attempt": "cleanup-final-lint-01",
+        "command": [
+          "pnpm",
+          "--dir",
+          "frontend",
+          "lint"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "86101657dff12504af7e9342a30491e7d1e51b926a421b142adcfca8769d486d",
+        "exit_code": 0,
+        "stop_reason": null,
+        "seconds": 0.5105580839881441,
+        "free_before": 366604288,
+        "minimum_free": 366600192,
+        "free_after": 366493696,
+        "receipt_sha256": "aaa77f49a43d83fb4549ac1c410c2ecfa40baea6743b60e46ae2780163a4d6c7",
+        "output_log_sha256": "2ebd597a21c427187c6f686b66cf9c97632d04133663c58b9b58798b2d56935d"
+      },
+      {
+        "attempt": "cleanup-final-types-01",
+        "command": [
+          "pnpm",
+          "--dir",
+          "frontend",
+          "exec",
+          "tsc",
+          "-b",
+          "--force"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "86101657dff12504af7e9342a30491e7d1e51b926a421b142adcfca8769d486d",
+        "exit_code": 0,
+        "stop_reason": null,
+        "seconds": 0.5011217499995837,
+        "free_before": 366489600,
+        "minimum_free": 366485504,
+        "free_after": 366481408,
+        "receipt_sha256": "363d3628002f55a742695861823dd8ef52493d8f38ff6ef1daea6f5c86237b9d",
+        "output_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "attempt": "cleanup-final-units-01",
+        "command": [
+          "pnpm",
+          "--dir",
+          "frontend",
+          "test"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "86101657dff12504af7e9342a30491e7d1e51b926a421b142adcfca8769d486d",
+        "exit_code": 0,
+        "stop_reason": null,
+        "seconds": 10.024287004998769,
+        "free_before": 366399488,
+        "minimum_free": 366018560,
+        "free_after": 366022656,
+        "receipt_sha256": "effab33d0f1752d1ba6193e5a9376e1f9d181ca4edb58dbeb389065488adae5a",
+        "output_log_sha256": "d7f18f1e6843f2eeacd191d9cee1488efbdc5e808c6e25ba0dfe145f87db677d"
+      },
+      {
+        "attempt": "cleanup-final-http-lifecycle-01",
+        "command": [
+          ".venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "backend/tests/test_api.py",
+          "backend/tests/test_streaming.py",
+          "backend/tests/test_lifecycle.py",
+          "-p",
+          "no:cacheprovider",
+          "-o",
+          "tmp_path_retention_policy=failed",
+          "--basetemp=.tools/merge-review/cleanup-final-http-lifecycle-01/tmp",
+          "--junitxml=.tools/merge-review/cleanup-final-http-lifecycle-01/junit.xml",
+          "--tb=short",
+          "-q"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "86101657dff12504af7e9342a30491e7d1e51b926a421b142adcfca8769d486d",
+        "exit_code": 0,
+        "stop_reason": null,
+        "seconds": 5.52378925299854,
+        "free_before": 365977600,
+        "minimum_free": 364212224,
+        "free_after": 365883392,
+        "receipt_sha256": "6970e4f85a81b58ea75bfbe4491479611b4a4b7add1b96ccd529271388395ab9",
+        "output_log_sha256": "795fe1443d4228058b42205fd5ce7ad5b995c2f1a6cdc607e38a427304ca01a3"
+      },
+      {
+        "attempt": "composer-eager-final-02",
+        "command": [
+          "pnpm",
+          "--dir",
+          "frontend",
+          "test:e2e",
+          "agent.spec.ts",
+          "--grep",
+          "last reply clears the composer",
+          "--repeat-each=8",
+          "--trace=off",
+          "--reporter=line",
+          "--output=../.tools/merge-review/composer-eager-final-02/results"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "86101657dff12504af7e9342a30491e7d1e51b926a421b142adcfca8769d486d",
+        "exit_code": 0,
+        "stop_reason": null,
+        "seconds": 21.602496886000154,
+        "free_before": 367521792,
+        "minimum_free": 366260224,
+        "free_after": 366792704,
+        "receipt_sha256": "2a5de5a3b148e13c1e99ceea3e142d59257adc0adca19619b9ee67fe548a6e9d",
+        "output_log_sha256": "0df7196c324f75c14a46258552c59a61b67b871c80367638676ef28a03d0e187"
+      },
+      {
+        "attempt": "cleanup-final-browser-01",
+        "command": [
+          "pnpm",
+          "--dir",
+          "frontend",
+          "test:e2e",
+          "agent.spec.ts",
+          "agent-safety.spec.ts",
+          "workspace.spec.ts",
+          "navigation.spec.ts",
+          "streaming.spec.ts",
+          "suggestions.spec.ts",
+          "--trace=off",
+          "--reporter=line",
+          "--output=../.tools/merge-review/cleanup-final-browser-01/results"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "86101657dff12504af7e9342a30491e7d1e51b926a421b142adcfca8769d486d",
+        "exit_code": 0,
+        "stop_reason": null,
+        "seconds": 130.46755052098888,
+        "free_before": 362991616,
+        "minimum_free": 353673216,
+        "free_after": 355500032,
+        "receipt_sha256": "09a43326f9d04dcad7ef61601e3dcfc08150039d50f5155c724b5aa24ae9dcf2",
+        "output_log_sha256": "21b0b8c2662e42b397cc0152c2deaf54e027f9992d3381e3bd56d24d16d68dfe"
+      },
+      {
+        "attempt": "cleanup-final-build-01",
+        "command": [
+          "pnpm",
+          "--dir",
+          "frontend",
+          "exec",
+          "vite",
+          "build",
+          "--outDir",
+          "../.tools/merge-review/cleanup-final-build-01/dist"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "86101657dff12504af7e9342a30491e7d1e51b926a421b142adcfca8769d486d",
+        "exit_code": 0,
+        "stop_reason": null,
+        "seconds": 0.5032752089900896,
+        "free_before": 355315712,
+        "minimum_free": 355307520,
+        "free_after": 352178176,
+        "receipt_sha256": "d56d5a61ac8b04028ce3eda6a1b8479e5cd0616b8f823c689b8e4df2df856cf5",
+        "output_log_sha256": "6ec6d9808914e4fddabe2167db40d6a40fedee6435321dad7022199272aca271"
+      }
+    ],
+    "results": {
+      "backend_http_streaming_lifecycle": 51,
+      "frontend_units": 169,
+      "affected_browser": 51,
+      "controlled_scrolling_repetitions": 8,
+      "test_ports_reusable": [
+        18145,
+        18146,
+        18147
+      ],
+      "final_browser_backend_tracebacks": 0,
+      "final_build_equals_served": true,
+      "files": 54
+    },
+    "source_and_assets": {
+      "base": "885f38468c775454fb5c3a8070942828e60eaa61",
+      "production_source_changes": [
+        "backend/src/agent_sim/api.py",
+        "frontend/src/components/ui/breadcrumb.tsx",
+        "frontend/src/hooks/use-compact.ts",
+        "frontend/src/pages/agent.tsx"
+      ],
+      "other_application_and_benchmark_files_equal": 276,
+      "benchmark_executable_and_oracle_changes": [],
+      "served_equals_final_build": true,
+      "served_files": 54,
+      "served_bytes": 2972933,
+      "served_inventory_sha256": "ce3e553e1a8171ecf825284a0b979aa75be45d0e2bb17f0da1f934c7e0ed0cfc"
+    },
+    "preview_refresh": {
+      "old_pid": 507105,
+      "new_pid": 518143,
+      "same_database_inode": true,
+      "public_state_and_usage_unchanged": true,
+      "counts": {
+        "studies": 0,
+        "runs": 0,
+        "chats": 1
+      },
+      "free_after": 352088064,
+      "receipt_sha256": "c1a027e0de1540d054149adc9c8ea4eb18bda5e80a60bfd9e87ce09d8453f917"
+    },
+    "independent_reviews": {
+      "standards": {
+        "result": "PASS",
+        "outstanding_findings": 0,
+        "corrected_findings": "Two stale export-v17 references and obsolete contract chronology in docs/ARCHITECTURE.md; current contract is v18.",
+        "limit": "Read-only review; did not independently rerun checks or inspect retired raw evidence."
+      },
+      "spec": {
+        "result": "PASS",
+        "outstanding_findings": 0,
+        "scope": "Authorized engineering cleanup; current user data, accepted requirements, benchmarks and contract rejection preserved.",
+        "limit": "Read-only review; no live/held-out competence claim."
+      }
+    },
+    "hosted_prior_repair": {
+      "run": 42919797313,
+      "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+      "backend": "PASS",
+      "container": "PASS",
+      "workflows": "PASS",
+      "frontend": "FAIL:181pass/1last-reply-spacing failure",
+      "verify": "FAIL"
+    },
+    "retained_diagnostic_attempts": [
+      {
+        "attempt": "composer-gap-repro-01",
+        "command": [
+          "pnpm",
+          "--dir",
+          "frontend",
+          "test:e2e",
+          "agent.spec.ts",
+          "--grep",
+          "last reply clears the composer",
+          "--repeat-each=12",
+          "--trace=off",
+          "--reporter=line",
+          "--output=../.tools/merge-review/composer-gap-repro-01/results"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "46143fb7b4db4c1ea49ef925270b78bbbe1789628ad3108705718a00d8b877b6",
+        "exit_code": 1,
+        "stop_reason": null,
+        "seconds": 24.595400927995797,
+        "free_before": 389554176,
+        "minimum_free": 387178496,
+        "free_after": 387706880,
+        "receipt_sha256": "5b199a84ed9fd6c6cf68054f4cf256fb42915bba5138b5c713c39f7a696ff861",
+        "output_log_sha256": "d6d239e52bf1ed38430a174782e4cbbfedd68cd3a257f5cace9412e6ae61cf22"
+      },
+      {
+        "attempt": "composer-gap-probe-01",
+        "command": [
+          "pnpm",
+          "--dir",
+          "frontend",
+          "test:e2e",
+          "agent.spec.ts",
+          "--grep",
+          "last reply clears the composer",
+          "--repeat-each=8",
+          "--trace=off",
+          "--reporter=line",
+          "--output=../.tools/merge-review/composer-gap-probe-01/results"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "0272c1c2b051586a55ea62366ec96e88524f881924a2e24936b8c96be3b58b8c",
+        "exit_code": 1,
+        "stop_reason": null,
+        "seconds": 17.589209425001172,
+        "free_before": 387428352,
+        "minimum_free": 386162688,
+        "free_after": 386666496,
+        "receipt_sha256": "c1f45b4458d715805a0f6ae1309ef5690833079f4f712b0745b58f601aa55ad4",
+        "output_log_sha256": "a8fb0bcd89c7a6b4d2d5e6901cfd5c1543c1c789df75b4d7922fde0adf13a533"
+      },
+      {
+        "attempt": "composer-gap-probe-02",
+        "command": [
+          "pnpm",
+          "--dir",
+          "frontend",
+          "test:e2e",
+          "agent.spec.ts",
+          "--grep",
+          "last reply clears the composer",
+          "--trace=off",
+          "--reporter=line",
+          "--output=../.tools/merge-review/composer-gap-probe-02/results"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "8d1dd9166fa901e75ab44dc4fa70dbbfb73640dc6a35d01b2bc9cf923160acdd",
+        "exit_code": 1,
+        "stop_reason": null,
+        "seconds": 5.038296086000628,
+        "free_before": 386142208,
+        "minimum_free": 385073152,
+        "free_after": 385581056,
+        "receipt_sha256": "029e82a4e9c4c5c4232df25ccf760ed9fca5c83ea76c43841dd711e7442a3422",
+        "output_log_sha256": "cabe29a8c57e5bf385ba7764941c0dbe48ee6dc6777286d4c98c92d76b40565f"
+      },
+      {
+        "attempt": "composer-late-notice-red-01",
+        "command": [
+          "pnpm",
+          "--dir",
+          "frontend",
+          "test:e2e",
+          "agent.spec.ts",
+          "--grep",
+          "last reply clears the composer",
+          "--trace=off",
+          "--reporter=line",
+          "--output=../.tools/merge-review/composer-late-notice-red-01/results"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "52866bd8a8b673f3c9491ede7926f12fcaf71c1227b166b326e740e07b8220f5",
+        "exit_code": 0,
+        "stop_reason": null,
+        "seconds": 4.521124835999217,
+        "free_before": 384098304,
+        "minimum_free": 383225856,
+        "free_after": 383758336,
+        "receipt_sha256": "ec5c38e13dafdf0f5d3fd66e4ca10bef1dcaf120c840cfbe6a7ee2ddb0083a67",
+        "output_log_sha256": "930818a0553f8dbf8f3eb13316bdecbbd0219d8866bf7d2da2956e579b168717"
+      },
+      {
+        "attempt": "composer-late-notice-red-02",
+        "command": [
+          "pnpm",
+          "--dir",
+          "frontend",
+          "test:e2e",
+          "agent.spec.ts",
+          "--grep",
+          "last reply clears the composer",
+          "--trace=off",
+          "--reporter=line",
+          "--output=../.tools/merge-review/composer-late-notice-red-02/results"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "6c03e2122c7d33a736966a938a9a0da0c8612bb2fd65e0a5f744961560f0c505",
+        "exit_code": 1,
+        "stop_reason": null,
+        "seconds": 5.0149709609977435,
+        "free_before": 383320064,
+        "minimum_free": 382451712,
+        "free_after": 382967808,
+        "receipt_sha256": "2661e7365731b46d8c2580d549e6f52c49eba2d4af4e48fc02e567293cb9e541",
+        "output_log_sha256": "b62d368f0b8c13c8b55b6c68fb711e9026090a6be5dbd5ce27a3f4fe9b3fe6e3"
+      },
+      {
+        "attempt": "disconnected-asset-red-01",
+        "command": [
+          ".venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "backend/tests/test_api.py::test_disconnected_asset_request_does_not_become_a_server_error",
+          "-p",
+          "no:cacheprovider",
+          "-o",
+          "tmp_path_retention_policy=failed",
+          "--basetemp=.tools/merge-review/disconnected-asset-red-01/tmp",
+          "--tb=short",
+          "-q"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "dfcde62bb5fb0e616392e945ec90738178a3a7902c405c5f822cff8e028269a8",
+        "exit_code": 1,
+        "stop_reason": null,
+        "seconds": 2.0146649170055753,
+        "free_before": 385425408,
+        "minimum_free": 384815104,
+        "free_after": 385105920,
+        "receipt_sha256": "19eb4abe263054a054d6b5a27ead88fe0a16b6b5bec10ea03752efe717c1c5a3",
+        "output_log_sha256": "b91bcfa0a945485db27c7da1da38ac01e845ea72b0012f85fdd3a5ee2ac71387"
+      },
+      {
+        "attempt": "composer-late-notice-green-01",
+        "command": [
+          "pnpm",
+          "--dir",
+          "frontend",
+          "test:e2e",
+          "agent.spec.ts",
+          "--grep",
+          "last reply clears the composer",
+          "--repeat-each=8",
+          "--trace=off",
+          "--reporter=line",
+          "--output=../.tools/merge-review/composer-late-notice-green-01/results"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "ef9b296ce2457ce6fa05047495a7bd80b2df69fdb1b35964852ef60f79d35b63",
+        "exit_code": -2,
+        "stop_reason": null,
+        "seconds": 62.98559873900376,
+        "free_before": 375984128,
+        "minimum_free": 374263808,
+        "free_after": 384843776,
+        "receipt_sha256": "4a9f67ad60caa636b451a9a8ab2a53f88d9621808f747883578055e411def166",
+        "output_log_sha256": "8601cfe590c6508505d26a54cd63a97f4a6732dd099783f6cf7d866ecca9978e"
+      },
+      {
+        "attempt": "composer-following-probe-01",
+        "command": [
+          "pnpm",
+          "--dir",
+          "frontend",
+          "test:e2e",
+          "agent.spec.ts",
+          "--grep",
+          "last reply clears the composer",
+          "--trace=off",
+          "--timeout=8000",
+          "--reporter=line",
+          "--output=../.tools/merge-review/composer-following-probe-01/results"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "2e158d48c10d9a55b7987feea8b170f9e1c7270f54e119c83e0c22b1f6636900",
+        "exit_code": 1,
+        "stop_reason": null,
+        "seconds": 11.083844130000216,
+        "free_before": 384000000,
+        "minimum_free": 383025152,
+        "free_after": 383545344,
+        "receipt_sha256": "52dcb97b2ac74e495fc55c36923e6ae2651a61e00a0415c176ac6ae07d05cbf2",
+        "output_log_sha256": "59daf27e35f3cb7a04c41a9622ec3eade99e43465ecb182d6848fe474763776d"
+      },
+      {
+        "attempt": "composer-late-notice-green-02",
+        "command": [
+          "pnpm",
+          "--dir",
+          "frontend",
+          "test:e2e",
+          "agent.spec.ts",
+          "--grep",
+          "last reply clears the composer",
+          "--repeat-each=8",
+          "--trace=off",
+          "--reporter=line",
+          "--output=../.tools/merge-review/composer-late-notice-green-02/results"
+        ],
+        "head": "885f38468c775454fb5c3a8070942828e60eaa61",
+        "source_sha256": "34bbda3edc0f31344639791e8b3dc826ac01d99749b4604f9a9446d1d902bb42",
+        "exit_code": -2,
+        "stop_reason": null,
+        "seconds": 85.26900508199469,
+        "free_before": 376500224,
+        "minimum_free": 374796288,
+        "free_after": 375320576,
+        "receipt_sha256": "d092d4615e5f8e6c0ab12e7f3f73086ece9803bae9caba1d80388e635412f0f8",
+        "output_log_sha256": "68fe900a6ab557ba21596a52eea5305c9c927f509dfee8c552adf6099ec32ca6"
+      }
+    ],
+    "diagnostic_attribution": "Original cold-load gap fails1/12; frame probes show provider-notice viewport shrink after scroll target selection, with fonts already loaded. Controlled late-notice02 repeats same gap. Late-notice01 was an insufficient trigger and passed. Both always-following initialization experiments failed/partially interrupted and were replaced by eager newest-reply layout. The ASGI disconnect regression fails before middleware replacement; final browser log has no backend traceback. Probes and rejected approaches are absent from tracked application/test code.",
+    "benchmark_executables_and_oracles_changed": false,
+    "live_model_requests": 0,
+    "hosted_current_gate": "Read the current PR head checks; do not infer a new hosted pass from prior source results.",
+    "documentation_links": {
+      "markdown_files": 28,
+      "local_links_checked": 116,
+      "missing_local_links": [],
+      "missing_anchors": [],
+      "plain_retired_references": []
+    }
+  }
+}

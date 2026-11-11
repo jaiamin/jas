@@ -1,11 +1,15 @@
 import type { ReactNode } from "react";
+import { CommitmentAssumptions } from "@/components/commitment-fields";
 import {
   Disclosure,
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { CoordinationAssumptions } from "@/components/distributed-fields";
+import { FiniteMechanics } from "@/components/editor/finite-mechanics";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { WorkflowAssumptions } from "@/components/workflow-fields";
 import { label, modelLabel, money } from "@/lib/format";
 import type { Catalog, Design } from "@/lib/types";
 
@@ -53,6 +57,7 @@ export function ExperimentReview({
   );
   const runCount =
     design.conditions.length * design.seeds.length * design.repetitions;
+  const extension = design.environment_source?.definition.extension;
   return (
     <section
       aria-label="Experiment review"
@@ -69,9 +74,49 @@ export function ExperimentReview({
           </h2>
           <p className="leading-relaxed break-words">{design.question}</p>
           <p className="text-muted-foreground">{environment?.name}</p>
+          {design.environment_source && (
+            <section
+              aria-label="Environment source"
+              className="flex flex-col gap-1 text-muted-foreground"
+            >
+              <p>
+                {design.environment_source.definition.name} · Revision{" "}
+                {design.environment_source.revision} · Rules{" "}
+                {design.environment_source.definition.rule_version}
+              </p>
+              <p>
+                Based on a pinned mechanics example. This experiment keeps its
+                own configured rules.
+              </p>
+              {extension && (
+                <Disclosure>
+                  <DisclosureTrigger>
+                    {extension.profile === "reviewed-finite-v1"
+                      ? "Generated mechanics and checks"
+                      : "Admitted extension and independent checks"}
+                  </DisclosureTrigger>
+                  <DisclosureContent className="flex min-w-0 flex-col gap-3 pt-3">
+                    <p className="mt-3 break-all">
+                      Package v{extension.version} · SHA-256 {extension.sha256}
+                    </p>
+                    {extension.profile === "reviewed-finite-v1" ? (
+                      <FiniteMechanics extension={extension} />
+                    ) : (
+                      <p>{extension.capabilities.join(" · ")}</p>
+                    )}
+                    <ul className="mt-3 flex flex-col gap-2">
+                      {extension.checks.map((check) => (
+                        <li key={check.stage}>{check.detail}</li>
+                      ))}
+                    </ul>
+                  </DisclosureContent>
+                </Disclosure>
+              )}
+            </section>
+          )}
           {(design.hypothesis || design.context) && (
             <Disclosure>
-              <DisclosureTrigger>Hypothesis and context</DisclosureTrigger>
+              <DisclosureTrigger>Analysis plan and context</DisclosureTrigger>
               <DisclosureContent className="flex flex-col gap-3 pt-3 text-muted-foreground whitespace-pre-wrap break-words">
                 {design.hypothesis && <p>{design.hypothesis}</p>}
                 {design.context && <p>{design.context}</p>}
@@ -99,7 +144,108 @@ export function ExperimentReview({
             >
               <dt className="min-w-0 break-words">{condition.name}</dt>
               <dd className="text-muted-foreground">
-                {modelLabel(condition.model)}
+                {condition.harness.kind === "scripted"
+                  ? "Non-model control"
+                  : modelLabel(condition.model)}
+                <span className="block">
+                  {condition.harness.kind === "direct_action"
+                    ? "Direct action"
+                    : condition.harness.kind === "scripted"
+                      ? "Scripted control"
+                      : "Tool using"}{" "}
+                  · v{condition.harness.version}
+                </span>
+                {condition.harness.kind === "scripted" && (
+                  <span className="block">
+                    {condition.harness.policy} · actor-authorized input only
+                  </span>
+                )}
+                <span className="block">
+                  Memory: {condition.parameters.memory}
+                </span>
+                <span className="block">
+                  {condition.harness.max_requests} requests ·{" "}
+                  {condition.harness.max_tool_operations} operations per
+                  activation
+                </span>
+                {condition.harness.tools.length > 0 && (
+                  <span className="block">
+                    {condition.harness.tools.join(", ")}
+                  </span>
+                )}
+                {condition.parameters.relay && (
+                  <p className="text-sm text-muted-foreground">
+                    Sealed relay · Submitter{" "}
+                    {condition.parameters.relay.submitter} · Reviewer{" "}
+                    {condition.parameters.relay.reviewer} · Three action credits
+                  </p>
+                )}
+                {condition.parameters.finite && (
+                  <div className="mt-2 flex flex-col gap-1">
+                    <p>
+                      {Object.entries(condition.parameters.finite.bindings)
+                        .map(([role, actor]) => `${role} → ${actor}`)
+                        .join("; ")}
+                    </p>
+                    {Object.entries(
+                      condition.parameters.finite.private,
+                    ).flatMap(([actor, fields]) =>
+                      Object.entries(fields).map(([field, value]) => (
+                        <p key={`${actor}-${field}`}>
+                          {actor} · {field}: {value}
+                        </p>
+                      )),
+                    )}
+                  </div>
+                )}
+                {condition.parameters.artifacts && (
+                  <div className="mt-2 flex flex-col gap-1">
+                    <span>
+                      {condition.parameters.artifacts.write_limit} writes
+                    </span>
+                    {condition.parameters.artifacts.objects.map((obj) => (
+                      <span key={obj.key}>
+                        {obj.name} ({obj.key}) · owner: {obj.owner ?? "none"} ·
+                        readers: {obj.readers.join(", ") || "none"} · writers:{" "}
+                        {obj.writers.join(", ") || "none"}
+                      </span>
+                    ))}
+                    {condition.parameters.artifacts.requirements.map((r) => (
+                      <span key={`${r.artifact}-${r.field}`}>
+                        {r.artifact}.{r.field} must match {r.source}.
+                        {r.source_field} at v1, with a source reference.
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {condition.parameters.workflow && (
+                  <WorkflowAssumptions rules={condition.parameters.workflow} />
+                )}
+                {condition.parameters.coordination && (
+                  <CoordinationAssumptions
+                    rules={condition.parameters.coordination}
+                  />
+                )}
+                {condition.parameters.commitments && (
+                  <CommitmentAssumptions
+                    rules={condition.parameters.commitments}
+                  />
+                )}
+                {condition.harness.kind === "tool_using" && (
+                  <>
+                    {Object.entries(condition.harness.capabilities).map(
+                      ([name, policy]) => (
+                        <span className="block" key={name}>
+                          {name}: {policy === "disabled" ? "Disabled" : policy}
+                        </span>
+                      ),
+                    )}
+                    <span className="block">
+                      {condition.harness.max_context_chars} context characters ·{" "}
+                      {condition.harness.max_memory_items} memory results
+                    </span>
+                  </>
+                )}
               </dd>
             </div>
           ))}
@@ -145,9 +291,11 @@ export function ExperimentReview({
         </dl>
       </ReviewSection>
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Creating an experiment saves its protocol and planned runs. Model calls
-        begin only when you choose to run it. Earlier revisions keep their
-        original rules and evidence.
+        Private goals, roles and condition profile overrides are declared study
+        factors. Harness selection does not prescribe a social outcome. Creating
+        an experiment saves its protocol and planned runs. Model calls begin
+        only when you choose to run it. Earlier revisions keep their original
+        rules and evidence.
       </p>
     </section>
   );

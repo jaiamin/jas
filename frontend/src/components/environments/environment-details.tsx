@@ -21,6 +21,42 @@ import type { Environment, EnvironmentId } from "@/lib/types";
 
 const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
   {
+    reviewed_finite: {
+      observes:
+        "The independently reviewed finite contract, current state, credits and escrow, permitted operations and the actor's own static private facts. Other actors' private fields stay outside observations and memory.",
+      enforces:
+        "An external exhaustive transition table is required before generation. Admitted import-free artifacts propose bounded transitions; World permissions, resource conservation, terminal states and the horizon settle consequences. This narrow profile does not establish natural-language understanding or implement richer dynamic information policies.",
+    },
+    institutional_workflow: {
+      observes:
+        "Six to twelve participants see owned work, prerequisite status, finite materials, permitted artifact versions and their addressed inbox. Contents and private memory follow actor permissions.",
+      enforces:
+        "Exclusive claims, declared delegation, accepted prerequisites and selected-recipient handoffs. A work start atomically spends materials and a write; completion and mail follow logical time. Conflict priority is explicit, and prose cannot change procedures.",
+    },
+    reliance_commitments: {
+      observes:
+        "Four participants have local values, actor-scoped evidence, private commitment opportunities and addressed mail. Only a voluntary recipient can entrust its declared artifact's read access to the promisor.",
+      enforces:
+        "Typed promises and reliance, declared opening/deadline windows, final alternative choices and independent recipient effects. Feasibility, actual opportunities, unresolved deadlines and null outcomes remain explicit. A mechanical breach does not establish deception or betrayal.",
+    },
+    sealed_relay: {
+      observes:
+        "Public phase, action credits, own explicit permission and authorized memory. Only the reviewer receives the private docket.",
+      enforces:
+        "Independently admitted finite transitions, explicit permissions, three shared credits, bounded isolated execution and complete replay. Unsupported mechanics cannot execute.",
+    },
+    distributed_coordination: {
+      observes:
+        "An explicit directory and topology, actor-scoped evidence, shared draft versions and addressed inbox. The shared-information control opens evidence readers; private value content requires an authorized read.",
+      enforces:
+        "Independent final alternatives or abstention, local values and a declared all-match bonus. Sequential or phased settlement, stable conflict priority and delayed logical-time mail are explicit factors. Provider completion speed grants no World priority.",
+    },
+    artifact_workspace: {
+      observes:
+        "Permitted document identities, versions, write allowance and actual read/check results. Contents require an authorized read; private sources stay scoped to their readers.",
+      enforces:
+        "Fixed access rules, immutable evidence, versioned work, atomic version conflicts and a finite write allowance. Submit checks content and source versions; stop or horizon ends unsuccessfully.",
+    },
     composed: {
       observes:
         "Own inventory, needs and utility. Stock and other inventories follow the selected visibility rules; controllers know the stocks they allocate.",
@@ -149,7 +185,7 @@ export function EnvironmentDetails({
       <Separator />
       <SheetFooter className="gap-2 px-6 pt-0 pb-6">
         <Button asChild>
-          <Link to={`/new?template=${env.key}&step=conditions`}>
+          <Link to={`/new?environment=${env.key}&step=conditions`}>
             Configure experiment
             <ArrowRight data-icon="inline-end" />
           </Link>

@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Mapping
 from typing import Any, cast
 
-from ..domain import Action, Decision, Design, Event, Measure, Parameters
+from ..domain import Action, Decision, Design, Event, Measure, Parameters, ReadArtifact
 from .checkpoints import Checkpoint, LegalAction, Observation
 from .decisions import ActionOption, DecisionRules, decision_schema
 
@@ -198,6 +198,21 @@ class World[StateT: Checkpoint](ABC):
     def schema_rules(self, observation: Observation) -> DecisionRules:
         return self.decision_rules
 
+    def exposure_paths(self, event: dict, observation: Observation) -> list[list[str | int]]:
+        """Locate a recorded event in this actor's projection, without adding information.
+
+        Producers for other Worlds can supply paths into their own observation shape.
+        This is provenance for researcher inspection, never a participant tool or a
+        claim that an available observation has reached a model.
+        """
+        safe = {key: event[key] for key in ("round", "kind", "actor", "target", "text")}
+        return [
+            [field, index]
+            for field in ("public_history", "your_experiences")
+            for index, item in enumerate(observation[field])
+            if all(item.get(key) == value for key, value in safe.items())
+        ]
+
     def decision_schema(self, observation: Observation) -> type[Decision]:
         grouped: dict[tuple[str, int, int], list[str]] = {}
         for action in observation["legal_actions"]:
@@ -218,6 +233,8 @@ class World[StateT: Checkpoint](ABC):
         )
 
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        if not isinstance(decision.action, Action):
+            raise ValueError("Expected a controlled-world action")
         return self.apply(actor, decision.action)
 
     def step(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
@@ -267,3 +284,15 @@ class World[StateT: Checkpoint](ABC):
 
     def snapshot(self) -> StateT:
         return copy.deepcopy(self.state)
+
+    def read(self, actor: str, request: ReadArtifact) -> dict[str, Any]:
+        raise ValueError("Artifact operation is unavailable")
+
+    def adjudication_inputs(self, actor: str, decision: Decision) -> dict | None:
+        """A pure, explicitly permitted external-result input; ordinary worlds need none."""
+        return None
+
+    def settle_adjudication(
+        self, actor: str, decision: Decision, receipt: dict
+    ) -> tuple[list[Event], list[Measure]]:
+        raise ValueError("Adjudication is unavailable")

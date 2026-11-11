@@ -20,6 +20,7 @@ def test_current_schema_reopens_without_changing_usage_or_conversations(tmp_path
     first.close()
     reopened = Database(url, ceiling=8_000_000)
     with reopened.session() as session:
+        assert session.execute(text("SELECT version FROM schema_version")).scalar() == 15
         workspace = session.get_one(Workspace, 1)
         assert workspace.charged == 123 and workspace.ceiling == 8_000_000
         saved = session.scalars(select(Analysis)).one()
@@ -27,7 +28,7 @@ def test_current_schema_reopens_without_changing_usage_or_conversations(tmp_path
     reopened.close()
 
 
-@pytest.mark.parametrize("version", [1, 2, 3, 99])
+@pytest.mark.parametrize("version", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 99])
 def test_incompatible_schema_is_rejected_without_migration(tmp_path, version):
     url = f"sqlite:///{tmp_path}/workspace.sqlite3"
     db = Database(url)

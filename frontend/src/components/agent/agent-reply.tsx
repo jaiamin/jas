@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { ReplyActivity } from "@/components/agent/agent-activity";
 import { AgentMarkdown } from "@/components/agent/agent-markdown";
 import { AgentTarget } from "@/components/agent/agent-target";
+import { InvestigationProgress } from "@/components/agent/investigation-progress";
+import { ClaimEvidence } from "@/components/claim-evidence";
+import { ComparisonEvidence } from "@/components/comparison-evidence";
 import {
   Disclosure,
   DisclosureContent,
@@ -31,16 +34,19 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Analysis } from "@/lib/types";
+import { TraceLine, TraceTitle } from "@/components/ui/trace";
+import type { Analysis, AnalysisLensKey } from "@/lib/types";
 
 export const AgentReply = memo(function AgentReply({
   row,
   disabled,
   onRetry,
+  onReanalyze,
 }: {
   row: Analysis;
   disabled: boolean;
   onRetry: () => void;
+  onReanalyze?: (lens: AnalysisLensKey) => void;
 }) {
   const pending = row.status === "pending";
   const complete = row.status === "complete";
@@ -77,12 +83,26 @@ export const AgentReply = memo(function AgentReply({
       <MessageContent>
         <MessageHeader className="min-h-6 items-start gap-2 px-0">
           <AgentTarget
-            animated={pending}
+            animated={pending && row.purpose !== "investigation"}
             className="size-5"
             aria-label="Assistant"
           />
-          <ReplyActivity row={row} />
+          {row.purpose === "investigation" ? (
+            <TraceLine>
+              <TraceTitle>Investigation</TraceTitle>
+            </TraceLine>
+          ) : (
+            <ReplyActivity row={row} />
+          )}
         </MessageHeader>
+        {row.purpose === "investigation" && (
+          <InvestigationProgress id={row.id} />
+        )}
+        <ClaimEvidence
+          row={row}
+          disabled={disabled}
+          onReanalyze={onReanalyze}
+        />
         {messageText && (
           <AgentMarkdown
             text={messageText}
@@ -191,6 +211,17 @@ export const AgentReply = memo(function AgentReply({
                 ))}
               </div>
             )}
+            {row.output?.comparisons &&
+              Object.entries(row.output.comparisons).map(([key, report]) => (
+                <Disclosure key={key}>
+                  <DisclosureTrigger>
+                    Captured comparison · revision {report.comparison.revision}
+                  </DisclosureTrigger>
+                  <DisclosureContent>
+                    <ComparisonEvidence report={report} />
+                  </DisclosureContent>
+                </Disclosure>
+              ))}
             {complete && !!row.output?.caveats?.length && (
               <Disclosure className="min-w-0">
                 <DisclosureTrigger>Limitations & uncertainty</DisclosureTrigger>

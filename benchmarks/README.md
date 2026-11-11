@@ -5,6 +5,11 @@ environment validity, participant execution and observable behavior. There are 1
 and 10 held-out families across seven rule-based worlds. This is a diagnostic benchmark;
 passing it does not establish human realism, intent or useful scientific insight.
 
+This frozen suite predates the expanded artifact, workflow and generated-mechanic
+catalog. Its protocol describes the benchmark's declared conditions, not the
+current application's full capabilities. Use the
+[current validity guide](../docs/EXPERIMENT_VALIDITY.md) for authoring new experiments.
+
 | Read or reuse | Entry point |
 | --- | --- |
 | Scenario definitions and frozen requests | [families.json](families.json), [quality-cases.jsonl](quality-cases.jsonl) |
@@ -28,6 +33,20 @@ The complete gate checks independent payoffs, solvability, invalid-action atomic
 observation isolation, sealed choices, privacy, memory and deterministic per-turn replay.
 Scripted witnesses cover communication that helps, hurts or makes no difference. They
 validate the instrument; they are not production participants or preferred model outcomes.
+
+For bounded local platform timings without any model requests:
+
+```sh
+uv run python -m benchmarks.runtime --output data/runtime/current
+```
+
+This starts and closes its own keyless HTTP server on port18228. It repeats the
+2/12-participant two-round Commons workloads, then measures12 participants across
+20 rounds (240 turns), with exact replay/export and20 warm reads per endpoint.
+The larger case also mixes health/run/experiment reads through four concurrent
+workers,20 requests to each endpoint. Results include raw timings, response sizes and server memory;
+they measure platform overhead, not model latency or competence. Use a fresh output
+directory and `--port` when another local task owns the default port.
 
 ## Run model trials
 
@@ -58,7 +77,8 @@ qualitative usefulness still needs independent review. Failures stay in the deno
 
 Outputs contain attempts, observable provider calls, source snapshots, hashes, costs and
 summaries. All generated files belong in ignored `data/quality/`, outside this directory.
-Replay and summarize participant exports without credentials or model calls:
+Replay and summarize exports whose rule versions match the executing source,
+without credentials or model calls:
 
 ```sh
 uv run python -m benchmarks.replay data/quality/participants/attempts.jsonl.gz
@@ -77,8 +97,9 @@ families needs a new reviewed split and a new declaration before opening its res
 Only the compact [report](results/REPORT.md), [score history](results/score-history.json),
 [cost audit](results/aggregate-cost.json) and [limitations](results/LIMITATIONS.md) are kept
 here. Full historical traces, source bundles and one-off commands are recoverable at the
-immutable evidence commit; see the report's archive/replay instructions. Saved decisions
-replay exactly with their matching rules; fresh model responses are stochastic.
+immutable evidence commit; see the report's archive/replay instructions. Historical
+exports need their matching archived source; the current app rejects incompatible
+rules instead of loading an old engine. Fresh model responses are stochastic.
 
 ## Later planner development checks
 

@@ -4,6 +4,7 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { HarnessFields } from "@/components/editor/harness-fields";
 import { ProfileOverridesEditor } from "@/components/editor/profile-overrides-editor";
 import { ResourceScheduleEditor } from "@/components/editor/resource-schedule-editor";
 import { Plus, Trash2 } from "@/components/icons";
@@ -20,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Field,
+  FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldLegend,
@@ -120,7 +122,9 @@ export function ConditionFields({
                 {c.name || "Unnamed condition"}
               </span>
               <span className="ml-auto hidden max-w-48 truncate text-xs font-normal text-muted-foreground sm:inline">
-                {modelLabel(c.model)}
+                {c.harness.kind === "scripted"
+                  ? "Non-model control"
+                  : modelLabel(c.model)}
               </span>
             </AccordionTrigger>
             <AccordionContent>
@@ -152,6 +156,7 @@ export function ConditionFields({
                       id={`model-${c.key}`}
                       label={`Condition ${i + 1} model`}
                       value={c.model}
+                      disabled={c.harness.kind === "scripted"}
                       onValueChange={(v) =>
                         condition(i, { model: v as ModelId })
                       }
@@ -160,6 +165,11 @@ export function ConditionFields({
                         label: modelLabel(m.id),
                       }))}
                     />
+                    {c.harness.kind === "scripted" && (
+                      <FieldDescription>
+                        Configured model assignments are unused by this control.
+                      </FieldDescription>
+                    )}
                   </Field>
                   {environment.parameters.includes("endowment") && (
                     <>
@@ -248,17 +258,65 @@ export function ConditionFields({
                     />
                   </Field>
                 </FieldGroup>
+                <HarnessFields
+                  id={c.key}
+                  index={i}
+                  value={c.harness}
+                  artifacts={[
+                    "artifact_workspace",
+                    "distributed_coordination",
+                    "reliance_commitments",
+                    "institutional_workflow",
+                  ].includes(design.environment)}
+                  environment={design.environment}
+                  onAblation={(choice) => {
+                    if (c.harness.kind !== "tool_using") return;
+                    const harness = c.harness;
+                    condition(
+                      i,
+                      choice === "memory"
+                        ? {
+                            harness: {
+                              ...harness,
+                              capabilities: {
+                                ...harness.capabilities,
+                                memory: "disabled",
+                              },
+                            },
+                            parameters: { ...c.parameters, memory: "none" },
+                          }
+                        : choice === "tools"
+                          ? {
+                              harness: {
+                                ...harness,
+                                tools: [],
+                                max_tool_operations: 0,
+                                capabilities: {
+                                  planning: "disabled",
+                                  memory: "disabled",
+                                  investigation: "disabled",
+                                  verification: "disabled",
+                                },
+                              },
+                            }
+                          : { harness: { ...harness, max_requests: 1 } },
+                    );
+                  }}
+                  onChange={(harness) => condition(i, { harness })}
+                />
                 <div className="flex flex-wrap gap-5">
-                  <FieldLabel htmlFor={`communication-${c.key}`}>
-                    <Checkbox
-                      id={`communication-${c.key}`}
-                      checked={c.parameters.communication}
-                      onCheckedChange={(checked) =>
-                        parameter(i, "communication", checked === true)
-                      }
-                    />
-                    Communication
-                  </FieldLabel>
+                  {environment.parameters.includes("communication") && (
+                    <FieldLabel htmlFor={`communication-${c.key}`}>
+                      <Checkbox
+                        id={`communication-${c.key}`}
+                        checked={c.parameters.communication}
+                        onCheckedChange={(checked) =>
+                          parameter(i, "communication", checked === true)
+                        }
+                      />
+                      Communication
+                    </FieldLabel>
+                  )}
                   {environment.parameters.includes("private_signal") && (
                     <FieldLabel htmlFor={`private-signal-${c.key}`}>
                       <Checkbox
@@ -272,51 +330,54 @@ export function ConditionFields({
                     </FieldLabel>
                   )}
                 </div>
-                {c.parameters.communication && (
-                  <FieldSet className="col-span-full flex flex-wrap gap-4">
-                    <FieldLegend>Communication channels</FieldLegend>
-                    {(["messages", "reports", "promises"] as const)
-                      .filter(
-                        (channel) =>
-                          channel !== "promises" ||
-                          ["commons", "trust_exchange"].includes(
-                            design.environment,
-                          ),
-                      )
-                      .map((channel) => (
-                        <FieldLabel
-                          key={channel}
-                          htmlFor={`channel-${c.key}-${channel}`}
-                        >
-                          <Checkbox
-                            id={`channel-${c.key}-${channel}`}
-                            checked={c.parameters.communication_channels.includes(
-                              channel,
-                            )}
-                            onCheckedChange={(checked) =>
-                              parameter(
-                                i,
-                                "communication_channels",
-                                checked === true
-                                  ? [
-                                      ...c.parameters.communication_channels,
-                                      channel,
-                                    ]
-                                  : c.parameters.communication_channels.filter(
-                                      (key) => key !== channel,
-                                    ),
-                              )
-                            }
-                          />
-                          {channel === "reports"
-                            ? "Factual reports"
-                            : channel === "promises"
-                              ? "Promises"
-                              : "Messages"}
-                        </FieldLabel>
-                      ))}
-                  </FieldSet>
-                )}
+                {environment.parameters.includes("communication_channels") &&
+                  c.parameters.communication && (
+                    <FieldSet className="col-span-full flex flex-wrap gap-4">
+                      <FieldLegend>Communication channels</FieldLegend>
+                      {(["messages", "reports", "promises"] as const)
+                        .filter(
+                          (channel) =>
+                            (design.environment !== "institutional_workflow" ||
+                              channel === "messages") &&
+                            (channel !== "promises" ||
+                              ["commons", "trust_exchange"].includes(
+                                design.environment,
+                              )),
+                        )
+                        .map((channel) => (
+                          <FieldLabel
+                            key={channel}
+                            htmlFor={`channel-${c.key}-${channel}`}
+                          >
+                            <Checkbox
+                              id={`channel-${c.key}-${channel}`}
+                              checked={c.parameters.communication_channels.includes(
+                                channel,
+                              )}
+                              onCheckedChange={(checked) =>
+                                parameter(
+                                  i,
+                                  "communication_channels",
+                                  checked === true
+                                    ? [
+                                        ...c.parameters.communication_channels,
+                                        channel,
+                                      ]
+                                    : c.parameters.communication_channels.filter(
+                                        (key) => key !== channel,
+                                      ),
+                                )
+                              }
+                            />
+                            {channel === "reports"
+                              ? "Factual reports"
+                              : channel === "promises"
+                                ? "Promises"
+                                : "Messages"}
+                          </FieldLabel>
+                        ))}
+                    </FieldSet>
+                  )}
                 <MechanismFields
                   environment={design.environment}
                   parameters={c.parameters}

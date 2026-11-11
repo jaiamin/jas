@@ -5,12 +5,14 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
+import { ComparisonEvidence } from "@/components/comparison-evidence";
 import {
   Disclosure,
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
 import { ExperimentCheck } from "@/components/experiment-check";
+import { ExposureInspection } from "@/components/exposure-inspection";
 import { Alert, Empty } from "@/components/feedback";
 import {
   AgentIcon,
@@ -179,17 +181,15 @@ export default function Study() {
           <TabsTrigger value="design">Protocol</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
-          <ExperimentCheck report={study.preflight} />
+          <ExperimentCheck report={study.preflight} design={study.design} />
           <div className="flex min-w-0 flex-col gap-6">
             <section>
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
                 <div>
-                  <h2 className="text-base font-semibold">
-                    Condition comparison
-                  </h2>
+                  <h2 className="text-base font-semibold">Results</h2>
                 </div>
               </div>
-              {!study.results.length ? (
+              {!study.results.some((r) => r.runs > 0) ? (
                 <Empty
                   title={active ? "Runs in progress" : "No results yet"}
                   description={
@@ -229,10 +229,9 @@ export default function Study() {
                               <TableCell key={c.key} className="tabular-nums">
                                 {metric(key, result?.mean)}
                                 <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
-                                  {result?.runs ?? 0} eligible runs ·{" "}
-                                  {result?.seeds ?? 0} seeds
-                                  {result?.interval &&
-                                    ` · ${metric(key, result.interval[0])}–${metric(key, result.interval[1])}`}
+                                  {result?.runs ?? 0} eligible /{" "}
+                                  {result?.planned ?? 0} planned runs ·{" "}
+                                  {result?.seeds ?? 0} seed clusters
                                 </span>
                               </TableCell>
                             );
@@ -242,14 +241,23 @@ export default function Study() {
                     </TableBody>
                   </Table>
                   <div className="p-4 text-xs leading-relaxed text-muted-foreground">
-                    Ranges: 95% seed-level percentile bootstrap intervals,
-                    available with ≥3 independent seeds. Repetitions are
-                    averaged within seed; turns are not independent
-                    replications.
+                    Observed complete, eligible outcomes only. Repetitions are
+                    averaged within seed. Seed clusters are not certified
+                    independent samples; no confidence interval is identified by
+                    the protocol.
                   </div>
                 </div>
               )}
             </section>
+            <Disclosure className="min-w-0">
+              <DisclosureTrigger>Comparison &amp; evidence</DisclosureTrigger>
+              <DisclosureContent className="flex min-w-0 flex-col gap-6 pt-3">
+                <ComparisonEvidence report={study} />
+                <ExposureInspection
+                  path={`/studies/${id}/exposure?revision=${study.revision}`}
+                />
+              </DisclosureContent>
+            </Disclosure>
             <Disclosure className="min-w-0 mt-2">
               <DisclosureTrigger>Question & protocol</DisclosureTrigger>
               <DisclosureContent>
@@ -303,56 +311,6 @@ export default function Study() {
               </DisclosureContent>
             </Disclosure>
           </div>
-          {study.effects?.length > 0 && (
-            <Disclosure className="min-w-0 mt-8">
-              <DisclosureTrigger>Matched-seed effects</DisclosureTrigger>
-              <DisclosureContent>
-                <div className="min-w-0 overflow-hidden rounded-lg border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Comparison</TableHead>
-                        <TableHead>Measurement</TableHead>
-                        <TableHead>Difference</TableHead>
-                        <TableHead>Independent seeds</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {study.effects.map((effect) => (
-                        <TableRow key={`${effect.condition}-${effect.metric}`}>
-                          <TableCell>
-                            {effect.condition} − {effect.baseline}
-                          </TableCell>
-                          <TableCell>{label(effect.metric)}</TableCell>
-                          <TableCell className="text-right tabular-nums">
-                            {effect.mean > 0 ? "+" : ""}
-                            {metric(effect.metric, effect.mean)}
-                            <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
-                              {effect.interval
-                                ? `${metric(effect.metric, effect.interval[0])}–${metric(effect.metric, effect.interval[1])} · 95% CI`
-                                : "Too few seeds for an interval"}
-                            </span>
-                          </TableCell>
-                          <TableCell className="text-right tabular-nums">
-                            {effect.seeds}
-                            <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
-                              {effect.pairs} matched run pairs
-                            </span>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                  <div className="p-4 text-xs leading-relaxed text-muted-foreground">
-                    Treatment minus the first condition. Repetitions are
-                    averaged within each seed; intervals bootstrap independent
-                    seeds. A difference is not proof of human behavior or
-                    general causal validity.
-                  </div>
-                </div>
-              </DisclosureContent>
-            </Disclosure>
-          )}
         </TabsContent>
         <TabsContent value="runs">
           <div className="mb-3 w-full sm:max-w-72">

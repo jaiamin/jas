@@ -10,12 +10,25 @@ arbitrary simulator or a promise that model-generated experiments are always opt
    The planner may use an existing world, compose resource mechanics, or explain missing ones.
 2. Review the proposed protocol. The Conditions editor exposes resources, access, visibility,
    needs and incentives. Check experiment runs without model calls and highlights limits.
-3. Save custom environment to reuse the rules, roles, conditions and execution settings.
-   Environments lists these records separately from built-in templates. Edit & reuse updates
+3. Save custom environment to extract mechanical configuration examples. Questions,
+   participant identities/models/harnesses, condition arms, memory, replication and analysis
+   are excluded. Mechanical roles such as controllers remain unbound until an experiment
+   assigns its participants. Environments lists these records separately from built-in choices. Edit & reuse updates
    a record; Delete requires confirmation. Updates reject stale revisions instead of silently
    overwriting newer edits.
 4. Create experiment saves an independent immutable revision. Explicitly run it when ready.
    Editing/deleting the reusable environment cannot alter its experiments or evidence.
+
+Reuse starts a neutral experiment with one baseline condition. Choose a question and population
+independently; Conditions → Configuration examples applies another example with explicit role
+bindings. Review shows the source revision and installed rule version. Specification/export
+retain the full source definition and hash alongside the experiment's concrete rules. Library
+examples are provenance, not live links or assertions that the configured conditions are identical.
+Explicit built-in experiment templates remain available as a separate starting point.
+
+Drafts retain their original source revision when the library changes, so stale updates fail
+visibly instead of overwriting a newer entry. A draft remains recoverable after library deletion;
+Save as new custom environment creates a separate library identity when needed.
 
 Use **Hypothesis & analysis plan** for observable choice definitions, recorded fields,
 formulas, denominators and comparison rules. Additional calculations belong there rather
@@ -24,8 +37,67 @@ to participants. A written formula does not install a new automatically computed
 verify derived analyses against the recorded evidence.
 
 Custom environments are stored beside the SQLite workspace in `<database-stem>.environments/`.
-Back up that directory with the database. Browser-only reusable setups have been removed;
-there is no legacy importer. Existing saved experiments and their embedded evidence are retained.
+Back up that directory with the database. Format `jas-environment-v10` contains `definition` (version2,
+world/rule version, name/description and configuration examples), plus ID, optimistic revision,
+updated timestamp and definition hash. Examples contain mechanics parameters, optional tasks
+and unbound roles. Create/update accept `{definition, revision}`; selection and extraction use
+`POST /api/design/use-environment` and `POST /api/design/environment`.
+Unsupported library/definition/rule versions and content hashes fail explicitly.
+Database schema15 and export18 retain investigation ownership, workflow rules,
+finite packages and generation allowances. Other persisted versions reject
+explicitly. Preserve incompatible data separately when starting a fresh workspace;
+see the [storage contract](ARCHITECTURE.md#storage).
+
+The `reviewed_finite` backend profile additionally requires an actual immutable
+external contract, explicit role bindings, static actor-private facts and a
+matching independent executable admission. Its full finite transition table is
+a declared prerequisite, not evidence of independently understood intent. It
+does not replace the richer installed Worlds. See [extension generation](EXTENSIONS.md)
+for bounds and the current implementation/qualification scope.
+
+## Artifact investigation, rules 2.0.0
+
+Reusable artifact mechanics describe objects, structured initial contents, owner and
+read/write ACL roles, a finite write allowance and content/source requirements.
+They contain no investigator, role prose, model, harness or memory policy. Applying
+an example creates one participant when only one binding is required; it never adds
+a fabricated partner. Additional participants can be configured up to the overall
+limit of 12. Study revisions retain the full source definition and concrete bound
+parameters even if the library entry is later changed or deleted.
+
+Immutable evidence fields are the reference for deterministic checks. Each accepted
+write appends a version with exact source/version references and expected-version
+conflict checking. Read, write, check, submit and stop remain executable permissions;
+role names and model claims grant none. Sources and content are bounded data, never
+code. Undeclared submission is an enforced content/source result. An explicitly
+declared, versioned fallible pickup-note adjudicator can affect only submission
+status after hard-fact and ACL validation; its explanation is not an enforced fact. A
+recorded citation alone is not proof of reading; inspect delivered read receipts.
+Generated execution uses separate admission and execution contracts. Three-person
+coordination has its own installed World below.
+
+## Distributed information, rules 1.0.0
+
+The built-in template supplies a distributed-evidence task and a shared-information
+control for three participants. Each participant has immutable local values for
+cedar, quartz and reed, can read permitted evidence, draft shared work, send addressed
+mail, wait, choose any alternative or stop personally. The all-match bonus is an
+explicit incentive; no participant must cooperate and no outcome is labeled success.
+
+Conditions expose sequential/phased timing, logical delay, activation/conflict orders,
+message-route checkboxes, bonus, artifact contents and ACLs. The Specification editor
+also edits alternatives, actor/value bindings and route ordering. Exactly three
+participants are required. Switching from a smaller draft adds neutral participants
+while retaining existing ones; additional unbound profiles must be removed before
+saving. Configuration examples extract/rebind all three mechanical roles, orders,
+routes and information bindings independently of participant names/goals/harnesses.
+
+Phased inputs freeze until the barrier; physical inference may be serial. Equal-time
+delivery follows the declared route order. Mailboxes persist across memory modes;
+queued mail is private to its author until delivery. Terminal runs retain future mail
+without flushing it. The run view is researcher-scoped: inspect choices/values,
+pending proposals, delivery times, conflicts, artifact versions and source links.
+Recorded-input inclusion requires a real request receipt; replay/restore do not sample.
 
 ## Resource primitives, rules 1.0.0
 

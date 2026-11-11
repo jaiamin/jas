@@ -2,25 +2,31 @@ from collections import defaultdict
 
 from sqlalchemy import select
 
-from .db import Analysis, Annotation, Condition, ProviderCall, RecordedEvent, Revision, Run, Turn
+from .db import (
+    Analysis,
+    Annotation,
+    InvestigationRecord,
+    ProviderCall,
+    RecordedEvent,
+    Revision,
+    Run,
+    Turn,
+)
 from .research import Research, event_dict
-from .simulation.environments import CATALOG
 
 
 def export_study(research: Research, study_id: str) -> dict[str, object]:
+    with research.db.read_snapshot():
+        return _export_study(research, study_id)
+
+
+def _export_study(research: Research, study_id: str) -> dict[str, object]:
     detail = research.study(study_id)
     with research.db.session() as session:
         revisions = session.scalars(
             select(Revision).where(Revision.study_id == study_id).order_by(Revision.number)
         ).all()
         runs = session.scalars(select(Run).where(Run.study_id == study_id)).all()
-        environments = dict(
-            session.execute(
-                select(Condition.id, Revision.design["environment"].as_string())
-                .join(Revision, Condition.revision_id == Revision.id)
-                .where(Revision.study_id == study_id)
-            ).all()
-        )
         plan_ids = [
             r.source.removeprefix("plan:") for r in revisions if r.source.startswith("plan:")
         ]
@@ -40,6 +46,13 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
         analyses = session.scalars(
             select(Analysis).where((Analysis.study_id == study_id) | Analysis.id.in_(plan_ids))
         ).all()
+        investigations = session.scalars(
+            select(InvestigationRecord).where(
+                InvestigationRecord.id.in_(
+                    [a.investigation_id for a in analyses if a.investigation_id]
+                )
+            )
+        ).all()
     grouped_events: dict[tuple[str, int], list[dict]] = defaultdict(list)
     grouped_turns: dict[str, list[dict]] = defaultdict(list)
     for event in events:
@@ -57,17 +70,35 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
                 "events": grouped_events[turn.run_id, turn.number],
             }
         )
-    initial = {
-        run.id: research.evidence(run.id, 0)
-        for run in runs
-        if run.turn == 0
-        or run.checkpoint["rule_version"] == CATALOG[environments[run.condition_id]].world.version
-    }
+    initial = {run.id: research.evidence(run.id, 0) for run in runs}
     return {
         "format": "jas-study",
-        "version": 4,
+        "version": 18,
+        "extension_generations": [
+            attempt
+            for attempt in research.extensions.generations.list()
+            if attempt["analysis_id"] in {analysis.id for analysis in analyses}
+        ],
+        "investigations": [
+            {
+                "id": i.id,
+                "authorization": i.authorization,
+                "status": i.status,
+                "stage": i.stage,
+                "stop_reason": i.stop_reason,
+                "requests": i.requests,
+                "charged_usd": i.charged / 1_000_000,
+                "attempts": i.attempts,
+                "decisions": i.decisions,
+                "confirmation": i.confirmation,
+                "result": i.result,
+            }
+            for i in investigations
+        ],
         "rule_versions": sorted({run.checkpoint["rule_version"] for run in runs}),
         "study": detail,
+        "activations": [a for run in runs for a in research.activations(run.id)],
+        "exposure": [research.exposure(run.id) for run in runs],
         "annotations": [
             {
                 "run_id": a.run_id,
@@ -88,6 +119,15 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
                 "output": a.output,
                 "error": a.error,
                 "created": a.created,
+                "generation": {
+                    "authorization": a.generation["authorization"],
+                    "contract": a.generation["contract"],
+                    "requests": a.generation_requests,
+                    "candidates": a.generation_candidates,
+                    "charged_microdollars": a.generation_charged,
+                }
+                if a.generation is not None
+                else None,
             }
             for a in analyses
         ],
@@ -104,16 +144,21 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
         "requests": [
             {
                 "id": c.id,
+                "investigation_id": c.investigation_id,
                 "run_id": c.run_id,
                 "analysis_id": c.analysis_id,
+                "activation_id": c.activation_id,
                 "turn": c.turn,
                 "model": c.model,
+                "purpose": c.purpose,
                 "status": c.status,
                 "request": c.request_payload,
                 "response": c.response_payload,
                 "input_tokens": c.input_tokens,
                 "output_tokens": c.output_tokens,
                 "cost_usd": c.charged / 1_000_000,
+                "reserved": c.reserved,
+                "charged": c.charged,
                 "error": c.error,
             }
             for c in calls
@@ -121,8 +166,7 @@ def export_study(research: Research, study_id: str) -> dict[str, object]:
         "runs": [
             {
                 "record": research.run(r.id),
-                "initial_state_available": r.id in initial,
-                "evidence": ([initial[r.id]] if r.id in initial else []) + grouped_turns[r.id],
+                "evidence": [initial[r.id], *grouped_turns[r.id]],
             }
             for r in runs
         ],

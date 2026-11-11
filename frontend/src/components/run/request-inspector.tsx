@@ -19,6 +19,14 @@ import {
 import { api } from "@/lib/api";
 import { money } from "@/lib/format";
 import type { RequestEvidence, RunDetail } from "@/lib/types";
+
+function requestWork(call: { purpose: string; analysis_id: string | null }) {
+  return call.purpose === "adjudication"
+    ? "Adjudication"
+    : call.analysis_id
+      ? "Analysis"
+      : "Participant";
+}
 export function RequestInspector({
   requests,
 }: {
@@ -43,6 +51,7 @@ export function RequestInspector({
           <TableHeader>
             <TableRow>
               <TableHead>Request</TableHead>
+              <TableHead>Work</TableHead>
               <TableHead>Turn</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Tokens in / out</TableHead>
@@ -64,6 +73,22 @@ export function RequestInspector({
                   >
                     {call.id.slice(0, 8)}
                   </Button>
+                </TableCell>
+                <TableCell>
+                  {call.analysis_id ? (
+                    <a
+                      className="underline underline-offset-4"
+                      href={`/api/analyses/${call.analysis_id}`}
+                    >
+                      {requestWork(call)} · analysis{" "}
+                      {call.analysis_id.slice(0, 5)}
+                    </a>
+                  ) : (
+                    requestWork(call)
+                  )}
+                  <span className="block text-xs text-muted-foreground">
+                    {call.model.replace("openai:", "")}
+                  </span>
                 </TableCell>
                 <TableCell>{call.turn ?? "—"}</TableCell>
                 <TableCell>
@@ -97,6 +122,15 @@ export function RequestInspector({
               <h3 className="text-sm font-medium">
                 Request {request.data.id.slice(0, 8)}
               </h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {requestWork(request.data)} · {request.data.model} ·{" "}
+                {request.data.purpose}
+              </p>
+              {request.data.activation_id && (
+                <p className="mt-1 break-all text-xs text-muted-foreground">
+                  Participant activation {request.data.activation_id}
+                </p>
+              )}
               {!request.data.request ? (
                 <p className="text-muted-foreground">
                   No request payload was recorded.

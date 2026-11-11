@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { removeProfile } from "@/lib/design";
+import { minimumParticipants, removeProfile } from "@/lib/design";
 import { modelLabel } from "@/lib/format";
 import type { Catalog, Design, ModelId, Profile } from "@/lib/types";
 
@@ -52,13 +52,22 @@ export function AgentFields({
           type="button"
           variant="outline"
           size="sm"
-          disabled={design.profiles.length >= 12}
+          disabled={
+            design.profiles.length >=
+            (design.environment === "reliance_commitments"
+              ? 4
+              : design.environment === "distributed_coordination"
+                ? 3
+                : design.environment === "sealed_relay"
+                  ? 2
+                  : 12)
+          }
           onClick={() => {
             let n = design.profiles.length + 1;
             while (design.profiles.some((p) => p.key === `agent-${n}`)) n++;
             addedInput.current = `agent-agent-${n}-name`;
             setOpen((open) => [...open, `agent-${n}`]);
-            update("profiles", [
+            const profiles: Profile[] = [
               ...design.profiles,
               {
                 key: `agent-${n}`,
@@ -67,7 +76,30 @@ export function AgentFields({
                 model: null,
                 goal: "Pursue your goals under the environment's rules.",
               },
-            ]);
+            ];
+            onChange({
+              ...design,
+              profiles,
+              conditions: design.conditions.map((condition) => ({
+                ...condition,
+                parameters: {
+                  ...condition.parameters,
+                  workflow: condition.parameters.workflow
+                    ? {
+                        ...condition.parameters.workflow,
+                        turn_order: [
+                          ...condition.parameters.workflow.turn_order,
+                          `agent-${n}`,
+                        ],
+                        conflict_order: [
+                          ...condition.parameters.workflow.conflict_order,
+                          `agent-${n}`,
+                        ],
+                      }
+                    : null,
+                },
+              })),
+            });
           }}
         >
           <Plus data-icon="inline-start" />
@@ -172,7 +204,27 @@ export function AgentFields({
                   className="self-start"
                   size="sm"
                   aria-label={`Remove ${p.name}`}
-                  disabled={design.profiles.length <= 2}
+                  disabled={
+                    design.profiles.length <=
+                      minimumParticipants(design.environment) ||
+                    ([
+                      "distributed_coordination",
+                      "reliance_commitments",
+                    ].includes(design.environment) &&
+                      design.conditions.some((condition) =>
+                        Object.hasOwn(
+                          condition.parameters.coordination?.information ?? {},
+                          p.key,
+                        ),
+                      )) ||
+                    design.conditions.some((condition) =>
+                      condition.parameters.workflow?.work_items.some(
+                        (work) =>
+                          work.workers.includes(p.key) ||
+                          work.handoff_to.includes(p.key),
+                      ),
+                    )
+                  }
                   onClick={() => onChange(removeProfile(design, p.key))}
                 >
                   <Trash2 data-icon="inline-start" />

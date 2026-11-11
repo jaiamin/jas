@@ -25,8 +25,10 @@ from pydantic_core import from_json
 from sqlalchemy import func, select, update
 
 from .config import setting
-from .db import Database, ProviderCall, Study, Workspace
+from .db import Analysis, Database, InvestigationRecord, ProviderCall, Run, Study, Workspace
 from .diagnostics import log_failure
+from .finite_contract import GenerationAuthorization
+from .investigation_limits import InvestigationStopped, wait_ready
 
 T = TypeVar("T")
 PRICES: dict[str, tuple[float, float]] = {
@@ -97,6 +99,16 @@ class LanguageModels:
             raise ValueError("Concurrent provider requests must be between 1 and 32")
         self.capacity = asyncio.Semaphore(self.concurrency)
 
+    def research_model(self, purpose: str, investigation_id: str | None = None) -> str:
+        if investigation_id:
+            with self.db.session() as session:
+                return session.get_one(InvestigationRecord, investigation_id).authorization[
+                    "researcher_model"
+                ]
+        return setting(
+            "PLANNER_MODEL" if purpose == "design" else "ASSISTANT_MODEL", "openai:gpt-6.1-sol"
+        )
+
     def model(self, name: str) -> Model:
         if name in self.models:
             return self.models[name]
@@ -135,20 +147,35 @@ class LanguageModels:
         study_id: str | None = None,
         run_id: str | None = None,
         analysis_id: str | None = None,
+        activation_id: str | None = None,
         max_tokens: int = 4096,
         turn: int | None = None,
         openai_reasoning_effort: Literal["low", "medium", "high"] | None = None,
         web_search: bool = False,
         on_partial: Callable[[dict], None] | None = None,
+        input_evidence: dict | None = None,
+        on_reserved: Callable[[str], None] | None = None,
+        before_reserve: Callable[[], None] | None = None,
     ) -> T:
         if model not in PRICES:
             raise ProviderFailure("This model has no reviewed price configuration.")
         if web_search and (model != "openai:gpt-6.1-sol" or output is not str):
             raise ValueError("Web research requires GPT-6.1 Sol text output")
+        allowance = None
+        if analysis_id:
+            with self.db.session() as session:
+                analysis = session.get_one(Analysis, analysis_id)
+                if analysis.generation is not None:
+                    allowance = GenerationAuthorization.model_validate(
+                        analysis.generation["authorization"]
+                    )
+                    if model != "openai:gpt-6.1-sol":
+                        raise ProviderFailure("Extension allowance authorizes only GPT-6.1 Sol.")
+                    max_tokens = min(max_tokens, allowance.max_output_tokens)
         schema = TypeAdapter(output).json_schema()
         model_object = self.model(model)
         input_bound = len((prompt + instructions + json.dumps(schema)).encode()) + 4096
-        if input_bound > 180_000:
+        if input_bound > (allowance.max_input_bytes if allowance else 180_000):
             raise ProviderFailure("Evidence exceeds this request's input limit; narrow the scope.")
         timeout = 180 if purpose == "design" else 90
         settings: OpenAIResponsesModelSettings = {"max_tokens": max_tokens, "timeout": timeout}
@@ -163,11 +190,31 @@ class LanguageModels:
             reserved = (
                 math.ceil(1_050_000 * input_rate * 2 + max_tokens * output_rate * 1.5) + 20_000
             )
+        investigation_id = None
+        with self.db.session() as session:
+            owner = (
+                session.get(Analysis, analysis_id)
+                if analysis_id
+                else (session.get(Run, run_id) if run_id else None)
+            )
+            if owner and owner.investigation_id:
+                investigation_id = owner.investigation_id
+                if study_id is not None and study_id != owner.study_id:
+                    raise ValueError("Request study does not match its investigation owner")
+                study_id = owner.study_id
+        await wait_ready(self.db, investigation_id)
         async with self.capacity:
+            if before_reserve is not None:
+                before_reserve()
+            await wait_ready(self.db, investigation_id)
+            if before_reserve is not None:
+                before_reserve()
             call = ProviderCall(
+                investigation_id=investigation_id,
                 study_id=study_id,
                 run_id=run_id,
                 analysis_id=analysis_id,
+                activation_id=activation_id,
                 purpose=purpose,
                 model=model,
                 turn=turn,
@@ -178,6 +225,14 @@ class LanguageModels:
                     "web_search": web_search,
                     "settings": settings,
                     "price_per_million": [input_rate, output_rate],
+                    "provider_adapter": {
+                        "class": (
+                            f"{type(model_object).__module__}.{type(model_object).__qualname__}"
+                        ),
+                        "model_name": model_object.model_name,
+                        "system": model_object.system,
+                    },
+                    **({"input_evidence": input_evidence} if input_evidence is not None else {}),
                 },
                 reserved=reserved,
                 charged=reserved,
@@ -185,6 +240,8 @@ class LanguageModels:
             self._reserve(call)
             messages, failure = [], None
             try:
+                if on_reserved is not None:
+                    on_reserved(call.id)
                 agent = Agent(
                     model_object,
                     output_type=str if web_search else ToolOutput(output, strict=True),
@@ -239,6 +296,40 @@ class LanguageModels:
 
     def _reserve(self, call: ProviderCall) -> None:
         with self.db.session.begin() as session:
+            if call.investigation_id:
+                parent = session.get_one(InvestigationRecord, call.investigation_id)
+                if call.purpose == "adjudication":
+                    raise InvestigationStopped("adjudicator_outside_scope")
+                expected = parent.authorization[
+                    "researcher_model" if call.analysis_id else "participant_model"
+                ]
+                if call.model != expected:
+                    raise InvestigationStopped("model_outside_scope")
+                if (
+                    session.execute(
+                        update(InvestigationRecord)
+                        .where(
+                            InvestigationRecord.id == parent.id,
+                            InvestigationRecord.status == "running",
+                            InvestigationRecord.charged + call.reserved
+                            <= InvestigationRecord.ceiling,
+                            InvestigationRecord.requests < parent.authorization["max_requests"],
+                        )
+                        .values(
+                            charged=InvestigationRecord.charged + call.reserved,
+                            requests=InvestigationRecord.requests + 1,
+                        )
+                        .returning(InvestigationRecord.id)
+                    ).scalar_one_or_none()
+                    is None
+                ):
+                    raise InvestigationStopped(
+                        parent.status
+                        if parent.status != "running"
+                        else "requests_allowance_exhausted"
+                        if parent.requests >= parent.authorization["max_requests"]
+                        else "spending_allowance_exhausted"
+                    )
             if (
                 session.execute(
                     update(Workspace)
@@ -264,6 +355,33 @@ class LanguageModels:
                 is None
             ):
                 raise ProviderFailure("Study spending ceiling reached. No request was sent.")
+            if call.analysis_id:
+                analysis = session.get_one(Analysis, call.analysis_id)
+                if analysis.generation is not None:
+                    allowance = GenerationAuthorization.model_validate(
+                        analysis.generation["authorization"]
+                    )
+                    if (
+                        session.execute(
+                            update(Analysis)
+                            .where(
+                                Analysis.id == call.analysis_id,
+                                Analysis.generation_requests < allowance.max_requests,
+                                Analysis.generation_charged + call.reserved
+                                <= math.floor(allowance.budget_usd * 1_000_000),
+                            )
+                            .values(
+                                generation_requests=Analysis.generation_requests + 1,
+                                generation_charged=Analysis.generation_charged + call.reserved,
+                            )
+                            .returning(Analysis.id)
+                        ).scalar_one_or_none()
+                        is None
+                    ):
+                        raise ProviderFailure(
+                            "Extension question request/spending allowance reached. "
+                            "No request was sent."
+                        )
             session.add(call)
             session.flush()
 
@@ -293,6 +411,8 @@ class LanguageModels:
         )
         with self.db.session.begin() as session:
             record = session.get_one(ProviderCall, call.id)
+            if record.status != "pending":
+                return
             record.status = (
                 "complete" if failure is None else "failed" if usage_known else "unknown"
             )
@@ -312,6 +432,12 @@ class LanguageModels:
             record.charged = charged
             record.input_tokens, record.output_tokens = inputs, outputs
             record.reasoning_tokens = reasoning
+            if call.investigation_id:
+                session.execute(
+                    update(InvestigationRecord)
+                    .where(InvestigationRecord.id == call.investigation_id)
+                    .values(charged=InvestigationRecord.charged + charged - call.reserved)
+                )
             session.execute(
                 update(Workspace)
                 .where(Workspace.id == 1)
@@ -323,6 +449,18 @@ class LanguageModels:
                     .where(Study.id == call.study_id)
                     .values(charged=Study.charged + charged - call.reserved)
                 )
+            if call.analysis_id:
+                analysis = session.get_one(Analysis, call.analysis_id)
+                if analysis.generation is not None:
+                    session.execute(
+                        update(Analysis)
+                        .where(
+                            Analysis.id == call.analysis_id,
+                        )
+                        .values(
+                            generation_charged=Analysis.generation_charged + charged - call.reserved
+                        )
+                    )
 
     async def close(self) -> None:
         for model in self.models.values():
@@ -356,7 +494,11 @@ class LanguageModels:
         )
 
     def usage(
-        self, study_id: str | None = None, run_id: str | None = None, analysis_id: str | None = None
+        self,
+        study_id: str | None = None,
+        run_id: str | None = None,
+        analysis_id: str | None = None,
+        investigation_id: str | None = None,
     ) -> Usage:
         query = select(*self.usage_columns())
         if study_id:
@@ -365,6 +507,8 @@ class LanguageModels:
             query = query.where(ProviderCall.run_id == run_id)
         if analysis_id:
             query = query.where(ProviderCall.analysis_id == analysis_id)
+        if investigation_id:
+            query = query.where(ProviderCall.investigation_id == investigation_id)
         with self.db.session() as session:
             return usage_record(session.execute(query).mappings().one())
 

@@ -1,0 +1,26 @@
+# Documentation
+
+JAS is a single-user local workspace for experiments on model behavior.
+Start with the workflow guide you need; implementation details and verification
+records are separate from scientific claims.
+
+| Guide | Use it for |
+| --- | --- |
+| [Development](DEVELOPMENT.md) | Setup, local servers, tests and runtime checks |
+| [Custom environments](CUSTOM_ENVIRONMENTS.md) | Authoring and reusing mechanics |
+| [New mechanics](EXTENSIONS.md) | Finite contracts, generation allowances, containment and admission |
+| [Experiment validity](EXPERIMENT_VALIDITY.md) | Question fidelity, preflight, opportunities, cutoffs and interpretation |
+| [Research](RESEARCH.md) | Primary methodological sources and evidence limits |
+| [Architecture](ARCHITECTURE.md) | Current contracts, lifecycle, privacy, accounting and replay |
+| [Design](DESIGN.md) | Interface patterns, tokens, controls and interaction states |
+| [Glossary](GLOSSARY.md) | Domain terminology |
+| [Accepted specification](RESEARCH_HARNESS_SPEC.md) | Product requirements and open live-evaluation gates |
+| [Benchmark guide](../benchmarks/README.md) | Frozen evaluation, safe local timings and paid-run gates |
+
+The [product review](research/FINAL_PRODUCT_REVIEW.md) and
+[verification record](research/MERGE_READINESS_VERIFICATION.json) identify observed
+results and their source versions. [Historical outcomes](research/RESEARCH_HARNESS_COMPACT_REPORT.md)
+are summarized once; obsolete task plans and raw captures are not current guides.
+
+The architecture decisions cover [probe/world authority](adr/0001-isolate-probes-and-world-authority.md)
+and [participant harnesses](adr/0002-participant-harnesses-are-experimental-factors.md).

@@ -9,7 +9,7 @@ import {
 } from "@/components/disclosure";
 import { DraftList } from "@/components/draft-list";
 import { Alert } from "@/components/feedback";
-import { HomeGrid } from "@/components/home-grid";
+import { HomeBackdrop } from "@/components/home-backdrop";
 import {
   ArrowUpRight,
   Ellipsis,
@@ -99,24 +99,24 @@ export default function Home() {
   return (
     <>
       <section
-        className="relative isolate grid grid-cols-1 grid-rows-[auto_3fr_2fr]"
+        className="relative isolate grid grid-cols-1"
         aria-labelledby="home-title"
       >
         <div
           data-slot="home-backdrop"
-          className="relative col-start-1 row-start-1 row-end-3 overflow-hidden border-b"
+          className="home-backdrop absolute inset-x-0 top-0 overflow-hidden"
         >
-          <HomeGrid />
+          <HomeBackdrop />
         </div>
         <h1
           id="home-title"
-          className="relative col-start-1 row-start-1 mt-20 mb-6 px-4 text-center text-2xl font-semibold tracking-tight sm:mt-24 sm:px-6 sm:text-3xl"
+          className="relative col-start-1 row-start-1 mt-38 mb-4 px-4 text-center text-2xl font-semibold tracking-tight sm:mt-39 sm:px-6 sm:text-3xl"
         >
-          <span className="home-heading relative isolate inline-block">
+          <span className="home-title relative isolate inline-block">
             What would you like to test?
           </span>
         </h1>
-        <div className="relative col-start-1 row-start-2 row-end-4 min-w-0 px-4 sm:px-6">
+        <div className="relative col-start-1 row-start-2 min-w-0 px-4 sm:px-6">
           <AgentComposer
             variant="home"
             className="mx-auto w-full max-w-2xl"

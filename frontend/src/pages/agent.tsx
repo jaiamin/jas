@@ -15,6 +15,8 @@ import {
 import { AgentHistory } from "@/components/agent/agent-history";
 import { AgentReply } from "@/components/agent/agent-reply";
 import { AgentWelcomeHeading } from "@/components/agent/agent-welcome-heading";
+import { GenerationAuthorization } from "@/components/agent/generation-authorization";
+import { InvestigationAuthorization } from "@/components/agent/investigation-authorization";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
 import { Alert } from "@/components/feedback";
 import {
@@ -109,6 +111,10 @@ export default function AgentPage() {
                   introduction: update.introduction,
                   stage: update.stage,
                   ...(update.activity ? { activity: update.activity } : {}),
+                  ...(update.research ? { research: update.research } : {}),
+                  ...(update.investigation_id
+                    ? { investigation_id: update.investigation_id }
+                    : {}),
                 },
               }
             : message,
@@ -266,14 +272,37 @@ function AgentConversation({
       state={state}
       compact={messages.length > 0}
       contextControl={
-        <AgentContext
-          value={context}
-          onChange={changeContext}
-          studies={studies}
-          runs={runs}
-          loading={contextLoading}
-          disabled={state.send.isPending}
-        />
+        <>
+          <AgentContext
+            value={context}
+            onChange={changeContext}
+            studies={studies}
+            runs={runs}
+            loading={contextLoading}
+            disabled={state.send.isPending}
+          />
+          {(context === "general" || context === "new") && (
+            <GenerationAuthorization
+              question={state.question}
+              draftKey={draftKey}
+              disabled={state.blocked}
+              pending={send.isPending}
+              error={send.error}
+              settings={settings.data}
+              onGenerate={state.generate}
+            />
+          )}
+          {(context === "general" || context === "new") && (
+            <InvestigationAuthorization
+              question={state.question}
+              draftKey={draftKey}
+              disabled={state.investigationDisabled}
+              pending={send.isPending}
+              error={send.error}
+              onInvestigate={(allowance) => state.submit(allowance)}
+            />
+          )}
+        </>
       }
       placeholder={
         selectedStudy || selectedRun
@@ -308,17 +337,14 @@ function AgentConversation({
       data-empty={!messages.length}
     >
       {messages.length ? (
-        <MessageScrollerProvider
-          autoScroll={busy}
-          defaultScrollPosition="last-anchor"
-        >
+        <MessageScrollerProvider autoScroll defaultScrollPosition="last-anchor">
           <MessageScroller className="flex-1">
             <MessageScrollerViewport
               aria-label="Agent conversation"
               className="[--scroll-fade-size:0.75rem]"
             >
               <MessageScrollerContent className="mx-auto w-full max-w-3xl px-4 pt-4 pb-10 sm:px-6">
-                {messages.flatMap((row) => [
+                {messages.flatMap((row, index) => [
                   <MessageScrollerItem
                     key={`${row.id}-question`}
                     messageId={`${row.id}-question`}
@@ -340,7 +366,12 @@ function AgentConversation({
                   <MessageScrollerItem
                     key={row.id}
                     messageId={row.id}
-                    className="pl-1"
+                    id={row.id}
+                    className={
+                      index === messages.length - 1
+                        ? "pl-1 [content-visibility:visible]"
+                        : "pl-1"
+                    }
                   >
                     <AgentReply
                       row={row}
@@ -359,6 +390,23 @@ function AgentConversation({
                             row.purpose === "design"
                               ? "new"
                               : messageContext(row),
+                          ...(row.output?.lens
+                            ? { lens: row.output.lens.key }
+                            : {}),
+                          ...(row.output?.source_analysis_id
+                            ? {
+                                source_analysis_id:
+                                  row.output.source_analysis_id,
+                              }
+                            : {}),
+                        })
+                      }
+                      onReanalyze={(lens) =>
+                        send.mutate({
+                          question: `Reanalyze the same frozen evidence using the ${lens} lens. Give a concise behavioral account and assess its limits.`,
+                          context: messageContext(row),
+                          source_analysis_id: row.id,
+                          lens,
                         })
                       }
                     />

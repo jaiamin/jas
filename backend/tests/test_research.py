@@ -34,7 +34,7 @@ def test_named_tasks_complete_early_and_replay(runtime, design):
     rid = research.study(sid)["runs"][0]["id"]
 
     async def exercise():
-        engine.start(rid)
+        await engine.start(rid)
         await engine.executions[rid].task
 
     asyncio.run(exercise())
@@ -68,7 +68,8 @@ def test_matched_effects_cluster_repetitions_and_exclude_incomplete_runs(runtime
     effect = next(e for e in detail["effects"] if e["metric"] == "contribution_rate")
     assert effect["mean"] == pytest.approx((0.1 + 0.4 + 0.6) / 3)
     assert effect["seeds"] == 3 and effect["pairs"] == 6
-    assert effect["interval"] == pytest.approx([0.1, 0.6])
+    assert effect["interval"] is None
+    assert "sampling" in effect["uncertainty_reason"]
     with db.session.begin() as session:
         missing_control = next(
             run
@@ -82,4 +83,5 @@ def test_matched_effects_cluster_repetitions_and_exclude_incomplete_runs(runtime
     assert matched["pairs"] == 5 and matched["seeds"] == 3
     assert matched["mean"] == pytest.approx(0.3)
     assert matched["mean"] != pytest.approx((0.0 + 0.2 + 0.2 + 0.6 + 0.4) / 5)
-    assert matched["interval"] == pytest.approx([0.1, 0.4])
+    assert matched["interval"] is None
+    assert len(matched["missing_pairs"]) == 1

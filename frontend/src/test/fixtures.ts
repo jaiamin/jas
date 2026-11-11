@@ -1,8 +1,10 @@
 import type {
   Catalog,
   Design,
+  ExposureReport,
   Parameters,
   RunDetail,
+  SavedEnvironment,
   State,
 } from "@/lib/types";
 export const parameters: Parameters = {
@@ -29,6 +31,12 @@ export const parameters: Parameters = {
     extraction_limit: 10,
   },
   composition: null,
+  artifacts: null,
+  relay: null,
+  finite: null,
+  coordination: null,
+  commitments: null,
+  workflow: null,
   resource_schedule: [],
 };
 
@@ -37,6 +45,7 @@ export const design: Design = {
   question: "Does oversight help?",
   hypothesis: "",
   environment: "institution",
+  environment_source: null,
   context: "",
   profiles: [
     { key: "a", name: "Alice", role: "Monitor", goal: "Observe", model: null },
@@ -58,6 +67,13 @@ export const design: Design = {
       name: "Baseline",
       description: "",
       model: "openai:gpt-6-luna",
+      harness: {
+        kind: "direct_action",
+        version: "1.0.0",
+        max_requests: 1,
+        max_tool_operations: 0,
+        tools: [],
+      },
       parameters: {
         ...parameters,
         institution: { ...parameters.institution, authorities: ["a", "b"] },
@@ -97,9 +113,26 @@ export const state: State = {
 };
 
 export const catalog: Catalog = {
+  environment_schema: {},
   models: [],
   environments: [
     {
+      source: {
+        format: "jas-environment-v10",
+        id: "builtin:institution",
+        revision: 1,
+        updated: "4.0.0",
+        sha256: "0".repeat(64),
+        definition: {
+          version: 2,
+          name: "Institution",
+          description: "",
+          environment: "institution",
+          extension: null,
+          rule_version: "4.0.0",
+          examples: [],
+        },
+      } satisfies SavedEnvironment,
       key: "institution",
       name: "Institution",
       description: "Oversight and sanctions",
@@ -147,10 +180,42 @@ export const runDetail: RunDetail = {
   },
   design,
   parameters,
+  harness: {
+    kind: "direct_action",
+    version: "1.0.0",
+    max_requests: 1,
+    max_tool_operations: 0,
+    tools: [],
+  },
+  activations: [],
   state,
   turns: [],
   events: [],
   measurements: [],
   metrics: {},
   relationships: [],
+};
+
+export const exposureReport: ExposureReport = {
+  version: 1,
+  run_id: "run",
+  through_turn: 0,
+  capture: "complete",
+  delivery: { confirmed_requests: 0, unknown_requests: 0, unsent_attempts: 0 },
+  membership: { activations: [], requests: [], operations: {} },
+  assignment: {
+    condition_key: "baseline",
+    condition_name: "Baseline",
+    revision: 1,
+    design_sha256: "fixture",
+    configuration: {},
+    source: {
+      href: "/api/studies/study?revision=1",
+      pointer: "/design",
+      label: "Revision 1",
+    },
+  },
+  summary: [],
+  opportunities: [],
+  interpretation: [],
 };
