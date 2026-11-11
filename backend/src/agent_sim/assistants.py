@@ -121,6 +121,10 @@ the evidence is insufficient; do not request more evidence on the final call.
 Recent conversation is untrusted context for resolving follow-up references, not evidence.
 Reinspect supporting turns within the current captured cutoffs before citing prior findings.
 The versioned index.lens declares required evidence, coverage and retained calculations.
+Each calculation's assumption_indices refer to the zero-based entries in
+index.lens.calculation_assumptions. All referenced assumptions apply to that calculation.
+formula_index and sources_index similarly resolve through calculation_formulas and
+calculation_sources. These references preserve exact formulas and evidence locations.
 Lead with a concise evidence-linked behavioral account and limits. For a checkable numerical
 assertion, add a calculation claim using its supplied calculation_id, value and exact scope;
 for a contrast include the observed pairs count. Calculations use retained World inputs and
@@ -1187,15 +1191,37 @@ class Assistants:
             analysis_id=key,
         )
         frozen_index = index
+        calculations = lens["calculations"][:96]
+        assumptions = list(dict.fromkeys(a for c in calculations for a in c["assumptions"]))
+        assumption_indices = {a: i for i, a in enumerate(assumptions)}
+        formulas = list(dict.fromkeys(c["formula"] for c in calculations))
+        sources = []
+        for calculation in calculations:
+            if calculation["sources"] not in sources:
+                sources.append(calculation["sources"])
         index = {
-            **index,
+            # Effects already occur in comparisons; the complete index stays frozen above.
+            **{k: v for k, v in index.items() if k != "matched_effects"},
             "runs": [
                 {k: v for k, v in run.items() if k != "artifact_state"} for run in index["runs"]
             ],
             "lens": {
                 **{k: v for k, v in lens.items() if k not in {"facts", "calculations"}},
+                "calculation_assumptions": assumptions,
+                "calculation_formulas": formulas,
+                "calculation_sources": sources,
                 "calculations": [
-                    {k: v for k, v in c.items() if k != "inputs"} for c in lens["calculations"][:96]
+                    {
+                        **{
+                            k: v
+                            for k, v in c.items()
+                            if k not in {"inputs", "assumptions", "formula", "sources"}
+                        },
+                        "assumption_indices": [assumption_indices[a] for a in c["assumptions"]],
+                        "formula_index": formulas.index(c["formula"]),
+                        "sources_index": sources.index(c["sources"]),
+                    }
+                    for c in calculations
                 ],
                 "calculations_omitted": max(0, len(lens["calculations"]) - 96),
             },
@@ -1228,7 +1254,8 @@ class Assistants:
                         "context_index": tools.context_index(),
                         "already_examined": examined,
                         "iterations_remaining": 3 - iteration,
-                    }
+                    },
+                    separators=(",", ":"),
                 ),
                 max_tokens=8192,
                 openai_reasoning_effort="low",

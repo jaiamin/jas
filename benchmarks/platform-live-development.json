@@ -1,0 +1,274 @@
+{
+  "version": 2,
+  "split": "public-development",
+  "baseline": "efb486208c7674c554b6f50cdbf991c9500e7d56",
+  "cases": [
+    {
+      "id": "commons",
+      "environment": "commons",
+      "participant_model": "openai:gpt-6-luna",
+      "rounds": 2,
+      "conditions": "all installed template arms",
+      "seeds": [
+        137
+      ],
+      "repetitions": 1,
+      "response_tokens": 1024,
+      "study_ceiling_usd": 1.0,
+      "checks": [
+        "valid_immutable_save",
+        "step_pause_no_duplicate",
+        "bounded_live_complete_or_explicit_failure",
+        "all_requests_settled",
+        "turn_evidence_inspectable",
+        "export_pins_source",
+        "zero_call_consequence_replay"
+      ]
+    },
+    {
+      "id": "trust_exchange",
+      "environment": "trust_exchange",
+      "participant_model": "openai:gpt-6-luna",
+      "rounds": 2,
+      "conditions": "all installed template arms",
+      "seeds": [
+        137
+      ],
+      "repetitions": 1,
+      "response_tokens": 1024,
+      "study_ceiling_usd": 1.0,
+      "checks": [
+        "valid_immutable_save",
+        "step_pause_no_duplicate",
+        "bounded_live_complete_or_explicit_failure",
+        "all_requests_settled",
+        "turn_evidence_inspectable",
+        "export_pins_source",
+        "zero_call_consequence_replay"
+      ]
+    },
+    {
+      "id": "coordination",
+      "environment": "coordination",
+      "participant_model": "openai:gpt-6-luna",
+      "rounds": 2,
+      "conditions": "all installed template arms",
+      "seeds": [
+        137
+      ],
+      "repetitions": 1,
+      "response_tokens": 1024,
+      "study_ceiling_usd": 1.0,
+      "checks": [
+        "valid_immutable_save",
+        "step_pause_no_duplicate",
+        "bounded_live_complete_or_explicit_failure",
+        "all_requests_settled",
+        "turn_evidence_inspectable",
+        "export_pins_source",
+        "zero_call_consequence_replay"
+      ]
+    },
+    {
+      "id": "institution",
+      "environment": "institution",
+      "participant_model": "openai:gpt-6-luna",
+      "rounds": 2,
+      "conditions": "all installed template arms",
+      "seeds": [
+        137
+      ],
+      "repetitions": 1,
+      "response_tokens": 1024,
+      "study_ceiling_usd": 1.0,
+      "checks": [
+        "valid_immutable_save",
+        "step_pause_no_duplicate",
+        "bounded_live_complete_or_explicit_failure",
+        "all_requests_settled",
+        "turn_evidence_inspectable",
+        "export_pins_source",
+        "zero_call_consequence_replay"
+      ]
+    },
+    {
+      "id": "bargaining",
+      "environment": "bargaining",
+      "participant_model": "openai:gpt-6-luna",
+      "rounds": 2,
+      "conditions": "all installed template arms",
+      "seeds": [
+        137
+      ],
+      "repetitions": 1,
+      "response_tokens": 1024,
+      "study_ceiling_usd": 1.0,
+      "checks": [
+        "valid_immutable_save",
+        "step_pause_no_duplicate",
+        "bounded_live_complete_or_explicit_failure",
+        "all_requests_settled",
+        "turn_evidence_inspectable",
+        "export_pins_source",
+        "zero_call_consequence_replay"
+      ]
+    },
+    {
+      "id": "information",
+      "environment": "information",
+      "participant_model": "openai:gpt-6-luna",
+      "rounds": 2,
+      "conditions": "all installed template arms",
+      "seeds": [
+        137
+      ],
+      "repetitions": 1,
+      "response_tokens": 1024,
+      "study_ceiling_usd": 1.0,
+      "checks": [
+        "valid_immutable_save",
+        "step_pause_no_duplicate",
+        "bounded_live_complete_or_explicit_failure",
+        "all_requests_settled",
+        "turn_evidence_inspectable",
+        "export_pins_source",
+        "zero_call_consequence_replay"
+      ]
+    },
+    {
+      "id": "renewable_resource",
+      "environment": "renewable_resource",
+      "participant_model": "openai:gpt-6-luna",
+      "rounds": 2,
+      "conditions": "all installed template arms",
+      "seeds": [
+        137
+      ],
+      "repetitions": 1,
+      "response_tokens": 1024,
+      "study_ceiling_usd": 1.0,
+      "checks": [
+        "valid_immutable_save",
+        "step_pause_no_duplicate",
+        "bounded_live_complete_or_explicit_failure",
+        "all_requests_settled",
+        "turn_evidence_inspectable",
+        "export_pins_source",
+        "zero_call_consequence_replay"
+      ]
+    },
+    {
+      "id": "composed",
+      "environment": "composed",
+      "participant_model": "openai:gpt-6-luna",
+      "rounds": 2,
+      "conditions": "all installed template arms",
+      "seeds": [
+        137
+      ],
+      "repetitions": 1,
+      "response_tokens": 1024,
+      "study_ceiling_usd": 1.0,
+      "checks": [
+        "valid_immutable_save",
+        "step_pause_no_duplicate",
+        "bounded_live_complete_or_explicit_failure",
+        "all_requests_settled",
+        "turn_evidence_inspectable",
+        "export_pins_source",
+        "zero_call_consequence_replay"
+      ]
+    },
+    {
+      "id": "artifact_workspace",
+      "environment": "artifact_workspace",
+      "participant_model": "openai:gpt-6-luna",
+      "rounds": 5,
+      "conditions": "all installed template arms",
+      "seeds": [
+        137
+      ],
+      "repetitions": 1,
+      "response_tokens": 1024,
+      "study_ceiling_usd": 1.0,
+      "checks": [
+        "valid_immutable_save",
+        "step_pause_no_duplicate",
+        "bounded_live_complete_or_explicit_failure",
+        "all_requests_settled",
+        "turn_evidence_inspectable",
+        "export_pins_source",
+        "zero_call_consequence_replay"
+      ]
+    },
+    {
+      "id": "distributed_coordination",
+      "environment": "distributed_coordination",
+      "participant_model": "openai:gpt-6-luna",
+      "rounds": 2,
+      "conditions": "all installed template arms",
+      "seeds": [
+        137
+      ],
+      "repetitions": 1,
+      "response_tokens": 1024,
+      "study_ceiling_usd": 1.0,
+      "checks": [
+        "valid_immutable_save",
+        "step_pause_no_duplicate",
+        "bounded_live_complete_or_explicit_failure",
+        "all_requests_settled",
+        "turn_evidence_inspectable",
+        "export_pins_source",
+        "zero_call_consequence_replay"
+      ]
+    },
+    {
+      "id": "reliance_commitments",
+      "environment": "reliance_commitments",
+      "participant_model": "openai:gpt-6-luna",
+      "rounds": 2,
+      "conditions": "all installed template arms",
+      "seeds": [
+        137
+      ],
+      "repetitions": 1,
+      "response_tokens": 1024,
+      "study_ceiling_usd": 1.0,
+      "checks": [
+        "valid_immutable_save",
+        "step_pause_no_duplicate",
+        "bounded_live_complete_or_explicit_failure",
+        "all_requests_settled",
+        "turn_evidence_inspectable",
+        "export_pins_source",
+        "zero_call_consequence_replay"
+      ]
+    },
+    {
+      "id": "institutional_workflow",
+      "environment": "institutional_workflow",
+      "participant_model": "openai:gpt-6-luna",
+      "rounds": 2,
+      "conditions": "all installed template arms",
+      "seeds": [
+        137
+      ],
+      "repetitions": 1,
+      "response_tokens": 1024,
+      "study_ceiling_usd": 1.0,
+      "checks": [
+        "valid_immutable_save",
+        "step_pause_no_duplicate",
+        "bounded_live_complete_or_explicit_failure",
+        "all_requests_settled",
+        "turn_evidence_inspectable",
+        "export_pins_source",
+        "zero_call_consequence_replay"
+      ]
+    }
+  ],
+  "participant_model": "openai:gpt-6-luna",
+  "assistant_model": "openai:gpt-6.1-sol",
+  "prior_model_attempts": "Historical Haiku attempts remain retained locally; user clarified actual Sol/Luna configuration before this qualification."
+}

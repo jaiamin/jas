@@ -1,9 +1,48 @@
 # JAS handoff
 
-ROOT owns `fix/agent-revision-context` in this checkout. PR34 is the active repair;
-baseline `9bc78b13` passed all five hosted checks. Do not merge or rewrite history.
+ROOT owns `eval/experiment-environments` in this checkout. Current work is a fresh
+experiment/environment E2E evaluation from `efb48620`. PR34 at that baseline passed
+all five hosted checks; it is draft/unmerged and unwatched. Do not merge or rewrite history.
 
-## Current result
+## Active evaluation
+
+The user authorized **up to $20 additional** provider spend. Use GPT-6.1 Sol for
+the assistant/generation and GPT-6 Luna for participant agents. Initial explicitly
+configured Haiku trials are historical comparisons, not main qualification. All
+actual costs count, including failed/interrupted attempts; the interrupted Haiku
+renewable case uses its separate settled reconciliation, preserving the original
+result. Never silently retry, replace models, raise input limits or weaken validation.
+
+[The durable plan/report](docs/research/EXPERIMENT_ENVIRONMENT_E2E.md) owns acceptance
+and progress. Frozen cases/finite oracle are in `benchmarks/platform-*.json`; exact
+source maps, full HTTP/request evidence, budgets and closed restoration maps are
+under `.tools/platform-e2e/`. Queue log `luna01.log` records the sequential installed
+worlds. Helpers use own port 18144 and fresh SQLite per stage under shared checks.lock.
+Only one paid workspace is allowed at a time. Preserve app8080 and data/jas.sqlite3.
+
+Local evaluation is complete:12 installed Luna families, reuse/in-flight pause,
+tool read + separate Sol judge, matched-seed interpretation and independently
+admitted finite synthesis/run, browser and two-lifetime keyless replay. Repairs clarify
+communication/tool/handoff payloads and deduplicate exact analysis context.199 affected
+regressions, whole Ruff and global ty pass. Detailed phases/failures/limits remain in
+the report; do not claim a final-source resampling of the full matrix.
+
+Independent closed-ledger audit:521 unique settled calls,937294 microdollars
+($0.937294), no pending/unknown; historical Haiku included. Reopened copies are
+ID-deduplicated; interrupted stages use their separate CLOSED reconciliation.
+All own18144 lifetimes and browser tabs are closed. Independent review, normal
+checkpoint/publication and hosted checks remain next.
+
+Disk is constrained. User explicitly authorized clearing `/home/agent/.cache/uv`.
+The normal uv command aborted before modification (jemalloc/page size); exact
+approved disposable cache contents were then cleared after ownership, no-symlink
+and single-link metadata checks. Receipt: `.tools/platform-e2e/approved-uv-cache-clean/`.
+Closed earlier ROOT evidence was losslessly archived with complete readback/map at
+`.tools/platform-e2e/closed-history-archive/`; archived old raw paths require its
+restoration metadata. User data, installed environments and shared package stores
+were untouched. Do not perform additional outside-checkout cleanup without approval.
+
+## Previous Agent-only evaluation (closed)
 
 The user authorized extensive live Agent evaluation with **up to $10 additional**
 API spending. It is closed at **$9.542765 / 230 settled requests**, no unknown or
@@ -46,10 +85,3 @@ assets were reused: no frontend source changed. Own disposable `node_modules` wa
 removed; `.venv` and `frontend/dist` remain. Reinstall dependencies normally if a
 future frontend task requires them. Disk remains constrained; do not reclaim user
 data, another owner's output or shared caches. Preserve lossless restoration maps.
-
-## Remaining release boundary
-
-PR34 must pass hosted CI on the exact evaluation/cleanup checkpoint before release.
-Local checks and baseline hosted results must not be described as hosted qualification
-of a new diff. Publication uses normal hooks/Gitleaks. No merge,
-production deployment or model-competence certification is authorized by these results.
