@@ -34,6 +34,14 @@ app was refreshed at PID593169: exact public study/run/chat hashes, usage and da
 match before/after; no failed request was replayed. Receipt:
 `.tools/agent-context/user-refresh/receipt.json`. Hosted CI remains the merge gate for PR33.
 
+Hosted CI on `a6200c9` completed1840 backend cases and exposed two stale fixtures:
+streamed general output omitted required `propose_experiment=false`, and T17's exact
+request-key assertion omitted recorded `strict_output=null`. Both reproduced locally before
+fixture-only correction. The existing streaming/accounting assertions and literal T17 oracle
+remain intact. API/T17/T18/streaming/real-adapter groups now pass62 cases; affected Ruff and
+formatting pass. Logs: `.tools/agent-context/ci-a6200c9-{failed,red,green}.log`.
+No application change, refresh, install or paid call occurred in this CI correction.
+
 ### Prior map repair
 
 2026-11-11 Agent drafting repair: the two user-reported failures in chat

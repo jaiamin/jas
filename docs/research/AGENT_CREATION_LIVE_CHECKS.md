@@ -104,3 +104,15 @@ closed and18143 passed reuse-bind proof. `live-final-accounting.json` and
 the live-test SQLite archive has full independent readback and exact restoration metadata in
 `.tools/agent-context/anthropic/restoration.json`. User data, dependencies, shared caches and
 other worktrees were not cleaned. Local refresh/publication status is recorded in HANDOFF.
+
+## Hosted CI fixture follow-up
+
+The `a6200c9` full hosted backend run passed1840 cases and failed two fixtures missed by
+scoped qualification. Both reproduce locally: the SSE mock omitted the required explicit
+routing decision; T17's exact request-key assertion omitted `strict_output`. Only those
+fixtures changed: the stream now explicitly declines a protocol handoff, and the literal
+request assertion requires the new field to equal null. The frozen T17 fixture bytes,
+stream/reconnect/request-count checks, complete checkpoints and accounting remain unchanged.
+API/T17/T18/streaming/provider-adapter regression groups pass62 cases (6.68s); affected Ruff,
+formatting and diff checks pass. No production change or additional live spending. Full CI
+must pass the new head; the earlier hosted failure remains recorded.
