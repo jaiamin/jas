@@ -29,6 +29,12 @@ completion from manual semantic assessment, actual spend and source attribution.
 These public development cases are separate from the historical frozen benchmark
 and do not establish held-out competence.
 
+The [experiment/environment evaluation](../docs/research/EXPERIMENT_ENVIRONMENT_E2E.md)
+adds live Luna trials across the expanded catalog, Sol finite synthesis and
+matched-run interpretation, plus browser/restoration checks. Its
+[case manifest](platform-live-development.json), [finite oracle](platform-finite-contract.json)
+and [results](platform-live-results.json) retain failed attempts and source limitations.
+
 ## Run without spending
 
 From the repository root, using the [normal development setup](../docs/DEVELOPMENT.md):

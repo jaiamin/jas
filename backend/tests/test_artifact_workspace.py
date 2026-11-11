@@ -256,6 +256,11 @@ def test_tool_harness_reads_real_artifacts_without_a_world_turn_and_exports_actu
 
     async def respond(messages, info):
         prompts.append(json.loads(messages[-1].parts[0].content))
+        # The operation envelope is distinct from the nested final Decision.
+        fields = prompts[-1]["response_fields"]
+        assert set(fields) == set(info.output_tools[0].parameters_json_schema["properties"])
+        assert {"operation", "decision", "read"} <= set(fields)
+        assert not {"rationale", "memory", "forecast"} & set(fields)
         return ModelResponse(
             parts=[ToolCallPart(info.output_tools[0].name, next(responses))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),

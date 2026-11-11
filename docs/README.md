@@ -23,6 +23,8 @@ results and their source versions. [Historical outcomes](research/RESEARCH_HARNE
 are summarized once; obsolete task plans and raw captures are not current guides.
 The [live Agent evaluation](research/AGENT_EXTENSIVE_EVALUATION.md) separates fresh
 workflow completion, protocol quality, failures and API spending from CI results.
+The [experiment/environment evaluation](research/EXPERIMENT_ENVIRONMENT_E2E.md)
+covers live participants, generated finite mechanics, matched insights and restoration.
 
 The architecture decisions cover [probe/world authority](adr/0001-isolate-probes-and-world-authority.md)
 and [participant harnesses](adr/0002-participant-harnesses-are-experimental-factors.md).
