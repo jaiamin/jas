@@ -1,6 +1,6 @@
 # Experiment and environment E2E evaluation
 
-Status: local evaluation complete; independent review/publication pending. Baseline `efb486208c7674c554b6f50cdbf991c9500e7d56`, whose
+Status: local evaluation and independent Standards/Spec reviews PASS; hosted checks pending publication. Baseline `efb486208c7674c554b6f50cdbf991c9500e7d56`, whose
 five hosted checks passed. This is a new evaluation with **up to $20 additional**
 provider spending; the prior $9.542765 evaluation is closed and separate.
 
@@ -58,7 +58,8 @@ caches. Preserve the app on port 8080 and its database. Close owned tabs/service
 - [x] Freeze case/configuration/source manifests and begin bounded installed-world trials.
 - [x] Complete reusable environment, tool/adjudication and finite-generation trials.
 - [x] Browser and offline reopen; meaningful regression fixes if failures reproduce.
-- [ ] Reconcile spending, source/case/results and failures; review, docs and hosted checks.
+- [x] Reconcile spending, source/case/results and failures; independent review and docs.
+- [ ] Publish draft PR and inspect fresh hosted checks.
 
 ## Adverse boundaries retained
 
@@ -226,3 +227,11 @@ results show useful bounded experiments and interpretation; they do not train mo
 prove general intelligence, establish judgment accuracy or support insights about
 anything indiscriminately. Large evidence scopes can still reach explicit safety
 limits. Invalid model responses remain visible failures with retained charges.
+
+Independent Standards and Spec reviews of `efb48620...ed002924` both PASS with no
+actionable findings; neither reviewer reran paid work. Their sampled checks retain
+the source-pin, final-source resampling and scientific limits above. The existing
+8080 app was idle at two identical snapshots, then refreshed to the repaired backend
+with unchanged full public-state hashes, usage and database inode. No user request
+was retried. Evaluation resources remain closed; the user app stays available.
+Local closure identities/assets and review receipts: `.tools/platform-e2e/final-seal.json`.

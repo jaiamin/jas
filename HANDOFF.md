@@ -30,8 +30,11 @@ the report; do not claim a final-source resampling of the full matrix.
 Independent closed-ledger audit:521 unique settled calls,937294 microdollars
 ($0.937294), no pending/unknown; historical Haiku included. Reopened copies are
 ID-deduplicated; interrupted stages use their separate CLOSED reconciliation.
-All own18144 lifetimes and browser tabs are closed. Independent review, normal
-checkpoint/publication and hosted checks remain next.
+All own18144 lifetimes and browser tabs are closed. Independent Standards/Spec reviews PASS with no actionable findings. Normal
+checkpoint `ed002924` passed Gitleaks; publication and hosted checks remain next.
+App8080 was refreshed after two identical idle guards: complete public state/usage
+and database inode unchanged. No failed user request was retried. Final seal and
+review receipts are in `.tools/platform-e2e/final-seal.json`.
 
 Disk is constrained. User explicitly authorized clearing `/home/agent/.cache/uv`.
 The normal uv command aborted before modification (jemalloc/page size); exact
