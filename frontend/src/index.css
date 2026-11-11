@@ -195,28 +195,108 @@
   );
 }
 
-.home-map-roads {
+.home-map-curb,
+.home-map-street,
+.home-map-drive,
+.home-map-centerline,
+.home-map-crossings,
+.home-map-plot,
+.home-map-door,
+.home-map-paving,
+.home-map-bench {
   fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.home-map-curb {
+  stroke: color-mix(in oklch, var(--foreground) 11%, var(--background));
+  stroke-width: 18;
+}
+
+.home-map-street {
+  stroke: color-mix(in oklch, var(--foreground) 3%, var(--background));
+  stroke-width: 16;
+}
+
+.home-map-drive {
+  stroke: color-mix(in oklch, var(--foreground) 6%, var(--background));
+  stroke-width: 8;
+}
+
+.home-map-centerline {
+  stroke: var(--foreground);
+  stroke-width: 0.6;
+  stroke-dasharray: 3 9;
+  opacity: 0.09;
+}
+
+.home-map-crossings {
+  stroke: var(--background);
+  stroke-width: 1.5;
+}
+
+.home-map-plot {
+  stroke: var(--primary);
+  stroke-width: 0.7;
+  fill: color-mix(in oklch, var(--primary) 4%, transparent);
+  stroke-opacity: 0.28;
+}
+
+.home-map-door {
+  stroke: var(--primary);
+  stroke-width: 1;
+  opacity: 0.5;
+}
+
+.home-map-paving {
+  stroke: var(--foreground);
+  stroke-width: 0.6;
+  opacity: 0.12;
+}
+
+.home-map-gardens {
+  fill: oklch(0.64 0.08 155 / 0.16);
+  stroke: oklch(0.58 0.06 155 / 0.28);
+  stroke-width: 0.7;
+}
+
+.home-map-lawn {
+  fill: oklch(0.64 0.08 155 / 0.035);
+  stroke: none;
+}
+
+.home-map-bench {
   stroke: var(--foreground);
   stroke-width: 1;
-  opacity: 0.1;
+  opacity: 0.2;
 }
 
 .home-map-agent {
   fill: var(--foreground);
-  opacity: 0.75;
+  opacity: 0.8;
 }
 
 .home-map-agent[data-color="red"] {
-  fill: #ff5757;
+  fill: #d94747;
+}
+
+.home-map-agent-face {
+  stroke: var(--background);
+  stroke-width: 1;
+  opacity: 0.7;
 }
 
 .home-map-building > svg {
-  opacity: 0.5;
+  opacity: 0.6;
+}
+
+.home-map-building > svg > path:first-child {
+  display: none;
 }
 
 .dark .home-map-building > svg {
-  opacity: 0.65;
+  opacity: 0.75;
 }
 
 /* Shared welcome/working scan timeline; the stock Target stays stationary. */

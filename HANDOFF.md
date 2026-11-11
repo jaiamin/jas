@@ -13,27 +13,30 @@ in Git; retired raw evidence cannot be independently reread.
 
 ## Current state
 
-2026-11-11 Home backdrop: replacing the paired crossfade with the user’s simulation
-town direction. Fourteen existing environment diagrams are unevenly placed
-buildings. Red/ink agents follow connected streets, enter, dwell and leave; closed
-native SVG routes avoid teleporting. Reduced motion, hidden tabs and offscreen
-states pause the timeline. Artwork does not intercept input or represent live runs.
-The composer, navigation, user data and provider configuration are unchanged.
+2026-11-11 Home campus refinement complete: preserve the user-approved town
+and randomized layout. Layered avenues/connectors, crossings, small entrances,
+paved plots and sparse planted courtyards give the scene structure. Map-only grid
+suppression reveals the existing environment silhouettes; catalogue artwork stays
+unchanged. Building placement clears the roads. Red/ink agents keep right, orient
+along their paths and turn on rounded SVG arcs. Curved lengths keep pauses aligned
+with building centers. One lazy scene state replaces the separate seed/memo pair.
+No simulation timer, data reset, provider call, app restart or dependency was added.
 
-This iteration passes all 164 frontend units (including closed street routes and
-building-dwell timing), all 12 Home browser cases, full frontend lint, forced
-TypeScript and production build. Browser checks observe native SVG time and agent
-transforms, reduced-motion/offscreen freezing and resume, all fourteen marks,
-center coverage, no horizontal overflow and exact catalogue geometry. Shared
-EnvironmentMark honors explicit size; default catalogue sizing stays 40px.
+Observed: all164 frontend units passed after route/clearance changes; after the
+final coordinate/courtyard-only edit, both affected route units and all12 Home
+browser cases pass. The browser independently measures all108 dwell positions with
+native SVG geometry (<0.1SVG-unit error), observes actual transforms and pause/resume,
+and checks existing drafts/submission/navigation/layout flows. Full frontend lint,
+forced TypeScript and production build pass; final affected lint passes. Detector:
+zero findings. Entry chunk119.54kB gzip versus118.73kB for the simpler town.
 
-Fresh independent Impeccable finish review: SHIP, no material findings. It reviewed
-four settled light/dark desktop/phone captures and current source. Desktop viewport
-was 1440×900 CSS (preview downsampled PNGs to1280×800); phone was390×844 CSS at2×.
-Native motion behavior is qualified by browser checks rather than the still captures.
-Mechanical detector: zero findings. The prior paired-world CSS and container-query
-classes are removed. The local 8080 app serves the new build. No user-data reset,
-provider call or app restart occurred. Hosted CI remains pending publication.
+Fresh independent Impeccable finish review: SHIP, no material findings, from current
+source, earlier comparison and five final captures (1440×900/light+dark,
+390×844/light+dark,1280×800/dark). Preview downsampled desktop PNGs; CSS viewport
+sizes were confirmed. Still captures do not prove smoothness; browser tests supply
+motion evidence. This is scoped Home refinement, not a perfection or whole-product
+claim. The existing localhost8080 app serves the new build. Hosted CI on the new
+publication remains pending. All own test services and preview tabs are closed.
 
 The cleanup removes two confirmed unused frontend modules and consolidates49
 superseded documents into the compact historical report. Current guides and links

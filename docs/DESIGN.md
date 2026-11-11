@@ -294,20 +294,29 @@ Decisions and evidence stack below 1440px.
 Home’s experiment ideas, drafts, active runs and recent experiments share a centered
 58rem maximum-width content column below the composer. Keep their edges aligned.
 
-Home’s backdrop is a small simulation town. All fourteen existing environment
+Home’s backdrop is a miniature simulation campus. All fourteen existing environment
 marks become buildings, reusing `EnvironmentMark` and its exact mechanism geometry.
-Uneven placement, varied sizes and restrained blue, green, amber and violet accents
-keep the field inhabited through the center. Thin streets and driveways connect
-buildings; red and ink-colored agents travel along them, pause inside a building,
-and leave. Buildings mask the agents while they are inside. The scene is decorative,
-does not capture input and never represents actual experiments or provider activity.
+The quiet grid cells are hidden only in the map, revealing each building’s silhouette;
+the catalogue retains the full artwork. Chamfered plots, small door thresholds and
+paved approaches give buildings entrances facing their connected street. A few planted
+courtyards and benches occupy the spaces between buildings. Uneven placement, varied
+sizes and restrained blue, green, amber and violet accents keep it inhabited through
+the center. These details belong to the map, not to product controls.
 
-Layout and three-stop routes vary on each visit. Native SVG motion runs at a steady
-speed without a React frame loop or simulation timer. Every route closes without
-teleporting. Reduced motion freezes the current scene; offscreen and hidden tabs
-pause and resume the same SVG timeline. The fourteen diagrams stay still at 50%
-opacity in light mode and 65% in dark mode. A horizontal mask softens the outer
-edges. There is no external imagery, added dependency or extra data request.
+Streets have quiet curbs, two lanes, dashed centerlines and small crossings. Crossroads
+connect the avenues rather than extending into an arbitrary full-page grid. Building
+plots stay clear of streets. Red and ink agents follow their direction of travel, turn
+on rounded paths, enter through the approach, pause inside a building and leave. Buildings
+conceal agents while they are inside. The scene is decorative, does not capture input,
+and never represents actual experiments or provider activity.
+
+Layout and three-stop routes vary on each visit. Junction choices balance travel distance
+with variation. Native SVG motion runs at a steady speed without a React frame loop or
+simulation timer; curved lengths determine the exact building dwell positions. Every
+route closes without teleporting. Reduced motion freezes the current scene; offscreen
+and hidden tabs pause and resume the same timeline. Diagram opacity is 60% in light mode
+and 75% in dark mode, with a horizontal mask at the outer edges. There is no external
+imagery, added dependency or extra data request.
 
 The header and bottom section divider remain intact. A slight 3px backdrop blur
 and feathered surface tint protect the heading text where streets and diagrams

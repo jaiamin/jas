@@ -118,6 +118,39 @@ test("Home traffic follows the native clock and pauses offscreen or with reduced
   await expect(backdrop).toHaveAttribute("aria-hidden", "true");
   await expect(backdrop).toHaveAttribute("data-paused", "true");
   await expect(backdrop.locator("[data-environment]")).toHaveCount(14);
+  // Measure the curved paths with the browser's SVG geometry, independently of
+  // the route generator's length calculation: every dwell must reach a building.
+  const visits = await backdrop.evaluate((element) => {
+    const buildings = [
+      ...element.querySelectorAll<SVGGElement>(".home-map-building"),
+    ].map((building) => {
+      const origin = building.transform.baseVal.consolidate()?.matrix;
+      const size = building.querySelector("svg")?.width.baseVal.value ?? 0;
+      return { x: (origin?.e ?? 0) + size / 2, y: (origin?.f ?? 0) + size / 2 };
+    });
+    return [...element.querySelectorAll("animateMotion")].flatMap((motion) => {
+      const path = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "path",
+      );
+      path.setAttribute("d", motion.getAttribute("path") ?? "");
+      const distance = path.getTotalLength();
+      const positions = (motion.getAttribute("keyPoints") ?? "")
+        .split(";")
+        .map(Number);
+      return positions.flatMap((position, index) => {
+        if (!index || position !== positions[index - 1]) return [];
+        const point = path.getPointAtLength(distance * position);
+        return [
+          Math.min(
+            ...buildings.map((b) => Math.hypot(point.x - b.x, point.y - b.y)),
+          ),
+        ];
+      });
+    });
+  });
+  expect(visits).toHaveLength(108);
+  for (const distance of visits) expect(distance).toBeLessThan(0.1);
   const frozen = await clock();
   expect(frozen.paused).toBe(true);
   await page.waitForTimeout(300);

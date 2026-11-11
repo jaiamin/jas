@@ -33,7 +33,8 @@ Home/Agent together above Workspace navigation; surface unfinished work and acti
 runs conditionally, with full experiment/run lists in their existing destinations.
 Home sits over a decorative simulation town: the existing environment diagrams
 are buildings, with red and ink-colored agents moving along streets and visiting
-them. Uneven placement and restrained color keep it playful and quiet. Reduced
+them. Small entrances, planted courtyards and curved lane-following motion make the
+map feel inhabited. Uneven placement and restrained color keep it playful and quiet. Reduced
 motion freezes the scene; the animation never represents live experiments. Agent starts
 with a centered heading and plain composer, suggestions below, and a recent-chat
 popup beside New at the upper right. Keep history loading local to that popup.
