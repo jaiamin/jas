@@ -31,8 +31,10 @@ subtle blue accent with a weaker hover state. Avoid redundant descriptive subtit
 Agent composer for questions or experiment design and four experiment ideas. Keep
 Home/Agent together above Workspace navigation; surface unfinished work and active
 runs conditionally, with full experiment/run lists in their existing destinations.
-The Home composer is framed by the existing environment diagrams, slowly
-crossfading through restrained colors; reduced motion keeps the artwork static. Agent starts
+Home sits over a decorative simulation town: the existing environment diagrams
+are buildings, with red and ink-colored agents moving along streets and visiting
+them. Uneven placement and restrained color keep it playful and quiet. Reduced
+motion freezes the scene; the animation never represents live experiments. Agent starts
 with a centered heading and plain composer, suggestions below, and a recent-chat
 popup beside New at the upper right. Keep history loading local to that popup.
 

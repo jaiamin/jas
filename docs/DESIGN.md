@@ -294,33 +294,32 @@ Decisions and evidence stack below 1440px.
 Home’s experiment ideas, drafts, active runs and recent experiments share a centered
 58rem maximum-width content column below the composer. Keep their edges aligned.
 
-Home uses two enlarged environment diagrams to frame the composer. They reuse
-`EnvironmentMark`, including its exact mechanism geometry, quiet matrix and focal
-cells. A fixed composition leaves the center open; container queries bring the
-diagrams inward on narrow content areas. The artwork is decorative, does not
-capture input and never represents live runs or participant activity.
+Home’s backdrop is a small simulation town. All fourteen existing environment
+marks become buildings, reusing `EnvironmentMark` and its exact mechanism geometry.
+Uneven placement, varied sizes and restrained blue, green, amber and violet accents
+keep the field inhabited through the center. Thin streets and driveways connect
+buildings; red and ink-colored agents travel along them, pause inside a building,
+and leave. Buildings mask the agents while they are inside. The scene is decorative,
+does not capture input and never represents actual experiments or provider activity.
 
-Four environment pairs crossfade on a 48-second cycle: resources (green),
-exchange/information (blue), work (amber), and institutions/commitments (violet).
-Each holds for most of its 12-second phase, with a 2.4-second crossfade. Only
-opacity changes; diagrams never drift, orbit or zoom. Colors are scoped to the
-artwork and controls keep their preset tokens. Overall artwork opacity is 55%
-in light mode and 70% in dark mode, with a horizontal fade at the outer edges.
-Reduced motion displays the static resource pair. Offscreen and hidden tabs
-pause the CSS timeline and resume its existing phase when visible. There is no
-simulation timer, particle renderer, external imagery or extra data request.
+Layout and three-stop routes vary on each visit. Native SVG motion runs at a steady
+speed without a React frame loop or simulation timer. Every route closes without
+teleporting. Reduced motion freezes the current scene; offscreen and hidden tabs
+pause and resume the same SVG timeline. The fourteen diagrams stay still at 50%
+opacity in light mode and 65% in dark mode. A horizontal mask softens the outer
+edges. There is no external imagery, added dependency or extra data request.
 
 The header and bottom section divider remain intact. A slight 3px backdrop blur
-and feathered surface tint protect the heading text where narrow diagrams
-approach it. The tint uses 12% of the surface color; its radial mask falls through
+and feathered surface tint protect the heading text where streets and diagrams
+pass behind it. The tint uses 12% of the surface color; its radial mask falls through
 100/80/35/0% opacity without a hard edge. The opaque composer keeps artwork out
 of the text field. There is no visible background control.
 The Home composer has a 672px maximum width and 88px minimum text-entry height.
 Heading top spacing is 80px on mobile and 96px on desktop. A 3:2 grid split
 places three fifths of the composer within the backdrop and two fifths below its
-bottom edge; the opaque surface keeps the grid out of the text field. A stock
+bottom edge; the opaque surface keeps the map out of the text field. A stock
 `shadow-lg` gives the composer's gray backing Card a compact blended shadow along its sides and
-bottom, separating it from the animated grid.
+bottom, separating it from the simulation map.
 Every unscoped entry point uses the same server intent routing: Agent answers a
 question or creates a validated experiment proposal from the prompt, without a
 manual creation mode. Home has no selector. Agent has an optional experiment/run

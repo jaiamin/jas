@@ -1,50 +1,34 @@
-import { type CSSProperties, useEffect, useRef } from "react";
+import {
+  type CSSProperties,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { EnvironmentMark } from "@/components/environments/environment-mark";
-import type { EnvironmentId } from "@/lib/types";
+import { createHomeMap } from "@/components/home-map";
 
-const worlds = [
-  {
-    name: "resources",
-    color: "oklch(0.67 0.15 155)",
-    environments: ["commons", "renewable_resource"],
-  },
-  {
-    name: "exchange",
-    color: "oklch(0.62 0.19 255)",
-    environments: ["trust_exchange", "information"],
-  },
-  {
-    name: "work",
-    color: "oklch(0.72 0.15 70)",
-    environments: ["coordination", "institutional_workflow"],
-  },
-  {
-    name: "rules",
-    color: "oklch(0.68 0.16 305)",
-    environments: ["institution", "reliance_commitments"],
-  },
-] satisfies {
-  name: string;
-  color: string;
-  environments: [EnvironmentId, EnvironmentId];
-}[];
-
-const positions = [
-  { x: 0, side: "west" },
-  { x: 840, side: "east" },
-];
+const colors = {
+  blue: "oklch(0.62 0.19 255)",
+  green: "oklch(0.67 0.15 155)",
+  amber: "oklch(0.72 0.15 70)",
+  violet: "oklch(0.68 0.16 305)",
+};
 
 export function HomeEnvironments() {
   const field = useRef<SVGSVGElement>(null);
+  const [seed] = useState(() => Math.floor(Math.random() * 4294967296));
+  const map = useMemo(() => createHomeMap(seed), [seed]);
   useEffect(() => {
     const svg = field.current;
     if (!svg) return;
     let visible = false;
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
     const updateActivity = () => {
-      svg.dataset.paused = String(
-        !visible || document.hidden || motion.matches,
-      );
+      const paused = !visible || document.hidden || motion.matches;
+      svg.dataset.paused = String(paused);
+      if (paused) svg.pauseAnimations();
+      else svg.unpauseAnimations();
     };
     const visibility = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
@@ -55,6 +39,7 @@ export function HomeEnvironments() {
     motion.addEventListener("change", updateActivity);
     updateActivity();
     return () => {
+      svg.pauseAnimations();
       visibility.disconnect();
       document.removeEventListener("visibilitychange", updateActivity);
       motion.removeEventListener("change", updateActivity);
@@ -68,34 +53,46 @@ export function HomeEnvironments() {
       focusable="false"
       className="home-environments pointer-events-none absolute inset-0 size-full"
       data-paused="true"
-      viewBox="0 0 1120 280"
+      viewBox="0 0 1440 360"
       preserveAspectRatio="xMidYMid slice"
     >
-      {worlds.map((world, index) => (
+      <path d={map.roads} className="home-map-roads" />
+      {map.agents.map((agent) => (
         <g
-          key={world.name}
-          className="home-environment-world"
-          data-world={world.name}
-          style={
-            {
-              "--primary": world.color,
-              animationDelay: `${-((4 - index) % 4) * 12}s`,
-            } as CSSProperties
-          }
+          key={agent.id}
+          className="home-map-agent"
+          data-color={agent.id % 2 ? "red" : "ink"}
         >
-          {positions.map(({ x, side }, position) => (
-            <g
-              key={side}
-              className={`home-environment-${side}`}
-              transform={`translate(${x} -32)`}
-            >
-              <EnvironmentMark
-                environment={world.environments[position]}
-                className="size-70"
-                size={280}
-              />
-            </g>
-          ))}
+          <rect x={-3} y={-3} width={6} height={6} rx={1} />
+          <animateMotion
+            path={agent.path}
+            dur={`${agent.duration}s`}
+            begin={`${agent.begin}s`}
+            keyPoints={agent.keyPoints}
+            keyTimes={agent.keyTimes}
+            calcMode="linear"
+            repeatCount="indefinite"
+          />
+        </g>
+      ))}
+      {map.buildings.map((building) => (
+        <g
+          key={building.environment}
+          className="home-map-building"
+          transform={`translate(${building.x - building.size / 2} ${building.y - building.size / 2})`}
+          style={{ "--primary": colors[building.tone] } as CSSProperties}
+        >
+          <rect
+            x={8}
+            y={8}
+            width={building.size - 16}
+            height={building.size - 16}
+            fill="var(--background)"
+          />
+          <EnvironmentMark
+            environment={building.environment}
+            size={building.size}
+          />
         </g>
       ))}
     </svg>

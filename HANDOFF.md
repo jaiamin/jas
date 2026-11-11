@@ -13,27 +13,27 @@ in Git; retired raw evidence cannot be independently reread.
 
 ## Current state
 
-2026-11-11 Home backdrop: the existing environment diagrams now frame the
-composer and crossfade between four environment pairs. Restrained green, blue,
-amber and violet accents stay scoped to artwork. Shapes remain stationary;
-reduced motion holds a static pair, and hidden/offscreen states pause the CSS
-timeline. The obsolete Home particle renderer, local simulation and its seven
-specific unit cases are removed. No compatibility scene or simulation timer
-remains. The shared EnvironmentMark has explicit SVG viewport dimensions for
-nested use; catalogue artwork retains its geometry and default 40px size.
+2026-11-11 Home backdrop: replacing the paired crossfade with the user’s simulation
+town direction. Fourteen existing environment diagrams are unevenly placed
+buildings. Red/ink agents follow connected streets, enter, dwell and leave; closed
+native SVG routes avoid teleporting. Reduced motion, hidden tabs and offscreen
+states pause the timeline. Artwork does not intercept input or represent live runs.
+The composer, navigation, user data and provider configuration are unchanged.
 
-Current 162 frontend units, 12 Home browser cases, affected lint, forced TypeScript
-and production build pass. Browser cases cover both diagrams remaining visible
-at phone/desktop widths, both themes, cycle/pause/reduced-motion behavior and
-exact artwork equality with the catalogue. Two earlier browser attempts failed
-on asynchronous pause settlement and reading a catalogue query before it loaded;
-those test timing issues were corrected and the final complete Home file passes.
-The initial SVG-size and blue self-referencing color issues caught during visual
-inspection are fixed. A fresh independent finish review reports SHIP for this
-scoped backdrop from four settled desktop/phone light/dark captures and source;
-it does not claim whole-product or model competence. Mechanical scan: 0 findings.
-The local 8080 app serves the new build. This task did not reset user data, restart
-the app or make provider calls. Hosted CI on the next publication remains pending.
+This iteration passes all 164 frontend units (including closed street routes and
+building-dwell timing), all 12 Home browser cases, full frontend lint, forced
+TypeScript and production build. Browser checks observe native SVG time and agent
+transforms, reduced-motion/offscreen freezing and resume, all fourteen marks,
+center coverage, no horizontal overflow and exact catalogue geometry. Shared
+EnvironmentMark honors explicit size; default catalogue sizing stays 40px.
+
+Fresh independent Impeccable finish review: SHIP, no material findings. It reviewed
+four settled light/dark desktop/phone captures and current source. Desktop viewport
+was 1440×900 CSS (preview downsampled PNGs to1280×800); phone was390×844 CSS at2×.
+Native motion behavior is qualified by browser checks rather than the still captures.
+Mechanical detector: zero findings. The prior paired-world CSS and container-query
+classes are removed. The local 8080 app serves the new build. No user-data reset,
+provider call or app restart occurred. Hosted CI remains pending publication.
 
 The cleanup removes two confirmed unused frontend modules and consolidates49
 superseded documents into the compact historical report. Current guides and links

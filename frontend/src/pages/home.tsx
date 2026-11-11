@@ -104,7 +104,7 @@ export default function Home() {
       >
         <div
           data-slot="home-backdrop"
-          className="@container relative col-start-1 row-start-1 row-end-3 overflow-hidden border-b"
+          className="relative col-start-1 row-start-1 row-end-3 overflow-hidden border-b"
         >
           <HomeEnvironments />
         </div>

@@ -1,5 +1,4 @@
 import type { EnvironmentId } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
 // Fixed 9×9 identities: pooled contributions, paired transfers, dependency steps,
 // authority, negotiation, private signals, replenishment and modular resources.
@@ -179,11 +178,9 @@ const paths = Object.fromEntries(
 /** Decorative brand artwork, never a replacement for the environment's name. */
 export function EnvironmentMark({
   environment,
-  className,
   size = 40,
 }: {
   environment: EnvironmentId;
-  className?: string;
   size?: number;
 }) {
   return (
@@ -192,7 +189,7 @@ export function EnvironmentMark({
       viewBox="-3 -3 43 43"
       width={size}
       height={size}
-      className={cn("size-10 shrink-0", className)}
+      className="shrink-0"
       data-environment={environment}
     >
       <path d={paths[environment][0]} className="fill-muted-foreground/15" />

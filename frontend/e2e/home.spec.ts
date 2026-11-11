@@ -91,76 +91,75 @@ test("Home keeps immediate content usable while only database rows show skeleton
   await expect(page).toHaveURL(/\/studies$/);
 });
 
-test("Home changes shared environment artwork only while visible and motion is enabled", async ({
+test("Home traffic follows the native clock and pauses offscreen or with reduced motion", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 480 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const backdrop = page.locator(".home-environments");
-  const worlds = backdrop.locator(".home-environment-world");
   const clock = () =>
-    worlds.evaluateAll(async (elements) => {
-      const animations = elements.flatMap((element) => element.getAnimations());
-      await Promise.all(animations.map((animation) => animation.ready));
-      return animations.map((animation) => animation.currentTime);
+    backdrop.evaluate((element) => {
+      const svg = element as SVGSVGElement;
+      return {
+        time: svg.getCurrentTime(),
+        paused: svg.animationsPaused(),
+        positions: [
+          ...svg.querySelectorAll<SVGGElement>(".home-map-agent"),
+        ].map((agent) => {
+          const matrix = agent.getCTM();
+          return [matrix?.e, matrix?.f];
+        }),
+      };
     });
   await expect(
     page.getByRole("link", { name: "Configure a provider", exact: true }),
   ).toBeVisible();
   await expect(backdrop).toHaveAttribute("aria-hidden", "true");
   await expect(backdrop).toHaveAttribute("data-paused", "true");
-  await expect(worlds.first()).toHaveCSS("opacity", "1");
-  await expect(worlds.nth(1)).toHaveCSS("opacity", "0");
-  expect(
-    await worlds.evaluateAll((elements) =>
-      elements.every(
-        (element) =>
-          getComputedStyle(element).getPropertyValue("--primary").trim() !== "",
-      ),
-    ),
-  ).toBe(true);
-  expect(await clock()).toEqual([]);
+  await expect(backdrop.locator("[data-environment]")).toHaveCount(14);
+  const frozen = await clock();
+  expect(frozen.paused).toBe(true);
+  await page.waitForTimeout(300);
+  expect(await clock()).toEqual(frozen);
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await expect(backdrop).toHaveAttribute("data-paused", "false");
   const started = await clock();
-  expect(started).toHaveLength(4);
-  await expect.poll(clock).not.toEqual(started);
-  // Seek the real CSS timeline to the next world without waiting a full cycle.
-  await worlds.evaluateAll((elements) => {
-    for (const element of elements)
-      for (const animation of element.getAnimations())
-        animation.currentTime = 12_000;
-  });
-  await expect(worlds.nth(1)).toHaveCSS("opacity", "1");
-  await expect(worlds.first()).toHaveCSS("opacity", "0");
+  expect(started.paused).toBe(false);
+  await expect
+    .poll(async () => (await clock()).time)
+    .toBeGreaterThan(started.time);
+  await expect
+    .poll(async () => (await clock()).positions)
+    .not.toEqual(started.positions);
   const exchangeArtwork = await backdrop
-    .locator('[data-world="exchange"] [data-environment="trust_exchange"]')
-    .first()
-    .locator("path")
+    .locator('[data-environment="trust_exchange"] path')
     .evaluateAll((paths) => paths.map((path) => path.getAttribute("d")));
   await page
     .getByRole("region", { name: "Recent experiments" })
     .scrollIntoViewIfNeeded();
   await expect(backdrop).toHaveAttribute("data-paused", "true");
   const offscreen = await clock();
-  await page.waitForTimeout(900);
+  await page.waitForTimeout(300);
   expect(await clock()).toEqual(offscreen);
   await backdrop.scrollIntoViewIfNeeded();
   await expect(backdrop).toHaveAttribute("data-paused", "false");
-  await expect.poll(clock).not.toEqual(offscreen);
+  await expect
+    .poll(async () => (await clock()).time)
+    .toBeGreaterThan(offscreen.time);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(backdrop).toHaveAttribute("data-paused", "true");
-  await expect(worlds.first()).toHaveCSS("opacity", "1");
-  expect(await clock()).toEqual([]);
+  const stopped = await clock();
+  expect(stopped.paused).toBe(true);
+  await page.waitForTimeout(300);
+  expect(await clock()).toEqual(stopped);
   await page.goto("/environments");
   await expect(
     page.locator('[data-environment="trust_exchange"]'),
   ).toBeVisible();
   expect(
     await page
-      .locator('[data-environment="trust_exchange"]')
-      .locator("path")
+      .locator('[data-environment="trust_exchange"] path')
       .evaluateAll((paths) => paths.map((path) => path.getAttribute("d"))),
   ).toEqual(exchangeArtwork);
 });
@@ -592,25 +591,30 @@ for (const width of [390, 1440])
       const backdrop = page.locator(".home-environments");
       await expect(backdrop).toHaveAttribute("aria-hidden", "true");
       await expect(backdrop).toHaveCSS("pointer-events", "none");
-      expect(
-        await backdrop.locator("[data-environment]").count(),
-      ).toBeGreaterThan(0);
-      const framed = await backdrop.evaluate((element) => {
+      await expect(backdrop.locator("[data-environment]")).toHaveCount(14);
+      const coverage = await backdrop.evaluate((element) => {
         const field = element.getBoundingClientRect();
-        const diagrams = element.querySelectorAll(
-          ".home-environment-world:first-child [data-environment]",
-        );
-        return [...diagrams].map((diagram) => {
-          const bounds = diagram.getBoundingClientRect();
-          return (
-            bounds.right > field.left &&
-            bounds.left < field.right &&
-            bounds.bottom > field.top &&
-            bounds.top < field.bottom
+        const buildings = [...element.querySelectorAll("[data-environment]")];
+        const visible = buildings
+          .map((building) => building.getBoundingClientRect())
+          .filter(
+            (bounds) =>
+              bounds.right > field.left &&
+              bounds.left < field.right &&
+              bounds.bottom > field.top &&
+              bounds.top < field.bottom,
           );
-        });
+        return {
+          visible: visible.length,
+          center: visible.some(
+            (bounds) =>
+              bounds.right > field.left + field.width * 0.35 &&
+              bounds.left < field.left + field.width * 0.65,
+          ),
+        };
       });
-      expect(framed).toEqual([true, true]);
+      expect(coverage.visible).toBeGreaterThanOrEqual(3);
+      expect(coverage.center).toBe(true);
       const draftToggle = draftSection.getByRole("button", {
         name: "Drafts",
         exact: true,
@@ -759,10 +763,15 @@ for (const width of [390, 1440])
       });
       await page.mouse.move(0, 0);
       await page.emulateMedia({ reducedMotion: "reduce" });
-      await expect(page.locator(".home-environment-world").first()).toHaveCSS(
-        "animation-name",
-        "none",
+      await expect(page.locator(".home-environments")).toHaveAttribute(
+        "data-paused",
+        "true",
       );
+      expect(
+        await page
+          .locator(".home-environments")
+          .evaluate((element) => (element as SVGSVGElement).animationsPaused()),
+      ).toBe(true);
       await page.screenshot({
         path: testInfo.outputPath(`home-${theme}-${width}.png`),
         fullPage: true,
