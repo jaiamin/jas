@@ -26,7 +26,8 @@ def test_streamed_prose_precedes_completion_and_preserves_validation_and_cost(
         )
         yield {
             0: DeltaToolCall(
-                json_args=f' seeds share randomization.","citations":{citations},"caveats":[]}}'
+                json_args=f' seeds share randomization.","citations":{citations},'
+                '"caveats":[],"propose_experiment":false}'
             )
         }
 

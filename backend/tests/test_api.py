@@ -353,7 +353,10 @@ def test_chat_events_deliver_partial_and_final_records_without_resubmission(clie
         yield {0: DeltaToolCall(name=info.output_tools[0].name, json_args='{"answer":"Matched')}
         await asyncio.wait_for(partial_observed.wait(), timeout=5)
         yield {
-            0: DeltaToolCall(json_args=' seeds share randomization.","citations":[],"caveats":[]}')
+            0: DeltaToolCall(
+                json_args=' seeds share randomization.","citations":[],"caveats":[],'
+                '"propose_experiment":false}'
+            )
         }
 
     monkeypatch.setattr(

@@ -312,6 +312,7 @@ def build_run(environment, seed, count, rounds, public=False):
             instructions=INSTRUCTIONS,
             prompt=prompt,
             schema=schema,
+            strict_output=None,
             web_search=False,
             settings=dict(max_tokens=512, timeout=90, openai_reasoning_effort="low"),
             price_per_million=[0.1, 0.5],
@@ -479,7 +480,7 @@ def build_run(environment, seed, count, rounds, public=False):
 
 def freeze():
     value = {
-        "version": 6,
+        "version": 7,
         "split": "DEVELOPMENT",
         "historical_comparison": False,
         "authorship": (
@@ -523,7 +524,7 @@ def freeze():
             turn["provider_tool"] = {
                 "name": "final_result",
                 "description": "The final response which ends this conversation",
-                "strict": True,
+                "strict": None,
                 "schema": schema,
             }
     return value

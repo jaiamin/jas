@@ -25,6 +25,8 @@ def client(tmp_path):
 def scripted(client, monkeypatch, respond):
     async def function(messages, info):
         payload = respond(json.loads(messages[-1].parts[0].content))
+        if "propose_experiment" in info.output_tools[0].parameters_json_schema["properties"]:
+            payload = {"propose_experiment": False, **payload}
         return ModelResponse(
             parts=[ToolCallPart(info.output_tools[0].name, payload)],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -33,6 +35,8 @@ def scripted(client, monkeypatch, respond):
     async def stream(messages, info):
         prompt = json.loads(messages[-1].parts[0].content)
         payload = respond(prompt)
+        if "propose_experiment" in info.output_tools[0].parameters_json_schema["properties"]:
+            payload = {"propose_experiment": False, **payload}
         yield {0: DeltaToolCall(name=info.output_tools[0].name, json_args=json.dumps(payload))}
 
     monkeypatch.setattr(
@@ -152,9 +156,7 @@ def test_general_catalog_supplies_usable_lookup_ids(client, monkeypatch):
             entry = next(e for e in prompt["environments"] if "bargain" in e["name"].casefold())
             return answer(
                 "Inspect the supplied bargaining entry.",
-                requests=[
-                    {"kind": "capabilities", "environment": entry.get("key", entry["name"])}
-                ],
+                requests=[{"kind": "capabilities", "environment": entry.get("key", entry["name"])}],
             )
         operation = operations[0]
         return answer(
@@ -428,7 +430,7 @@ def test_operation_results_reach_planner_without_replacing_the_original_question
     question = "Design an experiment about collateralized loans; keep the actual loan mechanic."
 
     def respond(prompt):
-        if "design_schema" in prompt:
+        if "research_operations" in prompt:
             assert prompt["question"] == question
             assert prompt["research_operations"]["operations"][0]["data"]["environments"]
             return {
@@ -476,6 +478,7 @@ def test_auxiliary_provider_failure_keeps_prior_operation_and_unknown_charge(cli
                 json_args=json.dumps(
                     answer(
                         "Inspect mechanics.",
+                        propose_experiment=False,
                         requests=[{"kind": "capabilities", "environment": "commons"}],
                     )
                 ),
@@ -646,6 +649,7 @@ def test_pending_operation_results_survive_reconnect_without_duplicate_work(clie
             entered.set()
             assert await asyncio.to_thread(release.wait, 5)
             payload = answer("The copied catalog supports sealed contributions.")
+        payload["propose_experiment"] = False
         yield {0: DeltaToolCall(name=info.output_tools[0].name, json_args=json.dumps(payload))}
 
     monkeypatch.setattr(
@@ -695,6 +699,7 @@ def test_restart_keeps_interrupted_auxiliary_request_and_artifact_without_resubm
                 json_args=json.dumps(
                     answer(
                         "Inspect trusted mechanics.",
+                        propose_experiment=False,
                         requests=[{"kind": "capabilities", "environment": "information"}],
                     )
                 ),

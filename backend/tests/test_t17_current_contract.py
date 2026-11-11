@@ -118,6 +118,7 @@ def test_literal_current_contract_five_runs_22_complete_inputs_ledgers_restore_a
             "instructions",
             "prompt",
             "schema",
+            "strict_output",
             "web_search",
             "settings",
             "price_per_million",
@@ -127,6 +128,7 @@ def test_literal_current_contract_five_runs_22_complete_inputs_ledgers_restore_a
         assert payload["instructions"] == oracle["instructions"]
         assert json.loads(payload["prompt"]) == expected["observation"]
         assert payload["schema"] == expected["schema"]
+        assert payload["strict_output"] is None
         assert payload["web_search"] is False
         assert payload["settings"] == oracle["settings"]
         assert payload["price_per_million"] == [0.1, 0.5]

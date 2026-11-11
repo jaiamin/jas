@@ -19,7 +19,10 @@ def test_chats_persist_followups_isolate_contexts_and_keep_proposals_reviewable(
     async def generate(output, **kwargs):
         prompts.append(json.loads(kwargs["prompt"]))
         return GeneralResponse(
-            answer="A matched seed shares an initial randomization.", citations=[], caveats=[]
+            answer="A matched seed shares an initial randomization.",
+            citations=[],
+            caveats=[],
+            propose_experiment=False,
         )
 
     async def plan(_planner, key, question, conversation):

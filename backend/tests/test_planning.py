@@ -1,7 +1,147 @@
 import asyncio
+import json
 
 import pytest
 from agent_sim.validity import Requirement
+
+
+def test_completed_team_probes_fit_final_review_without_losing_evidence(runtime, monkeypatch):
+    from copy import deepcopy
+
+    from agent_sim.assistants import Assistants
+    from agent_sim.domain import DesignSpec
+    from agent_sim.planning import Candidate, DesignReview, StudyBrief
+    from agent_sim.templates import templates
+    from pydantic_ai.messages import ModelResponse, ToolCallPart
+    from pydantic_ai.models.function import FunctionModel
+    from pydantic_ai.usage import RequestUsage
+
+    db, llm, research, _ = runtime
+    question = (
+        "Does delayed private communication make a three-agent team choose before "
+        "combining everyone’s evidence?"
+    )
+    design = deepcopy(
+        next(t["design"] for t in templates() if t["id"] == "distributed_coordination")
+    )
+    assert isinstance(design, dict)
+    design.update(question=question, seeds=[17, 83, 241], repetitions=2, rounds=10)
+    design["context"] = (
+        "You are working with two other participants to choose among Cedar, Quartz and Reed. "
+        "Your own record lists the value you receive for each option. Other participants may "
+        "hold different values. Each participant selects independently, and the selections "
+        "determine the result under the rules you can inspect. You may exchange private messages "
+        "along the available routes and read the artifacts you are permitted to access. Messages "
+        "become available after the configured delay. Decide what to share, which records to "
+        "inspect and when to commit your choice. The shared draft can be edited by participants "
+        "with write permission. Messages are statements by their senders; receiving a statement "
+        "does not verify its accuracy. A participant's independent choice remains that "
+        "participant's decision. Your current legal actions and their constraints are shown "
+        "at every opportunity. You may wait while messages are pending or choose with the "
+        "evidence currently available to you."
+    )
+    baseline = design["conditions"][0]
+    design["conditions"] = [
+        {**deepcopy(baseline), "key": "short_delay", "name": "Short delay"},
+        {**deepcopy(baseline), "key": "long_delay", "name": "Long delay"},
+    ]
+    for condition, delay in zip(design["conditions"], [1, 4], strict=True):
+        assert isinstance(condition["parameters"], dict)
+        condition["parameters"]["coordination"]["delivery_delay"] = delay
+    actors = ["iris", "moss", "vale"]
+    probes = [
+        {
+            "condition_key": condition["key"],
+            "steps": [
+                *[
+                    {
+                        "actor": actor,
+                        "action": {
+                            "kind": "send_message",
+                            "recipient": actors[(i + 1) % 3],
+                            "text": "I propose comparing our local value evidence before choosing.",
+                        },
+                    }
+                    for i, actor in enumerate(actors)
+                ],
+                *[
+                    {
+                        "actor": actor,
+                        "action": {"kind": "choose_alternative", "alternative": "cedar"},
+                    }
+                    for actor in actors
+                ],
+            ],
+        }
+        for condition in design["conditions"]
+    ]
+    brief = StudyBrief(
+        supported=True,
+        explanation="Compare short and delayed private messages.",
+        operationalization="Compare choice values and actual delivered evidence.",
+        size_rationale="Three seeds with matched repeated model trials form a descriptive pilot.",
+        agents=3,
+        conditions=2,
+        seeds=3,
+        repetitions=2,
+        rounds=10,
+        research_query=None,
+        requirements=[
+            Requirement(
+                source="everyone's evidence",
+                capability="distributed_information",
+                mapping="direct",
+                explanation="Directed private messages have an explicit logical delivery delay.",
+            )
+        ],
+    )
+    outputs = [
+        brief,
+        Candidate(
+            explanation="Change only the delivery delay.",
+            design=DesignSpec.model_validate(design),
+            probes=probes,
+        ),
+        DesignReview(issues=[], summary="Compare message delay and joint choice quality."),
+    ]
+    prompts = []
+
+    async def respond(messages, info):
+        prompts.append(json.loads(messages[-1].parts[0].content))
+        return ModelResponse(
+            parts=[ToolCallPart(info.output_tools[0].name, outputs[len(prompts) - 1].model_dump())],
+            usage=RequestUsage(input_tokens=120, output_tokens=30),
+        )
+
+    monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=respond))
+
+    async def exercise():
+        assistant = Assistants(db, research, llm)
+        try:
+            pending = await assistant.send(question, "new")
+            await assistant.tasks[pending["id"]]
+            result = assistant.get(pending["id"])
+            assert result["status"] == "complete", result["error"]
+            assert len(prompts) == result["usage"]["requests"] == 3
+            assert prompts[-1]["question"] == question
+            assert prompts[-1]["candidate"]["design"] == result["output"]["design"]
+            retained = result["output"]["research"]["operations"]
+            reviewed = prompts[-1]["research_operations"]["operations"]
+            for operation in retained:
+                sent = next(op for op in reviewed if op["id"] == operation["id"])
+                if operation["request"]["kind"] == "probe":
+                    assert sent == operation  # Full observations/actions/consequences survive.
+                    assert len(operation["data"]["steps"]) == 6
+                else:
+                    assert len(operation["data"]["environments"]) > 1
+                    assert [env["key"] for env in sent["data"]["environments"]] == [
+                        "distributed_coordination"
+                    ]
+            assert research.studies() == []
+        finally:
+            await assistant.close()
+
+    asyncio.run(exercise())
 
 
 def test_planner_reviews_and_repairs_design_before_returning(runtime, design, monkeypatch):
@@ -88,7 +228,10 @@ def test_planner_reviews_and_repairs_design_before_returning(runtime, design, mo
     with db.session() as session:
         activity = session.get_one(Analysis, key).output["activity"]
     assert activity.index("checking") < activity.index("reviewing")
-    assert "role" in prompts[0]["design_schema"]["$defs"]["Profile"]["properties"]
+    assert "design_schema" not in prompts[0] and "rule_examples" not in prompts[0]
+    discovery = prompts[0]["research_operations"]["operations"][0]["data"]["environments"]
+    assert all(env["source"]["definition"]["examples"] for env in discovery)
+    assert all("template_parameters" in env for env in discovery)
     assert "events" in prompts[0]["evidence"]
     assert research.studies() == []
 

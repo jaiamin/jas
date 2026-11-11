@@ -1,6 +1,6 @@
 # JAS handoff
 
-2026-11-10. ROOT owns `integration/research-harness` in this checkout.
+2026-11-11. ROOT owns `fix/agent-protocol-maps` in this checkout.
 The [merge-readiness repair report](docs/research/MERGE_READINESS_FIXES.md) and
 [repair verification](docs/research/MERGE_READINESS_VERIFICATION.json) supersede
 the earlier partial-suite merge gate. Complete local qualification at `885f3846`
@@ -12,6 +12,74 @@ closed local research captures. Earlier source and documentary history remain
 in Git; retired raw evidence cannot be independently reread.
 
 ## Current state
+
+
+2026-11-11 Agent creation/input-limit follow-up: see
+[the live-check report](docs/research/AGENT_CREATION_LIVE_CHECKS.md). Review discovery is scoped
+without losing original results or probes; scoping/drafting/review contracts and general-chat
+handoff are explicit. Closed records use strict output; dynamic protocol maps retain automatic
+selection. Original failing draft replay passes without raising the180,000-byte limit. Related
+146 cases plus10 reference cases pass at their recorded sources; subsequent focused51/49 pass
+after stage/answer refinements. Whole Ruff/globalty and changed-file formatting pass.
+
+Real Haiku4.5 diagnosis used73 requests/$2.002530 under a final$3 test ceiling, with no unknown
+usage or participant calls. Short bargaining, detailed two-condition bargaining and the original
+three-agent delay question reached valid drafts/save/export; browser review/save/reload passed.
+Earlier failures remain failures. Generated explanations still contain scientific/measurement
+limitations; this is workflow qualification, not a content-accuracy benchmark. All test services
+and the incognito tab are closed;18143 reusable. The closed own live DB is losslessly archived
+with `.tools/agent-context/anthropic/restoration.json`; complete request/cost evidence retained.
+Current-contract v7 changes only strict-selection metadata, independently checked. The idle user
+app was refreshed at PID593169: exact public study/run/chat hashes, usage and database inode
+match before/after; no failed request was replayed. Receipt:
+`.tools/agent-context/user-refresh/receipt.json`. Hosted CI remains the merge gate for PR33.
+
+Hosted CI on `a6200c9` completed1840 backend cases and exposed two stale fixtures:
+streamed general output omitted required `propose_experiment=false`, and T17's exact
+request-key assertion omitted recorded `strict_output=null`. Both reproduced locally before
+fixture-only correction. The existing streaming/accounting assertions and literal T17 oracle
+remain intact. API/T17/T18/streaming/real-adapter groups now pass62 cases; affected Ruff and
+formatting pass. Logs: `.tools/agent-context/ci-a6200c9-{failed,red,green}.log`.
+No application change, refresh, install or paid call occurred in this CI correction.
+
+### Prior map repair
+
+2026-11-11 Agent drafting repair: the two user-reported failures in chat
+`4da5af4520144a69` ended normally below their output allowance. Both retained
+responses contained empty artifact-content and participant-information maps;
+each failed local validation on the same18 missing-map errors. The real OpenAI
+adapter regression reproduced forced `ToolOutput(strict=True)` removing
+`patternProperties` and closing those maps to empty objects. Automatic schema
+selection preserves their keys and bounds. Local typed/domain validation,
+one-request limits, reservation/settlement and the no-retry policy remain intact.
+Official references: [Pydantic AI output](https://ai.pydantic.dev/output/) and
+[OpenAI function calling](https://developers.openai.com/api/docs/guides/function-calling/#strict-mode).
+
+Verification in `.tools/agent-drafting/`:148 distinct affected backend cases pass
+across the recorded groups, including5 real-adapter/public-HTTP regressions for
+both direct creation and streamed general-chat handoff. Invalid output remains
+blocked and billed correctly; explicit same-chat follow-up succeeds without
+rewriting the failed attempt. Two existing real browser creation flows pass
+(light desktop/dark phone), including reconnect, editing and call-free saving.
+Whole Ruff and global ty pass. No paid/live call or participant sample occurred.
+The scoped checks do not establish live drafting reliability for all questions.
+
+The hosted backend run at `fcd8506d` passed 1831 cases but failed one restart test:
+the parent could kill its child between readiness-file creation and completed
+JSON writing. The fixture now atomically publishes that signal; both restart
+boundaries and its investigation gate pass without weakening any assertion.
+Hosted checks on the repair commit remain the merge gate.
+PR32 was already squash-merged at `a7390924` before this bug report. Its source
+tree exactly matches `fcd8506d`; the repair is a separate follow-up branch based
+on that current `main`. The tested production and regression sources are
+byte-identical after transfer. No PR merge or shared-history rewrite was done.
+
+The local app was refreshed at PID578290. The database inode, full public
+study/run/chat hashes and usage match before/after exactly; failed requests were
+not replayed. Receipt: `.tools/agent-drafting/live-refresh/receipt.json`.
+The refresh observed27,254,784→30,822,400 shared/unreserved free bytes; the earlier
+historical disk margin is still not claimed. Its bounded local preflight was8MiB.
+Browser test server18142 is closed. Preserve the running user app on8080.
 
 2026-11-11 Home background replacement: use the user's second city GIF as
 `frontend/public/illustrations/city.gif`, with `city.webp` as its reduced-motion

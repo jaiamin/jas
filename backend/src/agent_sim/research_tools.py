@@ -158,14 +158,14 @@ class ResearchTools:
         self.record["operations"].append(operation)
         return operation
 
-    def prompt_record(self) -> dict:
-        """Bound repeated discovery inputs without rewriting any retained operation."""
+    def prompt_record(self, *, environment: str | None = None) -> dict:
+        """Scope discovery for review; retain complete probes and original operation records."""
         latest = {}
         for operation in self.record["operations"]:
             request = operation["request"]
             if request["kind"] == "capabilities" and operation["status"] == "complete":
                 latest[request.get("environment")] = operation["id"]
-        return {
+        record: dict = {
             **self.record,
             "operations": [
                 {
@@ -183,6 +183,38 @@ class ResearchTools:
                 for operation in self.record["operations"]
             ],
         }
+        if environment is not None:
+            for index, operation in enumerate(record["operations"]):
+                data = operation["data"]
+                if (
+                    operation["request"]["kind"] == "capabilities"
+                    and operation["status"] == "complete"
+                    and isinstance(data, dict)
+                    and "environments" in data
+                ):
+                    environments = data["environments"]
+                    custom_environments = data["custom_environments"]
+                    assert isinstance(environments, list) and isinstance(custom_environments, list)
+                    record["operations"][index] = {
+                        **operation,
+                        "data": {
+                            **data,
+                            "environments": [
+                                entry for entry in environments if entry["key"] == environment
+                            ],
+                            "custom_environments": [
+                                source
+                                for source in custom_environments
+                                if source["definition"]["environment"] == environment
+                            ],
+                            "catalog_scope": {
+                                "environment": environment,
+                                "full_result_retained": True,
+                                "sha256": digest(data),
+                            },
+                        },
+                    }
+        return record
 
     def dispatch(
         self,

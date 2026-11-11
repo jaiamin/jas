@@ -152,6 +152,7 @@ class LanguageModels:
         turn: int | None = None,
         openai_reasoning_effort: Literal["low", "medium", "high"] | None = None,
         web_search: bool = False,
+        strict_output: bool | None = None,
         on_partial: Callable[[dict], None] | None = None,
         input_evidence: dict | None = None,
         on_reserved: Callable[[str], None] | None = None,
@@ -222,6 +223,7 @@ class LanguageModels:
                     "instructions": instructions,
                     "prompt": prompt,
                     "schema": schema,
+                    "strict_output": strict_output,
                     "web_search": web_search,
                     "settings": settings,
                     "price_per_million": [input_rate, output_rate],
@@ -244,7 +246,9 @@ class LanguageModels:
                     on_reserved(call.id)
                 agent = Agent(
                     model_object,
-                    output_type=str if web_search else ToolOutput(output, strict=True),
+                    # Dynamic maps need the adapter's schema selection. Only closed
+                    # records opt into strict mode; typed output always validates locally.
+                    output_type=str if web_search else ToolOutput(output, strict=strict_output),
                     capabilities=[NativeTool(WebSearchTool(search_context_size="low"))]
                     if web_search
                     else [],
