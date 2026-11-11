@@ -17,7 +17,7 @@ from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
 FIXTURE = Path(__file__).with_name("fixtures") / "t17_current_contract_v2.json"
-FIXTURE_SHA256 = "47d740d7b9745910eee63e6e0b23e1b9086c7de13f5c5c73657bd1b22242d7fd"
+FIXTURE_SHA256 = "3864f978694cbd293b0a6fdac0369f5c3a8d682f9ab8a2e2b4645b0e1d8188a2"
 
 
 def facts(event):
@@ -47,7 +47,7 @@ def test_literal_current_contract_five_runs_22_complete_inputs_ledgers_restore_a
         "input_tokens": 2200,
         "output_tokens": 1100,
         "charged": 770,
-        "reserved": 28231,
+        "reserved": 29062,
     }
     fixture_source = Path(__file__).resolve().parents[2] / oracle["source_cases"]
     assert hashlib.sha256(fixture_source.read_bytes()).hexdigest() == oracle["source_cases_sha256"]
@@ -284,7 +284,7 @@ def test_literal_current_contract_five_runs_22_complete_inputs_ledgers_restore_a
             assert sum(request["reserved"] for request in requests) == record["oracle"]["reserved"]
         assert (
             sum(request["reserved"] for value in exported.values() for request in value["requests"])
-            == 28231
+            == 29062
         )
         for sid, value in exported.items():
             (tmp_path / f"{sid}-export.json").write_text(json.dumps(value, indent=2))

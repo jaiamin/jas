@@ -31,7 +31,12 @@ Independent closed-ledger audit:521 unique settled calls,937294 microdollars
 ($0.937294), no pending/unknown; historical Haiku included. Reopened copies are
 ID-deduplicated; interrupted stages use their separate CLOSED reconciliation.
 All own18144 lifetimes and browser tabs are closed. Independent Standards/Spec reviews PASS with no actionable findings. Normal
-checkpoint `ed002924` passed Gitleaks; publication and hosted checks remain next.
+checkpoint `ed002924` passed Gitleaks. PR35's first hosted backend run at `959a813`
+reported 1845 passing cases and 10 failures from stale literal participant instructions.
+The CI follow-up updates only those instruction expectations and independent byte-based
+reservations; all observations, schemas, decisions, checkpoints, charges and replay
+assertions remain unchanged. All three contract groups pass locally (11 tests), as
+do whole Ruff/global ty. Hosted requalification remains pending after this correction.
 App8080 was refreshed after two identical idle guards: complete public state/usage
 and database inode unchanged. No failed user request was retried. Final seal and
 review receipts are in `.tools/platform-e2e/final-seal.json`.

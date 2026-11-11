@@ -235,3 +235,13 @@ the source-pin, final-source resampling and scientific limits above. The existin
 with unchanged full public-state hashes, usage and database inode. No user request
 was retried. Evaluation resources remain closed; the user app stays available.
 Local closure identities/assets and review receipts: `.tools/platform-e2e/final-seal.json`.
+
+PR35 CI at `959a813` exposed stale literal instruction expectations in three current
+contract groups: 10 failures, 1845 passing tests. The added communication guidance
+increases each request by 302 UTF-8 bytes. The follow-up amends only literal prompt
+text and independently calculated input bounds/reservations (T17 total reservation
+29062 microdollars; settled charges remain 770). Full observations, schemas, actions,
+checkpoints, privacy, integer settlements and zero-call replay expectations are
+unchanged. All 11 tests in those groups, whole Ruff and global ty pass locally.
+The original red and fixture-only delta audit remain under `.tools/platform-e2e/`;
+this does not supersede the earlier live source attribution or repeat paid work.
