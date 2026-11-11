@@ -244,7 +244,9 @@ class LanguageModels:
                     on_reserved(call.id)
                 agent = Agent(
                     model_object,
-                    output_type=str if web_search else ToolOutput(output, strict=True),
+                    # Forced strict mode closes dynamic maps to empty objects. Let the
+                    # adapter preserve the schema; typed output still validates locally.
+                    output_type=str if web_search else ToolOutput(output),
                     capabilities=[NativeTool(WebSearchTool(search_context_size="low"))]
                     if web_search
                     else [],

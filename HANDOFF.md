@@ -13,6 +13,39 @@ in Git; retired raw evidence cannot be independently reread.
 
 ## Current state
 
+2026-11-11 Agent drafting repair: the two user-reported failures in chat
+`4da5af4520144a69` ended normally below their output allowance. Both retained
+responses contained empty artifact-content and participant-information maps;
+each failed local validation on the same18 missing-map errors. The real OpenAI
+adapter regression reproduced forced `ToolOutput(strict=True)` removing
+`patternProperties` and closing those maps to empty objects. Automatic schema
+selection preserves their keys and bounds. Local typed/domain validation,
+one-request limits, reservation/settlement and the no-retry policy remain intact.
+Official references: [Pydantic AI output](https://ai.pydantic.dev/output/) and
+[OpenAI function calling](https://developers.openai.com/api/docs/guides/function-calling/#strict-mode).
+
+Verification in `.tools/agent-drafting/`:148 distinct affected backend cases pass
+across the recorded groups, including5 real-adapter/public-HTTP regressions for
+both direct creation and streamed general-chat handoff. Invalid output remains
+blocked and billed correctly; explicit same-chat follow-up succeeds without
+rewriting the failed attempt. Two existing real browser creation flows pass
+(light desktop/dark phone), including reconnect, editing and call-free saving.
+Whole Ruff and global ty pass. No paid/live call or participant sample occurred.
+The scoped checks do not establish live drafting reliability for all questions.
+
+The hosted backend run at `fcd8506d` passed1831 cases but failed one restart test:
+the parent could kill its child between readiness-file creation and completed
+JSON writing. The fixture now atomically publishes that signal; both restart
+boundaries and its investigation gate pass without weakening any assertion.
+Hosted checks on the repair commit remain the merge gate.
+
+The local app was refreshed at PID578290. The database inode, full public
+study/run/chat hashes and usage match before/after exactly; failed requests were
+not replayed. Receipt: `.tools/agent-drafting/live-refresh/receipt.json`.
+The refresh observed27,254,784→30,822,400 shared/unreserved free bytes; the earlier
+historical disk margin is still not claimed. Its bounded local preflight was8MiB.
+Browser test server18142 is closed. Preserve the running user app on8080.
+
 2026-11-11 Home background replacement: use the user's second city GIF as
 `frontend/public/illustrations/city.gif`, with `city.webp` as its reduced-motion
 still. Superseded GIF/poster, procedural map generator/component/tests and map-only

@@ -44,9 +44,15 @@ async def author(messages, info):
         "action": next(actions), "rationale": "Literal development action.",
         "memory": "", "forecast": None,
     })], usage=RequestUsage(input_tokens=101, output_tokens=37))
+def publish_ready():
+    # The parent kills this process as soon as the signal appears.
+    ready = Path(sys.argv[3])
+    pending = ready.with_suffix(".tmp")
+    pending.write_text(json.dumps({"run_id": run_id}))
+    pending.replace(ready)
 async def judge(messages, info):
     if sys.argv[4] == "inflight":
-        Path(sys.argv[3]).write_text(json.dumps({"run_id": run_id}))
+        publish_ready()
         await asyncio.Event().wait()
     return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, case["ruling"])],
                          usage=RequestUsage(input_tokens=41, output_tokens=19))
@@ -68,7 +74,7 @@ with TestClient(app, base_url="http://localhost") as client:
     study = client.get(f"/api/studies/{created.json()['id']}").json()
     run_id = study["runs"][0]["id"]
     if sys.argv[4] != "inflight":
-        Path(sys.argv[3]).write_text(json.dumps({"run_id": run_id}))
+        publish_ready()
     assert client.post(f"/api/runs/{run_id}/control", json={"action": "start"}).status_code == 200
     while True:
         time.sleep(0.02)
