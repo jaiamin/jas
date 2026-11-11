@@ -1,6 +1,6 @@
 # JAS handoff
 
-2026-11-11. ROOT owns `fix/agent-protocol-maps` in this checkout.
+2026-11-11. ROOT owns `fix/agent-revision-context` in this checkout.
 The [merge-readiness repair report](docs/research/MERGE_READINESS_FIXES.md) and
 [repair verification](docs/research/MERGE_READINESS_VERIFICATION.json) supersede
 the earlier partial-suite merge gate. Complete local qualification at `885f3846`
@@ -13,6 +13,41 @@ in Git; retired raw evidence cannot be independently reread.
 
 ## Current state
 
+PR33 is merged at `ce269cd6`. The user then reproduced the input-limit stop twice
+at the first protocol revision. The earlier review-only repair missed that path.
+The [live-check report](docs/research/AGENT_CREATION_LIVE_CHECKS.md#reopened-revision-context-overflow-2026-11-11)
+records the continuation. Both exact retained cases now complete on final-source replay;
+the larger revision is162,821 bytes instead of236,889, below the unchanged180,000-byte
+bound. Current probe evidence reconstructs exactly; complete original records remain
+retained. Zero/one/two-revision coverage and98 affected cases pass, with whole Ruff,
+globalty, formatting and diff checks. Prompts explain server-pinned provenance, preserve
+canonical output bounds and offer one existing bounded scope correction for inconsistent
+capability mappings. No provider retry, model substitution or validation relaxation.
+
+Fresh Haiku qualification is **NOT PASS**: seven dispatched cases/23 requests/$0.706613
+exposed invalid quotations, numeric/text bounds and false capability declines. A sixth
+numbered attempt stopped at disk preflight without dispatch. No new live draft reached
+validate/save/export. Final canonical-bound prompts are integration-tested but have no
+fresh live drafting success; latest real runs declined before drafting. Earlier successful
+live variety checks keep their earlier attribution. Total own Anthropic diagnosis is
+96 requests/$2.709143, below$3; known usage throughout, zero participant calls. Do not
+claim reliable creation for the original question or broad scientific competence.
+
+The idle user app was refreshed from PID593169 to642941. Database inode, all public
+study/run/chat hashes and usage match exactly; no failed request was replayed. Receipt:
+`.tools/agent-revision-limit/user-refresh/receipt.json`. Test services are closed and18143
+is reusable. Preserve the user's running8080 app. The new PR remains subject to hosted CI
+and unresolved live content qualification; do not call the whole Agent flow all-good.
+
+Own closed test families were losslessly archived with independent complete readback and
+restoration maps under `.tools/agent-revision-limit/`. Old live01's single-file archive
+stopped on sidecars; the later complete-family map explicitly preserves all sidecars too.
+Only superseded generated Home renders and4,271 own single-link CPython cache files were
+retired with metadata inventories. Package sources, lockfiles, assets, original recordings,
+shared caches, other worktrees and user data were preserved. Shared disk reached zero
+earlier; the historical134,217,728-byte floor is not claimed. Final refresh observed
+46,747,648→50,860,032 shared/unreserved free bytes. Hosted CI and live qualification
+remain open; no merge readiness is claimed.
 
 2026-11-11 Agent creation/input-limit follow-up: see
 [the live-check report](docs/research/AGENT_CREATION_LIVE_CHECKS.md). Review discovery is scoped

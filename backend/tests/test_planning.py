@@ -5,10 +5,14 @@ import pytest
 from agent_sim.validity import Requirement
 
 
-def test_completed_team_probes_fit_final_review_without_losing_evidence(runtime, monkeypatch):
+@pytest.mark.parametrize("revisions", [0, 1, 2])
+def test_completed_team_probes_fit_revisions_and_review_without_losing_evidence(
+    runtime, monkeypatch, revisions
+):
     from copy import deepcopy
 
     from agent_sim.assistants import Assistants
+    from agent_sim.db import digest
     from agent_sim.domain import DesignSpec
     from agent_sim.planning import Candidate, DesignReview, StudyBrief
     from agent_sim.templates import templates
@@ -26,6 +30,7 @@ def test_completed_team_probes_fit_final_review_without_losing_evidence(runtime,
     )
     assert isinstance(design, dict)
     design.update(question=question, seeds=[17, 83, 241], repetitions=2, rounds=10)
+    design["environment_source"] = None
     design["context"] = (
         "You are working with two other participants to choose among Cedar, Quartz and Reed. "
         "Your own record lists the value you receive for each option. Other participants may "
@@ -95,19 +100,39 @@ def test_completed_team_probes_fit_final_review_without_losing_evidence(runtime,
             )
         ],
     )
-    outputs = [
-        brief,
-        Candidate(
-            explanation="Change only the delivery delay.",
-            design=DesignSpec.model_validate(design),
-            probes=probes,
-        ),
-        DesignReview(issues=[], summary="Compare message delay and joint choice quality."),
-    ]
+    outputs = [brief]
+    for attempt in range(revisions + 1):
+        draft = deepcopy(design)
+        # A different witness for the same design, then a revised delay configuration.
+        draft["conditions"][1]["parameters"]["coordination"]["delivery_delay"] = (
+            5 if attempt == 2 else 4
+        )
+        witnesses: list[dict] = deepcopy(probes)
+        for witness in witnesses:
+            witness["steps"][0]["action"]["text"] += f" Witness {attempt}."
+        outputs.extend(
+            [
+                Candidate(
+                    explanation="Change only the delivery delay.",
+                    design=DesignSpec.model_validate(draft),
+                    probes=witnesses,
+                ),
+                DesignReview(
+                    issues=["Clarify terminal censoring of unavailable messages."]
+                    if attempt < revisions
+                    else [],
+                    summary="Compare message delay and joint choice quality.",
+                ),
+            ]
+        )
     prompts = []
 
     async def respond(messages, info):
         prompts.append(json.loads(messages[-1].parts[0].content))
+        if info.output_tools[0].parameters_json_schema.get("title") == "Candidate":
+            limits = prompts[-1]["output_constraints"]
+            assert limits["properties"]["explanation"]["maxLength"] == 2000
+            assert limits["$defs"]["DesignSpec"]["properties"]["title"]["maxLength"] == 100
         return ModelResponse(
             parts=[ToolCallPart(info.output_tools[0].name, outputs[len(prompts) - 1].model_dump())],
             usage=RequestUsage(input_tokens=120, output_tokens=30),
@@ -122,21 +147,53 @@ def test_completed_team_probes_fit_final_review_without_losing_evidence(runtime,
             await assistant.tasks[pending["id"]]
             result = assistant.get(pending["id"])
             assert result["status"] == "complete", result["error"]
-            assert len(prompts) == result["usage"]["requests"] == 3
+            assert len(prompts) == result["usage"]["requests"] == 3 + 2 * revisions
             assert prompts[-1]["question"] == question
             assert prompts[-1]["candidate"]["design"] == result["output"]["design"]
             retained = result["output"]["research"]["operations"]
             reviewed = prompts[-1]["research_operations"]["operations"]
+
+            def expand(value):
+                if isinstance(value, dict):
+                    if set(value) == {"shared_probe_input"}:
+                        return prompts[-1]["research_operations"]["shared_probe_inputs"][
+                            value["shared_probe_input"]
+                        ]
+                    return {key: expand(item) for key, item in value.items()}
+                if isinstance(value, list):
+                    return [expand(item) for item in value]
+                return value
+
+            assert len(retained) == 3 + 2 * revisions
+            assert prompts[-1]["source_validation"] == {
+                "builtin_source_pinned": True,
+                "sha256": result["output"]["design"]["environment_source"]["sha256"],
+            }
+            current_probes = [op["id"] for op in retained[-2:]]
             for operation in retained:
                 sent = next(op for op in reviewed if op["id"] == operation["id"])
                 if operation["request"]["kind"] == "probe":
-                    assert sent == operation  # Full observations/actions/consequences survive.
                     assert len(operation["data"]["steps"]) == 6
+                    if operation["id"] in current_probes:
+                        assert expand(sent) == operation  # Full current evidence survives.
+                    else:
+                        assert sent == {
+                            **operation,
+                            "data": {
+                                "full_result_retained": True,
+                                "sha256": digest(operation["data"]),
+                                "omitted_reason": "superseded_candidate_probe",
+                            },
+                        }
                 else:
                     assert len(operation["data"]["environments"]) > 1
                     assert [env["key"] for env in sent["data"]["environments"]] == [
                         "distributed_coordination"
                     ]
+            for prompt in prompts[3::2]:
+                assert [entry["key"] for entry in prompt["rule_examples"]] == [
+                    "distributed_coordination"
+                ]
             assert research.studies() == []
         finally:
             await assistant.close()
@@ -379,7 +436,7 @@ def test_planner_validates_revised_capability_and_counts(runtime, design, monkey
     assert research.studies() == []
 
 
-@pytest.mark.parametrize("repair", [True, False])
+@pytest.mark.parametrize("repair", [True, False, "verbatim"])
 @pytest.mark.parametrize("invalid_source", ["Paraphrased request", None])
 def test_scoping_quote_repair_is_bounded_and_retains_review_evidence(
     runtime, design, monkeypatch, repair, invalid_source
@@ -405,6 +462,8 @@ def test_scoping_quote_repair_is_bounded_and_retains_review_evidence(
         if output is StudyBrief:
             scopes += 1
             source = "“COMPARE cooperation”" if scopes == 2 and repair else invalid_source
+            if scopes == 2 and repair == "verbatim":
+                source = prompts[-1]["scope_feedback"].get("verbatim_source_option", invalid_source)
             return StudyBrief(
                 supported=True,
                 explanation="Pilot",
@@ -562,6 +621,77 @@ def test_direct_unavailable_mapping_gets_one_correction_and_never_a_false_declin
         with db.session() as session:
             assert len(session.get_one(Analysis, key).output["planning"]["reviews"]) == 2
     assert scopes == 2
+
+
+@pytest.mark.parametrize("repair", [True, False])
+def test_incompatible_direct_capabilities_get_one_scope_correction(runtime, monkeypatch, repair):
+    from agent_sim.db import Analysis
+    from agent_sim.domain import DesignSpec
+    from agent_sim.planning import Candidate, DesignReview, Planner, StudyBrief
+    from agent_sim.templates import templates
+
+    db, models, research, _ = runtime
+    design = DesignSpec.model_validate(
+        next(t["design"] for t in templates() if t["id"] == "distributed_coordination")
+    )
+    question = "Compare delayed private communication before combining everyone's evidence"
+    brief = StudyBrief(
+        supported=True,
+        explanation="Compare message timing.",
+        operationalization="Recorded choices and delivered evidence.",
+        size_rationale="Matched descriptive pilot.",
+        research_query=None,
+        agents=len(design.profiles),
+        conditions=len(design.conditions),
+        seeds=len(design.seeds),
+        repetitions=design.repetitions,
+        rounds=design.rounds,
+        requirements=[
+            Requirement(
+                source="delayed private communication",
+                capability="distributed_information",
+                mapping="direct",
+                explanation="Private artifacts and addressed logical-time mail.",
+            )
+        ],
+    )
+    invalid = brief.model_copy(deep=True)
+    invalid.requirements.append(
+        Requirement(
+            source="combining everyone's evidence",
+            capability="signal_disclosure",
+            mapping="direct",
+            explanation="Incorrectly equating artifact evidence with synthetic signals.",
+        )
+    )
+    scopes = 0
+
+    async def generate(output, **kwargs):
+        nonlocal scopes
+        if output is StudyBrief:
+            scopes += 1
+            if scopes == 2:
+                prompt = json.loads(kwargs["prompt"])
+                gaps = prompt["scope_feedback"]["capability_gaps"]["distributed_coordination"]
+                assert any("signal_disclosure" in issue for issue in gaps)
+                assert prompt["scope_candidate"] == invalid.model_dump()
+            return brief if repair and scopes == 2 else invalid
+        assert repair
+        if output is Candidate:
+            return Candidate(explanation="Protocol", design=design)
+        return DesignReview(summary="Compare delivery delay and recorded choices.", issues=[])
+
+    monkeypatch.setattr(models, "generate", generate)
+    with db.session.begin() as session:
+        row = Analysis(purpose="design", question=question, cutoffs={})
+        session.add(row)
+        session.flush()
+        key = row.id
+    result = asyncio.run(Planner(db, research, models).run(key, question))
+    assert result["supported"] is repair
+    assert (result["design"] is not None) is repair
+    assert scopes == 2
+    assert research.studies() == []
 
 
 @pytest.mark.parametrize("repair", [True, False])

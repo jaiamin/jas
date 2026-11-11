@@ -158,13 +158,22 @@ class ResearchTools:
         self.record["operations"].append(operation)
         return operation
 
-    def prompt_record(self, *, environment: str | None = None) -> dict:
-        """Scope discovery for review; retain complete probes and original operation records."""
+    def prompt_record(
+        self, *, environment: str | None = None, candidate_hash: str | None = None
+    ) -> dict:
+        """Project current discovery/probes without modifying retained operation records."""
         latest = {}
+        current_probes = {}
         for operation in self.record["operations"]:
             request = operation["request"]
             if request["kind"] == "capabilities" and operation["status"] == "complete":
                 latest[request.get("environment")] = operation["id"]
+            elif (
+                request["kind"] == "probe"
+                and request["source"]["kind"] == "candidate"
+                and request["source"]["design_hash"] == candidate_hash
+            ):
+                current_probes[request["source"]["condition_key"]] = operation["id"]
         record: dict = {
             **self.record,
             "operations": [
@@ -183,6 +192,59 @@ class ResearchTools:
                 for operation in self.record["operations"]
             ],
         }
+        if candidate_hash is not None:
+            shared_inputs = {}
+
+            def shared(value):
+                key = digest(value)
+                shared_inputs[key] = value
+                return {"shared_probe_input": key}
+
+            def observation(value):
+                if not isinstance(value, dict):
+                    return value
+                return {
+                    key: shared(item) if key in {"rules", "legal_actions"} else item
+                    for key, item in value.items()
+                }
+
+            for index, operation in enumerate(record["operations"]):
+                request = operation["request"]
+                source = request.get("source")
+                if (
+                    request["kind"] == "probe"
+                    and isinstance(source, dict)
+                    and source["kind"] == "candidate"
+                    and operation["id"] not in current_probes.values()
+                ):
+                    record["operations"][index] = {
+                        **operation,
+                        "data": {
+                            "full_result_retained": True,
+                            "sha256": digest(operation["data"]),
+                            "omitted_reason": "superseded_candidate_probe",
+                        },
+                    }
+                elif (
+                    operation["id"] in current_probes.values()
+                    and isinstance(data := operation["data"], dict)
+                    and isinstance(steps := data.get("steps"), list)
+                ):
+                    record["operations"][index] = {
+                        **operation,
+                        "data": {
+                            **data,
+                            "observation": observation(data["observation"]),
+                            "legal_schema": shared(data["legal_schema"]),
+                            "steps": [
+                                {**step, "observation": observation(step["observation"])}
+                                for step in steps
+                            ],
+                            "next_observation": observation(data["next_observation"]),
+                        },
+                    }
+            if shared_inputs:
+                record["shared_probe_inputs"] = shared_inputs
         if environment is not None:
             for index, operation in enumerate(record["operations"]):
                 data = operation["data"]
