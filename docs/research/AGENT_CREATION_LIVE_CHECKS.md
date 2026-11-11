@@ -205,3 +205,27 @@ Closed own SQLite families have lossless archives, full independent readback and
 maps; live01's earlier archive stop remains recorded. Original data, source assets, dependencies,
 shared caches and other worktrees remain intact. Shared disk reached zero earlier; no historical
 floor-preservation claim. Refresh observed46,747,648→50,860,032 shared/unreserved free bytes.
+
+## PR34 hosted CI follow-up
+
+At `b459314d`, full hosted backend testing passed1846 cases and failed the two existing
+four-role follow-up regressions. Both reproduce locally: the10,540-byte canonical bound
+projection pushes the third follow-up's initial draft above180,000 bytes. That stage has
+no current candidate yet, so it previously kept every World's illustrative rule examples.
+The latest complete prior proposal now scopes those examples for initial follow-up drafts,
+just as the current candidate scopes revision examples. Full prior proposals, immutable
+sources and the complete discovery catalog remain available; no evidence or validation
+assertion is removed. Both unchanged regressions now pass2/2. The other98 affected cases,
+whole Ruff/globalty, changed formatting and diff checks also pass. Hosted CI must qualify
+the correction; the earlier full run is still a failure.
+
+Frontend lint,162 unit cases/37 files and build passed. Ubuntu mirror DNS failed at
+Chromium system-package installation, before browser tests. A same-head frontend rerun was
+accepted after workflow completion; a new correction push starts full CI again. `verify`
+failed because its backend/frontend dependencies failed, with container/workflows passing.
+No workflow checks or browser assertions were changed.
+
+The idle local app was refreshed from PID642941 to645747. Full public records, usage and
+database inode match exactly before/after; no failed user request was replayed. Receipt:
+`.tools/agent-revision-limit/ci-b459314/user-refresh/receipt.json`. No new provider spending.
+Fresh live Agent content qualification remains NOT PASS as documented above.

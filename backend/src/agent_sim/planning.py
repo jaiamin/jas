@@ -423,6 +423,19 @@ class Planner:
                 **data,
                 "output_constraints": _output_constraints(TypeAdapter(output).json_schema()),
             }
+            if not isinstance(candidate, dict) and isinstance(
+                conversation := data.get("conversation"), list
+            ):
+                # Follow-ups retain complete proposals; their latest World also scopes
+                # illustrative examples before the first new candidate exists.
+                candidate = next(
+                    (
+                        {"design": turn["proposal"]}
+                        for turn in reversed(conversation)
+                        if isinstance(turn, dict) and isinstance(turn.get("proposal"), dict)
+                    ),
+                    None,
+                )
             if isinstance(candidate, dict) and isinstance(design := candidate.get("design"), dict):
                 examples = data.get("rule_examples")
                 if isinstance(examples, list):

@@ -49,6 +49,23 @@ earlier; the historical134,217,728-byte floor is not claimed. Final refresh obse
 46,747,648→50,860,032 shared/unreserved free bytes. Hosted CI and live qualification
 remain open; no merge readiness is claimed.
 
+
+Hosted CI at `b459314d` passed1846 backend cases and failed two existing four-role
+follow-up regressions: the canonical constraint table pushed the third follow-up's
+first draft above180,000 bytes. Both unchanged tests reproduce red locally and now
+pass after scoping illustrative rule examples to the latest complete prior proposal's
+World. Full prior protocols/sources and the discovery catalog remain complete; bounds
+and canonical constraints are unchanged. Both regressions plus the other98 affected
+cases pass; whole Ruff/globalty/formatting/diff checks pass. No new paid calls.
+
+Frontend lint,162 units/37 files and build passed, but Ubuntu mirror DNS failed during
+Chromium dependency installation, so no browser case started in that attempt. Its
+same-head rerun started after workflow completion; publication of the backend correction
+starts a fresh full CI gate. `verify` only aggregates those failures. The latest idle
+user refresh is PID642941→645747, with identical database inode/public records/usage;
+receipt `.tools/agent-revision-limit/ci-b459314/user-refresh/receipt.json`. Preserve8080.
+The separate live content qualification remains NOT PASS.
+
 2026-11-11 Agent creation/input-limit follow-up: see
 [the live-check report](docs/research/AGENT_CREATION_LIVE_CHECKS.md). Review discovery is scoped
 without losing original results or probes; scoping/drafting/review contracts and general-chat
