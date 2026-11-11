@@ -294,41 +294,50 @@ Decisions and evidence stack below 1440px.
 Home’s experiment ideas, drafts, active runs and recent experiments share a centered
 58rem maximum-width content column below the composer. Keep their edges aligned.
 
-Home’s backdrop is a miniature simulation campus. All fourteen existing environment
-marks become buildings, reusing `EnvironmentMark` and its exact mechanism geometry.
-The quiet grid cells are hidden only in the map, revealing each building’s silhouette;
-the catalogue retains the full artwork. Chamfered plots, small door thresholds and
-paved approaches give buildings entrances facing their connected street. A few planted
-courtyards and benches occupy the spaces between buildings. Uneven placement, varied
-sizes and restrained blue, green, amber and violet accents keep it inhabited through
-the center. These details belong to the map, not to product controls.
+Home’s backdrop uses the user's replacement city GIF, stored as `city.gif`,
+with `city.webp` derived from a decoded frame. The superseded GIF and poster,
+procedural town, route generator and map-only styles are removed. Environment
+catalogue illustrations are unchanged.
 
-Streets have quiet curbs, two lanes, dashed centerlines and small crossings. Crossroads
-connect the avenues rather than extending into an arbitrary full-page grid. Building
-plots stay clear of streets. Red and ink agents follow their direction of travel, turn
-on rounded paths, enter through the approach, pause inside a building and leave. Buildings
-conceal agents while they are inside. The scene is decorative, does not capture input,
-and never represents actual experiments or provider activity.
+Keep the backdrop 320px tall at all widths. The image fills the available width
+with CSS `object-fit: cover`, centered horizontally with a 35% vertical focal
+point that favors the skyline. Narrow windows crop the sides; wide windows can
+crop excess sky and water. No viewport JavaScript or fixed media width is needed.
+Its top edge, upper corners and central column are uninterrupted. Only the lower corners
+dissolve along broad, asymmetric rounded contours inspired by the supplied recording.
+All strips are opaque. Their coverage decreases gradually toward the corner edges,
+with varied lengths, stepped ends, detached pixels and irregular 1–4px row pitches.
+Correlated patches mix thicker clusters with fine filaments. The full
+image becomes increasingly sparse shreds rather than a translucent or blurred veil.
+The rounded contours reach a little farther toward the lower middle, following
+the final refinement; their upper extent stays unchanged. Regenerate the single SVG
+with `python3 frontend/scripts/generate_home_dissolve.py`. Twelve coverage bands
+per corner carry seamless repeating ribbon textures at varied speeds with gentle,
+forward-only speed changes.
+The left corner flows left and the right corner flows right, without reversing.
+Each 12.8–20.48-second loop advances exactly one 256px repeat, so its reset is
+visually continuous. The rounded coverage contours, top and core stay still.
+One mask asset contains an explicit still view. The React component
+selects it and the poster for reduced motion, hidden documents or an offscreen
+backdrop; there is no JavaScript animation clock or duplicate GIF layer.
 
-Layout and three-stop routes vary on each visit. Junction choices balance travel distance
-with variation. Native SVG motion runs at a steady speed without a React frame loop or
-simulation timer; curved lengths determine the exact building dwell positions. Every
-route closes without teleporting. Reduced motion freezes the current scene; offscreen
-and hidden tabs pause and resume the same timeline. Diagram opacity is 60% in light mode
-and 75% in dark mode, with a horizontal mask at the outer edges. There is no external
-imagery, added dependency or extra data request.
+Light mode preserves the GIF's color and opacity. Dark mode uses 67% brightness
+and 90% saturation; the dissolve itself uses no opacity animation or blur.
+The heading stays above the composer, with dark neutral lettering in both themes.
+A localized 75% white tint and 6px backdrop blur sit behind the full title.
+A broad oval mask extends 8rem beyond each end and 2rem vertically, with multiple
+falloff stops for a gradual transition into the city. There is no dark scrim or hard-edged plate.
+The text itself stays sharp. The artwork
+is decorative, hidden from assistive technology and pointer-inert; it does not
+represent current experiments or provider activity. There is no bottom divider.
 
-The header and bottom section divider remain intact. A slight 3px backdrop blur
-and feathered surface tint protect the heading text where streets and diagrams
-pass behind it. The tint uses 12% of the surface color; its radial mask falls through
-100/80/35/0% opacity without a hard edge. The opaque composer keeps artwork out
-of the text field. There is no visible background control.
-The Home composer has a 672px maximum width and 88px minimum text-entry height.
-Heading top spacing is 80px on mobile and 96px on desktop. A 3:2 grid split
-places three fifths of the composer within the backdrop and two fifths below its
-bottom edge; the opaque surface keeps the map out of the text field. A stock
+The Home composer retains a 672px maximum width and 88px minimum text-entry height.
+Heading top spacing is 152px on mobile and 156px on desktop, with a 16px gap to
+the composer. The composer overlaps the artwork and extends below the fixed
+backdrop, keeping imagery out of
+the text field. A stock
 `shadow-lg` gives the composer's gray backing Card a compact blended shadow along its sides and
-bottom, separating it from the simulation map.
+bottom, separating it from the decorative background.
 Every unscoped entry point uses the same server intent routing: Agent answers a
 question or creates a validated experiment proposal from the prompt, without a
 manual creation mode. Home has no selector. Agent has an optional experiment/run

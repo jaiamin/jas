@@ -163,140 +163,51 @@
   display: none;
 }
 
-/* Home's requested brand decoration stays separate from preset control colors. */
-.home-environments {
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    rgb(0 0 0 / 40%) 4%,
-    rgb(0 0 0 / 85%) 9%,
-    #000 14%,
-    #000 86%,
-    rgb(0 0 0 / 85%) 91%,
-    rgb(0 0 0 / 40%) 96%,
-    transparent
-  );
+/* Cover any available width while keeping the central skyline in view. */
+.home-backdrop {
+  height: 320px;
 }
 
-.home-heading::before {
+.home-media {
+  mask: url("/illustrations/home-dissolve.svg") center / 100% 100% no-repeat;
+}
+
+.home-city {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+}
+
+.home-media[data-motion="still"] {
+  mask-image: url("/illustrations/home-dissolve.svg#still");
+}
+
+.dark .home-city {
+  filter: brightness(0.67) saturate(0.9);
+}
+
+/* A feathered white blur follows the lettering, without a rectangular plate. */
+.home-title {
+  @apply text-neutral-950;
+}
+
+.home-title::before {
   content: "";
   position: absolute;
   z-index: -1;
-  inset: -0.75rem -1.5rem;
+  inset: -2rem -8rem;
   pointer-events: none;
-  background: color-mix(in oklch, var(--background) 12%, transparent);
-  backdrop-filter: blur(3px);
+  background: rgb(255 255 255 / 75%);
+  backdrop-filter: blur(6px);
   mask-image: radial-gradient(
-    ellipse,
+    ellipse closest-side,
     #000 0%,
-    rgb(0 0 0 / 80%) 30%,
-    rgb(0 0 0 / 35%) 65%,
+    rgb(0 0 0 / 90%) 35%,
+    rgb(0 0 0 / 60%) 60%,
+    rgb(0 0 0 / 25%) 80%,
     transparent 100%
   );
-}
-
-.home-map-curb,
-.home-map-street,
-.home-map-drive,
-.home-map-centerline,
-.home-map-crossings,
-.home-map-plot,
-.home-map-door,
-.home-map-paving,
-.home-map-bench {
-  fill: none;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
-.home-map-curb {
-  stroke: color-mix(in oklch, var(--foreground) 11%, var(--background));
-  stroke-width: 18;
-}
-
-.home-map-street {
-  stroke: color-mix(in oklch, var(--foreground) 3%, var(--background));
-  stroke-width: 16;
-}
-
-.home-map-drive {
-  stroke: color-mix(in oklch, var(--foreground) 6%, var(--background));
-  stroke-width: 8;
-}
-
-.home-map-centerline {
-  stroke: var(--foreground);
-  stroke-width: 0.6;
-  stroke-dasharray: 3 9;
-  opacity: 0.09;
-}
-
-.home-map-crossings {
-  stroke: var(--background);
-  stroke-width: 1.5;
-}
-
-.home-map-plot {
-  stroke: var(--primary);
-  stroke-width: 0.7;
-  fill: color-mix(in oklch, var(--primary) 4%, transparent);
-  stroke-opacity: 0.28;
-}
-
-.home-map-door {
-  stroke: var(--primary);
-  stroke-width: 1;
-  opacity: 0.5;
-}
-
-.home-map-paving {
-  stroke: var(--foreground);
-  stroke-width: 0.6;
-  opacity: 0.12;
-}
-
-.home-map-gardens {
-  fill: oklch(0.64 0.08 155 / 0.16);
-  stroke: oklch(0.58 0.06 155 / 0.28);
-  stroke-width: 0.7;
-}
-
-.home-map-lawn {
-  fill: oklch(0.64 0.08 155 / 0.035);
-  stroke: none;
-}
-
-.home-map-bench {
-  stroke: var(--foreground);
-  stroke-width: 1;
-  opacity: 0.2;
-}
-
-.home-map-agent {
-  fill: var(--foreground);
-  opacity: 0.8;
-}
-
-.home-map-agent[data-color="red"] {
-  fill: #d94747;
-}
-
-.home-map-agent-face {
-  stroke: var(--background);
-  stroke-width: 1;
-  opacity: 0.7;
-}
-
-.home-map-building > svg {
-  opacity: 0.6;
-}
-
-.home-map-building > svg > path:first-child {
-  display: none;
-}
-
-.dark .home-map-building > svg {
-  opacity: 0.75;
 }
 
 /* Shared welcome/working scan timeline; the stock Target stays stationary. */

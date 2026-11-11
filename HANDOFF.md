@@ -13,30 +13,60 @@ in Git; retired raw evidence cannot be independently reread.
 
 ## Current state
 
-2026-11-11 Home campus refinement complete: preserve the user-approved town
-and randomized layout. Layered avenues/connectors, crossings, small entrances,
-paved plots and sparse planted courtyards give the scene structure. Map-only grid
-suppression reveals the existing environment silhouettes; catalogue artwork stays
-unchanged. Building placement clears the roads. Red/ink agents keep right, orient
-along their paths and turn on rounded SVG arcs. Curved lengths keep pauses aligned
-with building centers. One lazy scene state replaces the separate seed/memo pair.
-No simulation timer, data reset, provider call, app restart or dependency was added.
+2026-11-11 Home background replacement: use the user's second city GIF as
+`frontend/public/illustrations/city.gif`, with `city.webp` as its reduced-motion
+still. Superseded GIF/poster, procedural map generator/component/tests and map-only
+CSS are removed. Catalogue environment art is unchanged. The latest instruction
+supersedes the intermediate fixed-native-width design: fill all available width
+with CSS cover, fixed 320px height, centered skyline at 35% vertical focus. There
+is no resize JavaScript or bottom divider.
 
-Observed: all164 frontend units passed after route/clearance changes; after the
-final coordinate/courtyard-only edit, both affected route units and all12 Home
-browser cases pass. The browser independently measures all108 dwell positions with
-native SVG geometry (<0.1SVG-unit error), observes actual transforms and pause/resume,
-and checks existing drafts/submission/navigation/layout flows. Full frontend lint,
-forced TypeScript and production build pass; final affected lint passes. Detector:
-zero findings. Entry chunk119.54kB gzip versus118.73kB for the simpler town.
+The top and center stay full. The final lower corners round slightly farther
+toward the middle, following the last user refinement. Opaque pixel ribbons
+with irregular 1–4px pitches become sparse toward the outside.
+Stepped ends, detached flecks and correlated thicker clusters follow the user's
+second, close-up recording. There is
+no continuous alpha veil, full-image blur or opacity animation. Twelve texture
+bands per corner flow continuously outward (left goes left, right goes right),
+with seamless repeats and varied forward-only speeds instead of a reversing sway.
+The source generator is in
+`frontend/scripts/generate_home_dissolve.py`. A single SVG's `#still` view freezes
+the same strips. Reduced motion, hidden documents and offscreen placement switch
+to poster/static mask. The title is restored above the composer; dark neutral text
+uses a feathered white 75% tint and 6px backdrop blur, with no dark scrim.
+The final halo stretches into a broad oval, 8rem beyond each end and 2rem vertically,
+with gradual multi-stop falloff into the city. Heading spacing is 152/156px phone/desktop;
+the final 16px title/composer gap moves the composer 8px above the earlier placement.
 
-Fresh independent Impeccable finish review: SHIP, no material findings, from current
-source, earlier comparison and five final captures (1440×900/light+dark,
-390×844/light+dark,1280×800/dark). Preview downsampled desktop PNGs; CSS viewport
-sizes were confirmed. Still captures do not prove smoothness; browser tests supply
-motion evidence. This is scoped Home refinement, not a perfection or whole-product
-claim. The existing localhost8080 app serves the new build. Hosted CI on the new
-publication remains pending. All own test services and preview tabs are closed.
+Final checks are recorded in `.tools/home-gif/verification.json`: 14 Home browser
+cases pass at the final render source, including actual outward motion/seamless
+repeats, stable top/core, reduced-motion freeze, responsive bounds and composer
+workflows. Frontend lint (241 files), TypeScript/build, generator Ruff and exact
+regeneration pass. All 162 frontend units in 37 files pass at the final source.
+Both themes were inspected at 390/1440px, plus the 1280px user and 2400px wide views.
+Fresh full design review passed; the final expanded halo also passed its focused
+visual verdict with no remaining findings. Earlier interrupted reviews predate
+user steering and are not claimed as final acceptance.
+No external provider call, dependency install, user data reset or application
+restart occurred; localhost8080 serves the current built assets. Hosted CI on
+final publication remains a gate. Earlier failed diagnostics remain retained.
+
+Shared disk fell below the historical margin during iteration. Only closed own
+`.tools/merge-review/*/tmp` test SQLite/JSON payloads were losslessly gzipped:
+137 files/57,210,154 bytes became3,394,139 bytes, with full independent decompression
+hash/size verification before each original was removed. Restoration metadata is
+`.tools/home-gif/closed-test-compaction/restoration.json`; old raw tmp paths now
+require that map. Logs, JUnit, receipts, live data, dependencies and shared caches
+were untouched. Free measured97,468,416→151,011,328 bytes at that boundary.
+Later obsolete generated build copies and successful screenshot sets were
+retired with inventories in `.tools/home-gif/generated-retirement.json` and
+`superseded-success-retirement.json`. These disposable outputs are no longer
+retained; failed diagnostics, logs, run statuses and live assets remain intact.
+Two decoded reference frames were also retired; the original supplied recording
+and middle reference frame remain available. No shared cache was changed.
+Later shared free fell below the historical 134,217,728-byte margin; this UI
+continuation does not claim that margin held. Only bounded local checks/captures
+ran, with no cleanup outside this checkout or other-owner reads.
 
 The cleanup removes two confirmed unused frontend modules and consolidates49
 superseded documents into the compact historical report. Current guides and links
