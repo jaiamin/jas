@@ -4,6 +4,13 @@ export type LifeCell = {
   opacity: number;
 };
 
+export type LifeAgent = {
+  id: number;
+  x: number;
+  y: number;
+  color: LifeCell["color"];
+};
+
 // A decorative local world: bounded populations, renewable patches, persistent
 // paths and brief encounters. It never calls the application or a model.
 export function createGridLife(columns: number, rows: number, seed: number) {
@@ -189,5 +196,18 @@ export function createGridLife(columns: number, rows: number, seed: number) {
   // Begin with an inhabited world, rather than an empty grid or a second
   // static illustration. Paused/reduced-motion states hold this same world.
   for (let tick = 0; tick < 24; tick++) step();
-  return { cells, step };
+  return {
+    cells,
+    step,
+    agents: (): LifeAgent[] =>
+      agents.map((agent, id) => ({
+        id,
+        x: agent.x,
+        y: agent.y,
+        color:
+          fields.purple[agent.y * columns + agent.x] >= 0.3
+            ? "purple"
+            : agent.color,
+      })),
+  };
 }

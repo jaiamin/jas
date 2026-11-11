@@ -209,12 +209,25 @@
     fill 650ms ease-in-out;
 }
 
-.home-grid[data-paused="true"] .home-grid-cell {
+.home-grid-agent {
+  transition:
+    transform var(--home-grid-step) linear,
+    fill 650ms ease-in-out;
+}
+
+.dark .home-grid {
+  --home-grid-red: #ff7676;
+  --home-grid-blue: #6ca8ff;
+}
+
+.home-grid[data-paused="true"] .home-grid-cell,
+.home-grid[data-paused="true"] .home-grid-agent {
   transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .home-grid-cell {
+  .home-grid-cell,
+  .home-grid-agent {
     transition: none;
   }
 }

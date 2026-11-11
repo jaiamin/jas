@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { createGridLife, type LifeCell } from "@/components/home-grid-life";
 
 const cellSize = 18;
@@ -6,8 +12,13 @@ const tickMilliseconds = 700;
 
 export function HomeGrid() {
   const field = useRef<SVGSVGElement>(null);
-  const seed = useRef<number | null>(null);
+  const [seed] = useState(() => Math.floor(Math.random() * 4294967296));
   const [{ columns, rows }, setGrid] = useState({ columns: 60, rows: 18 });
+  const world = useMemo(
+    () => createGridLife(columns, rows, seed),
+    [columns, rows, seed],
+  );
+  const agents = useMemo(() => world.agents(), [world]);
   useEffect(() => {
     const svg = field.current;
     if (!svg) return;
@@ -34,9 +45,8 @@ export function HomeGrid() {
   useEffect(() => {
     const svg = field.current;
     if (!svg) return;
-    seed.current ??= Math.floor(Math.random() * 4294967296);
-    const world = createGridLife(columns, rows, seed.current);
     const rects = svg.querySelectorAll<SVGRectElement>(".home-grid-cell");
+    const heads = svg.querySelectorAll<SVGGElement>(".home-grid-agent");
     let previous = new Map<number, LifeCell>();
     const paint = (cells: LifeCell[]) => {
       const next = new Map(cells.map((cell) => [cell.index, cell]));
@@ -49,7 +59,12 @@ export function HomeGrid() {
         if (before?.color !== cell.color)
           rect.setAttribute("fill", `var(--home-grid-${cell.color})`);
         if (before?.opacity !== cell.opacity)
-          rect.style.opacity = String(cell.opacity);
+          rect.style.opacity = String(cell.opacity * 0.7);
+      }
+      for (const agent of world.agents()) {
+        const head = heads[agent.id];
+        head.style.transform = `translate(${(agent.x + 0.5) * cellSize}px, ${(agent.y + 0.5) * cellSize}px)`;
+        head.style.fill = `var(--home-grid-${agent.color})`;
       }
       previous = next;
     };
@@ -83,7 +98,7 @@ export function HomeGrid() {
       document.removeEventListener("visibilitychange", updateActivity);
       motion.removeEventListener("change", updateActivity);
     };
-  }, [columns, rows]);
+  }, [world]);
 
   const cells = useMemo(
     () =>
@@ -100,16 +115,19 @@ export function HomeGrid() {
       aria-hidden="true"
       focusable="false"
       className="home-grid pointer-events-none absolute inset-0 size-full text-foreground"
+      data-paused="true"
+      style={{ "--home-grid-step": `${tickMilliseconds}ms` } as CSSProperties}
       viewBox={`0 0 ${columns * cellSize} ${rows * cellSize}`}
       preserveAspectRatio="none"
     >
       {cells.map(({ x, y }) => (
         <rect
           key={`${x}-${y}`}
-          x={x}
-          y={y}
-          width={cellSize}
-          height={cellSize}
+          x={x + 2}
+          y={y + 2}
+          width={cellSize - 4}
+          height={cellSize - 4}
+          rx={4}
           className="home-grid-cell"
         />
       ))}
@@ -126,9 +144,23 @@ export function HomeGrid() {
         ].join(" ")}
         fill="none"
         stroke="currentColor"
-        strokeOpacity="0.12"
+        strokeOpacity="0.075"
         strokeWidth="0.6"
       />
+      {agents.map(({ id, x, y, color }) => (
+        <g
+          key={id}
+          className="home-grid-agent"
+          style={{
+            transform: `translate(${(x + 0.5) * cellSize}px, ${(y + 0.5) * cellSize}px)`,
+            fill: `var(--home-grid-${color})`,
+          }}
+        >
+          <circle r={11} opacity={0.06} />
+          <circle r={7} opacity={0.16} />
+          <circle r={3} opacity={0.95} />
+        </g>
+      ))}
     </svg>
   );
 }

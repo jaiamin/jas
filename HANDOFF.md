@@ -13,6 +13,16 @@ in Git; retired raw evidence cannot be independently reread.
 
 ## Current state
 
+2026-11-11 Home refinement: continuous agent transforms now lead the existing
+seeded ecosystem, with soft inset trails, quieter grid lines and brighter
+red/blue colors in dark mode. Reduced-motion, hidden and offscreen states stop
+both the timer and transitions. All169 frontend units,12 Home browser cases,
+affected lint, forced TypeScript and production build pass; desktop/phone and
+both themes were visually checked. Four earlier browser failures expected the
+old flush tile geometry; updated assertions require the intended two-unit inset
+and rounded corners. The local8080 app serves the new build without restarting
+or modifying user data. Hosted CI on the new publication remains pending.
+
 The cleanup removes two confirmed unused frontend modules and consolidates49
 superseded documents into the compact historical report. Current guides and links
 are updated. Specifications, executable benchmark oracles and user data are

@@ -100,7 +100,7 @@ test("the grid ecosystem evolves only while visible and motion is enabled", asyn
   const grid = page.locator(".home-grid");
   const frame = () =>
     grid
-      .locator("rect")
+      .locator(".home-grid-cell, .home-grid-agent")
       .evaluateAll((cells) =>
         cells
           .map(
@@ -135,6 +135,20 @@ test("the grid ecosystem evolves only while visible and motion is enabled", asyn
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await expect(grid).toHaveAttribute("data-paused", "false");
   await expect.poll(frame).not.toBe(still);
+  // Moving heads must pass between cell centers, rather than teleport on ticks.
+  await expect
+    .poll(() =>
+      grid.locator(".home-grid-agent").evaluateAll((agents) =>
+        agents.some((agent) => {
+          const matrix = new DOMMatrix(getComputedStyle(agent).transform);
+          return [matrix.e, matrix.f].some((position) => {
+            const cell = (position - 9) / 18;
+            return Math.abs(cell - Math.round(cell)) > 0.05;
+          });
+        }),
+      ),
+    )
+    .toBe(true);
   await page
     .getByRole("region", { name: "Recent experiments" })
     .scrollIntoViewIfNeeded();
@@ -145,6 +159,15 @@ test("the grid ecosystem evolves only while visible and motion is enabled", asyn
   await grid.scrollIntoViewIfNeeded();
   await expect(grid).toHaveAttribute("data-paused", "false");
   await expect.poll(frame).not.toBe(offscreen);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(grid).toHaveAttribute("data-paused", "true");
+  await expect(grid.locator(".home-grid-agent").first()).toHaveCSS(
+    "transition-duration",
+    "0s",
+  );
+  const reduced = await frame();
+  await page.waitForTimeout(900);
+  expect(await frame()).toBe(reduced);
 });
 
 test("Composer's manual editor link preserves the message without submitting", async ({
@@ -584,7 +607,7 @@ for (const width of [390, 1440])
         );
       });
       expect(completeCells).toBe(true);
-      const filledEdges = await page.locator(".home-grid").evaluate((svg) => {
+      const trailEdges = await page.locator(".home-grid").evaluate((svg) => {
         const cells = [
           ...svg.querySelectorAll<SVGRectElement>(".home-grid-cell"),
         ];
@@ -596,10 +619,12 @@ for (const width of [390, 1440])
             ),
           ),
           height: (svg as SVGSVGElement).viewBox.baseVal.height,
+          rounded: cells.every((cell) => cell.rx.baseVal.value === 4),
         };
       });
-      expect(filledEdges.top).toBe(0);
-      expect(filledEdges.bottom).toBe(filledEdges.height);
+      expect(trailEdges.top).toBe(2);
+      expect(trailEdges.bottom).toBe(trailEdges.height - 2);
+      expect(trailEdges.rounded).toBe(true);
       const draftToggle = draftSection.getByRole("button", {
         name: "Drafts",
         exact: true,

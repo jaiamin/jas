@@ -5,7 +5,10 @@ test("a seeded ecosystem reproduces its evolving paths and encounters", () => {
   const a = createGridLife(60, 18, 42);
   const b = createGridLife(60, 18, 42);
   expect(a.cells()).toEqual(b.cells());
-  for (let tick = 0; tick < 100; tick++) expect(a.step()).toEqual(b.step());
+  for (let tick = 0; tick < 100; tick++) {
+    expect(a.step()).toEqual(b.step());
+    expect(a.agents()).toEqual(b.agents());
+  }
   expect(a.cells()).not.toEqual(createGridLife(60, 18, 43).cells());
 });
 
@@ -20,7 +23,18 @@ test.each([
   (columns, rows) => {
     const world = createGridLife(columns, rows, 0);
     for (let tick = 0; tick < 300; tick++) {
+      const before = world.agents();
       const frame = world.step();
+      for (const agent of world.agents()) {
+        const previous = before[agent.id];
+        expect(agent.x).toBeGreaterThanOrEqual(0);
+        expect(agent.x).toBeLessThan(columns);
+        expect(agent.y).toBeGreaterThanOrEqual(0);
+        expect(agent.y).toBeLessThan(rows);
+        expect(
+          Math.abs(agent.x - previous.x) + Math.abs(agent.y - previous.y),
+        ).toBeLessThanOrEqual(1);
+      }
       expect(frame.length).toBeLessThanOrEqual(columns * rows);
       expect(new Set(frame.map((cell) => cell.index)).size).toBe(frame.length);
       for (const cell of frame) {
