@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "split": "public development variants, frozen before outputs; not held out",
+  "assessment": "Manual semantic assessment against these expectations, separately from protocol validation. No live participant execution in this matrix.",
+  "cases": [
+    {
+      "id": "trust-memory",
+      "question": "Design a four-agent trust-exchange pilot comparing history-only memory with history plus private notes. Use six rounds, seeds 7 and 29, one repetition and Luna throughout. Keep partners, transfer multipliers, payoffs, profiles and communication identical. Measure reciprocal returns using actual return opportunities; do not infer feelings or weight learning. Do not save or run.",
+      "kind": "design",
+      "constraints": {"environment": "trust_exchange", "agents": 4, "conditions": 2, "rounds": 6, "seeds": [7, 29], "repetitions": 1},
+      "expected": ["Only private-note retention differs; public history remains in both arms", "Return-rate denominator reflects actual transfer/return opportunities", "Rotating partner schedule is honestly stated rather than invented fixed pairs", "Counts and Luna retained without a claim of model-weight learning"]
+    },
+    {
+      "id": "authority-permission",
+      "question": "Answer a mechanics question only. In the installed institution, Morgan's private profile says Treasurer, but only Alex is in the configured authorities list. Does Morgan's role label let Morgan allocate the budget? Inspect the actual mechanic if useful. Distinguish instruction, legal permission and observed behavior. Do not create or run a study.",
+      "kind": "answer",
+      "expected": ["Morgan's role text grants no authority", "The configured authorities enforce allocation permission", "No claim about what Morgan actually chose", "Any catalog/probe inspection claimed was actually performed"]
+    },
+    {
+      "id": "information-disclosure",
+      "question": "Create a four-agent binary-information pilot: public versus private synthetic signals, with signal accuracy 0.75, immediate outcome feedback, four rounds, seeds 11 and 47, one repetition and Luna. Disable communication identically in both arms so it cannot bypass private signals. Only signal disclosure should differ. Define accuracy from recorded choices and ground truth. Do not save or run.",
+      "kind": "design",
+      "constraints": {"environment": "information", "agents": 4, "conditions": 2, "rounds": 4, "seeds": [11, 47], "repetitions": 1},
+      "expected": ["Only private_signal changes; accuracy and reveal_outcome stay fixed", "Communication disabled identically", "No interpretation of binary signals as arbitrary documents", "Accuracy uses actual truth and choices without inferring beliefs"]
+    },
+    {
+      "id": "workflow-team",
+      "question": "Design one exploratory institutional-workflow pilot with six AI workers, Luna, one condition, seed 31 and twelve rounds. Use a small explicit prerequisite chain: evidence collection, report production, recipient acceptance of the handoff. Work consumes a finite shared material stock and finishes after logical time; report versions remain immutable. Keep team goals practical, permissions explicit and routes sufficient for the handoff. Record blocked work, delayed completion, delivered messages and acceptance separately. Do not add a semantic judge, an external tool or a treatment effect; do not save or run.",
+      "kind": "design",
+      "constraints": {"environment": "institutional_workflow", "agents": 6, "conditions": 1, "rounds": 12, "seeds": [31]},
+      "expected": ["Six actual workers with valid ownership, work/task references and handoff routes", "Prerequisites, material costs and logical completion are enforced rather than prose-only", "Enough material and horizon for the proposed work and handoff", "Immutable artifacts and recipient acceptance retained", "Descriptive single-condition pilot without causal claims"]
+    },
+    {
+      "id": "commitment-opportunity",
+      "question": "Explain this scheduling boundary without drafting or running anything: an actor can act only at logical ticks 4 and 8. A promise requires its action within the half-open interval [5,6). Is fulfillment feasible, or is this an eligible intentional breach? Distinguish infeasibility, actual opportunity, observable breach and intent. Do not invent a trial result.",
+      "kind": "answer",
+      "expected": ["No scheduled action lies in [5,6), so the promise is infeasible under the stated schedule", "Not an eligible breach and not evidence of intentional deception", "General explanation is distinguished from actual recorded results"]
+    },
+    {
+      "id": "large-detailed-commons",
+      "question": "Please draft a complete but compact exploratory experiment for twelve model agents sharing a public-goods fund. This is a digital behavior pilot, not a human-subject prediction and not a test of consciousness. Use the installed commons World, not renewable stock or a custom resource economy. Every agent starts each round with 12 credits; contributions are sealed until settlement and the multiplier is 2. The only experimental contrast is whether public messages are available. Keep communication enabled in both arms and retain reports and promises in both; remove only the messages channel in the control. Keep signal privacy, payoff rules, the credit schedule, all profiles and all inference settings identical.\n\nUse exactly twelve agents, two conditions, six rounds, seeds 17, 83 and 241, and one repetition per seed. All participants use GPT-6 Luna with the same direct-action harness, low reasoning effort and a 4096-token response allowance. The whole experiment API ceiling is $1, not $1 per run and not a one-credit endowment. That ceiling does not authorize execution now. There are no external tools, documents or code execution. Keep profile goals identical in substantive meaning: pursue personal credits while considering the shared fund, without instructing anyone to cooperate, defect, lie or send messages.\n\nOperationalize contribution rate using actual contributed amounts relative to available credits, and summarize group payoff from settled values. Describe message use separately from the randomized availability contrast. Retain zero contributions, empty messages, null differences and unfavorable outcomes. Retain interrupted or budget-stopped trajectories with their reason; missing outcomes are not zeros. Use whole trajectories as outcome units and seeds as matched blocks. Do not count agent turns as independent replication, claim statistical power or infer feelings from prose. Six rounds are finite repeated opportunities, not evidence of long-term learning.\n\nKeep the title short and the hypothesis/analysis plan compact, using registered metrics plus explicit calculations where needed. Preserve the exact participant count, seed list, repetition, horizon and model. Return a pending reviewable proposal; do not save the experiment, start participants, alter the budget automatically or substitute a cheaper model after an error.",
+      "kind": "design",
+      "constraints": {"environment": "commons", "agents": 12, "conditions": 2, "rounds": 6, "seeds": [17, 83, 241], "repetitions": 1, "budget_usd": 1.0},
+      "expected": ["Exact twelve-agent population and all specified counts, Luna and API ceiling", "Endowment 12 and multiplier 2 in both arms", "Only messages channel differs, with reports/promises retained", "Goals do not prescribe the outcome", "No hidden evidence leakage, invented tool access or premature execution", "Missingness, dependence and finite pilot limits remain explicit"]
+    },
+    {
+      "id": "large-followup-one",
+      "after": "large-detailed-commons",
+      "question": "Keep the complete twelve-agent commons proposal, both messaging arms, model, seed list and $1 budget. Change only the maximum rounds from six to eight. Do not save or run.",
+      "kind": "design",
+      "constraints": {"environment": "commons", "agents": 12, "conditions": 2, "rounds": 8, "seeds": [17, 83, 241], "repetitions": 1, "budget_usd": 1.0},
+      "expected": ["Only requested horizon changes; full prior source and proposal remain available", "No input-limit stop, hidden context truncation, model replacement or execution"]
+    },
+    {
+      "id": "large-followup-two",
+      "after": "large-followup-one",
+      "question": "Keep every setting in that latest twelve-agent commons proposal except change the horizon from eight to ten rounds. Keep both messaging arms, all agents, models, seeds and the $1 ceiling. Do not save or run.",
+      "kind": "design",
+      "constraints": {"environment": "commons", "agents": 12, "conditions": 2, "rounds": 10, "seeds": [17, 83, 241], "repetitions": 1, "budget_usd": 1.0},
+      "expected": ["Only requested horizon changes; full prior source and proposal remain available", "No input-limit stop, hidden context truncation, model replacement or execution"]
+    },
+    {
+      "id": "large-followup-three",
+      "after": "large-followup-two",
+      "question": "One final revision: preserve that latest twelve-agent commons protocol exactly, but set the horizon to twelve rounds. The two messaging arms, twelve profiles, Luna, seeds 17/83/241, one repetition and $1 budget all stay. Do not save or run.",
+      "kind": "design",
+      "constraints": {"environment": "commons", "agents": 12, "conditions": 2, "rounds": 12, "seeds": [17, 83, 241], "repetitions": 1, "budget_usd": 1.0},
+      "expected": ["Third consecutive follow-up retains exact treatment, population and provenance", "No input-limit stop, silent truncation or execution"]
+    }
+  ]
+}

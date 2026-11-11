@@ -2,8 +2,18 @@
 
 # JAS
 
-Design agent experiments, run matched trials, inspect decisions and compare results.
-AI helps draft protocols and investigate recorded evidence.
+Design experiments on model-agent behavior, run matched trials, and inspect the evidence.
+The Agent drafts reviewable protocols and answers questions about recorded runs.
+
+- **Design:** choose enforced mechanics, participant models, information access,
+  treatments, seeds and spending limits. Saving freezes an immutable revision.
+- **Run:** explicitly start model-controlled participants; inspect actions, messages,
+  artifact versions and costs. Pause and resume without losing committed work.
+- **Understand:** compare matched conditions, investigate cutoff-scoped evidence,
+  export complete records and verify recorded consequences without new model calls.
+
+Reusable environments define rules separately from experiments. New executable mechanics
+require an explicit reviewed contract and independent admission.
 
 ```sh
 cp .env.example .env
@@ -12,11 +22,14 @@ docker compose up --build
 ```
 
 Open [localhost:8080](http://localhost:8080). Requires Docker Compose; data persists
-in a named volume. OpenAI powers the Agent; run participants also support Anthropic.
-Manual setup, saved evidence and replay work without keys.
+in a named volume. The Agent defaults to OpenAI; configured Agent and participant models
+also support Anthropic. See [.env.example](.env.example) for model and budget settings.
+Manual setup, saved evidence and replay work without provider keys. For native development,
+see [setup and checks](docs/DEVELOPMENT.md) (Python 3.13+, Node 24+, uv and pnpm 12).
 
-Work in progress. Single-user local app without authentication. Experiments measure
-model behavior under stated rules, not validated human predictions.
+Single-user local app without authentication; do not expose it publicly. Protocol checks
+verify mechanics, not scientific conclusions. Model responses remain fallible; app and
+harness improvements do not train model weights or establish general intelligence.
 
 [Docs](docs/README.md) · [Development](docs/DEVELOPMENT.md) · [Architecture](docs/ARCHITECTURE.md) ·
 [Research](docs/RESEARCH.md) · [Benchmarks](benchmarks/README.md) · [MIT License](LICENSE)

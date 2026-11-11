@@ -1,5 +1,8 @@
 # Agent creation repair and live checks
 
+This is the source-attributed repair history. For the current live evaluation and
+remaining gates, see [Agent live evaluation](AGENT_EXTENSIVE_EVALUATION.md).
+
 2026-11-11. Follow-up on `fix/agent-protocol-maps`, PR33. The reported input-bound
 failure is repaired. Real Anthropic requests now reach validated drafts and saving;
 this is bounded workflow qualification, not a reliability or scientific-validity benchmark.

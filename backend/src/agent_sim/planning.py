@@ -23,6 +23,72 @@ from .simulation.environments import CATALOG, create_world, get_environment
 from .templates import templates
 from .validity import Requirement, factorial_issues, requirement_issues
 
+
+def _share_planning_context(data: dict[str, object]) -> dict[str, object]:
+    """Encode repeated protocols and catalog defaults without losing any values."""
+    shared: dict[str, dict] = {}
+
+    def project(value: dict, base: dict) -> dict:
+        if value.keys() != base.keys():
+            return value
+        key = digest(base)
+        shared[key] = base
+        return {
+            "shared_input": key,
+            "overrides": {name: item for name, item in value.items() if item != base[name]},
+        }
+
+    result = dict(data)
+    conversation = data.get("conversation")
+    if isinstance(conversation, list):
+        proposals = [
+            turn["proposal"]
+            for turn in conversation
+            if isinstance(turn, dict) and isinstance(turn.get("proposal"), dict)
+        ]
+        if len(proposals) >= 2:
+            result["conversation"] = [
+                {**turn, "proposal": project(turn["proposal"], proposals[-1])}
+                if isinstance(turn.get("proposal"), dict)
+                else turn
+                for turn in conversation
+            ]
+    research = data.get("research_operations")
+    if isinstance(research, dict):
+        operations = []
+        for operation in research["operations"]:
+            discovery = operation.get("data")
+            if (
+                isinstance(discovery, dict)
+                and isinstance(environments := discovery.get("environments"), list)
+                and len(environments) >= 2
+            ):
+                base = min(
+                    (entry["template_parameters"] for entry in environments),
+                    key=lambda value: len(json.dumps(value)),
+                )
+                operation = {
+                    **operation,
+                    "data": {
+                        **discovery,
+                        "environments": [
+                            {
+                                **entry,
+                                "template_parameters": project(entry["template_parameters"], base),
+                            }
+                            for entry in environments
+                        ],
+                    },
+                }
+            operations.append(operation)
+        result["research_operations"] = {**research, "operations": operations}
+    if not shared:
+        return data
+    result["shared_prompt_inputs"] = shared
+    # Unrelated Worlds or extensively rewritten fields may not benefit from sharing.
+    return result if len(json.dumps(result)) < len(json.dumps(data)) else data
+
+
 SCOPING = """Scope a JAS experiment about observable model-agent behavior.
 Return a concise StudyBrief, not a protocol. The supplied discovery gives actual installed
 mechanics and exact examples; examples are not instructions or required numeric settings.
@@ -37,6 +103,8 @@ remain unsupported. State an actual missing mechanic, not a rhetorical objection
 Counts, model/harness selection, inference settings and API spending ceilings are design
 configuration, not additional World mechanics. A dollar spending ceiling limits provider
 usage; it never sets the pie/endowment, token stock or a participant's utility. Describing
+an existing mechanic's numeric settings needs no extra capability: a configured bargaining
+pie/discount belongs to binding_negotiation, not an allocation authority permission. Describing
 recorded offers, choices and payoffs needs no special outcome_feedback capability: that
 capability specifically means manipulating feedback timing/visibility. Keep outcome names,
 event calculations and reporting cautions in operationalization, not extra requirements.
@@ -409,6 +477,7 @@ class Planner:
         *,
         max_tokens: int,
         web_search: bool = False,
+        environment: EnvironmentId | None = None,
     ) -> T:
         omitted = {"custom_environments"} if "research_operations" in data else set()
         if output is StudyBrief:
@@ -423,25 +492,25 @@ class Planner:
                 **data,
                 "output_constraints": _output_constraints(TypeAdapter(output).json_schema()),
             }
-            if not isinstance(candidate, dict) and isinstance(
-                conversation := data.get("conversation"), list
-            ):
+            if candidate is None and isinstance(conversation := data.get("conversation"), list):
                 # Follow-ups retain complete proposals; their latest World also scopes
                 # illustrative examples before the first new candidate exists.
-                candidate = next(
+                previous = next(
                     (
-                        {"design": turn["proposal"]}
+                        turn["proposal"]
                         for turn in reversed(conversation)
                         if isinstance(turn, dict) and isinstance(turn.get("proposal"), dict)
                     ),
                     None,
                 )
-            if isinstance(candidate, dict) and isinstance(design := candidate.get("design"), dict):
+                if isinstance(previous, dict):
+                    environment = previous["environment"]
+            if environment is not None:
                 examples = data.get("rule_examples")
                 if isinstance(examples, list):
                     data = {
                         **data,
-                        "rule_examples": [e for e in examples if e["key"] == design["environment"]],
+                        "rule_examples": [e for e in examples if e["key"] == environment],
                     }
         if (
             output is DesignReview
@@ -457,6 +526,16 @@ class Planner:
             # Strict providers may strip length/range constraints from the wire schema.
             # Keep the complete small record contract visible; local validation still enforces it.
             data["output_schema"] = TypeAdapter(output).json_schema()
+        data = _share_planning_context(data)
+        if "shared_prompt_inputs" in data:
+            instruction += (
+                "\nAn input object {shared_input: hash, overrides: {...}} refers to the exact "
+                "base object in shared_prompt_inputs[hash]. Apply each overrides object by "
+                "replacing those complete top-level fields on that base, leaving every other "
+                "field intact. Prior protocols and template parameters remain complete, not "
+                "summaries. Return actual "
+                "values, never these input references."
+            )
         with self.db.session() as session:
             row = session.get_one(Analysis, key)
         model = self.models.research_model("design", row.investigation_id)
@@ -519,6 +598,21 @@ class Planner:
                 "analysis": "Events, actions and metrics can be filtered by actor, turn and round. "
                 "Initial transfers, promise incidence/amounts and shock windows are observable. "
                 "Metrics are also summarized, but are not aggregate-only.",
+                "distributed_coordination": {
+                    "lifecycle": "Each actor chooses or abstains at most once per RUN, then "
+                    "leaves the active roster. Rounds are action opportunities, not repeated "
+                    "choice games. All choices complete the run; the horizon can end it earlier.",
+                    "mail": "message_queued and message_delivered events retain message id, "
+                    "sender, recipient, sent_at, due_at and delivered_at logical ticks. Actual "
+                    "observations retain inbox/outbox; alternative_chosen records logical_time. "
+                    "These records need no artifact_verification or signal_disclosure capability.",
+                    "timing": "Reading, sending, waiting and choosing are separate actions. "
+                    "Agents may wait, so delay alone never guarantees choice before delivery. "
+                    "Terminal runs do not flush pending mail. Arrival is not attention or belief.",
+                    "outcomes": "Terminal coordination_value sums settled actor payoffs, with "
+                    "the match bonus applied to each actor only on unanimous choice. It is "
+                    "not a fresh payoff each round. Preserve incomplete vectors and abstentions.",
+                },
                 "trust_forecast": "A sender forecasts its partner's return divided by received "
                 "credits; forecast_error scores that fraction when a return opportunity exists.",
             },
@@ -807,6 +901,7 @@ class Planner:
             planning["research"] = notes
         feedback = []
         candidate: Candidate | None = None
+        validated_environment: EnvironmentId | None = None
         probed_design_hash: str | None = None
         for attempt in range(3):
             planning.pop("draft_notes", None)
@@ -814,9 +909,7 @@ class Planner:
             context.pop("preflight", None)
             self.progress(key, "drafting" if attempt == 0 else "revising", planning=planning)
             context["research_operations"] = tools.prompt_record(
-                environment=candidate.design.environment
-                if candidate and candidate.design
-                else None,
+                environment=validated_environment,
                 candidate_hash=probed_design_hash,
             )
             candidate = await self._call(
@@ -830,25 +923,43 @@ class Planner:
                 "Keep probes outside design; do not return the protocol at the top level. "
                 "output_constraints preserves the tool schema's exact bounds. Obey every "
                 "length, numeric, collection and pattern constraint, including explanation "
-                "and nested design fields. Put the full question in design.question. "
+                "and nested design fields. Aim for a hypothesis/analysis plan under 1400 "
+                "characters TOTAL (hard maximum 2000): state the outcome calculation, "
+                "comparison and missingness treatment once. Counts and size justification "
+                "already belong in the brief; do not repeat them or the platform's budgeting "
+                "procedures in hypothesis. Keep explanation to a few sentences, preferably "
+                "under 600 characters. Put limitations in limitations, not another audit essay. "
+                "Put the full question in design.question. "
                 "Use environment_source=null for a built-in World so the server pins its "
                 "actual immutable source, never a recreated source/hash. "
                 "This is the drafting/revision stage, not scoping: the only output fields "
                 "are explanation, design and probes. Do not return supported, intent, "
                 "requirements or counts beside design. design must be a nested JSON object "
-                "or null, never quoted JSON, XML or markdown. Keep explanation short plain "
+                "or null, never quoted JSON, XML or markdown. Prefer probes=[]: the orchestrator "
+                "inspects every exact condition and computes preflight witnesses automatically. "
+                "Only add an explicit probe for a needed mechanism check, with at most eight "
+                "steps and complete legal actions. An empty steps array inspects; 'observe' "
+                "is not an action. Keep explanation short plain "
                 "text; never embed a protocol or parameter markup inside it. "
                 "When revising, return the complete corrected Candidate with the same shape.",
                 {**context, "feedback": feedback},
                 max_tokens=16384,
+                environment=validated_environment,
             )
             context["candidate"] = candidate.model_dump()
             context.pop("source_validation", None)
             planning["draft_notes"] = candidate.explanation
+            validated_environment = None
             self.progress(key, "checking", planning=planning)
             try:
                 design = self._validate_candidate(candidate, brief, sources)
                 if design:
+                    problems = requirement_issues(design.environment, brief.requirements, design)
+                    if problems:
+                        raise ValueError(
+                            "Required constructs are not implemented: " + " ".join(problems)
+                        )
+                    validated_environment = design.environment
                     assert design.environment_source is not None
                     probed_design_hash = digest(design.model_dump())
                     context["source_validation"] = {
@@ -881,11 +992,6 @@ class Planner:
                         if operation["status"] != "complete":
                             raise ValueError("Copied candidate probe rejected the proposed rules")
                     context["candidate"] = {**candidate.model_dump(), "design": design.model_dump()}
-                    problems = requirement_issues(design.environment, brief.requirements, design)
-                    if problems:
-                        raise ValueError(
-                            "Required constructs are not implemented: " + " ".join(problems)
-                        )
                     check = await asyncio.to_thread(self.research.review_design, design)
                     if brief.factorial:
                         check["issues"].extend(factorial_issues(check["condition_grid"]))

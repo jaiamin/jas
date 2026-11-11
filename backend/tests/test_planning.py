@@ -5,6 +5,196 @@ import pytest
 from agent_sim.validity import Requirement
 
 
+def test_large_protocol_followups_fit_without_losing_prior_revisions(tmp_path, monkeypatch):
+    from copy import deepcopy
+
+    from agent_sim.api import create_app
+    from agent_sim.domain import Design
+    from fastapi.testclient import TestClient
+
+    from backend.tests.test_researcher_designs import finish, provider, scope
+
+    app = create_app(f"sqlite:///{tmp_path}/large-followups.sqlite3")
+    with TestClient(app, base_url="http://localhost") as client:
+        installed = client.get("/api/catalog").json()["templates"]
+        expected_parameters = {
+            item["id"]: Design.model_validate(item["design"]).conditions[0].parameters.model_dump()
+            for item in installed
+        }
+        design = deepcopy(next(t["design"] for t in installed if t["id"] == "commons"))
+        design["question"] = (
+            "Compare optional public messaging in a twelve-agent Commons pilot. "
+            + "Preserve matched resources, participant settings and incomplete outcomes. " * 50
+        )
+        design["context"] = (
+            "Choose how much to contribute from your credits under the displayed rules. " * 12
+        )
+        design["hypothesis"] = (
+            "Compare recorded contributions across matched conditions and seeds; "
+            "retain zeros and incomplete runs. " * 10
+        )
+        design["profiles"] = [
+            dict(
+                deepcopy(design["profiles"][0]),
+                key=f"worker_{i}",
+                name=f"Worker {i}",
+                goal="Choose contributions using the displayed personal and collective payoff "
+                "rules, without a required outcome.",
+            )
+            for i in range(12)
+        ]
+        design.update(rounds=6, seeds=[17, 83, 241], repetitions=1)
+        design["limitations"] = [
+            "Synthetic credits do not establish human behavior or mental states.",
+            "Interacting agent turns are not independent population samples.",
+            "Fixed seeds match World randomization, not stochastic model responses.",
+            "Retain missing and failed trajectories; do not replace unsuccessful trials.",
+            "An API ceiling can stop a run before the planned horizon without an outcome.",
+            "Availability of public messages is distinct from voluntary message use.",
+            "Recorded explanations are not private reasoning or proof of attention.",
+            "Findings apply to the configured model, task and bounded pilot only.",
+        ]
+        brief = scope(
+            design,
+            requirements=[
+                {
+                    "source": "public messaging",
+                    "capability": "messaging",
+                    "mapping": "direct",
+                    "explanation": "Optional messages, with the same resource rules.",
+                }
+            ],
+        )
+        calls = provider(client, monkeypatch, design, brief=brief)
+        proposals, chat_id = [], None
+        for index in range(4):
+            design["rounds"] = brief["rounds"] = 6 + 2 * index
+            design["context"] = (
+                "You have finite credits at each displayed decision opportunity. "
+                "Choose freely between personal retained credits and the shared fund. "
+                "Other participants may choose differently; messages are unverified statements. "
+                "Read the displayed legal actions and actual payoff rules before choosing. "
+            ) * 12 + f"The maximum horizon is {design['rounds']} rounds."
+            design["hypothesis"] = (
+                "Compare actual contributions and settled payoffs within matched seed blocks. "
+                "Record voluntary messages separately from message availability. "
+                "Retain failures and incomplete trajectories with their observed denominators; "
+                "do not turn missing outcomes into zero contributions or independent samples. "
+            ) * 5 + f"The planned maximum is {design['rounds']} rounds per trajectory."
+            question = (
+                design["question"]
+                if index == 0
+                else f"Change only the horizon to {design['rounds']} rounds; "
+                "retain all other settings."
+            )
+            result = finish(
+                client, client.post("/api/chats", json={"question": question, "chat_id": chat_id})
+            )
+            assert result["status"] == "complete", result["error"]
+            assert result["output"]["design"]["rounds"] == design["rounds"]
+            proposals.append(result["output"]["design"])
+            chat_id = result["chat_id"]
+        for call in calls:
+            for operation in call["prompt"].get("research_operations", {}).get("operations", []):
+                for environment in (operation.get("data") or {}).get("environments", []):
+                    assert (
+                        environment["template_parameters"]
+                        == expected_parameters[environment["key"]]
+                    )
+            for turn in call["prompt"].get("conversation", []):
+                if previous := turn.get("proposal"):
+                    assert previous in proposals
+        assert len(client.get(f"/api/chats/{chat_id}").json()) == 4
+        assert client.get("/api/studies").json() == []
+
+
+def test_invalid_world_selection_keeps_discovery_available_for_correction(runtime, monkeypatch):
+    from copy import deepcopy
+
+    from agent_sim.assistants import Assistants
+    from agent_sim.domain import DesignSpec
+    from agent_sim.planning import Candidate, DesignReview, StudyBrief
+    from agent_sim.templates import templates
+    from pydantic_ai.messages import ModelResponse, ToolCallPart
+    from pydantic_ai.models.function import FunctionModel
+    from pydantic_ai.usage import RequestUsage
+
+    db, models, research, _ = runtime
+    question = "Design a three-agent distributed information pilot."
+    design = deepcopy(
+        next(t["design"] for t in templates() if t["id"] == "distributed_coordination")
+    )
+    assert isinstance(design, dict)
+    design["question"] = question
+    invalid = deepcopy(design)
+    invalid["environment"] = "coordination"  # Public tasks cannot implement scoped artifacts.
+    brief = StudyBrief(
+        supported=True,
+        explanation="A small distributed choice pilot.",
+        operationalization="Describe actual choices and available evidence.",
+        size_rationale="Three peers and one descriptive trajectory.",
+        agents=len(design["profiles"]),
+        conditions=len(design["conditions"]),
+        seeds=len(design["seeds"]),
+        repetitions=design["repetitions"],
+        rounds=design["rounds"],
+        research_query=None,
+        requirements=[
+            Requirement(
+                source="distributed information",
+                capability="distributed_information",
+                mapping="direct",
+                explanation="Scoped evidence and addressed mail.",
+            )
+        ],
+    )
+    drafts = []
+
+    async def respond(messages, info):
+        prompt = json.loads(messages[-1].parts[0].content)
+        title = info.output_tools[0].parameters_json_schema["title"]
+        if title == "StudyBrief":
+            output = brief
+        elif title == "Candidate":
+            drafts.append(prompt)
+            catalog = prompt["research_operations"]["operations"][0]["data"]["environments"]
+            can_correct = "distributed_coordination" in {env["key"] for env in catalog} and (
+                "distributed_coordination"
+                in {example["key"] for example in prompt["rule_examples"]}
+            )
+            output = Candidate(
+                design=DesignSpec.model_validate(
+                    design if len(drafts) > 1 and can_correct else invalid
+                )
+            )
+        else:
+            output = DesignReview(issues=[], summary="Describe distributed choice outcomes.")
+        return ModelResponse(
+            parts=[ToolCallPart(info.output_tools[0].name, output.model_dump())],
+            usage=RequestUsage(input_tokens=120, output_tokens=30),
+        )
+
+    monkeypatch.setattr(models, "model", lambda _: FunctionModel(function=respond))
+
+    async def exercise():
+        assistant = Assistants(db, research, models)
+        try:
+            pending = await assistant.send(question, "new")
+            await assistant.tasks[pending["id"]]
+            result = assistant.get(pending["id"])
+            assert result["status"] == "complete", result["error"]
+            assert result["output"]["design"]["environment"] == "distributed_coordination"
+            assert result["usage"]["requests"] == 4
+            assert len(drafts) == 2
+            assert drafts[1]["candidate"]["design"] == invalid
+            assert drafts[1]["feedback"]  # Rejected content stays visible, with the actual error.
+            assert research.studies() == []
+        finally:
+            await assistant.close()
+
+    asyncio.run(exercise())
+
+
 @pytest.mark.parametrize("revisions", [0, 1, 2])
 def test_completed_team_probes_fit_revisions_and_review_without_losing_evidence(
     runtime, monkeypatch, revisions

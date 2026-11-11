@@ -21,6 +21,8 @@ The [product review](research/FINAL_PRODUCT_REVIEW.md) and
 [verification record](research/MERGE_READINESS_VERIFICATION.json) identify observed
 results and their source versions. [Historical outcomes](research/RESEARCH_HARNESS_COMPACT_REPORT.md)
 are summarized once; obsolete task plans and raw captures are not current guides.
+The [live Agent evaluation](research/AGENT_EXTENSIVE_EVALUATION.md) separates fresh
+workflow completion, protocol quality, failures and API spending from CI results.
 
 The architecture decisions cover [probe/world authority](adr/0001-isolate-probes-and-world-authority.md)
 and [participant harnesses](adr/0002-participant-harnesses-are-experimental-factors.md).

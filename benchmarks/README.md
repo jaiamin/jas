@@ -19,6 +19,16 @@ current application's full capabilities. Use the
 | Export replay and paired summaries | `replay.py`, `report.py` |
 | Published results and caveats | [report](results/REPORT.md), [limitations](results/LIMITATIONS.md) |
 
+## Live Agent development checks
+
+The frozen [core prompts](agent-live-development.json) and
+[variants](agent-live-variants.json) exercise general answers, protocol drafting,
+follow-ups, permissions and unsupported requests through public HTTP. The
+[evaluation report](../docs/research/AGENT_EXTENSIVE_EVALUATION.md) separates workflow
+completion from manual semantic assessment, actual spend and source attribution.
+These public development cases are separate from the historical frozen benchmark
+and do not establish held-out competence.
+
 ## Run without spending
 
 From the repository root, using the [normal development setup](../docs/DEVELOPMENT.md):

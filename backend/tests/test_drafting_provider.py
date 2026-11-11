@@ -120,7 +120,7 @@ def test_provider_can_express_participant_information_and_artifact_contents(runt
     }
 
 
-@pytest.mark.parametrize("invalid_draft", [False, True])
+@pytest.mark.parametrize("invalid_draft", [False, "missing_map", "long_hypothesis"])
 @pytest.mark.parametrize("context", ["new", "general"])
 @pytest.mark.parametrize("omit_rationale", [False, True])
 def test_chat_drafts_reviewable_protocol_and_keeps_invalid_output_blocked(
@@ -154,9 +154,11 @@ def test_chat_drafts_reviewable_protocol_and_keeps_invalid_output_blocked(
     draft = candidate.model_dump(mode="json")
     if omit_rationale:
         draft.pop("explanation")
-    if invalid_draft:
+    if invalid_draft == "missing_map":
         # This is the same missing required map observed in both reported failures.
         draft["design"]["conditions"][0]["parameters"]["coordination"]["information"] = {}
+    elif invalid_draft == "long_hypothesis":
+        draft["design"]["hypothesis"] = "Private analysis plan. " * 100
     outputs = [
         brief.model_dump(mode="json"),
         draft,
@@ -231,6 +233,10 @@ def test_chat_drafts_reviewable_protocol_and_keeps_invalid_output_blocked(
                 assert result["status"] == "failed"
                 assert "UnexpectedModelBehavior" in result["error"]
                 assert "No retry or substitute model" in result["error"]
+                if invalid_draft == "long_hypothesis":
+                    assert "design.hypothesis" in result["error"]
+                    assert "2000" in result["error"]
+                    assert "Private analysis plan" not in result["error"]
                 assert result["output"]["planning"]["brief"]["operationalization"]
                 assert calls[-1]["status"] == "failed"
                 assert "design" not in result["output"]

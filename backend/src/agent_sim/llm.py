@@ -7,7 +7,7 @@ from dataclasses import replace
 from typing import Any, Literal, TypedDict, TypeVar
 from urllib.parse import urlparse
 
-from pydantic import TypeAdapter
+from pydantic import TypeAdapter, ValidationError
 from pydantic_ai import Agent, ToolOutput, WebSearchTool, capture_run_messages
 from pydantic_ai.capabilities import NativeTool
 from pydantic_ai.messages import (
@@ -88,6 +88,27 @@ def partial_outputs(response: ModelResponse, *, web_search: bool) -> Iterator[di
 
 class ProviderFailure(Exception):
     pass
+
+
+def _validation_detail(error: BaseException | None) -> str:
+    for _ in range(8):
+        if error is None:
+            break
+        if isinstance(error, ValidationError):
+            for issue in error.errors(include_input=False):
+                if issue["type"] == "string_too_long" and issue["loc"] in {
+                    ("design", "title"),
+                    ("design", "hypothesis"),
+                    ("design", "context"),
+                    ("explanation",),
+                    ("summary",),
+                }:
+                    field = ".".join(str(part) for part in issue["loc"])
+                    limit = issue["ctx"]["max_length"]
+                    return f"Generated field {field} exceeds its {limit}-character limit. "
+            return "The generated response did not match its required schema. "
+        error = error.__cause__ or error.__context__
+    return ""
 
 
 class LanguageModels:
@@ -284,7 +305,7 @@ class LanguageModels:
                 detail = (
                     f"Output reached the {max_tokens}-token limit; increase response tokens. "
                     if truncated
-                    else ""
+                    else _validation_detail(error)
                 )
                 raise ProviderFailure(
                     f"{model} request failed ({failure}). {detail}"

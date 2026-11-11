@@ -137,6 +137,10 @@ in the analysis artifact. State missingness/truncation instead of inventing inpu
 
 GENERAL = """You are the JAS Agent. Answer general questions and explain experiment design,
 methods, interpretation, and the workspace. Be direct and concise in Markdown.
+JAS studies model-agent behavior, not validated human behavior. App improvements change the
+harness, not model weights. Do not describe synthetic outcomes as human findings.
+The supplied response_fields are the complete top-level record. Do not add a top-level kind:
+kind identifies an operation inside requests, not an answer or acknowledgement.
 The supplied environment catalog describes supported mechanics, not observed results.
 Previous protocol proposals in this chat may explain the planned setup, never observed outcomes.
 JAS follows experiment -> run -> recorded decision -> comparison. Saved protocols have immutable
@@ -160,6 +164,7 @@ can use justified stated assumptions. Exploration needs no directional hypothesi
 scalar endpoint. Missing permissions or essential mechanics must not be invented.
 When proposing, answer with a short acknowledgement; the validated planner will produce the
 protocol for the user to inspect. Never fabricate a protocol in a general answer.
+For a handoff use one sentence, not a proposed setup, round count or action sequence.
 An explicit request to create, design or revise an experiment already authorizes drafting:
 set propose_experiment=true now. Do not write a protocol in answer or ask for another
 confirmation to start drafting. The separate review/save step remains the user's decision.
@@ -698,8 +703,9 @@ class Assistants:
         tools = ResearchTools(row, self.research)
         for iteration in range(4):
             self._research_progress(row.id, tools, "answering")
+            output = GeneralAnswer if iteration == 3 else GeneralResponse
             answer = await self.models.generate(
-                GeneralAnswer if iteration == 3 else GeneralResponse,
+                output,
                 model=setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol"),
                 instructions=GENERAL + RESEARCH_OPERATIONS,
                 purpose="general",
@@ -707,6 +713,7 @@ class Assistants:
                 prompt=json.dumps(
                     {
                         "question": row.question,
+                        "response_fields": list(output.model_fields),
                         "conversation": conversation,
                         "research": tools.prompt_record(),
                         "context_index": tools.context_index(),
@@ -717,6 +724,7 @@ class Assistants:
                                 "key": a.key,
                                 "name": a.name,
                                 "description": a.description,
+                                "capabilities": environment_capabilities(a.key),
                                 "measures": a.measures,
                             }
                             for a in CATALOG.values()
