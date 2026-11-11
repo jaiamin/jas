@@ -122,8 +122,9 @@ def test_provider_can_express_participant_information_and_artifact_contents(runt
 
 @pytest.mark.parametrize("invalid_draft", [False, True])
 @pytest.mark.parametrize("context", ["new", "general"])
+@pytest.mark.parametrize("omit_rationale", [False, True])
 def test_chat_drafts_reviewable_protocol_and_keeps_invalid_output_blocked(
-    tmp_path, monkeypatch, invalid_draft, context
+    tmp_path, monkeypatch, invalid_draft, context, omit_rationale
 ):
     question = "Compare distributed information in a three-agent team."
     design = next(t["design"] for t in templates() if t["id"] == "distributed_coordination")
@@ -151,6 +152,8 @@ def test_chat_drafts_reviewable_protocol_and_keeps_invalid_output_blocked(
         explanation="Contrast who can read the evidence.", design=DesignSpec.model_validate(design)
     )
     draft = candidate.model_dump(mode="json")
+    if omit_rationale:
+        draft.pop("explanation")
     if invalid_draft:
         # This is the same missing required map observed in both reported failures.
         draft["design"]["conditions"][0]["parameters"]["coordination"]["information"] = {}
@@ -159,6 +162,18 @@ def test_chat_drafts_reviewable_protocol_and_keeps_invalid_output_blocked(
         draft,
     ]
     review = DesignReview(issues=[], summary="Compare shared and private evidence.").model_dump()
+    if omit_rationale:
+        # A valid live review exceeded the old display-text bound by only 34 characters.
+        review["summary"] = (
+            "This exploratory study compares two-agent commons contributions across four rounds "
+            "when private messaging is disabled versus enabled, using matched environment seed "
+            "and one repetition to observe how communication availability affects sealed "
+            "contribution choices and payoff trajectories. All observable behavior—including "
+            "uncooperative zero contributions, round-to-round adjustments, and message content—"
+            "is retained without filtering for cooperative outcomes. A primary limitation is "
+            "that one seed and one pair provide a single descriptive trajectory, not generalized "
+            "inference; long-run learning beyond four rounds cannot be assessed."
+        )
     if not invalid_draft:
         outputs.append(review)
     if context == "general":
@@ -208,6 +223,10 @@ def test_chat_drafts_reviewable_protocol_and_keeps_invalid_output_blocked(
             assert client.get("/api/studies").json() == []  # Drafts need explicit approval.
             assert client.get(f"/api/chats/{chat}").json() == [result]
             assert "drafting" in result["output"]["activity"]
+            if context == "general":
+                assert "propose_experiment" in requests[0]["tools"][0]["parameters"]["required"]
+            brief_request = requests[1 if context == "general" else 0]
+            assert brief_request["tools"][0]["strict"] is True
             if invalid_draft:
                 assert result["status"] == "failed"
                 assert "UnexpectedModelBehavior" in result["error"]
@@ -263,7 +282,7 @@ def test_chat_drafts_reviewable_protocol_and_keeps_invalid_output_blocked(
                 assert protocol["conditions"][0]["parameters"]["artifacts"]["objects"][0][
                     "content"
                 ] == {"cedar": 9, "quartz": 2, "reed": -2}
-                assert result["output"]["summary"] == "Compare shared and private evidence."
+                assert result["output"]["summary"] == review["summary"]
                 saved = client.post("/api/studies", json={"design": protocol})
                 assert saved.status_code == 201
                 assert len(client.get("/api/studies").json()) == 1

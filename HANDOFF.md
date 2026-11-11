@@ -13,6 +13,29 @@ in Git; retired raw evidence cannot be independently reread.
 
 ## Current state
 
+
+2026-11-11 Agent creation/input-limit follow-up: see
+[the live-check report](docs/research/AGENT_CREATION_LIVE_CHECKS.md). Review discovery is scoped
+without losing original results or probes; scoping/drafting/review contracts and general-chat
+handoff are explicit. Closed records use strict output; dynamic protocol maps retain automatic
+selection. Original failing draft replay passes without raising the180,000-byte limit. Related
+146 cases plus10 reference cases pass at their recorded sources; subsequent focused51/49 pass
+after stage/answer refinements. Whole Ruff/globalty and changed-file formatting pass.
+
+Real Haiku4.5 diagnosis used73 requests/$2.002530 under a final$3 test ceiling, with no unknown
+usage or participant calls. Short bargaining, detailed two-condition bargaining and the original
+three-agent delay question reached valid drafts/save/export; browser review/save/reload passed.
+Earlier failures remain failures. Generated explanations still contain scientific/measurement
+limitations; this is workflow qualification, not a content-accuracy benchmark. All test services
+and the incognito tab are closed;18143 reusable. The closed own live DB is losslessly archived
+with `.tools/agent-context/anthropic/restoration.json`; complete request/cost evidence retained.
+Current-contract v7 changes only strict-selection metadata, independently checked. The idle user
+app was refreshed at PID593169: exact public study/run/chat hashes, usage and database inode
+match before/after; no failed request was replayed. Receipt:
+`.tools/agent-context/user-refresh/receipt.json`. Hosted CI remains the merge gate for PR33.
+
+### Prior map repair
+
 2026-11-11 Agent drafting repair: the two user-reported failures in chat
 `4da5af4520144a69` ended normally below their output allowance. Both retained
 responses contained empty artifact-content and participant-information maps;

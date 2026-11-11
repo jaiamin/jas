@@ -836,7 +836,8 @@ def test_concurrent_investigations_cannot_overdraw_shared_workspace_allowance(
     tmp_path, monkeypatch
 ):
     with TestClient(
-        create_app(f"sqlite:///{tmp_path}/contention.sqlite3", budget_usd=0.6),
+        # The compact scope prompt fits once, but twice must exceed this ceiling.
+        create_app(f"sqlite:///{tmp_path}/contention.sqlite3", budget_usd=0.4),
         base_url="http://localhost",
     ) as client:
 
@@ -866,7 +867,7 @@ def test_concurrent_investigations_cannot_overdraw_shared_workspace_allowance(
         assert len(sent) == winner["requests"] == 1
         assert loser["requests"] == loser["charged_usd"] == loser["study_charged_usd"] == 0
         reservation = winner["ledger"][0]["reserved"]
-        assert 300_000 < reservation <= 600_000
+        assert 200_000 < reservation <= 400_000
         assert (
             round(client.get("/api/settings").json()["usage"]["cost_usd"] * 1_000_000)
             == reservation

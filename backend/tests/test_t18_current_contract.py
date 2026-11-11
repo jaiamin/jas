@@ -53,7 +53,7 @@ def test_frozen_current_contract(case_index, indices, tmp_path, monkeypatch):
         assert tool.parameters_json_schema == turn["provider_tool"]["schema"]
         assert tool.name == turn["provider_tool"]["name"]
         assert tool.description == turn["provider_tool"]["description"]
-        assert tool.strict is True
+        assert tool.strict is turn["provider_tool"]["strict"]
         assert info.function_tools == [] and info.allow_text_output is False
         seen.append(copy.deepcopy(turn))
         return ModelResponse(

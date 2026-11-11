@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "split": "DEVELOPMENT",
   "historical_comparison": false,
   "authorship": "Independent stdlib contract arithmetic before candidate outputs; no JAS imports.",
@@ -291,6 +291,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -421,7 +422,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -917,6 +918,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -1100,7 +1102,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -1522,6 +1524,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -1667,7 +1670,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -1945,6 +1948,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -2138,7 +2142,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -2432,6 +2436,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -2730,7 +2735,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -3028,6 +3033,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -3173,7 +3179,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -3455,6 +3461,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -3648,7 +3655,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -3946,6 +3953,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -4244,7 +4252,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -4566,6 +4574,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -4684,7 +4693,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -4988,6 +4997,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -5115,7 +5125,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -5419,6 +5429,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -5555,7 +5566,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -5859,6 +5870,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -6376,7 +6388,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -6776,6 +6788,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -7289,7 +7302,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -7689,6 +7702,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -8210,7 +8224,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -8610,6 +8624,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -9139,7 +9154,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -9539,6 +9554,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -10478,7 +10494,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -10920,6 +10936,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -11105,7 +11122,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -11553,6 +11570,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -11801,7 +11819,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -12255,6 +12273,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -12572,7 +12591,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -13041,6 +13060,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -13427,7 +13447,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -13911,6 +13931,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -14366,7 +14387,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {
@@ -14865,6 +14886,7 @@
               "title": "TurnDecision",
               "type": "object"
             },
+            "strict_output": null,
             "web_search": false,
             "settings": {
               "max_tokens": 512,
@@ -15389,7 +15411,7 @@
           "provider_tool": {
             "name": "final_result",
             "description": "The final response which ends this conversation",
-            "strict": true,
+            "strict": null,
             "schema": {
               "$defs": {
                 "Kind0": {

@@ -529,7 +529,10 @@ def test_configured_assistant_model_is_used_without_substitution(runtime, monkey
     async def generate(output, **kwargs):
         assert kwargs["model"] == "openai:gpt-6-luna"
         return GeneralResponse(
-            answer="Select recorded evidence to inspect outcomes.", citations=[], caveats=[]
+            answer="Select recorded evidence to inspect outcomes.",
+            citations=[],
+            caveats=[],
+            propose_experiment=False,
         )
 
     monkeypatch.setattr(llm, "generate", generate)
@@ -914,7 +917,9 @@ def test_public_activity_survives_completion_failure_and_reload(runtime, monkeyp
         kwargs["on_partial"]({"answer": "Updated draft"})
         if failed:
             raise ValueError("Provider stopped")
-        return GeneralResponse(answer="Validated answer", citations=[], caveats=[])
+        return GeneralResponse(
+            answer="Validated answer", citations=[], caveats=[], propose_experiment=False
+        )
 
     monkeypatch.setattr(llm, "generate", generate)
 

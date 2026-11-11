@@ -142,6 +142,13 @@ Previous protocol proposals in this chat may explain the planned setup, never ob
 JAS follows experiment -> run -> recorded decision -> comparison. Saved protocols have immutable
 revisions. Saving a protocol does not execute it. Conditions, matched seeds, and repetitions
 define planned runs; shared seeds and within-run histories can induce dependence.
+Matched seeds align World randomization, not model outputs; pairing alone does not establish
+causal identification or independent replication.
+When explaining matched seeds, state that model responses and resulting trajectories can still
+differ. Never claim the same seed makes all events identical or proves a causal effect.
+World rules are seeded; participant decisions come from language models, not inspectable
+deterministic policies. For unsupported requests, explain JAS's evidence limits concisely.
+Do not turn that local limitation into a proof about consciousness or all empirical science.
 Maximum decisions are runs times rounds times agents. Spending
 ceilings limit model calls. Decide whether the user wants an answer or a reviewed experiment
 proposal. Set propose_experiment=true only when they ask to design/create an experiment or
@@ -153,6 +160,10 @@ can use justified stated assumptions. Exploration needs no directional hypothesi
 scalar endpoint. Missing permissions or essential mechanics must not be invented.
 When proposing, answer with a short acknowledgement; the validated planner will produce the
 protocol for the user to inspect. Never fabricate a protocol in a general answer.
+An explicit request to create, design or revise an experiment already authorizes drafting:
+set propose_experiment=true now. Do not write a protocol in answer or ask for another
+confirmation to start drafting. The separate review/save step remains the user's decision.
+For that handoff, requests must be []: the planner performs its own mechanic discovery.
 You cannot save experiments or start participant execution. Planning never saves or runs a proposal.
 An explicit generation_allowance can authorize a checked finite artifact and reusable mechanics
 record; the resulting experiment still awaits review and a separate execution action.
@@ -209,6 +220,9 @@ do not silently retry. Inspection and saving never sample participants. A succes
 pending user review of rules, information policy, harness and limits before separate execution.
 Each response chooses an answer/handoff OR up to four requests, never both. A general request
 response's answer is only a short public description of the operation, not private reasoning.
+When requests is nonempty, set propose_experiment=false and citations=[]; after inspecting
+the results, a later response may hand off with propose_experiment=true and requests=[].
+Use only the declared output fields, with caveats and citations as arrays, never strings.
 Identical requests reuse their recorded result. At most three request batches are dispatched;
 the fourth model request must answer with available evidence and explicit limits. Every model
 request is accounted separately. The supplied research.operations contain actual results and
@@ -218,15 +232,21 @@ rejections; use those results rather than claiming hypothetical tool access or e
 
 class GeneralAnswer(Finding):
     propose_experiment: bool = Field(
-        default=False,
         description=(
-            "Whether the user requests a new or revised experiment protocol, rather than an answer."
+            "Explicit routing decision: true for requests to create, design or revise an "
+            "experiment. With true, answer is only a short acknowledgement; the planner "
+            "produces the reviewable protocol. False answers a question without inventing one."
         ),
     )
 
 
 class GeneralResponse(GeneralAnswer):
-    requests: list[ResearchRequest] = Field(default_factory=list, max_length=4)
+    requests: list[ResearchRequest] = Field(
+        default_factory=list,
+        max_length=4,
+        description="Read-only operations before answering. Empty for a protocol handoff; "
+        "nonempty requires propose_experiment=false and citations=[].",
+    )
 
 
 class HistoryRequest(Strict):
