@@ -294,50 +294,16 @@ Decisions and evidence stack below 1440px.
 Home’s experiment ideas, drafts, active runs and recent experiments share a centered
 58rem maximum-width content column below the composer. Keep their edges aligned.
 
-Home’s backdrop uses the user's replacement city GIF, stored as `city.gif`,
-with `city.webp` derived from a decoded frame. The superseded GIF and poster,
-procedural town, route generator and map-only styles are removed. Environment
-catalogue illustrations are unchanged.
-
-Keep the backdrop 320px tall at all widths. The image fills the available width
-with CSS `object-fit: cover`, centered horizontally with a 35% vertical focal
-point that favors the skyline. Narrow windows crop the sides; wide windows can
-crop excess sky and water. No viewport JavaScript or fixed media width is needed.
-Its top edge, upper corners and central column are uninterrupted. Only the lower corners
-dissolve along broad, asymmetric rounded contours inspired by the supplied recording.
-All strips are opaque. Their coverage decreases gradually toward the corner edges,
-with varied lengths, stepped ends, detached pixels and irregular 1–4px row pitches.
-Correlated patches mix thicker clusters with fine filaments. The full
-image becomes increasingly sparse shreds rather than a translucent or blurred veil.
-The rounded contours reach a little farther toward the lower middle, following
-the final refinement; their upper extent stays unchanged. Regenerate the single SVG
-with `python3 frontend/scripts/generate_home_dissolve.py`. Twelve coverage bands
-per corner carry seamless repeating ribbon textures at varied speeds with gentle,
-forward-only speed changes.
-The left corner flows left and the right corner flows right, without reversing.
-Each 12.8–20.48-second loop advances exactly one 256px repeat, so its reset is
-visually continuous. The rounded coverage contours, top and core stay still.
-One mask asset contains an explicit still view. The React component
-selects it and the poster for reduced motion, hidden documents or an offscreen
-backdrop; there is no JavaScript animation clock or duplicate GIF layer.
-
-Light mode preserves the GIF's color and opacity. Dark mode uses 67% brightness
-and 90% saturation; the dissolve itself uses no opacity animation or blur.
-The heading stays above the composer, with dark neutral lettering in both themes.
-A localized 75% white tint and 6px backdrop blur sit behind the full title.
-A broad oval mask extends 8rem beyond each end and 2rem vertically, with multiple
-falloff stops for a gradual transition into the city. There is no dark scrim or hard-edged plate.
-The text itself stays sharp. The artwork
-is decorative, hidden from assistive technology and pointer-inert; it does not
-represent current experiments or provider activity. There is no bottom divider.
+Home uses the shared neutral background: white in light mode and graphite in
+dark mode. The heading uses the foreground token, without imagery, animation,
+title tint or backdrop blur. A stock Separator restores the full-width gray
+divider in the existing gap below the composer (16px mobile, 20px desktop),
+without changing the position of the composer or the content beneath it.
+Environment catalogue and experiment-idea illustrations remain unchanged.
 
 The Home composer retains a 672px maximum width and 88px minimum text-entry height.
 Heading top spacing is 152px on mobile and 156px on desktop, with a 16px gap to
-the composer. The composer overlaps the artwork and extends below the fixed
-backdrop, keeping imagery out of
-the text field. A stock
-`shadow-lg` gives the composer's gray backing Card a compact blended shadow along its sides and
-bottom, separating it from the decorative background.
+the composer. Its gray backing Card retains the stock `shadow-lg`.
 Every unscoped entry point uses the same server intent routing: Agent answers a
 question or creates a validated experiment proposal from the prompt, without a
 manual creation mode. Home has no selector. Agent has an optional experiment/run

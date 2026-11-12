@@ -1,5 +1,29 @@
 # JAS handoff
 
+## Home: static neutral background
+
+User selected the static neutral option. Branch `feat/quiet-home-background` is
+based on accepted CI checkpoint `a016350d` from still-open PR #36. Home now uses
+theme background/foreground tokens, without the animated city or title tint/blur.
+A stock gray Separator sits in the existing gap below the composer. Heading,
+composer, experiment ideas and all following content retain their original layout.
+Deleted the backdrop component, dissolve generator, mask, GIF/poster and their CSS;
+updated PRODUCT/DESIGN and replaced obsolete animation browser assertions.
+
+Verification: full frontend units 168/168 (39 files), Home browser 15/15, whole
+frontend lint, forced TypeScript and private build PASS. Native visual inspection
+passed in both themes at desktop/mobile sizes; light-mode before/after geometry
+is exactly equal. Evidence is under `.tools/quiet-home/`. Retained initial reds
+include the original artwork defect, an overbroad test selector and mobile baseline
+assumptions; the corrected baseline was measured against the original build.
+No paid calls. Temporary layout instrumentation was removed.
+
+Qualified assets are served on 8080 with the original PID/database. Refresh receipt
+`publish-8080-01/receipt.json` proves the same DB inode, all rows/usage unchanged,
+served asset equality and absence of city assets. The previous generated dist is
+retained locally for rollback; it is not shipped. Owned review tab is closed.
+Publication: coherent commit/draft PR against `feat/research-quality` next; no merge.
+
 ## CI follow-up: planning activity animation
 
 PR #36 at be738b8 passed backend/container/workflows; frontend retained 186/187 browser

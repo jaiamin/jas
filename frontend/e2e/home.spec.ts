@@ -91,152 +91,74 @@ test("Home keeps immediate content usable while only database rows show skeleton
   await expect(page).toHaveURL(/\/studies$/);
 });
 
-test("Home media respects reduced motion and stops when it leaves the viewport", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 390, height: 480 });
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
-  const backdrop = page.locator(".home-media");
-  const image = backdrop.locator("img");
-  await expect(backdrop).toHaveAttribute("aria-hidden", "true");
-  await expect(backdrop).toHaveCSS("pointer-events", "none");
-  await expect(backdrop).toHaveAttribute("data-motion", "still");
-  await expect(image).toHaveAttribute("src", /city\.webp$/);
-  await expect
-    .poll(() => image.evaluate((img) => (img as HTMLImageElement).naturalWidth))
-    .toBeGreaterThan(0);
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await expect(backdrop).toHaveAttribute("data-motion", "animated");
-  await expect(image).toHaveAttribute("src", /city\.gif$/);
-  await expect
-    .poll(() => image.evaluate((img) => (img as HTMLImageElement).naturalWidth))
-    .toBe(1600);
-  await page
-    .getByRole("region", { name: "Recent experiments" })
-    .scrollIntoViewIfNeeded();
-  await expect(backdrop).toHaveAttribute("data-motion", "still");
-  await expect(image).toHaveAttribute("src", /city\.webp$/);
-  await backdrop.scrollIntoViewIfNeeded();
-  await expect(backdrop).toHaveAttribute("data-motion", "animated");
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(image).toHaveAttribute("src", /city\.webp$/);
-  for (const width of [390, 1440, 2400]) {
-    await page.setViewportSize({ width, height: 900 });
-    // Read both bounds in one frame while the responsive sidebar transitions.
-    const { frame, field } = await image.evaluate((img) => {
-      const container = img.parentElement;
-      if (!container) throw new Error("Missing city viewport");
-      return {
-        frame: img.getBoundingClientRect().toJSON(),
-        field: container.getBoundingClientRect().toJSON(),
-      };
+for (const width of [390, 1440])
+  for (const theme of ["light", "dark"]) {
+    test(`Home keeps a neutral background and original content positions · ${theme} · ${width}`, async ({
+      page,
+    }, testInfo) => {
+      const artworkRequests: string[] = [];
+      page.on("request", (request) => {
+        if (
+          /\/(city\.(gif|webp)|home-dissolve\.svg)(?:$|\?)/.test(request.url())
+        )
+          artworkRequests.push(request.url());
+      });
+      await page.addInitScript(
+        (value) => localStorage.setItem("jas-theme", value),
+        theme,
+      );
+      await page.route("**/api/settings", (route) =>
+        route.fulfill({ json: settings }),
+      );
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/");
+      await page.evaluate(() => document.fonts.ready);
+      const hero = page.getByRole("region", {
+        name: "What would you like to test?",
+      });
+      await expect(hero.locator("img, video, canvas")).toHaveCount(0);
+      const geometry = await hero.evaluate((element) => {
+        const title = element.querySelector("h1");
+        const composer = element.querySelector("form");
+        const ideas = document.getElementById("experiment-ideas-title");
+        const divider = element.querySelector('[data-slot="separator"]');
+        if (!title || !composer || !ideas || !divider)
+          throw new Error("Missing Home content or divider");
+        return {
+          titleTop: title.getBoundingClientRect().top,
+          composerTop: composer.getBoundingClientRect().top,
+          ideasTop: ideas.getBoundingClientRect().top,
+          composerBottom: composer.getBoundingClientRect().bottom,
+          divider: divider.getBoundingClientRect().toJSON(),
+          width: element.getBoundingClientRect().width,
+          titleColor: getComputedStyle(title).color,
+          foreground: getComputedStyle(element).color,
+          blurred: [title, ...title.querySelectorAll("*")].some(
+            (node) =>
+              getComputedStyle(node, "::before").backdropFilter !== "none",
+          ),
+          animations: element.getAnimations({ subtree: true }).length,
+        };
+      });
+      // Positions captured before replacing the city: preserve both content rows.
+      expect(geometry.titleTop).toBe(width === 390 ? 204 : 208);
+      expect(geometry.composerTop).toBe(width === 390 ? 252 : 260);
+      expect(geometry.ideasTop).toBe(476);
+      expect(geometry.divider.width).toBe(geometry.width);
+      expect(geometry.divider.height).toBe(1);
+      expect(geometry.divider.top - geometry.composerBottom).toBe(
+        width === 390 ? 16 : 20,
+      );
+      expect(geometry.titleColor).toBe(geometry.foreground);
+      expect(geometry.blurred).toBe(false);
+      expect(geometry.animations).toBe(0);
+      expect(artworkRequests).toEqual([]);
+      await page.screenshot({
+        path: testInfo.outputPath(`neutral-home-${theme}-${width}.png`),
+        animations: "disabled",
+      });
     });
-    expect(frame.width).toBe(field.width);
-    expect(frame.height).toBe(320);
-    expect(frame.x + frame.width / 2).toBeCloseTo(field.x + field.width / 2, 1);
-    await expect(image).toHaveCSS("object-fit", "cover");
   }
-  const message = page.getByLabel("Message Agent", { exact: true });
-  await message.fill("Compare cooperation");
-  await expect(message).toHaveValue("Compare cooperation");
-});
-
-test("Home dissolve moves only the lower corners and freezes with reduced motion", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  // Hold the town still so these observations measure the dissolve itself.
-  await page.route("**/illustrations/city.gif", (route) =>
-    route.fulfill({
-      path: "public/illustrations/city.webp",
-      contentType: "image/webp",
-    }),
-  );
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/");
-  const backdrop = page.locator(".home-media");
-  await expect(backdrop).toHaveAttribute("data-motion", "animated");
-  await expect
-    .poll(() =>
-      backdrop
-        .locator("img")
-        .evaluate((img) => (img as HTMLImageElement).naturalWidth),
-    )
-    .toBe(1200);
-  await page.evaluate(() => document.fonts.ready);
-  const bounds = await backdrop.boundingBox();
-  if (!bounds) throw new Error("Missing Home media");
-  const lower = {
-    x: bounds.x,
-    y: bounds.y + bounds.height - 72,
-    width: 120,
-    height: 70,
-  };
-  const upper = { x: bounds.x, y: bounds.y + 2, width: 120, height: 40 };
-  const center = {
-    x: bounds.x + bounds.width / 2 - 60,
-    y: bounds.y + 2,
-    width: 120,
-    height: 40,
-  };
-  const first = await page.screenshot({ clip: lower });
-  const upperFirst = await page.screenshot({ clip: upper });
-  const centerFirst = await page.screenshot({ clip: center });
-  await expect
-    .poll(async () => (await page.screenshot({ clip: lower })).equals(first))
-    .toBe(false);
-  expect((await page.screenshot({ clip: upper })).equals(upperFirst)).toBe(
-    true,
-  );
-  expect((await page.screenshot({ clip: center })).equals(centerFirst)).toBe(
-    true,
-  );
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect(backdrop).toHaveAttribute("data-motion", "still");
-  const frozen = await page.screenshot({ clip: lower });
-  await page.waitForTimeout(350);
-  expect((await page.screenshot({ clip: lower })).equals(frozen)).toBe(true);
-});
-
-test("Dissolve ribbons flow outward and repeat without a visual jump", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 1600, height: 320 });
-  await page.goto("/illustrations/home-dissolve.svg");
-  const frames = [];
-  for (const progress of [0.25, 0.5, 0.75, 1.25]) {
-    const positions = await page.evaluate(async (phase) => {
-      const animations = document.getAnimations();
-      if (!animations.length) throw new Error("Missing ribbon animation");
-      await Promise.all(animations.map((animation) => animation.ready));
-      for (const animation of animations) {
-        animation.pause();
-        const timing = animation.effect?.getTiming();
-        const duration = timing?.duration;
-        if (typeof duration !== "number") throw new Error("Missing duration");
-        animation.effect?.updateTiming({ delay: 0 });
-        animation.currentTime = phase * duration;
-      }
-      return Array.from(document.querySelectorAll(".stream"), (ribbon) => ({
-        side: ribbon.classList.contains("right") ? "right" : "left",
-        x: new DOMMatrix(getComputedStyle(ribbon).transform).m41,
-      }));
-    }, progress);
-    frames.push({ positions, pixels: await page.screenshot() });
-  }
-  expect(frames[0].positions.length).toBeGreaterThan(0);
-  for (let index = 0; index < frames[0].positions.length; index++) {
-    const direction = frames[0].positions[index].side === "right" ? 1 : -1;
-    expect(frames[1].positions[index].x * direction).toBeGreaterThan(
-      frames[0].positions[index].x * direction,
-    );
-    expect(frames[2].positions[index].x * direction).toBeGreaterThan(
-      frames[1].positions[index].x * direction,
-    );
-  }
-  expect(frames[3].pixels.equals(frames[0].pixels)).toBe(true);
-});
 
 test("Composer's manual editor link preserves the message without submitting", async ({
   page,
@@ -557,23 +479,17 @@ for (const width of [390, 1440])
         .locator('[data-slot="card"]')
         .evaluate((box) => {
           const bounds = box.getBoundingClientRect();
-          const backdrop = document
-            .querySelector("[data-slot=home-backdrop]")
-            ?.getBoundingClientRect();
           return {
             top: bounds.top,
             height: bounds.height,
             width: bounds.width,
-            bottom: bounds.bottom,
-            edge: backdrop?.bottom,
             shadow: getComputedStyle(box).boxShadow,
           };
         });
       expect(geometry.width).toBeLessThanOrEqual(672);
       expect(geometry.height).toBeGreaterThanOrEqual(136);
-      expect(geometry.top).toBeLessThan(geometry.edge ?? 0);
-      expect(geometry.bottom).toBeGreaterThan(geometry.edge ?? 0);
-      // The title stays above the composer on its own feathered white blur.
+      expect(geometry.top).toBe(width === 390 ? 252 : 260);
+      // The title remains above the composer, using the shared theme foreground.
       await expect(
         page
           .getByRole("form", { name: "Agent composer" })
@@ -669,21 +585,6 @@ for (const width of [390, 1440])
       await expect(
         page.getByRole("button", { name: /background animation/ }),
       ).toHaveCount(0);
-      const backdrop = page.locator(".home-media");
-      await expect(backdrop).toHaveAttribute("aria-hidden", "true");
-      await expect(backdrop).toHaveCSS("pointer-events", "none");
-      await expect(backdrop.locator("img")).toHaveAttribute("alt", "");
-      await expect
-        .poll(() =>
-          backdrop
-            .locator("img")
-            .evaluate((img) => (img as HTMLImageElement).naturalWidth),
-        )
-        .toBeGreaterThan(0);
-      expect(
-        (await page.locator('[data-slot="home-backdrop"]').boundingBox())
-          ?.height,
-      ).toBe(320);
       const draftToggle = draftSection.getByRole("button", {
         name: "Drafts",
         exact: true,
@@ -831,15 +732,6 @@ for (const width of [390, 1440])
         animations: "disabled",
       });
       await page.mouse.move(0, 0);
-      await page.emulateMedia({ reducedMotion: "reduce" });
-      await expect(page.locator(".home-media")).toHaveAttribute(
-        "data-motion",
-        "still",
-      );
-      await expect(page.locator(".home-media img")).toHaveAttribute(
-        "src",
-        /city\.webp$/,
-      );
       await page.screenshot({
         path: testInfo.outputPath(`home-${theme}-${width}.png`),
         fullPage: true,
