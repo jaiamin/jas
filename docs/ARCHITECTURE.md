@@ -602,6 +602,17 @@ are explicitly marked outside the current context, not silently summarized or co
 as inspected. Full frozen sources and claim checking remain unchanged; later turns
 and unselected runs remain inaccessible. An overview is not a claim of exhaustive review.
 
+Protocol planning shares repeated condition parameters and input subtrees losslessly,
+including rejected drafts. Once scoped, discovery retains complete rules for every
+compatible World and the rejected candidate's World, so revision can correct a wrong
+selection without resending the entire catalog. Validation and output bounds remain
+authoritative. General chat budgets prior proposals and retrieved results separately
+from the complete planner handoff: oversized values carry explicit retrieval metadata,
+and same-scope context requests select nested paths and pages (string pages count
+characters). Stored protocols, documents and operation results remain unchanged.
+These projections reduce context growth; finite model input/output, request-count and
+spending limits still apply, and external/provider failures remain visible.
+
 Participant harnesses (`participants.py`; direct action 1.0.0, tool using 2.0.0) are condition factors,
 independent of provider/model assignments and World. Direct action preserves the
 single structured-decision request and its observation. Tool using owns a bounded

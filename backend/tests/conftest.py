@@ -29,6 +29,21 @@ def analysis_prompt(content):
     return resolve(data)
 
 
+def planning_prompt(content):
+    data = analysis_prompt(content)
+
+    def resolve(value):
+        if isinstance(value, dict):
+            if set(value) == {"shared_input", "overrides"}:
+                return resolve(
+                    {**data["shared_prompt_inputs"][value["shared_input"]], **value["overrides"]}
+                )
+            return {name: resolve(child) for name, child in value.items()}
+        return [resolve(child) for child in value] if isinstance(value, list) else value
+
+    return resolve(data)
+
+
 @pytest.fixture(autouse=True)
 def no_network(monkeypatch):
     monkeypatch.setattr(models, "ALLOW_MODEL_REQUESTS", False)

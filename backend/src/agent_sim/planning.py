@@ -19,6 +19,7 @@ from .research_tools import (
     ProbeStep,
     ResearchTools,
 )
+from .shared_json import share_json
 from .simulation.environments import CATALOG, create_world, get_environment
 from .templates import templates
 from .validity import Requirement, factorial_issues, requirement_issues
@@ -40,6 +41,10 @@ def _share_planning_context(data: dict[str, object]) -> dict[str, object]:
         }
 
     result = dict(data)
+    protocols = []
+    candidate = data.get("candidate")
+    if isinstance(candidate, dict) and isinstance(candidate.get("design"), dict):
+        protocols.append(candidate["design"])
     conversation = data.get("conversation")
     if isinstance(conversation, list):
         proposals = [
@@ -47,6 +52,7 @@ def _share_planning_context(data: dict[str, object]) -> dict[str, object]:
             for turn in conversation
             if isinstance(turn, dict) and isinstance(turn.get("proposal"), dict)
         ]
+        protocols.extend(proposals)
         if len(proposals) >= 2:
             result["conversation"] = [
                 {**turn, "proposal": project(turn["proposal"], proposals[-1])}
@@ -54,6 +60,28 @@ def _share_planning_context(data: dict[str, object]) -> dict[str, object]:
                 else turn
                 for turn in conversation
             ]
+    parameters = [
+        condition["parameters"]
+        for protocol in protocols
+        for condition in protocol.get("conditions", [])
+        if isinstance(condition.get("parameters"), dict)
+    ]
+    if len(parameters) >= 2:
+        base = min(parameters, key=lambda value: len(json.dumps(value)))
+
+        def share_conditions(value):
+            if isinstance(value, dict):
+                return {
+                    name: project(item, base)
+                    if name == "parameters" and isinstance(item, dict)
+                    else share_conditions(item)
+                    for name, item in value.items()
+                }
+            return [share_conditions(item) for item in value] if isinstance(value, list) else value
+
+        # Conditions often differ in one setting but repeat every inactive mechanic.
+        # Keep the complete active protocol, including all source documents.
+        result = share_conditions(result)
     research = data.get("research_operations")
     if isinstance(research, dict):
         operations = []
@@ -525,6 +553,15 @@ class Planner:
                 **data,
                 "output_constraints": _output_constraints(TypeAdapter(output).json_schema()),
             }
+            if isinstance(brief_data := data.get("brief"), dict):
+                requirements = StudyBrief.model_validate(brief_data).requirements
+                compatible = {key for key in CATALOG if not requirement_issues(key, requirements)}
+                # A rejected draft is not authority for choosing a World. Keep every
+                # compatible alternative so the next draft can correct that choice.
+                if compatible and requirements:
+                    if isinstance(candidate, dict) and isinstance(candidate.get("design"), dict):
+                        compatible.add(candidate["design"]["environment"])
+                    data = self._scope_discovery(data, compatible)
             if candidate is None and isinstance(conversation := data.get("conversation"), list):
                 # Follow-ups retain complete proposals; their latest World also scopes
                 # illustrative examples before the first new candidate exists.
@@ -569,12 +606,17 @@ class Planner:
                 "summaries. Return actual "
                 "values, never these input references."
             )
+        instruction += (
+            "\nRepeated input values may use single-key objects keyed by reference_key; "
+            "resolve these recursively from shared_values. All values remain complete. "
+            "Return actual values, never input references."
+        )
         model = self.models.research_model("design")
         return await self.models.generate(
             output,
             model=model,
             instructions=instruction,
-            prompt=json.dumps(data, separators=(",", ":")),
+            prompt=json.dumps(share_json(data), ensure_ascii=False, separators=(",", ":")),
             purpose="design",
             analysis_id=key,
             openai_reasoning_effort="medium",
@@ -583,6 +625,34 @@ class Planner:
             # These closed records have no dynamic maps to lose during strict normalization.
             strict_output=True if output in (StudyBrief, DesignReview) else None,
         )
+
+    @staticmethod
+    def _scope_discovery(data: dict, environments: set[str]) -> dict:
+        result = {**data}
+        if isinstance(examples := data.get("rule_examples"), list):
+            result["rule_examples"] = [e for e in examples if e["key"] in environments]
+        if isinstance(research := data.get("research_operations"), dict):
+            operations = []
+            for operation in research["operations"]:
+                discovery = operation.get("data")
+                if isinstance(discovery, dict) and isinstance(discovery.get("environments"), list):
+                    operation = {
+                        **operation,
+                        "data": {
+                            **discovery,
+                            "environments": [
+                                e for e in discovery["environments"] if e["key"] in environments
+                            ],
+                            "unrelated_environments": [
+                                {"key": e["key"], "capabilities": e["capabilities"]}
+                                for e in discovery["environments"]
+                                if e["key"] not in environments
+                            ],
+                        },
+                    }
+                operations.append(operation)
+            result["research_operations"] = {**research, "operations": operations}
+        return result
 
     def _context(self, question: str, conversation: Sequence[dict]) -> dict[str, object]:
         rule_examples = []

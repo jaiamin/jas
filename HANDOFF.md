@@ -1,5 +1,73 @@
 # JAS handoff
 
+## Complete: bounded Agent context through protocol refinement
+
+The user reports another internal input-limit failure and requests reliable
+creation/refinement at every stage, including large contexts. Preserve complete
+protocols and original requests; context management must not silently alter the
+scientific question, weaken validation, raise spending or retry provider calls.
+External outages and genuinely unsupported protocols cannot be guaranteed away.
+
+Read-only local replay of failed analysis ff7c891035e84346 reproduces the exact
+input-limit failure at Planner._call(Candidate) before provider access. Evidence:
+`.tools/agent-context/reproduce-red.log`; command `.venv/bin/python -B
+.tools/agent-context/reproduce.py`. Original failure remains untouched. No paid
+calls authorized for this new fix. Branch: `fix/agent-refinement-context`.
+
+Acceptance: actual replay passes; large/Unicode/multi-revision synthetic requests
+fit the byte limit at every model boundary without losing required protocol or
+feedback fields; stage-specific context excludes redundant unrelated material
+and uses explicit references/pages where full material is too large. Cover
+normal general/design/analysis flows and retain request accounting. Run affected
+then broad checks and relevant browser flows; activate verified source on8080
+without resetting current data. Document measured limits and remaining risks.
+
+Implemented lossless sharing of condition parameters and repeated input subtrees,
+UTF-8 prompt serialization, and requirement-scoped catalog details retaining every
+compatible alternative plus the rejected candidate's World. Original captured
+revision replay now measures140,157 bytes versus199,341 before, under the unchanged
+180,000-byte guard. Complete protocols, source documents, feedback, validation and
+reservation/settlement remain intact. General chat budgets large prior proposals
+and operation results with explicit omissions and same-scope path/string/list/object
+pages; complete planner handoff is separate. Large analysis scopes page duplicate
+run rows while retaining every frozen cutoff. Finite input/output, spending and
+operation limits remain real; no unbounded-size or live-quality guarantee is made.
+
+Observed verification:1858 full backend cases PASS (398.27s);10 final focused
+regressions PASS, including ASCII/Unicode multi-revision repair, oversized general
+retrieval,1200-run paging and scope/path rejection; Ruff/globalty PASS. Browser:
+2 real HTTP/planner design-review/edit/save cases and29 Agent/context/streaming/
+reload cases PASS, light/dark and mobile/desktop. No paid calls. The full run had
+four initial new regression cases; six additional variants were subsequently run
+in the final10-case group, with unchanged production source. Logs are ignored at
+`.tools/agent-context/`. Initial test-authoring errors (general fixture selected
+context=new; direct tools fixture queried before transaction commit) remain in
+local logs and are not product-red evidence. Actual saved-request red, ASCII/
+Unicode public-API red and1200-run analysis red were observed before their fixes.
+
+Activated verified backend on8080, PID14092. Health/home200; independent before/
+after hashes match all analyses/provider calls/studies/runs. Original failed
+request preserved; provider-call count stays4. Receipt:
+`.tools/agent-context/activation.json`, including backend source fingerprint.
+The requested8080 server stays running; both temporary browser servers closed.
+Publication: task branch `fix/agent-refinement-context`, targeting
+`feat/research-quality` (its squash base has the same tree as1515c04a). No default-
+branch push, merge, reset of user data or hidden provider retry.
+
+## Current local server after environment restoration
+
+The user requested port8080 again after the sandbox was restored without local
+dependencies or data. Restored published source1515c04a on the separate local
+`t3/run-current-on-8080` branch. Server PID3938 runs `.venv/bin/jas --host 0.0.0.0
+--port 8080`; health and the built home page return200. Keep this user-requested
+server running. Current receipts/log: `.tools/run-8080/`.
+
+Frontend frozen install/build pass. System uv aborts with an unsupported jemalloc
+page size; Python ensurepip is also absent. Created the project venv without pip,
+then used system pip's `--python .venv` with exact Python3.13 pins from uv.lock.
+No dependency/lockfile or application changes, credential inspection or paid calls.
+This current runtime supersedes the historical PID/runtime boundaries below.
+
 ## Complete: remove New mechanics and autonomous Investigate
 
 User explicitly requested removal of both Agent controls and their backend

@@ -4,6 +4,8 @@ import json
 import pytest
 from agent_sim.validity import Requirement
 
+from backend.tests.conftest import planning_prompt
+
 
 def test_large_protocol_followups_fit_without_losing_prior_revisions(tmp_path, monkeypatch):
     from copy import deepcopy
@@ -156,7 +158,7 @@ def test_invalid_world_selection_keeps_discovery_available_for_correction(runtim
     drafts = []
 
     async def respond(messages, info):
-        prompt = json.loads(messages[-1].parts[0].content)
+        prompt = planning_prompt(messages[-1].parts[0].content)
         title = info.output_tools[0].parameters_json_schema["title"]
         if title == "StudyBrief":
             output = brief
@@ -323,7 +325,7 @@ def test_completed_team_probes_fit_revisions_and_review_without_losing_evidence(
     prompts = []
 
     async def respond(messages, info):
-        prompts.append(json.loads(messages[-1].parts[0].content))
+        prompts.append(planning_prompt(messages[-1].parts[0].content))
         if info.output_tools[0].parameters_json_schema.get("title") == "Candidate":
             limits = prompts[-1]["output_constraints"]
             assert limits["properties"]["explanation"]["maxLength"] == 2000
