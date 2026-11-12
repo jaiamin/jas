@@ -1,28 +1,31 @@
 # JAS handoff
 
-## Home: static neutral background
+## Home: quiet drafting background
 
-User selected the static neutral option. Branch `feat/quiet-home-background` is
-based on accepted CI checkpoint `a016350d` from still-open PR #36. Home now uses
-theme background/foreground tokens, without the animated city or title tint/blur.
-A stock gray Separator sits in the existing gap below the composer. Heading,
-composer, experiment ideas and all following content retain their original layout.
+Branch `feat/quiet-home-background` is based on CI-green `a016350d` from open PR #36.
+User rejected the first flat-white implementation and clarified the gray rule must
+cross behind the composer at three-fifths of its height. Final Home uses a static
+blue-gray drafting field with faint sampling points and theme-specific tokens.
+CSS subgrid aligns the field's bottom/rule with 60% of the actual composer row,
+including its responsive height. Heading/composer positions and all following
+content are unchanged; title tint/blur and the city animation are removed.
 Deleted the backdrop component, dissolve generator, mask, GIF/poster and their CSS;
 updated PRODUCT/DESIGN and replaced obsolete animation browser assertions.
 
-Verification: full frontend units 168/168 (39 files), Home browser 15/15, whole
-frontend lint, forced TypeScript and private build PASS. Native visual inspection
-passed in both themes at desktop/mobile sizes; light-mode before/after geometry
-is exactly equal. Evidence is under `.tools/quiet-home/`. Retained initial reds
-include the original artwork defect, an overbroad test selector and mobile baseline
-assumptions; the corrected baseline was measured against the original build.
-No paid calls. Temporary layout instrumentation was removed.
+Final revision: Home browser 15/15 with clean exit0, whole frontend lint (246 files),
+forced TypeScript and private build PASS. Full frontend units 168/168 (39 files)
+passed before the final visual adjustment; no new state or behavior was introduced.
+Native inspection covered light/dark, desktop/mobile. Evidence: `.tools/quiet-home/`.
+Initial selector/baseline authoring failures remain retained. Revision browser01
+printed all 15 passes but wrapper exited143; revision02 used the managed keyless
+server, passed15 and exited0 with complete teardown. Temporary instrumentation
+was removed. No paid calls or changes to the Agent workflow.
 
-Qualified assets are served on 8080 with the original PID/database. Refresh receipt
-`publish-8080-01/receipt.json` proves the same DB inode, all rows/usage unchanged,
-served asset equality and absence of city assets. The previous generated dist is
-retained locally for rollback; it is not shipped. Owned review tab is closed.
-Publication: coherent commit/draft PR against `feat/research-quality` next; no merge.
+Final qualified assets are live on8080: `publish-8080-02/receipt.json` proves the same
+PID/DB inode, all rows/usage unchanged and served asset equality. Previous generated
+outputs remain local for rollback; no fallback artwork is shipped. Review tabs and
+private test servers are closed. Task branch is prepared for a draft PR against
+`feat/research-quality`; hosted CI remains a separate gate. No merge authorized.
 
 ## CI follow-up: planning activity animation
 

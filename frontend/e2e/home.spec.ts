@@ -93,7 +93,7 @@ test("Home keeps immediate content usable while only database rows show skeleton
 
 for (const width of [390, 1440])
   for (const theme of ["light", "dark"]) {
-    test(`Home keeps a neutral background and original content positions · ${theme} · ${width}`, async ({
+    test(`Home keeps a drafting background and original content positions · ${theme} · ${width}`, async ({
       page,
     }, testInfo) => {
       const artworkRequests: string[] = [];
@@ -129,6 +129,11 @@ for (const width of [390, 1440])
           composerTop: composer.getBoundingClientRect().top,
           ideasTop: ideas.getBoundingClientRect().top,
           composerBottom: composer.getBoundingClientRect().bottom,
+          composerHeight: composer.getBoundingClientRect().height,
+          fieldColor: getComputedStyle(
+            element.querySelector(".home-field") as Element,
+          ).backgroundColor,
+          pageColor: getComputedStyle(document.body).backgroundColor,
           divider: divider.getBoundingClientRect().toJSON(),
           width: element.getBoundingClientRect().width,
           titleColor: getComputedStyle(title).color,
@@ -146,9 +151,11 @@ for (const width of [390, 1440])
       expect(geometry.ideasTop).toBe(476);
       expect(geometry.divider.width).toBe(geometry.width);
       expect(geometry.divider.height).toBe(1);
-      expect(geometry.divider.top - geometry.composerBottom).toBe(
-        width === 390 ? 16 : 20,
+      expect(geometry.divider.top).toBeCloseTo(
+        geometry.composerTop + geometry.composerHeight * 0.6,
+        1,
       );
+      expect(geometry.fieldColor).not.toBe(geometry.pageColor);
       expect(geometry.titleColor).toBe(geometry.foreground);
       expect(geometry.blurred).toBe(false);
       expect(geometry.animations).toBe(0);

@@ -294,11 +294,13 @@ Decisions and evidence stack below 1440px.
 Home’s experiment ideas, drafts, active runs and recent experiments share a centered
 58rem maximum-width content column below the composer. Keep their edges aligned.
 
-Home uses the shared neutral background: white in light mode and graphite in
-dark mode. The heading uses the foreground token, without imagery, animation,
-title tint or backdrop blur. A stock Separator restores the full-width gray
-divider in the existing gap below the composer (16px mobile, 20px desktop),
-without changing the position of the composer or the content beneath it.
+Home uses a static blue-gray drafting field with faint, widely spaced sampling
+points. Dedicated theme tokens keep it pale slate in light mode and deep slate
+in dark mode. The heading uses the foreground token, without imagery, animation,
+title tint or backdrop blur. The field ends at a stock full-width gray Separator
+behind the composer, three-fifths down its height. A shared CSS subgrid follows
+the actual composer row; no fixed pixel height or runtime measurement is needed.
+Heading, composer and all following content retain their original positions.
 Environment catalogue and experiment-idea illustrations remain unchanged.
 
 The Home composer retains a 672px maximum width and 88px minimum text-entry height.

@@ -101,6 +101,16 @@ export default function Home() {
         className="relative isolate grid grid-cols-1"
         aria-labelledby="home-title"
       >
+        <div
+          aria-hidden="true"
+          className="home-field pointer-events-none -z-10 col-start-1 row-span-2 row-start-1 grid grid-rows-subgrid"
+        >
+          <div />
+          <div className="relative">
+            <div className="bg-background absolute inset-x-0 bottom-0 h-2/5" />
+            <Separator className="absolute inset-x-0 top-3/5" />
+          </div>
+        </div>
         <h1
           id="home-title"
           className="relative col-start-1 row-start-1 mt-38 mb-4 px-4 text-center text-2xl font-semibold tracking-tight sm:mt-39 sm:px-6 sm:text-3xl"
@@ -115,7 +125,6 @@ export default function Home() {
             placeholder="Ask a question or describe an experiment…"
           />
         </div>
-        <Separator className="absolute inset-x-0 top-full mt-4 sm:mt-5" />
       </section>
       <div className="mx-auto flex w-full max-w-232 flex-col gap-8 px-4 pt-8 pb-6 sm:px-6 sm:pt-10 sm:pb-8">
         <section
