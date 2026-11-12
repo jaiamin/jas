@@ -3,12 +3,12 @@
 import json
 from typing import Annotated, Literal
 
-from pydantic import Field
+from pydantic import Field, TypeAdapter
 from sqlalchemy import select
 
 from .analysis_context import value_at_path
 from .db import Analysis, digest, uid
-from .domain import ActionRequest, Decision, Design, Parameters, Strict
+from .domain import ActionRequest, Decision, Design, Parameters, ParticipantHarness, Strict
 from .environment_library import builtin_environment
 from .research import Research
 from .shared_json import share_json
@@ -228,6 +228,20 @@ class ResearchTools:
                 current_probes[request["source"]["condition_key"]] = operation["id"]
         record: dict = {
             **self.record,
+            "participant_harnesses": {
+                "configuration_schema": TypeAdapter(ParticipantHarness).json_schema(),
+                "scope": "Harness configuration is separate from World mechanics. These are "
+                "installed participant interfaces, not external service integrations.",
+                "artifact_access": "Both direct_action and tool_using can choose authorized "
+                "artifact actions. Tool using additionally supports read_artifact pure reads "
+                "within an activation when enabled. Direct-action reads take World turns; "
+                "pure reads consume request/operation allowance without advancing World time. "
+                "Both respect the same artifact ACLs. Tools do not grant hidden information.",
+                "limits": "Requests/operations are per activation. Provider spending ceilings "
+                "apply to the whole experiment, not independently to each harness or run. "
+                "Recorded synthetic incident evidence can support a recommendation study; "
+                "these tools cannot query a live service or execute operational interventions.",
+            },
             "operations": [
                 {
                     **operation,

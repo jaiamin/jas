@@ -612,6 +612,13 @@ and same-scope context requests select nested paths and pages (string pages coun
 characters). Stored protocols, documents and operation results remain unchanged.
 These projections reduce context growth; finite model input/output, request-count and
 spending limits still apply, and external/provider failures remain visible.
+Researcher context also supplies the actual typed participant-harness configurations,
+separately from World capabilities. Scoping and protocol review distinguish a harness
+comparison on simulated evidence from live service integrations or intervention effects.
+An unsupported scope receives one bounded semantic review before a final decline;
+material clarification returns immediately. This additional scoping request is ledgered.
+Explicit operational requirements remain authoritative, and the shared experiment budget
+must not be described as independently enforced equal per-harness dollar ceilings.
 
 Participant harnesses (`participants.py`; direct action 1.0.0, tool using 2.0.0) are condition factors,
 independent of provider/model assignments and World. Direct action preserves the

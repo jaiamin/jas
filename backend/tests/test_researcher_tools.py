@@ -461,7 +461,7 @@ def test_operation_results_reach_planner_without_replacing_the_original_question
     assert final["purpose"] == "design" and final["question"] == question
     assert final["output"]["supported"] is False and final["output"]["design"] is None
     assert final["output"]["research"]["stop_reason"] == "planner_handoff"
-    assert final["usage"]["requests"] == 3
+    assert final["usage"]["requests"] == 4  # General operation/handoff plus two scope checks.
     assert client.get("/api/studies").json() == []
 
 

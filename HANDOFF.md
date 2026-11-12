@@ -1,5 +1,44 @@
 # JAS handoff
 
+## Implemented: distinguish participant tools from unavailable external integrations
+
+User's checkout incident decision experiment was declined because scoping invented
+executable service queries as a requirement for generic tool access. Saved analysis
+3c7b6086048a4756 is complete/unsupported, not a runtime error. It received no explicit
+participant-harness catalog and returned before an unsupported-scope review.
+
+Acceptance: expose actual typed harness configurations at all Agent stages; separate
+within-activation tools from World actions and external/live integrations; preserve
+explicit requirements and use clarification for material ambiguity. Give unsupported
+scopes one bounded semantic review, retaining genuine declines. No new infrastructure,
+World, budget semantics, hidden execution, model substitutions or provider retries.
+Test both the user's exact prompt and a non-checkout case, legitimate external-tool
+refusals, clarification, actual matched harness execution and previous context limits.
+Run relevant checks/browser, preserve user records and activate on8080. Extend the
+existing Agent reliability PR38. No fresh paid-call budget has been granted.
+
+Observed red: two public HTTP regressions replaying the unsupported tool-access mapping
+return supported=false before a second scoping call (red.log). Ranked causes: absent
+harness discovery at scoping; overbroad external-tool prohibition; unreviewed semantic
+declines. Implemented typed harness discovery plus shared scoping/review guidance and
+one bounded review. Final full backend1868PASS (404.71s), affected95PASS,
+Ruff/globalty/format PASS, both real HTTP/planner browser flows PASS in light/dark.
+Exact checkout and non-checkout replay cases now propose validated matched harness
+protocols; both save, execute, retain authorized reads and replay. Deterministic
+witness: direct3turns/3requests, tool2turns/5requests, private vault not delivered.
+Genuine external integrations remain declined after the bounded review; material
+clarification returns immediately. Additional scoping requests are fully accounted;
+three existing tests now assert the new exact request counts. No paid call was made.
+Evidence: `.tools/harness-scoping/`.
+
+Activated on8080, PID25565; health/home200 and before/after hashes preserve all
+analyses/provider calls/studies/runs (14 existing calls). Previous activation/evidence
+retained separately. Browser18142 closed. User was asked for up to$1 to verify exact
+prompt plus follow-up on live GPT6.1Sol; approval remains pending, so live model
+interpretation is not claimed verified. Only that optional paid check remains open;
+the implemented fix/tests are published in PR38. Hosted CI remains subject to the
+previously observed account billing/spending-limit block.
+
 ## Complete: bounded Agent context through protocol refinement
 
 The user reports another internal input-limit failure and requests reliable

@@ -520,7 +520,9 @@ def test_planner_does_not_research_or_invent_unsupported_worlds(runtime, monkeyp
     monkeypatch.setattr(llm, "generate", generate)
     result = asyncio.run(Planner(db, research, llm).run(key, "Predict an election"))
     assert result["design"] is None and not result["supported"]
-    assert len(calls) == 1 and research.studies() == []
+    assert len(calls) == 2 and research.studies() == []
+    assert all(not call.get("web_search") for call in calls)
+    assert result["planning"]["reviews"][0]["kind"] == "scope_validation"
 
 
 def test_planner_rejects_unresolved_review(runtime, design, monkeypatch):
