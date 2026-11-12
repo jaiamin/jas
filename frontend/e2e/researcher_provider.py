@@ -9,6 +9,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import DeltaToolCall, FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 
 def deterministic_researcher(app):
     models.ALLOW_MODEL_REQUESTS = False
@@ -120,7 +122,7 @@ def deterministic_researcher(app):
                 ],
             }
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, payload)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, payload))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
             model_name="t13-keyless-researcher",
         )

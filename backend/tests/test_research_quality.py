@@ -19,6 +19,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 
 def coordination():
     return Design.model_validate(
@@ -75,7 +77,7 @@ def test_maximum_study_analysis_can_inspect_late_run_without_overloading_context
                 },
             }
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, payload)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, payload))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -340,12 +342,15 @@ def test_event_wait_wakes_for_delivery_preserves_turns_and_replays(runtime, monk
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "action": action,
-                        "rationale": "Development schedule.",
-                        "memory": "",
-                        "forecast": None,
-                    },
+                    output_args(
+                        info,
+                        {
+                            "action": action,
+                            "rationale": "Development schedule.",
+                            "memory": "",
+                            "forecast": None,
+                        },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -536,7 +541,7 @@ def test_concurrency_bounds_and_within_run_causality(
                 parts=[
                     ToolCallPart(
                         info.output_tools[0].name,
-                        decision_for(json.loads(messages[-1].parts[0].content)),
+                        output_args(info, decision_for(json.loads(messages[-1].parts[0].content))),
                     )
                 ],
                 usage=RequestUsage(input_tokens=100, output_tokens=50),

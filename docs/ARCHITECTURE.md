@@ -49,7 +49,7 @@ requires explicit confirmation; local browser drafts remain recoverable.
 The planner scopes the question and justifies agents, conditions, seeds, repetitions and
 rounds; optionally retrieves public methodological research; drafts a typed protocol; validates
 its invariants; and obtains a separate critique. At most three protocol revisions resolve
-validation/review feedback. Provider failures stop visibly without retries or substitution.
+validation/review feedback. Transport failures stop visibly without retries or substitution.
 Declared factorials require complete computed condition-grid coverage; the originating brief
 is checked again at save and execution. Coupled fields count as one bundle; partial designs
 remain allowed without a full-factorial claim.
@@ -61,6 +61,12 @@ Unavailable search cannot be claimed as completed research. Synthetic studies ma
 their assumptions; requests requiring verified external facts need clarification. A material
 user choice discovered during final review also returns a clarification without an executable
 draft, rather than exhausting protocol revisions on a choice the planner cannot make.
+
+A malformed planner draft enters the existing visible three-candidate validation
+allowance, with its failed provider call and exact validation issues retained. A
+corrected draft must still pass full domain validation, probes and review; artifact
+content limits are unchanged. Transport failures, refusals and token truncation do
+not trigger draft correction. Participant requests never retry implicitly.
 
 Browser drafts preserve unfinished visual edits and raw JSON per source document;
 assistant visibility and other presentation parameters do not change draft identity. Invalid drafts
@@ -633,6 +639,28 @@ application loop: each inference uses `LanguageModels.generate` once with its ow
 atomic reservation/settlement. Only the active actor's observation, rules and legal
 options can be read; no operation accepts an actor or state selector. World.step
 independently validates the final decision. Reads never advance logical time.
+The final available model request is decision-only; exhausting the tool allowance also
+makes the next request decision-only. The output schema enforces that boundary while the
+participant chooses the legal World action. Request/tool limits do not increase and no
+action or additional observation is supplied automatically. Paused activations
+retain their original consumed allowances; recorded failures are never rewritten.
+
+Participant provider responses use closed, strict operation records. A tool response
+contains one `request` variant with only its selected payload; only configured
+operations and authorized artifact read targets are offered. Writable artifact targets
+also pin the current authorized version as their write precondition. Arbitrary content
+travels as unique key/value entries and is decoded into the existing World object
+before validation. Canonical saved decisions, journals, permissions and replay remain
+unchanged; duplicate content keys are rejected rather than overwritten.
+
+Tool context compaction first removes repeated history from requested observations,
+marking `omitted_fields`, and retains the latest authorized action/version directory
+before replacing complete operations with receipts. It never fetches another
+observation, widens access or increases the declared character budget. Exposure binds
+retained fields individually: a partial observation does not count as full delivery,
+and omitted history cannot count as received evidence. Complete results remain in
+the immutable journal. Request/tool allowances reset at the next World activation;
+`decide` commits one action, while `stop` ends the run without submission.
 
 Scripted harness 1.0.0 runs declared non-model controls through that same activation,
 World settlement and replay path. `reference_policies.py` implements keep credits,

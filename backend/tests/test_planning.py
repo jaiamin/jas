@@ -982,3 +982,72 @@ def test_declared_factorial_is_repaired_or_rejected_before_model_review(
             asyncio.run(Planner(db, research, llm).run(key, question))
         assert candidates == 3 and reviews == 0
     assert research.studies() == []
+
+
+@pytest.mark.parametrize("repaired", [True, False])
+def test_malformed_draft_gets_visible_bounded_validation_revision(tmp_path, monkeypatch, repaired):
+    """Live Agent follow-up failed on a 1000-character artifact rubric bound."""
+    from copy import deepcopy
+
+    from agent_sim.api import create_app
+    from fastapi.testclient import TestClient
+
+    from backend.tests.test_researcher_designs import artifact_design, finish, provider
+
+    app = create_app(f"sqlite:///{tmp_path}/malformed-draft.sqlite3")
+    drafts = []
+    with TestClient(app, base_url="http://localhost") as client:
+        design = artifact_design(client)
+        invalid = deepcopy(design)
+        invalid["conditions"][0]["parameters"]["artifacts"]["objects"][0]["content"] = {
+            "rubric": "x" * 1001
+        }
+
+        def draft(prompt):
+            drafts.append(prompt)
+            return {"design": design if repaired and len(drafts) > 1 else invalid}
+
+        provider(client, monkeypatch, design, candidate=draft)
+        row = finish(
+            client,
+            client.post("/api/chats", json={"question": design["question"], "context": "new"}),
+        )
+        assert row["status"] == ("complete" if repaired else "failed"), row.get("error")
+        assert len(drafts) == (2 if repaired else 3)
+        if repaired:
+            assert (
+                row["output"]["design"]["conditions"][0]["parameters"]["artifacts"]
+                == design["conditions"][0]["parameters"]["artifacts"]
+            )
+        assert drafts[1]["feedback"]
+        assert "1000" in json.dumps(drafts[1]["feedback"])
+        assert client.get("/api/studies").json() == []
+        calls = client.get("/api/settings").json()["usage"]["requests"]
+        assert calls == 4  # scope + drafts + review, or scope + three drafts
+
+
+def test_transport_failure_does_not_enter_the_draft_revision_loop(tmp_path, monkeypatch):
+    from agent_sim.api import create_app
+    from fastapi.testclient import TestClient
+
+    from backend.tests.test_researcher_designs import artifact_design, finish, provider
+
+    app = create_app(f"sqlite:///{tmp_path}/transport-failure.sqlite3")
+    calls = []
+    with TestClient(app, base_url="http://localhost") as client:
+        design = artifact_design(client)
+
+        def draft(prompt):
+            calls.append(prompt)
+            raise TimeoutError("Controlled provider transport failure")
+
+        provider(client, monkeypatch, design, candidate=draft)
+        row = finish(
+            client,
+            client.post("/api/chats", json={"question": design["question"], "context": "new"}),
+        )
+        assert row["status"] == "failed"
+        assert "TimeoutError" in row["error"]
+        assert len(calls) == 1
+        assert client.get("/api/settings").json()["usage"]["requests"] == 2
+        assert client.get("/api/studies").json() == []

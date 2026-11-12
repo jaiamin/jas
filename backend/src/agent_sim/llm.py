@@ -102,6 +102,48 @@ class ProviderFailure(Exception):
     pass
 
 
+class OutputValidationFailure(ProviderFailure):
+    """A settled structured response rejected locally; never a transport retry signal."""
+
+    def __init__(self, message: str, call_id: str, proposal: dict, issues: list[dict]):
+        super().__init__(message)
+        self.call_id, self.proposal, self.issues = call_id, proposal, issues
+
+
+def _invalid_output(
+    error: BaseException, messages: list[ModelMessage]
+) -> tuple[dict, list[dict]] | None:
+    cause: BaseException | None = error
+    for _ in range(8):
+        if cause is None:
+            return None
+        if isinstance(cause, ValidationError):
+            calls = [
+                part
+                for message in messages
+                if isinstance(message, ModelResponse)
+                for part in message.parts
+                if isinstance(part, ToolCallPart)
+            ]
+            if len(calls) != 1:
+                return None
+            args = calls[0].args
+            try:
+                value = json.loads(args) if isinstance(args, str) else args
+            except ValueError:
+                return None
+            if isinstance(value, dict):
+                return value, [
+                    dict(issue)
+                    for issue in cause.errors(
+                        include_input=False, include_url=False, include_context=False
+                    )
+                ]
+            return None
+        cause = cause.__cause__ or cause.__context__
+    return None
+
+
 def _validation_detail(error: BaseException | None) -> str:
     for _ in range(8):
         if error is None:
@@ -292,10 +334,14 @@ class LanguageModels:
                     if truncated
                     else _validation_detail(error)
                 )
-                raise ProviderFailure(
+                message = (
                     f"{model} request failed ({failure}). {detail}"
                     "No retry or substitute model was used."
-                ) from error
+                )
+                if not truncated and (invalid := _invalid_output(error, messages)) is not None:
+                    proposal, issues = invalid
+                    raise OutputValidationFailure(message, call.id, proposal, issues) from error
+                raise ProviderFailure(message) from error
             finally:
                 try:
                     self._settle(call, messages, failure)

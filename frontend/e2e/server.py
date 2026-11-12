@@ -1,11 +1,16 @@
 """Serve a fresh, keyless browser-test workspace until Playwright shuts it down."""
 
 import os
+import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import uvicorn
 from agent_sim.api import create_app
+
+# The script runs from frontend; shared keyless fixtures live at the repository root.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from benchmarks.provider_fixtures import output_args  # noqa: E402
 
 
 def deterministic_participants(app):
@@ -20,7 +25,7 @@ def deterministic_participants(app):
 
     models.ALLOW_MODEL_REQUESTS = False
 
-    stale_attempts: set[str] = set()
+    rejected_attempts: set[str] = set()
 
     def artifact_response(prompt):
         if "operations" in prompt:
@@ -55,9 +60,11 @@ def deterministic_participants(app):
             }
             if "[t09-browser-failure-" in goal:
                 action["content"] = {"reading": -4}
-            if "[t09-browser-recover-" in goal and goal not in stale_attempts:
-                stale_attempts.add(goal)
-                action["expected_version"] = 2
+            if "[t09-browser-recover-" in goal and goal not in rejected_attempts:
+                rejected_attempts.add(goal)
+                # Stale preconditions now fail the provider schema. Exercise the
+                # World-rejection UI with an unavailable source version instead.
+                action["sources"][0]["version"] = 2
         elif index == 2:
             action = {"kind": "check_artifacts"}
         else:
@@ -81,17 +88,20 @@ def deterministic_participants(app):
                 parts=[
                     ToolCallPart(
                         info.output_tools[0].name,
-                        {
-                            "action": {
-                                "kind": "relay",
-                                "operation": "lodge"
-                                if prompt["relay"]["phase"] == 0
-                                else "release",
+                        output_args(
+                            info,
+                            {
+                                "action": {
+                                    "kind": "relay",
+                                    "operation": "lodge"
+                                    if prompt["relay"]["phase"] == 0
+                                    else "release",
+                                },
+                                "memory": "",
+                                "rationale": "Independent T16 deterministic browser fixture",
+                                "forecast": None,
                             },
-                            "memory": "",
-                            "rationale": "Independent T16 deterministic browser fixture",
-                            "forecast": None,
-                        },
+                        ),
                     )
                 ],
                 usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -141,12 +151,17 @@ def deterministic_participants(app):
                 parts=[
                     ToolCallPart(
                         info.output_tools[0].name,
-                        {
-                            "action": action,
-                            "memory": "",
-                            "rationale": "T11 keyless development proposal; no intent inference.",
-                            "forecast": None,
-                        },
+                        output_args(
+                            info,
+                            {
+                                "action": action,
+                                "memory": "",
+                                "rationale": (
+                                    "T11 keyless development proposal; no intent inference."
+                                ),
+                                "forecast": None,
+                            },
+                        ),
                     )
                 ],
                 usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -171,19 +186,26 @@ def deterministic_participants(app):
                 parts=[
                     ToolCallPart(
                         info.output_tools[0].name,
-                        {
-                            "action": action,
-                            "memory": "",
-                            "rationale": "T10 keyless development fixture.",
-                            "forecast": None,
-                        },
+                        output_args(
+                            info,
+                            {
+                                "action": action,
+                                "memory": "",
+                                "rationale": "T10 keyless development fixture.",
+                                "forecast": None,
+                            },
+                        ),
                     )
                 ],
                 usage=RequestUsage(input_tokens=100, output_tokens=50),
             )
         if "artifacts" in prompt or "read_artifact" in prompt.get("limits", {}).get("tools", []):
             return ModelResponse(
-                parts=[ToolCallPart(info.output_tools[0].name, artifact_response(prompt))],
+                parts=[
+                    ToolCallPart(
+                        info.output_tools[0].name, output_args(info, artifact_response(prompt))
+                    )
+                ],
                 usage=RequestUsage(input_tokens=100, output_tokens=50),
                 model_name="t09-browser-deterministic-v1",
             )
@@ -262,7 +284,7 @@ def deterministic_participants(app):
         else:
             output = final
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, output)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, output))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
             model_name="t04-browser-deterministic-v1",
         )
@@ -335,7 +357,7 @@ def deterministic_researcher(app):
                 },
             }
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, payload)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, payload))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
             model_name="t19-browser-deterministic-v1",
         )

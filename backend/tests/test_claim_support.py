@@ -22,6 +22,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import DeltaToolCall, FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 
 @pytest.fixture
 def claim_client(tmp_path, monkeypatch, request):
@@ -103,7 +105,7 @@ def claim_client(tmp_path, monkeypatch, request):
             if actions := controls.get("artifact_actions"):
                 payload["action"] = next(actions)
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, payload)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, payload))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
             model_name="t19-development-v1",
         )

@@ -16,6 +16,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 FIXTURE = Path(__file__).with_name("fixtures") / "t17_current_contract_v2.json"
 FIXTURE_SHA256 = "3864f978694cbd293b0a6fdac0369f5c3a8d682f9ab8a2e2b4645b0e1d8188a2"
 
@@ -59,7 +61,11 @@ def test_literal_current_contract_five_runs_22_complete_inputs_ledgers_restore_a
     async def respond(messages, info):
         delivered.append(json.loads(messages[-1].parts[0].content))
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, deepcopy(current["decision"]))],
+            parts=[
+                ToolCallPart(
+                    info.output_tools[0].name, output_args(info, deepcopy(current["decision"]))
+                )
+            ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -128,7 +134,7 @@ def test_literal_current_contract_five_runs_22_complete_inputs_ledgers_restore_a
         assert payload["instructions"] == oracle["instructions"]
         assert json.loads(payload["prompt"]) == expected["observation"]
         assert payload["schema"] == expected["schema"]
-        assert payload["strict_output"] is None
+        assert payload["strict_output"] is True
         assert payload["web_search"] is False
         assert payload["settings"] == oracle["settings"]
         assert payload["price_per_million"] == [0.1, 0.5]

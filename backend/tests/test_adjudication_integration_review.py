@@ -12,6 +12,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 GUIDANCE = (
     "Use the north desk before 19:00. If you miss it, ask about another date; "
     "a replacement pickup is not confirmed."
@@ -135,12 +137,15 @@ def provider_stand_ins(app, closing_hour, entered=None, release=None):
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "action": next(actions),
-                        "rationale": "Development action.",
-                        "memory": "",
-                        "forecast": None,
-                    },
+                    output_args(
+                        info,
+                        {
+                            "action": next(actions),
+                            "rationale": "Development action.",
+                            "memory": "",
+                            "forecast": None,
+                        },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=101, output_tokens=37),
@@ -152,7 +157,7 @@ def provider_stand_ins(app, closing_hour, entered=None, release=None):
             entered.set()
             assert await asyncio.to_thread(release.wait, 8), "Judge barrier timed out"
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, RULING)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, RULING))],
             usage=RequestUsage(input_tokens=41, output_tokens=19),
         )
 

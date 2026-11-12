@@ -12,6 +12,7 @@ from pydantic_ai.usage import RequestUsage
 
 from backend.tests.test_participant_harnesses import wait_finished
 from backend.tests.test_researcher_designs import artifact_design, finish, provider, scope
+from benchmarks.provider_fixtures import output_args
 
 
 @pytest.mark.parametrize(
@@ -150,7 +151,7 @@ def test_harness_comparison_recovers_an_invented_external_tool_requirement(
                     else decision
                 )
             return ModelResponse(
-                parts=[ToolCallPart(info.output_tools[0].name, value)],
+                parts=[ToolCallPart(info.output_tools[0].name, output_args(info, value))],
                 usage=RequestUsage(input_tokens=100, output_tokens=50),
             )
 
