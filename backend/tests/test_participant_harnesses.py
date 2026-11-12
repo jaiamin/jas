@@ -12,6 +12,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import DeltaToolCall, FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 
 def decision():
     return {
@@ -45,7 +47,7 @@ def harness_client(tmp_path, monkeypatch):
         else:
             value = decision()
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, value)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, value))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
             model_name="t04-deterministic-v1",
         )
@@ -202,9 +204,11 @@ def test_researcher_indexes_tool_requests_separately_from_its_own_analysis(
 @pytest.mark.parametrize(
     ("limits", "reason", "requests", "statuses"),
     [
-        ({"max_requests": 1}, "request_limit", 1, ["complete"]),
-        ({"max_tool_operations": 1}, "tool_limit", 2, ["complete", "rejected"]),
-        ({"tools": ["rules"]}, "invalid_operation", 1, ["rejected"]),
+        # This fixture deliberately returns another tool on the decision-only request.
+        # Schema validation rejects it before operation dispatch, with no retry or turn.
+        ({"max_requests": 1}, "provider_failure", 1, []),
+        ({"max_tool_operations": 1}, "provider_failure", 2, ["complete"]),
+        ({"tools": ["rules"]}, "provider_failure", 1, []),
     ],
 )
 def test_effort_or_permission_failure_retains_attempt_without_settling_action(
@@ -221,6 +225,14 @@ def test_effort_or_permission_failure_retains_attempt_without_settling_action(
     activation = run["activations"][0]
     assert activation["status"] == "failed" and activation["stop_reason"] == reason
     assert [op["status"] for op in activation["operations"]] == statuses
+    if reason == "provider_failure" and "tools" not in limits:
+        last_request = client.get(f"/api/requests/{run['requests'][-1]['id']}").json()
+        assert (
+            last_request["request"]["schema"]["$defs"]["ParticipantDecide"]["properties"][
+                "operation"
+            ]["const"]
+            == "decide"
+        )
     exported = client.get(f"/api/studies/{study['id']}/export").json()
     assert exported["activations"] == run["activations"]
     assert len(exported["requests"]) == requests
@@ -558,11 +570,14 @@ def test_tool_actor_selectors_and_other_private_profiles_cannot_reach_provider(
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "operation": "observe",
-                        "decision": None,
-                        "actor": "morgan",
-                    },
+                    output_args(
+                        info,
+                        {
+                            "operation": "observe",
+                            "decision": None,
+                            "actor": "morgan",
+                        },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=20, output_tokens=10),
@@ -596,10 +611,13 @@ def test_paused_actor_session_survives_restart_without_resetting_its_effort(
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "operation": "decide" if prompt["operations"] else "observe",
-                        "decision": decision() if prompt["operations"] else None,
-                    },
+                    output_args(
+                        info,
+                        {
+                            "operation": "decide" if prompt["operations"] else "observe",
+                            "decision": decision() if prompt["operations"] else None,
+                        },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -707,7 +725,7 @@ def test_tool_policy_runs_existing_worlds_and_keeps_profile_model_assignment_ind
         if "read" in info.output_tools[0].parameters_json_schema["properties"]:
             output["read"] = None
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, output)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, output))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 

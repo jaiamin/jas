@@ -13,6 +13,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 models.ALLOW_MODEL_REQUESTS = False
 app = create_app(sys.argv[1], static_dir=Path(sys.argv[2]).parent / "static")
 requests = 0
@@ -37,12 +39,15 @@ async def respond(messages, info):
         parts=[
             ToolCallPart(
                 info.output_tools[0].name,
-                {
-                    "action": action,
-                    "rationale": "Synthetic restoration witness.",
-                    "memory": "retained note",
-                    "forecast": None,
-                },
+                output_args(
+                    info,
+                    {
+                        "action": action,
+                        "rationale": "Synthetic restoration witness.",
+                        "memory": "retained note",
+                        "forecast": None,
+                    },
+                ),
             )
         ],
         usage=RequestUsage(input_tokens=100, output_tokens=50),

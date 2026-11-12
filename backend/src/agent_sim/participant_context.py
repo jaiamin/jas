@@ -227,9 +227,50 @@ def bounded_prompt(payload: dict, limit: int, activation_id: str) -> str:
     """Compact only already-authorized data; full receipts remain in the journal."""
     payload = payload | {"operations": list(payload["operations"])}
     encoded = json.dumps(payload)
+    if len(encoded) <= limit:
+        return encoded
+    observed = []
     for index, op in enumerate(payload["operations"]):
+        if op["kind"] != "observe" or not isinstance(op["result"], dict):
+            continue
+        observed.append(index)
+        result, omitted = dict(op["result"]), []
+        # Repeated work/history can dwarf the current action directory. Preserve
+        # fields from this actual tool result, never fetch a fresh observation.
+        for name in (
+            "public_history",
+            "your_experiences",
+            "artifact_history",
+            "last_result",
+            "your_note",
+            "context",
+        ):
+            if name not in result:
+                continue
+            result.pop(name)
+            omitted.append(name)
+            payload["operations"][index] = {
+                **op,
+                "result": dict(result),
+                "omitted_fields": list(omitted),
+            }
+            encoded = json.dumps(payload)
+            if len(encoded) <= limit:
+                return encoded
+    payload["retained_artifacts"] = [
+        source_reference(source) for source in payload["retained_artifacts"]
+    ]
+    encoded = json.dumps(payload)
+    # Keep the latest requested action/state projection until other receipts have
+    # been shortened. A compacted observation is not a full-observation delivery.
+    latest = observed[-1] if observed else None
+    order = [i for i in range(len(payload["operations"])) if i != latest]
+    if latest is not None:
+        order.append(latest)
+    for index in order:
         if len(encoded) <= limit:
             return encoded
+        op = payload["operations"][index]
         payload["operations"][index] = {
             "number": op["number"],
             "kind": op["kind"],
@@ -237,11 +278,6 @@ def bounded_prompt(payload: dict, limit: int, activation_id: str) -> str:
             "receipt": {"activation_id": activation_id, "operation": op["number"]},
             "result": "Content omitted by context budget; receipt retained for inspection.",
         }
-        encoded = json.dumps(payload)
-    if len(encoded) > limit:
-        payload["retained_artifacts"] = [
-            source_reference(source) for source in payload["retained_artifacts"]
-        ]
         encoded = json.dumps(payload)
     if len(encoded) > limit:
         raise ValueError("Actor context exceeds its declared character budget")

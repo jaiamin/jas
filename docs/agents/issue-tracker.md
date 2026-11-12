@@ -1,7 +1,7 @@
 # Issue tracker: GitHub
 
-Issues and specs live in jaiamin/ass on GitHub.
-Use the gh CLI with --repo jaiamin/ass.
+Issues and specs live in jaiamin/jas on GitHub.
+Use the gh CLI with --repo jaiamin/jas.
 
 - Publish specs as GitHub issues.
 - Use --body-file for multiline issue bodies.

@@ -9,6 +9,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import DeltaToolCall, FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 
 def deterministic_researcher(app):
     models.ALLOW_MODEL_REQUESTS = False
@@ -32,6 +34,14 @@ def deterministic_researcher(app):
                 "and source-linked report revisions. "
                 "Keep unsuccessful work visible; participant trials have not run.",
             }
+            question = prompt["question"]
+            while isinstance(question, dict) and set(question) == {prompt["reference_key"]}:
+                question = prompt["shared_values"][question[prompt["reference_key"]]]
+            if "[review-budget-choice]" in question:
+                payload.update(
+                    issues=["The budget comparison needs a user decision."],
+                    clarification="Do you accept a shared experiment-wide ceiling?",
+                )
         elif "brief" in prompt:
             design = next(t["design"] for t in templates() if t["id"] == "artifact_workspace")
             design.update(
@@ -112,7 +122,7 @@ def deterministic_researcher(app):
                 ],
             }
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, payload)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, payload))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
             model_name="t13-keyless-researcher",
         )

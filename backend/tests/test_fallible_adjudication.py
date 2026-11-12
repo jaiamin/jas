@@ -15,6 +15,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 GUIDANCE = (
     "Collect the reserved book at the west desk before 17:00. If you cannot get there "
     "in time, ask the library about another pickup date; availability is not confirmed."
@@ -148,12 +150,15 @@ def test_declared_judgment_is_recorded_enforced_and_replayed_without_sampling(tm
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "action": next(actions),
-                        "rationale": "An explicit development action, not a competence result.",
-                        "memory": "",
-                        "forecast": None,
-                    },
+                    output_args(
+                        info,
+                        {
+                            "action": next(actions),
+                            "rationale": "An explicit development action, not a competence result.",
+                            "memory": "",
+                            "forecast": None,
+                        },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=101, output_tokens=37),
@@ -162,7 +167,11 @@ def test_declared_judgment_is_recorded_enforced_and_replayed_without_sampling(tm
     async def judge_response(messages, info):
         judge_inputs.append(json.loads(messages[-1].parts[0].content))
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, json.loads(json.dumps(RULING)))],
+            parts=[
+                ToolCallPart(
+                    info.output_tools[0].name, output_args(info, json.loads(json.dumps(RULING)))
+                )
+            ],
             usage=RequestUsage(input_tokens=41, output_tokens=19),
         )
 
@@ -251,9 +260,10 @@ def test_declared_judgment_is_recorded_enforced_and_replayed_without_sampling(tm
         exported = client.get(f"/api/studies/{study_id}/export").json()
         assert exported["revisions"][0]["design"] == design
         assert len(exported["requests"]) == 3
-        assert next(r for r in exported["requests"] if r["id"] == receipt["request_id"])[
-            "purpose"
-        ] == "adjudication"
+        assert (
+            next(r for r in exported["requests"] if r["id"] == receipt["request_id"])["purpose"]
+            == "adjudication"
+        )
         assert exported["runs"][0]["evidence"][-1] == terminal
         usage = client.get("/api/settings").json()["usage"]
 

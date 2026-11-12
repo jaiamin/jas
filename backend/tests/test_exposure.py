@@ -14,6 +14,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 PRIVATE = "actor-to-target-disclosure-731"
 FROZEN_EXPECTED_SHA256 = "f67d29314fb6c48b90aab383b58930b1b4ecdc5b46664be903b0017059ad4eb2"
 
@@ -70,7 +72,7 @@ def exposure_client(tmp_path, monkeypatch, request):
         else:
             output = final
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, output)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, output))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
             model_name="t07-development-v3",
         )
@@ -248,7 +250,7 @@ def test_private_sanction_record_is_included_without_episodic_memory_and_rules_w
             target="morgan" if prompt["authority"] else "",
         )
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, final)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, final))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -321,7 +323,7 @@ def test_analysis_freezes_input_membership_before_later_observation_and_new_revi
             },
         }
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, output)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, output))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -437,7 +439,7 @@ def test_receipt_confirms_input_even_when_output_validation_fails(
 
     async def invalid(messages, info):
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, {"invalid": True})],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, {"invalid": True}))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -574,7 +576,7 @@ def test_read_result_is_not_included_until_sent_after_pause_and_restore(
             ),
         }
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, output)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, output))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 

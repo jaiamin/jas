@@ -289,7 +289,7 @@ export default function WorkspaceShell() {
             </Button>
             <Button variant="ghost" size="icon-sm" asChild>
               <a
-                href="https://github.com/jaiamin/ass"
+                href="https://github.com/jaiamin/jas"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="GitHub repository"

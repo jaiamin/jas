@@ -25,6 +25,8 @@ The [live Agent evaluation](research/AGENT_EXTENSIVE_EVALUATION.md) separates fr
 workflow completion, protocol quality, failures and API spending from CI results.
 The [experiment/environment evaluation](research/EXPERIMENT_ENVIRONMENT_E2E.md)
 covers live participants, generated finite mechanics, matched insights and restoration.
+The [current Agent/run evaluation](research/LIVE_AGENT_EVALUATION.md) records the
+checkout execution repairs, diverse Sol/Luna trials, input grounding and quality limits.
 The [research-quality plan](research/RESEARCH_QUALITY_PLAN.md) records executable
 outcomes, scientific diagnostics, explicit scenarios, reference controls and their
 source-specific validation.

@@ -18,6 +18,7 @@ from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
 from backend.tests.test_artifact_workspace import decision, save, wait_finished
+from benchmarks.provider_fixtures import output_args
 
 ACTORS = ["iris", "moss", "vale"]
 VALUES = [
@@ -111,7 +112,9 @@ def test_independent_choices_have_real_values_and_call_free_replay(tmp_path, mon
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    decision({"kind": "choose_alternative", "alternative": choice}),
+                    output_args(
+                        info, decision({"kind": "choose_alternative", "alternative": choice})
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -166,7 +169,7 @@ def test_addressed_mail_uses_logical_delivery_and_preserves_private_input(
         elif round_number == 3:
             action = {"kind": "choose_alternative", "alternative": "cedar"}
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, decision(action)))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -219,7 +222,7 @@ def test_competing_shared_writes_use_declared_priority_at_the_phase_barrier(tmp_
         elif o["round"] == 2:
             action = {"kind": "stop"}
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, decision(action)))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -286,7 +289,9 @@ def test_provider_completion_permutations_cannot_change_frozen_conflict_priority
                 "sources": [],
             }
             return ModelResponse(
-                parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+                parts=[
+                    ToolCallPart(info.output_tools[0].name, output_args(info, decision(action)))
+                ],
                 usage=RequestUsage(input_tokens=100, output_tokens=50),
             )
 
@@ -346,7 +351,7 @@ def test_committed_proposals_and_pending_deliveries_restore_without_sampling(
         elif o["round"] == 3:
             action = {"kind": "choose_alternative", "alternative": "quartz"}
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, decision(action)))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -421,7 +426,7 @@ def test_tool_participants_read_only_permitted_values_with_actual_input_receipts
                 "decision": decision({"kind": "choose_alternative", "alternative": choice}),
             }
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, output)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, output))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -476,7 +481,7 @@ def test_settled_choices_have_source_linked_exposure_only_for_later_inputs(tmp_p
             else {"kind": "wait_coordination"}
         )
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, decision(action)))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -501,11 +506,15 @@ def test_settled_choices_have_source_linked_exposure_only_for_later_inputs(tmp_p
         retain("settled-choice-exposure", run=run, exposure=exposure)
 
 
-@pytest.mark.parametrize("context_limit, included", [(4000, False), (16000, True)])
+@pytest.mark.parametrize(
+    "context_limit, message_length, included",
+    [(4000, 15, True), (4000, 1000, False), (16000, 1000, True)],
+)
 def test_mail_exposure_requires_content_in_the_final_bounded_request(
-    context_limit, included, tmp_path, monkeypatch
+    context_limit, message_length, included, tmp_path, monkeypatch
 ):
     prompts = []
+    message = "bounded-mail-93".ljust(message_length, "x")
 
     async def respond(messages, info):
         prompt = json.loads(messages[-1].parts[0].content)
@@ -515,12 +524,12 @@ def test_mail_exposure_requires_content_in_the_final_bounded_request(
         else:
             action = {"kind": "wait_coordination"}
             if prompt["round"] == 1 and prompt["actor"] == "iris":
-                action = {"kind": "send_message", "recipient": "moss", "text": "bounded-mail-93"}
+                action = {"kind": "send_message", "recipient": "moss", "text": message}
             elif prompt["round"] == 3:
                 action = {"kind": "choose_alternative", "alternative": "reed"}
             output = {"operation": "decide", "read": None, "decision": decision(action)}
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, output)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, output))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -552,6 +561,7 @@ def test_mail_exposure_requires_content_in_the_final_bounded_request(
         final = next(
             p for p in prompts if p["actor"] == "moss" and p["round"] == 3 and p["operations"]
         )
+        assert len(json.dumps(final)) <= context_limit
         assert ("bounded-mail-93" in json.dumps(final)) is included
         assert ("receipt" in final["operations"][0]) is not included
         assert "bounded-mail-93" not in json.dumps([p for p in prompts if p["actor"] == "vale"])
@@ -825,7 +835,9 @@ def test_researcher_inspects_choice_values_and_probes_them_without_changing_the_
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    decision({"kind": "choose_alternative", "alternative": "reed"}),
+                    output_args(
+                        info, decision({"kind": "choose_alternative", "alternative": "reed"})
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),

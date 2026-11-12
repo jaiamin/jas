@@ -340,8 +340,8 @@ def test_four_grounded_followups_preserve_t11_source_and_complete_input_bounds(
                 assert record.model == "openai:gpt-6.1-sol" and record.status == "complete"
                 payload = record.request_payload
                 assert payload is not None
-                request_input = payload["prompt"] + payload["instructions"] + json.dumps(
-                    payload["schema"]
+                request_input = (
+                    payload["prompt"] + payload["instructions"] + json.dumps(payload["schema"])
                 )
                 assert len(request_input.encode()) + 4096 <= 180_000
         assert final is not None

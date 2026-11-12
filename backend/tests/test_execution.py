@@ -6,6 +6,8 @@ from agent_sim.domain import Design
 from agent_sim.execution import Engine
 from agent_sim.templates import templates
 
+from benchmarks.provider_fixtures import output_args
+
 
 @pytest.mark.parametrize("template", templates(), ids=lambda x: x["id"])
 def test_complete_all_adapters_and_exact_replay(runtime, template):
@@ -244,19 +246,22 @@ def test_concurrent_runs_cannot_reserve_above_shared_budget(runtime, design, mon
                 parts=[
                     ToolCallPart(
                         info.output_tools[0].name,
-                        {
-                            "action": {
-                                "kind": "contribute",
-                                "amount": 0,
-                                "target": "",
-                                "message": "",
-                                "report": None,
-                                "promise": None,
+                        output_args(
+                            info,
+                            {
+                                "action": {
+                                    "kind": "contribute",
+                                    "amount": 0,
+                                    "target": "",
+                                    "message": "",
+                                    "report": None,
+                                    "promise": None,
+                                },
+                                "memory": "",
+                                "rationale": "",
+                                "forecast": None,
                             },
-                            "memory": "",
-                            "rationale": "",
-                            "forecast": None,
-                        },
+                        ),
                     )
                 ],
                 usage=RequestUsage(input_tokens=100, output_tokens=50),

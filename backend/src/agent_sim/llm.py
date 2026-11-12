@@ -37,6 +37,12 @@ def prompt_byte_limit(output: type, instructions: str) -> int:
     return MAX_INPUT_BYTES - len((instructions + json.dumps(schema)).encode()) - 4096
 
 
+def web_research_reservation(model: str, max_tokens: int) -> int:
+    input_rate, output_rate = PRICES[model]
+    # Search inputs are unknown until completion; reserve the model's full context.
+    return math.ceil(1_050_000 * input_rate * 2 + max_tokens * output_rate * 1.5) + 20_000
+
+
 PRICES: dict[str, tuple[float, float]] = {
     "openai:gpt-6-luna": (0.10, 0.50),
     "openai:gpt-6.1-sol": (2.0, 10.0),
@@ -96,6 +102,48 @@ class ProviderFailure(Exception):
     pass
 
 
+class OutputValidationFailure(ProviderFailure):
+    """A settled structured response rejected locally; never a transport retry signal."""
+
+    def __init__(self, message: str, call_id: str, proposal: dict, issues: list[dict]):
+        super().__init__(message)
+        self.call_id, self.proposal, self.issues = call_id, proposal, issues
+
+
+def _invalid_output(
+    error: BaseException, messages: list[ModelMessage]
+) -> tuple[dict, list[dict]] | None:
+    cause: BaseException | None = error
+    for _ in range(8):
+        if cause is None:
+            return None
+        if isinstance(cause, ValidationError):
+            calls = [
+                part
+                for message in messages
+                if isinstance(message, ModelResponse)
+                for part in message.parts
+                if isinstance(part, ToolCallPart)
+            ]
+            if len(calls) != 1:
+                return None
+            args = calls[0].args
+            try:
+                value = json.loads(args) if isinstance(args, str) else args
+            except ValueError:
+                return None
+            if isinstance(value, dict):
+                return value, [
+                    dict(issue)
+                    for issue in cause.errors(
+                        include_input=False, include_url=False, include_context=False
+                    )
+                ]
+            return None
+        cause = cause.__cause__ or cause.__context__
+    return None
+
+
 def _validation_detail(error: BaseException | None) -> str:
     for _ in range(8):
         if error is None:
@@ -130,6 +178,15 @@ class LanguageModels:
         return setting(
             "PLANNER_MODEL" if purpose == "design" else "ASSISTANT_MODEL", "openai:gpt-6.1-sol"
         )
+
+    def web_research_available(self, max_tokens: int = 4096) -> bool:
+        model = self.research_model("design")
+        if model != "openai:gpt-6.1-sol":
+            return False
+        reserved = web_research_reservation(model, max_tokens)
+        with self.db.session() as session:
+            workspace = session.get_one(Workspace, 1)
+            return workspace.charged + reserved <= workspace.ceiling
 
     def model(self, name: str) -> Model:
         if name in self.models:
@@ -198,10 +255,7 @@ class LanguageModels:
         if web_search:
             settings["openai_include_web_search_sources"] = True
             settings["extra_body"] = {"max_tool_calls": 2}
-            # Search inputs are unknown until completion; reserve the model's full context.
-            reserved = (
-                math.ceil(1_050_000 * input_rate * 2 + max_tokens * output_rate * 1.5) + 20_000
-            )
+            reserved = web_research_reservation(model, max_tokens)
         async with self.capacity:
             if before_reserve is not None:
                 before_reserve()
@@ -280,10 +334,14 @@ class LanguageModels:
                     if truncated
                     else _validation_detail(error)
                 )
-                raise ProviderFailure(
+                message = (
                     f"{model} request failed ({failure}). {detail}"
                     "No retry or substitute model was used."
-                ) from error
+                )
+                if not truncated and (invalid := _invalid_output(error, messages)) is not None:
+                    proposal, issues = invalid
+                    raise OutputValidationFailure(message, call.id, proposal, issues) from error
+                raise ProviderFailure(message) from error
             finally:
                 try:
                     self._settle(call, messages, failure)
