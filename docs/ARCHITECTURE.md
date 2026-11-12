@@ -640,6 +640,10 @@ journal queries. It also retains the linked question's complete immutable genera
 attempts (including failures and repairs), external contracts/checks/admission/source,
 generation authorization/counters and exact integer reserved/charged request ledgers.
 Incompatible contracts are rejected without reinterpretation or migration.
+UI downloads use a lossless `.json.gz` representation of that same export via
+`?compressed=true`; raw JSON remains the API representation. Snapshot capture finishes
+before response headers, then JSON encoding/compression streams in worker threads.
+The export object still resides in memory; no second full-size JSON byte copy is built.
 Participant harnesses (`participants.py`; direct action 1.0.0, tool using 2.0.0) are condition factors,
 independent of provider/model assignments and World. Direct action preserves the
 single structured-decision request and its observation. Tool using owns a bounded

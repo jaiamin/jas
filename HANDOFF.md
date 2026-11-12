@@ -1,5 +1,23 @@
 # JAS handoff
 
+## Active: smaller evidence downloads
+
+Preserve complete export19 evidence and snapshot semantics; all four UI export
+entry points use lossless `.json.gz`. Raw JSON remains available to API callers.
+No importer, schema change, new dependency or paid calls. Acceptance: byte-exact
+decompression, missing-record errors before attachment headers, unchanged usage,
+Unicode/large-value coverage, desktop/mobile light/dark actual browser downloads,
+and measured reduction on the original read-only 24-run evidence. All acceptance
+checks passed:46 backend,8 affected UI units,7 browser cases,whole Ruff/ty/lint,
+forcedTS and private/public builds. Actual current API:50,030,684 bytes →2,312,936
+bytes (95.4% smaller), independent decompression SHA equal,usage unchanged. Local
+response1.11s raw/1.74s compressed: saved file size improves; generation is not faster.
+App8080 safely refreshed: same database inode/all rows/usage,2studies64runs10chats.
+Refresh receipt names base830dce51; tested uncommitted code is captured by the next
+download checkpoint. Evidence: `.tools/export-download/`. User now reports a separate
+large-experiment Researcher context-limit failure; diagnose next, no original retry.
+Keep app8080 and all user data intact.
+
 ROOT owns `feat/research-quality`, based on `5f2523e58c7a851482f6a1ed3c2590eaa01696c4`.
 The ten recommendations, acceptance criteria, methods and source-specific results
 are in [the plan](docs/research/RESEARCH_QUALITY_PLAN.md).

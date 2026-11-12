@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
 from pydantic import Field
 from sqlalchemy import select, text
 
@@ -15,7 +15,7 @@ from .db import Annotation, Database, ProviderCall, Workspace
 from .domain import Design, EnvironmentMechanics, SavedEnvironment, Strict
 from .environment_library import builtin_environment, definition_from_design, use_environment
 from .execution import Engine
-from .exports import export_study
+from .exports import export_study, gzip_export
 from .extensions import (
     ExtensionAdmission,
     ExtensionCandidate,
@@ -522,9 +522,18 @@ def study_findings(
 
 
 @router.get("/api/studies/{study_id}/export")
-async def download_study(study_id: str, *, research: ResearchDep) -> JSONResponse:
+async def download_study(
+    study_id: str, *, research: ResearchDep, compressed: bool = False
+) -> Response:
+    payload = await asyncio.to_thread(export_study, research, study_id)
+    if compressed:
+        return StreamingResponse(
+            gzip_export(payload),
+            media_type="application/gzip",
+            headers={"Content-Disposition": f'attachment; filename="jas-{study_id}.json.gz"'},
+        )
     return JSONResponse(
-        await asyncio.to_thread(export_study, research, study_id),
+        payload,
         headers={"Content-Disposition": f'attachment; filename="jas-{study_id}.json"'},
     )
 

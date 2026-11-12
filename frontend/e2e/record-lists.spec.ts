@@ -1130,7 +1130,9 @@ for (const theme of ["light", "dark"] as const) {
     });
     const download = page.waitForEvent("download");
     await page.getByRole("menuitem", { name: "Export evidence" }).click();
-    expect((await download).suggestedFilename()).toBe(`jas-${study.id}.json`);
+    expect((await download).suggestedFilename()).toBe(
+      `jas-${study.id}.json.gz`,
+    );
     await actions.click();
     await page
       .getByRole("menuitem", { name: "Duplicate", exact: true })
@@ -1258,7 +1260,7 @@ test("run action menu opens the exact revision and exports evidence without muta
   await page
     .getByRole("menuitem", { name: "Export experiment evidence" })
     .click();
-  expect((await download).suggestedFilename()).toBe(`jas-${study.id}.json`);
+  expect((await download).suggestedFilename()).toBe(`jas-${study.id}.json.gz`);
   expect(
     (await (await request.get(`/api/runs/${run.id}`)).json()).summary.turn,
   ).toBe(0);

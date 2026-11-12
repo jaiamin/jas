@@ -69,6 +69,25 @@ readers or automatic resets. Start with a fresh database when changing contracts
 removing existing data requires an explicit user decision.
 Capture1/comparison1/tool2.0/direct1.0 remain current.
 
+### Evidence downloads
+
+Every export button downloads `jas-<experiment-id>.json.gz`: lossless gzip of the
+complete current `jas-study` JSON, including checkpoints, provider traces, ledgers
+and provenance. Compression changes packaging only; it does not omit evidence or
+change the export version. File size still grows with runs, turns and model output.
+
+Expand it with an archive utility or `gzip -dk jas-<experiment-id>.json.gz`, or read
+it directly in Python with `json.load(gzip.open(path, "rt", encoding="utf-8"))`.
+For AI review, decompress and select relevant sections; compression does not reduce
+the expanded text or an AI model's context requirements. Exports can contain private
+participant observations and recorded prompts: share them deliberately.
+
+`GET /api/studies/{id}/export?compressed=true` returns the gzip attachment;
+`GET /api/studies/{id}/export` returns JSON for API callers. Both capture one database
+read snapshot without provider calls. Study exports are evidence bundles, not
+importable workspaces: JAS currently has no study-import endpoint. Reusing saved
+environment definitions is a separate workflow.
+
 T12's keyless browser witnesses use the opt-in DEVELOPMENT-only workflow provider,
 fresh owned data and the already installed headless shell. Set `JAS_TEST_PORT`,
 `JAS_TEST_DATA_DIR`, `PLAYWRIGHT_BROWSERS_PATH`, `T12_BROWSER_EXECUTABLE` and
