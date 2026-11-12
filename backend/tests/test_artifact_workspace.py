@@ -156,7 +156,7 @@ def test_solo_evidence_work_is_versioned_consequential_and_replayable(tmp_path, 
         assert replay["verified_turns"] == 4 and replay["model_requests"] == 0
         assert client.get("/api/settings").json()["usage"] == before
         exported = client.get(f"/api/studies/{study['id']}/export").json()
-        assert exported["version"] == 19
+        assert exported["version"] == 20
         assert len(exported["requests"]) == 4
         assert exported["runs"][0]["evidence"][-1]["checkpoint"] == run["state"]
 

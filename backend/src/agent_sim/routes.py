@@ -27,10 +27,8 @@ from .extensions import (
 from .finite_contract import (
     FiniteArtifactCheck,
     FiniteContract,
-    GenerationAuthorization,
     ReviewedFiniteContract,
 )
-from .investigations import InvestigationAuthorization, Investigations
 from .llm import LanguageModels
 from .research import Research, RunSummary
 from .shared_json import portable_json
@@ -74,53 +72,6 @@ async def assistant_service(request: Request) -> Assistants:
 
 
 AssistantsDep = Annotated[Assistants, Depends(assistant_service)]
-
-
-async def investigation_service(request: Request) -> Investigations:
-    return request.app.state.investigations
-
-
-InvestigationsDep = Annotated[Investigations, Depends(investigation_service)]
-
-
-@router.post("/api/investigations", status_code=202)
-async def investigate(
-    body: InvestigationAuthorization, *, investigations: InvestigationsDep
-) -> dict:
-    return investigations.start(body)
-
-
-@router.get("/api/investigations/{key}")
-async def investigation(key: str, *, investigations: InvestigationsDep) -> dict:
-    return investigations.get(key)
-
-
-class InvestigationControl(Strict):
-    action: Literal["pause", "resume", "cancel"]
-
-
-@router.post("/api/investigations/{key}/control")
-async def control_investigation(
-    key: str,
-    body: InvestigationControl,
-    *,
-    investigations: InvestigationsDep,
-) -> dict:
-    return investigations.control(key, body.action)
-
-
-class InvestigationAdaptation(Strict):
-    instruction: str = Field(min_length=1, max_length=2000)
-
-
-@router.post("/api/investigations/{key}/adapt", status_code=202)
-async def adapt_investigation(
-    key: str,
-    body: InvestigationAdaptation,
-    *,
-    investigations: InvestigationsDep,
-) -> dict:
-    return investigations.adapt(key, body.instruction)
 
 
 async def extension_service(request: Request) -> Extensions:
@@ -183,16 +134,6 @@ async def finite_admission(key: str, *, extensions: ExtensionsDep) -> FiniteAdmi
     return await asyncio.to_thread(extensions.finite_admission, key)
 
 
-@router.get("/api/extensions/generations")
-async def extension_generations(*, extensions: ExtensionsDep) -> list[dict]:
-    return await asyncio.to_thread(extensions.generations.list)
-
-
-@router.get("/api/extensions/generations/{key}")
-async def extension_generation(key: str, *, extensions: ExtensionsDep) -> dict:
-    return await asyncio.to_thread(extensions.generations.get, key)
-
-
 @router.get("/api/extensions/profile")
 async def extension_profile() -> dict:
     return {
@@ -221,7 +162,6 @@ async def extension_profile() -> dict:
         "requires_current_runtime": True,
         "requires_separate_participant_execution": True,
         "contract_schema": FiniteContract.model_json_schema(),
-        "authorization_schema": GenerationAuthorization.model_json_schema(),
     }
 
 
@@ -324,7 +264,6 @@ class ChatMessage(Strict):
     chat_id: str | None = None
     lens: Literal["behavior", "communication"] | None = None
     source_analysis_id: str | None = Field(default=None, min_length=1, max_length=80)
-    generation: GenerationAuthorization | None = None
 
 
 class Note(Strict):
@@ -685,7 +624,6 @@ async def send_chat(body: ChatMessage, *, assistants: AssistantsDep) -> dict:
         body.chat_id,
         body.lens,
         body.source_analysis_id,
-        body.generation,
     )
 
 

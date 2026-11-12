@@ -15,8 +15,6 @@ import {
 import { AgentHistory } from "@/components/agent/agent-history";
 import { AgentReply } from "@/components/agent/agent-reply";
 import { AgentWelcomeHeading } from "@/components/agent/agent-welcome-heading";
-import { GenerationAuthorization } from "@/components/agent/generation-authorization";
-import { InvestigationAuthorization } from "@/components/agent/investigation-authorization";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
 import { Alert } from "@/components/feedback";
 import {
@@ -112,9 +110,6 @@ export default function AgentPage() {
                   stage: update.stage,
                   ...(update.activity ? { activity: update.activity } : {}),
                   ...(update.research ? { research: update.research } : {}),
-                  ...(update.investigation_id
-                    ? { investigation_id: update.investigation_id }
-                    : {}),
                 },
               }
             : message,
@@ -272,37 +267,14 @@ function AgentConversation({
       state={state}
       compact={messages.length > 0}
       contextControl={
-        <>
-          <AgentContext
-            value={context}
-            onChange={changeContext}
-            studies={studies}
-            runs={runs}
-            loading={contextLoading}
-            disabled={state.send.isPending}
-          />
-          {(context === "general" || context === "new") && (
-            <GenerationAuthorization
-              question={state.question}
-              draftKey={draftKey}
-              disabled={state.blocked}
-              pending={send.isPending}
-              error={send.error}
-              settings={settings.data}
-              onGenerate={state.generate}
-            />
-          )}
-          {(context === "general" || context === "new") && (
-            <InvestigationAuthorization
-              question={state.question}
-              draftKey={draftKey}
-              disabled={state.investigationDisabled}
-              pending={send.isPending}
-              error={send.error}
-              onInvestigate={(allowance) => state.submit(allowance)}
-            />
-          )}
-        </>
+        <AgentContext
+          value={context}
+          onChange={changeContext}
+          studies={studies}
+          runs={runs}
+          loading={contextLoading}
+          disabled={state.send.isPending}
+        />
       }
       placeholder={
         selectedStudy || selectedRun

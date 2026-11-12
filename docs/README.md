@@ -8,7 +8,7 @@ records are separate from scientific claims.
 | --- | --- |
 | [Development](DEVELOPMENT.md) | Setup, local servers, tests and runtime checks |
 | [Custom environments](CUSTOM_ENVIRONMENTS.md) | Authoring and reusing mechanics |
-| [New mechanics](EXTENSIONS.md) | Finite contracts, generation allowances, containment and admission |
+| [Extension review](EXTENSIONS.md) | Independent finite contracts, containment and artifact admission |
 | [Experiment validity](EXPERIMENT_VALIDITY.md) | Question fidelity, preflight, opportunities, cutoffs and interpretation |
 | [Research](RESEARCH.md) | Primary methodological sources and evidence limits |
 | [Architecture](ARCHITECTURE.md) | Current contracts, lifecycle, privacy, accounting and replay |

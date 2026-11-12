@@ -43,8 +43,8 @@ updated timestamp and definition hash. Examples contain mechanics parameters, op
 and unbound roles. Create/update accept `{definition, revision}`; selection and extraction use
 `POST /api/design/use-environment` and `POST /api/design/environment`.
 Unsupported library/definition/rule versions and content hashes fail explicitly.
-Database schema15 and export19 retain investigation ownership, workflow rules,
-finite packages and generation allowances. Other persisted versions reject
+Database schema16 and export20 retain workflow rules and independently admitted
+finite packages. Other persisted versions reject
 explicitly. Preserve incompatible data separately when starting a fresh workspace;
 see the [storage contract](ARCHITECTURE.md#storage).
 
@@ -52,7 +52,7 @@ The `reviewed_finite` backend profile additionally requires an actual immutable
 external contract, explicit role bindings, static actor-private facts and a
 matching independent executable admission. Its full finite transition table is
 a declared prerequisite, not evidence of independently understood intent. It
-does not replace the richer installed Worlds. See [extension generation](EXTENSIONS.md)
+does not replace the richer installed Worlds. See [extension review](EXTENSIONS.md)
 for bounds and the current implementation/qualification scope.
 
 ## Artifact investigation, rules 2.0.0

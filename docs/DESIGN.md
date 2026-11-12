@@ -182,14 +182,15 @@ while keeping its action row visible.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
 background surface. The new-chat heading has a decorative primary-colored Target
 at left (30px, 34px on larger screens), with an 8px gap and centered alignment.
-Its stationary outline has a short outer scanning arc, followed by a gentle inner
-ring contraction and a brief center highlight. Its primary blue mixes 15%
-foreground for readable detail in either theme. Native browser animations finish
-within two seconds; each scan then rests for a varied 2.4–4.4 seconds. Motion and
-its scheduler stop offscreen/in hidden tabs; reduced motion shows the static
-outline. AgentTarget owns the shared animation and cleanup. Its welcome instance
-is decorative and never delays the composer; pending replies reuse the motion
-until they complete or stop. At the upper right, a 32px stock outline history button
+Two rounded blue arcs orbit a steady center over faint concentric tracks. Its
+primary blue mixes 15% foreground for readable detail in either theme. The welcome
+plays one 2.2-second introduction: the arcs align midway, then fade into the regular
+Target. Working replies use continuous clockwise orbits of 5.2 and 7.8 seconds;
+they indicate activity, never measured progress. Native browser animations pause
+offscreen/in hidden tabs and resume at the same position. Reduced motion keeps the
+regular static outline and skips the decorative introduction. AgentTarget owns the
+shared motion and cleanup, with no per-frame React updates or animation scheduler.
+Its welcome instance is decorative and never delays the composer. At the upper right, a 32px stock outline history button
 with the standard rounded corners sits beside the stock 32px New button when a
 saved conversation is selected. The base new-chat view shows only History. History uses a
 stock Popover and ScrollArea in every viewport, with local skeleton rows, empty
@@ -229,7 +230,7 @@ states; do not add a second prose-width cap or shrink-to-fit bubble inside it.
 The Target and text-only activity dropdown share one aligned header row. The expanded
 activity guide begins under the Target’s center, with step text aligned to its label. Activity
 stages and details have no decorative icons or completion checkmarks. While pending,
-the Target reuses the welcome scan/focus/rest animation; completion or failure
+the Target uses the shared orbital animation; completion or failure
 settles it to the regular blue Lucide Target.
 One stock TraceCollapsible presents the current public stage and recorded scope,
 research sources, examined evidence and mechanical checks. It starts closed and opens only on request.
@@ -294,50 +295,25 @@ Decisions and evidence stack below 1440px.
 Home’s experiment ideas, drafts, active runs and recent experiments share a centered
 58rem maximum-width content column below the composer. Keep their edges aligned.
 
-Home’s backdrop uses the user's replacement city GIF, stored as `city.gif`,
-with `city.webp` derived from a decoded frame. The superseded GIF and poster,
-procedural town, route generator and map-only styles are removed. Environment
-catalogue illustrations are unchanged.
+Home uses a continuous pixel-art sky with quiet blue tones and drifting ivory clouds. All source pixels are opaque and touching; there
+are no dot gutters, masks or transparent fades. A low-resolution canvas fills the
+exact field bounds with nearest-neighbor scaling, so complete source pixels stay
+crisp at approximately 5 CSS pixels. Ordered dithering softens the sky's palette
+bands without blurring pixels. Light mode uses pale muted colors; dark mode uses
+deep blue and slate. The clouds are decorative, not live simulation data.
 
-Keep the backdrop 320px tall at all widths. The image fills the available width
-with CSS `object-fit: cover`, centered horizontally with a 35% vertical focal
-point that favors the skyline. Narrow windows crop the sides; wide windows can
-crop excess sky and water. No viewport JavaScript or fixed media width is needed.
-Its top edge, upper corners and central column are uninterrupted. Only the lower corners
-dissolve along broad, asymmetric rounded contours inspired by the supplied recording.
-All strips are opaque. Their coverage decreases gradually toward the corner edges,
-with varied lengths, stepped ends, detached pixels and irregular 1–4px row pitches.
-Correlated patches mix thicker clusters with fine filaments. The full
-image becomes increasingly sparse shreds rather than a translucent or blurred veil.
-The rounded contours reach a little farther toward the lower middle, following
-the final refinement; their upper extent stays unchanged. Regenerate the single SVG
-with `python3 frontend/scripts/generate_home_dissolve.py`. Twelve coverage bands
-per corner carry seamless repeating ribbon textures at varied speeds with gentle,
-forward-only speed changes.
-The left corner flows left and the right corner flows right, without reversing.
-Each 12.8–20.48-second loop advances exactly one 256px repeat, so its reset is
-visually continuous. The rounded coverage contours, top and core stay still.
-One mask asset contains an explicit still view. The React component
-selects it and the poster for reduced motion, hidden documents or an offscreen
-backdrop; there is no JavaScript animation clock or duplicate GIF layer.
-
-Light mode preserves the GIF's color and opacity. Dark mode uses 67% brightness
-and 90% saturation; the dissolve itself uses no opacity animation or blur.
-The heading stays above the composer, with dark neutral lettering in both themes.
-A localized 75% white tint and 6px backdrop blur sit behind the full title.
-A broad oval mask extends 8rem beyond each end and 2rem vertically, with multiple
-falloff stops for a gradual transition into the city. There is no dark scrim or hard-edged plate.
-The text itself stays sharp. The artwork
-is decorative, hidden from assistive technology and pointer-inert; it does not
-represent current experiments or provider activity. There is no bottom divider.
+The base sky is cached. Only the clouds redraw at a bounded 160ms interval;
+no React updates, image downloads or per-display-frame loop. Clouds move slowly
+across the fixed scene. Reduced motion keeps it still; hidden/offscreen updates
+stop. Resize/theme changes rebuild the cached scene. The title uses the shared
+foreground without a tint or blur. The stock gray Separator stays behind the
+composer, three-fifths down its height. CSS subgrid follows the actual composer
+row; heading, composer and following content keep their positions. Environment
+catalogue and experiment-idea illustrations remain unchanged.
 
 The Home composer retains a 672px maximum width and 88px minimum text-entry height.
 Heading top spacing is 152px on mobile and 156px on desktop, with a 16px gap to
-the composer. The composer overlaps the artwork and extends below the fixed
-backdrop, keeping imagery out of
-the text field. A stock
-`shadow-lg` gives the composer's gray backing Card a compact blended shadow along its sides and
-bottom, separating it from the decorative background.
+the composer. Its gray backing Card retains the stock `shadow-lg`.
 Every unscoped entry point uses the same server intent routing: Agent answers a
 question or creates a validated experiment proposal from the prompt, without a
 manual creation mode. Home has no selector. Agent has an optional experiment/run
@@ -705,7 +681,7 @@ those compositions, semantic theme tokens live
 in `src/index.css`, and app glyphs pass through `src/components/icons.tsx`.
 
 The deliberate visual exceptions are the JAS logo/wordmark, Home environment artwork and
-heading fade, the shared Target scan/focus/rest animation, CC0 3dicons suggestion images, partial selected navigation glyphs,
+heading fade, the shared Target orbital animation, CC0 3dicons suggestion images, partial selected navigation glyphs,
 white/graphite surfaces, blue selection, and composer sizing, backing and focus
 appearance. They are not all controlled by a preset. A preset changes the shared
 foundation; review these documented exceptions and the icon boundary rather than

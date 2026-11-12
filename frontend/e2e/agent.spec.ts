@@ -93,11 +93,11 @@ for (const width of [320, 1440]) {
   });
 }
 
-test("Agent decoration respects motion preferences and stops offscreen", async ({
+test("Agent welcome pauses offscreen and settles after one introduction", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 400 });
-  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/agent");
   const heading = page.getByRole("heading", { name: "What can we explore?" });
   const playing = () =>
@@ -108,8 +108,6 @@ test("Agent decoration respects motion preferences and stops offscreen", async (
           .filter((animation) => animation.playState === "running").length,
     );
   await expect(heading).toBeVisible();
-  expect(await playing()).toBe(0);
-  await page.emulateMedia({ reducedMotion: "no-preference" });
   await expect.poll(playing).toBeGreaterThan(0);
   await page
     .getByRole("button", { name: "Learn the basics" })
@@ -118,9 +116,40 @@ test("Agent decoration respects motion preferences and stops offscreen", async (
   await expect.poll(playing).toBe(0);
   await heading.scrollIntoViewIfNeeded();
   await expect.poll(playing).toBeGreaterThan(0);
-  await page.emulateMedia({ reducedMotion: "reduce" });
+  // It comes to rest without waiting for an action or replaying on visibility.
   await expect.poll(playing).toBe(0);
+  await expect(heading.locator("svg")).not.toHaveAttribute("data-agent-motion");
+  await page
+    .getByRole("button", { name: "Learn the basics" })
+    .scrollIntoViewIfNeeded();
+  await expect(heading).not.toBeInViewport();
+  await heading.scrollIntoViewIfNeeded();
+  expect(await playing()).toBe(0);
   await expect(page.getByLabel("Message Agent", { exact: true })).toBeEnabled();
+});
+
+test("Agent welcome stays static with reduced motion and does not replay a skipped entrance", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/agent");
+  const target = page
+    .getByRole("heading", { name: "What can we explore?" })
+    .locator("svg");
+  await expect(target).toBeVisible();
+  await expect(target).not.toHaveAttribute("data-agent-motion");
+  expect(
+    await target.evaluate(
+      (element) => element.getAnimations({ subtree: true }).length,
+    ),
+  ).toBe(0);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(target).not.toHaveAttribute("data-agent-motion");
+  expect(
+    await target.evaluate(
+      (element) => element.getAnimations({ subtree: true }).length,
+    ),
+  ).toBe(0);
 });
 
 test("Agent centers a plain contextual composer without a history rail", async ({
@@ -137,6 +166,12 @@ test("Agent centers a plain contextual composer without a history rail", async (
   ).toHaveCount(0);
   await page.getByRole("link", { name: "Agent", exact: true }).click();
   await expect(page).toHaveTitle("JAS");
+  await expect(
+    page.getByRole("button", { name: "New mechanics", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Investigate", exact: true }),
+  ).toHaveCount(0);
   const defaultContext = page.getByRole("combobox", {
     name: "Message context",
   });

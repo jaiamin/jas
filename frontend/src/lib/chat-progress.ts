@@ -2,8 +2,7 @@ import type { ResearchActivity } from "./types";
 
 interface ChatProgress {
   status: "pending" | "complete" | "failed";
-  purpose: "general" | "design" | "analysis" | "investigation";
-  investigation_id?: string;
+  purpose: "general" | "design" | "analysis";
   partial?: string;
   introduction?: string;
   stage?: string;
@@ -39,7 +38,7 @@ function researchActivity(value: unknown): value is ResearchActivity {
       typeof operation.id === "string" &&
       typeof operation.summary === "string" &&
       object(operation.request) &&
-      ["capabilities", "context", "probe", "generate_extension"].includes(
+      ["capabilities", "context", "probe"].includes(
         String(operation.request.kind),
       ) &&
       ["pending", "complete", "rejected", "failed"].includes(
@@ -56,7 +55,6 @@ function researchActivity(value: unknown): value is ResearchActivity {
             "analysis",
             "run",
             "finite_contract",
-            "extension_generation",
             "extension_review",
             "finite_check",
             "finite_admission",
@@ -100,18 +98,9 @@ export function chatProgress(
     )
       return null;
     const purpose = "purpose" in row ? row.purpose : undefined;
-    if (
-      purpose !== "general" &&
-      purpose !== "design" &&
-      purpose !== "analysis" &&
-      purpose !== "investigation"
-    )
+    if (purpose !== "general" && purpose !== "design" && purpose !== "analysis")
       return null;
     const output = row.output;
-    const investigationId =
-      "investigation_id" in output ? output.investigation_id : undefined;
-    if (investigationId !== undefined && investigationId !== messageId)
-      return null;
     const partial = "partial" in output ? output.partial : undefined;
     const introduction =
       "introduction" in output ? output.introduction : undefined;
@@ -131,9 +120,6 @@ export function chatProgress(
       return null;
     return {
       ...(activity ? { activity } : {}),
-      ...(typeof investigationId === "string"
-        ? { investigation_id: investigationId }
-        : {}),
       ...(research ? { research } : {}),
       ...(introduction !== undefined ? { introduction } : {}),
       status: row.status,

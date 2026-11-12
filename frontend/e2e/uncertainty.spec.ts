@@ -103,7 +103,7 @@ for (const theme of ["light", "dark"]) {
       await download.saveAs(path);
       expect(download.suggestedFilename()).toBe(`jas-${id}.json`);
       const exported = expandEvidence(await readFile(path, "utf8"));
-      expect(exported.version).toBe(19);
+      expect(exported.version).toBe(20);
       expect(exported.study.comparison).toEqual(before.comparison);
       expect(exported.study.effects).toEqual(before.effects);
       expect(exported.requests).toEqual([]);
