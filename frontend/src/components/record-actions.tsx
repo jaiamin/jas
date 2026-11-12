@@ -84,9 +84,7 @@ export function ExperimentActions({ study }: { study: StudySummary }) {
             <Link to={`/new?copy=${study.id}`}>Duplicate</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <a href={`/api/studies/${study.id}/export?compressed=true`}>
-              Export evidence
-            </a>
+            <a href={`/api/studies/${study.id}/export`}>Export evidence</a>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
@@ -166,7 +164,7 @@ export function RunActions({ run }: { run: RunSummary }) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <a href={`/api/studies/${run.study_id}/export?compressed=true`}>
+          <a href={`/api/studies/${run.study_id}/export`}>
             Export experiment evidence
           </a>
         </DropdownMenuItem>

@@ -193,7 +193,7 @@ export default function Run() {
           aria-label="Export experiment evidence"
           asChild
         >
-          <a href={`/api/studies/${summary.study_id}/export?compressed=true`}>
+          <a href={`/api/studies/${summary.study_id}/export`}>
             <Download />
           </a>
         </Button>

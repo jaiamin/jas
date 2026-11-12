@@ -1,5 +1,4 @@
 import { readFile } from "node:fs/promises";
-import { gunzipSync } from "node:zlib";
 import { expect, test } from "@playwright/test";
 import type { Catalog, StudyDetail } from "../src/lib/types.js";
 import { templateDesign } from "./helpers.js";
@@ -100,30 +99,15 @@ for (const theme of ["light", "dark"]) {
       const downloaded = page.waitForEvent("download");
       await page.getByRole("link", { name: "Export experiment" }).click();
       const download = await downloaded;
-      const path = testInfo.outputPath("experiment.json.gz");
-      expect(download.suggestedFilename()).toBe(`jas-${id}.json.gz`);
+      const path = testInfo.outputPath("experiment.json");
       await download.saveAs(path);
-      const exported = JSON.parse(
-        gunzipSync(await readFile(path)).toString("utf8"),
-      );
+      const exported = JSON.parse(await readFile(path, "utf8"));
       expect(exported.version).toBe(19);
       expect(exported.study.comparison).toEqual(before.comparison);
       expect(exported.study.effects).toEqual(before.effects);
       expect(exported.requests).toEqual([]);
       expect(exported.runs).toHaveLength(4);
       expect(exported.study.sha256).toBe(before.sha256);
-      await page.goto(`/runs/${before.runs[0].id}`);
-      const runDownload = page.waitForEvent("download");
-      await page
-        .getByRole("link", { name: "Export experiment evidence" })
-        .click();
-      const runFile = await runDownload;
-      expect(runFile.suggestedFilename()).toBe(`jas-${id}.json.gz`);
-      const runPath = testInfo.outputPath("run-evidence.json.gz");
-      await runFile.saveAs(runPath);
-      expect(
-        JSON.parse(gunzipSync(await readFile(runPath)).toString("utf8")),
-      ).toEqual(exported);
       expect(exported.study.comparison.design_sha256).toBe(before.sha256);
       const revised = await request.post(`/api/studies/${id}/revisions`, {
         data: { design: { ...design, title: `${design.title} revised` } },

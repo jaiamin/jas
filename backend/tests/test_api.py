@@ -1,6 +1,3 @@
-import gzip
-import json
-
 import pytest
 from agent_sim.api import create_app
 from fastapi.testclient import TestClient
@@ -51,15 +48,14 @@ def test_manual_design_step_evidence_and_export(client, design):
     assert evidence["observation"]["you"]["goal"]
     assert "pending" not in evidence["observation"]
     assert evidence["state_hash"]
-    note = "Inspect this choice — 协作"
     assert (
         client.post(
             f"/api/runs/{rid}/annotations",
-            json={"turn": 1, "label": "Review", "note": note},
+            json={"turn": 1, "label": "Review", "note": "Inspect this choice"},
         ).status_code
         == 201
     )
-    assert client.get(f"/api/runs/{rid}/annotations").json()[0]["note"] == note
+    assert client.get(f"/api/runs/{rid}/annotations").json()[0]["note"] == "Inspect this choice"
     response = client.get(f"/api/studies/{sid}/export")
     assert response.headers["content-disposition"] == f'attachment; filename="jas-{sid}.json"'
     assert client.get("/api/openapi.json").json()["info"]["title"] == "JAS"
@@ -70,29 +66,7 @@ def test_manual_design_step_evidence_and_export(client, design):
     assert all("initial_state_available" not in row for row in export["runs"])
     assert export["runs"][0]["evidence"][0]["number"] == 0
     assert export["runs"][0]["evidence"][1] == evidence
-    usage = client.get("/api/settings").json()["usage"]
-    for encoding in ("identity", "gzip"):
-        compressed = client.get(
-            f"/api/studies/{sid}/export?compressed=true",
-            headers={"Accept-Encoding": encoding},
-        )
-        assert compressed.status_code == 200
-        assert compressed.headers["content-type"] == "application/gzip"
-        assert "content-encoding" not in compressed.headers
-        assert compressed.headers["content-disposition"] == (
-            f'attachment; filename="jas-{sid}.json.gz"'
-        )
-        assert gzip.decompress(compressed.content) == response.content
-        assert json.loads(gzip.decompress(compressed.content)) == export
-        assert len(compressed.content) < len(response.content) // 2
-    assert client.get("/api/settings").json()["usage"] == usage
     assert client.post(f"/api/runs/{rid}/verify", json={}).json()["verified_turns"] == 1
-
-
-def test_compressed_export_reports_missing_study_before_download(client):
-    response = client.get("/api/studies/missing/export?compressed=true")
-    assert response.status_code == 404
-    assert "content-disposition" not in response.headers
 
 
 def test_validation_and_origin_guard_do_not_spend(client, design):

@@ -1,7 +1,4 @@
-import json
-import zlib
 from collections import defaultdict
-from collections.abc import Iterator
 
 from sqlalchemy import select
 
@@ -16,20 +13,6 @@ from .db import (
     Turn,
 )
 from .research import Research, event_dict
-
-
-def gzip_export(payload: dict[str, object]) -> Iterator[bytes]:
-    """Compress incrementally without a second, full-size JSON serialization in memory."""
-    encoder = json.JSONEncoder(ensure_ascii=False, allow_nan=False, separators=(",", ":"))
-    compressor = zlib.compressobj(level=6, wbits=31)
-    buffer = bytearray()
-    for part in encoder.iterencode(payload):
-        buffer.extend(part.encode("utf-8"))
-        if len(buffer) >= 65536:
-            if chunk := compressor.compress(buffer):
-                yield chunk
-            buffer.clear()
-    yield compressor.compress(buffer) + compressor.flush()
 
 
 def export_study(research: Research, study_id: str) -> dict[str, object]:

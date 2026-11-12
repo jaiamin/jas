@@ -1,19 +1,7 @@
 import asyncio
-import gzip
-import json
 
 from agent_sim.db import Analysis, Annotation, ProviderCall, Run
-from agent_sim.exports import export_study, gzip_export
-
-
-def test_compressed_export_preserves_large_unicode_values_and_complete_stream():
-    payload: dict[str, object] = {
-        "evidence": [{"note": "观察 — café " * 20000}, {"value": None, "score": 1.5}]
-    }
-    compressed = b"".join(gzip_export(payload))
-    restored = gzip.decompress(compressed)
-    assert json.loads(restored) == payload
-    assert len(compressed) < len(restored) // 10
+from agent_sim.exports import export_study
 
 
 def test_export_keeps_own_provenance_and_evidence_without_unrelated_work(runtime, design):

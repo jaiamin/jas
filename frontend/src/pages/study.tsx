@@ -120,7 +120,7 @@ export default function Study() {
           aria-label="Export experiment"
           asChild
         >
-          <a href={`/api/studies/${id}/export?compressed=true`}>
+          <a href={`/api/studies/${id}/export`}>
             <Download />
           </a>
         </Button>
