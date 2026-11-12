@@ -741,7 +741,9 @@ MEASURE_DESCRIPTIONS["finite_success"] = (
 def create_world(
     design: Design, parameters: Parameters, seed: int, state: dict | None = None, *, runner=None
 ) -> World:
-    world = get_environment(design.environment).world(design, parameters, seed, state)
+    world = get_environment(design.environment).world(
+        design, design.scenario_parameters(parameters, seed), seed, state
+    )
     from .extension import SealedRelay
 
     if isinstance(world, SealedRelay):

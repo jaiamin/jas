@@ -249,11 +249,27 @@ In commons/trust, available per-action credits (endowment) are an agent's resour
 a scheduled reduction can make an earlier promise infeasible. This is not physical capacity.
 No new parameter names or invented mechanics. Inactive environment parameters retain defaults.
 All study/profile/condition keys must be lowercase identifiers. Return all schema fields.
-Use registered measure keys only in design.measures. Put additional outcome definitions and
-calculations in design.hypothesis: name recorded fields/events, the formula or event filter,
-the denominator and the comparison. Distinguish observable choices from their consequences;
-do not merely promise to inspect evidence. These calculations are analysis plans, not new
-engine metrics. Keep researcher analysis instructions out of participant context and goals.
+Use registered measure keys only in design.measures. Declare design.analysis_plan version1
+with named outcomes and a supported calculation: metric (registered metric identifier),
+turn_count, request_count (participant/adjudication attempts, excluding Researcher analysis),
+cost_usd, message_count, or, for
+distributed_coordination only, wait_count and coordination_regret. Unsupported semantic
+outcomes require calculation=manual with a specific manual_reason coding procedure; never
+promise they will be computed. Set target, trajectory/scenario sampling_unit and actual
+allocation; retain_all exclusions and descriptive uncertainty are mandatory. These fields
+are researcher metadata and never participant instructions. Do not invent significance.
+Use design.scenarios only for explicit distributed_coordination value-table cases: exactly
+one version1 scenario per seed, containing all immutable local-value artifacts and every
+alternative, with integer values -100 to100. Scenarios are matched across all conditions;
+they do not randomize model outputs or counterbalance names/order. Otherwise use [].
+Free waiting and generous horizons can preserve optimal choices despite message delay.
+Inspect the separate scientific review before claiming sensitivity or generalization.
+Missing waiting costs/deadlines/incentives require actual reviewed mechanics, never prose.
+Event-wait is an explicit participant harness alternative for distributed coordination,
+not a World action or an invisible optimization. It changes the studied policy; keep an
+ordinary direct-action control. local_value_v1 is a zero-request control that reads the
+first readable immutable table, then chooses its locally maximal alternative; it does
+not pool all private information or compute a global optimum.
 Template example values are not requirements:
 compare conditions to each other and the actual request, not to template numeric constants.
 The scoped agent/condition/seed/repetition/round counts are a binding plan, not suggestions.
@@ -660,6 +676,8 @@ class Planner:
                 raise ValueError(
                     "Confirmatory proposals must declare their outcome and analysis plan"
                 )
+            if brief.intent == "confirmatory" and design.analysis_plan is None:
+                raise ValueError("Confirmatory proposals must declare an executable analysis plan")
             if design.budget_usd > 10:
                 raise ValueError("AI-proposed studies must have a spending ceiling at or below $10")
         return design

@@ -61,7 +61,7 @@ def test_manual_design_step_evidence_and_export(client, design):
     assert client.get("/api/openapi.json").json()["info"]["title"] == "JAS"
     export = response.json()
     assert export["format"] == "jas-study"
-    assert export["version"] == 18
+    assert export["version"] == 19
     assert export["rule_versions"] == ["4.0.0"]
     assert all("initial_state_available" not in row for row in export["runs"])
     assert export["runs"][0]["evidence"][0]["number"] == 0

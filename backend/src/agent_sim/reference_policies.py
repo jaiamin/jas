@@ -7,6 +7,30 @@ from .simulation.checkpoints import Observation
 def reference_decision(
     policy: str, observation: Observation, decision_type: type[Decision]
 ) -> Decision:
+    if policy == "local_value_v1":
+        alternatives = observation["coordination"]["alternatives"]
+        last = observation.get("last_result") or {}
+        content = last.get("content", {})
+        if set(content) == set(alternatives) and all(type(v) is int for v in content.values()):
+            action = {
+                "kind": "choose_alternative",
+                "alternative": max(alternatives, key=lambda a: content[a]),
+            }
+        else:
+            readable = next((a for a in observation["artifacts"] if not a["writable"]), None)
+            if readable is None:
+                raise ValueError("Local-value reference requires a readable immutable table")
+            action = {"kind": "read_artifact", "artifact": readable["key"], "version": None}
+        return Decision.model_validate(
+            decision_type.model_validate(
+                {
+                    "action": action,
+                    "memory": "",
+                    "rationale": "Declared first-readable-table local-value control.",
+                    "forecast": None,
+                }
+            )
+        )
     if policy == "private_signal_v1":
         kind, amount = "choose", observation["your_private_signal"]
     elif policy in {"commons_keep_v1", "commons_half_v1"}:

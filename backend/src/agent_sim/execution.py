@@ -23,7 +23,7 @@ from .diagnostics import log_failure
 from .domain import AdjudicationRuling, Decision, ReadArtifact, RecordedAdjudication, Treatment
 from .investigation_limits import InvestigationStopped, claim_turn, claim_work
 from .llm import LanguageModels, ProviderFailure
-from .participants import Activation
+from .participants import Activation, event_wait
 from .participants import operations as activation_record_operations
 from .research import Research
 
@@ -544,6 +544,23 @@ class Engine:
                 if observed != activation["observation"]:
                     raise ValueError("Activation observation mismatch")
                 for operation in activation["operations"]:
+                    if operation["kind"] == "event_wait":
+                        if condition.harness.kind != "event_wait":
+                            raise ValueError("Undeclared event-wait policy")
+                        repeated = event_wait(
+                            self.models,
+                            run_id,
+                            actor,
+                            activation["turn"],
+                            observed,
+                            condition.harness.max_wait_turns,
+                        )
+                        if (
+                            repeated is None
+                            or operation["request"] != {"source_turn": repeated[1]}
+                            or operation["result"] != repeated[0].model_dump()
+                        ):
+                            raise ValueError("Event-wait receipt mismatch")
                     if (
                         operation["kind"] == "read_artifact"
                         or operation["request"].get("operation") == "read_artifact"

@@ -1,6 +1,6 @@
 import asyncio
 
-from agent_sim.db import Analysis, Annotation, ProviderCall
+from agent_sim.db import Analysis, Annotation, ProviderCall, Run
 from agent_sim.exports import export_study
 
 
@@ -65,4 +65,29 @@ def test_export_keeps_own_provenance_and_evidence_without_unrelated_work(runtime
     evidence = runs[0]["evidence"]
     assert evidence[1] == research.evidence(rid, 1)
     assert evidence[1]["events"]
+    assert models.usage() == before
+
+
+def test_findings_share_exports_snapshot_during_a_concurrent_commit(runtime, design, monkeypatch):
+    db, models, research, _ = runtime
+    sid = research.save_design(design)
+    rid = research.operational_runs(sid)[0].id
+    original = research.study
+
+    def study_then_commit(key):
+        captured = original(key)
+        # Use the writer session: the export's read transaction must keep its old view.
+        with db._session.begin() as session:
+            session.get_one(Run, rid).status = "complete"
+        return captured
+
+    monkeypatch.setattr(research, "study", study_then_commit)
+    before = models.usage()
+    exported = export_study(research, sid)
+    study, findings, runs = exported["study"], exported["research"], exported["runs"]
+    assert isinstance(study, dict) and isinstance(findings, dict) and isinstance(runs, list)
+    assert study["runs"][0]["status"] == "ready"
+    assert findings["complete"] == 0
+    assert runs[0]["record"]["summary"]["status"] == "ready"
+    assert research.findings(sid)["complete"] == 1
     assert models.usage() == before

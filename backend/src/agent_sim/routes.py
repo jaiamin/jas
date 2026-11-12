@@ -514,6 +514,13 @@ async def study_exposure(
     }
 
 
+@router.get("/api/studies/{study_id}/findings")
+def study_findings(
+    study_id: str, revision: int | None = Query(default=None, ge=1), *, research: ResearchDep
+) -> dict:
+    return research.findings(study_id, revision)
+
+
 @router.get("/api/studies/{study_id}/export")
 async def download_study(study_id: str, *, research: ResearchDep) -> JSONResponse:
     return JSONResponse(

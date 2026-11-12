@@ -3,7 +3,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import TypedDict
 
-from sqlalchemy import delete, or_, select, update
+from sqlalchemy import delete, func, or_, select, update
 from sqlalchemy.orm import defer
 
 from .comparisons import ComparisonRun, compare_runs, empty_effort
@@ -32,6 +32,7 @@ from .llm import PRICES, LanguageModels, Usage, empty_usage
 from .metrics import aggregate_metrics
 from .participant_context import OPERATION_CAPABILITY
 from .participants import activation_record, operation_record
+from .research_quality import completion, findings_report, scientific_review
 from .simulation.environments import create_world, get_environment
 from .validity import Requirement, factorial_issues, preflight, require_valid, requirement_issues
 
@@ -83,6 +84,7 @@ class RunSummary(TypedDict):
     created: str
     error: str | None
     usage: Usage
+    completion: dict
 
 
 @dataclass(frozen=True)
@@ -114,6 +116,7 @@ class Research:
         # Persisted revisions carry their exact package and provenance. Their checks
         # must remain possible after loss of the original review/admission sidecars.
         result = preflight(design, runner=self.extensions.transition)
+        result["research"] = scientific_review(design)
         result["question_mapping"] = []
         result["original_question"] = None
         if plan_id:
@@ -173,6 +176,20 @@ class Research:
             raise ValueError("Choose a model in the reviewed provider catalog")
         environment_definition = get_environment(design.environment)
         unsupported = sorted(set(design.measures) - set(environment_definition.measures))
+        if design.analysis_plan:
+            for outcome in design.analysis_plan.outcomes:
+                if (
+                    outcome.calculation == "metric"
+                    and outcome.metric not in environment_definition.measures
+                ):
+                    raise ValueError("Analysis outcomes must use a registered environment metric")
+                if (
+                    outcome.calculation in {"coordination_regret", "wait_count"}
+                    and design.environment != "distributed_coordination"
+                ):
+                    raise ValueError(
+                        "Coordination regret/wait counts require distributed_coordination"
+                    )
         if unsupported:
             raise ValueError(
                 f"Unsupported measurements {unsupported}; "
@@ -415,7 +432,72 @@ class Research:
             "created": run.created,
             "error": run.error,
             "usage": usage if usage is not None else self.models.usage(run_id=run.id),
+            "completion": completion(
+                run.status, run.checkpoint, run.turn, design.turn_count, design.environment
+            ),
         }
+
+    def findings(self, study_id: str, number: int | None = None) -> dict:
+        with self.db.read_snapshot():
+            return self._findings(study_id, number)
+
+    def _findings(self, study_id: str, number: int | None = None) -> dict:
+        with self.db.session() as session:
+            study = session.get_one(Study, study_id)
+            revision = session.scalars(
+                select(Revision).where(
+                    Revision.study_id == study_id, Revision.number == (number or study.revision)
+                )
+            ).one()
+            records = session.execute(
+                select(Run, Condition.key)
+                .join(Condition)
+                .where(Condition.revision_id == revision.id)
+            ).all()
+            ids = {run.id for run, _ in records}
+            event_counts = session.execute(
+                select(RecordedEvent.run_id, RecordedEvent.kind, func.count())
+                .where(RecordedEvent.run_id.in_(ids))
+                .group_by(RecordedEvent.run_id, RecordedEvent.kind)
+            ).all()
+            calls = session.execute(
+                select(ProviderCall.run_id, ProviderCall.status, ProviderCall.charged).where(
+                    ProviderCall.run_id.in_(ids),
+                    ProviderCall.purpose.in_(
+                        ["decision", "participant_operation", "adjudication"]
+                    ),
+                )
+            ).all()
+        events = {rid: Counter() for rid in ids}
+        usage = {rid: {"requests": 0, "charged": 0, "partial": False} for rid in ids}
+        for rid, kind, count in event_counts:
+            events[rid][kind] = count
+        for rid, status, charged in calls:
+            assert rid is not None
+            usage[rid]["requests"] += 1
+            usage[rid]["charged"] += charged
+            usage[rid]["partial"] |= status in {"pending", "unknown"}
+        runs = [
+            {
+                "id": run.id,
+                "condition_key": key,
+                "seed": run.seed,
+                "repetition": run.repetition,
+                "status": run.status,
+                "turn": run.turn,
+                "error": run.error,
+            }
+            for run, key in records
+        ]
+        return findings_report(
+            Design.model_validate(revision.design),
+            revision.number,
+            revision.sha256,
+            runs,
+            self.metrics_many(ids),
+            events,
+            usage,
+        )
 
     def runs(
         self, study_id: str | None = None, *, run_ids: set[str] | None = None

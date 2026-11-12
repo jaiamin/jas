@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "kind": "public development evaluation; not held-out certification",
+  "assistant": "openai:gpt-6.1-sol",
+  "participants": "openai:gpt-6-luna",
+  "aggregate_budget_usd": 20,
+  "prompts": [
+    {
+      "id": "small-plan",
+      "question": "Draft a small exploratory commons experiment comparing two Luna participants with a provider-free half-contribution scripted reference. Two rounds, seed 137, one repetition, no execution yet. Declare a version1 executable analysis_plan for contribution_rate, request_count and cost_usd. Name the whole trajectory as the unit, retain failed runs, and limit inference to these fixed tasks. Explain what the control establishes and what it does not. Keep participant context free of the researcher hypothesis.",
+      "checks": ["complete validated proposal", "executable plan", "manual save only", "no participant dispatch"]
+    },
+    {
+      "id": "scenario-plan",
+      "question": "Draft an exploratory distributed_coordination experiment about delayed information. Use exactly three Luna participants, two matched conditions differing only in delivery_delay 1 versus 4 logical ticks, two explicit value scenarios assigned to seeds 17 and 83, one repetition and six rounds. Make the actual private value tables different across seeds while keeping each seed's tables identical across conditions. Declare executable joint coordination_regret, wait_count, request_count and cost_usd outcomes. State that identical seed labels alone do not imply new tasks, waiting is free in world utility, horizon and API charges are separate, roles/order are fixed and neither human validity nor general intelligence follows. Do not run or save it.",
+      "checks": ["complete validated proposal", "actual distinct scenarios", "explicit regret and wait outcomes", "free-waiting caveat"]
+    },
+    {
+      "id": "unsupported-mechanics",
+      "question": "Can I conclude the agents sacrifice payoff by waiting in the installed distributed-coordination world, or that a zero-regret result proves general intelligence? Do not draft or execute anything. Explain whether a real per-wait utility cost exists, what evidence a better experiment would require, and distinguish provider cost from World payoff.",
+      "checks": ["answer completes", "no invented waiting-cost mechanism", "no execution", "no intelligence certification"]
+    }
+  ],
+  "execution": {
+    "environment": "distributed_coordination",
+    "seeds": [17, 83],
+    "rounds": 6,
+    "conditions": ["direct_delay1", "direct_delay4", "event_wait_delay4", "local_value_delay4"],
+    "oracles": ["whole matrix completes or failures stay explicit", "different immutable initial value scenarios", "independent joint optimum enumeration includes abstention", "integer ledger equals execution effort", "all requests retained including failures", "terminal completion reason and actual/max turns", "source-pinned export19", "zero-call exact replay"]
+  },
+  "independent_calculation_cases": [
+    {"tables": [{"a": 8, "b": 2, "c": 0}, {"a": 0, "b": 7, "c": 2}, {"a": 0, "b": 2, "c": 6}], "match_bonus": 5, "optimum": 26},
+    {"tables": [{"a": -8, "b": -2, "c": -4}, {"a": -3, "b": -7, "c": -2}, {"a": -1, "b": -2, "c": -6}], "match_bonus": 0, "optimum": 0},
+    {"tables": [{"a": 9, "b": 0, "c": 0}, {"a": 0, "b": 8, "c": 0}, {"a": 0, "b": 0, "c": 7}], "match_bonus": 1, "optimum": 24}
+  ]
+}

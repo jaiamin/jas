@@ -61,7 +61,7 @@ its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
 `data/jas.sqlite3`; Compose stores it in `jas-data`.
-The sole current contract is database15, `jas-study` export18,
+The sole current contract is database15, `jas-study` export19,
 `jas-environment-v10`/definition2, research-operation2 and generation-event-v2.
 Incompatible databases, library records and rule checkpoints are rejected on
 inspection, export, execution and replay. There are no migrations, compatibility

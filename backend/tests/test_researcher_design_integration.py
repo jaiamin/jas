@@ -233,7 +233,7 @@ def test_quartz_exploration_preserves_exact_copies_and_saving_adds_no_calls(clie
     saved = client.post("/api/studies", json={"design": proposal, "plan_id": row["id"]})
     assert saved.status_code == 201, saved.text
     exported = client.get(f"/api/studies/{saved.json()['id']}/export").json()
-    assert exported["version"] == 18
+    assert exported["version"] == 19
     assert len(exported["runs"]) == 4
     assert all(r["record"]["summary"]["status"] == "ready" for r in exported["runs"])
     assert all(r["record"]["summary"]["turn"] == 0 for r in exported["runs"])

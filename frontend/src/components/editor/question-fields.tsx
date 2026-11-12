@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { Catalog, Design, EnvironmentId } from "@/lib/types";
+import { AnalysisPlanFields } from "./analysis-plan-fields";
 
 export function QuestionFields({
   design,
@@ -102,6 +103,11 @@ export function QuestionFields({
               trials. Agents do not receive this plan.
             </FieldDescription>
           </Field>
+          <AnalysisPlanFields
+            design={design}
+            metrics={environment?.measures ?? []}
+            onChange={onChange}
+          />
         </DisclosureContent>
       </Disclosure>
       <Disclosure>

@@ -72,6 +72,31 @@ export function ExperimentCheckDetails({
           <strong>Original question:</strong> {report.original_question}
         </p>
       )}
+      {report.research && (
+        <Disclosure>
+          <DisclosureTrigger>
+            Scientific design review · {report.research.issues.length} cautions
+          </DisclosureTrigger>
+          <DisclosureContent className="flex flex-col gap-3 pt-3">
+            <p>Mechanical admission does not certify scientific validity.</p>
+            {report.research.variation.map((row) => (
+              <p key={row.condition_key}>
+                {row.condition_key}: {row.distinct_initial_states} distinct
+                initial states across {row.seeds} seed labels.
+              </p>
+            ))}
+            {report.research.issues.map((issue) => (
+              <div key={`${issue.code}-${issue.message}`}>
+                <p>{issue.message}</p>
+                <p className="text-muted-foreground">
+                  Next test: {issue.next_test}
+                </p>
+              </div>
+            ))}
+            <p className="text-muted-foreground">{report.research.limits}</p>
+          </DisclosureContent>
+        </Disclosure>
+      )}
       {report.question_mapping?.length ? (
         <div>
           <p>Planner mapping; review against the enforced rules.</p>

@@ -64,6 +64,23 @@ assistant visibility and other presentation parameters do not change draft ident
 can be recovered in the specification editor. Only backend-validated designs become immutable
 revisions and run matrices; saving does not start execution.
 
+## Research contracts and findings
+
+An optional version1 analysis plan pins named calculations or explicit manual outcomes
+with the immutable revision. The findings endpoint uses a repeatable read, the existing
+matched-comparison engine and integer execution ledgers; unknown usage stays visible.
+It excludes Researcher spending from participant/judge effort. Export19 computes the
+same report inside its existing evidence snapshot. Scientific diagnostics remain
+separate from mechanical preflight and never certify scientific validity.
+
+Coordination scenario v1 applies explicit local value tables by seed before initialization,
+identically across matched conditions. Initial-state hashes reveal seed labels that do
+not vary starting states, without claiming later randomness is identical. The actor-only
+local-value control and optional event-wait harness are explicit policies. Event waiting
+reuses a model-chosen wait for a bounded number of unchanged-input opportunities; it
+preserves every World turn, activation and replay receipt. It does not add a payoff cost.
+See the [implementation rationale](research/RESEARCH_QUALITY_PLAN.md).
+
 ## Agent workspace
 
 `/agent` is a single conversation surface with a conversation toolbar and a contextual
@@ -217,7 +234,7 @@ participants, roles, conditions, opportunity-based horizon/stopping, replication
 Material clarification keeps the same conversation without an executable proposal. Unsupported
 questions retain their original text and may offer explicitly narrower installed alternatives.
 These planning additions are research artifacts. The combined current contract is
-DB15/export18/capture1/comparison1/library10/tool2.0/direct1.0. Installed
+DB15/export19/capture1/comparison1/library10/tool2.0/direct1.0. Installed
 three-participant distributed coordination includes phase/conflict rules and logical addressed
 mail; solo artifact investigation remains sequential. A decline whose direct requirements and
 population have an installed example witness receives a bounded, recorded scoping recheck.
@@ -278,7 +295,7 @@ commitments through the same settlement, artifact and logical-time seams.
 Reliance rule1.0.1 checks promise feasibility against the currently scheduled
 future decision slots, including the exclusive deadline. Incompatible rule
 checkpoints are rejected on inspection, export, execution and replay.
-The current combined contract is DB15/export18/library10.
+The current combined contract is DB15/export19/library10.
 The promise-time forecast assumes the current schedule; later withdrawals can
 change that cadence. A recorded actual fulfillment opportunity establishes
 feasibility for settlement even when the original schedule forecast was false.
@@ -342,7 +359,7 @@ structural object/requirement edits also use the existing JSON editor. The revie
 shows requirements and ACLs; the run view links versions and terminal results to
 recorded turns. Reusable mechanics extract/rebind ACL roles and retain complete
 immutable source snapshots, independently of population, model, harness and memory.
-DB15, export18, comparison1 and `jas-environment-v10`/definition2 are the current contract.
+DB15, export19, comparison1 and `jas-environment-v10`/definition2 are the current contract.
 Older database/library versions fail explicitly; preserve them with their source.
 No migration, compatibility reader or reset is performed. Controlled-world rules
 remain unchanged. Generated execution uses its separate admission profile.
@@ -515,7 +532,7 @@ provider request confirms input inclusion, separately from availability or inten
 Frozen analysis lenses recompute nonfinancial reliance value/eligibility while
 financial utility remains null; Sol analysis is separately billed from Luna work.
 
-The current contract is DB15/export18/library10/definition2, with
+The current contract is DB15/export19/library10/definition2, with
 research-operation2 and generation-event-v2. It includes typed commitments,
 admitted packages, durable investigation ownership, institutional workflow,
 externally reviewed finite generation and declared fallible adjudication.
@@ -759,7 +776,7 @@ receipt establishes inclusion; pending proposals and queued mail cannot supply i
 Applying a different lens changes its
 requirements/account without rewriting the source analysis. Unsupported lens
 versions are rejected without conversion; historical analyses without a lens
-remain unassessed and cannot supply lens inputs. Database15/export18/capture1/
+remain unassessed and cannot supply lens inputs. Database15/export19/capture1/
 comparison1/libraryv10 and harness contracts retain the analysis lens meanings;
 the combined persistence change provides no migration or reset.
 
@@ -826,7 +843,7 @@ the experiment adapts those examples. Editing/deleting a reusable environment ne
 or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
 12 recent definitions as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
-call or run. Database schema15, export18 and libraryv10 reject incompatible versions explicitly; there is
+call or run. Database schema15, export19 and libraryv10 reject incompatible versions explicitly; there is
 no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 ### Failure-aware comparisons
@@ -909,7 +926,7 @@ read-only. Exposure-conditioned descriptions are post-treatment selections, not
 automatic causal effects; inclusion establishes no attention, belief or intent.
 
 Current export v18 retains exposure capture v1, its complete chain and frozen
-analysis artifacts. Database15/export18/library10 includes institutional work,
+analysis artifacts. Database15/export19/library10 includes institutional work,
 external finite generation authorization and per-question request/candidate/charge
 counters. Incompatible persisted meanings reject explicitly.
 Exposure provenance alone does not alter controlled-world

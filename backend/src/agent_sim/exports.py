@@ -73,7 +73,8 @@ def _export_study(research: Research, study_id: str) -> dict[str, object]:
     initial = {run.id: research.evidence(run.id, 0) for run in runs}
     return {
         "format": "jas-study",
-        "version": 18,
+        "version": 19,
+        "research": research._findings(study_id),
         "extension_generations": [
             attempt
             for attempt in research.extensions.generations.list()

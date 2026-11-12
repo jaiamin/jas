@@ -43,7 +43,7 @@ updated timestamp and definition hash. Examples contain mechanics parameters, op
 and unbound roles. Create/update accept `{definition, revision}`; selection and extraction use
 `POST /api/design/use-environment` and `POST /api/design/environment`.
 Unsupported library/definition/rule versions and content hashes fail explicitly.
-Database schema15 and export18 retain investigation ownership, workflow rules,
+Database schema15 and export19 retain investigation ownership, workflow rules,
 finite packages and generation allowances. Other persisted versions reject
 explicitly. Preserve incompatible data separately when starting a fresh workspace;
 see the [storage contract](ARCHITECTURE.md#storage).
