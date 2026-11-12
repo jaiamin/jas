@@ -1,5 +1,21 @@
 # JAS handoff
 
+## CI follow-up: planning activity animation
+
+PR #36 at be738b8 passed backend/container/workflows; frontend retained 186/187 browser
+passes. Its sole failure was the light planning-stage case reopening draft notes
+after reload. The hosted trace shows the nested click 42 ms after the outer opening
+click, while its 200 ms height animation was clipping the child; the notes trigger
+stayed aria-expanded=false. Polling retained the notes payload throughout.
+The original case passed locally in both themes; a slow-animation attempt and
+three CPU-throttled light runs also passed, so no local reproduction is claimed.
+The test now waits for actual collapsible animations to finish and checks the nested
+trigger opens before asserting the unchanged note content. No timeout increase,
+product change, paid call or 8080 refresh. All 7 streaming browser cases pass against
+the existing qualified build; logs and original hosted artifact remain under
+`.tools/export-download/ci-*`. Frontend lint (247 files) and forced types also pass.
+Hosted CI on the new checkpoint remains the final gate.
+
 ## Active: portable evidence and large analysis contexts
 
 User explicitly rejected archived/compressed downloads. Gzip implementation07b0abc1
