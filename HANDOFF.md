@@ -34,6 +34,10 @@ Final frozen-download extension:80 affected backend cases and11 browser cases PA
 (7 experiment +4 frozen analysis, phone/desktop and light/dark). A run advancing
 after analysis does not change downloaded frozen inputs. Shared representation helper
 now serves both download kinds; ordinary API responses remain expanded.
+Native frozen-record verification exposed dictionary ordering loss (values equal,
+bytes unequal); failed measurement and focused RED retained. Hashing now respects
+field order. Final136 affected backend cases and11 browser cases PASS on that source;
+full frozen-record native readback remains to seal after guarded refresh.
 Evidence `.tools/export-download/` preserves gzip/revert/adverse attempts. No new
 paid calls. Remaining: documentary seal and branch publication/hosted CI. App8080
 stays running; all owned test browsers/services are closed.

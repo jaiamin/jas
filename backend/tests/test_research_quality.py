@@ -779,6 +779,17 @@ def test_shared_wire_preserves_literal_reference_shaped_artifacts():
     assert decoded == original
 
 
+def test_shared_json_preserves_dictionary_order_for_exact_restoration():
+    from agent_sim.shared_json import share_json
+
+    text = "Exact provider evidence " * 20
+    original = {"first": {"alpha": text, "omega": 1}, "second": {"omega": 1, "alpha": text}}
+    restored = analysis_prompt(json.dumps(share_json(original)))
+    restored.pop("reference_key")
+    restored.pop("shared_values")
+    assert json.dumps(restored) == json.dumps(original)
+
+
 def test_context_oversize_is_explicit_and_frozen_details_remain_accessible(runtime, design):
     from agent_sim.analysis_context import AnalysisContext, IndexRequest
     from agent_sim.db import digest

@@ -22,13 +22,13 @@ def portable_json(data: dict, overview: dict) -> dict:
 
 
 def share_json(data: dict) -> dict:
-    """Share exact repeated values on the wire; retain the original frozen evidence."""
+    """Share repeated JSON encodings without changing values or dictionary field order."""
     counts: Counter[str] = Counter()
     field_names: set[str] = set()
 
     def key(value):
         if isinstance(value, (dict, list, str)):
-            encoded = json.dumps(value, sort_keys=True)
+            encoded = json.dumps(value)
             if len(encoded) >= 160:
                 return hashlib.sha256(encoded.encode()).hexdigest()
         return None
