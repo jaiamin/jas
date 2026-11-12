@@ -93,7 +93,7 @@ test("Home keeps immediate content usable while only database rows show skeleton
 
 for (const width of [390, 1440])
   for (const theme of ["light", "dark"]) {
-    test(`Home keeps a square mosaic and original content positions · ${theme} · ${width}`, async ({
+    test(`Home keeps a pixel Earth scene and original content positions · ${theme} · ${width}`, async ({
       page,
     }, testInfo) => {
       const artworkRequests: string[] = [];
@@ -158,7 +158,7 @@ for (const width of [390, 1440])
       expect(geometry.fieldColor).not.toBe(geometry.pageColor);
       expect(geometry.titleColor).toBe(geometry.foreground);
       expect(geometry.blurred).toBe(false);
-      await expect(hero.locator(".home-mosaic")).toHaveAttribute(
+      await expect(hero.locator(".home-world")).toHaveAttribute(
         "data-active",
         "true",
       );
@@ -170,7 +170,7 @@ for (const width of [390, 1440])
     });
   }
 
-test("Home mosaic uses whole square cells after resizing, with no fades", async ({
+test("Home pixel art fills every cell without grid gaps or cropped edges", async ({
   page,
 }) => {
   await page.route("**/api/settings", (route) =>
@@ -178,91 +178,68 @@ test("Home mosaic uses whole square cells after resizing, with no fades", async 
   );
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  const mosaic = page.locator("canvas.home-mosaic");
+  const world = page.locator("canvas.home-world");
   for (const width of [333, 390, 753, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await expect
-      .poll(() => mosaic.evaluate((canvas: HTMLCanvasElement) => canvas.width))
-      .toBeGreaterThan(0);
-    await expect
       .poll(() =>
-        mosaic.evaluate(
+        world.evaluate(
           (canvas: HTMLCanvasElement) =>
-            canvas.width ===
-            Math.floor(
-              canvas.parentElement?.getBoundingClientRect().width ?? 0,
-            ),
+            Math.abs(
+              parseFloat(canvas.style.width) -
+                (canvas.parentElement?.getBoundingClientRect().width ?? 0),
+            ) < 0.01,
         ),
       )
       .toBe(true);
-    const grid = await mosaic.evaluate((canvas: HTMLCanvasElement) => {
+    const scene = await world.evaluate((canvas: HTMLCanvasElement) => {
       const context = canvas.getContext("2d");
-      const dividerElement = canvas.parentElement?.querySelector(
+      const divider = canvas.parentElement?.querySelector(
         '[data-slot="separator"]',
       );
-      if (!context || !dividerElement)
-        throw new Error("Missing mosaic canvas or divider");
-      const { width, height } = canvas;
-      const pixels = context.getImageData(0, 0, width, height).data;
-      const horizontal: number[][] = [];
-      const vertical: number[][] = [];
-      let firstX = -1;
-      let firstY = -1;
-      for (let y = 0; y < height && firstY < 0; y++) {
-        for (let x = 0; x < width; x++) {
-          if (pixels[(y * width + x) * 4 + 3]) {
-            firstX = x;
-            firstY = y;
-            break;
-          }
-        }
+      if (!context || !divider)
+        throw new Error("Missing pixel scene or divider");
+      const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+      let gaps = 0;
+      const colors = new Set<string>();
+      for (let pixel = 0; pixel < data.length; pixel += 4) {
+        if (data[pixel + 3] !== 255) gaps++;
+        colors.add(`${data[pixel]},${data[pixel + 1]},${data[pixel + 2]}`);
       }
-      const runs = (
-        length: number,
-        painted: (index: number) => boolean,
-        target: number[][],
-      ) => {
-        for (let index = 0; index < length; index++) {
-          if (!painted(index)) continue;
-          const start = index;
-          while (index + 1 < length && painted(index + 1)) index++;
-          target.push([start, index - start + 1]);
-        }
-      };
-      runs(width, (x) => !!pixels[(firstY * width + x) * 4 + 3], horizontal);
-      runs(height, (y) => !!pixels[(y * width + firstX) * 4 + 3], vertical);
       const bounds = canvas.getBoundingClientRect();
-      const divider = dividerElement.getBoundingClientRect();
+      const field = divider.closest(".home-field")?.getBoundingClientRect();
+      if (!field) throw new Error("Missing scene field");
       const styles = getComputedStyle(canvas);
       return {
-        horizontal,
-        vertical,
-        width,
-        height,
+        gaps,
+        colors: colors.size,
+        sourceWidth: canvas.width,
+        sourceHeight: canvas.height,
+        width: bounds.width,
+        height: bounds.height,
+        x: bounds.x,
+        fieldX: field.x,
         bottom: bounds.bottom,
-        dividerTop: divider.top,
+        dividerTop: divider.getBoundingClientRect().top,
+        rendering: styles.imageRendering,
         mask: styles.maskImage,
         filter: styles.filter,
-        animations: canvas.getAnimations().length,
       };
     });
-    for (const runs of [grid.horizontal, grid.vertical]) {
-      expect(runs.length).toBeGreaterThan(10);
-      for (let index = 0; index < runs.length; index++) {
-        expect(runs[index][1]).toBe(4);
-        if (index) expect(runs[index][0] - runs[index - 1][0]).toBe(9);
-      }
-    }
-    expect(grid.horizontal[0][0]).toBeGreaterThanOrEqual(0);
-    expect(grid.vertical[0][0]).toBeGreaterThanOrEqual(0);
-    expect(grid.bottom).toBeLessThanOrEqual(grid.dividerTop);
-    expect(grid.mask).toBe("none");
-    expect(grid.filter).toBe("none");
-    expect(grid.animations).toBe(0);
+    expect(scene.gaps).toBe(0);
+    expect(scene.colors).toBeGreaterThanOrEqual(6);
+    expect(scene.colors).toBeLessThanOrEqual(14);
+    expect(scene.width / scene.sourceWidth).toBeCloseTo(5, 0);
+    expect(scene.height / scene.sourceHeight).toBeCloseTo(5, 0);
+    expect(scene.x).toBe(scene.fieldX);
+    expect(scene.bottom).toBeCloseTo(scene.dividerTop, 2);
+    expect(scene.rendering).toBe("pixelated");
+    expect(scene.mask).toBe("none");
+    expect(scene.filter).toBe("none");
   }
 });
 
-test("Home mosaic respects reduced motion and pauses offscreen", async ({
+test("Home clouds respect reduced motion and pause offscreen", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 300 });
@@ -271,12 +248,12 @@ test("Home mosaic respects reduced motion and pauses offscreen", async ({
   );
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  const mosaic = page.locator("canvas.home-mosaic");
+  const mosaic = page.locator("canvas.home-world");
   await expect(mosaic).toHaveAttribute("data-active", "false");
   const image = () =>
     mosaic.evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL());
   const initial = await image();
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(500);
   expect(await image()).toBe(initial);
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await expect(mosaic).toHaveAttribute("data-active", "true");
@@ -286,7 +263,7 @@ test("Home mosaic respects reduced motion and pauses offscreen", async ({
     .scrollIntoViewIfNeeded();
   await expect(mosaic).toHaveAttribute("data-active", "false");
   const paused = await image();
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(500);
   expect(await image()).toBe(paused);
   await page
     .getByRole("heading", { name: "What would you like to test?" })

@@ -31,11 +31,10 @@ subtle blue accent with a weaker hover state. Avoid redundant descriptive subtit
 Agent composer for questions or experiment design and four experiment ideas. Keep
 Home/Agent together above Workspace navigation; surface unfinished work and active
 runs conditionally, with full experiment/run lists in their existing destinations.
-Home uses a complete grid of small square pixels with a very faint abstract
-mosaic in a few gray tones. Whole rows/columns are centered inside the field;
-resizing never crops a square. Tones change slowly in discrete steps, without
-fades, masks, gradients or moving cells. Reduced motion keeps it still, and
-hidden/offscreen updates pause. The thin gray rule stays behind the composer at
+Home uses continuous pixel art: a muted blue sky, slowly moving ivory clouds and
+a distant Earth with sage continents. Pixels touch with no grid gutters or masks;
+the palette adapts to light/dark mode. Reduced motion keeps the scene still and
+hidden/offscreen animation stops. The gray rule stays behind the composer at
 three-fifths of its height. Preserve the composer position and everything below.
 Agent starts
 with a centered heading and plain composer, suggestions below, and a recent-chat

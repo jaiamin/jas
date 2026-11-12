@@ -294,20 +294,23 @@ Decisions and evidence stack below 1440px.
 Home’s experiment ideas, drafts, active runs and recent experiments share a centered
 58rem maximum-width content column below the composer. Keep their edges aligned.
 
-Home uses a complete square pixel grid with a faint abstract mosaic, drawn in
-five discrete tones. Squares stay 4 CSS pixels wide on a 9-pixel pitch; remaining
-space is balanced at the edges so no square is cropped. Canvas bounds follow the
-actual gray divider and responsive field width; high-density screens retain
-sharp geometry. A few broad, interlocking tonal regions evolve every 1.8 seconds
-without opacity transitions, gradients, masks or moving cells. The grid remains
-visible everywhere. This is decorative and does not depict live experiment data.
-Theme tokens keep it mist-gray in light mode and deep slate in dark mode.
-Reduced motion keeps a still mosaic; hidden/offscreen updates pause. Resize and
-theme changes redraw it without a per-frame loop or image download. The heading
-uses the foreground token without a tint or blur. The stock gray Separator stays
-behind the composer, three-fifths down its height. CSS subgrid follows the actual
-composer row. Heading, composer and following content keep their positions;
-environment catalogue and experiment-idea illustrations remain unchanged.
+Home uses a continuous pixel-art scene: quiet blue sky, ivory clouds and a distant
+Earth with sage/sand continents. All source pixels are opaque and touching; there
+are no dot gutters, masks or transparent fades. A low-resolution canvas fills the
+exact field bounds with nearest-neighbor scaling, so complete source pixels stay
+crisp at approximately 5 CSS pixels. Ordered dithering softens the sky's palette
+bands without blurring pixels. Light mode uses pale muted colors; dark mode uses
+deep blue, subdued teal and sage. The Earth is a decorative illustration using
+simplified continent outlines, not a geographic instrument or live simulation.
+
+The base sky/globe is cached. Only the clouds redraw at a bounded 160ms interval;
+no React updates, image downloads or per-display-frame loop. Clouds move slowly
+across the fixed scene. Reduced motion keeps it still; hidden/offscreen updates
+stop. Resize/theme changes rebuild the cached scene. The title uses the shared
+foreground without a tint or blur. The stock gray Separator stays behind the
+composer, three-fifths down its height. CSS subgrid follows the actual composer
+row; heading, composer and following content keep their positions. Environment
+catalogue and experiment-idea illustrations remain unchanged.
 
 The Home composer retains a 672px maximum width and 88px minimum text-entry height.
 Heading top spacing is 152px on mobile and 156px on desktop, with a 16px gap to

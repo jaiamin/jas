@@ -1,32 +1,38 @@
 # JAS handoff
 
-## Home: aligned abstract mosaic
+## Home: continuous pixel Earth and clouds
 
-Branch `feat/quiet-home-background`, draft PR #37 stacked on PR #36. User requested
-a complete small-pixel grid with no clipped squares or fades and a subtle abstract
-mosaic. Replaced the terrain mask/sweep and removed both its SVG and component.
-HomeMosaic draws 4 CSS-pixel squares on a 9-pixel pitch, centering whole rows and
-columns within the measured field/divider. Five faint discrete tones form broad
-abstract regions. Tones evolve every 1.8s; cells stay fixed with no fade, mask,
-gradient, transition or per-frame loop. Resize/theme observers keep geometry and
-palette correct. Hidden/offscreen and reduced-motion modes stop the update timer.
-The gray rule remains 60% down the composer; all content positions are preserved.
+Branch `feat/quiet-home-background`, draft PR #37 stacked on PR #36. User clarified
+that pixels must touch and form a colored scene, not separate grid marks. HomeWorld
+now renders an opaque low-resolution image scaled with image-rendering:pixelated.
+There are no gutters, masks or transparent fades. An illustrated Earth with sage
+continents sits behind slowly drifting ivory clouds and a muted blue sky. Dark
+mode has a separate subdued blue/teal/sage palette. Small-palette dithering softens
+sky bands while preserving hard pixel edges. Earth stays fully inside phone bounds.
+Scene colors are decorative, not geographic or live simulation measurements.
 
-Qualification: 17 Home browser cases, all 168 frontend units (39 files), whole lint,
-forced TypeScript and private build PASS. Raster inspection at 333/390/753/1440
-verifies whole 4x4 cells, consistent 9-pixel spacing and no clipping at the divider.
-Browser cases also verify a still reduced-motion image, actual pattern evolution,
-offscreen pause/resume, existing drafts/navigation/submission and both themes.
-Native review covered both themes at desktop/mobile. First formatting reported
-four non-null warnings in the new test; replaced them with runtime guards before
-qualification. Earlier landscape/static source attempts remain attributed in
-`.tools/quiet-home/`; their failures were not changed into passes.
+Pixel-earth owns the cached globe/sky and cloud rendering; HomeWorld owns resize,
+theme, visibility and reduced-motion lifecycle. Only clouds redraw on a bounded
+160ms timer; hidden/offscreen and reduced-motion modes stop it. No image fetch,
+React frame updates or display-frame loop. The exact field bounds meet the gray
+rule at 60% of the composer height; title/composer/following content stay in place.
+The old spaced-cell component was removed. PRODUCT/DESIGN reflect this contract.
 
-Qualified assets are live on 8080: `publish-8080-mosaic-01/receipt.json` proves same
-PID/DB inode, all persisted rows/usage unchanged and served asset equality. No paid
-calls, backend changes or user-run retries. Legacy imagery remains absent from
-shipped output. All owned preview tabs and private test services are closed.
-Update PR #37; hosted CI remains a separate gate. No merge authorized.
+Final source: 17 Home browser cases PASS (all opaque pixels/no gaps, palette/nearest
+scaling at 333/390/753/1440, cloud movement, reduced motion, pause/resume and existing
+user flows). All 168 frontend units (39 files), lint, forced types and build PASS.
+Native inspection covered both themes and desktop/mobile. Earlier world browser
+phases also passed at their sources; final polish removed visible sky bands, kept
+Earth inside phone bounds and filled fractional field bounds. Evidence lives in
+`.tools/quiet-home/*world*`. No provider calls or backend changes.
+
+Repeated private preview builds retained 28 obsolete unreferenced chunks outside
+Vite's normal dist. A fresh 54-file build omits them; world-clean-attribution.json
+proves every current file and entrypoint byte-equal to the tested output. Live 8080
+uses that clean set. `publish-8080-world-clean-01/receipt.json` proves same PID/DB
+inode, all persisted rows/usage unchanged and served asset equality. All owned
+preview tabs/private test services are closed. Update PR #37; hosted CI remains a
+separate gate. No merge authorized.
 
 ## CI follow-up: planning activity animation
 

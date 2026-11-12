@@ -68,8 +68,7 @@
   color-scheme: light;
   --radius: 0.625rem;
   --workspace-header-height: 3.25rem;
-  --home-field: oklch(0.977 0.003 255);
-  --home-ink: oklch(0.4 0.015 255 / 14%);
+  --home-field: rgb(237 242 242);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -105,8 +104,7 @@
 
 .dark {
   color-scheme: dark;
-  --home-field: oklch(0.235 0.006 255);
-  --home-ink: oklch(0.8 0.015 255 / 12%);
+  --home-field: rgb(29 38 46);
   --background: oklch(0.21 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.245 0 0);
@@ -171,8 +169,8 @@
   background-color: var(--home-field);
 }
 
-.home-mosaic {
-  color: var(--home-ink);
+.home-world {
+  image-rendering: pixelated;
 }
 
 /* Shared welcome/working scan timeline; the stock Target stays stationary. */
