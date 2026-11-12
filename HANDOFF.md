@@ -66,8 +66,10 @@ require fresh identity/idle guards and a distinct receipt.
 ## Closing work
 
 Implementation, normal-hook checkpoints, fresh Standards/Spec reviews and safe
-idle8080 refresh are complete. Push this task branch/create one draft PR and link
-immediately; then hosted CI is the remaining merge gate. No merge, main push or history rewrite. Use existing
+idle8080 refresh are complete. Delivery is one draft PR from this task branch;
+hosted CI is the remaining merge gate. Accepted main a2609feb was normally merged
+at c759fd5f; all seven conflicts were retained and the resulting full tree is
+identical to reviewed closure936cd9aa. Receipt: main-integration-conflicts-01. No merge, main push or history rewrite. Use existing
 `.venv/bin/python -B`/Ruff/ty: uv crashes here. pnpm12.18 frozen dependencies are
 already installed without package/lock changes. Keep one writer and use
 `.tools/research-harness/checks.lock` for bounded jobs. No active paid work remains.

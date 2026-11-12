@@ -224,7 +224,7 @@ Evidence is under `.tools/research-quality/`; source-frozen confirmation cases a
 tracked beside the public development declaration. No original user data or
 historical failed evidence was removed. Current docs use export19; old contract
 readers, aliases and reset paths were not added. Independent final recheck and
-safe8080 refresh are complete; hosted CI remains the publication/merge gate.
+safe8080 refresh are complete; hosted CI remains the merge gate.
 
 ## Closing review and running app
 
