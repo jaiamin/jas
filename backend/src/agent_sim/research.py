@@ -202,7 +202,6 @@ class Research:
         *,
         study_id: str | None = None,
         plan_id: str | None = None,
-        investigation_id: str | None = None,
     ) -> str:
         require_valid(self.review_design(design, plan_id))
         payload = design.model_dump()
@@ -217,15 +216,9 @@ class Research:
                     raise ValueError("Choose a completed, supported AI design")
             if study_id:
                 study = session.get_one(Study, study_id)
-                if study.investigation_id != investigation_id:
-                    raise ValueError("Investigation revisions must use its bounded workflow")
                 study.revision += 1
                 study.title, study.question = design.title, design.question
-                study.ceiling = (
-                    min(study.ceiling, round(design.budget_usd * 1_000_000))
-                    if investigation_id
-                    else round(design.budget_usd * 1_000_000)
-                )
+                study.ceiling = round(design.budget_usd * 1_000_000)
                 if study.ceiling < study.charged:
                     raise ValueError("Study budget cannot be below already committed usage")
             else:
@@ -264,7 +257,6 @@ class Research:
                             seed=seed,
                             repetition=repetition,
                             checkpoint=world.snapshot(),
-                            investigation_id=investigation_id,
                         )
                         session.add(run)
                         session.flush()
@@ -302,8 +294,6 @@ class Research:
                 .values(title=Study.title)
                 .returning(Study.id)
             ).scalar_one()
-            if session.get_one(Study, study_id).investigation_id:
-                raise ValueError("Investigation evidence and attempts must be retained")
             runs = session.scalars(select(Run).where(Run.study_id == study_id)).all()
             run_ids = {run.id for run in runs}
             if run_ids & active_runs or any(

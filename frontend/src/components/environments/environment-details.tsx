@@ -25,7 +25,7 @@ const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
       observes:
         "The independently reviewed finite contract, current state, credits and escrow, permitted operations and the actor's own static private facts. Other actors' private fields stay outside observations and memory.",
       enforces:
-        "An external exhaustive transition table is required before generation. Admitted import-free artifacts propose bounded transitions; World permissions, resource conservation, terminal states and the horizon settle consequences. This narrow profile does not establish natural-language understanding or implement richer dynamic information policies.",
+        "An external exhaustive transition table is required for independent admission. Admitted import-free artifacts propose bounded transitions; World permissions, resource conservation, terminal states and the horizon settle consequences. This narrow profile does not establish natural-language understanding or implement richer dynamic information policies.",
     },
     institutional_workflow: {
       observes:

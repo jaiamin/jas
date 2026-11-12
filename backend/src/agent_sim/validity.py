@@ -782,8 +782,8 @@ def _preflight(specification: str, runner=None) -> dict:
                 "limits": "Only selected work fields and pinned immutable evidence fields; "
                 "no private goals, inaccessible objects, invented responses or beliefs. "
                 "Hard-fact and ACL checks precede dispatch and settlement. One separately "
-                "ledgered request per submission attempt; atomic study/workspace and applicable "
-                "investigation ceilings apply. Cost depends on input/output usage; unknown "
+                "ledgered request per submission attempt; atomic study/workspace ceilings "
+                "apply. Cost depends on input/output usage; unknown "
                 "usage retains its reservation. No retries or model substitution. "
                 "Acceptance is a fallible rubric ruling, not semantic truth or competence.",
             }

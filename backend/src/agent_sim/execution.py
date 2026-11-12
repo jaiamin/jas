@@ -8,7 +8,6 @@ from sqlalchemy import select, update
 from .adjudication import INSTRUCTIONS as ADJUDICATION_INSTRUCTIONS
 from .db import (
     Database,
-    InvestigationRecord,
     Measurement,
     ParticipantActivation,
     ParticipantOperation,
@@ -21,7 +20,6 @@ from .db import (
 )
 from .diagnostics import log_failure
 from .domain import AdjudicationRuling, Decision, ReadArtifact, RecordedAdjudication, Treatment
-from .investigation_limits import InvestigationStopped, claim_turn, claim_work
 from .llm import LanguageModels, ProviderFailure
 from .participants import Activation, event_wait
 from .participants import operations as activation_record_operations
@@ -98,21 +96,6 @@ class Engine:
         run, design, condition = self.research.configuration(run_id)
         if run.status == "complete":
             return False
-        if run.investigation_id:
-            with self.db.session() as session:
-                parent = session.get_one(InvestigationRecord, run.investigation_id)
-                if parent.status != "running":
-                    raise InvestigationStopped(parent.status)
-                if session.scalar(
-                    select(ParticipantActivation.id)
-                    .where(
-                        ParticipantActivation.run_id == run_id,
-                        ParticipantActivation.turn == run.turn + 1,
-                        ParticipantActivation.status.in_(["failed", "interrupted"]),
-                    )
-                    .limit(1)
-                ):
-                    raise InvestigationStopped("interrupted_turn_requires_new_attempt")
         self.research.check_run(run_id)
         if condition.harness.kind != "scripted":
             for model in {p.model or condition.model for p in design.profiles}:
@@ -126,9 +109,6 @@ class Engine:
     ) -> None:
         with self.db.session.begin() as session:
             saved = session.get_one(Run, run_id)
-            if not saved.investigation_started and saved.investigation_id:
-                claim_work(self.db, saved.investigation_id, "runs")
-                saved.investigation_started = True
             saved.status, saved.error = "queued", None
         execution = Execution()
         self.executions[run_id] = execution
@@ -144,14 +124,6 @@ class Engine:
             run = session.get_one(Run, run_id)
             if run.status != "complete":
                 run.status = "pausing" if run.status == "running" else "paused"
-                if run.investigation_id:
-                    parent = session.get_one(InvestigationRecord, run.investigation_id)
-                    if parent.status == "running":
-                        parent.status = "pausing"
-                        parent.decisions = [
-                            *parent.decisions,
-                            {"at": now(), "decision": "pause_requested", "run_id": run_id},
-                        ]
 
     async def _run(self, run_id: str, execution: Execution, single: bool) -> None:
         try:
@@ -166,8 +138,6 @@ class Engine:
                         self._status(run_id, "complete")
                         return
                     self._status(run_id, "running")
-                    if run.investigation_id:
-                        claim_turn(self.db, run_id)
                     observation = world.observe(actor)
                     profile = next(p for p in design.profiles if p.key == actor)
                     observation["you"] = profile.model_dump()
@@ -327,8 +297,6 @@ class Engine:
                 "Request interrupted; last committed checkpoint retained. Usage may be unknown.",
             )
             raise
-        except InvestigationStopped as error:
-            self._status(run_id, "failed", error.reason)
         except (ValueError, ProviderFailure) as error:
             if isinstance(error, ValueError):
                 log_failure(f"Run {run_id} failed", error)

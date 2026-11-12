@@ -34,7 +34,7 @@ mechanics; they do not certify arbitrary programs, intelligence or research vali
 
 The separate `reviewed-finite-v1` path requires an **independently
 user-authored, reviewed, exhaustive external transition table frozen before
-generation**. It supports at most256 encoded inputs, explicit role permissions,
+artifact admission**. It supports at most256 encoded inputs, explicit role permissions,
 conserved available/escrow/spent resources, terminal states and static actor-private
 facts. Full-domain and four invalid signed integers are checked twice from fresh
 instances, followed by actual World consequence/ACL/projection/restoration/replay
@@ -44,42 +44,20 @@ cannot author, replace or relax it. Rich installed Worlds retain their own
 interfaces. Dynamic information policy, arbitrary programs, host imports and
 external systems remain unsupported.
 
-Through `POST /api/chats`, an explicit `generation` allowance selects the frozen
-contract and caps1–3 candidate attempts,1–12 total nested Sol requests,512–16384
-output tokens/request,4096–180000 input bytes/request and$0.01–$10 for the question.
-Every Researcher/generator/planner request reserves and settles separately under
-all applicable question/investigation/study/workspace ceilings. Ordinary discussion
-has no generation allowance. Generation emits explicit WAT through the real model
-path, then validation/independent admission/library operations run on the qualified
-worker path. No template selector or production WAT generator supplies the answer.
-Candidate versions, failed checks, explicit repair links, sources and stop reasons
-remain in append-only attempt events. Generation records/events use v2 and retain
-each generator request's model, reservation, settlement, tokens, cost and error;
-prior unversioned/v1 events are rejected explicitly. A resulting experiment remains pending
-human review and separately authorized participant execution; discussion and saving
-never sample participants. Copied probes are distinct from executable containment.
+Candidate authoring is manual. The Agent can configure and compose installed
+mechanics, but does not synthesize new executable artifacts. Independent admission
+and an explicit user action are still required before participant execution.
 
-The [product review](research/FINAL_PRODUCT_REVIEW.md) records deterministic generation,
-repair, export, World/Engine/replay and rendered UI qualification with source
-attribution. Current merge gates are tracked in
-[merge-readiness repairs](research/MERGE_READINESS_FIXES.md). Live Sol competence
-and held-out generation remain unverified.
-
-After local containment and independent admission pass, **Save admitted environment**
-uses the normal reusable mechanics library. **Review an experiment** opens the
-standard design Review. Saving an immutable revision pins exact WAT content, WAT
-and compiled Wasm hashes, package/profile versions, declared capabilities, current
-runner/runtime fingerprints and full containment/semantic check provenance. Run,
-Record, evidence export and exact call-free consequence replay use the same World
-and scoped isolated runner. Changes or deletion in the library/review sidecar cannot
-change pinned pending or past runs. Starting a new revision requires an actual
-matching admission record; a pasted self-reported package cannot authorize it.
+Admitted environments use the reusable mechanics library. Immutable revisions pin
+the exact WAT content, WAT and compiled Wasm hashes, package/profile versions,
+capabilities, runtime fingerprints and independent check provenance. Library or
+sidecar edits cannot change pending or past runs. A new revision requires an
+actual matching admission record; a self-reported package cannot authorize it.
 
 `execution_enabled` describes the current qualified boundary, not candidate
 permission. Restart, runtime source changes or worker failure revoke qualification.
-Run inspection shows why execution/replay is blocked while retaining evidence.
-Unsupported package/profile/runtime semantics fail explicitly without fallback.
-Requalification never rewrites a pinned package or substitutes a model.
+Inspection retains evidence and explains blocked execution/replay. Unsupported
+semantics fail explicitly; requalification never rewrites pinned packages.
 
 ## Containment boundary
 
@@ -133,7 +111,7 @@ must be observed in the running process; CLI availability is not proof.
 - `GET /api/extensions/admissions` and `/api/extensions/admissions/{id}`:
   inspect successful, failed and unsupported attempts and pinned packages.
 - `GET /api/extensions/profile`: inspect the finite-table prerequisite, supported
-  bounds, unsupported semantics, contract and allowance schemas.
+  bounds, unsupported semantics and the contract schema.
 - `POST /api/extensions/contracts` and `GET /api/extensions/contracts[/{id}]`:
   freeze/inspect independently authored immutable external contracts.
 - `POST /api/extensions/contracts/{id}/checks` with `review_id`, and
@@ -142,16 +120,12 @@ must be observed in the running process; CLI availability is not proof.
 - `POST /api/extensions/finite-checks/{id}/admit` and
   `GET /api/extensions/finite-admissions[/{id}]`: execute independent World checks
   and retain a pinned finite package or honest failed admission.
-- `GET /api/extensions/generations[/{id}]` and
-  `GET /api/analyses/{id}/requests`: inspect generation event/source history and
-  each separately reserved/settled question request.
 
 Reviews live beside the workspace database in `<database>.extensions/`, like
 custom environment setups. They use `jas-extension-review-v1`, validate their
 candidate identity/hash on read, and publish only complete files. The current
-contract is DB15/export19/library10/definition2/research-operation2 with
-generation-event-v2, including investigation ownership, institutional workflow,
-finite packages, generation allowances and declared adjudication.
+contract is DB16/export20/library10/definition2/research-operation2, including
+institutional workflow, independently admitted finite packages and declared adjudication.
 Capture1/comparison1/tool2.0/direct1.0 and installed World rules retain their meanings.
 Incompatible persisted meanings and rule checkpoints are rejected on inspection,
 export, execution and replay. No migration, adapter or reset is provided. In-memory

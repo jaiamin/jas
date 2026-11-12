@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { ReplyActivity } from "@/components/agent/agent-activity";
 import { AgentMarkdown } from "@/components/agent/agent-markdown";
 import { AgentTarget } from "@/components/agent/agent-target";
-import { InvestigationProgress } from "@/components/agent/investigation-progress";
 import { ClaimEvidence } from "@/components/claim-evidence";
 import { ComparisonEvidence } from "@/components/comparison-evidence";
 import {
@@ -34,7 +33,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { TraceLine, TraceTitle } from "@/components/ui/trace";
 import type { Analysis, AnalysisLensKey } from "@/lib/types";
 
 export const AgentReply = memo(function AgentReply({
@@ -83,21 +81,12 @@ export const AgentReply = memo(function AgentReply({
       <MessageContent>
         <MessageHeader className="min-h-6 items-start gap-2 px-0">
           <AgentTarget
-            animated={pending && row.purpose !== "investigation"}
+            motion={pending ? "working" : "idle"}
             className="size-5"
             aria-label="Assistant"
           />
-          {row.purpose === "investigation" ? (
-            <TraceLine>
-              <TraceTitle>Investigation</TraceTitle>
-            </TraceLine>
-          ) : (
-            <ReplyActivity row={row} />
-          )}
+          <ReplyActivity row={row} />
         </MessageHeader>
-        {row.purpose === "investigation" && (
-          <InvestigationProgress id={row.id} />
-        )}
         <ClaimEvidence
           row={row}
           disabled={disabled}

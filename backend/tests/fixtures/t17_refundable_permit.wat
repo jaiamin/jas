@@ -1,5 +1,5 @@
 ;; Independently scripted DEVELOPMENT Sol artifact, not production/catalog code.
-;; Exhaustive external table in test_extension_generation.py predates this artifact.
+;; Exhaustive external table in test_finite_contract.py predates this artifact.
 (module
   (func (export "step") (param $x i32) (result i32)
     (local $s i32) (local $c i32) (local $actor i32) (local $op i32)
