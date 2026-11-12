@@ -21,7 +21,7 @@ Full backend1883 PASS; after formatting and one test-only type assertion, affect
 PASS. Whole Ruff/ty, frontend168 units, affected9 editor recheck, lint247, forced
 TS and private build PASS. Broad browser184/187 followed by all7 affected repaired/
 new-flow cases PASS; do not claim a fresh187/187 rerun. Two independent initial
-reviews found real wire/diagnostic defects, now fixed. Final recheck pending.
+reviews found real wire/diagnostic defects, now fixed. Fresh Standards/Spec recheck PASS at f6ffa4fe; the sole stale control-list doc finding is fixed.
 
 Sixteen actual Sol/Luna matched trajectories completed with export and zero-call
 replay. Two new post-implementation cases were frozen before outputs, run once
@@ -53,18 +53,21 @@ Browser18146/tab closed; all closed-own DB gzip maps verified. Evidence stays in
 The app8080 uses `data/jas.sqlite3`; read fresh identity from
 `.tools/final/live/server.json`. Never retry/mutate original study
 `0c1f6370d8e841a4`. Its read-only audit remains in `.tools/run-audit/`.
-Latest observed app has64 runs/8 chats, none active, usage settled. Python still
-imports earlier backend and assets need a coherent refresh. Run the newly prepared
-`.tools/research-quality/refresh-8080.py` under shared checks.lock only after final
-qualification: it rechecks identity/idle twice, builds, rechecks idle, refreshes,
-and proves every persisted row, database inode and usage unchanged. Leave active
-user work running; do not force a refresh. Its output directory must be fresh.
+Guarded refresh completed at f6ffa4fe:64 runs/8 chats/2 studies, every persisted
+row, database inode and usage unchanged. App8080 now uses the verified backend and
+clean production build. Read-only desktop1280/phone390 original-study checks show
+findings without console errors or horizontal overflow; owned tab closed. App8080
+stays running as requested. All test ports18145/18146/18147 are reusable. Final-state02
+proves served assets equal qualified bytes and production ASTs equal the live freeze;
+private build's14 historical unserved chunks explain retained final-state01 failure.
+Do not rerun refresh-8080.py: its output directory already exists; future refreshes
+require fresh identity/idle guards and a distinct receipt.
 
 ## Closing work
 
-Normal-hook checkpoint, fresh Standards/Spec recheck, fix findings, update closure,
-safe idle8080 refresh, then push this task branch and create one draft PR. Link PR
-immediately after creation. No merge, main push or history rewrite. Use existing
+Implementation, normal-hook checkpoints, fresh Standards/Spec reviews and safe
+idle8080 refresh are complete. Push this task branch/create one draft PR and link
+immediately; then hosted CI is the remaining merge gate. No merge, main push or history rewrite. Use existing
 `.venv/bin/python -B`/Ruff/ty: uv crashes here. pnpm12.18 frozen dependencies are
 already installed without package/lock changes. Keep one writer and use
 `.tools/research-harness/checks.lock` for bounded jobs. No active paid work remains.

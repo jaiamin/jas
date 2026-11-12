@@ -38,7 +38,7 @@ New live validation has a hard aggregate $20 ceiling, including failed calls.
 - [x] Implement authoring/results/completion UI using existing stock components.
 - [x] Implement and benchmark bounded performance improvements and explicit controls.
 - [x] Run backend/static/frontend/browser/replay and bounded live validation; fix findings.
-- [ ] Review the final diff, remove obsolete code/docs, document results and limitations.
+- [x] Review the final diff, remove obsolete code/docs, document results and limitations.
 
 ## Decisions and constraints
 
@@ -127,14 +127,15 @@ semantic tokens, typography and borders. Findings lead with observed outcomes;
 uncertainty, all-attempt effort, formulas and pinned evidence remain one disclosure
 away. Authoring sits beside the hypothesis and run matrix. Completion names the
 actual number of turns, maximum and stop reason; “complete” is never a competence
-score. Active pages poll; idle pages refetch on focus or explicit action.
+score. Run/study detail and findings polling is active-only; idle detail queries refetch
+on focus or explicit action. The existing workspace-wide run-status poll remains.
 
-## Verification in progress
+## Verification history
 
 - New contract/calculation/scenario/wait/control/concurrency tests pass, including
   public HTTP revision/reopen and concurrent-commit export snapshot checks.
 - Existing affected backend groups, whole Ruff/types, frontend units and build have
-  passed at their recorded sources; the complete final matrix is still running.
+  passed at their recorded sources; complete final checks are recorded below.
 - Initial import/fixture/static failures remain under `.tools/research-quality/`;
   they are not mislabeled product reds. Original pilot evidence remains untouched.
 - Fresh authoring/findings/recovery browser flows pass3 cases in desktop light and
@@ -223,4 +224,32 @@ Evidence is under `.tools/research-quality/`; source-frozen confirmation cases a
 tracked beside the public development declaration. No original user data or
 historical failed evidence was removed. Current docs use export19; old contract
 readers, aliases and reset paths were not added. Independent final recheck and
-safe8080 refresh/publication remain the closing steps.
+safe8080 refresh are complete; hosted CI remains the publication/merge gate.
+
+## Closing review and running app
+
+- **Standards: PASS** at `f6ffa4fe`, no blocking breaches. The sole P3 finding was
+  an outdated architecture paragraph listing only three scripted controls; it now
+  documents the fourth control and each environment restriction.
+- **Spec: PASS** at `f6ffa4fe`, no blocking gaps against criteria1–10. The reviewer
+  independently inspected confirmation outputs, literal-wire/ACL/horizon repairs,
+  original declaration digest and formatting-only source equality.
+- Normal Gitleaks initially flagged an API source filename beside a SHA256 in the
+  confirmation manifest. Independent hashing proved a non-secret source digest.
+  The manifest now uses explicit path/sha256 rows with identical cases/hashes and
+  the original declaration digest; original bytes remain retained. Normal hooks
+  pass with no exemption, disabled rule or bypass.
+- Guarded8080 refresh passed at `f6ffa4fe`:64runs/8chats/2studies, database inode,
+  every persisted row and usage unchanged. Read-only desktop1280/phone390 checks
+  show the original24-run findings, no console errors or horizontal overflow.
+  The owned tab is closed. App8080 stays running as requested; test ports are free.
+- Final-state01 retained an overly strict asset-directory equality failure: the
+  private test build contains14 historical, unserved chunks. Final-state02 verifies
+  every clean served asset equals its qualified private-build bytes and production
+  ASTs still match the confirmation freeze. No historical evidence was deleted.
+
+Remaining research limits are substantive: no new waiting-cost World mechanic,
+independent prose certification, human predictive validation or model generality
+claim. Live cases did not elicit delayed-message receipt or event-wait savings.
+The frozen historical T01 still fails its four old export-v4 checks; current
+export19 qualifications are separate and never relabel that history.

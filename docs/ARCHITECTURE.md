@@ -649,10 +649,12 @@ options can be read; no operation accepts an actor or state selector. World.step
 independently validates the final decision. Reads never advance logical time.
 
 Scripted harness 1.0.0 runs declared non-model controls through that same activation,
-World settlement and replay path. `reference_policies.py` implements only keep credits,
-half the legal contribution maximum (rounded down), and choose the actor's private
-signal. Each accepts only the authorized actor observation and legal schema. The
-first two require commons; the last requires information. Unsupported policies/worlds
+World settlement and replay path. `reference_policies.py` implements keep credits,
+half the legal contribution maximum (rounded down), choose the actor's private
+signal, and choose the maximum of the first readable immutable value table.
+Each accepts only the authorized actor observation and legal schema. The first two
+require commons, private-signal choice requires information, and `local_value_v1`
+requires distributed coordination. Unsupported policies/worlds
 are rejected. No provider is constructed, no request is sent and no model failure is
 replaced with a script. Identity records null actual model/provider/inference,
 separate unused configured assignments, implementation digest, input/schema hashes
