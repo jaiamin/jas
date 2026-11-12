@@ -16,18 +16,22 @@ calculation and exact-turn inspection. Input/budget limits are unchanged. Whole 
 evidence remains accessible; oversized data is explicitly not_in_context, and unread
 turns cannot become citations. Additional path selection stays within captured cutoffs.
 
-Acceptance: exact full-export restoration (including literal reference-shaped values,
-Unicode and schemas), all four browser export actions, light/dark phone/desktop,
-large/small analyses, page/cutoff isolation and explicit oversize handling. Remaining:
-measurement, source closure, guarded8080 refresh and normal publication. Final scoped
-170 backend cases PASS, then2 page/path checks PASS after completing inspection access
-to experiment_checks and excluding bulk calculation inputs from default pages. All7
-plain-JSON browser cases PASS, whole Ruff/ty/lint, forcedTS/private build PASS.
-The older8 affected UI unit passes remain at their recorded source; only export hrefs
-changed, qualified by the new browser cases.
-Evidence `.tools/export-download/` retains gzip/revert and all adverse attempts. No new
-paid calls or original experiment retries. Preserve app8080/database; the earlier
-gzip refresh is superseded only after this new source passes qualification.
+Qualification complete:170 scoped backend cases PASS, then2 page/path cases PASS
+at final504fd141 after completing experiment_checks retrieval and slim calculation
+pages. All7 plain-JSON browser cases PASS, whole Ruff/ty/lint, forcedTS/private and
+public builds PASS. Old8 affected UI unit passes retain their earlier attribution.
+Final read-only frozen-context02 reconfirms both user scopes fit; no provider calls.
+
+App8080 safely refreshed at exact504fd141:2studies/64runs/10chats, same database
+inode/all rows/usage. Actual24run download50,030,684→16,438,694 bytes (67.1% smaller),
+plain application/json, no archive. Full independent resolution is byte-for-byte
+identical to expanded export19 (SHA4de1e98973e43ba3ef24d4c9f22b2dcdcf15ec6f7a28febe6ab5e862b7241a89).
+Native total response3.95s: representation reduces saved-file/context duplication;
+it does not claim faster generation or that all evidence fits a model context.
+Original failed analyses remain FAILED with zero provider requests; never retried.
+Evidence `.tools/export-download/` preserves gzip/revert/adverse attempts. No new
+paid calls. Remaining: documentary seal and branch publication/hosted CI. App8080
+stays running; all owned test browsers/services are closed.
 
 ROOT owns `feat/research-quality`, based on `5f2523e58c7a851482f6a1ed3c2590eaa01696c4`.
 The ten recommendations, acceptance criteria, methods and source-specific results
