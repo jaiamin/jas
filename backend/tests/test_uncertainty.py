@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 from agent_sim.api import create_app
 from agent_sim.domain import Parameters, Treatment
-from conftest import decision_for
+from conftest import analysis_prompt, decision_for
 from fastapi.testclient import TestClient
 from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import DeltaToolCall, FunctionModel
@@ -68,7 +68,7 @@ def execute(client, monkeypatch, rid, amount=0, *, fail=False, action="start"):
     async def respond(messages, info):
         if fail:
             raise RuntimeError("Controlled missing arm")
-        observation = json.loads(messages[-1].parts[0].content)
+        observation = analysis_prompt(messages[-1].parts[0].content)
         decision = decision_for(observation)
         decision["action"]["amount"] = amount
         decision["action"]["report"] = None
@@ -184,7 +184,7 @@ def test_analysis_freezes_planned_sample_before_late_completion_and_revision(
     prompts = []
 
     async def respond(messages, info):
-        prompt = json.loads(messages[-1].parts[0].content)
+        prompt = analysis_prompt(messages[-1].parts[0].content)
         if "index" in prompt:
             prompts.append(prompt)
             entered.set()

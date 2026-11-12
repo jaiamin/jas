@@ -76,6 +76,9 @@ for (const { theme, width } of [
       kind: "scripted",
       version: "1.0.0",
       policy: "local_value_v1",
+      max_requests: 0,
+      max_tool_operations: 0,
+      tools: [],
     };
     design.analysis_plan = {
       version: 1,
@@ -142,10 +145,15 @@ for (const { theme, width } of [
       })
       .click();
     await expect(
-      page.getByText("Manual assessment required", { exact: true }),
+      page.getByText("Leadership · Manual assessment required", {
+        exact: true,
+      }),
     ).toBeVisible();
     await expect(
-      page.getByText("Independent blinded coding required.", { exact: false }),
+      page.getByRole("cell", {
+        name: "Independent blinded coding required.",
+        exact: true,
+      }),
     ).toBeVisible();
     await page.screenshot({
       path: testInfo.outputPath("findings.png"),

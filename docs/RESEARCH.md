@@ -22,6 +22,8 @@ consolidated in the [historical summary](research/RESEARCH_HARNESS_COMPACT_REPOR
 
 | Evaluation reference | Design consequence |
 | --- | --- |
+| [ODD update, Grimm et al.](https://www.jasss.org/23/2/7.html) | State purpose, entities, scheduling, assumptions and evaluation; mechanical execution is distinct from scientific fitness. |
+| [Pseudoreplication, Lazic](https://pmc.ncbi.nlm.nih.gov/articles/PMC2817684/) | Declare the experimental unit; extra turns, participants and repetitions within a shared task do not create independent scenario samples. |
 | [Melting Pot](https://arxiv.org/abs/2107.06857) | Hold out partners, combinations and wording; report performance outside the development distribution. |
 | [PettingZoo parallel API](https://pettingzoo.farama.org/api/parallel/) | Separate private observations; settle joint actions together when causality requires it. Serialized model requests do not make observations sequential. |
 | [tau-bench](https://arxiv.org/abs/2406.12045) | Score independently specified outcomes and repeated-trial reliability through real application execution; preserve failures and label retests. |

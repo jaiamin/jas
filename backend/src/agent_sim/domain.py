@@ -666,7 +666,7 @@ class DesignSpec(Strict):
         default_factory=list,
         max_length=12,
         description="Registered metric identifiers only. Additional event-derived calculations "
-        "belong in hypothesis, not in this list; they are analysis plans, not engine metrics.",
+        "belong in analysis_plan, not in this list; they are not engine metrics.",
     )
     analysis_plan: AnalysisPlan | None = None
     scenarios: list[CoordinationScenario] = Field(default_factory=list, max_length=20)

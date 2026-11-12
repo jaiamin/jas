@@ -13,15 +13,18 @@ UI and bounded schema caches are implemented. Export is now19; DB15/library10 an
 World transition versions are unchanged. No migrations, resets or legacy aliases.
 
 Targeted backend/public HTTP/reopen/export-snapshot tests and all165 frontend units
-pass at recorded sources. Full backend verification is running; browser and live
-validation, final independent review and publication remain pending. Static failures
+pass at recorded sources. Full backend/browser verification, final independent review and publication remain
+pending. The three new browser flows and live repaired requests pass. Static failures
 and fixture-authoring failures are retained in `.tools/research-quality/`; do not
 claim a clean first attempt. The tracked frozen development cases are in
 `benchmarks/research-quality-development.json`.
 
 The user authorized $15–20 additional live spend: use $20 as an aggregate hard ceiling,
-including failures and unknown reservations. No new live call has run yet. The proposed
-single fresh ledger has that cap and uses Sol for the assistant and Luna participants,
+including failures and unknown reservations. Stages01/02 retain FAILED interpretations;
+stage03 passes their remaining repaired path and a small redraft. One restored ledger
+settles94 requests and $1.153843, partial=false. Sixteen actual matched trajectories
+completed and replayed. All live resources closed/port18145 reusable. The ledger
+has the same $20 total cap and uses Sol for the assistant and Luna participants,
 no automatic provider retry or substitution. Run only one paid workspace at a time;
 stop on unknown usage. All task artifacts/databases use `.tools/research-quality/`,
 port18145 for live and18146 for browser checks. Use shared checks.lock for bounded jobs.

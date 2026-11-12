@@ -229,20 +229,23 @@ export function AnalysisPlanFields({
           type="button"
           variant="outline"
           disabled={plan.outcomes.length >= 12}
-          onClick={() =>
+          onClick={() => {
+            let suffix = 2;
+            while (plan.outcomes.some((o) => o.key === `outcome_${suffix}`))
+              suffix++;
             update({
               ...plan,
               outcomes: [
                 ...plan.outcomes,
                 {
-                  key: `outcome_${plan.outcomes.length + 1}`,
+                  key: `outcome_${suffix}`,
                   calculation: "turn_count",
                   metric: null,
                   manual_reason: "",
                 },
               ],
-            })
-          }
+            });
+          }}
         >
           Add outcome
         </Button>

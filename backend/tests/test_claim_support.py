@@ -16,6 +16,7 @@ from uuid import uuid4
 
 import pytest
 from agent_sim.api import create_app
+from conftest import analysis_prompt
 from fastapi.testclient import TestClient
 from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import DeltaToolCall, FunctionModel
@@ -32,7 +33,7 @@ def claim_client(tmp_path, monkeypatch, request):
     seen, operations = [], []
 
     async def respond(messages, info):
-        prompt = json.loads(messages[-1].parts[0].content)
+        prompt = analysis_prompt(messages[-1].parts[0].content)
         seen.append(prompt)
         if "index" in prompt:
             if gate := controls.get("analysis_gate"):

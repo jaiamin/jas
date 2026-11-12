@@ -43,3 +43,17 @@ test("declaring and removing a plan preserves the experiment's participant conte
     '"analysis_plan":null',
   );
 });
+
+test("adding after removing an outcome keeps every identifier unique", () => {
+  render(<Editor />);
+  fireEvent.click(
+    screen.getByRole("button", { name: "Declare analysis plan" }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Add outcome" }));
+  fireEvent.click(screen.getByRole("button", { name: "Add outcome" }));
+  fireEvent.click(screen.getByRole("button", { name: "Remove outcome 2" }));
+  fireEvent.click(screen.getByRole("button", { name: "Add outcome" }));
+  const value = JSON.parse(screen.getByRole("status").textContent ?? "{}");
+  const keys = value.analysis_plan.outcomes.map((o: { key: string }) => o.key);
+  expect(new Set(keys).size).toBe(keys.length);
+});

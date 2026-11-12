@@ -141,3 +141,31 @@ test("a refresh failure retains captured findings and exposes a local retry", as
     ).not.toBeInTheDocument(),
   );
 });
+
+test("an unrun experiment leads with its state and keeps empty outcome tables hidden", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue(
+      Response.json({
+        ...findings,
+        complete: 0,
+        summary: "0 of 2 planned trajectories completed.",
+      }),
+    ),
+  );
+  renderWithQueries(
+    <MemoryRouter>
+      <ResearchFindings studyId="unrun" revision={1} active={false} />
+    </MemoryRouter>,
+  );
+  expect(
+    await screen.findByText("0 of 2 planned trajectories completed."),
+  ).toBeVisible();
+  expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Calculations, missingness & sources" }),
+  );
+  expect(
+    await screen.findByRole("link", { name: "Through turn 2" }),
+  ).toBeVisible();
+});

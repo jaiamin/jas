@@ -707,10 +707,14 @@ def get_environment(key: str) -> EnvironmentDefinition:
         from .finite import ReviewedFinite
 
         return EnvironmentDefinition(
-            "reviewed_finite", "Reviewed finite extension",
+            "reviewed_finite",
+            "Reviewed finite extension",
             "Requires an external exhaustive finite contract and independently admitted WAT; "
             "not natural-language understanding or support for arbitrary rich worlds.",
-            ReviewedFinite, "finite_success", ("finite", "memory"), ("finite_success",),
+            ReviewedFinite,
+            "finite_success",
+            ("finite", "memory"),
+            ("finite_success",),
         )
     if key == "sealed_relay":
         from .extension import SealedRelay

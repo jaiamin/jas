@@ -463,9 +463,7 @@ class Research:
             calls = session.execute(
                 select(ProviderCall.run_id, ProviderCall.status, ProviderCall.charged).where(
                     ProviderCall.run_id.in_(ids),
-                    ProviderCall.purpose.in_(
-                        ["decision", "participant_operation", "adjudication"]
-                    ),
+                    ProviderCall.purpose.in_(["decision", "participant_operation", "adjudication"]),
                 )
             ).all()
         events = {rid: Counter() for rid in ids}

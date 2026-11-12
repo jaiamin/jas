@@ -134,6 +134,27 @@ score. Active pages poll; idle pages refetch on focus or explicit action.
   passed at their recorded sources; the complete final matrix is still running.
 - Initial import/fixture/static failures remain under `.tools/research-quality/`;
   they are not mislabeled product reds. Original pilot evidence remains untouched.
-- Browser and new live validation are pending. No new paid request has dispatched.
+- Fresh authoring/findings/recovery browser flows pass3 cases in desktop light and
+  phone dark after an incorrect exact-text locator was retained/corrected. Broader
+  browser/backend regression and final review are pending.
+- Live stages01/02 are retained FAILED: all16 actual trajectories completed and
+  replayed, but three interpretation attempts hit the unchanged input-size limit.
+  Offline exact-copy reproductions isolated duplicated wire evidence; compact local
+  references and recursive sharing preserve the original frozen evidence. Stage03
+  passes the remaining exact interpretation and a new small draft.
+- One aggregate restored ledger settles94 requests,575731 input/26044 output tokens,
+  $1.153843 total, partial=false, against the authorized $20 ceiling. Never sum the
+  cumulative stage totals as independent spends. All three live servers were reaped
+  and port18145 reuse checked. No automatic provider retry/substitution occurred.
+- First task pair (bonus3) already favored local-only choice: joint regret0 in all
+  arms. The second pair (bonus5) has local-reference regret5/1; Luna still selected
+  the same local alternatives. Those choices preserve individual incentives even
+  though the joint optimum is higher. No messages were sent, so assigned delays
+  did not test delayed-message receipt. No live event-wait savings were elicited.
+- Manual review of final Sol answers found exact recorded outcome/effort tables,
+  individual-versus-joint incentives, private-information/exposure and finite-horizon
+  limits, and a concrete ACL contrast proposal. Structured numerical claims were
+  checked; attached prose remains unassessed by the platform. These development
+  cases establish neither semantic certification nor general model competence.
 - No new waiting-cost World or general semantic judge is claimed. Those remain
   explicit limits rather than pretend mechanisms or scientific certification.

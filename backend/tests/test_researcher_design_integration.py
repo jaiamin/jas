@@ -411,6 +411,13 @@ def test_quartz_confirmation_requires_advance_commitments_and_retains_replicatio
     plan += "denominators and show missing outcomes. Fixed seeds and fresh repetitions do not "
     plan += "establish independent population draws."
     design["hypothesis"] = plan
+    design["analysis_plan"] = {
+        "version": 1,
+        "intent": "confirmatory",
+        "outcomes": [
+            {"key": "correct_submission", "calculation": "metric", "metric": "artifact_success"}
+        ],
+    }
     provider(client, monkeypatch, design, brief=brief)
     ready = finish(
         client,

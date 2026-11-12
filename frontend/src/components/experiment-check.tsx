@@ -80,10 +80,20 @@ export function ExperimentCheckDetails({
           <DisclosureContent className="flex flex-col gap-3 pt-3">
             <p>Mechanical admission does not certify scientific validity.</p>
             {report.research.variation.map((row) => (
-              <p key={row.condition_key}>
-                {row.condition_key}: {row.distinct_initial_states} distinct
-                initial states across {row.seeds} seed labels.
-              </p>
+              <div key={row.condition_key}>
+                <p>
+                  {row.condition_key}: {row.distinct_initial_states} distinct
+                  initial states across {row.seeds} seed labels.
+                </p>
+                {row.payoff_cases?.map((sample) => (
+                  <p key={sample.seed} className="text-muted-foreground">
+                    Seed {sample.seed}: local-value reference{" "}
+                    {sample.local_value}
+                    {" · "}joint optimum {sample.joint_optimum}. Researcher-only
+                    comparator; private-information limits still apply.
+                  </p>
+                ))}
+              </div>
             ))}
             {report.research.issues.map((issue) => (
               <div key={`${issue.code}-${issue.message}`}>

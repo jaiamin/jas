@@ -436,6 +436,11 @@ export interface ScientificReview {
     seeds: number;
     distinct_initial_states: number;
     initial_state_sha256: Record<string, string>;
+    payoff_cases?: {
+      seed: number;
+      local_value: number;
+      joint_optimum: number;
+    }[];
   }[];
   limits: string;
 }

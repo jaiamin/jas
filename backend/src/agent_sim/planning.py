@@ -12,6 +12,7 @@ from .environment_library import builtin_environment
 from .investigation_limits import InvestigationStopped
 from .llm import LanguageModels
 from .research import Research
+from .research_quality import FORMULAS
 from .research_tools import (
     CandidateProbeRequest,
     CandidateSource,
@@ -29,8 +30,9 @@ def _share_planning_context(data: dict[str, object]) -> dict[str, object]:
     shared: dict[str, dict] = {}
 
     def project(value: dict, base: dict) -> dict:
-        if value.keys() != base.keys():
+        if not value.keys() <= base.keys():
             return value
+        base = {name: base[name] for name in value}
         key = digest(base)
         shared[key] = base
         return {
@@ -75,6 +77,19 @@ def _share_planning_context(data: dict[str, object]) -> dict[str, object]:
                             {
                                 **entry,
                                 "template_parameters": project(entry["template_parameters"], base),
+                                "source": {
+                                    **entry["source"],
+                                    "definition": {
+                                        **entry["source"]["definition"],
+                                        "examples": [
+                                            {
+                                                **example,
+                                                "parameters": project(example["parameters"], base),
+                                            }
+                                            for example in entry["source"]["definition"]["examples"]
+                                        ],
+                                    },
+                                },
                             }
                             for entry in environments
                         ],
@@ -258,6 +273,9 @@ outcomes require calculation=manual with a specific manual_reason coding procedu
 promise they will be computed. Set target, trajectory/scenario sampling_unit and actual
 allocation; retain_all exclusions and descriptive uncertainty are mandatory. These fields
 are researcher metadata and never participant instructions. Do not invent significance.
+Use evidence.planned_calculations as the authoritative definitions in hypothesis and review.
+Do not invent alternative denominators or token-price fallback estimates for recorded costs.
+Pending/unknown usage stays missing; plan.intent must match the brief's intent.
 Use design.scenarios only for explicit distributed_coordination value-table cases: exactly
 one version1 scenario per seed, containing all immutable local-value artifacts and every
 alternative, with integer values -100 to100. Scenarios are matched across all conditions;
@@ -606,6 +624,7 @@ class Planner:
             "remain independent of later library edits/deletion.",
             "design_schema": DesignSpec.model_json_schema(),
             "evidence": {
+                "planned_calculations": FORMULAS,
                 "turns": "Round, actor, actual observation, action amount/target/message/report/"
                 "promise, forecast, private note and self-reported rationale.",
                 "events": "Typed events include transfers with phase/amount/available, claims "
@@ -678,6 +697,8 @@ class Planner:
                 )
             if brief.intent == "confirmatory" and design.analysis_plan is None:
                 raise ValueError("Confirmatory proposals must declare an executable analysis plan")
+            if design.analysis_plan is not None and design.analysis_plan.intent != brief.intent:
+                raise ValueError("Analysis plan must retain the declared research intent")
             if design.budget_usd > 10:
                 raise ValueError("AI-proposed studies must have a spending ceiling at or below $10")
         return design

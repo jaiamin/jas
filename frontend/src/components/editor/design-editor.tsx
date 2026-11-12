@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -55,7 +55,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { api } from "@/lib/api";
+import { api, invalidateResources } from "@/lib/api";
 import { changeEnvironment } from "@/lib/design";
 import { type Draft, removeDraft, writeDraft } from "@/lib/drafts";
 import type {
@@ -135,13 +135,19 @@ export function DesignEditor({
   const [pendingEnvironment, setPendingEnvironment] =
     useState<EnvironmentId | null>(null);
   const navigate = useNavigate();
+  const client = useQueryClient();
   const save = useMutation({
     mutationFn: (specification: unknown) =>
       api<{ id: string }>(
         studyId ? `/studies/${studyId}/revisions` : "/studies",
         { design: specification, plan_id: planId },
       ),
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
+      await invalidateResources(client, [
+        "/studies",
+        `/studies/${result.id}`,
+        "/runs",
+      ]);
       let notice: string | undefined;
       try {
         removeDraft(draftPath);

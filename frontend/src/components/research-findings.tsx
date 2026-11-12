@@ -73,7 +73,7 @@ export function ResearchFindings({
               to declare them before new trials.
             </p>
           )}
-          {report.outcomes.length > 0 && (
+          {report.complete > 0 && report.outcomes.length > 0 && (
             <div className="overflow-hidden rounded-lg border">
               <Table>
                 <TableHeader>

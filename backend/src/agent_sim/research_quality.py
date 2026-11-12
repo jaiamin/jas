@@ -12,21 +12,30 @@ from .domain import Design, Parameters, PlannedOutcome
 from .simulation.environments import create_world
 
 
-def coordination_optimum(design: Design, parameters: Parameters) -> int:
+def coordination_values(design: Design, parameters: Parameters) -> dict[str, int]:
     """Enumerate joint actions, including abstention; never expose this to actors."""
     rules, artifacts = parameters.coordination, parameters.artifacts
     if design.environment != "distributed_coordination" or rules is None or artifacts is None:
         raise ValueError("Joint-value regret requires distributed_coordination")
     objects = {obj.key: obj for obj in artifacts.objects}
     tables = [objects[rules.information[p.key]].content for p in design.profiles]
-    return max(
-        sum(
+
+    def value(choices):
+        return sum(
             int(table[choice]) if choice is not None else 0
             for table, choice in zip(tables, choices, strict=True)
+        ) + (
+            len(tables) * rules.match_bonus if None not in choices and len(set(choices)) == 1 else 0
         )
-        + (len(tables) * rules.match_bonus if None not in choices and len(set(choices)) == 1 else 0)
-        for choices in product([None, *rules.alternatives], repeat=len(tables))
-    )
+
+    return {
+        "local_value": value(
+            tuple(max(rules.alternatives, key=table.__getitem__) for table in tables)
+        ),
+        "joint_optimum": max(
+            value(choices) for choices in product([None, *rules.alternatives], repeat=len(tables))
+        ),
+    }
 
 
 def scientific_review(design: Design) -> dict:
@@ -67,10 +76,19 @@ def _scientific_review(specification: str) -> dict:
         )
     else:
         for condition in design.conditions:
-            states = {}
+            states, payoff_cases = {}, []
             for seed in design.seeds:
                 world = create_world(design.resolve(condition), condition.parameters, seed)
-                states[seed] = digest(world.snapshot())
+                states[str(seed)] = digest(world.snapshot())
+                if design.environment == "distributed_coordination":
+                    payoff_cases.append(
+                        {
+                            "seed": seed,
+                            **coordination_values(
+                                design, design.scenario_parameters(condition.parameters, seed)
+                            ),
+                        }
+                    )
             distinct = len(set(states.values()))
             variation.append(
                 {
@@ -78,8 +96,17 @@ def _scientific_review(specification: str) -> dict:
                     "seeds": len(states),
                     "distinct_initial_states": distinct,
                     "initial_state_sha256": states,
+                    "payoff_cases": payoff_cases,
                 }
             )
+            if payoff_cases and all(c["local_value"] == c["joint_optimum"] for c in payoff_cases):
+                issue(
+                    "local_information_sufficient",
+                    f"{condition.name}: the declared local-value reference already attains "
+                    "the joint optimum in every scenario; optimal payoff does not require pooling.",
+                    "Include independently checked cases where the local-value control has "
+                    "positive regret before attributing optimal choices to coordination.",
+                )
             if len(states) > 1 and distinct == 1:
                 issue(
                     "fixed_initial_scenario",
@@ -138,13 +165,14 @@ FORMULAS = {
     "turn_count": "Number of committed actor decisions at terminal capture.",
     "request_count": "All run-linked participant and adjudication attempts; "
     "Researcher analysis calls are excluded.",
-    "cost_usd": "Sum of integer ledger microdollars / 1,000,000; "
-    "unavailable while usage is pending/unknown.",
+    "cost_usd": "Sum of participant/adjudication integer ledger microdollars / 1,000,000; "
+    "Researcher calls excluded; unavailable while usage is pending/unknown. No price backfill.",
     "wait_count": "Count of coordination_wait events; "
     "phased proposals count only after settlement.",
     "message_count": "Count of message or message_queued events; queued does not mean received.",
     "coordination_regret": "Maximum feasible terminal joint value (including abstention) "
-    "minus recorded coordination_value.",
+    "minus recorded coordination_value. Researcher-only omniscient comparator, "
+    "not an information-constrained actor policy or a test of irrationality.",
     "manual": "Not computed; requires the declared coding/assessment procedure.",
 }
 
@@ -180,9 +208,9 @@ def outcome_value(
             value = (
                 None
                 if actual is None
-                else coordination_optimum(
+                else coordination_values(
                     design, design.scenario_parameters(condition.parameters, run["seed"])
-                )
+                )["joint_optimum"]
                 - actual
             )
         case _:
@@ -254,6 +282,7 @@ def findings_report(
             for r in runs
         ],
         calculated,
+        metric_sources={f"analysis:{o.key}": o.metric for o in outcomes if o.metric is not None},
     )
     for row in comparison["results"] + comparison["effects"]:
         row["metric"] = row["metric"].removeprefix("analysis:")

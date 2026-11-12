@@ -58,6 +58,11 @@ their evidence. It is distinct from the participants whose behavior is studied.
 The instructions, tools and retained research context through which the researcher
 conducts its work.
 
+**Event-wait policy**:
+An explicitly chosen participant policy that may repeat a model-chosen wait while
+its actionable information is unchanged, within a declared bound. These settled
+waits consume World opportunities even when no new model request is made.
+
 **Participant harness**:
 The instructions, memory, tools and decision process through which a participant
 acts in an experiment. Its configuration is part of the system being studied.
@@ -75,6 +80,20 @@ An explicit versioned executable artifact submitted for containment and behavior
 review. A successful example check does not admit it as a runnable environment.
 
 ## Evidence and validity
+
+**Analysis plan**:
+A versioned declaration of research intent, target, sampling unit, allocation and
+outcomes fixed with a protocol revision. Outcomes name executable calculations or
+an explicit manual assessment; the declaration alone does not establish validity.
+
+**Matched value scenario**:
+An explicit set of private values applied to the same declared seed across
+conditions. Different seed labels alone need not produce different tasks.
+
+**Joint-value regret**:
+The difference between the highest feasible joint payoff and the recorded payoff
+in a declared coordination scenario. The comparator has researcher access to all
+values; it is not an information-constrained policy or a test of individual rationality.
 
 **Analysis lens**:
 A declared way of examining the same frozen evidence, with explicit requirements,

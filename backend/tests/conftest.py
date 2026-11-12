@@ -13,6 +13,21 @@ from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
 
+def analysis_prompt(content):
+    """Resolve the documented wire references before a deterministic analyst uses them."""
+    data = json.loads(content)
+    shared = data.get("shared_analysis_inputs", {})
+
+    def resolve(value):
+        if isinstance(value, dict):
+            if set(value) == {"shared_analysis_input"}:
+                return resolve(shared[value["shared_analysis_input"]])
+            return {name: resolve(child) for name, child in value.items()}
+        return [resolve(child) for child in value] if isinstance(value, list) else value
+
+    return resolve(data)
+
+
 @pytest.fixture(autouse=True)
 def no_network(monkeypatch):
     monkeypatch.setattr(models, "ALLOW_MODEL_REQUESTS", False)

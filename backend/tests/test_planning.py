@@ -21,6 +21,10 @@ def test_large_protocol_followups_fit_without_losing_prior_revisions(tmp_path, m
             item["id"]: Design.model_validate(item["design"]).conditions[0].parameters.model_dump()
             for item in installed
         }
+        expected_sources = {
+            entry["key"]: entry["source"]
+            for entry in client.get("/api/catalog").json()["environments"]
+        }
         design = deepcopy(next(t["design"] for t in installed if t["id"] == "commons"))
         design["question"] = (
             "Compare optional public messaging in a twelve-agent Commons pilot. "
@@ -101,6 +105,7 @@ def test_large_protocol_followups_fit_without_losing_prior_revisions(tmp_path, m
                         environment["template_parameters"]
                         == expected_parameters[environment["key"]]
                     )
+                    assert environment["source"] == expected_sources[environment["key"]]
             for turn in call["prompt"].get("conversation", []):
                 if previous := turn.get("proposal"):
                     assert previous in proposals
