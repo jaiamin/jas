@@ -151,6 +151,9 @@ available; its current identity and guarded record-preservation receipt are in
 preserved all 14 table hashes, the database inode and 78 provider records; health
 and home returned 200.
 
-PR #38 remains draft. GitHub previously refused to start all hosted jobs because
+PR #38 merged into `feat/research-quality`; a follow-up integration branch based
+on `main` carries #37/#38 without repeating #36. Its application and test sources
+are byte-identical to the qualified version; only delivery-status docs changed.
+GitHub previously refused to start all hosted jobs because
 account payments/spending limits blocked Actions. Local passes do not satisfy
 blocked hosted checks; the repository checks were not weakened to bypass that gate.

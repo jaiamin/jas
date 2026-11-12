@@ -3,6 +3,12 @@
 GitHub repository renamed to `jaiamin/jas`; origin, app link, docs and test
 expectations use the new name. Existing PR #38 and issue numbers are preserved.
 
+Delivery correction: PRs #37/#38 merged into `feat/research-quality`, not `main`.
+`fix/integrate-research-updates` starts at main `c0f9a941` and carries exactly those
+two squash commits, with original commit references. Its complete tree matched
+qualified `ef2194a1` before these documentary status corrections. Deliver through
+one follow-up PR targeting `main`; do not reuse the obsolete feature-branch base.
+
 ## Current: live Agent and participant evaluation complete
 
 User-authorized aggregate ceiling $15. Final isolated ledger retained $4.115505
@@ -25,7 +31,7 @@ All failed attempts remain in ignored local evidence. No old runs relabeled or r
 
 Final local checks: backend 1,894; browser 191; frontend 141; lint,
 formatting, global types and frontend build pass. Hosted CI remains an account-billing
-blocker until fresh checks actually run. Existing PR #38 stays draft; do not merge.
+blocker until fresh checks actually run. PR #38 is merged; the follow-up targets main.
 
 Keep user app 8080 running. Read `.tools/run-8080/server.json` for current identity;
 `activate-8080-03/receipt.json` proves preserved database inode/all 14 tables/78 provider records.
