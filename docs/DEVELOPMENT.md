@@ -69,6 +69,32 @@ readers or automatic resets. Start with a fresh database when changing contracts
 removing existing data requires an explicit user decision.
 Capture1/comparison1/tool2.0/direct1.0 remain current.
 
+### Evidence downloads
+
+Export buttons save a plain `jas-<experiment-id>.json` file. The `shared-values-v1`
+representation stores repeated observations, rules, schemas and other identical
+values once. Every unique value remains in the file: checkpoints, provider traces,
+integer ledgers, failures, analyses and provenance are preserved. No archive utility,
+network lookup or JAS installation is required to inspect it.
+
+Start with the readable `overview` and `reading_guide`. `reference_key` identifies a
+reserved property absent from the source evidence. An object containing only that
+property references `shared_values[its value]`; resolve recursively. Other objects,
+including JSON Schema `$ref` fields, remain literal data. Removing `representation`,
+`reading_guide`, `overview`, `reference_key` and `shared_values` after resolution
+recovers the exact full export19 content. These references change representation,
+not evidence meaning or persisted versions.
+
+`GET /api/studies/{id}/export?download=true` returns the portable representation;
+`GET /api/studies/{id}/export` returns expanded JSON for API callers. Both capture
+one database snapshot without provider calls. File size still grows with unique
+evidence. For AI review, inspect the overview and relevant sections; a complete
+experiment need not fit one model context. Exports may contain private participant
+observations and recorded prompts, so share them deliberately.
+
+Study exports are evidence bundles, not importable workspaces: there is no study-import
+endpoint. Reusing saved environment definitions is a separate workflow.
+
 T12's keyless browser witnesses use the opt-in DEVELOPMENT-only workflow provider,
 fresh owned data and the already installed headless shell. Set `JAS_TEST_PORT`,
 `JAS_TEST_DATA_DIR`, `PLAYWRIGHT_BROWSERS_PATH`, `T12_BROWSER_EXECUTABLE` and

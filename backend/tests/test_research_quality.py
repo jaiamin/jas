@@ -26,6 +26,90 @@ def coordination():
     )
 
 
+def test_maximum_study_analysis_can_inspect_late_run_without_overloading_context(
+    runtime, monkeypatch
+):
+    from pydantic_ai.models.function import DeltaToolCall
+
+    db, models, research, engine = runtime
+    design = coordination()
+    design.seeds, design.repetitions, design.rounds = list(range(20)), 3, 2
+    sid = research.save_design(design)
+    runs = research.operational_runs(sid)
+    assert len(runs) == 120
+    last = runs[-1].id
+    prompts = []
+
+    async def respond(messages, info):
+        prompt = analysis_prompt(messages[-1].parts[0].content)
+        prompts.append(prompt)
+        assert {r["run_id"] for r in prompt["index"]["runs"]} == {r.id for r in runs}
+        if len(prompts) == 1:
+            payload = {
+                "requests": [
+                    {"kind": "index", "section": "runs", "run_id": last, "start": 0, "count": 1},
+                    {
+                        "kind": "index",
+                        "section": "calculations",
+                        "run_id": last,
+                        "start": 0,
+                        "count": 5,
+                    },
+                    {"kind": "turn", "run_id": last, "turn": 1},
+                ],
+                "answer": None,
+            }
+        else:
+            records = prompt["evidence"]
+            assert records[0]["data"]["items"][0]["run_id"] == last
+            assert records[0]["data"]["items"][0]["through_turn"] == 1
+            assert records[1]["data"]["items"]
+            assert all(last in c["id"] for c in records[1]["data"]["items"])
+            assert records[2]["data"]["number"] == 1
+            payload = {
+                "requests": [],
+                "answer": {
+                    "answer": "One inspected turn; the other planned trials are not observations.",
+                    "citations": [{"run_id": last, "turn": 1}],
+                    "caveats": ["No independent population inference."],
+                },
+            }
+        return ModelResponse(
+            parts=[ToolCallPart(info.output_tools[0].name, payload)],
+            usage=RequestUsage(input_tokens=100, output_tokens=50),
+        )
+
+    async def stream(messages, info):
+        result = await respond(messages, info)
+        yield {
+            0: DeltaToolCall(
+                name=info.output_tools[0].name, json_args=json.dumps(result.parts[0].args)
+            )
+        }
+
+    async def exercise():
+        await engine.start(last, single=True)
+        await engine.executions[last].task
+        monkeypatch.setattr(
+            models, "model", lambda _: FunctionModel(function=respond, stream_function=stream)
+        )
+        assistants = Assistants(db, research, models)
+        key = await assistants.start("What happened?", purpose="analysis", study_id=sid)
+        await assistants.tasks[key]
+        row = assistants.get(key)
+        assert row["status"] == "complete", row["error"]
+        assert len(prompts) == 2
+        assert len(row["output"]["evidence_index"]["runs"]) == 120
+        assert row["output"]["examined"] == [
+            {"run_id": last, "start": 1, "end": 1, "full_turn": True}
+        ]
+        assert research.run(last)["summary"]["turn"] == 1
+        await assistants.close()
+        await engine.close()
+
+    asyncio.run(exercise())
+
+
 def test_http_plan_and_real_scenarios_remain_revision_pinned_after_reopen(tmp_path):
     design = coordination()
     design.seeds = [17]
@@ -621,7 +705,7 @@ def test_scientific_review_detects_when_local_only_choices_already_attain_optimu
 
 
 def test_shared_analysis_wire_preserves_nested_evidence_without_hash_overhead():
-    from agent_sim.assistants import _share_analysis_inputs
+    from agent_sim.shared_json import share_json
     from conftest import analysis_prompt
 
     observation = {"rules": ["private permission " * 30], "choices": list(range(40))}
@@ -633,10 +717,10 @@ def test_shared_analysis_wire_preserves_nested_evidence_without_hash_overhead():
         ],
     }
     before = json.dumps(original)
-    wire = json.dumps(_share_analysis_inputs(original))
+    wire = json.dumps(share_json(original))
     decoded = analysis_prompt(wire)
-    decoded.pop("shared_analysis_inputs")
-    decoded.pop("shared_analysis_reference_key")
+    decoded.pop("shared_values")
+    decoded.pop("reference_key")
     assert decoded == original
     assert json.dumps(original) == before
     assert len(wire) < 3500  # Leaves headroom for schema/instructions in the 180k-byte envelope.
@@ -679,17 +763,78 @@ def test_planner_cannot_change_declared_research_intent(runtime, intent):
 
 
 def test_shared_wire_preserves_literal_reference_shaped_artifacts():
-    from agent_sim.assistants import _share_analysis_inputs
+    from agent_sim.shared_json import share_json
 
     original = {
-        "evidence": [{"shared_analysis_input": "0"}, {"shared_analysis_input_1": "0"}],
+        "evidence": [{"$jas": "0"}, {"$jas_": "0"}],
+        "schema": {"$ref": "#/$defs/Action"},
+        "unicode": "模型观察 — café",
+        "null": None,
         "first": "repeated evidence " * 30,
         "second": "repeated evidence " * 30,
     }
-    decoded = analysis_prompt(json.dumps(_share_analysis_inputs(original)))
-    decoded.pop("shared_analysis_inputs")
-    decoded.pop("shared_analysis_reference_key", None)
+    decoded = analysis_prompt(json.dumps(share_json(original)))
+    decoded.pop("shared_values")
+    decoded.pop("reference_key", None)
     assert decoded == original
+
+
+def test_context_oversize_is_explicit_and_frozen_details_remain_accessible(runtime, design):
+    from agent_sim.analysis_context import AnalysisContext, IndexRequest
+    from agent_sim.db import digest
+
+    db, models, research, _ = runtime
+    rid = research.operational_runs(research.save_design(design))[0].id
+    assistants = Assistants(db, research, models)
+    index = assistants._evidence_index({rid: 0})
+    lens = capture_lens(research, {rid: 0}, index=index, analysis_id="frozen")
+    context = AnalysisContext(index, lens)
+    original = digest({"index": index, "lens": lens})
+    large = {"unique": "".join(str(n) for n in range(50000))}
+    evidence = [{"range": {"run_id": rid, "start": 0, "end": 0}, "data": large}]
+    prompt, visible = context.prompt(
+        {
+            "question": "Explain",
+            "conversation": [],
+            "evidence": evidence,
+            "research": {"operations": []},
+            "context_index": [],
+            "already_examined": [],
+        },
+        100_000,
+    )
+    decoded = analysis_prompt(prompt)
+    assert len(prompt.encode()) <= 100_000
+    assert decoded["evidence"][0]["data"]["not_in_context"] is True
+    assert visible == []
+    assert evidence[0]["data"] == large
+    detail = context.page(IndexRequest(kind="index", section="runs", run_id=rid, path=["outcome"]))
+    assert detail["items"] == [index["runs"][0]["outcome"]]
+    assert detail["next_start"] is None
+    checks = context.page(IndexRequest(kind="index", section="experiment_checks", run_id=rid))
+    assert checks["items"][0]["value"] == next(iter(index["experiment_checks"].values()))
+    calculations = context.page(IndexRequest(kind="index", section="calculations", run_id=rid))
+    assert all("inputs" not in c for c in calculations["items"])
+    inputs = context.page(
+        IndexRequest(kind="index", section="calculations", run_id=rid, count=1, path=["inputs"])
+    )
+    assert inputs["items"] == [lens["calculations"][0]["inputs"]]
+    assert digest({"index": index, "lens": lens}) == original
+    from agent_sim.assistants import TurnRequest
+
+    scope = {rid: 0}
+    inspected, field = assistants._requested_evidence(
+        TurnRequest(kind="turn", run_id=rid, turn=0, path=["checkpoint", "rule_version"]), scope
+    )
+    assert field["value"] == index["runs"][0]["recorded_rule_version"]
+    assert inspected["full_turn"] is False
+    assert inspected["path"] == ["checkpoint", "rule_version"]
+    _, invalid = assistants._requested_evidence(
+        TurnRequest(kind="turn", run_id=rid, turn=0, path=["absent"]), scope
+    )
+    assert invalid["not_in_context"] is True
+    with pytest.raises(ValueError, match="outside the captured"):
+        context.page(IndexRequest(kind="index", section="runs", run_id="unselected"))
 
 
 def test_scientific_reference_value_matches_executed_shared_acl_control():

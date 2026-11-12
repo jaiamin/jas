@@ -31,6 +31,14 @@ from .finite_contract import GenerationAuthorization
 from .investigation_limits import InvestigationStopped, wait_ready
 
 T = TypeVar("T")
+MAX_INPUT_BYTES = 180_000
+
+
+def prompt_byte_limit(output: type, instructions: str) -> int:
+    schema = TypeAdapter(output).json_schema()
+    return MAX_INPUT_BYTES - len((instructions + json.dumps(schema)).encode()) - 4096
+
+
 PRICES: dict[str, tuple[float, float]] = {
     "openai:gpt-6-luna": (0.10, 0.50),
     "openai:gpt-6.1-sol": (2.0, 10.0),
@@ -197,7 +205,7 @@ class LanguageModels:
         schema = TypeAdapter(output).json_schema()
         model_object = self.model(model)
         input_bound = len((prompt + instructions + json.dumps(schema)).encode()) + 4096
-        if input_bound > (allowance.max_input_bytes if allowance else 180_000):
+        if input_bound > (allowance.max_input_bytes if allowance else MAX_INPUT_BYTES):
             raise ProviderFailure("Evidence exceeds this request's input limit; narrow the scope.")
         timeout = 180 if purpose == "design" else 90
         settings: OpenAIResponsesModelSettings = {"max_tokens": max_tokens, "timeout": timeout}

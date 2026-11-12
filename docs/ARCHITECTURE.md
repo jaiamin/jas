@@ -640,6 +640,21 @@ journal queries. It also retains the linked question's complete immutable genera
 attempts (including failures and repairs), external contracts/checks/admission/source,
 generation authorization/counters and exact integer reserved/charged request ledgers.
 Incompatible contracts are rejected without reinterpretation or migration.
+Downloads remain plain JSON. `?download=true` uses self-contained `shared-values-v1`
+references for repeated values, plus a readable overview/guide. Resolving references
+recovers the exact expanded export19 returned to ordinary API callers. The reserved
+reference property is chosen to avoid collisions with literal evidence/schema fields.
+Snapshot capture finishes before sharing values in a worker; no provider calls occur.
+
+Analysis contexts use the same lossless sharing. Before every request, the Researcher
+budgets the question, instructions, exact output schema and evidence against the
+existing input bound. Large scopes get an explicit overview with every run identity
+and cutoff; index pages retrieve frozen runs, protocols, comparisons, exposure,
+coverage and calculations. Turn requests may select nested fields. Oversized results
+are explicitly marked outside the current context, not silently summarized or counted
+as inspected. Full frozen sources and claim checking remain unchanged; later turns
+and unselected runs remain inaccessible. An overview is not a claim of exhaustive review.
+
 Participant harnesses (`participants.py`; direct action 1.0.0, tool using 2.0.0) are condition factors,
 independent of provider/model assignments and World. Direct action preserves the
 single structured-decision request and its observation. Tool using owns a bounded

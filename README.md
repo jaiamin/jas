@@ -16,6 +16,9 @@ The Agent drafts reviewable protocols and answers questions about recorded runs.
 Reusable environments define rules separately from experiments. New executable mechanics
 require an explicit reviewed contract and independent admission.
 
+Share complete evidence as [self-contained JSON](docs/DEVELOPMENT.md#evidence-downloads),
+with repeated values stored once and a readable overview for external review.
+
 ```sh
 cp .env.example .env
 # Add provider keys to .env, then:

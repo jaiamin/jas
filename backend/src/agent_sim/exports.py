@@ -13,11 +13,40 @@ from .db import (
     Turn,
 )
 from .research import Research, event_dict
+from .shared_json import share_json
 
 
-def export_study(research: Research, study_id: str) -> dict[str, object]:
+def export_study(research: Research, study_id: str, *, download: bool = False) -> dict[str, object]:
     with research.db.read_snapshot():
-        return _export_study(research, study_id)
+        payload = _export_study(research, study_id)
+    if not download:
+        return payload
+    study = payload["study"]
+    assert isinstance(study, dict)
+    return {
+        "representation": "shared-values-v1",
+        "reading_guide": (
+            "Complete experiment evidence as plain JSON. Start with overview. Repeated values "
+            "are stored once in shared_values. A single-key object whose key equals reference_key "
+            "refers to shared_values[its value]; resolve recursively. All referenced data is "
+            "inside this file. Other objects, including JSON schemas, are literal data. "
+            "Remove representation, reading_guide, overview, reference_key and shared_values "
+            "after resolving to recover the exact full jas-study export."
+        ),
+        "overview": {
+            "id": study_id,
+            "title": study["design"]["title"],
+            "question": study["design"]["question"],
+            "scope": "Every revision and its recorded runs; not just the latest revision.",
+            "counts": {
+                name: len(value)
+                for name, value in payload.items()
+                if name in {"runs", "revisions", "requests", "analyses", "annotations"}
+                and isinstance(value, list)
+            },
+        },
+        **share_json(payload),
+    }
 
 
 def _export_study(research: Research, study_id: str) -> dict[str, object]:

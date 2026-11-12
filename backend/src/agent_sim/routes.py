@@ -522,9 +522,11 @@ def study_findings(
 
 
 @router.get("/api/studies/{study_id}/export")
-async def download_study(study_id: str, *, research: ResearchDep) -> JSONResponse:
+async def download_study(
+    study_id: str, *, research: ResearchDep, download: bool = False
+) -> JSONResponse:
     return JSONResponse(
-        await asyncio.to_thread(export_study, research, study_id),
+        await asyncio.to_thread(export_study, research, study_id, download=download),
         headers={"Content-Disposition": f'attachment; filename="jas-{study_id}.json"'},
     )
 

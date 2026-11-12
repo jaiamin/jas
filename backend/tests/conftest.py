@@ -16,8 +16,8 @@ from pydantic_ai.usage import RequestUsage
 def analysis_prompt(content):
     """Resolve the documented wire references before a deterministic analyst uses them."""
     data = json.loads(content)
-    shared = data.get("shared_analysis_inputs", {})
-    reference_key = data.get("shared_analysis_reference_key")
+    shared = data.get("shared_values", {})
+    reference_key = data.get("reference_key")
 
     def resolve(value):
         if isinstance(value, dict):

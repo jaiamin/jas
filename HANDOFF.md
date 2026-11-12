@@ -1,5 +1,34 @@
 # JAS handoff
 
+## Active: portable evidence and large analysis contexts
+
+User explicitly rejected archived/compressed downloads. Gzip implementation07b0abc1
+was fully reverted at01685360; it is not the delivery. Downloads stay plain JSON,
+using lossless shared-values-v1 references plus an overview/reading guide. Expanded
+export19 remains the API representation; no study importer or persisted version change.
+All unique evidence is retained. New code lives in shared_json.py and analysis_context.py.
+
+Diagnosed actual stopped analyses76993ce6 (40runs) and a3782028 (24runs), both failing
+before provider dispatch. Read-only frozen snapshots now fit in~87KB/~68KB versus
+~193KB/~180KB detailed prompts, without altering frozen output or user data. A genuine
+120run regression observed the same input-limit RED, then GREEN with late-run index,
+calculation and exact-turn inspection. Input/budget limits are unchanged. Whole frozen
+evidence remains accessible; oversized data is explicitly not_in_context, and unread
+turns cannot become citations. Additional path selection stays within captured cutoffs.
+
+Acceptance: exact full-export restoration (including literal reference-shaped values,
+Unicode and schemas), all four browser export actions, light/dark phone/desktop,
+large/small analyses, page/cutoff isolation and explicit oversize handling. Remaining:
+measurement, source closure, guarded8080 refresh and normal publication. Final scoped
+170 backend cases PASS, then2 page/path checks PASS after completing inspection access
+to experiment_checks and excluding bulk calculation inputs from default pages. All7
+plain-JSON browser cases PASS, whole Ruff/ty/lint, forcedTS/private build PASS.
+The older8 affected UI unit passes remain at their recorded source; only export hrefs
+changed, qualified by the new browser cases.
+Evidence `.tools/export-download/` retains gzip/revert and all adverse attempts. No new
+paid calls or original experiment retries. Preserve app8080/database; the earlier
+gzip refresh is superseded only after this new source passes qualification.
+
 ROOT owns `feat/research-quality`, based on `5f2523e58c7a851482f6a1ed3c2590eaa01696c4`.
 The ten recommendations, acceptance criteria, methods and source-specific results
 are in [the plan](docs/research/RESEARCH_QUALITY_PLAN.md).

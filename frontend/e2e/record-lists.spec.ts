@@ -1131,6 +1131,9 @@ for (const theme of ["light", "dark"] as const) {
     const download = page.waitForEvent("download");
     await page.getByRole("menuitem", { name: "Export evidence" }).click();
     expect((await download).suggestedFilename()).toBe(`jas-${study.id}.json`);
+    expect(new URL((await download).url()).searchParams.get("download")).toBe(
+      "true",
+    );
     await actions.click();
     await page
       .getByRole("menuitem", { name: "Duplicate", exact: true })

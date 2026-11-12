@@ -12,6 +12,31 @@ import type {
   StudyDetail,
 } from "../src/lib/types.js";
 
+export function expandEvidence(text: string) {
+  const file = JSON.parse(text);
+  expect(file.representation).toBe("shared-values-v1");
+  expect(file.reading_guide).toContain("plain JSON");
+  function resolve(value: unknown): unknown {
+    if (Array.isArray(value)) return value.map(resolve);
+    if (value !== null && typeof value === "object") {
+      const record = value as Record<string, unknown>;
+      if (Object.keys(record).length === 1 && file.reference_key in record) {
+        return resolve(file.shared_values[String(record[file.reference_key])]);
+      }
+      return Object.fromEntries(
+        Object.entries(record).map(([key, item]) => [key, resolve(item)]),
+      );
+    }
+    return value;
+  }
+  return resolve(file) as {
+    version: number;
+    study: StudyDetail;
+    requests: unknown[];
+    runs: unknown[];
+  };
+}
+
 export function templateDesign(
   catalog: Catalog,
   environment: EnvironmentId = "commons",
