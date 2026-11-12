@@ -7,6 +7,7 @@ records are separate from scientific claims.
 | Guide | Use it for |
 | --- | --- |
 | [Development](DEVELOPMENT.md) | Setup, local servers, tests and runtime checks |
+| [Hosting](DEPLOYMENT.md) | Private Railway deployment, authentication and persistent storage |
 | [Custom environments](CUSTOM_ENVIRONMENTS.md) | Authoring and reusing mechanics |
 | [Extension review](EXTENSIONS.md) | Independent finite contracts, containment and artifact admission |
 | [Experiment validity](EXPERIMENT_VALIDITY.md) | Question fidelity, preflight, opportunities, cutoffs and interpretation |

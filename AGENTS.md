@@ -38,7 +38,7 @@ Read [architecture](docs/ARCHITECTURE.md) for contracts and environment integrat
   Agent output is pending until validated; reconnect restores without resubmitting.
   Keep loading, error, empty, keyboard and mobile states usable.
 - Validate at API/domain boundaries; retain host and origin checks. LAN hosts must be
-  explicit in `JAS_ALLOWED_HOSTS`. Public hosting needs an authentication design.
+  explicit in `JAS_ALLOWED_HOSTS`. Hosted workspaces must require authentication.
 
 ## Development and checks
 

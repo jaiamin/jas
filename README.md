@@ -31,7 +31,8 @@ also support Anthropic. See [.env.example](.env.example) for model and budget se
 Manual setup, saved evidence and replay work without provider keys. For native development,
 see [setup and checks](docs/DEVELOPMENT.md) (Python 3.13+, Node 24+, uv and pnpm 12).
 
-Single-user local app without authentication; do not expose it publicly. Protocol checks
+For private hosted use, follow the [Railway guide](docs/DEPLOYMENT.md) for persistent
+storage and password protection. Local use needs no login. Protocol checks
 verify mechanics, not scientific conclusions. Model responses remain fallible; app and
 harness improvements do not train model weights or establish general intelligence.
 

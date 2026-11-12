@@ -100,6 +100,8 @@ jobs:
         run: |
           curl --fail --silent --show-error http://127.0.0.1:8083/api/health
           docker compose --env-file /dev/null exec -T app python - < .github/scripts/smoke.py
+      - name: Verify protected hosting with a root-owned volume and restart
+        run: python3 .github/scripts/deployment_smoke.py jas-ci-smoke-app:latest
       - name: Collect container logs
         if: always()
         run: docker compose --env-file /dev/null logs --no-color > container.log

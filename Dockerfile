@@ -21,6 +21,7 @@ RUN uv sync --frozen --no-dev && \
 COPY --from=frontend /build/dist/ frontend/dist/
 USER 10001:10001
 EXPOSE 8080
+ENTRYPOINT ["python", "-m", "agent_sim.container_entrypoint"]
 HEALTHCHECK --interval=20s --timeout=3s --start-period=10s \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/api/health', timeout=2)"
 CMD ["jas", "--host", "0.0.0.0", "--port", "8080"]

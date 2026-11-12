@@ -11,6 +11,7 @@ from starlette.datastructures import Headers, MutableHeaders
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
+from .access import BasicAuthMiddleware, access_credentials
 from .assistants import Assistants
 from .config import setting
 from .db import Database
@@ -74,6 +75,7 @@ def create_app(
     static_dir: str | Path | None = None,
     concurrent_runs: int | None = None,
 ) -> FastAPI:
+    credentials = access_credentials()
     db = Database(
         database_url or setting("DATABASE_URL", "sqlite:///data/jas.sqlite3"),
         round(
@@ -116,6 +118,7 @@ def create_app(
     app.add_middleware(GZipMiddleware, minimum_size=1000)
 
     app.state.frontend = Path(static_dir or setting("STATIC_DIR", "frontend/dist")).resolve()
+    app.add_middleware(BasicAuthMiddleware, credentials=credentials)
     app.add_middleware(SameOriginMiddleware)
     app.add_middleware(
         TrustedHostMiddleware,

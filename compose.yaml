@@ -15,6 +15,8 @@ services:
       JAS_ASSISTANT_MODEL: ${JAS_ASSISTANT_MODEL:-openai:gpt-6.1-sol}
       JAS_CONCURRENT_REQUESTS: ${JAS_CONCURRENT_REQUESTS:-4}
       JAS_BUDGET_USD: ${JAS_BUDGET_USD:-25}
+      JAS_AUTH_USERNAME: ${JAS_AUTH_USERNAME:-}
+      JAS_AUTH_PASSWORD: ${JAS_AUTH_PASSWORD:-}
     volumes:
       - jas-data:/app/data
     init: true

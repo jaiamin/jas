@@ -1,5 +1,30 @@
 # JAS handoff
 
+## Current: Railway deployment repair
+
+PR #39 is merged into main (`3b918ff9`). Branch `fix/railway-deployment` starts
+there. User authorized Railway log inspection, configuration and deployment repair.
+Confirmed: initial image built successfully; deployment `d59c1950` crashed opening
+SQLite on the root-owned `/app/data` volume. Existing volume and databases must
+remain intact. No paid model calls are needed or authorized by this deployment task.
+
+Acceptance: initialize only the mount directory, run the app as 10001, password
+protect hosted reads/actions, retain host/origin checks, and verify restart
+persistence and actual production containment. Preserve native/Compose local setup.
+Keep one replica, no sleep and graceful shutdown in Railway's service settings;
+focused hosting instructions are in `docs/DEPLOYMENT.md`. No deprecated Railway
+config format or new platform dependency. Credentials stay outside Git/logs.
+
+Progress: access/API regressions pass (76 cases), Ruff/ty/workflow lint pass, and
+both default Compose and root-owned-volume authenticated production smoke pass,
+including containment, guard refusals and restart persistence. Full backend suite
+is running. Railway auth/host/bootstrap variables configured with secrets via stdin,
+without triggering an old-image deployment. Tested deployment, final health and
+source delivery remain pending. Do not claim hosted success until the exact
+deployment reports SUCCESS and public/protected HTTP checks pass.
+
+## Previous delivery and evaluation
+
 GitHub repository renamed to `jaiamin/jas`; origin, app link, docs and test
 expectations use the new name. Existing PR #38 and issue numbers are preserved.
 
@@ -9,7 +34,7 @@ two squash commits, with original commit references. Its complete tree matched
 qualified `ef2194a1` before these documentary status corrections. Deliver through
 one follow-up PR targeting `main`; do not reuse the obsolete feature-branch base.
 
-## Current: live Agent and participant evaluation complete
+## Completed: live Agent and participant evaluation
 
 User-authorized aggregate ceiling $15. Final isolated ledger retained $4.115505
 charged/reserved: $4.111282 known settled + $0.004223 unknown timeout reservation.
