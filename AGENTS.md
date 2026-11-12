@@ -79,7 +79,7 @@ without running the corresponding evaluation.
 
 ### Issue tracker
 
-GitHub Issues in jaiamin/ass. See docs/agents/issue-tracker.md.
+GitHub Issues in jaiamin/jas. See docs/agents/issue-tracker.md.
 
 ### Domain docs
 

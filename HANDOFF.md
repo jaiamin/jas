@@ -1,5 +1,8 @@
 # JAS handoff
 
+GitHub repository renamed to `jaiamin/jas`; origin, app link, docs and test
+expectations use the new name. Existing PR #38 and issue numbers are preserved.
+
 ## Current: live Agent and participant evaluation complete
 
 User-authorized aggregate ceiling $15. Final isolated ledger retained $4.115505

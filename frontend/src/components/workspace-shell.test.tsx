@@ -65,7 +65,7 @@ test("header theme control persists appearance and Settings has a direct footer 
   expect(settings).toHaveAttribute("href", "/settings");
   expect(settings).toHaveAttribute("aria-current", "page");
   const github = screen.getByRole("link", { name: "GitHub repository" });
-  expect(github).toHaveAttribute("href", "https://github.com/jaiamin/ass");
+  expect(github).toHaveAttribute("href", "https://github.com/jaiamin/jas");
   fireEvent.click(screen.getByRole("button", { name: "Switch to dark mode" }));
   expect(document.documentElement).toHaveClass("dark");
   expect(localStorage.getItem("jas-theme")).toBe("dark");
