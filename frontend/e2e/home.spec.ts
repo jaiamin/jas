@@ -93,7 +93,7 @@ test("Home keeps immediate content usable while only database rows show skeleton
 
 for (const width of [390, 1440])
   for (const theme of ["light", "dark"]) {
-    test(`Home keeps a drafting background and original content positions · ${theme} · ${width}`, async ({
+    test(`Home keeps a pixel landscape and original content positions · ${theme} · ${width}`, async ({
       page,
     }, testInfo) => {
       const artworkRequests: string[] = [];
@@ -128,7 +128,6 @@ for (const width of [390, 1440])
           titleTop: title.getBoundingClientRect().top,
           composerTop: composer.getBoundingClientRect().top,
           ideasTop: ideas.getBoundingClientRect().top,
-          composerBottom: composer.getBoundingClientRect().bottom,
           composerHeight: composer.getBoundingClientRect().height,
           fieldColor: getComputedStyle(
             element.querySelector(".home-field") as Element,
@@ -142,7 +141,6 @@ for (const width of [390, 1440])
             (node) =>
               getComputedStyle(node, "::before").backdropFilter !== "none",
           ),
-          animations: element.getAnimations({ subtree: true }).length,
         };
       });
       // Positions captured before replacing the city: preserve both content rows.
@@ -158,14 +156,58 @@ for (const width of [390, 1440])
       expect(geometry.fieldColor).not.toBe(geometry.pageColor);
       expect(geometry.titleColor).toBe(geometry.foreground);
       expect(geometry.blurred).toBe(false);
-      expect(geometry.animations).toBe(0);
+      await expect(hero.locator(".home-landscape")).toHaveAttribute(
+        "data-active",
+        "true",
+      );
       expect(artworkRequests).toEqual([]);
       await page.screenshot({
-        path: testInfo.outputPath(`neutral-home-${theme}-${width}.png`),
+        path: testInfo.outputPath(`pixel-home-${theme}-${width}.png`),
         animations: "disabled",
       });
     });
   }
+
+test("Home landscape stays still with reduced motion and pauses offscreen", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 300 });
+  await page.route("**/api/settings", (route) =>
+    route.fulfill({ json: settings }),
+  );
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const landscape = page.locator(".home-landscape");
+  await expect(landscape).toHaveAttribute("data-active", "true");
+  const motion = () =>
+    landscape.evaluate((element) => ({
+      animation: getComputedStyle(element, "::after").animationName,
+      state: getComputedStyle(element, "::after").animationPlayState,
+      transform: getComputedStyle(element, "::after").transform,
+      mask: getComputedStyle(element).maskImage,
+    }));
+  expect((await motion()).animation).toBe("none");
+  expect((await motion()).mask).toContain("terrain.svg");
+  const asset = await page.request.get("/illustrations/terrain.svg");
+  expect(asset.ok()).toBe(true);
+  expect(asset.headers()["content-type"]).toContain("image/svg+xml");
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect.poll(async () => (await motion()).state).toBe("running");
+  expect((await motion()).animation).toBe("terrain-light");
+  const initialTransform = (await motion()).transform;
+  await expect
+    .poll(async () => (await motion()).transform)
+    .not.toBe(initialTransform);
+  await page
+    .getByRole("region", { name: "Recent experiments" })
+    .scrollIntoViewIfNeeded();
+  await expect(landscape).toHaveAttribute("data-active", "false");
+  expect((await motion()).state).toBe("paused");
+  await page
+    .getByRole("heading", { name: "What would you like to test?" })
+    .scrollIntoViewIfNeeded();
+  await expect(landscape).toHaveAttribute("data-active", "true");
+});
 
 test("Composer's manual editor link preserves the message without submitting", async ({
   page,

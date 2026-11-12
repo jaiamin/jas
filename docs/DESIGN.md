@@ -294,11 +294,17 @@ Decisions and evidence stack below 1440px.
 Home’s experiment ideas, drafts, active runs and recent experiments share a centered
 58rem maximum-width content column below the composer. Keep their edges aligned.
 
-Home uses a static blue-gray drafting field with faint, widely spaced sampling
-points. Dedicated theme tokens keep it pale slate in light mode and deep slate
-in dark mode. The heading uses the foreground token, without imagery, animation,
-title tint or backdrop blur. The field ends at a stock full-width gray Separator
-behind the composer, three-fifths down its height. A shared CSS subgrid follows
+Home uses a very faint layered landscape drawn through a square halftone mask
+(`terrain.svg`): 4-unit squares on a 9-unit pitch leave clear space between pixels.
+The authored landscape is decorative, not a view of live experiments. Theme tokens
+keep the field mist-gray in light mode and deep slate in dark mode; maximum pixel
+contrast stays low. One broad 32-second light sweep changes the pixels gently
+without moving the terrain. It uses CSS transform animation, with no frame loop
+or video. An intersection observer and page visibility pause hidden/offscreen
+motion; reduced motion hides the sweep and retains the still image. The heading
+uses the foreground token, without title tint or backdrop blur. The field ends at
+a stock full-width gray Separator behind the composer, three-fifths down its height.
+A shared CSS subgrid follows
 the actual composer row; no fixed pixel height or runtime measurement is needed.
 Heading, composer and all following content retain their original positions.
 Environment catalogue and experiment-idea illustrations remain unchanged.

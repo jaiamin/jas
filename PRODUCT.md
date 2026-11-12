@@ -31,9 +31,11 @@ subtle blue accent with a weaker hover state. Avoid redundant descriptive subtit
 Agent composer for questions or experiment design and four experiment ideas. Keep
 Home/Agent together above Workspace navigation; surface unfinished work and active
 runs conditionally, with full experiment/run lists in their existing destinations.
-Home uses a static blue-gray drafting field with faint sampling points, adapted
-to both themes. Its thin gray bottom rule crosses behind the composer at three-fifths
-of its height. The title has no tint or blur. Preserve the composer position and
+Home uses a very faint grayscale landscape formed from spaced square pixels,
+with a slow light sweep through the pixels. Theme-specific mist/slate tones keep
+it subdued; reduced motion uses the still landscape, and hidden/offscreen motion
+pauses. Its thin gray bottom rule crosses behind the composer at three-fifths of
+its height. The title has no tint or blur. Preserve the composer position and
 everything below it.
 Agent starts
 with a centered heading and plain composer, suggestions below, and a recent-chat

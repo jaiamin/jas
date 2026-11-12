@@ -1,31 +1,33 @@
 # JAS handoff
 
-## Home: quiet drafting background
+## Home: subtle square-pixel landscape
 
-Branch `feat/quiet-home-background` is based on CI-green `a016350d` from open PR #36.
-User rejected the first flat-white implementation and clarified the gray rule must
-cross behind the composer at three-fifths of its height. Final Home uses a static
-blue-gray drafting field with faint sampling points and theme-specific tokens.
-CSS subgrid aligns the field's bottom/rule with 60% of the actual composer row,
-including its responsive height. Heading/composer positions and all following
-content are unchanged; title tint/blur and the city animation are removed.
-Deleted the backdrop component, dissolve generator, mask, GIF/poster and their CSS;
-updated PRODUCT/DESIGN and replaced obsolete animation browser assertions.
+Branch `feat/quiet-home-background`, draft PR #37 stacked on open PR #36. User
+requested a very faint, spaced-square image animation matching their reference.
+Replaced the blue dot field with an authored layered terrain SVG (1,850 bytes),
+used as a square halftone mask. Mist-gray/slate theme tokens keep contrast low;
+a broad 32-second light sweep changes pixel visibility without moving the terrain.
+No new dependency, video, raster download or frame clock. Reduced motion keeps the
+still image; IntersectionObserver/page visibility pause offscreen/hidden animation.
+No title tint/blur. CSS subgrid preserves the gray rule behind the composer at 60%
+of its actual row height. Composer, heading and following content do not move.
+The obsolete city GIF/poster, dissolve generator/mask/component remain removed.
 
-Final revision: Home browser 15/15 with clean exit0, whole frontend lint (246 files),
-forced TypeScript and private build PASS. Full frontend units 168/168 (39 files)
-passed before the final visual adjustment; no new state or behavior was introduced.
-Native inspection covered light/dark, desktop/mobile. Evidence: `.tools/quiet-home/`.
-Initial selector/baseline authoring failures remain retained. Revision browser01
-printed all 15 passes but wrapper exited143; revision02 used the managed keyless
-server, passed15 and exited0 with complete teardown. Temporary instrumentation
-was removed. No paid calls or changes to the Agent workflow.
+Final pixel revision: Home browser 16/16, full frontend units 168/168 (39 files),
+whole frontend lint, forced TypeScript and private build PASS. Native review covered
+light/dark at desktop/mobile. The motion case verifies transform progress, still
+reduced-motion rendering, offscreen pause and resume. First pixel browser attempt
+retained 15 passes/1 test-authoring failure: it scrolled the window instead of the
+app scroll container. Corrected with real section navigation before the final pass.
+Earlier static-background attempts/failures retain their own source attribution.
+Regex-only design detection found no issues; it does not establish rendered contrast.
+Evidence: `.tools/quiet-home/*pixels*`. No provider calls or user-study retries.
 
-Final qualified assets are live on8080: `publish-8080-02/receipt.json` proves the same
-PID/DB inode, all rows/usage unchanged and served asset equality. Previous generated
-outputs remain local for rollback; no fallback artwork is shipped. Review tabs and
-private test servers are closed. Task branch is prepared for a draft PR against
-`feat/research-quality`; hosted CI remains a separate gate. No merge authorized.
+Qualified assets are live on 8080: `publish-8080-pixels-01/receipt.json` proves the same
+PID/DB inode, all rows/usage unchanged and served asset equality. Original generated
+outputs remain locally for rollback, not shipped. All owned preview tabs and private
+test servers are closed. Update PR #37 with this revision; hosted CI remains separate.
+No merge authorized.
 
 ## CI follow-up: planning activity animation
 
