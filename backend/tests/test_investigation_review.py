@@ -387,7 +387,7 @@ def test_independent_admitted_workflow_uses_actual_workers_and_null_utility(admi
     assert "unavailable" in lens["account"][0]["text"]
     assert client.get(f"/api/studies/{row['study_id']}/exposure").status_code == 200
     exported = client.get(f"/api/studies/{row['study_id']}/export").json()
-    assert exported["version"] == 18
+    assert exported["version"] == 19
     assert exported["revisions"][0]["design"]["environment_source"] == source
     before = len(sent)
     assert client.post(f"/api/runs/{run_id}/verify", json={}).json()["verified_turns"] == 2

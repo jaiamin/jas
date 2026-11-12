@@ -13,11 +13,31 @@ from .db import (
     Turn,
 )
 from .research import Research, event_dict
+from .shared_json import portable_json
 
 
-def export_study(research: Research, study_id: str) -> dict[str, object]:
+def export_study(research: Research, study_id: str, *, download: bool = False) -> dict[str, object]:
     with research.db.read_snapshot():
-        return _export_study(research, study_id)
+        payload = _export_study(research, study_id)
+    if not download:
+        return payload
+    study = payload["study"]
+    assert isinstance(study, dict)
+    return portable_json(
+        payload,
+        {
+            "id": study_id,
+            "title": study["design"]["title"],
+            "question": study["design"]["question"],
+            "scope": "Every revision and its recorded runs; not just the latest revision.",
+            "counts": {
+                name: len(value)
+                for name, value in payload.items()
+                if name in {"runs", "revisions", "requests", "analyses", "annotations"}
+                and isinstance(value, list)
+            },
+        },
+    )
 
 
 def _export_study(research: Research, study_id: str) -> dict[str, object]:
@@ -73,7 +93,8 @@ def _export_study(research: Research, study_id: str) -> dict[str, object]:
     initial = {run.id: research.evidence(run.id, 0) for run in runs}
     return {
         "format": "jas-study",
-        "version": 18,
+        "version": 19,
+        "research": research._findings(study_id),
         "extension_generations": [
             attempt
             for attempt in research.extensions.generations.list()

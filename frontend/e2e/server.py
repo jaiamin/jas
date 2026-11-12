@@ -361,7 +361,9 @@ if __name__ == "__main__":
         app = create_app(
             database_url=f"sqlite:///{workspace}/workspace.sqlite3",
             budget_usd=10,
-            static_dir=Path(__file__).resolve().parents[1] / "dist",
+            static_dir=Path(
+                os.getenv("JAS_TEST_STATIC_DIR", Path(__file__).resolve().parents[1] / "dist")
+            ),
             concurrent_runs=1,
         )
         if os.getenv("JAS_TEST_PARTICIPANTS") == "1":

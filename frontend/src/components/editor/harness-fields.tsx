@@ -76,18 +76,52 @@ export function HarnessFields({
             }
             options={[
               { value: "direct_action", label: "Direct action" },
+              ...(environment === "distributed_coordination"
+                ? [
+                    {
+                      value: "event_wait",
+                      label: "Direct action with event waiting",
+                    },
+                  ]
+                : []),
               { value: "tool_using", label: "Tool using" },
               { value: "scripted", label: "Scripted control" },
             ]}
           />
           <FieldDescription>
-            {value.kind === "direct_action"
-              ? "One request receives the current observation and proposes an action."
-              : value.kind === "scripted"
-                ? "Non-model control. No provider requests."
-                : "The participant chooses capabilities, reads and an action within these limits. Each inference is charged separately."}
+            {value.kind === "event_wait"
+              ? "Explicit policy change: repeat a model-chosen wait without inference until new input, a bounded wake-up, or the final round. Every turn still commits. Compare with ordinary direct action."
+              : value.kind === "direct_action"
+                ? "One request receives the current observation and proposes an action."
+                : value.kind === "scripted"
+                  ? "Non-model control. No provider requests."
+                  : "The participant chooses capabilities, reads and an action within these limits. Each inference is charged separately."}
           </FieldDescription>
         </Field>
+        {value.kind === "event_wait" && (
+          <Field>
+            <FieldLabel htmlFor={`wait-${id}`}>
+              Maximum repeated wait turns
+            </FieldLabel>
+            <Input
+              id={`wait-${id}`}
+              type="number"
+              min={1}
+              max={12}
+              value={value.max_wait_turns}
+              onChange={(event) =>
+                onChange({
+                  ...value,
+                  max_wait_turns: Number(event.target.value),
+                })
+              }
+            />
+            <FieldDescription>
+              Per participant, after a model-chosen wait. Messages, choices and
+              artifact changes wake it; clock and memory alone do not.
+            </FieldDescription>
+          </Field>
+        )}
         {value.kind === "scripted" && (
           <Field className="sm:col-span-full">
             <FieldLabel htmlFor={`reference-${id}`}>
@@ -107,6 +141,10 @@ export function HarnessFields({
                   value: "private_signal_v1",
                   label: "Own private signal · information",
                 },
+                {
+                  value: "local_value_v1",
+                  label: "First readable table, local maximum · coordination",
+                },
               ]}
               onValueChange={(policy) =>
                 onChange({
@@ -118,9 +156,12 @@ export function HarnessFields({
             <FieldDescription>
               Keep credits contributes zero. Half contribution uses half the
               legal maximum, rounded down. Own private signal chooses the
-              actor's observed signal. Controls read only that participant's
-              observation and legal options, send no communication and retain no
-              self-authored notes. The named world is required.
+              actor's observed signal. Local maximum reads the first permitted
+              immutable table and chooses its best alternative, breaking ties in
+              declared alternative order. It does not pool private tables.
+              Controls read only that participant's observation and legal
+              options, send no communication and retain no self-authored notes.
+              The named world is required.
             </FieldDescription>
           </Field>
         )}

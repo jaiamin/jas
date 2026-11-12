@@ -1,6 +1,7 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { useApi } from "@/lib/api";
 import { participantHarness } from "@/lib/design";
 import { catalog, design } from "@/test/fixtures";
 import { deferredResponse, renderWithQueries } from "@/test/queries";
@@ -396,4 +397,55 @@ test("workflow tool participants can select authorized artifact reads without un
     ]);
     expect(draft.conditions[0].harness.kind).toBe("tool_using");
   });
+});
+
+function SavedTitle() {
+  const query = useApi<{ design: { title: string } }>("/studies/existing");
+  return <h1>{query.data?.design.title}</h1>;
+}
+
+test("saving a revision replaces a recently cached experiment on return", async () => {
+  let title = "Original title";
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockImplementation((_path, options) => {
+      if (options?.method === "POST") {
+        title = JSON.parse(options.body).design.title;
+        return Promise.resolve(Response.json({ id: "existing" }));
+      }
+      return Promise.resolve(Response.json({ design: { title } }));
+    }),
+  );
+  const view = renderWithQueries(
+    <MemoryRouter initialEntries={["/new"]}>
+      <Routes>
+        <Route
+          path="/new"
+          element={
+            <DesignEditor
+              initial={design}
+              catalog={catalog}
+              studyId="existing"
+              planId={null}
+              draftPath="/new?study=existing"
+            />
+          }
+        />
+        <Route path="/studies/:id" element={<SavedTitle />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+  view.client.setQueryDefaults(["/studies/existing"], { staleTime: Infinity });
+  view.client.setQueryData(["/studies/existing"], { design: { title } });
+  fireEvent.change(screen.getByLabelText("Experiment name"), {
+    target: { value: "Updated revision" },
+  });
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Review" }), {
+    button: 0,
+    ctrlKey: false,
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Save new revision" }));
+  expect(
+    await screen.findByRole("heading", { name: "Updated revision", level: 1 }),
+  ).toBeVisible();
 });

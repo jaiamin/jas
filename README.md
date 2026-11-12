@@ -9,11 +9,15 @@ The Agent drafts reviewable protocols and answers questions about recorded runs.
   treatments, seeds and spending limits. Saving freezes an immutable revision.
 - **Run:** explicitly start model-controlled participants; inspect actions, messages,
   artifact versions and costs. Pause and resume without losing committed work.
-- **Understand:** compare matched conditions, investigate cutoff-scoped evidence,
-  export complete records and verify recorded consequences without new model calls.
+- **Understand:** declare executable outcomes, inspect evidence-linked findings and
+  missingness, compare matched conditions, and investigate cutoff-scoped evidence.
+  Findings and exact replay need no model calls; interpretation remains explicit.
 
 Reusable environments define rules separately from experiments. New executable mechanics
 require an explicit reviewed contract and independent admission.
+
+Share complete evidence as [self-contained JSON](docs/DEVELOPMENT.md#evidence-downloads),
+with repeated values stored once and a readable overview for external review.
 
 ```sh
 cp .env.example .env

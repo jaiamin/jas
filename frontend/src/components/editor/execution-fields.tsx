@@ -19,6 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { label } from "@/lib/format";
 import type { Catalog, Design } from "@/lib/types";
+import { ScenarioFields } from "./scenario-fields";
 
 export function ExecutionFields({
   design,
@@ -116,6 +117,7 @@ export function ExecutionFields({
         </FieldDescription>
       </Field>
       <Separator />
+      <ScenarioFields design={design} onChange={onChange} />
       <FieldSet>
         <FieldLegend>Measurements</FieldLegend>
         <FieldGroup className="grid grid-cols-1 gap-3 sm:grid-cols-2">

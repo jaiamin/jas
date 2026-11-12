@@ -2,7 +2,7 @@
 
 import copy
 from enum import StrEnum
-from functools import reduce
+from functools import lru_cache, reduce
 from operator import or_
 from typing import cast
 
@@ -120,21 +120,39 @@ class DistributedCoordination(ArtifactWorkspace):
         return observation
 
     def decision_schema(self, observation: Observation) -> type[Decision]:
-        Choice = StrEnum(
-            "Choice", {f"a{i}": a for i, a in enumerate(self.coordination.alternatives)}
+        return self._coordination_schema(
+            super().decision_schema(observation),
+            tuple(self.coordination.alternatives),
+            any(a["kind"] == "choose_alternative" for a in observation["legal_actions"]),
+            tuple(
+                next(
+                    (
+                        a["targets"]
+                        for a in observation["legal_actions"]
+                        if a["kind"] == "send_message"
+                    ),
+                    [],
+                )
+            ),
         )
+
+    @staticmethod
+    @lru_cache(maxsize=256)
+    def _coordination_schema(
+        base: type[Decision],
+        alternatives: tuple[str, ...],
+        can_choose: bool,
+        recipients: tuple[str, ...],
+    ) -> type[Decision]:
+        Choice = StrEnum("Choice", {f"a{i}": a for i, a in enumerate(alternatives)})
         choose = create_model(
             "PermittedAlternative", __base__=ChooseAlternative, alternative=(Choice, ...)
         )
-        base = super().decision_schema(observation)
         annotation = base.model_fields["action"].annotation
         assert annotation is not None
         variants: list[type] = [cast(type, annotation), WaitCoordination]
-        if any(a["kind"] == "choose_alternative" for a in observation["legal_actions"]):
+        if can_choose:
             variants.insert(1, choose)
-        recipients = next(
-            (a["targets"] for a in observation["legal_actions"] if a["kind"] == "send_message"), []
-        )
         if recipients:
             Recipient = StrEnum("Recipient", {f"a{i}": a for i, a in enumerate(recipients)})
             variants.append(

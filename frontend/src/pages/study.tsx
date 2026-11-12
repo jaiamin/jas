@@ -24,6 +24,7 @@ import {
 } from "@/components/icons";
 import { OptionSelect as Select } from "@/components/option-select";
 import { RecordSearch } from "@/components/record-list-heading";
+import { ResearchFindings } from "@/components/research-findings";
 import { RunTable } from "@/components/run-table";
 import {
   ErrorState,
@@ -53,7 +54,13 @@ export default function Study() {
   const location = useLocation();
   const [params, setParams] = useSearchParams();
   const path = `/studies/${id}${params.get("revision") ? `?revision=${params.get("revision")}` : ""}`;
-  const query = useApi<StudyDetail>(path, true);
+  const query = useApi<StudyDetail>(
+    path,
+    (data) =>
+      data?.runs.some((run) =>
+        ["running", "queued", "pausing"].includes(run.status),
+      ) ?? false,
+  );
   const client = useQueryClient();
   const control = useMutation({
     mutationFn: (action: string) => api(`/studies/${id}/control`, { action }),
@@ -113,7 +120,7 @@ export default function Study() {
           aria-label="Export experiment"
           asChild
         >
-          <a href={`/api/studies/${id}/export`}>
+          <a href={`/api/studies/${id}/export?download=true`}>
             <Download />
           </a>
         </Button>
@@ -183,6 +190,13 @@ export default function Study() {
         <TabsContent value="overview">
           <ExperimentCheck report={study.preflight} design={study.design} />
           <div className="flex min-w-0 flex-col gap-6">
+            {study.preflight.research && (
+              <ResearchFindings
+                studyId={study.id}
+                revision={study.revision}
+                active={active}
+              />
+            )}
             <section>
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
                 <div>

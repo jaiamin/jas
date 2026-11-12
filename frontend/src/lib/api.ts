@@ -64,11 +64,17 @@ export async function api<T>(
   }
   return response.json() as Promise<T>;
 }
-export function useApi<T>(path: string, poll = false) {
+export function useApi<T>(
+  path: string,
+  poll: boolean | ((data: T | undefined) => boolean) = false,
+) {
   return useQuery({
     queryKey: [path],
     queryFn: () => api<T>(path),
-    refetchInterval: poll ? 1500 : false,
+    refetchInterval: (query) =>
+      (typeof poll === "function" ? poll(query.state.data) : poll)
+        ? 1500
+        : false,
     refetchOnWindowFocus: true,
   });
 }

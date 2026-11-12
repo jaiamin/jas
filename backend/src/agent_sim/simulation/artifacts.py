@@ -2,7 +2,7 @@
 
 import copy
 from enum import StrEnum
-from functools import reduce
+from functools import lru_cache, reduce
 from operator import or_
 from typing import Any
 
@@ -207,11 +207,19 @@ class ArtifactWorkspace(World[ArtifactCheckpoint]):
         }
 
     def decision_schema(self, observation: Observation) -> type[Decision]:
+        return self._decision_schema(
+            tuple(
+                (option["kind"], tuple(option.get("targets", [])))
+                for option in observation["legal_actions"]
+            )
+        )
+
+    @staticmethod
+    @lru_cache(maxsize=256)
+    def _decision_schema(options: tuple[tuple[str, tuple[str, ...]], ...]) -> type[Decision]:
         variants: list[type] = [StopArtifact]
-        for option in observation["legal_actions"]:
-            kind = option["kind"]
+        for kind, keys in options:
             if kind in {"read_artifact", "write_artifact"}:
-                keys = option["targets"]
                 KeyType = StrEnum("KeyType", {f"a{i}": key for i, key in enumerate(keys)})
                 fields: dict[str, Any] = {"artifact": (KeyType, ...)}
                 base = ReadArtifact if kind == "read_artifact" else WriteArtifact

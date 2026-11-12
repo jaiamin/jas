@@ -35,6 +35,14 @@ matched-run interpretation, plus browser/restoration checks. Its
 [case manifest](platform-live-development.json), [finite oracle](platform-finite-contract.json)
 and [results](platform-live-results.json) retain failed attempts and source limitations.
 
+The [research-quality development declaration](research-quality-development.json)
+adds executable outcomes, two explicit matched value tasks, local-only controls,
+waiting-policy contrasts and interpretation checks. These are transparent development
+cases, not a held-out intelligence benchmark. Methods and source-specific results
+are recorded in the [implementation plan](../docs/research/RESEARCH_QUALITY_PLAN.md).
+Keep failed drafts/analyses and all ledger costs when retesting; never reset the
+aggregate spending allowance for a repaired source.
+
 ## Run without spending
 
 From the repository root, using the [normal development setup](../docs/DEVELOPMENT.md):

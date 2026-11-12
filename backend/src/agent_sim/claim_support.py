@@ -1,15 +1,17 @@
 """Read-only, explicit calculation assertions; generated wording is never certified."""
 
 import math
+from collections import Counter
 from typing import Literal
 
 from sqlalchemy import select
 
 from .comparisons import ComparisonRun, compare_runs
-from .db import Measurement, RecordedEvent, Turn, digest
+from .db import Measurement, ProviderCall, RecordedEvent, Turn, digest
 from .domain import Finding
 from .metrics import aggregate_metrics
 from .research import Research, event_dict
+from .research_quality import FORMULAS, outcome_value
 
 VERSION = 1
 LensKey = Literal["behavior", "communication"]
@@ -331,6 +333,59 @@ def capture_lens(
                     ],
                 }
             )
+        run, design, condition = research.configuration(rid)
+        if design.analysis_plan:
+            with research.db.session() as session:
+                ledger = session.execute(
+                    select(ProviderCall.status, ProviderCall.charged).where(
+                        ProviderCall.run_id == rid,
+                        ProviderCall.turn <= cutoff,
+                        ProviderCall.purpose.in_(
+                            ["decision", "participant_operation", "adjudication"]
+                        ),
+                    )
+                ).all()
+            usage = {
+                "requests": len(ledger),
+                "charged": sum(c for _, c in ledger),
+                "partial": any(s in {"pending", "unknown"} for s, _ in ledger),
+            }
+            fact["analysis_plan"] = design.analysis_plan.model_dump()
+            for outcome in design.analysis_plan.outcomes:
+                value, missing = outcome_value(
+                    outcome,
+                    design,
+                    condition,
+                    {
+                        "status": "complete" if recorded["completed_at_cutoff"] else "cutoff",
+                        "turn": cutoff,
+                        "seed": run.seed,
+                    },
+                    aggregate_metrics((m.key, m.value) for m in measurements),
+                    Counter(e.kind for e in events),
+                    usage,
+                )
+                calculations.append(
+                    {
+                        "id": f"run:{rid}:planned:{outcome.key}",
+                        "label": outcome.key,
+                        "scope": "captured_run",
+                        "value": value,
+                        "formula": FORMULAS[outcome.calculation],
+                        "inputs": {
+                            "outcome": outcome.model_dump(),
+                            "through_turn": cutoff,
+                            "usage": usage,
+                        },
+                        "sources": [fact["snapshot_source"]],
+                        "assumptions": [missing]
+                        if missing
+                        else [
+                            "Terminal-only planned calculation; "
+                            "numerical agreement does not certify prose."
+                        ],
+                    }
+                )
         for row in exposure[rid]["summary"]:
             calculations.append(
                 {

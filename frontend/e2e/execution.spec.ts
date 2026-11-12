@@ -43,6 +43,8 @@ test("run controls advance, start, pause and suppress completed actions", async 
   ).toBeEnabled();
   expect(actions).toEqual(["step", "start", "pause"]);
   run.summary.status = "complete";
+  // Idle runs refresh on navigation/focus rather than polling an external writer.
+  await page.reload();
   await expect(
     page.getByRole("button", { name: "Step", exact: true }),
   ).toHaveCount(0);

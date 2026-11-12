@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 import type { Catalog, StudyDetail } from "../src/lib/types.js";
-import { templateDesign } from "./helpers.js";
+import { expandEvidence, templateDesign } from "./helpers.js";
 
 for (const theme of ["light", "dark"]) {
   for (const width of [390, 1440]) {
@@ -101,14 +101,24 @@ for (const theme of ["light", "dark"]) {
       const download = await downloaded;
       const path = testInfo.outputPath("experiment.json");
       await download.saveAs(path);
-      const exported = JSON.parse(await readFile(path, "utf8"));
-      expect(exported.version).toBe(18);
+      expect(download.suggestedFilename()).toBe(`jas-${id}.json`);
+      const exported = expandEvidence(await readFile(path, "utf8"));
+      expect(exported.version).toBe(19);
       expect(exported.study.comparison).toEqual(before.comparison);
       expect(exported.study.effects).toEqual(before.effects);
       expect(exported.requests).toEqual([]);
       expect(exported.runs).toHaveLength(4);
       expect(exported.study.sha256).toBe(before.sha256);
       expect(exported.study.comparison.design_sha256).toBe(before.sha256);
+      await page.goto(`/runs/${before.runs[0].id}`);
+      const downloadingRun = page.waitForEvent("download");
+      await page
+        .getByRole("link", { name: "Export experiment evidence" })
+        .click();
+      const runFile = await downloadingRun;
+      const runPath = testInfo.outputPath("run-evidence.json");
+      await runFile.saveAs(runPath);
+      expect(expandEvidence(await readFile(runPath, "utf8"))).toEqual(exported);
       const revised = await request.post(`/api/studies/${id}/revisions`, {
         data: { design: { ...design, title: `${design.title} revised` } },
       });

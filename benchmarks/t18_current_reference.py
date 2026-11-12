@@ -480,14 +480,14 @@ def build_run(environment, seed, count, rounds, public=False):
 
 def freeze():
     value = {
-        "version": 7,
+        "version": 8,
         "split": "DEVELOPMENT",
         "historical_comparison": False,
         "authorship": (
             "Independent stdlib contract arithmetic before candidate outputs; no JAS imports."
         ),
         "limits": "Finite scripted correctness only; no live accuracy or generic competence.",
-        "contracts": {"database": 15, "export": 18, "library": 10},
+        "contracts": {"database": 15, "export": 19, "library": 10},
         "totals": {
             "runs": 5,
             "turns": 22,

@@ -61,12 +61,33 @@ def test_manual_design_step_evidence_and_export(client, design):
     assert client.get("/api/openapi.json").json()["info"]["title"] == "JAS"
     export = response.json()
     assert export["format"] == "jas-study"
-    assert export["version"] == 18
+    assert export["version"] == 19
     assert export["rule_versions"] == ["4.0.0"]
     assert all("initial_state_available" not in row for row in export["runs"])
     assert export["runs"][0]["evidence"][0]["number"] == 0
     assert export["runs"][0]["evidence"][1] == evidence
+    from conftest import analysis_prompt
+
+    usage = client.get("/api/settings").json()["usage"]
+    portable = client.get(f"/api/studies/{sid}/export?download=true")
+    assert portable.status_code == 200
+    assert portable.headers["content-type"] == "application/json"
+    assert portable.headers["content-disposition"] == response.headers["content-disposition"]
+    assert portable.json()["representation"] == "shared-values-v1"
+    restored = analysis_prompt(portable.text)
+    assert portable.json()["overview"]["title"] == design.title
+    for field in ("representation", "reading_guide", "overview", "reference_key", "shared_values"):
+        restored.pop(field)
+    assert restored == export
+    assert len(portable.content) < len(response.content)
+    assert client.get("/api/settings").json()["usage"] == usage
     assert client.post(f"/api/runs/{rid}/verify", json={}).json()["verified_turns"] == 1
+
+
+def test_portable_export_reports_missing_study_before_download(client):
+    response = client.get("/api/studies/missing/export?download=true")
+    assert response.status_code == 404
+    assert "content-disposition" not in response.headers
 
 
 def test_validation_and_origin_guard_do_not_spend(client, design):

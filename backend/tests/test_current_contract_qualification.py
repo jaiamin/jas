@@ -201,7 +201,7 @@ def test_fresh_current_contract_complete_public_workflow(
                 assert len(exposure["membership"]["requests"]) == cutoff
                 assert exposure["delivery"]["confirmed_requests"] == cutoff
             exported = client.get(f"/api/studies/{sid}/export").json()
-            assert exported["version"] == 18
+            assert exported["version"] == 19
             assert len(exported["activations"]) == len(exported["requests"]) == count
             assert len(exported["runs"][0]["evidence"]) == count + 1
             assert [microdollars(r["cost_usd"]) for r in exported["requests"]] == [35] * count

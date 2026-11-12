@@ -610,9 +610,27 @@ for (const theme of ["light", "dark"]) {
       row.output.summary,
     ]);
     await activity.click();
-    await page
-      .getByRole("button", { name: "Draft notes (before checks)", exact: true })
-      .click();
+    await expect(activity).toHaveAttribute("aria-expanded", "true");
+    // A stable child can still be clipped by its expanding ancestor.
+    await expect
+      .poll(() =>
+        page
+          .locator('[data-slot="trace-collapsible-content"]')
+          .evaluateAll(
+            (elements) =>
+              elements
+                .flatMap((element) => element.getAnimations())
+                .filter((animation) => animation.playState === "running")
+                .length,
+          ),
+      )
+      .toBe(0);
+    const draftNotes = page.getByRole("button", {
+      name: "Draft notes (before checks)",
+      exact: true,
+    });
+    await draftNotes.click();
+    await expect(draftNotes).toHaveAttribute("aria-expanded", "true");
     await expect(
       page.getByText(row.output.explanation, { exact: true }),
     ).toBeVisible();

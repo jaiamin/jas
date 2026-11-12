@@ -3,7 +3,7 @@
 import asyncio
 import hashlib
 import json
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from importlib.metadata import version
 from pathlib import Path
 from typing import Any, Literal, TypeVar, cast
@@ -11,7 +11,7 @@ from typing import Any, Literal, TypeVar, cast
 from pydantic import create_model
 from sqlalchemy import select, update
 
-from .db import ParticipantActivation, ParticipantOperation, RecordedEvent, Run, digest, now
+from .db import ParticipantActivation, ParticipantOperation, RecordedEvent, Run, Turn, digest, now
 from .domain import Decision, Design, Profile, ReadArtifact, Strict, Treatment
 from .exposure import available_inputs, input_bindings
 from .llm import LanguageModels, ProviderFailure
@@ -353,7 +353,7 @@ class Activation:
             model=self.model,
             prompt=prompt,
             instructions=instructions,
-            purpose="decision" if self.harness.kind == "direct_action" else "participant_operation",
+            purpose="participant_operation" if self.harness.kind == "tool_using" else "decision",
             study_id=self.run.study_id,
             run_id=self.run.id,
             activation_id=self.row.id,
@@ -412,7 +412,21 @@ class Activation:
                 )
                 self.append("decide", decision.model_dump(), None)
                 return decision
-            policy = DirectAction if self.harness.kind == "direct_action" else ToolUsing
+            if self.harness.kind == "event_wait":
+                waiting = event_wait(
+                    self.models,
+                    self.run.id,
+                    self.actor,
+                    self.run.turn + 1,
+                    cast(Observation, self.row.observation),
+                    self.harness.max_wait_turns,
+                )
+                if waiting is not None:
+                    decision, source_turn = waiting
+                    self.append("event_wait", {"source_turn": source_turn}, decision.model_dump())
+                    self.append("decide", decision.model_dump(), None)
+                    return decision
+            policy = ToolUsing if self.harness.kind == "tool_using" else DirectAction
             return await policy.decide(self, paused)
         except asyncio.CancelledError:
             self.finish("interrupted", "cancelled", "Request interrupted; usage may be unknown.")
@@ -443,11 +457,67 @@ class DirectAction:
         result = await activation.generate(
             activation.world.decision_schema(cast(Observation, activation.row.observation)),
             json.dumps(activation.row.observation),
-            action_instructions(activation.row.observation),
+            action_instructions(activation.row.observation)
+            + (
+                f"\nYour explicitly configured event-wait policy repeats a wait_coordination "
+                f"without inference for at most {activation.harness.max_wait_turns} of your "
+                "next turns, waking when current input changes or before the last round. "
+                "Clock, memory, own outbox and prior-action history alone do not wake it. "
+                "Each repeated wait still commits and advances World time normally."
+                if activation.harness.kind == "event_wait"
+                else ""
+            ),
         )
         decision = Decision.model_validate(result)
         activation.append("decide", decision.model_dump(), None)
         return decision
+
+
+def event_wait(
+    models: LanguageModels,
+    run_id: str,
+    actor: str,
+    turn: int,
+    observation: Observation,
+    maximum: int,
+) -> tuple[Decision, int] | None:
+    """Repeat only a model-chosen wait, preserving every World opportunity and receipt."""
+    if observation["round"] >= observation["total_rounds"]:
+        return None
+    ignored = {"round", "logical_time", "your_experiences", "your_note", "outbox", "public_history"}
+
+    def visible(value: Mapping) -> dict:
+        return {key: item for key, item in value.items() if key not in ignored}
+
+    with models.db.session() as session:
+        previous = session.execute(
+            select(Turn, ParticipantActivation.requests)
+            .join(
+                ParticipantActivation,
+                (ParticipantActivation.run_id == Turn.run_id)
+                & (ParticipantActivation.turn == Turn.number)
+                & (ParticipantActivation.status == "committed"),
+            )
+            .where(Turn.run_id == run_id, Turn.actor == actor, Turn.number < turn)
+            .order_by(Turn.number.desc())
+            .limit(maximum + 1)
+        ).all()
+    for index, (prior, requests) in enumerate(previous):
+        if prior.decision["action"]["kind"] != "wait_coordination" or visible(
+            prior.observation
+        ) != visible(observation):
+            return None
+        if requests:
+            if index >= maximum:
+                return None
+            return Decision.model_validate(
+                {
+                    **prior.decision,
+                    "rationale": "Declared event-wait policy; "
+                    f"repeat model wait from turn {prior.number}.",
+                }
+            ), prior.number
+    return None
 
 
 class ToolUsing:

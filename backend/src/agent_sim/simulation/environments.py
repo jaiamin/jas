@@ -707,10 +707,14 @@ def get_environment(key: str) -> EnvironmentDefinition:
         from .finite import ReviewedFinite
 
         return EnvironmentDefinition(
-            "reviewed_finite", "Reviewed finite extension",
+            "reviewed_finite",
+            "Reviewed finite extension",
             "Requires an external exhaustive finite contract and independently admitted WAT; "
             "not natural-language understanding or support for arbitrary rich worlds.",
-            ReviewedFinite, "finite_success", ("finite", "memory"), ("finite_success",),
+            ReviewedFinite,
+            "finite_success",
+            ("finite", "memory"),
+            ("finite_success",),
         )
     if key == "sealed_relay":
         from .extension import SealedRelay
@@ -741,7 +745,9 @@ MEASURE_DESCRIPTIONS["finite_success"] = (
 def create_world(
     design: Design, parameters: Parameters, seed: int, state: dict | None = None, *, runner=None
 ) -> World:
-    world = get_environment(design.environment).world(design, parameters, seed, state)
+    world = get_environment(design.environment).world(
+        design, design.scenario_parameters(parameters, seed), seed, state
+    )
     from .extension import SealedRelay
 
     if isinstance(world, SealedRelay):

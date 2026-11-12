@@ -61,13 +61,44 @@ its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
 `data/jas.sqlite3`; Compose stores it in `jas-data`.
-The sole current contract is database15, `jas-study` export18,
+The sole current contract is database15, `jas-study` export19,
 `jas-environment-v10`/definition2, research-operation2 and generation-event-v2.
 Incompatible databases, library records and rule checkpoints are rejected on
 inspection, export, execution and replay. There are no migrations, compatibility
 readers or automatic resets. Start with a fresh database when changing contracts;
 removing existing data requires an explicit user decision.
 Capture1/comparison1/tool2.0/direct1.0 remain current.
+
+### Evidence downloads
+
+Export buttons save a plain `jas-<experiment-id>.json` file. The `shared-values-v1`
+representation stores repeated observations, rules, schemas and other identical
+values once. Every unique value remains in the file: checkpoints, provider traces,
+integer ledgers, failures, analyses and provenance are preserved. No archive utility,
+network lookup or JAS installation is required to inspect it.
+
+Start with the readable `overview` and `reading_guide`. `reference_key` identifies a
+reserved property absent from the source evidence. An object containing only that
+property references `shared_values[its value]`; resolve recursively. Other objects,
+including JSON Schema `$ref` fields, remain literal data. Removing `representation`,
+`reading_guide`, `overview`, `reference_key` and `shared_values` after resolution
+recovers the exact full export19 content. These references change representation,
+not evidence meaning or persisted versions.
+
+`GET /api/studies/{id}/export?download=true` returns the portable representation;
+`GET /api/studies/{id}/export` returns expanded JSON for API callers. Both capture
+one database snapshot without provider calls. File size still grows with unique
+evidence. For AI review, inspect the overview and relevant sections; a complete
+experiment need not fit one model context. Exports may contain private participant
+observations and recorded prompts, so share them deliberately.
+
+Study exports are evidence bundles, not importable workspaces: there is no study-import
+endpoint. Reusing saved environment definitions is a separate workflow.
+
+The Agent's **Download frozen evidence** action uses this same plain JSON representation
+at `/api/analyses/{id}?download=true`. It preserves that analysis record and its captured
+cutoffs even after a run advances. The ordinary analysis endpoint remains expanded JSON
+for the app; downloading never reruns analysis or contacts a model.
 
 T12's keyless browser witnesses use the opt-in DEVELOPMENT-only workflow provider,
 fresh owned data and the already installed headless shell. Set `JAS_TEST_PORT`,

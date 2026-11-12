@@ -110,7 +110,7 @@ def seed_mean(values: dict[int, list[float]]) -> float | None:
     return statistics.mean(statistics.mean(v) for v in values.values()) if values else None
 
 
-def sensitivity(metric: str, arms: list[list[dict]], design: Design) -> dict:
+def sensitivity(metric: str, arms: list[list[dict]], design: Design, endpoint: str) -> dict:
     """Bound the *planned* seed-weighted contrast; never create missing records."""
     undefined = any(
         cell["status"] == "complete" and metric not in cell["metrics"]
@@ -120,7 +120,7 @@ def sensitivity(metric: str, arms: list[list[dict]], design: Design) -> dict:
     observed = all(
         cell["status"] == "complete" and metric in cell["metrics"] for arm in arms for cell in arm
     )
-    if not observed and (metric not in BOUNDED_ENDPOINTS or undefined):
+    if not observed and (endpoint not in BOUNDED_ENDPOINTS or undefined):
         return {
             "status": "not_identified",
             "bounds": None,
@@ -159,7 +159,10 @@ def sensitivity(metric: str, arms: list[list[dict]], design: Design) -> dict:
     }
 
 
-def compare_runs(runs: list[ComparisonRun], design: Design) -> dict:
+def compare_runs(
+    runs: list[ComparisonRun], design: Design, *, metric_sources: dict[str, str] | None = None
+) -> dict:
+    metric_sources = metric_sources or {}
     records = {(r.condition_key, r.seed, r.repetition): r for r in runs}
     cells, by_condition = [], {}
     for condition in design.conditions:
@@ -271,7 +274,9 @@ def compare_runs(runs: list[ComparisonRun], design: Design) -> dict:
                 "method": "Observed terminal means; repetitions averaged within seed",
                 "uncertainty_reason": UNCERTAINTY,
                 "selection_assumption": SELECTION,
-                "sensitivity": sensitivity(metric, [group], design),
+                "sensitivity": sensitivity(
+                    metric, [group], design, metric_sources.get(metric, metric)
+                ),
             }
             results.append(result)
             if condition.key == baseline.key:
@@ -316,7 +321,9 @@ def compare_runs(runs: list[ComparisonRun], design: Design) -> dict:
                     "method": "Observed matched differences; repetitions averaged within seed",
                     "uncertainty_reason": UNCERTAINTY,
                     "selection_assumption": SELECTION,
-                    "sensitivity": sensitivity(metric, [control, group], design),
+                    "sensitivity": sensitivity(
+                        metric, [control, group], design, metric_sources.get(metric, metric)
+                    ),
                 }
             )
     return {

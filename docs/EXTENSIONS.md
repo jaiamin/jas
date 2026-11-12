@@ -149,7 +149,7 @@ must be observed in the running process; CLI availability is not proof.
 Reviews live beside the workspace database in `<database>.extensions/`, like
 custom environment setups. They use `jas-extension-review-v1`, validate their
 candidate identity/hash on read, and publish only complete files. The current
-contract is DB15/export18/library10/definition2/research-operation2 with
+contract is DB15/export19/library10/definition2/research-operation2 with
 generation-event-v2, including investigation ownership, institutional workflow,
 finite packages, generation allowances and declared adjudication.
 Capture1/comparison1/tool2.0/direct1.0 and installed World rules retain their meanings.

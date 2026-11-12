@@ -21,8 +21,21 @@ export function participantHarness(
       kind: "scripted",
       version: "1.0.0",
       policy:
-        environment === "information" ? "private_signal_v1" : "commons_keep_v1",
+        environment === "information"
+          ? "private_signal_v1"
+          : environment === "distributed_coordination"
+            ? "local_value_v1"
+            : "commons_keep_v1",
       max_requests: 0,
+      max_tool_operations: 0,
+      tools: [],
+    };
+  if (kind === "event_wait")
+    return {
+      kind,
+      version: "1.0.0",
+      max_wait_turns: 4,
+      max_requests: 1,
       max_tool_operations: 0,
       tools: [],
     };

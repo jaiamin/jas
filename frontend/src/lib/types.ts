@@ -334,6 +334,11 @@ export interface DirectActionHarness extends HarnessLimits {
   kind: "direct_action";
   version: "1.0.0";
 }
+export interface EventWaitHarness extends HarnessLimits {
+  kind: "event_wait";
+  version: "1.0.0";
+  max_wait_turns: number;
+}
 export interface ToolUsingHarness extends HarnessLimits {
   kind: "tool_using";
   version: "2.0.0";
@@ -344,10 +349,15 @@ export interface ToolUsingHarness extends HarnessLimits {
 export interface ScriptedHarness extends HarnessLimits {
   kind: "scripted";
   version: "1.0.0";
-  policy: "commons_keep_v1" | "commons_half_v1" | "private_signal_v1";
+  policy:
+    | "commons_keep_v1"
+    | "commons_half_v1"
+    | "private_signal_v1"
+    | "local_value_v1";
 }
 export type ParticipantHarness =
   | DirectActionHarness
+  | EventWaitHarness
   | ToolUsingHarness
   | ScriptedHarness;
 export interface Treatment {
@@ -384,6 +394,96 @@ export interface Design {
   response_tokens: number;
   limitations: string[];
   measures: string[];
+  analysis_plan?: AnalysisPlan | null;
+  scenarios?: CoordinationScenario[];
+}
+export interface PlannedOutcome {
+  key: string;
+  calculation:
+    | "metric"
+    | "turn_count"
+    | "request_count"
+    | "cost_usd"
+    | "wait_count"
+    | "message_count"
+    | "coordination_regret"
+    | "manual";
+  metric: string | null;
+  manual_reason: string;
+}
+export interface AnalysisPlan {
+  version: 1;
+  intent: "exploratory" | "confirmatory";
+  outcomes: PlannedOutcome[];
+  target: string;
+  sampling_unit: "trajectory" | "scenario";
+  allocation: string;
+  exclusions: "retain_all";
+  uncertainty: "descriptive";
+}
+export interface CoordinationScenario {
+  version: 1;
+  seed: number;
+  name: string;
+  values: Record<string, Record<string, number>>;
+}
+export interface ScientificReview {
+  version: 1;
+  scientific_validity: "not_certified";
+  issues: { code: string; message: string; next_test: string }[];
+  variation: {
+    condition_key: string;
+    seeds: number;
+    distinct_initial_states: number;
+    initial_state_sha256: Record<string, string>;
+    payoff_cases?: {
+      seed: number;
+      local_value: number;
+      joint_optimum: number;
+    }[];
+  }[];
+  limits: string;
+}
+export interface ResearchFindings {
+  observations: { outcome: string; runs: number; text: string }[];
+  version: 1;
+  revision: number;
+  design_sha256: string;
+  plan_status: "declared" | "not_declared";
+  plan: AnalysisPlan | null;
+  complete: number;
+  planned: number;
+  status: "complete" | "incomplete";
+  summary: string;
+  outcomes: {
+    key: string;
+    calculation: string;
+    status: "manual" | "computed";
+    formula: string;
+    manual_reason: string;
+  }[];
+  results: ComparisonReport["results"];
+  effects: ComparisonReport["effects"];
+  evidence: {
+    outcome: string;
+    run_id: string;
+    value: number | null;
+    missing_reason: string | null;
+    through_turn: number;
+    source: string;
+  }[];
+  effort: {
+    condition_key: string;
+    condition: string;
+    requests: number;
+    cost_usd: number;
+    partial: boolean;
+    committed_turns: number;
+    waits: number;
+  }[];
+  review: ScientificReview;
+  next_tests: string[];
+  interpretation: string;
 }
 export interface Usage {
   requests: number;
@@ -407,6 +507,13 @@ export interface StudySummary {
 }
 export interface RunSummary {
   id: string;
+  completion?: {
+    reason: string;
+    actual_turns: number;
+    maximum_turns: number;
+    success: boolean | null;
+    interpretation: string;
+  };
   study_id: string;
   study_title: string;
   revision: number;
@@ -555,6 +662,7 @@ export interface QuestionRequirement {
   explanation: string;
 }
 export interface ExperimentPreflight {
+  research?: ScientificReview;
   status: "blocked" | "review" | "checked";
   issues: { code: string; severity: "error" | "warning"; message: string }[];
   comparisons: {

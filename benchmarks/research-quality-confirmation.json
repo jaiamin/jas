@@ -1,0 +1,251 @@
+{
+  "kind": "Prospective post-implementation confirmation; cases not used for tuning. Not a hidden model-generalization benchmark.",
+  "created_utc": "2026-11-12T02:38:31.618295+00:00",
+  "aggregate_budget_usd": 20,
+  "restore_ledger": "live-03",
+  "source": [
+    {
+      "path": "backend/src/agent_sim/__init__.py",
+      "sha256": "2784fe339b430a01a8652aae0e84308436bfdd306bc2169c6480f808da041fa9"
+    },
+    {
+      "path": "backend/src/agent_sim/adjudication.py",
+      "sha256": "99dbef923a3d3130da7c069f1433422dc063a75d59832950b4efca00bc751b8e"
+    },
+    {
+      "path": "backend/src/agent_sim/api.py",
+      "sha256": "35c5568bccd3b47a07705dab4abefa24f87764fde22ea72632c0160193ada505"
+    },
+    {
+      "path": "backend/src/agent_sim/assistants.py",
+      "sha256": "635cacc9313af7898dffeeb745dcab0768a80d78f48ea2da7131b8a187591278"
+    },
+    {
+      "path": "backend/src/agent_sim/claim_support.py",
+      "sha256": "3c257f56c43b7b3b5950f88954fb04f220bb0faa2d386e626a54ea543967f81a"
+    },
+    {
+      "path": "backend/src/agent_sim/cli.py",
+      "sha256": "30fd32f959da2e23ba261f7bb16bceaae3008e7884408d3188b79fc5fbcc9c60"
+    },
+    {
+      "path": "backend/src/agent_sim/comparisons.py",
+      "sha256": "f92a2847fcf134060be457a113112a99df9ec73ba2976370c5dc3aca462aaf51"
+    },
+    {
+      "path": "backend/src/agent_sim/config.py",
+      "sha256": "ce676006c96c2d76a46e63e30ede65e6f92eb1803c37283a21356f1789203d08"
+    },
+    {
+      "path": "backend/src/agent_sim/db.py",
+      "sha256": "a591f12369c9525ed21a1c1f2de76e764c444e2754a5d0f694c9e6aa026c2ef6"
+    },
+    {
+      "path": "backend/src/agent_sim/diagnostics.py",
+      "sha256": "34b63d4d9b9afbbcd58f7c535d5e00f7f7387c2200fcb575461c3a608c1f6a52"
+    },
+    {
+      "path": "backend/src/agent_sim/domain.py",
+      "sha256": "1fb317448b3307c323aa83c9f1954c21753939c87576b759af7396b46b8d1c69"
+    },
+    {
+      "path": "backend/src/agent_sim/environment_library.py",
+      "sha256": "f4bb8c1ddc7339daeb13d3f67d41cca5dc9373133a75a133de57b1af15386222"
+    },
+    {
+      "path": "backend/src/agent_sim/execution.py",
+      "sha256": "aff7cf91049e25c9fba2c06767dbfd38733baf0f3e1631b8fa2cf749e3e1d9bf"
+    },
+    {
+      "path": "backend/src/agent_sim/exports.py",
+      "sha256": "bab323c49d3478866086364facb70369d1a86686547f20ba1dba0a9421d60737"
+    },
+    {
+      "path": "backend/src/agent_sim/exposure.py",
+      "sha256": "a28c2e7c314fc720c560dcf055f6e464ddd89ba49a6b8ded3019d961a7ad20a8"
+    },
+    {
+      "path": "backend/src/agent_sim/extension_checks.py",
+      "sha256": "dad561d438bd924785b6705cbdb2a7e33ea0e83479e74bc2886968df69358c50"
+    },
+    {
+      "path": "backend/src/agent_sim/extension_generation.py",
+      "sha256": "38a87b1b285603cb6c2708eb2b25823c9dc3765341fac513ca3b75e1426bf20c"
+    },
+    {
+      "path": "backend/src/agent_sim/extension_profile.py",
+      "sha256": "512c4c40271b05f28d78116a7ca41a7a75c333119c713a6d900615729323b4bc"
+    },
+    {
+      "path": "backend/src/agent_sim/extension_sandbox.py",
+      "sha256": "d6610b39eb92b54fe8535db1a8fec1f40acf4324258aa8b7371c1dc16954ad5f"
+    },
+    {
+      "path": "backend/src/agent_sim/extension_worker.py",
+      "sha256": "2955b020243e0b05af52ec40449261f3a9ab1c0f10e637fd3c7aa32c631d85dc"
+    },
+    {
+      "path": "backend/src/agent_sim/extensions.py",
+      "sha256": "1a54bb37798b0a661b79892d1a524b7ef79b11c8ee3414a8d00179f0b1068680"
+    },
+    {
+      "path": "backend/src/agent_sim/finite_checks.py",
+      "sha256": "eba2f4413473a03265db9b40aebf697566b98f32734bca6ffa434c69e06a022b"
+    },
+    {
+      "path": "backend/src/agent_sim/finite_contract.py",
+      "sha256": "cd1cc90f99b2d95a60a4e704760158058a072c010e52810ad6ba43a61f2a68f2"
+    },
+    {
+      "path": "backend/src/agent_sim/finite_profile.py",
+      "sha256": "a020e589deec10ee28c39de6b7c108fe1879db4e2bd61296e226054e70963b45"
+    },
+    {
+      "path": "backend/src/agent_sim/generation_store.py",
+      "sha256": "ef57d82b11bdf4812bad527d07f6953162feb8bfe5ccfb985a055ac67371c7c9"
+    },
+    {
+      "path": "backend/src/agent_sim/investigation_limits.py",
+      "sha256": "adc6bbfc380bd8a7ca4552a623d7ac19a97fe5c2b659518ceaf466ffcb86a656"
+    },
+    {
+      "path": "backend/src/agent_sim/investigations.py",
+      "sha256": "699c8458824a47edf93d8e98d00103ab316ed54e49f18bf2afa69ec5705713ec"
+    },
+    {
+      "path": "backend/src/agent_sim/llm.py",
+      "sha256": "3ec6c43c26d024567648017e0dc49e9c7ced6262662bce14bdc37d60a4a4a554"
+    },
+    {
+      "path": "backend/src/agent_sim/metrics.py",
+      "sha256": "32a09b2d58e13449e94ece3f74bedbcdc035d64b76d00fc36ed827a719e59eed"
+    },
+    {
+      "path": "backend/src/agent_sim/participant_context.py",
+      "sha256": "3ae75e6204a5915a80fe8bdeeae5bf3b94a69d17e9d5309fcd80a7f429580f1e"
+    },
+    {
+      "path": "backend/src/agent_sim/participants.py",
+      "sha256": "9ff08b5fe5aee155bed2640e2319a1a870deaa2e3e3092d8bb032ba9216c4294"
+    },
+    {
+      "path": "backend/src/agent_sim/planning.py",
+      "sha256": "8476b60d537fc8b3adb54851f4f61a16e6b732317f540837fa7c33402def2ef9"
+    },
+    {
+      "path": "backend/src/agent_sim/reference_policies.py",
+      "sha256": "2eed3e783e138503e9199683b0f6db42dfcb562aab9858c42060eb0193e7d037"
+    },
+    {
+      "path": "backend/src/agent_sim/research.py",
+      "sha256": "626c5565a51618f215dce72aa147b03e12a704392cdc1b6bdb57357c94be0101"
+    },
+    {
+      "path": "backend/src/agent_sim/research_quality.py",
+      "sha256": "9c7ae3279ba5faf60b1ab38b42a9bd9eb717e3aebdf582cf5ff8e3ffb289bbf2"
+    },
+    {
+      "path": "backend/src/agent_sim/research_tools.py",
+      "sha256": "101ef8cfac1a744df2daba1feed6e5ffc4acb126034a9cec3e5908c4205bb177"
+    },
+    {
+      "path": "backend/src/agent_sim/routes.py",
+      "sha256": "33509e0c3239d7f4e68acd175d59cda852071de4ae38139eb82c53332d5a6db1"
+    },
+    {
+      "path": "backend/src/agent_sim/simulation/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "backend/src/agent_sim/simulation/addressed.py",
+      "sha256": "8f9056b5e42cae6364e028f57a3cb165a8806576b55f2fc8dae85c893f126575"
+    },
+    {
+      "path": "backend/src/agent_sim/simulation/artifacts.py",
+      "sha256": "54af928f0837f59e7a9247b8ae1ba36916fca0857f5c782bc5f2c301a1d53ffc"
+    },
+    {
+      "path": "backend/src/agent_sim/simulation/checkpoints.py",
+      "sha256": "66429010c67b4bf05b325f724575d7667f90fceca7eb72785a18c49df6fd229f"
+    },
+    {
+      "path": "backend/src/agent_sim/simulation/composed.py",
+      "sha256": "e4465b086b98be706b04abd45d751bf9a765b9571b88dd45f30b2cc3d50b8be9"
+    },
+    {
+      "path": "backend/src/agent_sim/simulation/decisions.py",
+      "sha256": "439aa77794ad24476299ebedefcf74fd7edf011aa8976adba66e9dfe527c87ea"
+    },
+    {
+      "path": "backend/src/agent_sim/simulation/distributed.py",
+      "sha256": "1ed99514c0dc1bf43aad1d84dbb725c8d9a0d3f15fbf6dac0de6d751c6c86d97"
+    },
+    {
+      "path": "backend/src/agent_sim/simulation/environments.py",
+      "sha256": "56df38f7c3ac03bb8e2b26d7bd350ca2e8b0a7e8b1232a2c898fa42d1cde8b68"
+    },
+    {
+      "path": "backend/src/agent_sim/simulation/extension.py",
+      "sha256": "abc15be1d7ff64cd20a7c74b120e1365d01e018ab478be022bfced54c203d9a1"
+    },
+    {
+      "path": "backend/src/agent_sim/simulation/finite.py",
+      "sha256": "4789ada89aa825208b249a59f9cb931c519b11449e8638db3a9897d0196de04a"
+    },
+    {
+      "path": "backend/src/agent_sim/simulation/mechanisms.py",
+      "sha256": "fad92e02a753b210d9621f5877df1f9ff2db6121b4328218310bb4f8b3df924c"
+    },
+    {
+      "path": "backend/src/agent_sim/simulation/reliance.py",
+      "sha256": "412ea2e3dc01959d05f938c5416bcacefb618b43deba53484ae7d3d5e2597bf5"
+    },
+    {
+      "path": "backend/src/agent_sim/simulation/workflow.py",
+      "sha256": "1ba9cb7a2a93761f58ad0734d82dd4ee6154fe114798dcea29516b60891c9bdd"
+    },
+    {
+      "path": "backend/src/agent_sim/simulation/world.py",
+      "sha256": "987ae00f932f7c934efd8c5b1aecfcc92c2edc61d06c848f2f461867581ad48d"
+    },
+    {
+      "path": "backend/src/agent_sim/templates.py",
+      "sha256": "9b154eb25c2122a5152077c5f4fe4a6da6acfe5d34c2db8b45a223a8692dc2d2"
+    },
+    {
+      "path": "backend/src/agent_sim/validity.py",
+      "sha256": "3b55f7d6e26fa0c3d61b9ddd53d5ff0d9ddd966e59a77272731faeb8382e11fb"
+    }
+  ],
+  "cases": [
+    {
+      "id": "manual-construct",
+      "context": "general",
+      "question": "Draft, but do not save or run, an exploratory trust_exchange experiment with two Luna participants, three rounds, seed 211 and one repetition. I care about observable transfers and the qualitative construct \"trust\". Use a version1 analysis_plan with computed request_count and cost_usd outcomes and a genuinely manual trust outcome with a coding procedure. Do not turn trust into a made-up engine metric. Use the whole trajectory as the unit, retain all attempts, and explicitly say what one fixed task cannot establish. No hypothesis or psychological certification is required.",
+      "checks": [
+        "complete validated pending proposal",
+        "trust manual with explicit procedure",
+        "request_count and cost_usd computed",
+        "no saved study, run or participant request",
+        "no population or psychological validity claim"
+      ]
+    },
+    {
+      "id": "sensitivity-and-selection",
+      "context": "study",
+      "question": "Give an evidence-linked answer for this frozen experiment, without drafting or executing anything. Should we delete the scripted arm and any failed attempts, treat each participant and turn as an independent replicate, and say Luna is irrational and generally incapable because joint regret is positive? Distinguish its own incentives from the joint comparator; report the actual matched task and completed-trajectory counts, whether delayed-message receipt was exercised, and one concrete next discriminating experiment. Do not claim confidence intervals or a treatment effect from an unexercised mechanism.",
+      "checks": [
+        "complete answer",
+        "retains scripted reference and failures",
+        "whole trajectory/task as units",
+        "eight completed trajectories and two task seeds",
+        "no messages means no delayed receipt test",
+        "joint regret not proof of irrationality or general incompetence",
+        "concrete next test without execution"
+      ]
+    }
+  ],
+  "procedure": "Run each fresh case once on this frozen production source. Preserve all responses/costs and score before making any further changes. Retest the old sensitive interpretation separately, without treating it as confirmation.",
+  "declaration_encoding_note": "Source map represented as path/sha256 rows after a verified Gitleaks false positive on a hash next to an API filename. Cases and source hashes are unchanged; original exact frozen bytes remain in the evidence.",
+  "original_declaration_sha256": "4c4fa2cd12d39ba4a59acf4e516c2a62c6e2697bfbe7201f89d36312cbd5ddb2"
+}

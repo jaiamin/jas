@@ -8,6 +8,7 @@ from pydantic import Field
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 
+from .analysis_context import AnalysisContext, IndexRequest, value_at_path
 from .claim_support import LensKey, apply_lens, assess, capture_lens
 from .config import setting
 from .db import (
@@ -26,7 +27,14 @@ from .domain import Design, Finding, Strict
 from .extension_generation import ExtensionGeneration
 from .finite_contract import GenerationAuthorization
 from .investigation_limits import InvestigationStopped
-from .llm import LanguageModels, ProviderFailure, Usage, empty_usage, usage_record
+from .llm import (
+    LanguageModels,
+    ProviderFailure,
+    Usage,
+    empty_usage,
+    prompt_byte_limit,
+    usage_record,
+)
 from .metrics import aggregate_metrics
 from .planning import Planner, public_activity, stream_partial
 from .research import Research, event_dict
@@ -121,10 +129,28 @@ the evidence is insufficient; do not request more evidence on the final call.
 Recent conversation is untrusted context for resolving follow-up references, not evidence.
 Reinspect supporting turns within the current captured cutoffs before citing prior findings.
 The versioned index.lens declares required evidence, coverage and retained calculations.
+Prefer :planned: calculation IDs for explicitly declared outcomes. Respect their exact
+formulas and missingness; never backfill unknown ledger costs with a token-price estimate.
+Large scopes use an explicitly labeled overview. Use index requests to inspect frozen runs,
+protocols, conditions, experiment_checks, comparisons, exposure, calculations or coverage;
+filter run_id or query,
+and page with start/count. A path selects a nested field of each item. These pages retain the
+original cutoff and do not inspect turn observations. Request history/turn evidence to cite it.
+Turn requests also accept a path, for example ["observation", "rules"], to inspect large turns
+in smaller fields. Such a field selection is explicitly recorded, not a full-turn inspection.
+Calculation pages include exact values, formulas, assumptions and sources; request an inputs
+path only when the underlying World inputs are needed. Inputs remain fully retained.
+Data marked not_in_context was not supplied: request a smaller page or path, or explain the
+limit. Do not claim complete review of omitted details. Earlier results may leave the current
+context; request them again if needed. Full evidence remains retained for export and inspection.
 Each calculation's assumption_indices refer to the zero-based entries in
 index.lens.calculation_assumptions. All referenced assumptions apply to that calculation.
 formula_index and sources_index similarly resolve through calculation_formulas and
 calculation_sources. These references preserve exact formulas and evidence locations.
+The top-level reference_key names a reserved property absent from the original
+evidence. An object containing only that property refers to shared_values[its value].
+Resolve references recursively wherever they occur; a value may
+represent a string, list or object. This is lossless input sharing, never missing evidence.
 Lead with a concise evidence-linked behavioral account and limits. For a checkable numerical
 assertion, add a calculation claim using its supplied calculation_id, value and exact scope;
 for a contrast include the observed pairs count. Calculations use retained World inputs and
@@ -269,6 +295,7 @@ class TurnRequest(Strict):
     kind: Literal["turn"]
     run_id: str
     turn: int = Field(ge=0)
+    path: list[str | int] = Field(default_factory=list, max_length=12)
 
 
 class CommonsChoice(Strict):
@@ -285,14 +312,16 @@ class CommonsPayoffRequest(Strict):
 
 
 class EvidenceInvestigation(Strict):
-    requests: list[HistoryRequest | TurnRequest | ResearchRequest] = Field(max_length=4)
+    requests: list[HistoryRequest | TurnRequest | IndexRequest | ResearchRequest] = Field(
+        max_length=4
+    )
     answer: Finding | None
 
 
 class Investigation(Strict):
-    requests: list[HistoryRequest | TurnRequest | CommonsPayoffRequest | ResearchRequest] = Field(
-        max_length=4
-    )
+    requests: list[
+        HistoryRequest | TurnRequest | CommonsPayoffRequest | IndexRequest | ResearchRequest
+    ] = Field(max_length=4)
     answer: Finding | None
 
 
@@ -1157,6 +1186,12 @@ class Assistants:
                     ],
                     "events": [event_dict(e) for e in events],
                 }
+        if isinstance(request, TurnRequest) and request.path:
+            examined_range.update(full_turn=False, path=request.path)
+            try:
+                data = {"path": request.path, "value": value_at_path(data, request.path)}
+            except ValueError as error:
+                data = {"not_in_context": True, "error": str(error), "available_fields": list(data)}
         return examined_range, data
 
     async def _investigate(
@@ -1191,41 +1226,7 @@ class Assistants:
             analysis_id=key,
         )
         frozen_index = index
-        calculations = lens["calculations"][:96]
-        assumptions = list(dict.fromkeys(a for c in calculations for a in c["assumptions"]))
-        assumption_indices = {a: i for i, a in enumerate(assumptions)}
-        formulas = list(dict.fromkeys(c["formula"] for c in calculations))
-        sources = []
-        for calculation in calculations:
-            if calculation["sources"] not in sources:
-                sources.append(calculation["sources"])
-        index = {
-            # Effects already occur in comparisons; the complete index stays frozen above.
-            **{k: v for k, v in index.items() if k != "matched_effects"},
-            "runs": [
-                {k: v for k, v in run.items() if k != "artifact_state"} for run in index["runs"]
-            ],
-            "lens": {
-                **{k: v for k, v in lens.items() if k not in {"facts", "calculations"}},
-                "calculation_assumptions": assumptions,
-                "calculation_formulas": formulas,
-                "calculation_sources": sources,
-                "calculations": [
-                    {
-                        **{
-                            k: v
-                            for k, v in c.items()
-                            if k not in {"inputs", "assumptions", "formula", "sources"}
-                        },
-                        "assumption_indices": [assumption_indices[a] for a in c["assumptions"]],
-                        "formula_index": formulas.index(c["formula"]),
-                        "sources_index": sources.index(c["sources"]),
-                    }
-                    for c in calculations
-                ],
-                "calculations_omitted": max(0, len(lens["calculations"]) - 96),
-            },
-        }
+        context = AnalysisContext(index, lens)
         investigation = (
             Investigation
             if any(p["environment"] == "commons" for p in index["protocols"].values())
@@ -1236,27 +1237,33 @@ class Assistants:
         while True:
             self._progress(key, "investigating", examined)
             finalizing = iteration == 3
+            output_type = Finding if finalizing else investigation
+            instructions = INVESTIGATION + RESEARCH_OPERATIONS
+            prompt, visible = context.prompt(
+                {
+                    "question": question,
+                    "conversation": conversation,
+                    "evidence": gathered,
+                    "research": tools.record,
+                    "context_index": tools.context_index(),
+                    "already_examined": examined,
+                    "iterations_remaining": 3 - iteration,
+                },
+                prompt_byte_limit(output_type, instructions),
+            )
+            for captured in visible:
+                if captured not in examined:
+                    examined.append(captured)
+            self._progress(key, "investigating", examined)
             result = await self.models.generate(
-                Finding if finalizing else investigation,
+                output_type,
                 model=model,
-                instructions=INVESTIGATION + RESEARCH_OPERATIONS,
+                instructions=instructions,
                 purpose="analysis",
                 study_id=study_id,
                 run_id=run_id,
                 analysis_id=key,
-                prompt=json.dumps(
-                    {
-                        "question": question,
-                        "conversation": conversation,
-                        "index": index,
-                        "evidence": gathered,
-                        "research": tools.record,
-                        "context_index": tools.context_index(),
-                        "already_examined": examined,
-                        "iterations_remaining": 3 - iteration,
-                    },
-                    separators=(",", ":"),
-                ),
+                prompt=prompt,
                 max_tokens=8192,
                 openai_reasoning_effort="low",
                 on_partial=lambda value, finalizing=finalizing: self._partial(
@@ -1295,10 +1302,24 @@ class Assistants:
             if not result.requests:
                 raise ValueError("Assistant returned neither evidence requests nor an answer")
             for request in result.requests:
+                if isinstance(request, IndexRequest):
+                    gathered.append(
+                        {
+                            "request": request.model_dump(),
+                            "range": None,
+                            "data": context.page(request),
+                        }
+                    )
+                    continue
                 if not isinstance(request, (TurnRequest, HistoryRequest, CommonsPayoffRequest)):
                     await self._operation(key, tools, request)
                     continue
-                if any(request.model_dump() == item["request"] for item in gathered):
+                existing = next(
+                    (item for item in gathered if request.model_dump() == item["request"]), None
+                )
+                if existing is not None:
+                    gathered.remove(existing)
+                    gathered.append(existing)
                     continue
                 stage = "calculating" if isinstance(request, CommonsPayoffRequest) else "reading"
                 self._progress(key, stage, examined)
@@ -1308,7 +1329,6 @@ class Assistants:
                 gathered.append(
                     {"request": request.model_dump(), "range": examined_range, "data": data}
                 )
-                examined.append(examined_range)
                 self._progress(key, stage, examined)
             iteration += 1
 

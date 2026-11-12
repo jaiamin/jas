@@ -9,6 +9,7 @@ from threading import Event
 import pytest
 from agent_sim.api import create_app
 from agent_sim.templates import templates
+from conftest import analysis_prompt
 from fastapi.testclient import TestClient
 from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import DeltaToolCall, FunctionModel
@@ -24,7 +25,7 @@ def client(tmp_path):
 
 def scripted(client, monkeypatch, respond):
     async def function(messages, info):
-        payload = respond(json.loads(messages[-1].parts[0].content))
+        payload = respond(analysis_prompt(messages[-1].parts[0].content))
         if "propose_experiment" in info.output_tools[0].parameters_json_schema["properties"]:
             payload = {"propose_experiment": False, **payload}
         return ModelResponse(
@@ -33,7 +34,7 @@ def scripted(client, monkeypatch, respond):
         )
 
     async def stream(messages, info):
-        prompt = json.loads(messages[-1].parts[0].content)
+        prompt = analysis_prompt(messages[-1].parts[0].content)
         payload = respond(prompt)
         if "propose_experiment" in info.output_tools[0].parameters_json_schema["properties"]:
             payload = {"propose_experiment": False, **payload}
@@ -773,7 +774,7 @@ def test_run_probe_uses_recorded_cutoff_while_source_advances(client, monkeypatc
         client.portal.call(done)
 
     async def researcher(messages, info):
-        prompt = json.loads(messages[-1].parts[0].content)
+        prompt = analysis_prompt(messages[-1].parts[0].content)
         operations = prompt["research"]["operations"]
         if not operations:
             entered.set()

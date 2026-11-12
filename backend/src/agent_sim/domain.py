@@ -485,6 +485,17 @@ class ParticipantCapabilities(Strict):
     verification: Literal["legal_evidence_v1", "disabled"] = "legal_evidence_v1"
 
 
+class EventWaitHarness(Strict):
+    """Explicit policy: repeat an existing wait until an input event or a bounded wake-up."""
+
+    kind: Literal["event_wait"] = "event_wait"
+    version: Literal["1.0.0"] = "1.0.0"
+    max_wait_turns: int = Field(default=4, ge=1, le=12)
+    max_requests: Literal[1] = 1
+    max_tool_operations: Literal[0] = 0
+    tools: list[ParticipantTool] = Field(default_factory=list, max_length=0)
+
+
 class ToolUsingHarness(Strict):
     kind: Literal["tool_using"] = "tool_using"
     version: Literal["2.0.0"] = "2.0.0"
@@ -509,14 +520,15 @@ class ScriptedHarness(Strict):
 
     kind: Literal["scripted"] = "scripted"
     version: Literal["1.0.0"] = "1.0.0"
-    policy: Literal["commons_keep_v1", "commons_half_v1", "private_signal_v1"]
+    policy: Literal["commons_keep_v1", "commons_half_v1", "private_signal_v1", "local_value_v1"]
     max_requests: Literal[0] = 0
     max_tool_operations: Literal[0] = 0
     tools: list[ParticipantTool] = Field(default_factory=list, max_length=0)
 
 
 ParticipantHarness = Annotated[
-    DirectActionHarness | ToolUsingHarness | ScriptedHarness, Field(discriminator="kind")
+    DirectActionHarness | EventWaitHarness | ToolUsingHarness | ScriptedHarness,
+    Field(discriminator="kind"),
 ]
 
 
@@ -575,6 +587,58 @@ class SavedEnvironment(Strict):
     definition: EnvironmentMechanics
 
 
+class PlannedOutcome(Strict):
+    key: ArtifactKey
+    calculation: Literal[
+        "metric",
+        "turn_count",
+        "request_count",
+        "cost_usd",
+        "wait_count",
+        "message_count",
+        "coordination_regret",
+        "manual",
+    ]
+    metric: str | None = Field(default=None, max_length=80)
+    manual_reason: str = Field(default="", max_length=400)
+
+    @model_validator(mode="after")
+    def defined_calculation(self) -> Self:
+        if (self.calculation == "metric") != bool(self.metric):
+            raise ValueError("Only a registered metric calculation takes a metric identifier")
+        if (self.calculation == "manual") != bool(self.manual_reason.strip()):
+            raise ValueError("Manual outcomes require an explicit coding/assessment plan")
+        return self
+
+
+class AnalysisPlan(Strict):
+    version: Literal[1] = 1
+    intent: Literal["exploratory", "confirmatory"] = "exploratory"
+    outcomes: list[PlannedOutcome] = Field(min_length=1, max_length=12)
+    target: str = Field(default="This protocol and its declared scenarios only.", max_length=600)
+    sampling_unit: Literal["trajectory", "scenario"] = "trajectory"
+    allocation: str = Field(
+        default="Fixed matched condition × seed × repetition matrix; no random allocation.",
+        min_length=1,
+        max_length=600,
+    )
+    exclusions: Literal["retain_all"] = "retain_all"
+    uncertainty: Literal["descriptive"] = "descriptive"
+
+    @model_validator(mode="after")
+    def unique_outcomes(self) -> Self:
+        if len({outcome.key for outcome in self.outcomes}) != len(self.outcomes):
+            raise ValueError("Analysis outcome identifiers must be unique")
+        return self
+
+
+class CoordinationScenario(Strict):
+    version: Literal[1] = 1
+    seed: Annotated[int, Field(ge=0, le=2**32 - 1)]
+    name: str = Field(min_length=1, max_length=80)
+    values: dict[ArtifactKey, dict[ArtifactKey, StrictInt]] = Field(min_length=3, max_length=3)
+
+
 class DesignSpec(Strict):
     title: str = Field(min_length=1, max_length=100)
     question: str = Field(min_length=1, max_length=4000)
@@ -602,8 +666,10 @@ class DesignSpec(Strict):
         default_factory=list,
         max_length=12,
         description="Registered metric identifiers only. Additional event-derived calculations "
-        "belong in hypothesis, not in this list; they are analysis plans, not engine metrics.",
+        "belong in analysis_plan, not in this list; they are not engine metrics.",
     )
+    analysis_plan: AnalysisPlan | None = None
+    scenarios: list[CoordinationScenario] = Field(default_factory=list, max_length=20)
 
     @field_validator("profiles")
     @classmethod
@@ -620,6 +686,33 @@ class DesignSpec(Strict):
 class Design(DesignSpec):
     @model_validator(mode="after")
     def matrix_is_valid(self) -> Self:
+        if (
+            any(c.harness.kind == "event_wait" for c in self.conditions)
+            and self.environment != "distributed_coordination"
+        ):
+            raise ValueError("Event waiting requires distributed_coordination")
+        if self.scenarios:
+            if self.environment != "distributed_coordination":
+                raise ValueError("Explicit value scenarios require distributed_coordination")
+            if len(self.scenarios) != len(self.seeds) or {s.seed for s in self.scenarios} != set(
+                self.seeds
+            ):
+                raise ValueError("Declare exactly one scenario for every planned seed")
+            for scenario in self.scenarios:
+                for condition in self.conditions:
+                    rules = condition.parameters.coordination
+                    if rules is None or set(scenario.values) != set(rules.information.values()):
+                        raise ValueError(
+                            "Scenarios must replace exactly the immutable value tables"
+                        )
+                    if any(
+                        set(values) != set(rules.alternatives)
+                        or any(not -100 <= v <= 100 for v in values.values())
+                        for values in scenario.values.values()
+                    ):
+                        raise ValueError(
+                            "Scenario values require each alternative and integers -100–100"
+                        )
         for values, label in [
             ([p.key for p in self.profiles], "Agent"),
             ([c.key for c in self.conditions], "Condition"),
@@ -853,9 +946,10 @@ class Design(DesignSpec):
             elif workflow is not None:
                 raise ValueError("Workflow mechanics require institutional_workflow")
             if condition.harness.kind == "scripted":
-                required_world = (
-                    "information" if condition.harness.policy == "private_signal_v1" else "commons"
-                )
+                required_world = {
+                    "private_signal_v1": "information",
+                    "local_value_v1": "distributed_coordination",
+                }.get(condition.harness.policy, "commons")
                 if self.environment != required_world:
                     raise ValueError(
                         f"This reference policy requires the {required_world} environment"
@@ -914,6 +1008,17 @@ class Design(DesignSpec):
         return self.model_copy(
             update={"profiles": [overrides.get(p.key, p) for p in self.profiles]}
         )
+
+    def scenario_parameters(self, parameters: Parameters, seed: int) -> Parameters:
+        scenario = next((s for s in self.scenarios if s.seed == seed), None)
+        if scenario is None:
+            return parameters
+        result = parameters.model_copy(deep=True)
+        assert result.artifacts is not None
+        for obj in result.artifacts.objects:
+            if obj.key in scenario.values:
+                obj.content = dict(scenario.values[obj.key])
+        return result
 
     @property
     def run_count(self) -> int:

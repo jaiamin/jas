@@ -33,6 +33,7 @@ from .finite_contract import (
 from .investigations import InvestigationAuthorization, Investigations
 from .llm import LanguageModels
 from .research import Research, RunSummary
+from .shared_json import portable_json
 from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, get_environment
 from .templates import templates
 
@@ -514,10 +515,19 @@ async def study_exposure(
     }
 
 
+@router.get("/api/studies/{study_id}/findings")
+def study_findings(
+    study_id: str, revision: int | None = Query(default=None, ge=1), *, research: ResearchDep
+) -> dict:
+    return research.findings(study_id, revision)
+
+
 @router.get("/api/studies/{study_id}/export")
-async def download_study(study_id: str, *, research: ResearchDep) -> JSONResponse:
+async def download_study(
+    study_id: str, *, research: ResearchDep, download: bool = False
+) -> JSONResponse:
     return JSONResponse(
-        await asyncio.to_thread(export_study, research, study_id),
+        await asyncio.to_thread(export_study, research, study_id, download=download),
         headers={"Content-Disposition": f'attachment; filename="jas-{study_id}.json"'},
     )
 
@@ -605,8 +615,29 @@ async def add_note(
 
 
 @router.get("/api/analyses/{analysis_id}")
-async def get_analysis(analysis_id: str, *, assistants: AssistantsDep) -> dict[str, Any]:
-    return assistants.get(analysis_id)
+async def get_analysis(
+    analysis_id: str, *, assistants: AssistantsDep, download: bool = False
+) -> JSONResponse:
+    with assistants.db.read_snapshot():
+        record = assistants.get(analysis_id)
+    if download:
+        return JSONResponse(
+            await asyncio.to_thread(
+                portable_json,
+                record,
+                {
+                    "id": record["id"],
+                    "question": record["question"],
+                    "status": record["status"],
+                    "cutoffs": record["cutoffs"],
+                    "scope": "One frozen analysis record; never later evidence.",
+                },
+            ),
+            headers={
+                "Content-Disposition": f'attachment; filename="jas-analysis-{analysis_id}.json"'
+            },
+        )
+    return JSONResponse(record)
 
 
 @router.get("/api/chats")

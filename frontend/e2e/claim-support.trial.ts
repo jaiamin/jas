@@ -1,6 +1,7 @@
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
-import { templateDesign } from "./helpers.js";
+import type { Analysis } from "../src/lib/types.js";
+import { expandEvidence, templateDesign } from "./helpers.js";
 
 for (const { theme, width } of [
   { theme: "light", width: 1440 },
@@ -76,6 +77,21 @@ for (const { theme, width } of [
       });
       await disclosure.focus();
       await disclosure.press("Enter");
+      const downloading = page.waitForEvent("download");
+      await evidence
+        .getByRole("link", { name: "Download frozen evidence" })
+        .click();
+      const downloaded = await downloading;
+      const path = testInfo.outputPath("frozen-analysis.json");
+      await downloaded.saveAs(path);
+      const record = expandEvidence<Analysis>(await readFile(path, "utf8"));
+      expect(record.cutoffs).toEqual({ [rid]: 4 });
+      expect(downloaded.suggestedFilename()).toBe(
+        `jas-analysis-${record.id}.json`,
+      );
+      expect(record).toEqual(
+        await (await request.get(`/api/analyses/${record.id}`)).json(),
+      );
       await expect(
         evidence.getByText(invented ? "Contradicted" : "Value checked", {
           exact: true,

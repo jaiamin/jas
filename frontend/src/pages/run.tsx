@@ -41,7 +41,9 @@ export default function Run() {
   const [annotationDrafts, setAnnotationDrafts] = useState<
     Record<string, string>
   >({});
-  const query = useApi<RunDetail>(`/runs/${id}`, true);
+  const query = useApi<RunDetail>(`/runs/${id}`, (data) =>
+    ["running", "queued", "pausing"].includes(data?.summary.status ?? ""),
+  );
   const needsDeclaration =
     !!query.data?.parameters.artifacts?.judgment &&
     query.data.summary.status !== "complete";
@@ -191,7 +193,7 @@ export default function Run() {
           aria-label="Export experiment evidence"
           asChild
         >
-          <a href={`/api/studies/${summary.study_id}/export`}>
+          <a href={`/api/studies/${summary.study_id}/export?download=true`}>
             <Download />
           </a>
         </Button>
@@ -293,6 +295,13 @@ export default function Run() {
           </Badge>
         )}
       </section>
+      {summary.completion && summary.status === "complete" && (
+        <p className="mb-6 max-w-prose text-sm text-muted-foreground">
+          Finished after {summary.turn} turns ·{" "}
+          {label(summary.completion.reason)} · maximum {summary.total_turns}{" "}
+          turns. {summary.completion.interpretation}
+        </p>
+      )}
       {run.execution_blocked && (
         <Alert title="Recorded rules">{run.execution_blocked}</Alert>
       )}

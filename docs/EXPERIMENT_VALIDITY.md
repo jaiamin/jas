@@ -25,6 +25,33 @@ replication. Exploratory work need not invent a hypothesis or scalar endpoint;
 confirmatory decisions must be frozen before validation outcomes are opened.
 Saving or discussing a protocol does not authorize paid participant execution.
 
+## Declare an executable analysis
+
+In Hypothesis and analysis plan, name the target of the conclusion, sampling unit,
+allocation and outcomes before running. Plans are optional and versioned with the
+immutable revision. Choose registered metrics, committed turns, waits, messages,
+execution requests/cost or coordination regret. Unsupported concepts such as
+leadership require an explicit manual coding procedure; they never become zero.
+Exploration does not require a directional hypothesis. A confirmatory Agent proposal
+requires a hypothesis and executable plan; declaring them is not preregistration
+with an external registry or proof of valid inference.
+
+Scientific review is separate from mechanical admission. It discloses repeated
+initial states, fixed role/order assumptions, free waiting and absent controls.
+For coordination, inspect local-reference and joint-optimum values: if local-only
+choice already attains the optimum, payoff success cannot show information pooling.
+A positive gap still may reflect conflicting private incentives rather than an error.
+The omniscient joint comparator is available only to research analysis.
+
+Matched value scenarios replace declared private tables by seed across conditions.
+The editor's alternative-label rotation changes which named option pays best;
+it does not randomize roles, turn order or population. Inspect the actual values.
+The local-value scripted control reads the first permitted immutable table and
+chooses its maximum without communicating or making model requests. Under shared
+ACLs this may be another actor's table: it is a simple order-sensitive reference,
+not an own-payoff optimum. Scientific review executes that exact policy, including
+the declared horizon, before reporting its attainable payoff.
+
 ## Mechanical checks
 
 `POST /api/design/preflight` sends no model requests and mutates no saved run.
@@ -51,6 +78,22 @@ records under new rules or silently migrate/reset a workspace. Preserve an
 incompatible database separately when explicitly starting fresh work.
 
 ## Reading outcomes
+
+Overview leads with deterministic Research findings: completion, declared outcomes,
+matched differences and the next diagnostic test, without paid summarization.
+Expand the disclosures for formulas, eligible/planned counts, missingness, all-attempt
+effort and links pinned through a recorded turn. Manual, unfinished and unknown
+outcomes remain explicit. Export19 freezes these findings in the same read snapshot
+as run evidence. Paid interpretation is a separate explicit action.
+
+“Complete” means the World reached its stopping condition, not that participants
+were competent. Actual turns can be below rounds × participants when agents finish
+early. Horizon exhaustion, failure and interruption have separate descriptions.
+Coordination has no per-wait utility penalty: API charges and finite opportunities
+are different costs. The opt-in event-wait policy can avoid fresh requests only
+for a bounded repetition of a model-chosen wait with unchanged actionable input;
+it changes the participant policy and must be declared as a condition.
+
 
 Analysis is read-only and pinned to accepted evidence cutoffs. Its index supplies
 installed capabilities, active controls, recorded actions, feasible opportunities,

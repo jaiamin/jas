@@ -1012,6 +1012,11 @@ def test_confirmatory_trials_freeze_exact_decisions_after_retained_exploratory_p
     design["hypothesis"] = (
         "Record whether the actor explicitly stops within its single opportunity."
     )
+    design["analysis_plan"] = {
+        "version": 1,
+        "intent": "confirmatory",
+        "outcomes": [{"key": "decisions", "calculation": "turn_count"}],
+    }
     identity = client.post(
         "/api/investigations",
         json=authorization(
