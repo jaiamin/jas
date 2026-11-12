@@ -1,62 +1,70 @@
 # JAS handoff
 
 ROOT owns `feat/research-quality`, based on `5f2523e58c7a851482f6a1ed3c2590eaa01696c4`.
-This task implements the ten research-quality recommendations; the durable acceptance
-criteria, methods, decisions and progress are in
-[the implementation plan](docs/research/RESEARCH_QUALITY_PLAN.md).
+The ten recommendations, acceptance criteria, methods and source-specific results
+are in [the plan](docs/research/RESEARCH_QUALITY_PLAN.md).
 
-## Current boundary
+## Implemented
 
-Research contracts/calculations/scientific diagnostics, matched value scenarios,
-actor-only local-value control, opt-in event waiting, authoring/findings/completion
-UI and bounded schema caches are implemented. Export is now19; DB15/library10 and
-World transition versions are unchanged. No migrations, resets or legacy aliases.
+Versioned executable analysis plans, separate scientific diagnostics, provider-free
+findings, matched value scenarios, actor-only local-value control, checked planned
+calculations, explicit inference/missingness, unavailable-mechanic disclosures,
+opt-in event waiting/bounded caches and completion UX. Export19; DB15/library10
+and World transition versions unchanged. No migrations, resets or legacy aliases.
+Saved revisions invalidate editor/list/run caches. Analysis wire sharing preserves
+exact repeated values and literal marker-shaped evidence. Scientific control
+values follow the actual actor-only policy, ACL order and horizon.
 
-Targeted backend/public HTTP/reopen/export-snapshot tests and all165 frontend units
-pass at recorded sources. Full backend/browser verification, final independent review and publication remain
-pending. The three new browser flows and live repaired requests pass. Static failures
-and fixture-authoring failures are retained in `.tools/research-quality/`; do not
-claim a clean first attempt. The tracked frozen development cases are in
-`benchmarks/research-quality-development.json`.
+## Verified boundary
 
-The user authorized $15–20 additional live spend: use $20 as an aggregate hard ceiling,
-including failures and unknown reservations. Stages01/02 retain FAILED interpretations;
-stage03 passes their remaining repaired path and a small redraft. One restored ledger
-settles94 requests and $1.153843, partial=false. Sixteen actual matched trajectories
-completed and replayed. All live resources closed/port18145 reusable. The ledger
-has the same $20 total cap and uses Sol for the assistant and Luna participants,
-no automatic provider retry or substitution. Run only one paid workspace at a time;
-stop on unknown usage. All task artifacts/databases use `.tools/research-quality/`,
-port18145 for live and18146 for browser checks. Use shared checks.lock for bounded jobs.
+Full backend1883 PASS; after formatting and one test-only type assertion, affected27
+PASS. Whole Ruff/ty, frontend168 units, affected9 editor recheck, lint247, forced
+TS and private build PASS. Broad browser184/187 followed by all7 affected repaired/
+new-flow cases PASS; do not claim a fresh187/187 rerun. Two independent initial
+reviews found real wire/diagnostic defects, now fixed. Final recheck pending.
 
-## Preserve the existing app and pilot
+Sixteen actual Sol/Luna matched trajectories completed with export and zero-call
+replay. Two new post-implementation cases were frozen before outputs, run once
+and manually scored; both passed, as did the old sensitive interpretation retest.
+Those cases are not a hidden general-intelligence benchmark. The joint-regret task
+exposes conflicting individual incentives; no messages were sent, so delayed-mail
+receipt and event-wait savings were not demonstrated. Prose remains unassessed by
+the platform even when structured numbers check.
 
-The user's app is on8080; read fresh PID/launcher identity from
-`.tools/final/live/server.json`. Do not retry or mutate the user's original24-run
-study (`0c1f6370d8e841a4`) or reset `data/jas.sqlite3`. Its read-only audit is in
-`.tools/run-audit/0c1f6370d8e841a4/FINDINGS.md`: completion was natural rather than
-missing turns, seed labels did not vary initial states, and longer delays mostly
-added waiting/provider costs. Preserve its original Terra model attribution.
+The one restored live ledger settles102 requests/$1.638735, partial=false, against
+the user's aggregate$20 authorization. Stages01/02 retain FAILED interpretations;
+stage03 repairs them. Live04's three responses completed, but its recorder FAILED
+by incorrectly expecting study-wide charged cost to stay fixed after paid analysis.
+Separate offline verification proves unchanged16 run rows and all committed
+participant evidence,8 new research-only calls and exact ledger deltas. Offline02
+passes export19/findings and8 zero-call replays; offline01's strict-host400 setup
+failure remains retained. No paid retry, provider substitution or limit increase.
+All live resources are closed and port18145 reusable.
 
-The current frontend build has refreshed frontend/dist, which8080 serves. Its
-Python process still has the earlier backend loaded. Do not describe8080 as final
-qualified source until an explicitly idle, identity-checked refresh is completed.
-Do not interrupt user work to refresh it.
+Native keyless runtime4/24/240turns/replay/export PASS. The largest run completed
+in3.00s, with mixed-read health p95 3.93ms/run285.72ms/experiment143.05ms and peak
+RSS318432KiB. This excludes provider time; no reliable before/after speedup claim.
+Default concurrency remains3 independent runs/4 provider calls. Runtime18147 closed.
+Browser18146/tab closed; all closed-own DB gzip maps verified. Evidence stays in
+`.tools/research-quality/`. No outside-checkout cleanup or user data deletion.
 
-## Tooling and remaining work
+## Preserve existing app and pilot
 
-Use existing `.venv/bin/python -B`, Ruff and ty directly: uv crashes on this VM.
-Frontend deps were installed normally with frozen pnpm12.18/hardlinks; lock/package
-bytes are unchanged. No global install or outside-checkout cleanup is authorized
-by this task. Earlier uv-cache cleanup belongs to the closed prior evaluation.
+The app8080 uses `data/jas.sqlite3`; read fresh identity from
+`.tools/final/live/server.json`. Never retry/mutate original study
+`0c1f6370d8e841a4`. Its read-only audit remains in `.tools/run-audit/`.
+Latest observed app has64 runs/8 chats, none active, usage settled. Python still
+imports earlier backend and assets need a coherent refresh. Run the newly prepared
+`.tools/research-quality/refresh-8080.py` under shared checks.lock only after final
+qualification: it rechecks identity/idle twice, builds, rechecks idle, refreshes,
+and proves every persisted row, database inode and usage unchanged. Leave active
+user work running; do not force a refresh. Its output directory must be fresh.
 
-Finish broad regression failures, browser flows, real bounded model evaluation and
-manual semantic assessment; record actual source/ledger attribution. Update the plan
-and focused docs, normal-hook commit, run fresh Standards/Spec review, then publish
-one draft PR. No main push, merge or shared-history rewrite. New World waiting-cost
-mechanics, independent semantic certification, human validity and model generality
-are explicitly outside observed qualification, not silently assumed to work.
+## Closing work
 
-Earlier task receipts/reports remain historical evidence. Closed own per-test SQLite
-may be losslessly compacted after teardown with the existing verification/map plugin;
-never remove user data, original failures or another owner's artifacts.
+Normal-hook checkpoint, fresh Standards/Spec recheck, fix findings, update closure,
+safe idle8080 refresh, then push this task branch and create one draft PR. Link PR
+immediately after creation. No merge, main push or history rewrite. Use existing
+`.venv/bin/python -B`/Ruff/ty: uv crashes here. pnpm12.18 frozen dependencies are
+already installed without package/lock changes. Keep one writer and use
+`.tools/research-harness/checks.lock` for bounded jobs. No active paid work remains.

@@ -244,6 +244,13 @@ def test_confirmatory_harness_comparison_freezes_intent_replication_and_analysis
     design["hypothesis"] += "source-linked correct submission in each harness arm. Keep failed, "
     design["hypothesis"] += "paused and unsuccessful attempts visible; two repetitions per "
     design["hypothesis"] += "fixed seed are not independent population draws."
+    design["analysis_plan"] = {
+        "version": 1,
+        "intent": "confirmatory",
+        "outcomes": [
+            {"key": "correct_submission", "calculation": "metric", "metric": "artifact_success"}
+        ],
+    }
     brief = scope(design, intent="confirmatory")
     brief["requirements"][0]["source"] = "authorized evidence"
     provider(client, monkeypatch, design, brief=brief)

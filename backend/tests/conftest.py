@@ -17,11 +17,12 @@ def analysis_prompt(content):
     """Resolve the documented wire references before a deterministic analyst uses them."""
     data = json.loads(content)
     shared = data.get("shared_analysis_inputs", {})
+    reference_key = data.get("shared_analysis_reference_key")
 
     def resolve(value):
         if isinstance(value, dict):
-            if set(value) == {"shared_analysis_input"}:
-                return resolve(shared[value["shared_analysis_input"]])
+            if reference_key is not None and set(value) == {reference_key}:
+                return resolve(shared[value[reference_key]])
             return {name: resolve(child) for name, child in value.items()}
         return [resolve(child) for child in value] if isinstance(value, list) else value
 

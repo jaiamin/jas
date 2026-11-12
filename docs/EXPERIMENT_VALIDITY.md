@@ -46,8 +46,11 @@ The omniscient joint comparator is available only to research analysis.
 Matched value scenarios replace declared private tables by seed across conditions.
 The editor's alternative-label rotation changes which named option pays best;
 it does not randomize roles, turn order or population. Inspect the actual values.
-Use the local-value scripted control to test whether private local choice explains
-success without communicating or making model requests.
+The local-value scripted control reads the first permitted immutable table and
+chooses its maximum without communicating or making model requests. Under shared
+ACLs this may be another actor's table: it is a simple order-sensitive reference,
+not an own-payoff optimum. Scientific review executes that exact policy, including
+the declared horizon, before reporting its attainable payoff.
 
 ## Mechanical checks
 

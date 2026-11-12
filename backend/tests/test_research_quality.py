@@ -605,19 +605,19 @@ def test_scientific_review_detects_when_local_only_choices_already_attain_optimu
         rules.match_bonus = 0
     review = scientific_review(design)
     assert "local_information_sufficient" in {i["code"] for i in review["issues"]}
-    assert all(
-        row["payoff_cases"] == [{"seed": 17, "local_value": 21, "joint_optimum": 21}]
-        for row in review["variation"]
-    )
+    assert [row["payoff_cases"] for row in review["variation"]] == [
+        [{"seed": 17, "local_value": 21, "joint_optimum": 21}],
+        [{"seed": 17, "local_value": 8, "joint_optimum": 21}],
+    ]
     for condition in design.conditions:
         assert condition.parameters.coordination is not None
         condition.parameters.coordination.match_bonus = 5
     strengthened = scientific_review(design)
     assert "local_information_sufficient" not in {i["code"] for i in strengthened["issues"]}
-    assert all(
-        row["payoff_cases"] == [{"seed": 17, "local_value": 21, "joint_optimum": 26}]
-        for row in strengthened["variation"]
-    )
+    assert [row["payoff_cases"] for row in strengthened["variation"]] == [
+        [{"seed": 17, "local_value": 21, "joint_optimum": 26}],
+        [{"seed": 17, "local_value": 23, "joint_optimum": 26}],
+    ]
 
 
 def test_shared_analysis_wire_preserves_nested_evidence_without_hash_overhead():
@@ -636,6 +636,7 @@ def test_shared_analysis_wire_preserves_nested_evidence_without_hash_overhead():
     wire = json.dumps(_share_analysis_inputs(original))
     decoded = analysis_prompt(wire)
     decoded.pop("shared_analysis_inputs")
+    decoded.pop("shared_analysis_reference_key")
     assert decoded == original
     assert json.dumps(original) == before
     assert len(wire) < 3500  # Leaves headroom for schema/instructions in the 180k-byte envelope.
@@ -675,3 +676,53 @@ def test_planner_cannot_change_declared_research_intent(runtime, intent):
     sources = [builtin_environment(design.environment).model_dump()]
     with pytest.raises(ValueError, match="research intent"):
         Planner(db, research, models)._validate_candidate(candidate, brief, sources)
+
+
+def test_shared_wire_preserves_literal_reference_shaped_artifacts():
+    from agent_sim.assistants import _share_analysis_inputs
+
+    original = {
+        "evidence": [{"shared_analysis_input": "0"}, {"shared_analysis_input_1": "0"}],
+        "first": "repeated evidence " * 30,
+        "second": "repeated evidence " * 30,
+    }
+    decoded = analysis_prompt(json.dumps(_share_analysis_inputs(original)))
+    decoded.pop("shared_analysis_inputs")
+    decoded.pop("shared_analysis_reference_key", None)
+    assert decoded == original
+
+
+def test_scientific_reference_value_matches_executed_shared_acl_control():
+    from agent_sim.reference_policies import reference_decision
+    from agent_sim.simulation.environments import create_world
+
+    design = coordination()
+    design.rounds, design.seeds = 3, [17]
+    condition = design.conditions[1]
+    world = create_world(design.resolve(condition), condition.parameters, 17)
+    for _ in range(6):
+        actor = world.actor()
+        assert actor is not None
+        observed = world.observe(actor)
+        proposal = reference_decision("local_value_v1", observed, world.decision_schema(observed))
+        world.step(actor, proposal)
+    assert world.snapshot()["done"]
+    actual = sum(world.snapshot()["outcome"]["payoffs"].values())
+    assert actual == 15
+    expected = coordination_values(design, condition.parameters)
+    assert expected["local_value"] == actual
+    if actual != expected["joint_optimum"]:
+        review = scientific_review(design)
+        assert not any(
+            i["code"] == "local_information_sufficient"
+            and i["message"].startswith(condition.name + ":")
+            for i in review["issues"]
+        )
+
+
+def test_scientific_reference_respects_reading_opportunities_in_short_horizon():
+    design = coordination()
+    design.rounds = 1
+    assert all(
+        coordination_values(design, c.parameters)["local_value"] == 0 for c in design.conditions
+    )

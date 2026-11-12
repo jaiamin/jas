@@ -633,7 +633,7 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v18 (`jas-study`)
+Every Analysis has an indexed conversation identity. Study export v19 (`jas-study`)
 includes investigation authorization, decisions and attempts, every revision and its
 runs, actual recorded rule versions, exact turn evidence and provider traces; it batches
 journal queries. It also retains the linked question's complete immutable generation
@@ -876,7 +876,7 @@ Analysis submissions synchronously freeze cutoffs, dispositions, terminal metric
 eligibility, revision/hash and calculations before the server task runs. Progress,
 reconnect, failure and export preserve that snapshot across later run completion or
 new revisions. Analysis reads do not append participant evidence or provider calls.
-Study export v18 includes this versioned comparison contract and persisted analysis
+Study export v19 includes this versioned comparison contract and persisted analysis
 snapshots. Historical evidence is never backfilled with invented states.
 
 T15 adds self-versioned participant configurations and effort captures to comparison1
@@ -925,7 +925,7 @@ artifact. Inspection/export/replay remain
 read-only. Exposure-conditioned descriptions are post-treatment selections, not
 automatic causal effects; inclusion establishes no attention, belief or intent.
 
-Current export v18 retains exposure capture v1, its complete chain and frozen
+Current export v19 retains exposure capture v1, its complete chain and frozen
 analysis artifacts. Database15/export19/library10 includes institutional work,
 external finite generation authorization and per-question request/candidate/charge
 counters. Incompatible persisted meanings reject explicitly.

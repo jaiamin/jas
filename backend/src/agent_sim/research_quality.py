@@ -9,6 +9,7 @@ from itertools import product
 from .comparisons import ComparisonRun, compare_runs
 from .db import digest
 from .domain import Design, Parameters, PlannedOutcome
+from .reference_policies import reference_decision
 from .simulation.environments import create_world
 
 
@@ -28,10 +29,16 @@ def coordination_values(design: Design, parameters: Parameters) -> dict[str, int
             len(tables) * rules.match_bonus if None not in choices and len(set(choices)) == 1 else 0
         )
 
+    # Use the actual actor-only control, including ACL order and the declared horizon.
+    reference = create_world(design.model_copy(update={"scenarios": []}), parameters, 0)
+    while (actor := reference.actor()) is not None:
+        observed = reference.observe(actor)
+        decision = reference_decision(
+            "local_value_v1", observed, reference.decision_schema(observed)
+        )
+        reference.step(actor, decision)
     return {
-        "local_value": value(
-            tuple(max(rules.alternatives, key=table.__getitem__) for table in tables)
-        ),
+        "local_value": sum(reference.snapshot()["outcome"]["payoffs"].values()),
         "joint_optimum": max(
             value(choices) for choices in product([None, *rules.alternatives], repeat=len(tables))
         ),
