@@ -61,6 +61,8 @@ its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
 `data/jas.sqlite3`; Compose stores it in `jas-data`.
+Private hosted deployments use the same image; see [hosting](DEPLOYMENT.md) for
+Railway volume permissions, authentication and environment separation.
 The sole current contract is database16, `jas-study` export20,
 `jas-environment-v10`/definition2 and research-operation2.
 Incompatible databases, library records and rule checkpoints are rejected on

@@ -1,5 +1,6 @@
 """Check the built image against a fresh, keyless workspace without model requests."""
 
+import base64
 import json
 import os
 import re
@@ -15,8 +16,17 @@ from agent_sim.simulation.environments import create_world
 from sqlalchemy.engine import make_url
 
 
+def request_headers() -> dict[str, str]:
+    username, password = setting("AUTH_USERNAME", ""), setting("AUTH_PASSWORD", "")
+    if not username:
+        return {}
+    token = base64.b64encode(f"{username}:{password}".encode()).decode()
+    return {"Authorization": f"Basic {token}"}
+
+
 def get(path: str) -> str:
-    with urlopen(f"http://127.0.0.1:8080{path}", timeout=5) as response:
+    request = Request(f"http://127.0.0.1:8080{path}", headers=request_headers())
+    with urlopen(request, timeout=5) as response:
         assert response.status == 200, path
         return response.read().decode()
 
@@ -47,7 +57,7 @@ def post(path: str, body: dict) -> dict:
     request = Request(
         f"http://127.0.0.1:8080{path}",
         data=json.dumps(body).encode(),
-        headers={"Content-Type": "application/json"},
+        headers={"Content-Type": "application/json", **request_headers()},
     )
     with urlopen(request, timeout=30) as response:
         return json.loads(response.read())
