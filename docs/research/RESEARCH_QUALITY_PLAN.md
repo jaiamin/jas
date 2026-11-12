@@ -253,3 +253,12 @@ independent prose certification, human predictive validation or model generality
 claim. Live cases did not elicit delayed-message receipt or event-wait savings.
 The frozen historical T01 still fails its four old export-v4 checks; current
 export19 qualifications are separate and never relabel that history.
+
+## Hosted CI follow-up
+
+The first container job at38b37145 built and booted the non-root image and passed
+health/assets/containment checks, then failed the production smoke's stale literal
+export18 assertion. The real public API reproduction observed export19 and the
+same assertion red; updating that one current-contract expectation to19 passes
+with zero provider calls. Smoke-script Ruff passes. No production contract or
+compatibility path changed; the corrected hosted job remains the merge gate.

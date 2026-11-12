@@ -73,3 +73,8 @@ identical to reviewed closure936cd9aa. Receipt: main-integration-conflicts-01. N
 `.venv/bin/python -B`/Ruff/ty: uv crashes here. pnpm12.18 frozen dependencies are
 already installed without package/lock changes. Keep one writer and use
 `.tools/research-harness/checks.lock` for bounded jobs. No active paid work remains.
+
+Hosted CI follow-up: first container job built/booted and passed containment, then
+failed smoke.py's stale export18 expectation. Actual public HTTP red→green proves
+current export19; expectation corrected, zero calls, script Ruff PASS. No app code
+changed or new8080 refresh needed. Updated hosted CI remains pending.
