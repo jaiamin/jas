@@ -15,24 +15,38 @@ Keep one replica, no sleep and graceful shutdown in Railway's service settings;
 focused hosting instructions are in `docs/DEPLOYMENT.md`. No deprecated Railway
 config format or new platform dependency. Credentials stay outside Git/logs.
 
-Progress: access/API regressions pass (76 cases), Ruff/ty/workflow lint pass, and
-both default Compose and root-owned-volume authenticated production smoke pass,
-including containment, guard refusals and restart persistence. Full backend suite
-is running. Railway auth/host/bootstrap variables configured with secrets via stdin,
-without triggering an old-image deployment. Tested deployment, final health and
-source delivery remain pending. Do not claim hosted success until the exact
-deployment reports SUCCESS and public/protected HTTP checks pass.
+Complete: all 1,919 backend cases pass (528.11s), including 76 access/API cases.
+Ruff/ty/format checks and Actionlint pass. Production image build, default non-root
+Compose smoke and root-owned-volume authenticated smoke pass, including actual
+containment, symlink/ownership refusals, existing-file preservation and restart
+persistence. Initial local Compose smoke correctly stopped on inherited provider
+availability; recreated with explicitly empty keys, then passed. No paid calls.
+
+Railway project `jas`, production service `jas`: deployment `105efe70` from code
+checkpoint `64ca7faa` reports SUCCESS. Public domain ACTIVE on 8080; live health200,
+protected UI/API/assets200, unauthenticated reads/writes401, cross-origin writes403,
+provider requests0. Existing volume retained. Auth secrets set through stdin; login
+name `jas`. Draining allowance120s saved via the typed service update (CLI dot-path
+edit was a no-op); one replica/no sleep retained. No deprecated platform config.
+Direct SSH inspection was unavailable without SSH keys; no keys/access added.
+Non-root UID/group/ownership and restart evidence is from the actual local image.
+
+Draft PR #40 targets main. Merge it before the next GitHub-source deployment so
+main includes the fix; no PR was merged or default-branch push performed here.
+Fresh GitHub Actions checks were refused before starting by account payment/spending
+limits (observed annotation on run43311755857), not test failures. Clear that billing
+block and rerun hosted CI. No service, database or model credentials in tracked files.
+All disposable test containers/volumes are removed. User's local8080 remains healthy.
 
 ## Previous delivery and evaluation
 
 GitHub repository renamed to `jaiamin/jas`; origin, app link, docs and test
 expectations use the new name. Existing PR #38 and issue numbers are preserved.
 
-Delivery correction: PRs #37/#38 merged into `feat/research-quality`, not `main`.
-`fix/integrate-research-updates` starts at main `c0f9a941` and carries exactly those
-two squash commits, with original commit references. Its complete tree matched
-qualified `ef2194a1` before these documentary status corrections. Deliver through
-one follow-up PR targeting `main`; do not reuse the obsolete feature-branch base.
+PRs #37/#38 initially merged into `feat/research-quality`, not `main`.
+PR #39 corrected delivery by carrying exactly those two squash commits from main
+`c0f9a941`, with original commit references. Its complete tree matched qualified
+`ef2194a1` before documentary status corrections. It is now merged into main.
 
 ## Completed: live Agent and participant evaluation
 
