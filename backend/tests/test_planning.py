@@ -4,6 +4,8 @@ import json
 import pytest
 from agent_sim.validity import Requirement
 
+from backend.tests.conftest import planning_prompt
+
 
 def test_large_protocol_followups_fit_without_losing_prior_revisions(tmp_path, monkeypatch):
     from copy import deepcopy
@@ -156,7 +158,7 @@ def test_invalid_world_selection_keeps_discovery_available_for_correction(runtim
     drafts = []
 
     async def respond(messages, info):
-        prompt = json.loads(messages[-1].parts[0].content)
+        prompt = planning_prompt(messages[-1].parts[0].content)
         title = info.output_tools[0].parameters_json_schema["title"]
         if title == "StudyBrief":
             output = brief
@@ -323,7 +325,7 @@ def test_completed_team_probes_fit_revisions_and_review_without_losing_evidence(
     prompts = []
 
     async def respond(messages, info):
-        prompts.append(json.loads(messages[-1].parts[0].content))
+        prompts.append(planning_prompt(messages[-1].parts[0].content))
         if info.output_tools[0].parameters_json_schema.get("title") == "Candidate":
             limits = prompts[-1]["output_constraints"]
             assert limits["properties"]["explanation"]["maxLength"] == 2000
@@ -518,7 +520,9 @@ def test_planner_does_not_research_or_invent_unsupported_worlds(runtime, monkeyp
     monkeypatch.setattr(llm, "generate", generate)
     result = asyncio.run(Planner(db, research, llm).run(key, "Predict an election"))
     assert result["design"] is None and not result["supported"]
-    assert len(calls) == 1 and research.studies() == []
+    assert len(calls) == 2 and research.studies() == []
+    assert all(not call.get("web_search") for call in calls)
+    assert result["planning"]["reviews"][0]["kind"] == "scope_validation"
 
 
 def test_planner_rejects_unresolved_review(runtime, design, monkeypatch):
@@ -978,3 +982,72 @@ def test_declared_factorial_is_repaired_or_rejected_before_model_review(
             asyncio.run(Planner(db, research, llm).run(key, question))
         assert candidates == 3 and reviews == 0
     assert research.studies() == []
+
+
+@pytest.mark.parametrize("repaired", [True, False])
+def test_malformed_draft_gets_visible_bounded_validation_revision(tmp_path, monkeypatch, repaired):
+    """Live Agent follow-up failed on a 1000-character artifact rubric bound."""
+    from copy import deepcopy
+
+    from agent_sim.api import create_app
+    from fastapi.testclient import TestClient
+
+    from backend.tests.test_researcher_designs import artifact_design, finish, provider
+
+    app = create_app(f"sqlite:///{tmp_path}/malformed-draft.sqlite3")
+    drafts = []
+    with TestClient(app, base_url="http://localhost") as client:
+        design = artifact_design(client)
+        invalid = deepcopy(design)
+        invalid["conditions"][0]["parameters"]["artifacts"]["objects"][0]["content"] = {
+            "rubric": "x" * 1001
+        }
+
+        def draft(prompt):
+            drafts.append(prompt)
+            return {"design": design if repaired and len(drafts) > 1 else invalid}
+
+        provider(client, monkeypatch, design, candidate=draft)
+        row = finish(
+            client,
+            client.post("/api/chats", json={"question": design["question"], "context": "new"}),
+        )
+        assert row["status"] == ("complete" if repaired else "failed"), row.get("error")
+        assert len(drafts) == (2 if repaired else 3)
+        if repaired:
+            assert (
+                row["output"]["design"]["conditions"][0]["parameters"]["artifacts"]
+                == design["conditions"][0]["parameters"]["artifacts"]
+            )
+        assert drafts[1]["feedback"]
+        assert "1000" in json.dumps(drafts[1]["feedback"])
+        assert client.get("/api/studies").json() == []
+        calls = client.get("/api/settings").json()["usage"]["requests"]
+        assert calls == 4  # scope + drafts + review, or scope + three drafts
+
+
+def test_transport_failure_does_not_enter_the_draft_revision_loop(tmp_path, monkeypatch):
+    from agent_sim.api import create_app
+    from fastapi.testclient import TestClient
+
+    from backend.tests.test_researcher_designs import artifact_design, finish, provider
+
+    app = create_app(f"sqlite:///{tmp_path}/transport-failure.sqlite3")
+    calls = []
+    with TestClient(app, base_url="http://localhost") as client:
+        design = artifact_design(client)
+
+        def draft(prompt):
+            calls.append(prompt)
+            raise TimeoutError("Controlled provider transport failure")
+
+        provider(client, monkeypatch, design, candidate=draft)
+        row = finish(
+            client,
+            client.post("/api/chats", json={"question": design["question"], "context": "new"}),
+        )
+        assert row["status"] == "failed"
+        assert "TimeoutError" in row["error"]
+        assert len(calls) == 1
+        assert client.get("/api/settings").json()["usage"]["requests"] == 2
+        assert client.get("/api/studies").json() == []

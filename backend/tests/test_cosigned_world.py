@@ -15,6 +15,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 
 def cosigned_design(client):
     fixtures = Path(__file__).with_name("fixtures")
@@ -276,7 +278,7 @@ def test_cosigned_engine_tools_keep_docket_private_and_replay_without_sampling(
                 },
             }
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, value)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, value))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -367,7 +369,7 @@ def test_cosigned_engine_tools_keep_docket_private_and_replay_without_sampling(
             assert marker not in json.dumps(run["activations"][1])
             assert client.get(f"/api/studies/{sid}").json()["revisions"] == study["revisions"]
             exported = client.get(f"/api/studies/{sid}/export").json()
-            assert exported["version"] == 19
+            assert exported["version"] == 20
             assert (
                 exported["revisions"][0]["design"]["environment_source"]
                 == payload["environment_source"]

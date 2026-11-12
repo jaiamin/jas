@@ -12,6 +12,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 
 def protocol():
     return {
@@ -123,7 +125,9 @@ def test_solo_evidence_work_is_versioned_consequential_and_replayable(tmp_path, 
     async def respond(messages, info):
         delivered.append(json.loads(messages[-1].parts[0].content))
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision(next(actions)))],
+            parts=[
+                ToolCallPart(info.output_tools[0].name, output_args(info, decision(next(actions))))
+            ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -156,12 +160,13 @@ def test_solo_evidence_work_is_versioned_consequential_and_replayable(tmp_path, 
         assert replay["verified_turns"] == 4 and replay["model_requests"] == 0
         assert client.get("/api/settings").json()["usage"] == before
         exported = client.get(f"/api/studies/{study['id']}/export").json()
-        assert exported["version"] == 19
+        assert exported["version"] == 20
         assert len(exported["requests"]) == 4
         assert exported["runs"][0]["evidence"][-1]["checkpoint"] == run["state"]
 
 
-def test_rejected_stale_work_is_atomic_and_explicit_retry_can_recover(tmp_path, monkeypatch):
+@pytest.mark.parametrize("invalid", ["stale_write", "missing_source_version"])
+def test_rejected_work_is_atomic_and_explicit_retry_can_recover(tmp_path, monkeypatch, invalid):
     write = {
         "kind": "write_artifact",
         "artifact": "report",
@@ -169,11 +174,22 @@ def test_rejected_stale_work_is_atomic_and_explicit_retry_can_recover(tmp_path, 
         "content": {"reading": 17},
         "sources": [{"artifact": "measurement", "version": 1}],
     }
-    actions = iter([write, write, {"kind": "submit_artifacts"}])
+    rejected_write = (
+        write
+        if invalid == "stale_write"
+        else {
+            **write,
+            "expected_version": 2,
+            "sources": [{"artifact": "measurement", "version": 2}],
+        }
+    )
+    actions = iter([write, rejected_write, {"kind": "submit_artifacts"}])
 
     async def respond(_messages, info):
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision(next(actions)))],
+            parts=[
+                ToolCallPart(info.output_tools[0].name, output_args(info, decision(next(actions))))
+            ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -191,13 +207,22 @@ def test_rejected_stale_work_is_atomic_and_explicit_retry_can_recover(tmp_path, 
         assert rejected["state"] == accepted["state"]
         assert rejected["summary"]["turn"] == 1
         attempt = rejected["activations"][-1]
-        assert attempt["status"] == "failed" and attempt["stop_reason"] == "world_rejected"
-        assert attempt["operations"][-1]["kind"] == "reject"
-        assert attempt["operations"][-1]["request"] == decision(write)
+        assert attempt["status"] == "failed"
+        if invalid == "stale_write":
+            # The current precondition is now enforced at the provider boundary.
+            assert attempt["stop_reason"] == "provider_failure"
+            assert attempt["operations"] == []
+            raw = client.get(f"/api/requests/{rejected['requests'][-1]['id']}").json()
+            assert raw["status"] == "failed"
+            assert "expected_version" in json.dumps(raw["response"])
+        else:
+            assert attempt["stop_reason"] == "world_rejected"
+            assert attempt["operations"][-1]["kind"] == "reject"
+            assert attempt["operations"][-1]["request"] == decision(rejected_write)
         assert rejected["summary"]["usage"]["requests"] == 2
         replay = client.post(f"/api/runs/{run_id}/verify").json()
         assert replay["verified_turns"] == 1
-        assert replay["verified_rejections"] == 1
+        assert replay["verified_rejections"] == (invalid == "missing_source_version")
         client.post(f"/api/runs/{run_id}/control", json={"action": "step"})
         recovered = wait_finished(client, run_id)
         assert recovered["summary"]["status"] == "complete"
@@ -205,19 +230,20 @@ def test_rejected_stale_work_is_atomic_and_explicit_retry_can_recover(tmp_path, 
         assert recovered["state"]["artifacts"] == accepted["state"]["artifacts"]
         assert recovered["summary"]["usage"]["requests"] == 3
         assert len(recovered["activations"]) == 3
-        from agent_sim.db import ParticipantOperation
-        from sqlalchemy import select
+        if invalid == "missing_source_version":
+            from agent_sim.db import ParticipantOperation
+            from sqlalchemy import select
 
-        with app.state.db.session.begin() as session:
-            rejection = session.scalars(
-                select(ParticipantOperation).where(ParticipantOperation.kind == "reject")
-            ).one()
-            rejection.request = decision({**write, "expected_version": 2})
-        altered = client.post(f"/api/runs/{run_id}/verify")
-        assert altered.status_code == 422 and "rejection" in altered.text.lower()
-        unchanged = client.get(f"/api/runs/{run_id}").json()
-        assert unchanged["state"] == recovered["state"]
-        assert unchanged["summary"]["usage"] == recovered["summary"]["usage"]
+            with app.state.db.session.begin() as session:
+                rejection = session.scalars(
+                    select(ParticipantOperation).where(ParticipantOperation.kind == "reject")
+                ).one()
+                rejection.request = decision({**write, "expected_version": 2})
+            altered = client.post(f"/api/runs/{run_id}/verify")
+            assert altered.status_code == 422 and "rejection" in altered.text.lower()
+            unchanged = client.get(f"/api/runs/{run_id}").json()
+            assert unchanged["state"] == recovered["state"]
+            assert unchanged["summary"]["usage"] == recovered["summary"]["usage"]
 
 
 def test_tool_harness_reads_real_artifacts_without_a_world_turn_and_exports_actual_results(
@@ -259,10 +285,10 @@ def test_tool_harness_reads_real_artifacts_without_a_world_turn_and_exports_actu
         # The operation envelope is distinct from the nested final Decision.
         fields = prompts[-1]["response_fields"]
         assert set(fields) == set(info.output_tools[0].parameters_json_schema["properties"])
-        assert {"operation", "decision", "read"} <= set(fields)
+        assert fields == ["request"]
         assert not {"rationale", "memory", "forecast"} & set(fields)
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, next(responses))],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, next(responses)))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -515,7 +541,7 @@ def test_replay_checks_actual_tool_reads_and_delivered_observations_without_samp
 
     async def respond(_messages, info):
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, next(replies))],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, next(replies)))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -579,7 +605,7 @@ def test_terminal_failure_stop_and_horizon_are_real_outcomes_with_correct_source
     async def respond(_messages, info):
         value = decision(action) | {"rationale": "I certify this report is correct and successful."}
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, value)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, value))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -625,11 +651,18 @@ def test_paused_tool_read_restores_its_durable_receipt_without_calls_and_explici
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "operation": "read_artifact",
-                        "read": {"kind": "read_artifact", "artifact": "measurement", "version": 1},
-                        "decision": None,
-                    },
+                    output_args(
+                        info,
+                        {
+                            "operation": "read_artifact",
+                            "read": {
+                                "kind": "read_artifact",
+                                "artifact": "measurement",
+                                "version": 1,
+                            },
+                            "decision": None,
+                        },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -707,11 +740,14 @@ def test_paused_tool_read_restores_its_durable_receipt_without_calls_and_explici
                 parts=[
                     ToolCallPart(
                         info.output_tools[0].name,
-                        {
-                            "operation": "decide",
-                            "read": None,
-                            "decision": decision(action),
-                        },
+                        output_args(
+                            info,
+                            {
+                                "operation": "decide",
+                                "read": None,
+                                "decision": decision(action),
+                            },
+                        ),
                     )
                 ],
                 usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -931,11 +967,14 @@ def test_rejected_tool_read_retains_attempt_but_never_delivers_another_objects_c
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "operation": "read_artifact",
-                        "read": {"kind": "read_artifact", "artifact": "sealed", "version": 1},
-                        "decision": None,
-                    },
+                    output_args(
+                        info,
+                        {
+                            "operation": "read_artifact",
+                            "read": {"kind": "read_artifact", "artifact": "sealed", "version": 1},
+                            "decision": None,
+                        },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -952,12 +991,12 @@ def test_rejected_tool_read_retains_attempt_but_never_delivers_another_objects_c
         run = wait_finished(client, run_id)
         assert run["summary"]["status"] == "failed" and run["state"] == initial
         assert run["summary"]["usage"]["requests"] == 1
-        operation = run["activations"][0]["operations"][0]
-        assert operation["request"]["read"]["artifact"] == "sealed"
-        assert (
-            operation["status"] == "rejected"
-            and operation["result"] == "Artifact operation is unavailable"
-        )
+        assert run["activations"][0]["operations"] == []
+        assert run["activations"][0]["stop_reason"] == "provider_failure"
+        raw = client.get(f"/api/requests/{run['requests'][0]['id']}").json()
+        assert raw["status"] == "failed"
+        assert "sealed" in json.dumps(raw["response"])
+        assert "hidden-83" not in json.dumps(raw)
         assert "hidden-83" not in json.dumps(run["activations"])
         assert client.post(f"/api/runs/{run_id}/verify").json()["verified_reads"] == 0
 
@@ -969,7 +1008,12 @@ def test_replay_rejects_forged_terminal_evidence_without_spending(tmp_path, monk
 
     async def respond(_messages, info):
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision({"kind": "submit_artifacts"}))],
+            parts=[
+                ToolCallPart(
+                    info.output_tools[0].name,
+                    output_args(info, decision({"kind": "submit_artifacts"})),
+                )
+            ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 

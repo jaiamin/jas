@@ -33,6 +33,7 @@ from backend.tests.test_claim_support import (
     source as participant_source,
 )
 from backend.tests.test_researcher_tools import scripted
+from benchmarks.provider_fixtures import output_args
 
 ACTORS = ["alder", "birch", "cedar", "dune", "elm", "fern"]
 
@@ -167,7 +168,7 @@ def test_owned_work_atomically_versions_its_artifact_and_spends_materials(tmp_pa
             {"kind": "wait_workflow"},
         )
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, decision(action)))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -263,7 +264,7 @@ def test_delayed_work_requires_accepted_handoff_before_dependent_start(tmp_path,
             {"kind": "wait_workflow"},
         )
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, decision(action)))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -770,7 +771,7 @@ def test_real_tool_harness_reads_privately_then_proposes_work_with_matching_inst
             }
         )
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, output)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, output))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -828,15 +829,18 @@ def test_tool_interruption_preserves_pure_read_unknown_usage_and_entire_world(
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "operation": "read_artifact",
-                        "decision": None,
-                        "read": {
-                            "kind": "read_artifact",
-                            "artifact": "intake_record",
-                            "version": 1,
+                    output_args(
+                        info,
+                        {
+                            "operation": "read_artifact",
+                            "decision": None,
+                            "read": {
+                                "kind": "read_artifact",
+                                "artifact": "intake_record",
+                                "version": 1,
+                            },
                         },
-                    },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -968,7 +972,7 @@ def test_workflow_sources_rebind_all_six_roles_pin_revisions_and_reject_prior_co
         assert client.delete(f"/api/environments/{source['id']}?revision=2").status_code == 200
         assert client.get(f"/api/studies/{study['id']}").json()["design"] == reused
         exported = client.get(f"/api/studies/{study['id']}/export").json()
-        assert exported["version"] == 19
+        assert exported["version"] == 20
         assert exported["study"]["design"]["environment_source"] == source
         rejected = client.post(
             "/api/design/use-environment",
@@ -1010,7 +1014,7 @@ def test_work_handoff_and_delayed_mail_have_recipient_scoped_actual_input_receip
             (observation["logical_time"], observation["you"]["key"]), {"kind": "wait_workflow"}
         )
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, decision(action)))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -1077,13 +1081,20 @@ def test_workflow_tool_read_needs_bounded_content_and_a_provider_receipt(
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "operation": "read_artifact" if read else "decide",
-                        "read": {"kind": "read_artifact", "artifact": "intake_record", "version": 1}
-                        if read
-                        else None,
-                        "decision": None if read else decision({"kind": "wait_workflow"}),
-                    },
+                    output_args(
+                        info,
+                        {
+                            "operation": "read_artifact" if read else "decide",
+                            "read": {
+                                "kind": "read_artifact",
+                                "artifact": "intake_record",
+                                "version": 1,
+                            }
+                            if read
+                            else None,
+                            "decision": None if read else decision({"kind": "wait_workflow"}),
+                        },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -1365,7 +1376,7 @@ def test_pause_duplicate_controls_and_restart_keep_one_atomic_work_settlement(
             (observed["logical_time"], observed["you"]["key"]), {"kind": "wait_workflow"}
         )
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, decision(action)))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -1468,6 +1479,7 @@ from pydantic_ai import models
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.usage import RequestUsage
+from benchmarks.provider_fixtures import output_args
 models.ALLOW_MODEL_REQUESTS = False
 app = create_app(sys.argv[1], static_dir=Path(sys.argv[2]).parent / "static")
 calls = 0
@@ -1485,10 +1497,10 @@ async def respond(messages, info):
         elif observation["logical_time"] == 1:
             action = {"kind": "perform_work", "work": "intake", "expected_version": 1,
                       "content": {"batch": 17}, "sources": []}
-    return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, {
+    return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, output_args(info, {
         "action": action, "rationale": "DEVELOPMENT restart witness",
         "memory": "", "forecast": None,
-    })], usage=RequestUsage(input_tokens=100, output_tokens=50))
+    }))], usage=RequestUsage(input_tokens=100, output_tokens=50))
 app.state.models.models["openai:gpt-6-luna"] = FunctionModel(function=respond)
 with TestClient(app, base_url="http://localhost") as client:
     value = json.loads(Path(sys.argv[2]).read_text())
@@ -1622,7 +1634,7 @@ def test_actual_http_claim_conflict_uses_priority_despite_provider_delay(
             else {"kind": "wait_workflow"}
         )
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, decision(action)))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -1740,7 +1752,7 @@ def test_public_nine_material_alternative_records_all_six_actual_participants_an
             (observed["logical_time"], observed["you"]["key"]), {"kind": "wait_workflow"}
         )
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision(action))],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, decision(action)))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 

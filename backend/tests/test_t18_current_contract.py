@@ -19,6 +19,7 @@ from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 from test_fallible_adjudication import finished
 
+from benchmarks.provider_fixtures import output_args
 from benchmarks.research_baseline import design_for
 
 ROOT = Path(__file__).absolute().parents[2]
@@ -57,7 +58,7 @@ def test_frozen_current_contract(case_index, indices, tmp_path, monkeypatch):
         assert info.function_tools == [] and info.allow_text_output is False
         seen.append(copy.deepcopy(turn))
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, turn["decision"])],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, turn["decision"]))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 

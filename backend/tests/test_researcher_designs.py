@@ -126,21 +126,9 @@ def provider(client, monkeypatch, design, *, brief=None, candidate=None, review=
     requests = []
 
     async def respond(messages, info):
-        prompt = json.loads(messages[-1].parts[0].content)
+        from backend.tests.conftest import planning_prompt
 
-        def resolve(value):
-            if isinstance(value, dict):
-                if "shared_input" in value:
-                    return {
-                        **prompt["shared_prompt_inputs"][value["shared_input"]],
-                        **value["overrides"],
-                    }
-                return {key: resolve(child) for key, child in value.items()}
-            if isinstance(value, list):
-                return [resolve(child) for child in value]
-            return value
-
-        prompt = resolve(prompt)
+        prompt = planning_prompt(messages[-1].parts[0].content)
         requests.append({"model": info.model_settings, "prompt": copy.deepcopy(prompt)})
         if "operations_remaining" in prompt:
             payload = (

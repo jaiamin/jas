@@ -11,6 +11,7 @@ from pydantic_ai.models.function import DeltaToolCall, FunctionModel
 from pydantic_ai.usage import RequestUsage
 
 from backend.tests.test_fallible_adjudication import GUIDANCE, RULING, finished, protocol
+from benchmarks.provider_fixtures import output_args
 
 
 def test_researcher_provider_index_separates_judge_cost_at_its_frozen_cutoff(tmp_path):
@@ -34,12 +35,15 @@ def test_researcher_provider_index_separates_judge_cost_at_its_frozen_cutoff(tmp
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "action": next(actions),
-                        "rationale": "Controlled cost witness.",
-                        "memory": "",
-                        "forecast": None,
-                    },
+                    output_args(
+                        info,
+                        {
+                            "action": next(actions),
+                            "rationale": "Controlled cost witness.",
+                            "memory": "",
+                            "forecast": None,
+                        },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=101, output_tokens=37),
@@ -65,7 +69,7 @@ def test_researcher_provider_index_separates_judge_cost_at_its_frozen_cutoff(tmp
         else:
             result = RULING
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, result)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, result))],
             usage=RequestUsage(input_tokens=41, output_tokens=19),
         )
 

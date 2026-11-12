@@ -22,6 +22,7 @@ from backend.tests.test_claim_support import claim_client as claim_client
 from backend.tests.test_claim_support import finish
 from backend.tests.test_claim_support import run as run_control
 from backend.tests.test_claim_support import source as evidence_source
+from benchmarks.provider_fixtures import output_args
 
 ACTORS = ["oak-7", "fen-2", "ash-9", "bay-4"]
 
@@ -311,7 +312,11 @@ def test_public_http_run_export_accounting_and_exact_call_free_replay(tmp_path, 
                 kind="choose_alternative", alternative="share" if actor == "oak-7" else "keep"
             )
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decide(**action).model_dump())],
+            parts=[
+                ToolCallPart(
+                    info.output_tools[0].name, output_args(info, decide(**action).model_dump())
+                )
+            ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -510,7 +515,7 @@ def test_current_contract_and_four_role_pinned_reuse_reject_previous_formats(tmp
         assert (opportunity["promisor"], opportunity["recipient"]) == ("member_1", "member_2")
         assert value["environment_source"] == source
         study, _ = save(client, value)
-        assert client.get(f"/api/studies/{study['id']}/export").json()["version"] == 19
+        assert client.get(f"/api/studies/{study['id']}/export").json()["version"] == 20
         incompatible = {**source, "format": "jas-environment-v5"}
         denied = client.post(
             "/api/design/use-environment",
@@ -731,7 +736,11 @@ def test_new_process_restores_sealed_reliance_and_queued_mail_without_calls(tmp_
         # Explicitly requested subsequent steps are new sampling, unlike restoration.
         async def resume(_messages, info):
             return ModelResponse(
-                parts=[ToolCallPart(info.output_tools[0].name, decide().model_dump())],
+                parts=[
+                    ToolCallPart(
+                        info.output_tools[0].name, output_args(info, decide().model_dump())
+                    )
+                ],
                 usage=RequestUsage(input_tokens=100, output_tokens=50),
             )
 
@@ -796,7 +805,7 @@ def test_tool_harness_uses_entrusted_evidence_with_pure_reads_and_complete_effor
                     "choose_alternative", alternative="share" if actor == "oak-7" else "keep"
                 ).model_dump()
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, payload)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, payload))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 

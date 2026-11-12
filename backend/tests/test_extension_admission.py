@@ -6,6 +6,8 @@ import pytest
 from agent_sim.api import create_app
 from fastapi.testclient import TestClient
 
+from benchmarks.provider_fixtures import output_args
+
 SOURCE = Path(__file__).with_name("fixtures").joinpath("t16_sealed_relay.wat").read_text()
 
 
@@ -138,12 +140,15 @@ def test_admitted_package_runs_through_normal_revision_evidence_and_replay(tmp_p
                 parts=[
                     ToolCallPart(
                         info.output_tools[0].name,
-                        {
-                            "action": {"kind": "relay", "operation": operation},
-                            "rationale": "Claimed success does not settle the World",
-                            "memory": "",
-                            "forecast": None,
-                        },
+                        output_args(
+                            info,
+                            {
+                                "action": {"kind": "relay", "operation": operation},
+                                "rationale": "Claimed success does not settle the World",
+                                "memory": "",
+                                "forecast": None,
+                            },
+                        ),
                     )
                 ],
                 usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -208,12 +213,15 @@ def test_restart_and_runtime_loss_never_sample_or_change_pinned_evidence(tmp_pat
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "action": {"kind": "relay", "operation": op},
-                        "rationale": "Finite fixture",
-                        "memory": "private actor note",
-                        "forecast": None,
-                    },
+                    output_args(
+                        info,
+                        {
+                            "action": {"kind": "relay", "operation": op},
+                            "rationale": "Finite fixture",
+                            "memory": "private actor note",
+                            "forecast": None,
+                        },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=10, output_tokens=5),
@@ -336,9 +344,7 @@ def test_unsupported_profiles_and_forged_packages_are_visible_fail_closed(tmp_pa
         forged["admission_id"] = "0" * 16
         forged["sha256"] = digest({key: value for key, value in forged.items() if key != "sha256"})
         design["environment_source"]["definition"]["extension"] = forged
-        design["environment_source"]["sha256"] = digest(
-            design["environment_source"]["definition"]
-        )
+        design["environment_source"]["sha256"] = digest(design["environment_source"]["definition"])
         worker_calls = []
         execute = isolated.execute
 
@@ -489,12 +495,15 @@ def test_inflight_isolated_transition_allows_pause_with_exactly_one_writer(tmp_p
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "action": {"kind": "relay", "operation": "lodge"},
-                        "rationale": "The relay has already succeeded",
-                        "memory": "private note",
-                        "forecast": None,
-                    },
+                    output_args(
+                        info,
+                        {
+                            "action": {"kind": "relay", "operation": "lodge"},
+                            "rationale": "The relay has already succeeded",
+                            "memory": "private note",
+                            "forecast": None,
+                        },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=10, output_tokens=5),
@@ -624,7 +633,7 @@ def test_scoped_tools_and_untrusted_results_preserve_privacy_and_accounting(
                 "forecast": None,
             }
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, value)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, value))],
             usage=RequestUsage(input_tokens=10, output_tokens=5),
         )
 
@@ -705,12 +714,14 @@ def test_scoped_tools_and_untrusted_results_preserve_privacy_and_accounting(
                 and run["turns"] == run["events"] == run["measurements"] == []
             )
             assert usage["requests"] == 1
-            assert run["requests"][0]["status"] == "complete"
             assert run["activations"][0]["status"] == "failed"
-            assert run["activations"][0]["operations"][-1]["status"] == "rejected"
             if case == "denied_tool":
-                assert "not authorized" in run["activations"][0]["operations"][-1]["result"]
+                assert run["requests"][0]["status"] == "failed"
+                assert run["activations"][0]["operations"] == []
+                assert run["activations"][0]["stop_reason"] == "provider_failure"
             else:
+                assert run["requests"][0]["status"] == "complete"
+                assert run["activations"][0]["operations"][-1]["status"] == "rejected"
                 assert "consequence differs" in run["activations"][0]["operations"][-1]["result"]
         exported = client.get(f"/api/studies/{sid}/export").json()
         assert len(exported["requests"]) == usage["requests"]

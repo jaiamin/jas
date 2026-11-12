@@ -18,6 +18,7 @@ from backend.tests.test_coordination_integration import protocol as coordination
 from backend.tests.test_reliance_commitments import ACTORS as RELIANCE_ACTORS
 from backend.tests.test_reliance_commitments import protocol as reliance_protocol
 from backend.tests.test_workflow_integration_review import review_protocol
+from benchmarks.provider_fixtures import output_args
 
 
 def artifact_protocol(*, harness="tool_using", compact=False, memory="episodic"):
@@ -117,7 +118,7 @@ def test_artifact_tool_exposure_requires_actual_bounded_content_and_delivery(
             "decision": None if read else decision({"kind": "stop"}),
         }
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, output)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, output))],
             usage=RequestUsage(input_tokens=71, output_tokens=29),
         )
 
@@ -189,7 +190,9 @@ def test_direct_artifact_read_content_is_bound_to_the_next_actual_request(
 
     async def respond(_messages, info):
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision(next(actions)))],
+            parts=[
+                ToolCallPart(info.output_tools[0].name, output_args(info, decision(next(actions))))
+            ],
             usage=RequestUsage(input_tokens=71, output_tokens=29),
         )
 
@@ -218,16 +221,25 @@ def test_replay_checks_rejected_artifact_read_receipts(tmp_path, monkeypatch, co
     from agent_sim.db import ParticipantOperation
     from sqlalchemy import select
 
+    # A permitted name with an unavailable version reaches World rejection;
+    # invented names are now rejected by the strict provider contract earlier.
     async def respond(_messages, info):
         return ModelResponse(
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "operation": "read_artifact",
-                        "read": {"kind": "read_artifact", "artifact": "unavailable", "version": 1},
-                        "decision": None,
-                    },
+                    output_args(
+                        info,
+                        {
+                            "operation": "read_artifact",
+                            "read": {
+                                "kind": "read_artifact",
+                                "artifact": "thermometer",
+                                "version": 2,
+                            },
+                            "decision": None,
+                        },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=71, output_tokens=29),

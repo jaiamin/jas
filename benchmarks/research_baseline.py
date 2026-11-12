@@ -21,6 +21,7 @@ from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
 from benchmarks.provenance import backend_digest
+from benchmarks.provider_fixtures import output_args
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = ROOT / "benchmarks/research-cases.json"
@@ -130,7 +131,7 @@ def provider_for(case):
             "forecast": None,
         }
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, decision))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 

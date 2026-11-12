@@ -15,6 +15,7 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
 from benchmarks.research_baseline import snapshot, write_json
 
 CASES = Path(__file__).with_name("reference-policy-cases.json")
@@ -45,7 +46,7 @@ def provider():
             }
             value = {"operation": "decide", "decision": decision} if capable else decision
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, value)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, value))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
             model_name="t15-development-v1",
         )

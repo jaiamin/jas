@@ -49,7 +49,6 @@ from .finite_profile import (
 from .finite_profile import (
     validate_package as validate_finite_package,
 )
-from .generation_store import GenerationStore
 
 CASES = Path(__file__).with_name("extension_qualification.json")
 
@@ -165,7 +164,6 @@ class Extensions:
         )
         self.lock = RLock()
         self.runtime = ExtensionRuntime()
-        self.generations = GenerationStore(self.root / "generations")
 
     def freeze_contract(self, specification: FiniteContract) -> ReviewedFiniteContract:
         with self.lock:

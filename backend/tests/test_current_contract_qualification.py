@@ -15,6 +15,7 @@ from pydantic_ai.usage import RequestUsage
 
 from backend.tests.current_contract_oracle import INSTRUCTIONS, observations
 from backend.tests.test_claim_support import run as control
+from benchmarks.provider_fixtures import output_args
 from benchmarks.research_baseline import CASES, design_for
 
 MATRIX = [
@@ -128,12 +129,15 @@ def test_fresh_current_contract_complete_public_workflow(
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "action": actions[index],
-                        "memory": "",
-                        "forecast": None,
-                        "rationale": "Independent literal current-contract witness.",
-                    },
+                    output_args(
+                        info,
+                        {
+                            "action": actions[index],
+                            "memory": "",
+                            "forecast": None,
+                            "rationale": "Independent literal current-contract witness.",
+                        },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -201,7 +205,7 @@ def test_fresh_current_contract_complete_public_workflow(
                 assert len(exposure["membership"]["requests"]) == cutoff
                 assert exposure["delivery"]["confirmed_requests"] == cutoff
             exported = client.get(f"/api/studies/{sid}/export").json()
-            assert exported["version"] == 19
+            assert exported["version"] == 20
             assert len(exported["activations"]) == len(exported["requests"]) == count
             assert len(exported["runs"][0]["evidence"]) == count + 1
             assert [microdollars(r["cost_usd"]) for r in exported["requests"]] == [35] * count

@@ -61,12 +61,14 @@ its data volume.
 
 Configuration uses `JAS_*`; the command is `jas`. The default database is
 `data/jas.sqlite3`; Compose stores it in `jas-data`.
-The sole current contract is database15, `jas-study` export19,
-`jas-environment-v10`/definition2, research-operation2 and generation-event-v2.
+The sole current contract is database16, `jas-study` export20,
+`jas-environment-v10`/definition2 and research-operation2.
 Incompatible databases, library records and rule checkpoints are rejected on
 inspection, export, execution and replay. There are no migrations, compatibility
 readers or automatic resets. Start with a fresh database when changing contracts;
-removing existing data requires an explicit user decision.
+removing existing data requires an explicit user decision. Database16 removes
+the retired autonomous-investigation and mechanic-generation storage. Preserve
+schema15 workspaces separately; they are not upgraded or reset automatically.
 Capture1/comparison1/tool2.0/direct1.0 remain current.
 
 ### Evidence downloads
@@ -82,7 +84,7 @@ reserved property absent from the source evidence. An object containing only tha
 property references `shared_values[its value]`; resolve recursively. Other objects,
 including JSON Schema `$ref` fields, remain literal data. Removing `representation`,
 `reading_guide`, `overview`, `reference_key` and `shared_values` after resolution
-recovers the exact full export19 content. These references change representation,
+recovers the exact full export20 content. These references change representation,
 not evidence meaning or persisted versions.
 
 `GET /api/studies/{id}/export?download=true` returns the portable representation;

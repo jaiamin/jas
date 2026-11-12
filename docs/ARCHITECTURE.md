@@ -7,7 +7,7 @@ remain ordered. Only explicit user actions create paid work. Restart pauses inte
 ## Storage
 
 SQLAlchemy 2 typed mappings; SQLite WAL, foreign keys and busy timeout. Startup creates
-schema15 for fresh workspaces and rejects incompatible schemas. Local transactions
+schema16 for fresh workspaces and rejects incompatible schemas. Local transactions
 commit each turn's input, decision, consequences, metrics and checkpoint together.
 
 | Record | Purpose / invariant |
@@ -21,9 +21,8 @@ commit each turn's input, decision, consequences, metrics and checkpoint togethe
 | Event | Typed consequence with actor, recipient, visibility and structured payload. |
 | Measurement | Versioned metric value, denominator and turn/round. Null rates stay null. |
 | Analysis | Design proposal, general conversation or scoped analysis; explicit question, answer and status. Scoped analysis freezes evidence cutoffs. |
-| Investigation | Immutable displayed authorization, parent workflow status, work counters, retained attempts, decisions and frozen confirmation. |
 | Annotation | Researcher interpretation attached to a specific run/turn. |
-| Provider call | Reservation before sending; actual or unknown usage after. Atomic workspace/study/investigation ceilings. |
+| Provider call | Reservation before sending; actual or unknown usage after. Atomic workspace/study ceilings. |
 
 Use relational keys/indexes for identity, joins, selection and time series. Use JSON for
 versioned immutable specifications and environment-specific payloads. Do not turn all domain
@@ -44,20 +43,30 @@ and requests settle; roll back every change on rejection. Provider-call usage/st
 records survive with deleted foreign keys detached and request/response payloads cleared;
 workspace charges and ceilings never reset. This requires no schema change. UI deletion
 requires explicit confirmation; local browser drafts remain recoverable.
-Investigation-bound studies retain their evidence and attempts; ordinary deletion
-and external revision mutation are rejected.
 
 ## Experiment design
 
 The planner scopes the question and justifies agents, conditions, seeds, repetitions and
 rounds; optionally retrieves public methodological research; drafts a typed protocol; validates
 its invariants; and obtains a separate critique. At most three protocol revisions resolve
-validation/review feedback. Provider failures stop visibly without retries or substitution.
+validation/review feedback. Transport failures stop visibly without retries or substitution.
 Declared factorials require complete computed condition-grid coverage; the originating brief
 is checked again at save and execution. Coupled fields count as one bundle; partial designs
 remain allowed without a full-factorial claim.
 Proposal stages, research sources, reviews and provider traces remain Analysis data.
 Revisions record the originating proposal; exports retain that proposal and its requests.
+Optional web research is advertised only when the configured search model and remaining
+workspace headroom cover its conservative reservation; dispatch still reserves atomically.
+Unavailable search cannot be claimed as completed research. Synthetic studies may state
+their assumptions; requests requiring verified external facts need clarification. A material
+user choice discovered during final review also returns a clarification without an executable
+draft, rather than exhausting protocol revisions on a choice the planner cannot make.
+
+A malformed planner draft enters the existing visible three-candidate validation
+allowance, with its failed provider call and exact validation issues retained. A
+corrected draft must still pass full domain validation, probes and review; artifact
+content limits are unchanged. Transport failures, refusals and token truncation do
+not trigger draft correction. Participant requests never retry implicitly.
 
 Browser drafts preserve unfinished visual edits and raw JSON per source document;
 assistant visibility and other presentation parameters do not change draft identity. Invalid drafts
@@ -69,7 +78,7 @@ revisions and run matrices; saving does not start execution.
 An optional version1 analysis plan pins named calculations or explicit manual outcomes
 with the immutable revision. The findings endpoint uses a repeatable read, the existing
 matched-comparison engine and integer execution ledgers; unknown usage stays visible.
-It excludes Researcher spending from participant/judge effort. Export19 computes the
+It excludes Researcher spending from participant/judge effort. Export20 computes the
 same report inside its existing evidence snapshot. Scientific diagnostics remain
 separate from mechanical preflight and never certify scientific validity.
 
@@ -126,7 +135,7 @@ Unscoped follow-ups return to general intent selection; proposals never save or 
 automatically. All unscoped entry points, including Agent, use this shared server
 harness; the UI has no manual creation mode. Home has no scope selector; Agent
 defaults to no selected experiment and offers existing experiment/run evidence selection.
-Investigation history matches the chat,
+Analysis history matches the chat,
 exact scope and purpose, and citations still require inspected turns within frozen cutoffs.
 The model receives up to three completed prior turns; design refinements include previous
 proposals and revalidate all rules. Complete transcripts remain saved and visible.
@@ -141,43 +150,8 @@ the composer checks the configured assistant provider for ordinary messages.
 The automatic handoff uses the configured planner provider and reports its failures;
 explicit retries of failed proposals keep their design purpose and planner provider.
 
-The explicit Investigate control uses `POST /api/investigations`. Its displayed
-authorization fixes the question, installed worlds, participant harnesses, Sol
-Researcher/Luna participant identities, investigation/study spending ceilings,
-request/run/turn/operation/revision limits, population/horizon and stopping policy.
-Authorization is persisted before the workflow starts. A server-owned parent
-Analysis occupies one pending chat turn and retains the investigation identity;
-ordinary follow-ups cannot overlap it. `GET /api/investigations/{id}` restores
-scope, attempts, decisions, charges and source-linked run progress without spending.
-`POST /api/investigations/{id}/control` requests pause, resume or cancellation.
-
-`investigations.py` composes existing Assistants/Planner, Research revisions,
-Engine run writers and read-only analysis. Planner context includes the immutable
-authorization; its checked output must still fit the allowed world, model,
-harness, population, horizon and remaining run allowance before saving/rollout.
-Each pilot retains a separate revision. Confirmatory trials record the exact
-protocol/hash, run identities and stopping policy before their first request.
-Frozen decisions cannot be edited through ordinary revision routes. Material
-ambiguity, changed scope, failed work and exhaustion stop visibly with evidence.
-
-Nested analyses and runs bind each provider request to the parent investigation.
-The existing ledger transaction reserves investigation, study and workspace
-ceilings together before send; a refused ceiling rolls all three back. Each
-request settles independently to actual usage or retains an unknown reservation.
-Work counters are durable and bounded separately. Pause commits an in-flight final
-decision; explicit resume continues from the committed cursor. Restart restores
-paused parents and retains accounting without automatic spending. The
-[product review](research/FINAL_PRODUCT_REVIEW.md) records lifecycle/UI qualification
-and its limits; the [compact history](research/RESEARCH_HARNESS_COMPACT_REPORT.md) summarizes earlier
-development history.
-
-The parent result reports recorded complete/failed/missing run counts and exact
-cutoffs with descriptive, missingness and small-sample limits. Separately billed
-model analysis remains an interpretation. Workflow completion does not certify
-research validity, causal effects, intelligence or private motives.
-
 The Researcher can dispatch `capabilities`, `context` and `probe` operations through
-the same general-answer or scoped-investigation loop. There are at most three
+the same general-answer or scoped-analysis loop. There are at most three
 batches of four operations and one answer-only final request (four separately
 reserved/settled Researcher requests); the existing planner has its own bounded
 handoff. Identical operations reuse their retained result. Ordinary answers need
@@ -185,9 +159,8 @@ no operation or protocol. Provider errors stop without a retry or substitution.
 
 `Analysis.output.research` is a version-2 artifact envelope containing
 the chat, capture time, selected run cutoffs, operation IDs, requests, public
-results, source IDs/content hashes and terminal reason. Version2 adds explicitly
-authorized finite generation and immutable contract/artifact/check/admission source
-links. Version1 is not a current contract; earlier databases/exports/library
+results, source IDs/content hashes and terminal reason, including immutable
+contract/artifact/check/admission source links. Version1 is not a current contract; earlier databases/exports/library
 definitions are rejected without reinterpretation, migration or reset. Pending
 operations are persisted before dispatch. Failures,
 interruption and restart retain completed artifacts and mark unfinished work
@@ -234,7 +207,7 @@ participants, roles, conditions, opportunity-based horizon/stopping, replication
 Material clarification keeps the same conversation without an executable proposal. Unsupported
 questions retain their original text and may offer explicitly narrower installed alternatives.
 These planning additions are research artifacts. The combined current contract is
-DB15/export19/capture1/comparison1/library10/tool2.0/direct1.0. Installed
+DB16/export20/capture1/comparison1/library10/tool2.0/direct1.0. Installed
 three-participant distributed coordination includes phase/conflict rules and logical addressed
 mail; solo artifact investigation remains sequential. A decline whose direct requirements and
 population have an installed example witness receives a bounded, recorded scoping recheck.
@@ -295,7 +268,7 @@ commitments through the same settlement, artifact and logical-time seams.
 Reliance rule1.0.1 checks promise feasibility against the currently scheduled
 future decision slots, including the exclusive deadline. Incompatible rule
 checkpoints are rejected on inspection, export, execution and replay.
-The current combined contract is DB15/export19/library10.
+The current combined contract is DB16/export20/library10.
 The promise-time forecast assumes the current schedule; later withdrawals can
 change that cadence. A recorded actual fulfillment opportunity establishes
 feasibility for settlement even when the original schedule forecast was false.
@@ -359,7 +332,7 @@ structural object/requirement edits also use the existing JSON editor. The revie
 shows requirements and ACLs; the run view links versions and terminal results to
 recorded turns. Reusable mechanics extract/rebind ACL roles and retain complete
 immutable source snapshots, independently of population, model, harness and memory.
-DB15, export19, comparison1 and `jas-environment-v10`/definition2 are the current contract.
+DB16, export20, comparison1 and `jas-environment-v10`/definition2 are the current contract.
 Older database/library versions fail explicitly; preserve them with their source.
 No migration, compatibility reader or reset is performed. Controlled-world rules
 remain unchanged. Generated execution uses its separate admission profile.
@@ -385,9 +358,9 @@ cannot grant access, change facts, execute code or create a visitor response.
 
 The existing request ledger reserves and settles purpose `adjudication`, owned
 by the study/run/turn with no participant activation ID. Judge costs therefore
-remain separate from participant effort. Current investigation authorization
-has no displayed judge identity/scope and rejects adjudicated proposals and
-judge reservations; researcher identity does not authorize judge work.
+remain separate from participant effort. Judge identity, scope and prices require
+explicit review before participant execution; researcher identity does not
+authorize judge work.
 
 Pause before a judge reservation retains the recorded decision for explicit
 Resume without resampling the participant. Pause during a judge request lets
@@ -435,23 +408,11 @@ dynamic information policy, arbitrary programs, imports and external systems are
 unsupported. Static actor-private facts remain outside the guest and other actors'
 observations/schemas/memories.
 
-An explicit per-question generation allowance selects the frozen contract and
-caps candidates, all nested Sol requests, input/output and spend. Sol returns an
-explicit candidate WAT artifact; no production answer/compiler/catalog selector
-supplies it. Hash-linked append-only v2 generation records/events retain candidate,
-validation, independent check, admission, reusable source, explicit repair link,
-stop reason and each generator request's reservation/settlement/cost receipt.
-Prior unversioned/v1 generation events are rejected explicitly.
 Only actual independent admission permits the normal World/library/revision path.
 The trusted table mediates every guest proposal and enforces conservation, actor
 permissions, complete checkpoints and unsuccessful horizon/stop consequences.
-Generation and checking do not sample participants. The resulting experiment awaits
-review and separate execution. Each Researcher/generator/planner request reserves
-and settles separately; any investigation/study/workspace ceiling also applies in
-the same atomic reservation. Source-attributed deterministic qualification is
-recorded in the [product review](research/FINAL_PRODUCT_REVIEW.md), with current
-merge gates in [merge-readiness repairs](research/MERGE_READINESS_FIXES.md).
-Live competence and held-out generation remain unverified.
+Validation does not sample participants. Experiments await review and a separate
+execution action; model-assisted artifact generation is not supported.
 
 
 ## Distributed information and consequential choice
@@ -532,10 +493,9 @@ provider request confirms input inclusion, separately from availability or inten
 Frozen analysis lenses recompute nonfinancial reliance value/eligibility while
 financial utility remains null; Sol analysis is separately billed from Luna work.
 
-The current contract is DB15/export19/library10/definition2, with
-research-operation2 and generation-event-v2. It includes typed commitments,
-admitted packages, durable investigation ownership, institutional workflow,
-externally reviewed finite generation and declared fallible adjudication.
+The current contract is DB16/export20/library10/definition2, with
+research-operation2. It includes typed commitments, independently admitted
+packages, institutional workflow and declared fallible adjudication.
 Incompatible persisted meanings are rejected without a compatibility reader,
 migration or reset. Capture1/comparison1/tool2.0/direct1.0 remain current.
 
@@ -633,16 +593,13 @@ independently. Public-history-only memory is the
 control for private notes; notes versus episodic retention isolates retrieved experiences.
 Renewable stocks can begin depleted independently of their carrying capacity.
 
-Every Analysis has an indexed conversation identity. Study export v19 (`jas-study`)
-includes investigation authorization, decisions and attempts, every revision and its
-runs, actual recorded rule versions, exact turn evidence and provider traces; it batches
-journal queries. It also retains the linked question's complete immutable generation
-attempts (including failures and repairs), external contracts/checks/admission/source,
-generation authorization/counters and exact integer reserved/charged request ledgers.
+Every Analysis has an indexed conversation identity. Study export v20 (`jas-study`)
+includes every revision and recorded run, participant activations/operations,
+analysis snapshots and exact integer reserved/charged request ledgers.
 Incompatible contracts are rejected without reinterpretation or migration.
 Downloads remain plain JSON. `?download=true` uses self-contained `shared-values-v1`
 references for repeated values, plus a readable overview/guide. Resolving references
-recovers the exact expanded export19 returned to ordinary API callers. The reserved
+recovers the exact expanded export20 returned to ordinary API callers. The reserved
 reference property is chosen to avoid collisions with literal evidence/schema fields.
 Snapshot capture finishes before sharing values in a worker; no provider calls occur.
 Frozen-analysis downloads use the same representation and a connection-bound snapshot,
@@ -657,6 +614,24 @@ are explicitly marked outside the current context, not silently summarized or co
 as inspected. Full frozen sources and claim checking remain unchanged; later turns
 and unselected runs remain inaccessible. An overview is not a claim of exhaustive review.
 
+Protocol planning shares repeated condition parameters and input subtrees losslessly,
+including rejected drafts. Once scoped, discovery retains complete rules for every
+compatible World and the rejected candidate's World, so revision can correct a wrong
+selection without resending the entire catalog. Validation and output bounds remain
+authoritative. General chat budgets prior proposals and retrieved results separately
+from the complete planner handoff: oversized values carry explicit retrieval metadata,
+and same-scope context requests select nested paths and pages (string pages count
+characters). Stored protocols, documents and operation results remain unchanged.
+These projections reduce context growth; finite model input/output, request-count and
+spending limits still apply, and external/provider failures remain visible.
+Researcher context also supplies the actual typed participant-harness configurations,
+separately from World capabilities. Scoping and protocol review distinguish a harness
+comparison on simulated evidence from live service integrations or intervention effects.
+An unsupported scope receives one bounded semantic review before a final decline;
+material clarification returns immediately. This additional scoping request is ledgered.
+Explicit operational requirements remain authoritative, and the shared experiment budget
+must not be described as independently enforced equal per-harness dollar ceilings.
+
 Participant harnesses (`participants.py`; direct action 1.0.0, tool using 2.0.0) are condition factors,
 independent of provider/model assignments and World. Direct action preserves the
 single structured-decision request and its observation. Tool using owns a bounded
@@ -664,6 +639,28 @@ application loop: each inference uses `LanguageModels.generate` once with its ow
 atomic reservation/settlement. Only the active actor's observation, rules and legal
 options can be read; no operation accepts an actor or state selector. World.step
 independently validates the final decision. Reads never advance logical time.
+The final available model request is decision-only; exhausting the tool allowance also
+makes the next request decision-only. The output schema enforces that boundary while the
+participant chooses the legal World action. Request/tool limits do not increase and no
+action or additional observation is supplied automatically. Paused activations
+retain their original consumed allowances; recorded failures are never rewritten.
+
+Participant provider responses use closed, strict operation records. A tool response
+contains one `request` variant with only its selected payload; only configured
+operations and authorized artifact read targets are offered. Writable artifact targets
+also pin the current authorized version as their write precondition. Arbitrary content
+travels as unique key/value entries and is decoded into the existing World object
+before validation. Canonical saved decisions, journals, permissions and replay remain
+unchanged; duplicate content keys are rejected rather than overwritten.
+
+Tool context compaction first removes repeated history from requested observations,
+marking `omitted_fields`, and retains the latest authorized action/version directory
+before replacing complete operations with receipts. It never fetches another
+observation, widens access or increases the declared character budget. Exposure binds
+retained fields individually: a partial observation does not count as full delivery,
+and omitted history cannot count as received evidence. Complete results remain in
+the immutable journal. Request/tool allowances reset at the next World activation;
+`decide` commits one action, while `stop` ends the run without submission.
 
 Scripted harness 1.0.0 runs declared non-model controls through that same activation,
 World settlement and replay path. `reference_policies.py` implements keep credits,
@@ -795,7 +792,7 @@ receipt establishes inclusion; pending proposals and queued mail cannot supply i
 Applying a different lens changes its
 requirements/account without rewriting the source analysis. Unsupported lens
 versions are rejected without conversion; historical analyses without a lens
-remain unassessed and cannot supply lens inputs. Database15/export19/capture1/
+remain unassessed and cannot supply lens inputs. Database16/export20/capture1/
 comparison1/libraryv10 and harness contracts retain the analysis lens meanings;
 the combined persistence change provides no migration or reset.
 
@@ -862,7 +859,7 @@ the experiment adapts those examples. Editing/deleting a reusable environment ne
 or pending experiment rules, run checkpoints, exports or evidence. The planner receives up to
 12 recent definitions as untrusted examples; new proposals still undergo scope mapping,
 parameter-specific capability checks, preflight and critique. Library CRUD never starts a model
-call or run. Database schema15, export19 and libraryv10 reject incompatible versions explicitly; there is
+call or run. Database schema16, export20 and libraryv10 reject incompatible versions explicitly; there is
 no adapter, migration or automatic reset. See [custom environments](CUSTOM_ENVIRONMENTS.md).
 
 ### Failure-aware comparisons
@@ -895,7 +892,7 @@ Analysis submissions synchronously freeze cutoffs, dispositions, terminal metric
 eligibility, revision/hash and calculations before the server task runs. Progress,
 reconnect, failure and export preserve that snapshot across later run completion or
 new revisions. Analysis reads do not append participant evidence or provider calls.
-Study export v19 includes this versioned comparison contract and persisted analysis
+Study export v20 includes this versioned comparison contract and persisted analysis
 snapshots. Historical evidence is never backfilled with invented states.
 
 T15 adds self-versioned participant configurations and effort captures to comparison1
@@ -944,9 +941,8 @@ artifact. Inspection/export/replay remain
 read-only. Exposure-conditioned descriptions are post-treatment selections, not
 automatic causal effects; inclusion establishes no attention, belief or intent.
 
-Current export v19 retains exposure capture v1, its complete chain and frozen
-analysis artifacts. Database15/export19/library10 includes institutional work,
-external finite generation authorization and per-question request/candidate/charge
-counters. Incompatible persisted meanings reject explicitly.
+Current export v20 retains exposure capture v1, its complete chain and frozen
+analysis artifacts. Database16/export20/library10 includes institutional work and
+independently admitted finite packages. Incompatible persisted meanings reject explicitly.
 Exposure provenance alone does not alter controlled-world
 settlement, prompts or checkpoint replay. No migration or reset is performed.

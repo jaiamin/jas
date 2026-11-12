@@ -11,6 +11,8 @@ from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 from test_participant_harnesses import decision, protocol, save, step, wait_finished
 
+from benchmarks.provider_fixtures import output_args
+
 
 @pytest.fixture
 def context_client(tmp_path, monkeypatch):
@@ -23,7 +25,7 @@ def context_client(tmp_path, monkeypatch):
         if callable(value):
             value = value(prompt)
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, value)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, value))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
             model_name="t08-neutral-deterministic-v1",
         )
@@ -112,9 +114,7 @@ def test_retained_plans_and_retrieved_sources_respect_memory_policy(context_clie
     assert client.post(f"/api/runs/{run_id}/verify").json()["verified_turns"] == 3
 
 
-def test_past_retrieval_cutoff_does_not_claim_the_current_observation_round(
-    context_client, design
-):
+def test_past_retrieval_cutoff_does_not_claim_the_current_observation_round(context_client, design):
     client, responses, _ = context_client
     value = protocol(design, max_requests=3)
     value["rounds"] = 2
@@ -279,7 +279,8 @@ def test_disabled_capability_stops_explicitly_without_substitution(
     run = step(client, run_id)
     assert run["summary"]["status"] == "failed" and run["summary"]["turn"] == 0
     assert run["state"] == before and len(run["requests"]) == 1
-    assert run["activations"][0]["operations"][0]["status"] == "rejected"
+    assert run["activations"][0]["operations"] == []
+    assert run["activations"][0]["stop_reason"] == "provider_failure"
     assert prompts[0]["limits"]["capabilities"][capability] == "disabled"
     assert len(responses) == 1
 
@@ -305,7 +306,8 @@ def test_unexecuted_payload_cannot_silently_bypass_a_disabled_capability(context
     _, run_id = save(client, protocol(design, capabilities={"planning": "disabled"}))
     run = step(client, run_id)
     assert run["summary"]["turn"] == 0
-    assert run["activations"][0]["operations"][0]["status"] == "rejected"
+    assert run["activations"][0]["operations"] == []
+    assert run["activations"][0]["stop_reason"] == "provider_failure"
     assert len(run["requests"]) == 1
 
 
@@ -404,7 +406,7 @@ def test_paused_plan_receipts_restore_with_world_cutoff_and_remaining_effort(
             else finish()
         )
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, value)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, value))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 

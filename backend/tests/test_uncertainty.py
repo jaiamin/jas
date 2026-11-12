@@ -14,6 +14,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import DeltaToolCall, FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 
 @pytest.fixture
 def client(tmp_path, monkeypatch, request):
@@ -73,7 +75,7 @@ def execute(client, monkeypatch, rid, amount=0, *, fail=False, action="start"):
         decision["action"]["amount"] = amount
         decision["action"]["report"] = None
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, decision))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -163,7 +165,7 @@ def test_missing_arm_preserves_matrix_and_bounds_without_inventing_outcomes(
     assert failed["status"] == "failed" and failed["reason"]
     assert failed["metrics"] == {}
     exported = client.get(f"/api/studies/{sid}/export").json()
-    assert exported["version"] == 19
+    assert exported["version"] == 20
     assert exported["study"]["comparison"] == comparison
     assert exported["study"]["sha256"] == study["sha256"]
     for rid, record in before.items():
@@ -202,7 +204,7 @@ def test_analysis_freezes_planned_sample_before_late_completion_and_revision(
             output["action"]["amount"] = 10
             output["action"]["report"] = None
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, output)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, output))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 

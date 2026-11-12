@@ -896,7 +896,7 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
             assert row["output"]["introduction"] == "I can help with that."
         with db.session() as session:
             calls = session.scalars(select(ProviderCall)).all()
-            assert len(calls) == (2 if route == "proposal" else 1)
+            assert len(calls) == (3 if route == "proposal" else 1)
             assert all(call.analysis_id == row["id"] for call in calls)
             assert row["usage"]["requests"] == len(calls)
             assert session.get_one(Workspace, 1).charged == sum(call.charged for call in calls)
@@ -905,7 +905,7 @@ def test_general_intent_handoff_preserves_chat_scope_and_accounting(
         await assistant.close()
 
     asyncio.run(exercise())
-    assert len(planner_calls) == (1 if route == "proposal" else 0)
+    assert len(planner_calls) == (2 if route == "proposal" else 0)
 
 
 @pytest.mark.parametrize("failed", [False, True])

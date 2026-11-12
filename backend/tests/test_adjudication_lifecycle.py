@@ -1,4 +1,4 @@
-"""Real process restoration and declared investigation boundaries, with no live models."""
+"""Real process restoration and declared adjudication boundaries, with no live models."""
 
 import json
 import os
@@ -11,7 +11,6 @@ from agent_sim.api import create_app
 from fastapi.testclient import TestClient
 from pydantic_ai.models.function import FunctionModel
 from test_fallible_adjudication import GUIDANCE, RULING, protocol
-from test_investigation_review import authorize, install_provider, until
 
 
 @pytest.mark.parametrize("boundary", ["inflight", "settled-before-commit"])
@@ -29,6 +28,7 @@ from pydantic_ai import models
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.usage import RequestUsage
+from benchmarks.provider_fixtures import output_args
 from sqlalchemy import event, text
 models.ALLOW_MODEL_REQUESTS = False
 case = json.loads(Path(sys.argv[2]).read_text())
@@ -40,10 +40,10 @@ actions = iter([
     {"kind": "submit_artifacts"},
 ])
 async def author(messages, info):
-    return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, {
+    return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, output_args(info, {
         "action": next(actions), "rationale": "Literal development action.",
         "memory": "", "forecast": None,
-    })], usage=RequestUsage(input_tokens=101, output_tokens=37))
+    }))], usage=RequestUsage(input_tokens=101, output_tokens=37))
 def publish_ready():
     # The parent kills this process as soon as the signal appears.
     ready = Path(sys.argv[3])
@@ -133,29 +133,3 @@ with TestClient(app, base_url="http://localhost") as client:
         assert verified.status_code == 200, verified.text
         assert verified.json()["verified_turns"] == 1 and verified.json()["model_requests"] == 0
         assert client.get("/api/settings").json()["usage"] == usage
-
-
-def test_investigation_without_displayed_judge_scope_rejects_the_proposal(tmp_path, monkeypatch):
-    app = create_app(f"sqlite:///{tmp_path}/scope.sqlite3", static_dir=tmp_path / "static")
-    with TestClient(app, base_url="http://localhost") as client:
-        design = protocol()
-        design["question"] = "Does a solo author write then submit in an artifact workspace?"
-        design["response_tokens"] = 2048
-        sent, entered, release, _ = install_provider(client, monkeypatch, design)
-        try:
-            key = authorize(client, design)
-            row = until(
-                client,
-                key,
-                lambda row: row["status"] not in {"running", "pausing"} or entered.is_set(),
-            )
-            assert (
-                row["status"] == "stopped" and row["stop_reason"] == "adjudicator_outside_scope"
-            ), row
-            assert not entered.is_set()
-            assert row["runs"] == row["turns"] == 0
-            assert row["confirmation"] is None
-            assert not any(call["purpose"] == "adjudication" for call in row["ledger"])
-            assert not any("you" in call["prompt"] for call in sent)
-        finally:
-            release.set()

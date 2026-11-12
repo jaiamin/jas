@@ -125,6 +125,10 @@ for (const theme of ["light", "dark"]) {
             .filter((animation) => animation.playState === "running").length,
       );
     await expect.poll(playing).toBeGreaterThan(0);
+    await expect(assistantTarget.locator("[data-orbit]")).toHaveCount(2);
+    await expect(
+      assistantTarget.locator(":scope > circle:nth-child(3)"),
+    ).toHaveCSS("fill-opacity", "1");
     const target = await page
       .getByLabel("Assistant", { exact: true })
       .boundingBox();
@@ -221,7 +225,7 @@ for (const theme of ["light", "dark"]) {
     });
     await expect(activity).toBeVisible();
     await expect(assistantTarget).toHaveAttribute("data-agent-state", "idle");
-    await expect(assistantTarget.locator("[data-target-scan]")).toHaveCount(0);
+    await expect(assistantTarget.locator("[data-agent-orbits]")).toHaveCount(0);
     await page.emulateMedia({ reducedMotion: "no-preference" });
     expect(await playing()).toBe(0);
     await expect(

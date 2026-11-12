@@ -176,7 +176,9 @@ def test_chat_drafts_reviewable_protocol_and_keeps_invalid_output_blocked(
             "that one seed and one pair provide a single descriptive trajectory, not generalized "
             "inference; long-run learning beyond four rounds cannot be assessed."
         )
-    if not invalid_draft:
+    if invalid_draft:
+        outputs.extend([draft, draft])  # Three visible candidate revisions, still invalid.
+    else:
         outputs.append(review)
     if context == "general":
         outputs.insert(
@@ -217,7 +219,7 @@ def test_chat_drafts_reviewable_protocol_and_keeps_invalid_output_blocked(
             client.portal.call(finished)
             result = client.get(f"/api/analyses/{key}").json()
             calls = client.get(f"/api/analyses/{key}/requests").json()
-            count = (2 if invalid_draft else 3) + (context == "general")
+            count = (4 if invalid_draft else 3) + (context == "general")
             assert len(requests) == len(calls) == count
             assert result["usage"]["requests"] == len(calls)
             assert result["usage"]["cost_usd"] == count * 540 / 1_000_000
@@ -231,10 +233,14 @@ def test_chat_drafts_reviewable_protocol_and_keeps_invalid_output_blocked(
             assert brief_request["tools"][0]["strict"] is True
             if invalid_draft:
                 assert result["status"] == "failed"
-                assert "UnexpectedModelBehavior" in result["error"]
-                assert "No retry or substitute model" in result["error"]
+                assert "Design review still has unresolved issues" in result["error"]
+                assert len(result["output"]["planning"]["reviews"]) == 3
+                assert all(
+                    review["kind"] == "validation" and review["provider_call_id"]
+                    for review in result["output"]["planning"]["reviews"]
+                )
                 if invalid_draft == "long_hypothesis":
-                    assert "design.hypothesis" in result["error"]
+                    assert '"hypothesis"' in result["error"]
                     assert "2000" in result["error"]
                     assert "Private analysis plan" not in result["error"]
                 assert result["output"]["planning"]["brief"]["operationalization"]

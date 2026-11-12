@@ -16,6 +16,7 @@ from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
 from backend.tests.test_artifact_workspace import wait_finished
+from benchmarks.provider_fixtures import output_args
 
 ACTORS = list("abcdef")
 
@@ -371,9 +372,14 @@ def test_review_public_engine_restores_coupled_pending_work_and_integer_ledger(
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    proposal(
-                        chosen.get((observation["logical_time"], actor), {"kind": "wait_workflow"})
-                    ).model_dump(),
+                    output_args(
+                        info,
+                        proposal(
+                            chosen.get(
+                                (observation["logical_time"], actor), {"kind": "wait_workflow"}
+                            )
+                        ).model_dump(),
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
@@ -440,7 +446,7 @@ def test_review_public_engine_restores_coupled_pending_work_and_integer_ledger(
             assert client.get(f"/api/runs/{rid}").json()["state"] == state
             assert client.get("/api/settings").json()["usage"] == usage
             export = client.get(f"/api/studies/{sid}/export").json()
-            assert export["version"] == 19 and len(export["requests"]) == 12
+            assert export["version"] == 20 and len(export["requests"]) == 12
         reopened = create_app(database, static_dir=tmp_path / "assets")
         monkeypatch.setattr(reopened.state.models, "model", lambda _: provider)
         with TestClient(reopened, base_url="http://localhost") as client:
@@ -592,7 +598,11 @@ def test_review_public_interactions_include_only_delivered_mail_and_settled_hand
             {"kind": "wait_workflow"},
         )
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, proposal(action).model_dump())],
+            parts=[
+                ToolCallPart(
+                    info.output_tools[0].name, output_args(info, proposal(action).model_dump())
+                )
+            ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 

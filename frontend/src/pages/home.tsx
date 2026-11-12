@@ -9,7 +9,7 @@ import {
 } from "@/components/disclosure";
 import { DraftList } from "@/components/draft-list";
 import { Alert } from "@/components/feedback";
-import { HomeBackdrop } from "@/components/home-backdrop";
+import { HomeWorld } from "@/components/home-world";
 import {
   ArrowUpRight,
   Ellipsis,
@@ -103,18 +103,21 @@ export default function Home() {
         aria-labelledby="home-title"
       >
         <div
-          data-slot="home-backdrop"
-          className="home-backdrop absolute inset-x-0 top-0 overflow-hidden"
+          aria-hidden="true"
+          className="home-field pointer-events-none relative -z-10 col-start-1 row-span-2 row-start-1 grid grid-rows-subgrid"
         >
-          <HomeBackdrop />
+          <HomeWorld />
+          <div />
+          <div className="relative">
+            <div className="bg-background absolute inset-x-0 bottom-0 h-2/5" />
+            <Separator className="absolute inset-x-0 top-3/5" />
+          </div>
         </div>
         <h1
           id="home-title"
           className="relative col-start-1 row-start-1 mt-38 mb-4 px-4 text-center text-2xl font-semibold tracking-tight sm:mt-39 sm:px-6 sm:text-3xl"
         >
-          <span className="home-title relative isolate inline-block">
-            What would you like to test?
-          </span>
+          What would you like to test?
         </h1>
         <div className="relative col-start-1 row-start-2 min-w-0 px-4 sm:px-6">
           <AgentComposer
@@ -146,9 +149,9 @@ export default function Home() {
                     <img
                       src={`/illustrations/suggestions/${suggestionIllustrations[index]}.webp`}
                       alt=""
-                      width={36}
-                      height={36}
-                      className="size-9 shrink-0 object-contain object-left"
+                      width={32}
+                      height={32}
+                      className="m-0.5 size-8 shrink-0 object-contain object-left saturate-50 contrast-90"
                       data-icon="inline-start"
                       aria-hidden="true"
                     />

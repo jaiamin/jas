@@ -11,6 +11,8 @@ import pytest
 from agent_sim.api import create_app
 from fastapi.testclient import TestClient
 
+from benchmarks.provider_fixtures import output_args
+
 
 def refundable_permit():
     """External complete oracle; production must not contain a permit implementation."""
@@ -166,7 +168,7 @@ def refundable_permit():
     }
 
 
-def test_user_freezes_independent_contract_before_any_generated_candidate(tmp_path):
+def test_user_freezes_independent_finite_contract(tmp_path):
     """Contract review itself is inert: no worker qualification or model work."""
     with TestClient(
         create_app(f"sqlite:///{tmp_path}/t17-contract.sqlite3"),
@@ -304,9 +306,7 @@ def checked_permit(client):
 @pytest.mark.parametrize(
     "failure", ["unavailable", "exited", "cleanup", "scratch-allocation", "scratch-teardown"]
 )
-def test_finite_admission_worker_failure_requires_fresh_containment(
-    tmp_path, monkeypatch, failure
-):
+def test_finite_admission_worker_failure_requires_fresh_containment(tmp_path, monkeypatch, failure):
     app = create_app(f"sqlite:///{tmp_path}/admission-failure.sqlite3")
     with TestClient(app, base_url="http://localhost") as client:
         check = checked_permit(client)
@@ -335,13 +335,9 @@ def test_finite_admission_worker_failure_requires_fresh_containment(
 
         with monkeypatch.context() as boundary:
             if failure == "cleanup":
-                boundary.setattr(
-                    "agent_sim.extension_sandbox.TemporaryDirectory", unclean_scratch
-                )
+                boundary.setattr("agent_sim.extension_sandbox.TemporaryDirectory", unclean_scratch)
             elif failure.startswith("scratch-"):
-                boundary.setattr(
-                    "agent_sim.extension_sandbox.TemporaryDirectory", failed_scratch
-                )
+                boundary.setattr("agent_sim.extension_sandbox.TemporaryDirectory", failed_scratch)
             else:
                 boundary.setattr(subprocess, "Popen", failed_worker)
             response = client.post(f"/api/extensions/finite-checks/{check['id']}/admit")
@@ -359,9 +355,10 @@ def test_finite_admission_worker_failure_requires_fresh_containment(
         saved = client.get(f"/api/extensions/finite-admissions/{admission['id']}").json()
         assert saved == admission
         assert client.post("/api/extensions/qualify").json()["status"] == "qualified"
-        assert client.post(f"/api/extensions/finite-checks/{check['id']}/admit").json()[
-            "runnable"
-        ] is True
+        assert (
+            client.post(f"/api/extensions/finite-checks/{check['id']}/admit").json()["runnable"]
+            is True
+        )
         assert client.get("/api/settings").json()["usage"]["requests"] == 0
 
 
@@ -595,12 +592,15 @@ def test_finite_admission_runs_pinned_permit_through_engine_and_exact_zero_call_
                 parts=[
                     ToolCallPart(
                         info.output_tools[0].name,
-                        {
-                            "action": {"kind": "finite", "operation": operation},
-                            "rationale": "Prose is inert",
-                            "memory": "actor-private note",
-                            "forecast": None,
-                        },
+                        output_args(
+                            info,
+                            {
+                                "action": {"kind": "finite", "operation": operation},
+                                "rationale": "Prose is inert",
+                                "memory": "actor-private note",
+                                "forecast": None,
+                            },
+                        ),
                     )
                 ],
                 usage=RequestUsage(input_tokens=100, output_tokens=50),

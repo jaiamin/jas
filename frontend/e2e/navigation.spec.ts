@@ -323,7 +323,7 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
   await expect(header.locator('[data-slot="separator"]')).toHaveCount(0);
   await expect(
     header.getByRole("link", { name: "GitHub repository" }),
-  ).toHaveAttribute("href", "https://github.com/jaiamin/ass");
+  ).toHaveAttribute("href", "https://github.com/jaiamin/jas");
   const geometry = await page.evaluate(() => {
     function box(selector: string) {
       const element = document.querySelector(selector);

@@ -32,7 +32,7 @@ export function PlanningProgress({ plan }: { plan?: Analysis }) {
             <MessageContent>
               <MessageHeader className="min-h-6 gap-2 px-0">
                 <AgentTarget
-                  animated
+                  motion="working"
                   className="size-5"
                   aria-label="Assistant"
                 />

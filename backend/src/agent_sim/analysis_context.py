@@ -276,6 +276,12 @@ class AnalysisContext:
                 }
             prompt = encode()
         if len(prompt.encode()) > limit:
+            # Cutoffs retain every identity. Repeating all run rows can exhaust
+            # the request before the analyst can use the existing frozen pages.
+            payload["index"]["runs"] = []
+            payload["index"]["runs_omitted"] = len(self.index["runs"])
+            prompt = encode()
+        if len(prompt.encode()) > limit:
             payload["conversation"] = []
             payload["conversation_omitted"] = len(data["conversation"])
             prompt = encode()
