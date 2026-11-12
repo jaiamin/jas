@@ -70,7 +70,6 @@
   --workspace-header-height: 3.25rem;
   --home-field: oklch(0.977 0.003 255);
   --home-ink: oklch(0.4 0.015 255 / 14%);
-  --home-light: oklch(0.4 0.015 255 / 9%);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -108,7 +107,6 @@
   color-scheme: dark;
   --home-field: oklch(0.235 0.006 255);
   --home-ink: oklch(0.8 0.015 255 / 12%);
-  --home-light: oklch(0.8 0.015 255 / 8%);
   --background: oklch(0.21 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.245 0 0);
@@ -173,44 +171,8 @@
   background-color: var(--home-field);
 }
 
-.home-landscape {
-  background: var(--home-ink);
-  mask: url("/illustrations/terrain.svg") center / cover no-repeat;
-}
-
-.home-landscape::after {
-  content: "";
-  position: absolute;
-  inset-block: 0;
-  width: 55%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--home-light),
-    transparent
-  );
-  animation: terrain-light 32s linear infinite;
-  animation-play-state: paused;
-}
-
-.home-landscape[data-active="true"]::after {
-  animation-play-state: running;
-}
-
-@keyframes terrain-light {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(282%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .home-landscape::after {
-    animation: none;
-    display: none;
-  }
+.home-mosaic {
+  color: var(--home-ink);
 }
 
 /* Shared welcome/working scan timeline; the stock Target stays stationary. */

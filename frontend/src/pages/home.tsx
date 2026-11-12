@@ -9,7 +9,7 @@ import {
 } from "@/components/disclosure";
 import { DraftList } from "@/components/draft-list";
 import { Alert } from "@/components/feedback";
-import { HomeLandscape } from "@/components/home-landscape";
+import { HomeMosaic } from "@/components/home-mosaic";
 import {
   ArrowUpRight,
   Ellipsis,
@@ -106,7 +106,7 @@ export default function Home() {
           aria-hidden="true"
           className="home-field pointer-events-none relative -z-10 col-start-1 row-span-2 row-start-1 grid grid-rows-subgrid"
         >
-          <HomeLandscape />
+          <HomeMosaic />
           <div />
           <div className="relative">
             <div className="bg-background absolute inset-x-0 bottom-0 h-2/5" />

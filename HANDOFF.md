@@ -1,33 +1,32 @@
 # JAS handoff
 
-## Home: subtle square-pixel landscape
+## Home: aligned abstract mosaic
 
-Branch `feat/quiet-home-background`, draft PR #37 stacked on open PR #36. User
-requested a very faint, spaced-square image animation matching their reference.
-Replaced the blue dot field with an authored layered terrain SVG (1,850 bytes),
-used as a square halftone mask. Mist-gray/slate theme tokens keep contrast low;
-a broad 32-second light sweep changes pixel visibility without moving the terrain.
-No new dependency, video, raster download or frame clock. Reduced motion keeps the
-still image; IntersectionObserver/page visibility pause offscreen/hidden animation.
-No title tint/blur. CSS subgrid preserves the gray rule behind the composer at 60%
-of its actual row height. Composer, heading and following content do not move.
-The obsolete city GIF/poster, dissolve generator/mask/component remain removed.
+Branch `feat/quiet-home-background`, draft PR #37 stacked on PR #36. User requested
+a complete small-pixel grid with no clipped squares or fades and a subtle abstract
+mosaic. Replaced the terrain mask/sweep and removed both its SVG and component.
+HomeMosaic draws 4 CSS-pixel squares on a 9-pixel pitch, centering whole rows and
+columns within the measured field/divider. Five faint discrete tones form broad
+abstract regions. Tones evolve every 1.8s; cells stay fixed with no fade, mask,
+gradient, transition or per-frame loop. Resize/theme observers keep geometry and
+palette correct. Hidden/offscreen and reduced-motion modes stop the update timer.
+The gray rule remains 60% down the composer; all content positions are preserved.
 
-Final pixel revision: Home browser 16/16, full frontend units 168/168 (39 files),
-whole frontend lint, forced TypeScript and private build PASS. Native review covered
-light/dark at desktop/mobile. The motion case verifies transform progress, still
-reduced-motion rendering, offscreen pause and resume. First pixel browser attempt
-retained 15 passes/1 test-authoring failure: it scrolled the window instead of the
-app scroll container. Corrected with real section navigation before the final pass.
-Earlier static-background attempts/failures retain their own source attribution.
-Regex-only design detection found no issues; it does not establish rendered contrast.
-Evidence: `.tools/quiet-home/*pixels*`. No provider calls or user-study retries.
+Qualification: 17 Home browser cases, all 168 frontend units (39 files), whole lint,
+forced TypeScript and private build PASS. Raster inspection at 333/390/753/1440
+verifies whole 4x4 cells, consistent 9-pixel spacing and no clipping at the divider.
+Browser cases also verify a still reduced-motion image, actual pattern evolution,
+offscreen pause/resume, existing drafts/navigation/submission and both themes.
+Native review covered both themes at desktop/mobile. First formatting reported
+four non-null warnings in the new test; replaced them with runtime guards before
+qualification. Earlier landscape/static source attempts remain attributed in
+`.tools/quiet-home/`; their failures were not changed into passes.
 
-Qualified assets are live on 8080: `publish-8080-pixels-01/receipt.json` proves the same
-PID/DB inode, all rows/usage unchanged and served asset equality. Original generated
-outputs remain locally for rollback, not shipped. All owned preview tabs and private
-test servers are closed. Update PR #37 with this revision; hosted CI remains separate.
-No merge authorized.
+Qualified assets are live on 8080: `publish-8080-mosaic-01/receipt.json` proves same
+PID/DB inode, all persisted rows/usage unchanged and served asset equality. No paid
+calls, backend changes or user-run retries. Legacy imagery remains absent from
+shipped output. All owned preview tabs and private test services are closed.
+Update PR #37; hosted CI remains a separate gate. No merge authorized.
 
 ## CI follow-up: planning activity animation
 

@@ -294,20 +294,20 @@ Decisions and evidence stack below 1440px.
 Home’s experiment ideas, drafts, active runs and recent experiments share a centered
 58rem maximum-width content column below the composer. Keep their edges aligned.
 
-Home uses a very faint layered landscape drawn through a square halftone mask
-(`terrain.svg`): 4-unit squares on a 9-unit pitch leave clear space between pixels.
-The authored landscape is decorative, not a view of live experiments. Theme tokens
-keep the field mist-gray in light mode and deep slate in dark mode; maximum pixel
-contrast stays low. One broad 32-second light sweep changes the pixels gently
-without moving the terrain. It uses CSS transform animation, with no frame loop
-or video. An intersection observer and page visibility pause hidden/offscreen
-motion; reduced motion hides the sweep and retains the still image. The heading
-uses the foreground token, without title tint or backdrop blur. The field ends at
-a stock full-width gray Separator behind the composer, three-fifths down its height.
-A shared CSS subgrid follows
-the actual composer row; no fixed pixel height or runtime measurement is needed.
-Heading, composer and all following content retain their original positions.
-Environment catalogue and experiment-idea illustrations remain unchanged.
+Home uses a complete square pixel grid with a faint abstract mosaic, drawn in
+five discrete tones. Squares stay 4 CSS pixels wide on a 9-pixel pitch; remaining
+space is balanced at the edges so no square is cropped. Canvas bounds follow the
+actual gray divider and responsive field width; high-density screens retain
+sharp geometry. A few broad, interlocking tonal regions evolve every 1.8 seconds
+without opacity transitions, gradients, masks or moving cells. The grid remains
+visible everywhere. This is decorative and does not depict live experiment data.
+Theme tokens keep it mist-gray in light mode and deep slate in dark mode.
+Reduced motion keeps a still mosaic; hidden/offscreen updates pause. Resize and
+theme changes redraw it without a per-frame loop or image download. The heading
+uses the foreground token without a tint or blur. The stock gray Separator stays
+behind the composer, three-fifths down its height. CSS subgrid follows the actual
+composer row. Heading, composer and following content keep their positions;
+environment catalogue and experiment-idea illustrations remain unchanged.
 
 The Home composer retains a 672px maximum width and 88px minimum text-entry height.
 Heading top spacing is 152px on mobile and 156px on desktop, with a 16px gap to

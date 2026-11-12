@@ -93,13 +93,15 @@ test("Home keeps immediate content usable while only database rows show skeleton
 
 for (const width of [390, 1440])
   for (const theme of ["light", "dark"]) {
-    test(`Home keeps a pixel landscape and original content positions · ${theme} · ${width}`, async ({
+    test(`Home keeps a square mosaic and original content positions · ${theme} · ${width}`, async ({
       page,
     }, testInfo) => {
       const artworkRequests: string[] = [];
       page.on("request", (request) => {
         if (
-          /\/(city\.(gif|webp)|home-dissolve\.svg)(?:$|\?)/.test(request.url())
+          /\/(city\.(gif|webp)|home-dissolve\.svg|terrain\.svg)(?:$|\?)/.test(
+            request.url(),
+          )
         )
           artworkRequests.push(request.url());
       });
@@ -116,7 +118,7 @@ for (const width of [390, 1440])
       const hero = page.getByRole("region", {
         name: "What would you like to test?",
       });
-      await expect(hero.locator("img, video, canvas")).toHaveCount(0);
+      await expect(hero.locator("img, video")).toHaveCount(0);
       const geometry = await hero.evaluate((element) => {
         const title = element.querySelector("h1");
         const composer = element.querySelector("form");
@@ -156,7 +158,7 @@ for (const width of [390, 1440])
       expect(geometry.fieldColor).not.toBe(geometry.pageColor);
       expect(geometry.titleColor).toBe(geometry.foreground);
       expect(geometry.blurred).toBe(false);
-      await expect(hero.locator(".home-landscape")).toHaveAttribute(
+      await expect(hero.locator(".home-mosaic")).toHaveAttribute(
         "data-active",
         "true",
       );
@@ -168,7 +170,99 @@ for (const width of [390, 1440])
     });
   }
 
-test("Home landscape stays still with reduced motion and pauses offscreen", async ({
+test("Home mosaic uses whole square cells after resizing, with no fades", async ({
+  page,
+}) => {
+  await page.route("**/api/settings", (route) =>
+    route.fulfill({ json: settings }),
+  );
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const mosaic = page.locator("canvas.home-mosaic");
+  for (const width of [333, 390, 753, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect
+      .poll(() => mosaic.evaluate((canvas: HTMLCanvasElement) => canvas.width))
+      .toBeGreaterThan(0);
+    await expect
+      .poll(() =>
+        mosaic.evaluate(
+          (canvas: HTMLCanvasElement) =>
+            canvas.width ===
+            Math.floor(
+              canvas.parentElement?.getBoundingClientRect().width ?? 0,
+            ),
+        ),
+      )
+      .toBe(true);
+    const grid = await mosaic.evaluate((canvas: HTMLCanvasElement) => {
+      const context = canvas.getContext("2d");
+      const dividerElement = canvas.parentElement?.querySelector(
+        '[data-slot="separator"]',
+      );
+      if (!context || !dividerElement)
+        throw new Error("Missing mosaic canvas or divider");
+      const { width, height } = canvas;
+      const pixels = context.getImageData(0, 0, width, height).data;
+      const horizontal: number[][] = [];
+      const vertical: number[][] = [];
+      let firstX = -1;
+      let firstY = -1;
+      for (let y = 0; y < height && firstY < 0; y++) {
+        for (let x = 0; x < width; x++) {
+          if (pixels[(y * width + x) * 4 + 3]) {
+            firstX = x;
+            firstY = y;
+            break;
+          }
+        }
+      }
+      const runs = (
+        length: number,
+        painted: (index: number) => boolean,
+        target: number[][],
+      ) => {
+        for (let index = 0; index < length; index++) {
+          if (!painted(index)) continue;
+          const start = index;
+          while (index + 1 < length && painted(index + 1)) index++;
+          target.push([start, index - start + 1]);
+        }
+      };
+      runs(width, (x) => !!pixels[(firstY * width + x) * 4 + 3], horizontal);
+      runs(height, (y) => !!pixels[(y * width + firstX) * 4 + 3], vertical);
+      const bounds = canvas.getBoundingClientRect();
+      const divider = dividerElement.getBoundingClientRect();
+      const styles = getComputedStyle(canvas);
+      return {
+        horizontal,
+        vertical,
+        width,
+        height,
+        bottom: bounds.bottom,
+        dividerTop: divider.top,
+        mask: styles.maskImage,
+        filter: styles.filter,
+        animations: canvas.getAnimations().length,
+      };
+    });
+    for (const runs of [grid.horizontal, grid.vertical]) {
+      expect(runs.length).toBeGreaterThan(10);
+      for (let index = 0; index < runs.length; index++) {
+        expect(runs[index][1]).toBe(4);
+        if (index) expect(runs[index][0] - runs[index - 1][0]).toBe(9);
+      }
+    }
+    expect(grid.horizontal[0][0]).toBeGreaterThanOrEqual(0);
+    expect(grid.vertical[0][0]).toBeGreaterThanOrEqual(0);
+    expect(grid.bottom).toBeLessThanOrEqual(grid.dividerTop);
+    expect(grid.mask).toBe("none");
+    expect(grid.filter).toBe("none");
+    expect(grid.animations).toBe(0);
+  }
+});
+
+test("Home mosaic respects reduced motion and pauses offscreen", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 300 });
@@ -177,36 +271,27 @@ test("Home landscape stays still with reduced motion and pauses offscreen", asyn
   );
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  const landscape = page.locator(".home-landscape");
-  await expect(landscape).toHaveAttribute("data-active", "true");
-  const motion = () =>
-    landscape.evaluate((element) => ({
-      animation: getComputedStyle(element, "::after").animationName,
-      state: getComputedStyle(element, "::after").animationPlayState,
-      transform: getComputedStyle(element, "::after").transform,
-      mask: getComputedStyle(element).maskImage,
-    }));
-  expect((await motion()).animation).toBe("none");
-  expect((await motion()).mask).toContain("terrain.svg");
-  const asset = await page.request.get("/illustrations/terrain.svg");
-  expect(asset.ok()).toBe(true);
-  expect(asset.headers()["content-type"]).toContain("image/svg+xml");
+  const mosaic = page.locator("canvas.home-mosaic");
+  await expect(mosaic).toHaveAttribute("data-active", "false");
+  const image = () =>
+    mosaic.evaluate((canvas: HTMLCanvasElement) => canvas.toDataURL());
+  const initial = await image();
+  await page.waitForTimeout(2000);
+  expect(await image()).toBe(initial);
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await expect.poll(async () => (await motion()).state).toBe("running");
-  expect((await motion()).animation).toBe("terrain-light");
-  const initialTransform = (await motion()).transform;
-  await expect
-    .poll(async () => (await motion()).transform)
-    .not.toBe(initialTransform);
+  await expect(mosaic).toHaveAttribute("data-active", "true");
+  await expect.poll(image).not.toBe(initial);
   await page
     .getByRole("region", { name: "Recent experiments" })
     .scrollIntoViewIfNeeded();
-  await expect(landscape).toHaveAttribute("data-active", "false");
-  expect((await motion()).state).toBe("paused");
+  await expect(mosaic).toHaveAttribute("data-active", "false");
+  const paused = await image();
+  await page.waitForTimeout(2000);
+  expect(await image()).toBe(paused);
   await page
     .getByRole("heading", { name: "What would you like to test?" })
     .scrollIntoViewIfNeeded();
-  await expect(landscape).toHaveAttribute("data-active", "true");
+  await expect(mosaic).toHaveAttribute("data-active", "true");
 });
 
 test("Composer's manual editor link preserves the message without submitting", async ({
