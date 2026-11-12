@@ -1,5 +1,21 @@
 # JAS handoff
 
+## Approved: quieter idea illustrations
+
+User approved a local trial before pushing. Existing 3D illustrations are now
+32px, with 50% saturation and 90% contrast; margins preserve their original 36px
+footprint. Native before/after measurements confirm unchanged section/card geometry.
+This is a CSS treatment of the existing assets, not newly rendered artwork.
+
+Whole frontend lint, forced TypeScript, fresh private build and all four focused
+Home browser cases (desktop/mobile, light/dark) PASS. Native desktop light/dark
+inspection is complete; owned tab closed. Evidence: `.tools/quiet-home/*icons-preview*`.
+Live 8080 serves this trial; `publish-8080-icons-preview-01/receipt.json` verifies
+unchanged server PID, database inode, persisted rows and usage, plus served asset
+equality. The prior cloud-only build is retained there as `previous-dist`.
+User approved the result and requested publication to the existing PR #37.
+No further visual changes are included in this checkpoint.
+
 ## Home: continuous pixel clouds
 
 Branch `feat/quiet-home-background`, draft PR #37 stacked on PR #36. User requested

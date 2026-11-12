@@ -149,9 +149,9 @@ export default function Home() {
                     <img
                       src={`/illustrations/suggestions/${suggestionIllustrations[index]}.webp`}
                       alt=""
-                      width={36}
-                      height={36}
-                      className="size-9 shrink-0 object-contain object-left"
+                      width={32}
+                      height={32}
+                      className="m-0.5 size-8 shrink-0 object-contain object-left saturate-50 contrast-90"
                       data-icon="inline-start"
                       aria-hidden="true"
                     />
