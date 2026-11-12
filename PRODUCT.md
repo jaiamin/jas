@@ -31,8 +31,7 @@ subtle blue accent with a weaker hover state. Avoid redundant descriptive subtit
 Agent composer for questions or experiment design and four experiment ideas. Keep
 Home/Agent together above Workspace navigation; surface unfinished work and active
 runs conditionally, with full experiment/run lists in their existing destinations.
-Home uses continuous pixel art: a muted blue sky, slowly moving ivory clouds and
-a distant Earth with sage continents. Pixels touch with no grid gutters or masks;
+Home uses continuous pixel art: a muted blue sky and slowly moving ivory clouds. Pixels touch with no grid gutters or masks;
 the palette adapts to light/dark mode. Reduced motion keeps the scene still and
 hidden/offscreen animation stops. The gray rule stays behind the composer at
 three-fifths of its height. Preserve the composer position and everything below.

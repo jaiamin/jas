@@ -294,16 +294,14 @@ Decisions and evidence stack below 1440px.
 Home’s experiment ideas, drafts, active runs and recent experiments share a centered
 58rem maximum-width content column below the composer. Keep their edges aligned.
 
-Home uses a continuous pixel-art scene: quiet blue sky, ivory clouds and a distant
-Earth with sage/sand continents. All source pixels are opaque and touching; there
+Home uses a continuous pixel-art sky with quiet blue tones and drifting ivory clouds. All source pixels are opaque and touching; there
 are no dot gutters, masks or transparent fades. A low-resolution canvas fills the
 exact field bounds with nearest-neighbor scaling, so complete source pixels stay
 crisp at approximately 5 CSS pixels. Ordered dithering softens the sky's palette
 bands without blurring pixels. Light mode uses pale muted colors; dark mode uses
-deep blue, subdued teal and sage. The Earth is a decorative illustration using
-simplified continent outlines, not a geographic instrument or live simulation.
+deep blue and slate. The clouds are decorative, not live simulation data.
 
-The base sky/globe is cached. Only the clouds redraw at a bounded 160ms interval;
+The base sky is cached. Only the clouds redraw at a bounded 160ms interval;
 no React updates, image downloads or per-display-frame loop. Clouds move slowly
 across the fixed scene. Reduced motion keeps it still; hidden/offscreen updates
 stop. Resize/theme changes rebuild the cached scene. The title uses the shared

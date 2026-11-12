@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { createPixelEarth } from "./pixel-earth";
+import { createPixelClouds } from "./pixel-clouds";
 
 export function HomeWorld() {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -14,7 +14,7 @@ export function HomeWorld() {
     let visible = false;
     let offset = 0;
     let timer: number | undefined;
-    let scene: ReturnType<typeof createPixelEarth> | undefined;
+    let scene: ReturnType<typeof createPixelClouds> | undefined;
 
     const paint = () => {
       if (scene) context.putImageData(scene(offset), 0, 0);
@@ -30,7 +30,7 @@ export function HomeWorld() {
       canvas.height = Math.max(1, Math.round(height / 5));
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
-      scene = createPixelEarth(
+      scene = createPixelClouds(
         canvas.width,
         canvas.height,
         document.documentElement.classList.contains("dark"),

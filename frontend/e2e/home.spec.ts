@@ -93,7 +93,7 @@ test("Home keeps immediate content usable while only database rows show skeleton
 
 for (const width of [390, 1440])
   for (const theme of ["light", "dark"]) {
-    test(`Home keeps a pixel Earth scene and original content positions · ${theme} · ${width}`, async ({
+    test(`Home keeps a pixel cloud scene and original content positions · ${theme} · ${width}`, async ({
       page,
     }, testInfo) => {
       const artworkRequests: string[] = [];
@@ -227,8 +227,8 @@ test("Home pixel art fills every cell without grid gaps or cropped edges", async
       };
     });
     expect(scene.gaps).toBe(0);
-    expect(scene.colors).toBeGreaterThanOrEqual(6);
-    expect(scene.colors).toBeLessThanOrEqual(14);
+    expect(scene.colors).toBeGreaterThanOrEqual(5);
+    expect(scene.colors).toBeLessThanOrEqual(6);
     expect(scene.width / scene.sourceWidth).toBeCloseTo(5, 0);
     expect(scene.height / scene.sourceHeight).toBeCloseTo(5, 0);
     expect(scene.x).toBe(scene.fieldX);

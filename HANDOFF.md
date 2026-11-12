@@ -1,38 +1,27 @@
 # JAS handoff
 
-## Home: continuous pixel Earth and clouds
+## Home: continuous pixel clouds
 
-Branch `feat/quiet-home-background`, draft PR #37 stacked on PR #36. User clarified
-that pixels must touch and form a colored scene, not separate grid marks. HomeWorld
-now renders an opaque low-resolution image scaled with image-rendering:pixelated.
-There are no gutters, masks or transparent fades. An illustrated Earth with sage
-continents sits behind slowly drifting ivory clouds and a muted blue sky. Dark
-mode has a separate subdued blue/teal/sage palette. Small-palette dithering softens
-sky bands while preserving hard pixel edges. Earth stays fully inside phone bounds.
-Scene colors are decorative, not geographic or live simulation measurements.
+Branch `feat/quiet-home-background`, draft PR #37 stacked on PR #36. User requested
+clouds only. Removed the globe, continent outlines, projection code and land/sea
+palettes; renamed pixel-earth to pixel-clouds and updated its caller/docs/tests.
+The current background is an opaque pixel-art sky with softly colored drifting
+clouds. Existing touching pixels, theme palettes, reduced motion, offscreen/hidden
+pause, composer layout and three-fifths divider are preserved.
 
-Pixel-earth owns the cached globe/sky and cloud rendering; HomeWorld owns resize,
-theme, visibility and reduced-motion lifecycle. Only clouds redraw on a bounded
-160ms timer; hidden/offscreen and reduced-motion modes stop it. No image fetch,
-React frame updates or display-frame loop. The exact field bounds meet the gray
-rule at 60% of the composer height; title/composer/following content stay in place.
-The old spaced-cell component was removed. PRODUCT/DESIGN reflect this contract.
+Cloud-only source: 17 Home browser cases PASS, plus whole frontend lint, forced
+TypeScript and a fresh 54-file build. Browser checks cover complete opaque pixels,
+only sky/cloud colors at four widths, motion, pause and both themes; native 8080
+inspection confirms the Earth is gone. Previous 168-unit result remains attributed
+to the earlier source; no new unit result claimed. Evidence: `.tools/quiet-home/`
+with `*clouds*` names. Current PRODUCT/DESIGN describe clouds only.
 
-Final source: 17 Home browser cases PASS (all opaque pixels/no gaps, palette/nearest
-scaling at 333/390/753/1440, cloud movement, reduced motion, pause/resume and existing
-user flows). All 168 frontend units (39 files), lint, forced types and build PASS.
-Native inspection covered both themes and desktop/mobile. Earlier world browser
-phases also passed at their sources; final polish removed visible sky bands, kept
-Earth inside phone bounds and filled fractional field bounds. Evidence lives in
-`.tools/quiet-home/*world*`. No provider calls or backend changes.
-
-Repeated private preview builds retained 28 obsolete unreferenced chunks outside
-Vite's normal dist. A fresh 54-file build omits them; world-clean-attribution.json
-proves every current file and entrypoint byte-equal to the tested output. Live 8080
-uses that clean set. `publish-8080-world-clean-01/receipt.json` proves same PID/DB
-inode, all persisted rows/usage unchanged and served asset equality. All owned
-preview tabs/private test services are closed. Update PR #37; hosted CI remains a
-separate gate. No merge authorized.
+Live 8080 serves the qualified cloud-only output. `publish-8080-clouds-01/receipt.json`
+proves the same PID/database inode, all persisted rows/usage unchanged and exact
+served asset equality. No provider calls, user-data writes or backend changes.
+Owned review tab is closed; browser test server was torn down. Update PR #37;
+hosted CI remains separate. No merge authorized. Prior design outputs and retained
+failures remain local evidence, not product fallbacks.
 
 ## CI follow-up: planning activity animation
 
