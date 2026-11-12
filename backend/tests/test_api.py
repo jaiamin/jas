@@ -61,7 +61,11 @@ def test_manual_design_step_evidence_and_export(client, design):
     assert client.get("/api/openapi.json").json()["info"]["title"] == "JAS"
     export = response.json()
     assert export["format"] == "jas-study"
-    assert export["version"] == 19
+    assert export["version"] == 20
+    assert "investigations" not in export
+    assert "extension_generations" not in export
+    assert all("generation" not in row for row in export["analyses"])
+    assert all("investigation_id" not in row for row in export["requests"])
     assert export["rule_versions"] == ["4.0.0"]
     assert all("initial_state_available" not in row for row in export["runs"])
     assert export["runs"][0]["evidence"][0]["number"] == 0
@@ -88,6 +92,38 @@ def test_portable_export_reports_missing_study_before_download(client):
     response = client.get("/api/studies/missing/export?download=true")
     assert response.status_code == 404
     assert "content-disposition" not in response.headers
+
+
+@pytest.mark.parametrize(
+    ("method", "path"),
+    [
+        ("POST", "/api/investigations"),
+        ("GET", "/api/investigations/removed"),
+        ("POST", "/api/investigations/removed/control"),
+        ("POST", "/api/investigations/removed/adapt"),
+        ("GET", "/api/extensions/generations"),
+        ("GET", "/api/extensions/generations/removed"),
+    ],
+)
+def test_removed_workflows_have_no_routes_or_side_effects(client, method, path):
+    before = client.get("/api/settings").json()["usage"]
+    response = client.request(method, path, json={})
+    assert response.status_code == (405 if method == "POST" else 404)
+    assert client.get("/api/studies").json() == []
+    assert client.get("/api/chats").json() == []
+    assert client.get("/api/settings").json()["usage"] == before
+    assert path not in client.get("/api/openapi.json").json()["paths"]
+
+
+@pytest.mark.parametrize("authority", ["generation", "investigation"])
+def test_chat_rejects_removed_workflow_authority_without_spending(client, authority):
+    response = client.post(
+        "/api/chats",
+        json={"question": "Design a cooperation experiment", authority: {}},
+    )
+    assert response.status_code == 422
+    assert client.get("/api/chats").json() == []
+    assert client.get("/api/settings").json()["usage"]["requests"] == 0
 
 
 def test_validation_and_origin_guard_do_not_spend(client, design):

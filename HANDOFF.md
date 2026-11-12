@@ -1,5 +1,96 @@
 # JAS handoff
 
+## Complete: remove New mechanics and autonomous Investigate
+
+User explicitly requested removal of both Agent controls and their backend
+support, limited to those two features. Remove LLM mechanic generation,
+authorization/attempt orchestration and autonomous design/pilot/run/analyze
+investigations. Preserve installed/admitted environments and their independent
+validation, ordinary Agent design/chat/read-only analysis, participant tools,
+manual experiment execution, request accounting and the approved orbital animation.
+
+Acceptance: no UI entry points or backend workflow routes/authorization tools;
+unused feature code, tests and current documentation removed; normal design,
+execution/replay/export and analysis still pass. A fresh database contract must
+exclude obsolete persistence fields/tables and reject the old schema explicitly.
+The user subsequently explicitly authorized migration or deleting all existing
+workspace data. Chose a clean reset without migration or compatibility code.
+Use temporary keyless databases for verification. No new paid calls or
+dependencies are needed.
+
+Implementation removes both workflows, their routes, authorization components,
+generator tools/journal, parent accounting and obsolete persistence fields. Manual
+finite-contract review/admission and ordinary accounting remain. Current contracts
+are DB16/export20. After verification, the authorized activation stopped the old
+server and deleted the schema15 database/WAL/SHM and any workspace environment or
+extension sidecars. No data conversion, compatibility readers or fallback paths.
+The current server is PID66617 on8080 with a fresh DB16 and the exact55-file
+qualified frontend build. Health, all served asset hashes, empty studies/chats,
+zero provider usage and eight real keyless rejection cases PASS. The old2studies/
+64runs are deleted as explicitly authorized. Activation evidence:
+`.tools/remove-agent-actions/activation-01/`. Keep this user-requested server running.
+Verification is complete for the local source:
+
+- Full backend run: 1,847 passed; three new negative-route expectations incorrectly
+  expected404 for unknown POSTs (the SPA GET catchall produces405), and four current
+  contract cases still expected export19. Those failures remain recorded. Corrected
+  only the route oracle and reference metadata (v9/DB16/export20); independent
+  prompt/action/checkpoint/ledger expectations are byte-equivalent. All161 affected
+  backend cases then pass, including all failed cases, chat/design/analysis,
+  accounting, database rejection/reopen, full current matrix and finite admission.
+  An intermediate invocation named a nonexistent test file and exited4 before
+  collecting tests; corrected invocation/results are distinct.
+- Whole backend/benchmarks/scripts Ruff and global ty PASS. Affected Python
+  formatting PASS. An additional whole-tree formatting check found four unchanged
+  HEAD test files; no unrelated formatting edits were made.
+- Whole frontend lint, forced TypeScript, all141 units/35files and a fresh private
+  build PASS. All29 Agent/streaming/environment-reuse browser cases PASS with the
+  fresh build and a keyless DB16, including absent workflow controls, normal chat,
+  drafts, reconnect, protocol review, themes/mobile and the orbital animation.
+- The first browser job stopped at the disk guard, not a completed product result.
+  Its recording artifacts are retained. Its detached owned test backend was then
+  explicitly stopped. The second job kept identical assertions and disabled debug
+  traces to fit the disk envelope; min137,986,048 bytes, above134,217,728 floor.
+  Server shutdown and reusable18149 are independently confirmed.
+- Fresh database inspection confirms no investigation table or retired
+  ownership/generation-allowance columns. Before the subsequent explicitly
+  authorized reset, live8080 was PID23091/schema15 with2studies/64runs and had
+  remained untouched throughout implementation/qualification. Those historical
+  boundary receipts remain accurate for their recorded time; activation above
+  records the later user-authorized deletion and fresh workspace.
+
+Evidence: `.tools/remove-agent-actions/`. Historical reports/frozen T01 remain
+historical and unchanged. Current docs describe only supported workflows. The
+manual finite-contract tests remain in `test_finite_contract.py`; obsolete
+workflow-only suites/configuration were deleted. No dependencies added. The user
+approved publishing both this removal and the orbital animation to the existing
+branch/PR37. Generated assets, databases and local evidence remain ignored.
+
+## Approved: Agent orbital focus
+
+User chose orbital focus for the shared Agent animation. AgentTarget now accepts
+idle/intro/working motion: two clockwise arcs over faint rings with a steady
+center, one 2.2-second welcome entrance, and continuous 5.2/7.8-second working
+orbits. Finished/stopped replies return to the regular Target. The old randomized
+scan/contraction/flash scheduler and its styling are removed. Native timelines
+pause offscreen/hidden and cancel on unmount; reduced motion stays static and
+does not replay a skipped welcome. React does not render animation frames.
+
+All 25 Agent/streaming browser cases PASS, including welcome rest, offscreen
+pause/resume, reduced motion, pending replies, planning and completion. Native
+desktop/mobile light/dark inspection used an isolated keyless workspace; the
+pending visual was a browser-intercepted DTO, not a provider witness. Its tab and
+server are closed. Final whole frontend lint, forced TypeScript and 12 affected
+unit cases PASS. Evidence: `.tools/orbital-agent/`; fresh build: `dist-final`.
+An intermediate output retained 14 stale chunks because its external output
+directory was reused. The final fresh build omits them; all 54 current file bytes
+equal the browser-tested output (see `fresh-output-attribution.json`).
+At that stage live8080 served those54files. `publish-8080-02/receipt.json` verifies the
+same server PID/database inode, all persisted rows/usage unchanged and exact served
+asset equality. Prior builds are retained as local evidence. No provider calls or
+user-data writes. The later authorized reset/55-file activation is recorded above.
+The user subsequently approved publishing this animation with the removal.
+
 ## Approved: quieter idea illustrations
 
 User approved a local trial before pushing. Existing 3D illustrations are now

@@ -83,7 +83,7 @@ Overview leads with deterministic Research findings: completion, declared outcom
 matched differences and the next diagnostic test, without paid summarization.
 Expand the disclosures for formulas, eligible/planned counts, missingness, all-attempt
 effort and links pinned through a recorded turn. Manual, unfinished and unknown
-outcomes remain explicit. Export19 freezes these findings in the same read snapshot
+outcomes remain explicit. Export20 freezes these findings in the same read snapshot
 as run evidence. Paid interpretation is a separate explicit action.
 
 “Complete” means the World reached its stopping condition, not that participants
@@ -131,7 +131,7 @@ case selection, attempt accounting and paid-run gates. The
 [compact historical report](research/RESEARCH_HARNESS_COMPACT_REPORT.md) preserves
 superseded development results without presenting them as current measurements.
 
-Live researcher/participant competence, held-out mechanic generation and judge
+Live researcher/participant competence and judge
 accuracy remain open under the [accepted specification](RESEARCH_HARNESS_SPEC.md)
 and [T20](https://github.com/jaiamin/ass/issues/31). Freeze fresh cases and rubrics
 before evaluation, retain every attempt and cost, and obtain the appropriate

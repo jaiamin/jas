@@ -105,17 +105,6 @@ class FiniteArtifactCheck(Strict):
     sha256: str
 
 
-class GenerationAuthorization(Strict):
-    """Explicit user allowance for one question, including every nested Sol request."""
-
-    contract_id: str = Field(pattern=r"^[a-f0-9]{16}$")
-    max_candidates: int = Field(ge=1, le=3, strict=True)
-    max_requests: int = Field(ge=1, le=12, strict=True)
-    max_output_tokens: int = Field(ge=512, le=16384, strict=True)
-    max_input_bytes: int = Field(ge=4096, le=180000, strict=True)
-    budget_usd: float = Field(ge=0.01, le=10)
-
-
 def contract_inputs(contract: FiniteContract) -> list[int]:
     return [*range(len(contract.table)), -1, len(contract.table), 2147483647, -2147483648] * 2
 

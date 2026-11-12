@@ -173,26 +173,34 @@
   image-rendering: pixelated;
 }
 
-/* Shared welcome/working scan timeline; the stock Target stays stationary. */
+/* Orbital activity returns to the stock Target when it settles. */
 .agent-target {
   color: color-mix(in oklab, var(--primary) 85%, var(--foreground));
 }
-.agent-target > circle:first-child {
-  opacity: 0.55;
+.agent-target > circle {
+  transition:
+    opacity 220ms ease-out,
+    fill-opacity 220ms ease-out;
 }
-.agent-target > circle:nth-child(2) {
-  opacity: 0.75;
-  transform-box: fill-box;
-  transform-origin: center;
+.agent-target[data-agent-motion="active"] > circle:nth-child(-n + 2) {
+  opacity: 0.22;
 }
 .agent-target > circle:nth-child(3) {
   fill: currentColor;
   fill-opacity: 0;
 }
-.agent-target > [data-target-scan] {
+.agent-target[data-agent-motion="active"] > circle:nth-child(3) {
+  fill-opacity: 1;
+}
+.agent-target > [data-agent-orbits] {
   opacity: 0;
-  transform-origin: center;
-  transform: rotate(-90deg);
+}
+.agent-target[data-agent-motion="active"] > [data-agent-orbits] {
+  opacity: 1;
+}
+.agent-target [data-orbit] {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
 }
 
 /* Requested partial fills preserve the stock Lucide icon outlines. */

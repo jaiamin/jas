@@ -6,10 +6,9 @@ from typing import Any, Literal
 from pydantic import Field, TypeAdapter, ValidationError
 
 from .config import setting
-from .db import Analysis, Database, InvestigationRecord, digest
+from .db import Analysis, Database, digest
 from .domain import Design, DesignSpec, EnvironmentId, PlannedStudy, Strict
 from .environment_library import builtin_environment
-from .investigation_limits import InvestigationStopped
 from .llm import LanguageModels
 from .research import Research
 from .research_quality import FORMULAS
@@ -350,8 +349,8 @@ protocols or authorization to run them.
 
 PLANNING += """
 An actual admitted reviewed_finite source may also be supplied by discovery. This narrow
-extension profile requires an independently user-authored exhaustive finite table fixed BEFORE
-generation. It is bounded artifact synthesis against that table, not independent understanding
+extension profile requires an independently user-authored exhaustive finite table checked
+against the admitted artifact. Table conformance does not establish independent understanding
 of natural-language intent or a universal language for rich installed Worlds. Inspect its pinned
 contract/source/checks, explicit role bindings, static actor-private facts, resource conservation,
 terminal/horizon and harness/effort limits. Reject unsupported richer semantics honestly.
@@ -570,9 +569,7 @@ class Planner:
                 "summaries. Return actual "
                 "values, never these input references."
             )
-        with self.db.session() as session:
-            row = session.get_one(Analysis, key)
-        model = self.models.research_model("design", row.investigation_id)
+        model = self.models.research_model("design")
         return await self.models.generate(
             output,
             model=model,
@@ -709,16 +706,6 @@ class Planner:
         context = self._context(question, conversation)
         with self.db.session() as session:
             row = session.get_one(Analysis, key)
-            if row.investigation_id:
-                context["research_available"] = True
-                context["authorization"] = session.get_one(
-                    InvestigationRecord, row.investigation_id
-                ).authorization
-                context["adaptation"] = (
-                    session.get_one(InvestigationRecord, row.investigation_id)
-                    .attempts[-1]
-                    .get("adaptation")
-                )
         tools = ResearchTools(row, self.research)
         if row.output and "research" in row.output:
             tools.record = row.output["research"]
@@ -1044,8 +1031,6 @@ class Planner:
                                 i["message"] for i in check["issues"] if i["severity"] == "error"
                             )
                         )
-            except InvestigationStopped:
-                raise
             except (ValidationError, ValueError) as error:
                 feedback = [str(error)]
                 planning["reviews"].append({"kind": "validation", "issues": feedback})

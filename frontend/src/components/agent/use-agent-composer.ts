@@ -1,20 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { api, useApi } from "@/lib/api";
-import type {
-  AnalysisLensKey,
-  GenerationAuthorization,
-  InvestigationAllowance,
-  Settings,
-} from "@/lib/types";
+import type { AnalysisLensKey, Settings } from "@/lib/types";
 
 type Submission = {
   question: string;
   context: string;
   lens?: AnalysisLensKey;
   source_analysis_id?: string;
-  investigation?: InvestigationAllowance;
-  generation?: GenerationAuthorization;
 };
 type ChatCreated = { id: string; chat_id: string };
 
@@ -59,18 +52,11 @@ export function useAgentComposer({
     ":",
   )[0];
   const unavailable = settings.data?.providers[provider] === false;
-  const investigationUnavailable = settings.data?.providers.openai === false;
   const client = useQueryClient();
   const submitting = useRef(false);
   const send = useMutation({
     mutationFn: (submission: Submission) =>
-      submission.investigation
-        ? api<ChatCreated>("/investigations", {
-            ...submission.investigation,
-            question: submission.question,
-            chat_id: chatId,
-          })
-        : api<ChatCreated>("/chats", { ...submission, chat_id: chatId }),
+      api<ChatCreated>("/chats", { ...submission, chat_id: chatId }),
     onSettled: () => {
       submitting.current = false;
     },
@@ -90,31 +76,20 @@ export function useAgentComposer({
     setQuestion(text);
     composer.current?.focus();
   }
-  function dispatch(authority: {
-    investigation?: InvestigationAllowance;
-    generation?: GenerationAuthorization;
-  }) {
+  function submit() {
     if (
       question.trim() &&
       !busy &&
       !send.isPending &&
       !submitting.current &&
-      !(authority.investigation || authority.generation
-        ? investigationUnavailable
-        : unavailable) &&
+      !unavailable &&
       settings.data
     ) {
       submitting.current = true;
       // Per-call callbacks stop with their observer when this composer unmounts.
       // Cache and draft settlement above still runs for the accepted request.
-      send.mutate({ question, context, ...authority }, { onSuccess: onSent });
+      send.mutate({ question, context }, { onSuccess: onSent });
     }
-  }
-  function submit(investigation?: InvestigationAllowance) {
-    dispatch(investigation ? { investigation } : {});
-  }
-  function generate(generation: GenerationAuthorization) {
-    dispatch({ generation });
   }
   return {
     question,
@@ -127,13 +102,9 @@ export function useAgentComposer({
     assistantModel,
     provider,
     unavailable,
-    investigationUnavailable,
     send,
     submit,
-    generate,
     blocked: busy || send.isPending || !settings.data,
     disabled: busy || send.isPending || !settings.data || !!unavailable,
-    investigationDisabled:
-      busy || send.isPending || !settings.data || investigationUnavailable,
   };
 }

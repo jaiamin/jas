@@ -150,7 +150,7 @@ def test_http_plan_and_real_scenarios_remain_revision_pinned_after_reopen(tmp_pa
         assert first["plan"]["target"] == "Only the declared development case."
         assert current["plan"]["target"] == "Revision two."
         export = client.get(f"/api/studies/{sid}/export").json()
-        assert export["version"] == 19 and export["research"] == current
+        assert export["version"] == 20 and export["research"] == current
         assert (
             export["revisions"][0]["design"]["scenarios"][0]["values"]
             == payload["scenarios"][0]["values"]

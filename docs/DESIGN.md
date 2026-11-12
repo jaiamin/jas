@@ -182,14 +182,15 @@ while keeping its action row visible.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
 background surface. The new-chat heading has a decorative primary-colored Target
 at left (30px, 34px on larger screens), with an 8px gap and centered alignment.
-Its stationary outline has a short outer scanning arc, followed by a gentle inner
-ring contraction and a brief center highlight. Its primary blue mixes 15%
-foreground for readable detail in either theme. Native browser animations finish
-within two seconds; each scan then rests for a varied 2.4–4.4 seconds. Motion and
-its scheduler stop offscreen/in hidden tabs; reduced motion shows the static
-outline. AgentTarget owns the shared animation and cleanup. Its welcome instance
-is decorative and never delays the composer; pending replies reuse the motion
-until they complete or stop. At the upper right, a 32px stock outline history button
+Two rounded blue arcs orbit a steady center over faint concentric tracks. Its
+primary blue mixes 15% foreground for readable detail in either theme. The welcome
+plays one 2.2-second introduction: the arcs align midway, then fade into the regular
+Target. Working replies use continuous clockwise orbits of 5.2 and 7.8 seconds;
+they indicate activity, never measured progress. Native browser animations pause
+offscreen/in hidden tabs and resume at the same position. Reduced motion keeps the
+regular static outline and skips the decorative introduction. AgentTarget owns the
+shared motion and cleanup, with no per-frame React updates or animation scheduler.
+Its welcome instance is decorative and never delays the composer. At the upper right, a 32px stock outline history button
 with the standard rounded corners sits beside the stock 32px New button when a
 saved conversation is selected. The base new-chat view shows only History. History uses a
 stock Popover and ScrollArea in every viewport, with local skeleton rows, empty
@@ -229,7 +230,7 @@ states; do not add a second prose-width cap or shrink-to-fit bubble inside it.
 The Target and text-only activity dropdown share one aligned header row. The expanded
 activity guide begins under the Target’s center, with step text aligned to its label. Activity
 stages and details have no decorative icons or completion checkmarks. While pending,
-the Target reuses the welcome scan/focus/rest animation; completion or failure
+the Target uses the shared orbital animation; completion or failure
 settles it to the regular blue Lucide Target.
 One stock TraceCollapsible presents the current public stage and recorded scope,
 research sources, examined evidence and mechanical checks. It starts closed and opens only on request.
@@ -680,7 +681,7 @@ those compositions, semantic theme tokens live
 in `src/index.css`, and app glyphs pass through `src/components/icons.tsx`.
 
 The deliberate visual exceptions are the JAS logo/wordmark, Home environment artwork and
-heading fade, the shared Target scan/focus/rest animation, CC0 3dicons suggestion images, partial selected navigation glyphs,
+heading fade, the shared Target orbital animation, CC0 3dicons suggestion images, partial selected navigation glyphs,
 white/graphite surfaces, blue selection, and composer sizing, backing and focus
 appearance. They are not all controlled by a preset. A preset changes the shared
 foundation; review these documented exceptions and the icon boundary rather than

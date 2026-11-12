@@ -1,12 +1,12 @@
 {
-  "version": 8,
+  "version": 9,
   "split": "DEVELOPMENT",
   "historical_comparison": false,
   "authorship": "Independent stdlib contract arithmetic before candidate outputs; no JAS imports.",
   "limits": "Finite scripted correctness only; no live accuracy or generic competence.",
   "contracts": {
-    "database": 15,
-    "export": 19,
+    "database": 16,
+    "export": 20,
     "library": 10
   },
   "totals": {

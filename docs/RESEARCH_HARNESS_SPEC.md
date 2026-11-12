@@ -35,8 +35,9 @@ and defensible findings are established first.
 Build an evidence-led investigation workflow with two equally developed
 architectures: a Pydantic AI Researcher using GPT-6.1 Sol and interchangeable
 participant harnesses using GPT-6 Luna. The Researcher can answer questions,
-inspect evidence, design and validate experiments, propose bounded pilots,
-create environment extensions and analyze authorized runs. Participants can
+inspect evidence, design and validate experiments, propose bounded pilots
+and analyze authorized runs. Independently authored environment extensions
+require separate validation and admission. Participants can
 choose planning, memory retrieval, investigation and verification through
 permitted tools and declared effort limits.
 
@@ -56,8 +57,7 @@ Deliver a small-population milestone spanning solo evidence seeking,
 three-agent distributed information, four-agent reliance/commitments and a
 6–12-agent institutional workflow. Establish separate evidence for participant
 capability, world correctness, research competence and research validity.
-Require at least one held-out task to generate genuinely absent mechanics and
-pass independently specified checks. Target 1–12 active participants in the
+Target 1–12 active participants in the
 first version, with population size justified by the question. Consider later
 expansion only for concrete studies and after validation of the relevant
 operating limits. Preserve the current UI appearance while making behavior,
@@ -78,16 +78,13 @@ evidence, uncertainty and failures inspectable.
 11. As an experiment author, I want horizons and stopping conditions justified by opportunities and response times, so that meaningful behavior is not cut off by arbitrary turn limits.
 12. As a workspace user, I want durable research context and retrievable artifacts, so that the Researcher can continue work without repeatedly receiving every record.
 13. As an experiment reviewer, I want to inspect proposed rules and assumptions before execution, so that important simplifications remain visible.
-14. As a workspace user, I want one explicit investigation action to authorize bounded design, checks, pilots, runs and analysis, so that a complete investigation does not require repeated approvals within its declared scope.
 15. As a workspace user, I want saving a proposal or asking a question to remain distinct from authorizing paid participant execution, so that ordinary conversation cannot trigger an unexpected rollout.
-16. As a workspace user, I want visible spending and work limits with recorded stop reasons, so that autonomous research remains bounded and understandable.
-17. As a workspace user, I want material scope changes or exhausted allowances to stop for input, so that an investigation cannot silently expand its authority.
+16. As a workspace user, I want visible spending and work limits with recorded stop reasons, so that authorized model work remains bounded and understandable.
 18. As an experiment author, I want reusable environments independent of one question and model lineup, so that the same mechanics can support different studies.
 19. As an experiment author, I want environment configuration examples separate from experimental commitments, so that reuse does not accidentally import unrelated conditions or analysis choices.
 20. As an experiment author, I want generated configurations to compose verified capabilities, so that common new scenarios can be created efficiently and reliably.
-21. As an experiment author, I want the Researcher to attempt tested extensions when genuinely new mechanics are needed, so that the installed catalog does not become a permanent ceiling.
-22. As an experiment reviewer, I want extension provenance and admission results, so that generated code is not trusted on the strength of its explanation or self-tests.
-23. As a workspace user, I want extension generation to report failure honestly, so that unavailable semantics cannot appear as a supported experiment.
+21. As an experiment author, I want to supply independently reviewed extensions when genuinely new mechanics are needed, so that the installed catalog does not become a permanent ceiling.
+22. As an experiment reviewer, I want extension provenance and admission results, so that executable code is not trusted on the strength of its explanation or self-tests.
 24. As an experiment author, I want saved revisions to pin complete versioned definitions, so that later environment edits cannot change previous or pending runs.
 25. As an experiment author, I want objects, relationships, tools and artifacts where the question needs them, so that rich work is not reduced to agents narrating abstract counters.
 26. As an experiment author, I want valid simple environments preserved, so that extra detail does not confound a question that needs only a small action space.
@@ -149,7 +146,6 @@ evidence, uncertainty and failures inspectable.
 82. As a workspace user, I want usable loading, error, empty, keyboard and mobile states, so that the new workflow remains reliable under ordinary interaction failures.
 83. As an experiment reviewer, I want evidence and configuration available through the existing inspection and export workflow, so that a result can be audited outside its generated summary.
 84. As an experiment reviewer, I want fresh development and held-out cases separated with source identity, so that repeated tuning is not disguised as generalization.
-85. As an experiment reviewer, I want a held-out task requiring genuinely absent mechanics, so that on-demand generation is tested beyond renaming an installed environment.
 86. As an experiment reviewer, I want independently specified extension acceptance checks and all attempts preserved, so that generator-written tests alone cannot establish correctness.
 87. As a workspace user, I want the small-population milestone visibly gated on live and deterministic evidence, so that mocks or load tests cannot stand in for behavioral validation.
 88. As a workspace user, I want the first version focused on 1–12 active participants, so that interaction depth and defensible findings take priority over an unnecessarily large cast.
@@ -176,7 +172,7 @@ evidence, uncertainty and failures inspectable.
 
 9. **Research probes and extension isolation.** A probe runs against an isolated copy and cannot mutate the source checkpoint, append source evidence or contact live participants. Copied state is separate from executable-code containment. Before generated extensions execute, qualify a fail-closed, credential-free runtime in both permitted development and production environments. Generated artifacts have no direct access to host secrets, provider credentials, user databases or unrestricted application interfaces. Do not weaken host security, change host mounts or expand credential forwarding to make qualification pass.
 
-10. **Extension admission.** Prefer configuring and composing verified mechanics when sufficient; attempt a bounded new extension when semantics are genuinely absent. Independently check action contracts, authorization, observation projection, consequences, resource bounds, termination and restoration/replay before admission. Generated self-tests supplement independent checks. Failed admission remains a visible capability gap, and generation stays disabled if containment cannot be qualified. The runner technology is selected by that proof, not prescribed speculatively here. Recorded/model prose remains inert; only an explicit executable extension artifact can enter this separate admitted path.
+10. **Extension admission.** Prefer configuring and composing verified mechanics when sufficient; accept only an explicitly supplied extension when semantics are genuinely absent. Independently check action contracts, authorization, observation projection, consequences, resource bounds, termination and restoration/replay before admission. Generated self-tests supplement independent checks. Failed admission remains a visible capability gap; artifact execution stays disabled if containment cannot be qualified. The runner technology is selected by that proof, not prescribed speculatively here. Recorded/model prose remains inert; only an explicit executable extension artifact can enter this separate admitted path.
 
 11. **Multiple rich representations.** Controlled games, finite transitions, structured artifacts, task/workflow dependencies, resources and institutional rules can be different environment implementations. Do not force all objects into numerical variables or one fixed action vocabulary. Environment complexity follows the requested mechanism; physical geometry, private information, departments and humanlike needs are not mandatory setting templates.
 
@@ -190,9 +186,8 @@ evidence, uncertainty and failures inspectable.
 
 16. **Declared fallible adjudication.** A versioned world mechanism may consume a model judgment for an explicitly judgment-dependent outcome. Record its inputs, configuration and ruling. It cannot contradict executable facts, invent a participant's response or establish private belief/intent. Generated explanations remain interpretations, even when a declared ruling affects later enforced state. Evaluate judge quality separately from world mechanics.
 
-17. **Bounded autonomous investigations.** One explicit investigation action can authorize the displayed scope of design, checks, exploratory pilots, execution and analysis within spending/work limits. Saving a proposal or ordinary chat is not that action. Material ambiguity, a scope change or an exhausted allowance stops for user input. Exploratory adaptation creates retained revisions/attempts; confirmatory decisions remain frozen before their trials. Progress records public operations and results, never hidden reasoning.
 
-18. **Per-request accounting.** Every researcher, participant, planner, verifier and adjudicator request reserves budget atomically before sending and settles its own actual or unknown usage. A multi-request loop cannot reuse one reservation. Preserve unknown charges, cancellation semantics and primary errors through settlement failures. Apply explicit per-investigation and participant effort limits in addition to existing workspace/study ceilings. Record real model/tool work and why it stopped.
+18. **Per-request accounting.** Every researcher, participant, planner, verifier and adjudicator request reserves budget atomically before sending and settles its own actual or unknown usage. A multi-request loop cannot reuse one reservation. Preserve unknown charges, cancellation semantics and primary errors through settlement failures. Apply explicit participant effort limits in addition to existing workspace/study ceilings. Record real model/tool work and why it stopped.
 
 19. **Research validity is independent.** Treat world correctness, researcher competence, participant capability, claim-specific research validity and runtime feasibility as separate tracks. Do not collapse them into a universal intelligence or validity score. A schema-valid design, completed run, citation or attractive graph does not establish a supported conclusion.
 
@@ -206,7 +201,6 @@ evidence, uncertainty and failures inspectable.
 
 24. **Small-population acceptance gate.** Deliver four families with fresh variants and appropriate repetitions: one-agent evidence seeking; three-agent distributed-information coordination with a shared-information control; four-agent voluntary reliance and feasible commitments; and a 6–12-agent institutional workflow with persistent work, permissions and dependencies. Include valid simple, null and inconclusive cases. Establish actual information flow and consequential interaction rather than success by narration. No required cooperative, deceptive or dramatic outcome is part of acceptance.
 
-25. **Held-out generation requirement.** The first-version capability milestone requires at least one held-out task to produce an extension introducing genuinely absent mechanics and pass independently specified acceptance, privacy and replay checks. Define criteria before examining generated outputs. Keep development and validation separated, preserve every attempt/repair/cost and source identity, and do not silently retune/rescore held-out failures. Renaming an installed rule or passing only self-generated tests is insufficient. One success establishes a narrow capability, not universal generation.
 
 26. **Preserve the UI and public workflow.** Retain the existing appearance and remote-state patterns. Make reusable world choices, participant configurations and experiment decisions distinguishable in review. Results lead with a concise evidence-linked behavioral account and inspectable uncertainty, failures and claim status. Add graphs, artifact history or maps only when supported by recorded mechanics/evidence. Preserve drafts, record identity, late-response isolation, one pending chat turn, reconnect without resubmission and accessible loading/error/empty/mobile/keyboard states.
 
@@ -216,7 +210,7 @@ evidence, uncertainty and failures inspectable.
 
 ## Testing Decisions
 
-1. **Primary acceptance seam: the existing public workflow API.** Exercise question/investigation, reviewed design, immutable revision, authorized run, evidence inspection, analysis and export through the real application workflow. Extend existing operations rather than adding a testing-only research API. Assert externally visible results, state, usage and failures; avoid tests of private call order, prompt wording, class layout or duplicated implementation logic.
+1. **Primary acceptance seam: the existing public workflow API.** Exercise question, reviewed design, immutable revision, authorized run, evidence inspection, analysis and export through the real application workflow. Extend existing operations rather than adding a testing-only research API. Assert externally visible results, state, usage and failures; avoid tests of private call order, prompt wording, class layout or duplicated implementation logic.
 
 2. **Prefer existing lower seams only where justified.** Use the existing World interface for independent mechanics/privacy/replay oracles and the existing provider/accounting interface for reservation, cancellation and unknown-usage races. The participant-harness contract belongs at the existing execution-to-policy seam and must admit both real implementations. These focused tests supplement the public API acceptance story; they do not require a collection of new test-only abstractions.
 
@@ -240,7 +234,6 @@ evidence, uncertainty and failures inspectable.
 
 12. **Four-family behavioral milestone.** Freeze varied solo, three-agent, four-agent and institutional-workflow cases with known permissions/consequences and feasible alternative behavior. Use deterministic providers for mechanics/orchestration and separately authorized repeated live trials for actual research/participant competence. A mock, visual demo, interesting conversation or all-complete status cannot substitute for the live behavioral evidence.
 
-13. **Held-out extension acceptance.** Independently author expected behavior and privacy/replay checks before generation. Keep held-out prompts/checks separate from implementation tuning. Require a genuinely new mechanic to work through the same public workflow and admitted execution path, preserve all generation attempts and do not hide repairs. Generator self-tests and renamed built-ins cannot pass this gate on their own.
 
 14. **Browser prior art and regressions.** Reuse existing keyless browser flows for streaming/reconnect, malformed-stream recovery, navigation/new-draft protection, delayed validation/save and per-run observation drafts. Verify the necessary world/participant/review/evidence changes in light/dark and narrow/desktop layouts, including keyboard access, loading/errors/empty states and stale responses. Keep appearance changes limited to the accepted workflows.
 

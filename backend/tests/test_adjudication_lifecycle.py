@@ -1,4 +1,4 @@
-"""Real process restoration and declared investigation boundaries, with no live models."""
+"""Real process restoration and declared adjudication boundaries, with no live models."""
 
 import json
 import os
@@ -11,7 +11,6 @@ from agent_sim.api import create_app
 from fastapi.testclient import TestClient
 from pydantic_ai.models.function import FunctionModel
 from test_fallible_adjudication import GUIDANCE, RULING, protocol
-from test_investigation_review import authorize, install_provider, until
 
 
 @pytest.mark.parametrize("boundary", ["inflight", "settled-before-commit"])
@@ -133,29 +132,3 @@ with TestClient(app, base_url="http://localhost") as client:
         assert verified.status_code == 200, verified.text
         assert verified.json()["verified_turns"] == 1 and verified.json()["model_requests"] == 0
         assert client.get("/api/settings").json()["usage"] == usage
-
-
-def test_investigation_without_displayed_judge_scope_rejects_the_proposal(tmp_path, monkeypatch):
-    app = create_app(f"sqlite:///{tmp_path}/scope.sqlite3", static_dir=tmp_path / "static")
-    with TestClient(app, base_url="http://localhost") as client:
-        design = protocol()
-        design["question"] = "Does a solo author write then submit in an artifact workspace?"
-        design["response_tokens"] = 2048
-        sent, entered, release, _ = install_provider(client, monkeypatch, design)
-        try:
-            key = authorize(client, design)
-            row = until(
-                client,
-                key,
-                lambda row: row["status"] not in {"running", "pausing"} or entered.is_set(),
-            )
-            assert (
-                row["status"] == "stopped" and row["stop_reason"] == "adjudicator_outside_scope"
-            ), row
-            assert not entered.is_set()
-            assert row["runs"] == row["turns"] == 0
-            assert row["confirmation"] is None
-            assert not any(call["purpose"] == "adjudication" for call in row["ledger"])
-            assert not any("you" in call["prompt"] for call in sent)
-        finally:
-            release.set()
