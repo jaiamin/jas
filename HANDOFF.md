@@ -24,10 +24,10 @@ public builds PASS. Old8 affected UI unit passes retain their earlier attributio
 Final read-only frozen-context02 reconfirms both user scopes fit; no provider calls.
 
 App8080 safely refreshed at exact504fd141:2studies/64runs/10chats, same database
-inode/all rows/usage. Actual24run download50,030,684→16,438,694 bytes (67.1% smaller),
+inode/all rows/usage. Actual24run download50,030,684→16,438,681 bytes (67.1% smaller),
 plain application/json, no archive. Full independent resolution is byte-for-byte
 identical to expanded export19 (SHA4de1e98973e43ba3ef24d4c9f22b2dcdcf15ec6f7a28febe6ab5e862b7241a89).
-Native total response3.95s: representation reduces saved-file/context duplication;
+Native total response3.21s: representation reduces saved-file/context duplication;
 it does not claim faster generation or that all evidence fits a model context.
 Original failed analyses remain FAILED with zero provider requests; never retried.
 Final frozen-download extension:80 affected backend cases and11 browser cases PASS
@@ -37,7 +37,12 @@ now serves both download kinds; ordinary API responses remain expanded.
 Native frozen-record verification exposed dictionary ordering loss (values equal,
 bytes unequal); failed measurement and focused RED retained. Hashing now respects
 field order. Final136 affected backend cases and11 browser cases PASS on that source;
-full frozen-record native readback remains to seal after guarded refresh.
+native frozen-record readback02 now PASS:4,442,846→2,336,286 bytes (47.4% smaller),
+byte-exact restoration SHAe46af32d70931849388a3021416f415adb6c2b2d62b0c3218dd510aa1bfee831.
+Both downloads stay plain JSON; study byte-exact restoration still PASS.
+Final guarded8080 refresh at8644adb2 preserves every row/inode/usage;2studies/64runs/10chats.
+Frozen-context03 again fits both stopped snapshots with zero calls. Final served assets
+are the qualified final-dist bytes; current136 backend/11 browser qualification is retained.
 Evidence `.tools/export-download/` preserves gzip/revert/adverse attempts. No new
 paid calls. Remaining: documentary seal and branch publication/hosted CI. App8080
 stays running; all owned test browsers/services are closed.
