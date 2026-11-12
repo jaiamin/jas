@@ -32,6 +32,14 @@ def deterministic_researcher(app):
                 "and source-linked report revisions. "
                 "Keep unsuccessful work visible; participant trials have not run.",
             }
+            question = prompt["question"]
+            while isinstance(question, dict) and set(question) == {prompt["reference_key"]}:
+                question = prompt["shared_values"][question[prompt["reference_key"]]]
+            if "[review-budget-choice]" in question:
+                payload.update(
+                    issues=["The budget comparison needs a user decision."],
+                    clarification="Do you accept a shared experiment-wide ceiling?",
+                )
         elif "brief" in prompt:
             design = next(t["design"] for t in templates() if t["id"] == "artifact_workspace")
             design.update(

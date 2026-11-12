@@ -220,3 +220,87 @@ def test_scope_review_preserves_real_external_limits_and_permission_clarificatio
         assert len(scopes) == len(calls) == (1 if clarification else 2)
         assert all("candidate" not in call["prompt"] for call in calls)
         assert client.get("/api/studies").json() == []
+
+
+@pytest.mark.parametrize(("budget", "available"), [(1, False), (10, True)])
+def test_planning_research_availability_respects_workspace_budget(
+    tmp_path, monkeypatch, budget, available
+):
+    app = create_app(f"sqlite:///{tmp_path}/research-budget.sqlite3", budget_usd=budget)
+    with TestClient(app, base_url="http://localhost") as client:
+        design = artifact_design(client)
+        seen = []
+
+        def brief(prompt):
+            seen.append(prompt)
+            assert prompt["research_available"] is available
+            return scope(design, research_query=None)
+
+        provider(client, monkeypatch, design, brief=brief)
+        result = finish(
+            client,
+            client.post("/api/chats", json={"question": design["question"], "context": "new"}),
+        )
+        assert result["status"] == "complete", result["error"]
+        assert result["output"]["supported"]
+        assert len(seen) == 1
+        assert result["usage"]["requests"] == 3
+
+
+def test_review_budget_clarification_returns_a_question_without_an_executable_draft(
+    tmp_path, monkeypatch
+):
+    app = create_app(f"sqlite:///{tmp_path}/review-clarification.sqlite3")
+    with TestClient(app, base_url="http://localhost") as client:
+        design = artifact_design(client)
+        question = "Do you accept a shared total ceiling, rather than equal per-arm caps?"
+        waiting = True
+
+        def review(_):
+            return (
+                {
+                    "issues": ["A shared total ceiling does not enforce equal per-arm caps."],
+                    "summary": "The intended budget control needs your confirmation.",
+                    "clarification": question,
+                }
+                if waiting
+                else {"issues": [], "summary": "A pilot under a shared total ceiling."}
+            )
+
+        calls = provider(
+            client,
+            monkeypatch,
+            design,
+            review=review,
+        )
+        result = finish(
+            client,
+            client.post("/api/chats", json={"question": design["question"], "context": "new"}),
+        )
+        assert result["status"] == "complete", result["error"]
+        assert result["error"] is None
+        assert result["output"]["supported"] is False
+        assert result["output"]["design"] is None
+        assert result["output"]["clarification"] == question
+        assert question in result["output"]["explanation"]
+        assert result["output"]["planning"]["reviews"][-1]["clarification"] == question
+        assert len(calls) == result["usage"]["requests"] == 3
+        assert client.get("/api/studies").json() == []
+        waiting = False
+        followup = finish(
+            client,
+            client.post(
+                "/api/chats",
+                json={
+                    "question": "Yes, use the shared experiment-wide ceiling.",
+                    "context": "general",
+                    "chat_id": result["chat_id"],
+                },
+            ),
+        )
+        assert followup["status"] == "complete", followup["error"]
+        assert followup["chat_id"] == result["chat_id"]
+        assert followup["output"]["supported"] is True
+        assert followup["output"]["design"]["budget_usd"] == design["budget_usd"]
+        assert len(calls) == 7
+        assert client.get("/api/studies").json() == []

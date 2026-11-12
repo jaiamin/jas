@@ -55,6 +55,12 @@ is checked again at save and execution. Coupled fields count as one bundle; part
 remain allowed without a full-factorial claim.
 Proposal stages, research sources, reviews and provider traces remain Analysis data.
 Revisions record the originating proposal; exports retain that proposal and its requests.
+Optional web research is advertised only when the configured search model and remaining
+workspace headroom cover its conservative reservation; dispatch still reserves atomically.
+Unavailable search cannot be claimed as completed research. Synthetic studies may state
+their assumptions; requests requiring verified external facts need clarification. A material
+user choice discovered during final review also returns a clarification without an executable
+draft, rather than exhausting protocol revisions on a choice the planner cannot make.
 
 Browser drafts preserve unfinished visual edits and raw JSON per source document;
 assistant visibility and other presentation parameters do not change draft identity. Invalid drafts

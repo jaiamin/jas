@@ -5,7 +5,6 @@ from typing import Any, Literal
 
 from pydantic import Field, TypeAdapter, ValidationError
 
-from .config import setting
 from .db import Analysis, Database, digest
 from .domain import Design, DesignSpec, EnvironmentId, PlannedStudy, Strict
 from .environment_library import builtin_environment
@@ -145,6 +144,9 @@ Same-model and general budget constraints are configuration. Use the declared ex
 ceiling and disclose its shared scope. Do not claim equal per-arm/trajectory dollar caps are
 enforced; if the user explicitly requires them, explain that limit and ask whether a shared
 ceiling is acceptable. Never silently replace an explicit operational or budget requirement.
+Use the same defaults at scoping and drafting: openai:gpt-6-luna for participants and a $3
+experiment-wide ceiling, unless the user requests other supported settings. Do not select a
+more expensive participant model merely because it appears in the catalog.
 """
 
 
@@ -254,8 +256,8 @@ agent to behave selfishly or lie when studying whether those behaviors emerge. G
 trade off personal and collective outcomes without dictating actions. Use concrete tasks and
 goals for collaboration studies. Shared goals and interchangeable participants are valid; distinct
 personal task responsibilities are not required. Ensure conditions manipulate the question's
-variable. Use only supported measurement keys. Budget defaults to $3; never exceed $10.
-Default to openai:gpt-6-luna. For model comparisons, choose distinct listed OpenAI models.
+variable. Use only supported measurement keys. Never exceed $10.
+For model comparisons, choose distinct listed OpenAI models.
 Reciprocity can be operationalized as return_rate under rotating partners; do not require fixed
 partners or infer partner-specific feelings.
 Profiles may specify their own listed model for heterogeneous teams; null inherits the condition.
@@ -488,6 +490,14 @@ class Candidate(Strict):
 
 class DesignReview(Strict):
     issues: list[str] = Field(max_length=6)
+    clarification: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=600,
+        description="Ask the user only when a material choice about meaning, permissions or "
+        "feasibility cannot be resolved by revising the protocol. This withholds the draft; "
+        "use issues for corrections the planner can make without a user decision.",
+    )
     summary: str = Field(
         min_length=1,
         max_length=1200,
@@ -698,8 +708,12 @@ class Planner:
         return {
             "question": question,
             "conversation": conversation,
-            "research_available": setting("PLANNER_MODEL", "openai:gpt-6.1-sol")
-            == "openai:gpt-6.1-sol",
+            "research_available": self.models.web_research_available(),
+            "research_availability_note": "Web research requires the configured search model "
+            "and enough remaining workspace budget for its conservative reservation. When "
+            "unavailable, do not request a search or claim external sources were checked. "
+            "Use explicit synthetic-case assumptions when external research is optional; "
+            "ask clarification if verified external facts are essential to the request.",
             # The source-linked discovery operation supplies the full catalog once.
             "rule_examples": rule_examples,
             "models": self.models.catalog(),
@@ -1153,6 +1167,10 @@ class Planner:
                 DesignReview,
                 PLANNING + "\nCritique this protocol against the original question. "
                 "Return material issues only; an empty list approves it. "
+                "If a material user decision is required, return a concise clarification "
+                "question instead of asking the drafter to guess or repeatedly revise an "
+                "unresolvable choice. Do not invent an explicit equal per-arm budget "
+                "requirement, and do not label a shared ceiling as enforcing one. "
                 "candidate.design is the server-validated protocol. source_validation records "
                 "whether a null built-in source was expanded to its complete immutable source. "
                 "That normalization is expected; do not request nulling or editing the pinned "
@@ -1192,8 +1210,24 @@ class Planner:
                 max_tokens=8192,
             )
             feedback = review.issues
-            planning["reviews"].append({"kind": "review", "issues": feedback})
+            planning["reviews"].append(
+                {
+                    "kind": "review",
+                    "issues": feedback,
+                    **({"clarification": review.clarification} if review.clarification else {}),
+                }
+            )
             self.progress(key, "reviewing", planning=planning)
+            if review.clarification:
+                return {
+                    **PlannedStudy(
+                        supported=False,
+                        explanation=f"{review.summary}\n\n{review.clarification}",
+                        design=None,
+                    ).model_dump(),
+                    "clarification": review.clarification,
+                    "planning": planning,
+                }
             if not feedback:
                 planning.pop("draft_notes", None)
                 return {

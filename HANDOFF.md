@@ -1,5 +1,62 @@
 # JAS handoff
 
+## Live checkout evaluation: fixes verified, live qualification remains open
+
+The user authorized up to $1 additional GPT-6.1 Sol spending for the exact checkout
+prompt and its follow-up through the real Agent. All attempts share the SAME isolated
+`.tools/harness-scoping/live-01/workspace.sqlite3`, ceiling1,000,000 microdollars.
+No user data was used for evaluation. No participant runs, saved studies, provider
+substitution, silent retries or reservation changes. Do not start further paid work
+under a new ledger or treat the unused allowance as a reset budget.
+
+Live01 FAILED after two completed calls/$0.064730: scope supported the harness study,
+but optional search required a $4.281440 conservative reservation. Fixed availability:
+search is advertised only when its reviewed model and remaining unreserved workspace
+headroom permit it. Atomic dispatch reservation/settlement remain authoritative; no
+claimed web research or silently skipped requested search. Synthetic cases can disclose
+assumptions; externally verified facts essential to the request need clarification.
+
+Live02 FAILED after six calls/$0.452576: scope correctly supported synthetic tool access,
+but two draft validation repairs consumed the revision budget before review rejected
+the shared-budget interpretation of 'same budget'. The final reviewer previously had
+no clarification channel. Added a bounded clarification field: material user decisions
+return COMPLETE/supported=false/no executable draft and can continue in the same chat,
+rather than asking the planner to resolve an unanswerable choice. Actual unresolved
+protocol defects still block approval. Scoping and drafting now share Luna/$3 defaults;
+the historical live brief chose Terra/$5 despite the prior drafting-only default. No
+Terra/participant call occurred; final default guidance is NOT live-qualified.
+
+Live03 sent the approved original follow-up in that SAME chat/ledger. Scoping supported
+it, but drafting reservation correctly refused before dispatch: two calls/$0.065748.
+Final independent ledger audit:10 completed Sol calls, total583,054 microdollars
+($0.583054), no unsettled calls, studies0/runs0, ceiling unchanged. Frozen oracle SHA
+matches across all three attempts. Qualification is NOT PASSED: neither exact request
+nor follow-up delivered a completed live protocol. Do not claim live success based on
+the deterministic tests. Remaining headroom416,946 microdollars cannot cover the
+observed draft reservation; no additional paid attempt is planned. Raw failures and
+results remain immutable under `.tools/harness-scoping/live-01`, `live-02`, `live-03`.
+`live-03/final-live-audit.json` records the limitations without model payloads.
+
+Deterministic verification: budget boundary/workflow tests, review-clarification red→green
+and same-chat confirmation→validated proposal PASS in the80-case affected group.
+Budget-aware source full backend1874PASS; the final full suite after review/default
+changes passes1875 cases (395.67s). Final real HTTP/planner browser3PASS: light
+and dark edit/save flows plus visible clarification/reload/same-chat continuation,
+no participant calls or console errors. New browser fixture initially inspected a shared
+question reference without resolving it; corrected test-only decoding, failure retained.
+An initial wrong test filename and wrong Playwright config selected no tests; logs retained.
+Ruff/globalty/format PASS; Biome formatted the new browser test. Hosted CI on b29744b6
+was refused before execution by GitHub account payment/spending limits; no hosted app
+checks ran. Keep draft PR38 open and do not merge on these local results alone.
+
+Final verified source is active on8080, PID39969; health/home200. Activation
+hashes preserve analyses/provider_calls/studies/runs AND the workspace spending ledger
+(3 analyses,14 existing provider calls). Receipt: `live-03/activation.json`, including
+backend source SHA and pre-commit HEAD; earlier receipts remain untouched. All paid
+evaluation jobs and temporary18143/18144 servers are closed. Keep8080 running.
+Publication: existing draft PR38 on `fix/agent-refinement-context`; no merge/default
+branch push, billing change or hosted re-run. Live qualification remains open.
+
 ## Implemented: distinguish participant tools from unavailable external integrations
 
 User's checkout incident decision experiment was declined because scoping invented
@@ -15,7 +72,7 @@ World, budget semantics, hidden execution, model substitutions or provider retri
 Test both the user's exact prompt and a non-checkout case, legitimate external-tool
 refusals, clarification, actual matched harness execution and previous context limits.
 Run relevant checks/browser, preserve user records and activate on8080. Extend the
-existing Agent reliability PR38. No fresh paid-call budget has been granted.
+existing Agent reliability PR38. This deterministic checkpoint predates the $1 approval above.
 
 Observed red: two public HTTP regressions replaying the unsupported tool-access mapping
 return supported=false before a second scoping call (red.log). Ranked causes: absent
@@ -34,8 +91,8 @@ Evidence: `.tools/harness-scoping/`.
 Activated on8080, PID25565; health/home200 and before/after hashes preserve all
 analyses/provider calls/studies/runs (14 existing calls). Previous activation/evidence
 retained separately. Browser18142 closed. User was asked for up to$1 to verify exact
-prompt plus follow-up on live GPT6.1Sol; approval remains pending, so live model
-interpretation is not claimed verified. Only that optional paid check remains open;
+prompt plus follow-up on live GPT6.1Sol; the subsequent approval and live failures are
+recorded above. Live model interpretation is not claimed verified;
 the implemented fix/tests are published in PR38. Hosted CI remains subject to the
 previously observed account billing/spending-limit block.
 

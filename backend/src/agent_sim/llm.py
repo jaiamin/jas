@@ -37,6 +37,12 @@ def prompt_byte_limit(output: type, instructions: str) -> int:
     return MAX_INPUT_BYTES - len((instructions + json.dumps(schema)).encode()) - 4096
 
 
+def web_research_reservation(model: str, max_tokens: int) -> int:
+    input_rate, output_rate = PRICES[model]
+    # Search inputs are unknown until completion; reserve the model's full context.
+    return math.ceil(1_050_000 * input_rate * 2 + max_tokens * output_rate * 1.5) + 20_000
+
+
 PRICES: dict[str, tuple[float, float]] = {
     "openai:gpt-6-luna": (0.10, 0.50),
     "openai:gpt-6.1-sol": (2.0, 10.0),
@@ -131,6 +137,15 @@ class LanguageModels:
             "PLANNER_MODEL" if purpose == "design" else "ASSISTANT_MODEL", "openai:gpt-6.1-sol"
         )
 
+    def web_research_available(self, max_tokens: int = 4096) -> bool:
+        model = self.research_model("design")
+        if model != "openai:gpt-6.1-sol":
+            return False
+        reserved = web_research_reservation(model, max_tokens)
+        with self.db.session() as session:
+            workspace = session.get_one(Workspace, 1)
+            return workspace.charged + reserved <= workspace.ceiling
+
     def model(self, name: str) -> Model:
         if name in self.models:
             return self.models[name]
@@ -198,10 +213,7 @@ class LanguageModels:
         if web_search:
             settings["openai_include_web_search_sources"] = True
             settings["extra_body"] = {"max_tool_calls": 2}
-            # Search inputs are unknown until completion; reserve the model's full context.
-            reserved = (
-                math.ceil(1_050_000 * input_rate * 2 + max_tokens * output_rate * 1.5) + 20_000
-            )
+            reserved = web_research_reservation(model, max_tokens)
         async with self.capacity:
             if before_reserve is not None:
                 before_reserve()
