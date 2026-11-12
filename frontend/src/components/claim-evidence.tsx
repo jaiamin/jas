@@ -162,7 +162,7 @@ export function ClaimEvidence({
           </Disclosure>
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" asChild>
-              <a href={`/api/analyses/${row.id}`} download>
+              <a href={`/api/analyses/${row.id}?download=true`} download>
                 Download frozen evidence
               </a>
             </Button>

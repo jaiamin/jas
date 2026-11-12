@@ -243,6 +243,35 @@ def test_inspected_citation_cannot_validate_invented_total(claim_client, design)
     assert final["usage"]["requests"] == 2
 
 
+def test_frozen_analysis_download_is_lossless_plain_json_after_run_advances(claim_client, design):
+    client, _, _ = claim_client
+    _, rid = save(client, design)
+    assert run(client, rid, "step")["turn"] == 1
+    frozen = finish(
+        client,
+        client.post(
+            "/api/chats", json={"question": "Describe this turn.", "context": f"run:{rid}"}
+        ),
+    )
+    assert frozen["status"] == "complete"
+    assert run(client, rid, "step")["turn"] == 2
+    usage = client.get("/api/settings").json()["usage"]
+    key = frozen["id"]
+    download = client.get(f"/api/analyses/{key}?download=true")
+    assert download.status_code == 200
+    assert download.headers["content-type"] == "application/json"
+    assert download.headers["content-disposition"] == (
+        f'attachment; filename="jas-analysis-{key}.json"'
+    )
+    record = analysis_prompt(download.text)
+    for name in ("representation", "reading_guide", "overview", "reference_key", "shared_values"):
+        record.pop(name)
+    assert record == client.get(f"/api/analyses/{key}").json()
+    assert record["cutoffs"] == {rid: 1}
+    assert record["output"] == frozen["output"]
+    assert client.get("/api/settings").json()["usage"] == usage
+
+
 def test_six_run_interpretation_fits_without_losing_calculation_assumptions(claim_client):
     import copy
 

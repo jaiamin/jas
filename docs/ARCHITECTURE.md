@@ -645,6 +645,8 @@ references for repeated values, plus a readable overview/guide. Resolving refere
 recovers the exact expanded export19 returned to ordinary API callers. The reserved
 reference property is chosen to avoid collisions with literal evidence/schema fields.
 Snapshot capture finishes before sharing values in a worker; no provider calls occur.
+Frozen-analysis downloads use the same representation and a connection-bound snapshot,
+preserving their captured cutoffs as the live run advances.
 
 Analysis contexts use the same lossless sharing. Before every request, the Researcher
 budgets the question, instructions, exact output schema and evidence against the

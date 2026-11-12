@@ -95,6 +95,11 @@ observations and recorded prompts, so share them deliberately.
 Study exports are evidence bundles, not importable workspaces: there is no study-import
 endpoint. Reusing saved environment definitions is a separate workflow.
 
+The Agent's **Download frozen evidence** action uses this same plain JSON representation
+at `/api/analyses/{id}?download=true`. It preserves that analysis record and its captured
+cutoffs even after a run advances. The ordinary analysis endpoint remains expanded JSON
+for the app; downloading never reruns analysis or contacts a model.
+
 T12's keyless browser witnesses use the opt-in DEVELOPMENT-only workflow provider,
 fresh owned data and the already installed headless shell. Set `JAS_TEST_PORT`,
 `JAS_TEST_DATA_DIR`, `PLAYWRIGHT_BROWSERS_PATH`, `T12_BROWSER_EXECUTABLE` and

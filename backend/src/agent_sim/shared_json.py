@@ -5,6 +5,22 @@ import json
 from collections import Counter
 
 
+def portable_json(data: dict, overview: dict) -> dict:
+    return {
+        "representation": "shared-values-v1",
+        "reading_guide": (
+            "Self-contained evidence as plain JSON. Start with overview. Repeated values "
+            "are stored once in shared_values. A single-key object whose key equals reference_key "
+            "refers to shared_values[its value]; resolve recursively. All referenced data is "
+            "inside this file. Other objects, including JSON schemas, are literal data. "
+            "Remove representation, reading_guide, overview, reference_key and shared_values "
+            "after resolving to recover the exact expanded JSON."
+        ),
+        "overview": overview,
+        **share_json(data),
+    }
+
+
 def share_json(data: dict) -> dict:
     """Share exact repeated values on the wire; retain the original frozen evidence."""
     counts: Counter[str] = Counter()

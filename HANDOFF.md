@@ -4,7 +4,8 @@
 
 User explicitly rejected archived/compressed downloads. Gzip implementation07b0abc1
 was fully reverted at01685360; it is not the delivery. Downloads stay plain JSON,
-using lossless shared-values-v1 references plus an overview/reading guide. Expanded
+using lossless shared-values-v1 references plus an overview/reading guide. The Agent
+frozen-analysis download uses the same representation without widening its cutoffs. Expanded
 export19 remains the API representation; no study importer or persisted version change.
 All unique evidence is retained. New code lives in shared_json.py and analysis_context.py.
 
@@ -29,6 +30,10 @@ identical to expanded export19 (SHA4de1e98973e43ba3ef24d4c9f22b2dcdcf15ec6f7a28f
 Native total response3.95s: representation reduces saved-file/context duplication;
 it does not claim faster generation or that all evidence fits a model context.
 Original failed analyses remain FAILED with zero provider requests; never retried.
+Final frozen-download extension:80 affected backend cases and11 browser cases PASS
+(7 experiment +4 frozen analysis, phone/desktop and light/dark). A run advancing
+after analysis does not change downloaded frozen inputs. Shared representation helper
+now serves both download kinds; ordinary API responses remain expanded.
 Evidence `.tools/export-download/` preserves gzip/revert/adverse attempts. No new
 paid calls. Remaining: documentary seal and branch publication/hosted CI. App8080
 stays running; all owned test browsers/services are closed.
