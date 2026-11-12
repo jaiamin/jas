@@ -162,3 +162,67 @@ for (const [theme, width] of [
     });
   });
 }
+
+test("review clarification is visible and continues in the same chat", async ({
+  page,
+  request,
+}) => {
+  const studiesBefore = await (await request.get("/api/studies")).json();
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.route("**/api/settings", async (route) => {
+    const response = await route.fetch();
+    const settings = await response.json();
+    await route.fulfill({
+      response,
+      json: { ...settings, providers: { openai: true, anthropic: false } },
+    });
+  });
+  await page.goto("/agent");
+  await page
+    .getByLabel("Message Agent", { exact: true })
+    .fill(`${question} [review-budget-choice]`);
+  const posted = page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/api/chats") &&
+      response.request().method() === "POST",
+  );
+  await page.getByRole("button", { name: "Send message", exact: true }).click();
+  const identity = await (await posted).json();
+  await expect(
+    page.getByText("Do you accept a shared experiment-wide ceiling?", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(page.getByText("Request stopped", { exact: true })).toHaveCount(
+    0,
+  );
+  await expect(
+    page.getByRole("link", { name: "Review protocol", exact: true }),
+  ).toHaveCount(0);
+  await page.reload();
+  await expect(
+    page.getByText("Do you accept a shared experiment-wide ceiling?", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page
+    .getByLabel("Message Agent", { exact: true })
+    .fill("Yes, use the shared experiment-wide ceiling.");
+  await page.getByRole("button", { name: "Send message", exact: true }).click();
+  await expect(
+    page.getByRole("link", { name: "Review protocol", exact: true }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`chat=${identity.chat_id}`));
+  const rows = await (
+    await request.get(`/api/chats/${identity.chat_id}`)
+  ).json();
+  expect(rows.map((row: { status: string }) => row.status)).toEqual([
+    "complete",
+    "complete",
+  ]);
+  expect(await (await request.get("/api/studies")).json()).toEqual(
+    studiesBefore,
+  );
+  expect(errors).toEqual([]);
+});

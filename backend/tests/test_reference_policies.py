@@ -15,6 +15,8 @@ from pydantic_ai.usage import RequestUsage
 from test_participant_harnesses import decision, save, step, wait_finished
 from test_participant_harnesses import harness_client as harness_client
 
+from benchmarks.provider_fixtures import output_args
+
 
 @pytest.fixture
 def reference_client(tmp_path, monkeypatch):
@@ -266,7 +268,7 @@ def test_declared_capability_ablations_reject_use_without_fallback(
     async def respond(messages, info):
         value = {"operation": operation, "decision": None, **payload}
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, value)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, value))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -285,13 +287,11 @@ def test_declared_capability_ablations_reject_use_without_fallback(
     assert activation["identity"]["harness"]["capabilities"][capability] == "disabled"
     assert activation["identity"]["memory"] == "none"
     assert activation["identity"]["model"] == "openai:gpt-6-luna"
-    assert activation["stop_reason"] == "invalid_operation"
+    assert activation["stop_reason"] == "provider_failure"
     assert activation["requests"] == len(run["requests"]) == 1
-    assert (
-        len(activation["operations"]) == 1 and activation["operations"][0]["status"] == "rejected"
-    )
+    assert activation["operations"] == []
     result = client.get(f"/api/studies/{study['id']}").json()["comparison"]["conditions"][0]
-    assert result["effort"]["tool_attempts"] == 1
+    assert result["effort"]["tool_attempts"] == 0
     assert result["effort"]["tool_operations"] == 0
     assert result["effort"]["usage"]["requests"] == 1
     exported = client.get(f"/api/studies/{study['id']}/export").json()
@@ -335,7 +335,8 @@ def test_missing_cells_keep_failed_work_and_frozen_effort_after_retry(
     ) == (1, 1, 1, 1)
     assert rows["limited"]["effort"]["inference_attempts"] == 1
     assert rows["limited"]["effort"]["usage"]["requests"] == 1
-    assert rows["limited"]["effort"]["stop_reasons"] == {"request_limit": 1}
+    # The deliberately noncompliant provider ignores the decision-only schema.
+    assert rows["limited"]["effort"]["stop_reasons"] == {"provider_failure": 1}
     assert {e["condition_key"]: e["pairs"] for e in current["effects"]} == {"limited": 0, "keep": 1}
     posted = client.post(
         "/api/chats",
@@ -360,7 +361,7 @@ def test_missing_cells_keep_failed_work_and_frozen_effort_after_retry(
             else decision()
         )
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, output)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, output))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -372,7 +373,7 @@ def test_missing_cells_keep_failed_work_and_frozen_effort_after_retry(
     later = client.get(f"/api/studies/{study['id']}").json()
     limited = next(r for r in later["comparison"]["conditions"] if r["condition_key"] == "limited")
     assert limited["effort"]["activations"] == 3
-    assert limited["effort"]["stop_reasons"] == {"request_limit": 1, "decision_committed": 2}
+    assert limited["effort"]["stop_reasons"] == {"provider_failure": 1, "decision_committed": 2}
     assert limited["effort"]["usage"] == client.get(f"/api/runs/{rid}").json()["summary"]["usage"]
     assert client.get(f"/api/analyses/{aid}").json()["output"]["comparisons"] == frozen
     exported = client.get(f"/api/studies/{study['id']}/export").json()
@@ -481,7 +482,7 @@ def test_artifact_read_work_is_included_in_run_comparison_and_export_effort(
             "decision": None if reading else decision({"kind": "stop"}),
         }
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, output)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, output))],
             usage=RequestUsage(input_tokens=67, output_tokens=23),
         )
 
@@ -495,7 +496,7 @@ def test_artifact_read_work_is_included_in_run_comparison_and_export_effort(
         rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
         run = settle(client, rid)
         assert run["summary"]["status"] == ("complete" if authorized else "failed")
-        assert run["effort"]["tool_attempts"] == 1
+        assert run["effort"]["tool_attempts"] == int(authorized)
         assert run["effort"]["tool_operations"] == int(authorized)
         assert run["effort"]["usage"] == run["summary"]["usage"]
         comparison = client.get(f"/api/studies/{sid}").json()["comparison"]
@@ -504,5 +505,9 @@ def test_artifact_read_work_is_included_in_run_comparison_and_export_effort(
         assert exported["study"]["comparison"] == comparison
         replay = client.post(f"/api/runs/{rid}/verify").json()
         assert replay["verified_reads"] == int(authorized)
-        assert replay["verified_rejections"] == int(not authorized)
+        assert replay["verified_rejections"] == 0
+        if not authorized:
+            assert run["summary"]["turn"] == 0
+            assert run["activations"][0]["stop_reason"] == "provider_failure"
+            assert run["requests"][0]["status"] == "failed"
         (tmp_path / "public-evidence.json").write_text(json.dumps(exported))

@@ -28,6 +28,7 @@ from pydantic_ai import models
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.usage import RequestUsage
+from benchmarks.provider_fixtures import output_args
 from sqlalchemy import event, text
 models.ALLOW_MODEL_REQUESTS = False
 case = json.loads(Path(sys.argv[2]).read_text())
@@ -39,10 +40,10 @@ actions = iter([
     {"kind": "submit_artifacts"},
 ])
 async def author(messages, info):
-    return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, {
+    return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, output_args(info, {
         "action": next(actions), "rationale": "Literal development action.",
         "memory": "", "forecast": None,
-    })], usage=RequestUsage(input_tokens=101, output_tokens=37))
+    }))], usage=RequestUsage(input_tokens=101, output_tokens=37))
 def publish_ready():
     # The parent kills this process as soon as the signal appears.
     ready = Path(sys.argv[3])

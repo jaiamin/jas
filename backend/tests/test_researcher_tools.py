@@ -15,6 +15,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import DeltaToolCall, FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 
 @pytest.fixture
 def client(tmp_path):
@@ -29,7 +31,7 @@ def scripted(client, monkeypatch, respond):
         if "propose_experiment" in info.output_tools[0].parameters_json_schema["properties"]:
             payload = {"propose_experiment": False, **payload}
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, payload)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, payload))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -461,7 +463,7 @@ def test_operation_results_reach_planner_without_replacing_the_original_question
     assert final["purpose"] == "design" and final["question"] == question
     assert final["output"]["supported"] is False and final["output"]["design"] is None
     assert final["output"]["research"]["stop_reason"] == "planner_handoff"
-    assert final["usage"]["requests"] == 3
+    assert final["usage"]["requests"] == 4  # General operation/handoff plus two scope checks.
     assert client.get("/api/studies").json() == []
 
 
@@ -759,7 +761,7 @@ def test_run_probe_uses_recorded_cutoff_while_source_advances(client, monkeypatc
             "forecast": None,
         }
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, decision))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 

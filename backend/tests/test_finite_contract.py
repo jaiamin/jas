@@ -11,6 +11,8 @@ import pytest
 from agent_sim.api import create_app
 from fastapi.testclient import TestClient
 
+from benchmarks.provider_fixtures import output_args
+
 
 def refundable_permit():
     """External complete oracle; production must not contain a permit implementation."""
@@ -590,12 +592,15 @@ def test_finite_admission_runs_pinned_permit_through_engine_and_exact_zero_call_
                 parts=[
                     ToolCallPart(
                         info.output_tools[0].name,
-                        {
-                            "action": {"kind": "finite", "operation": operation},
-                            "rationale": "Prose is inert",
-                            "memory": "actor-private note",
-                            "forecast": None,
-                        },
+                        output_args(
+                            info,
+                            {
+                                "action": {"kind": "finite", "operation": operation},
+                                "rationale": "Prose is inert",
+                                "memory": "actor-private note",
+                                "forecast": None,
+                            },
+                        ),
                     )
                 ],
                 usage=RequestUsage(input_tokens=100, output_tokens=50),

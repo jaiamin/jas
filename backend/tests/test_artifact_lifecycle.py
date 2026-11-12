@@ -14,6 +14,8 @@ from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 from test_artifact_workspace import decision, protocol, save, wait_finished
 
+from benchmarks.provider_fixtures import output_args
+
 
 def test_actual_process_restart_pauses_inflight_work_and_keeps_unknown_reservation(
     tmp_path, monkeypatch
@@ -31,6 +33,7 @@ from pydantic_ai import models
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.usage import RequestUsage
+from benchmarks.provider_fixtures import output_args
 models.ALLOW_MODEL_REQUESTS = False
 app = create_app(sys.argv[1], static_dir=Path(sys.argv[2]).parent / "static")
 requests = 0
@@ -40,12 +43,12 @@ async def respond(messages, info):
     if requests > 1:
         Path(sys.argv[3]).write_text(json.dumps({"run_id": run_id}))
         await asyncio.Event().wait()
-    return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, {
+    return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, output_args(info, {
         "action": {"kind": "write_artifact", "artifact": "report", "expected_version": 1,
                    "content": {"reading": 17},
                    "sources": [{"artifact": "measurement", "version": 1}]},
         "rationale": "Known fixture", "memory": "Retain version two.", "forecast": None,
-    })], usage=RequestUsage(input_tokens=100, output_tokens=50))
+    }))], usage=RequestUsage(input_tokens=100, output_tokens=50))
 app.state.models.models["openai:gpt-6-luna"] = FunctionModel(function=respond)
 with TestClient(app, base_url="http://localhost") as client:
     value = json.loads(Path(sys.argv[2]).read_text())
@@ -128,7 +131,7 @@ def test_auxiliary_or_next_provider_failure_retains_actual_reads_and_unknown_usa
             else {"operation": "read_artifact", "read": action, "decision": None}
         )
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, value)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, value))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 

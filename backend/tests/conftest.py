@@ -12,6 +12,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 
 def analysis_prompt(content):
     """Resolve the documented wire references before a deterministic analyst uses them."""
@@ -23,6 +25,21 @@ def analysis_prompt(content):
         if isinstance(value, dict):
             if reference_key is not None and set(value) == {reference_key}:
                 return resolve(shared[value[reference_key]])
+            return {name: resolve(child) for name, child in value.items()}
+        return [resolve(child) for child in value] if isinstance(value, list) else value
+
+    return resolve(data)
+
+
+def planning_prompt(content):
+    data = analysis_prompt(content)
+
+    def resolve(value):
+        if isinstance(value, dict):
+            if set(value) == {"shared_input", "overrides"}:
+                return resolve(
+                    {**data["shared_prompt_inputs"][value["shared_input"]], **value["overrides"]}
+                )
             return {name: resolve(child) for name, child in value.items()}
         return [resolve(child) for child in value] if isinstance(value, list) else value
 
@@ -85,7 +102,11 @@ def fake_model():
         prompt = messages[-1].parts[0].content
         observation = json.loads(prompt)
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, decision_for(observation))],
+            parts=[
+                ToolCallPart(
+                    info.output_tools[0].name, output_args(info, decision_for(observation))
+                )
+            ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 

@@ -16,10 +16,12 @@ from pydantic_ai.usage import RequestUsage
 from sqlalchemy import select, text
 from test_fallible_adjudication import ADJUDICATOR, GUIDANCE, INPUTS, RULING, finished, protocol
 
+from benchmarks.provider_fixtures import output_args
+
 
 def response(info, value, *, judge=False):
     return ModelResponse(
-        parts=[ToolCallPart(info.output_tools[0].name, copy.deepcopy(value))],
+        parts=[ToolCallPart(info.output_tools[0].name, output_args(info, copy.deepcopy(value)))],
         usage=RequestUsage(input_tokens=41 if judge else 101, output_tokens=19 if judge else 37),
     )
 
@@ -182,7 +184,8 @@ def test_judgment_scope_and_configuration_remain_pinned_after_library_and_revisi
         assert judge == [INPUTS] and len(author) == 2
 
 
-def test_pause_before_judgment_holds_the_decision_and_resume_does_not_resample(tmp_path):
+@pytest.mark.parametrize("harness", ["direct_action", "tool_using"])
+def test_pause_before_judgment_holds_the_decision_and_resume_does_not_resample(tmp_path, harness):
     entered, release = threading.Event(), threading.Event()
     proposals = iter([write_action(), {"kind": "submit_artifacts"}])
     count = 0
@@ -194,9 +197,21 @@ def test_pause_before_judgment_holds_the_decision_and_resume_does_not_resample(t
         if count == 2:
             entered.set()
             assert await asyncio.to_thread(release.wait, 8)
-        return response(info, decision(action))
+        value = decision(action)
+        if harness == "tool_using":
+            value = {"operation": "decide", "decision": value}
+        return response(info, value)
 
-    with workflow(tmp_path, participant=participant) as (_, client, _, run_id, author, judge):
+    design = protocol()
+    design["conditions"][0]["harness"] = {"kind": harness}
+    with workflow(tmp_path, participant=participant, design=design) as (
+        _,
+        client,
+        _,
+        run_id,
+        author,
+        judge,
+    ):
         written = start(client, run_id, "step")
         try:
             assert (

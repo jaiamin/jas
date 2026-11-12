@@ -356,3 +356,21 @@ def test_provider_trace_keeps_observable_output_and_usage_without_thinking(runti
         assert (call.input_tokens, call.output_tokens, call.reasoning_tokens) == (120, 30, 12)
         assert call.charged == 27 and call.status == "complete"
     assert isinstance(captured[0].parts[0], ThinkingPart)
+
+
+@pytest.mark.parametrize(
+    ("ceiling", "charged", "available"),
+    [(4281440, 0, True), (4281439, 0, False), (5000000, 718560, True), (5000000, 718561, False)],
+)
+def test_web_research_availability_uses_unreserved_workspace_headroom(
+    runtime, monkeypatch, ceiling, charged, available
+):
+    db, llm, _, _ = runtime
+    monkeypatch.setenv("JAS_PLANNER_MODEL", "openai:gpt-6.1-sol")
+    with db.session.begin() as session:
+        row = session.get_one(Workspace, 1)
+        row.ceiling, row.charged = ceiling, charged
+    assert llm.web_research_available() is available
+    with db.session() as session:
+        assert session.get_one(Workspace, 1).charged == charged
+        assert session.query(ProviderCall).count() == 0

@@ -13,6 +13,7 @@ from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 
 from backend.tests.test_cosigned_world import cosigned_design
+from benchmarks.provider_fixtures import output_args
 
 
 def test_finite_engine_start_keeps_http_responsive_and_real_worker_off_the_api_loop(
@@ -33,12 +34,15 @@ def test_finite_engine_start_keeps_http_responsive_and_real_worker_off_the_api_l
             parts=[
                 ToolCallPart(
                     info.output_tools[0].name,
-                    {
-                        "action": {"kind": "finite", "operation": operation},
-                        "rationale": "Self-reported success grants no authority",
-                        "memory": "actor-private note",
-                        "forecast": None,
-                    },
+                    output_args(
+                        info,
+                        {
+                            "action": {"kind": "finite", "operation": operation},
+                            "rationale": "Self-reported success grants no authority",
+                            "memory": "actor-private note",
+                            "forecast": None,
+                        },
+                    ),
                 )
             ],
             usage=RequestUsage(input_tokens=100, output_tokens=50),

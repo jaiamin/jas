@@ -14,6 +14,8 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import DeltaToolCall, FunctionModel
 from pydantic_ai.usage import RequestUsage
 
+from benchmarks.provider_fixtures import output_args
+
 DISCLOSURE = "review-private-disclosure-18218"
 
 
@@ -150,7 +152,11 @@ def combined_client(tmp_path, monkeypatch, request):
                     raise TimeoutError("Independent unknown-receipt witness")
                 if state["failure"] == "invalid":
                     return ModelResponse(
-                        parts=[ToolCallPart(info.output_tools[0].name, {"bad": True})],
+                        parts=[
+                            ToolCallPart(
+                                info.output_tools[0].name, output_args(info, {"bad": True})
+                            )
+                        ],
                         usage=RequestUsage(input_tokens=100, output_tokens=50),
                     )
             if workflow == "institution" and len(journal) < 2:
@@ -198,7 +204,7 @@ def combined_client(tmp_path, monkeypatch, request):
                 with app.state.db.session.begin() as session:
                     session.get_one(Workspace, 1).ceiling = 0
         return ModelResponse(
-            parts=[ToolCallPart(info.output_tools[0].name, output)],
+            parts=[ToolCallPart(info.output_tools[0].name, output_args(info, output))],
             usage=RequestUsage(input_tokens=100, output_tokens=50),
         )
 
@@ -349,7 +355,9 @@ def test_t08_state_investigation_uses_institution_producer_and_private_visibilit
                 assert content["actor"] == "alex" and content["target"] == "morgan"
 
 
-def test_compacted_observation_receipt_is_not_model_delivery(combined_client, design):
+def test_partial_observation_delivers_retained_rules_but_not_omitted_messages(
+    combined_client, design
+):
     client, state, _, _ = combined_client
     state["workflow"] = "compact"
     _, rid = saved(client, protocol(design, compact=True))
@@ -358,13 +366,16 @@ def test_compacted_observation_receipt_is_not_model_delivery(combined_client, de
     report = exposure(client, rid)
     assert count(report, "message")["eligible_participants"] == 2
     assert count(report, "message")["exposed_participants"] == 0
-    assert count(report, "rules")["exposed_participants"] == 0
+    assert count(report, "rules")["exposed_participants"] == 3
     assert count(report, "observation")["exposed_participants"] == 0
     assert count(report, "choices")["exposed_participants"] == 3
     assert any(DISCLOSURE in json.dumps(a["operations"]) for a in record["activations"])
     for item in state["prompts"]:
         assert DISCLOSURE not in json.dumps(item)
         assert len(json.dumps(item["prompt"])) <= 4000
+    assert any(
+        op.get("omitted_fields") for item in state["prompts"] for op in item["prompt"]["operations"]
+    )
     for opportunity in report["opportunities"]:
         for binding in opportunity["inputs"]:
             resolve_input(client, binding["source"])
@@ -420,7 +431,8 @@ def test_disabled_investigation_fails_without_invented_delivery_or_fallback(
     record = execute(client, rid)
     assert record["summary"]["status"] == "failed" and record["summary"]["turn"] == 0
     assert record["summary"]["usage"]["requests"] == 1
-    assert record["activations"][0]["operations"][0]["status"] == "rejected"
+    assert record["activations"][0]["operations"] == []
+    assert record["activations"][0]["stop_reason"] == "provider_failure"
     report = exposure(client, rid)
     assert count(report, "rules")["exposed_participants"] == 0
     assert count(report, "choices")["exposed_participants"] == 1

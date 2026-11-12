@@ -93,5 +93,5 @@ the matching historical source bundle for replay. Model sampling cannot be repla
 New evaluations write to `data/quality/`; only reusable tooling and compact results belong here.
 Historical artifacts remain in Git history; this cleanup does not rewrite shared history.
 
-[archive]: https://github.com/jaiamin/ass/tree/a2ce6ba940398ca12b2c8baba25787e0d43f5c10/benchmarks
-[full-report]: https://github.com/jaiamin/ass/blob/a2ce6ba940398ca12b2c8baba25787e0d43f5c10/benchmarks/results/REPORT.md
+[archive]: https://github.com/jaiamin/jas/tree/a2ce6ba940398ca12b2c8baba25787e0d43f5c10/benchmarks
+[full-report]: https://github.com/jaiamin/jas/blob/a2ce6ba940398ca12b2c8baba25787e0d43f5c10/benchmarks/results/REPORT.md

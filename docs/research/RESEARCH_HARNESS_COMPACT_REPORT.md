@@ -100,14 +100,14 @@ contracts in [Architecture](../ARCHITECTURE.md). The independently authored
 
 | Delivered area | Original issues | Bounded outcome |
 | --- | --- | --- |
-| Baseline, containment, reusable worlds | [T01–T03, #12–14](https://github.com/jaiamin/ass/issues/12) | Current contracts reject incompatible records; executable candidates need real containment and independent admission. |
-| Participant/researcher tools and evidence | [T04–T08, #15–19](https://github.com/jaiamin/ass/issues/15) | Actor-scoped tools, request accounting, source-linked context, failure-aware comparisons and actual-input exposure. |
-| Artifact, coordination and reliance worlds | [T09–T11, #20–22](https://github.com/jaiamin/ass/issues/20) | Versioned work, private deliveries, logical-time settlement and feasible commitment opportunities. |
-| Institutional workflows | [T12, #23](https://github.com/jaiamin/ass/issues/23) | Six–twelve participant rules, resources, dependencies and delivered handoff/mail inspection. |
-| Research design and investigations | [T13–T15, #24–26](https://github.com/jaiamin/ass/issues/24) | Pending reviewable proposals, explicit bounded autonomous work and declared reference policies. |
-| Admission and generated mechanics | [T16–T17, #27–28](https://github.com/jaiamin/ass/issues/27) | Frozen external finite contracts, retained wrong artifacts, linked repairs, full request receipts and crash recovery. |
-| Adjudication and claim support | [T18–T19, #29–30](https://github.com/jaiamin/ass/issues/29) | Declared judge authority/prices, separate raw/enforced results and cutoff-scoped independently checkable claims. |
-| Live generalization milestone | [T20, #31](https://github.com/jaiamin/ass/issues/31) | Open. No deterministic test or scripted provider substitutes for this gate. |
+| Baseline, containment, reusable worlds | [T01–T03, #12–14](https://github.com/jaiamin/jas/issues/12) | Current contracts reject incompatible records; executable candidates need real containment and independent admission. |
+| Participant/researcher tools and evidence | [T04–T08, #15–19](https://github.com/jaiamin/jas/issues/15) | Actor-scoped tools, request accounting, source-linked context, failure-aware comparisons and actual-input exposure. |
+| Artifact, coordination and reliance worlds | [T09–T11, #20–22](https://github.com/jaiamin/jas/issues/20) | Versioned work, private deliveries, logical-time settlement and feasible commitment opportunities. |
+| Institutional workflows | [T12, #23](https://github.com/jaiamin/jas/issues/23) | Six–twelve participant rules, resources, dependencies and delivered handoff/mail inspection. |
+| Research design and investigations | [T13–T15, #24–26](https://github.com/jaiamin/jas/issues/24) | Pending reviewable proposals, explicit bounded autonomous work and declared reference policies. |
+| Admission and generated mechanics | [T16–T17, #27–28](https://github.com/jaiamin/jas/issues/27) | Frozen external finite contracts, retained wrong artifacts, linked repairs, full request receipts and crash recovery. |
+| Adjudication and claim support | [T18–T19, #29–30](https://github.com/jaiamin/jas/issues/29) | Declared judge authority/prices, separate raw/enforced results and cutoff-scoped independently checkable claims. |
+| Live generalization milestone | [T20, #31](https://github.com/jaiamin/jas/issues/31) | Open. No deterministic test or scripted provider substitutes for this gate. |
 
 T20 still requires independently frozen cases/rubrics and sampling rationale;
 varied solo, three-person, four-person and six–twelve-person live studies;
