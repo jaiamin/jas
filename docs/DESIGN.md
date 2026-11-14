@@ -104,6 +104,9 @@ borders, focus and destructive states use their corresponding semantic tokens.
 Keep foreground/background pairs together when composing components. Link variants and inline link hover use the shared accent-foreground token so small blue text remains readable on both themes; filled primary buttons keep their primary foreground/background pair.
 Shared cursor rules give enabled actions, links, labels and portalled menu/select
 items a pointer. Text entry keeps its text cursor; disabled controls are excluded.
+Option dropdowns open from the trigger's left edge. Their values are left-aligned
+with 10px horizontal padding; long values truncate while preserving caret spacing.
+Searchable record filters share the same trigger padding and alignment.
 Focus decoration follows input modality throughout the app, including portals:
 pointer clicks do not add rings; keyboard navigation retains the preset focus
 indicators. Typing into a pointer-focused text field does not turn the ring on.
@@ -174,6 +177,8 @@ scrolling transcript and a composer below it; both use a 768px maximum width.
 The shared Home/Agent textarea starts at three rows with 15px text and 23px
 line height (88px including padding), grows to 192px, then scrolls internally
 while keeping its action row visible.
+Assistant has no spending caption below its composer; provider and draft errors
+remain visible. Home retains its composer guidance and draft spending estimate.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
 background surface. The new-chat heading has a decorative primary-colored Target
 at left (30px, 34px on larger screens), with an 8px gap and centered alignment.

@@ -47,3 +47,14 @@ External launch gates: registry publication, live GitHub/S3/keychain integration
 actual cross-machine publish/fork, provider terms, genuine launch corpus and the
 specified outside-user checks. Hosted CI previously could not start because of
 GitHub billing limits; local checks do not resolve that account-level block.
+
+Composer/dropdown follow-up: removed the spending caption beneath the plain
+Assistant composer, preserving Home guidance/estimates and operational errors.
+Shared option menus now align to the trigger's left edge; selected text aligns
+left with symmetric 10px padding and truncates before the caret. Searchable
+record filters use matching trigger spacing. Frontend lint, 149 unit tests and
+build pass. All 54 affected browser cases were verified (52 in the initial run,
+then the two filter cases after correcting the new test's hidden-trigger lookup).
+Manual checks on port 8080 verified compact filters and full-width Settings/editor
+selects at 320px without horizontal overflow, with 11px from caret to outer edge.
+The existing local server remains on 0.0.0.0:8080; no model calls or deployment.

@@ -975,6 +975,22 @@ for (const [path, noun, scopeNoun, pageSize] of [
       await status.evaluate(appearance),
     );
     await expect(scope).toHaveCSS("font-weight", "400");
+    await expect(status).toHaveCSS("text-align", "left");
+    await expect(status).toHaveCSS("padding-right", "10px");
+    const triggerBox = await status.boundingBox();
+    await status.click();
+    const menu = page.getByRole("listbox");
+    await expect(menu).toBeVisible();
+    await expect
+      .poll(async () => {
+        const menuBox = await menu.boundingBox();
+        return triggerBox && menuBox
+          ? Math.abs(triggerBox.x - menuBox.x)
+          : Number.POSITIVE_INFINITY;
+      })
+      .toBeLessThan(1);
+    await page.keyboard.press("Escape");
+    await expect(status).toBeFocused();
     const table = page.getByRole("table");
     await table
       .locator("tbody tr")

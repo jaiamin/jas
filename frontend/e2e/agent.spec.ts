@@ -1,6 +1,42 @@
 import { expect, test } from "@playwright/test";
 import { settings as settingsFixture } from "../src/test/fixtures.js";
 
+test("Assistant omits the spending caption while Home keeps its composer guidance", async ({
+  page,
+}) => {
+  const estimate = { max_requests: 3, upper_usd: 0.1 };
+  await page.route("**/api/settings", (route) =>
+    route.fulfill({
+      json: {
+        ...settingsFixture,
+        providers: { openai: true },
+        assistant_estimates: {
+          general: estimate,
+          design: estimate,
+          analysis: estimate,
+        },
+      },
+    }),
+  );
+  await page.goto("/assistant");
+  const composer = page.getByRole("form", { name: "Assistant composer" });
+  await page
+    .getByLabel("Message Assistant", { exact: true })
+    .fill("Compare conditions");
+  await expect(
+    composer.getByRole("button", { name: "Send message" }),
+  ).toBeEnabled();
+  await expect(composer.getByText(/Workspace budget applies/)).toHaveCount(0);
+  await page.goto("/");
+  await expect(
+    composer.getByText(/Shape an experiment with Assistant/),
+  ).toBeVisible();
+  await page
+    .getByLabel("Message Assistant", { exact: true })
+    .fill("Compare conditions");
+  await expect(composer.getByText(/Up to 3 calls/)).toBeVisible();
+});
+
 for (const width of [320, 1440]) {
   test(`context selection keeps the composer anchored and clearable · ${width}`, async ({
     page,
