@@ -24,7 +24,7 @@ function BudgetRing({ value, label }: { value: number | null; label: string }) {
         viewBox="0 0 36 36"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="3"
         aria-hidden="true"
         className="absolute inset-0 size-full -rotate-90"
       >
@@ -41,7 +41,10 @@ function BudgetRing({ value, label }: { value: number | null; label: string }) {
           className="text-primary"
         />
       </svg>
-      <img src="/logo.svg" alt="" className="size-3 opacity-40" />
+      <span
+        aria-hidden="true"
+        className="size-1.5 rounded-full bg-muted-foreground/40"
+      />
     </span>
   );
 }
@@ -97,7 +100,11 @@ export function SidebarBudget() {
               <span>{title}</span>
               <span className="tabular-nums">{amount}</span>
             </span>
-            <Progress aria-label={title} value={percentage ?? 0} />
+            <Progress
+              aria-label={title}
+              value={percentage ?? 0}
+              className="h-1.25"
+            />
           </span>
           <BudgetRing value={percentage} label={`${title}: ${description}`} />
         </Link>

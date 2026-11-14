@@ -144,8 +144,9 @@ subtitle or appearance dropdown. Light/dark mode lives only in the top-right hea
 A stock SidebarSeparator separates the primary, workspace and community groups;
 the footer divider spans the full sidebar. Settings keeps its 32px height in the
 collapsed rail, while the usage line is hidden to retain a clean icon column.
-Collapsed usage is a 28px circular budget indicator containing a 12px JAS mark at
-40% opacity, with no visible labels or amounts. It retains the budget tooltip and
+Collapsed usage is a 28px circular budget indicator with a 3-unit SVG stroke and a
+subtle 6px center dot, with no visible labels or amounts. The expanded meter is 5px
+thick. It retains the budget tooltip and
 Settings link, uses the token ceiling when dollar cost is unknown, and shows a quiet
 track when usage is loading, unavailable or uncapped.
 Navigation glyphs are 15px; the sidebar toggle glyph is 14px in its unchanged 28px target.

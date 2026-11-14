@@ -458,8 +458,7 @@ for (const theme of ["light", "dark"]) {
       "50",
     );
     await expect(budget.locator(":scope > span").first()).toBeHidden();
-    await expect(budget.locator("img")).toHaveJSProperty("complete", true);
-    await expect(budget.locator("img")).toHaveCSS("opacity", "0.4");
+    await expect(budget.locator("img")).toHaveCount(0);
     for (const name of [
       "Home",
       "Assistant",
