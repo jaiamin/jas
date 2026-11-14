@@ -1,5 +1,6 @@
 import asyncio
 import json
+from decimal import Decimal
 
 import pytest
 from agent_sim.db import ProviderCall, Study, Workspace
@@ -7,6 +8,79 @@ from pydantic_ai.messages import ModelResponse, ToolCallPart
 from pydantic_ai.models.function import FunctionModel
 from pydantic_ai.usage import RequestUsage
 from sqlalchemy import select
+
+
+@pytest.mark.parametrize(
+    ("cost", "custom_prices", "expected"),
+    [("0.0112269", False, 11227), ("0", False, 0), ("0.0112269", True, 29622)],
+)
+def test_settlement_uses_cache_aware_recorded_cost_without_overriding_custom_prices(
+    runtime, monkeypatch, cost, custom_prices, expected
+):
+    from agent_sim.providers import ModelConfiguration
+
+    db, llm, _, _ = runtime
+    if custom_prices:
+        llm.registry.set_model(
+            ModelConfiguration(id="openai:gpt-6.1-sol", input_per_million=3, output_per_million=7)
+        )
+
+    async def respond(messages, info):
+        return ModelResponse(
+            parts=[ToolCallPart(info.output_tools[0].name, {"response": "You're welcome."})],
+            usage=RequestUsage(
+                input_tokens=9783,
+                output_tokens=39,
+                cache_read_tokens=5649,
+                cache_write_tokens=4008,
+                cost=Decimal(cost),
+            ),
+        )
+
+    monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=respond))
+    asyncio.run(
+        llm.generate(
+            str,
+            model="openai:gpt-6.1-sol",
+            prompt="thanks",
+            instructions="Answer briefly",
+            purpose="general",
+        )
+    )
+    with db.session() as session:
+        call = session.scalar(select(ProviderCall))
+        assert call.status == "complete"
+        assert call.charged == expected
+        assert session.get_one(Workspace, 1).charged == expected
+        assert call.response_payload[0]["usage"]["cost"] == cost
+
+
+def test_successful_response_without_usage_keeps_unknown_reservation(runtime, monkeypatch):
+    db, llm, _, _ = runtime
+
+    async def respond(messages, info):
+        return ModelResponse(
+            parts=[ToolCallPart(info.output_tools[0].name, {"response": "You're welcome."})],
+            usage=RequestUsage(unmeasured_requests=1),
+        )
+
+    monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=respond))
+    answer = asyncio.run(
+        llm.generate(
+            str,
+            model="openai:gpt-6.1-sol",
+            prompt="thanks",
+            instructions="Answer briefly",
+            purpose="general",
+        )
+    )
+    assert answer == "You're welcome."
+    with db.session() as session:
+        call = session.scalar(select(ProviderCall))
+        assert call.status == "unknown"
+        assert call.charged == call.reserved > 0
+        assert session.get_one(Workspace, 1).charged == call.reserved
+    assert llm.usage()["partial"] is True
 
 
 def test_study_budget_failure_rolls_back_workspace_reservation(runtime, design):

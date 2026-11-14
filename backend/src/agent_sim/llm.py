@@ -3,6 +3,7 @@ import json
 import math
 from collections.abc import Callable, Iterator, Mapping
 from dataclasses import replace
+from decimal import Decimal
 from typing import Any, Literal, TypedDict, TypeVar
 from urllib.parse import urlparse
 
@@ -70,6 +71,29 @@ def usage_record(row: Mapping[str, Any]) -> Usage:
         "cost_usd": None if row["unpriced"] else float(row["cost_usd"]),
         "partial": bool(row["partial"]),
     }
+
+
+def recorded_cost(
+    model: str, price: list[float] | None, responses: list[ModelResponse], *, web_search: bool
+) -> int:
+    costs = [response.usage.cost for response in responses if response.usage.cost is not None]
+    # The SDK includes cache pricing and native tools; custom prices remain authoritative.
+    if responses and price and tuple(price) == PRICES.get(model) and len(costs) == len(responses):
+        if any(not cost.is_finite() or cost < 0 for cost in costs):
+            raise ValueError("Provider returned an invalid usage cost")
+        return math.ceil(sum(costs, Decimal(0)) * 1_000_000)
+    input_rate, output_rate = (Decimal(str(rate)) for rate in (price or (0, 0)))
+    inputs = sum(response.usage.input_tokens for response in responses)
+    outputs = sum(response.usage.output_tokens for response in responses)
+    searches = sum(response.usage.details.get("web_search_requests", 0) for response in responses)
+    long_context = web_search and inputs > 272_000
+    return (
+        math.ceil(
+            inputs * input_rate * (2 if long_context else 1)
+            + outputs * output_rate * (Decimal("1.5") if long_context else 1)
+        )
+        + searches * 10_000
+    )
 
 
 def partial_outputs(response: ModelResponse, *, web_search: bool) -> Iterator[dict]:
@@ -479,22 +503,23 @@ class LanguageModels:
         payload = call.request_payload
         if payload is None:
             raise ValueError("Provider request is missing its accounting metadata")
-        price = payload["price_per_million"]
-        input_rate, output_rate = price if price else (0, 0)
-        web_search = payload["web_search"]
         responses = [m for m in messages if isinstance(m, ModelResponse)]
         inputs = sum(m.usage.input_tokens for m in responses)
         outputs = sum(m.usage.output_tokens for m in responses)
         reasoning = sum(m.usage.details.get("reasoning_tokens", 0) for m in responses)
         search_calls = sum(m.usage.details.get("web_search_requests", 0) for m in responses)
-        usage_known = bool(responses) and (failure is None or inputs + outputs + search_calls > 0)
-        long_context = web_search and inputs > 272_000
+        usage_known = (
+            bool(responses)
+            and not any(response.usage.unmeasured_requests for response in responses)
+            and (failure is None or inputs + outputs + search_calls > 0)
+        )
         charged = (
-            math.ceil(
-                inputs * input_rate * (2 if long_context else 1)
-                + outputs * output_rate * (1.5 if long_context else 1)
+            recorded_cost(
+                call.model,
+                payload["price_per_million"],
+                responses,
+                web_search=payload["web_search"],
             )
-            + search_calls * 10_000
             if usage_known
             else call.reserved
         )
@@ -503,7 +528,7 @@ class LanguageModels:
             if record.status != "pending":
                 return
             record.status = (
-                "complete" if failure is None else "failed" if usage_known else "unknown"
+                "unknown" if not usage_known else "complete" if failure is None else "failed"
             )
             record.response_payload = ModelMessagesTypeAdapter.dump_python(
                 [
@@ -654,6 +679,20 @@ class LanguageModels:
 
     def usage_by_analysis(self, analysis_ids: set[str]) -> dict[str, Usage]:
         return self._group_usage(ProviderCall.analysis_id, analysis_ids)
+
+    def models_by_analysis(self, analysis_ids: set[str]) -> dict[str, list[str]]:
+        result: dict[str, list[str]] = {}
+        with self.db.session() as session:
+            rows = session.execute(
+                select(ProviderCall.analysis_id, ProviderCall.model)
+                .where(ProviderCall.analysis_id.in_(analysis_ids))
+                .distinct()
+                .order_by(ProviderCall.model)
+            )
+            for key, model in rows:
+                if key is not None:
+                    result.setdefault(key, []).append(model)
+        return result
 
     def usage_by_study(self, study_ids: set[str]) -> dict[str, Usage]:
         return self._group_usage(ProviderCall.study_id, study_ids)

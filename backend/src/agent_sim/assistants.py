@@ -459,7 +459,9 @@ class Assistants:
         }
 
     @staticmethod
-    def serialize(row: Analysis, usage: Usage | None = None) -> dict:
+    def serialize(
+        row: Analysis, usage: Usage | None = None, models: list[str] | None = None
+    ) -> dict:
         return {
             "id": row.id,
             "chat_id": row.chat_id,
@@ -473,12 +475,17 @@ class Assistants:
             "study_id": row.study_id,
             "run_id": row.run_id,
             "usage": usage if usage is not None else empty_usage(),
+            "models": models if models is not None else [],
         }
 
     def get(self, key: str) -> dict:
         with self.db.session() as session:
             row = session.get_one(Analysis, key)
-            return self.serialize(row, self.models.usage(analysis_id=key))
+            return self.serialize(
+                row,
+                self.models.usage(analysis_id=key),
+                self.models.models_by_analysis({key}).get(key),
+            )
 
     def chats(self) -> Sequence[dict]:
         with self.db.session() as session:
@@ -527,7 +534,8 @@ class Assistants:
             if not rows:
                 raise NoResultFound("Conversation not found")
             usage = self.models.usage_by_analysis({row.id for row in rows})
-            return [self.serialize(row, usage.get(row.id)) for row in rows]
+            models = self.models.models_by_analysis({row.id for row in rows})
+            return [self.serialize(row, usage.get(row.id), models.get(row.id)) for row in rows]
 
     async def send(
         self,

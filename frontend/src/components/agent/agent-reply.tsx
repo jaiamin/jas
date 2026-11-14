@@ -231,7 +231,7 @@ export const AgentReply = memo(function AgentReply({
             )}
           </>
         )}
-        <MessageFooter className="-mt-1 -ml-1 min-h-6 flex-wrap gap-2 px-0">
+        <MessageFooter className="-mt-1 -ml-1 min-h-6 flex-wrap gap-1 px-0">
           {complete && copyText && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -240,14 +240,6 @@ export const AgentReply = memo(function AgentReply({
               <TooltipContent>Copy response</TooltipContent>
             </Tooltip>
           )}
-          {row.purpose === "analysis" &&
-            Object.keys(row.cutoffs).length > 0 && (
-              <span>
-                {Object.keys(row.cutoffs).length === 1
-                  ? `Evidence through turn ${Object.values(row.cutoffs)[0]}`
-                  : `${Object.keys(row.cutoffs).length} captured runs`}
-              </span>
-            )}
           {!pending && !!row.usage?.requests && (
             <Popover>
               <PopoverTrigger asChild>
@@ -257,35 +249,60 @@ export const AgentReply = memo(function AgentReply({
                   className="font-normal text-muted-foreground tabular-nums"
                   aria-label="Reply usage"
                 >
-                  {row.usage.cost_usd == null
-                    ? "Cost unknown"
-                    : money(row.usage.cost_usd)}
-                  {row.usage.partial && " · partial"}
+                  {row.usage.partial
+                    ? "Cost pending"
+                    : row.usage.cost_usd == null
+                      ? "Cost unknown"
+                      : `${row.usage.cost_usd > 0 ? "~" : ""}${money(row.usage.cost_usd)}`}
                 </Button>
               </PopoverTrigger>
               <PopoverContent
                 align="start"
-                className="w-60 text-xs"
+                className="w-72 text-xs"
                 aria-label="Reply usage details"
               >
-                <dl className="grid grid-cols-2 gap-x-4 gap-y-2 [&_dd]:text-right [&_dd]:tabular-nums">
-                  <dt>Calls</dt>
-                  <dd>{row.usage.requests.toLocaleString()}</dd>
+                <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2 [&_dd]:text-right [&_dd]:tabular-nums">
+                  {row.models.length > 0 && (
+                    <>
+                      <dt>{row.models.length > 1 ? "Models" : "Model"}</dt>
+                      <dd className="wrap-anywhere">{row.models.join(", ")}</dd>
+                    </>
+                  )}
+                  {row.usage.requests > 1 && (
+                    <>
+                      <dt>Calls</dt>
+                      <dd>{row.usage.requests.toLocaleString()}</dd>
+                    </>
+                  )}
                   <dt>Input tokens</dt>
                   <dd>{row.usage.input_tokens.toLocaleString()}</dd>
                   <dt>Output tokens</dt>
                   <dd>{row.usage.output_tokens.toLocaleString()}</dd>
+                  <dt>
+                    {row.usage.partial
+                      ? "Committed estimate"
+                      : "Estimated cost"}
+                  </dt>
+                  <dd>{money(row.usage.cost_usd, 6)}</dd>
                 </dl>
-                <p className="text-muted-foreground">
-                  {row.usage.partial
-                    ? "Includes reservations for calls with unsettled usage."
-                    : row.usage.cost_usd == null
-                      ? "Price unavailable. Token usage is recorded."
-                      : "Calculated from recorded usage and configured prices. Your provider bills your key."}
-                </p>
+                {(row.usage.partial || row.usage.cost_usd == null) && (
+                  <p className="text-muted-foreground">
+                    {row.usage.partial
+                      ? "Includes unsettled reservations."
+                      : "Price unavailable."}
+                  </p>
+                )}
               </PopoverContent>
             </Popover>
           )}
+          {row.purpose === "analysis" &&
+            Object.keys(row.cutoffs).length > 0 && (
+              <span className="ml-1">
+                {Object.keys(row.cutoffs).length === 1
+                  ? `Evidence through turn ${Object.values(row.cutoffs)[0]}`
+                  : `${Object.keys(row.cutoffs).length} captured runs`}
+              </span>
+            )}
         </MessageFooter>
       </MessageContent>
     </Message>

@@ -23,6 +23,23 @@ archive before removal from the current public tree; Git history is intact.
 
 Local review uses `data/workspace` on port 8080. No existing workspace was reset,
 no Railway resources changed, and no launch-corpus model calls were made.
+Inside the sandbox, start with `.venv/bin/jas --workspace ./data/workspace
+--host 0.0.0.0 --port 8080 --no-browser` so the host's existing loopback port
+mapping reaches the app. Keep the localhost Host/origin protections enabled.
+
+Reply-cost follow-up: Copy/cost spacing is 4px; the popup shows recorded models,
+tokens and the estimate to microdollar precision, without its normal footer paragraph.
+Settlement now uses recorded SDK cache pricing for bundled prices, preserves custom
+prices, and retains reservations when provider usage is missing. Two existing local
+receipts were corrected from their saved SDK costs with a private backup/correction
+log in `.tools/workspace-backups`; request/response evidence was byte-checked unchanged.
+No provider calls were made. Follow-up verification passed 60 backend tests, all 146
+frontend tests, lint/build, Ruff/format and ty, plus desktop/light and 320px/dark browser
+checks and Escape focus restoration. The additional full backend run was interrupted
+by SIGTERM at 32%; it did not finish and is not a fresh full-suite pass.
+The first Markdown block no longer adds its own top margin: browser measurements
+now show the same 11px block gap after Activity for heading- and paragraph-led replies
+(previously 27px versus 11px). All frontend tests/lint/build passed again afterward.
 
 External launch gates: registry publication, live GitHub/S3/keychain integration,
 actual cross-machine publish/fork, provider terms, genuine launch corpus and the

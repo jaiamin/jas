@@ -29,6 +29,7 @@ afterEach(() => vi.unstubAllGlobals());
 
 const row: Analysis = {
   id: "answer",
+  models: [],
   purpose: "analysis",
   question: "What happened?",
   status: "pending",
@@ -384,12 +385,12 @@ test("live activity stays open when the reply finishes so its content remains re
 });
 
 test.each([
-  { status: "complete", cost: 0.0123, partial: false, label: "$0.0123" },
+  { status: "complete", cost: 0.012345, partial: false, label: "~$0.0123" },
   {
     status: "failed",
     cost: null,
     partial: true,
-    label: "Cost unknown · partial",
+    label: "Cost pending",
   },
 ])(
   "reply usage preserves $status cost and exposes token details on demand",
@@ -401,6 +402,7 @@ test.each([
             row={{
               ...row,
               status,
+              models: ["openai:gpt-6.1-sol", "openai:gpt-6-luna"],
               usage: {
                 requests: 2,
                 input_tokens: 1200,
@@ -422,5 +424,19 @@ test.each([
     fireEvent.click(screen.getByRole("button", { name: "Reply usage" }));
     expect(await screen.findByText("Input tokens")).toBeVisible();
     expect(screen.getByText("1,200")).toBeVisible();
+    expect(screen.getByText("Models")).toBeVisible();
+    expect(
+      screen.getByText("openai:gpt-6.1-sol, openai:gpt-6-luna"),
+    ).toBeVisible();
+    if (partial) {
+      expect(
+        screen.getByText("Includes unsettled reservations."),
+      ).toBeVisible();
+    } else {
+      expect(screen.getByText("$0.012345")).toBeVisible();
+      expect(
+        screen.queryByText(/Your provider bills your key/),
+      ).not.toBeInTheDocument();
+    }
   },
 );

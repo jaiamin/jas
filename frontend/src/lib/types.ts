@@ -1102,6 +1102,7 @@ export interface ClaimSupport {
 export interface Analysis {
   chat_id?: string | null;
   usage?: Usage | null;
+  models: string[];
   id: string;
   purpose: string;
   question: string;

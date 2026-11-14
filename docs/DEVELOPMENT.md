@@ -90,6 +90,12 @@ timeout and unknown usage preserve reservations; price edits never backfill old
 requests. Dollar caps apply to priced calls. Assistant/planner models are chosen
 in Settings; planner web research starts disabled.
 
+For bundled model prices, settlement uses the SDK's recorded cache-aware cost when
+available; custom input/output prices remain authoritative. Missing provider usage
+retains its reservation. Reply receipts show their recorded models and identify
+calculated costs as estimates; the provider's final bill can differ. Budget accounting
+rounds up to whole microdollars, and the cost popup retains that precision.
+
 Data backup contains SQLite snapshots, publication receipts/lineage, local
 environments, extensions and configuration, excluding keys. It includes private
 conversations/evidence.

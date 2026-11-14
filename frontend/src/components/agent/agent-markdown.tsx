@@ -127,7 +127,7 @@ export function AgentMarkdown({
       data-streaming={streaming}
     >
       <BubbleContent className="w-full">
-        <div className="flex min-w-0 flex-col gap-4 break-words text-sm leading-relaxed">
+        <div className="flex min-w-0 flex-col gap-4 break-words text-sm leading-relaxed [&>:first-child]:mt-0">
           <Markdown remarkPlugins={remarkPlugins} components={components}>
             {text}
           </Markdown>

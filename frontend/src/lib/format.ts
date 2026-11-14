@@ -1,10 +1,15 @@
-export const money = (value: number | null | undefined) =>
+export const money = (
+  value: number | null | undefined,
+  maximumFractionDigits?: number,
+) =>
   value == null
     ? "Unknown"
     : new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
-        maximumFractionDigits: value < 0.1 ? 4 : 2,
+        maximumFractionDigits:
+          maximumFractionDigits ??
+          (value > 0 && value < 0.0001 ? 6 : value < 0.1 ? 4 : 2),
       }).format(value);
 export const label = (value: string) =>
   value.replaceAll("_", " ").replace(/^./, (s) => s.toUpperCase());

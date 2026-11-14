@@ -24,6 +24,7 @@ for (const theme of ["light", "dark"]) {
       );
       let posts = 0;
       const row: Analysis = {
+        models: [],
         id: "probe-answer",
         chat_id: "probe-chat",
         question: "Inspect binding acceptance without running participants",
