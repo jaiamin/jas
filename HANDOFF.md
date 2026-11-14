@@ -68,3 +68,6 @@ uncapped meters have no percentage value. Obsolete ring code was removed. Lint/b
 and four affected browser cases pass, covering collapse/expand in both themes,
 zero/threshold/precise-dollar display and token/uncapped fallback. Unit/backend suites
 were not repeated. The existing local app remains on 0.0.0.0:8080; no deployment.
+Sidebar toggle spacing: both states retain a 28px control and 14px glyph. The
+expanded control now ends 6px before the divider; collapsed alignment is preserved.
+Lint/build and two desktop/narrow navigation browser cases pass; full suites were not rerun.

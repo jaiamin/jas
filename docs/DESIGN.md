@@ -168,6 +168,8 @@ theme toggle precedes the GitHub brand link at right. These glyphs use the stock
 the outer icon edge matches the navigation glyphs’ 16px edge inset. Settings uses
 the stock gear glyph in both navigation and the local workspace menu. Desktop collapse sits on the
 right of the brand row and overlays the stationary logo on hover when collapsed.
+Both states use a 28px control with a 14px glyph; the expanded control ends 6px
+before the sidebar divider.
 Only visible keyboard focus also reveals the control; pointer focus must not keep
 it visible after hover ends. Hover is tracked on the control rather than the
 shrinking header; opacity changes immediately and the logo is hidden beneath the

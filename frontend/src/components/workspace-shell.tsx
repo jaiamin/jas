@@ -128,9 +128,9 @@ export default function WorkspaceShell() {
         <a href="#main">Skip to content</a>
       </Button>
       <Sidebar collapsible="icon">
-        <SidebarHeader className="h-(--workspace-header-height) shrink-0 justify-center border-b py-1">
+        <SidebarHeader className="h-(--workspace-header-height) shrink-0 justify-center border-b py-1 pr-1.5 group-data-[collapsible=icon]:pr-2">
           <SidebarMenu>
-            <SidebarMenuItem className="relative flex h-7 items-center justify-between pr-0.5 pl-1.5">
+            <SidebarMenuItem className="relative flex h-7 items-center justify-between pl-1.5">
               <Button
                 variant="link"
                 asChild
