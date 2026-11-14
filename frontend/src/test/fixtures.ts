@@ -5,8 +5,9 @@ import type {
   Parameters,
   RunDetail,
   SavedEnvironment,
+  Settings,
   State,
-} from "@/lib/types";
+} from "../lib/types.js";
 export const parameters: Parameters = {
   endowment: 10,
   multiplier: 2,
@@ -148,6 +149,7 @@ export const catalog: Catalog = {
 };
 
 export const runDetail: RunDetail = {
+  estimate: { runs: 1, max_requests: 4, upper_usd: 0.25 },
   next_actor: "a",
   execution_blocked: null,
   requests: [],
@@ -218,4 +220,34 @@ export const exposureReport: ExposureReport = {
   summary: [],
   opportunities: [],
   interpretation: [],
+};
+
+export const settings: Settings = {
+  providers: { openai: false, anthropic: false, openrouter: false },
+  provider_configurations: [],
+  preferences: {
+    token_budget: null,
+    developer: false,
+    default_visibility: "unlisted",
+    planner_model: "openai:gpt-6.1-sol",
+    assistant_model: "openai:gpt-6.1-sol",
+  },
+  committed_tokens: 0,
+  data_location: ":memory:",
+  models: [],
+  planner_model: "openai:gpt-6.1-sol",
+  assistant_model: "openai:gpt-6.1-sol",
+  budget_usd: 10,
+  charged_usd: 0,
+  usage: {
+    requests: 0,
+    input_tokens: 0,
+    output_tokens: 0,
+    cost_usd: 0,
+    partial: false,
+  },
+  storage: "SQLite",
+  concurrent_runs: 3,
+  concurrent_requests: 4,
+  mode: "local",
 };

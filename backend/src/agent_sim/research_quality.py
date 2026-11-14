@@ -205,7 +205,9 @@ def outcome_value(
         case "request_count":
             value = usage["requests"]
         case "cost_usd":
-            value = None if usage["partial"] else usage["charged"] / 1_000_000
+            value = (
+                None if usage["partial"] or usage.get("unpriced") else usage["charged"] / 1_000_000
+            )
         case "wait_count":
             value = events["coordination_wait"]
         case "message_count":
@@ -303,7 +305,9 @@ def findings_report(
                 "condition_key": condition.key,
                 "condition": condition.name,
                 "requests": sum(usage[r["id"]]["requests"] for r in group),
-                "cost_usd": sum(usage[r["id"]]["charged"] for r in group) / 1_000_000,
+                "cost_usd": None
+                if any(usage[r["id"]].get("unpriced") for r in group)
+                else sum(usage[r["id"]]["charged"] for r in group) / 1_000_000,
                 "partial": any(usage[r["id"]]["partial"] for r in group),
                 "committed_turns": sum(r["turn"] for r in group),
                 "waits": sum(events[r["id"]]["coordination_wait"] for r in group),

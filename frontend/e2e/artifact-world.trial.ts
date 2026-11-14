@@ -27,7 +27,7 @@ test("solo artifact configuration preserves its draft and immutable saved rules"
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/studies\//);
+  await expect(page).toHaveURL(/\/experiments\//);
   const id = page.url().split("/").at(-1);
   const study = await (await request.get(`/api/studies/${id}`)).json();
   expect(study.design.profiles).toHaveLength(1);

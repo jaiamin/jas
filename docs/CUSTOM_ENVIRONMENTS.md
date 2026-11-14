@@ -224,8 +224,8 @@ preceding exact source archive, not a universal experiment-quality certification
 
 All paid diagnostics use only `openai:gpt-6-luna` and the existing $75 aggregate ledger.
 Initial planner batches have additional $2 ceilings; focused planner and participant
-checks have separate additional $1 ceilings. Actual costs and source fingerprints are recorded in
-HANDOFF.md. Local manifests, exact source archives, attempts and sanitized provider traces
+checks have separate additional $1 ceilings. Actual costs and source fingerprints are retained in the historical development
+records in Git history. Local manifests, exact source archives, attempts and sanitized provider traces
 live in `data/quality/composition-model-development/`, `composition-model-final/`,
 `composition-model-raw-question/`, `composition-model-scope-corrected/`, `composition-model-review-corrected/`,
 `composition-model-mapping-guard/`, `composition-model-final-verbatim/`,

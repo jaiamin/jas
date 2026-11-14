@@ -7,10 +7,11 @@ COPY frontend/ ./
 COPY backend/tests/fixtures/t17_cosigned_escrow_contract.json /backend/tests/fixtures/
 RUN pnpm build
 
-FROM python:3.13-slim-bookworm
+FROM python:3.13-slim-bookworm AS runtime
 WORKDIR /app
 ENV PYTHONUNBUFFERED=1 UV_LINK_MODE=copy UV_COMPILE_BYTECODE=1 \
-    PATH="/app/.venv/bin:$PATH" JAS_STATIC_DIR=/app/frontend/dist JAS_WORKSPACE=/app/data
+    PATH="/app/.venv/bin:$PATH" JAS_STATIC_DIR=/app/frontend/dist JAS_WORKSPACE=/app/data \
+    JAS_REQUIRE_AUTH=1
 RUN pip install --no-cache-dir uv==0.13.7
 COPY pyproject.toml uv.lock hatch_build.py ./
 RUN uv sync --frozen --no-dev --no-install-project
@@ -25,3 +26,11 @@ ENTRYPOINT ["python", "-m", "agent_sim.container_entrypoint"]
 HEALTHCHECK --interval=20s --timeout=3s --start-period=10s \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/api/health', timeout=2)"
 CMD ["jas", "--host", "0.0.0.0", "--port", "8080", "--no-browser"]
+
+FROM runtime AS gallery
+USER root
+RUN uv sync --frozen --no-dev --extra gallery
+USER 10001:10001
+CMD ["jas", "--host", "0.0.0.0", "--no-browser", "gallery", "--port", "8080", "--data", "/app/data"]
+
+FROM runtime AS workspace

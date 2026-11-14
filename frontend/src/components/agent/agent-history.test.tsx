@@ -31,7 +31,7 @@ test("history retry restores the active chat and exposes pending work", async ()
   );
   vi.stubGlobal("fetch", fetch);
   renderWithQueries(
-    <MemoryRouter initialEntries={["/agent?chat=selected"]}>
+    <MemoryRouter initialEntries={["/assistant?chat=selected"]}>
       <AgentHistory />
     </MemoryRouter>,
   );
@@ -44,7 +44,7 @@ test("history retry restores the active chat and exposes pending work", async ()
   fireEvent.click(screen.getByRole("button", { name: "Retry" }));
   const chat = await screen.findByRole("link", { name: /Saved question/ });
   expect(chat).toHaveAttribute("aria-current", "page");
-  expect(chat).toHaveAttribute("href", "/agent?chat=selected");
+  expect(chat).toHaveAttribute("href", "/assistant?chat=selected");
   expect(
     screen.getByRole("status", { name: "In progress" }),
   ).toBeInTheDocument();

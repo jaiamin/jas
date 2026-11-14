@@ -77,7 +77,7 @@ for (const theme of ["light", "dark"]) {
       });
       expect(
         await card
-          .locator("p")
+          .locator('[data-slot="item-description"]')
           .evaluate((element) => getComputedStyle(element).userSelect),
       ).not.toBe("none");
       const mark = card.locator("svg[data-environment]");
@@ -147,13 +147,13 @@ for (const theme of ["light", "dark"]) {
             name: "Configure experiment",
             exact: true,
           }),
-        ).toHaveAttribute(
-          "href",
-          `/new?environment=${env.key}&step=conditions`,
-        );
+        ).toHaveAttribute("href", `/new?environment=${env.key}`);
         await expect(
-          panel.getByRole("link", { name: "Design with Agent", exact: true }),
-        ).toHaveAttribute("href", "/agent");
+          panel.getByRole("link", {
+            name: "Design with Assistant",
+            exact: true,
+          }),
+        ).toHaveAttribute("href", "/assistant");
         await panel
           .getByRole("button", { name: "Available controls", exact: true })
           .click();
@@ -163,7 +163,7 @@ for (const theme of ["light", "dark"]) {
             { exact: true },
           ),
         ).toBeVisible();
-        await panel.getByRole("button", { name: /^Measurements/ }).click();
+        await panel.getByRole("button", { name: /^Metrics/ }).click();
         await expect(
           panel.getByText(
             env.measure_definitions[env.primary_metric] ?? "Missing metric",

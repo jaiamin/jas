@@ -10,6 +10,8 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
+import { workSettings } from "@/lib/environments";
+import { money } from "@/lib/format";
 import type { Environment } from "@/lib/types";
 
 export function EnvironmentRow({
@@ -43,6 +45,14 @@ export function EnvironmentRow({
             >
               {environment.description}
             </ItemDescription>
+            <p className="text-xs text-muted-foreground">
+              {workSettings.includes(environment.key)
+                ? "Work setting"
+                : "Abstract game"}
+              {environment.example
+                ? ` · ${environment.example.agents} agents · ${environment.example.runs}-run example ${environment.example.upper_usd == null ? "cost unknown" : `up to ${money(environment.example.upper_usd)}`}`
+                : " · estimate in builder"}
+            </p>
           </ItemContent>
           <ItemActions
             className="shrink-0 text-muted-foreground [&>svg]:size-4"
@@ -65,6 +75,7 @@ export function EnvironmentRowSkeleton() {
       <ItemContent className="min-w-0">
         <Skeleton className="h-[1.375em] w-44 max-w-full" />
         <Skeleton className="h-[3em] w-96 max-w-full sm:h-[1.5em]" />
+        <Skeleton className="h-4 w-64 max-w-full" />
       </ItemContent>
       <ItemActions>
         <Skeleton className="size-4" />

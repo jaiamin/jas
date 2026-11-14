@@ -40,7 +40,7 @@ assert json.loads(get("/api/studies")) == []
 assert json.loads(get("/api/runs")) == []
 
 index = get("/")
-for path in ("/studies", "/runs", "/agent", "/new", "/settings", "/environments"):
+for path in ("/experiments", "/runs", "/assistant", "/new", "/settings", "/environments"):
     assert get(path) == index, f"SPA route did not serve the frontend: {path}"
 assets = re.findall(r'(?:src|href)="(/assets/[^\"]+)"', index)
 assert any(path.endswith(".js") for path in assets), "JavaScript bundle missing from index"

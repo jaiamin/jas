@@ -197,12 +197,12 @@ export function AgentContext({
                       keywords={[
                         run.study_title,
                         contextLabel(`run:${run.id}`, studies, runs),
-                        `Rev ${run.revision}`,
+                        `Version ${run.revision}`,
                       ]}
                       data-checked={value === `run:${run.id}`}
                       onSelect={() => choose(`run:${run.id}`)}
-                      title={`${run.study_title} · Rev ${run.revision} · ${contextLabel(`run:${run.id}`, studies, runs)}`}
-                      aria-label={`${run.study_title} · Rev ${run.revision} · ${contextLabel(`run:${run.id}`, studies, runs)}`}
+                      title={`${run.study_title} · Version ${run.revision} · ${contextLabel(`run:${run.id}`, studies, runs)}`}
+                      aria-label={`${run.study_title} · Version ${run.revision} · ${contextLabel(`run:${run.id}`, studies, runs)}`}
                     >
                       <Play aria-hidden="true" />
                       <span className="flex min-w-0 flex-col gap-0.5">
@@ -210,7 +210,7 @@ export function AgentContext({
                         <span className="text-xs text-muted-foreground whitespace-normal">
                           {run.condition} · Seed {run.seed} · Rep{" "}
                           {run.repetition}
-                          {run.revision > 1 && ` · Rev ${run.revision}`}
+                          {run.revision > 1 && ` · Version ${run.revision}`}
                         </span>
                       </span>
                     </CommandItem>

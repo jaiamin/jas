@@ -9,7 +9,6 @@ from sqlalchemy.exc import NoResultFound
 
 from .analysis_context import AnalysisContext, IndexRequest, value_at_path
 from .claim_support import LensKey, apply_lens, assess, capture_lens
-from .config import setting
 from .db import (
     Analysis,
     Condition,
@@ -330,6 +329,8 @@ class Assistants:
         chat_id: str | None = None,
         lens: LensKey | None = None,
         source_analysis_id: str | None = None,
+        revision: int | None = None,
+        through_turn: int | None = None,
     ) -> str:
         loop = asyncio.get_running_loop()
         if self.closing:
@@ -342,6 +343,10 @@ class Assistants:
             raise ValueError("Choose exactly one run or study for analysis")
         if (lens is not None or source_analysis_id is not None) and purpose != "analysis":
             raise ValueError("Choose recorded evidence before applying an analysis lens")
+        if purpose != "analysis" and (revision is not None or through_turn is not None):
+            raise ValueError("Version and turn scopes require recorded evidence")
+        if through_turn is not None and not run_id:
+            raise ValueError("A turn cutoff requires a selected run")
         question = question.strip()
         if not question or len(question) > 4000:
             raise ValueError("Enter a question between 1 and 4,000 characters")
@@ -350,9 +355,27 @@ class Assistants:
         if run_id:
             run, _, _ = self.research.configuration(run_id)
             study_id = run.study_id
-            cutoffs = {run_id: run.turn}
+            if through_turn is not None and not 0 <= through_turn <= run.turn:
+                raise ValueError("Turn cutoff is outside the recorded run")
+            if revision is not None:
+                with self.db.session() as session:
+                    actual = session.scalar(
+                        select(Revision.number)
+                        .join(Condition)
+                        .where(Condition.id == run.condition_id)
+                    )
+                if actual != revision:
+                    raise ValueError("Version does not belong to the selected run")
+            cutoffs = {run_id: run.turn if through_turn is None else through_turn}
         elif study_id:
-            cutoffs = {r.id: r.turn for r in self.research.operational_runs(study_id)}
+            if revision is not None:
+                with self.db.session() as session:
+                    session.scalars(
+                        select(Revision).where(
+                            Revision.study_id == study_id, Revision.number == revision
+                        )
+                    ).one()
+            cutoffs = {r.id: r.turn for r in self.research.operational_runs(study_id, revision)}
         key = uid()
         snapshot = None
         if source_analysis_id is not None:
@@ -369,6 +392,10 @@ class Assistants:
                     )
                 if source.status == "pending" or not (source.output or {}).get("lens"):
                     raise ValueError("Analysis source has no frozen lens inputs")
+                if (revision is not None or through_turn is not None) and any(
+                    cutoff > cutoffs.get(rid, -1) for rid, cutoff in source.cutoffs.items()
+                ):
+                    raise ValueError("Analysis source exceeds the selected version or turn cutoff")
                 snapshot, cutoffs = source.output, source.cutoffs
         inputs = (
             await asyncio.to_thread(self._analysis_inputs, cutoffs, snapshot, key, lens)
@@ -509,6 +536,8 @@ class Assistants:
         chat_id: str | None = None,
         lens: LensKey | None = None,
         source_analysis_id: str | None = None,
+        revision: int | None = None,
+        through_turn: int | None = None,
     ) -> dict:
         if chat_id:
             self.chat(chat_id)
@@ -526,6 +555,8 @@ class Assistants:
             chat_id=chat_id,
             lens=lens,
             source_analysis_id=source_analysis_id,
+            revision=revision,
+            through_turn=through_turn,
             **scope,
         )
         return {"id": key, "chat_id": chat_id}
@@ -680,7 +711,7 @@ class Assistants:
             output = GeneralAnswer if iteration == 3 else GeneralResponse
             answer = await self.models.generate(
                 output,
-                model=setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol"),
+                model=self.models.research_model("general"),
                 instructions=GENERAL + RESEARCH_OPERATIONS,
                 purpose="general",
                 analysis_id=row.id,

@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, expect, test, vi } from "vitest";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { settings as settingsFixture } from "@/test/fixtures";
 import { renderWithQueries } from "@/test/queries";
 import appHtml from "../../index.html?raw";
 import WorkspaceShell from "./workspace-shell";
@@ -38,14 +39,18 @@ function renderShell(path: string) {
 
 test.each([
   "/runs/run",
-  "/studies/study",
+  "/experiments/study",
   "/new",
   "/new?study=study",
   "/compare?runs=one,two",
 ])("%s keeps the static JAS browser title", async (path) => {
   vi.stubGlobal(
     "fetch",
-    vi.fn(() => Promise.resolve(Response.json([]))),
+    vi.fn((path: string) =>
+      Promise.resolve(
+        Response.json(path === "/api/settings" ? settingsFixture : []),
+      ),
+    ),
   );
   renderShell(path);
   await waitFor(() => expect(document.title).toBe("JAS"));
@@ -54,16 +59,21 @@ test.each([
   ).not.toBeInTheDocument();
 });
 
-test("header theme control persists appearance and Settings has a direct footer link", async () => {
+test("header alone changes appearance and the footer links directly to Settings", async () => {
   vi.stubGlobal(
     "fetch",
-    vi.fn(() => Promise.resolve(Response.json([]))),
+    vi.fn((path: string) =>
+      Promise.resolve(
+        Response.json(path === "/api/settings" ? settingsFixture : []),
+      ),
+    ),
   );
   document.documentElement.classList.remove("dark");
   renderShell("/settings");
-  const settings = screen.getByRole("link", { name: "Settings" });
+  const settings = screen.getByRole("link", { name: /^Settings$/ });
+  expect(settings).toHaveAttribute("data-active", "true");
   expect(settings).toHaveAttribute("href", "/settings");
-  expect(settings).toHaveAttribute("aria-current", "page");
+  expect(screen.queryByRole("menu")).not.toBeInTheDocument();
   const github = screen.getByRole("link", { name: "GitHub repository" });
   expect(github).toHaveAttribute("href", "https://github.com/jaiamin/jas");
   fireEvent.click(screen.getByRole("button", { name: "Switch to dark mode" }));

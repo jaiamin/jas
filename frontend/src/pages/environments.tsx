@@ -17,7 +17,8 @@ import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useApi } from "@/lib/api";
-import type { Catalog } from "@/lib/types";
+import { environmentOptions } from "@/lib/environments";
+import type { Catalog, Settings } from "@/lib/types";
 
 const skeletonIds = ["a", "b", "c", "d", "e", "f", "g", "h"];
 
@@ -27,23 +28,24 @@ export default function Environments() {
   const detailTrigger = useRef<HTMLAnchorElement | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const catalog = useApi<Catalog>("/catalog");
+  const settings = useApi<Settings>("/settings");
+  const developer = settings.data?.preferences?.developer === true;
   const requestedView = params.get("view");
   const view =
-    requestedView === "custom" || requestedView === "candidates"
+    requestedView === "custom" || (developer && requestedView === "candidates")
       ? requestedView
       : "built-in";
-  const environments = catalog.data?.environments ?? [];
+  const environments = environmentOptions(
+    catalog.data?.environments ?? [],
+    developer,
+  );
   const selected = environments.find(
     (env) => env.key === params.get("environment"),
   );
   const query = search.trim().toLowerCase();
-  const visibleEnvironments = environments
-    .filter((env) =>
-      `${env.name} ${env.description}`.toLowerCase().includes(query),
-    )
-    .toSorted(
-      (a, b) => Number(a.key === "composed") - Number(b.key === "composed"),
-    );
+  const visibleEnvironments = environments.filter((env) =>
+    `${env.name} ${env.description}`.toLowerCase().includes(query),
+  );
   function closeDetails() {
     setParams(
       (previous) => {
@@ -92,9 +94,11 @@ export default function Environments() {
             <TabsTrigger value="custom" className="h-full px-2.5 py-0">
               Custom
             </TabsTrigger>
-            <TabsTrigger value="candidates" className="h-full px-2.5 py-0">
-              Candidates
-            </TabsTrigger>
+            {developer && (
+              <TabsTrigger value="candidates" className="h-full px-2.5 py-0">
+                Candidates
+              </TabsTrigger>
+            )}
           </TabsList>
           <Separator />
         </div>
@@ -156,12 +160,14 @@ export default function Environments() {
             </Alert>
           )}
         </TabsContent>
-        <TabsContent value="candidates" className="min-w-0">
-          <ExtensionCandidates
-            search={search}
-            selectedId={params.get("review")}
-          />
-        </TabsContent>
+        {developer && (
+          <TabsContent value="candidates" className="min-w-0">
+            <ExtensionCandidates
+              search={search}
+              selectedId={params.get("review")}
+            />
+          </TabsContent>
+        )}
         <TabsContent value="custom" className="min-w-0">
           <CustomEnvironments
             search={search}

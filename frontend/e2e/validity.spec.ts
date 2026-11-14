@@ -1,12 +1,16 @@
 import { expect, test } from "@playwright/test";
-import { templateDesign } from "./helpers.js";
+import { setDeveloper, templateDesign } from "./helpers.js";
+
+test.beforeEach(async ({ request }) => {
+  await setDeveloper(request, true);
+});
 
 test("checks expose institution incentive limits without spending and invalidate after edits", async ({
   page,
   request,
 }) => {
   const before = await (await request.get("/api/settings")).json();
-  await page.goto("/new?template=institution");
+  await page.goto("/new?template=institution&mode=advanced");
   await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page
     .getByRole("button", { name: "Check experiment", exact: true })
@@ -35,7 +39,7 @@ test("JSON inactive treatments are blocked in the editor and at the real save en
   const catalog = await (await request.get("/api/catalog")).json();
   const design = templateDesign(catalog);
   design.conditions[1].parameters.institution.oversight = 0.123;
-  await page.goto("/new?template=commons");
+  await page.goto("/new?template=commons&mode=advanced");
   await page.getByRole("tab", { name: "Specification", exact: true }).click();
   await page
     .getByLabel("Complete JSON specification")
@@ -56,7 +60,7 @@ test("mobile check, save and overview show the same real report", async ({
   request,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/new?template=commons");
+  await page.goto("/new?template=commons&mode=advanced");
   await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page
     .getByRole("button", { name: "Check experiment", exact: true })
@@ -69,7 +73,10 @@ test("mobile check, save and overview show the same real report", async ({
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
   const { id } = await (await response).json();
-  await page.waitForURL(`**/studies/${id}`);
+  await page.waitForURL(`**/experiments/${id}`);
+  await page
+    .getByRole("button", { name: "Checks & detailed findings", exact: true })
+    .click();
   await expect(page.getByText("No mechanical issues found")).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Run experiment", exact: true }),

@@ -9,6 +9,7 @@ import { ProfileOverridesEditor } from "@/components/editor/profile-overrides-ed
 import { ResourceScheduleEditor } from "@/components/editor/resource-schedule-editor";
 import { Plus, Trash2 } from "@/components/icons";
 import { MechanismFields } from "@/components/mechanism-fields";
+import { ModelPicker } from "@/components/model-picker";
 import { OptionSelect as Select } from "@/components/option-select";
 import {
   Accordion,
@@ -152,18 +153,13 @@ export function ConditionFields({
                   </Field>
                   <Field>
                     <FieldLabel htmlFor={`model-${c.key}`}>Model</FieldLabel>
-                    <Select
+                    <ModelPicker
                       id={`model-${c.key}`}
                       label={`Condition ${i + 1} model`}
                       value={c.model}
                       disabled={c.harness.kind === "scripted"}
-                      onValueChange={(v) =>
-                        condition(i, { model: v as ModelId })
-                      }
-                      options={catalog.models.map((m) => ({
-                        value: m.id,
-                        label: modelLabel(m.id),
-                      }))}
+                      onChange={(v) => condition(i, { model: v as ModelId })}
+                      models={catalog.models}
                     />
                     {c.harness.kind === "scripted" && (
                       <FieldDescription>

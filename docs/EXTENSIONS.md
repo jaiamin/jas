@@ -93,8 +93,7 @@ limits, explicit timeout/termination, empty credential environment and cleanup.
 It is an explicit local action, never a candidate-supplied result or environment
 flag. It resets on restart. Runtime/case fingerprints identify the proof; worker
 failure or changed source revokes validation permission. Failed checks remain
-visible. Development history is summarized in the
-[compact report](research/RESEARCH_HARNESS_COMPACT_REPORT.md). Current qualification
+visible. Historical reports remain in Git history. Current qualification
 must be observed in the running process; CLI availability is not proof.
 
 ## Public workflow and storage

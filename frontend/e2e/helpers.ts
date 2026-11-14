@@ -98,3 +98,17 @@ export async function selectText(page: Page, text: Locator) {
     await page.evaluate(() => document.getSelection()?.toString().length),
   ).toBeGreaterThan(0);
 }
+
+export async function setDeveloper(
+  request: APIRequestContext,
+  enabled: boolean,
+) {
+  const settings = await (await request.get("/api/settings")).json();
+  const saved = await request.put("/api/settings", {
+    data: {
+      preferences: { ...settings.preferences, developer: enabled },
+      budget_usd: settings.budget_usd,
+    },
+  });
+  expect(saved.ok()).toBe(true);
+}

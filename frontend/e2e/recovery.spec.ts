@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { templateDesign } from "./helpers.js";
+import { setDeveloper, templateDesign } from "./helpers.js";
+
+test.beforeEach(async ({ request }) => {
+  await setDeveloper(request, true);
+});
 
 test("a corrupt draft leaves valid drafts available with targeted recovery", async ({
   page,
@@ -72,7 +76,7 @@ for (const unreadable of [true, false]) {
         throw new Error("Storage temporarily unavailable");
       };
     }, unreadable);
-    await page.goto("/new");
+    await page.goto("/new?mode=advanced");
     const discard = page.getByRole("button", {
       name: unreadable ? "Discard unreadable draft" : "Discard draft",
       exact: true,
@@ -113,7 +117,7 @@ test("agent context errors retain loaded experiment choices and retry locally", 
         : { json: [] },
     ),
   );
-  await page.goto("/agent");
+  await page.goto("/assistant");
   await expect(page.getByRole("alert")).toContainText(
     "Run choices unavailable",
   );
@@ -130,14 +134,14 @@ test("agent context errors retain loaded experiment choices and retry locally", 
 test("visiting Agent preserves the editor's single recoverable draft", async ({
   page,
 }) => {
-  await page.goto("/new?template=commons");
+  await page.goto("/new?template=commons&mode=advanced");
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Preserved while asking AI");
   await page
-    .getByRole("link", { name: "Generate with Agent", exact: true })
+    .getByRole("link", { name: "Generate with Assistant", exact: true })
     .click();
-  await expect(page).toHaveURL(/agent\?new=/);
+  await expect(page).toHaveURL(/assistant\?new=/);
   await page.goBack();
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
     "Preserved while asking AI",
@@ -152,7 +156,7 @@ test("visiting Agent preserves the editor's single recoverable draft", async ({
 test("pending validation locks the submitted specification until its response", async ({
   page,
 }) => {
-  await page.goto("/new?template=commons");
+  await page.goto("/new?template=commons&mode=advanced");
   await page.getByRole("tab", { name: "Specification", exact: true }).click();
   const text = page.getByLabel("Complete JSON specification");
   const design = JSON.parse(await text.inputValue());
@@ -183,7 +187,7 @@ test("pending validation locks the submitted specification until its response", 
 test("a delayed save locks editing and a failed save keeps the draft editable", async ({
   page,
 }) => {
-  await page.goto("/new?template=commons");
+  await page.goto("/new?template=commons&mode=advanced");
   const name = page.getByLabel("Experiment name", { exact: true });
   await name.fill("Save recovery snapshot");
   let release: () => void = () => {};
@@ -231,7 +235,7 @@ test("a delayed save locks editing and a failed save keeps the draft editable", 
   await page.unroute("**/api/studies");
   await page.getByRole("tab", { name: "Review", exact: true }).click();
   await save.click();
-  await expect(page).toHaveURL(/\/studies\//);
+  await expect(page).toHaveURL(/\/experiments\//);
   await expect(
     page.getByRole("heading", {
       name: "Recovered after failed save",
@@ -254,7 +258,7 @@ test("chat history failures have a local retry", async ({ page }) => {
         : { json: [] },
     ),
   );
-  await page.goto("/agent");
+  await page.goto("/assistant");
   await page.getByRole("button", { name: "Chat history", exact: true }).click();
   const history = page.getByRole("dialog", { name: "Recent chats" });
   await expect(history.getByRole("alert")).toContainText(
@@ -296,7 +300,7 @@ test("transient draft validation failures retry without classifying the draft as
         })
       : route.continue(),
   );
-  await page.goto("/new");
+  await page.goto("/new?mode=advanced");
   await expect(page.getByRole("alert")).toContainText(
     "Validation temporarily unavailable",
   );

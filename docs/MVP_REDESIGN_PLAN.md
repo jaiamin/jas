@@ -1,74 +1,51 @@
-# JAS MVP redesign
+# MVP redesign acceptance
 
-## Authority and current status
+The November 13, 2026 product specification defines this MVP. v0.2 features are
+excluded. This checklist retains the requirements and separates local implementation
+from public-launch acceptance. Installation, execution and provider credentials stay
+local; the optional public gallery receives reviewed finished evidence only.
 
-The user's **JAS redesign: end-to-end product spec**, dated November 13, 2026,
-is the implementation specification. The user explicitly requires every MVP
-requirement, preservation of the visual elements named in the spec, and exclusion
-of v0.2. This is not permission to substitute a smaller product.
+## Product decisions
 
-Current stage: implementation. All 19 PDF pages and focused repository audits have
-been reviewed. On November 14, 2026, the user accepted both six-question rounds,
-confirmed shared understanding, and authorized proceeding while keeping the
-implementation minimal. The user also explicitly permits major refactors where
-they improve organization and maintainability. Implementation and the authorized
-Step 0 evaluation are underway. No infrastructure resources have been provisioned.
+- Keep the sidebar, Geist, blue primary actions, light/graphite themes and Home sky.
+- Show exactly three Home starters; retain all six protocols and free recordings.
+- Use a compact usage meter and direct Settings link in the sidebar footer. Theme
+  switching lives in the top-right header. Local use needs no account or chooser.
+- Assistant replies show a quiet actual-cost receipt; call/token details open on demand.
+- Quick and Advanced edit one protocol. Preserve invalid/raw drafts; Developer
+  exposes Specification within Advanced. Saving never starts model work.
+- Unknown prices remain unknown; require a token ceiling. Never treat a token cap
+  as a dollar guarantee or recalculate historical charges after a price change.
+- Publish one frozen version and all its planned runs, including reviewed agent-private
+  evidence. Exclude provider keys, Assistant conversations and discarded versions.
+- Replay is independent and free. Failed/unsupported replay permits publication with
+  explicit reasons and no verified badge. Never execute uploaded environment code.
+- Default publications to unlisted. Scan before upload; genuine leaks in immutable
+  evidence block publication. Only documented synthetic email false positives may
+  be reviewed. Preserve the local evidence and create a clean version/run if needed.
+- GitHub identity is only for publishing. Store scoped, revocable tokens in the OS
+  keychain. Require seven-day account age, at most ten publications per day and
+  25 MiB per record. Reports stay in the operator's private queue.
+- Pair matched runs by version, seed and repetition. Compare actor/schedule, accepted
+  action/message and enforced consequence; report initial-state differences separately.
+- Preserve the existing Railway runner and volume. Do not deploy or provision during
+  this local review. A separate gallery target is ready for operator configuration;
+  its initial $10/month target needs a concrete service/storage/egress/domain review.
 
-## Implementation evidence
+## Implementation and acceptance evidence
 
-- Installation: `jaslab` wheel bundles the built UI. Both `jas` and `jaslab` start
-  the app with a stable app-data workspace, explicit `--workspace`, and browser
-  launch after server readiness. Existing checkout `data/jas.sqlite3` is preserved.
-  A clean installed wheel served health, SPA and JS/CSS assets from an unrelated
-  working directory with zero provider requests. CLI/path tests: 6 passed;
-  affected API/access tests: 78 passed.
-- Production image built successfully. Fresh keyless deployment smoke passed:
-  root-owned volume initialization, non-root execution, hosted authentication,
-  containment, existing-file preservation and restart persistence. This is local
-  container evidence, not a fresh Railway deployment.
-- Step 0 discovery: six complete runs, 54 requests, $0.011623; enabling messages
-  increased mean contribution rate from 0.1222 to 0.5407 on three discovery seeds.
-  This is exploratory, not yet a confirmed launch result. First confirmation was
-  interrupted by development changing package metadata; retain its four completed
-  runs, one failed run and seven unattempted runs. A new six-seed confirmation uses
-  the preserved original source/runtime and the same aggregate $10 ledger. Its
-  frozen direction/threshold are unchanged; no failed trajectory is replaced.
-- Arbitrary models, local provider settings and token caps are in progress. The
-  remaining matrix entries are open; installation alone does not satisfy the MVP.
-
-## Accepted direction
-
-- Controlled, replayable experiments on AI agents: run, replay, publish and fork.
-- Local/private execution and a separate public gallery; the gallery makes no
-  model calls and never receives provider credentials.
-- Preserve stock shadcn, Geist, blue actions, light/graphite themes, sidebar,
-  supplied logo/wordmark, Home composer and pixel sky, and the existing tables.
-- Preserve deterministic settlement, immutable experiment versions, append-only
-  evidence, privacy between agents, atomic spending reservations and explicit
-  paid actions. Playback, consequence replay and new model sampling remain distinct.
-- Public interface vocabulary: experiment, version, condition, seed, run, turn,
-  agent, assistant and metric. Internal names need not change gratuitously.
-- A durable public record format is separate from internal workspace contracts.
-  Future public links must remain viewable; retaining old viewers alone does not
-  preserve the ability to verify old settlement rules.
-- Keep frontend/backend code clean and minimal: reuse current patterns and
-  dependencies, preserve complete behavior, and restructure only where a required
-  boundary or demonstrated duplication justifies it. Avoid parallel domain models,
-  speculative abstractions and dependencies for a few lines. Test real boundary,
-  accounting, replay and user-flow behavior, rather than implementation details.
-
-## Accepted interview decisions
-
-| Decision | Accepted outcome |
-| --- | --- |
-| Installation identity | `jaslab` is the distribution/one-command installation name; JAS remains the product and `jas` the CLI. Registry availability was checked, not reserved. |
-| Unknown model prices | Unpriced models require an explicit token cap and display USD cost as unknown. Reject dollar-only execution until prices are supplied; never represent token limits as a dollar guarantee. |
-| Step 0 budget | Fresh aggregate maximum $10 in model calls for finding a result and confirming it on new seeds. Prepare concrete protocols and estimates first, retain attempts, stop at the ceiling, and do not inherit an earlier task's authorization. Launch-content generation needs a separate budget. |
-| Gallery hosting | Plan a separate Railway gallery API/database and object storage with an initial $10/month target and an assigned domain. Preserve the private workspace/volume. Review concrete costs before provisioning paid resources; the target is not an observed or guaranteed bill. |
-| Publication scope | A selected frozen experiment version and its runs, including reviewed agent-private observations. Exclude assistant conversations, discarded versions and raw researcher-provider traces. Do not upload the broad internal export as a public payload. |
-| Public-tree cleanup | Replace the tracked-HANDOFF workflow for this redesign: preserve HANDOFF and internal research reports in a local archive, remove them from the current public tree, repair documentation links and preserve Git history. Temporary tracked planning continues only until the accepted archive/cleanup is implemented. |
+| Requirements | Local evidence | Remaining acceptance |
+| --- | --- | --- |
+| M01 | Fresh six-seed live confirmation completed and replayed: allowing messages increased mean contribution from 0.170370 to 0.411111, positive on 5/6 seeds, meeting the frozen threshold. All attempts retained in the private local archive. | This finite setup does not establish broad model behavior or a public launch corpus. |
+| M02–M04, M21, M30 | Bundled wheel/CLI, provider and unknown-price accounting tests; installed-wheel smoke; key-canary checks for exports and final publication serialization; consistent backup without provider keys. | Registry release and fresh stranger/install timing; live integration with every external provider is not established by fixture tests. |
+| M05–M11, M20 | Six scripted recordings, three Home cards, onboarding, Quick/Advanced drafts/checks, Assistant scope/restoration and catalogue visibility tested in the browser. | External first-run usability checks. |
+| M12–M19, M33–M34 | Results/seed dots/grid, frozen design diff, shared viewer/privacy, playback/moment links, replay and matched alignment have backend/unit/browser checks. | Five cold viewers must independently explain a run. |
+| M22–M29, M31–M32 | Public record/scanner, independent replay, immutable publication, split files, metadata/social PNG, anonymous mobile viewer, gallery filters, device approval/revocation and fresh-workspace fork/replay tested locally. Separate non-root gallery container smoke passed. | Live GitHub OAuth, OS keychains on supported platforms, private S3 storage, actual cross-machine publish/fork and hosted cache/removal checks. |
+| M35 | Actual 20-second replay GIF in README; internal research work logs archived outside the tracked public tree; focused setup/architecture/publishing/operations guides. A short tracked HANDOFF is retained by the latest repository instructions. | Hosted CI was previously refused before jobs started by account billing limits; account-owner action is required. |
+| M36 | Terms, report/takedown path, limits and operator launch checklist implemented. | Review provider terms; create 10–15 genuine publications under a separately approved budget; five cold viewers; ten outsider runs and three publishes. Never substitute scripted demos for these checks. |
 
 ## Requirement and acceptance checklist
+
 
 Each requirement needs implementation evidence and an observed check before it
 can be marked complete. Existing code is a starting point, not proof of acceptance.
@@ -112,112 +89,9 @@ can be marked complete. Existing code is a starting point, not proof of acceptan
 | M35 | 14–16 | Fix or explicitly report hosted CI billing block; clean public documentation, preserve/remove internal logs outside public tree, update links, minimal README with an actual 20-second replay GIF. Do not rewrite published Git history. |
 | M36 | 11, 17–18 | Before public launch: seed 10–15 genuine experiments, five cold-viewer checks, clean-install/new-user tests, publish/fork across machines, and ten outsider runs/three publishes. External human checks cannot be claimed from automated tests. Review provider terms. |
 
-## Initial evidence and reuse
+## Verification and next steps
 
-- Baseline: `5dd65475`, including the merged private Railway deployment repair.
-- Run playback, turn URLs, exact replay verification and an experiment backlink
-  already exist. Reorganize them into the required shared viewer.
-- Experiment-level matched/failure-aware comparison already exists. The Results
-  presentation, seed dots and synchronized matched viewer remain new work.
-- Existing templates and scripted policies support building starters and keyless
-  examples, but no bundled recorded-run gallery path was found.
-- Four-model allowlists exist at domain/service/request boundaries. Unknown-price
-  token accounting, editable provider configuration and generic adapters are new.
-- Current wheel excludes the frontend. Current exports include every experiment
-  version plus research conversations/provider traces and are not workspace imports.
-  Do not directly upload these as the public publication payload.
-- Hidden provider thinking is already stripped before persistence. Extend existing
-  secret-canary checks to all new export/publication paths.
-- Latest observed GitHub Checks run `43313112223` did not start because of account
-  billing/spending limits. No test failure or current success can be inferred.
-- Railway CLI/MCP is unavailable here; the old deployment's live state has not been
-  freshly verified. Do not claim historical HANDOFF checks as current observations.
-
-## Decision tree / interview
-
-First-round root decisions are settled in the accepted table above. The user's
-clean/minimal-code instruction applies equally to frontend and backend.
-
-The user accepted the following final policies and closed the interview:
-
-| Question | Accepted policy |
-| --- | --- |
-| Q7: verification | Gallery independently verifies uploaded records with retained trusted JAS rules and zero model calls. Preserve versioned public viewers/verifiers; never run code from an upload. Failed or unsupported verification still permits publication without the badge and with reasons, as required by the PDF. |
-| Q8: scanner resolution | Allow reasoned review of demonstrable false positives, such as synthetic example emails; never waive genuine credentials, forbidden local paths or hidden provider reasoning. Correct mutable metadata and rescan. A real leak in immutable evidence blocks that record; preserve it locally and require a clean new version/run rather than silent redaction. |
-| Q9: visibility/removal | Default to unlisted (anyone with the link, absent from discovery, noindex). Unpublish/takedown stops serving page, record/run files and social card, removes listings and purges controlled CDN caches. Keep a minimal identity/lineage tombstone. Do not promise recall of already downloaded copies or external caches. |
-| Q10: moderation | Start with seven-day GitHub account minimum plus the PDF's 25 MB/10 daily publication limits. Reports go to a private operator queue; the project owner initially curates and handles takedowns. No teams, social feed or general role system. |
-| Q11: editor visibility | Keep one complete protocol; Quick changes representable fields and preserves the rest, with complex settings editable in Advanced. Raw Specification lives inside Advanced and is exposed by Developer, reconciling pages 8/10/16. Invalid raw drafts survive mode/toggle changes and have an explicit recovery path. |
-| Q12: first divergence | Pair one version by seed and repetition; shared scrubber uses committed turn number and shows each side's actual actor/round/logical time. Mark first actor/schedule, accepted action/message or enforced-consequence difference; report initial state differences separately. Exclude rationale, memory prose and latency; show ended/failed/missing sides honestly. |
-
-Routine implementation defaults from the code/contract investigation:
-
-- Agent perspective uses saved authorized observations at/before the selected tick,
-  marks their source turn and separates availability from confirmed model input.
-  Filter privileged state/messages consistently; do not reconstruct future knowledge.
-- The overview uses the first declared executable outcome as a display choice,
-  otherwise the environment's primary metric/first selected metric, labelled
-  descriptive. Do not silently substitute a more favorable outcome when data is
-  missing, manual or undefined. Keep denominators/limits accessible.
-- Before empirical estimates exist, label mechanics/harness-derived calls/costs
-  as upper bounds with assumptions; keep those bounds separate from spending caps.
-- Reuse Assistant chats and pending-work restoration. Pin experiment questions to
-  the selected version and run questions to the displayed cutoff on Send. Preserve
-  chat identity across panel/full page; do not feed future-cutoff answers backward.
-
-The interview is complete. Accepted spending/provisioning constraints remain in
-force; no additional approval is needed for routine implementation or the agreed
-Step 0 spending. Paid gallery provisioning still requires the concrete cost review.
-
-## Concrete Step 0 plan
-
-Use a disposable database and a single fresh $10 aggregate ledger, with no paid
-planner/analyst and no user-data mutation. Resolve the observed 16 KB-page jemalloc
-failure of the supplied uv through project-local, lockfile-preserving setup first;
-system Python currently has no project dependencies. Run affected keyless accounting,
-validity, research and independent environment-oracle checks before live execution.
-
-First candidate: commons, messages available versus unavailable, with reports and
-promises unchanged in both conditions. Fix three agents, three rounds, goals,
-endowment, multiplier, memory, order, direct-action harness and normal 4096-token
-response limit. Use Luna throughout; a treatment difference qualifies as the spec's
-result, without requiring a model-versus-model contrast.
-
-- Proposed discovery seeds: 1009, 1013, 1019 (not yet run).
-- Proposed untouched confirmation seeds: 2027, 2029, 2039, 2053, 2063, 2069.
-- Primary outcome: contribution rate; retain group payoff, actual communication,
-  confirmed exposure, completion/failure, request and spending evidence as well.
-- At most 54 discovery requests and 108 confirmation requests. At current configured
-  Luna rates and the enforced input/output ceilings, maximum reservations total
-  $3.976776. This is a code-price bound, not a provider invoice guarantee.
-- Historical communication contrasts are a lead, not new evidence or confirmation.
-  After discovery, freeze the exact contrast/direction/minimum worthwhile difference
-  before viewing confirmation. Retain failed/null attempts; never tune on confirmation.
-- Backup if needed: information, reports available versus unavailable, same three
-  agents/fixed setup and four rounds. Both discoveries plus six-seed confirmation of
-  the larger design allow at most 270 calls/$6.627960 in current reservation bounds.
-  Keep all attempts in the same aggregate ledger; allocate at most $4 discovery and
-  reserve $6 for confirmation, without silently moving the total ceiling.
-- Free preflight must verify exactly the intended factor and real opportunity for
-  treatment; replay every run and confirm findings/export/replay add zero calls.
-- Failure to find a reproducible/interesting effect remains a reported launch gate,
-  not a reason to manufacture a claim or consume unapproved launch-content spending.
-
-## Delivery sequence
-
-Follow PDF page 17: establish a real result; models/install; recorded starters;
-shared viewer/matched diff; Quick/Results/vocabulary/colors; CLI/public contract/
-gallery/auth/fork; launch content and external acceptance. Resolve the interview
-before application implementation. Keep acceptance evidence with each coherent
-checkpoint and keep this matrix current.
-
-Appropriate checks include affected backend/frontend regressions, lint/types/build,
-real browser flows, clean wheel installation and zero-key demo/CLI flows. Container
-or auth changes require production smoke; workflow changes require Actionlint and
-ShellCheck. No claim of launch readiness without the specified live/human checks.
-
-## Explicitly excluded
-
-v0.2: bring-your-own HTTP agents, saved Agents destination, Python environment SDK,
-MCP server and Inspect-format export. Later: human seats, hosted execution, teams,
-comments, feeds, likes and leaderboards. No scale beyond the spec's small populations
-and no claims about human behavior.
+The final local regression results are recorded in HANDOFF.md. Public launch remains
+blocked on the external checks above; a local automated pass cannot satisfy human
+usability checks, provider terms or live hosted integration. See
+[gallery operations](GALLERY_OPERATIONS.md) and [development](DEVELOPMENT.md).

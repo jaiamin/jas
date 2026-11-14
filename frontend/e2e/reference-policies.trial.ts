@@ -148,9 +148,9 @@ for (const { theme, width } of [
       fullPage: true,
     });
     await page
-      .getByRole("button", { name: "Save new revision", exact: true })
+      .getByRole("button", { name: "Save new version", exact: true })
       .click();
-    await expect(page).toHaveURL(new RegExp(`/studies/${created.id}$`));
+    await expect(page).toHaveURL(new RegExp(`/experiments/${created.id}$`));
     let study = await (await request.get(`/api/studies/${created.id}`)).json();
     for (const run of study.runs) {
       expect(

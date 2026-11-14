@@ -8,7 +8,7 @@ for (const theme of ["light", "dark"]) {
       (value) => localStorage.setItem("jas-theme", value),
       theme,
     );
-    await page.goto("/new");
+    await page.goto("/new?mode=advanced");
     await page.getByLabel("Experiment name", { exact: true }).click();
     await page.keyboard.press("Tab");
     await page.keyboard.type(" An edit");

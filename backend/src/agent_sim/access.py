@@ -15,10 +15,10 @@ def access_credentials() -> tuple[bytes, bytes] | None:
     password = os.getenv("JAS_AUTH_PASSWORD", "")
     if bool(username) != bool(password):
         raise ValueError("Set both JAS_AUTH_USERNAME and JAS_AUTH_PASSWORD, or neither")
-    if not username and os.getenv("RAILWAY_PUBLIC_DOMAIN"):
-        raise ValueError(
-            "Set JAS_AUTH_USERNAME and JAS_AUTH_PASSWORD before public Railway hosting"
-        )
+    hosts = {host.strip() for host in os.getenv("JAS_ALLOWED_HOSTS", "").split(",") if host.strip()}
+    hosted = bool(hosts - {"localhost", "127.0.0.1", "[::1]"})
+    if not username and (hosted or os.getenv("JAS_REQUIRE_AUTH", "").lower() in {"1", "true"}):
+        raise ValueError("Set JAS_AUTH_USERNAME and JAS_AUTH_PASSWORD before private hosted access")
     if ":" in username:
         raise ValueError("JAS_AUTH_USERNAME cannot contain a colon")
     return (username.encode(), password.encode()) if username else None

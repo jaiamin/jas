@@ -4,7 +4,7 @@ import { afterEach, expect, test, vi } from "vitest";
 import { WorkspaceProvider } from "@/components/workspace-provider";
 import WorkspaceShell from "@/components/workspace-shell";
 import { finiteProposal, finiteSource } from "@/test/finite-proposal";
-import { catalog } from "@/test/fixtures";
+import { catalog, settings as settingsFixture } from "@/test/fixtures";
 import { renderWithQueries } from "@/test/queries";
 import { DesignEditor } from "./design-editor";
 
@@ -28,6 +28,8 @@ test("pending finite proposal exposes independent rules, private ACLs, harness a
     })),
   );
   const fetcher = vi.fn((path: string) => {
+    if (path === "/api/settings")
+      return Promise.resolve(Response.json(settingsFixture));
     if (path === "/api/runs") return Promise.resolve(Response.json([]));
     throw new Error(
       `Review must not send an execution/generation request: ${path}`,
@@ -48,6 +50,7 @@ test("pending finite proposal exposes independent rules, private ACLs, harness a
             path="/new"
             element={
               <DesignEditor
+                initialMode="visual"
                 initial={finiteProposal}
                 catalog={catalog}
                 studyId={null}
@@ -124,7 +127,11 @@ test("pending finite proposal exposes independent rules, private ACLs, harness a
   expect(
     screen.getByRole("button", { name: "Create experiment" }),
   ).toBeEnabled();
-  expect(fetcher.mock.calls.every(([path]) => path === "/api/runs")).toBe(true);
+  expect(
+    fetcher.mock.calls.every(([path]) =>
+      ["/api/runs", "/api/settings"].includes(path),
+    ),
+  ).toBe(true);
   expect(
     screen.queryByText("This view could not load"),
   ).not.toBeInTheDocument();

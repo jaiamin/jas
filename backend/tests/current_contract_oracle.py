@@ -1,7 +1,7 @@
 """Independent literal DEVELOPMENT tables, fixed before current matrix outputs.
 
 These expand the worked T01 cases; they never call a World or consume its output.
-See docs/research/T12_CURRENT_CONTRACT_ORACLE.md for arithmetic and authorship.
+The original arithmetic and authorship notes remain in Git history.
 """
 
 import copy

@@ -173,7 +173,7 @@ export function StudyTable({
                     <Link
                       className="min-w-0 truncate underline-offset-4 hover:underline"
                       title={study.title}
-                      to={`/studies/${study.id}`}
+                      to={`/experiments/${study.id}`}
                     >
                       {study.title}
                     </Link>

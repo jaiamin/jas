@@ -138,7 +138,9 @@ def _export_study(research: Research, study_id: str) -> dict[str, object]:
                 "response": c.response_payload,
                 "input_tokens": c.input_tokens,
                 "output_tokens": c.output_tokens,
-                "cost_usd": c.charged / 1_000_000,
+                "cost_usd": None
+                if (c.request_payload or {}).get("unpriced")
+                else c.charged / 1_000_000,
                 "reserved": c.reserved,
                 "charged": c.charged,
                 "error": c.error,

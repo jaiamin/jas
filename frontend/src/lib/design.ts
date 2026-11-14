@@ -12,6 +12,15 @@ import type {
   WorkflowRules,
 } from "./types";
 
+export function parseSeeds(text: string): number[] | null {
+  const seeds = text
+    .split(",")
+    .map((part) => (part.trim() === "" ? Number.NaN : Number(part.trim())));
+  return seeds.some((seed) => !Number.isSafeInteger(seed) || seed < 0)
+    ? null
+    : seeds;
+}
+
 export function participantHarness(
   kind: ParticipantHarness["kind"],
   environment: EnvironmentId = "commons",
@@ -125,6 +134,22 @@ export function removeProfile(design: Design, key: string): Design {
   };
 }
 
+export function canRemoveProfile(design: Design, key: string): boolean {
+  return (
+    design.profiles.length > minimumParticipants(design.environment) &&
+    !design.conditions.some(
+      (condition) =>
+        Object.hasOwn(
+          condition.parameters.coordination?.information ?? {},
+          key,
+        ) ||
+        condition.parameters.workflow?.work_items.some(
+          (work) => work.workers.includes(key) || work.handoff_to.includes(key),
+        ),
+    )
+  );
+}
+
 export function removeTask(
   tasks: TaskDefinition[],
   key: string,
@@ -235,6 +260,52 @@ export function minimumParticipants(environment: Design["environment"]) {
   )
     ? 2
     : 1;
+}
+
+export function maximumParticipants(environment: Design["environment"]) {
+  return environment === "reliance_commitments"
+    ? 4
+    : environment === "distributed_coordination"
+      ? 3
+      : environment === "sealed_relay" || environment === "bargaining"
+        ? 2
+        : 12;
+}
+
+export function addProfile(design: Design): Design {
+  let number = design.profiles.length + 1;
+  while (design.profiles.some((profile) => profile.key === `agent-${number}`))
+    number++;
+  const key = `agent-${number}`;
+  return {
+    ...design,
+    profiles: [
+      ...design.profiles,
+      {
+        key,
+        name: `Agent ${number}`,
+        role: "Participant",
+        model: null,
+        goal: "Pursue your goals under the environment's rules.",
+      },
+    ],
+    conditions: design.conditions.map((condition) => ({
+      ...condition,
+      parameters: {
+        ...condition.parameters,
+        workflow: condition.parameters.workflow
+          ? {
+              ...condition.parameters.workflow,
+              turn_order: [...condition.parameters.workflow.turn_order, key],
+              conflict_order: [
+                ...condition.parameters.workflow.conflict_order,
+                key,
+              ],
+            }
+          : null,
+      },
+    })),
+  };
 }
 
 function workflowMechanics(

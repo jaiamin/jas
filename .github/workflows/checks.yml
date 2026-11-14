@@ -65,6 +65,7 @@ jobs:
       - run: pnpm --dir frontend build
       - run: pnpm --dir frontend exec playwright install --with-deps chromium
       - run: pnpm --dir frontend test:e2e --reporter=line,html
+      - run: JAS_TEST_PORT=8095 pnpm --dir frontend test:e2e --config playwright.gallery.config.ts
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
@@ -72,6 +73,7 @@ jobs:
           path: |
             frontend/playwright-report/
             frontend/test-results/
+            frontend/gallery-test-results/
           retention-days: 7
 
   container:
@@ -102,6 +104,15 @@ jobs:
           docker compose --env-file /dev/null exec -T app python - < .github/scripts/smoke.py
       - name: Verify protected hosting with a root-owned volume and restart
         run: python3 .github/scripts/deployment_smoke.py jas-ci-smoke-app:latest
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          target: gallery
+          load: true
+          tags: jas-ci-gallery:latest
+          cache-from: type=gha,scope=production
+      - name: Verify the separate model-free gallery image
+        run: python3 .github/scripts/gallery_smoke.py jas-ci-gallery:latest
       - name: Collect container logs
         if: always()
         run: docker compose --env-file /dev/null logs --no-color > container.log

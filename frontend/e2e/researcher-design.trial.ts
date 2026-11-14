@@ -28,13 +28,13 @@ for (const [theme, width] of [
         json: { ...settings, providers: { openai: true, anthropic: false } },
       });
     });
-    await page.goto("/agent");
+    await page.goto("/assistant");
     const posted = page.waitForResponse(
       (response) =>
         response.url().endsWith("/api/chats") &&
         response.request().method() === "POST",
     );
-    await page.getByLabel("Message Agent", { exact: true }).fill(question);
+    await page.getByLabel("Message Assistant", { exact: true }).fill(question);
     await page
       .getByRole("button", { name: "Send message", exact: true })
       .click();
@@ -126,7 +126,7 @@ for (const [theme, width] of [
     await page
       .getByRole("button", { name: "Create experiment", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/studies\//);
+    await expect(page).toHaveURL(/\/experiments\//);
     const sid = new URL(page.url()).pathname.split("/").at(-1);
     const exported = await (
       await request.get(`/api/studies/${sid}/export`)
@@ -178,9 +178,9 @@ test("review clarification is visible and continues in the same chat", async ({
       json: { ...settings, providers: { openai: true, anthropic: false } },
     });
   });
-  await page.goto("/agent");
+  await page.goto("/assistant");
   await page
-    .getByLabel("Message Agent", { exact: true })
+    .getByLabel("Message Assistant", { exact: true })
     .fill(`${question} [review-budget-choice]`);
   const posted = page.waitForResponse(
     (response) =>
@@ -207,7 +207,7 @@ test("review clarification is visible and continues in the same chat", async ({
     }),
   ).toBeVisible();
   await page
-    .getByLabel("Message Agent", { exact: true })
+    .getByLabel("Message Assistant", { exact: true })
     .fill("Yes, use the shared experiment-wide ceiling.");
   await page.getByRole("button", { name: "Send message", exact: true }).click();
   await expect(

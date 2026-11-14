@@ -9,6 +9,7 @@ import {
 } from "@/components/disclosure";
 import { DraftList } from "@/components/draft-list";
 import { Alert } from "@/components/feedback";
+import { FirstRunStrip } from "@/components/first-run-strip";
 import { HomeWorld } from "@/components/home-world";
 import {
   ArrowUpRight,
@@ -18,6 +19,7 @@ import {
   Plus,
 } from "@/components/icons";
 import { ErrorState, Status } from "@/components/shared";
+import { StarterExperiments } from "@/components/starter-experiments";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -40,28 +42,13 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNow } from "@/hooks/use-now";
-import { agentSuggestions } from "@/lib/agent-suggestions";
 import { useApi } from "@/lib/api";
 import { listDrafts, removeDraft } from "@/lib/drafts";
 import { date, relativeTime } from "@/lib/format";
 import type { RunSummary, StudySummary } from "@/lib/types";
 
-const suggestions = agentSuggestions({ context: "new" });
-const suggestionIllustrations = [
-  "communication",
-  "memory",
-  "oversight",
-  "resources",
-];
 const recordTriggerClassName =
   "border-0 px-0 hover:bg-transparent aria-expanded:bg-transparent aria-expanded:hover:bg-transparent dark:hover:bg-transparent dark:aria-expanded:hover:bg-transparent";
-const suggestionDescriptions = [
-  "Compare contributions to a shared pool with public messages enabled or disabled.",
-  "Compare return rates with private notes versus history alone, under the same rules.",
-  "Change the chance of oversight and compare sanction use under the same limits.",
-  "Vary resource renewal and compare extraction, remaining stock, and survival.",
-];
-
 export default function Home() {
   const now = useNow();
   const navigate = useNavigate();
@@ -73,7 +60,7 @@ export default function Home() {
     onSent: (result) => {
       // A lazy destination may keep Home mounted while navigation is pending.
       if (window.location.pathname === "/")
-        navigate(`/agent?chat=${result.chat_id}`);
+        navigate(`/assistant?chat=${result.chat_id}`);
     },
   });
   const [drafts, setDrafts] = useState(() => {
@@ -129,55 +116,11 @@ export default function Home() {
         </div>
       </section>
       <div className="mx-auto flex w-full max-w-232 flex-col gap-8 px-4 pt-8 pb-6 sm:px-6 sm:pt-10 sm:pb-8">
-        <section
-          aria-labelledby="experiment-ideas-title"
-          className="flex flex-col gap-3"
-        >
-          <h2 id="experiment-ideas-title" className="text-xs font-medium">
-            Experiment ideas
-          </h2>
-          <ItemGroup className="gap-0 overflow-hidden rounded-xl border xl:flex-row">
-            {suggestions.map(({ title, prompt }, index) => {
-              return (
-                <Fragment key={title}>
-                  <Button
-                    variant="ghost"
-                    className="h-auto w-full min-w-0 flex-1 items-center justify-start gap-3 rounded-none border-0 p-4 pr-3.5 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-4 xl:flex-col xl:items-start"
-                    disabled={state.send.isPending}
-                    onClick={() => state.chooseSuggestion(prompt)}
-                  >
-                    <img
-                      src={`/illustrations/suggestions/${suggestionIllustrations[index]}.webp`}
-                      alt=""
-                      width={32}
-                      height={32}
-                      className="m-0.5 size-8 shrink-0 object-contain object-left saturate-50 contrast-90"
-                      data-icon="inline-start"
-                      aria-hidden="true"
-                    />
-                    <span className="flex min-w-0 flex-col gap-1.5">
-                      <span className="text-[0.9375rem] leading-[1.1875rem] font-semibold">
-                        {title}
-                      </span>
-                      <span className="text-[0.8125rem] leading-4.5 font-normal text-foreground/60">
-                        {suggestionDescriptions[index]}
-                      </span>
-                    </span>
-                  </Button>
-                  {index < suggestions.length - 1 && (
-                    <>
-                      <Separator className="xl:hidden" />
-                      <Separator
-                        orientation="vertical"
-                        className="hidden xl:block"
-                      />
-                    </>
-                  )}
-                </Fragment>
-              );
-            })}
-          </ItemGroup>
-        </section>
+        <FirstRunStrip
+          settings={state.settings.data}
+          hasRun={runs.data?.some((run) => run.status === "complete") ?? false}
+        />
+        <StarterExperiments />
         {active.length > 0 && (
           <section
             aria-labelledby="active-runs-title"
@@ -314,7 +257,7 @@ export default function Home() {
                   </Link>
                 </Button>
                 <Button variant="outline" size="sm" asChild>
-                  <Link to="/studies">View all</Link>
+                  <Link to="/experiments">View all</Link>
                 </Button>
               </div>
             </div>
@@ -349,7 +292,7 @@ export default function Home() {
                           className="min-w-0 flex-1 rounded-none border-0 px-0 py-3 [a]:hover:bg-transparent"
                           asChild
                         >
-                          <Link to={`/studies/${study.id}`}>
+                          <Link to={`/experiments/${study.id}`}>
                             <ItemMedia
                               variant="icon"
                               className="group-has-data-[slot=item-description]/item:translate-y-0 group-has-data-[slot=item-description]/item:self-center [&_svg:not([class*='size-'])]:size-3.5"

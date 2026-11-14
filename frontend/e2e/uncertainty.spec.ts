@@ -27,13 +27,14 @@ for (const theme of ["light", "dark"]) {
         theme,
       );
       await page.setViewportSize({ width, height: 900 });
-      await page.goto(`/studies/${id}`);
+      await page.goto(`/experiments/${id}`);
       await expect(
         page.getByRole("heading", { name: design.title }),
       ).toBeVisible();
       await expect(
         page.getByText("No results yet", { exact: true }),
       ).toBeVisible();
+      await page.getByRole("tab", { name: "Results", exact: true }).click();
       const evidence = page.getByRole("button", {
         name: "Comparison & evidence",
         exact: true,
@@ -123,7 +124,7 @@ for (const theme of ["light", "dark"]) {
         data: { design: { ...design, title: `${design.title} revised` } },
       });
       expect(revised.status()).toBe(201);
-      await page.goto(`/studies/${id}?revision=1`);
+      await page.goto(`/experiments/${id}?revision=1&tab=results`);
       await expect(
         page.getByRole("heading", { name: design.title }),
       ).toBeVisible();

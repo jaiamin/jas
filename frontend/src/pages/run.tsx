@@ -1,26 +1,28 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { AdjudicationReview } from "@/components/adjudication";
+import { AssistantPanel } from "@/components/agent/assistant-panel";
 import { MetricChart } from "@/components/charts";
 import { Alert, Empty } from "@/components/feedback";
-import {
-  AgentIcon,
-  ChevronLeft,
-  ChevronRight,
-  Download,
-  Pause,
-  Play,
-  Radio,
-  SkipForward,
-} from "@/components/icons";
+import { Download, Pause, Play, Radio, SkipForward } from "@/components/icons";
 import { OptionSelect as Select } from "@/components/option-select";
+import { ProtocolEstimate } from "@/components/protocol-estimate";
 import { DecisionBrowser } from "@/components/run/decision-browser";
-import { RunRecord } from "@/components/run/run-record";
+import { PlaybackControls } from "@/components/run/playback-controls";
+import { ReplayVerification, RunRecord } from "@/components/run/run-record";
+import { RunViewer } from "@/components/run/run-viewer";
 import { ErrorState, Loading, PageHeading, Status } from "@/components/shared";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -36,7 +38,8 @@ export default function Run() {
   const { id } = useParams();
   const [params, setParams] = useSearchParams();
   const [selectedMetric, setSelectedMetric] = useState("");
-  const [playbackEnd, setPlaybackEnd] = useState<number | null>(null);
+  const [inspectorOpen, setInspectorOpen] = useState(() => params.has("tab"));
+  const [perspective, setPerspective] = useState("researcher");
   const [focusRequest, setFocusRequest] = useState(0);
   const [annotationDrafts, setAnnotationDrafts] = useState<
     Record<string, string>
@@ -68,42 +71,16 @@ export default function Run() {
   const evidence = useQuery({
     queryKey: ["evidence", id, turn],
     queryFn: () => api<Evidence>(`/runs/${id}/turns/${turn}`),
-    enabled: !!query.data && (pinned || tab === "decisions"),
+    enabled: !!query.data,
   });
-  const playing = playbackEnd !== null && turn < playbackEnd;
-  useEffect(() => {
-    if (!playing) return;
-    if (document.hidden || evidence.error || query.error) {
-      setPlaybackEnd(null);
-      return;
-    }
-    const pauseWhenHidden = () => {
-      if (document.hidden) setPlaybackEnd(null);
-    };
-    document.addEventListener("visibilitychange", pauseWhenHidden);
-    const timer = evidence.data
-      ? window.setTimeout(
-          () =>
-            setParams(
-              { ...Object.fromEntries(params), turn: String(turn + 1) },
-              { replace: true },
-            ),
-          900,
-        )
-      : undefined;
-    return () => {
-      window.clearTimeout(timer);
-      document.removeEventListener("visibilitychange", pauseWhenHidden);
-    };
-  }, [
-    playing,
-    turn,
-    evidence.data,
-    evidence.error,
-    query.error,
-    params,
-    setParams,
-  ]);
+  const perspectiveTurn = query.data?.turns.findLast(
+    (item) => item.actor === perspective && item.number <= turn,
+  )?.number;
+  const perspectiveEvidence = useQuery({
+    queryKey: ["evidence", id, perspectiveTurn],
+    queryFn: () => api<Evidence>(`/runs/${id}/turns/${perspectiveTurn}`),
+    enabled: perspective !== "researcher" && perspectiveTurn !== undefined,
+  });
   const control = useMutation({
     mutationFn: (action: string) => api(`/runs/${id}/control`, { action }),
     onSuccess: () =>
@@ -144,8 +121,10 @@ export default function Run() {
     ? selectedMetric
     : (metricKeys[0] ?? "contribution_rate");
   function selectTurn(value: number, decision = false) {
-    setPlaybackEnd(null);
-    if (decision) setFocusRequest((request) => request + 1);
+    if (decision) {
+      setFocusRequest((request) => request + 1);
+      setInspectorOpen(true);
+    }
     setParams(
       {
         ...Object.fromEntries(params),
@@ -156,7 +135,6 @@ export default function Run() {
     );
   }
   function selectAgent(key: string) {
-    setPlaybackEnd(null);
     const last = run.turns.findLast((t) => t.actor === key && t.number <= turn);
     setFocusRequest((request) => request + 1);
     setParams(
@@ -170,23 +148,42 @@ export default function Run() {
     );
   }
   function live() {
-    setPlaybackEnd(null);
     const next = new URLSearchParams(params);
     next.delete("turn");
     setParams(next, { replace: true });
   }
   return (
     <>
+      <nav
+        aria-label="Breadcrumb"
+        className="mb-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground"
+      >
+        <Link to="/experiments" className="hover:underline">
+          Experiments
+        </Link>
+        <span>/</span>
+        <Link
+          to={`/experiments/${summary.study_id}?revision=${summary.revision}`}
+          className="hover:underline"
+        >
+          {summary.study_title}
+        </Link>
+        <span>/</span>
+        <span>{summary.condition}</span>
+        <span>/</span>
+        <span>
+          Seed {summary.seed} · Repetition {summary.repetition}
+        </span>
+      </nav>
       <PageHeading
         title={summary.condition}
-        description={`${runModelLabel(summary)} · Rev ${summary.revision} · Seed ${summary.seed} · Repetition ${summary.repetition}`}
+        description={`${runModelLabel(summary)} · Version ${summary.revision} · Seed ${summary.seed} · Repetition ${summary.repetition}`}
       >
-        <Button variant="outline" size="sm" asChild>
-          <Link to={`/agent?context=${encodeURIComponent(`run:${id}`)}`}>
-            <AgentIcon data-icon="inline-start" />
-            Ask Agent
-          </Link>
-        </Button>
+        <AssistantPanel
+          context={`run:${summary.id}`}
+          revision={summary.revision}
+          throughTurn={turn}
+        />
         <Button
           variant="ghost"
           size="icon"
@@ -248,9 +245,9 @@ export default function Run() {
               ? "Loading the pinned adjudicator declaration and prices…"
               : review.error
                 ? "The pinned adjudicator declaration could not be loaded."
-                : "The pinned revision is blocked or has no matching explicit adjudicator declaration. Run and Step remain unavailable."}
+                : "The pinned version is blocked or has no matching explicit adjudicator declaration. Run and Step remain unavailable."}
             <Link
-              to={`/studies/${summary.study_id}?revision=${summary.revision}`}
+              to={`/experiments/${summary.study_id}?revision=${summary.revision}`}
               className="ml-1 underline underline-offset-4"
             >
               Review experiment
@@ -262,7 +259,9 @@ export default function Run() {
         className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground"
       >
         <Button variant="link" size="sm" className="h-auto p-0" asChild>
-          <Link to={`/studies/${summary.study_id}`}>{summary.study_title}</Link>
+          <Link to={`/experiments/${summary.study_id}`}>
+            {summary.study_title}
+          </Link>
         </Button>
         <Status value={summary.status} />
         <span>
@@ -295,6 +294,11 @@ export default function Run() {
           </Badge>
         )}
       </section>
+      {summary.status !== "complete" && !active && (
+        <div className="mb-5">
+          <ProtocolEstimate design={run.design} value={run.estimate} />
+        </div>
+      )}
       {summary.completion && summary.status === "complete" && (
         <p className="mb-6 max-w-prose text-sm text-muted-foreground">
           Finished after {summary.turn} turns ·{" "}
@@ -318,216 +322,220 @@ export default function Run() {
           </Button>
         </Alert>
       )}
-      <div className="mb-6 grid grid-cols-[1fr_auto] items-center gap-3 lg:grid-cols-[auto_minmax(0,1fr)_auto]">
-        <div className="flex items-center gap-2 text-sm whitespace-nowrap">
-          <Badge variant="outline">{pinned ? "Recorded" : "Latest"}</Badge>
-          {pinned ? `Viewing turn ${turn}` : `Latest · turn ${turn}`}
-        </div>
-        <div className="col-span-full row-start-2 flex min-w-0 items-center gap-2 lg:col-auto lg:row-auto">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={!maxTurn}
-            aria-pressed={playing}
-            title="Watch saved turns without running agents"
-            onClick={() => {
-              if (playing) setPlaybackEnd(null);
-              else {
-                selectTurn(turn >= maxTurn ? 0 : turn);
-                setPlaybackEnd(maxTurn);
-              }
-            }}
-          >
-            {playing ? (
-              <Pause data-icon="inline-start" />
-            ) : (
-              <Play data-icon="inline-start" />
-            )}
-            {playing ? "Pause recording" : "Play recording"}
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Previous recorded turn"
-            disabled={turn === 0}
-            onClick={() => selectTurn(turn - 1)}
-          >
-            <ChevronLeft />
-          </Button>
-          <Slider
-            aria-label="Recorded turn"
-            min={0}
-            max={Math.max(maxTurn, 1)}
-            disabled={!maxTurn}
-            value={[turn]}
-            step={1}
-            onValueChange={([value]) => selectTurn(value)}
-          />
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Next recorded turn"
-            disabled={turn >= maxTurn}
-            onClick={() => selectTurn(turn + 1)}
-          >
-            <ChevronRight />
-          </Button>
-        </div>
-        {pinned ? (
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+        <span>{pinned ? `Viewing turn ${turn}` : `Latest · turn ${turn}`}</span>
+        {pinned && (
           <Button variant="outline" size="sm" onClick={live}>
             <Radio data-icon="inline-start" />
             {active ? `Live · ${maxTurn}` : "Latest"}
           </Button>
-        ) : (
-          <span className="text-xs text-muted-foreground">
-            {active ? "Following execution" : "Recorded evidence"}
-          </span>
         )}
       </div>
-      <Tabs
-        value={tab}
-        onValueChange={(v) =>
-          setParams(
-            { ...Object.fromEntries(params), tab: v },
-            { replace: true },
-          )
-        }
-      >
-        <TabsList className="mb-4 max-w-full justify-start overflow-x-auto">
-          <TabsTrigger value="live">Environment</TabsTrigger>
-          <TabsTrigger value="decisions">Decisions</TabsTrigger>
-          <TabsTrigger value="relationships">Interactions</TabsTrigger>
-          <TabsTrigger value="settings">Record</TabsTrigger>
-        </TabsList>
-        <TabsContent value="live">
-          {pinned && evidence.error ? (
-            <ErrorState error={evidence.error} onRetry={evidence.refetch} />
-          ) : pinned && !evidence.data ? (
-            <Loading />
-          ) : (
-            <div className="grid min-w-0 gap-8 xl:grid-cols-2">
-              <WorldView
-                run={run}
-                state={state}
-                events={events}
-                onAgent={selectAgent}
-              />
-              <section className="min-w-0">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
-                  <h2 className="text-base font-semibold">Outcome history</h2>
-                  {metricKeys.length > 0 && (
-                    <Select
-                      label="History measurement"
-                      value={chosenMetric}
-                      onValueChange={setSelectedMetric}
-                      options={metricKeys.map((key) => ({
-                        value: key,
-                        label: label(key),
-                      }))}
+      {evidence.error && (
+        <ErrorState error={evidence.error} onRetry={evidence.refetch} />
+      )}
+      {perspectiveEvidence.error && (
+        <ErrorState
+          error={perspectiveEvidence.error}
+          onRetry={perspectiveEvidence.refetch}
+        />
+      )}
+      <div className="flex min-w-0 flex-col gap-6">
+        <RunViewer
+          run={run}
+          turn={turn}
+          evidence={evidence.data}
+          perspective={perspective}
+          perspectiveEvidence={perspectiveEvidence.data}
+          onPerspective={setPerspective}
+        />
+        <PlaybackControls
+          key={id}
+          turn={turn}
+          maxTurn={maxTurn}
+          ready={evidence.data?.number === turn && !evidence.error}
+          moments={run.key_moments}
+          onTurn={selectTurn}
+        />
+      </div>
+      <div className="mt-5 flex flex-wrap items-start gap-3">
+        <ReplayVerification key={id} runId={id ?? ""} />
+      </div>
+      <Sheet open={inspectorOpen} onOpenChange={setInspectorOpen}>
+        <SheetTrigger asChild>
+          <Button variant="outline" size="sm" className="mt-5">
+            Rules & evidence
+          </Button>
+        </SheetTrigger>
+        <SheetContent className="data-[side=right]:w-full data-[side=right]:sm:max-w-5xl">
+          <SheetHeader>
+            <SheetTitle>Rules & evidence</SheetTitle>
+            <SheetDescription>
+              Recorded rules, decisions and exact input receipts. Private
+              records are included in researcher inspection.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="min-h-0 min-w-0 overflow-y-auto px-4 pb-6 sm:px-6">
+            <Tabs
+              value={tab}
+              onValueChange={(v) =>
+                setParams(
+                  { ...Object.fromEntries(params), tab: v },
+                  { replace: true },
+                )
+              }
+            >
+              <TabsList className="mb-4 max-w-full justify-start overflow-x-auto">
+                <TabsTrigger value="live">Environment</TabsTrigger>
+                <TabsTrigger value="decisions">Decisions</TabsTrigger>
+                <TabsTrigger value="relationships">Interactions</TabsTrigger>
+                <TabsTrigger value="settings">Record</TabsTrigger>
+              </TabsList>
+              <TabsContent value="live">
+                {pinned && evidence.error ? (
+                  <ErrorState
+                    error={evidence.error}
+                    onRetry={evidence.refetch}
+                  />
+                ) : pinned && !evidence.data ? (
+                  <Loading />
+                ) : (
+                  <div className="grid min-w-0 gap-8 xl:grid-cols-2">
+                    <WorldView
+                      run={run}
+                      state={state}
+                      events={events}
+                      onAgent={selectAgent}
                     />
-                  )}
-                </div>
-                <MetricChart
-                  series={[
-                    {
-                      id: summary.id,
-                      name: summary.condition,
-                      measurements: run.measurements.filter(
-                        (m) => m.turn <= turn,
-                      ),
-                    },
-                  ]}
-                  metricKey={chosenMetric}
-                />
-                <p className="p-4 text-xs leading-relaxed text-muted-foreground">
-                  Recorded outcomes through turn {turn}. Each point summarizes
-                  one round.
-                </p>
-              </section>
-            </div>
-          )}
-          <section className="mt-8">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
-              <h2 className="text-base font-semibold">Recent events</h2>
-            </div>
-            {!events.length ? (
-              <Empty
-                title="Waiting for the first consequence"
-                description="Start the run or step through one agent decision."
-              />
-            ) : (
-              <div className="flex flex-col divide-y">
-                {events
-                  .slice(-12)
-                  .toReversed()
-                  .map((event) => (
-                    <div
-                      className="flex flex-wrap items-center gap-3 py-3 text-sm"
-                      key={event.id}
-                    >
-                      <Button
-                        variant="link"
-                        size="sm"
-                        type="button"
-                        onClick={() => selectTurn(event.turn, true)}
-                      >
-                        Turn {event.turn}
-                      </Button>
-                      <span className="font-medium">
-                        {run.design.profiles.find((p) => p.key === event.actor)
-                          ?.name ?? "Environment"}
-                      </span>
-                      <span>{event.text}</span>
-                      <Badge>{label(event.kind)}</Badge>
+                    <section className="min-w-0">
+                      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
+                        <h2 className="text-base font-semibold">
+                          Outcome history
+                        </h2>
+                        {metricKeys.length > 0 && (
+                          <Select
+                            label="History measurement"
+                            value={chosenMetric}
+                            onValueChange={setSelectedMetric}
+                            options={metricKeys.map((key) => ({
+                              value: key,
+                              label: label(key),
+                            }))}
+                          />
+                        )}
+                      </div>
+                      <MetricChart
+                        series={[
+                          {
+                            id: summary.id,
+                            name: summary.condition,
+                            measurements: run.measurements.filter(
+                              (m) => m.turn <= turn,
+                            ),
+                          },
+                        ]}
+                        metricKey={chosenMetric}
+                      />
+                      <p className="p-4 text-xs leading-relaxed text-muted-foreground">
+                        Recorded outcomes through turn {turn}. Each point
+                        summarizes one round.
+                      </p>
+                    </section>
+                  </div>
+                )}
+                <section className="mt-8">
+                  <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
+                    <h2 className="text-base font-semibold">Recent events</h2>
+                  </div>
+                  {!events.length ? (
+                    <Empty
+                      title="Waiting for the first consequence"
+                      description="Start the run or step through one agent decision."
+                    />
+                  ) : (
+                    <div className="flex flex-col divide-y">
+                      {events
+                        .slice(-12)
+                        .toReversed()
+                        .map((event) => (
+                          <div
+                            className="flex flex-wrap items-center gap-3 py-3 text-sm"
+                            key={event.id}
+                          >
+                            <Button
+                              variant="link"
+                              size="sm"
+                              type="button"
+                              onClick={() => selectTurn(event.turn, true)}
+                            >
+                              Turn {event.turn}
+                            </Button>
+                            <span className="font-medium">
+                              {run.design.profiles.find(
+                                (p) => p.key === event.actor,
+                              )?.name ?? "Environment"}
+                            </span>
+                            <span>{event.text}</span>
+                            <Badge>{label(event.kind)}</Badge>
+                          </div>
+                        ))}
                     </div>
-                  ))}
-              </div>
-            )}
-          </section>
-        </TabsContent>
-        <TabsContent value="decisions">
-          <DecisionBrowser
-            key={`${summary.id}:${params.get("actor") ?? "all"}`}
-            run={run}
-            turn={turn}
-            pinned={pinned}
-            evidence={evidence}
-            focusRequest={focusRequest}
-            selectTurn={selectTurn}
-            annotationDrafts={annotationDrafts}
-            setAnnotationDrafts={setAnnotationDrafts}
-          />
-        </TabsContent>
-        <TabsContent value="relationships">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
-            <div>
-              <h2 className="text-base font-semibold">Interaction patterns</h2>
-              <p>Directed exchanges and direct messages through turn {turn}.</p>
-            </div>
+                  )}
+                </section>
+              </TabsContent>
+              <TabsContent value="decisions">
+                <DecisionBrowser
+                  key={`${summary.id}:${params.get("actor") ?? "all"}`}
+                  run={run}
+                  turn={turn}
+                  pinned={pinned}
+                  evidence={evidence}
+                  focusRequest={focusRequest}
+                  selectTurn={selectTurn}
+                  annotationDrafts={annotationDrafts}
+                  setAnnotationDrafts={setAnnotationDrafts}
+                />
+              </TabsContent>
+              <TabsContent value="relationships">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
+                  <div>
+                    <h2 className="text-base font-semibold">
+                      Interaction patterns
+                    </h2>
+                    <p>
+                      Directed exchanges and direct messages through turn {turn}
+                      .
+                    </p>
+                  </div>
+                </div>
+                <div className="grid min-w-0 items-start gap-8 xl:grid-cols-2">
+                  <InteractionTable
+                    profiles={run.design.profiles}
+                    events={events}
+                    onAgent={selectAgent}
+                  />
+                  <div className="min-w-0">
+                    <h2 className="text-base font-semibold">
+                      Verifiable behavior
+                    </h2>
+                    <p className="text-muted-foreground">
+                      Ground truth comes from the rules and the information each
+                      actor received.
+                    </p>
+                    <RelationshipTable
+                      profiles={run.design.profiles}
+                      events={events}
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+              <TabsContent value="settings">
+                <RunRecord key={run.summary.id} run={run} />
+              </TabsContent>
+            </Tabs>
           </div>
-          <div className="grid min-w-0 items-start gap-8 xl:grid-cols-2">
-            <InteractionTable
-              profiles={run.design.profiles}
-              events={events}
-              onAgent={selectAgent}
-            />
-            <div className="min-w-0">
-              <h2 className="text-base font-semibold">Verifiable behavior</h2>
-              <p className="text-muted-foreground">
-                Ground truth comes from the rules and the information each actor
-                received.
-              </p>
-              <RelationshipTable
-                profiles={run.design.profiles}
-                events={events}
-              />
-            </div>
-          </div>
-        </TabsContent>
-        <TabsContent value="settings">
-          <RunRecord key={run.summary.id} run={run} />
-        </TabsContent>
-      </Tabs>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }

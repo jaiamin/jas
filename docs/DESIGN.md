@@ -24,11 +24,12 @@ colors:
   dark-accent-foreground: "oklch(0.882 0.059 254.128)"
   dark-border: "oklch(1 0 0 / 16%)"
   dark-destructive: "oklch(0.704 0.191 22.216)"
-  chart-1: "oklch(0.87 0 0)"
-  chart-2: "oklch(0.556 0 0)"
-  chart-3: "oklch(0.439 0 0)"
-  chart-4: "oklch(0.371 0 0)"
-  chart-5: "oklch(0.269 0 0)"
+  chart-1: "#0072b2"
+  chart-2: "#d55e00"
+  chart-3: "#009e73"
+  chart-4: "#cc79a7"
+  chart-5: "#e69f00"
+  chart-6: "#56b4e9"
 typography:
   headline:
     fontFamily: '"Geist Variable", sans-serif'
@@ -116,11 +117,10 @@ InputGroup, Field and CodeBlock use the latter for their enclosing surface.
 Keep these small variant substitutions when regenerating those primitives from
 a preset; validation and selected-state styling remain independent of focus.
 
-Charts use the five chart tokens. Keep legend text in the foreground color so it
-remains readable independently of each series color. Labels and distinct line
-patterns identify series; status text and icons supplement color in tables.
-Dark chart tokens use neutral lightness steps 0.87, 0.77, 0.69, 0.61 and 0.53
-so the darkest series remains visible against raised chart surfaces.
+Charts use six colorblind-safe condition tokens. Keep labels and distinct line
+patterns alongside color, and legends in foreground text. Dark mode uses the
+same condition identity with sufficient contrast against graphite surfaces.
+Agent identities use their separate deterministic palette and glyphs.
 
 ## Typography
 
@@ -133,20 +133,15 @@ belong to the preset and its stylesheet, except the dedicated brand wordmark.
 ## Layout
 
 Selected sidebar text retains the same size and weight as unselected text.
-The stock Sidebar starts with an untitled Home/Agent group above Workspace
-(Experiments, Runs, Environments). The compact brand link returns to Home. Its
-footer has a direct Settings link beneath the full-width divider, followed by the
-local workspace menu with Settings and appearance. Its Avatar is 28px with the same subtle blue background/foreground token pair as
-sidebar selection in both themes, centered
-within the collapsed rail with the label and menu chevron hidden.
-A stock SidebarSeparator with 16px expanded and 12px collapsed edge insets aligns with the navigation icons
-between primary and workspace groups. The separator above the local-workspace
-footer spans the full sidebar width. The navigation section separator stays
-visible at the same vertical position in the collapsed rail, with equal side
-insets. The full-width footer divider and continuous divider under the top bars
-remain. Footer button
-heights stay 32px for Settings and 48px for the workspace menu in both states, so
-their vertical positions and padding do not change when labels disappear. Navigation glyphs are 15px; the sidebar toggle glyph is 14px in its unchanged 28px target. Selected sidebar icons fill,
+The stock Sidebar starts with Home/Assistant above Workspace
+(Experiments, Runs, Environments), then Community (Gallery, My published).
+The compact brand link returns to Home. The footer contains a quiet usage line,
+a thin budget meter and one direct Settings link. There is no avatar, chooser,
+subtitle or appearance dropdown. Light/dark mode lives only in the top-right header.
+A stock SidebarSeparator separates the primary, workspace and community groups;
+the footer divider spans the full sidebar. Settings keeps its 32px height in the
+collapsed rail, while the usage line is hidden to retain a clean icon column.
+Navigation glyphs are 15px; the sidebar toggle glyph is 14px in its unchanged 28px target. Selected sidebar icons fill,
 with the requested exceptions: Agent keeps the stock Lucide Target outlined,
 House fills only
 its door, Layers2 fills only its upper layer, Settings fills only its center circle,
@@ -182,15 +177,9 @@ while keeping its action row visible.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
 background surface. The new-chat heading has a decorative primary-colored Target
 at left (30px, 34px on larger screens), with an 8px gap and centered alignment.
-Two rounded blue arcs orbit a steady center over faint concentric tracks. Its
-primary blue mixes 15% foreground for readable detail in either theme. The welcome
-plays one 2.2-second introduction: the arcs align midway, then fade into the regular
-Target. Working replies use continuous clockwise orbits of 5.2 and 7.8 seconds;
-they indicate activity, never measured progress. Native browser animations pause
-offscreen/in hidden tabs and resume at the same position. Reduced motion keeps the
-regular static outline and skips the decorative introduction. AgentTarget owns the
-shared motion and cleanup, with no per-frame React updates or animation scheduler.
-Its welcome instance is decorative and never delays the composer. At the upper right, a 32px stock outline history button
+The Target remains static in welcome, working and completed states. Activity uses
+recorded text and a stock loading indicator. Motion belongs only to explicit run
+playback and the Home sky, with reduced motion respected. At the upper right, a 32px stock outline history button
 with the standard rounded corners sits beside the stock 32px New button when a
 saved conversation is selected. The base new-chat view shows only History. History uses a
 stock Popover and ScrollArea in every viewport, with local skeleton rows, empty
@@ -229,9 +218,7 @@ Reply Markdown fills the shared transcript column in both streaming and complete
 states; do not add a second prose-width cap or shrink-to-fit bubble inside it.
 The Target and text-only activity dropdown share one aligned header row. The expanded
 activity guide begins under the Target’s center, with step text aligned to its label. Activity
-stages and details have no decorative icons or completion checkmarks. While pending,
-the Target uses the shared orbital animation; completion or failure
-settles it to the regular blue Lucide Target.
+stages and details have no decorative icons or completion checkmarks. The blue Lucide Target remains static while pending, complete or failed.
 One stock TraceCollapsible presents the current public stage and recorded scope,
 research sources, examined evidence and mechanical checks. It starts closed and opens only on request.
 Live activity opened by the user stays open across completion
@@ -681,7 +668,7 @@ those compositions, semantic theme tokens live
 in `src/index.css`, and app glyphs pass through `src/components/icons.tsx`.
 
 The deliberate visual exceptions are the JAS logo/wordmark, Home environment artwork and
-heading fade, the shared Target orbital animation, CC0 3dicons suggestion images, partial selected navigation glyphs,
+sky, retained CC0 3dicons artwork, partial selected navigation glyphs,
 white/graphite surfaces, blue selection, and composer sizing, backing and focus
 appearance. They are not all controlled by a preset. A preset changes the shared
 foundation; review these documented exceptions and the icon boundary rather than
@@ -854,3 +841,34 @@ and source-linked settlements use stock disclosures. Label researcher inspection
 mailbox arrival does not confirm participant input. Keep ordinary tables and
 spatial diagrams out of the default work view. Material cost/duration edits retain
 draft/save locking; population edits preserve bound workers and complete orders.
+
+## MVP data and workflow surfaces
+
+Use the six colorblind-safe condition hues from index.css. Resolve each condition
+against its full frozen protocol, including in filtered charts; never assign color
+from the visible subset. Pair color with names and dash patterns. Agent identities
+use the separate agent palette and deterministic glyphs from lib/identity.ts.
+Private observations use the lock and muted tint; agent perspective exposes only
+that agent's authorized recorded observations and addressed events.
+
+Home follows the MVP layout with the user-requested three compact starter cards, work
+settings first, a watch link on each, and a dismissible first-run strip. Preserve the
+composer and pixel sky. The original four illustrated idea cards remain in Git and
+may be restored after review; the user's latest direction is to try the spec first.
+Quick and Advanced share a protocol and browser draft. Show conservative cost bounds
+until empirical estimates exist. Save never runs; Save and run is explicit.
+The experiment has Overview, Results, Runs, Design and Publish. Keep one numerical
+headline and one chart in Overview, with at most three limit chips. Full evidence,
+limits and protocol controls stay one click away. Results shows every eligible seed
+with failed, missing and undefined cells inspectable; repetitions remain explicit.
+
+
+Settings uses separated sections, clear headings and stock form controls rather
+than a stack of bordered cards. Provider credentials remain inside their relevant
+provider disclosure; searchable model selection is retained. Publishing visibility
+uses two direct radio choices. Assistant message footers show a quiet cost receipt;
+a click reveals calls/tokens and explains unknown or unsettled usage.
+
+The desktop run viewer gives each pane its own keyboard-accessible scroll area,
+capped at half the viewport height, so long consequences do not push playback
+far below the turn. Phones retain the ordinary single-column document flow.

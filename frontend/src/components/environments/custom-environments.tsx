@@ -119,7 +119,7 @@ export function CustomEnvironments({
                     {environments.find(
                       (env) => env.key === item.definition.environment,
                     )?.name ?? label(item.definition.environment)}{" "}
-                    · Revision {item.revision}
+                    · Version {item.revision}
                   </ItemDescription>
                 </ItemContent>
                 <ItemActions>

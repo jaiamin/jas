@@ -22,7 +22,7 @@ test("switching a solo draft creates three bound participants without losing the
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/studies\//);
+  await expect(page).toHaveURL(/\/experiments\//);
   const study = await (
     await request.get(`/api/studies/${page.url().split("/").at(-1)}`)
   ).json();
@@ -100,7 +100,7 @@ test("coordination timing and topology edits survive reload and review", async (
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/studies\//);
+  await expect(page).toHaveURL(/\/experiments\//);
   const study = await (
     await request.get(`/api/studies/${page.url().split("/").at(-1)}`)
   ).json();

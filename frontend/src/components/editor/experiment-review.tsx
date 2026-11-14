@@ -294,7 +294,7 @@ export function ExperimentReview({
         Private goals, roles and condition profile overrides are declared study
         factors. Harness selection does not prescribe a social outcome. Creating
         an experiment saves its protocol and planned runs. Model calls begin
-        only when you choose to run it. Earlier revisions keep their original
+        only when you choose to run it. Earlier versions keep their original
         rules and evidence.
       </p>
     </section>

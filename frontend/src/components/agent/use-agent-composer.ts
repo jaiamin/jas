@@ -8,6 +8,8 @@ type Submission = {
   context: string;
   lens?: AnalysisLensKey;
   source_analysis_id?: string;
+  revision?: number;
+  through_turn?: number;
 };
 type ChatCreated = { id: string; chat_id: string };
 
@@ -18,6 +20,8 @@ export function useAgentComposer({
   initialQuestion,
   busy = false,
   onSent,
+  scope,
+  onCreated,
 }: {
   context: string;
   chatId?: string | null;
@@ -25,6 +29,8 @@ export function useAgentComposer({
   initialQuestion?: string;
   busy?: boolean;
   onSent: (result: ChatCreated) => void;
+  scope?: { revision: number; through_turn?: number };
+  onCreated?: (result: ChatCreated) => void;
 }) {
   const [question, setQuestion] = useState<string>(() => {
     if (initialQuestion !== undefined) return initialQuestion;
@@ -61,6 +67,7 @@ export function useAgentComposer({
       submitting.current = false;
     },
     onSuccess: (result, submitted) => {
+      onCreated?.(result);
       setQuestion((current) => (current === submitted.question ? "" : current));
       try {
         if (sessionStorage.getItem(draftKey) === submitted.question)
@@ -88,7 +95,7 @@ export function useAgentComposer({
       submitting.current = true;
       // Per-call callbacks stop with their observer when this composer unmounts.
       // Cache and draft settlement above still runs for the accepted request.
-      send.mutate({ question, context }, { onSuccess: onSent });
+      send.mutate({ question, context, ...scope }, { onSuccess: onSent });
     }
   }
   return {
@@ -101,6 +108,14 @@ export function useAgentComposer({
     plannerModel,
     assistantModel,
     provider,
+    estimate:
+      settings.data?.assistant_estimates?.[
+        context === "new"
+          ? "design"
+          : context === "general"
+            ? "general"
+            : "analysis"
+      ],
     unavailable,
     send,
     submit,

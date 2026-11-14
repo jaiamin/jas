@@ -1,4 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { setDeveloper } from "./helpers.js";
+
+test.beforeEach(async ({ request }) => {
+  await setDeveloper(request, true);
+});
 
 for (const theme of ["light", "dark"]) {
   for (const width of [390, 1440]) {
@@ -12,7 +17,7 @@ for (const theme of ["light", "dark"]) {
         theme,
       );
       await page.setViewportSize({ width, height: 900 });
-      await page.goto("/new?template=commons");
+      await page.goto("/new?template=commons&mode=advanced");
       await expect(
         page.getByLabel("Experiment name", { exact: true }),
       ).toBeVisible();
@@ -140,7 +145,7 @@ for (const theme of ["light", "dark"]) {
 test("editor preserves input DOM across sections and applies validated JSON to the run plan", async ({
   page,
 }) => {
-  await page.goto("/new?template=coordination");
+  await page.goto("/new?template=coordination&mode=advanced");
   await page.getByLabel("Experiment name").fill("Preserved experiment");
   await page.getByRole("tab", { name: "Agents", exact: true }).click();
   await page.getByRole("button", { name: "Add agent", exact: true }).click();
@@ -170,7 +175,7 @@ test("editor preserves input DOM across sections and applies validated JSON to t
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/studies\//);
+  await expect(page).toHaveURL(/\/experiments\//);
   expect(
     await page.evaluate(() =>
       Object.keys(localStorage).some((key) => key.startsWith("jas:draft:")),
@@ -191,7 +196,7 @@ for (const width of [390, 1440]) {
       await gate;
       await route.continue();
     });
-    await page.goto("/new");
+    await page.goto("/new?mode=advanced");
     await expect(
       page.getByRole("heading", { name: "New experiment", exact: true }),
     ).toBeVisible();
@@ -232,7 +237,9 @@ for (const [theme, width] of [
     );
     await page.setViewportSize({ width, height: 900 });
     for (const template of catalog.templates) {
-      await page.goto(`/new?template=${template.id}&step=conditions`);
+      await page.goto(
+        `/new?template=${template.id}&step=conditions&mode=advanced`,
+      );
       const panel = page.getByRole("tabpanel", {
         name: "Conditions",
         exact: true,

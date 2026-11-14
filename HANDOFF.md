@@ -1,111 +1,30 @@
 # JAS handoff
 
-## Current: MVP redesign discovery
+MVP redesign implementation follows [the acceptance matrix](docs/MVP_REDESIGN_PLAN.md).
+v0.2 features are excluded. Product and architecture decisions live in docs/adr/;
+setup, testing, publishing and hosting each have focused guides in docs/.
 
-User requires the attached November 13 end-to-end product spec exactly for MVP,
-with v0.2 excluded, and explicitly requested `grill-with-docs` before implementation.
-All 19 PDF pages and the engine/interface/deployment fact-finding are reviewed.
-Requirements, acceptance criteria and unresolved decisions are tracked in
-`docs/MVP_REDESIGN_PLAN.md`. Product vocabulary has been aligned in the glossary.
-User accepted all six first-round recommendations: jaslab distribution/JAS/ jas CLI,
-explicit token caps for unknown prices, fresh $10 aggregate Step 0 live budget,
-separate Railway gallery plan targeting $10/month before cost-reviewed provisioning,
-one-version publication scope excluding private assistant context, and archival of
-HANDOFF/internal reports outside the public tree without rewriting Git history.
-User additionally requires minimal, organized frontend/backend changes with no
-unnecessary abstractions. Accepted durable boundaries are recorded in ADRs 0003/0004.
-User accepted all six final policies (Q7–Q12) and confirmed shared understanding;
-the interview is complete. Implement now, keeping all spec MVP requirements and
-minimal frontend/backend changes. Major refactors are explicitly authorized where
-they improve the codebase. Accepted decisions and the concrete Step 0 plan are in
-`docs/MVP_REDESIGN_PLAN.md`; public-record decisions are ADRs 0003–0005.
-No application implementation, provider calls, user-data changes or infrastructure
-mutations have occurred. Local dependency bootstrap is in progress. System uv aborts
-on this sandbox's 16 KB pages; `.venv` is being populated with pip under exact
-uv.lock constraints without changing the committed lockfile. Frontend frozen install
-passed. Next: keyless validity/accounting checks, then the authorized isolated Step 0.
+The runner and provider keys stay local. The separate public gallery has no model
+execution service. Preserve the existing Railway service/volume; no redeploy or
+provisioning is part of this review. The local app is to remain on port 8080.
 
-Baseline `5dd65475` includes merged PR #40; the prior draft-PR note below is
-historical. Latest observed Checks run `43313112223` was refused before jobs started
-because of GitHub billing/spending limits. Live Railway state is not freshly verified;
-no CLI/MCP path is available. Never reuse historical paid-evaluation authorization.
-The user authorized replacing the tracked-handoff rule with preserved local archival
-at public-documentation cleanup; do not lose these records or rewrite Git history.
+Local verification: 1,969 backend tests, 146 frontend tests and 201 browser tests
+passed. Final affected checks add 33 backend cases, 19 viewer/workspace browser
+cases, nine starter/catalogue cases and two anonymous gallery phone/theme cases.
+Ruff, formatting, ty, frontend lint/build and Actionlint/ShellCheck pass. The final
+wheel serves its bundled UI/recordings from an unrelated working directory with
+zero model calls. Private-hosting and separate-gallery container smokes pass.
+The README includes an actual 20-second scripted replay capture.
 
-## Previous: Railway deployment repair
+Backend/browser regression logs and retained live evaluation evidence are kept in
+the ignored task workspace. Internal research
+reports and the previous detailed handoff were byte-checked into a private local
+archive before removal from the current public tree; Git history is intact.
 
-PR #39 is merged into main (`3b918ff9`). Branch `fix/railway-deployment` starts
-there. User authorized Railway log inspection, configuration and deployment repair.
-Confirmed: initial image built successfully; deployment `d59c1950` crashed opening
-SQLite on the root-owned `/app/data` volume. Existing volume and databases must
-remain intact. No paid model calls are needed or authorized by this deployment task.
+Local review uses `data/workspace` on port 8080. No existing workspace was reset,
+no Railway resources changed, and no launch-corpus model calls were made.
 
-Acceptance: initialize only the mount directory, run the app as 10001, password
-protect hosted reads/actions, retain host/origin checks, and verify restart
-persistence and actual production containment. Preserve native/Compose local setup.
-Keep one replica, no sleep and graceful shutdown in Railway's service settings;
-focused hosting instructions are in `docs/DEPLOYMENT.md`. No deprecated Railway
-config format or new platform dependency. Credentials stay outside Git/logs.
-
-Complete: all 1,919 backend cases pass (528.11s), including 76 access/API cases.
-Ruff/ty/format checks and Actionlint pass. Production image build, default non-root
-Compose smoke and root-owned-volume authenticated smoke pass, including actual
-containment, symlink/ownership refusals, existing-file preservation and restart
-persistence. Initial local Compose smoke correctly stopped on inherited provider
-availability; recreated with explicitly empty keys, then passed. No paid calls.
-
-Railway project `jas`, production service `jas`: deployment `105efe70` from code
-checkpoint `64ca7faa` reports SUCCESS. Public domain ACTIVE on 8080; live health200,
-protected UI/API/assets200, unauthenticated reads/writes401, cross-origin writes403,
-provider requests0. Existing volume retained. Auth secrets set through stdin; login
-name `jas`. Draining allowance120s saved via the typed service update (CLI dot-path
-edit was a no-op); one replica/no sleep retained. No deprecated platform config.
-Direct SSH inspection was unavailable without SSH keys; no keys/access added.
-Non-root UID/group/ownership and restart evidence is from the actual local image.
-
-Draft PR #40 targets main. Merge it before the next GitHub-source deployment so
-main includes the fix; no PR was merged or default-branch push performed here.
-Fresh GitHub Actions checks were refused before starting by account payment/spending
-limits (observed annotation on run43311755857), not test failures. Clear that billing
-block and rerun hosted CI. No service, database or model credentials in tracked files.
-All disposable test containers/volumes are removed. User's local8080 remains healthy.
-
-## Previous delivery and evaluation
-
-GitHub repository renamed to `jaiamin/jas`; origin, app link, docs and test
-expectations use the new name. Existing PR #38 and issue numbers are preserved.
-
-PRs #37/#38 initially merged into `feat/research-quality`, not `main`.
-PR #39 corrected delivery by carrying exactly those two squash commits from main
-`c0f9a941`, with original commit references. Its complete tree matched qualified
-`ef2194a1` before documentary status corrections. It is now merged into main.
-
-## Completed: live Agent and participant evaluation
-
-User-authorized aggregate ceiling $15. Final isolated ledger retained $4.115505
-charged/reserved: $4.111282 known settled + $0.004223 unknown timeout reservation.
-2,105 provider records, zero pending; no further paid evaluation is active.
-Assistant GPT-6.1 Sol, participants GPT-6 Luna. No retries/substitutions or user-data
-reset. Database16/export20/library10 unchanged.
-
-Report and criteria: `docs/research/LIVE_AGENT_EVALUATION.md`. Final live batch 52/52
-runs, all 12 environment families, 539 turns, 675 participant requests, all exact replay
-and JSON exports. Separate real browser draft/save/run/results flow 2/2 complete.
-Artifact source-delivery/privacy audit passed; semantic quality reviewed with explicit
-limits. No independent blinded scoring, population or general-intelligence claim.
-
-Repairs: closed operation-specific provider records and canonical action decoding;
-last-request decision reservation; current artifact write preconditions; canonical
-paused-tool restoration; visible bounded malformed-draft correction; progressive
-compaction of requested observations retaining legal actions/current versions.
-All failed attempts remain in ignored local evidence. No old runs relabeled or rerun.
-
-Final local checks: backend 1,894; browser 191; frontend 141; lint,
-formatting, global types and frontend build pass. Hosted CI remains an account-billing
-blocker until fresh checks actually run. PR #38 is merged; the follow-up targets main.
-
-Keep user app 8080 running. Read `.tools/run-8080/server.json` for current identity;
-`activate-8080-03/receipt.json` proves preserved database inode/all 14 tables/78 provider records.
-Evaluation tab and 18149/18150 services are closed. Same private evaluation DB:
-`.tools/checkout-tool-limit/live-luna-01/workspace.sqlite3`. Never spend from a fresh
-ledger that bypasses this aggregate ceiling. Evidence: `.tools/agent-e2e-15/`.
+External launch gates: registry publication, live GitHub/S3/keychain integration,
+actual cross-machine publish/fork, provider terms, genuine launch corpus and the
+specified outside-user checks. Hosted CI previously could not start because of
+GitHub billing limits; local checks do not resolve that account-level block.

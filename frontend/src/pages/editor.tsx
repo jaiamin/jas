@@ -21,6 +21,7 @@ import type {
   Catalog,
   Design,
   SavedEnvironment,
+  Starter,
   StudyDetail,
 } from "@/lib/types";
 
@@ -57,6 +58,12 @@ export default function Editor() {
     refetchOnWindowFocus: false,
   });
   const catalog = useApi<Catalog>("/catalog");
+  const starterId = params.get("starter");
+  const starters = useQuery({
+    queryKey: ["/starters"],
+    queryFn: () => api<Starter[]>("/starters"),
+    enabled: !!starterId,
+  });
   const setupId = params.get("setup");
   const environmentId = params.get("environment");
   const hasSourceDraft = Boolean(
@@ -131,15 +138,25 @@ export default function Editor() {
         )}
       </>
     );
-  if (catalog.error || plan.error || previousError || setupError)
+  if (
+    catalog.error ||
+    plan.error ||
+    previousError ||
+    setupError ||
+    starters.error
+  )
     return (
       <ErrorState
         error={
-          (catalog.error || plan.error || previousError || setupError) as Error
+          (catalog.error ||
+            plan.error ||
+            previousError ||
+            setupError ||
+            starters.error) as Error
         }
         onRetry={() =>
           Promise.all(
-            [catalog, plan, previous, setup]
+            [catalog, plan, previous, setup, starters]
               .filter((query) => query.error)
               .map((query) => query.refetch()),
           )
@@ -150,6 +167,7 @@ export default function Editor() {
     !catalog.data ||
     draft.isPending ||
     !draft.isFetchedAfterMount ||
+    (starterId && !starters.data) ||
     (sourceId && !previous.data && !deletedSource) ||
     ((setupId || environmentId) && !hasSourceDraft && !setup.data)
   )
@@ -177,14 +195,28 @@ export default function Editor() {
         <PlanningProgress plan={plan.data} />
       </>
     );
+  if (
+    starterId &&
+    !draft.data?.saved &&
+    !starters.data?.some((starter) => starter.id === starterId)
+  )
+    return (
+      <Alert variant="error" title="Starter not found">
+        Choose a starter from{" "}
+        <Link className="underline" to="/">
+          Home
+        </Link>
+        .
+      </Alert>
+    );
   if (plan.data?.status === "failed")
     return (
       <>
         <PageHeading title="Design request stopped" />
         <Alert variant="error">{plan.data.error}</Alert>
         <Button variant="outline" asChild>
-          <Link to="/agent" state={{ question: plan.data.question }}>
-            Back to Agent
+          <Link to="/assistant" state={{ question: plan.data.question }}>
+            Back to Assistant
           </Link>
         </Button>
       </>
@@ -219,6 +251,7 @@ export default function Editor() {
         }
       : previous.data?.design) ??
     setup.data?.design ??
+    starters.data?.find((starter) => starter.id === starterId)?.design ??
     catalog.data.templates.find((t) => t.id === params.get("template"))
       ?.design ??
     catalog.data.templates[0]?.design;
@@ -234,6 +267,11 @@ export default function Editor() {
       <DesignEditor
         key={draftPath}
         initial={initial}
+        initialMode={
+          params.get("mode") === "advanced" || params.has("step")
+            ? "visual"
+            : "quick"
+        }
         setupId={setupId}
         setupRevision={setup.data?.revision}
         initialStep={
@@ -257,6 +295,7 @@ export default function Editor() {
             ? {
                 ...draft.data.saved,
                 mode: "json",
+                jsonDirty: true,
                 json:
                   draft.data.saved.mode === "json"
                     ? draft.data.saved.json

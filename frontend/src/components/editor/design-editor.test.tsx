@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { useApi } from "@/lib/api";
 import { participantHarness } from "@/lib/design";
-import { catalog, design } from "@/test/fixtures";
+import { catalog, design, settings } from "@/test/fixtures";
 import { deferredResponse, renderWithQueries } from "@/test/queries";
 import { workflowRun } from "@/test/workflow";
 import { DesignEditor } from "./design-editor";
@@ -21,12 +21,28 @@ beforeEach(() =>
 );
 afterEach(() => localStorage.clear());
 
+function stubNetwork(fetcher: typeof fetch) {
+  vi.stubGlobal("fetch", (path: RequestInfo | URL, options?: RequestInit) =>
+    path === "/api/settings"
+      ? Promise.resolve(
+          Response.json({
+            ...settings,
+            preferences: { ...settings.preferences, developer: true },
+          }),
+        )
+      : fetcher(path, options),
+  );
+}
+beforeEach(() =>
+  stubNetwork(vi.fn().mockRejectedValue(new Error("Unexpected request"))),
+);
+
 for (const mode of ["visual", "json"]) {
   for (const succeeds of [true, false]) {
     test(`${mode} saves lock the submitted snapshot and ${succeeds ? "clear its draft on success" : "retain its draft on failure"}`, async () => {
       const response = deferredResponse();
       const fetcher = vi.fn().mockReturnValue(response.promise);
-      vi.stubGlobal("fetch", fetcher);
+      stubNetwork(fetcher);
       renderWithQueries(
         <MemoryRouter initialEntries={["/new"]}>
           <Routes>
@@ -34,6 +50,7 @@ for (const mode of ["visual", "json"]) {
               path="/new"
               element={
                 <DesignEditor
+                  initialMode="visual"
                   initial={design}
                   catalog={catalog}
                   studyId={null}
@@ -42,7 +59,10 @@ for (const mode of ["visual", "json"]) {
                 />
               }
             />
-            <Route path="/studies/:id" element={<h1>Saved experiment</h1>} />
+            <Route
+              path="/experiments/:id"
+              element={<h1>Saved experiment</h1>}
+            />
           </Routes>
         </MemoryRouter>,
       );
@@ -55,7 +75,7 @@ for (const mode of ["visual", "json"]) {
       });
       if (mode === "json") {
         fireEvent.mouseDown(
-          screen.getByRole("tab", { name: "Specification" }),
+          await screen.findByRole("tab", { name: "Specification" }),
           {
             button: 0,
             ctrlKey: false,
@@ -149,10 +169,11 @@ test("free mechanics checks block invalid saves and become stale after editing",
       ],
     }),
   );
-  vi.stubGlobal("fetch", fetcher);
+  stubNetwork(fetcher);
   renderWithQueries(
     <MemoryRouter>
       <DesignEditor
+        initialMode="visual"
         initial={design}
         catalog={catalog}
         studyId={null}
@@ -199,10 +220,11 @@ test("free mechanics checks block invalid saves and become stale after editing",
 test("workflow edits retain typed costs and delays in review, failed saves and drafts", async () => {
   const response = deferredResponse();
   const fetcher = vi.fn().mockReturnValue(response.promise);
-  vi.stubGlobal("fetch", fetcher);
+  stubNetwork(fetcher);
   renderWithQueries(
     <MemoryRouter>
       <DesignEditor
+        initialMode="visual"
         initial={workflowRun.design}
         catalog={{
           ...catalog,
@@ -277,6 +299,7 @@ test("workflow population edits keep six to twelve identities and preserve bound
   renderWithQueries(
     <MemoryRouter>
       <DesignEditor
+        initialMode="visual"
         initial={workflowRun.design}
         catalog={{
           ...catalog,
@@ -346,6 +369,7 @@ test("workflow tool participants can select authorized artifact reads without un
   renderWithQueries(
     <MemoryRouter>
       <DesignEditor
+        initialMode="visual"
         initial={initial}
         catalog={{
           ...catalog,
@@ -406,8 +430,7 @@ function SavedTitle() {
 
 test("saving a revision replaces a recently cached experiment on return", async () => {
   let title = "Original title";
-  vi.stubGlobal(
-    "fetch",
+  stubNetwork(
     vi.fn().mockImplementation((_path, options) => {
       if (options?.method === "POST") {
         title = JSON.parse(options.body).design.title;
@@ -423,6 +446,7 @@ test("saving a revision replaces a recently cached experiment on return", async 
           path="/new"
           element={
             <DesignEditor
+              initialMode="visual"
               initial={design}
               catalog={catalog}
               studyId="existing"
@@ -431,7 +455,7 @@ test("saving a revision replaces a recently cached experiment on return", async 
             />
           }
         />
-        <Route path="/studies/:id" element={<SavedTitle />} />
+        <Route path="/experiments/:id" element={<SavedTitle />} />
       </Routes>
     </MemoryRouter>,
   );
@@ -444,7 +468,7 @@ test("saving a revision replaces a recently cached experiment on return", async 
     button: 0,
     ctrlKey: false,
   });
-  fireEvent.click(screen.getByRole("button", { name: "Save new revision" }));
+  fireEvent.click(screen.getByRole("button", { name: "Save new version" }));
   expect(
     await screen.findByRole("heading", { name: "Updated revision", level: 1 }),
   ).toBeVisible();

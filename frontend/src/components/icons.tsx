@@ -35,6 +35,7 @@ export {
   KeyRound,
   Layers2,
   LoaderCircle,
+  LockKeyhole,
   MessageSquare,
   Monitor,
   Moon,

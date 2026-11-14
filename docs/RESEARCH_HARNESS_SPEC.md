@@ -3,7 +3,7 @@
 Accepted product requirements. The Problem Statement records the original design
 motivation; current implementation and verification are documented in
 [Architecture](ARCHITECTURE.md) and the
-[product review](research/FINAL_PRODUCT_REVIEW.md). Live evaluation gates remain
+[experiment validity guide](EXPERIMENT_VALIDITY.md). Live evaluation gates remain
 requirements until independently demonstrated.
 
 ## Problem Statement

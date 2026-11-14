@@ -224,7 +224,7 @@ test("selecting an admitted relay pins its package and retains the existing part
     reviewer: original.profiles[1].key,
     docket: "seal-42",
   });
-  await expect(page).toHaveURL(/\/studies\//);
+  await expect(page).toHaveURL(/\/experiments\//);
   const after = await (await request.get("/api/settings")).json();
   expect(after.usage).toEqual(before.usage);
 });

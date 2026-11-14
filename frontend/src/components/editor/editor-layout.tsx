@@ -44,7 +44,13 @@ export function EditorHeading({
   );
 }
 
-export function EditorNavigation({ disabled }: { disabled: boolean }) {
+export function EditorNavigation({
+  disabled,
+  showSpecification = true,
+}: {
+  disabled: boolean;
+  showSpecification?: boolean;
+}) {
   return (
     <div
       data-slot="editor-section-navigation"
@@ -57,17 +63,19 @@ export function EditorNavigation({ disabled }: { disabled: boolean }) {
           aria-label="Experiment sections"
           className="gap-2 p-0 group-data-horizontal/tabs:h-9"
         >
-          {editorSections.map((section) => (
-            <TabsTrigger
-              key={section.value}
-              value={section.value}
-              disabled={disabled}
-              className="h-9 border-0 px-2 group-data-horizontal/tabs:after:bottom-0"
-            >
-              {section.value === "json" && <Code2 aria-hidden="true" />}
-              {section.label}
-            </TabsTrigger>
-          ))}
+          {editorSections
+            .filter((section) => section.value !== "json" || showSpecification)
+            .map((section) => (
+              <TabsTrigger
+                key={section.value}
+                value={section.value}
+                disabled={disabled}
+                className="h-9 border-0 px-2 group-data-horizontal/tabs:after:bottom-0"
+              >
+                {section.value === "json" && <Code2 aria-hidden="true" />}
+                {section.label}
+              </TabsTrigger>
+            ))}
         </TabsList>
       </div>
     </div>
@@ -87,7 +95,7 @@ export function EditorLoading({
         {!revision && (
           <Button type="button" variant="outline" size="sm" disabled>
             <AgentIcon data-icon="inline-start" />
-            {fromAgent ? "Back to Agent" : "Generate with Agent"}
+            {fromAgent ? "Back to Assistant" : "Generate with Assistant"}
           </Button>
         )}
         <Button
@@ -100,6 +108,18 @@ export function EditorLoading({
           <Ellipsis />
         </Button>
       </EditorHeading>
+      <fieldset
+        className="mb-6 flex items-center gap-1"
+        aria-label="Builder mode"
+        disabled
+      >
+        <Button type="button" size="sm" variant="ghost">
+          Quick
+        </Button>
+        <Button type="button" size="sm" variant="secondary">
+          Advanced
+        </Button>
+      </fieldset>
       <Tabs value="question" className="gap-0">
         <EditorNavigation disabled />
         <div

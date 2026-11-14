@@ -175,7 +175,7 @@ test("workflow editor retains mobile drafts, pending saves, errors and cancelled
   );
   await page.unroute("**/api/studies");
   await save.click();
-  await expect(page).toHaveURL(/\/studies\//);
+  await expect(page).toHaveURL(/\/experiments\//);
   const study: StudyDetail = await (
     await request.get(`/api/studies/${page.url().split("/").at(-1)}`)
   ).json();

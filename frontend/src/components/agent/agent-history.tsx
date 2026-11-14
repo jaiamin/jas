@@ -97,7 +97,7 @@ export function AgentHistory() {
                   asChild
                 >
                   <Link
-                    to={`/agent?chat=${chat.id}`}
+                    to={`/assistant?chat=${chat.id}`}
                     title={chat.title}
                     aria-current={current === chat.id ? "page" : undefined}
                     onClick={() => setOpen(false)}

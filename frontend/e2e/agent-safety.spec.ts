@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { settings as settingsFixture } from "../src/test/fixtures.js";
 import { selectText } from "./helpers.js";
 
 for (const destination of ["experiments", "new chat"]) {
@@ -8,6 +9,7 @@ for (const destination of ["experiments", "new chat"]) {
     await page.route("**/api/settings", (route) =>
       route.fulfill({
         json: {
+          ...settingsFixture,
           providers: { openai: true },
           planner_model: "openai:gpt-6.1-sol",
           assistant_model: "openai:gpt-6.1-sol",
@@ -59,9 +61,9 @@ for (const destination of ["experiments", "new chat"]) {
     );
     const sourceChat = destination === "new chat" ? "late-chat" : "new";
     await page.goto(
-      destination === "new chat" ? "/agent?chat=late-chat" : "/agent",
+      destination === "new chat" ? "/assistant?chat=late-chat" : "/assistant",
     );
-    const input = page.getByLabel("Message Agent", { exact: true });
+    const input = page.getByLabel("Message Assistant", { exact: true });
     await input.fill("Original question");
     await page
       .getByRole("button", { name: "Send message", exact: true })
@@ -71,10 +73,10 @@ for (const destination of ["experiments", "new chat"]) {
       await page
         .getByRole("link", { name: "Experiments", exact: true })
         .click();
-      await expect(page).toHaveURL(/\/studies$/);
+      await expect(page).toHaveURL(/\/experiments$/);
     } else {
       await page.getByRole("button", { name: "New chat", exact: true }).click();
-      await expect(page).toHaveURL(/\/agent\?new=/);
+      await expect(page).toHaveURL(/\/assistant\?new=/);
       await input.fill("Keep this new draft");
     }
     const chosenURL = page.url();
@@ -97,7 +99,7 @@ for (const destination of ["experiments", "new chat"]) {
         page.getByRole("navigation", { name: "Past chats" }),
       ).toContainText("Original question");
     } else {
-      await page.getByRole("link", { name: "Agent", exact: true }).click();
+      await page.getByRole("link", { name: "Assistant", exact: true }).click();
       await page
         .getByRole("button", { name: "Chat history", exact: true })
         .click();
@@ -108,7 +110,7 @@ for (const destination of ["experiments", "new chat"]) {
   });
 }
 
-for (const path of ["/", "/agent"]) {
+for (const path of ["/assistant"]) {
   test(`suggestion text can be selected without changing the composer · ${path}`, async ({
     page,
   }) => {
@@ -118,7 +120,7 @@ for (const path of ["/", "/agent"]) {
         submissions++;
     });
     await page.goto(path);
-    const input = page.getByLabel("Message Agent", { exact: true });
+    const input = page.getByLabel("Message Assistant", { exact: true });
     if (path === "/") await input.fill("My unfinished research question");
     const suggestions = page.getByRole("region", {
       name: path === "/" ? "Experiment ideas" : "Suggested questions",
@@ -178,9 +180,9 @@ test("retrying provider availability never submits the message form", async ({
     if (request.method() === "POST" && request.url().endsWith("/api/chats"))
       submissions++;
   });
-  await page.goto("/agent");
-  const form = page.getByRole("form", { name: "Agent composer" });
-  const input = page.getByLabel("Message Agent", { exact: true });
+  await page.goto("/assistant");
+  const form = page.getByRole("form", { name: "Assistant composer" });
+  const input = page.getByLabel("Message Assistant", { exact: true });
   await input.fill("Keep this question until I send it");
   await expect(
     form.getByRole("button", { name: "Retry", exact: true }),

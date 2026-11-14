@@ -209,8 +209,11 @@ def test_local_hosts_accept_same_origin_writes(client, design, host):
 
 def test_configured_host_keeps_origin_checks(tmp_path, monkeypatch, design):
     monkeypatch.setenv("JAS_ALLOWED_HOSTS", "localhost, lab.example")
+    monkeypatch.setenv("JAS_AUTH_USERNAME", "test-owner")
+    monkeypatch.setenv("JAS_AUTH_PASSWORD", "test-only-password")
     app = create_app(f"sqlite:///{tmp_path}/hosts.sqlite3")
     with TestClient(app, base_url="http://lab.example") as client:
+        client.auth = ("test-owner", "test-only-password")
         assert client.get("/api/health").status_code == 200
         assert (
             client.post(

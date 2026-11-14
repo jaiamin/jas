@@ -2,7 +2,7 @@
 
 The scripted Sol identity is not live adjudicator authorization or an accuracy
 measurement. Literal oracles were frozen before implementation; their development
-record is summarized in docs/research/RESEARCH_HARNESS_COMPACT_REPORT.md.
+record remains in Git history.
 Only the external provider boundary is replaced; workflow assertions use HTTP.
 """
 

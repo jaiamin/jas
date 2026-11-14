@@ -18,10 +18,6 @@ import type { RunDetail } from "@/lib/types";
 
 export function RunRecord({ run }: { run: RunDetail }) {
   const summary = run.summary;
-  const verify = useMutation({
-    mutationFn: () =>
-      api<{ verified_turns: number }>(`/runs/${summary.id}/verify`, {}),
-  });
   return (
     <>
       <Card>
@@ -102,23 +98,7 @@ export function RunRecord({ run }: { run: RunDetail }) {
             work is restored and active runs pause. Run or Step explicitly
             requests new model sampling and may spend budget.
           </p>
-          <Button
-            variant="outline"
-            disabled={verify.isPending}
-            onClick={() => verify.mutate()}
-          >
-            <Check data-icon="inline-start" />
-            Verify exact replay
-          </Button>
-          {verify.data && (
-            <Alert>
-              {verify.data.verified_turns} turns verified locally. No model
-              calls.
-            </Alert>
-          )}
-          {verify.error && (
-            <Alert variant="error">{verify.error.message}</Alert>
-          )}
+          <ReplayVerification key={summary.id} runId={summary.id} />
           <Disclosure>
             <DisclosureTrigger>Resolved condition</DisclosureTrigger>
             <DisclosureContent>
@@ -136,6 +116,31 @@ export function RunRecord({ run }: { run: RunDetail }) {
       <ExposureInspection path={`/runs/${summary.id}/exposure`} />
       <ActivationInspector activations={run.activations} />
       <RequestInspector requests={run.requests} />
+    </>
+  );
+}
+
+export function ReplayVerification({ runId }: { runId: string }) {
+  const verify = useMutation({
+    mutationFn: () =>
+      api<{ verified_turns: number }>(`/runs/${runId}/verify`, {}),
+  });
+  return (
+    <>
+      <Button
+        variant="outline"
+        disabled={verify.isPending}
+        onClick={() => verify.mutate()}
+      >
+        <Check data-icon="inline-start" />
+        Verify exact replay
+      </Button>
+      {verify.data && (
+        <Alert>
+          {verify.data.verified_turns} turns verified locally. No model calls.
+        </Alert>
+      )}
+      {verify.error && <Alert variant="error">{verify.error.message}</Alert>}
     </>
   );
 }

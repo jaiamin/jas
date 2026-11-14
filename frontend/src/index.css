@@ -50,6 +50,7 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -87,11 +88,18 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --chart-1: #0072b2;
+  --chart-2: #d55e00;
+  --chart-3: #009e73;
+  --chart-4: #cc79a7;
+  --chart-5: #e69f00;
+  --chart-6: #56b4e9;
+  --agent-1: #8064a2;
+  --agent-2: #287f8e;
+  --agent-3: #b46337;
+  --agent-4: #667c30;
+  --agent-5: #a95177;
+  --agent-6: #526bac;
   --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: var(--primary);
@@ -123,11 +131,18 @@
   --border: oklch(1 0 0 / 16%);
   --input: oklch(1 0 0 / 20%);
   --ring: oklch(0.65 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.77 0 0);
-  --chart-3: oklch(0.69 0 0);
-  --chart-4: oklch(0.61 0 0);
-  --chart-5: oklch(0.53 0 0);
+  --chart-1: #56b4e9;
+  --chart-2: #ff8c60;
+  --chart-3: #43caa3;
+  --chart-4: #e8a7c9;
+  --chart-5: #e9ba54;
+  --chart-6: #a5d9f3;
+  --agent-1: #b9a1d5;
+  --agent-2: #72c5d2;
+  --agent-3: #e9aa7f;
+  --agent-4: #b4ca7b;
+  --agent-5: #de9cba;
+  --agent-6: #9aafe4;
   --sidebar: oklch(0.21 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: var(--primary);
@@ -171,36 +186,6 @@
 
 .home-world {
   image-rendering: pixelated;
-}
-
-/* Orbital activity returns to the stock Target when it settles. */
-.agent-target {
-  color: color-mix(in oklab, var(--primary) 85%, var(--foreground));
-}
-.agent-target > circle {
-  transition:
-    opacity 220ms ease-out,
-    fill-opacity 220ms ease-out;
-}
-.agent-target[data-agent-motion="active"] > circle:nth-child(-n + 2) {
-  opacity: 0.22;
-}
-.agent-target > circle:nth-child(3) {
-  fill: currentColor;
-  fill-opacity: 0;
-}
-.agent-target[data-agent-motion="active"] > circle:nth-child(3) {
-  fill-opacity: 1;
-}
-.agent-target > [data-agent-orbits] {
-  opacity: 0;
-}
-.agent-target[data-agent-motion="active"] > [data-agent-orbits] {
-  opacity: 1;
-}
-.agent-target [data-orbit] {
-  transform-box: view-box;
-  transform-origin: 50% 50%;
 }
 
 /* Requested partial fills preserve the stock Lucide icon outlines. */

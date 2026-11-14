@@ -1025,6 +1025,11 @@ class Planner:
             }
         context["brief"] = brief.model_dump()
         if brief.research_query:
+            if not self.models.web_research_available():
+                raise ValueError(
+                    "Planner web research is off or unavailable; "
+                    "enable it in Settings before requesting it"
+                )
             self.progress(key, "researching", planning=planning)
             notes = await self._call(
                 key,

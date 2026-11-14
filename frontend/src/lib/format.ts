@@ -1,9 +1,11 @@
-export const money = (value: number) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: value < 0.1 ? 4 : 2,
-  }).format(value);
+export const money = (value: number | null | undefined) =>
+  value == null
+    ? "Unknown"
+    : new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: value < 0.1 ? 4 : 2,
+      }).format(value);
 export const label = (value: string) =>
   value.replaceAll("_", " ").replace(/^./, (s) => s.toUpperCase());
 export const modelLabel = (value: string) =>

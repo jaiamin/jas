@@ -1,7 +1,6 @@
 import asyncio
 import json
 import math
-import os
 from collections.abc import Callable, Iterator, Mapping
 from dataclasses import replace
 from typing import Any, Literal, TypedDict, TypeVar
@@ -22,11 +21,13 @@ from pydantic_ai.models import Model
 from pydantic_ai.models.openai import OpenAIResponsesModelSettings
 from pydantic_ai.usage import UsageLimits
 from pydantic_core import from_json
-from sqlalchemy import func, select, update
+from sqlalchemy import case, func, select, update
 
 from .config import setting
-from .db import Database, ProviderCall, Study, Workspace
+from .db import Condition, Database, ProviderCall, Revision, Run, Study, Workspace
 from .diagnostics import log_failure
+from .domain import Design
+from .providers import PRICES, ModelRegistry
 
 T = TypeVar("T")
 MAX_INPUT_BYTES = 180_000
@@ -43,19 +44,11 @@ def web_research_reservation(model: str, max_tokens: int) -> int:
     return math.ceil(1_050_000 * input_rate * 2 + max_tokens * output_rate * 1.5) + 20_000
 
 
-PRICES: dict[str, tuple[float, float]] = {
-    "openai:gpt-6-luna": (0.10, 0.50),
-    "openai:gpt-6.1-sol": (2.0, 10.0),
-    "openai:gpt-6.1-terra": (1.0, 5.0),
-    "anthropic:claude-haiku-4-5": (1.0, 5.0),
-}
-
-
 class Usage(TypedDict):
     requests: int
     input_tokens: int
     output_tokens: int
-    cost_usd: float
+    cost_usd: float | None
     partial: bool
 
 
@@ -74,7 +67,7 @@ def usage_record(row: Mapping[str, Any]) -> Usage:
         "requests": int(row["requests"]),
         "input_tokens": int(row["input_tokens"]),
         "output_tokens": int(row["output_tokens"]),
-        "cost_usd": float(row["cost_usd"]),
+        "cost_usd": None if row["unpriced"] else float(row["cost_usd"]),
         "partial": bool(row["partial"]),
     }
 
@@ -166,22 +159,31 @@ def _validation_detail(error: BaseException | None) -> str:
 
 
 class LanguageModels:
-    def __init__(self, db: Database):
+    def __init__(self, db: Database, *, registry: ModelRegistry | None = None):
         self.db = db
+        self.registry = registry if registry is not None else ModelRegistry(db.engine.url.database)
         self.models: dict[str, Model] = {}
+        self.retired_models: list[Model] = []
         self.concurrency = int(setting("CONCURRENT_REQUESTS", "4"))
         if not 1 <= self.concurrency <= 32:
             raise ValueError("Concurrent provider requests must be between 1 and 32")
         self.capacity = asyncio.Semaphore(self.concurrency)
 
     def research_model(self, purpose: str) -> str:
+        preferences = self.registry.configuration.preferences
+        selected = preferences.planner_model if purpose == "design" else preferences.assistant_model
+        if selected is not None:
+            return selected
         return setting(
-            "PLANNER_MODEL" if purpose == "design" else "ASSISTANT_MODEL", "openai:gpt-6.1-sol"
+            "PLANNER_MODEL" if purpose == "design" else "ASSISTANT_MODEL",
+            "openai:gpt-6.1-sol",
         )
 
     def web_research_available(self, max_tokens: int = 4096) -> bool:
+        if not self.registry.configuration.preferences.planner_web_research:
+            return False
         model = self.research_model("design")
-        if model != "openai:gpt-6.1-sol":
+        if model != "openai:gpt-6.1-sol" or self.registry.price(model) != PRICES[model]:
             return False
         reserved = web_research_reservation(model, max_tokens)
         with self.db.session() as session:
@@ -192,26 +194,63 @@ class LanguageModels:
         if name in self.models:
             return self.models[name]
         provider, model = name.split(":", 1)
-        if not os.environ.get(f"{provider.upper()}_API_KEY"):
-            raise ProviderFailure(f"{provider.upper()}_API_KEY is not configured.")
-        if provider == "openai":
+        try:
+            configuration = self.registry.provider(provider)
+        except ValueError as error:
+            raise ProviderFailure(str(error)) from error
+        if not configuration.api_key and configuration.kind != "compatible":
+            raise ProviderFailure(
+                f"{provider.upper()}_API_KEY is not configured. Add it in Settings."
+            )
+        if configuration.kind == "openai":
             from openai import AsyncOpenAI
             from pydantic_ai.models.openai import OpenAIResponsesModel
             from pydantic_ai.providers.openai import OpenAIProvider
 
             result = OpenAIResponsesModel(
-                model, provider=OpenAIProvider(openai_client=AsyncOpenAI(max_retries=0))
+                model,
+                provider=OpenAIProvider(
+                    openai_client=AsyncOpenAI(
+                        api_key=configuration.api_key,
+                        base_url=configuration.base_url,
+                        max_retries=0,
+                    )
+                ),
             )
-        elif provider == "anthropic":
+        elif configuration.kind == "anthropic":
             from anthropic import AsyncAnthropic
             from pydantic_ai.models.anthropic import AnthropicModel
             from pydantic_ai.providers.anthropic import AnthropicProvider
 
             result = AnthropicModel(
-                model, provider=AnthropicProvider(anthropic_client=AsyncAnthropic(max_retries=0))
+                model,
+                provider=AnthropicProvider(
+                    anthropic_client=AsyncAnthropic(
+                        api_key=configuration.api_key,
+                        base_url=configuration.base_url,
+                        max_retries=0,
+                    )
+                ),
             )
         else:
-            raise ProviderFailure("Unsupported provider")
+            from openai import AsyncOpenAI
+            from pydantic_ai.models.openai import OpenAIChatModel
+            from pydantic_ai.models.openrouter import OpenRouterModel
+            from pydantic_ai.providers.openai_compatible import OpenAICompatibleProvider
+            from pydantic_ai.providers.openrouter import OpenRouterProvider
+
+            client = AsyncOpenAI(
+                api_key=configuration.api_key or "jas-local",
+                base_url=configuration.base_url,
+                max_retries=0,
+            )
+            result = (
+                OpenRouterModel(model, provider=OpenRouterProvider(openai_client=client))
+                if configuration.kind == "openrouter"
+                else OpenAIChatModel(
+                    model, provider=OpenAICompatibleProvider(provider, openai_client=client)
+                )
+            )
         self.models[name] = result
         return result
 
@@ -237,10 +276,11 @@ class LanguageModels:
         on_reserved: Callable[[str], None] | None = None,
         before_reserve: Callable[[], None] | None = None,
     ) -> T:
-        if model not in PRICES:
-            raise ProviderFailure("This model has no reviewed price configuration.")
-        if web_search and (model != "openai:gpt-6.1-sol" or output is not str):
-            raise ValueError("Web research requires GPT-6.1 Sol text output")
+        price = self.registry.price(model)
+        if web_search and (
+            model != "openai:gpt-6.1-sol" or output is not str or price != PRICES[model]
+        ):
+            raise ValueError("Web research requires GPT-6.1 Sol text output and bundled prices")
         schema = TypeAdapter(output).json_schema()
         model_object = self.model(model)
         input_bound = len((prompt + instructions + json.dumps(schema)).encode()) + 4096
@@ -250,8 +290,7 @@ class LanguageModels:
         settings: OpenAIResponsesModelSettings = {"max_tokens": max_tokens, "timeout": timeout}
         if model.startswith("openai:") and openai_reasoning_effort is not None:
             settings["openai_reasoning_effort"] = openai_reasoning_effort
-        input_rate, output_rate = PRICES[model]
-        reserved = math.ceil(input_bound * input_rate * 1.25 + max_tokens * output_rate)
+        reserved = math.ceil(input_bound * price[0] * 1.25 + max_tokens * price[1]) if price else 0
         if web_search:
             settings["openai_include_web_search_sources"] = True
             settings["extra_body"] = {"max_tool_calls": 2}
@@ -274,7 +313,8 @@ class LanguageModels:
                     "strict_output": strict_output,
                     "web_search": web_search,
                     "settings": settings,
-                    "price_per_million": [input_rate, output_rate],
+                    "price_per_million": list(price) if price else None,
+                    **({"unpriced": True} if price is None else {}),
                     "provider_adapter": {
                         "class": (
                             f"{type(model_object).__module__}.{type(model_object).__qualname__}"
@@ -287,7 +327,7 @@ class LanguageModels:
                 reserved=reserved,
                 charged=reserved,
             )
-            self._reserve(call)
+            self._reserve(call, token_reservation=input_bound + max_tokens)
             messages, failure = [], None
             try:
                 if on_reserved is not None:
@@ -350,7 +390,7 @@ class LanguageModels:
                         raise
                     log_failure(f"Provider call {call.id} settlement failed", settlement_error)
 
-    def _reserve(self, call: ProviderCall) -> None:
+    def _reserve(self, call: ProviderCall, *, token_reservation: int | None = None) -> None:
         with self.db.session.begin() as session:
             if (
                 session.execute(
@@ -377,8 +417,61 @@ class LanguageModels:
                 is None
             ):
                 raise ProviderFailure("Study spending ceiling reached. No request was sent.")
+            self._reserve_tokens(session, call, token_reservation)
             session.add(call)
             session.flush()
+
+    @staticmethod
+    def token_charge():
+        return case(
+            (
+                ProviderCall.status.in_(["pending", "unknown"]),
+                func.coalesce(
+                    ProviderCall.request_payload["token_reservation"].as_integer(),
+                    MAX_INPUT_BYTES + 8192,
+                ),
+            ),
+            else_=ProviderCall.input_tokens + ProviderCall.output_tokens,
+        )
+
+    def token_usage(self) -> int:
+        with self.db.session() as session:
+            return session.scalar(select(func.coalesce(func.sum(self.token_charge()), 0)))
+
+    def _reserve_tokens(self, session, call: ProviderCall, allowance: int | None) -> None:
+        payload = call.request_payload or {}
+        allowance = allowance or payload.get("token_reservation", MAX_INPUT_BYTES + 8192)
+        workspace_limit = self.registry.configuration.preferences.token_budget
+        experiment_limit = None
+        if call.study_id:
+            query = select(Revision.design)
+            if call.run_id:
+                query = query.join(Condition).join(Run).where(Run.id == call.run_id)
+            else:
+                query = query.join(Study).where(
+                    Study.id == call.study_id, Revision.number == Study.revision
+                )
+            protocol = session.scalar(query)
+            experiment_limit = protocol.get("token_budget") if protocol else None
+        if payload.get("unpriced") and experiment_limit is None and workspace_limit is None:
+            raise ProviderFailure(
+                "This model has no price. Set an explicit token cap in the experiment or Settings; "
+                "a dollar cap cannot bound an unpriced model. No request was sent."
+            )
+        if workspace_limit is None and experiment_limit is None:
+            return
+        call.request_payload = {**payload, "token_reservation": allowance}
+        for label, limit, study_id in (
+            ("Workspace", workspace_limit, None),
+            ("Experiment", experiment_limit, call.study_id),
+        ):
+            if limit is None:
+                continue
+            query = select(func.coalesce(func.sum(self.token_charge()), 0))
+            if study_id:
+                query = query.where(ProviderCall.study_id == study_id)
+            if session.scalar(query) + allowance > limit:
+                raise ProviderFailure(f"{label} token ceiling reached. No request was sent.")
 
     def _settle(
         self, call: ProviderCall, messages: list[ModelMessage], failure: str | None
@@ -386,7 +479,8 @@ class LanguageModels:
         payload = call.request_payload
         if payload is None:
             raise ValueError("Provider request is missing its accounting metadata")
-        input_rate, output_rate = payload["price_per_million"]
+        price = payload["price_per_million"]
+        input_rate, output_rate = price if price else (0, 0)
         web_search = payload["web_search"]
         responses = [m for m in messages if isinstance(m, ModelResponse)]
         inputs = sum(m.usage.input_tokens for m in responses)
@@ -439,8 +533,12 @@ class LanguageModels:
                     .values(charged=Study.charged + charged - call.reserved)
                 )
 
+    def retire_adapters(self) -> None:
+        self.retired_models.extend(self.models.values())
+        self.models.clear()
+
     async def close(self) -> None:
-        for model in self.models.values():
+        for model in [*self.models.values(), *self.retired_models]:
             client = getattr(model, "client", None)
             if client is not None:
                 await client.close()
@@ -453,12 +551,76 @@ class LanguageModels:
                 .values(status="unknown", error="Server stopped; reserved cost retained.")
             )
 
-    @staticmethod
-    def catalog() -> list[dict]:
-        return [
-            {"id": model, "input_per_million": price[0], "output_per_million": price[1]}
-            for model, price in PRICES.items()
-        ]
+    def catalog(self) -> list[dict]:
+        return self.registry.catalog()
+
+    def assistant_estimate(self, purpose: str) -> dict:
+        planner = self.research_model("design")
+        assistant = self.research_model("general")
+        # Includes every bounded scoping, drafting and review attempt, including a handoff.
+        calls = [(assistant, 8192)] * 4 if purpose == "analysis" else []
+        if purpose == "general":
+            calls += [(assistant, 4096)] * 4
+        if purpose != "analysis":
+            calls += [(planner, 4096)] * 2 + [(planner, 16384)] * 3 + [(planner, 8192)] * 3
+        total = 0
+        priced = True
+        for name, response_tokens in calls:
+            price = self.registry.price(name)
+            if price is None:
+                priced = False
+            else:
+                total += math.ceil(MAX_INPUT_BYTES * price[0] * 1.25 + response_tokens * price[1])
+        if purpose != "analysis" and self.web_research_available():
+            calls.append((planner, 4096))
+            total += web_research_reservation(planner, 4096)
+        return {"max_requests": len(calls), "upper_usd": total / 1_000_000 if priced else None}
+
+    def estimate(self, design: Design) -> dict:
+        requests, known_cost, tokens = 0, 0, 0
+        unpriced: set[str] = set()
+        multiplier = len(design.seeds) * design.repetitions
+        for condition in design.conditions:
+            profiles = design.resolve(condition).profiles
+            names = {profile.model or condition.model for profile in profiles}
+            if condition.harness.kind != "scripted":
+                count = design.turn_count * condition.harness.max_requests * multiplier
+                prices = [self.registry.price(name) for name in names]
+                unpriced.update(name for name in names if self.registry.price(name) is None)
+                known_cost += count * max(
+                    (
+                        math.ceil(MAX_INPUT_BYTES * p[0] * 1.25 + design.response_tokens * p[1])
+                        for p in prices
+                        if p is not None
+                    ),
+                    default=0,
+                )
+                requests += count
+                tokens += count * (MAX_INPUT_BYTES + design.response_tokens)
+            if condition.adjudicator:
+                count = design.turn_count * multiplier
+                price = self.registry.price(condition.adjudicator.model)
+                if price is None:
+                    unpriced.add(condition.adjudicator.model)
+                else:
+                    known_cost += count * math.ceil(
+                        MAX_INPUT_BYTES * price[0] * 1.25
+                        + condition.adjudicator.response_tokens * price[1]
+                    )
+                requests += count
+                tokens += count * (MAX_INPUT_BYTES + condition.adjudicator.response_tokens)
+        return {
+            "runs": len(design.conditions) * multiplier,
+            "max_requests": requests,
+            "max_tokens": tokens,
+            "upper_usd": None if unpriced else known_cost / 1_000_000,
+            "unpriced_models": sorted(unpriced),
+            "dollar_cap_usd": design.budget_usd,
+            "token_cap": design.token_budget,
+            "assumptions": "Conservative bound using every turn and harness request allowance, "
+            "maximum input size and response limit; runs may end earlier. Token caps do not "
+            "guarantee a dollar cost for unpriced models. No provider request was sent.",
+        }
 
     @staticmethod
     def usage_columns():
@@ -468,6 +630,7 @@ class LanguageModels:
             func.coalesce(func.sum(ProviderCall.output_tokens), 0).label("output_tokens"),
             (func.coalesce(func.sum(ProviderCall.charged), 0) / 1_000_000).label("cost_usd"),
             func.max(ProviderCall.status.in_(["pending", "unknown"])).label("partial"),
+            func.max(ProviderCall.request_payload["unpriced"].as_boolean()).label("unpriced"),
         )
 
     def usage(
@@ -491,6 +654,9 @@ class LanguageModels:
 
     def usage_by_analysis(self, analysis_ids: set[str]) -> dict[str, Usage]:
         return self._group_usage(ProviderCall.analysis_id, analysis_ids)
+
+    def usage_by_study(self, study_ids: set[str]) -> dict[str, Usage]:
+        return self._group_usage(ProviderCall.study_id, study_ids)
 
     def _group_usage(self, column, keys: set[str]) -> dict[str, Usage]:
         with self.db.session() as session:

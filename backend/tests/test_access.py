@@ -115,9 +115,14 @@ def test_local_use_without_auth_still_works(tmp_path, monkeypatch):
         assert client.get("/api/settings").status_code == 200
 
 
-def test_public_railway_service_requires_authentication(tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    "configuration",
+    [{"JAS_REQUIRE_AUTH": "1"}, {"JAS_ALLOWED_HOSTS": "localhost,workspace.example"}],
+)
+def test_hosted_service_requires_authentication(tmp_path, monkeypatch, configuration):
     monkeypatch.delenv("JAS_AUTH_USERNAME", raising=False)
     monkeypatch.delenv("JAS_AUTH_PASSWORD", raising=False)
-    monkeypatch.setenv("RAILWAY_PUBLIC_DOMAIN", "workspace.up.railway.app")
-    with pytest.raises(ValueError, match="before public Railway hosting"):
+    for key, value in configuration.items():
+        monkeypatch.setenv(key, value)
+    with pytest.raises(ValueError, match="before private hosted access"):
         create_app(f"sqlite:///{tmp_path}/public.sqlite3")

@@ -1,6 +1,5 @@
 import asyncio
 import json
-import os
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
@@ -9,19 +8,23 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from pydantic import Field
 from sqlalchemy import select, text
 
-from .assistants import Assistants
-from .config import setting
-from .db import Annotation, Database, ProviderCall, Workspace
+from .db import Annotation, ProviderCall
+from .dependencies import (
+    AssistantsDep,
+    DatabaseDep,
+    EngineDep,
+    ExtensionsDep,
+    LanguageModelsDep,
+    ResearchDep,
+)
 from .domain import Design, EnvironmentMechanics, SavedEnvironment, Strict
 from .environment_library import builtin_environment, definition_from_design, use_environment
-from .execution import Engine
 from .exports import export_study
 from .extensions import (
     ExtensionAdmission,
     ExtensionCandidate,
     ExtensionReview,
     ExtensionRuntime,
-    Extensions,
     FiniteAdmission,
 )
 from .finite_contract import (
@@ -29,56 +32,22 @@ from .finite_contract import (
     FiniteContract,
     ReviewedFiniteContract,
 )
-from .llm import LanguageModels
-from .research import Research, RunSummary
+from .research import RunSummary
 from .shared_json import portable_json
 from .simulation.environments import CATALOG, MEASURE_DESCRIPTIONS, get_environment
+from .starters import starters
 from .templates import templates
 
 router = APIRouter()
 web_router = APIRouter()
 
 
-async def database(request: Request) -> Database:
-    return request.app.state.db
-
-
-DatabaseDep = Annotated[Database, Depends(database)]
-
-
-async def language_models(request: Request) -> LanguageModels:
-    return request.app.state.models
-
-
-LanguageModelsDep = Annotated[LanguageModels, Depends(language_models)]
-
-
-async def research_service(request: Request) -> Research:
-    return request.app.state.research
-
-
-ResearchDep = Annotated[Research, Depends(research_service)]
-
-
-async def execution_engine(request: Request) -> Engine:
-    return request.app.state.engine
-
-
-EngineDep = Annotated[Engine, Depends(execution_engine)]
-
-
-async def assistant_service(request: Request) -> Assistants:
-    return request.app.state.assistants
-
-
-AssistantsDep = Annotated[Assistants, Depends(assistant_service)]
-
-
-async def extension_service(request: Request) -> Extensions:
-    return request.app.state.extensions
-
-
-ExtensionsDep = Annotated[Extensions, Depends(extension_service)]
+@router.get("/api/starters")
+async def starter_experiments(*, models: LanguageModelsDep) -> list[dict]:
+    return [
+        {**starter, "estimate": models.estimate(Design.model_validate(starter["design"]))}
+        for starter in starters()
+    ]
 
 
 @router.post("/api/extensions/contracts", status_code=201)
@@ -264,6 +233,8 @@ class ChatMessage(Strict):
     chat_id: str | None = None
     lens: Literal["behavior", "communication"] | None = None
     source_analysis_id: str | None = Field(default=None, min_length=1, max_length=80)
+    revision: int | None = Field(default=None, ge=1)
+    through_turn: int | None = Field(default=None, ge=0)
 
 
 class Note(Strict):
@@ -289,6 +260,15 @@ async def health(*, db: DatabaseDep) -> dict[str, Any]:
 
 @router.get("/api/catalog")
 async def catalog(*, models: LanguageModelsDep, research: ResearchDep) -> dict[str, Any]:
+    examples = templates()
+    estimates = {
+        item["id"]: {
+            "agents": len(design.profiles),
+            **models.estimate(design),
+        }
+        for item in examples
+        for design in [Design.model_validate(item["design"])]
+    }
     sources = [builtin_environment(key) for key in CATALOG]
     admitted = next(
         (
@@ -312,12 +292,13 @@ async def catalog(*, models: LanguageModelsDep, research: ResearchDep) -> dict[s
                 "measure_definitions": {m: MEASURE_DESCRIPTIONS[m] for m in a.measures},
                 "rule_version": a.world.version,
                 "source": source.model_dump(),
+                "example": estimates.get(a.key),
             }
             for source in sources
             for a in [get_environment(source.definition.environment)]
         ],
         "models": models.catalog(),
-        "templates": templates(),
+        "templates": examples,
         "design_schema": Design.model_json_schema(),
         "environment_schema": EnvironmentMechanics.model_json_schema(),
     }
@@ -353,27 +334,9 @@ async def delete_environment(
     return {"ok": True}
 
 
-@router.get("/api/settings")
-async def settings(
-    *, db: DatabaseDep, models: LanguageModelsDep, engine: EngineDep
-) -> dict[str, Any]:
-    with db.session() as session:
-        workspace = session.get_one(Workspace, 1)
-        return {
-            "providers": {
-                p: bool(os.environ.get(f"{p.upper()}_API_KEY")) for p in ("openai", "anthropic")
-            },
-            "planner_model": setting("PLANNER_MODEL", "openai:gpt-6.1-sol"),
-            "assistant_model": setting("ASSISTANT_MODEL", "openai:gpt-6.1-sol"),
-            "concurrent_requests": models.concurrency,
-            "models": models.catalog(),
-            "budget_usd": workspace.ceiling / 1000000,
-            "charged_usd": workspace.charged / 1000000,
-            "usage": models.usage(),
-            "storage": "SQLite" if db.engine.dialect.name == "sqlite" else "PostgreSQL",
-            "concurrent_runs": engine.concurrency,
-            "mode": "local",
-        }
+@router.post("/api/design/estimate")
+async def estimate_design(body: SaveStudy, *, models: LanguageModelsDep) -> dict:
+    return models.estimate(body.design)
 
 
 @router.get("/api/studies")
@@ -459,6 +422,20 @@ def study_findings(
     study_id: str, revision: int | None = Query(default=None, ge=1), *, research: ResearchDep
 ) -> dict:
     return research.findings(study_id, revision)
+
+
+@router.get("/api/studies/{study_id}/matched")
+def matched_runs(
+    study_id: str,
+    left: str,
+    right: str,
+    seed: Annotated[int, Query(ge=0)],
+    repetition: Annotated[int, Query(ge=1, le=10)],
+    revision: Annotated[int, Query(ge=1)],
+    *,
+    research: ResearchDep,
+) -> dict:
+    return research.matched(study_id, revision, left, right, seed, repetition)
 
 
 @router.get("/api/studies/{study_id}/export")
@@ -624,6 +601,8 @@ async def send_chat(body: ChatMessage, *, assistants: AssistantsDep) -> dict:
         body.chat_id,
         body.lens,
         body.source_analysis_id,
+        body.revision,
+        body.through_turn,
     )
 
 

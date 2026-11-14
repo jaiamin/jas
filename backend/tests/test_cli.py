@@ -52,11 +52,9 @@ def test_cli_loads_local_configuration_and_binds_only_as_requested(
 
 
 def test_browser_opens_only_after_this_server_starts(monkeypatch):
-    from types import SimpleNamespace
-
     opened = []
     monkeypatch.setattr(cli.webbrowser, "open", opened.append)
-    server = SimpleNamespace(started=False, should_exit=False)
+    server = cli.uvicorn.Server(cli.uvicorn.Config("unused"))
     monkeypatch.setattr(cli.time, "sleep", lambda _: setattr(server, "started", True))
     cli.open_when_ready(server, "http://localhost:8080")
     assert opened == ["http://localhost:8080"]
@@ -81,3 +79,67 @@ def test_explicit_workspace_overrides_inherited_database(monkeypatch, tmp_path):
     cli.main()
     assert (chosen / "jas.sqlite3").is_file()
     assert not inherited.exists()
+
+
+def test_headless_check_run_export_and_cross_workspace_replay(
+    monkeypatch, tmp_path, design, capsys
+):
+    import json
+
+    from agent_sim.domain import ScriptedHarness
+
+    monkeypatch.chdir(tmp_path)
+    design.conditions[0].harness = ScriptedHarness(policy="commons_half_v1")
+    protocol = tmp_path / "protocol.json"
+    protocol.write_text(design.model_dump_json())
+    workspace = tmp_path / "first-machine"
+    record = tmp_path / "record.json"
+    monkeypatch.setattr("sys.argv", ["jas", "--workspace", str(workspace), "check", str(protocol)])
+    cli.main()
+    check = json.loads(capsys.readouterr().out)
+    assert check["estimate"]["max_requests"] == 0
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "jas",
+            "--workspace",
+            str(workspace),
+            "run",
+            str(protocol),
+            "--max-usd",
+            "0",
+            "--output",
+            str(record),
+        ],
+    )
+    cli.main()
+    output = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
+    assert output[-1]["usage"]["requests"] == 0
+    assert record.is_file()
+    monkeypatch.setattr(
+        "sys.argv", ["jas", "--workspace", str(tmp_path / "second-machine"), "replay", str(record)]
+    )
+    cli.main()
+    replay = json.loads(capsys.readouterr().out)
+    assert replay["model_requests"] == 0
+    assert all(row["verified"] for row in replay["verification"])
+    assert not (tmp_path / "second-machine").exists()
+
+
+def test_cli_requires_explicit_budget_and_lock_prevents_a_second_engine(
+    monkeypatch, tmp_path, design
+):
+    from agent_sim.workspace_lock import workspace_lock
+
+    protocol = tmp_path / "protocol.json"
+    protocol.write_text(design.model_dump_json())
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr("sys.argv", ["jas", "run", str(protocol)])
+    with pytest.raises(SystemExit) as missing:
+        cli.main()
+    assert missing.value.code == 2
+    path = tmp_path / "workspace" / "jas.sqlite3"
+    with workspace_lock(str(path)):
+        with pytest.raises(ValueError, match="already open"):
+            with workspace_lock(str(path)):
+                pytest.fail("A second process cannot own the same workspace")

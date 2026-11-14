@@ -122,3 +122,29 @@ def runtime(tmp_path, monkeypatch, fake_model):
     engine = Engine(db, research, llm)
     yield db, llm, research, engine
     db.close()
+
+
+@pytest.fixture
+def publication(runtime, design):
+    import asyncio
+
+    from agent_sim.domain import ScriptedHarness
+    from agent_sim.public_records import PublicationDescription, public_record
+
+    _, models, research, engine = runtime
+    design.seeds = [7]
+    design.rounds = 2
+    design.conditions = design.conditions[:1]
+    design.conditions[0].harness = ScriptedHarness(policy="commons_half_v1")
+    sid = research.save_design(design)
+    rid = research.study(sid)["runs"][0]["id"]
+
+    async def finish():
+        await engine.start(rid)
+        await engine.executions[rid].task
+
+    asyncio.run(finish())
+    metadata = PublicationDescription(
+        title="Messages and cooperation", finding="A scripted demonstration.", featured_run=rid
+    )
+    return public_record(research, sid, 1, metadata), models, research, sid

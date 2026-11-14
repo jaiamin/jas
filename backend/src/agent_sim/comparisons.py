@@ -100,8 +100,10 @@ def total_effort(records: list[dict]) -> dict:
                 result["implementation_sources"].append(source)
     # Each run converts integer ledger microdollars once; preserve those decimal
     # amounts while combining runs rather than accumulating binary float error.
-    result["usage"]["cost_usd"] = float(
-        sum((Decimal(str(e["usage"]["cost_usd"])) for e in records), Decimal(0))
+    result["usage"]["cost_usd"] = (
+        None
+        if any(e["usage"]["cost_usd"] is None for e in records)
+        else float(sum((Decimal(str(e["usage"]["cost_usd"])) for e in records), Decimal(0)))
     )
     return result
 

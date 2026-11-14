@@ -15,6 +15,9 @@ dependencies = [
   "pydantic-ai-slim[openai,anthropic]>=2.66,<3",
   "python-dotenv>=1.2,<2",
   "wasmtime==50.0.1",
+  "httpx>=0.28,<1",
+  "keyring>=25,<26",
+  "pillow>=13,<14",
 ]
 
 [dependency-groups]
@@ -28,6 +31,11 @@ dev = [
 [project.scripts]
 jas = "agent_sim.cli:main"
 jaslab = "agent_sim.cli:main"
+
+[project.optional-dependencies]
+gallery = [
+    "boto3>=1.44,<2",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["backend/src/agent_sim"]

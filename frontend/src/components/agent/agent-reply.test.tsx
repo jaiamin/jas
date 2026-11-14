@@ -1,9 +1,10 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { Analysis } from "@/lib/types";
 import { design } from "@/test/fixtures";
+import { renderWithQueries as render } from "@/test/queries";
 import { AgentReply } from "./agent-reply";
 
 // jsdom has no media/visibility APIs; real animation is exercised in browser tests.
@@ -381,3 +382,45 @@ test("live activity stays open when the reply finishes so its content remains re
     screen.queryByText("Compare cooperation under two resource levels."),
   ).not.toBeInTheDocument();
 });
+
+test.each([
+  { status: "complete", cost: 0.0123, partial: false, label: "$0.0123" },
+  {
+    status: "failed",
+    cost: null,
+    partial: true,
+    label: "Cost unknown · partial",
+  },
+])(
+  "reply usage preserves $status cost and exposes token details on demand",
+  async ({ status, cost, partial, label }) => {
+    render(
+      <MemoryRouter>
+        <TooltipProvider>
+          <AgentReply
+            row={{
+              ...row,
+              status,
+              usage: {
+                requests: 2,
+                input_tokens: 1200,
+                output_tokens: 300,
+                cost_usd: cost,
+                partial,
+              },
+            }}
+            disabled={false}
+            onRetry={() => {}}
+          />
+        </TooltipProvider>
+      </MemoryRouter>,
+    );
+    expect(
+      screen.getByRole("button", { name: "Reply usage" }),
+    ).toHaveTextContent(label);
+    expect(screen.queryByText("Input tokens")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Reply usage" }));
+    expect(await screen.findByText("Input tokens")).toBeVisible();
+    expect(screen.getByText("1,200")).toBeVisible();
+  },
+);

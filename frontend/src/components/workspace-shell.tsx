@@ -10,8 +10,10 @@ import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { Empty } from "@/components/feedback";
 import {
   AgentIcon,
+  BookOpen,
   ExperimentIcon,
   Github,
+  Globe,
   House,
   Layers2,
   Moon,
@@ -19,8 +21,8 @@ import {
   Settings,
   Sun,
 } from "@/components/icons";
-import { LocalWorkspaceMenu } from "@/components/local-workspace-menu";
 import { Loading } from "@/components/shared";
+import { SidebarBudget } from "@/components/sidebar-budget";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -78,9 +80,9 @@ export default function WorkspaceShell() {
     document.documentElement.classList.contains("dark"),
   );
   const location = useLocation();
-  const isAgent = location.pathname === "/agent";
+  const isAgent = location.pathname === "/assistant";
   const isHome = location.pathname === "/";
-  const isRecordList = ["/studies", "/runs"].includes(location.pathname);
+  const isRecordList = ["/experiments", "/runs"].includes(location.pathname);
   const runs = useApi<RunSummary[]>("/runs", true);
   const active =
     runs.data?.filter((r) =>
@@ -88,11 +90,16 @@ export default function WorkspaceShell() {
     ) ?? [];
   const primaryLinks = [
     { to: "/", label: "Home", icon: House, partialFill: "house" },
-    { to: "/agent", label: "Agent", icon: AgentIcon, partialFill: "none" },
+    {
+      to: "/assistant",
+      label: "Assistant",
+      icon: AgentIcon,
+      partialFill: "none",
+    },
   ];
   const links = [
     {
-      to: "/studies",
+      to: "/experiments",
       label: "Experiments",
       icon: ExperimentIcon,
       partialFill: undefined,
@@ -195,6 +202,23 @@ export default function WorkspaceShell() {
             {[
               { label: null, items: primaryLinks },
               { label: "Workspace", items: links },
+              {
+                label: "Community",
+                items: [
+                  {
+                    to: "/gallery",
+                    label: "Gallery",
+                    icon: Globe,
+                    partialFill: undefined,
+                  },
+                  {
+                    to: "/published",
+                    label: "My published",
+                    icon: BookOpen,
+                    partialFill: undefined,
+                  },
+                ],
+              },
             ].map((group, index) => (
               <Fragment key={group.label ?? "primary"}>
                 {index > 0 && (
@@ -218,7 +242,7 @@ export default function WorkspaceShell() {
                             location.pathname === item.to ||
                             (item.to !== "/" &&
                               location.pathname.startsWith(item.to)) ||
-                            (item.to === "/studies" &&
+                            (item.to === "/experiments" &&
                               location.pathname === "/new") ||
                             (item.to === "/runs" &&
                               location.pathname === "/compare")
@@ -249,6 +273,7 @@ export default function WorkspaceShell() {
         </SidebarContent>
         <SidebarSeparator className="mx-0" />
         <SidebarFooter>
+          <SidebarBudget />
           <nav aria-label="Workspace settings">
             <SidebarMenu>
               <SidebarMenuItem>
@@ -260,14 +285,13 @@ export default function WorkspaceShell() {
                   }
                 >
                   <NavLink to="/settings" onClick={() => setOpenMobile(false)}>
-                    <Settings aria-hidden="true" data-partial-fill="settings" />
+                    <Settings aria-hidden="true" />
                     <span>Settings</span>
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </nav>
-          <LocalWorkspaceMenu dark={dark} onThemeChange={changeTheme} />
         </SidebarFooter>
       </Sidebar>
       <SidebarInset className="min-h-0 min-w-0 overflow-hidden">
@@ -327,7 +351,7 @@ export default function WorkspaceShell() {
               fallback={
                 isAgent ? (
                   <div className="flex h-full items-center justify-center">
-                    <Spinner aria-label="Loading Agent" />
+                    <Spinner aria-label="Loading Assistant" />
                   </div>
                 ) : (
                   <Loading />

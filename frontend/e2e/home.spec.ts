@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { settings as settingsFixture } from "../src/test/fixtures.js";
 import { createStudy } from "./helpers.js";
 
 const settings = {
+  ...settingsFixture,
   providers: { openai: true },
   planner_model: "openai:gpt-6.1-sol",
   assistant_model: "openai:gpt-6.1-sol",
@@ -49,7 +51,7 @@ test("Home keeps immediate content usable while only database rows show skeleton
   await expect(loading).toBeVisible();
   const placeholders = loading.locator('[data-slot="skeleton"]');
   expect(await placeholders.count()).toBeGreaterThan(0);
-  await expect(page.locator('[data-slot="skeleton"]')).toHaveCount(
+  await expect(recent.locator('[data-slot="skeleton"]')).toHaveCount(
     await placeholders.count(),
   );
   await expect(
@@ -64,12 +66,14 @@ test("Home keeps immediate content usable while only database rows show skeleton
       recent.getByRole("link", { name: label, exact: true }),
     ).toBeVisible();
   }
-  const suggestions = page
-    .getByRole("region", { name: "Experiment ideas" })
-    .getByRole("button");
-  await expect(suggestions).toHaveCount(4);
-  await suggestions.first().click();
-  const input = page.getByLabel("Message Agent", { exact: true });
+  const starters = page.getByRole("region", { name: "Starter experiments" });
+  await expect(
+    starters.getByRole("link", { name: /^Watch a recorded run:/ }),
+  ).toHaveCount(3);
+  const input = page.getByLabel("Message Assistant", { exact: true });
+  await input.fill(
+    "Design an experiment about public messages and cooperation.",
+  );
   await expect(input).toHaveValue(/public messages/);
   const send = page.getByRole("button", { name: "Send message" });
   await expect(send).toBeDisabled();
@@ -88,7 +92,7 @@ test("Home keeps immediate content usable while only database rows show skeleton
     await recent.getByRole("link", { name: "New", exact: true }).boundingBox(),
   ).toEqual(newPosition);
   await recent.getByRole("link", { name: "View all", exact: true }).click();
-  await expect(page).toHaveURL(/\/studies$/);
+  await expect(page).toHaveURL(/\/experiments$/);
 });
 
 for (const width of [390, 1440])
@@ -122,7 +126,7 @@ for (const width of [390, 1440])
       const geometry = await hero.evaluate((element) => {
         const title = element.querySelector("h1");
         const composer = element.querySelector("form");
-        const ideas = document.getElementById("experiment-ideas-title");
+        const ideas = document.getElementById("starter-title");
         const divider = element.querySelector('[data-slot="separator"]');
         if (!title || !composer || !ideas || !divider)
           throw new Error("Missing Home content or divider");
@@ -148,7 +152,9 @@ for (const width of [390, 1440])
       // Positions captured before replacing the city: preserve both content rows.
       expect(geometry.titleTop).toBe(width === 390 ? 204 : 208);
       expect(geometry.composerTop).toBe(width === 390 ? 252 : 260);
-      expect(geometry.ideasTop).toBe(476);
+      expect(geometry.ideasTop).toBeGreaterThan(
+        geometry.composerTop + geometry.composerHeight,
+      );
       expect(geometry.divider.width).toBe(geometry.width);
       expect(geometry.divider.height).toBe(1);
       expect(geometry.divider.top).toBeCloseTo(
@@ -283,10 +289,10 @@ test("Composer's manual editor link preserves the message without submitting", a
       submissions++;
   });
   await page.goto("/");
-  const input = page.getByLabel("Message Agent", { exact: true });
+  const input = page.getByLabel("Message Assistant", { exact: true });
   await input.fill("Compare cooperation with and without messages");
   await page
-    .getByRole("form", { name: "Agent composer" })
+    .getByRole("form", { name: "Assistant composer" })
     .getByRole("link", { name: "start from scratch" })
     .click();
   await expect(page).toHaveURL(/\/new$/);
@@ -297,7 +303,7 @@ test("Composer's manual editor link preserves the message without submitting", a
   expect(submissions).toBe(0);
 });
 
-test("Home submits once, opens the saved Agent conversation and never resubmits on back or reload", async ({
+test("Home submits once, opens the saved Assistant conversation and never resubmits on back or reload", async ({
   page,
 }) => {
   await page.route("**/api/settings", (route) =>
@@ -372,21 +378,15 @@ test("Home submits once, opens the saved Agent conversation and never resubmits 
     "opacity",
     "1",
   );
-  const suggestions = page
-    .getByRole("region", { name: "Experiment ideas" })
-    .getByRole("button");
-  await expect(suggestions).toHaveCount(4);
+  const starters = page.getByRole("region", { name: "Starter experiments" });
   await expect(
-    page.getByRole("heading", { name: "Experiment ideas", exact: true }),
-  ).toBeVisible();
-  await suggestions.last().click();
-  await expect(page.getByLabel("Message Agent", { exact: true })).toHaveValue(
-    /Vary only regeneration/,
-  );
+    starters.getByRole("link", { name: /^Watch a recorded run:/ }),
+  ).toHaveCount(3);
   expect(submissions).toBe(0);
-  await suggestions.first().click();
-  const input = page.getByLabel("Message Agent", { exact: true });
-  await expect(input).toHaveValue(/public messages/);
+  const input = page.getByLabel("Message Assistant", { exact: true });
+  await input.fill(
+    "Design an experiment about public messages and cooperation.",
+  );
   await expect(input).toBeFocused();
   expect(submissions).toBe(0);
   await page.reload();
@@ -394,19 +394,21 @@ test("Home submits once, opens the saved Agent conversation and never resubmits 
   await expect(
     page.getByRole("button", { name: "Send message" }),
   ).toBeEnabled();
-  await page.getByRole("form", { name: "Agent composer" }).evaluate((form) => {
-    (form as HTMLFormElement).requestSubmit();
-    (form as HTMLFormElement).requestSubmit();
-  });
+  await page
+    .getByRole("form", { name: "Assistant composer" })
+    .evaluate((form) => {
+      (form as HTMLFormElement).requestSubmit();
+      (form as HTMLFormElement).requestSubmit();
+    });
   await expect(
     page.getByRole("button", { name: "Send message" }),
   ).toBeDisabled();
   expect(submissions).toBe(1);
   release();
-  await expect(page).toHaveURL(/\/agent\?chat=home-chat$/);
+  await expect(page).toHaveURL(/\/assistant\?chat=home-chat$/);
   await expect(
     page
-      .getByRole("region", { name: "Agent conversation" })
+      .getByRole("region", { name: "Assistant conversation" })
       .getByText(question, { exact: true }),
   ).toBeVisible();
   await expect(
@@ -418,7 +420,7 @@ test("Home submits once, opens the saved Agent conversation and never resubmits 
   await page.reload();
   await expect(
     page
-      .getByRole("region", { name: "Agent conversation" })
+      .getByRole("region", { name: "Assistant conversation" })
       .getByText(question, { exact: true }),
   ).toBeVisible();
   await page.goBack();
@@ -447,7 +449,7 @@ test("Home preserves failed drafts and disables paid submission without a config
   await page.goto("/");
   // Home never inherits record scope from a URL or a previous Agent selection.
   await page.goto("/?context=run:unselected");
-  const input = page.getByLabel("Message Agent", { exact: true });
+  const input = page.getByLabel("Message Assistant", { exact: true });
   await input.fill("Keep this experiment question");
   await input.press("Shift+Enter");
   await expect(input).toHaveValue("Keep this experiment question\n");
@@ -505,19 +507,19 @@ test("late Home responses keep the user's destination and leave the chat in hist
   });
   await page.goto("/");
   await page
-    .getByLabel("Message Agent", { exact: true })
+    .getByLabel("Message Assistant", { exact: true })
     .fill("A question sent from Home");
   await page.getByRole("button", { name: "Send message" }).click();
   await page.getByRole("link", { name: "Experiments", exact: true }).click();
   release();
   await expect(page).toHaveTitle("JAS");
-  await page.getByRole("link", { name: "Agent", exact: true }).click();
+  await page.getByRole("link", { name: "Assistant", exact: true }).click();
   await page.getByRole("button", { name: "Chat history", exact: true }).click();
   await expect(
     page
       .getByRole("navigation", { name: "Past chats" })
       .getByRole("link", { name: "A question sent from Home" }),
-  ).toHaveAttribute("href", "/agent?chat=late-home-chat");
+  ).toHaveAttribute("href", "/assistant?chat=late-home-chat");
 });
 
 for (const width of [390, 1440])
@@ -586,7 +588,7 @@ for (const width of [390, 1440])
         page.getByRole("heading", { name: "What would you like to test?" }),
       ).toBeVisible();
       const geometry = await page
-        .getByRole("form", { name: "Agent composer" })
+        .getByRole("form", { name: "Assistant composer" })
         .locator('[data-slot="card"]')
         .evaluate((box) => {
           const bounds = box.getBoundingClientRect();
@@ -603,7 +605,7 @@ for (const width of [390, 1440])
       // The title remains above the composer, using the shared theme foreground.
       await expect(
         page
-          .getByRole("form", { name: "Agent composer" })
+          .getByRole("form", { name: "Assistant composer" })
           .locator('[data-slot="card"]')
           .getByRole("heading", { name: "What would you like to test?" }),
       ).toHaveCount(0);
@@ -618,7 +620,7 @@ for (const width of [390, 1440])
       });
       await expect(
         recentSection.getByRole("link", { name: "View all", exact: true }),
-      ).toHaveAttribute("href", "/studies");
+      ).toHaveAttribute("href", "/experiments");
       await expect(recentSection.locator("time").first()).toHaveText(
         "Just now",
       );
@@ -680,9 +682,9 @@ for (const width of [390, 1440])
       ).toHaveAttribute("href", "/new");
       await expect(
         page
-          .getByRole("region", { name: "Experiment ideas" })
-          .getByRole("link"),
-      ).toHaveCount(0);
+          .getByRole("region", { name: "Starter experiments" })
+          .getByRole("link", { name: /^Watch a recorded run:/ }),
+      ).toHaveCount(3);
       await expect(
         page
           .getByRole("region", { name: "In progress" })
@@ -786,57 +788,25 @@ for (const width of [390, 1440])
         path: testInfo.outputPath(`home-record-hover-${theme}-${width}.png`),
         fullPage: true,
       });
-      const suggestionSection = page.getByRole("region", {
-        name: "Experiment ideas",
+      const starters = page.getByRole("region", {
+        name: "Starter experiments",
       });
-      const illustrations = suggestionSection.locator("img");
-      await expect(illustrations).toHaveCount(4);
-      await expect
-        .poll(() =>
-          illustrations.evaluateAll((images) =>
-            images.every(
-              (image) =>
-                image instanceof HTMLImageElement &&
-                image.complete &&
-                image.naturalWidth > 0,
-            ),
-          ),
-        )
-        .toBe(true);
-      const firstSuggestion = suggestionSection.getByRole("button").first();
-      await firstSuggestion.hover();
-      const suggestionEdges = await suggestionSection
-        .locator('[data-slot="item-group"]')
-        .evaluate((group) => {
-          const bounds = group.getBoundingClientRect();
-          const buttons = [...group.querySelectorAll("button")];
-          const boxes = buttons.map((button) => button.getBoundingClientRect());
-          const horizontal = getComputedStyle(group).flexDirection === "row";
-          const last = boxes.at(-1);
-          if (!last) throw new Error("Suggestions are missing");
-          return {
-            horizontal,
-            topGap: boxes[0].top - bounds.top,
-            leftGap: boxes[0].left - bounds.left,
-            endGap: bounds.bottom - last.bottom,
-            gaps: boxes
-              .slice(1)
-              .map((box, index) =>
-                horizontal
-                  ? box.left - boxes[index].right
-                  : box.top - boxes[index].bottom,
-              ),
-            borders: buttons.map(
-              (button) => getComputedStyle(button).borderTopWidth,
-            ),
-          };
-        });
-      expect(suggestionEdges.topGap).toBeCloseTo(1, 1);
-      expect(suggestionEdges.horizontal).toBe(width >= 1280);
-      expect(suggestionEdges.leftGap).toBeCloseTo(1, 1);
-      expect(suggestionEdges.endGap).toBeCloseTo(1, 1);
-      for (const gap of suggestionEdges.gaps) expect(gap).toBeCloseTo(1, 1);
-      expect(suggestionEdges.borders).toEqual(Array(4).fill("0px"));
+      const cards = starters.locator('[data-slot="item"]');
+      await expect(cards).toHaveCount(3);
+      const boxes = await cards.evaluateAll((cards) =>
+        cards.map((card) => {
+          const box = card.getBoundingClientRect();
+          return { x: box.x, width: box.width, right: box.right };
+        }),
+      );
+      expect(boxes.every((box) => box.width >= 160 && box.right <= width)).toBe(
+        true,
+      );
+      expect(new Set(boxes.map((box) => Math.round(box.width))).size).toBe(1);
+      await starters
+        .getByRole("link", { name: /^Watch a recorded run:/ })
+        .first()
+        .hover();
       await page.screenshot({
         path: testInfo.outputPath(`home-hover-${theme}-${width}.png`),
         fullPage: true,
@@ -853,10 +823,12 @@ for (const width of [390, 1440])
       const nav = page.getByRole("navigation", { name: "Main navigation" });
       await expect(nav.getByRole("link")).toHaveText([
         "Home",
-        "Agent",
+        "Assistant",
         "Experiments",
         "Runs",
         "Environments",
+        "Gallery",
+        "My published",
       ]);
       const typography = await nav.getByRole("link").evaluateAll((links) =>
         links.map((link) => {
@@ -900,16 +872,16 @@ for (const width of [390, 1440])
   }
 
 for (const width of [390, 1440]) {
-  test(`Home and Agent composers grow, scroll internally and shrink again · ${width}`, async ({
+  test(`Home and Assistant composers grow, scroll internally and shrink again · ${width}`, async ({
     page,
   }, testInfo) => {
     await page.route("**/api/settings", (route) =>
       route.fulfill({ json: settings }),
     );
     await page.setViewportSize({ width, height: 900 });
-    for (const path of ["/", "/agent"]) {
+    for (const path of ["/", "/assistant"]) {
       await page.goto(path);
-      const input = page.getByLabel("Message Agent", { exact: true });
+      const input = page.getByLabel("Message Assistant", { exact: true });
       const group = input.locator("..");
       const appearance = () =>
         group.evaluate((element) => {
@@ -961,7 +933,7 @@ for (const width of [390, 1440]) {
       await expect
         .poll(async () => (await input.boundingBox())?.height ?? 0)
         .toBe(initialHeight);
-      if (path === "/agent") {
+      if (path === "/assistant") {
         await page.screenshot({
           path: testInfo.outputPath(`agent-composer-${width}.png`),
           fullPage: true,

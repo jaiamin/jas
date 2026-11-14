@@ -173,7 +173,7 @@ export function RunTable({
                 <TableCell className="relative min-w-48 max-w-96">
                   {selectable && (
                     <RecordSelectionCheckbox
-                      aria-label={`Select ${run.condition}, seed ${run.seed}, revision ${run.revision}, repetition ${run.repetition}, ${run.id.slice(0, 6)}`}
+                      aria-label={`Select ${run.condition}, seed ${run.seed}, version ${run.revision}, repetition ${run.repetition}, ${run.id.slice(0, 6)}`}
                       checked={selected.includes(run.id)}
                       onCheckedChange={(checked) =>
                         setSelected((previous) =>
@@ -195,7 +195,7 @@ export function RunTable({
                 <TableCell>
                   <FavoriteButton
                     id={run.id}
-                    name={`${run.condition}, seed ${run.seed}, revision ${run.revision}, repetition ${run.repetition}`}
+                    name={`${run.condition}, seed ${run.seed}, version ${run.revision}, repetition ${run.repetition}`}
                     favorites={favorites}
                   />
                 </TableCell>
@@ -203,7 +203,7 @@ export function RunTable({
                   <Link
                     className="block truncate underline-offset-4 hover:underline"
                     title={run.study_title}
-                    to={`/studies/${run.study_id}?revision=${run.revision}`}
+                    to={`/experiments/${run.study_id}?revision=${run.revision}`}
                   >
                     {run.study_title}
                   </Link>

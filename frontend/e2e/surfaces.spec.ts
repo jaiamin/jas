@@ -10,11 +10,11 @@ for (const width of [390, 834, 1280, 1440]) {
         theme,
       );
       await page.setViewportSize({ width, height: 900 });
-      for (const route of ["agent", "environments"]) {
+      for (const route of ["assistant", "environments"]) {
         await page.goto(`/${route}`);
-        if (route === "agent")
+        if (route === "assistant")
           await expect(
-            page.getByLabel("Message Agent", { exact: true }),
+            page.getByLabel("Message Assistant", { exact: true }),
           ).toBeVisible();
         else
           await expect(

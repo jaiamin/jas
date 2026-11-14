@@ -3,130 +3,77 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
-import { Check, Database, KeyRound } from "@/components/icons";
+import { ModelSettings } from "@/components/settings/model-settings";
+import { ProviderForm } from "@/components/settings/provider-form";
+import { PublishingSettings } from "@/components/settings/publishing-settings";
+import { WorkspaceForm } from "@/components/settings/workspace-form";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useApi } from "@/lib/api";
-import { modelLabel, money } from "@/lib/format";
+import { money } from "@/lib/format";
 import type { Settings } from "@/lib/types";
 
 export default function SettingsPage() {
-  const settings = useApi<Settings>("/settings", true);
+  const settings = useApi<Settings>("/settings");
   if (settings.error)
     return <ErrorState error={settings.error} onRetry={settings.refetch} />;
   if (!settings.data) return <Loading />;
   const s = settings.data;
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto max-w-3xl">
       <PageHeading title="Settings" />
-      <div className="flex flex-col gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Model providers</CardTitle>
-            <CardDescription>
-              Set provider keys in <code>.env</code> and restart JAS.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <ItemGroup>
-              {Object.entries(s.providers).map(([provider, configured]) => (
-                <Item key={provider} variant="outline">
-                  <ItemMedia variant="icon">
-                    <KeyRound />
-                  </ItemMedia>
-                  <ItemContent>
-                    <ItemTitle>
-                      {provider === "openai" ? "OpenAI" : "Anthropic"}
-                    </ItemTitle>
-                  </ItemContent>
-                  <ItemActions>
-                    <Badge variant="secondary">
-                      {configured && <Check />}
-                      {configured ? "Configured" : "Not configured"}
-                    </Badge>
-                  </ItemActions>
-                </Item>
-              ))}
-            </ItemGroup>
-            <dl className="grid gap-3 text-sm sm:grid-cols-2">
-              <div>
-                <dt className="text-muted-foreground">Protocol designer</dt>
-                <dd className="mt-1">{modelLabel(s.planner_model)}</dd>
-              </div>
-              <div>
-                <dt className="text-muted-foreground">Evidence assistant</dt>
-                <dd className="mt-1">{modelLabel(s.assistant_model)}</dd>
-              </div>
-            </dl>
+      <div className="divide-y [&>section]:py-8 [&>section:first-child]:pt-0">
+        <section>
+          <header className="mb-5 space-y-1">
+            <h2 className="text-base font-semibold">Providers</h2>
+            <p className="text-sm text-muted-foreground">
+              Keys stay on this machine. Local execution needs no account.
+            </p>
+          </header>
+          <div className="flex flex-col gap-5">
+            {s.provider_configurations.map((provider) => (
+              <Disclosure key={provider.id}>
+                <DisclosureTrigger>
+                  {provider.id}{" "}
+                  <Badge variant="secondary">
+                    {provider.configured ? "Configured" : "Add key"}
+                  </Badge>
+                </DisclosureTrigger>
+                <DisclosureContent className="pt-4">
+                  <ProviderForm provider={provider} />
+                </DisclosureContent>
+              </Disclosure>
+            ))}
             <Disclosure>
-              <DisclosureTrigger>Model pricing</DisclosureTrigger>
-              <DisclosureContent className="pt-3">
-                <div className="overflow-hidden rounded-lg border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Model</TableHead>
-                        <TableHead className="text-right">Input / 1M</TableHead>
-                        <TableHead className="text-right">
-                          Output / 1M
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {s.models.map((m) => (
-                        <TableRow key={m.id}>
-                          <TableCell>{modelLabel(m.id)}</TableCell>
-                          <TableCell className="text-right tabular-nums">
-                            {money(m.input_per_million)}
-                          </TableCell>
-                          <TableCell className="text-right tabular-nums">
-                            {money(m.output_per_million)}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-                <p className="mt-3 text-xs text-muted-foreground">
-                  Token estimates before credits, cache discounts or web search.
-                </p>
+              <DisclosureTrigger>Add a compatible endpoint</DisclosureTrigger>
+              <DisclosureContent className="pt-4">
+                <ProviderForm />
               </DisclosureContent>
             </Disclosure>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Usage & budget</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-5">
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-wrap justify-between gap-2 text-sm">
-                <span>Committed cost</span>
+          </div>
+        </section>
+        <section>
+          <header className="mb-5 space-y-1">
+            <h2 className="text-base font-semibold">Models</h2>
+            <p className="text-sm text-muted-foreground">
+              Any model ID, with known or editable prices. Connection tests run
+              only after you review their estimate.
+            </p>
+          </header>
+          <div>
+            <ModelSettings settings={s} />
+          </div>
+        </section>
+        <section>
+          <header className="mb-5 space-y-1">
+            <h2 className="text-base font-semibold">Budget & defaults</h2>
+          </header>
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between gap-3 text-sm">
+                <span>Committed priced usage</span>
                 <span className="tabular-nums">
                   {money(s.charged_usd)} / {money(s.budget_usd)}
                 </span>
@@ -139,66 +86,42 @@ export default function SettingsPage() {
                     : 0
                 }
               />
+              <p className="text-xs text-muted-foreground">
+                {s.usage.requests.toLocaleString()} requests ·{" "}
+                {s.committed_tokens.toLocaleString()} committed tokens ·{" "}
+                {s.usage.cost_usd == null
+                  ? "total dollar cost unknown"
+                  : `${money(s.usage.cost_usd)} recorded cost`}
+              </p>
             </div>
-            <dl className="grid gap-4 text-sm sm:grid-cols-3">
-              {[
-                ["Requests", s.usage.requests.toLocaleString()],
-                ["Input tokens", s.usage.input_tokens.toLocaleString()],
-                ["Output tokens", s.usage.output_tokens.toLocaleString()],
-              ].map(([name, value]) => (
-                <div key={name}>
-                  <dt className="text-muted-foreground">{name}</dt>
-                  <dd className="mt-1 tabular-nums">{value}</dd>
-                </div>
-              ))}
-            </dl>
-            <Disclosure>
-              <DisclosureTrigger>How spending is controlled</DisclosureTrigger>
-              <DisclosureContent className="pt-3 text-sm leading-relaxed text-muted-foreground">
-                Each request reserves its upper allowance before sending.
-                Unknown usage retains that reservation. Adjust{" "}
-                <code>JAS_BUDGET_USD</code> in <code>.env</code> for the
-                workspace ceiling.
-              </DisclosureContent>
-            </Disclosure>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Local workspace</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <Item variant="outline">
-              <ItemMedia variant="icon">
-                <Database />
-              </ItemMedia>
-              <ItemContent className="min-w-0">
-                <ItemTitle>Storage</ItemTitle>
-                <p className="break-all font-mono text-xs text-muted-foreground">
-                  {s.storage}
-                </p>
-              </ItemContent>
-            </Item>
-            <dl className="grid gap-3 text-sm sm:grid-cols-2">
-              <div>
-                <dt className="text-muted-foreground">Concurrent runs</dt>
-                <dd className="mt-1">{s.concurrent_runs}</dd>
-              </div>
-              <div>
-                <dt className="text-muted-foreground">
-                  Concurrent provider requests
-                </dt>
-                <dd className="mt-1">{s.concurrent_requests}</dd>
-              </div>
-            </dl>
-            <Separator />
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              Data stays in the local database. Model requests send selected
-              evidence to the configured provider. Public hosting requires
-              authentication.
+            <WorkspaceForm settings={s} />
+          </div>
+        </section>
+        <section id="publishing" className="scroll-mt-6">
+          <header className="mb-5 space-y-1">
+            <h2 className="text-base font-semibold">Publishing</h2>
+          </header>
+          <div>
+            <PublishingSettings settings={s} />
+          </div>
+        </section>
+        <section>
+          <header className="mb-5 space-y-1">
+            <h2 className="text-base font-semibold">Data</h2>
+          </header>
+          <div className="flex flex-col gap-3">
+            <p className="break-all font-mono text-xs">{s.data_location}</p>
+            <Button variant="outline" asChild>
+              <a href="/api/data/backup" download>
+                Back up all workspace data
+              </a>
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Includes experiments, runs, conversations and saved environments.
+              Provider keys are excluded.
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </div>
     </div>
   );

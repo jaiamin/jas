@@ -1,5 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   Link,
   useLocation,
@@ -15,6 +14,7 @@ import {
 import { AgentHistory } from "@/components/agent/agent-history";
 import { AgentReply } from "@/components/agent/agent-reply";
 import { AgentWelcomeHeading } from "@/components/agent/agent-welcome-heading";
+import { useAgentChat } from "@/components/agent/use-agent-chat";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
 import { Alert } from "@/components/feedback";
 import {
@@ -48,7 +48,6 @@ import {
   agentSuggestions,
 } from "@/lib/agent-suggestions";
 import { api, useApi } from "@/lib/api";
-import { chatProgress } from "@/lib/chat-progress";
 import type { Analysis, Design, RunSummary, StudySummary } from "@/lib/types";
 
 const suggestionIcons = {
@@ -69,57 +68,9 @@ export default function AgentPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const chatId = params.get("chat");
-  const path = `/chats/${chatId}`;
-  const chat = useQuery({
-    queryKey: [path],
-    queryFn: () => api<Analysis[]>(path),
-    enabled: !!chatId,
-    refetchInterval: 1500,
-  });
+  const chat = useAgentChat(chatId);
   const studies = useApi<StudySummary[]>("/studies");
   const runs = useApi<RunSummary[]>("/runs");
-  const client = useQueryClient();
-  const pending = chat.data?.find(
-    (message) => message.status === "pending",
-  )?.id;
-  useEffect(() => {
-    if (!chatId || !pending) return;
-    const stream = new EventSource(`/api/chats/${chatId}/events`);
-    stream.onmessage = (event) => {
-      const update = chatProgress(event.data, pending);
-      if (!update) {
-        stream.close();
-        return;
-      }
-      if (update.status !== "pending") {
-        stream.close();
-        client.invalidateQueries({ queryKey: [`/chats/${chatId}`] });
-        client.invalidateQueries({ queryKey: ["/chats"] });
-        return;
-      }
-      client.setQueryData<Analysis[]>([`/chats/${chatId}`], (messages) =>
-        messages?.map((message) =>
-          message.id === pending && message.status === "pending"
-            ? {
-                ...message,
-                purpose: update.purpose,
-                output: {
-                  ...(update.purpose !== message.purpose ? {} : message.output),
-                  partial: update.partial,
-                  introduction: update.introduction,
-                  stage: update.stage,
-                  ...(update.activity ? { activity: update.activity } : {}),
-                  ...(update.research ? { research: update.research } : {}),
-                },
-              }
-            : message,
-        ),
-      );
-    };
-    // Polling keeps an interrupted connection recoverable without resubmitting a request.
-    stream.onerror = () => stream.close();
-    return () => stream.close();
-  }, [chatId, pending, client]);
   const question = chat.data?.[0]?.question;
   const characters = Array.from(question ?? "");
   const title =
@@ -147,7 +98,7 @@ export default function AgentPage() {
           {chatId && (
             <Button
               aria-label="New chat"
-              onClick={() => navigate(`/agent?new=${crypto.randomUUID()}`)}
+              onClick={() => navigate(`/assistant?new=${crypto.randomUUID()}`)}
             >
               <Plus data-icon="inline-start" />
               New
@@ -160,7 +111,7 @@ export default function AgentPage() {
           <div className="flex flex-col gap-4 p-6">
             <ErrorState error={chat.error} onRetry={chat.refetch} />
             <Button asChild variant="outline">
-              <Link to="/agent">Start a new chat</Link>
+              <Link to="/assistant">Start a new chat</Link>
             </Button>
           </div>
         ) : chatId && !chat.data ? (
@@ -180,6 +131,16 @@ export default function AgentPage() {
           <AgentConversation
             key={chatId ?? params.get("new") ?? "new"}
             chatId={chatId}
+            scope={
+              params.has("revision")
+                ? {
+                    revision: Number(params.get("revision")),
+                    ...(params.has("through_turn")
+                      ? { through_turn: Number(params.get("through_turn")) }
+                      : {}),
+                  }
+                : undefined
+            }
             messages={chat.data ?? []}
             studies={studies.data ?? []}
             runs={runs.data ?? []}
@@ -199,7 +160,7 @@ export default function AgentPage() {
   );
 }
 
-function AgentConversation({
+export function AgentConversation({
   chatId,
   messages,
   studies,
@@ -207,6 +168,12 @@ function AgentConversation({
   contextError,
   contextLoading,
   retryContexts,
+  pinnedContext,
+  scope,
+  onChatCreated,
+  onChatRecorded,
+  draftId,
+  embedded = false,
 }: {
   chatId: string | null;
   messages: Analysis[];
@@ -215,33 +182,62 @@ function AgentConversation({
   contextLoading: boolean;
   contextError: Error | null;
   retryContexts: () => unknown;
+  pinnedContext?: string;
+  scope?: { revision: number; through_turn?: number };
+  onChatCreated?: (id: string) => void;
+  onChatRecorded?: (id: string) => void;
+  draftId?: string;
+  embedded?: boolean;
 }) {
   const [params, setParams] = useSearchParams();
   const location = useLocation();
   const context =
+    pinnedContext ??
     params.get("context") ??
     (messages.length
       ? messageContext(messages[messages.length - 1])
       : "general");
-  const draftKey = `jas:agent-draft:${chatId ?? params.get("new") ?? "new"}`;
+  const draftKey = `jas:agent-draft:${chatId ?? draftId ?? params.get("new") ?? "new"}`;
   const busy = messages.some((message) => message.status === "pending");
   const state = useAgentComposer({
     context,
     chatId,
     draftKey,
     busy,
+    scope,
+    onCreated: onChatRecorded
+      ? (result) => onChatRecorded(result.chat_id)
+      : undefined,
     initialQuestion:
       typeof location.state?.question === "string"
         ? location.state.question
         : undefined,
     onSent: (result) => {
+      if (onChatCreated) {
+        onChatCreated(result.chat_id);
+        return;
+      }
       // Lazy navigation can leave this composer mounted after the URL changes.
       if (
         !chatId &&
         window.location.pathname === location.pathname &&
         window.location.search === location.search
       )
-        setParams({ chat: result.chat_id }, { replace: true, state: null });
+        setParams(
+          {
+            chat: result.chat_id,
+            ...(scope
+              ? {
+                  context,
+                  revision: String(scope.revision),
+                  ...(scope.through_turn !== undefined
+                    ? { through_turn: String(scope.through_turn) }
+                    : {}),
+                }
+              : {}),
+          },
+          { replace: true, state: null },
+        );
     },
   });
   const {
@@ -255,6 +251,8 @@ function AgentConversation({
   function changeContext(value: string) {
     const next = new URLSearchParams(params);
     next.set("context", value);
+    next.delete("revision");
+    next.delete("through_turn");
     setParams(next, { replace: true });
     send.reset();
   }
@@ -267,19 +265,30 @@ function AgentConversation({
       state={state}
       compact={messages.length > 0}
       contextControl={
-        <AgentContext
-          value={context}
-          onChange={changeContext}
-          studies={studies}
-          runs={runs}
-          loading={contextLoading}
-          disabled={state.send.isPending}
-        />
+        pinnedContext ? (
+          <span className="text-xs text-muted-foreground">
+            Version {scope?.revision}
+            {scope?.through_turn !== undefined
+              ? ` · through turn ${scope.through_turn}`
+              : ""}
+          </span>
+        ) : (
+          <AgentContext
+            value={context}
+            onChange={changeContext}
+            studies={studies}
+            runs={runs}
+            loading={contextLoading}
+            disabled={state.send.isPending}
+          />
+        )
       }
       placeholder={
-        selectedStudy || selectedRun
-          ? "Ask about the selected evidence…"
-          : "Ask a question or describe an experiment…"
+        pinnedContext
+          ? "Ask about this evidence…"
+          : selectedStudy || selectedRun
+            ? "Ask about the selected evidence…"
+            : "Ask a question or describe an experiment…"
       }
       className={
         messages.length
@@ -305,14 +314,14 @@ function AgentConversation({
   return (
     <section
       className="flex h-full min-h-0 flex-col"
-      aria-label="Agent workspace"
+      aria-label="Assistant workspace"
       data-empty={!messages.length}
     >
       {messages.length ? (
         <MessageScrollerProvider autoScroll defaultScrollPosition="last-anchor">
           <MessageScroller className="flex-1">
             <MessageScrollerViewport
-              aria-label="Agent conversation"
+              aria-label="Assistant conversation"
               className="[--scroll-fade-size:0.75rem]"
             >
               <MessageScrollerContent className="mx-auto w-full max-w-3xl px-4 pt-4 pb-10 sm:px-6">
@@ -358,6 +367,7 @@ function AgentConversation({
                       onRetry={() =>
                         send.mutate({
                           question: row.question,
+                          ...scope,
                           context:
                             row.purpose === "design"
                               ? "new"
@@ -378,6 +388,7 @@ function AgentConversation({
                           question: `Reanalyze the same frozen evidence using the ${lens} lens. Give a concise behavioral account and assess its limits.`,
                           context: messageContext(row),
                           source_analysis_id: row.id,
+                          ...scope,
                           lens,
                         })
                       }
@@ -389,6 +400,13 @@ function AgentConversation({
             <MessageScrollerButton />
           </MessageScroller>
         </MessageScrollerProvider>
+      ) : embedded ? (
+        <div className="flex flex-1 flex-col gap-3 px-4 pt-4 text-sm text-muted-foreground">
+          <p>
+            Ask about the selected version and recorded evidence. Sending uses
+            your configured Assistant model and workspace budget.
+          </p>
+        </div>
       ) : (
         <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)_auto_minmax(0,2fr)] overflow-y-auto px-4 py-8 sm:px-6">
           <div className="row-start-2 mx-auto flex w-full max-w-3xl flex-col gap-6">
@@ -406,7 +424,7 @@ function AgentConversation({
           </div>
         </div>
       )}
-      {messages.length > 0 && composer}
+      {(messages.length > 0 || embedded) && composer}
     </section>
   );
 }

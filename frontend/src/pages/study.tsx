@@ -5,24 +5,24 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
+import { AssistantPanel } from "@/components/agent/assistant-panel";
 import { ComparisonEvidence } from "@/components/comparison-evidence";
 import {
   Disclosure,
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
+import { ExperimentOverview } from "@/components/experiment/experiment-overview";
+import { ExperimentResults } from "@/components/experiment/experiment-results";
+import { PublishExperiment } from "@/components/experiment/publish-experiment";
+import { RunGrid } from "@/components/experiment/run-grid";
+import { VersionDiff } from "@/components/experiment/version-diff";
 import { ExperimentCheck } from "@/components/experiment-check";
 import { ExposureInspection } from "@/components/exposure-inspection";
-import { Alert, Empty } from "@/components/feedback";
-import {
-  AgentIcon,
-  ArrowUpRight,
-  Download,
-  Pause,
-  Play,
-  Settings2,
-} from "@/components/icons";
+import { Alert } from "@/components/feedback";
+import { Download, Pause, Play, Settings2 } from "@/components/icons";
 import { OptionSelect as Select } from "@/components/option-select";
+import { ProtocolEstimate } from "@/components/protocol-estimate";
 import { RecordSearch } from "@/components/record-list-heading";
 import { ResearchFindings } from "@/components/research-findings";
 import { RunTable } from "@/components/run-table";
@@ -45,7 +45,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRecordFilters } from "@/hooks/use-record-filters";
 import { api, invalidateResources, useApi } from "@/lib/api";
-import { label, metric, money } from "@/lib/format";
+import { label, money } from "@/lib/format";
 import type { StudyDetail } from "@/lib/types";
 
 export default function Study() {
@@ -82,12 +82,9 @@ export default function Study() {
   const active = !!activeRun;
   const complete = study.runs.every((r) => r.status === "complete");
   const tab =
-    ["overview", "runs", "design"].find(
+    ["overview", "results", "runs", "design", "publish"].find(
       (value) => value === params.get("tab"),
     ) ?? "overview";
-  const metrics = study.design.measures.length
-    ? study.design.measures
-    : [...new Set(study.results.map((r) => r.metric))];
   const isOld = study.revision !== study.revisions[0]?.number;
   function experimentStatus() {
     if (active) return "running";
@@ -102,12 +99,10 @@ export default function Study() {
         title={study.design.title}
         description={study.design.question}
       >
-        <Button variant="outline" size="sm" asChild>
-          <Link to={`/agent?context=${encodeURIComponent(`study:${id}`)}`}>
-            <AgentIcon data-icon="inline-start" />
-            Ask Agent
-          </Link>
-        </Button>
+        <AssistantPanel
+          context={`study:${study.id}`}
+          revision={study.revision}
+        />
         <Button variant="outline" size="sm" asChild>
           <Link to={`/new?study=${id}&revision=${study.revision}`}>
             <Settings2 data-icon="inline-start" />
@@ -152,7 +147,7 @@ export default function Study() {
           {money(study.usage.cost_usd)} / {money(study.design.budget_usd)}
         </span>
         <Select
-          label="Design revision"
+          label="Design version"
           value={String(study.revision)}
           onValueChange={(v) => {
             setParams((previous) => {
@@ -164,15 +159,20 @@ export default function Study() {
           }}
           options={study.revisions.map((r) => ({
             value: String(r.number),
-            label: `Revision ${r.number}`,
+            label: `Version ${r.number}`,
           }))}
         />
       </div>
+      {!complete && !isOld && !active && (
+        <div className="mb-5">
+          <ProtocolEstimate design={study.design} value={study.estimate} />
+        </div>
+      )}
       {control.error && <Alert variant="error">{control.error.message}</Alert>}
       {location.state?.notice && <Alert>{location.state.notice}</Alert>}
       {isOld && (
         <Alert>
-          This is a preserved design revision. Tune it to create a new one; its
+          This is a preserved design version. Tune it to create a new one; its
           recorded runs remain available.
         </Alert>
       )}
@@ -184,159 +184,84 @@ export default function Study() {
       >
         <TabsList className="mb-4 max-w-full justify-start overflow-x-auto">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="results">Results</TabsTrigger>
           <TabsTrigger value="runs">Runs</TabsTrigger>
-          <TabsTrigger value="design">Protocol</TabsTrigger>
+          <TabsTrigger value="design">Design</TabsTrigger>
+          <TabsTrigger value="publish">Publish</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
-          <ExperimentCheck report={study.preflight} design={study.design} />
-          <div className="flex min-w-0 flex-col gap-6">
-            {study.preflight.research && (
-              <ResearchFindings
-                studyId={study.id}
-                revision={study.revision}
-                active={active}
-              />
-            )}
-            <section>
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-3 [&_p]:mt-1 [&_p]:text-sm [&_p]:text-muted-foreground">
-                <div>
-                  <h2 className="text-base font-semibold">Results</h2>
-                </div>
-              </div>
-              {!study.results.some((r) => r.runs > 0) ? (
-                <Empty
-                  title={active ? "Runs in progress" : "No results yet"}
-                  description={
-                    active ? "Results appear as runs finish." : undefined
-                  }
-                >
-                  {activeRun && (
-                    <Button variant="outline" asChild>
-                      <Link to={`/runs/${activeRun?.id}`}>
-                        Watch live
-                        <ArrowUpRight data-icon="inline-end" />
-                      </Link>
-                    </Button>
-                  )}
-                </Empty>
-              ) : (
-                <div className="min-w-0 overflow-hidden rounded-lg border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Measurement</TableHead>
-                        {study.design.conditions.map((c) => (
-                          <TableHead key={c.key}>{c.name}</TableHead>
-                        ))}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {metrics.map((key) => (
-                        <TableRow key={key}>
-                          <TableCell>{label(key)}</TableCell>
-                          {study.design.conditions.map((c) => {
-                            const result = study.results.find(
-                              (r) =>
-                                r.condition_key === c.key && r.metric === key,
-                            );
-                            return (
-                              <TableCell key={c.key} className="tabular-nums">
-                                {metric(key, result?.mean)}
-                                <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
-                                  {result?.runs ?? 0} eligible /{" "}
-                                  {result?.planned ?? 0} planned runs ·{" "}
-                                  {result?.seeds ?? 0} seed clusters
-                                </span>
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                  <div className="p-4 text-xs leading-relaxed text-muted-foreground">
-                    Observed complete, eligible outcomes only. Repetitions are
-                    averaged within seed. Seed clusters are not certified
-                    independent samples; no confidence interval is identified by
-                    the protocol.
-                  </div>
-                </div>
-              )}
-            </section>
-            <Disclosure className="min-w-0">
-              <DisclosureTrigger>Comparison &amp; evidence</DisclosureTrigger>
-              <DisclosureContent className="flex min-w-0 flex-col gap-6 pt-3">
-                <ComparisonEvidence report={study} />
-                <ExposureInspection
-                  path={`/studies/${id}/exposure?revision=${study.revision}`}
+          {!!study.preflight.adjudications?.length && (
+            <ExperimentCheck report={study.preflight} design={study.design} />
+          )}
+          <ExperimentOverview study={study} activeRun={activeRun} />
+          <Disclosure className="mt-6 min-w-0">
+            <DisclosureTrigger>
+              Checks &amp; detailed findings
+            </DisclosureTrigger>
+            <DisclosureContent className="flex min-w-0 flex-col gap-6 pt-4">
+              {!study.preflight.adjudications?.length && (
+                <ExperimentCheck
+                  report={study.preflight}
+                  design={study.design}
                 />
-              </DisclosureContent>
-            </Disclosure>
-            <Disclosure className="min-w-0 mt-2">
-              <DisclosureTrigger>Question & protocol</DisclosureTrigger>
-              <DisclosureContent>
-                <p className="max-w-prose text-base leading-relaxed">
-                  {study.design.question}
-                </p>
-                <dl className="grid gap-3 text-sm [&>div]:grid [&>div]:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] [&>div]:gap-4 [&_dt]:text-muted-foreground [&_dd]:min-w-0 [&_dd]:break-words">
-                  <div>
-                    <dt>Hypothesis & analysis plan</dt>
-                    <dd>{study.design.hypothesis || "Exploratory study"}</dd>
-                  </div>
-                  <div>
-                    <dt>Design</dt>
-                    <dd>
-                      {study.design.conditions.length} conditions ·{" "}
-                      {study.design.seeds.length} matched seeds ·{" "}
-                      {study.design.repetitions} repetition
-                      {study.design.repetitions !== 1 && "s"}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Population</dt>
-                    <dd>
-                      {study.design.profiles.length} agents,{" "}
-                      {study.design.rounds} rounds per run
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Rule version</dt>
-                    <dd>
-                      {study.runs[0] ? (
-                        <Link to={`/runs/${study.runs[0].id}?tab=settings`}>
-                          View execution record
-                        </Link>
-                      ) : (
-                        "Available in each run’s record"
-                      )}
-                    </dd>
-                  </div>
-                </dl>
-                {!!study.design.limitations.length && (
-                  <div className="max-w-prose text-sm leading-relaxed">
-                    <h3 className="text-sm font-medium">Interpret with care</h3>
-                    <ul>
-                      {study.design.limitations.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </DisclosureContent>
-            </Disclosure>
-          </div>
+              )}
+              {study.preflight.research && (
+                <ResearchFindings
+                  studyId={study.id}
+                  revision={study.revision}
+                  active={active}
+                />
+              )}
+            </DisclosureContent>
+          </Disclosure>
+        </TabsContent>
+        <TabsContent value="results">
+          <ExperimentResults study={study} />
+          <Disclosure className="mt-6 min-w-0">
+            <DisclosureTrigger>Comparison &amp; evidence</DisclosureTrigger>
+            <DisclosureContent className="flex min-w-0 flex-col gap-6 pt-3">
+              <ComparisonEvidence report={study} />
+              <ExposureInspection
+                path={`/studies/${id}/exposure?revision=${study.revision}`}
+              />
+            </DisclosureContent>
+          </Disclosure>
         </TabsContent>
         <TabsContent value="runs">
-          <div className="mb-3 w-full sm:max-w-72">
-            <RecordSearch
-              label="Search runs"
-              value={runFilters.search}
-              onChange={runFilters.setSearch}
-            />
-          </div>
-          <RunTable runs={study.runs} filters={runFilters} selectable />
+          {study.comparison.cells.length <= 120 ? (
+            <>
+              <RunGrid study={study} />
+              <Disclosure className="mt-5">
+                <DisclosureTrigger>Run table</DisclosureTrigger>
+                <DisclosureContent className="pt-4">
+                  <div className="mb-3 w-full sm:max-w-72">
+                    <RecordSearch
+                      label="Search runs"
+                      value={runFilters.search}
+                      onChange={runFilters.setSearch}
+                    />
+                  </div>
+                  <RunTable runs={study.runs} filters={runFilters} selectable />
+                </DisclosureContent>
+              </Disclosure>
+            </>
+          ) : (
+            <>
+              <div className="mb-3 w-full sm:max-w-72">
+                <RecordSearch
+                  label="Search runs"
+                  value={runFilters.search}
+                  onChange={runFilters.setSearch}
+                />
+              </div>
+              <RunTable runs={study.runs} filters={runFilters} selectable />
+            </>
+          )}
         </TabsContent>
         <TabsContent value="design">
+          <div className="mb-8">
+            <VersionDiff key={study.revision} study={study} />
+          </div>
           <div className="grid min-w-0 items-start gap-8 xl:grid-cols-2">
             <section>
               <h2 className="text-base font-semibold">Population</h2>
@@ -373,12 +298,18 @@ export default function Study() {
                 </Link>
               )}
               <p className="text-muted-foreground">
-                Revision {study.revision} · SHA-256{" "}
+                Version {study.revision} · SHA-256{" "}
                 <code>{study.sha256.slice(0, 16)}</code>
               </p>
               <Json value={study.design} />
             </section>
           </div>
+        </TabsContent>
+        <TabsContent value="publish">
+          <PublishExperiment
+            key={`${study.id}:${study.revision}`}
+            study={study}
+          />
         </TabsContent>
       </Tabs>
     </>

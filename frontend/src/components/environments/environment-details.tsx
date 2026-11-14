@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { EnvironmentMark } from "@/components/environments/environment-mark";
-import { AgentIcon, ArrowRight } from "@/components/icons";
+import { AgentIcon, ArrowRight, Play } from "@/components/icons";
+import { ErrorState } from "@/components/shared";
 import {
   Accordion,
   AccordionContent,
@@ -16,8 +17,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useApi } from "@/lib/api";
 import { label } from "@/lib/format";
-import type { Environment, EnvironmentId } from "@/lib/types";
+import type { Environment, EnvironmentId, Starter } from "@/lib/types";
 
 const mechanics: Record<EnvironmentId, { observes: string; enforces: string }> =
   {
@@ -112,6 +114,10 @@ export function EnvironmentDetails({
 }: {
   environment: Environment;
 }) {
+  const starters = useApi<Starter[]>("/starters");
+  const starter = starters.data?.find(
+    (item) => item.design.environment === env.key,
+  );
   return (
     <>
       <SheetHeader className="gap-3 px-6 pt-6">
@@ -123,6 +129,17 @@ export function EnvironmentDetails({
       </SheetHeader>
       <Separator />
       <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-6 pb-6">
+        {starters.error && (
+          <ErrorState error={starters.error} onRetry={starters.refetch} />
+        )}
+        {starter && (
+          <Button variant="outline" className="self-start" asChild>
+            <Link to={`/watch/${starter.id}`}>
+              <Play data-icon="inline-start" />
+              Watch a recorded run
+            </Link>
+          </Button>
+        )}
         <section className="flex flex-col gap-2">
           <h3 className="text-sm font-medium">What agents observe</h3>
           <p className="text-sm leading-relaxed text-muted-foreground">
@@ -154,9 +171,7 @@ export function EnvironmentDetails({
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="measurements">
-            <AccordionTrigger>
-              Measurements ({env.measures.length})
-            </AccordionTrigger>
+            <AccordionTrigger>Metrics ({env.measures.length})</AccordionTrigger>
             <AccordionContent>
               <dl className="flex flex-col gap-4">
                 {env.measures.map((measure) => (
@@ -185,20 +200,20 @@ export function EnvironmentDetails({
       <Separator />
       <SheetFooter className="gap-2 px-6 pt-0 pb-6">
         <Button asChild>
-          <Link to={`/new?environment=${env.key}&step=conditions`}>
+          <Link to={`/new?environment=${env.key}`}>
             Configure experiment
             <ArrowRight data-icon="inline-end" />
           </Link>
         </Button>
         <Button variant="outline" asChild>
           <Link
-            to="/agent"
+            to="/assistant"
             state={{
               question: `Help me design an experiment using ${env.name}. Explain which behavior it can identify, suggest an isolated comparison, and flag limitations before proposing a protocol.`,
             }}
           >
             <AgentIcon data-icon="inline-start" />
-            Design with Agent
+            Design with Assistant
           </Link>
         </Button>
       </SheetFooter>

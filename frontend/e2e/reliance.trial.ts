@@ -22,7 +22,7 @@ test("switching a solo draft binds four participants and preserves its investiga
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/studies\//);
+  await expect(page).toHaveURL(/\/experiments\//);
   const study = await (
     await request.get(`/api/studies/${page.url().split("/").at(-1)}`)
   ).json();
@@ -83,7 +83,7 @@ for (const variant of [
     await page
       .getByRole("button", { name: "Create experiment", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/studies\//);
+    await expect(page).toHaveURL(/\/experiments\//);
     const sid = page.url().split("/").at(-1);
     const study = await (await request.get(`/api/studies/${sid}`)).json();
     expect(study.usage.requests).toBe(0);

@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 import threading
 import time
 import webbrowser
@@ -31,13 +32,63 @@ def main() -> None:
     parser.add_argument(
         "--no-browser", action="store_true", help="Do not open a browser on startup"
     )
+    from .commands import add_commands
+
+    add_commands(parser)
     args = parser.parse_args()
     load_dotenv(Path.cwd() / ".env", override=True, interpolate=False)
-    from .api import create_app
-
     directory = args.workspace.expanduser().resolve() if args.workspace else workspace_directory()
     database_url = os.getenv("JAS_DATABASE_URL") if args.workspace is None else None
     database_url = database_url or f"sqlite:///{(directory / 'jas.sqlite3').as_posix()}"
+    try:
+        dispatch(args, database_url)
+    except ValueError as error:
+        from pydantic import ValidationError
+
+        message = (
+            "; ".join(issue["msg"] for issue in error.errors(include_input=False))
+            if isinstance(error, ValidationError)
+            else str(error)
+        )
+        print(f"JAS: {message}", file=sys.stderr)
+        raise SystemExit(1) from None
+
+
+def dispatch(args, database_url: str) -> None:
+    if args.command == "gallery":
+        from .gallery_api import create_gallery_app
+
+        uvicorn.run(
+            create_gallery_app(args.data, origin=args.origin),
+            host=args.host,
+            port=args.port,
+            access_log=False,
+        )
+        return
+    from sqlalchemy.engine import make_url
+
+    from .workspace_lock import workspace_lock
+
+    if args.command in {"replay", "login", "publish"}:
+        from .commands import execute
+
+        execute(args, database_url)
+        return
+    database = make_url(database_url).database
+    if not database or database == ":memory:":
+        raise ValueError("CLI commands require a persistent local workspace")
+    with workspace_lock(database):
+        if args.command:
+            from .commands import execute
+
+            execute(args, database_url)
+            return
+        serve(args, database_url)
+
+
+def serve(args, database_url: str) -> None:
+    from .api import create_app
+
     host = "127.0.0.1" if args.host in {"0.0.0.0", "::"} else args.host
     url = f"http://{'[' + host + ']' if ':' in host else host}:{args.port}"
     app = create_app(database_url)

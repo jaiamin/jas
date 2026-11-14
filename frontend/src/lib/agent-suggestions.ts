@@ -122,8 +122,8 @@ export function agentSuggestions({
   if (!study && !run) return [];
   const title = run?.study_title ?? study?.title;
   const identity = run
-    ? `the run in “${title}”, revision ${run.revision}, condition “${run.condition}”, seed ${run.seed}, repetition ${run.repetition}, recorded through turn ${run.turn}`
-    : `“${title}”, revision ${study?.revision}`;
+    ? `the run in “${title}”, version ${run.revision}, condition “${run.condition}”, seed ${run.seed}, repetition ${run.repetition}, recorded through turn ${run.turn}`
+    : `“${title}”, version ${study?.revision}`;
   const question = design?.question ?? study?.question;
   const subject = question ? ` Its research question is: ${question}` : "";
   const environment = run?.environment ?? study?.environment;

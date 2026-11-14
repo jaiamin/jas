@@ -4,8 +4,10 @@ from typing import Any
 from urllib.parse import urlparse
 
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy.engine import make_url
 from sqlalchemy.exc import NoResultFound
 from starlette.datastructures import Headers, MutableHeaders
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -20,8 +22,11 @@ from .environment_library import EnvironmentConflict
 from .execution import Engine
 from .llm import LanguageModels, ProviderFailure
 from .paths import static_directory
+from .providers import ModelRegistry
+from .publishing_routes import router as publishing_router
 from .research import Research
 from .routes import router, web_router
+from .settings_routes import router as settings_router
 
 
 class ErrorResponse(Strict):
@@ -69,6 +74,19 @@ async def provider_error(_request: Request, error: Exception) -> JSONResponse:
     return JSONResponse({"detail": str(error)}, status_code=409)
 
 
+async def invalid_request(_request: Request, error: Exception) -> JSONResponse:
+    assert isinstance(error, RequestValidationError)
+    return JSONResponse(
+        {
+            "detail": [
+                {"loc": issue["loc"], "msg": issue["msg"], "type": issue["type"]}
+                for issue in error.errors()
+            ]
+        },
+        status_code=422,
+    )
+
+
 def create_app(
     database_url: str | None = None,
     *,
@@ -77,14 +95,18 @@ def create_app(
     concurrent_runs: int | None = None,
 ) -> FastAPI:
     credentials = access_credentials()
+    database_url = database_url or setting("DATABASE_URL", "sqlite:///data/jas.sqlite3")
+    registry = ModelRegistry(make_url(database_url).database)
+    ceiling = budget_usd
+    if ceiling is None:
+        ceiling = registry.configuration.workspace_budget_usd
+    if ceiling is None:
+        ceiling = float(setting("BUDGET_USD", "25"))
     db = Database(
-        database_url or setting("DATABASE_URL", "sqlite:///data/jas.sqlite3"),
-        round(
-            (budget_usd if budget_usd is not None else float(setting("BUDGET_USD", "25")))
-            * 1_000_000
-        ),
+        database_url,
+        round(ceiling * 1_000_000),
     )
-    models = LanguageModels(db)
+    models = LanguageModels(db, registry=registry)
     research = Research(db, models)
     engine = Engine(
         db,
@@ -113,6 +135,7 @@ def create_app(
         openapi_url="/api/openapi.json",
         responses={status: {"model": ErrorResponse} for status in (403, 404, 409, 422)},
     )
+    app.add_exception_handler(RequestValidationError, invalid_request)
     app.state.db, app.state.models = db, models
     app.state.research, app.state.engine, app.state.assistants = research, engine, assistants
     app.state.extensions = extensions
@@ -135,6 +158,8 @@ def create_app(
     app.add_exception_handler(NoResultFound, missing)
     app.add_exception_handler(ProviderFailure, provider_error)
     app.include_router(router)
+    app.include_router(settings_router)
+    app.include_router(publishing_router)
     app.include_router(web_router)
 
     return app

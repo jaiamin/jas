@@ -7,7 +7,9 @@ export interface Draft {
   updated: string;
   design: unknown;
   json: string;
-  mode: "visual" | "json";
+  mode: "quick" | "visual" | "json";
+  jsonDirty?: boolean;
+  seedsInput?: string;
   environmentEdit?: { id: string; revision: number };
 }
 
@@ -19,6 +21,7 @@ export function editorDraftPath(params: URLSearchParams): string {
     "copy",
     "revision",
     "template",
+    "starter",
     "environment",
     "setup",
   ]) {
@@ -51,7 +54,11 @@ export function readDraft(path: string): Draft | null {
     !("json" in value) ||
     typeof value.json !== "string" ||
     !("mode" in value) ||
-    (value.mode !== "visual" && value.mode !== "json") ||
+    (value.mode !== "quick" &&
+      value.mode !== "visual" &&
+      value.mode !== "json") ||
+    ("jsonDirty" in value && typeof value.jsonDirty !== "boolean") ||
+    ("seedsInput" in value && typeof value.seedsInput !== "string") ||
     !("design" in value)
   )
     throw new Error("This draft could not be read.");
@@ -78,7 +85,13 @@ export function readDraft(path: string): Draft | null {
     updated: value.updated,
     json: value.json,
     mode: value.mode,
+    jsonDirty:
+      "jsonDirty" in value
+        ? (value.jsonDirty as boolean)
+        : value.mode === "json",
     design: value.design,
+    seedsInput:
+      "seedsInput" in value ? (value.seedsInput as string) : undefined,
     environmentEdit,
   };
 }
@@ -108,8 +121,10 @@ export function writeDraft(
   path: string,
   design: Design,
   json: string,
-  mode: "visual" | "json",
+  mode: "quick" | "visual" | "json",
   environmentEdit?: Draft["environmentEdit"],
+  jsonDirty = mode === "json",
+  seedsInput?: string,
 ) {
   localStorage.setItem(
     prefix + path,
@@ -119,6 +134,8 @@ export function writeDraft(
       design,
       json,
       mode,
+      jsonDirty,
+      seedsInput,
       environmentEdit,
       updated: new Date().toISOString(),
     } satisfies Draft),

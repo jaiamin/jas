@@ -366,6 +366,7 @@ def test_web_research_availability_uses_unreserved_workspace_headroom(
     runtime, monkeypatch, ceiling, charged, available
 ):
     db, llm, _, _ = runtime
+    llm.registry.configuration.preferences.planner_web_research = True
     monkeypatch.setenv("JAS_PLANNER_MODEL", "openai:gpt-6.1-sol")
     with db.session.begin() as session:
         row = session.get_one(Workspace, 1)

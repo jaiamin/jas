@@ -73,7 +73,7 @@ for (const theme of ["light", "dark"]) {
     await page
       .getByRole("button", { name: "Create experiment", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/studies\//);
+    await expect(page).toHaveURL(/\/experiments\//);
     const studyId = new URL(page.url()).pathname.split("/").at(-1);
     const study = await (await request.get(`/api/studies/${studyId}`)).json();
     expect(study.design.hypothesis).toBe(analysisPlan);
@@ -82,6 +82,9 @@ for (const theme of ["light", "dark"]) {
     expect(baseline.initial_stock).toBe(16);
     expect(baseline.stock_visibility).toBe("controllers");
     await page.goto(`/runs/${study.runs[0].id}`);
+    await page
+      .getByRole("button", { name: "Rules & evidence", exact: true })
+      .click();
     await page.getByRole("tab", { name: "Environment", exact: true }).click();
     await expect(
       page.getByRole("heading", { name: "Resources & needs", exact: true }),

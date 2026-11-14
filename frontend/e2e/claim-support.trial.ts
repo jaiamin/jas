@@ -54,8 +54,8 @@ for (const { theme, width } of [
           json: { ...settings, providers: { openai: true } },
         });
       });
-      await page.goto(`/agent?context=run:${rid}`);
-      const composer = page.getByLabel("Message Agent", { exact: true });
+      await page.goto(`/assistant?context=run:${rid}`);
+      const composer = page.getByLabel("Message Assistant", { exact: true });
       await composer.fill(
         invented
           ? "Inspect this invented total with valid citations."
@@ -234,8 +234,8 @@ test("artifact findings retain versions without inventing financial outcomes", a
       json: { ...settings, providers: { openai: true } },
     });
   });
-  await page.goto(`/agent?context=run:${rid}`);
-  const composer = page.getByLabel("Message Agent", { exact: true });
+  await page.goto(`/assistant?context=run:${rid}`);
+  const composer = page.getByLabel("Message Assistant", { exact: true });
   await composer.fill(
     "Describe the retained writes and assess the claimed financial zero.",
   );
@@ -402,9 +402,9 @@ for (const { theme, width } of [
         json: { ...settings, providers: { openai: true } },
       });
     });
-    await page.goto(`/agent?context=run:${rid}`);
+    await page.goto(`/assistant?context=run:${rid}`);
     await page
-      .getByLabel("Message Agent", { exact: true })
+      .getByLabel("Message Assistant", { exact: true })
       .fill("Describe the recorded utility accurately.");
     await page
       .getByRole("button", { name: "Send message", exact: true })

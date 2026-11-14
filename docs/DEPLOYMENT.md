@@ -1,10 +1,44 @@
 # Hosting JAS
 
-JAS hosts one private workspace per service, with SQLite on a persistent volume and
-one application process. This is not a multi-user service. The same Docker image
-serves the UI, API and background runs; no separate frontend deployment is needed.
+JAS runs locally without hosted infrastructure. Public sharing uses a separate
+model-free gallery; never expose a runner database to implement public replay.
+Private remote hosting remains optional for an owner's own workspace.
 
-## Railway
+## Public gallery
+
+Build the explicit gallery image, leaving the default workspace target unchanged:
+
+```sh
+docker build --target gallery -t jas-gallery .
+```
+
+Configure a separate service with `/app/data` persistent storage, one process and
+health path `/api/health` on port 8080. Set `JAS_GALLERY_ORIGIN` to its HTTPS origin,
+`JAS_GALLERY_DATA=/app/data`, GitHub OAuth client ID/secret, and the
+`JAS_GALLERY_S3_*` private bucket settings from [.env.example](../.env.example).
+Register the OAuth callback at `https://YOUR-GALLERY/auth/github/callback`.
+The image includes the optional object-storage dependency. Public origins refuse
+the local filesystem object store; localhost may use it for disposable testing.
+
+Do not copy `.env`, provider keys, workspace credentials or the existing runner's
+volume into this service. Reading is anonymous; publishing uses GitHub and scoped,
+revocable device tokens. Keep objects private behind the publication-status gate.
+The current small catalogue uses SQLite, so one gallery replica owns its volume.
+No PostgreSQL or hosted execution service is required by the MVP.
+
+Railway may host this service and its private bucket; use a separate gallery
+service/volume and select this built image/target explicitly. Review service,
+storage, egress and domain costs before provisioning. The initial $10/month target
+is not a measured bill or a resource authorization. Preserve any existing private
+service and its data until the owner has deliberately backed up and retired it.
+This redesign performs no Railway redeploy or resource deletion.
+
+See [gallery operations](GALLERY_OPERATIONS.md) for moderation, reporting,
+takedown, caching and public-launch gates. A local gallery smoke is not a live
+GitHub OAuth or hosted object-storage test.
+
+## Optional private workspace on Railway
+
 
 Connect the repository's `main` branch with the repository root as the service root.
 The root Dockerfile builds the frontend and Python app. In service Settings, set
@@ -25,7 +59,7 @@ platform SDK or deprecated `railway.json`/`railway.toml` configuration.
    | `JAS_AUTH_USERNAME` | Your chosen login name |
    | `JAS_AUTH_PASSWORD` | A strong unique password |
    | `JAS_ALLOWED_HOSTS` | `localhost,127.0.0.1,[::1],YOUR-DOMAIN.up.railway.app,healthcheck.railway.app` |
-   | `OPENAI_API_KEY` | Your provider key, for Agent drafting and OpenAI participants |
+   | `OPENAI_API_KEY` | Your provider key, for Assistant drafting and OpenAI participants |
    | `ANTHROPIC_API_KEY` | Optional, for Anthropic models |
 
 3. Generate a domain under Settings → Networking, with target port **8080**. Use
@@ -44,13 +78,13 @@ requires a deliberate operator repair, not automatic rewriting.
 
 HTTP Basic authentication protects UI, assets, API, event streams, exports and model
 actions. Only GET/HEAD `/api/health` bypasses authentication. Both auth settings must
-be supplied together. Public Railway deployments refuse to start without them.
+be supplied together. Non-loopback or explicitly protected hosted workspaces refuse to start without them.
 Browsers remember Basic credentials; close the browser session or clear that site's
 credentials when finished on a shared computer. This is a single shared login, not
 accounts, roles or a public signup system.
 
 Provider defaults and concurrency remain in [.env.example](../.env.example). The
-Agent defaults to GPT-6.1 Sol; participant models are pinned by each experiment.
+Assistant defaults to GPT-6.1 Sol; participant models are pinned by each experiment.
 `JAS_BUDGET_USD` initializes a fresh workspace's ledger ceiling; inspect Settings
 and recorded usage when operating an existing workspace. No deployment test needs
 live model requests. Keep production and development volumes, credentials and

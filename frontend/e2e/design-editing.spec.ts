@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { templateDesign } from "./helpers.js";
+import { setDeveloper, templateDesign } from "./helpers.js";
+
+test.beforeEach(async ({ request }) => {
+  await setDeveloper(request, true);
+});
 
 test("task prerequisite edits and deletion persist without stale dependent fields", async ({
   page,
@@ -12,7 +16,7 @@ test("task prerequisite edits and deletion persist without stale dependent field
     { key: "task-2", name: "Second", effort: 2, dependencies: [] },
     { key: "task-3", name: "Third", effort: 2, dependencies: ["task-1"] },
   ];
-  await page.goto("/new?template=coordination");
+  await page.goto("/new?template=coordination&mode=advanced");
   await page.getByRole("tab", { name: "Specification", exact: true }).click();
   await page
     .getByLabel("Complete JSON specification")
@@ -57,7 +61,7 @@ test("cloned conditions keep independent nested resource schedules through savin
   design.conditions[0].parameters.resource_schedule = [
     { round: 2, endowment: 4 },
   ];
-  await page.goto("/new?template=commons");
+  await page.goto("/new?template=commons&mode=advanced");
   await page.getByRole("tab", { name: "Specification", exact: true }).click();
   await page
     .getByLabel("Complete JSON specification")
@@ -116,7 +120,7 @@ test("cloned conditions keep independent nested resource schedules through savin
 test("editor select labels activate their associated controls", async ({
   page,
 }) => {
-  await page.goto("/new?template=composed");
+  await page.goto("/new?template=composed&mode=advanced");
   const environment = page.getByRole("combobox", {
     name: "Environment",
     exact: true,

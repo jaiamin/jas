@@ -1,0 +1,1583 @@
+[
+  {
+    "id": "workflow-materials",
+    "design": {
+      "title": "Owned work and dependent handoffs",
+      "question": "How do material constraints affect work and acknowledged handoffs?",
+      "hypothesis": "",
+      "environment": "institutional_workflow",
+      "environment_source": null,
+      "context": "",
+      "profiles": [
+        {
+          "key": "alex",
+          "name": "Alex",
+          "goal": "Inspect the available work and choose.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "morgan",
+          "name": "Morgan",
+          "goal": "Inspect the available work and choose.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "sam",
+          "name": "Sam",
+          "goal": "Inspect the available work and choose.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "jordan",
+          "name": "Jordan",
+          "goal": "Inspect the available work and choose.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "casey",
+          "name": "Casey",
+          "goal": "Inspect the available work and choose.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "taylor",
+          "name": "Taylor",
+          "goal": "Inspect the available work and choose.",
+          "role": "Participant",
+          "model": null
+        }
+      ],
+      "tasks": [],
+      "conditions": [
+        {
+          "key": "scarce",
+          "name": "Seven material units",
+          "description": "",
+          "model": "openai:gpt-6-luna",
+          "harness": {
+            "kind": "direct_action",
+            "version": "1.0.0",
+            "max_requests": 1,
+            "max_tool_operations": 0,
+            "tools": []
+          },
+          "parameters": {
+            "endowment": 10,
+            "multiplier": 2.0,
+            "communication": true,
+            "communication_channels": [
+              "messages",
+              "reports",
+              "promises"
+            ],
+            "private_signal": true,
+            "task_count": 8,
+            "institution": {
+              "authorities": [],
+              "oversight": 0.5,
+              "sanction_cap": 3,
+              "transparent": true,
+              "appeal": true
+            },
+            "bargaining": {
+              "discount": 0.9,
+              "outside_option": 1
+            },
+            "information": {
+              "accuracy": 0.75,
+              "correct_reward": 10,
+              "reveal_outcome": true
+            },
+            "resource": {
+              "capacity": 60,
+              "initial_stock": null,
+              "regeneration": 0.25,
+              "extraction_limit": 10
+            },
+            "composition": null,
+            "artifacts": {
+              "objects": [
+                {
+                  "key": "draft",
+                  "name": "Draft",
+                  "owner": null,
+                  "readers": [
+                    "alex",
+                    "morgan"
+                  ],
+                  "writers": [
+                    "alex",
+                    "morgan"
+                  ],
+                  "content": {
+                    "draft": "unstarted"
+                  }
+                },
+                {
+                  "key": "release",
+                  "name": "Release",
+                  "owner": null,
+                  "readers": [
+                    "sam",
+                    "jordan"
+                  ],
+                  "writers": [
+                    "sam",
+                    "jordan"
+                  ],
+                  "content": {
+                    "draft": "unstarted"
+                  }
+                },
+                {
+                  "key": "audit",
+                  "name": "Audit",
+                  "owner": null,
+                  "readers": [
+                    "casey",
+                    "taylor"
+                  ],
+                  "writers": [
+                    "casey",
+                    "taylor"
+                  ],
+                  "content": {
+                    "draft": "unstarted"
+                  }
+                }
+              ],
+              "requirements": [],
+              "write_limit": 6,
+              "judgment": null
+            },
+            "relay": null,
+            "finite": null,
+            "coordination": null,
+            "commitments": null,
+            "workflow": {
+              "timing": "phased_simultaneous",
+              "turn_order": [
+                "alex",
+                "morgan",
+                "sam",
+                "jordan",
+                "casey",
+                "taylor"
+              ],
+              "conflict_order": [
+                "alex",
+                "morgan",
+                "sam",
+                "jordan",
+                "casey",
+                "taylor"
+              ],
+              "routes": [
+                {
+                  "sender": "alex",
+                  "recipient": "morgan"
+                },
+                {
+                  "sender": "alex",
+                  "recipient": "sam"
+                },
+                {
+                  "sender": "alex",
+                  "recipient": "jordan"
+                },
+                {
+                  "sender": "alex",
+                  "recipient": "casey"
+                },
+                {
+                  "sender": "alex",
+                  "recipient": "taylor"
+                },
+                {
+                  "sender": "morgan",
+                  "recipient": "alex"
+                },
+                {
+                  "sender": "morgan",
+                  "recipient": "sam"
+                },
+                {
+                  "sender": "morgan",
+                  "recipient": "jordan"
+                },
+                {
+                  "sender": "morgan",
+                  "recipient": "casey"
+                },
+                {
+                  "sender": "morgan",
+                  "recipient": "taylor"
+                },
+                {
+                  "sender": "sam",
+                  "recipient": "alex"
+                },
+                {
+                  "sender": "sam",
+                  "recipient": "morgan"
+                },
+                {
+                  "sender": "sam",
+                  "recipient": "jordan"
+                },
+                {
+                  "sender": "sam",
+                  "recipient": "casey"
+                },
+                {
+                  "sender": "sam",
+                  "recipient": "taylor"
+                },
+                {
+                  "sender": "jordan",
+                  "recipient": "alex"
+                },
+                {
+                  "sender": "jordan",
+                  "recipient": "morgan"
+                },
+                {
+                  "sender": "jordan",
+                  "recipient": "sam"
+                },
+                {
+                  "sender": "jordan",
+                  "recipient": "casey"
+                },
+                {
+                  "sender": "jordan",
+                  "recipient": "taylor"
+                },
+                {
+                  "sender": "casey",
+                  "recipient": "alex"
+                },
+                {
+                  "sender": "casey",
+                  "recipient": "morgan"
+                },
+                {
+                  "sender": "casey",
+                  "recipient": "sam"
+                },
+                {
+                  "sender": "casey",
+                  "recipient": "jordan"
+                },
+                {
+                  "sender": "casey",
+                  "recipient": "taylor"
+                },
+                {
+                  "sender": "taylor",
+                  "recipient": "alex"
+                },
+                {
+                  "sender": "taylor",
+                  "recipient": "morgan"
+                },
+                {
+                  "sender": "taylor",
+                  "recipient": "sam"
+                },
+                {
+                  "sender": "taylor",
+                  "recipient": "jordan"
+                },
+                {
+                  "sender": "taylor",
+                  "recipient": "casey"
+                }
+              ],
+              "delivery_delay": 2,
+              "resource_stock": 7,
+              "work_items": [
+                {
+                  "key": "prepare",
+                  "artifact": "draft",
+                  "workers": [
+                    "alex",
+                    "morgan"
+                  ],
+                  "dependencies": [],
+                  "handoff_to": [
+                    "sam",
+                    "jordan"
+                  ],
+                  "resource_cost": 3,
+                  "duration": 2
+                },
+                {
+                  "key": "release",
+                  "artifact": "release",
+                  "workers": [
+                    "sam",
+                    "jordan"
+                  ],
+                  "dependencies": [
+                    "prepare"
+                  ],
+                  "handoff_to": [
+                    "casey",
+                    "taylor"
+                  ],
+                  "resource_cost": 2,
+                  "duration": 1
+                },
+                {
+                  "key": "audit",
+                  "artifact": "audit",
+                  "workers": [
+                    "casey",
+                    "taylor"
+                  ],
+                  "dependencies": [],
+                  "handoff_to": [
+                    "alex",
+                    "morgan"
+                  ],
+                  "resource_cost": 4,
+                  "duration": 1
+                }
+              ]
+            },
+            "resource_schedule": [],
+            "memory": "episodic"
+          },
+          "profile_overrides": [],
+          "adjudicator": null
+        },
+        {
+          "key": "sufficient",
+          "name": "Nine material units",
+          "description": "",
+          "model": "openai:gpt-6-luna",
+          "harness": {
+            "kind": "direct_action",
+            "version": "1.0.0",
+            "max_requests": 1,
+            "max_tool_operations": 0,
+            "tools": []
+          },
+          "parameters": {
+            "endowment": 10,
+            "multiplier": 2.0,
+            "communication": true,
+            "communication_channels": [
+              "messages",
+              "reports",
+              "promises"
+            ],
+            "private_signal": true,
+            "task_count": 8,
+            "institution": {
+              "authorities": [],
+              "oversight": 0.5,
+              "sanction_cap": 3,
+              "transparent": true,
+              "appeal": true
+            },
+            "bargaining": {
+              "discount": 0.9,
+              "outside_option": 1
+            },
+            "information": {
+              "accuracy": 0.75,
+              "correct_reward": 10,
+              "reveal_outcome": true
+            },
+            "resource": {
+              "capacity": 60,
+              "initial_stock": null,
+              "regeneration": 0.25,
+              "extraction_limit": 10
+            },
+            "composition": null,
+            "artifacts": {
+              "objects": [
+                {
+                  "key": "draft",
+                  "name": "Draft",
+                  "owner": null,
+                  "readers": [
+                    "alex",
+                    "morgan"
+                  ],
+                  "writers": [
+                    "alex",
+                    "morgan"
+                  ],
+                  "content": {
+                    "draft": "unstarted"
+                  }
+                },
+                {
+                  "key": "release",
+                  "name": "Release",
+                  "owner": null,
+                  "readers": [
+                    "sam",
+                    "jordan"
+                  ],
+                  "writers": [
+                    "sam",
+                    "jordan"
+                  ],
+                  "content": {
+                    "draft": "unstarted"
+                  }
+                },
+                {
+                  "key": "audit",
+                  "name": "Audit",
+                  "owner": null,
+                  "readers": [
+                    "casey",
+                    "taylor"
+                  ],
+                  "writers": [
+                    "casey",
+                    "taylor"
+                  ],
+                  "content": {
+                    "draft": "unstarted"
+                  }
+                }
+              ],
+              "requirements": [],
+              "write_limit": 6,
+              "judgment": null
+            },
+            "relay": null,
+            "finite": null,
+            "coordination": null,
+            "commitments": null,
+            "workflow": {
+              "timing": "phased_simultaneous",
+              "turn_order": [
+                "alex",
+                "morgan",
+                "sam",
+                "jordan",
+                "casey",
+                "taylor"
+              ],
+              "conflict_order": [
+                "alex",
+                "morgan",
+                "sam",
+                "jordan",
+                "casey",
+                "taylor"
+              ],
+              "routes": [
+                {
+                  "sender": "alex",
+                  "recipient": "morgan"
+                },
+                {
+                  "sender": "alex",
+                  "recipient": "sam"
+                },
+                {
+                  "sender": "alex",
+                  "recipient": "jordan"
+                },
+                {
+                  "sender": "alex",
+                  "recipient": "casey"
+                },
+                {
+                  "sender": "alex",
+                  "recipient": "taylor"
+                },
+                {
+                  "sender": "morgan",
+                  "recipient": "alex"
+                },
+                {
+                  "sender": "morgan",
+                  "recipient": "sam"
+                },
+                {
+                  "sender": "morgan",
+                  "recipient": "jordan"
+                },
+                {
+                  "sender": "morgan",
+                  "recipient": "casey"
+                },
+                {
+                  "sender": "morgan",
+                  "recipient": "taylor"
+                },
+                {
+                  "sender": "sam",
+                  "recipient": "alex"
+                },
+                {
+                  "sender": "sam",
+                  "recipient": "morgan"
+                },
+                {
+                  "sender": "sam",
+                  "recipient": "jordan"
+                },
+                {
+                  "sender": "sam",
+                  "recipient": "casey"
+                },
+                {
+                  "sender": "sam",
+                  "recipient": "taylor"
+                },
+                {
+                  "sender": "jordan",
+                  "recipient": "alex"
+                },
+                {
+                  "sender": "jordan",
+                  "recipient": "morgan"
+                },
+                {
+                  "sender": "jordan",
+                  "recipient": "sam"
+                },
+                {
+                  "sender": "jordan",
+                  "recipient": "casey"
+                },
+                {
+                  "sender": "jordan",
+                  "recipient": "taylor"
+                },
+                {
+                  "sender": "casey",
+                  "recipient": "alex"
+                },
+                {
+                  "sender": "casey",
+                  "recipient": "morgan"
+                },
+                {
+                  "sender": "casey",
+                  "recipient": "sam"
+                },
+                {
+                  "sender": "casey",
+                  "recipient": "jordan"
+                },
+                {
+                  "sender": "casey",
+                  "recipient": "taylor"
+                },
+                {
+                  "sender": "taylor",
+                  "recipient": "alex"
+                },
+                {
+                  "sender": "taylor",
+                  "recipient": "morgan"
+                },
+                {
+                  "sender": "taylor",
+                  "recipient": "sam"
+                },
+                {
+                  "sender": "taylor",
+                  "recipient": "jordan"
+                },
+                {
+                  "sender": "taylor",
+                  "recipient": "casey"
+                }
+              ],
+              "delivery_delay": 2,
+              "resource_stock": 9,
+              "work_items": [
+                {
+                  "key": "prepare",
+                  "artifact": "draft",
+                  "workers": [
+                    "alex",
+                    "morgan"
+                  ],
+                  "dependencies": [],
+                  "handoff_to": [
+                    "sam",
+                    "jordan"
+                  ],
+                  "resource_cost": 3,
+                  "duration": 2
+                },
+                {
+                  "key": "release",
+                  "artifact": "release",
+                  "workers": [
+                    "sam",
+                    "jordan"
+                  ],
+                  "dependencies": [
+                    "prepare"
+                  ],
+                  "handoff_to": [
+                    "casey",
+                    "taylor"
+                  ],
+                  "resource_cost": 2,
+                  "duration": 1
+                },
+                {
+                  "key": "audit",
+                  "artifact": "audit",
+                  "workers": [
+                    "casey",
+                    "taylor"
+                  ],
+                  "dependencies": [],
+                  "handoff_to": [
+                    "alex",
+                    "morgan"
+                  ],
+                  "resource_cost": 4,
+                  "duration": 1
+                }
+              ]
+            },
+            "resource_schedule": [],
+            "memory": "episodic"
+          },
+          "profile_overrides": [],
+          "adjudicator": null
+        }
+      ],
+      "seeds": [
+        7,
+        19,
+        43
+      ],
+      "repetitions": 1,
+      "rounds": 8,
+      "budget_usd": 3.0,
+      "token_budget": null,
+      "openai_reasoning_effort": "low",
+      "response_tokens": 2048,
+      "limitations": [
+        "Ownership, artifact ACLs and acknowledged prerequisite handoffs govern work; participant role labels and prose cannot change procedures.",
+        "Starting owned work appends a version, spends materials and schedules readiness atomically. Delayed completion spends nothing further.",
+        "Six to twelve participants share declared logical time and conflict priority; provider requests may execute serially. Completion is optional.",
+        "This finite work queue has no physical geometry or external execution. Researcher inspection includes private records."
+      ],
+      "measures": [
+        "workflow_completion"
+      ],
+      "analysis_plan": null,
+      "scenarios": []
+    },
+    "setting": "work",
+    "estimated_seconds": 180,
+    "recording": "/recordings/workflow-materials.json",
+    "demo_policy": "workflow_ordered_v1"
+  },
+  {
+    "id": "evidence-report",
+    "design": {
+      "title": "Evidence before submission",
+      "question": "How does one participant inspect evidence and revise work before submitting?",
+      "hypothesis": "",
+      "environment": "artifact_workspace",
+      "environment_source": null,
+      "context": "",
+      "profiles": [
+        {
+          "key": "investigator",
+          "name": "Investigator",
+          "goal": "Produce a source-backed report, or stop if you choose.",
+          "role": "Participant",
+          "model": null
+        }
+      ],
+      "tasks": [],
+      "conditions": [
+        {
+          "key": "baseline",
+          "name": "Baseline",
+          "description": "",
+          "model": "openai:gpt-6-luna",
+          "harness": {
+            "kind": "direct_action",
+            "version": "1.0.0",
+            "max_requests": 1,
+            "max_tool_operations": 0,
+            "tools": []
+          },
+          "parameters": {
+            "endowment": 10,
+            "multiplier": 2.0,
+            "communication": true,
+            "communication_channels": [
+              "messages",
+              "reports",
+              "promises"
+            ],
+            "private_signal": true,
+            "task_count": 8,
+            "institution": {
+              "authorities": [],
+              "oversight": 0.5,
+              "sanction_cap": 3,
+              "transparent": true,
+              "appeal": true
+            },
+            "bargaining": {
+              "discount": 0.9,
+              "outside_option": 1
+            },
+            "information": {
+              "accuracy": 0.75,
+              "correct_reward": 10,
+              "reveal_outcome": true
+            },
+            "resource": {
+              "capacity": 60,
+              "initial_stock": null,
+              "regeneration": 0.25,
+              "extraction_limit": 10
+            },
+            "composition": null,
+            "artifacts": {
+              "objects": [
+                {
+                  "key": "measurement",
+                  "name": "Measurement",
+                  "owner": null,
+                  "readers": [
+                    "investigator"
+                  ],
+                  "writers": [],
+                  "content": {
+                    "reading": 17
+                  }
+                },
+                {
+                  "key": "report",
+                  "name": "Report",
+                  "owner": "investigator",
+                  "readers": [],
+                  "writers": [],
+                  "content": {
+                    "reading": 0
+                  }
+                },
+                {
+                  "key": "sealed",
+                  "name": "Sealed calibration",
+                  "owner": null,
+                  "readers": [],
+                  "writers": [],
+                  "content": {
+                    "reading": 91
+                  }
+                }
+              ],
+              "requirements": [
+                {
+                  "artifact": "report",
+                  "field": "reading",
+                  "source": "measurement",
+                  "source_field": "reading"
+                }
+              ],
+              "write_limit": 3,
+              "judgment": null
+            },
+            "relay": null,
+            "finite": null,
+            "coordination": null,
+            "commitments": null,
+            "workflow": null,
+            "resource_schedule": [],
+            "memory": "episodic"
+          },
+          "profile_overrides": [],
+          "adjudicator": null
+        }
+      ],
+      "seeds": [
+        7,
+        19,
+        43
+      ],
+      "repetitions": 1,
+      "rounds": 8,
+      "budget_usd": 3.0,
+      "token_budget": null,
+      "openai_reasoning_effort": "low",
+      "response_tokens": 2048,
+      "limitations": [
+        "Deterministic structured content/source checks, not semantic judgment or evidence of intelligence.",
+        "Sequential access with fixed ACLs; no collaborative phases or model adjudication.",
+        "A citation validates source identity/version; actual reading is established only by recorded operations."
+      ],
+      "measures": [
+        "artifact_success"
+      ],
+      "analysis_plan": null,
+      "scenarios": []
+    },
+    "setting": "work",
+    "estimated_seconds": 45,
+    "recording": "/recordings/evidence-report.json",
+    "demo_policy": "artifact_copy_v1"
+  },
+  {
+    "id": "commons-messages",
+    "design": {
+      "title": "Do messages change contributions?",
+      "question": "Does allowing messages change the share contributed to a common pool?",
+      "hypothesis": "Scarcity changes the fraction of available resources contributed.",
+      "environment": "commons",
+      "environment_source": null,
+      "context": "",
+      "profiles": [
+        {
+          "key": "alex",
+          "name": "Alex",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "morgan",
+          "name": "Morgan",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "sam",
+          "name": "Sam",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "jordan",
+          "name": "Jordan",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        }
+      ],
+      "tasks": [],
+      "conditions": [
+        {
+          "key": "no-messages",
+          "name": "No messages",
+          "description": "",
+          "model": "openai:gpt-6-luna",
+          "harness": {
+            "kind": "direct_action",
+            "version": "1.0.0",
+            "max_requests": 1,
+            "max_tool_operations": 0,
+            "tools": []
+          },
+          "parameters": {
+            "endowment": 10,
+            "multiplier": 2.0,
+            "communication": true,
+            "communication_channels": [
+              "reports",
+              "promises"
+            ],
+            "private_signal": true,
+            "task_count": 8,
+            "institution": {
+              "authorities": [],
+              "oversight": 0.5,
+              "sanction_cap": 3,
+              "transparent": true,
+              "appeal": true
+            },
+            "bargaining": {
+              "discount": 0.9,
+              "outside_option": 1
+            },
+            "information": {
+              "accuracy": 0.75,
+              "correct_reward": 10,
+              "reveal_outcome": true
+            },
+            "resource": {
+              "capacity": 60,
+              "initial_stock": null,
+              "regeneration": 0.25,
+              "extraction_limit": 10
+            },
+            "composition": null,
+            "artifacts": null,
+            "relay": null,
+            "finite": null,
+            "coordination": null,
+            "commitments": null,
+            "workflow": null,
+            "resource_schedule": [],
+            "memory": "episodic"
+          },
+          "profile_overrides": [],
+          "adjudicator": null
+        },
+        {
+          "key": "messages",
+          "name": "Messages",
+          "description": "",
+          "model": "openai:gpt-6-luna",
+          "harness": {
+            "kind": "direct_action",
+            "version": "1.0.0",
+            "max_requests": 1,
+            "max_tool_operations": 0,
+            "tools": []
+          },
+          "parameters": {
+            "endowment": 10,
+            "multiplier": 2.0,
+            "communication": true,
+            "communication_channels": [
+              "reports",
+              "promises",
+              "messages"
+            ],
+            "private_signal": true,
+            "task_count": 8,
+            "institution": {
+              "authorities": [],
+              "oversight": 0.5,
+              "sanction_cap": 3,
+              "transparent": true,
+              "appeal": true
+            },
+            "bargaining": {
+              "discount": 0.9,
+              "outside_option": 1
+            },
+            "information": {
+              "accuracy": 0.75,
+              "correct_reward": 10,
+              "reveal_outcome": true
+            },
+            "resource": {
+              "capacity": 60,
+              "initial_stock": null,
+              "regeneration": 0.25,
+              "extraction_limit": 10
+            },
+            "composition": null,
+            "artifacts": null,
+            "relay": null,
+            "finite": null,
+            "coordination": null,
+            "commitments": null,
+            "workflow": null,
+            "resource_schedule": [],
+            "memory": "episodic"
+          },
+          "profile_overrides": [],
+          "adjudicator": null
+        }
+      ],
+      "seeds": [
+        7,
+        19,
+        43
+      ],
+      "repetitions": 1,
+      "rounds": 4,
+      "budget_usd": 3.0,
+      "token_budget": null,
+      "openai_reasoning_effort": "low",
+      "response_tokens": 2048,
+      "limitations": [
+        "Contribution rate operationalizes cooperation; it does not establish motive."
+      ],
+      "measures": [
+        "contribution_rate",
+        "group_payoff",
+        "false_report_rate",
+        "promise_fulfillment_rate"
+      ],
+      "analysis_plan": null,
+      "scenarios": []
+    },
+    "setting": "game",
+    "estimated_seconds": 90,
+    "recording": "/recordings/commons-messages.json",
+    "demo_policy": "commons_half_v1"
+  },
+  {
+    "id": "trust-memory",
+    "design": {
+      "title": "Memory and reciprocity",
+      "question": "Does remembering prior exchanges change reciprocity?",
+      "hypothesis": "",
+      "environment": "trust_exchange",
+      "environment_source": null,
+      "context": "",
+      "profiles": [
+        {
+          "key": "alex",
+          "name": "Alex",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "morgan",
+          "name": "Morgan",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "sam",
+          "name": "Sam",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "jordan",
+          "name": "Jordan",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        }
+      ],
+      "tasks": [],
+      "conditions": [
+        {
+          "key": "memory",
+          "name": "Episodic memory",
+          "description": "",
+          "model": "openai:gpt-6-luna",
+          "harness": {
+            "kind": "direct_action",
+            "version": "1.0.0",
+            "max_requests": 1,
+            "max_tool_operations": 0,
+            "tools": []
+          },
+          "parameters": {
+            "endowment": 10,
+            "multiplier": 2.0,
+            "communication": true,
+            "communication_channels": [
+              "messages",
+              "reports",
+              "promises"
+            ],
+            "private_signal": true,
+            "task_count": 8,
+            "institution": {
+              "authorities": [],
+              "oversight": 0.5,
+              "sanction_cap": 3,
+              "transparent": true,
+              "appeal": true
+            },
+            "bargaining": {
+              "discount": 0.9,
+              "outside_option": 1
+            },
+            "information": {
+              "accuracy": 0.75,
+              "correct_reward": 10,
+              "reveal_outcome": true
+            },
+            "resource": {
+              "capacity": 60,
+              "initial_stock": null,
+              "regeneration": 0.25,
+              "extraction_limit": 10
+            },
+            "composition": null,
+            "artifacts": null,
+            "relay": null,
+            "finite": null,
+            "coordination": null,
+            "commitments": null,
+            "workflow": null,
+            "resource_schedule": [],
+            "memory": "episodic"
+          },
+          "profile_overrides": [],
+          "adjudicator": null
+        },
+        {
+          "key": "no-memory",
+          "name": "No retained history",
+          "description": "",
+          "model": "openai:gpt-6-luna",
+          "harness": {
+            "kind": "direct_action",
+            "version": "1.0.0",
+            "max_requests": 1,
+            "max_tool_operations": 0,
+            "tools": []
+          },
+          "parameters": {
+            "endowment": 10,
+            "multiplier": 2.0,
+            "communication": true,
+            "communication_channels": [
+              "messages",
+              "reports",
+              "promises"
+            ],
+            "private_signal": true,
+            "task_count": 8,
+            "institution": {
+              "authorities": [],
+              "oversight": 0.5,
+              "sanction_cap": 3,
+              "transparent": true,
+              "appeal": true
+            },
+            "bargaining": {
+              "discount": 0.9,
+              "outside_option": 1
+            },
+            "information": {
+              "accuracy": 0.75,
+              "correct_reward": 10,
+              "reveal_outcome": true
+            },
+            "resource": {
+              "capacity": 60,
+              "initial_stock": null,
+              "regeneration": 0.25,
+              "extraction_limit": 10
+            },
+            "composition": null,
+            "artifacts": null,
+            "relay": null,
+            "finite": null,
+            "coordination": null,
+            "commitments": null,
+            "workflow": null,
+            "resource_schedule": [],
+            "memory": "none"
+          },
+          "profile_overrides": [],
+          "adjudicator": null
+        }
+      ],
+      "seeds": [
+        7,
+        19,
+        43
+      ],
+      "repetitions": 1,
+      "rounds": 4,
+      "budget_usd": 3.0,
+      "token_budget": null,
+      "openai_reasoning_effort": "low",
+      "response_tokens": 2048,
+      "limitations": [
+        "Observed reciprocity is not proof of friendship or trust as a feeling."
+      ],
+      "measures": [
+        "trust_rate",
+        "return_rate",
+        "false_report_rate"
+      ],
+      "analysis_plan": null,
+      "scenarios": []
+    },
+    "setting": "game",
+    "estimated_seconds": 90,
+    "recording": "/recordings/trust-memory.json",
+    "demo_policy": "trust_half_v1"
+  },
+  {
+    "id": "private-evidence",
+    "design": {
+      "title": "Evidence and social influence",
+      "question": "When do agents override their private evidence after observing others?",
+      "hypothesis": "",
+      "environment": "information",
+      "environment_source": null,
+      "context": "",
+      "profiles": [
+        {
+          "key": "alex",
+          "name": "Alex",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "morgan",
+          "name": "Morgan",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "sam",
+          "name": "Sam",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "jordan",
+          "name": "Jordan",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        }
+      ],
+      "tasks": [],
+      "conditions": [
+        {
+          "key": "weak",
+          "name": "Weak evidence",
+          "description": "",
+          "model": "openai:gpt-6-luna",
+          "harness": {
+            "kind": "direct_action",
+            "version": "1.0.0",
+            "max_requests": 1,
+            "max_tool_operations": 0,
+            "tools": []
+          },
+          "parameters": {
+            "endowment": 10,
+            "multiplier": 2.0,
+            "communication": true,
+            "communication_channels": [
+              "messages",
+              "reports",
+              "promises"
+            ],
+            "private_signal": true,
+            "task_count": 8,
+            "institution": {
+              "authorities": [],
+              "oversight": 0.5,
+              "sanction_cap": 3,
+              "transparent": true,
+              "appeal": true
+            },
+            "bargaining": {
+              "discount": 0.9,
+              "outside_option": 1
+            },
+            "information": {
+              "accuracy": 0.6,
+              "correct_reward": 10,
+              "reveal_outcome": true
+            },
+            "resource": {
+              "capacity": 60,
+              "initial_stock": null,
+              "regeneration": 0.25,
+              "extraction_limit": 10
+            },
+            "composition": null,
+            "artifacts": null,
+            "relay": null,
+            "finite": null,
+            "coordination": null,
+            "commitments": null,
+            "workflow": null,
+            "resource_schedule": [],
+            "memory": "episodic"
+          },
+          "profile_overrides": [],
+          "adjudicator": null
+        },
+        {
+          "key": "strong",
+          "name": "Strong evidence",
+          "description": "",
+          "model": "openai:gpt-6-luna",
+          "harness": {
+            "kind": "direct_action",
+            "version": "1.0.0",
+            "max_requests": 1,
+            "max_tool_operations": 0,
+            "tools": []
+          },
+          "parameters": {
+            "endowment": 10,
+            "multiplier": 2.0,
+            "communication": true,
+            "communication_channels": [
+              "messages",
+              "reports",
+              "promises"
+            ],
+            "private_signal": true,
+            "task_count": 8,
+            "institution": {
+              "authorities": [],
+              "oversight": 0.5,
+              "sanction_cap": 3,
+              "transparent": true,
+              "appeal": true
+            },
+            "bargaining": {
+              "discount": 0.9,
+              "outside_option": 1
+            },
+            "information": {
+              "accuracy": 0.9,
+              "correct_reward": 10,
+              "reveal_outcome": true
+            },
+            "resource": {
+              "capacity": 60,
+              "initial_stock": null,
+              "regeneration": 0.25,
+              "extraction_limit": 10
+            },
+            "composition": null,
+            "artifacts": null,
+            "relay": null,
+            "finite": null,
+            "coordination": null,
+            "commitments": null,
+            "workflow": null,
+            "resource_schedule": [],
+            "memory": "episodic"
+          },
+          "profile_overrides": [],
+          "adjudicator": null
+        }
+      ],
+      "seeds": [
+        7,
+        19,
+        43
+      ],
+      "repetitions": 1,
+      "rounds": 4,
+      "budget_usd": 3.0,
+      "token_budget": null,
+      "openai_reasoning_effort": "low",
+      "response_tokens": 2048,
+      "limitations": [
+        "Signal overrides are observed; conformity and intent are interpretations."
+      ],
+      "measures": [
+        "accuracy",
+        "signal_override_rate",
+        "false_report_rate"
+      ],
+      "analysis_plan": null,
+      "scenarios": []
+    },
+    "setting": "game",
+    "estimated_seconds": 90,
+    "recording": "/recordings/private-evidence.json",
+    "demo_policy": "private_signal_v1"
+  },
+  {
+    "id": "resource-renewal",
+    "design": {
+      "title": "Sustainable extraction",
+      "question": "Does faster resource regeneration prevent collapse of a shared stock?",
+      "hypothesis": "",
+      "environment": "renewable_resource",
+      "environment_source": null,
+      "context": "",
+      "profiles": [
+        {
+          "key": "alex",
+          "name": "Alex",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "morgan",
+          "name": "Morgan",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "sam",
+          "name": "Sam",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        },
+        {
+          "key": "jordan",
+          "name": "Jordan",
+          "goal": "Earn a sustainable personal payoff. Decide how to interact with the group.",
+          "role": "Participant",
+          "model": null
+        }
+      ],
+      "tasks": [],
+      "conditions": [
+        {
+          "key": "slow",
+          "name": "Slow regeneration",
+          "description": "",
+          "model": "openai:gpt-6-luna",
+          "harness": {
+            "kind": "direct_action",
+            "version": "1.0.0",
+            "max_requests": 1,
+            "max_tool_operations": 0,
+            "tools": []
+          },
+          "parameters": {
+            "endowment": 10,
+            "multiplier": 2.0,
+            "communication": true,
+            "communication_channels": [
+              "messages",
+              "reports",
+              "promises"
+            ],
+            "private_signal": true,
+            "task_count": 8,
+            "institution": {
+              "authorities": [],
+              "oversight": 0.5,
+              "sanction_cap": 3,
+              "transparent": true,
+              "appeal": true
+            },
+            "bargaining": {
+              "discount": 0.9,
+              "outside_option": 1
+            },
+            "information": {
+              "accuracy": 0.75,
+              "correct_reward": 10,
+              "reveal_outcome": true
+            },
+            "resource": {
+              "capacity": 60,
+              "initial_stock": null,
+              "regeneration": 0.1,
+              "extraction_limit": 8
+            },
+            "composition": null,
+            "artifacts": null,
+            "relay": null,
+            "finite": null,
+            "coordination": null,
+            "commitments": null,
+            "workflow": null,
+            "resource_schedule": [],
+            "memory": "episodic"
+          },
+          "profile_overrides": [],
+          "adjudicator": null
+        },
+        {
+          "key": "fast",
+          "name": "Fast regeneration",
+          "description": "",
+          "model": "openai:gpt-6-luna",
+          "harness": {
+            "kind": "direct_action",
+            "version": "1.0.0",
+            "max_requests": 1,
+            "max_tool_operations": 0,
+            "tools": []
+          },
+          "parameters": {
+            "endowment": 10,
+            "multiplier": 2.0,
+            "communication": true,
+            "communication_channels": [
+              "messages",
+              "reports",
+              "promises"
+            ],
+            "private_signal": true,
+            "task_count": 8,
+            "institution": {
+              "authorities": [],
+              "oversight": 0.5,
+              "sanction_cap": 3,
+              "transparent": true,
+              "appeal": true
+            },
+            "bargaining": {
+              "discount": 0.9,
+              "outside_option": 1
+            },
+            "information": {
+              "accuracy": 0.75,
+              "correct_reward": 10,
+              "reveal_outcome": true
+            },
+            "resource": {
+              "capacity": 60,
+              "initial_stock": null,
+              "regeneration": 0.8,
+              "extraction_limit": 8
+            },
+            "composition": null,
+            "artifacts": null,
+            "relay": null,
+            "finite": null,
+            "coordination": null,
+            "commitments": null,
+            "workflow": null,
+            "resource_schedule": [],
+            "memory": "episodic"
+          },
+          "profile_overrides": [],
+          "adjudicator": null
+        }
+      ],
+      "seeds": [
+        7,
+        19,
+        43
+      ],
+      "repetitions": 1,
+      "rounds": 4,
+      "budget_usd": 3.0,
+      "token_budget": null,
+      "openai_reasoning_effort": "low",
+      "response_tokens": 2048,
+      "limitations": [
+        "Stylized logistic resource dynamics, without geography or calibrated ecology."
+      ],
+      "measures": [
+        "stock_fraction",
+        "extraction_rate",
+        "collapse_rate"
+      ],
+      "analysis_plan": null,
+      "scenarios": []
+    },
+    "setting": "game",
+    "estimated_seconds": 90,
+    "recording": "/recordings/resource-renewal.json",
+    "demo_policy": "resource_half_v1"
+  }
+]

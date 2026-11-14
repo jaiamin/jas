@@ -75,10 +75,10 @@ export function ExperimentActions({ study }: { study: StudySummary }) {
       <RecordActionsMenu name={study.title} triggerRef={triggerRef}>
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link to={`/studies/${study.id}`}>Open experiment</Link>
+            <Link to={`/experiments/${study.id}`}>Open experiment</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to={`/new?study=${study.id}`}>Edit as new revision</Link>
+            <Link to={`/new?study=${study.id}`}>Edit as new version</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to={`/new?copy=${study.id}`}>Duplicate</Link>
@@ -119,7 +119,7 @@ export function ExperimentActions({ study }: { study: StudySummary }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete experiment?</AlertDialogTitle>
             <AlertDialogDescription>
-              “{study.title}” and all its revisions, runs, evidence, and related
+              “{study.title}” and all its versions, runs, evidence, and related
               chat messages will be permanently deleted. Spending records and
               local drafts are kept.
             </AlertDialogDescription>
@@ -154,14 +154,14 @@ export function ExperimentActions({ study }: { study: StudySummary }) {
 export function RunActions({ run }: { run: RunSummary }) {
   return (
     <RecordActionsMenu
-      name={`${run.condition}, seed ${run.seed}, revision ${run.revision}, repetition ${run.repetition}`}
+      name={`${run.condition}, seed ${run.seed}, version ${run.revision}, repetition ${run.repetition}`}
     >
       <DropdownMenuGroup>
         <DropdownMenuItem asChild>
           <Link to={`/runs/${run.id}`}>Inspect run</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to={`/studies/${run.study_id}?revision=${run.revision}`}>
+          <Link to={`/experiments/${run.study_id}?revision=${run.revision}`}>
             Open experiment
           </Link>
         </DropdownMenuItem>

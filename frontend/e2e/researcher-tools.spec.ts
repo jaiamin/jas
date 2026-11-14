@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Analysis } from "../src/lib/types.js";
+import { settings as settingsFixture } from "../src/test/fixtures.js";
 
 for (const theme of ["light", "dark"]) {
   for (const width of [390, 1440]) {
@@ -14,6 +15,7 @@ for (const theme of ["light", "dark"]) {
       await page.route("**/api/settings", (route) =>
         route.fulfill({
           json: {
+            ...settingsFixture,
             providers: { openai: true },
             planner_model: "openai:gpt-6.1-sol",
             assistant_model: "openai:gpt-6.1-sol",
@@ -107,8 +109,8 @@ for (const theme of ["light", "dark"]) {
           body: `data: ${JSON.stringify(row)}\n\n`,
         });
       });
-      await page.goto("/agent");
-      const composer = page.getByLabel("Message Agent", { exact: true });
+      await page.goto("/assistant");
+      const composer = page.getByLabel("Message Assistant", { exact: true });
       await composer.fill(row.question);
       await page
         .getByRole("button", { name: "Send message", exact: true })

@@ -104,7 +104,7 @@ function ResearchSource({
             ? `/environments?environment=${encodeURIComponent(source.id)}`
             : source.kind === "environment"
               ? `/new?setup=${encodeURIComponent(source.id)}&step=conditions`
-              : `/agent?chat=${chatId}#${source.id}`
+              : `/assistant?chat=${chatId}#${source.id}`
       }
     >
       {content}
