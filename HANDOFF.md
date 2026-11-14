@@ -1,6 +1,38 @@
 # JAS handoff
 
-## Current: Railway deployment repair
+## Current: MVP redesign discovery
+
+User requires the attached November 13 end-to-end product spec exactly for MVP,
+with v0.2 excluded, and explicitly requested `grill-with-docs` before implementation.
+All 19 PDF pages and the engine/interface/deployment fact-finding are reviewed.
+Requirements, acceptance criteria and unresolved decisions are tracked in
+`docs/MVP_REDESIGN_PLAN.md`. Product vocabulary has been aligned in the glossary.
+User accepted all six first-round recommendations: jaslab distribution/JAS/ jas CLI,
+explicit token caps for unknown prices, fresh $10 aggregate Step 0 live budget,
+separate Railway gallery plan targeting $10/month before cost-reviewed provisioning,
+one-version publication scope excluding private assistant context, and archival of
+HANDOFF/internal reports outside the public tree without rewriting Git history.
+User additionally requires minimal, organized frontend/backend changes with no
+unnecessary abstractions. Accepted durable boundaries are recorded in ADRs 0003/0004.
+User accepted all six final policies (Q7–Q12) and confirmed shared understanding;
+the interview is complete. Implement now, keeping all spec MVP requirements and
+minimal frontend/backend changes. Major refactors are explicitly authorized where
+they improve the codebase. Accepted decisions and the concrete Step 0 plan are in
+`docs/MVP_REDESIGN_PLAN.md`; public-record decisions are ADRs 0003–0005.
+No application implementation, provider calls, user-data changes or infrastructure
+mutations have occurred. Local dependency bootstrap is in progress. System uv aborts
+on this sandbox's 16 KB pages; `.venv` is being populated with pip under exact
+uv.lock constraints without changing the committed lockfile. Frontend frozen install
+passed. Next: keyless validity/accounting checks, then the authorized isolated Step 0.
+
+Baseline `5dd65475` includes merged PR #40; the prior draft-PR note below is
+historical. Latest observed Checks run `43313112223` was refused before jobs started
+because of GitHub billing/spending limits. Live Railway state is not freshly verified;
+no CLI/MCP path is available. Never reuse historical paid-evaluation authorization.
+The user authorized replacing the tracked-handoff rule with preserved local archival
+at public-documentation cleanup; do not lose these records or rewrite Git history.
+
+## Previous: Railway deployment repair
 
 PR #39 is merged into main (`3b918ff9`). Branch `fix/railway-deployment` starts
 there. User authorized Railway log inspection, configuration and deployment repair.
