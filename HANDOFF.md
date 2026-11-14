@@ -59,8 +59,8 @@ Manual checks on port 8080 verified compact filters and full-width Settings/edit
 selects at 320px without horizontal overflow, with 11px from caret to outer edge.
 The existing local server remains on 0.0.0.0:8080; no model calls or deployment.
 
-Sidebar follow-up: collapsed usage now shows a 28px ring with a subtle 6px center
-dot and no visible text or numbers; its tooltip, Settings link, dollar/token
+Sidebar follow-up: collapsed usage now shows an empty 24px ring with no inner
+symbol, visible text or numbers; its tooltip, Settings link, dollar/token
 accounting and unavailable/uncapped states are preserved. Every navigation icon
 now stays outlined, including when selected, per the final user preference.
 Removed sidebar fill rules and unused partial-fill configuration. Frontend lint,
@@ -68,6 +68,6 @@ Removed sidebar fill rules and unused partial-fill configuration. Frontend lint,
 all eight active links, token fallback and uncapped usage. Manual checks verified
 the ring and outlined Settings in the running 8080 app. Browser preferences were
 restored; the temporary test server/tab were closed. No backend or deployment changes.
-Latest usage polish replaces the logo with that dot and thickens the horizontal
-meter to 5px and the ring's SVG stroke to 3 units. Lint/build and three affected
+Latest usage polish uses a 32px collapsed control and 4px gap above Settings,
+with a 5px horizontal meter and 3-unit ring stroke. Lint/build and three affected
 browser cases pass; unit/backend suites were not repeated for this visual change.

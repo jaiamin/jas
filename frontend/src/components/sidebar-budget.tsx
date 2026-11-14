@@ -18,7 +18,7 @@ function BudgetRing({ value, label }: { value: number | null; label: string }) {
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={value ?? undefined}
-      className="relative hidden size-7 items-center justify-center group-data-[collapsible=icon]:flex"
+      className="relative hidden size-6 group-data-[collapsible=icon]:block"
     >
       <svg
         viewBox="0 0 36 36"
@@ -41,10 +41,6 @@ function BudgetRing({ value, label }: { value: number | null; label: string }) {
           className="text-primary"
         />
       </svg>
-      <span
-        aria-hidden="true"
-        className="size-1.5 rounded-full bg-muted-foreground/40"
-      />
     </span>
   );
 }
@@ -56,7 +52,7 @@ export function SidebarBudget() {
       <Link
         to="/settings"
         aria-label="Budget unavailable. Open budget settings."
-        className="px-2 py-1 text-xs text-muted-foreground group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:h-11 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0"
+        className="px-2 py-1 text-xs text-muted-foreground group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0"
       >
         <span className="group-data-[collapsible=icon]:hidden">
           Budget unavailable
@@ -67,7 +63,7 @@ export function SidebarBudget() {
       <div
         role="status"
         aria-label="Loading budget"
-        className="px-2 py-2 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:h-11 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0"
+        className="px-2 py-2 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0"
       >
         <Skeleton className="h-3 w-full group-data-[collapsible=icon]:hidden" />
         <BudgetRing value={null} label="Loading budget" />
@@ -93,7 +89,7 @@ export function SidebarBudget() {
         <Link
           to="/settings"
           aria-label={`${title}: ${description}`}
-          className="flex flex-col gap-2 rounded-md px-2 py-2 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-data-[collapsible=icon]:h-11 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0"
+          className="flex flex-col gap-2 rounded-md px-2 py-2 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0"
         >
           <span className="flex flex-col gap-2 group-data-[collapsible=icon]:hidden">
             <span className="flex items-center justify-between gap-2">
