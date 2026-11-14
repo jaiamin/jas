@@ -264,7 +264,7 @@ export default function WorkspaceShell() {
           </nav>
         </SidebarContent>
         <SidebarSeparator className="mx-0" />
-        <SidebarFooter className="group-data-[collapsible=icon]:gap-1">
+        <SidebarFooter>
           <SidebarBudget />
           <nav aria-label="Workspace settings">
             <SidebarMenu>

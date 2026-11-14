@@ -59,19 +59,12 @@ Manual checks on port 8080 verified compact filters and full-width Settings/edit
 selects at 320px without horizontal overflow, with 11px from caret to outer edge.
 The existing local server remains on 0.0.0.0:8080; no model calls or deployment.
 
-Sidebar follow-up: collapsed usage now shows an empty 24px ring with no inner
-symbol, visible text or numbers; its tooltip, Settings link, dollar/token
-accounting and unavailable/uncapped states are preserved. Every navigation icon
-now stays outlined, including when selected, per the final user preference.
-Removed sidebar fill rules and unused partial-fill configuration. Frontend lint,
-149 unit tests, build and 14 navigation/browser cases pass, including both themes,
-all eight active links, token fallback and uncapped usage. Manual checks verified
-the ring and outlined Settings in the running 8080 app. Browser preferences were
-restored; the temporary test server/tab were closed. No backend or deployment changes.
-Latest usage polish uses a 32px collapsed control and 4px gap above Settings,
-with a 5px horizontal meter and 3-unit ring stroke. Lint/build and three affected
-browser cases pass; unit/backend suites were not repeated for this visual change.
-Sidebar usage amounts now use up to three decimals, `<$0.001` for tiny nonzero
-charges and two decimals for the ceiling. Tooltips retain up to six decimals;
-token counts, ledger values and meter calculations are unchanged. Lint/build and
-four affected browser cases pass, including zero, threshold and detailed-tooltip checks.
+Sidebar follow-up: usage appears only in the expanded sidebar; collapsed loading,
+unavailable and usage states are hidden, leaving a direct Settings link. Navigation
+icons stay outlined when selected. The 5px expanded meter uses up to three decimals
+for dollar usage, `<$0.001` for tiny nonzero charges and two decimals for the ceiling;
+tooltips retain up to six decimals. Token counts and accounting are unchanged, and
+uncapped meters have no percentage value. Obsolete ring code was removed. Lint/build
+and four affected browser cases pass, covering collapse/expand in both themes,
+zero/threshold/precise-dollar display and token/uncapped fallback. Unit/backend suites
+were not repeated. The existing local app remains on 0.0.0.0:8080; no deployment.

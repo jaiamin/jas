@@ -466,7 +466,7 @@ test("sidebar usage stays compact without hiding small charges or precise totals
 });
 
 for (const theme of ["light", "dark"]) {
-  test(`collapsed usage and outlined selected icons remain clear · ${theme}`, async ({
+  test(`usage hides when collapsed and selected icons stay outlined · ${theme}`, async ({
     page,
   }) => {
     await page.addInitScript(
@@ -483,18 +483,22 @@ for (const theme of ["light", "dark"]) {
       }),
     );
     await page.goto("/assistant");
-    await page
-      .getByRole("button", { name: "Collapse sidebar", exact: true })
-      .click();
     const footer = page.locator('[data-slot="sidebar-footer"]');
-    const budget = footer.getByRole("link", { name: /^Usage:/ });
+    const budget = footer.getByRole("link", {
+      name: /^Usage:/,
+      includeHidden: true,
+    });
     await expect(budget).toBeVisible();
     await expect(budget.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",
       "50",
     );
-    await expect(budget.locator(":scope > span").first()).toBeHidden();
-    await expect(budget.locator("img")).toHaveCount(0);
+    await page
+      .getByRole("button", { name: "Collapse sidebar", exact: true })
+      .click();
+    await expect(budget).toBeHidden();
+    await expect(footer.getByRole("link")).toHaveCount(1);
+    await expect(footer.getByRole("progressbar")).toHaveCount(0);
     for (const name of [
       "Home",
       "Assistant",
@@ -511,6 +515,11 @@ for (const theme of ["light", "dark"]) {
       for (const part of await link.locator("svg > *").all())
         await expect(part).toHaveCSS("fill", "none");
     }
+    await page.locator('[data-slot="sidebar-header"]').first().hover();
+    await page
+      .getByRole("button", { name: "Expand sidebar", exact: true })
+      .click();
+    await expect(budget).toBeVisible();
     await budget.click();
     await expect(page).toHaveURL(/\/settings$/);
     await page.route("**/api/settings", (route) =>
@@ -529,7 +538,7 @@ for (const theme of ["light", "dark"]) {
       "aria-valuenow",
       "75",
     );
-    await expect(tokens.locator(":scope > span").first()).toBeHidden();
+    await expect(tokens.locator(".tabular-nums")).toContainText("750");
     await page.route("**/api/settings", (route) =>
       route.fulfill({
         json: {

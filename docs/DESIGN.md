@@ -144,11 +144,10 @@ subtitle or appearance dropdown. Light/dark mode lives only in the top-right hea
 A stock SidebarSeparator separates the primary, workspace and community groups;
 the footer divider spans the full sidebar. Settings keeps its 32px height in the
 collapsed rail, while the usage line is hidden to retain a clean icon column.
-Collapsed usage is an empty 24px circular budget indicator with a 3-unit SVG stroke,
-inside a 32px control separated from Settings by a 4px gap. It has no inner symbol,
-visible labels or amounts. The expanded meter is 5px thick. It retains the budget tooltip and
-Settings link, uses the token ceiling when dollar cost is unknown, and shows a quiet
-track when usage is loading, unavailable or uncapped.
+Usage is hidden entirely when collapsed, including its loading and unavailable
+states; the footer keeps one direct Settings link. The expanded meter is 5px thick,
+retains the detailed tooltip and Settings link, and uses the token ceiling when
+dollar cost is unknown. An uncapped meter has no percentage value.
 Sidebar dollar usage uses up to three decimals, with `<$0.001` for smaller nonzero
 amounts and `$0.00` for zero. The visible dollar ceiling uses two decimals; tooltip
 amounts retain up to six decimals. Token counts and budget calculations stay unchanged.
