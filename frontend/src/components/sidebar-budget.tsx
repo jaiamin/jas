@@ -77,12 +77,17 @@ export function SidebarBudget() {
   const cap = unpriced ? tokenCap : s.budget_usd;
   const percentage =
     cap != null && cap > 0 ? Math.min(100, (used / cap) * 100) : null;
-  const format = (value: number) =>
-    unpriced ? value.toLocaleString() : money(value);
-  const amount = `${format(used)} / ${cap == null ? "uncapped" : format(cap)}`;
+  const usedLabel = unpriced
+    ? used.toLocaleString()
+    : used > 0 && used < 0.001
+      ? "<$0.001"
+      : money(used, 3);
+  const capLabel =
+    cap == null ? "uncapped" : unpriced ? cap.toLocaleString() : money(cap, 2);
+  const amount = `${usedLabel} / ${capLabel}`;
   const description = unpriced
-    ? `Dollar cost unknown. ${amount} tokens, including reservations. ${money(s.charged_usd)} in priced usage.`
-    : `${amount} committed across this workspace, including pending reservations. Open budget settings.`;
+    ? `Dollar cost unknown. ${amount} tokens, including reservations. ${money(s.charged_usd, 6)} in priced usage.`
+    : `${money(used, 6)} / ${money(cap, 6)} committed across this workspace, including pending reservations. Open budget settings.`;
   return (
     <Tooltip>
       <TooltipTrigger asChild>

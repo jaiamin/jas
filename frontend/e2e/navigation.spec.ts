@@ -429,6 +429,42 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
   await expect(page).toHaveTitle("JAS");
 });
 
+test("sidebar usage stays compact without hiding small charges or precise totals", async ({
+  page,
+}) => {
+  let used = 0;
+  await page.route("**/api/settings", (route) =>
+    route.fulfill({
+      json: {
+        ...settingsFixture,
+        budget_usd: 25,
+        charged_usd: used,
+        usage: { ...settingsFixture.usage, cost_usd: used },
+      },
+    }),
+  );
+  for (const [value, visible, precise] of [
+    [0, "$0.00", "$0.00"],
+    [0.064321, "$0.064", "$0.064321"],
+    [0.000001, "<$0.001", "$0.000001"],
+    [0.001, "$0.001", "$0.001"],
+    [1.234567, "$1.235", "$1.234567"],
+  ] as const) {
+    used = value;
+    await page.goto("/assistant");
+    const budget = page
+      .locator('[data-slot="sidebar-footer"]')
+      .getByRole("link", { name: /^Usage:/ });
+    await expect(budget.locator(".tabular-nums")).toHaveText(
+      `${visible} / $25.00`,
+    );
+    await budget.hover();
+    await expect(page.getByRole("tooltip")).toContainText(
+      `${precise} / $25.00`,
+    );
+  }
+});
+
 for (const theme of ["light", "dark"]) {
   test(`collapsed usage and outlined selected icons remain clear · ${theme}`, async ({
     page,

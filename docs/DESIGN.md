@@ -149,6 +149,9 @@ inside a 32px control separated from Settings by a 4px gap. It has no inner symb
 visible labels or amounts. The expanded meter is 5px thick. It retains the budget tooltip and
 Settings link, uses the token ceiling when dollar cost is unknown, and shows a quiet
 track when usage is loading, unavailable or uncapped.
+Sidebar dollar usage uses up to three decimals, with `<$0.001` for smaller nonzero
+amounts and `$0.00` for zero. The visible dollar ceiling uses two decimals; tooltip
+amounts retain up to six decimals. Token counts and budget calculations stay unchanged.
 Navigation glyphs are 15px; the sidebar toggle glyph is 14px in its unchanged 28px target.
 Every sidebar icon stays outlined when selected. The text color and background
 highlight identify the active page. Partial fills outside the sidebar stay at the icon boundary;

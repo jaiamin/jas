@@ -71,3 +71,7 @@ restored; the temporary test server/tab were closed. No backend or deployment ch
 Latest usage polish uses a 32px collapsed control and 4px gap above Settings,
 with a 5px horizontal meter and 3-unit ring stroke. Lint/build and three affected
 browser cases pass; unit/backend suites were not repeated for this visual change.
+Sidebar usage amounts now use up to three decimals, `<$0.001` for tiny nonzero
+charges and two decimals for the ceiling. Tooltips retain up to six decimals;
+token counts, ledger values and meter calculations are unchanged. Lint/build and
+four affected browser cases pass, including zero, threshold and detailed-tooltip checks.
