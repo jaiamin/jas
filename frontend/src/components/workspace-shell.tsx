@@ -7,10 +7,11 @@ import {
   useState,
 } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { AssistantPanel } from "@/components/agent/assistant-panel";
+import { useWorkspaceAssistant } from "@/components/agent/assistant-workspace";
 import { Empty } from "@/components/feedback";
 import {
   AgentIcon,
-  BookOpen,
   FlaskConical,
   Github,
   Globe,
@@ -82,6 +83,15 @@ export default function WorkspaceShell() {
   const location = useLocation();
   const isAgent = location.pathname === "/assistant";
   const isHome = location.pathname === "/";
+  const { pageContext } = useWorkspaceAssistant();
+  const [assistantOpen, setAssistantOpen] = useState(false);
+  const [assistantMounted, setAssistantMounted] = useState(false);
+  const assistantTrigger = useRef<HTMLButtonElement>(null);
+  const assistantVisible = assistantOpen && !isHome && !isAgent;
+  function closeAssistant() {
+    setAssistantOpen(false);
+    assistantTrigger.current?.focus();
+  }
   const isRecordList = ["/experiments", "/runs"].includes(location.pathname);
   const runs = useApi<RunSummary[]>("/runs", true);
   const active =
@@ -90,11 +100,7 @@ export default function WorkspaceShell() {
     ) ?? [];
   const primaryLinks = [
     { to: "/", label: "Home", icon: House },
-    {
-      to: "/assistant",
-      label: "Assistant",
-      icon: AgentIcon,
-    },
+    { to: "/gallery", label: "Gallery", icon: Globe },
   ];
   const links = [
     {
@@ -199,21 +205,6 @@ export default function WorkspaceShell() {
             {[
               { label: null, items: primaryLinks },
               { label: "Workspace", items: links },
-              {
-                label: "Community",
-                items: [
-                  {
-                    to: "/gallery",
-                    label: "Gallery",
-                    icon: Globe,
-                  },
-                  {
-                    to: "/published",
-                    label: "My published",
-                    icon: BookOpen,
-                  },
-                ],
-              },
             ].map((group, index) => (
               <Fragment key={group.label ?? "primary"}>
                 {index > 0 && (
@@ -264,7 +255,7 @@ export default function WorkspaceShell() {
           </nav>
         </SidebarContent>
         <SidebarSeparator className="mx-0" />
-        <SidebarFooter>
+        <SidebarFooter className="overflow-hidden">
           <SidebarBudget />
           <nav aria-label="Workspace settings">
             <SidebarMenu>
@@ -295,6 +286,23 @@ export default function WorkspaceShell() {
             <SidebarTrigger ref={menuTrigger} aria-label="Open menu" />
           )}
           <div className="ml-auto flex items-center gap-1">
+            {!isHome && !isAgent && (
+              <Button
+                ref={assistantTrigger}
+                variant="outline"
+                size="sm"
+                className="mr-1 px-2.5 has-data-[icon=inline-start]:pl-2.5"
+                aria-expanded={assistantVisible}
+                aria-controls="workspace-assistant"
+                onClick={() => {
+                  setAssistantMounted(true);
+                  setAssistantOpen((open) => !open);
+                }}
+              >
+                <AgentIcon data-icon="inline-start" aria-hidden="true" />
+                Assistant
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon-sm"
@@ -315,46 +323,70 @@ export default function WorkspaceShell() {
             </Button>
           </div>
         </header>
-        <div
-          key={location.pathname}
-          data-slot="workspace-content"
-          className={cn(
-            "min-h-0 flex-1",
-            isAgent
-              ? "overflow-hidden"
-              : "overflow-x-hidden overflow-y-auto overscroll-contain scroll-py-4 [scrollbar-gutter:stable]",
-          )}
-        >
+        <div className="flex min-h-0 flex-1 overflow-hidden">
           <div
-            id="main"
+            key={location.pathname}
+            data-slot="workspace-content"
             className={cn(
-              "min-w-0 w-full",
+              "min-h-0 min-w-0 flex-1",
+              assistantVisible && "hidden xl:block",
               isAgent
-                ? "h-full min-h-0"
-                : isHome
-                  ? "pb-10"
-                  : isRecordList
-                    ? "pb-10"
-                    : "mx-auto max-w-7xl p-4 pb-10 sm:p-6 lg:p-8",
+                ? "overflow-hidden"
+                : "overflow-x-hidden overflow-y-auto overscroll-contain scroll-py-4 [scrollbar-gutter:stable]",
             )}
-            tabIndex={-1}
           >
-            <Suspense
-              fallback={
-                isAgent ? (
-                  <div className="flex h-full items-center justify-center">
-                    <Spinner aria-label="Loading Assistant" />
-                  </div>
-                ) : (
-                  <Loading />
-                )
-              }
+            <div
+              id="main"
+              className={cn(
+                "min-w-0 w-full",
+                isAgent
+                  ? "h-full min-h-0"
+                  : isHome
+                    ? "pb-10"
+                    : isRecordList
+                      ? "pb-10"
+                      : "mx-auto max-w-7xl p-4 pb-10 sm:p-6 lg:p-8",
+              )}
+              tabIndex={-1}
             >
-              <PageBoundary key={location.pathname}>
-                <Outlet />
-              </PageBoundary>
-            </Suspense>
+              <Suspense
+                fallback={
+                  isAgent ? (
+                    <div className="flex h-full items-center justify-center">
+                      <Spinner aria-label="Loading Assistant" />
+                    </div>
+                  ) : (
+                    <Loading />
+                  )
+                }
+              >
+                <PageBoundary key={location.pathname}>
+                  <Outlet />
+                </PageBoundary>
+              </Suspense>
+            </div>
           </div>
+          {assistantMounted && !isHome && !isAgent && (
+            <aside
+              id="workspace-assistant"
+              aria-labelledby="assistant-panel-title"
+              className={cn(
+                "flex min-h-0 min-w-0 w-full flex-col border-l bg-background xl:w-110 xl:shrink-0",
+                !assistantVisible && "hidden",
+              )}
+              onKeyDown={(event) => {
+                if (event.key === "Escape" && !event.defaultPrevented) {
+                  event.preventDefault();
+                  closeAssistant();
+                }
+              }}
+            >
+              <AssistantPanel
+                pageContext={pageContext}
+                onClose={closeAssistant}
+              />
+            </aside>
+          )}
         </div>
       </SidebarInset>
     </>

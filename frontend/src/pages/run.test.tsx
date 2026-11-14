@@ -1,6 +1,7 @@
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
 import { expect, test, vi } from "vitest";
+import { AssistantWorkspaceProvider } from "@/components/agent/assistant-workspace";
 import { WorkspaceProvider } from "@/components/workspace-provider";
 import WorkspaceShell from "@/components/workspace-shell";
 import {
@@ -222,9 +223,11 @@ for (const late of [false, true]) {
     const view = renderWithQueries(
       <MemoryRouter initialEntries={["/runs/run?tab=settings"]}>
         <Link to="/runs/second?tab=settings">Other run</Link>
-        <Routes>
-          <Route path="/runs/:id" element={<Run />} />
-        </Routes>
+        <AssistantWorkspaceProvider>
+          <Routes>
+            <Route path="/runs/:id" element={<Run />} />
+          </Routes>
+        </AssistantWorkspaceProvider>
       </MemoryRouter>,
     );
     fireEvent.click(

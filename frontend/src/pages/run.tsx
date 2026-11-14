@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { AdjudicationReview } from "@/components/adjudication";
-import { AssistantPanel } from "@/components/agent/assistant-panel";
+import { useAssistantPageContext } from "@/components/agent/assistant-workspace";
 import { MetricChart } from "@/components/charts";
 import { Alert, Empty } from "@/components/feedback";
 import { Download, Pause, Play, Radio, SkipForward } from "@/components/icons";
@@ -67,6 +67,16 @@ export default function Run() {
     requested !== null
       ? Math.max(0, Math.min(maxTurn, Math.trunc(Number(requested) || 0)))
       : maxTurn;
+  useAssistantPageContext(
+    query.data && !query.error
+      ? {
+          context: `run:${query.data.summary.id}`,
+          title: query.data.summary.study_title,
+          revision: query.data.summary.revision,
+          throughTurn: turn,
+        }
+      : null,
+  );
   const pinned = requested !== null;
   const evidence = useQuery({
     queryKey: ["evidence", id, turn],
@@ -179,11 +189,6 @@ export default function Run() {
         title={summary.condition}
         description={`${runModelLabel(summary)} · Version ${summary.revision} · Seed ${summary.seed} · Repetition ${summary.repetition}`}
       >
-        <AssistantPanel
-          context={`run:${summary.id}`}
-          revision={summary.revision}
-          throughTurn={turn}
-        />
         <Button
           variant="ghost"
           size="icon"

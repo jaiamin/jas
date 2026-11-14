@@ -71,3 +71,34 @@ were not repeated. The existing local app remains on 0.0.0.0:8080; no deployment
 Sidebar toggle spacing: both states retain a 28px control and 14px glyph. The
 expanded control now ends 6px before the divider; collapsed alignment is preserved.
 Lint/build and two desktop/narrow navigation browser cases pass; full suites were not rerun.
+
+
+Workspace interface refinement: [the UI acceptance plan](docs/UI_REDESIGN_PLAN.md)
+records the latest user-approved changes. Home has four original illustrated
+Experiment ideas with equal cells and 16px horizontal padding; Get started and its
+onboarding-only writes are removed. Gallery sits below Home and contains Browse /
+My published; Assistant and Community are removed from the left navigation.
+
+The outlined Assistant toggle precedes the theme control, with equal 10px padding
+and matching vertical centers. It is absent on Home and the focused Assistant
+page; Home has no top-right history control. The 440px right pane starts below the
+global header, pushes wide-page content, and fills the main area below 1280px.
+Its dropdown uses a darker history icon and the current chat name / New chat.
+Only New chat and Close remain at right; Open in Assistant is inside history.
+The welcome has the supplied JAS logo, suggestions have no boxed background, and
+the composer stays at the bottom. Shared Add context always remains available;
+individual experiment/run pages select their displayed revision/cutoff by default.
+Selection is clearable and remembered without modifying page filters.
+
+Chat/draft slots survive closing, navigation, reload and late acceptance. Focusing
+an accepted pending submission reconnects that chat without another POST. A late
+response cannot replace a newer chat/draft. Usage retains its accounting and
+precision; its fixed-width text is clipped by the footer during expansion instead
+of squeezing/wrapping. All sidebar icons remain outlined.
+
+Final verification: frontend lint/build, all 149 unit tests and all 83 affected
+browser cases passed, including desktop/phone, light/dark, exact scope, manual
+context, history, streaming/recovery, drafts, pending handoff and measured padding /
+usage animation. Manual inspection verified the final pane on the running 8080
+app. Backend tests were not repeated because backend code is unchanged. No model
+calls or deployment were made; preserve data/workspace and the existing 8080 server.

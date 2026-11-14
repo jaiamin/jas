@@ -1,100 +1,72 @@
-import { Link } from "react-router-dom";
-import { EnvironmentMark } from "@/components/environments/environment-mark";
-import { Play } from "@/components/icons";
-import { ErrorState } from "@/components/shared";
+import { Fragment } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemTitle,
-} from "@/components/ui/item";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useApi } from "@/lib/api";
-import { money } from "@/lib/format";
-import type { Starter } from "@/lib/types";
+import { ItemGroup } from "@/components/ui/item";
+import { Separator } from "@/components/ui/separator";
+import { agentSuggestions } from "@/lib/agent-suggestions";
 
-export function StarterExperiments() {
-  const starters = useApi<Starter[]>("/starters");
+const ideas = agentSuggestions({ context: "new" });
+const illustrations = ["communication", "memory", "oversight", "resources"];
+const titles = [
+  "Can conversation build cooperation?",
+  "Does memory change reciprocity?",
+  "How does oversight shape choices?",
+  "Can shared resources endure?",
+];
+const descriptions = [
+  "Compare contributions to a shared pool with public messages on or off.",
+  "Compare return rates with private notes versus the same recorded history.",
+  "Vary the chance of oversight and compare sanctions under the same rules.",
+  "Change resource renewal and compare extraction, stock levels, and survival.",
+];
+
+export function StarterExperiments({
+  onChoose,
+  disabled,
+}: {
+  onChoose: (prompt: string) => void;
+  disabled: boolean;
+}) {
   return (
     <section aria-labelledby="starter-title" className="flex flex-col gap-3">
       <h2 id="starter-title" className="text-sm font-medium">
-        Starter experiments
+        Experiment ideas
       </h2>
-      {starters.error && (
-        <ErrorState error={starters.error} onRetry={starters.refetch} />
-      )}
-      {!starters.data && !starters.error && (
-        <div
-          role="status"
-          aria-label="Loading starter experiments"
-          className="grid gap-3 sm:grid-cols-2"
-        >
-          <Skeleton className="h-40" />
-          <Skeleton className="h-40" />
-        </div>
-      )}
-      {starters.data && (
-        <ItemGroup className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {starters.data.slice(0, 3).map((starter) => (
-            <Item
-              key={starter.id}
-              variant="outline"
-              className="h-full flex-col items-stretch gap-4 p-4"
+      <ItemGroup className="overflow-hidden rounded-xl border xl:flex-row">
+        {ideas.map(({ prompt }, index) => (
+          <Fragment key={illustrations[index]}>
+            <Button
+              variant="ghost"
+              className="h-auto w-full min-w-0 flex-1 items-center justify-start gap-3 rounded-none border-0 p-4 whitespace-normal text-left focus-visible:ring-inset has-data-[icon=inline-start]:pl-4 xl:flex-col xl:items-start"
+              disabled={disabled}
+              onClick={() => onChoose(prompt)}
             >
-              <div className="flex items-center justify-between gap-3">
-                <EnvironmentMark
-                  environment={starter.design.environment}
-                  size={32}
-                />
-                <span className="text-xs text-muted-foreground">
-                  {starter.setting === "work"
-                    ? "Work setting"
-                    : "Abstract game"}
+              <img
+                src={`/illustrations/suggestions/${illustrations[index]}.webp`}
+                alt=""
+                width={32}
+                height={32}
+                className="m-0.5 size-8 shrink-0 object-contain object-left saturate-50 contrast-90"
+                data-icon="inline-start"
+                aria-hidden="true"
+              />
+              <span className="flex min-w-0 flex-col gap-1.5">
+                <span className="text-[0.9375rem] leading-[1.1875rem] font-semibold">
+                  {titles[index]}
                 </span>
-              </div>
-              <ItemContent className="gap-2">
-                <ItemTitle>
-                  <Link
-                    to={`/new?starter=${starter.id}`}
-                    className="hover:underline"
-                  >
-                    {starter.design.title}
-                  </Link>
-                </ItemTitle>
-                <ItemDescription className="line-clamp-none">
-                  {starter.design.question}
-                </ItemDescription>
-              </ItemContent>
-              <p className="text-xs text-muted-foreground">
-                About {Math.max(1, Math.round(starter.estimated_seconds / 60))}{" "}
-                min ·{" "}
-                {starter.estimate.upper_usd == null
-                  ? "Cost unknown"
-                  : `up to ${money(starter.estimate.upper_usd)}`}
-                <span className="sr-only">
-                  . Conservative estimate; model speed varies.
+                <span className="text-[0.8125rem] leading-4.5 font-normal text-foreground/60">
+                  {descriptions[index]}
                 </span>
-              </p>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="-ml-2 justify-start self-start"
-                asChild
-              >
-                <Link
-                  to={`/watch/${starter.id}`}
-                  aria-label={`Watch a recorded run: ${starter.design.title}`}
-                >
-                  <Play data-icon="inline-start" />
-                  Watch a recorded run
-                </Link>
-              </Button>
-            </Item>
-          ))}
-        </ItemGroup>
-      )}
+              </span>
+            </Button>
+            {index < ideas.length - 1 && (
+              <>
+                <Separator className="xl:hidden" />
+                <Separator orientation="vertical" className="hidden xl:block" />
+              </>
+            )}
+          </Fragment>
+        ))}
+      </ItemGroup>
     </section>
   );
 }

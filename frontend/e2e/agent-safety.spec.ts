@@ -92,17 +92,15 @@ for (const destination of ["experiments", "new chat"]) {
     await expect(page).toHaveURL(chosenURL);
     if (destination === "new chat") {
       await expect(input).toHaveValue("Keep this new draft");
-      await page
-        .getByRole("button", { name: "Chat history", exact: true })
-        .click();
+      await page.getByRole("button", { name: /chat history/i }).click();
       await expect(
         page.getByRole("navigation", { name: "Past chats" }),
       ).toContainText("Original question");
     } else {
-      await page.getByRole("link", { name: "Assistant", exact: true }).click();
       await page
-        .getByRole("button", { name: "Chat history", exact: true })
+        .getByRole("button", { name: "Assistant", exact: true })
         .click();
+      await page.getByRole("button", { name: /chat history/i }).click();
       await expect(
         page.getByRole("navigation", { name: "Past chats" }),
       ).toContainText("Original question");

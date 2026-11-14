@@ -14,11 +14,3 @@ export async function loadRecording(id: string): Promise<RunRecording> {
     throw new Error("This recording needs a newer JAS viewer.");
   return value;
 }
-
-export function markWatched() {
-  try {
-    localStorage.setItem("jas:onboarding:watched", "true");
-  } catch {
-    /* Playback works without browser storage. */
-  }
-}

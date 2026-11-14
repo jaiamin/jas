@@ -99,11 +99,6 @@ export function PublishExperiment({ study }: { study: StudyDetail }) {
       }),
     onSuccess: () => {
       receipt.refetch();
-      try {
-        localStorage.setItem("jas:onboarding:published", "true");
-      } catch {
-        /* The published link still works without storage. */
-      }
     },
   });
   const complete = study.runs.filter((run) => run.status === "complete");

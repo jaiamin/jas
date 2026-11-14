@@ -9,7 +9,6 @@ import {
 } from "@/components/disclosure";
 import { DraftList } from "@/components/draft-list";
 import { Alert } from "@/components/feedback";
-import { FirstRunStrip } from "@/components/first-run-strip";
 import { HomeWorld } from "@/components/home-world";
 import {
   ArrowUpRight,
@@ -116,11 +115,10 @@ export default function Home() {
         </div>
       </section>
       <div className="mx-auto flex w-full max-w-232 flex-col gap-8 px-4 pt-8 pb-6 sm:px-6 sm:pt-10 sm:pb-8">
-        <FirstRunStrip
-          settings={state.settings.data}
-          hasRun={runs.data?.some((run) => run.status === "complete") ?? false}
+        <StarterExperiments
+          onChoose={state.chooseSuggestion}
+          disabled={state.send.isPending}
         />
-        <StarterExperiments />
         {active.length > 0 && (
           <section
             aria-labelledby="active-runs-title"

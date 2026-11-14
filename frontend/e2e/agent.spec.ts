@@ -155,7 +155,7 @@ test("Assistant welcome stays static on screen and after scrolling", async ({
   await expect.poll(playing).toBe(0);
   // The spec reserves motion for playback and the Home sky.
   await expect.poll(playing).toBe(0);
-  await expect(heading.locator("svg")).not.toHaveAttribute("data-agent-motion");
+  await expect(heading.locator("img")).not.toHaveAttribute("data-agent-motion");
   await page
     .getByRole("button", { name: "Learn the basics" })
     .scrollIntoViewIfNeeded();
@@ -174,7 +174,7 @@ test("Agent welcome stays static with reduced motion and does not replay a skipp
   await page.goto("/assistant");
   const target = page
     .getByRole("heading", { name: "What can we explore?" })
-    .locator("svg");
+    .locator("img");
   await expect(target).toBeVisible();
   await expect(target).not.toHaveAttribute("data-agent-motion");
   expect(
@@ -191,7 +191,7 @@ test("Agent welcome stays static with reduced motion and does not replay a skipp
   ).toBe(0);
 });
 
-test("Agent centers a plain contextual composer without a history rail", async ({
+test("Agent anchors a plain contextual composer below suggestions without a history rail", async ({
   page,
   request,
 }) => {
@@ -203,7 +203,7 @@ test("Agent centers a plain contextual composer without a history rail", async (
   await expect(
     page.getByRole("link", { name: "Ask Assistant", exact: true }),
   ).toHaveCount(0);
-  await page.getByRole("link", { name: "Assistant", exact: true }).click();
+  await page.goto("/assistant");
   await expect(page).toHaveTitle("JAS");
   await expect(
     page.getByRole("button", { name: "New mechanics", exact: true }),
@@ -225,13 +225,13 @@ test("Agent centers a plain contextual composer without a history rail", async (
   await page.keyboard.press("Escape");
   await expect(page.getByRole("tab")).toHaveCount(0);
   await expect(
-    sidebar.getByRole("complementary", { name: "Chat history" }),
+    sidebar.getByRole("complementary", { name: /chat history/i }),
   ).toHaveCount(0);
   await expect(
-    page.locator("main").getByRole("complementary", { name: "Chat history" }),
+    page.locator("main").getByRole("complementary", { name: /chat history/i }),
   ).toHaveCount(0);
   await expect(
-    page.getByRole("button", { name: "Chat history", exact: true }),
+    page.getByRole("button", { name: /chat history/i }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "start from scratch" }),
@@ -254,8 +254,8 @@ test("Agent centers a plain contextual composer without a history rail", async (
     headingBox &&
       composerBox &&
       ideasBox &&
-      headingBox.y + headingBox.height < composerBox.y &&
-      composerBox.y + composerBox.height < ideasBox.y,
+      headingBox.y + headingBox.height < ideasBox.y &&
+      ideasBox.y + ideasBox.height < composerBox.y,
   ).toBe(true);
   await expect(
     page.getByRole("button", { name: "Open Assistant workspace" }),
@@ -339,7 +339,7 @@ test("Agent centers a plain contextual composer without a history rail", async (
   await expect(input).toHaveValue("Compare the recorded strategies");
   await expect(
     page.getByRole("button", { name: "New chat", exact: true }),
-  ).toHaveCount(0);
+  ).toBeVisible();
 });
 
 test("saved conversations resume after reload and new chats keep separate histories", async ({
@@ -425,7 +425,9 @@ test("saved conversations resume after reload and new chats keep separate histor
     ),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "What is a matched seed?", exact: true }),
+    page
+      .getByRole("region", { name: "Assistant conversation" })
+      .getByText("What is a matched seed?", { exact: true }),
   ).toBeVisible();
   expect(submitted[1]).toEqual({
     question: "How do repetitions help?",
@@ -436,7 +438,7 @@ test("saved conversations resume after reload and new chats keep separate histor
   await expect(
     page.getByText("Each condition shares the same initial randomization."),
   ).toBeAttached();
-  await page.getByRole("button", { name: "Chat history", exact: true }).click();
+  await page.getByRole("button", { name: /chat history/i }).click();
   await expect(
     page
       .getByRole("navigation", { name: "Past chats" })
@@ -447,13 +449,13 @@ test("saved conversations resume after reload and new chats keep separate histor
   await expect(input).toHaveValue("");
   await expect(
     page.getByRole("button", { name: "New chat", exact: true }),
-  ).toHaveCount(0);
+  ).toBeVisible();
   await expect(
     page.getByText(
       "Repetitions create independent trials under the same seed.",
     ),
   ).toHaveCount(0);
-  await page.getByRole("button", { name: "Chat history", exact: true }).click();
+  await page.getByRole("button", { name: /chat history/i }).click();
   await page
     .getByRole("navigation", { name: "Past chats" })
     .getByRole("link", { name: "What is a matched seed?" })
@@ -630,9 +632,7 @@ for (const theme of ["light", "dark"]) {
       ),
     ).toBe(true);
     if (theme === "dark") {
-      await page
-        .getByRole("button", { name: "Chat history", exact: true })
-        .click();
+      await page.getByRole("button", { name: /chat history/i }).click();
       await page
         .getByRole("dialog", { name: "Recent chats" })
         .getByRole("link", {
@@ -797,9 +797,7 @@ for (const width of [320, 1440]) {
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
-    await page
-      .getByRole("button", { name: "Chat history", exact: true })
-      .click();
+    await page.getByRole("button", { name: /chat history/i }).click();
     const popup = page.getByRole("dialog", { name: "Recent chats" });
     const history = popup.locator('[data-slot="scroll-area-viewport"]');
     await expect(popup.getByRole("link")).toHaveCount(120);
@@ -834,7 +832,7 @@ for (const width of [320, 1440]) {
     await page.keyboard.press("Escape");
     await expect(popup).toHaveCount(0);
     await expect(
-      page.getByRole("button", { name: "Chat history", exact: true }),
+      page.getByRole("button", { name: /chat history/i }),
     ).toBeFocused();
   });
 }
@@ -857,7 +855,7 @@ test("history loads inside its popup while the new-chat composer stays editable"
   await expect(input).toBeVisible();
   expect(historyRequests).toBe(0);
   const trigger = page.getByRole("button", {
-    name: "Chat history",
+    name: /chat history/i,
     exact: true,
   });
   await trigger.click();
@@ -942,7 +940,7 @@ test("saved transcript loading keeps history and New available without showing a
     page.getByRole("status", { name: "Loading conversation" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Chat history", exact: true }),
+    page.getByRole("button", { name: /chat history/i }),
   ).toBeVisible();
   await expect(
     page.getByRole("form", { name: "Assistant composer" }),
@@ -962,7 +960,7 @@ test("saved transcript loading keeps history and New available without showing a
 });
 
 for (const width of [320, 1440]) {
-  test(`long conversation titles indicate truncation and keep the full question available · ${width}`, async ({
+  test(`Assistant keeps a quiet header and the full question in its transcript · ${width}`, async ({
     page,
   }) => {
     const question =
@@ -989,12 +987,14 @@ for (const width of [320, 1440]) {
       }),
     );
     await page.goto("/assistant?chat=long-title");
-    const title = page.locator("main header h1");
-    await expect(title).toHaveText(
-      `${Array.from(question).slice(0, 79).join("").trimEnd()}…`,
-    );
-    await expect(title).toHaveAttribute("title", question);
-    await expect(title).toHaveCSS("text-overflow", "ellipsis");
+    await expect(
+      page.getByRole("heading", { name: "Assistant", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page
+        .getByRole("region", { name: "Assistant conversation" })
+        .getByText(question, { exact: true }),
+    ).toBeVisible();
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth > innerWidth,

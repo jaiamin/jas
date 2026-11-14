@@ -31,19 +31,7 @@ for (const width of [390, 1440]) {
       if (request.url().includes("/api/") && request.method() !== "GET")
         writes.push(request.url());
     });
-    await page.goto("/");
-    const starters = page.getByRole("region", { name: "Starter experiments" });
-    await expect(
-      starters.getByRole("link", { name: /^Watch a recorded run:/ }),
-    ).toHaveCount(3);
-    await expect(
-      starters.getByText("Work setting", { exact: true }),
-    ).toHaveCount(2);
-    await starters
-      .getByRole("link", {
-        name: /Watch a recorded run: Evidence before submission/,
-      })
-      .click();
+    await page.goto("/watch/evidence-report");
     await expect(
       page.getByText("Scripted demo", { exact: true }).first(),
     ).toBeVisible();

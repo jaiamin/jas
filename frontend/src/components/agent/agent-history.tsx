@@ -2,7 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useId, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Alert } from "@/components/feedback";
-import { History, MessageSquare } from "@/components/icons";
+import {
+  ChevronDown,
+  History,
+  Maximize2,
+  MessageSquare,
+} from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyDescription, EmptyHeader } from "@/components/ui/empty";
 import {
@@ -21,12 +26,22 @@ import { api } from "@/lib/api";
 import { relativeTime } from "@/lib/format";
 import type { ChatSummary } from "@/lib/types";
 
-export function AgentHistory() {
+export function AgentHistory({
+  currentChat,
+  currentTitle,
+  onSelect,
+  focusLink,
+}: {
+  currentChat?: string | null;
+  currentTitle?: string;
+  onSelect?: (id: string) => void;
+  focusLink?: { to: string; state?: unknown };
+}) {
   const now = useNow();
   const [open, setOpen] = useState(false);
   const titleId = useId();
   const [params] = useSearchParams();
-  const current = params.get("chat");
+  const current = currentChat === undefined ? params.get("chat") : currentChat;
   const chats = useQuery({
     queryKey: ["/chats"],
     queryFn: () => api<ChatSummary[]>("/chats"),
@@ -37,16 +52,29 @@ export function AgentHistory() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
-          size="icon"
-          aria-label="Chat history"
-          title="Chat history"
+          variant="ghost"
+          size="sm"
+          className="-ml-2.5 min-w-0 max-w-full shrink justify-start has-data-[icon=inline-start]:pl-2.5 has-data-[icon=inline-end]:pr-2.5"
+          aria-label={`${current ? (currentTitle ?? "Chat") : "New chat"} · Chat history`}
+          title={current ? (currentTitle ?? "Chat history") : "Chat history"}
         >
-          <History aria-hidden="true" />
+          <History
+            data-icon="inline-start"
+            className="text-foreground/70"
+            aria-hidden="true"
+          />
+          <span className="min-w-0 truncate">
+            {current ? (currentTitle ?? "Chat") : "New chat"}
+          </span>
+          <ChevronDown
+            data-icon="inline-end"
+            className="text-muted-foreground"
+            aria-hidden="true"
+          />
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        align="end"
+        align="start"
         collisionPadding={16}
         className="w-80 max-w-[calc(100vw-2rem)] gap-1.5"
         aria-labelledby={titleId}
@@ -100,7 +128,19 @@ export function AgentHistory() {
                     to={`/assistant?chat=${chat.id}`}
                     title={chat.title}
                     aria-current={current === chat.id ? "page" : undefined}
-                    onClick={() => setOpen(false)}
+                    onClick={(event) => {
+                      if (
+                        onSelect &&
+                        !event.metaKey &&
+                        !event.ctrlKey &&
+                        !event.shiftKey &&
+                        !event.altKey
+                      ) {
+                        event.preventDefault();
+                        onSelect(chat.id);
+                      }
+                      setOpen(false);
+                    }}
                   >
                     <MessageSquare
                       data-icon="inline-start"
@@ -136,6 +176,21 @@ export function AgentHistory() {
               <EmptyDescription>No chats yet</EmptyDescription>
             </EmptyHeader>
           </Empty>
+        )}
+        {focusLink && (
+          <div className="-mx-2.5 border-t px-1 pt-1.5">
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start"
+            >
+              <Link {...focusLink} onClick={() => setOpen(false)}>
+                <Maximize2 data-icon="inline-start" aria-hidden="true" />
+                Open in Assistant
+              </Link>
+            </Button>
+          </div>
         )}
       </PopoverContent>
     </Popover>

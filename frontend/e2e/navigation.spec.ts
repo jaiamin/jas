@@ -194,7 +194,7 @@ test("Home is the entry point; AI creation stays available without a key", async
       exact: true,
     }),
   ).toBeVisible();
-  await page.getByRole("link", { name: "Assistant", exact: true }).click();
+  await page.goto("/assistant");
   await expect(
     page.getByRole("combobox", { name: "Message context" }),
   ).toContainText("Add context");
@@ -399,7 +399,7 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
     exact: true,
   });
   await expect(expand).toHaveCSS("opacity", "0");
-  await expect(separators).toHaveCount(3);
+  await expect(separators).toHaveCount(2);
   await expect(separators.first()).toBeVisible();
   expect((await separators.first().boundingBox())?.y).toBe(
     sectionLineBefore?.y,
@@ -501,12 +501,10 @@ for (const theme of ["light", "dark"]) {
     await expect(footer.getByRole("progressbar")).toHaveCount(0);
     for (const name of [
       "Home",
-      "Assistant",
+      "Gallery",
       "Experiments",
       "Runs",
       "Environments",
-      "Gallery",
-      "My published",
       "Settings",
     ]) {
       const link = page.getByRole("link", { name, exact: true });

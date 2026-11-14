@@ -5,7 +5,7 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
-import { AssistantPanel } from "@/components/agent/assistant-panel";
+import { useAssistantPageContext } from "@/components/agent/assistant-workspace";
 import { ComparisonEvidence } from "@/components/comparison-evidence";
 import {
   Disclosure,
@@ -61,6 +61,15 @@ export default function Study() {
         ["running", "queued", "pausing"].includes(run.status),
       ) ?? false,
   );
+  useAssistantPageContext(
+    query.data && !query.error
+      ? {
+          context: `study:${query.data.id}`,
+          title: query.data.design.title,
+          revision: query.data.revision,
+        }
+      : null,
+  );
   const client = useQueryClient();
   const control = useMutation({
     mutationFn: (action: string) => api(`/studies/${id}/control`, { action }),
@@ -99,10 +108,6 @@ export default function Study() {
         title={study.design.title}
         description={study.design.question}
       >
-        <AssistantPanel
-          context={`study:${study.id}`}
-          revision={study.revision}
-        />
         <Button variant="outline" size="sm" asChild>
           <Link to={`/new?study=${id}&revision=${study.revision}`}>
             <Settings2 data-icon="inline-start" />

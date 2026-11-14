@@ -36,6 +36,7 @@ export {
   Layers2,
   LoaderCircle,
   LockKeyhole,
+  Maximize2,
   MessageSquare,
   Monitor,
   Moon,

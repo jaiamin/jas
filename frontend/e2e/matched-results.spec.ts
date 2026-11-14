@@ -191,10 +191,11 @@ test("closing a pending Assistant panel retains its chat and frozen cutoff", asy
     }),
   );
   await page.goto(`/runs/${runId}?turn=1`);
-  await page
-    .getByRole("button", { name: "Ask about this", exact: true })
-    .click();
-  let panel = page.getByRole("dialog");
+  await page.getByRole("button", { name: "Assistant", exact: true }).click();
+  let panel = page.getByRole("complementary", {
+    name: "Assistant",
+    exact: true,
+  });
   await panel
     .getByLabel("Message Assistant", { exact: true })
     .fill("What happened by this turn?");
@@ -207,7 +208,9 @@ test("closing a pending Assistant panel retains its chat and frozen cutoff", asy
     revision: 1,
     through_turn: 1,
   });
-  await panel.getByRole("button", { name: "Close", exact: true }).click();
+  await panel
+    .getByRole("button", { name: "Close Assistant", exact: true })
+    .click();
   finish();
   await expect
     .poll(() =>
@@ -217,26 +220,28 @@ test("closing a pending Assistant panel retains its chat and frozen cutoff", asy
       ),
     )
     .toBe("panel-chat");
-  await page
-    .getByRole("button", { name: "Ask about this", exact: true })
-    .click();
-  panel = page.getByRole("dialog");
+  await page.getByRole("button", { name: "Assistant", exact: true }).click();
+  panel = page.getByRole("complementary", { name: "Assistant", exact: true });
   await expect(
     panel.getByText("Pinned response", { exact: true }),
   ).toBeVisible();
+  await panel.getByRole("button", { name: /chat history/i }).click();
   await expect(
-    panel.getByRole("link", {
-      name: "Open conversation in Assistant",
-      exact: true,
-    }),
+    page.getByRole("link", { name: "Open in Assistant", exact: true }),
   ).toHaveAttribute("href", /chat=panel-chat.*revision=1.*through_turn=1/);
-  await panel.getByRole("button", { name: "Close", exact: true }).click();
-  await page.reload();
-  await page
-    .getByRole("button", { name: "Ask about this", exact: true })
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "Recent chats" })).toHaveCount(
+    0,
+  );
+  await panel
+    .getByRole("button", { name: "Close Assistant", exact: true })
     .click();
+  await page.reload();
+  await page.getByRole("button", { name: "Assistant", exact: true }).click();
   await expect(
-    page.getByRole("dialog").getByText("Pinned response", { exact: true }),
+    page
+      .getByRole("complementary", { name: "Assistant", exact: true })
+      .getByText("Pinned response", { exact: true }),
   ).toBeVisible();
   expect(sends).toBe(1);
   expect(

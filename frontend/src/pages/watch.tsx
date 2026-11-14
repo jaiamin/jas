@@ -7,7 +7,7 @@ import { RunViewer } from "@/components/run/run-viewer";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { loadRecording, markWatched } from "@/lib/recordings";
+import { loadRecording } from "@/lib/recordings";
 
 export default function Watch() {
   const { id = "" } = useParams();
@@ -71,7 +71,6 @@ export default function Watch() {
           maxTurn={run.summary.turn}
           moments={run.key_moments}
           onTurn={(number) => {
-            if (number > 0) markWatched();
             setParams({ turn: String(number) }, { replace: true });
           }}
         />

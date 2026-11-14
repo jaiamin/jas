@@ -36,7 +36,7 @@ test("history retry restores the active chat and exposes pending work", async ()
     </MemoryRouter>,
   );
   expect(fetch).not.toHaveBeenCalled();
-  fireEvent.click(screen.getByRole("button", { name: "Chat history" }));
+  fireEvent.click(screen.getByRole("button", { name: /chat history/i }));
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "Could not load chats",
   );

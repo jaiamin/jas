@@ -1,6 +1,7 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, expect, test, vi } from "vitest";
+import { AssistantWorkspaceProvider } from "@/components/agent/assistant-workspace";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { settings as settingsFixture } from "@/test/fixtures";
@@ -30,7 +31,9 @@ function renderShell(path: string) {
     <MemoryRouter initialEntries={[path]}>
       <TooltipProvider>
         <SidebarProvider>
-          <WorkspaceShell />
+          <AssistantWorkspaceProvider>
+            <WorkspaceShell />
+          </AssistantWorkspaceProvider>
         </SidebarProvider>
       </TooltipProvider>
     </MemoryRouter>,

@@ -1,6 +1,7 @@
 import { act, fireEvent, screen } from "@testing-library/react";
 import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
 import { expect, test, vi } from "vitest";
+import { AssistantWorkspaceProvider } from "@/components/agent/assistant-workspace";
 import { WorkspaceProvider } from "@/components/workspace-provider";
 import WorkspaceShell from "@/components/workspace-shell";
 import type { StudyDetail } from "@/lib/types";
@@ -61,9 +62,11 @@ function snapshot(statuses: string[]): StudyDetail {
 function renderStudy(path = "/experiments/study") {
   return renderWithQueries(
     <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route path="/experiments/:id" element={<Study />} />
-      </Routes>
+      <AssistantWorkspaceProvider>
+        <Routes>
+          <Route path="/experiments/:id" element={<Study />} />
+        </Routes>
+      </AssistantWorkspaceProvider>
     </MemoryRouter>,
   );
 }

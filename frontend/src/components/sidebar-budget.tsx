@@ -17,7 +17,7 @@ export function SidebarBudget() {
       <Link
         to="/settings"
         aria-label="Budget unavailable. Open budget settings."
-        className="px-2 py-1 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden"
+        className="w-[calc(var(--sidebar-width)-1rem)] shrink-0 whitespace-nowrap px-2 py-1 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden"
       >
         Budget unavailable
       </Link>
@@ -25,7 +25,7 @@ export function SidebarBudget() {
       <div
         role="status"
         aria-label="Loading budget"
-        className="px-2 py-2 group-data-[collapsible=icon]:hidden"
+        className="w-[calc(var(--sidebar-width)-1rem)] shrink-0 px-2 py-2 group-data-[collapsible=icon]:hidden"
       >
         <Skeleton className="h-3 w-full" />
       </div>
@@ -55,7 +55,7 @@ export function SidebarBudget() {
         <Link
           to="/settings"
           aria-label={`${title}: ${description}`}
-          className="flex flex-col gap-2 rounded-md px-2 py-2 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-data-[collapsible=icon]:hidden"
+          className="flex w-[calc(var(--sidebar-width)-1rem)] shrink-0 flex-col gap-2 whitespace-nowrap rounded-md px-2 py-2 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-data-[collapsible=icon]:hidden"
         >
           <span className="flex items-center justify-between gap-2">
             <span>{title}</span>

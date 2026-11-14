@@ -66,10 +66,8 @@ test("Home keeps immediate content usable while only database rows show skeleton
       recent.getByRole("link", { name: label, exact: true }),
     ).toBeVisible();
   }
-  const starters = page.getByRole("region", { name: "Starter experiments" });
-  await expect(
-    starters.getByRole("link", { name: /^Watch a recorded run:/ }),
-  ).toHaveCount(3);
+  const starters = page.getByRole("region", { name: "Experiment ideas" });
+  await expect(starters.getByRole("button")).toHaveCount(4);
   const input = page.getByLabel("Message Assistant", { exact: true });
   await input.fill(
     "Design an experiment about public messages and cooperation.",
@@ -378,10 +376,8 @@ test("Home submits once, opens the saved Assistant conversation and never resubm
     "opacity",
     "1",
   );
-  const starters = page.getByRole("region", { name: "Starter experiments" });
-  await expect(
-    starters.getByRole("link", { name: /^Watch a recorded run:/ }),
-  ).toHaveCount(3);
+  const starters = page.getByRole("region", { name: "Experiment ideas" });
+  await expect(starters.getByRole("button")).toHaveCount(4);
   expect(submissions).toBe(0);
   const input = page.getByLabel("Message Assistant", { exact: true });
   await input.fill(
@@ -513,8 +509,8 @@ test("late Home responses keep the user's destination and leave the chat in hist
   await page.getByRole("link", { name: "Experiments", exact: true }).click();
   release();
   await expect(page).toHaveTitle("JAS");
-  await page.getByRole("link", { name: "Assistant", exact: true }).click();
-  await page.getByRole("button", { name: "Chat history", exact: true }).click();
+  await page.getByRole("button", { name: "Assistant", exact: true }).click();
+  await page.getByRole("button", { name: /chat history/i }).click();
   await expect(
     page
       .getByRole("navigation", { name: "Past chats" })
@@ -682,9 +678,9 @@ for (const width of [390, 1440])
       ).toHaveAttribute("href", "/new");
       await expect(
         page
-          .getByRole("region", { name: "Starter experiments" })
-          .getByRole("link", { name: /^Watch a recorded run:/ }),
-      ).toHaveCount(3);
+          .getByRole("region", { name: "Experiment ideas" })
+          .getByRole("button"),
+      ).toHaveCount(4);
       await expect(
         page
           .getByRole("region", { name: "In progress" })
@@ -789,10 +785,14 @@ for (const width of [390, 1440])
         fullPage: true,
       });
       const starters = page.getByRole("region", {
-        name: "Starter experiments",
+        name: "Experiment ideas",
       });
-      const cards = starters.locator('[data-slot="item"]');
-      await expect(cards).toHaveCount(3);
+      const cards = starters.getByRole("button");
+      await expect(cards).toHaveCount(4);
+      for (const card of await cards.all()) {
+        await expect(card).toHaveCSS("padding-left", "16px");
+        await expect(card).toHaveCSS("padding-right", "16px");
+      }
       const boxes = await cards.evaluateAll((cards) =>
         cards.map((card) => {
           const box = card.getBoundingClientRect();
@@ -803,10 +803,7 @@ for (const width of [390, 1440])
         true,
       );
       expect(new Set(boxes.map((box) => Math.round(box.width))).size).toBe(1);
-      await starters
-        .getByRole("link", { name: /^Watch a recorded run:/ })
-        .first()
-        .hover();
+      await starters.getByRole("button").first().hover();
       await page.screenshot({
         path: testInfo.outputPath(`home-hover-${theme}-${width}.png`),
         fullPage: true,
@@ -823,12 +820,10 @@ for (const width of [390, 1440])
       const nav = page.getByRole("navigation", { name: "Main navigation" });
       await expect(nav.getByRole("link")).toHaveText([
         "Home",
-        "Assistant",
+        "Gallery",
         "Experiments",
         "Runs",
         "Environments",
-        "Gallery",
-        "My published",
       ]);
       const typography = await nav.getByRole("link").evaluateAll((links) =>
         links.map((link) => {

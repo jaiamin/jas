@@ -1,4 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useIsMutating,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { api, useApi } from "@/lib/api";
 import type { AnalysisLensKey, Settings } from "@/lib/types";
@@ -60,7 +64,9 @@ export function useAgentComposer({
   const unavailable = settings.data?.providers[provider] === false;
   const client = useQueryClient();
   const submitting = useRef(false);
+  const pendingSends = useIsMutating({ mutationKey: ["agent-send", draftKey] });
   const send = useMutation({
+    mutationKey: ["agent-send", draftKey],
     mutationFn: (submission: Submission) =>
       api<ChatCreated>("/chats", { ...submission, chat_id: chatId }),
     onSettled: () => {
@@ -87,6 +93,7 @@ export function useAgentComposer({
     if (
       question.trim() &&
       !busy &&
+      !pendingSends &&
       !send.isPending &&
       !submitting.current &&
       !unavailable &&
@@ -119,7 +126,12 @@ export function useAgentComposer({
     unavailable,
     send,
     submit,
-    blocked: busy || send.isPending || !settings.data,
-    disabled: busy || send.isPending || !settings.data || !!unavailable,
+    blocked: busy || pendingSends > 0 || send.isPending || !settings.data,
+    disabled:
+      busy ||
+      pendingSends > 0 ||
+      send.isPending ||
+      !settings.data ||
+      !!unavailable,
   };
 }

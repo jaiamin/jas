@@ -120,8 +120,8 @@ test("switching study revisions preserves the selected tab and Agent context", a
   await expect(
     page.getByRole("heading", { name: study.design.title, exact: true }),
   ).toBeVisible();
-  await page
-    .getByRole("button", { name: "Ask about this", exact: true })
-    .click();
-  await expect(page.getByRole("dialog")).toContainText("Version 1");
+  await page.getByRole("button", { name: "Assistant", exact: true }).click();
+  await expect(
+    page.getByRole("complementary", { name: "Assistant", exact: true }),
+  ).toContainText("v1");
 });

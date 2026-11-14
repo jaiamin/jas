@@ -8,6 +8,7 @@ import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api, useApi } from "@/lib/api";
 import { date, label } from "@/lib/format";
 import type { PublicationCard } from "@/lib/publication";
@@ -115,12 +116,14 @@ function GalleryCards({ cards }: { cards: PublicationCard[] }) {
 
 export default function GalleryPage({
   publicSurface = false,
-  mine = false,
+  mine: publishedOnly = false,
 }: {
   publicSurface?: boolean;
   mine?: boolean;
 }) {
   const [params, setParams] = useSearchParams();
+  const mine =
+    publishedOnly || (!publicSurface && params.get("view") === "mine");
   const filters = new URLSearchParams(
     [...params].filter(([key]) =>
       ["world", "model", "tag", "sort", "offset"].includes(key),
@@ -143,16 +146,8 @@ export default function GalleryPage({
     });
   }
   const featured = query.data?.filter((card) => card.featured) ?? [];
-  return (
+  const content = (
     <>
-      <PageHeading
-        title={mine ? "My published" : "Gallery"}
-        description={
-          mine
-            ? "Your immutable publications and shared links."
-            : "Controlled, replayable experiments on AI agents."
-        }
-      />
       {!mine && (
         <div className="mb-8 grid gap-3 sm:grid-cols-4">
           {["world", "model", "tag"].map((key) => (
@@ -302,6 +297,42 @@ export default function GalleryPage({
         <p role="status" className="mt-4 text-sm">
           {notice}
         </p>
+      )}
+    </>
+  );
+  return (
+    <>
+      <PageHeading
+        title={publicSurface && mine ? "My published" : "Gallery"}
+        description={
+          publicSurface
+            ? mine
+              ? "Your immutable publications and shared links."
+              : "Controlled, replayable experiments on AI agents."
+            : "Discover replayable experiments and manage what you share."
+        }
+      />
+      {publicSurface ? (
+        content
+      ) : (
+        <Tabs
+          value={mine ? "mine" : "browse"}
+          onValueChange={(view) => {
+            setParams((previous) => {
+              const next = new URLSearchParams(previous);
+              view === "mine" ? next.set("view", "mine") : next.delete("view");
+              return next;
+            });
+            setRemoving(null);
+            setNotice("");
+          }}
+        >
+          <TabsList variant="line" className="mb-5" aria-label="Gallery views">
+            <TabsTrigger value="browse">Browse</TabsTrigger>
+            <TabsTrigger value="mine">My published</TabsTrigger>
+          </TabsList>
+          <TabsContent value={mine ? "mine" : "browse"}>{content}</TabsContent>
+        </Tabs>
       )}
     </>
   );

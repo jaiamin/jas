@@ -56,6 +56,8 @@ export function AgentContext({
   runs,
   disabled,
   loading = false,
+  scope,
+  contextTitle,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -63,6 +65,8 @@ export function AgentContext({
   runs: RunSummary[];
   disabled?: boolean;
   loading?: boolean;
+  scope?: { revision: number; through_turn?: number };
+  contextTitle?: string;
 }) {
   const [open, setOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -72,6 +76,7 @@ export function AgentContext({
     studies.some((study) => value === `study:${study.id}`) ||
     runs.some((run) => value === `run:${run.id}`);
   const selected = value !== "general";
+  const selectedLabel = `${contextTitle ?? contextLabel(value, studies, runs)}${scope ? ` · v${scope.revision}${scope.through_turn !== undefined ? ` · turn ${scope.through_turn}` : ""}` : ""}`;
   const Icon = !selected
     ? Plus
     : value.startsWith("run:")
@@ -108,15 +113,11 @@ export function AgentContext({
               selected &&
                 "pr-0 hover:bg-transparent dark:hover:bg-transparent aria-expanded:bg-transparent",
             )}
-            title={
-              selected
-                ? contextLabel(value, studies, runs)
-                : "Add experiment or run context"
-            }
+            title={selected ? selectedLabel : "Add experiment or run context"}
           >
             <Icon data-icon="inline-start" aria-hidden="true" />
             <span className="truncate font-normal">
-              {selected ? contextLabel(value, studies, runs) : "Add context"}
+              {selected ? selectedLabel : "Add context"}
             </span>
           </Button>
         </PopoverTrigger>

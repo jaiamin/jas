@@ -136,18 +136,21 @@ belong to the preset and its stylesheet, except the dedicated brand wordmark.
 ## Layout
 
 Selected sidebar text retains the same size and weight as unselected text.
-The stock Sidebar starts with Home/Assistant above Workspace
-(Experiments, Runs, Environments), then Community (Gallery, My published).
+The stock Sidebar starts with Home and Gallery above Workspace
+(Experiments, Runs, Environments). Gallery contains Browse and My published tabs;
+there is one publishing destination and no Community navigation group.
 The compact brand link returns to Home. The footer contains a quiet usage line,
 a thin budget meter and one direct Settings link. There is no avatar, chooser,
 subtitle or appearance dropdown. Light/dark mode lives only in the top-right header.
-A stock SidebarSeparator separates the primary, workspace and community groups;
+A stock SidebarSeparator separates primary navigation from Workspace;
 the footer divider spans the full sidebar. Settings keeps its 32px height in the
 collapsed rail, while the usage line is hidden to retain a clean icon column.
 Usage is hidden entirely when collapsed, including its loading and unavailable
 states; the footer keeps one direct Settings link. The expanded meter is 5px thick,
 retains the detailed tooltip and Settings link, and uses the token ceiling when
-dollar cost is unknown. An uncapped meter has no percentage value.
+dollar cost is unknown. An uncapped meter has no percentage value. The usage row
+keeps its expanded width and nonwrapping text while the surrounding sidebar
+animates, so its labels never squeeze or reflow during expansion.
 Sidebar dollar usage uses up to three decimals, with `<$0.001` for smaller nonzero
 amounts and `$0.00` for zero. The visible dollar ceiling uses two decimals; tooltip
 amounts retain up to six decimals. Token counts and budget calculations stay unchanged.
@@ -164,7 +167,9 @@ scrolls; page content owns vertical scrolling with contained overscroll, stable 
 gutters and 16px scroll-target padding. Path navigation resets the page scroller.
 The editor’s section tabs stick directly below the global header. Agent retains
 its existing independent scrollers. The global bar has no title or breadcrumb;
-theme toggle precedes the GitHub brand link at right. These glyphs use the stock 16px size;
+an outlined Assistant button precedes the theme toggle and GitHub brand link at right.
+The Assistant button uses equal 10px horizontal padding and shares the controls’
+vertical center and 28px height. Hide it on Home and the focused Assistant page. These glyphs use the stock 16px size;
 the outer icon edge matches the navigation glyphs’ 16px edge inset. Settings uses
 the stock gear glyph in both navigation and the local workspace menu. Desktop collapse sits on the
 right of the brand row and overlays the stationary logo on hover when collapsed.
@@ -175,25 +180,41 @@ it visible after hover ends. Hover is tracked on the control rather than the
 shrinking header; opacity changes immediately and the logo is hidden beneath the
 overlay, so neither a lingering button nor the logo bleeds through. Mobile retains an Open menu button and close/focus
 restoration. The static browser title is always `JAS`, including initial load and record views;
-there is no route/catalog title derivation. Contextual Ask
-Agent actions live with experiment/run actions, and runs link to their experiment.
+there is no route/catalog title derivation. Runs link to their experiment.
+The global Assistant button replaces the per-record modal actions. Its pane lives
+inside the main area below the global header: 440px wide alongside content from
+1280px upward, filling the available main area on smaller screens. Use the
+background token, one left divider and no resize handle. Its compact header has a left history dropdown with a darker muted history
+icon, the current chat name (or New chat), and a caret. Keep New chat and Close
+as the only right-hand icons. Open in Assistant lives inside the history popup;
+omit the Assistant label, a separate full-screen button and a collapse button. Escape closes the pane unless a nested
+popover handles it, and closing restores focus to its header toggle.
+Only an individual experiment/run registers automatic context, using the actual
+displayed revision and evidence cutoff. The shared Add context picker remains available on every Assistant view,
+including lists, Gallery and Settings. Automatically select only the displayed
+experiment/run; clearing returns to Add context. Allow manual selection anywhere,
+without changing page filters. Remember the selection for that record in this tab. History selection stays inside
+the pane without changing page filters. Keep a separate chat/draft identity per
+record and revision, plus one general slot; late settlement never replaces a newer
+selection. The focused view shares the same draft/chat and reconnects pending
+acceptance without resubmission.
 Agent viewport height uses the same token. Ordinary pages use a centered 1280px maximum
 width and 16px, 24px or 32px responsive gutters. Tables scroll within their own
 containers. The Agent page fills the remaining viewport, with an independently
 scrolling transcript and a composer below it; both use a 768px maximum width.
-The shared Home/Agent textarea starts at three rows with 15px text and 23px
-line height (88px including padding), grows to 192px, then scrolls internally
-while keeping its action row visible.
+The shared Home/Agent textarea uses 15px text and 23px line height, grows to
+192px, then scrolls internally while keeping its action row visible. Home and the
+focused new-chat page start with three rows (88px including padding); the pane and
+saved conversations start with two rows.
 Assistant has no spending caption below its composer; provider and draft errors
 remain visible. Home retains its composer guidance and draft spending estimate.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
-background surface. The new-chat heading has a decorative primary-colored Target
-at left (30px, 34px on larger screens), with an 8px gap and centered alignment.
-The Target remains static in welcome, working and completed states. Activity uses
+background surface. The new-chat heading uses the supplied JAS logo before “What can we explore?”,
+24px in the pane and 30px/34px in the focused view, with an 8px gap. The logo is
+static. Reply Targets also stay static in working and completed states. Activity uses
 recorded text and a stock loading indicator. Motion belongs only to explicit run
-playback and the Home sky, with reduced motion respected. At the upper right, a 32px stock outline history button
-with the standard rounded corners sits beside the stock 32px New button when a
-saved conversation is selected. The base new-chat view shows only History. History uses a
+playback and the Home sky, with reduced motion respected. The left history dropdown and 32px ghost New chat control stay available for new
+and saved chats. History uses a
 stock Popover and ScrollArea in every viewport, with local skeleton rows, empty
 state and retry; it fetches on open and keeps cached rows during refresh. Static
 new-chat content never waits for record queries. Context-option skeletons stay in
@@ -211,21 +232,21 @@ spinners precede the right-aligned time rather than displacing it. Rows and thei
 skeletons are 26px tall with centered content; the hover surface extends 6px past
 the content on each side. The heading and divider remain outside the scrolling
 list, which caps at 20rem or the available popup height. There is no conversation rail or separate mobile
-history Sheet. New chats group the main heading, plain composer and suggestions
-in that order, without a subtitle, slightly above center. The heading and composer
-occupy the middle grid row, with remaining space split 1:2 above/below them.
-Suggestions sit in the lower row so changing context cannot move or resize the
-composer. Keep “What can we explore?” unchanged across selections. Empty space shrinks to zero on short screens;
-content remains scrollable without translated or clipped headings. The plain Agent composer omits Home’s gray
+history Sheet. New chats place their welcome heading and suggestions above the
+bottom composer; all remaining space belongs to the scrollable conversation.
+Keep “What can we explore?” unchanged across selections. The pane uses a smaller
+left-aligned heading and four stacked suggestion actions without borders or background fills. Empty space shrinks on
+short screens; welcome and suggestions remain scrollable without clipping. The plain Agent composer omits Home’s gray
 Card surround and manual-editor footer. Saved chats retain the streaming
 MessageScroller and bottom composer, with two initial textarea rows (Home/new chat keep three).
-Saved-chat headers show the first question capped at 80 characters including an explicit
-ellipsis; the full question stays in the hover title. The header stays centered on
-desktop, truncates safely on mobile, and never renames during streaming or follow-up
-turns. History keeps its compact list title. No extra title-generation request is made. The browser
-title remains JAS. Loading the title uses a local skeleton only.
+The history trigger shows the first question for a saved conversation and
+truncates within the available width, with its full title on hover. New conversations
+show New chat; its accessible name also identifies chat history. Keep the caret
+muted and history glyph slightly darker. No title-generation request is made. The
+browser title remains JAS.
 
-Assistant replies use a blue Target with no repeated Agent label or response cost.
+Assistant replies use a blue Target without repeating the Agent label. The quiet
+receipt remains in the message footer.
 Reply Markdown fills the shared transcript column in both streaming and completed
 states; do not add a second prose-width cap or shrink-to-fit bubble inside it.
 The Target and text-only activity dropdown share one aligned header row. The expanded
@@ -335,7 +356,7 @@ behavior. Run rows show their experiment plus condition, seed and repetition;
 revision appears when greater than one. IDs stay in search/accessible identity
 and hover titles. Loading skeletons, no matches and no saved context stay local.
 Explicitly scoped links and resumed chats preserve the selected evidence identity.
-Agent offers four compact stock outline Button shortcuts beneath the composer:
+Agent offers four compact stock outline Button shortcuts above the composer:
 Design an experiment, Review a setup, Understand results and Learn the basics.
 Use action-specific Lucide icons, a consistent 32px height and one centered row
 where space permits, wrapping on smaller viewports. Selected experiments/runs
@@ -346,7 +367,8 @@ different shortcut replaces the draft and returns focus to it. Four local
 skeletons match the shortcut layout; protocol errors/retry remain visible even
 while drafting. Home keeps four illustrated experiment suggestions that fill the
 draft without submitting. Under the Experiment ideas heading,
-they share one rounded ItemGroup border with Separator dividers: aligned illustrations,
+they share one rounded ItemGroup border with Separator dividers, equal-width cells
+and equal 16px left/right padding: aligned illustrations,
 15px semibold titles with 19px line height and 13px descriptions with 18px line height in one row of
 four on wide screens. Descriptions use foreground/60, matching record timestamps.
 Spell out “and” in suggestion titles rather than using ampersands.
@@ -863,10 +885,11 @@ use the separate agent palette and deterministic glyphs from lib/identity.ts.
 Private observations use the lock and muted tint; agent perspective exposes only
 that agent's authorized recorded observations and addressed events.
 
-Home follows the MVP layout with the user-requested three compact starter cards, work
-settings first, a watch link on each, and a dismissible first-run strip. Preserve the
-composer and pixel sky. The original four illustrated idea cards remain in Git and
-may be restored after review; the user's latest direction is to try the spec first.
+Home keeps the composer and pixel sky with the user-approved four original
+illustrated Experiment ideas, using communication, memory, oversight and resources
+artwork. Each fills and focuses a draft without sending. The Get started strip and
+its onboarding-only state are removed. This supersedes the earlier three-card
+starter/watch layout; recordings remain accessible through their own routes.
 Quick and Advanced share a protocol and browser draft. Show conservative cost bounds
 until empirical estimates exist. Save never runs; Save and run is explicit.
 The experiment has Overview, Results, Runs, Design and Publish. Keep one numerical

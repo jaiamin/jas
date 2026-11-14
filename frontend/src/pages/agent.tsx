@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import {
   Link,
   useLocation,
@@ -14,6 +15,10 @@ import {
 import { AgentHistory } from "@/components/agent/agent-history";
 import { AgentReply } from "@/components/agent/agent-reply";
 import { AgentWelcomeHeading } from "@/components/agent/agent-welcome-heading";
+import {
+  type AssistantSession,
+  recordAssistantChat,
+} from "@/components/agent/assistant-workspace";
 import { useAgentChat } from "@/components/agent/use-agent-chat";
 import { useAgentComposer } from "@/components/agent/use-agent-composer";
 import { Alert } from "@/components/feedback";
@@ -66,45 +71,67 @@ const suggestionClassName =
 
 export default function AgentPage() {
   const navigate = useNavigate();
-  const [params] = useSearchParams();
-  const chatId = params.get("chat");
+  const client = useQueryClient();
+  const location = useLocation();
+  const session = location.state?.assistantSession as
+    | AssistantSession
+    | undefined;
+  const [params, setParams] = useSearchParams();
+  const panelIdentity = useQuery<{ chatId: string | null; draftId: string }>({
+    queryKey: [
+      "assistant-panel-chat",
+      session ? `jas:assistant-panel:${session.slot}` : null,
+    ],
+    enabled: false,
+    initialData: session
+      ? () => {
+          try {
+            return {
+              chatId: localStorage.getItem(
+                `jas:assistant-panel:${session.slot}`,
+              ),
+              draftId: session.draftId,
+            };
+          } catch {
+            return { chatId: session.chatId, draftId: session.draftId };
+          }
+        }
+      : undefined,
+  });
+  const recordedChat =
+    panelIdentity.data?.draftId === session?.draftId
+      ? panelIdentity.data?.chatId
+      : null;
+  const chatId = params.get("chat") ?? recordedChat ?? null;
+  useEffect(() => {
+    if (
+      location.pathname !== "/assistant" ||
+      params.has("chat") ||
+      !recordedChat
+    )
+      return;
+    const next = new URLSearchParams(params);
+    next.delete("new");
+    next.set("chat", recordedChat);
+    setParams(next, { replace: true, state: location.state });
+  }, [recordedChat, params, setParams, location.pathname, location.state]);
   const chat = useAgentChat(chatId);
   const studies = useApi<StudySummary[]>("/studies");
   const runs = useApi<RunSummary[]>("/runs");
-  const question = chat.data?.[0]?.question;
-  const characters = Array.from(question ?? "");
-  const title =
-    characters.length > 80
-      ? `${characters.slice(0, 79).join("").trimEnd()}…`
-      : question;
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col bg-muted/50">
-      <header className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 pl-4 pr-2.5 sm:grid-cols-[7.5rem_minmax(0,1fr)_7.5rem] sm:pl-2.5">
-        <div aria-hidden="true" className="hidden sm:block" />
-        <div className="min-w-0 sm:text-center">
-          {chatId && !chat.data && !chat.error ? (
-            <Skeleton className="h-4 w-40 max-w-full sm:mx-auto" />
-          ) : title ? (
-            <h1
-              className="mx-auto max-w-xl truncate text-sm font-medium"
-              title={question}
-            >
-              {title}
-            </h1>
-          ) : null}
-        </div>
-        <div className="flex items-center justify-end gap-2">
-          <AgentHistory />
-          {chatId && (
-            <Button
-              aria-label="New chat"
-              onClick={() => navigate(`/assistant?new=${crypto.randomUUID()}`)}
-            >
-              <Plus data-icon="inline-start" />
-              New
-            </Button>
-          )}
-        </div>
+      <header className="flex shrink-0 items-center justify-between gap-3 px-4 py-3 sm:px-6">
+        <h1 className="sr-only">Assistant</h1>
+        <AgentHistory currentTitle={chat.data?.[0]?.question} />
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="New chat"
+          title="New chat"
+          onClick={() => navigate(`/assistant?new=${crypto.randomUUID()}`)}
+        >
+          <Plus aria-hidden="true" />
+        </Button>
       </header>
       <div className="min-h-0 min-w-0 flex-1">
         {chat.error ? (
@@ -131,6 +158,17 @@ export default function AgentPage() {
           <AgentConversation
             key={chatId ?? params.get("new") ?? "new"}
             chatId={chatId}
+            onChatRecorded={
+              session
+                ? (id) => {
+                    try {
+                      recordAssistantChat(client, session, id);
+                    } catch {
+                      /* The focused conversation has a durable URL. */
+                    }
+                  }
+                : undefined
+            }
             scope={
               params.has("revision")
                 ? {
@@ -169,6 +207,8 @@ export function AgentConversation({
   contextLoading,
   retryContexts,
   pinnedContext,
+  onContextChange,
+  contextTitle,
   scope,
   onChatCreated,
   onChatRecorded,
@@ -183,6 +223,8 @@ export function AgentConversation({
   contextError: Error | null;
   retryContexts: () => unknown;
   pinnedContext?: string;
+  onContextChange?: (value: string) => void;
+  contextTitle?: string;
   scope?: { revision: number; through_turn?: number };
   onChatCreated?: (id: string) => void;
   onChatRecorded?: (id: string) => void;
@@ -198,7 +240,9 @@ export function AgentConversation({
       ? messageContext(messages[messages.length - 1])
       : "general");
   const draftKey = `jas:agent-draft:${chatId ?? draftId ?? params.get("new") ?? "new"}`;
-  const busy = messages.some((message) => message.status === "pending");
+  const busy =
+    messages.some((message) => message.status === "pending") ||
+    (embedded && context !== "general" && contextLoading);
   const state = useAgentComposer({
     context,
     chatId,
@@ -209,7 +253,7 @@ export function AgentConversation({
       ? (result) => onChatRecorded(result.chat_id)
       : undefined,
     initialQuestion:
-      typeof location.state?.question === "string"
+      !embedded && typeof location.state?.question === "string"
         ? location.state.question
         : undefined,
     onSent: (result) => {
@@ -249,6 +293,11 @@ export function AgentConversation({
     blocked,
   } = state;
   function changeContext(value: string) {
+    if (onContextChange) {
+      onContextChange(value);
+      send.reset();
+      return;
+    }
     const next = new URLSearchParams(params);
     next.set("context", value);
     next.delete("revision");
@@ -263,37 +312,30 @@ export function AgentConversation({
   const composer = (
     <AgentComposer
       state={state}
-      compact={messages.length > 0}
+      compact={embedded || messages.length > 0}
       contextControl={
-        pinnedContext ? (
-          <span className="text-xs text-muted-foreground">
-            Version {scope?.revision}
-            {scope?.through_turn !== undefined
-              ? ` · through turn ${scope.through_turn}`
-              : ""}
-          </span>
-        ) : (
-          <AgentContext
-            value={context}
-            onChange={changeContext}
-            studies={studies}
-            runs={runs}
-            loading={contextLoading}
-            disabled={state.send.isPending}
-          />
-        )
+        <AgentContext
+          value={context}
+          onChange={changeContext}
+          studies={studies}
+          runs={runs}
+          loading={contextLoading}
+          disabled={state.send.isPending}
+          scope={scope}
+          contextTitle={contextTitle}
+        />
       }
       placeholder={
-        pinnedContext
+        pinnedContext && pinnedContext !== "general"
           ? "Ask about this evidence…"
           : selectedStudy || selectedRun
             ? "Ask about the selected evidence…"
             : "Ask a question or describe an experiment…"
       }
       className={
-        messages.length
-          ? "relative -mt-3 mx-auto w-full max-w-3xl shrink-0 px-4 pb-4 sm:px-6 sm:pb-6"
-          : "w-full"
+        embedded
+          ? "relative mx-auto w-full shrink-0 px-4 pb-4 pt-3"
+          : "relative mx-auto w-full max-w-3xl shrink-0 px-4 pb-4 pt-3 sm:px-6 sm:pb-6"
       }
     >
       {contextError && (
@@ -324,7 +366,13 @@ export function AgentConversation({
               aria-label="Assistant conversation"
               className="[--scroll-fade-size:0.75rem]"
             >
-              <MessageScrollerContent className="mx-auto w-full max-w-3xl px-4 pt-4 pb-10 sm:px-6">
+              <MessageScrollerContent
+                className={
+                  embedded
+                    ? "mx-auto w-full px-4 pt-4 pb-6"
+                    : "mx-auto w-full max-w-3xl px-4 pt-4 pb-6 sm:px-6"
+                }
+              >
                 {messages.flatMap((row, index) => [
                   <MessageScrollerItem
                     key={`${row.id}-question`}
@@ -367,7 +415,7 @@ export function AgentConversation({
                       onRetry={() =>
                         send.mutate({
                           question: row.question,
-                          ...scope,
+                          ...(messageContext(row) === context ? scope : {}),
                           context:
                             row.purpose === "design"
                               ? "new"
@@ -388,7 +436,7 @@ export function AgentConversation({
                           question: `Reanalyze the same frozen evidence using the ${lens} lens. Give a concise behavioral account and assess its limits.`,
                           context: messageContext(row),
                           source_analysis_id: row.id,
-                          ...scope,
+                          ...(messageContext(row) === context ? scope : {}),
                           lens,
                         })
                       }
@@ -400,22 +448,20 @@ export function AgentConversation({
             <MessageScrollerButton />
           </MessageScroller>
         </MessageScrollerProvider>
-      ) : embedded ? (
-        <div className="flex flex-1 flex-col gap-3 px-4 pt-4 text-sm text-muted-foreground">
-          <p>
-            Ask about the selected version and recorded evidence. Sending uses
-            your configured Assistant model and workspace budget.
-          </p>
-        </div>
       ) : (
-        <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)_auto_minmax(0,2fr)] overflow-y-auto px-4 py-8 sm:px-6">
-          <div className="row-start-2 mx-auto flex w-full max-w-3xl flex-col gap-6">
-            <AgentWelcomeHeading />
-            {composer}
-          </div>
-          <div className="row-start-3 mx-auto w-full max-w-3xl pt-6">
+        <div
+          className={
+            embedded
+              ? "flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-4 pb-3 pt-8"
+              : "flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-4 pb-3 pt-8 sm:px-6"
+          }
+        >
+          <div className="mx-auto mt-auto flex w-full max-w-3xl shrink-0 flex-col gap-5">
+            <AgentWelcomeHeading compact={embedded} />
             <AgentSuggestions
               context={context}
+              scope={scope}
+              compact={embedded}
               contextLoading={contextLoading}
               studies={studies}
               runs={runs}
@@ -424,7 +470,7 @@ export function AgentConversation({
           </div>
         </div>
       )}
-      {(messages.length > 0 || embedded) && composer}
+      {composer}
     </section>
   );
 }
@@ -435,21 +481,28 @@ function AgentSuggestions({
   studies,
   runs,
   onChoose,
+  scope,
+  compact = false,
 }: {
   context: string;
   contextLoading: boolean;
   studies: StudySummary[];
   runs: RunSummary[];
   onChoose: (text: string) => void;
+  scope?: { revision: number; through_turn?: number };
+  compact?: boolean;
 }) {
   const [kind, id] = context.split(":");
   const study = studies.find((item) => kind === "study" && item.id === id);
   const run = runs.find((item) => kind === "run" && item.id === id);
   const scoped = !!id && (kind === "study" || kind === "run");
-  const path = kind === "run" ? `/runs/${id}` : `/studies/${id}`;
+  const path =
+    kind === "run"
+      ? `/runs/${id}`
+      : `/studies/${id}${scope ? `?revision=${scope.revision}` : ""}`;
   const protocol = useQuery({
     queryKey: [path],
-    queryFn: () => api<{ design: Design }>(path),
+    queryFn: () => api<{ design: Design; runs?: RunSummary[] }>(path),
     enabled: scoped,
   });
   if (protocol.error)
@@ -469,20 +522,47 @@ function AgentSuggestions({
     );
   const suggestions = agentSuggestions({
     context,
-    study,
-    run,
+    study:
+      study && scope
+        ? {
+            ...study,
+            revision: scope.revision,
+            title: protocol.data?.design.title ?? study.title,
+            question: protocol.data?.design.question ?? study.question,
+            completed_runs:
+              protocol.data?.runs?.filter((run) => run.status === "complete")
+                .length ?? 0,
+          }
+        : study,
+    run:
+      run && scope
+        ? {
+            ...run,
+            revision: scope.revision,
+            turn: scope.through_turn ?? run.turn,
+          }
+        : run,
     runs,
     design: protocol.data?.design,
   });
   if (!suggestions.length) return null;
   return (
-    <section aria-label="Suggested questions" className={suggestionClassName}>
+    <section
+      aria-label="Suggested questions"
+      className={
+        compact ? "flex flex-col items-start gap-2" : suggestionClassName
+      }
+    >
       {suggestions.map(({ title, prompt, action }) => {
         const Icon = suggestionIcons[action];
         return (
           <Button
-            variant="outline"
-            className="max-w-full"
+            variant={compact ? "ghost" : "outline"}
+            className={
+              compact
+                ? "-ml-2.5 max-w-full justify-start whitespace-normal text-left text-muted-foreground hover:bg-transparent hover:text-foreground"
+                : "max-w-full whitespace-normal text-left"
+            }
             key={title}
             onClick={() => onChoose(prompt)}
           >

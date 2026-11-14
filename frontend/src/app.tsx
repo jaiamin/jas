@@ -84,7 +84,6 @@ export default function App() {
         <Route path="compare" element={<Compare />} />
         <Route path="watch/:id" element={<Watch />} />
         <Route path="gallery" element={<Gallery />} />
-        <Route path="published" element={<Gallery mine />} />
         <Route
           path="*"
           element={
