@@ -674,3 +674,128 @@ def test_delete_experiment_respects_live_task_ownership_even_if_status_is_paused
     finally:
         client.portal.call(release)
     assert client.delete(f"/api/studies/{sid}").status_code == 200
+
+
+@pytest.mark.parametrize("call_status", ["complete", "unknown"])
+def test_delete_chat_preserves_accounting_and_other_records(client, design, call_status):
+    from agent_sim.db import Analysis, ProviderCall
+
+    sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+    with client.app.state.db.session.begin() as session:
+        turns = [
+            Analysis(chat_id="remove", purpose="general", question="First", status="complete"),
+            Analysis(
+                chat_id="remove",
+                purpose="analysis",
+                question="Second",
+                status="failed",
+                study_id=sid,
+                run_id=rid,
+            ),
+            Analysis(chat_id="keep", purpose="general", question="Keep", status="complete"),
+        ]
+        session.add_all(turns)
+        session.flush()
+        ids = [turn.id for turn in turns]
+        call = ProviderCall(
+            analysis_id=ids[1],
+            study_id=sid,
+            run_id=rid,
+            purpose="analysis",
+            model="openai:gpt-6-luna",
+            status=call_status,
+            reserved=800,
+            charged=300,
+            input_tokens=42,
+            output_tokens=12,
+            reasoning_tokens=3,
+            request_payload={"input": "private"},
+            response_payload=[{"answer": "private"}],
+        )
+        session.add(call)
+        session.flush()
+        call_id = call.id
+    before = client.get("/api/settings").json()
+    assert client.delete("/api/chats/remove").json() == {"deleted": "remove"}
+    assert client.get("/api/chats/remove").status_code == 404
+    assert client.delete("/api/chats/remove").status_code == 404
+    assert [chat["id"] for chat in client.get("/api/chats").json()] == ["keep"]
+    assert client.get("/api/chats/keep").status_code == 200
+    assert client.get(f"/api/studies/{sid}/export").status_code == 200
+    after = client.get("/api/settings").json()
+    assert after["usage"] == before["usage"]
+    assert after["charged_usd"] == before["charged_usd"]
+    with client.app.state.db.session() as session:
+        assert all(session.get(Analysis, key) is None for key in ids[:2])
+        call = session.get_one(ProviderCall, call_id)
+        assert call.analysis_id is None and call.study_id == sid and call.run_id == rid
+        assert call.status == call_status and call.reserved == 800 and call.charged == 300
+        assert (call.input_tokens, call.output_tokens, call.reasoning_tokens) == (42, 12, 3)
+        assert call.request_payload is None and call.response_payload is None
+
+
+def test_delete_chat_rejects_pending_turns_calls_and_saved_proposals(client, design):
+    from agent_sim.db import Analysis, ProviderCall, Revision
+    from sqlalchemy import select
+
+    with client.app.state.db.session.begin() as session:
+        turn = Analysis(chat_id="protected", purpose="design", question="Plan", status="pending")
+        session.add(turn)
+        session.flush()
+        key = turn.id
+    response = client.delete("/api/chats/protected")
+    assert response.status_code == 422 and "chat to finish" in response.json()["detail"]
+    with client.app.state.db.session.begin() as session:
+        session.get_one(Analysis, key).status = "complete"
+        call = ProviderCall(
+            analysis_id=key, purpose="design", model="openai:gpt-6-luna", reserved=100, charged=0
+        )
+        session.add(call)
+        session.flush()
+        call_id = call.id
+    response = client.delete("/api/chats/protected")
+    assert response.status_code == 422 and "requests to settle" in response.json()["detail"]
+    sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    with client.app.state.db.session.begin() as session:
+        session.get_one(ProviderCall, call_id).status = "complete"
+        session.scalars(
+            select(Revision).where(Revision.study_id == sid)
+        ).one().source = f"plan:{key}"
+    response = client.delete("/api/chats/protected")
+    assert response.status_code == 422 and "saved experiment" in response.json()["detail"]
+    assert client.get("/api/chats/protected").status_code == 200
+    with client.app.state.db.session() as session:
+        assert session.get_one(ProviderCall, call_id).analysis_id == key
+        assert (
+            session.scalars(select(Revision).where(Revision.study_id == sid)).one().source
+            == f"plan:{key}"
+        )
+
+
+def test_delete_chat_respects_live_task_ownership(client):
+    import asyncio
+
+    from agent_sim.db import Analysis
+
+    with client.app.state.db.session.begin() as session:
+        turn = Analysis(chat_id="owned", purpose="general", question="Q", status="complete")
+        session.add(turn)
+        session.flush()
+        key = turn.id
+
+    async def own():
+        client.app.state.assistants.tasks[key] = asyncio.create_task(asyncio.Event().wait())
+
+    async def release():
+        task = client.app.state.assistants.tasks.pop(key)
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
+
+    client.portal.call(own)
+    try:
+        assert client.delete("/api/chats/owned").status_code == 422
+        assert client.get("/api/chats/owned").status_code == 200
+    finally:
+        client.portal.call(release)
+    assert client.delete("/api/chats/owned").status_code == 200

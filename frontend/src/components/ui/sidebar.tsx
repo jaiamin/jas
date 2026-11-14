@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
-import { PanelLeftIcon } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Slot } from "radix-ui";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
-const SIDEBAR_WIDTH = "16rem";
+const SIDEBAR_WIDTH = "15rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
@@ -215,7 +215,7 @@ function Sidebar({
       <div
         data-slot="sidebar-gap"
         className={cn(
-          "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear",
+          "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear motion-reduce:transition-none",
           "group-data-[collapsible=offcanvas]:w-0",
           "group-data-[side=right]:rotate-180",
           variant === "floating" || variant === "inset"
@@ -227,7 +227,7 @@ function Sidebar({
         data-slot="sidebar-container"
         data-side={side}
         className={cn(
-          "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear data-[side=left]:left-0 data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] data-[side=right]:right-0 data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)] md:flex",
+          "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear motion-reduce:transition-none data-[side=left]:left-0 data-[side=left]:group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)] data-[side=right]:right-0 data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)] md:flex",
           // Adjust the padding for floating and inset variants.
           variant === "floating" || variant === "inset"
             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
@@ -253,7 +253,8 @@ function SidebarTrigger({
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, open, openMobile, isMobile } = useSidebar();
+  const Icon = (isMobile ? openMobile : open) ? PanelLeftClose : PanelLeftOpen;
 
   return (
     <Button
@@ -268,7 +269,7 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <PanelLeftIcon className="size-3.5" />
+      <Icon aria-hidden="true" />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

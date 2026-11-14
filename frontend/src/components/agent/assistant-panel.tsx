@@ -1,12 +1,13 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { lazy, Suspense, useState } from "react";
+import { Link } from "react-router-dom";
 import { AgentHistory } from "@/components/agent/agent-history";
 import {
   type AssistantPageContext,
   recordAssistantChat,
 } from "@/components/agent/assistant-workspace";
 import { useAgentChat } from "@/components/agent/use-agent-chat";
-import { Plus, X } from "@/components/icons";
+import { Maximize, PanelRightClose, SquarePen } from "@/components/icons";
 import { ErrorState, Loading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -145,40 +146,50 @@ function PanelConversation({
   }
   return (
     <>
-      <header className="flex shrink-0 items-center gap-1 border-b px-4 py-3">
+      <header className="flex h-(--workspace-header-height) shrink-0 items-center gap-0.5 border-b px-4">
         <h2 id="assistant-panel-title" className="sr-only">
           Assistant
         </h2>
-        <div className="mr-auto min-w-0 flex-1 pr-2">
+        <div className="mr-auto flex min-w-0 flex-1 items-center pr-2">
           <AgentHistory
             currentChat={chatId}
             currentTitle={chat.data?.[0]?.question}
             onSelect={(id) =>
               select({ chatId: id, draftId: crypto.randomUUID() })
             }
-            focusLink={{
-              to: `/assistant?${focusParams}`,
-              state: { assistantSession: { slot, chatId, draftId } },
-            }}
           />
         </div>
         <Button
+          asChild
           variant="ghost"
-          size="icon"
+          size="icon-sm"
+          aria-label="Open in Assistant"
+          title="Open in Assistant"
+        >
+          <Link
+            to={`/assistant?${focusParams}`}
+            state={{ assistantSession: { slot, chatId, draftId } }}
+          >
+            <Maximize aria-hidden="true" />
+          </Link>
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-sm"
           aria-label="New chat"
           title="New chat"
           onClick={() => select({ chatId: null, draftId: crypto.randomUUID() })}
         >
-          <Plus aria-hidden="true" />
+          <SquarePen aria-hidden="true" />
         </Button>
         <Button
           variant="ghost"
-          size="icon"
+          size="icon-sm"
           aria-label="Close Assistant"
           title="Close Assistant"
           onClick={onClose}
         >
-          <X aria-hidden="true" />
+          <PanelRightClose aria-hidden="true" />
         </Button>
       </header>
       {storageError && (

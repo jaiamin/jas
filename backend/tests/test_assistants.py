@@ -987,3 +987,41 @@ def test_public_activity_survives_completion_failure_and_reload(runtime, monkeyp
         await restored.close()
 
     asyncio.run(exercise())
+
+
+def test_deleting_chat_during_context_capture_does_not_recreate_it(runtime, design, monkeypatch):
+    import threading
+
+    from agent_sim.db import Analysis
+    from sqlalchemy.exc import NoResultFound
+
+    db, llm, research, _ = runtime
+    sid = research.save_design(design)
+    with db.session.begin() as session:
+        session.add(Analysis(chat_id="deleted", purpose="general", question="Q", status="complete"))
+
+    async def exercise():
+        assistant = Assistants(db, research, llm)
+        capturing = asyncio.Event()
+        release = threading.Event()
+        loop = asyncio.get_running_loop()
+
+        def capture(*args):
+            loop.call_soon_threadsafe(capturing.set)
+            assert release.wait(5)
+            return {}
+
+        monkeypatch.setattr(assistant, "_analysis_inputs", capture)
+        sending = asyncio.create_task(assistant.send("Review", f"study:{sid}", "deleted"))
+        try:
+            await asyncio.wait_for(capturing.wait(), 5)
+            assistant.delete_chat("deleted")
+        finally:
+            release.set()
+        with pytest.raises(NoResultFound, match="deleted"):
+            await sending
+        assert assistant.chats() == [] and assistant.tasks == {}
+        assert llm.usage()["requests"] == 0
+        await assistant.close()
+
+    asyncio.run(exercise())

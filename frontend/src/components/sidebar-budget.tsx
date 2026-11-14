@@ -55,10 +55,10 @@ export function SidebarBudget() {
         <Link
           to="/settings"
           aria-label={`${title}: ${description}`}
-          className="flex w-[calc(var(--sidebar-width)-1rem)] shrink-0 flex-col gap-2 whitespace-nowrap rounded-md px-2 py-2 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-data-[collapsible=icon]:hidden"
+          className="flex w-[calc(var(--sidebar-width)-1rem)] shrink-0 flex-col gap-2.5 whitespace-nowrap rounded-lg border border-sidebar-border bg-muted/40 px-3 py-3 text-xs text-muted-foreground transition-colors hover:border-sidebar-foreground/20 hover:bg-muted/70 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-data-[collapsible=icon]:hidden"
         >
           <span className="flex items-center justify-between gap-2">
-            <span>{title}</span>
+            <span className="font-medium text-sidebar-foreground">{title}</span>
             <span className="tabular-nums">{amount}</span>
           </span>
           <Progress aria-label={title} value={percentage} className="h-1.25" />

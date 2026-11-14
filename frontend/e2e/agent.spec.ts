@@ -153,9 +153,11 @@ test("Assistant welcome stays static on screen and after scrolling", async ({
   await expect.poll(playing).toBe(0);
   await heading.scrollIntoViewIfNeeded();
   await expect.poll(playing).toBe(0);
-  // The spec reserves motion for playback and the Home sky.
+  // The welcome stays still even when navigation uses motion.
   await expect.poll(playing).toBe(0);
-  await expect(heading.locator("img")).not.toHaveAttribute("data-agent-motion");
+  await expect(heading.locator(".lucide-target")).not.toHaveAttribute(
+    "data-agent-motion",
+  );
   await page
     .getByRole("button", { name: "Learn the basics" })
     .scrollIntoViewIfNeeded();
@@ -174,7 +176,7 @@ test("Agent welcome stays static with reduced motion and does not replay a skipp
   await page.goto("/assistant");
   const target = page
     .getByRole("heading", { name: "What can we explore?" })
-    .locator("img");
+    .locator(".lucide-target");
   await expect(target).toBeVisible();
   await expect(target).not.toHaveAttribute("data-agent-motion");
   expect(

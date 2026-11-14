@@ -85,3 +85,35 @@ export function recordAssistantChat(
   client.setQueryData(key, { chatId, draftId: session.draftId });
   localStorage.setItem(storageKey, chatId);
 }
+
+export function forgetAssistantChat(
+  client: import("@tanstack/react-query").QueryClient,
+  chatId: string,
+) {
+  for (const [key, identity] of client.getQueriesData<
+    Omit<AssistantSession, "slot">
+  >({ queryKey: ["assistant-panel-chat"] })) {
+    if (identity?.chatId === chatId)
+      client.setQueryData(key, { chatId: null, draftId: crypto.randomUUID() });
+  }
+  try {
+    for (const key of Object.keys(localStorage)) {
+      if (
+        key.startsWith("jas:assistant-panel:") &&
+        localStorage.getItem(key) === chatId
+      ) {
+        localStorage.removeItem(key);
+        sessionStorage.removeItem(`${key}:draft`);
+      }
+    }
+    sessionStorage.removeItem(`jas:agent-draft:${chatId}`);
+  } catch {
+    // Cached identities are still cleared when browser storage is unavailable.
+  }
+  client.removeQueries({ queryKey: [`/chats/${chatId}`], exact: true });
+  client.setQueryData<import("@/lib/types").ChatSummary[]>(
+    ["/chats"],
+    (chats) => chats?.filter((chat) => chat.id !== chatId),
+  );
+  void client.invalidateQueries({ queryKey: ["/chats"] });
+}

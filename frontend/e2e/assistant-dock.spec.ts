@@ -64,10 +64,9 @@ for (const width of [390, 1440])
         page.getByRole("button", { name: "Assistant", exact: true }),
       ).toHaveCount(0);
       await page.goto("/settings");
-      const toggle = page.getByRole("button", {
-        name: "Assistant",
-        exact: true,
-      });
+      const toggle = page.locator(
+        'button[aria-controls="workspace-assistant"]',
+      );
       await expect(toggle).toHaveCSS("padding-left", "10px");
       await expect(toggle).toHaveCSS("padding-right", "10px");
       const centers = await page
@@ -98,12 +97,12 @@ for (const width of [390, 1440])
         pane.getByRole("button", { name: /chat history/i }),
       ).toHaveText("New chat");
       await expect(pane.locator("header").getByRole("button")).toHaveCount(3);
-      await expect(pane.locator("header").getByRole("link")).toHaveCount(0);
+      await expect(pane.locator("header").getByRole("link")).toHaveCount(1);
       await expect(
         pane
           .getByRole("heading", { name: "What can we explore?" })
-          .locator("img"),
-      ).toHaveAttribute("src", "/logo.svg");
+          .locator("svg.lucide-target"),
+      ).toBeVisible();
       for (const suggestion of await pane
         .getByRole("region", { name: "Suggested questions" })
         .getByRole("button")
@@ -116,12 +115,15 @@ for (const width of [390, 1440])
       }
       await expect(toggle).toHaveAttribute("aria-expanded", "true");
       const box = await pane.boundingBox();
-      expect(box?.y).toBe(52);
+      expect(box?.y).toBe(0);
       expect(box?.width).toBe(width === 390 ? 390 : 440);
       const content = page.locator('[data-slot="workspace-content"]');
       if (width === 1440)
-        expect((await content.boundingBox())?.width).toBe(1440 - 256 - 440);
-      else await expect(content).toBeHidden();
+        expect((await content.boundingBox())?.width).toBe(1440 - 240 - 440);
+      else {
+        await expect(content).toHaveCSS("width", "0px");
+        await expect(content.locator("..")).toHaveAttribute("inert");
+      }
       await expect(
         pane.getByRole("combobox", { name: "Message context" }),
       ).toContainText("Add context");
@@ -129,6 +131,50 @@ for (const width of [390, 1440])
         pane.getByRole("button", { name: "Clear context" }),
       ).toHaveCount(0);
       const input = pane.getByLabel("Message Assistant", { exact: true });
+      const alignment = await pane.evaluate((element) => {
+        const textarea = element.querySelector("textarea");
+        const suggestion = element.querySelector(
+          '[aria-label="Suggested questions"] svg',
+        );
+        if (!textarea || !suggestion)
+          throw new Error("Missing composer/suggestions");
+        const header = element.querySelector("header");
+        return {
+          input:
+            textarea.getBoundingClientRect().x +
+            Number.parseFloat(getComputedStyle(textarea).paddingLeft),
+          suggestion: suggestion.getBoundingClientRect().x,
+          welcome: element.querySelector("h2 svg")?.getBoundingClientRect().x,
+          controls: [...(header?.querySelectorAll("button, a") ?? [])].map(
+            (control) => {
+              const box = control.getBoundingClientRect();
+              return { center: box.y + box.height / 2, height: box.height };
+            },
+          ),
+          icons: [...(header?.querySelectorAll("svg") ?? [])].map(
+            (icon) => icon.getBoundingClientRect().width,
+          ),
+        };
+      });
+      expect(alignment.input).toBe(alignment.suggestion);
+      expect(alignment.welcome).toBe(alignment.suggestion);
+      expect(
+        new Set(alignment.controls.map((control) => control.center)).size,
+      ).toBe(1);
+      expect(alignment.controls.every((control) => control.height === 28)).toBe(
+        true,
+      );
+      expect(alignment.icons.every((size) => size === 16)).toBe(true);
+      await expect(pane.locator("header .lucide-maximize")).toBeVisible();
+      const expandBox = await pane
+        .getByRole("link", { name: "Open in Assistant" })
+        .boundingBox();
+      const newBox = await pane
+        .getByRole("button", { name: "New chat", exact: true })
+        .boundingBox();
+      expect(
+        (newBox?.x ?? 0) - (expandBox?.x ?? 0) - (expandBox?.width ?? 0),
+      ).toBe(2);
       await pane.getByRole("button", { name: "Learn the basics" }).click();
       await expect(input).toHaveValue(/Explain how JAS experiments work/);
       await input.fill("Keep this draft beside Settings");
@@ -144,8 +190,7 @@ for (const width of [390, 1440])
       await expect(pane).toBeHidden();
       await toggle.click();
       await expect(input).toHaveValue("Keep this draft beside Settings");
-      await pane.getByRole("button", { name: /chat history/i }).click();
-      await page.getByRole("link", { name: "Open in Assistant" }).click();
+      await pane.getByRole("link", { name: "Open in Assistant" }).click();
       await expect(page).toHaveURL(/\/assistant\?new=/);
       await expect(
         page.getByRole("button", { name: "Assistant", exact: true }),
@@ -157,6 +202,8 @@ for (const width of [390, 1440])
         .getByLabel("Message Assistant", { exact: true })
         .fill("Edited in focused view");
       await page.goBack();
+      await expect(pane).toBeHidden();
+      await toggle.click();
       await expect(input).toHaveValue("Edited in focused view");
       await pane.getByRole("button", { name: /chat history/i }).click();
       await page.getByRole("link", { name: /An earlier question/ }).click();
@@ -410,8 +457,7 @@ test("focusing a pending pane reconnects the accepted chat without resubmitting"
     .fill("Keep the accepted question");
   await pane.getByRole("button", { name: "Send message" }).click();
   await expect.poll(() => sends).toBe(1);
-  await pane.getByRole("button", { name: /chat history/i }).click();
-  await page.getByRole("link", { name: "Open in Assistant" }).click();
+  await pane.getByRole("link", { name: "Open in Assistant" }).click();
   await expect(
     page.getByRole("button", { name: "Send message" }),
   ).toBeDisabled();
@@ -421,6 +467,8 @@ test("focusing a pending pane reconnects the accepted chat without resubmitting"
     page.getByText("A recorded answer", { exact: true }),
   ).toBeVisible();
   await page.goBack();
+  await expect(pane).toBeHidden();
+  await page.getByRole("button", { name: "Assistant", exact: true }).click();
   await expect(
     pane.getByText("A recorded answer", { exact: true }),
   ).toBeVisible();
@@ -480,4 +528,255 @@ test("late pane responses cannot replace a new chat and its reloadable draft", a
   await page.getByRole("button", { name: "Assistant", exact: true }).click();
   await expect(input).toHaveValue("Preserve this newer draft");
   expect(sends).toBe(1);
+});
+
+for (const reducedMotion of ["no-preference", "reduce"] as const) {
+  test(`Assistant matches navigation motion and preserves its width · ${reducedMotion}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.emulateMedia({ reducedMotion });
+    await page.goto("/experiments");
+    const toggle = page.getByRole("button", { name: "Assistant", exact: true });
+    const dock = page.locator(".workspace-assistant-dock");
+    const left = page.locator('[data-slot="sidebar-gap"]');
+    const motion = await left.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        duration: style.transitionDuration,
+        easing: style.transitionTimingFunction,
+      };
+    });
+    await expect(dock).toHaveCSS(
+      "transition-duration",
+      reducedMotion === "reduce" ? "0s" : `${motion.duration}, 0s`,
+    );
+    if (reducedMotion !== "reduce")
+      await expect(dock).toHaveCSS(
+        "transition-timing-function",
+        `${motion.easing}, linear`,
+      );
+    const opening = await toggle.evaluate(
+      (button) =>
+        new Promise<number[]>((resolve) => {
+          const dock = document.querySelector(".workspace-assistant-dock");
+          const start = performance.now();
+          const widths: number[] = [];
+          (button as HTMLButtonElement).click();
+          function sample() {
+            widths.push(dock?.getBoundingClientRect().width ?? -1);
+            if (performance.now() - start < 300) requestAnimationFrame(sample);
+            else resolve(widths);
+          }
+          requestAnimationFrame(sample);
+        }),
+    );
+    expect(opening.at(-1)).toBe(440);
+    if (reducedMotion === "reduce")
+      expect(opening.every((width) => width === 440)).toBe(true);
+    else expect(opening.some((width) => width > 0 && width < 440)).toBe(true);
+    const pane = page.getByRole("complementary", {
+      name: "Assistant",
+      exact: true,
+    });
+    const input = pane.getByLabel("Message Assistant", { exact: true });
+    await input.fill("Keep this draft through both directions");
+    const closing = await pane
+      .getByRole("button", { name: "Close Assistant" })
+      .evaluate(
+        (button) =>
+          new Promise<number[]>((resolve) => {
+            const dock = document.querySelector(".workspace-assistant-dock");
+            const start = performance.now();
+            const widths: number[] = [];
+            (button as HTMLButtonElement).click();
+            function sample() {
+              widths.push(dock?.getBoundingClientRect().width ?? -1);
+              if (performance.now() - start < 300)
+                requestAnimationFrame(sample);
+              else resolve(widths);
+            }
+            requestAnimationFrame(sample);
+          }),
+      );
+    expect(closing.at(-1)).toBe(0);
+    if (reducedMotion === "reduce")
+      expect(closing.every((width) => width === 0)).toBe(true);
+    else expect(closing.some((width) => width > 0 && width < 440)).toBe(true);
+    await expect(pane).toBeHidden();
+    await expect(toggle).toBeFocused();
+    await toggle.click();
+    await expect(input).toHaveValue("Keep this draft through both directions");
+  });
+}
+
+for (const surface of ["pane", "focused"]) {
+  test(`history deletion is confirmed and recoverable · ${surface}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({
+      width: surface === "pane" ? 390 : 1440,
+      height: 900,
+    });
+    const title =
+      "A long experiment question about competing incentives and the evidence needed to distinguish strategies";
+    let deleted = false;
+    let attempts = 0;
+    let release = () => {};
+    const ready = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await page.addInitScript(() => {
+      localStorage.setItem("jas:assistant-panel:general", "remove-chat");
+      localStorage.setItem(
+        "jas:assistant-panel:study:remembered:1",
+        "remove-chat",
+      );
+      localStorage.setItem(
+        "jas:assistant-panel:study:unrelated:1",
+        "keep-chat",
+      );
+    });
+    await page.route("**/api/chats", (route) =>
+      route.fulfill({
+        json: [
+          ...(!deleted
+            ? [
+                {
+                  id: "remove-chat",
+                  title,
+                  updated: new Date().toISOString(),
+                  status: "complete",
+                },
+              ]
+            : []),
+          {
+            id: "pending-chat",
+            title: "Still working",
+            updated: new Date().toISOString(),
+            status: "pending",
+          },
+        ],
+      }),
+    );
+    await page.route("**/api/chats/remove-chat", async (route) => {
+      if (route.request().method() !== "DELETE")
+        return route.fulfill({ json: reply("remove-chat", title) });
+      attempts++;
+      if (attempts === 1)
+        return route.fulfill({
+          status: 422,
+          json: { detail: "Wait for requests to settle." },
+        });
+      await ready;
+      deleted = true;
+      return route.fulfill({ json: { deleted: "remove-chat" } });
+    });
+    await page.goto(
+      surface === "pane" ? "/settings" : "/assistant?chat=remove-chat",
+    );
+    if (surface === "pane")
+      await page
+        .getByRole("button", { name: "Assistant", exact: true })
+        .click();
+    const trigger = page.getByRole("button", { name: /chat history/i });
+    await expect(trigger).toContainText("…");
+    await expect(trigger).not.toHaveAttribute("title");
+    await trigger.click();
+    const popup = page.getByRole("dialog", { name: "Recent chats" });
+    const row = popup.getByRole("link", { name: new RegExp(title) });
+    await expect(row).toContainText("…");
+    await expect(row).not.toHaveAttribute("title");
+    await expect(
+      popup.getByRole("button", { name: "Delete chat: Still working" }),
+    ).toBeDisabled();
+    await popup.getByRole("button", { name: `Delete chat: ${title}` }).click();
+    const confirm = page.getByRole("alertdialog", { name: "Delete chat?" });
+    await confirm.getByRole("button", { name: "Cancel" }).click();
+    expect(attempts).toBe(0);
+    await trigger.click();
+    await popup.getByRole("button", { name: `Delete chat: ${title}` }).click();
+    await confirm
+      .getByRole("button", { name: "Delete chat", exact: true })
+      .click();
+    await expect(confirm.getByRole("alert")).toContainText(
+      "Wait for requests to settle.",
+    );
+    await confirm
+      .getByRole("button", { name: "Delete chat", exact: true })
+      .click();
+    await expect(
+      confirm.getByRole("button", { name: "Deleting…" }),
+    ).toBeDisabled();
+    await page.keyboard.press("Escape");
+    await expect(confirm).toBeVisible();
+    release();
+    await expect(confirm).toHaveCount(0);
+    await expect(trigger).toHaveText("New chat");
+    expect(
+      await page.evaluate(() => [
+        localStorage.getItem("jas:assistant-panel:general"),
+        localStorage.getItem("jas:assistant-panel:study:remembered:1"),
+        localStorage.getItem("jas:assistant-panel:study:unrelated:1"),
+      ]),
+    ).toEqual([null, null, "keep-chat"]);
+    await trigger.click();
+    await expect(
+      popup.getByRole("link", { name: new RegExp(title) }),
+    ).toHaveCount(0);
+    if (surface === "focused")
+      await expect(page).toHaveURL(/\/assistant\?new=/);
+    else await expect(page).toHaveURL(/\/settings$/);
+  });
+}
+
+test("opening stays manual while the last selected chat remains available", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.route("**/api/chats", (route) =>
+    route.fulfill({
+      json: [
+        {
+          id: "remembered-chat",
+          title: "My last conversation",
+          updated: new Date().toISOString(),
+          status: "complete",
+        },
+      ],
+    }),
+  );
+  await page.route("**/api/chats/remembered-chat", (route) =>
+    route.fulfill({ json: reply("remembered-chat", "My last conversation") }),
+  );
+  await page.goto("/experiments");
+  const pane = page.getByRole("complementary", {
+    name: "Assistant",
+    exact: true,
+  });
+  const toggle = page.getByRole("button", { name: "Assistant", exact: true });
+  await expect(pane).toBeHidden();
+  await toggle.click();
+  await pane.getByRole("button", { name: /chat history/i }).click();
+  await page.getByRole("link", { name: /My last conversation/ }).click();
+  await expect(pane.getByRole("button", { name: /chat history/i })).toHaveText(
+    "My last conversation",
+  );
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Gallery", exact: true })
+    .click();
+  await expect(pane).toBeHidden();
+  await page.goBack();
+  await expect(pane).toBeHidden();
+  await toggle.click();
+  await expect(pane.getByRole("button", { name: /chat history/i })).toHaveText(
+    "My last conversation",
+  );
+  await page.reload();
+  await expect(pane).toBeHidden();
+  await toggle.click();
+  await expect(pane.getByRole("button", { name: /chat history/i })).toHaveText(
+    "My last conversation",
+  );
 });

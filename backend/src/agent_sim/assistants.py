@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from typing import Literal
 
 from pydantic import Field
-from sqlalchemy import select
+from sqlalchemy import delete, select, update
 from sqlalchemy.exc import NoResultFound
 
 from .analysis_context import AnalysisContext, IndexRequest, value_at_path
@@ -397,6 +397,11 @@ class Assistants:
                 ):
                     raise ValueError("Analysis source exceeds the selected version or turn cutoff")
                 snapshot, cutoffs = source.output, source.cutoffs
+        with self.db.session() as session:
+            existing_chat = bool(
+                chat_id
+                and session.scalar(select(Analysis.id).where(Analysis.chat_id == chat_id).limit(1))
+            )
         inputs = (
             await asyncio.to_thread(self._analysis_inputs, cutoffs, snapshot, key, lens)
             if purpose == "analysis"
@@ -406,6 +411,10 @@ class Assistants:
             inputs["source_analysis_id"] = source_analysis_id
         with self.db.session.begin() as session:
             chat_id = chat_id or uid()
+            if existing_chat and not session.scalar(
+                select(Analysis.id).where(Analysis.chat_id == chat_id).limit(1)
+            ):
+                raise NoResultFound("Conversation was deleted before this request started")
             if session.scalar(
                 select(Analysis.id).where(Analysis.chat_id == chat_id, Analysis.status == "pending")
             ):
@@ -536,6 +545,49 @@ class Assistants:
             usage = self.models.usage_by_analysis({row.id for row in rows})
             models = self.models.models_by_analysis({row.id for row in rows})
             return [self.serialize(row, usage.get(row.id), models.get(row.id)) for row in rows]
+
+    def delete_chat(self, chat_id: str) -> None:
+        """Run synchronously on the assistant event loop; keep all budget accounting."""
+        with self.db.session.begin() as session:
+            # Lock before checking dependents, including on SQLite.
+            ids = set(
+                session.scalars(
+                    update(Analysis)
+                    .where(Analysis.chat_id == chat_id)
+                    .values(status=Analysis.status)
+                    .returning(Analysis.id)
+                )
+            )
+            if not ids:
+                raise NoResultFound("Conversation not found")
+            if any(
+                key in self.tasks and not self.tasks[key].done() for key in ids
+            ) or session.scalar(
+                select(Analysis.id)
+                .where(Analysis.id.in_(ids), Analysis.status == "pending")
+                .limit(1)
+            ):
+                raise ValueError("Wait for this chat to finish before deleting it.")
+            if session.scalar(
+                select(Revision.id)
+                .where(Revision.source.in_([f"plan:{key}" for key in ids]))
+                .limit(1)
+            ):
+                raise ValueError(
+                    "This chat contains a proposal used by a saved experiment. "
+                    "Keep it to preserve the experiment's source evidence."
+                )
+            calls = ProviderCall.analysis_id.in_(ids)
+            if session.scalar(
+                select(ProviderCall.id).where(calls, ProviderCall.status == "pending").limit(1)
+            ):
+                raise ValueError("Wait for this chat's requests to settle before deleting it.")
+            session.execute(
+                update(ProviderCall)
+                .where(calls)
+                .values(analysis_id=None, request_payload=None, response_payload=None)
+            )
+            session.execute(delete(Analysis).where(Analysis.id.in_(ids)))
 
     async def send(
         self,

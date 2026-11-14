@@ -105,6 +105,14 @@ and optional existing `chat_id`. The first accepted message creates the conversa
 heartbeat during quiet stages and completion closing the stream. Only the active turn is
 sent, avoiding repeated transmission of the conversation. Disconnecting never cancels or
 resubmits provider work; polling and reload restore the same persisted record.
+`DELETE /api/chats/{id}` removes all turns of a conversation only after confirmation
+in the UI. Run the transaction synchronously on the assistant event loop, locking
+turns before checking live ownership, pending turns/calls and saved revision
+proposal references. Reject those dependencies without partial deletion. Detach
+provider accounting from deleted turns and clear request/response payloads; retain
+all costs, tokens, unknown reservations and experiment/run accounting links. A
+request awaiting context capture must recheck that its existing chat still exists
+before creating a turn, so deletion cannot resurrect it or incur a provider call.
 
 Provider streaming uses the existing budget reservation, single-request limit, timeout and
 trace accounting. Partial prose is stored under `Analysis.output.partial`; it is pending

@@ -218,3 +218,39 @@
 ):not(:disabled, [aria-disabled="true"], [data-disabled], input, textarea) {
   cursor: pointer;
 }
+
+.workspace-layout {
+  container-type: inline-size;
+  --assistant-pane-width: 100cqw;
+}
+
+.workspace-assistant-dock {
+  width: 0;
+  visibility: hidden;
+  transition:
+    width 200ms linear,
+    visibility 0s linear 200ms;
+}
+
+.workspace-assistant-dock[data-open="true"] {
+  width: var(--assistant-pane-width);
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+/* Keep the composer and text at their final width throughout the slide. */
+.workspace-assistant-surface {
+  width: var(--assistant-pane-width);
+}
+
+@media (min-width: 1280px) {
+  .workspace-layout {
+    --assistant-pane-width: 27.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-assistant-dock {
+    transition: none;
+  }
+}

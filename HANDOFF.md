@@ -102,3 +102,33 @@ context, history, streaming/recovery, drafts, pending handoff and measured paddi
 usage animation. Manual inspection verified the final pane on the running 8080
 app. Backend tests were not repeated because backend code is unchanged. No model
 calls or deployment were made; preserve data/workspace and the existing 8080 server.
+
+Assistant/header follow-up (November 14): the fixed 440px pane now extends beside
+and aligns with the global 52px header. Opening/closing uses the left navigation's
+200ms linear width transition, with reduced-motion support, fixed inner width,
+inert closed content and explicit-close focus restoration. Opening remains manual
+after navigation, Back and reload; remembered chat/draft identities remain intact.
+The toolbar uses a four-corner Maximize focus link before SquarePen New chat and
+PanelRightClose, with aligned 16px glyphs, 28px controls and 2px action gaps. History
+titles cap/truncate with ellipsis while retaining full accessible names. The welcome
+uses the Assistant Target, a 6px text gap and the same leading edge as suggestions
+and composer text. The left navigation is 240px wide and its 16px panel icon changes
+direction with open/collapsed state. Removed dividers below JAS and above usage;
+retained the navigation divider. Usage now has a 57px soft-gray bordered surface,
+12px padding, a clearer label and quiet hover, without changing precision or usage.
+
+Chat history now offers confirmed deletion with busy/error/retry states, clearing
+only matching remembered identities after success. The new transactional endpoint
+rejects live/pending chats, unsettled calls and proposals referenced by saved
+revisions. Costs, tokens, unknown reservations and experiment/run accounting links
+remain intact; deleted turns' raw prompts/responses are cleared. Context capture
+rechecks chat identity before accepting a turn, preventing deleted-chat resurrection.
+No schema change or user data deletion was performed during verification.
+
+Verification: 82 backend tests, all 150 frontend unit tests, Ruff/format, ty,
+lint/build and 87 affected browser cases verified across runs. Final pane/navigation
+checks passed all 28 cases; four additional usage checks passed after the last
+visual adjustment. The design detector reported no findings. Manual desktop/light
+and phone/dark checks found no overflow or console errors. The local 8080 process
+was refreshed after confirming no active runs/pending chats; health is 200 and
+its workspace is preserved. No paid calls, deployment or Railway changes.

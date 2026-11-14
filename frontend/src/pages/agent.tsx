@@ -28,8 +28,8 @@ import {
   FlaskConical,
   GitCompareArrows,
   PenLine,
-  Plus,
   ScanLine,
+  SquarePen,
 } from "@/components/icons";
 import { ErrorState } from "@/components/shared";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
@@ -122,15 +122,24 @@ export default function AgentPage() {
     <div className="flex h-full min-h-0 min-w-0 flex-col bg-muted/50">
       <header className="flex shrink-0 items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <h1 className="sr-only">Assistant</h1>
-        <AgentHistory currentTitle={chat.data?.[0]?.question} />
+        <AgentHistory
+          currentChat={chatId}
+          currentTitle={chat.data?.[0]?.question}
+          onDeleted={(id) => {
+            if (chatId === id)
+              navigate(`/assistant?new=${crypto.randomUUID()}`, {
+                replace: true,
+              });
+          }}
+        />
         <Button
           variant="ghost"
-          size="icon"
+          size="icon-sm"
           aria-label="New chat"
           title="New chat"
           onClick={() => navigate(`/assistant?new=${crypto.randomUUID()}`)}
         >
-          <Plus aria-hidden="true" />
+          <SquarePen aria-hidden="true" />
         </Button>
       </header>
       <div className="min-h-0 min-w-0 flex-1">
@@ -550,7 +559,7 @@ function AgentSuggestions({
     <section
       aria-label="Suggested questions"
       className={
-        compact ? "flex flex-col items-start gap-2" : suggestionClassName
+        compact ? "flex flex-col items-start gap-2 pl-4" : suggestionClassName
       }
     >
       {suggestions.map(({ title, prompt, action }) => {

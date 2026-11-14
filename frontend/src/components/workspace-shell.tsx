@@ -42,6 +42,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/ui/spinner";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useApi } from "@/lib/api";
 import type { RunSummary } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -84,13 +85,32 @@ export default function WorkspaceShell() {
   const isAgent = location.pathname === "/assistant";
   const isHome = location.pathname === "/";
   const { pageContext } = useWorkspaceAssistant();
-  const [assistantOpen, setAssistantOpen] = useState(false);
+  const [assistantLocation, setAssistantLocation] = useState<string | null>(
+    null,
+  );
   const [assistantMounted, setAssistantMounted] = useState(false);
   const assistantTrigger = useRef<HTMLButtonElement>(null);
-  const assistantVisible = assistantOpen && !isHome && !isAgent;
+  const assistantVisible =
+    assistantLocation === location.key && !isHome && !isAgent;
+  const compactAssistant = useIsMobile(1280);
+  const assistantPane = useRef<HTMLElement>(null);
+  const restoreAssistantFocus = useRef(false);
+  useEffect(() => {
+    setAssistantLocation((opened) => (opened === location.key ? opened : null));
+  }, [location.key]);
+  useEffect(() => {
+    if (assistantVisible) {
+      assistantPane.current
+        ?.querySelector<HTMLButtonElement>("header button")
+        ?.focus({ preventScroll: true });
+    } else if (restoreAssistantFocus.current) {
+      assistantTrigger.current?.focus({ preventScroll: true });
+      restoreAssistantFocus.current = false;
+    }
+  }, [assistantVisible]);
   function closeAssistant() {
-    setAssistantOpen(false);
-    assistantTrigger.current?.focus();
+    restoreAssistantFocus.current = true;
+    setAssistantLocation(null);
   }
   const isRecordList = ["/experiments", "/runs"].includes(location.pathname);
   const runs = useApi<RunSummary[]>("/runs", true);
@@ -134,7 +154,7 @@ export default function WorkspaceShell() {
         <a href="#main">Skip to content</a>
       </Button>
       <Sidebar collapsible="icon">
-        <SidebarHeader className="h-(--workspace-header-height) shrink-0 justify-center border-b py-1 pr-1.5 group-data-[collapsible=icon]:pr-2">
+        <SidebarHeader className="h-(--workspace-header-height) shrink-0 justify-center py-1 pr-1.5 group-data-[collapsible=icon]:pr-2">
           <SidebarMenu>
             <SidebarMenuItem className="relative flex h-7 items-center justify-between pl-1.5">
               <Button
@@ -254,7 +274,6 @@ export default function WorkspaceShell() {
             ))}
           </nav>
         </SidebarContent>
-        <SidebarSeparator className="mx-0" />
         <SidebarFooter className="overflow-hidden">
           <SidebarBudget />
           <nav aria-label="Workspace settings">
@@ -277,59 +296,66 @@ export default function WorkspaceShell() {
           </nav>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset className="min-h-0 min-w-0 overflow-hidden">
-        <header
-          className="flex h-(--workspace-header-height) shrink-0 items-center gap-2 border-b bg-background px-2.5"
-          data-slot="workspace-header"
+      <SidebarInset className="workspace-layout min-h-0 min-w-0 flex-row overflow-hidden">
+        <div
+          className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
+          inert={compactAssistant && assistantVisible}
+          aria-hidden={compactAssistant && assistantVisible ? true : undefined}
         >
-          {isMobile && (
-            <SidebarTrigger ref={menuTrigger} aria-label="Open menu" />
-          )}
-          <div className="ml-auto flex items-center gap-1">
-            {!isHome && !isAgent && (
-              <Button
-                ref={assistantTrigger}
-                variant="outline"
-                size="sm"
-                className="mr-1 px-2.5 has-data-[icon=inline-start]:pl-2.5"
-                aria-expanded={assistantVisible}
-                aria-controls="workspace-assistant"
-                onClick={() => {
-                  setAssistantMounted(true);
-                  setAssistantOpen((open) => !open);
-                }}
-              >
-                <AgentIcon data-icon="inline-start" aria-hidden="true" />
-                Assistant
-              </Button>
+          <header
+            className="flex h-(--workspace-header-height) shrink-0 items-center gap-2 border-b bg-background px-2.5"
+            data-slot="workspace-header"
+          >
+            {isMobile && (
+              <SidebarTrigger ref={menuTrigger} aria-label="Open menu" />
             )}
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={changeTheme}
-              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {dark ? <Sun /> : <Moon />}
-            </Button>
-            <Button variant="ghost" size="icon-sm" asChild>
-              <a
-                href="https://github.com/jaiamin/jas"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="GitHub repository"
+            <div className="ml-auto flex items-center gap-1">
+              {!isHome && !isAgent && (
+                <Button
+                  ref={assistantTrigger}
+                  variant="outline"
+                  size="default"
+                  className="mr-1 h-7 gap-1 px-2.5 text-[0.8rem] has-data-[icon=inline-start]:pl-2.5"
+                  aria-expanded={assistantVisible}
+                  aria-controls="workspace-assistant"
+                  onClick={() => {
+                    setAssistantMounted(true);
+                    setAssistantLocation(
+                      assistantVisible ? null : location.key,
+                    );
+                  }}
+                >
+                  <AgentIcon data-icon="inline-start" aria-hidden="true" />
+                  Assistant
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={changeTheme}
+                aria-label={
+                  dark ? "Switch to light mode" : "Switch to dark mode"
+                }
               >
-                <Github />
-              </a>
-            </Button>
-          </div>
-        </header>
-        <div className="flex min-h-0 flex-1 overflow-hidden">
+                {dark ? <Sun /> : <Moon />}
+              </Button>
+              <Button variant="ghost" size="icon-sm" asChild>
+                <a
+                  href="https://github.com/jaiamin/jas"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="GitHub repository"
+                >
+                  <Github />
+                </a>
+              </Button>
+            </div>
+          </header>
           <div
             key={location.pathname}
             data-slot="workspace-content"
             className={cn(
               "min-h-0 min-w-0 flex-1",
-              assistantVisible && "hidden xl:block",
               isAgent
                 ? "overflow-hidden"
                 : "overflow-x-hidden overflow-y-auto overscroll-contain scroll-py-4 [scrollbar-gutter:stable]",
@@ -366,14 +392,19 @@ export default function WorkspaceShell() {
               </Suspense>
             </div>
           </div>
+        </div>
+        <div
+          className="workspace-assistant-dock min-h-0 shrink-0 overflow-hidden"
+          data-open={assistantVisible}
+          inert={!assistantVisible}
+          aria-hidden={!assistantVisible}
+        >
           {assistantMounted && !isHome && !isAgent && (
             <aside
+              ref={assistantPane}
               id="workspace-assistant"
               aria-labelledby="assistant-panel-title"
-              className={cn(
-                "flex min-h-0 min-w-0 w-full flex-col border-l bg-background xl:w-110 xl:shrink-0",
-                !assistantVisible && "hidden",
-              )}
+              className="workspace-assistant-surface flex h-full min-h-0 flex-col border-l bg-background"
               onKeyDown={(event) => {
                 if (event.key === "Escape" && !event.defaultPrevented) {
                   event.preventDefault();

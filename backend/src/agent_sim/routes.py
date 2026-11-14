@@ -566,6 +566,12 @@ async def chat(chat_id: str, *, assistants: AssistantsDep) -> list[dict]:
     return list(assistants.chat(chat_id))
 
 
+@router.delete("/api/chats/{chat_id}")
+async def delete_chat(chat_id: str, *, assistants: AssistantsDep) -> dict:
+    assistants.delete_chat(chat_id)
+    return {"deleted": chat_id}
+
+
 @router.get("/api/chats/{chat_id}/events")
 async def chat_events(chat_id: str, *, assistants: AssistantsDep) -> StreamingResponse:
     key = assistants.chat(chat_id)[-1]["id"]

@@ -142,8 +142,11 @@ there is one publishing destination and no Community navigation group.
 The compact brand link returns to Home. The footer contains a quiet usage line,
 a thin budget meter and one direct Settings link. There is no avatar, chooser,
 subtitle or appearance dropdown. Light/dark mode lives only in the top-right header.
-A stock SidebarSeparator separates primary navigation from Workspace;
-the footer divider spans the full sidebar. Settings keeps its 32px height in the
+A stock SidebarSeparator separates primary navigation from Workspace. Omit
+dividers below the JAS brand row and above usage. The usage link has a rounded border and soft muted surface, with 12px padding,
+a clearer medium-weight label, a 10px row-to-meter gap and a stronger muted hover
+state. Keep the 5px meter accurate even when usage is tiny; retain keyboard focus.
+Settings keeps its 32px height in the
 collapsed rail, while the usage line is hidden to retain a clean icon column.
 Usage is hidden entirely when collapsed, including its loading and unavailable
 states; the footer keeps one direct Settings link. The expanded meter is 5px thick,
@@ -154,7 +157,8 @@ animates, so its labels never squeeze or reflow during expansion.
 Sidebar dollar usage uses up to three decimals, with `<$0.001` for smaller nonzero
 amounts and `$0.00` for zero. The visible dollar ceiling uses two decimals; tooltip
 amounts retain up to six decimals. Token counts and budget calculations stay unchanged.
-Navigation glyphs are 15px; the sidebar toggle glyph is 14px in its unchanged 28px target.
+The expanded navigation is 240px wide; the collapsed rail remains 48px.
+Navigation glyphs are 15px; header controls use 16px glyphs in 28px targets.
 Every sidebar icon stays outlined when selected. The text color and background
 highlight identify the active page. Partial fills outside the sidebar stay at the icon boundary;
 conversation rows are text-only. Do not invent accounts or organizations.
@@ -173,8 +177,9 @@ vertical center and 28px height. Hide it on Home and the focused Assistant page.
 the outer icon edge matches the navigation glyphs’ 16px edge inset. Settings uses
 the stock gear glyph in both navigation and the local workspace menu. Desktop collapse sits on the
 right of the brand row and overlays the stationary logo on hover when collapsed.
-Both states use a 28px control with a 14px glyph; the expanded control ends 6px
-before the sidebar divider.
+Both states use a 28px control with a 16px glyph; the expanded control ends 6px
+before the sidebar divider. PanelLeftClose points inward while expanded;
+PanelLeftOpen points outward while collapsed, including the mobile menu state.
 Only visible keyboard focus also reveals the control; pointer focus must not keep
 it visible after hover ends. Hover is tracked on the control rather than the
 shrinking header; opacity changes immediately and the logo is hidden beneath the
@@ -182,13 +187,21 @@ overlay, so neither a lingering button nor the logo bleeds through. Mobile retai
 restoration. The static browser title is always `JAS`, including initial load and record views;
 there is no route/catalog title derivation. Runs link to their experiment.
 The global Assistant button replaces the per-record modal actions. Its pane lives
-inside the main area below the global header: 440px wide alongside content from
-1280px upward, filling the available main area on smaller screens. Use the
-background token, one left divider and no resize handle. Its compact header has a left history dropdown with a darker muted history
-icon, the current chat name (or New chat), and a caret. Keep New chat and Close
-as the only right-hand icons. Open in Assistant lives inside the history popup;
-omit the Assistant label, a separate full-screen button and a collapse button. Escape closes the pane unless a nested
-popover handles it, and closing restores focus to its header toggle.
+beside the global header, extending to the top of the main workspace: 440px wide
+alongside content from 1280px upward, filling the available main area on smaller
+screens. Its 52px header aligns with the global header. Use the background token,
+one left divider and no resize handle. Opening and closing match the left
+navigation: a 200ms linear width transition, disabled for reduced motion. The
+inner pane retains its final width during motion; closed content is inert and
+hidden. On narrow screens the covered page is inert as well.
+The compact header has a left history dropdown with a darker muted history icon,
+the current chat name (or New chat), and a caret. Opening stays manual after
+navigation, browser Back and reload; remember conversation/draft identity without
+persisting or restoring the pane’s open state. At right, use the four-corner
+Maximize link for Open in Assistant, then SquarePen for New chat and PanelRightClose
+for Close Assistant. Each uses a 16px glyph in a 28px target, with 2px gaps.
+Escape closes the pane unless a nested popover handles it; closing restores focus
+to the global toggle without scrolling. No redundant Assistant label.
 Only an individual experiment/run registers automatic context, using the actual
 displayed revision and evidence cutoff. The shared Add context picker remains available on every Assistant view,
 including lists, Gallery and Settings. Automatically select only the displayed
@@ -209,11 +222,13 @@ saved conversations start with two rows.
 Assistant has no spending caption below its composer; provider and draft errors
 remain visible. Home retains its composer guidance and draft spending estimate.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
-background surface. The new-chat heading uses the supplied JAS logo before “What can we explore?”,
-24px in the pane and 30px/34px in the focused view, with an 8px gap. The logo is
-static. Reply Targets also stay static in working and completed states. Activity uses
-recorded text and a stock loading indicator. Motion belongs only to explicit run
-playback and the Home sky, with reduced motion respected. The left history dropdown and 32px ghost New chat control stay available for new
+background surface. The new-chat heading uses the primary Assistant Target before
+“What can we explore?”, 24px in the pane and 30px/34px in the focused view, with
+a 6px gap. The icon is static; the pane welcome icon shares the suggestions’
+leading edge and composer text inset. Reply Targets also stay static in working and completed states. Activity uses
+recorded text and a stock loading indicator. Sidebar transitions, explicit run
+playback and the Home sky respect reduced motion. The left history dropdown and
+28px ghost New chat control stay available for new
 and saved chats. History uses a
 stock Popover and ScrollArea in every viewport, with local skeleton rows, empty
 state and retry; it fetches on open and keeps cached rows during refresh. Static
@@ -222,7 +237,9 @@ the selector; scoped suggestion placeholders match question buttons. A saved cha
 uses transcript-shaped skeletons while its initial turns load, leaving History
 and New available. Downloading the lazy Agent module uses only a small spinner,
 not a page of fake database content. Long
-labels truncate inside the popup beside a stock chat-bubble icon and relative
+labels cap at 40 characters with an ellipsis and truncate further to fit the popup,
+with full accessible names but no full-title hover popup. They sit beside a stock
+chat-bubble icon and relative
 last-message time (`now`, `5m`, `2h`, `3d`, then a calendar date). Hovering exposes
 the full local timestamp and the accessible label retains the expanded recency.
 The popup uses a small muted heading, full-width separator and compact stock
@@ -232,15 +249,21 @@ spinners precede the right-aligned time rather than displacing it. Rows and thei
 skeletons are 26px tall with centered content; the hover surface extends 6px past
 the content on each side. The heading and divider remain outside the scrolling
 list, which caps at 20rem or the available popup height. There is no conversation rail or separate mobile
-history Sheet. New chats place their welcome heading and suggestions above the
+history Sheet. Each row has a separate trash action, disabled while pending.
+Deletion requires confirmation, retains visible busy/error states and supports retry.
+A successful delete clears matching pane identities and starts a new chat if the
+deleted conversation was active. Usage is kept; proposals used by saved revisions
+are protected by the backend. New chats place their welcome heading and suggestions above the
 bottom composer; all remaining space belongs to the scrollable conversation.
 Keep “What can we explore?” unchanged across selections. The pane uses a smaller
-left-aligned heading and four stacked suggestion actions without borders or background fills. Empty space shrinks on
+left-aligned heading and four stacked suggestion actions without borders or
+background fills. Their leading icons align with the composer text inset. Empty space shrinks on
 short screens; welcome and suggestions remain scrollable without clipping. The plain Agent composer omits Home’s gray
 Card surround and manual-editor footer. Saved chats retain the streaming
 MessageScroller and bottom composer, with two initial textarea rows (Home/new chat keep three).
 The history trigger shows the first question for a saved conversation and
-truncates within the available width, with its full title on hover. New conversations
+caps at 40 characters and truncates within the available width; its accessible
+name retains the title without a full-title hover popup. New conversations
 show New chat; its accessible name also identifies chat history. Keep the caret
 muted and history glyph slightly darker. No title-generation request is made. The
 browser title remains JAS.

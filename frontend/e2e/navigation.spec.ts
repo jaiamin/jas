@@ -345,7 +345,7 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
     nav: 15,
     github: 16,
     theme: 16,
-    trigger: 14,
+    trigger: 16,
     left: 16,
     right: 16,
   });
@@ -391,6 +391,9 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
   const separators = page.locator('[data-slot="sidebar-separator"]');
   const sectionLineBefore = await separators.first().boundingBox();
   const settingsBefore = await settings.boundingBox();
+  await expect(
+    page.locator('[data-sidebar="trigger"] .lucide-panel-left-close'),
+  ).toBeVisible();
   await page
     .getByRole("button", { name: "Collapse sidebar", exact: true })
     .click();
@@ -398,8 +401,12 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
     name: "Expand sidebar",
     exact: true,
   });
+  await expect(expand.locator(".lucide-panel-left-open")).toHaveCSS(
+    "width",
+    "16px",
+  );
   await expect(expand).toHaveCSS("opacity", "0");
-  await expect(separators).toHaveCount(2);
+  await expect(separators).toHaveCount(1);
   await expect(separators.first()).toBeVisible();
   expect((await separators.first().boundingBox())?.y).toBe(
     sectionLineBefore?.y,
@@ -489,6 +496,18 @@ for (const theme of ["light", "dark"]) {
       includeHidden: true,
     });
     await expect(budget).toBeVisible();
+    await expect(
+      page.locator('[data-slot="sidebar-header"]').first(),
+    ).toHaveCSS("border-bottom-width", "0px");
+    await expect(page.locator('[data-slot="sidebar-separator"]')).toHaveCount(
+      1,
+    );
+    await expect(budget).toHaveCSS("border-width", "1px");
+    const restingBackground = await budget.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    await budget.hover();
+    await expect(budget).not.toHaveCSS("background-color", restingBackground);
     await expect(budget.getByRole("progressbar")).toHaveAttribute(
       "aria-valuenow",
       "50",
