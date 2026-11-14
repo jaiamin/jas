@@ -10,7 +10,6 @@ import {
   InputGroupAddon,
   InputGroupTextarea,
 } from "@/components/ui/input-group";
-import { money } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export function AgentComposer({
@@ -143,18 +142,6 @@ export function AgentComposer({
         </Alert>
       )}
       {children}
-      {variant === "home" &&
-        question.trim() &&
-        !unavailable &&
-        state.estimate && (
-          <p className="mt-2 text-xs text-muted-foreground">
-            Up to {state.estimate.max_requests} calls ·{" "}
-            {state.estimate.upper_usd == null
-              ? "cost unknown; token limit applies"
-              : `${money(state.estimate.upper_usd)} conservative bound`}
-            . Workspace budget applies.
-          </p>
-        )}
       {draftUnavailable && (
         <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
           This browser could not keep your message draft.

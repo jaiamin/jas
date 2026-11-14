@@ -103,7 +103,11 @@ for (const width of [390, 1440])
       await expect(
         pane.getByRole("button", { name: /chat history/i }),
       ).toHaveText("New chat");
-      await expect(pane.locator("header").getByRole("button")).toHaveCount(3);
+      await expect(pane.locator("header").getByRole("button")).toHaveCount(2);
+      for (const name of ["New chat", "Delete chat"])
+        await expect(
+          pane.getByRole("button", { name, exact: true }),
+        ).toHaveCount(0);
       await expect(pane.locator("header").getByRole("link")).toHaveCount(1);
       await expect(
         pane
@@ -177,11 +181,11 @@ for (const width of [390, 1440])
       const expandBox = await pane
         .getByRole("link", { name: "Open in Assistant" })
         .boundingBox();
-      const newBox = await pane
-        .getByRole("button", { name: "New chat", exact: true })
+      const closeBox = await pane
+        .getByRole("button", { name: "Close Assistant", exact: true })
         .boundingBox();
       expect(
-        (newBox?.x ?? 0) - (expandBox?.x ?? 0) - (expandBox?.width ?? 0),
+        (closeBox?.x ?? 0) - (expandBox?.x ?? 0) - (expandBox?.width ?? 0),
       ).toBe(2);
       await pane.getByRole("button", { name: "Learn the basics" }).click();
       await expect(input).toHaveValue(/Explain how JAS experiments work/);
@@ -203,12 +207,11 @@ for (const width of [390, 1440])
       await expect(
         page.getByRole("button", { name: "Assistant", exact: true }),
       ).toHaveCount(0);
-      await expect(
-        page.getByLabel("Message Assistant", { exact: true }),
-      ).toHaveValue("Keep this draft beside Settings");
-      await page
-        .getByLabel("Message Assistant", { exact: true })
-        .fill("Edited in focused view");
+      const focusedInput = page
+        .locator('[data-slot="workspace-content"]')
+        .getByLabel("Message Assistant", { exact: true });
+      await expect(focusedInput).toHaveValue("Keep this draft beside Settings");
+      await focusedInput.fill("Edited in focused view");
       await page.goBack();
       await expect(pane).toBeHidden();
       await toggle.click();
@@ -222,6 +225,36 @@ for (const width of [390, 1440])
       await expect(
         pane.getByRole("button", { name: /chat history/i }),
       ).toHaveText("An earlier question");
+      await expect(
+        pane.getByRole("button", { name: "New chat", exact: true }),
+      ).toBeVisible();
+      await expect(
+        pane.getByRole("button", { name: "Delete chat", exact: true }),
+      ).toBeEnabled();
+      const overlap = await pane.evaluate((element) => {
+        const viewport = element.querySelector(
+          '[aria-label="Assistant conversation"]',
+        );
+        const input = element.querySelector('[data-slot="input-group"]');
+        if (!viewport || !input)
+          throw new Error("Missing conversation/composer");
+        return (
+          viewport.getBoundingClientRect().bottom -
+          input.getBoundingClientRect().top
+        );
+      });
+      expect(overlap).toBe(0);
+      await expect(
+        pane.getByRole("region", {
+          name: "Assistant conversation",
+          exact: true,
+        }),
+      ).toHaveCSS("mask-image", "none");
+      await page.screenshot({
+        path: testInfo.outputPath(
+          `assistant-conversation-${theme}-${width}.png`,
+        ),
+      });
       await expect(
         pane
           .getByRole("button", { name: /chat history/i })
@@ -498,7 +531,17 @@ test("late pane responses cannot replace a new chat and its reloadable draft", a
   });
   let sends = 0;
   await page.route("**/api/chats", async (route) => {
-    if (route.request().method() !== "POST") return route.fulfill({ json: [] });
+    if (route.request().method() !== "POST")
+      return route.fulfill({
+        json: [
+          {
+            id: "another-chat",
+            title: "Another conversation",
+            updated: new Date().toISOString(),
+            status: "complete",
+          },
+        ],
+      });
     sends++;
     await pending;
     await route.fulfill({
@@ -506,6 +549,9 @@ test("late pane responses cannot replace a new chat and its reloadable draft", a
       json: { id: "late-answer", chat_id: "late-pane-chat" },
     });
   });
+  await page.route("**/api/chats/another-chat", (route) =>
+    route.fulfill({ json: reply("another-chat", "Another conversation") }),
+  );
   await page.goto("/experiments");
   await page.getByRole("button", { name: "Assistant", exact: true }).click();
   const pane = page.getByRole("complementary", {
@@ -516,7 +562,15 @@ test("late pane responses cannot replace a new chat and its reloadable draft", a
   await input.fill("The original question");
   await pane.getByRole("button", { name: "Send message" }).click();
   await expect.poll(() => sends).toBe(1);
+  await expect(
+    pane.getByRole("button", { name: "New chat", exact: true }),
+  ).toHaveCount(0);
+  await pane.getByRole("button", { name: /chat history/i }).click();
+  await page.getByRole("link", { name: /Another conversation/ }).click();
   await pane.getByRole("button", { name: "New chat", exact: true }).click();
+  await expect(pane.getByRole("button", { name: /chat history/i })).toHaveText(
+    "New chat",
+  );
   await input.fill("Preserve this newer draft");
   finish();
   await expect
@@ -618,12 +672,16 @@ for (const reducedMotion of ["no-preference", "reduce"] as const) {
   });
 }
 
-for (const surface of ["pane", "focused"]) {
-  test(`history deletion is confirmed and recoverable · ${surface}`, async ({
+for (const [surface, width] of [
+  ["pane", 390],
+  ["focused", 390],
+  ["focused", 1440],
+] as const) {
+  test(`history deletion is confirmed and recoverable · ${surface} · ${width}`, async ({
     page,
   }) => {
     await page.setViewportSize({
-      width: surface === "pane" ? 390 : 1440,
+      width,
       height: 900,
     });
     const title =
@@ -695,15 +753,43 @@ for (const surface of ["pane", "focused"]) {
     const row = popup.getByRole("link", { name: new RegExp(title) });
     await expect(row).toContainText("…");
     await expect(row).not.toHaveAttribute("title");
-    await expect(
-      popup.getByRole("button", { name: "Delete chat: Still working" }),
-    ).toBeDisabled();
-    await popup.getByRole("button", { name: `Delete chat: ${title}` }).click();
+    await expect(popup.getByRole("button", { name: /Delete/ })).toHaveCount(0);
+    await page.keyboard.press("Escape");
+    const remove = page.getByRole("button", {
+      name: "Delete chat",
+      exact: true,
+    });
+    const newChat = page.getByRole("button", { name: "New chat", exact: true });
+    const deleteBox = await remove.boundingBox();
+    const newBox = await newChat.boundingBox();
+    expect(
+      (newBox?.x ?? 0) - (deleteBox?.x ?? 0) - (deleteBox?.width ?? 0),
+    ).toBe(surface === "focused" ? 4 : 2);
+    if (surface === "focused") {
+      const toolbar = page.locator('[data-slot="workspace-content"] header');
+      const topbar = page.locator('[data-slot="workspace-header"]');
+      await expect(toolbar).toHaveCSS("padding-left", "10px");
+      await expect(toolbar).toHaveCSS("padding-right", "10px");
+      const historyIcon = await trigger.locator("svg").first().boundingBox();
+      const toolbarBox = await toolbar.boundingBox();
+      const github = await topbar
+        .getByRole("link", { name: "GitHub repository" })
+        .boundingBox();
+      const theme = await topbar
+        .getByRole("button", { name: /Switch to .* mode/ })
+        .boundingBox();
+      expect(deleteBox?.x).toBe(theme?.x);
+      expect((historyIcon?.x ?? 0) - (toolbarBox?.x ?? 0)).toBe(16);
+      expect((newBox?.x ?? 0) + (newBox?.width ?? 0)).toBe(
+        (github?.x ?? 0) + (github?.width ?? 0),
+      );
+    }
+    await remove.click();
     const confirm = page.getByRole("alertdialog", { name: "Delete chat?" });
     await confirm.getByRole("button", { name: "Cancel" }).click();
     expect(attempts).toBe(0);
-    await trigger.click();
-    await popup.getByRole("button", { name: `Delete chat: ${title}` }).click();
+    await expect(remove).toBeFocused();
+    await remove.click();
     await confirm
       .getByRole("button", { name: "Delete chat", exact: true })
       .click();
@@ -721,6 +807,11 @@ for (const surface of ["pane", "focused"]) {
     release();
     await expect(confirm).toHaveCount(0);
     await expect(trigger).toHaveText("New chat");
+    await expect(trigger).toBeFocused();
+    for (const name of ["New chat", "Delete chat"])
+      await expect(page.getByRole("button", { name, exact: true })).toHaveCount(
+        0,
+      );
     expect(
       await page.evaluate(() => [
         localStorage.getItem("jas:assistant-panel:general"),

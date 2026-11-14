@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import type { Catalog } from "../src/lib/types.js";
 
 for (const theme of ["light", "dark"]) {
-  for (const width of [390, 1600]) {
+  for (const width of [320, 390, 1600]) {
     test(`environment catalogue identities, details and navigation · ${theme} · ${width}`, async ({
       page,
       request,
@@ -105,12 +105,59 @@ for (const theme of ["light", "dark"]) {
         .locator('[data-slot="item-content"]')
         .boundingBox();
       expect(markBox && textBox).toBeTruthy();
-      if (markBox && textBox)
+      if (markBox && textBox) {
         expect(
           Math.abs(
             markBox.y + markBox.height / 2 - textBox.y - textBox.height / 2,
           ),
         ).toBeLessThanOrEqual(1);
+        expect(Math.abs(markBox.height - textBox.height)).toBeLessThanOrEqual(
+          1,
+        );
+        expect(markBox.width).toBeLessThanOrEqual(80);
+        if (width >= 640)
+          expect(Math.abs(markBox.width - textBox.height)).toBeLessThanOrEqual(
+            1,
+          );
+      }
+      const tags = card.locator('[data-slot="badge"]');
+      await expect(tags).toHaveCount(4);
+      await expect(tags.nth(0)).toHaveText("Abstract game");
+      await expect(tags.nth(1)).toHaveText(/\d+ agents?/);
+      await expect(tags.nth(2)).toHaveText(/\d+-run example/);
+      await expect(tags.nth(3)).toHaveText(/Up to \$/);
+      for (const tag of await tags.all()) {
+        await expect(tag).toHaveCSS("border-top-width", "1px");
+        await expect(tag).toHaveCSS("border-top-style", "solid");
+        await expect(tag).toHaveCSS("border-radius", "6px");
+        expect(
+          await tag.evaluate((element) => {
+            const style = getComputedStyle(element);
+            return (
+              style.backgroundColor ===
+                getComputedStyle(document.body).backgroundColor &&
+              element.scrollWidth <= element.clientWidth
+            );
+          }),
+        ).toBe(true);
+      }
+      for (const row of await page.getByRole("article").all())
+        expect(
+          await row.evaluate((element) => {
+            const bounds = element.getBoundingClientRect();
+            return (
+              element.scrollWidth <= element.clientWidth &&
+              Array.from(
+                element.querySelectorAll(
+                  '[data-slot="item-content"], [data-slot="badge"]',
+                ),
+              ).every((child) => {
+                const box = child.getBoundingClientRect();
+                return box.top >= bounds.top && box.bottom <= bounds.bottom;
+              })
+            );
+          }),
+        ).toBe(true);
       await expect(page.locator('[data-slot="card"]')).toHaveCount(0);
       await page.screenshot({
         path: testInfo.outputPath(`environments-${theme}-${width}.png`),

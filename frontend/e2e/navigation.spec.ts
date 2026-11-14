@@ -489,7 +489,7 @@ for (const theme of ["light", "dark"]) {
         },
       }),
     );
-    await page.goto("/assistant");
+    await page.goto("/");
     const footer = page.locator('[data-slot="sidebar-footer"]');
     const budget = footer.getByRole("link", {
       name: /^Usage:/,
@@ -503,12 +503,12 @@ for (const theme of ["light", "dark"]) {
       1,
     );
     await expect(budget).toHaveCSS("border-width", "1px");
-    const divider = await page
-      .locator('[data-slot="sidebar-separator"]')
+    const selectedItem = await page
+      .getByRole("link", { name: "Home", exact: true })
       .boundingBox();
     const usageBox = await budget.boundingBox();
-    expect(usageBox?.x).toBe(divider?.x);
-    expect(usageBox?.width).toBe(divider?.width);
+    expect(usageBox?.x).toBe(selectedItem?.x);
+    expect(usageBox?.width).toBe(selectedItem?.width);
     const restingBackground = await budget.evaluate(
       (element) => getComputedStyle(element).backgroundColor,
     );

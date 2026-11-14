@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   Link,
   useLocation,
@@ -12,6 +12,7 @@ import {
   contextLabel,
   messageContext,
 } from "@/components/agent/agent-context";
+import { AgentDeleteChat } from "@/components/agent/agent-delete-chat";
 import { AgentHistory } from "@/components/agent/agent-history";
 import { AgentReply } from "@/components/agent/agent-reply";
 import { AgentWelcomeHeading } from "@/components/agent/agent-welcome-heading";
@@ -70,6 +71,7 @@ const suggestionClassName =
   "mx-auto flex w-full flex-wrap justify-center gap-2";
 
 export default function AgentPage() {
+  const historyTrigger = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
   const client = useQueryClient();
   const location = useLocation();
@@ -120,27 +122,40 @@ export default function AgentPage() {
   const runs = useApi<RunSummary[]>("/runs");
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col bg-muted/50">
-      <header className="flex shrink-0 items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      <header className="flex shrink-0 items-center justify-between gap-3 px-2.5 py-3">
         <h1 className="sr-only">Assistant</h1>
         <AgentHistory
+          ref={historyTrigger}
+          className="ml-0 has-data-[icon=inline-start]:pl-1.25 has-data-[icon=inline-end]:pr-1.25"
           currentChat={chatId}
           currentTitle={chat.data?.[0]?.question}
-          onDeleted={(id) => {
-            if (chatId === id)
-              navigate(`/assistant?new=${crypto.randomUUID()}`, {
-                replace: true,
-              });
-          }}
         />
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          aria-label="New chat"
-          title="New chat"
-          onClick={() => navigate(`/assistant?new=${crypto.randomUUID()}`)}
-        >
-          <SquarePen aria-hidden="true" />
-        </Button>
+        <div className="flex shrink-0 items-center gap-1">
+          <AgentDeleteChat
+            chatId={chatId}
+            disabled={
+              !chat.data || chat.data.some((row) => row.status === "pending")
+            }
+            restoreFocusRef={historyTrigger}
+            onDeleted={(id) => {
+              if (chatId === id)
+                navigate(`/assistant?new=${crypto.randomUUID()}`, {
+                  replace: true,
+                });
+            }}
+          />
+          {chatId && (
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="New chat"
+              title="New chat"
+              onClick={() => navigate(`/assistant?new=${crypto.randomUUID()}`)}
+            >
+              <SquarePen aria-hidden="true" />
+            </Button>
+          )}
+        </div>
       </header>
       <div className="min-h-0 min-w-0 flex-1">
         {chat.error ? (
@@ -343,8 +358,10 @@ export function AgentConversation({
       }
       className={
         embedded
-          ? "relative mx-auto w-full shrink-0 px-4 pb-4 pt-3"
-          : "relative mx-auto w-full max-w-3xl shrink-0 px-4 pb-4 pt-3 sm:px-6 sm:pb-6"
+          ? "relative mx-auto w-full shrink-0 px-4 pb-4"
+          : messages.length
+            ? "relative mx-auto w-full max-w-3xl shrink-0 px-4 pb-4 sm:px-6 sm:pb-6"
+            : "w-full"
       }
     >
       {contextError && (
@@ -362,6 +379,17 @@ export function AgentConversation({
       )}
     </AgentComposer>
   );
+  const suggestions = (
+    <AgentSuggestions
+      context={context}
+      scope={scope}
+      compact={embedded}
+      contextLoading={contextLoading}
+      studies={studies}
+      runs={runs}
+      onChoose={chooseSuggestion}
+    />
+  );
   return (
     <section
       className="flex h-full min-h-0 flex-col"
@@ -371,15 +399,12 @@ export function AgentConversation({
       {messages.length ? (
         <MessageScrollerProvider autoScroll defaultScrollPosition="last-anchor">
           <MessageScroller className="flex-1">
-            <MessageScrollerViewport
-              aria-label="Assistant conversation"
-              className="[--scroll-fade-size:0.75rem]"
-            >
+            <MessageScrollerViewport aria-label="Assistant conversation">
               <MessageScrollerContent
                 className={
                   embedded
-                    ? "mx-auto w-full px-4 pt-4 pb-6"
-                    : "mx-auto w-full max-w-3xl px-4 pt-4 pb-6 sm:px-6"
+                    ? "mx-auto w-full px-4 pt-4 pb-7"
+                    : "mx-auto w-full max-w-3xl px-4 pt-4 pb-7 sm:px-6"
                 }
               >
                 {messages.flatMap((row, index) => [
@@ -457,29 +482,25 @@ export function AgentConversation({
             <MessageScrollerButton />
           </MessageScroller>
         </MessageScrollerProvider>
-      ) : (
-        <div
-          className={
-            embedded
-              ? "flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-4 pb-3 pt-8"
-              : "flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-4 pb-3 pt-8 sm:px-6"
-          }
-        >
+      ) : embedded ? (
+        <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-4 pb-3 pt-8">
           <div className="mx-auto mt-auto flex w-full max-w-3xl shrink-0 flex-col gap-5">
-            <AgentWelcomeHeading compact={embedded} />
-            <AgentSuggestions
-              context={context}
-              scope={scope}
-              compact={embedded}
-              contextLoading={contextLoading}
-              studies={studies}
-              runs={runs}
-              onChoose={chooseSuggestion}
-            />
+            <AgentWelcomeHeading compact />
+            {suggestions}
+          </div>
+        </div>
+      ) : (
+        <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)_auto_minmax(0,2fr)] overflow-y-auto px-4 py-8 sm:px-6">
+          <div className="row-start-2 mx-auto flex w-full max-w-3xl flex-col gap-6">
+            <AgentWelcomeHeading />
+            {composer}
+          </div>
+          <div className="row-start-3 mx-auto w-full max-w-3xl pt-6">
+            {suggestions}
           </div>
         </div>
       )}
-      {composer}
+      {(messages.length > 0 || embedded) && composer}
     </section>
   );
 }

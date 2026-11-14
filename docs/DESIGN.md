@@ -144,8 +144,8 @@ a thin budget meter and one direct Settings link. There is no avatar, chooser,
 subtitle or appearance dropdown. Light/dark mode lives only in the top-right header.
 A stock SidebarSeparator separates primary navigation from Workspace. Omit
 dividers below the JAS brand row and above usage. Align the usage link's outer edges
-with the navigation separator's 16px insets. Its rounded border and soft muted
-surface contain 12px top/side padding and 14px bottom padding,
+with the selected navigation item's background, using 8px sidebar insets. Its
+rounded border and soft muted surface contain 12px top, 10px side and 14px bottom padding,
 a clearer medium-weight label, a 10px row-to-meter gap and a stronger muted hover
 state. Keep the 5px meter accurate even when usage is tiny; retain keyboard focus.
 Settings keeps its 32px height in the
@@ -202,8 +202,9 @@ The compact header has a left history dropdown with a darker muted history icon,
 the current chat name (or New chat), and a caret. Opening stays manual after
 navigation, browser Back and reload; remember conversation/draft identity without
 persisting or restoring the pane’s open state. At right, use the four-corner
-Maximize link for Open in Assistant, then SquarePen for New chat and PanelRightClose
-for Close Assistant. Each uses a 16px glyph in a 28px target, with 2px gaps.
+Maximize link for Open in Assistant, then Trash2 for Delete chat, SquarePen for New
+chat and PanelRightClose for Close Assistant. Each uses a 16px glyph in a 28px
+target, with 2px gaps.
 Escape closes the pane unless a nested popover handles it; closing restores focus
 to the global toggle without scrolling. No redundant Assistant label.
 Only an individual experiment/run registers automatic context, using the actual
@@ -223,17 +224,23 @@ The shared Home/Agent textarea uses 15px text and 23px line height, grows to
 192px, then scrolls internally while keeping its action row visible. Home and the
 focused new-chat page start with three rows (88px including padding); the pane and
 saved conversations start with two rows.
-Assistant has no spending caption below its composer; provider and draft errors
-remain visible. Home retains its composer guidance and draft spending estimate.
+Home and Assistant omit call-count and cost-estimate captions below their
+composers; provider and draft errors remain visible. Home retains its short
+composer guidance and manual-editor link. Usage and explicit run confirmations
+retain budget details and spending safeguards.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
 background surface. The new-chat heading uses the primary Assistant Target before
 “What can we explore?”, 24px in the pane and 30px/34px in the focused view, with
 a 6px gap. The icon is static; the pane welcome icon shares the suggestions’
 leading edge and composer text inset. Reply Targets also stay static in working and completed states. Activity uses
 recorded text and a stock loading indicator. Sidebar transitions, explicit run
-playback and the Home sky respect reduced motion. The left history dropdown and
-28px ghost New chat control stay available for new
-and saved chats. History uses a
+playback and the Home sky respect reduced motion. History stays available in every
+chat. The 28px ghost New chat and Delete chat controls appear only for saved chats.
+Delete precedes New chat. The full-screen toolbar uses the global top bar's 10px
+horizontal insets; History's visible icon and the trailing action glyph share its
+16px icon insets, including on phones. Full-screen action gaps match the global
+top bar's 4px spacing: Trash aligns under the theme toggle, New chat under GitHub.
+New chats keep the history trigger without redundant creation/deletion actions. History uses a
 stock Popover and ScrollArea in every viewport, with local skeleton rows, empty
 state and retry; it fetches on open and keeps cached rows during refresh. Static
 new-chat content never waits for record queries. Context-option skeletons stay in
@@ -253,16 +260,22 @@ spinners precede the right-aligned time rather than displacing it. Rows and thei
 skeletons are 26px tall with centered content; the hover surface extends 6px past
 the content on each side. The heading and divider remain outside the scrolling
 list, which caps at 20rem or the available popup height. There is no conversation rail or separate mobile
-history Sheet. Each row has a separate trash action, disabled while pending.
-Deletion requires confirmation, retains visible busy/error states and supports retry.
+history Sheet. History rows only select conversations; the current chat's trash
+action lives beside the other toolbar buttons. Disable deletion while its record
+loads or has pending turns. Deletion requires confirmation, retains visible
+busy/error states and supports retry. Cancel returns focus to Delete; success
+returns focus to History after the action disappears.
 A successful delete clears matching pane identities and starts a new chat if the
 deleted conversation was active. Usage is kept; proposals used by saved revisions
-are protected by the backend. New chats place their welcome heading and suggestions above the
-bottom composer; all remaining space belongs to the scrollable conversation.
+are protected by the backend. The full-screen new-chat view restores the centered
+starting layout: welcome heading, plain composer, then suggestions. Keep the
+heading/composer group slightly above the midpoint and suggestion height out of
+its centering calculation, so context loading and drafting do not move the input.
+The side pane keeps its welcome and suggestions above the bottom composer.
 Keep “What can we explore?” unchanged across selections. The pane uses a smaller
 left-aligned heading and four stacked suggestion actions without borders or
 background fills. Their leading icons align with the composer text inset. Empty space shrinks on
-short screens; welcome and suggestions remain scrollable without clipping. The plain Agent composer omits Home’s gray
+short screens; empty content remains scrollable without clipping. The plain Agent composer omits Home’s gray
 Card surround and manual-editor footer. Saved chats retain the streaming
 MessageScroller and bottom composer, with two initial textarea rows (Home/new chat keep three).
 The history trigger shows the first question for a saved conversation and
@@ -294,11 +307,13 @@ stages after reconnect/reload. Never expose private provider reasoning. Public d
 rationale is labeled “Draft notes (before checks)” and remains separate from the answer. A failed request marks its last observed stage as stopped. Markdown renderers
 remain stable between partial and validated output. Fenced code uses stock CodeBlock
 with per-block copy and on-demand Shiki languages; replies have a stock copy control
-below them, with its glyph aligned to the prose and a compact gap; reserve footer
+below them, with its glyph aligned to the prose, an accessible Copy response label
+and no hover tooltip. Use a 2px gap before the cost control; reserve footer
 height during streaming. A 4px assistant-item inset keeps the copy hover surface inside
 the scroller item’s paint boundary. Leave at least 24px between the final reply footer
-and composer at the scroll end. Keep transcript top padding compact. Its 12px stock fade
-overlaps the composer top by 12px, avoiding a faded gap above the input. Preserve citations,
+and composer at the scroll end. Keep transcript top padding compact. Chat composers
+have no outer top padding or margin; the transcript meets the input surface directly,
+without a fade or mask. Keep text padding inside the input. Preserve citations,
 limitations and captured evidence cutoffs.
 Measure the newest reply eagerly so the initial question anchor uses its real
 height. At the end, follow viewport changes such as provider notices and composer
@@ -811,14 +826,21 @@ A separator beneath the tabs continues directly into the list; do not add cards,
 repeat Details footers or leave an extra gap before the first row.
 
 Built-ins compose stock Item/ItemGroup and Separators. Each row is a native React
-Router link to `?environment=<key>`, with a decorative 40px mark, medium 14px name,
+Router link to `?environment=<key>`, with a decorative mark, medium 14px name,
 regular muted description and a small trailing chevron. Use 12px horizontal row
-insets, 16px vertical padding and 12px between mark and text. Center marks against
-the whole name/description block, including wrapped phone copy. Keep text fully
-visible and selectable; rows have square corners and a subtle stock hover surface.
+insets, 16px vertical padding and 12px between the icon column and text. Reserve
+64px for artwork on phones and 80px from 640px upward. Scale marks against the
+whole text block, capping their visible width to that column and centering them
+when descriptions wrap. The fixed column prevents artwork/text sizing feedback
+and keeps neighboring rows from overlapping. Keep text fully visible and
+selectable; rows have square corners and a subtle stock hover surface.
+Metadata uses the shared Badge metadata variant: 20px height, 12px regular muted
+text, 1px border, background surface (white in light mode), 6px radius and 4px gaps.
+Keep setting type, agent count, example run count and cost in separate tags;
+wrap tags on phones. Unknown costs remain explicit. This does not start paid work.
 Keep the resource-composition builder last so existing mechanics lead the scan.
 Custom uses matching row spacing and mark alignment, with linked reusable setup
-names, environment/revision metadata and its existing bordered actions menu.
+names, matching environment/revision tags and its existing bordered actions menu.
 
 `EnvironmentMark` is authored brand SVG with no backing square, Avatar, border,
 shadow or rounded clipping. Its fixed 9×9 patterns represent pooling, reciprocal

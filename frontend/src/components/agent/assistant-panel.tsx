@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { AgentDeleteChat } from "@/components/agent/agent-delete-chat";
 import { AgentHistory } from "@/components/agent/agent-history";
 import {
   type AssistantPageContext,
@@ -51,6 +52,7 @@ function PanelConversation({
   pageContext: AssistantPageContext | null;
   onClose: () => void;
 }) {
+  const historyTrigger = useRef<HTMLButtonElement>(null);
   const storageKey = `jas:assistant-panel:${slot}`;
   const identityKey = ["assistant-panel-chat", storageKey];
   const client = useQueryClient();
@@ -152,6 +154,7 @@ function PanelConversation({
         </h2>
         <div className="mr-auto flex min-w-0 flex-1 items-center pr-2">
           <AgentHistory
+            ref={historyTrigger}
             currentChat={chatId}
             currentTitle={chat.data?.[0]?.question}
             onSelect={(id) =>
@@ -173,15 +176,26 @@ function PanelConversation({
             <Maximize aria-hidden="true" />
           </Link>
         </Button>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          aria-label="New chat"
-          title="New chat"
-          onClick={() => select({ chatId: null, draftId: crypto.randomUUID() })}
-        >
-          <SquarePen aria-hidden="true" />
-        </Button>
+        <AgentDeleteChat
+          chatId={chatId}
+          disabled={
+            !chat.data || chat.data.some((row) => row.status === "pending")
+          }
+          restoreFocusRef={historyTrigger}
+        />
+        {chatId && (
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="New chat"
+            title="New chat"
+            onClick={() =>
+              select({ chatId: null, draftId: crypto.randomUUID() })
+            }
+          >
+            <SquarePen aria-hidden="true" />
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="icon-sm"

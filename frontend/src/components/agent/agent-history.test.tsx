@@ -1,7 +1,9 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { createRef } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { expect, test, vi } from "vitest";
 import { renderWithQueries } from "@/test/queries";
+import { AgentDeleteChat } from "./agent-delete-chat";
 import { AgentHistory } from "./agent-history";
 
 test("history retry restores the active chat and exposes pending work", async () => {
@@ -70,6 +72,7 @@ test("deletion confirms, retains failed chats, and clears only the deleted ident
   let failing = true;
   let deletes = 0;
   const onDeleted = vi.fn();
+  const historyTrigger = createRef<HTMLButtonElement>();
   vi.stubGlobal(
     "fetch",
     vi.fn((_path: string, options?: RequestInit) => {
@@ -113,8 +116,14 @@ test("deletion confirms, retains failed chats, and clears only the deleted ident
   const { client } = renderWithQueries(
     <MemoryRouter>
       <AgentHistory
+        ref={historyTrigger}
         currentChat="selected"
         currentTitle={title}
+      />
+      <AgentDeleteChat
+        chatId="selected"
+        disabled={false}
+        restoreFocusRef={historyTrigger}
         onDeleted={onDeleted}
       />
     </MemoryRouter>,
@@ -134,29 +143,38 @@ test("deletion confirms, retains failed chats, and clears only the deleted ident
   const row = await screen.findByRole("link", { name: new RegExp(title) });
   expect(row).not.toHaveAttribute("title");
   expect(
-    screen.getByRole("button", { name: "Delete chat: Still working" }),
-  ).toBeDisabled();
-  fireEvent.click(
-    screen.getByRole("button", { name: `Delete chat: ${title}` }),
-  );
+    within(screen.getByRole("dialog", { name: "Recent chats" })).queryByRole(
+      "button",
+      { name: /Delete/ },
+    ),
+  ).not.toBeInTheDocument();
+  fireEvent.click(trigger);
+  const deleteButton = screen.getByRole("button", {
+    name: "Delete chat",
+  });
+  fireEvent.click(deleteButton);
   expect(
     screen.getByRole("alertdialog", { name: "Delete chat?" }),
   ).toBeInTheDocument();
   expect(deletes).toBe(0);
   fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
   expect(deletes).toBe(0);
-  fireEvent.click(trigger);
+  fireEvent.click(deleteButton);
+  const confirmation = screen.getByRole("alertdialog", {
+    name: "Delete chat?",
+  });
   fireEvent.click(
-    await screen.findByRole("button", { name: `Delete chat: ${title}` }),
+    within(confirmation).getByRole("button", { name: "Delete chat" }),
   );
-  fireEvent.click(screen.getByRole("button", { name: "Delete chat" }));
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "Wait for requests to settle.",
   );
   expect(localStorage.getItem("jas:assistant-panel:general")).toBe("selected");
   expect(onDeleted).not.toHaveBeenCalled();
   failing = false;
-  fireEvent.click(screen.getByRole("button", { name: "Delete chat" }));
+  fireEvent.click(
+    within(confirmation).getByRole("button", { name: "Delete chat" }),
+  );
   await waitFor(() => expect(onDeleted).toHaveBeenCalledWith("selected"));
   expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
   expect(localStorage.getItem("jas:assistant-panel:general")).toBeNull();
@@ -164,4 +182,26 @@ test("deletion confirms, retains failed chats, and clears only the deleted ident
   expect(localStorage.getItem("jas:assistant-panel:study:y:1")).toBe("other");
   expect(client.getQueryData(identityKey)).toMatchObject({ chatId: null });
   expect(client.getQueryData(["/settings"])).toEqual({ charged_usd: 1.234 });
+});
+
+test("toolbar deletion is absent for new chats and disabled for loading or pending chats", () => {
+  const restoreFocusRef = createRef<HTMLButtonElement>();
+  const { rerender } = renderWithQueries(
+    <AgentDeleteChat
+      chatId={null}
+      disabled={false}
+      restoreFocusRef={restoreFocusRef}
+    />,
+  );
+  expect(
+    screen.queryByRole("button", { name: "Delete chat" }),
+  ).not.toBeInTheDocument();
+  rerender(
+    <AgentDeleteChat
+      chatId="pending"
+      disabled
+      restoreFocusRef={restoreFocusRef}
+    />,
+  );
+  expect(screen.getByRole("button", { name: "Delete chat" })).toBeDisabled();
 });

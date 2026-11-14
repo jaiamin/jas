@@ -33,11 +33,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { money } from "@/lib/format";
 import type { Analysis, AnalysisLensKey } from "@/lib/types";
 
@@ -231,14 +226,9 @@ export const AgentReply = memo(function AgentReply({
             )}
           </>
         )}
-        <MessageFooter className="-mt-1 -ml-1 min-h-6 flex-wrap gap-1 px-0">
+        <MessageFooter className="-mt-1 -ml-1 min-h-6 flex-wrap gap-0.5 px-0">
           {complete && copyText && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <CodeBlockCopyButton value={copyText} title="Copy response" />
-              </TooltipTrigger>
-              <TooltipContent>Copy response</TooltipContent>
-            </Tooltip>
+            <CodeBlockCopyButton value={copyText} aria-label="Copy response" />
           )}
           {!pending && !!row.usage?.requests && (
             <Popover>

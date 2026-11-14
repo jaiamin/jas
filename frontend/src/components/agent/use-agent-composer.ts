@@ -115,14 +115,6 @@ export function useAgentComposer({
     plannerModel,
     assistantModel,
     provider,
-    estimate:
-      settings.data?.assistant_estimates?.[
-        context === "new"
-          ? "design"
-          : context === "general"
-            ? "general"
-            : "analysis"
-      ],
     unavailable,
     send,
     submit,

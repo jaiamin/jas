@@ -15,6 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -87,12 +88,12 @@ export function CustomEnvironments({
             <div
               key={id}
               aria-hidden="true"
-              className="flex items-center gap-3 px-3 py-4"
+              className="grid grid-cols-[4rem_minmax(0,1fr)_auto] items-center gap-3 px-3 py-4 sm:grid-cols-[5rem_minmax(0,1fr)_auto]"
             >
-              <Skeleton className="size-10 shrink-0" />
-              <div className="flex flex-1 flex-col gap-2">
+              <Skeleton className="size-11 shrink-0 justify-self-center" />
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
                 <Skeleton className="h-4 w-48 max-w-full" />
-                <Skeleton className="h-4 w-36" />
+                <Skeleton className="h-4 w-36 max-w-full" />
               </div>
               <Skeleton className="size-6" />
             </div>
@@ -102,9 +103,12 @@ export function CustomEnvironments({
         <ItemGroup className="gap-0">
           {visibleSetups.map((item) => (
             <Fragment key={item.id}>
-              <Item className="gap-3 rounded-none border-0 px-3 py-4">
-                <ItemMedia className="group-has-data-[slot=item-description]/item:self-center group-has-data-[slot=item-description]/item:translate-y-0">
-                  <EnvironmentMark environment={item.definition.environment} />
+              <Item className="grid grid-cols-[4rem_minmax(0,1fr)_auto] gap-3 rounded-none border-0 px-3 py-4 sm:grid-cols-[5rem_minmax(0,1fr)_auto]">
+                <ItemMedia className="relative aspect-square max-w-full justify-self-center group-has-data-[slot=item-description]/item:self-stretch group-has-data-[slot=item-description]/item:translate-y-0">
+                  <EnvironmentMark
+                    environment={item.definition.environment}
+                    className="absolute inset-0 size-full"
+                  />
                 </ItemMedia>
                 <ItemContent className="min-w-0">
                   <ItemTitle className="max-w-full">
@@ -115,11 +119,15 @@ export function CustomEnvironments({
                       {item.definition.name}
                     </Link>
                   </ItemTitle>
-                  <ItemDescription>
-                    {environments.find(
-                      (env) => env.key === item.definition.environment,
-                    )?.name ?? label(item.definition.environment)}{" "}
-                    · Version {item.revision}
+                  <ItemDescription className="flex flex-wrap gap-1 line-clamp-none">
+                    <Badge variant="metadata" className="max-w-full">
+                      <span className="truncate">
+                        {environments.find(
+                          (env) => env.key === item.definition.environment,
+                        )?.name ?? label(item.definition.environment)}
+                      </span>
+                    </Badge>
+                    <Badge variant="metadata">Version {item.revision}</Badge>
                   </ItemDescription>
                 </ItemContent>
                 <ItemActions>

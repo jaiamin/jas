@@ -128,6 +128,28 @@ for (const theme of ["light", "dark"]) {
     const first = await (await request.get(`/api/studies/${firstId}`)).json();
 
     await page.goto("/environments?view=custom");
+    const customRow = page.locator('[data-slot="item"]').filter({
+      has: page.getByRole("link", { name, exact: true }),
+    });
+    await expect(customRow.locator('[data-slot="badge"]')).toHaveText([
+      "Custom resource economy",
+      "Version 1",
+    ]);
+    const markBox = await customRow
+      .locator("svg[data-environment]")
+      .boundingBox();
+    const contentBox = await customRow
+      .locator('[data-slot="item-content"]')
+      .boundingBox();
+    expect(markBox && contentBox).toBeTruthy();
+    if (markBox && contentBox)
+      expect(Math.abs(markBox.height - contentBox.height)).toBeLessThanOrEqual(
+        1,
+      );
+    await page.screenshot({
+      path: testInfo.outputPath(`custom-environments-${theme}.png`),
+      animations: "disabled",
+    });
     await page.getByRole("link", { name, exact: true }).click();
     await page.getByRole("tab", { name: "Question", exact: true }).click();
     await expect(

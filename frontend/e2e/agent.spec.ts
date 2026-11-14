@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { settings as settingsFixture } from "../src/test/fixtures.js";
 
-test("Assistant omits the spending caption while Home keeps its composer guidance", async ({
+test("Assistant and Home omit spending captions while Home keeps its composer guidance", async ({
   page,
 }) => {
-  const estimate = { max_requests: 3, upper_usd: 0.1 };
+  const estimate = { max_requests: 12, upper_usd: 6.38 };
   await page.route("**/api/settings", (route) =>
     route.fulfill({
       json: {
@@ -34,7 +34,11 @@ test("Assistant omits the spending caption while Home keeps its composer guidanc
   await page
     .getByLabel("Message Assistant", { exact: true })
     .fill("Compare conditions");
-  await expect(composer.getByText(/Up to 3 calls/)).toBeVisible();
+  await expect(
+    composer.getByText(
+      /Up to \d+ calls|Workspace budget applies|conservative bound/,
+    ),
+  ).toHaveCount(0);
 });
 
 for (const width of [320, 1440]) {
@@ -193,7 +197,7 @@ test("Agent welcome stays static with reduced motion and does not replay a skipp
   ).toBe(0);
 });
 
-test("Agent anchors a plain contextual composer below suggestions without a history rail", async ({
+test("full-screen Agent centers its plain composer above suggestions without a history rail", async ({
   page,
   request,
 }) => {
@@ -256,8 +260,18 @@ test("Agent anchors a plain contextual composer below suggestions without a hist
     headingBox &&
       composerBox &&
       ideasBox &&
-      headingBox.y + headingBox.height < ideasBox.y &&
-      ideasBox.y + ideasBox.height < composerBox.y,
+      headingBox.y + headingBox.height < composerBox.y &&
+      composerBox.y + composerBox.height < ideasBox.y,
+  ).toBe(true);
+  const workspaceBox = await page
+    .getByRole("region", { name: "Assistant workspace" })
+    .boundingBox();
+  expect(
+    workspaceBox &&
+      composerBox &&
+      composerBox.y > workspaceBox.y + 32 &&
+      composerBox.y + composerBox.height <
+        workspaceBox.y + workspaceBox.height - 100,
   ).toBe(true);
   await expect(
     page.getByRole("button", { name: "Open Assistant workspace" }),
@@ -341,7 +355,10 @@ test("Agent anchors a plain contextual composer below suggestions without a hist
   await expect(input).toHaveValue("Compare the recorded strategies");
   await expect(
     page.getByRole("button", { name: "New chat", exact: true }),
-  ).toBeVisible();
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Delete chat", exact: true }),
+  ).toHaveCount(0);
 });
 
 test("saved conversations resume after reload and new chats keep separate histories", async ({
@@ -451,7 +468,7 @@ test("saved conversations resume after reload and new chats keep separate histor
   await expect(input).toHaveValue("");
   await expect(
     page.getByRole("button", { name: "New chat", exact: true }),
-  ).toBeVisible();
+  ).toHaveCount(0);
   await expect(
     page.getByText(
       "Repetitions create independent trials under the same seed.",
@@ -1070,9 +1087,11 @@ test("last reply clears the composer and its copy hover stays inside the message
   await expect
     .poll(() => viewport.evaluate((node) => node.clientHeight))
     .toBeLessThan(initialHeight);
-  const copy = page.getByTitle("Copy response", { exact: true });
+  const copy = page.getByRole("button", { name: "Copy response", exact: true });
   await expect(copy).toBeInViewport();
+  await expect(copy).not.toHaveAttribute("title");
   await copy.hover();
+  await expect(page.getByRole("tooltip")).toHaveCount(0);
   const button = await copy.boundingBox();
   const item = await copy
     .locator('xpath=ancestor::*[@data-slot="message-scroller-item"]')

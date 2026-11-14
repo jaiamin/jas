@@ -164,3 +164,35 @@ source detector reported no findings; parsed-page checks were not run. Backend
 and full frontend suites were not repeated for this copy/layout-only change.
 The existing 0.0.0.0:8080 app serves the rebuilt assets and health returned 200.
 No provider calls, user-data changes, Railway changes or deployment.
+
+Chat/environment refinement: the full-screen new-chat view again centers its
+welcome, composer and suggestions; the pane and saved conversations remain
+bottom-composed. Shared confirmed deletion now lives in the toolbar before New
+chat, outside History, and both actions are hidden on new chats. Full-screen
+toolbar insets and 4px gaps align Trash with theme and New chat with GitHub;
+pane controls retain 2px gaps. Confirmation, failure/retry, pending protection,
+identity cleanup and focus restoration remain intact. Copy response has no
+tooltip and sits 2px from cost. Removed call-count/spending captions from Home
+and Assistant while retaining Home guidance, errors and server spending limits.
+Both chat views have no fade or outer composer top spacing; internal text padding
+remains, with at least 24px transcript clearance after the final reply footer.
+Usage outer edges match selected navigation backgrounds, with 10px inner side padding.
+
+Environment rows use fixed 64px phone / 80px desktop artwork columns and scale
+the marks against the text block within those limits. This prevents cyclic
+artwork/text sizing and overlapping phone rows. Metadata uses small bordered
+background-surface tags with 6px rounding; counts, example costs, unknown costs,
+custom versions and existing actions remain. Loading placeholders match the
+column layout. Long custom environment labels retain full text with visible
+truncation. Quick-builder and detail-header artwork sizes are unchanged.
+
+Verification: frontend lint/build and all 151 unit tests pass. The final 13
+Assistant cases cover no-fade/no-gap geometry, streaming/copy, pane/full-screen
+handoff, deletion recovery and composer growth. All 11 Environment cases pass,
+including 320px/390px/1600px, both themes, row containment, metadata, navigation,
+custom reuse and loading/error recovery. Three final placeholder/truncation
+browser rechecks pass. Rendered Assistant and Environment screenshots were inspected.
+Earlier affected browser runs also verified toolbar alignment, Usage edges and
+15 repeated draft handoffs. Backend checks were not repeated: no backend code
+changed. The existing 8080 app serves the rebuilt assets; preserve its process
+and data/workspace. No provider calls, user-data deletion or deployment.

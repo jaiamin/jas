@@ -21,8 +21,9 @@ scrollers and the shared conversation engine. No resizing or additional menus.
 - [x] Narrow expanded navigation to 240px; use a slightly wider 52px rail and retain the mobile menu.
       Its 16px panel icon points inward when expanded and outward when collapsed.
 - [x] Remove dividers below JAS and above usage, retaining the navigation divider.
-      Give expanded usage a soft gray surface, clearer border/label, 12px top/side
-      and 14px bottom padding, divider-aligned outer edges and a quiet hover state.
+      Give expanded usage a soft gray surface, clearer border/label, 12px top,
+      10px side and 14px bottom padding, outer edges aligned to selected navigation
+      backgrounds and a quiet hover state.
       Condense its tooltip while retaining precise totals, reservations and unknown-cost information.
       Keep usage hidden when
       collapsed and prevent text reflow during expansion; accounting is unchanged.
@@ -35,19 +36,37 @@ scrollers and the shared conversation engine. No resizing or additional menus.
       Keep inner content at its final width; disable motion for reduced-motion
       users. Closed content is inert/hidden, and explicit closing restores focus.
 - [x] Toolbar: truncated chat-name history, four-corner Maximize focus link,
-      SquarePen new chat and PanelRightClose. Use 16px glyphs, 28px targets and
+      Trash2 delete, SquarePen new chat and PanelRightClose. Use 16px glyphs, 28px targets and
       2px action gaps. Keep full titles accessible without full-title tooltips.
+      Match the full-screen toolbar's 10px horizontal insets to the global top bar.
+      Its 4px action gaps align Trash below theme and New chat below GitHub.
 - [x] Restore the static Assistant Target before What can we explore?, with a 6px
       text gap. Align its leading edge and suggestions to the composer text inset.
       Preserve the bottom composer, unboxed pane suggestions and shared chat engine.
+- [x] Restore the centered full-screen new-chat layout: welcome, composer, then
+      suggestions. Keep the side pane and saved conversations bottom-composed;
+      preserve context/draft identity, input growth and short-screen scrolling.
+- [x] Remove the response Copy tooltip while keeping its accessible label and
+      copied feedback; reduce Copy/cost spacing to 2px.
+- [x] Remove call-count and cost-estimate captions beneath Home and Assistant
+      composers; retain provider/draft errors, Usage and explicit run budgets.
+- [x] Remove the conversation fade and all composer outer top padding/margins in
+      both Assistant views. Keep input text padding and at least 24px after the
+      last reply footer within the transcript.
+- [x] Scale Environment artwork against the whole text block with stable 64px /
+      80px columns, preserving readable phone descriptions and non-overlapping rows.
+      Show metadata as compact bordered, slightly rounded tags on the background
+      surface; preserve counts, prices, unknown costs and custom setup actions.
 - [x] Opening stays manual after navigation, Back and reload; remember chat/draft
       identity without saving or restoring the open state.
 - [x] Always offer Add context; auto-select only an individual experiment/run with
       its displayed revision/cutoff. Preserve manual selection and page filters.
 - [x] Preserve pending acceptance, draft identity and late-response guards; focusing
       reconnects without resubmission. Opening never incurs a provider call.
-- [x] Add separately focusable trash actions and explicit deletion confirmation,
-      with pending/busy/error/retry states. Clear matching identities after success.
+- [x] Put the current chat's trash action beside the other toolbar controls,
+      outside History. Hide New chat/Delete for new chats. Keep deletion
+      confirmation, pending/busy/error/retry states and keyboard focus restoration.
+      Clear matching identities after success.
 - [x] Delete terminal chats transactionally; reject live/pending turns and calls,
       and proposals referenced by saved revisions. Keep usage, tokens, costs and
       unknown reservations; clear raw prompts/responses without a schema change.
@@ -71,6 +90,16 @@ scrollers and the shared conversation engine. No resizing or additional menus.
   without sending; measured Usage/divider edges match, expansion does not reflow,
   and the collapsed rail reaches 52px. Rendered desktop/light and phone/dark
   screenshots were inspected. No provider calls or deployment.
+- Latest chat/environment follow-up: lint/build and all 151 unit tests pass.
+  The final 13 Assistant browser cases cover no-fade/no-gap composer geometry,
+  streaming/copy, pane/full-screen handoff, deletion recovery and input growth.
+  All 11 Environment cases pass across 320px/390px/1600px and both themes,
+  including row containment, bordered metadata, catalogue navigation, custom
+  reuse and independent loading/recovery. Three final placeholder/truncation
+  rechecks pass. Rendered screenshots were inspected.
+  Earlier runs also verified full-screen toolbar/global-control alignment,
+  Usage/selected-item edges and 15 repeated draft handoffs. Backend checks were
+  not repeated for these frontend-only changes.
 - The mechanical design detector reported no findings in changed UI surfaces.
 - Manual desktop/light and phone/dark browser inspection passed without overflow
   or console errors. The local app was refreshed on 0.0.0.0:8080; health is 200

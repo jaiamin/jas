@@ -17,7 +17,7 @@ export function SidebarBudget() {
       <Link
         to="/settings"
         aria-label="Budget unavailable. Open budget settings."
-        className="mx-2 w-[calc(var(--sidebar-width)-2rem-1px)] shrink-0 whitespace-nowrap px-2 py-1 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden"
+        className="w-[calc(var(--sidebar-width)-1rem-1px)] shrink-0 whitespace-nowrap px-2 py-1 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden"
       >
         Budget unavailable
       </Link>
@@ -25,7 +25,7 @@ export function SidebarBudget() {
       <div
         role="status"
         aria-label="Loading budget"
-        className="mx-2 w-[calc(var(--sidebar-width)-2rem-1px)] shrink-0 px-2 py-2 group-data-[collapsible=icon]:hidden"
+        className="w-[calc(var(--sidebar-width)-1rem-1px)] shrink-0 px-2 py-2 group-data-[collapsible=icon]:hidden"
       >
         <Skeleton className="h-3 w-full" />
       </div>
@@ -55,7 +55,7 @@ export function SidebarBudget() {
         <Link
           to="/settings"
           aria-label={`${title}: ${description}`}
-          className="mx-2 flex w-[calc(var(--sidebar-width)-2rem-1px)] shrink-0 flex-col gap-2.5 whitespace-nowrap rounded-lg border border-sidebar-border bg-muted/40 px-3 pt-3 pb-3.5 text-xs text-muted-foreground transition-colors hover:border-sidebar-foreground/20 hover:bg-muted/70 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-data-[collapsible=icon]:hidden"
+          className="flex w-[calc(var(--sidebar-width)-1rem-1px)] shrink-0 flex-col gap-2.5 whitespace-nowrap rounded-lg border border-sidebar-border bg-muted/40 px-2.5 pt-3 pb-3.5 text-xs text-muted-foreground transition-colors hover:border-sidebar-foreground/20 hover:bg-muted/70 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-data-[collapsible=icon]:hidden"
         >
           <span className="flex items-center justify-between gap-2">
             <span className="font-medium text-sidebar-foreground">{title}</span>

@@ -160,7 +160,10 @@ for (const theme of ["light", "dark"]) {
       .boundingBox();
     expect(
       viewport && inputSurface && viewport.y + viewport.height - inputSurface.y,
-    ).toBeCloseTo(12, 0);
+    ).toBeCloseTo(0, 0);
+    await expect(
+      page.getByRole("region", { name: "Assistant conversation", exact: true }),
+    ).toHaveCSS("mask-image", "none");
     releaseStream();
     await expect(
       page.getByRole("heading", { name: "Matched seeds", exact: true }),
@@ -195,11 +198,14 @@ for (const theme of ["light", "dark"]) {
       ),
     ).toBe(false);
     await expect(
-      page.getByRole("heading", { name: row.question, exact: true }),
+      page.getByRole("button", {
+        name: `${row.question} · Chat history`,
+        exact: true,
+      }),
     ).toBeVisible();
-    await expect(page.getByTitle("Copy response", { exact: true })).toHaveCount(
-      0,
-    );
+    await expect(
+      page.getByRole("button", { name: "Copy response", exact: true }),
+    ).toHaveCount(0);
     await page.screenshot({
       path: testInfo.outputPath(`streaming-${theme}.png`),
       animations: "disabled",
@@ -242,7 +248,7 @@ for (const theme of ["light", "dark"]) {
     // sequential boundingBox calls can manufacture a gap during the animation.
     await expect(async () => {
       const geometry = await page
-        .getByTitle("Copy response", { exact: true })
+        .getByRole("button", { name: "Copy response", exact: true })
         .evaluate((button) => {
           const icon = button.querySelector("svg");
           const response = button
@@ -263,9 +269,11 @@ for (const theme of ["light", "dark"]) {
     await page
       .context()
       .grantPermissions(["clipboard-read", "clipboard-write"]);
-    await page.getByTitle("Copy response", { exact: true }).click();
+    await page
+      .getByRole("button", { name: "Copy response", exact: true })
+      .click();
     await expect(
-      page.getByTitle("Copy response", { exact: true }),
+      page.getByRole("button", { name: "Copy response", exact: true }),
     ).toHaveAttribute("data-copied", "true");
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
       row.output.answer,
