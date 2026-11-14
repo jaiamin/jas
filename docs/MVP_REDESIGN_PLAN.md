@@ -11,8 +11,30 @@ Current stage: implementation. All 19 PDF pages and focused repository audits ha
 been reviewed. On November 14, 2026, the user accepted both six-question rounds,
 confirmed shared understanding, and authorized proceeding while keeping the
 implementation minimal. The user also explicitly permits major refactors where
-they improve organization and maintainability. No paid calls or infrastructure
-mutations have occurred yet. Local dependencies are being prepared from lockfiles.
+they improve organization and maintainability. Implementation and the authorized
+Step 0 evaluation are underway. No infrastructure resources have been provisioned.
+
+## Implementation evidence
+
+- Installation: `jaslab` wheel bundles the built UI. Both `jas` and `jaslab` start
+  the app with a stable app-data workspace, explicit `--workspace`, and browser
+  launch after server readiness. Existing checkout `data/jas.sqlite3` is preserved.
+  A clean installed wheel served health, SPA and JS/CSS assets from an unrelated
+  working directory with zero provider requests. CLI/path tests: 6 passed;
+  affected API/access tests: 78 passed.
+- Production image built successfully. Fresh keyless deployment smoke passed:
+  root-owned volume initialization, non-root execution, hosted authentication,
+  containment, existing-file preservation and restart persistence. This is local
+  container evidence, not a fresh Railway deployment.
+- Step 0 discovery: six complete runs, 54 requests, $0.011623; enabling messages
+  increased mean contribution rate from 0.1222 to 0.5407 on three discovery seeds.
+  This is exploratory, not yet a confirmed launch result. First confirmation was
+  interrupted by development changing package metadata; retain its four completed
+  runs, one failed run and seven unattempted runs. A new six-seed confirmation uses
+  the preserved original source/runtime and the same aggregate $10 ledger. Its
+  frozen direction/threshold are unchanged; no failed trajectory is replaced.
+- Arbitrary models, local provider settings and token caps are in progress. The
+  remaining matrix entries are open; installation alone does not satisfy the MVP.
 
 ## Accepted direction
 

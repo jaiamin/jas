@@ -19,6 +19,7 @@ from .domain import Strict
 from .environment_library import EnvironmentConflict
 from .execution import Engine
 from .llm import LanguageModels, ProviderFailure
+from .paths import static_directory
 from .research import Research
 from .routes import router, web_router
 
@@ -117,7 +118,7 @@ def create_app(
     app.state.extensions = extensions
     app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-    app.state.frontend = Path(static_dir or setting("STATIC_DIR", "frontend/dist")).resolve()
+    app.state.frontend = Path(static_dir).resolve() if static_dir else static_directory()
     app.add_middleware(BasicAuthMiddleware, credentials=credentials)
     app.add_middleware(SameOriginMiddleware)
     app.add_middleware(
