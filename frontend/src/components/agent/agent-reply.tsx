@@ -253,7 +253,9 @@ export const AgentReply = memo(function AgentReply({
                     ? "Cost pending"
                     : row.usage.cost_usd == null
                       ? "Cost unknown"
-                      : `${row.usage.cost_usd > 0 ? "~" : ""}${money(row.usage.cost_usd)}`}
+                      : row.usage.cost_usd > 0 && row.usage.cost_usd < 0.001
+                        ? "<$0.001"
+                        : `${row.usage.cost_usd > 0 ? "~" : ""}${money(row.usage.cost_usd, 3)}`}
                 </Button>
               </PopoverTrigger>
               <PopoverContent

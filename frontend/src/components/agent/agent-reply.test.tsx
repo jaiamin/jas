@@ -1,4 +1,4 @@
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -385,16 +385,44 @@ test("live activity stays open when the reply finishes so its content remains re
 });
 
 test.each([
-  { status: "complete", cost: 0.012345, partial: false, label: "~$0.0123" },
+  {
+    status: "complete",
+    cost: 0.012345,
+    partial: false,
+    label: "~$0.012",
+    details: "$0.012345",
+  },
+  {
+    status: "complete",
+    cost: 0.000321,
+    partial: false,
+    label: "<$0.001",
+    details: "$0.000321",
+  },
+  {
+    status: "complete",
+    cost: 0.001,
+    partial: false,
+    label: "~$0.001",
+    details: "$0.001",
+  },
+  {
+    status: "complete",
+    cost: 0,
+    partial: false,
+    label: "$0.00",
+    details: "$0.00",
+  },
   {
     status: "failed",
     cost: null,
     partial: true,
     label: "Cost pending",
+    details: "Unknown",
   },
 ])(
-  "reply usage preserves $status cost and exposes token details on demand",
-  async ({ status, cost, partial, label }) => {
+  "reply usage preserves $status cost $cost and exposes precise details on demand",
+  async ({ status, cost, partial, label, details }) => {
     render(
       <MemoryRouter>
         <TooltipProvider>
@@ -428,12 +456,13 @@ test.each([
     expect(
       screen.getByText("openai:gpt-6.1-sol, openai:gpt-6-luna"),
     ).toBeVisible();
+    const popup = screen.getByRole("dialog", { name: "Reply usage details" });
+    expect(within(popup).getByText(details, { exact: true })).toBeVisible();
     if (partial) {
       expect(
         screen.getByText("Includes unsettled reservations."),
       ).toBeVisible();
     } else {
-      expect(screen.getByText("$0.012345")).toBeVisible();
       expect(
         screen.queryByText(/Your provider bills your key/),
       ).not.toBeInTheDocument();

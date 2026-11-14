@@ -29,11 +29,13 @@ mapping reaches the app. Keep the localhost Host/origin protections enabled.
 
 Reply-cost follow-up: Copy/cost spacing is 4px; the popup shows recorded models,
 tokens and the estimate to microdollar precision, without its normal footer paragraph.
+Footer estimates use at most three decimal places; positive costs below $0.001
+show `<$0.001`, while a genuine zero remains `$0.00`. Popup precision is unchanged.
 Settlement now uses recorded SDK cache pricing for bundled prices, preserves custom
 prices, and retains reservations when provider usage is missing. Two existing local
 receipts were corrected from their saved SDK costs with a private backup/correction
 log in `.tools/workspace-backups`; request/response evidence was byte-checked unchanged.
-No provider calls were made. Follow-up verification passed 60 backend tests, all 146
+No provider calls were made. Follow-up verification passed 60 backend tests, all 149
 frontend tests, lint/build, Ruff/format and ty, plus desktop/light and 320px/dark browser
 checks and Escape focus restoration. The additional full backend run was interrupted
 by SIGTERM at 32%; it did not finish and is not a fresh full-suite pass.
