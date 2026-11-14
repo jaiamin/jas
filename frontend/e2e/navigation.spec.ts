@@ -503,6 +503,12 @@ for (const theme of ["light", "dark"]) {
       1,
     );
     await expect(budget).toHaveCSS("border-width", "1px");
+    const divider = await page
+      .locator('[data-slot="sidebar-separator"]')
+      .boundingBox();
+    const usageBox = await budget.boundingBox();
+    expect(usageBox?.x).toBe(divider?.x);
+    expect(usageBox?.width).toBe(divider?.width);
     const restingBackground = await budget.evaluate(
       (element) => getComputedStyle(element).backgroundColor,
     );
@@ -516,6 +522,10 @@ for (const theme of ["light", "dark"]) {
       .getByRole("button", { name: "Collapse sidebar", exact: true })
       .click();
     await expect(budget).toBeHidden();
+    await expect(page.locator('[data-slot="sidebar-container"]')).toHaveCSS(
+      "width",
+      "52px",
+    );
     await expect(footer.getByRole("link")).toHaveCount(1);
     await expect(footer.getByRole("progressbar")).toHaveCount(0);
     for (const name of [

@@ -14,13 +14,17 @@ scrollers and the shared conversation engine. No resizing or additional menus.
 
 - [x] Remove Get started and its onboarding-only writes; retain four equal illustrated
       Experiment ideas with icon-matched copy and symmetric 16px horizontal padding.
+- [x] Keep communication and memory; make the other two ideas source-backed reports
+      and shared-budget team work. Retain illustrations, concise copy and draft-only selection.
 - [x] Home, Gallery, then Workspace navigation; Gallery contains Browse/My published.
       No Assistant navigation item or Community group.
-- [x] Narrow expanded navigation to 240px; retain the 48px rail and mobile menu.
+- [x] Narrow expanded navigation to 240px; use a slightly wider 52px rail and retain the mobile menu.
       Its 16px panel icon points inward when expanded and outward when collapsed.
 - [x] Remove dividers below JAS and above usage, retaining the navigation divider.
-      Give expanded usage a soft gray surface, clearer border/label, 12px padding
-      and a quiet hover state. Keep usage hidden when
+      Give expanded usage a soft gray surface, clearer border/label, 12px top/side
+      and 14px bottom padding, divider-aligned outer edges and a quiet hover state.
+      Condense its tooltip while retaining precise totals, reservations and unknown-cost information.
+      Keep usage hidden when
       collapsed and prevent text reflow during expansion; accounting is unchanged.
 - [x] Keep the outlined Assistant toggle before theme, absent on Home/Assistant,
       with equal 10px horizontal padding and vertically aligned 16px glyphs.
@@ -62,6 +66,11 @@ scrollers and the shared conversation engine. No resizing or additional menus.
   recovery, directional icons and usage hover/animation. Focused Agent checks
   passed separately; Home, execution, matched results and recovery also passed.
 - Four additional usage checks passed after the final visual adjustment.
+- Latest ideas/usage follow-up: lint/build, six suggestion unit tests and 13
+  desktop/phone, light/dark browser checks passed. All four ideas fill drafts
+  without sending; measured Usage/divider edges match, expansion does not reflow,
+  and the collapsed rail reaches 52px. Rendered desktop/light and phone/dark
+  screenshots were inspected. No provider calls or deployment.
 - The mechanical design detector reported no findings in changed UI surfaces.
 - Manual desktop/light and phone/dark browser inspection passed without overflow
   or console errors. The local app was refreshed on 0.0.0.0:8080; health is 200

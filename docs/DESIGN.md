@@ -143,7 +143,9 @@ The compact brand link returns to Home. The footer contains a quiet usage line,
 a thin budget meter and one direct Settings link. There is no avatar, chooser,
 subtitle or appearance dropdown. Light/dark mode lives only in the top-right header.
 A stock SidebarSeparator separates primary navigation from Workspace. Omit
-dividers below the JAS brand row and above usage. The usage link has a rounded border and soft muted surface, with 12px padding,
+dividers below the JAS brand row and above usage. Align the usage link's outer edges
+with the navigation separator's 16px insets. Its rounded border and soft muted
+surface contain 12px top/side padding and 14px bottom padding,
 a clearer medium-weight label, a 10px row-to-meter gap and a stronger muted hover
 state. Keep the 5px meter accurate even when usage is tiny; retain keyboard focus.
 Settings keeps its 32px height in the
@@ -156,8 +158,10 @@ keeps its expanded width and nonwrapping text while the surrounding sidebar
 animates, so its labels never squeeze or reflow during expansion.
 Sidebar dollar usage uses up to three decimals, with `<$0.001` for smaller nonzero
 amounts and `$0.00` for zero. The visible dollar ceiling uses two decimals; tooltip
-amounts retain up to six decimals. Token counts and budget calculations stay unchanged.
-The expanded navigation is 240px wide; the collapsed rail remains 48px.
+amounts retain up to six decimals. Keep the tooltip to precise totals and the
+reservation note; explain unknown cost and retain known priced usage when needed.
+Token counts and budget calculations stay unchanged.
+The expanded navigation is 240px wide; the collapsed rail is 52px wide.
 Navigation glyphs are 15px; header controls use 16px glyphs in 28px targets.
 Every sidebar icon stays outlined when selected. The text color and background
 highlight identify the active page. Partial fills outside the sidebar stay at the icon boundary;
@@ -397,7 +401,10 @@ Desktop text spans the full inner cell width: aligned illustrations,
 four on wide screens. Descriptions use foreground/60, matching record timestamps.
 Spell out “and” in suggestion titles rather than using ampersands.
 Use concrete experiment questions covering communication/cooperation, memory/
-reciprocity, oversight/sanctions and resource survival. Descriptions name the
+reciprocity, source access/report accuracy and material budgets/work completion.
+The latter two use the installed artifact-investigation and institutional-workflow
+environments so Home includes realistic work settings without adding more cards.
+Keep the magnifier and money illustrations. Descriptions name the
 intervention and measured comparison, without implying outcomes are guaranteed.
 Place illustrations above the text in columns, with a consistent 6px gap between each
 title and description and no reserved title height. Keep descriptions to one

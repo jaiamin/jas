@@ -56,10 +56,17 @@ for (const width of [390, 1440])
       ).toHaveCount(0);
       const ideas = page.getByRole("region", { name: "Experiment ideas" });
       await expect(ideas.getByRole("button")).toHaveCount(4);
-      await ideas.getByRole("button").first().click();
-      await expect(
-        page.getByLabel("Message Assistant", { exact: true }),
-      ).toHaveValue(/shared-commons/);
+      for (const [index, topic] of [
+        /shared-commons/,
+        /trust-exchange/,
+        /artifact-investigation/,
+        /institutional-workflow/,
+      ].entries()) {
+        await ideas.getByRole("button").nth(index).click();
+        await expect(
+          page.getByLabel("Message Assistant", { exact: true }),
+        ).toHaveValue(topic);
+      }
       await expect(
         page.getByRole("button", { name: "Assistant", exact: true }),
       ).toHaveCount(0);

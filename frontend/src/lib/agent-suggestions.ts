@@ -65,16 +65,16 @@ const experimentSuggestions: AgentSuggestion[] = [
       "Design a trust-exchange experiment testing whether retained private notes change return rates. Compare episodic memory with history-only memory while holding goals, communication and resources constant. Use matched seeds, a compact pilot and a $3 spending ceiling.",
   },
   {
-    title: "Does oversight change sanctions?",
+    title: "Does evidence access improve reports?",
     action: "design",
     prompt:
-      "Design an institutional-oversight experiment testing whether oversight probability changes sanction use. Vary only oversight probability, keeping authority, goals and sanction limits identical. Use matched seeds, a compact pilot and a $3 spending ceiling; make no claims of psychological replication.",
+      "Design an artifact-investigation experiment testing whether access to source records changes report accuracy. Compare an investigator with and without read access to the same immutable evidence, keeping report requirements, goals, model, memory, write limits and turn budget identical. Measure required-field correctness at submission and recorded source reads; retain unsuccessful and unsubmitted outcomes. Use matched seeds, a compact pilot and a $3 spending ceiling. Do not start any runs.",
   },
   {
-    title: "Can shared resources last?",
+    title: "Can teams finish with less budget?",
     action: "design",
     prompt:
-      "Design a renewable-resource experiment testing how regeneration rate affects extraction and resource survival. Vary only regeneration, keeping initial stock, capacity, extraction limits and agent goals constant. Use matched seeds, a compact pilot and a $3 spending ceiling.",
+      "Design an institutional-workflow experiment testing whether a tighter shared material budget changes completed work and acknowledged handoffs. Vary only initial material stock, keeping work items, costs, durations, dependencies, permissions, goals, models, memory, communication and turn budget identical. Measure completed work and inspect blocked dependencies and handoffs, retaining incomplete outcomes. Use matched seeds, a compact pilot and a $3 spending ceiling. Do not start any runs.",
   },
 ];
 

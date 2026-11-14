@@ -9,14 +9,14 @@ const illustrations = ["communication", "memory", "oversight", "resources"];
 const titles = [
   "Can conversation build cooperation?",
   "Does memory change reciprocity?",
-  "How does oversight shape choices?",
-  "Can shared resources endure?",
+  "Does evidence access improve reports?",
+  "Can teams finish with less budget?",
 ];
 const descriptions = [
   "Compare contributions to a shared pool with public messages on or off.",
   "Compare return rates with private notes versus the same recorded history.",
-  "Vary the chance of oversight and compare sanctions under the same rules.",
-  "Change resource renewal and compare extraction, stock levels, and survival.",
+  "Vary source access and compare report accuracy against the same records.",
+  "Vary a team's material budget and compare completed work and handoffs.",
 ];
 
 export function StarterExperiments({

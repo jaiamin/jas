@@ -144,3 +144,23 @@ browser checks passed; these now measure actual divider adjacency and text inset
 not only declared button padding. Manual Home inspection on 8080 confirmed the
 final geometry; the design detector reported no findings. Backend/unit suites were
 not rerun for these layout-only edits. No deployment or paid calls.
+
+Ideas/usage follow-up: the user approved keeping communication and memory while
+making the other two Home ideas concrete work comparisons. The magnifier now
+offers source-access/report accuracy; the money bag offers shared material
+budgets/work completion. Visible copy and drafted prompts agree, preserve
+controlled comparisons, matched seeds and the $3 pilot ceiling, and never start
+runs on selection. Four equal cells and symmetric 16px padding remain intact.
+Usage now has 14px bottom padding (12px top/sides), with its outer edges exactly
+aligned to the navigation divider's 16px insets. Its condensed tooltip retains
+precise totals, reservations, unknown costs and priced usage; an uncapped ceiling
+is named explicitly. The collapsed rail is slightly wider, from 48px to 52px.
+
+Verification: lint/build, six suggestion unit tests and 13 affected browser cases
+passed, including desktop/phone, light/dark, all four draft selections, exact
+Usage/divider geometry, precise costs, collapsed visibility and stable expansion.
+Rendered desktop/light and phone/dark screenshots were inspected. The mechanical
+source detector reported no findings; parsed-page checks were not run. Backend
+and full frontend suites were not repeated for this copy/layout-only change.
+The existing 0.0.0.0:8080 app serves the rebuilt assets and health returned 200.
+No provider calls, user-data changes, Railway changes or deployment.
