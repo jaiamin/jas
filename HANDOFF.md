@@ -132,3 +132,15 @@ visual adjustment. The design detector reported no findings. Manual desktop/ligh
 and phone/dark checks found no overflow or console errors. The local 8080 process
 was refreshed after confirming no active runs/pending chats; health is 200 and
 its workspace is preserved. No paid calls, deployment or Railway changes.
+
+Experiment-ideas/composer spacing follow-up: restored the original group's zero
+gap so cells meet their dividers instead of inheriting 16px ItemGroup gaps. The
+four original illustrations/copy remain, equal-width desktop text fills each cell,
+and both horizontal insets measure exactly 16px. The user's proposed right-padding
+reduction was withdrawn; symmetric padding is retained. Shared composer text now
+has 12px top padding (previously 8px), with its existing side/bottom insets and
+height/growth behavior. Lint/build and all 10 targeted desktop/phone, light/dark
+browser checks passed; these now measure actual divider adjacency and text insets,
+not only declared button padding. Manual Home inspection on 8080 confirmed the
+final geometry; the design detector reported no findings. Backend/unit suites were
+not rerun for these layout-only edits. No deployment or paid calls.

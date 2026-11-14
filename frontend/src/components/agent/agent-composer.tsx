@@ -48,7 +48,7 @@ export function AgentComposer({
         <InputGroupTextarea
           ref={composer}
           className={cn(
-            "max-h-48 overflow-y-auto overscroll-contain px-3.5 text-[0.9375rem] leading-[1.4375rem] md:text-[0.9375rem]",
+            "max-h-48 overflow-y-auto overscroll-contain px-3.5 pt-3 text-[0.9375rem] leading-[1.4375rem] md:text-[0.9375rem]",
             compact ? "min-h-16" : "min-h-22",
           )}
           aria-label="Message Assistant"

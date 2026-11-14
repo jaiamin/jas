@@ -803,6 +803,43 @@ for (const width of [390, 1440])
         true,
       );
       expect(new Set(boxes.map((box) => Math.round(box.width))).size).toBe(1);
+      const group = starters.locator('[data-slot="item-group"]');
+      await expect(group).toHaveCSS("gap", "0px");
+      const edges = await group.evaluate((group) =>
+        [...group.children]
+          .filter((child) => getComputedStyle(child).display !== "none")
+          .map((child) => {
+            const box = child.getBoundingClientRect();
+            const content = child
+              .querySelector(":scope > span")
+              ?.getBoundingClientRect();
+            return {
+              x: box.x,
+              y: box.y,
+              right: box.right,
+              bottom: box.bottom,
+              contentLeft: content ? content.left - box.left : null,
+              contentRight: content ? box.right - content.right : null,
+            };
+          }),
+      );
+      for (let index = 1; index < edges.length; index++) {
+        const previous = edges[index - 1];
+        const current = edges[index];
+        expect(
+          Math.abs(
+            width >= 1280
+              ? current.x - previous.right
+              : current.y - previous.bottom,
+          ),
+        ).toBeLessThan(0.02);
+      }
+      if (width >= 1280) {
+        for (const edge of edges.filter((edge) => edge.contentLeft !== null)) {
+          expect(edge.contentLeft).toBe(16);
+          expect(edge.contentRight).toBe(16);
+        }
+      }
       await starters.getByRole("button").first().hover();
       await page.screenshot({
         path: testInfo.outputPath(`home-hover-${theme}-${width}.png`),
@@ -901,6 +938,8 @@ for (const width of [390, 1440]) {
       const initialHeight = (await input.boundingBox())?.height ?? 0;
       expect(initialHeight).toBe(88);
       await expect(input).toHaveCSS("font-size", "15px");
+      await expect(input).toHaveCSS("padding-top", "12px");
+      await expect(input).toHaveCSS("padding-bottom", "8px");
       await input.fill(
         Array.from({ length: 6 }, (_, i) => `Question line ${i + 1}`).join(
           "\n",

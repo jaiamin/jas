@@ -131,6 +131,7 @@ for (const width of [390, 1440])
         pane.getByRole("button", { name: "Clear context" }),
       ).toHaveCount(0);
       const input = pane.getByLabel("Message Assistant", { exact: true });
+      await expect(input).toHaveCSS("padding-top", "12px");
       const alignment = await pane.evaluate((element) => {
         const textarea = element.querySelector("textarea");
         const suggestion = element.querySelector(

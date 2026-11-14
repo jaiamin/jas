@@ -391,7 +391,8 @@ skeletons match the shortcut layout; protocol errors/retry remain visible even
 while drafting. Home keeps four illustrated experiment suggestions that fill the
 draft without submitting. Under the Experiment ideas heading,
 they share one rounded ItemGroup border with Separator dividers, equal-width cells
-and equal 16px left/right padding: aligned illustrations,
+and equal 16px left/right padding, with no group gaps beside the dividers.
+Desktop text spans the full inner cell width: aligned illustrations,
 15px semibold titles with 19px line height and 13px descriptions with 18px line height in one row of
 four on wide screens. Descriptions use foreground/60, matching record timestamps.
 Spell out “and” in suggestion titles rather than using ampersands.
@@ -419,8 +420,8 @@ bold link opening /new. Keep prose and link in one inline sentence with a normal
 space after “or” and matching text baselines. Underline only the link text at a 2px offset,
 and place the centered arrow 2px after it with a 2.25px stroke. Supporting text
 uses foreground/65 for legibility. Navigation preserves the unsent message and never sends it.
-Use 14px side insets for text and visible context icons, retaining the original 8px
-top and bottom insets and 23px text line height for a compact vertical rhythm. The textarea still starts
+Use 14px side insets for text and visible context icons, a 12px top inset,
+an 8px bottom inset and 23px text line height for a compact vertical rhythm. The textarea still starts
 with three lines, grows to its existing cap, then scrolls internally.
 The footer has 8px side insets. The context trigger adds 6px internally to align
 its icon with the text; Send retains matching 8px right and bottom insets. All

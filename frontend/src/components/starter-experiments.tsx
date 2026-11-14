@@ -31,7 +31,7 @@ export function StarterExperiments({
       <h2 id="starter-title" className="text-sm font-medium">
         Experiment ideas
       </h2>
-      <ItemGroup className="overflow-hidden rounded-xl border xl:flex-row">
+      <ItemGroup className="gap-0 overflow-hidden rounded-xl border xl:flex-row">
         {ideas.map(({ prompt }, index) => (
           <Fragment key={illustrations[index]}>
             <Button
@@ -49,7 +49,7 @@ export function StarterExperiments({
                 data-icon="inline-start"
                 aria-hidden="true"
               />
-              <span className="flex min-w-0 flex-col gap-1.5">
+              <span className="flex min-w-0 flex-col gap-1.5 xl:w-full">
                 <span className="text-[0.9375rem] leading-[1.1875rem] font-semibold">
                   {titles[index]}
                 </span>
