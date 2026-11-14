@@ -58,3 +58,13 @@ then the two filter cases after correcting the new test's hidden-trigger lookup)
 Manual checks on port 8080 verified compact filters and full-width Settings/editor
 selects at 320px without horizontal overflow, with 11px from caret to outer edge.
 The existing local server remains on 0.0.0.0:8080; no model calls or deployment.
+
+Sidebar follow-up: collapsed usage now shows a 28px ring with a 12px faded JAS
+mark and no visible text or numbers; its tooltip, Settings link, dollar/token
+accounting and unavailable/uncapped states are preserved. Every navigation icon
+now stays outlined, including when selected, per the final user preference.
+Removed sidebar fill rules and unused partial-fill configuration. Frontend lint,
+149 unit tests, build and 14 navigation/browser cases pass, including both themes,
+all eight active links, token fallback and uncapped usage. Manual checks verified
+the ring and outlined Settings in the running 8080 app. Browser preferences were
+restored; the temporary test server/tab were closed. No backend or deployment changes.

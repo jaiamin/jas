@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { settings as settingsFixture } from "../src/test/fixtures.js";
 import { createStudy, setDeveloper } from "./helpers.js";
 
 test.beforeEach(async ({ request }) => {
@@ -429,6 +430,85 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
 });
 
 for (const theme of ["light", "dark"]) {
+  test(`collapsed usage and outlined selected icons remain clear · ${theme}`, async ({
+    page,
+  }) => {
+    await page.addInitScript(
+      (value) => localStorage.setItem("jas-theme", value),
+      theme,
+    );
+    await page.route("**/api/settings", (route) =>
+      route.fulfill({
+        json: {
+          ...settingsFixture,
+          charged_usd: 5,
+          usage: { ...settingsFixture.usage, cost_usd: 5 },
+        },
+      }),
+    );
+    await page.goto("/assistant");
+    await page
+      .getByRole("button", { name: "Collapse sidebar", exact: true })
+      .click();
+    const footer = page.locator('[data-slot="sidebar-footer"]');
+    const budget = footer.getByRole("link", { name: /^Usage:/ });
+    await expect(budget).toBeVisible();
+    await expect(budget.getByRole("progressbar")).toHaveAttribute(
+      "aria-valuenow",
+      "50",
+    );
+    await expect(budget.locator(":scope > span").first()).toBeHidden();
+    await expect(budget.locator("img")).toHaveJSProperty("complete", true);
+    await expect(budget.locator("img")).toHaveCSS("opacity", "0.4");
+    for (const name of [
+      "Home",
+      "Assistant",
+      "Experiments",
+      "Runs",
+      "Environments",
+      "Gallery",
+      "My published",
+      "Settings",
+    ]) {
+      const link = page.getByRole("link", { name, exact: true });
+      await link.click();
+      await expect(link).toHaveAttribute("data-active", "true");
+      for (const part of await link.locator("svg > *").all())
+        await expect(part).toHaveCSS("fill", "none");
+    }
+    await budget.click();
+    await expect(page).toHaveURL(/\/settings$/);
+    await page.route("**/api/settings", (route) =>
+      route.fulfill({
+        json: {
+          ...settingsFixture,
+          usage: { ...settingsFixture.usage, cost_usd: null },
+          committed_tokens: 750,
+          preferences: { ...settingsFixture.preferences, token_budget: 1000 },
+        },
+      }),
+    );
+    await page.reload();
+    const tokens = footer.getByRole("link", { name: /^Tokens:/ });
+    await expect(tokens.getByRole("progressbar")).toHaveAttribute(
+      "aria-valuenow",
+      "75",
+    );
+    await expect(tokens.locator(":scope > span").first()).toBeHidden();
+    await page.route("**/api/settings", (route) =>
+      route.fulfill({
+        json: {
+          ...settingsFixture,
+          usage: { ...settingsFixture.usage, cost_usd: null },
+        },
+      }),
+    );
+    await page.reload();
+    await expect(tokens.getByRole("progressbar")).not.toHaveAttribute(
+      "aria-valuenow",
+    );
+  });
+
   test(`focus decoration follows keyboard navigation, not pointer clicks · ${theme}`, async ({
     page,
   }) => {

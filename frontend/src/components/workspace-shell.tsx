@@ -11,7 +11,7 @@ import { Empty } from "@/components/feedback";
 import {
   AgentIcon,
   BookOpen,
-  ExperimentIcon,
+  FlaskConical,
   Github,
   Globe,
   House,
@@ -89,27 +89,24 @@ export default function WorkspaceShell() {
       ["running", "queued", "pausing"].includes(r.status),
     ) ?? [];
   const primaryLinks = [
-    { to: "/", label: "Home", icon: House, partialFill: "house" },
+    { to: "/", label: "Home", icon: House },
     {
       to: "/assistant",
       label: "Assistant",
       icon: AgentIcon,
-      partialFill: "none",
     },
   ];
   const links = [
     {
       to: "/experiments",
       label: "Experiments",
-      icon: ExperimentIcon,
-      partialFill: undefined,
+      icon: FlaskConical,
     },
-    { to: "/runs", label: "Runs", icon: Play, partialFill: undefined },
+    { to: "/runs", label: "Runs", icon: Play },
     {
       to: "/environments",
       label: "Environments",
       icon: Layers2,
-      partialFill: "layers",
     },
   ];
   function changeTheme() {
@@ -209,13 +206,11 @@ export default function WorkspaceShell() {
                     to: "/gallery",
                     label: "Gallery",
                     icon: Globe,
-                    partialFill: undefined,
                   },
                   {
                     to: "/published",
                     label: "My published",
                     icon: BookOpen,
-                    partialFill: undefined,
                   },
                 ],
               },
@@ -253,10 +248,7 @@ export default function WorkspaceShell() {
                             end={item.to === "/"}
                             onClick={() => setOpenMobile(false)}
                           >
-                            <item.icon
-                              aria-hidden="true"
-                              data-partial-fill={item.partialFill}
-                            />
+                            <item.icon aria-hidden="true" />
                             <span>{item.label}</span>
                           </NavLink>
                         </SidebarMenuButton>
