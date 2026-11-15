@@ -9,6 +9,7 @@ import { ProfileOverridesEditor } from "@/components/editor/profile-overrides-ed
 import { ResourceScheduleEditor } from "@/components/editor/resource-schedule-editor";
 import { Plus, Trash2 } from "@/components/icons";
 import { MechanismFields } from "@/components/mechanism-fields";
+import { ModelPicker } from "@/components/model-picker";
 import { OptionSelect as Select } from "@/components/option-select";
 import {
   Accordion,
@@ -72,42 +73,6 @@ export function ConditionFields({
   }
   return (
     <section className="flex min-w-0 flex-col gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="text-base font-medium">
-            Conditions{" "}
-            <span className="text-muted-foreground">
-              {design.conditions.length}
-            </span>
-          </h2>
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={design.conditions.length >= 6}
-          onClick={() => {
-            let n = design.conditions.length + 1;
-            while (design.conditions.some((c) => c.key === `condition-${n}`))
-              n++;
-            const base = design.conditions[0];
-            if (!base) return;
-            addedInput.current = `condition-condition-${n}-name`;
-            setOpen((open) => [...open, `condition-${n}`]);
-            update("conditions", [
-              ...design.conditions,
-              structuredClone({
-                ...base,
-                key: `condition-${n}`,
-                name: `Condition ${n}`,
-              }),
-            ]);
-          }}
-        >
-          <Plus data-icon="inline-start" />
-          Add condition
-        </Button>
-      </div>
       <Accordion type="multiple" value={open} onValueChange={setOpen}>
         {design.conditions.map((c, i) => (
           <AccordionItem value={c.key} key={c.key}>
@@ -129,7 +94,7 @@ export function ConditionFields({
             </AccordionTrigger>
             <AccordionContent>
               <div className="flex min-w-0 flex-col gap-6 pb-2 pt-2">
-                <FieldGroup className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
+                <FieldGroup className="grid min-w-0 grid-cols-1 gap-5">
                   <Field>
                     <FieldLabel htmlFor={`condition-${c.key}-name`}>
                       Condition name
@@ -152,18 +117,13 @@ export function ConditionFields({
                   </Field>
                   <Field>
                     <FieldLabel htmlFor={`model-${c.key}`}>Model</FieldLabel>
-                    <Select
+                    <ModelPicker
                       id={`model-${c.key}`}
                       label={`Condition ${i + 1} model`}
                       value={c.model}
                       disabled={c.harness.kind === "scripted"}
-                      onValueChange={(v) =>
-                        condition(i, { model: v as ModelId })
-                      }
-                      options={catalog.models.map((m) => ({
-                        value: m.id,
-                        label: modelLabel(m.id),
-                      }))}
+                      onChange={(v) => condition(i, { model: v as ModelId })}
+                      models={catalog.models}
                     />
                     {c.harness.kind === "scripted" && (
                       <FieldDescription>
@@ -449,6 +409,32 @@ export function ConditionFields({
           </AccordionItem>
         ))}
       </Accordion>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="self-start"
+        disabled={design.conditions.length >= 6}
+        onClick={() => {
+          let n = design.conditions.length + 1;
+          while (design.conditions.some((c) => c.key === `condition-${n}`)) n++;
+          const base = design.conditions[0];
+          if (!base) return;
+          addedInput.current = `condition-condition-${n}-name`;
+          setOpen((open) => [...open, `condition-${n}`]);
+          update("conditions", [
+            ...design.conditions,
+            structuredClone({
+              ...base,
+              key: `condition-${n}`,
+              name: `Condition ${n}`,
+            }),
+          ]);
+        }}
+      >
+        <Plus data-icon="inline-start" />
+        Add condition
+      </Button>
     </section>
   );
 }

@@ -45,11 +45,15 @@ export function RecordListView({
           </TabsTrigger>
         </TabsList>
         {favorites.error && (
-          <Alert variant="error">
+          <Alert
+            variant="error"
+            action={
+              <Button variant="outline" size="sm" onClick={favorites.retry}>
+                Retry favorites
+              </Button>
+            }
+          >
             {favorites.error}{" "}
-            <Button variant="outline" size="sm" onClick={favorites.retry}>
-              Retry favorites
-            </Button>
           </Alert>
         )}
       </div>

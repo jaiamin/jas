@@ -8,6 +8,8 @@ __pycache__/
 .ruff_cache/
 *.egg-info/
 *.sqlite3*
+*.settings.json
+*.process.lock
 .env
 .env.*
 pbcopy
@@ -33,3 +35,5 @@ frontend/test-results/
 !/benchmarks/results/aggregate-cost.json
 *.environments/
 *.extensions/
+
+frontend/gallery-test-results/

@@ -1,5 +1,13 @@
 import { expect, test } from "@playwright/test";
-import { templateDesign } from "./helpers.js";
+import {
+  selectEditorSection,
+  setDeveloper,
+  templateDesign,
+} from "./helpers.js";
+
+test.beforeEach(async ({ request }) => {
+  await setDeveloper(request, true);
+});
 
 test("manual creation, revision, comparison and missing-key recovery", async ({
   page,
@@ -7,11 +15,12 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/new?template=commons");
+  await page.goto("/new?template=commons&mode=advanced");
+  await selectEditorSection(page, "Question");
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Browser QA · scarcity");
-  await page.getByRole("tab", { name: "Run plan", exact: true }).click();
+  await selectEditorSection(page, "Run plan");
   await page.getByLabel("Rounds per run").fill("3");
   await page.getByLabel("Matched seeds").fill("7");
   await page.getByLabel("Matched seeds").blur();
@@ -19,20 +28,21 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/studies\//);
+  await expect(page).toHaveURL(/\/experiments\//);
   await expect(
     page.getByRole("heading", { name: "Browser QA · scarcity" }),
   ).toBeVisible();
   const studyURL = page.url();
   await page.getByRole("link", { name: "Tune", exact: true }).click();
+  await selectEditorSection(page, "Question");
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Browser QA · tuned");
   await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page
-    .getByRole("button", { name: "Save new revision", exact: true })
+    .getByRole("button", { name: "Save new version", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/studies\//);
+  await expect(page).toHaveURL(/\/experiments\//);
   await expect(
     page.getByRole("heading", { name: "Browser QA · tuned" }),
   ).toBeVisible();
@@ -41,19 +51,22 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
     page.getByRole("heading", { name: "Browser QA · scarcity" }),
   ).toBeVisible();
   await expect(
-    page.getByText("This is a preserved design revision.", { exact: false }),
+    page.getByText("This is a preserved design version.", { exact: false }),
   ).toBeVisible();
   await page.goto(studyURL);
   await page.getByRole("tab", { name: "Runs", exact: true }).click();
+  await page.getByRole("button", { name: "Run table", exact: true }).click();
   const boxes = page.getByRole("table").locator("tbody").getByRole("checkbox");
   await boxes.nth(0).check();
   await boxes.nth(1).check();
-  await page.getByRole("link", { name: "Compare 2 runs" }).click();
+  await page.getByRole("link", { name: "Compare" }).click();
   await expect(
     page.getByRole("heading", { name: "Compare runs", exact: true }),
   ).toBeVisible();
   await page.goto(`${studyURL}?tab=runs`);
-  await page.getByRole("link", { name: "More resources", exact: true }).click();
+  await page
+    .getByRole("link", { name: /^More resources, seed 7, repetition 1:/ })
+    .click();
   await page.route("**/api/runs/*/control", (route) =>
     route.fulfill({
       status: 422,
@@ -75,13 +88,13 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
 test("invalid specifications cannot switch into visual mode or create a study", async ({
   page,
 }) => {
-  await page.goto("/new");
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await page.goto("/new?mode=advanced");
+  await selectEditorSection(page, "Specification");
   await page.getByLabel("Complete JSON specification").fill('{"profiles":4}');
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await selectEditorSection(page, "Question");
   await expect(
-    page.getByRole("tab", { name: "Specification" }),
-  ).toHaveAttribute("aria-selected", "true");
+    page.getByRole("button", { name: "Specification", includeHidden: true }),
+  ).toHaveAttribute("aria-expanded", "true");
   await expect(page.getByRole("alert")).toBeVisible();
 });
 
@@ -90,20 +103,12 @@ test("mobile navigation and theme persist without page overflow", async ({
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: /Local workspace/ }).click();
-  await page.getByRole("menuitemradio", { name: "Dark", exact: true }).click();
-  await expect(page.locator('[data-slot="dropdown-menu-content"]')).toHaveCount(
-    0,
-  );
-  await page.keyboard.press("Escape");
-  await expect(page.getByRole("button", { name: "Open menu" })).toBeFocused();
+  await page.getByRole("button", { name: "Switch to dark mode" }).click();
   await expect(page.locator("html")).toHaveClass("dark");
   await page.reload();
   await expect(page.locator("html")).toHaveClass("dark");
   await page.getByRole("button", { name: "Open menu" }).click();
-  await page.getByRole("button", { name: /Local workspace/ }).click();
-  await page.getByRole("menuitem", { name: "Settings", exact: true }).click();
+  await page.getByRole("link", { name: "Settings", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Settings", exact: true }),
   ).toBeVisible();
@@ -119,12 +124,10 @@ test("mobile navigation and theme persist without page overflow", async ({
   await expect(
     page.getByRole("button", { name: "Close menu", exact: true }),
   ).toBeFocused();
-  await page.getByRole("button", { name: /Local workspace/ }).click();
-  await page.getByRole("menuitemradio", { name: "Light", exact: true }).click();
-  await expect(page.locator("html")).not.toHaveClass("dark");
   await page.getByRole("button", { name: "Close menu", exact: true }).click();
+  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  await expect(page.locator("html")).not.toHaveClass("dark");
   await expect(page.getByRole("dialog")).not.toBeVisible();
-  await expect(page.getByRole("button", { name: "Open menu" })).toBeFocused();
 });
 
 test("removing agents removes condition overrides and environment changes need confirmation", async ({
@@ -137,29 +140,30 @@ test("removing agents removes condition overrides and environment changes need c
   design.conditions[0].profile_overrides = [
     { ...removed, goal: "Compare an alternative incentive" },
   ];
-  await page.goto("/new");
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await page.goto("/new?mode=advanced");
+  await selectEditorSection(page, "Specification");
   await page
     .getByLabel("Complete JSON specification")
     .fill(JSON.stringify(design));
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
-  await page.getByRole("tab", { name: /^Agents/ }).click();
+  await selectEditorSection(page, "Question");
+  await selectEditorSection(page, /^Agents/);
   await expect(
     page
+      .getByRole("region", { name: "Agents", exact: true })
       .locator("[data-slot=accordion-trigger]:visible")
       .filter({ hasText: removed.name }),
   ).toHaveAttribute("aria-expanded", "true");
   await page
     .getByRole("button", { name: `Remove ${removed.name}`, exact: true })
     .click();
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await selectEditorSection(page, "Specification");
   const changed = JSON.parse(
     await page.getByLabel("Complete JSON specification").inputValue(),
   );
   expect(changed.profiles).toHaveLength(design.profiles.length - 1);
   expect(changed.conditions[0].profile_overrides).toEqual([]);
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await selectEditorSection(page, "Question");
+  await selectEditorSection(page, "Question");
   await page
     .getByRole("combobox", { name: "Environment", exact: true })
     .click();
@@ -205,7 +209,7 @@ test("AI design progress opens a reviewable protocol with design notes", async (
       },
     }),
   );
-  await page.goto("/new?plan=qa-plan");
+  await page.goto("/new?plan=qa-plan&mode=advanced");
   await expect(
     page.getByText("Reviewing the design", { exact: true }),
   ).toBeVisible();
@@ -234,13 +238,15 @@ test("failed AI designs remain reachable and restore the original question", asy
   await page.route("**/api/analyses/qa-failed", (route) =>
     route.fulfill({ json: failed }),
   );
-  await page.goto("/new?plan=qa-failed");
+  await page.goto("/new?plan=qa-failed&mode=advanced");
   await expect(page.getByRole("alert")).toContainText(failed.error);
-  await page.getByRole("link", { name: "Back to Agent", exact: true }).click();
-  await expect(page.getByLabel("Message Agent", { exact: true })).toHaveValue(
-    question,
-  );
-  await page.goto("/new?plan=qa-failed");
+  await page
+    .getByRole("link", { name: "Back to Assistant", exact: true })
+    .click();
+  await expect(
+    page.getByLabel("Message Assistant", { exact: true }),
+  ).toHaveValue(question);
+  await page.goto("/new?plan=qa-failed&mode=advanced");
   await expect(
     page.getByRole("heading", { name: "Design request stopped", exact: true }),
   ).toBeVisible();
@@ -249,10 +255,11 @@ test("failed AI designs remain reachable and restore the original question", asy
 test("drafts survive reload, recover incomplete edits and clear after saving", async ({
   page,
 }) => {
-  await page.goto("/new?template=commons");
-  await page.goto("/studies");
+  await page.goto("/new?template=commons&mode=advanced");
+  await selectEditorSection(page, "Question");
+  await page.goto("/experiments");
   await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
-  await page.goto("/new?template=commons");
+  await page.goto("/new?template=commons&mode=advanced");
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Recovered protocol");
@@ -261,13 +268,13 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
     "Recovered protocol",
   );
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await selectEditorSection(page, "Specification");
   await page.getByLabel("Complete JSON specification").fill('{"unfinished":');
   await page.reload();
   await expect(page.getByLabel("Complete JSON specification")).toHaveValue(
     '{"unfinished":',
   );
-  await page.goto("/studies");
+  await page.goto("/experiments");
   await expect(
     page.getByRole("region", { name: "Drafts", exact: true }),
   ).toHaveCount(0);
@@ -279,7 +286,7 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   await expect(page.getByLabel("Complete JSON specification")).toHaveValue(
     '{"unfinished":',
   );
-  await page.goto("/studies");
+  await page.goto("/experiments");
   await expect(
     page.getByRole("region", { name: "Drafts", exact: true }),
   ).toHaveCount(0);
@@ -295,23 +302,28 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   await expect(
     page.getByRole("region", { name: "Drafts", exact: true }),
   ).toHaveCount(0);
-  await page.goto("/new?template=commons");
+  await page.goto("/new?template=commons&mode=advanced");
+  await selectEditorSection(page, "Question");
   await page.getByLabel("Experiment name", { exact: true }).fill("");
   await expect(page.getByRole("status")).toContainText("Draft saved");
   await page.reload();
-  await page
-    .getByRole("button", { name: "Edit specification", exact: true })
-    .click();
-  const text = page.getByLabel("Complete JSON specification");
-  const design = JSON.parse(await text.inputValue());
-  expect(design.title).toBe("");
-  design.title = "Recovered incomplete draft";
-  await text.fill(JSON.stringify(design));
+  const name = page.getByLabel("Experiment name", { exact: true });
+  await expect(name).toHaveValue("");
+  await expect(
+    page.getByText("Recover your draft", { exact: true }),
+  ).toHaveCount(0);
+  await name.fill("Recovered incomplete draft");
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/studies\//);
-  await expect(page.getByRole("heading", { name: design.title })).toBeVisible();
+  await expect(page).toHaveURL(/\/experiments\//);
+  await expect(
+    page.getByRole("heading", {
+      name: "Recovered incomplete draft",
+      exact: true,
+    }),
+  ).toBeVisible();
   await page.goto("/");
   await expect(
     page.getByRole("region", { name: "Drafts", exact: true }),
@@ -325,17 +337,21 @@ test("environment mechanics lead to editable reusable setups", async ({
   await page
     .getByRole("link", { name: "Explore Team coordination", exact: true })
     .click();
+  await page
+    .getByRole("button", { name: "Observations & rules", exact: true })
+    .click();
   await expect(
     page.getByRole("heading", { name: "What agents observe" }),
   ).toBeVisible();
   await page
-    .getByRole("link", { name: "Configure experiment", exact: true })
+    .getByRole("link", { name: "Create experiment", exact: true })
     .click();
-  await expect(page.getByRole("tab", { name: /^Conditions/ })).toHaveAttribute(
-    "aria-selected",
-    "true",
-  );
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await page.getByRole("tab", { name: "Advanced", exact: true }).click();
+  await selectEditorSection(page, /^Conditions/);
+  await expect(
+    page.getByRole("button", { name: /^Conditions/, includeHidden: true }),
+  ).toHaveAttribute("aria-expanded", "true");
+  await selectEditorSection(page, "Question");
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Supply-chain recovery");
@@ -352,7 +368,8 @@ test("environment mechanics lead to editable reusable setups", async ({
   await page
     .getByRole("link", { name: "Supply-chain recovery", exact: true })
     .click();
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await page.getByRole("tab", { name: "Advanced", exact: true }).click();
+  await selectEditorSection(page, "Question");
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
     "Supply-chain recovery experiment",
   );

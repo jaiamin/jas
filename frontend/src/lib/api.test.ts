@@ -36,8 +36,16 @@ test.each([
     "design → profiles → 0 → goal: Required. rounds: Too small",
   ],
   [404, { detail: "Run not found" }, "Run not found"],
-  [500, { detail: [null, { unexpected: true }] }, "Request failed (500)"],
-  [503, "Unavailable", "Request failed (503)"],
+  [
+    500,
+    { detail: [null, { unexpected: true }] },
+    "JAS couldn’t complete this request. Try again shortly.",
+  ],
+  [
+    503,
+    "Unavailable",
+    "JAS couldn’t complete this request. Try again shortly.",
+  ],
 ])("normalizes HTTP %s errors", async (status, body, message) => {
   vi.stubGlobal(
     "fetch",
@@ -55,10 +63,28 @@ test.each([
   await expect(api("/runs/missing")).rejects.toBeInstanceOf(ApiError);
 });
 
-test("network failures preserve their cause", async () => {
+test("network failures have readable copy, preserve their cause and never retry", async () => {
   const error = new TypeError("Network unavailable");
-  vi.stubGlobal("fetch", vi.fn().mockRejectedValue(error));
-  await expect(api("/runs")).rejects.toBe(error);
+  const fetch = vi.fn().mockRejectedValue(error);
+  vi.stubGlobal("fetch", fetch);
+  await expect(api("/runs", { action: "start" })).rejects.toMatchObject({
+    name: "ApiError",
+    message: "Couldn’t reach JAS. Check your connection and try again.",
+    cause: error,
+    status: 0,
+  });
+  expect(fetch).toHaveBeenCalledOnce();
+});
+
+test("unreadable successful responses do not expose parser errors", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue(new Response("<html>upstream error</html>")),
+  );
+  await expect(api("/runs")).rejects.toMatchObject({
+    message: "JAS returned an unreadable response. Try again.",
+    cause: expect.any(SyntaxError),
+  });
 });
 
 test("resource refresh covers revision variants while leaving unrelated work untouched", async () => {

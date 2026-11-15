@@ -776,8 +776,8 @@ def _preflight(specification: str, runner=None) -> dict:
                 "permitted_consequence": "terminal_submission_status",
                 "max_requests_per_submission_attempt": 1,
                 "price_per_million_usd": {
-                    "input": PRICES[c.adjudicator.model][0],
-                    "output": PRICES[c.adjudicator.model][1],
+                    "input": PRICES.get(c.adjudicator.model, (None, None))[0],
+                    "output": PRICES.get(c.adjudicator.model, (None, None))[1],
                 },
                 "limits": "Only selected work fields and pinned immutable evidence fields; "
                 "no private goals, inaccessible objects, invented responses or beliefs. "

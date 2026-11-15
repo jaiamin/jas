@@ -377,6 +377,7 @@ def deterministic_researcher(app):
 if __name__ == "__main__":
     os.environ["OPENAI_API_KEY"] = ""
     os.environ["ANTHROPIC_API_KEY"] = ""
+    os.environ["OPENROUTER_API_KEY"] = ""
     with TemporaryDirectory(prefix="jas-browser-tests-") as directory:
         workspace = Path(os.getenv("JAS_TEST_DATA_DIR", directory))
         workspace.mkdir(parents=True, exist_ok=True)

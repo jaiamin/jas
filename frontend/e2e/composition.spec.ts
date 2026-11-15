@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { selectEditorSection } from "./helpers.js";
 
 for (const theme of ["light", "dark"]) {
   test(`composed environment lifecycle preserves experiment evidence · ${theme}`, async ({
@@ -46,20 +47,13 @@ for (const theme of ["light", "dark"]) {
       .getByRole("button", { name: "Remove resource", exact: true })
       .click();
     await expect(resources).toHaveCount(1);
-    await page.getByRole("tab", { name: "Question", exact: true }).click();
+    await selectEditorSection(page, "Question");
     const title = `Custom shortage ${theme}`;
     await page.getByLabel("Experiment name", { exact: true }).fill(title);
-    await page
-      .getByRole("button", {
-        name: "Hypothesis and analysis plan",
-        exact: true,
-      })
-      .click();
+    await selectEditorSection(page, "Research plan");
     const analysisPlan =
       "Compare allocations to others and unallocated stock across conditions.";
-    await page
-      .getByLabel("Hypothesis and analysis plan", { exact: true })
-      .fill(analysisPlan);
+    await page.getByLabel("Hypothesis", { exact: true }).fill(analysisPlan);
     await page
       .getByRole("button", { name: "Experiment options", exact: true })
       .click();
@@ -73,7 +67,7 @@ for (const theme of ["light", "dark"]) {
     await page
       .getByRole("button", { name: "Create experiment", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/studies\//);
+    await expect(page).toHaveURL(/\/experiments\//);
     const studyId = new URL(page.url()).pathname.split("/").at(-1);
     const study = await (await request.get(`/api/studies/${studyId}`)).json();
     expect(study.design.hypothesis).toBe(analysisPlan);
@@ -82,6 +76,9 @@ for (const theme of ["light", "dark"]) {
     expect(baseline.initial_stock).toBe(16);
     expect(baseline.stock_visibility).toBe("controllers");
     await page.goto(`/runs/${study.runs[0].id}`);
+    await page
+      .getByRole("button", { name: "Rules & evidence", exact: true })
+      .click();
     await page.getByRole("tab", { name: "Environment", exact: true }).click();
     await expect(
       page.getByRole("heading", { name: "Resources & needs", exact: true }),
@@ -96,7 +93,7 @@ for (const theme of ["light", "dark"]) {
       .locator("[data-slot=item-group]")
       .getByRole("link", { name: title, exact: true })
       .click();
-    await page.getByRole("tab", { name: "Question", exact: true }).click();
+    await selectEditorSection(page, "Question");
     await page
       .getByLabel("Experiment name", { exact: true })
       .fill(`${title} updated`);

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { environmentSummary } from "@/lib/environments";
 import type { Catalog, Design, EnvironmentId } from "@/lib/types";
 import { AnalysisPlanFields } from "./analysis-plan-fields";
 
@@ -28,9 +29,6 @@ export function QuestionFields({
   onEnvironmentChange: (value: EnvironmentId) => void;
   disabled: boolean;
 }) {
-  const environment = catalog.environments.find(
-    (item) => item.key === design.environment,
-  );
   function update<K extends keyof Design>(key: K, value: Design[K]) {
     onChange({ ...design, [key]: value });
   }
@@ -42,14 +40,17 @@ export function QuestionFields({
           id="title"
           value={design.title}
           maxLength={100}
+          required
           onChange={(event) => update("title", event.target.value)}
         />
       </Field>
       <Field>
-        <FieldLabel htmlFor="question">Research question</FieldLabel>
+        <FieldLabel htmlFor="question">Question</FieldLabel>
         <Textarea
           id="question"
-          rows={3}
+          rows={1}
+          className="min-h-8 max-h-32 resize-none py-1.5"
+          required
           value={design.question}
           maxLength={4000}
           onChange={(event) => update("question", event.target.value)}
@@ -63,11 +64,16 @@ export function QuestionFields({
           value={design.environment}
           disabled={disabled}
           onValueChange={(value) => {
-            if (value !== design.environment) onEnvironmentChange(value);
+            if (value === design.environment) return;
+            // Finish Enter activation before the dialog receives focus.
+            requestAnimationFrame(() => onEnvironmentChange(value));
           }}
           options={[
             ...catalog.environments,
-            ...(design.environment === "sealed_relay" && !environment
+            ...(design.environment === "sealed_relay" &&
+            !catalog.environments.some(
+              (item) => item.key === design.environment,
+            )
               ? [
                   {
                     key: "sealed_relay" as const,
@@ -78,31 +84,49 @@ export function QuestionFields({
           ].map((item) => ({
             value: item.key,
             label: item.name,
+            description:
+              "description" in item
+                ? environmentSummary(item)
+                : "Explore a bounded relay with explicit permissions.",
           }))}
         />
-        <FieldDescription>{environment?.description}</FieldDescription>
+      </Field>
+    </FieldGroup>
+  );
+}
+
+export function ResearchFields({
+  design,
+  catalog,
+  onChange,
+}: {
+  design: Design;
+  catalog: Catalog;
+  onChange: (design: Design) => void;
+}) {
+  const environment = catalog.environments.find(
+    (item) => item.key === design.environment,
+  );
+  return (
+    <FieldGroup>
+      <Field>
+        <FieldLabel htmlFor="hypothesis">Hypothesis</FieldLabel>
+        <Textarea
+          id="hypothesis"
+          rows={3}
+          maxLength={2000}
+          value={design.hypothesis}
+          onChange={(event) =>
+            onChange({ ...design, hypothesis: event.target.value })
+          }
+        />
+        <FieldDescription>
+          Private research notes; agents do not see these.
+        </FieldDescription>
       </Field>
       <Disclosure>
-        <DisclosureTrigger>Hypothesis and analysis plan</DisclosureTrigger>
+        <DisclosureTrigger>Analysis plan</DisclosureTrigger>
         <DisclosureContent className="pt-4">
-          <Field>
-            <FieldLabel htmlFor="hypothesis">
-              Hypothesis and analysis plan
-            </FieldLabel>
-            <Textarea
-              id="hypothesis"
-              placeholder="Exploratory questions and evidence to retain, or a hypothesis and comparison plan"
-              rows={4}
-              maxLength={2000}
-              value={design.hypothesis}
-              onChange={(event) => update("hypothesis", event.target.value)}
-            />
-            <FieldDescription>
-              Exploration can describe trajectories without a primary scalar
-              outcome. For confirmation, define outcomes and comparisons before
-              trials. Agents do not receive this plan.
-            </FieldDescription>
-          </Field>
           <AnalysisPlanFields
             design={design}
             metrics={environment?.measures ?? []}
@@ -110,23 +134,18 @@ export function QuestionFields({
           />
         </DisclosureContent>
       </Disclosure>
-      <Disclosure>
-        <DisclosureTrigger>Scenario context</DisclosureTrigger>
-        <DisclosureContent className="pt-4">
-          <Field>
-            <FieldLabel htmlFor="context">
-              Scenario context (optional)
-            </FieldLabel>
-            <Textarea
-              id="context"
-              rows={3}
-              placeholder="Describe the setting. The environment defines the rules."
-              value={design.context}
-              onChange={(event) => update("context", event.target.value)}
-            />
-          </Field>
-        </DisclosureContent>
-      </Disclosure>
+      <Field>
+        <FieldLabel htmlFor="context">Scenario context</FieldLabel>
+        <Textarea
+          id="context"
+          rows={3}
+          value={design.context}
+          onChange={(event) =>
+            onChange({ ...design, context: event.target.value })
+          }
+        />
+        <FieldDescription>Setting shared with agents.</FieldDescription>
+      </Field>
     </FieldGroup>
   );
 }

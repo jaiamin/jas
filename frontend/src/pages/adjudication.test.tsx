@@ -3,7 +3,7 @@
  * Literal response fixtures test display, not live judgment accuracy or World rules.
  * The approved real public-HTTP backend tests independently establish consequences.
  */
-import { fireEvent, screen, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { expect, test, vi } from "vitest";
 import { WorkspaceProvider } from "@/components/workspace-provider";
@@ -337,6 +337,7 @@ test("the actual shell declares judge scope and prices before Run and separates 
     if (path === "/api/studies/judged-study")
       return Response.json({
         id: "judged-study",
+        estimate: runDetail.estimate,
         design: judgedDesign,
         revision: 1,
         sha256: "fixture-design",
@@ -381,7 +382,7 @@ test("the actual shell declares judge scope and prices before Run and separates 
   });
   vi.stubGlobal("fetch", fetcher);
   renderWithQueries(
-    <MemoryRouter initialEntries={["/studies/judged-study"]}>
+    <MemoryRouter initialEntries={["/experiments/judged-study"]}>
       <Routes>
         <Route
           element={
@@ -390,7 +391,7 @@ test("the actual shell declares judge scope and prices before Run and separates 
             </WorkspaceProvider>
           }
         >
-          <Route path="/studies/:id" element={<Study />} />
+          <Route path="/experiments/:id" element={<Study />} />
           <Route path="/runs/:id" element={<Run />} />
         </Route>
       </Routes>
@@ -428,22 +429,23 @@ test("the actual shell declares judge scope and prices before Run and separates 
     fetcher.mock.calls.filter(([, options]) => options?.method === "POST"),
   ).toHaveLength(0);
   fireEvent.click(screen.getByRole("button", { name: "Run experiment" }));
-  expect(
-    await screen.findByText(/1\s*\/\s*1 runs complete/),
-  ).toBeInTheDocument();
+  await waitFor(() =>
+    expect(
+      screen.getByText("Runs complete").nextElementSibling,
+    ).toHaveTextContent("1 / 1"),
+  );
   // Radix tabs activate on primary mousedown; click alone omits that browser event.
   fireEvent.mouseDown(screen.getByRole("tab", { name: "Runs" }), {
     button: 0,
     ctrlKey: false,
   });
+  fireEvent.click(await screen.findByRole("button", { name: "Run table" }));
   fireEvent.click(
     await screen.findByRole("link", {
       name: "Declared fallible judgment",
     }),
   );
-  expect(
-    await screen.findByRole("heading", { name: "Turn 2 evidence" }),
-  ).toBeInTheDocument();
+  expect(await openRunEvidence()).toBeInTheDocument();
   const raw = await screen.findByRole("region", {
     name: "Recorded fallible judgment",
   });
@@ -528,7 +530,7 @@ function renderRecordedRun(
 
 test("Run Record bills Sol adjudication separately from Luna participant effort", async () => {
   const fetcher = renderRecordedRun();
-  await screen.findByRole("heading", { name: "Turn 2 evidence" });
+  await openRunEvidence();
   fireEvent.mouseDown(screen.getByRole("tab", { name: "Record" }), {
     button: 0,
     ctrlKey: false,
@@ -561,7 +563,7 @@ test("a resumable Run waits for its pinned explicit adjudicator declaration and 
     },
     response.promise,
   );
-  await screen.findByRole("heading", { name: "Turn 2 evidence" });
+  await screen.findByRole("region", { name: "Turn story" });
   expect(screen.getByRole("button", { name: "Run" })).toBeDisabled();
   expect(screen.getByRole("button", { name: "Step" })).toBeDisabled();
   response.resolve(Response.json({ preflight }));
@@ -607,7 +609,7 @@ for (const missing of [
     await screen.findByText(
       missing === "unavailable"
         ? "The pinned adjudicator declaration could not be loaded."
-        : /The pinned revision .*Run and Step remain unavailable/,
+        : /The pinned version .*Run and Step remain unavailable/,
     );
     expect(screen.getByRole("button", { name: "Run" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Step" })).toBeDisabled();
@@ -631,7 +633,7 @@ test("missing declaration never prevents pausing already active work", async () 
     ),
   );
   await screen.findByText(
-    /The pinned revision .*Run and Step remain unavailable/,
+    /The pinned version .*Run and Step remain unavailable/,
   );
   expect(screen.getByRole("button", { name: "Pause" })).toBeEnabled();
   expect(screen.getByRole("button", { name: "Step" })).toBeDisabled();
@@ -665,6 +667,7 @@ test("abstention, untrusted explanation and unknown judge usage cannot become en
         : call,
     ),
   });
+  await openRunEvidence();
   const raw = await screen.findByRole("region", {
     name: "Recorded fallible judgment",
   });
@@ -699,6 +702,7 @@ test("Study review resolves an explicit null model override to Luna while Sol re
     if (path === "/api/studies/judged-study")
       return Response.json({
         id: "judged-study",
+        estimate: runDetail.estimate,
         design: { ...value, profiles: [profile], conditions },
         revision: 1,
         sha256: "fixture-assignment",
@@ -745,7 +749,7 @@ test("Study review resolves an explicit null model override to Luna while Sol re
   );
   vi.stubGlobal("fetch", fetcher);
   renderWithQueries(
-    <MemoryRouter initialEntries={["/studies/judged-study"]}>
+    <MemoryRouter initialEntries={["/experiments/judged-study"]}>
       <Routes>
         <Route
           element={
@@ -754,7 +758,7 @@ test("Study review resolves an explicit null model override to Luna while Sol re
             </WorkspaceProvider>
           }
         >
-          <Route path="/studies/:id" element={<Study />} />
+          <Route path="/experiments/:id" element={<Study />} />
         </Route>
       </Routes>
     </MemoryRouter>,
@@ -774,3 +778,12 @@ test("Study review resolves an explicit null model override to Luna while Sol re
     fetcher.mock.calls.filter(([, options]) => options?.method === "POST"),
   ).toHaveLength(0);
 });
+
+async function openRunEvidence() {
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Rules & evidence",
+    }),
+  );
+  return screen.findByRole("heading", { name: "Turn 2 evidence" });
+}

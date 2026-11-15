@@ -19,7 +19,7 @@ import {
 
 // Both filters share the stock Select trigger's spacing and regular label weight.
 const triggerClassName =
-  "min-w-0 max-w-full h-7 data-[size=default]:h-7 shrink gap-1.5 border-input bg-transparent py-1 text-[0.8125rem] leading-4 pr-2 has-data-[icon=inline-end]:pr-2 pl-2.5 font-normal hover:bg-muted sm:max-w-64";
+  "min-w-0 max-w-full h-7 data-[size=default]:h-7 shrink justify-between gap-1.5 border-input bg-transparent px-2.5 py-1 text-left text-[0.8125rem] leading-4 has-data-[icon=inline-end]:pr-2.5 font-normal hover:bg-muted sm:max-w-64";
 
 function FilterGroup({
   name,

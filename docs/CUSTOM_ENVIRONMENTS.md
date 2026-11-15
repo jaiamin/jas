@@ -170,68 +170,12 @@ New mechanics need independent expected outcomes and additional engine work. Syn
 and deterministic correctness do not establish question fidelity, realistic populations,
 statistical power, human validity or truthful generated interpretations.
 
-Planner diagnostics use six public development questions, each repeated twice: the original
-shortage request with an explicit operational scope, hidden stock, private receipts, two-resource
-transfers, unsupported individual needs/allocation vectors, and unsupported production/tools.
-The first batch passed 9/12 attempts. Its failures exposed outcome labels mistaken for missing
-mechanics, disabled controls mistaken for unsupported transfers, and equal extraction rights
-mistaken for unequal allocation power. The corrected planner passed 12/12 on the same cases.
-These are development results, not held-out generalization or an insight-quality score.
-
-A separate verbatim-question check initially passed only 1/2 attempts: the mapper interpreted
-"real resource shortage" as a requirement for physical-world calibration despite the explicit
-AI-agent setting. The scope instruction now distinguishes mechanically enforced scarcity
-inside a simulation from claims requiring empirical physical-world validation. Both the
-rejection and the subsequent evaluation remain recorded; the caveat about synthetic outcomes
-is retained.
-
-Four additional model runs compare public/party-only allocation information across matched
-seeds 7/19: four agents, four rounds, 12 food units and 16 required units per run. All 64
-decisions completed, and all runs passed independent conservation, need, utility, nonnegativity
-and exact replay checks. In all four runs, the three noncontrollers consumed no food. This
-small diagnostic does not establish that transparency improves cooperation or predicts a
-population effect. It also does not certify participant optimality or narrative accuracy.
-
-Subsequent public development checks retained every failed attempt. After clarifying scope,
-11/14 passed; two reviews exhausted the old 4096-token limit and one protocol lacked explicit
-outcome calculations. Reviews now allow 8192 tokens, and analysis plans must identify recorded
-fields, formulas, denominators and comparisons. That checkpoint passed 13/14; the remaining
-attempt contradicted itself by claiming an unavailable capability was directly supported.
-A bounded scope correction now catches that contradiction rather than accepting it.
-
-A focused check then passed 5/6: one proposal correctly stopped after three unsuccessful
-revisions because its claims required repeated allocation but its settings allowed the entire
-stock to disappear in one action. Preflight now reports the earliest possible exhaustion for
-nonreplenished stocks, without rejecting legitimate one-shot allocations. The following
-verbatim-question check passed 1/2: one accepted proposal duplicated a nonbaseline condition
-and omitted a cell while claiming a 2×2 interaction. This exposed a mechanical validation gap,
-not a successful factorial. Those original results remain failures.
-
-Preflight now computes the crossed grid from executable parameters and resolved assignments,
-groups perfectly coupled fields into factor bundles, and reports duplicate arms across all
-conditions. A typed planner declaration requires complete crossing of at least two bundles for
-factorial/interaction designs. Missing cells block approval, save and execution; partial
-comparisons and intentional replication remain permitted with warnings. Grid coverage cannot
-establish statistical power, identify the scientifically correct factors, or certify prose.
-
-The final two familiar-question trials passed the declared mechanical checks (12 calls,
-$0.036109). Manual inspection still found one protocol with passive noncontrollers: transfers
-and communication were disabled, leaving only wait actions for the audience. It cannot establish
-responsive community cooperation. A subsequent deterministic preflight warning now names
-that limitation; it does not reject intentional allocator/norm-response studies. That warning
-has correctness coverage but no subsequent paid planner score. The two passes belong to the
-preceding exact source archive, not a universal experiment-quality certification.
-
-All paid diagnostics use only `openai:gpt-6-luna` and the existing $75 aggregate ledger.
-Initial planner batches have additional $2 ceilings; focused planner and participant
-checks have separate additional $1 ceilings. Actual costs and source fingerprints are recorded in
-HANDOFF.md. Local manifests, exact source archives, attempts and sanitized provider traces
-live in `data/quality/composition-model-development/`, `composition-model-final/`,
-`composition-model-raw-question/`, `composition-model-scope-corrected/`, `composition-model-review-corrected/`,
-`composition-model-mapping-guard/`, `composition-model-final-verbatim/`,
-`composition-model-factorial-guard/` and `composition-participants/`. Historical benchmark reports
-and frozen families remain unchanged. A line wrap after the earlier 12/12 batch preserved every backend AST and string value;
-its provenance file records both byte hashes. Later semantic changes have distinct archives.
+Preflight reports early resource exhaustion and passive agents when their controls
+cannot support the proposed interaction. A declared factorial comparison must cover
+its executable factor grid; duplicate arms and missing cells remain inspectable.
+These mechanical checks do not certify question fidelity or a model's interpretation.
+Historical paid diagnostics remain in Git history and private evidence archives;
+use [benchmark instructions](../benchmarks/README.md) for fresh evaluations.
 
 Reproduce the keyless correctness checks with:
 

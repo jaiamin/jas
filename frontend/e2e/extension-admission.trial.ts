@@ -79,7 +79,7 @@ for (const theme of ["light", "dark"]) {
     await page
       .getByRole("button", { name: "Create experiment", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/studies\//);
+    await expect(page).toHaveURL(/\/experiments\//);
     await page.getByRole("tab", { name: "Runs", exact: true }).click();
     await page.locator('a[href^="/runs/"]').first().click();
     await page.getByRole("button", { name: "Run", exact: true }).click();

@@ -1,9 +1,10 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { Analysis } from "@/lib/types";
 import { design } from "@/test/fixtures";
+import { renderWithQueries as render } from "@/test/queries";
 import { AgentReply } from "./agent-reply";
 
 // jsdom has no media/visibility APIs; real animation is exercised in browser tests.
@@ -28,6 +29,7 @@ afterEach(() => vi.unstubAllGlobals());
 
 const row: Analysis = {
   id: "answer",
+  models: [],
   purpose: "analysis",
   question: "What happened?",
   status: "pending",
@@ -381,3 +383,89 @@ test("live activity stays open when the reply finishes so its content remains re
     screen.queryByText("Compare cooperation under two resource levels."),
   ).not.toBeInTheDocument();
 });
+
+test.each([
+  {
+    status: "complete",
+    cost: 0.012345,
+    partial: false,
+    label: "~$0.012",
+    details: "$0.012345",
+  },
+  {
+    status: "complete",
+    cost: 0.000321,
+    partial: false,
+    label: "<$0.001",
+    details: "$0.000321",
+  },
+  {
+    status: "complete",
+    cost: 0.001,
+    partial: false,
+    label: "~$0.001",
+    details: "$0.001",
+  },
+  {
+    status: "complete",
+    cost: 0,
+    partial: false,
+    label: "$0.00",
+    details: "$0.00",
+  },
+  {
+    status: "failed",
+    cost: null,
+    partial: true,
+    label: "Cost pending",
+    details: "Unknown",
+  },
+])(
+  "reply usage preserves $status cost $cost and exposes precise details on demand",
+  async ({ status, cost, partial, label, details }) => {
+    render(
+      <MemoryRouter>
+        <TooltipProvider>
+          <AgentReply
+            row={{
+              ...row,
+              status,
+              models: ["openai:gpt-6.1-sol", "openai:gpt-6-luna"],
+              usage: {
+                requests: 2,
+                input_tokens: 1200,
+                output_tokens: 300,
+                cost_usd: cost,
+                partial,
+              },
+            }}
+            disabled={false}
+            onRetry={() => {}}
+          />
+        </TooltipProvider>
+      </MemoryRouter>,
+    );
+    expect(
+      screen.getByRole("button", { name: "Reply usage" }),
+    ).toHaveTextContent(label);
+    expect(screen.queryByText("Input tokens")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Reply usage" }));
+    expect(await screen.findByText("Input tokens")).toBeVisible();
+    expect(screen.getByText("1,200")).toBeVisible();
+    expect(screen.getByText("Models")).toBeVisible();
+    expect(
+      screen.getByText("openai:gpt-6.1-sol, openai:gpt-6-luna"),
+    ).toBeVisible();
+    const popup = screen.getByRole("dialog", { name: "Reply usage details" });
+    expect(within(popup).getByText(details, { exact: true })).toBeVisible();
+    if (partial) {
+      expect(
+        screen.getByText("Includes unsettled reservations."),
+      ).toBeVisible();
+    } else {
+      expect(
+        screen.queryByText(/Your provider bills your key/),
+      ).not.toBeInTheDocument();
+    }
+  },
+);

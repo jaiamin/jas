@@ -117,3 +117,33 @@ test("a rejected draft opens its original incomplete specification for repair", 
   ).toHaveValue(json);
   expect(localStorage.getItem("jas:draft:/new")).not.toBeNull();
 });
+
+test("unfinished name and question survive validated draft recovery without becoming specification errors", async () => {
+  const unfinished = { ...design, title: "My new experiment", question: "" };
+  writeDraft("/new", unfinished, "", "quick");
+  const fetcher = vi.fn(async (path: string, options?: RequestInit) => {
+    if (path === "/api/catalog") return Response.json(catalog);
+    if (path === "/api/design/validate") {
+      const candidate = JSON.parse(String(options?.body)).design;
+      expect(candidate.question).toBe("Draft question");
+      return Response.json(candidate);
+    }
+    return Response.json({ providers: {}, preferences: {} });
+  });
+  vi.stubGlobal("fetch", fetcher);
+  renderWithQueries(
+    <MemoryRouter initialEntries={["/new"]}>
+      <Editor />
+    </MemoryRouter>,
+  );
+  expect(await screen.findByLabelText("Experiment name")).toHaveValue(
+    unfinished.title,
+  );
+  expect(screen.getByLabelText("Question")).toHaveValue("");
+  expect(screen.queryByText("Recover your draft")).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Create" })).toBeDisabled();
+  expect(
+    JSON.parse(localStorage.getItem("jas:draft:/new") ?? "null").design
+      .question,
+  ).toBe("");
+});

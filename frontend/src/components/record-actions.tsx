@@ -2,7 +2,15 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type ReactNode, type RefObject, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Alert } from "@/components/feedback";
-import { Ellipsis } from "@/components/icons";
+import {
+  Copy,
+  Download,
+  Ellipsis,
+  ExperimentIcon,
+  FileSearch,
+  PenLine,
+  Trash2,
+} from "@/components/icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,8 +47,8 @@ function RecordActionsMenu({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="outline"
-          size="icon-xs"
+          variant="ghost"
+          size="icon-sm"
           className="text-muted-foreground"
           aria-label={`Actions for ${name}`}
           ref={triggerRef}
@@ -48,7 +56,7 @@ function RecordActionsMenu({
           <Ellipsis />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent align="end" className="w-56">
         {children}
       </DropdownMenuContent>
     </DropdownMenu>
@@ -75,16 +83,26 @@ export function ExperimentActions({ study }: { study: StudySummary }) {
       <RecordActionsMenu name={study.title} triggerRef={triggerRef}>
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link to={`/studies/${study.id}`}>Open experiment</Link>
+            <Link to={`/experiments/${study.id}`}>
+              <ExperimentIcon />
+              Open experiment
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to={`/new?study=${study.id}`}>Edit as new revision</Link>
+            <Link to={`/new?study=${study.id}`}>
+              <PenLine />
+              New version
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to={`/new?copy=${study.id}`}>Duplicate</Link>
+            <Link to={`/new?copy=${study.id}`}>
+              <Copy />
+              Duplicate
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <a href={`/api/studies/${study.id}/export?download=true`}>
+              <Download />
               Export evidence
             </a>
           </DropdownMenuItem>
@@ -98,6 +116,7 @@ export function ExperimentActions({ study }: { study: StudySummary }) {
               setConfirm(true);
             }}
           >
+            <Trash2 />
             Delete experiment…
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -119,7 +138,7 @@ export function ExperimentActions({ study }: { study: StudySummary }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete experiment?</AlertDialogTitle>
             <AlertDialogDescription>
-              “{study.title}” and all its revisions, runs, evidence, and related
+              “{study.title}” and all its versions, runs, evidence, and related
               chat messages will be permanently deleted. Spending records and
               local drafts are kept.
             </AlertDialogDescription>
@@ -154,19 +173,24 @@ export function ExperimentActions({ study }: { study: StudySummary }) {
 export function RunActions({ run }: { run: RunSummary }) {
   return (
     <RecordActionsMenu
-      name={`${run.condition}, seed ${run.seed}, revision ${run.revision}, repetition ${run.repetition}`}
+      name={`${run.condition}, seed ${run.seed}, version ${run.revision}, repetition ${run.repetition}`}
     >
       <DropdownMenuGroup>
         <DropdownMenuItem asChild>
-          <Link to={`/runs/${run.id}`}>Inspect run</Link>
+          <Link to={`/runs/${run.id}`}>
+            <FileSearch />
+            Inspect run
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to={`/studies/${run.study_id}?revision=${run.revision}`}>
+          <Link to={`/experiments/${run.study_id}?revision=${run.revision}`}>
+            <ExperimentIcon />
             Open experiment
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <a href={`/api/studies/${run.study_id}/export?download=true`}>
+            <Download />
             Export experiment evidence
           </a>
         </DropdownMenuItem>

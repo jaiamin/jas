@@ -256,7 +256,7 @@ export function AnalysisPlanFields({
       <FieldDescription>
         All planned runs stay in the denominator. Means use eligible terminal
         outcomes; missingness stays visible. Confidence intervals are withheld.
-        Saving pins the plan to a new immutable revision and never runs models.
+        Saving pins the plan to a new immutable version and never runs models.
       </FieldDescription>
     </FieldGroup>
   );

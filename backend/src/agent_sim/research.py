@@ -28,12 +28,14 @@ from .domain import Design, Treatment
 from .environment_library import EnvironmentLibrary, validate_source
 from .exposure import exposure_report
 from .extensions import Extensions
-from .llm import PRICES, LanguageModels, Usage, empty_usage
+from .llm import LanguageModels, Usage, empty_usage
+from .matched import changes, first_divergence, world_state
 from .metrics import aggregate_metrics
 from .participant_context import OPERATION_CAPABILITY
 from .participants import activation_record, operation_record
 from .research_quality import completion, findings_report, scientific_review
 from .simulation.environments import create_world, get_environment
+from .simulation.moments import key_moments
 from .validity import Requirement, factorial_issues, preflight, require_valid, requirement_issues
 
 
@@ -116,6 +118,12 @@ class Research:
         # Persisted revisions carry their exact package and provenance. Their checks
         # must remain possible after loss of the original review/admission sidecars.
         result = preflight(design, runner=self.extensions.transition)
+        for declaration in result["adjudications"]:
+            price = self.models.registry.price(declaration["adjudicator"]["model"])
+            declaration["price_per_million_usd"] = {
+                "input": price[0] if price else None,
+                "output": price[1] if price else None,
+            }
         result["research"] = scientific_review(design)
         result["question_mapping"] = []
         result["original_question"] = None
@@ -169,11 +177,6 @@ class Research:
             if design.environment_source.definition.environment != design.environment:
                 raise ValueError("Pinned environment source must match the experiment's world")
             validate_source(design.environment_source)
-        if any(c.model not in PRICES for c in design.conditions) or any(
-            p.model is not None and p.model not in PRICES
-            for p in design.profiles + [p for c in design.conditions for p in c.profile_overrides]
-        ):
-            raise ValueError("Choose a model in the reviewed provider catalog")
         environment_definition = get_environment(design.environment)
         unsupported = sorted(set(design.measures) - set(environment_definition.measures))
         if design.analysis_plan:
@@ -451,20 +454,28 @@ class Research:
                 .group_by(RecordedEvent.run_id, RecordedEvent.kind)
             ).all()
             calls = session.execute(
-                select(ProviderCall.run_id, ProviderCall.status, ProviderCall.charged).where(
+                select(
+                    ProviderCall.run_id,
+                    ProviderCall.status,
+                    ProviderCall.charged,
+                    ProviderCall.request_payload["unpriced"].as_boolean(),
+                ).where(
                     ProviderCall.run_id.in_(ids),
                     ProviderCall.purpose.in_(["decision", "participant_operation", "adjudication"]),
                 )
             ).all()
         events = {rid: Counter() for rid in ids}
-        usage = {rid: {"requests": 0, "charged": 0, "partial": False} for rid in ids}
+        usage = {
+            rid: {"requests": 0, "charged": 0, "partial": False, "unpriced": False} for rid in ids
+        }
         for rid, kind, count in event_counts:
             events[rid][kind] = count
-        for rid, status, charged in calls:
+        for rid, status, charged, unpriced in calls:
             assert rid is not None
             usage[rid]["requests"] += 1
             usage[rid]["charged"] += charged
             usage[rid]["partial"] |= status in {"pending", "unknown"}
+            usage[rid]["unpriced"] |= bool(unpriced)
         runs = [
             {
                 "id": run.id,
@@ -523,6 +534,7 @@ class Research:
             records = session.scalars(
                 select(Study).where(Study.revision > 0).order_by(Study.created.desc())
             ).all()
+            usage = self.models.usage_by_study({study.id for study in records})
             revisions = session.scalars(
                 select(Revision)
                 .join(Study, Study.id == Revision.study_id)
@@ -556,7 +568,7 @@ class Research:
                         "status": status,
                         "run_count": len(statuses),
                         "completed_runs": counts["complete"],
-                        "cost_usd": study.charged / 1_000_000,
+                        "cost_usd": usage.get(study.id, empty_usage())["cost_usd"],
                         "budget_usd": study.ceiling / 1_000_000,
                     }
                 )
@@ -651,6 +663,7 @@ class Research:
             "runs": summaries,
             **comparison,
             "usage": self.models.usage(study_id=study_id),
+            "estimate": self.models.estimate(Design.model_validate(revision.design)),
             "preflight": check,
         }
 
@@ -662,8 +675,8 @@ class Research:
                 .join(Condition, Condition.revision_id == Revision.id)
                 .where(Condition.id == run.condition_id)
             ).scalar_one()
-            calls = session.scalars(
-                select(ProviderCall)
+            calls = session.execute(
+                select(ProviderCall, ProviderCall.request_payload["unpriced"].as_boolean())
                 .where(ProviderCall.run_id == run_id)
                 .options(defer(ProviderCall.request_payload), defer(ProviderCall.response_payload))
                 .order_by(ProviderCall.created)
@@ -689,7 +702,12 @@ class Research:
                 self.extensions.check_runtime(design.environment_source.definition.extension)
             except ValueError as error:
                 blocked = str(error)
-        return {
+        result: dict = {
+            "estimate": self.models.estimate(
+                design.model_copy(
+                    update={"conditions": [condition], "seeds": [run.seed], "repetitions": 1}
+                )
+            ),
             "summary": self.run_summary(run, design, condition, revision),
             "design": design.model_dump(),
             "parameters": condition.parameters.model_dump(),
@@ -713,9 +731,9 @@ class Research:
                     "created": c.created,
                     "input_tokens": c.input_tokens,
                     "output_tokens": c.output_tokens,
-                    "cost_usd": c.charged / 1_000_000,
+                    "cost_usd": None if unpriced else c.charged / 1_000_000,
                 }
-                for c in calls
+                for c, unpriced in calls
             ],
             "state": run.checkpoint,
             "turns": [
@@ -745,6 +763,10 @@ class Research:
             "metrics": self.metrics(run_id),
             "relationships": self.relationships(events),
         }
+        result["key_moments"] = key_moments(
+            design.environment, result["events"], result["measurements"]
+        )
+        return result
 
     def capture_exposure(self, cutoffs: dict[str, int]) -> dict:
         # Analysis capture runs off the API loop: the Engine can advance while
@@ -882,6 +904,97 @@ class Research:
                 "events": [event_dict(e) for e in events],
             }
 
+    def matched(
+        self, study_id: str, number: int, left: str, right: str, seed: int, repetition: int
+    ) -> dict:
+        with self.db.session() as session:
+            revision = session.scalars(
+                select(Revision).where(Revision.study_id == study_id, Revision.number == number)
+            ).one()
+            design = Design.model_validate(revision.design)
+            keys = {condition.key: condition for condition in design.conditions}
+            if left == right or left not in keys or right not in keys:
+                raise ValueError("Choose two different conditions from the same version")
+            if seed not in design.seeds or not 1 <= repetition <= design.repetitions:
+                raise ValueError("Seed and repetition must belong to this version")
+            runs = session.execute(
+                select(Run, Condition.key)
+                .join(Condition, Run.condition_id == Condition.id)
+                .where(
+                    Condition.revision_id == revision.id,
+                    Condition.key.in_([left, right]),
+                    Run.seed == seed,
+                    Run.repetition == repetition,
+                )
+            ).all()
+            ids = {key: run.id for run, key in runs}
+            paths: dict[str, list[dict]] = {key: [] for key in (left, right)}
+            events: dict[tuple[str, int], list[dict]] = defaultdict(list)
+            for event in session.scalars(
+                select(RecordedEvent)
+                .where(RecordedEvent.run_id.in_(ids.values()))
+                .order_by(RecordedEvent.id)
+            ):
+                events[(event.run_id, event.turn)].append(
+                    {
+                        "kind": event.kind,
+                        "actor": event.actor,
+                        "target": event.target,
+                        "visibility": event.visibility,
+                        "data": event.data,
+                    }
+                )
+            by_id = {value: key for key, value in ids.items()}
+            for turn in session.scalars(
+                select(Turn).where(Turn.run_id.in_(ids.values())).order_by(Turn.number)
+            ):
+                paths[by_id[turn.run_id]].append(
+                    {
+                        "number": turn.number,
+                        "round": turn.round,
+                        "actor": turn.actor,
+                        "observation": turn.observation,
+                        "decision": turn.decision,
+                        "checkpoint": turn.checkpoint,
+                        "consequences": events[(turn.run_id, turn.number)],
+                    }
+                )
+        initial = {
+            key: world_state(self.world(design, keys[key].parameters, seed).snapshot())
+            for key in (left, right)
+        }
+        setup = {
+            key: {
+                "parameters": keys[key].parameters.model_dump(),
+                "profiles": [
+                    profile.model_dump() for profile in design.resolve(keys[key]).profiles
+                ],
+                "model": keys[key].model,
+                "harness": keys[key].harness.model_dump(),
+            }
+            for key in (left, right)
+        }
+        return {
+            "revision": number,
+            "seed": seed,
+            "repetition": repetition,
+            "left_run_id": ids.get(left),
+            "active": any(run.status in {"running", "queued", "pausing"} for run, _ in runs),
+            "right_run_id": ids.get(right),
+            "initial_state_differences": changes(initial[left], initial[right]),
+            "setup_differences": changes(setup[left], setup[right]),
+            "first_divergence": first_divergence(paths[left], paths[right]),
+            "compared_turns": min(len(paths[left]), len(paths[right])),
+            "left_turns": len(paths[left]),
+            "right_turns": len(paths[right]),
+            "alignment": "Committed turn number; actual actor, round and logical time retained.",
+            "limits": (
+                "Descriptive path comparison, not a causal attribution. "
+                "Initial setup differences are separate. Rationale, model notes "
+                "and latency are excluded; unequal tails are not matched evidence."
+            ),
+        }
+
     def metrics(self, run_id: str) -> dict[str, float]:
         return self.metrics_many({run_id})[run_id]
 
@@ -960,8 +1073,8 @@ class Research:
                 .where(ParticipantOperation.activation_id.in_(allowed))
                 .options(defer(ParticipantOperation.request), defer(ParticipantOperation.result))
             ).all()
-            calls = session.scalars(
-                select(ProviderCall)
+            calls = session.execute(
+                select(ProviderCall, ProviderCall.request_payload["unpriced"].as_boolean())
                 .where(ProviderCall.activation_id.in_(allowed))
                 .options(defer(ProviderCall.request_payload), defer(ProviderCall.response_payload))
             ).all()
@@ -993,7 +1106,7 @@ class Research:
             elif op.kind == "reference":
                 effort["scripted_attempts"] += 1
                 effort["scripted_decisions"] += op.status == "complete"
-        for call in calls:
+        for call, unpriced in calls:
             assert call.activation_id is not None
             effort = result[allowed[call.activation_id].run_id]
             usage = effort["usage"]
@@ -1002,11 +1115,14 @@ class Research:
             usage["output_tokens"] += call.output_tokens
             charges[allowed[call.activation_id].run_id] += call.charged
             usage["partial"] |= call.status in {"pending", "unknown"}
+            if unpriced:
+                usage["cost_usd"] = None
             effort["reasoning_tokens"] += call.reasoning_tokens
             statuses = effort["request_statuses"]
             statuses[call.status] = statuses.get(call.status, 0) + 1
         for run_id, charged in charges.items():
-            result[run_id]["usage"]["cost_usd"] = charged / 1_000_000
+            if result[run_id]["usage"]["cost_usd"] is not None:
+                result[run_id]["usage"]["cost_usd"] = charged / 1_000_000
         return result
 
     def metrics_many(self, run_ids: set[str]) -> dict[str, dict[str, float]]:

@@ -21,6 +21,7 @@ import type {
   Catalog,
   Design,
   SavedEnvironment,
+  Starter,
   StudyDetail,
 } from "@/lib/types";
 
@@ -42,10 +43,30 @@ export default function Editor() {
       }
       if (!saved) return null;
       try {
-        const design = await api<Design>("/design/validate", {
-          design: saved.design,
+        const incompleteText: Partial<Pick<Design, "title" | "question">> = {};
+        const candidate = structuredClone(saved.design);
+        if (candidate && typeof candidate === "object") {
+          for (const key of ["title", "question"] as const) {
+            const value: unknown = Reflect.get(candidate, key);
+            if (typeof value === "string" && !value.trim()) {
+              incompleteText[key] = value;
+              Reflect.set(
+                candidate,
+                key,
+                key === "title" ? "Untitled experiment" : "Draft question",
+              );
+            }
+          }
+        }
+        // Validate the protocol, then restore unfinished text only in the local form.
+        const validated = await api<Design>("/design/validate", {
+          design: candidate,
         });
-        return { saved, design, error: null };
+        return {
+          saved,
+          design: { ...validated, ...incompleteText },
+          error: null,
+        };
       } catch (error) {
         if (!(error instanceof ApiError) || error.status !== 422) throw error;
         return { saved, design: null, error };
@@ -57,6 +78,12 @@ export default function Editor() {
     refetchOnWindowFocus: false,
   });
   const catalog = useApi<Catalog>("/catalog");
+  const starterId = params.get("starter");
+  const starters = useQuery({
+    queryKey: ["/starters"],
+    queryFn: () => api<Starter[]>("/starters"),
+    enabled: !!starterId,
+  });
   const setupId = params.get("setup");
   const environmentId = params.get("environment");
   const hasSourceDraft = Boolean(
@@ -131,15 +158,25 @@ export default function Editor() {
         )}
       </>
     );
-  if (catalog.error || plan.error || previousError || setupError)
+  if (
+    catalog.error ||
+    plan.error ||
+    previousError ||
+    setupError ||
+    starters.error
+  )
     return (
       <ErrorState
         error={
-          (catalog.error || plan.error || previousError || setupError) as Error
+          (catalog.error ||
+            plan.error ||
+            previousError ||
+            setupError ||
+            starters.error) as Error
         }
         onRetry={() =>
           Promise.all(
-            [catalog, plan, previous, setup]
+            [catalog, plan, previous, setup, starters]
               .filter((query) => query.error)
               .map((query) => query.refetch()),
           )
@@ -150,6 +187,7 @@ export default function Editor() {
     !catalog.data ||
     draft.isPending ||
     !draft.isFetchedAfterMount ||
+    (starterId && !starters.data) ||
     (sourceId && !previous.data && !deletedSource) ||
     ((setupId || environmentId) && !hasSourceDraft && !setup.data)
   )
@@ -177,14 +215,28 @@ export default function Editor() {
         <PlanningProgress plan={plan.data} />
       </>
     );
+  if (
+    starterId &&
+    !draft.data?.saved &&
+    !starters.data?.some((starter) => starter.id === starterId)
+  )
+    return (
+      <Alert variant="error" title="Starter not found">
+        Choose a starter from{" "}
+        <Link className="underline" to="/examples">
+          Examples
+        </Link>
+        .
+      </Alert>
+    );
   if (plan.data?.status === "failed")
     return (
       <>
         <PageHeading title="Design request stopped" />
         <Alert variant="error">{plan.data.error}</Alert>
         <Button variant="outline" asChild>
-          <Link to="/agent" state={{ question: plan.data.question }}>
-            Back to Agent
+          <Link to="/assistant" state={{ question: plan.data.question }}>
+            Back to Assistant
           </Link>
         </Button>
       </>
@@ -209,6 +261,9 @@ export default function Editor() {
         </Empty>
       </>
     );
+  const defaultDesign =
+    catalog.data.templates.find((template) => template.id === "commons")
+      ?.design ?? catalog.data.templates[0]?.design;
   const initial =
     draft.data?.design ??
     plan.data?.output?.design ??
@@ -219,9 +274,32 @@ export default function Editor() {
         }
       : previous.data?.design) ??
     setup.data?.design ??
+    starters.data?.find((starter) => starter.id === starterId)?.design ??
     catalog.data.templates.find((t) => t.id === params.get("template"))
       ?.design ??
-    catalog.data.templates[0]?.design;
+    (defaultDesign && {
+      ...defaultDesign,
+      title: "",
+      question: "",
+      hypothesis: "",
+      context: "",
+      analysis_plan: null,
+      profiles: defaultDesign.profiles.slice(0, 4),
+      conditions: defaultDesign.conditions.slice(0, 1).map((condition) => ({
+        ...condition,
+        key: "baseline",
+        name: "Baseline",
+        description: "",
+        parameters: {
+          ...condition.parameters,
+          ...(defaultDesign.environment === "commons" ? { endowment: 10 } : {}),
+        },
+      })),
+      seeds: [7],
+      repetitions: 1,
+      rounds: 5,
+      budget_usd: 1,
+    });
   if (!initial)
     return <EditorLoading revision={!!studyId} fromAgent={!!planId} />;
   return (
@@ -234,6 +312,11 @@ export default function Editor() {
       <DesignEditor
         key={draftPath}
         initial={initial}
+        initialMode={
+          planId || params.get("mode") === "advanced" || params.has("step")
+            ? "visual"
+            : "quick"
+        }
         setupId={setupId}
         setupRevision={setup.data?.revision}
         initialStep={
@@ -257,6 +340,7 @@ export default function Editor() {
             ? {
                 ...draft.data.saved,
                 mode: "json",
+                jsonDirty: true,
                 json:
                   draft.data.saved.mode === "json"
                     ? draft.data.saved.json

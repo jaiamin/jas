@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { templateDesign } from "./helpers.js";
+import { selectEditorSection, templateDesign } from "./helpers.js";
 
 for (const { theme, width } of [
   { theme: "light", width: 1440 },
@@ -26,7 +26,7 @@ for (const { theme, width } of [
     );
     await page.setViewportSize({ width, height: 900 });
     await page.goto(`/new?study=${created.id}`);
-    await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+    await selectEditorSection(page, "Conditions");
     await page
       .getByRole("button", { name: "Add condition", exact: true })
       .click();
@@ -148,9 +148,9 @@ for (const { theme, width } of [
       fullPage: true,
     });
     await page
-      .getByRole("button", { name: "Save new revision", exact: true })
+      .getByRole("button", { name: "Save new version", exact: true })
       .click();
-    await expect(page).toHaveURL(new RegExp(`/studies/${created.id}$`));
+    await expect(page).toHaveURL(new RegExp(`/experiments/${created.id}$`));
     let study = await (await request.get(`/api/studies/${created.id}`)).json();
     for (const run of study.runs) {
       expect(

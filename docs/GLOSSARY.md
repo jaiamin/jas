@@ -2,12 +2,13 @@
 
 | Term | Meaning |
 | --- | --- |
-| Experiment (study) | A research question investigated by a specified protocol. “Experiment” is the interface term; “study” is its established synonym. |
+| Experiment | A research question investigated by a specified protocol. _Avoid_: study. |
 | Protocol | The explicit population, rules, conditions, seeds and measurements defining an experiment. |
-| Design revision | An immutable definition of population, mechanics, conditions, seeds and measurements. |
+| Version | An immutable definition of an experiment's population, mechanics, conditions, seeds and metrics. _Avoid_: revision, design revision. |
 | Environment | Rules that determine observations, allowed actions and consequences. |
 | Condition | A named treatment applied to otherwise matched experiments. |
 | Agent profile | A declared identity, goals and preferences used to initialize an agent. |
+| Agent setup | The model, instructions, memory, tools and effort limits chosen for an agent. |
 | Agent | One model-controlled participant in a specific run. |
 | Run | One realization of a condition, seed and repetition, producing a behavioral trajectory. Runs are not automatically independent statistical replicates. |
 | Round | An environment-defined interaction cycle. |
@@ -50,12 +51,13 @@ provenance of its chosen mechanics.
 
 ## Research and participant roles
 
-**Researcher**:
+**Assistant**:
 The app assistant that helps formulate questions, design experiments and interpret
-their evidence. It is distinct from the participants whose behavior is studied.
+their evidence. It is distinct from the agents whose behavior is studied.
+_Avoid_: Agent, researcher (for the app helper).
 
-**Researcher harness**:
-The instructions, tools and retained research context through which the researcher
+**Assistant harness**:
+The instructions, tools and retained research context through which the assistant
 conducts its work.
 
 **Event-wait policy**:
@@ -78,6 +80,34 @@ from the installed environment definitions.
 **Extension candidate**:
 An explicit versioned executable artifact submitted for containment and behavior
 review. A successful example check does not admit it as a runnable environment.
+
+## Publishing
+
+**Publication**:
+An author's shared experiment result, with a finding, evidence and a public or
+unlisted address. A new published version preserves the previous version's identity.
+
+**Public record**:
+The self-contained evidence retained with one frozen published experiment version,
+sufficient to inspect its recorded runs and check their enforced consequences without
+model calls.
+
+**Fork**:
+A new editable experiment derived from the exact protocol of a published version,
+retaining its source lineage. Forking does not reproduce the original model behavior.
+
+**Unlisted publication**:
+A publication readable by anyone with its address but omitted from public discovery.
+It is not a private, access-controlled record.
+
+**Verified publication**:
+A publication whose recorded actions independently reproduce its recorded
+consequences under the retained rules. Verification does not predict a model rerun.
+
+**Trajectory divergence**:
+The first difference in matched runs' acting agent or schedule, accepted action or
+message, or enforced consequence. Initial setup differences are reported separately;
+different explanations or latency alone do not establish a behavioral difference.
 
 ## Evidence and validity
 

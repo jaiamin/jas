@@ -4,11 +4,10 @@ These sources inform experiment design. They do not establish that model partici
 reproduce human behavior. [Evaluation tooling](../benchmarks/README.md) checks application
 workflows and mechanics; it does not validate human predictions.
 
-See [experiment validity](EXPERIMENT_VALIDITY.md) for operational checks, the
-[accepted specification](RESEARCH_HARNESS_SPEC.md) for requirements and open live
-evaluation gates, and the [product review](research/FINAL_PRODUCT_REVIEW.md) for
-observed implementation results. Superseded surveys and task reports are
-consolidated in the [historical summary](research/RESEARCH_HARNESS_COMPACT_REPORT.md).
+See [experiment validity](EXPERIMENT_VALIDITY.md) for operational checks and
+[benchmark instructions](../benchmarks/README.md) for evaluation methods.
+Historical development reports are retained in Git history, separately from
+current implementation documentation.
 
 | Primary source | What it supports | Product consequence |
 | --- | --- | --- |

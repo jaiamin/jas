@@ -10,7 +10,9 @@ from pydantic import (
     model_validator,
 )
 
-ModelId = Annotated[str, Field(pattern=r"^(openai|anthropic):[a-zA-Z0-9._/-]+$")]
+ModelId = Annotated[
+    str, Field(pattern=r"^[a-z][a-z0-9_-]{0,31}:[^\s\x00-\x1f\x7f]+$", max_length=240)
+]
 EnvironmentId = Literal[
     "commons",
     "trust_exchange",
@@ -249,7 +251,7 @@ class ArtifactJudgment(Strict):
 
 class Adjudicator(Strict):
     version: Literal["1.0.0"]
-    model: Literal["openai:gpt-6.1-sol"]
+    model: ModelId
     openai_reasoning_effort: Literal["low", "medium", "high"]
     response_tokens: int = Field(ge=512, le=2048)
 
@@ -520,7 +522,16 @@ class ScriptedHarness(Strict):
 
     kind: Literal["scripted"] = "scripted"
     version: Literal["1.0.0"] = "1.0.0"
-    policy: Literal["commons_keep_v1", "commons_half_v1", "private_signal_v1", "local_value_v1"]
+    policy: Literal[
+        "commons_keep_v1",
+        "commons_half_v1",
+        "private_signal_v1",
+        "local_value_v1",
+        "trust_half_v1",
+        "resource_half_v1",
+        "artifact_copy_v1",
+        "workflow_ordered_v1",
+    ]
     max_requests: Literal[0] = 0
     max_tool_operations: Literal[0] = 0
     tools: list[ParticipantTool] = Field(default_factory=list, max_length=0)
@@ -658,7 +669,8 @@ class DesignSpec(Strict):
     seeds: list[Annotated[int, Field(ge=0, le=2**32 - 1)]] = Field(min_length=1, max_length=20)
     repetitions: int = Field(default=1, ge=1, le=10)
     rounds: int = Field(default=12, ge=1, le=100)
-    budget_usd: float = Field(default=3.0, ge=0.05, le=25)
+    budget_usd: float = Field(default=3.0, ge=0, le=25)
+    token_budget: int | None = Field(default=None, ge=1, le=10**12)
     openai_reasoning_effort: Literal["low", "medium", "high"] | None = None
     response_tokens: int = Field(default=4096, ge=512, le=8192)
     limitations: list[str] = Field(default_factory=list, max_length=12)
@@ -949,6 +961,10 @@ class Design(DesignSpec):
                 required_world = {
                     "private_signal_v1": "information",
                     "local_value_v1": "distributed_coordination",
+                    "trust_half_v1": "trust_exchange",
+                    "resource_half_v1": "renewable_resource",
+                    "artifact_copy_v1": "artifact_workspace",
+                    "workflow_ordered_v1": "institutional_workflow",
                 }.get(condition.harness.policy, "commons")
                 if self.environment != required_world:
                     raise ValueError(

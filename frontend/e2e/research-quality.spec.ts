@@ -4,15 +4,15 @@ import type {
   ResearchFindings,
   StudyDetail,
 } from "../src/lib/types.js";
-import { templateDesign } from "./helpers.js";
+import { selectEditorSection, templateDesign } from "./helpers.js";
 
 test("analysis plan and actual value scenarios survive authoring, save and reload", async ({
   page,
   request,
 }) => {
-  await page.goto("/new?template=distributed_coordination");
+  await page.goto("/new?template=distributed_coordination&mode=advanced");
   await page
-    .getByRole("button", { name: "Hypothesis and analysis plan", exact: true })
+    .getByRole("button", { name: "Analysis plan", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Declare analysis plan", exact: true })
@@ -22,7 +22,7 @@ test("analysis plan and actual value scenarios survive authoring, save and reloa
     .fill("Only these explicit value cases and declared agents.");
   await page.getByLabel("Outcome 1 identifier").fill("actual_decisions");
   await page.getByLabel("Outcome 1 identifier").blur();
-  await page.getByRole("tab", { name: "Run plan", exact: true }).click();
+  await selectEditorSection(page, "Run plan");
   await page.getByLabel("Matched seeds", { exact: true }).fill("17, 83");
   await page.getByLabel("Matched seeds", { exact: true }).blur();
   await page
@@ -32,7 +32,7 @@ test("analysis plan and actual value scenarios survive authoring, save and reloa
     .getByRole("button", { name: "Create rotated scenarios", exact: true })
     .click();
   await page.reload();
-  await page.getByRole("tab", { name: "Run plan", exact: true }).click();
+  await selectEditorSection(page, "Run plan");
   await page
     .getByRole("button", { name: "Matched value scenarios", exact: true })
     .click();
@@ -43,7 +43,7 @@ test("analysis plan and actual value scenarios survive authoring, save and reloa
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/studies\//);
+  await expect(page).toHaveURL(/\/experiments\//);
   const sid = page.url().split("/").at(-1);
   const study: StudyDetail = await (
     await request.get(`/api/studies/${sid}`)
@@ -54,6 +54,9 @@ test("analysis plan and actual value scenarios survive authoring, save and reloa
     study.design.scenarios?.[1].values,
   );
   expect(study.usage.requests).toBe(0);
+  await page
+    .getByRole("button", { name: "Checks & detailed findings", exact: true })
+    .click();
   await expect(
     page.getByRole("region", { name: "Research findings" }),
   ).toContainText("0 of");
@@ -117,7 +120,10 @@ for (const { theme, width } of [
       theme,
     );
     await page.setViewportSize({ width, height: 900 });
-    await page.goto(`/studies/${created.id}`);
+    await page.goto(`/experiments/${created.id}`);
+    await page
+      .getByRole("button", { name: "Checks & detailed findings", exact: true })
+      .click();
     await expect(
       page.getByRole("region", { name: "Research findings" }),
     ).toContainText("0 of 1");
@@ -180,6 +186,9 @@ for (const { theme, width } of [
       }),
     );
     await page.reload();
+    await page
+      .getByRole("button", { name: "Checks & detailed findings", exact: true })
+      .click();
     await expect(
       page.getByRole("button", { name: "Retry findings", exact: true }),
     ).toBeVisible({ timeout: 15000 });

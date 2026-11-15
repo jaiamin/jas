@@ -1,5 +1,13 @@
 import { expect, test } from "@playwright/test";
-import { templateDesign } from "./helpers.js";
+import {
+  selectEditorSection,
+  setDeveloper,
+  templateDesign,
+} from "./helpers.js";
+
+test.beforeEach(async ({ request }) => {
+  await setDeveloper(request, true);
+});
 
 test("a corrupt draft leaves valid drafts available with targeted recovery", async ({
   page,
@@ -72,7 +80,7 @@ for (const unreadable of [true, false]) {
         throw new Error("Storage temporarily unavailable");
       };
     }, unreadable);
-    await page.goto("/new");
+    await page.goto("/new?mode=advanced");
     const discard = page.getByRole("button", {
       name: unreadable ? "Discard unreadable draft" : "Discard draft",
       exact: true,
@@ -113,7 +121,7 @@ test("agent context errors retain loaded experiment choices and retry locally", 
         : { json: [] },
     ),
   );
-  await page.goto("/agent");
+  await page.goto("/assistant");
   await expect(page.getByRole("alert")).toContainText(
     "Run choices unavailable",
   );
@@ -130,14 +138,18 @@ test("agent context errors retain loaded experiment choices and retry locally", 
 test("visiting Agent preserves the editor's single recoverable draft", async ({
   page,
 }) => {
-  await page.goto("/new?template=commons");
+  await page.goto("/new?template=commons&mode=advanced");
+  await selectEditorSection(page, "Question");
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Preserved while asking AI");
   await page
-    .getByRole("link", { name: "Generate with Agent", exact: true })
+    .getByRole("button", { name: "Experiment options", exact: true })
     .click();
-  await expect(page).toHaveURL(/agent\?new=/);
+  await page
+    .getByRole("menuitem", { name: "Design with Assistant", exact: true })
+    .click();
+  await expect(page).toHaveURL(/assistant\?new=/);
   await page.goBack();
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
     "Preserved while asking AI",
@@ -152,8 +164,8 @@ test("visiting Agent preserves the editor's single recoverable draft", async ({
 test("pending validation locks the submitted specification until its response", async ({
   page,
 }) => {
-  await page.goto("/new?template=commons");
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await page.goto("/new?template=commons&mode=advanced");
+  await selectEditorSection(page, "Specification");
   const text = page.getByLabel("Complete JSON specification");
   const design = JSON.parse(await text.inputValue());
   design.title = "Validated snapshot";
@@ -166,10 +178,14 @@ test("pending validation locks the submitted specification until its response", 
     await pending;
     await route.fulfill({ json: design });
   });
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await selectEditorSection(page, "Question");
   await expect(text).toBeDisabled();
   await expect(
-    page.getByRole("tab", { name: "Run plan", exact: true }),
+    page.getByRole("button", {
+      name: "Run plan",
+      exact: true,
+      includeHidden: true,
+    }),
   ).toBeDisabled();
   await expect(
     page.getByRole("button", { name: "Create experiment", exact: true }),
@@ -183,7 +199,8 @@ test("pending validation locks the submitted specification until its response", 
 test("a delayed save locks editing and a failed save keeps the draft editable", async ({
   page,
 }) => {
-  await page.goto("/new?template=commons");
+  await page.goto("/new?template=commons&mode=advanced");
+  await selectEditorSection(page, "Question");
   const name = page.getByLabel("Experiment name", { exact: true });
   await name.fill("Save recovery snapshot");
   let release: () => void = () => {};
@@ -213,7 +230,11 @@ test("a delayed save locks editing and a failed save keeps the draft editable", 
     }),
   ).toBeDisabled();
   await expect(
-    page.getByRole("tab", { name: "Specification", exact: true }),
+    page.getByRole("button", {
+      name: "Specification",
+      exact: true,
+      includeHidden: true,
+    }),
   ).toBeDisabled();
   await expect(
     page.getByRole("button", { name: "Check experiment", exact: true }),
@@ -224,14 +245,14 @@ test("a delayed save locks editing and a failed save keeps the draft editable", 
   );
   await expect(name).toBeEnabled();
   await expect(name).toHaveValue("Save recovery snapshot");
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await selectEditorSection(page, "Question");
   await name.fill("Recovered after failed save");
   await page.reload();
   await expect(name).toHaveValue("Recovered after failed save");
   await page.unroute("**/api/studies");
   await page.getByRole("tab", { name: "Review", exact: true }).click();
   await save.click();
-  await expect(page).toHaveURL(/\/studies\//);
+  await expect(page).toHaveURL(/\/experiments\//);
   await expect(
     page.getByRole("heading", {
       name: "Recovered after failed save",
@@ -254,8 +275,8 @@ test("chat history failures have a local retry", async ({ page }) => {
         : { json: [] },
     ),
   );
-  await page.goto("/agent");
-  await page.getByRole("button", { name: "Chat history", exact: true }).click();
+  await page.goto("/assistant");
+  await page.getByRole("button", { name: /chat history/i }).click();
   const history = page.getByRole("dialog", { name: "Recent chats" });
   await expect(history.getByRole("alert")).toContainText(
     "Could not load chats",
@@ -296,7 +317,7 @@ test("transient draft validation failures retry without classifying the draft as
         })
       : route.continue(),
   );
-  await page.goto("/new");
+  await page.goto("/new?mode=advanced");
   await expect(page.getByRole("alert")).toContainText(
     "Validation temporarily unavailable",
   );

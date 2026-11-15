@@ -1,5 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
+import { selectEditorSection } from "./helpers.js";
 
 const question =
   "Design an exploratory one-agent study of how a records assistant investigates conflicting authorized folios, revises a persistent report, and decides when to submit or stop. Keep unsuccessful and unverified work; do not invent a primary scalar endpoint.";
@@ -28,13 +29,13 @@ for (const [theme, width] of [
         json: { ...settings, providers: { openai: true, anthropic: false } },
       });
     });
-    await page.goto("/agent");
+    await page.goto("/assistant");
     const posted = page.waitForResponse(
       (response) =>
         response.url().endsWith("/api/chats") &&
         response.request().method() === "POST",
     );
-    await page.getByLabel("Message Agent", { exact: true }).fill(question);
+    await page.getByLabel("Message Assistant", { exact: true }).fill(question);
     await page
       .getByRole("button", { name: "Send message", exact: true })
       .click();
@@ -99,16 +100,16 @@ for (const [theme, width] of [
     await expect(
       page.getByText("Exploratory design", { exact: true }),
     ).toBeVisible();
-    await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+    await selectEditorSection(page, "Conditions");
     await page.getByLabel("Maximum artifact writes", { exact: true }).fill("3");
     await page.reload();
-    await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+    await selectEditorSection(page, "Conditions");
     await expect(
       page.getByLabel("Maximum artifact writes", { exact: true }),
     ).toHaveValue("3");
-    await page.getByRole("tab", { name: "Question", exact: true }).click();
+    await selectEditorSection(page, "Question");
     await expect(
-      page.getByLabel("Research question", { exact: true }),
+      page.getByRole("textbox", { name: "Question", exact: true }),
     ).toHaveValue(question);
     await page.getByRole("tab", { name: "Review", exact: true }).click();
     await page
@@ -126,7 +127,7 @@ for (const [theme, width] of [
     await page
       .getByRole("button", { name: "Create experiment", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/studies\//);
+    await expect(page).toHaveURL(/\/experiments\//);
     const sid = new URL(page.url()).pathname.split("/").at(-1);
     const exported = await (
       await request.get(`/api/studies/${sid}/export`)
@@ -178,9 +179,9 @@ test("review clarification is visible and continues in the same chat", async ({
       json: { ...settings, providers: { openai: true, anthropic: false } },
     });
   });
-  await page.goto("/agent");
+  await page.goto("/assistant");
   await page
-    .getByLabel("Message Agent", { exact: true })
+    .getByLabel("Message Assistant", { exact: true })
     .fill(`${question} [review-budget-choice]`);
   const posted = page.waitForResponse(
     (response) =>
@@ -207,7 +208,7 @@ test("review clarification is visible and continues in the same chat", async ({
     }),
   ).toBeVisible();
   await page
-    .getByLabel("Message Agent", { exact: true })
+    .getByLabel("Message Assistant", { exact: true })
     .fill("Yes, use the shared experiment-wide ceiling.");
   await page.getByRole("button", { name: "Send message", exact: true }).click();
   await expect(

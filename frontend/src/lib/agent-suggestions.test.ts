@@ -90,7 +90,7 @@ test("partial failed runs get bounded evidence prompts with their exact identity
   const suggestions = agentSuggestions({ context: "run:run", run, design });
   expect(suggestions[0].title).toBe("Review partial record");
   expect(suggestions[0].prompt).toContain(
-    "revision 1, condition “Historical control”, seed 7, repetition 3, recorded through turn 2",
+    "version 1, condition “Historical control”, seed 7, repetition 3, recorded through turn 2",
   );
   expect(suggestions).toHaveLength(4);
   expect(suggestions[1].prompt).toContain("single run cannot establish");

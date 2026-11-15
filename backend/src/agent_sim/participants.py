@@ -285,7 +285,7 @@ class Activation:
                         "versions": {
                             name: version(name)
                             for name in [
-                                "agent-simulation-environment",
+                                "jaslab",
                                 "pydantic-ai-slim",
                                 "pydantic",
                                 "openai",

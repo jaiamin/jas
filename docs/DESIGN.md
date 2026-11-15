@@ -24,11 +24,12 @@ colors:
   dark-accent-foreground: "oklch(0.882 0.059 254.128)"
   dark-border: "oklch(1 0 0 / 16%)"
   dark-destructive: "oklch(0.704 0.191 22.216)"
-  chart-1: "oklch(0.87 0 0)"
-  chart-2: "oklch(0.556 0 0)"
-  chart-3: "oklch(0.439 0 0)"
-  chart-4: "oklch(0.371 0 0)"
-  chart-5: "oklch(0.269 0 0)"
+  chart-1: "#0072b2"
+  chart-2: "#d55e00"
+  chart-3: "#009e73"
+  chart-4: "#cc79a7"
+  chart-5: "#e69f00"
+  chart-6: "#56b4e9"
 typography:
   headline:
     fontFamily: '"Geist Variable", sans-serif'
@@ -101,8 +102,19 @@ Send and New experiment use the primary Button variant. Primary actions use a
 shared blue primary token with a light foreground in both themes; secondary surfaces, muted text,
 borders, focus and destructive states use their corresponding semantic tokens.
 Keep foreground/background pairs together when composing components. Link variants and inline link hover use the shared accent-foreground token so small blue text remains readable on both themes; filled primary buttons keep their primary foreground/background pair.
+All underlines use a shared 4px offset and 1px thickness from `index.css`.
+Use `text-link` for inline prose, evidence references and footer links; record names
+and breadcrumbs may underline on hover. Navigation, cards and button actions retain
+their existing treatment. Keep trailing icons outside the underlined text.
+Accordion/disclosure controls and dropdown items do not underline on hover.
+Keep padding inside hover surfaces: disclosure buttons retain their standard
+horizontal inset; menu actions use 10px, and select options use 8px left padding
+with space reserved for the trailing selection mark.
 Shared cursor rules give enabled actions, links, labels and portalled menu/select
 items a pointer. Text entry keeps its text cursor; disabled controls are excluded.
+Option dropdowns open from the trigger's left edge. Their values are left-aligned
+with 10px horizontal padding; long values truncate while preserving caret spacing.
+Searchable record filters share the same trigger padding and alignment.
 Focus decoration follows input modality throughout the app, including portals:
 pointer clicks do not add rings; keyboard navigation retains the preset focus
 indicators. Typing into a pointer-focused text field does not turn the ring on.
@@ -116,11 +128,10 @@ InputGroup, Field and CodeBlock use the latter for their enclosing surface.
 Keep these small variant substitutions when regenerating those primitives from
 a preset; validation and selected-state styling remain independent of focus.
 
-Charts use the five chart tokens. Keep legend text in the foreground color so it
-remains readable independently of each series color. Labels and distinct line
-patterns identify series; status text and icons supplement color in tables.
-Dark chart tokens use neutral lightness steps 0.87, 0.77, 0.69, 0.61 and 0.53
-so the darkest series remains visible against raised chart surfaces.
+Charts use six colorblind-safe condition tokens. Keep labels and distinct line
+patterns alongside color, and legends in foreground text. Dark mode uses the
+same condition identity with sufficient contrast against graphite surfaces.
+Agent identities use their separate deterministic palette and glyphs.
 
 ## Typography
 
@@ -133,26 +144,61 @@ belong to the preset and its stylesheet, except the dedicated brand wordmark.
 ## Layout
 
 Selected sidebar text retains the same size and weight as unselected text.
-The stock Sidebar starts with an untitled Home/Agent group above Workspace
-(Experiments, Runs, Environments). The compact brand link returns to Home. Its
-footer has a direct Settings link beneath the full-width divider, followed by the
-local workspace menu with Settings and appearance. Its Avatar is 28px with the same subtle blue background/foreground token pair as
-sidebar selection in both themes, centered
-within the collapsed rail with the label and menu chevron hidden.
-A stock SidebarSeparator with 16px expanded and 12px collapsed edge insets aligns with the navigation icons
-between primary and workspace groups. The separator above the local-workspace
-footer spans the full sidebar width. The navigation section separator stays
-visible at the same vertical position in the collapsed rail, with equal side
-insets. The full-width footer divider and continuous divider under the top bars
-remain. Footer button
-heights stay 32px for Settings and 48px for the workspace menu in both states, so
-their vertical positions and padding do not change when labels disappear. Navigation glyphs are 15px; the sidebar toggle glyph is 14px in its unchanged 28px target. Selected sidebar icons fill,
-with the requested exceptions: Agent keeps the stock Lucide Target outlined,
-House fills only
-its door, Layers2 fills only its upper layer, Settings fills only its center circle,
-and FlaskConical fills only its liquid. The flask fill stays at the icon boundary;
+The stock Sidebar starts with Home and Gallery above Workspace
+(Experiments, Runs, Environments). Gallery contains Browse and My published tabs;
+there is one publishing destination and no Community navigation group. Gallery
+shares the Environments heading/tabs, compact world/model/tag filters and restrained
+finding-first cards. My published owns sign-in, device management and card-level
+unpublish confirmation. There is no connection wizard or global Publish action;
+sharing starts on the finished experiment. Unavailable/empty/signed-out states are
+distinct, with no raw connection diagnostic in the main layout.
+Learn follows Workspace with Docs (BookText), JAS MCP (Cable) and Examples (Blocks).
+Keep these three navigation glyphs distinct and outlined. External documentation
+links use ArrowUpRight and open a new tab; collapsed navigation shows only the
+leading icon with its existing tooltip. Examples groups eight scripted recordings:
+three under Work & evidence and five under Cooperation & decisions. Match the
+Environments grid: two equal columns at 42rem of available content, one below,
+12px grid gaps and 32px between groups. Use stock Cards with 16px insets, a 44px
+bare environment mark, the protocol title and its short question. Keep Watch as
+an outline button and Use example as a quieter ghost action. Omit per-card demo
+labels, inset protocol previews, parameter lists, search and filters. Detailed conditions, seeds, rounds and participants remain in the recording
+and editor. Skeletons match the compact cards. Watch and reuse stay keyless and
+never start a model run.
+Examples shares RecordListTitle with Environments: a 36px muted rounded icon tile,
+an 18px glyph and 20px/22px title with a 12px gap. Use Blocks and omit the subtitle.
+A stock full-width Separator sits below the heading with 24px spacing on each side.
+The compact brand link returns to Home. The footer contains a quiet usage line,
+a thin budget meter and one direct Settings link. There is no avatar, chooser,
+subtitle or appearance dropdown. Light/dark mode lives only in the top-right header.
+Stock SidebarSeparators separate primary navigation, Workspace and Learn. Omit
+dividers below the JAS brand row and above usage. Align the usage link's outer edges
+with the selected navigation item's background, using 8px sidebar insets. Its
+rounded border and soft muted surface contain 12px top, 10px side and 14px bottom padding,
+a clearer medium-weight label, a 10px row-to-meter gap and a stronger muted hover
+state. Keep the 5px meter accurate even when usage is tiny; retain keyboard focus.
+Settings keeps its 32px height in the
+collapsed rail, while the usage line is hidden to retain a clean icon column.
+Usage is hidden entirely when collapsed, including its loading and unavailable
+states; the footer keeps one direct Settings link. The expanded meter is 5px thick,
+retains the detailed tooltip and Settings link, and uses the token ceiling when
+dollar cost is unknown. An uncapped meter has no percentage value. The usage row
+keeps its expanded width and nonwrapping text while the surrounding sidebar
+animates, so its labels never squeeze or reflow during expansion.
+Sidebar dollar usage uses up to three decimals, with `<$0.001` for smaller nonzero
+amounts and `$0.00` for zero. The visible dollar ceiling uses two decimals; tooltip
+amounts retain up to six decimals. Keep the tooltip to precise totals and the
+reservation note; explain unknown cost and retain known priced usage when needed.
+Token counts and budget calculations stay unchanged.
+The expanded navigation is 240px wide; the collapsed rail is 52px wide.
+Navigation glyphs are 15px; header controls use 16px glyphs in 28px targets.
+Every sidebar icon stays outlined when selected. The text color and background
+highlight identify the active page. Page-heading icons also remain outlined within their muted icon backgrounds;
 conversation rows are text-only. Do not invent accounts or organizations.
 Navigation becomes a Sheet on mobile.
+
+Unselected navigation links hover with the neutral muted surface and sidebar text
+color; only the selected link keeps the blue accent surface, including on hover.
+This applies to expanded/collapsed navigation and Settings.
 
 The global controls and desktop brand headers share `--workspace-header-height` (52px),
 with one continuous bottom divider. The global bar stays at the viewport top
@@ -161,38 +207,77 @@ scrolls; page content owns vertical scrolling with contained overscroll, stable 
 gutters and 16px scroll-target padding. Path navigation resets the page scroller.
 The editor’s section tabs stick directly below the global header. Agent retains
 its existing independent scrollers. The global bar has no title or breadcrumb;
-theme toggle precedes the GitHub brand link at right. These glyphs use the stock 16px size;
+an outlined Docs link precedes Assistant, the theme toggle and GitHub at right.
+Docs opens the public Mintlify site in a new tab without an icon, matching the
+Assistant button's height, text size and symmetric padding. It stays available on
+Home and the focused Assistant page.
+The Assistant button uses equal 10px horizontal padding and shares the controls’
+vertical center and 28px height. Hide it on Home and the focused Assistant page. These glyphs use the stock 16px size;
 the outer icon edge matches the navigation glyphs’ 16px edge inset. Settings uses
 the stock gear glyph in both navigation and the local workspace menu. Desktop collapse sits on the
 right of the brand row and overlays the stationary logo on hover when collapsed.
+Both states use a 28px control with a 16px glyph; the expanded control ends 6px
+before the sidebar divider. PanelLeftClose points inward while expanded;
+PanelLeftOpen points outward while collapsed, including the mobile menu state.
 Only visible keyboard focus also reveals the control; pointer focus must not keep
 it visible after hover ends. Hover is tracked on the control rather than the
 shrinking header; opacity changes immediately and the logo is hidden beneath the
 overlay, so neither a lingering button nor the logo bleeds through. Mobile retains an Open menu button and close/focus
 restoration. The static browser title is always `JAS`, including initial load and record views;
-there is no route/catalog title derivation. Contextual Ask
-Agent actions live with experiment/run actions, and runs link to their experiment.
+there is no route/catalog title derivation. Runs link to their experiment.
+The global Assistant button replaces the per-record modal actions. Its pane lives
+beside the global header, extending to the top of the main workspace: 440px wide
+alongside content from 1280px upward, filling the available main area on smaller
+screens. Its 52px header aligns with the global header. Use the background token,
+one left divider and no resize handle. Opening and closing match the left
+navigation: a 200ms linear width transition, disabled for reduced motion. The
+inner pane retains its final width during motion; closed content is inert and
+hidden. On narrow screens the covered page is inert as well.
+The compact header has a left history dropdown with a darker muted history icon,
+the current chat name (or New chat), and a caret. Opening stays manual after
+navigation, browser Back and reload; remember conversation/draft identity without
+persisting or restoring the pane’s open state. At right, use the four-corner
+Maximize link for Open in Assistant, then Trash2 for Delete chat, SquarePen for New
+chat and PanelRightClose for Close Assistant. Each uses a 16px glyph in a 28px
+target, with 2px gaps.
+Escape closes the pane unless a nested popover handles it; closing restores focus
+to the global toggle without scrolling. No redundant Assistant label.
+Only an individual experiment/run registers automatic context, using the actual
+displayed revision and evidence cutoff. The shared Add context picker remains available on every Assistant view,
+including lists, Gallery and Settings. Automatically select only the displayed
+experiment/run; clearing returns to Add context. Allow manual selection anywhere,
+without changing page filters. Remember the selection for that record in this tab. History selection stays inside
+the pane without changing page filters. Keep a separate chat/draft identity per
+record and revision, plus one general slot; late settlement never replaces a newer
+selection. The focused view shares the same draft/chat and reconnects pending
+acceptance without resubmission.
 Agent viewport height uses the same token. Ordinary pages use a centered 1280px maximum
 width and 16px, 24px or 32px responsive gutters. Tables scroll within their own
 containers. The Agent page fills the remaining viewport, with an independently
 scrolling transcript and a composer below it; both use a 768px maximum width.
-The shared Home/Agent textarea starts at three rows with 15px text and 23px
-line height (88px including padding), grows to 192px, then scrolls internally
-while keeping its action row visible.
+The shared Home/Agent textarea uses 15px text and 23px line height, grows to
+192px, then scrolls internally while keeping its action row visible. Home and the
+focused new-chat page start with three rows (88px including padding); the pane and
+saved conversations start with two rows.
+Home and Assistant omit call-count and cost-estimate captions below their
+composers; provider and draft errors remain visible. Home retains its short
+composer guidance and manual-editor link. Usage and explicit run confirmations
+retain budget details and spending safeguards.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
-background surface. The new-chat heading has a decorative primary-colored Target
-at left (30px, 34px on larger screens), with an 8px gap and centered alignment.
-Two rounded blue arcs orbit a steady center over faint concentric tracks. Its
-primary blue mixes 15% foreground for readable detail in either theme. The welcome
-plays one 2.2-second introduction: the arcs align midway, then fade into the regular
-Target. Working replies use continuous clockwise orbits of 5.2 and 7.8 seconds;
-they indicate activity, never measured progress. Native browser animations pause
-offscreen/in hidden tabs and resume at the same position. Reduced motion keeps the
-regular static outline and skips the decorative introduction. AgentTarget owns the
-shared motion and cleanup, with no per-frame React updates or animation scheduler.
-Its welcome instance is decorative and never delays the composer. At the upper right, a 32px stock outline history button
-with the standard rounded corners sits beside the stock 32px New button when a
-saved conversation is selected. The base new-chat view shows only History. History uses a
+background surface. The focused new-chat heading uses the static primary Assistant
+Target before “What can we explore?”, 30px/34px with a 6px gap. The pane has an
+18px welcome heading without an icon; its text shares the suggestions' leading
+edge and composer text inset. Keep 40px below the pane's suggestions before the
+composer, without adding outer composer padding.
+Reply Targets also stay static in working and completed states. Activity uses
+recorded text and a stock loading indicator. Sidebar transitions, explicit run
+playback and the Home sky respect reduced motion. History stays available in every
+chat. The 28px ghost New chat and Delete chat controls appear only for saved chats.
+Delete precedes New chat. The full-screen toolbar uses the global top bar's 10px
+horizontal insets; History's visible icon and the trailing action glyph share its
+16px icon insets, including on phones. Full-screen action gaps match the global
+top bar's 4px spacing: Trash aligns under the theme toggle, New chat under GitHub.
+New chats keep the history trigger without redundant creation/deletion actions. History uses a
 stock Popover and ScrollArea in every viewport, with local skeleton rows, empty
 state and retry; it fetches on open and keeps cached rows during refresh. Static
 new-chat content never waits for record queries. Context-option skeletons stay in
@@ -200,7 +285,9 @@ the selector; scoped suggestion placeholders match question buttons. A saved cha
 uses transcript-shaped skeletons while its initial turns load, leaving History
 and New available. Downloading the lazy Agent module uses only a small spinner,
 not a page of fake database content. Long
-labels truncate inside the popup beside a stock chat-bubble icon and relative
+labels cap at 40 characters with an ellipsis and truncate further to fit the popup,
+with full accessible names but no full-title hover popup. They sit beside a stock
+chat-bubble icon and relative
 last-message time (`now`, `5m`, `2h`, `3d`, then a calendar date). Hovering exposes
 the full local timestamp and the accessible label retains the expanded recency.
 The popup uses a small muted heading, full-width separator and compact stock
@@ -210,28 +297,38 @@ spinners precede the right-aligned time rather than displacing it. Rows and thei
 skeletons are 26px tall with centered content; the hover surface extends 6px past
 the content on each side. The heading and divider remain outside the scrolling
 list, which caps at 20rem or the available popup height. There is no conversation rail or separate mobile
-history Sheet. New chats group the main heading, plain composer and suggestions
-in that order, without a subtitle, slightly above center. The heading and composer
-occupy the middle grid row, with remaining space split 1:2 above/below them.
-Suggestions sit in the lower row so changing context cannot move or resize the
-composer. Keep “What can we explore?” unchanged across selections. Empty space shrinks to zero on short screens;
-content remains scrollable without translated or clipped headings. The plain Agent composer omits Home’s gray
+history Sheet. History rows only select conversations; the current chat's trash
+action lives beside the other toolbar buttons. Disable deletion while its record
+loads or has pending turns. Deletion requires confirmation, retains visible
+busy/error states and supports retry. Cancel returns focus to Delete; success
+returns focus to History after the action disappears.
+A successful delete clears matching pane identities and starts a new chat if the
+deleted conversation was active. Usage is kept; proposals used by saved revisions
+are protected by the backend. The full-screen new-chat view restores the centered
+starting layout: welcome heading, plain composer, then suggestions. Keep the
+heading/composer group slightly above the midpoint and suggestion height out of
+its centering calculation, so context loading and drafting do not move the input.
+The side pane keeps its welcome and suggestions above the bottom composer.
+Keep “What can we explore?” unchanged across selections. The pane uses a smaller
+left-aligned heading and four stacked suggestion actions without borders or
+background fills. Their leading icons align with the composer text inset. Empty space shrinks on
+short screens; empty content remains scrollable without clipping. The plain Agent composer omits Home’s gray
 Card surround and manual-editor footer. Saved chats retain the streaming
 MessageScroller and bottom composer, with two initial textarea rows (Home/new chat keep three).
-Saved-chat headers show the first question capped at 80 characters including an explicit
-ellipsis; the full question stays in the hover title. The header stays centered on
-desktop, truncates safely on mobile, and never renames during streaming or follow-up
-turns. History keeps its compact list title. No extra title-generation request is made. The browser
-title remains JAS. Loading the title uses a local skeleton only.
+The history trigger shows the first question for a saved conversation and
+caps at 40 characters and truncates within the available width; its accessible
+name retains the title without a full-title hover popup. New conversations
+show New chat; its accessible name also identifies chat history. Keep the caret
+muted and history glyph slightly darker. No title-generation request is made. The
+browser title remains JAS.
 
-Assistant replies use a blue Target with no repeated Agent label or response cost.
+Assistant replies use a blue Target without repeating the Agent label. The quiet
+receipt remains in the message footer.
 Reply Markdown fills the shared transcript column in both streaming and completed
 states; do not add a second prose-width cap or shrink-to-fit bubble inside it.
 The Target and text-only activity dropdown share one aligned header row. The expanded
 activity guide begins under the Target’s center, with step text aligned to its label. Activity
-stages and details have no decorative icons or completion checkmarks. While pending,
-the Target uses the shared orbital animation; completion or failure
-settles it to the regular blue Lucide Target.
+stages and details have no decorative icons or completion checkmarks. The blue Lucide Target remains static while pending, complete or failed.
 One stock TraceCollapsible presents the current public stage and recorded scope,
 research sources, examined evidence and mechanical checks. It starts closed and opens only on request.
 Live activity opened by the user stays open across completion
@@ -247,11 +344,13 @@ stages after reconnect/reload. Never expose private provider reasoning. Public d
 rationale is labeled “Draft notes (before checks)” and remains separate from the answer. A failed request marks its last observed stage as stopped. Markdown renderers
 remain stable between partial and validated output. Fenced code uses stock CodeBlock
 with per-block copy and on-demand Shiki languages; replies have a stock copy control
-below them, with its glyph aligned to the prose and a compact gap; reserve footer
+below them, with its glyph aligned to the prose, an accessible Copy response label
+and no hover tooltip. Use a 2px gap before the cost control; reserve footer
 height during streaming. A 4px assistant-item inset keeps the copy hover surface inside
 the scroller item’s paint boundary. Leave at least 24px between the final reply footer
-and composer at the scroll end. Keep transcript top padding compact. Its 12px stock fade
-overlaps the composer top by 12px, avoiding a faded gap above the input. Preserve citations,
+and composer at the scroll end. Keep transcript top padding compact. Chat composers
+have no outer top padding or margin; the transcript meets the input surface directly,
+without a fade or mask. Keep text padding inside the input. Preserve citations,
 limitations and captured evidence cutoffs.
 Measure the newest reply eagerly so the initial question anchor uses its real
 height. At the end, follow viewport changes such as provider notices and composer
@@ -336,7 +435,7 @@ behavior. Run rows show their experiment plus condition, seed and repetition;
 revision appears when greater than one. IDs stay in search/accessible identity
 and hover titles. Loading skeletons, no matches and no saved context stay local.
 Explicitly scoped links and resumed chats preserve the selected evidence identity.
-Agent offers four compact stock outline Button shortcuts beneath the composer:
+Agent offers four compact stock outline Button shortcuts above the composer:
 Design an experiment, Review a setup, Understand results and Learn the basics.
 Use action-specific Lucide icons, a consistent 32px height and one centered row
 where space permits, wrapping on smaller viewports. Selected experiments/runs
@@ -347,12 +446,17 @@ different shortcut replaces the draft and returns focus to it. Four local
 skeletons match the shortcut layout; protocol errors/retry remain visible even
 while drafting. Home keeps four illustrated experiment suggestions that fill the
 draft without submitting. Under the Experiment ideas heading,
-they share one rounded ItemGroup border with Separator dividers: aligned illustrations,
+they share one rounded ItemGroup border with Separator dividers, equal-width cells
+and equal 16px left/right padding, with no group gaps beside the dividers.
+Desktop text spans the full inner cell width: aligned illustrations,
 15px semibold titles with 19px line height and 13px descriptions with 18px line height in one row of
 four on wide screens. Descriptions use foreground/60, matching record timestamps.
 Spell out “and” in suggestion titles rather than using ampersands.
 Use concrete experiment questions covering communication/cooperation, memory/
-reciprocity, oversight/sanctions and resource survival. Descriptions name the
+reciprocity, source access/report accuracy and material budgets/work completion.
+The latter two use the installed artifact-investigation and institutional-workflow
+environments so Home includes realistic work settings without adding more cards.
+Keep the magnifier and money illustrations. Descriptions name the
 intervention and measured comparison, without implying outcomes are guaranteed.
 Place illustrations above the text in columns, with a consistent 6px gap between each
 title and description and no reserved title height. Keep descriptions to one
@@ -372,11 +476,11 @@ shadow-lg. The inner input keeps its stock input border and background surface;
 the shadow belongs to the backing, not the inner field. A compact CardFooter
 reads “Shape an experiment with Agent, or start from scratch →”, with a slightly
 bold link opening /new. Keep prose and link in one inline sentence with a normal
-space after “or” and matching text baselines. Underline only the link text at a 2px offset,
+space after “or” and matching text baselines. Underline only the link text at the shared 4px offset,
 and place the centered arrow 2px after it with a 2.25px stroke. Supporting text
 uses foreground/65 for legibility. Navigation preserves the unsent message and never sends it.
-Use 14px side insets for text and visible context icons, retaining the original 8px
-top and bottom insets and 23px text line height for a compact vertical rhythm. The textarea still starts
+Use 14px side insets for text and visible context icons, a 12px top inset,
+an 8px bottom inset and 23px text line height for a compact vertical rhythm. The textarea still starts
 with three lines, grows to its existing cap, then scrolls internally.
 The footer has 8px side insets. The context trigger adds 6px internally to align
 its icon with the text; Send retains matching 8px right and bottom insets. All
@@ -452,7 +556,7 @@ EmptyDescription text rather than a title. Full record lists remain on their
 dedicated destinations.
 
 Experiments and Runs share one list heading: a muted rounded-square icon beside
-the title (filled Play or flask liquid, matching navigation), using a borderless 36px
+the title (outlined stock Lucide glyphs, matching navigation), using a borderless 36px
 background (`muted-foreground/15`) and an 18px glyph, with search at the right
 (stacked below on mobile). Search fields have no placeholder text and retain their
 accessible labels. Only Experiments includes a primary New action; start runs from
@@ -518,12 +622,17 @@ the current filtered page, preserving selections on other pages and outside the 
 The header checkbox follows the same hover/focus/touch behavior and stays visible for
 full or partial page selections; disable it while loading or when no rows match.
 Both lists show a compact 28px stock ButtonGroup only while rows are selected:
-a muted count joined to an outline clear icon button with a Clear selection tooltip
-and accessible name. Clearing returns focus to the header checkbox. Keep Compare
-beside it on Runs. Selection is
+a muted count joined to outline Download, Delete (experiments only) and Clear icon
+buttons, each with a tooltip and accessible name. Downloads bundle the existing
+private experiment evidence as one ZIP; selected runs include each parent experiment
+once. Confirm experiment deletion, disable it for active selections and retain failed
+items for retry after partial success. Clearing returns focus to the header checkbox.
+Keep Compare beside it on Runs, with the concise label **Compare** and a Select 2–4
+runs hint. Selection is
 independent of comparison: Compare accepts two through four runs and is disabled
-with an explicit limit above four selections. A final Actions column uses bordered stock ellipsis buttons and
-DropdownMenu. Experiments offers Open, Edit as new revision, Duplicate, Export evidence,
+outside that range. A final Actions column uses quiet 28px ghost ellipsis buttons and
+DropdownMenu with consistently sized outline icons and short labels. Experiments offers
+Open experiment, New version, Duplicate, Export evidence,
 and confirmed Delete. Copy drafts use a separate source identity and save a new experiment;
 editing preserves immutable revisions. Runs offers Inspect, Open exact parent revision, and
 Export experiment evidence, with no per-trial edit/delete that would break the matched matrix.
@@ -574,6 +683,34 @@ protocol proposals appear in a Card for review before saving or running. Preserv
 draft identity, pending output, evidence scope and recoverable errors when
 changing presentation. Saving a protocol never executes it.
 
+### Experiment and run details
+
+Use compact outlined record icons and the workspace's 22px title, with a short
+parent breadcrumb. Questions and model/seed metadata sit below the title; actions
+move below that group on narrow content. A small definition list labels status,
+progress and usage. Keep tabular numbers, explicit unresolved usage and version
+selection. Avoid metric cards and repeated record identifiers.
+
+Experiment sections use the same accent line tabs and full-width baseline as the
+editor: Overview, Results, Runs, Design and Publish. Keep the detail column at
+1024px maximum. Overview shows one outcome summary and chart, or one empty state;
+interpretation limits use readable prose with further detail disclosed. Blocking
+checks remain visible before execution. Results and run grids use open tables.
+Design presents conditions, run plan, research notes and agents; configurations,
+version history and the immutable JSON remain disclosed. Publication keeps its
+existing review and privacy boundaries.
+
+Runs use a 1152px maximum column. Place recording controls before evidence, then
+a compact wrapping perspective row and a two-column turn-story/world layout.
+Switch to one column below 768px of viewer width, including beside the Assistant.
+Use the page's scroll rather than independent fixed-height columns. Models and
+memory live in Agent details; balances remain with the perspective buttons. Agent
+view must retain its private observation/event/world filtering. Shared example,
+matched and public viewers use the same reading order and privacy rules.
+Rules & evidence stays beside the recording state and opens the existing drawer;
+its sections use line tabs too. Keep replay verification available below the
+viewer. Inspect requests opens Record and preserves the selected turn.
+
 ### Run recordings
 
 Keep one stock **Play recording / Pause recording** button beside the saved-turn
@@ -586,30 +723,48 @@ click and uses the same Environment, Decisions and Interactions views.
 
 ### Experiment editor
 
-Use the compact page-heading geometry shared by record lists: a 36px muted,
-rounded-square flask surface and the same title scale. The editor is at most
-1024px wide, with a centered 768px form column. Question, Agents, Conditions,
-Run plan and Review are revisitable sections, rather than a progress indicator
-claiming earlier steps are valid. Specification exposes the full JSON contract
-for advanced editing. Stock line Tabs scroll horizontally on narrow screens;
-their selected underline and full-width Separator share one baseline. Preserve
-these layout adjustments when regenerating Tabs from a preset.
+Use the shared 36px outlined flask heading and a single 768px content column.
+The only top-level tabs are General, Advanced and Review. Stock line tabs share
+one baseline with their full-width Separator and remain sticky below the global
+header. Align their text with the form's left edge, using 24px gaps. Selected text
+and its indicator share the accent foreground, including on hover; inactive tabs
+stay neutral. Blank creation has empty name, question, hypothesis and scenario text,
+one baseline condition, four agents, one seed, five rounds and a $1 ceiling.
+Examples, templates, copies, revisions and Assistant proposals retain their content.
+Incomplete name/question text survives draft reload; protocol structure is still
+validated and incomplete experiments cannot be saved or run.
 
-Question covers the name, research question and environment, with hypothesis and
-scenario context disclosed separately. Agents and conditions use compact stock
-Accordions; adding an item opens it and focuses its name. Communication appears
-before its dependent channel controls. Show private signals only for environments
-that implement them. Optional condition notes, profile overrides, model settings
-and limitations stay behind disclosures. Run plan keeps seeds, repetitions,
-rounds, spending ceiling and measurements visible. Task and resource fields
-stack on phones instead of squeezing several unlabeled columns together.
+General owns name, question and environment. The question starts at one line and
+grows with its content. Omit redundant placeholders. Environment options show a
+name and one muted summary; selected triggers show only the name. Descriptions
+wrap within the trigger-width popup and are exposed to assistive technology.
+Agents has its own section with participant names, a short role/goal explanation
+and Edit agents. Comparison uses flat paired name/value fields, stacking on narrow
+content, with visible value labels and
+trailing removal actions. Compare by uses plain labels such as Resources; its
+numeric control names the unit (Credits per round). Runs keeps rounds and spending
+limit on one row; seeds/repetitions use one disclosure that opens for invalid
+seeds. Controls and dropdown menus align without nested card insets.
+Advanced expands one section at a time: Research plan (private hypothesis,
+optional analysis and shared scenario context), Agents, Conditions, Run plan and
+developer Specification. Basic identity fields do not repeat there. Agent and
+condition lists omit duplicate headings; their Add actions follow the list.
+Inputs stay mounted between sections; pending operations lock navigation and
+submitted fields. Agents and conditions keep their add/remove actions and focus
+behavior. General's fields remain mounted across tabs. Keep forms in one reading
+column. Show only supported environment controls; optional notes, overrides and
+model settings remain disclosed.
 
-Each form section offers Back/Continue. Review consolidates the question,
-participants, condition models and run plan with section-specific Edit actions,
-mechanical checking and one primary Create/Save action. Specification retains
-Check/Create for direct contract editing. Saving a reusable environment is a
-single-line item in Experiment options, rather than a competing primary action.
-Agent proposals open on Review. Saving never launches paid model work.
+Review consolidates the protocol with section-specific Edit links, mechanical
+checks and Create/Save. Advanced offers a direct Review action instead of a
+Back/Continue wizard. JSON edits must validate before they enter the visual form;
+never discard dirty JSON when switching views. Reusable environment saving stays
+in Experiment options, alongside Design with Assistant. Only proposals retain a
+Back to Assistant heading action. Assistant proposals open on Review. Show one
+compact estimate line and a draft status only after saving a browser draft; omit
+repeated execution reassurance. Saving never runs models.
+New experiments use Create and Create and run; existing experiments retain version
+saving language. Create alone does not run models.
 
 Reusable environments save only mechanics/configuration examples. Choosing a library or
 built-in environment starts an independent neutral experiment; explicit experiment templates
@@ -681,7 +836,7 @@ those compositions, semantic theme tokens live
 in `src/index.css`, and app glyphs pass through `src/components/icons.tsx`.
 
 The deliberate visual exceptions are the JAS logo/wordmark, Home environment artwork and
-heading fade, the shared Target orbital animation, CC0 3dicons suggestion images, partial selected navigation glyphs,
+sky, retained CC0 3dicons artwork,
 white/graphite surfaces, blue selection, and composer sizing, backing and focus
 appearance. They are not all controlled by a preset. A preset changes the shared
 foundation; review these documented exceptions and the icon boundary rather than
@@ -702,8 +857,7 @@ pnpm dlx shadcn@latest apply --preset <code>
    `components.json` `iconLibrary`, updating dependencies as needed. The CLI updates
    generated UI imports; it does **not** migrate these semantic app reexports
    automatically. The official `shadcn migrate icons` handles concrete icon imports,
-   not this reexport mapping. Keep stock glyphs and the explicitly requested partial house/layers/settings/flask fills
-   together at this boundary; update these small compositions with a new library.
+   not this reexport mapping. Keep stock outline glyphs at this boundary.
    The GitHub brand mark is a CC0 Simple Icons asset, distinct from preset UI glyphs.
    Avoid a runtime icon resolver.
 3. Preserve nonvisual fixes if regeneration overwrites them: Progress bounds and
@@ -716,7 +870,7 @@ pnpm dlx shadcn@latest apply --preset <code>
    distinct line patterns.
    Retain 4px tab gaps and 3px sidebar-item gaps, the continuous header
    divider, white/graphite surface tokens, CardFooter card surface, subtle blue
-   selection with weaker hover, filled selected sidebar icons, blue primary
+   selection with weaker hover, outline sidebar and heading icons, blue primary
    actions, and dedicated wordmark font
    unless superseded. The wordmark retains the foreground color.
 4. Keep app behavior outside regeneratable helpers: domain formatters live in
@@ -735,7 +889,7 @@ pnpm dlx shadcn@latest apply --preset <code>
 - **Do** verify readable text, visible focus and non-color status/series cues in both themes.
 - **Do** keep loading, error, empty and retry states explicit without discarding drafts.
 - **Don't** add custom stylesheets, visual variants or copied component implementations.
-  Keep the explicit Home decoration, partial icon fills, surface, selection, spacing and wordmark exceptions above
+  Keep the explicit Home decoration, surface, selection, spacing and wordmark exceptions above
   when applying a preset.
 - **Don't** treat snapshot values as constraints on the next preset.
 - **Don't** display fabricated activity, private reasoning or unsupported empirical outcomes.
@@ -747,7 +901,7 @@ Keyboard order follows the row from brand to close. Main navigation menus use
 
 ## Environments catalogue
 
-Environments uses one quiet list for choosing world rules. Use the shared
+Environments uses a quiet responsive grid for choosing world rules. Use the shared
 RecordListHeading with the Layers2 page icon on the same muted rounded-square
 surface as Experiments and Runs: 36px surface, 18px glyph, 12px icon/title gap,
 20px mobile / 22px desktop title. Environment grid artwork in the list stays bare.
@@ -755,18 +909,17 @@ Preserve a blank accessible search field and the neutral bordered Built-in / Cus
 tabs. Omit New here: its experiment-editor destination is misleading for a catalogue.
 Experiments keeps its New action; environment-specific configuration remains available
 in each detail panel, including the composed-resource builder.
-A separator beneath the tabs continues directly into the list; do not add cards,
-repeat Details footers or leave an extra gap before the first row.
-
-Built-ins compose stock Item/ItemGroup and Separators. Each row is a native React
-Router link to `?environment=<key>`, with a decorative 40px mark, medium 14px name,
-regular muted description and a small trailing chevron. Use 12px horizontal row
-insets, 16px vertical padding and 12px between mark and text. Center marks against
-the whole name/description block, including wrapped phone copy. Keep text fully
-visible and selectable; rows have square corners and a subtle stock hover surface.
-Keep the resource-composition builder last so existing mechanics lead the scan.
-Custom uses matching row spacing and mark alignment, with linked reusable setup
-names, environment/revision metadata and its existing bordered actions menu.
+A separator anchors the tabs. The built-in list groups Work settings and
+Games & mechanics, with 24px above the grid and 32px between groups. Cards compose
+stock outlined Item/ItemGroup without metadata badges. Each native
+Router link has a fixed 44px decorative mark, medium 14px name, one short muted
+description and a trailing chevron. Use 16px insets and 12px icon/text gaps;
+keep text selectable, unclipped and fully readable on phones. Use equal-width
+columns and 12px gaps, switching from one to two columns when the available
+content width reaches 42rem. The full description remains in the detail panel and
+search matches the full catalog description.
+Custom follows the same compact mark/card geometry, keeping environment/version
+metadata tags and a ghost actions trigger. Edit/reuse and confirmed deletion remain.
 
 `EnvironmentMark` is authored brand SVG with no backing square, Avatar, border,
 shadow or rounded clipping. Its fixed 9×9 patterns represent pooling, reciprocal
@@ -776,13 +929,13 @@ Only three paths use semantic muted foreground and primary fills. No runtime
 randomness, animation, generated assets or requests. Colors follow presets;
 functional preset icons remain separate at the shared icon boundary.
 
-Details retain the URL-addressable stock Sheet: full width on phones, at most
-32rem on desktop. Place the bare mark beside the title in a compact header, then
-the description. Keep title and footer actions fixed while the body scrolls.
-Preserve original observations, enforced mechanics, control/measurement accordions
-and rule version. Show the composition explanation only for that environment.
-Configure experiment opens a neutral experiment from its mechanics; Design with Agent passes the existing
-environment-specific request and uses the shared Target icon.
+Details use the URL-addressable stock Sheet, full width on phones and at most
+32rem on desktop. A compact title/mark and full description lead, with example
+agent/run counts in a small definition list. Observations & rules, Available
+controls and Metrics are expandable sections; preserve all original rule and
+measurement definitions and the rule version. Header/footer stay fixed while
+the body scrolls. The footer has one Create experiment action and Watch example
+when a recording exists. The global Assistant remains available outside the panel.
 
 Native links support opening details in another tab as well as normal navigation.
 Back closes the Sheet; Escape/Close removes only the environment parameter and
@@ -799,9 +952,8 @@ for related content, optional linked rows and aligned separators;
 scale and the relationship between internal text spacing and inter-item spacing.
 These guide composition; stock shadcn primitives and JAS tokens remain authoritative.
 
-The Environments heading marks the shared Layers2 glyph with `data-partial-fill="layers"`,
-reusing the sidebar selection rule to fill only its top layer. Keep the lower
-layer as an outline.
+Environments, Gallery, Examples and the experiment editor use the same outlined
+page-heading icon treatment. No full or partial heading-icon fills.
 
 Candidates extends the same Environments tabs without restyling installed rules.
 Show current containment status, an explicit keyless check, a locally retained
@@ -854,3 +1006,49 @@ and source-linked settlements use stock disclosures. Label researcher inspection
 mailbox arrival does not confirm participant input. Keep ordinary tables and
 spatial diagrams out of the default work view. Material cost/duration edits retain
 draft/save locking; population edits preserve bound workers and complete orders.
+
+## MVP data and workflow surfaces
+
+Use the six colorblind-safe condition hues from index.css. Resolve each condition
+against its full frozen protocol, including in filtered charts; never assign color
+from the visible subset. Pair color with names and dash patterns. Agent identities
+use the separate agent palette and deterministic glyphs from lib/identity.ts.
+Private observations use the lock and muted tint; agent perspective exposes only
+that agent's authorized recorded observations and addressed events.
+
+Home keeps the composer and pixel sky with the user-approved four original
+illustrated Experiment ideas, using communication, memory, oversight and resources
+artwork. Each fills and focuses a draft without sending. The Get started strip and
+its onboarding-only state are removed. Recordings remain accessible through Learn → Examples.
+General and Advanced share a protocol and browser draft. Show conservative cost bounds
+until empirical estimates exist. Save never runs; Save and run is explicit.
+The experiment has Overview, Results, Runs, Design and Publish. Keep one numerical
+headline and one chart in Overview, with at most three limit chips. Full evidence,
+limits and protocol controls stay one click away. Results shows every eligible seed
+with failed, missing and undefined cells inspectable; repetitions remain explicit.
+
+
+Settings uses separated sections, clear headings and stock form controls rather
+than a stack of bordered cards. Provider credentials remain inside their relevant
+provider disclosure; searchable model selection is retained. Gallery account
+controls live in My published; visibility is chosen during publication review. Assistant message footers show a quiet cost receipt;
+a click reveals calls/tokens and explains unknown or unsettled usage.
+
+The desktop run viewer gives each pane its own keyboard-accessible scroll area,
+capped at half the viewport height, so long consequences do not push playback
+far below the turn. Phones retain the ordinary single-column document flow.
+
+## Error feedback
+
+Use shared `Alert variant="error"` and `ErrorState` for page, inline, settings,
+Assistant, Gallery and dialog failures. The error surface uses the card/background
+and border tokens, 16px padding and a 672px maximum width, shrinking to its parent.
+Keep the title in normal foreground, the explanation muted, and only the 16px
+outline icon destructive. Align page errors to the content gutter in both themes.
+
+Keep copy short: a clear title, one useful sentence and relevant recovery actions.
+Pass buttons/links through `action`, below the explanation; do not embed them in
+prose. Preserve validation details and recorded errors. Field validation stays
+beside its control; recorded status badges remain compact. Never auto-retry a paid
+action. Setup requirements link to setup; retry is for recoverable requests.
+`PageBoundary` uses the same treatment and preserves navigation after a page fails.

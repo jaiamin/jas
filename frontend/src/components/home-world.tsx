@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { createPixelClouds } from "./pixel-clouds";
 
-export function HomeWorld() {
+export function HomeWorld({ animated = true }: { animated?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -9,7 +9,7 @@ export function HomeWorld() {
     const field = canvas?.parentElement;
     const divider = field?.querySelector('[data-slot="separator"]');
     const context = canvas?.getContext("2d");
-    if (!canvas || !field || !divider || !context) return;
+    if (!canvas || !field || !context) return;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     let visible = false;
     let offset = 0;
@@ -23,7 +23,9 @@ export function HomeWorld() {
     const draw = () => {
       const bounds = field.getBoundingClientRect();
       const width = bounds.width;
-      const height = divider.getBoundingClientRect().top - bounds.top;
+      const height = divider
+        ? divider.getBoundingClientRect().top - bounds.top
+        : bounds.height;
       if (width <= 0 || height <= 0) return;
       // Scale complete source pixels to the field, without gutters or cropped cells.
       canvas.width = Math.max(1, Math.round(width / 5));
@@ -39,7 +41,8 @@ export function HomeWorld() {
     };
     const updateActivity = () => {
       window.clearInterval(timer);
-      const active = visible && !document.hidden && !reduced.matches;
+      const active =
+        animated && visible && !document.hidden && !reduced.matches;
       canvas.dataset.active = String(active);
       if (active) {
         timer = window.setInterval(() => {
@@ -71,7 +74,7 @@ export function HomeWorld() {
       document.removeEventListener("visibilitychange", updateActivity);
       reduced.removeEventListener("change", updateActivity);
     };
-  }, []);
+  }, [animated]);
 
   return (
     <canvas

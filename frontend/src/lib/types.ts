@@ -1,4 +1,4 @@
-export type ModelId = `openai:${string}` | `anthropic:${string}`;
+export type ModelId = `${string}:${string}`;
 export type EnvironmentId =
   | "commons"
   | "trust_exchange"
@@ -167,7 +167,7 @@ export interface JudgmentScope {
 }
 export interface Adjudicator {
   version: "1.0.0";
-  model: "openai:gpt-6.1-sol";
+  model: ModelId;
   openai_reasoning_effort: "low" | "medium" | "high";
   response_tokens: number;
 }
@@ -179,7 +179,7 @@ export interface AdjudicationDeclaration {
   rubric: string;
   permitted_consequence: "terminal_submission_status";
   max_requests_per_submission_attempt: 1;
-  price_per_million_usd: { input: number; output: number };
+  price_per_million_usd: { input: number | null; output: number | null };
   limits: string;
 }
 export interface RecordedAdjudication {
@@ -353,7 +353,11 @@ export interface ScriptedHarness extends HarnessLimits {
     | "commons_keep_v1"
     | "commons_half_v1"
     | "private_signal_v1"
-    | "local_value_v1";
+    | "local_value_v1"
+    | "trust_half_v1"
+    | "resource_half_v1"
+    | "artifact_copy_v1"
+    | "workflow_ordered_v1";
 }
 export type ParticipantHarness =
   | DirectActionHarness
@@ -389,6 +393,7 @@ export interface Design {
   seeds: number[];
   repetitions: number;
   rounds: number;
+  token_budget?: number | null;
   budget_usd: number;
   openai_reasoning_effort: "low" | "medium" | "high" | null;
   response_tokens: number;
@@ -476,7 +481,7 @@ export interface ResearchFindings {
     condition_key: string;
     condition: string;
     requests: number;
-    cost_usd: number;
+    cost_usd: number | null;
     partial: boolean;
     committed_turns: number;
     waits: number;
@@ -489,7 +494,7 @@ export interface Usage {
   requests: number;
   input_tokens: number;
   output_tokens: number;
-  cost_usd: number;
+  cost_usd: number | null;
   partial: boolean;
 }
 export interface StudySummary {
@@ -502,7 +507,7 @@ export interface StudySummary {
   status: string;
   run_count: number;
   completed_runs: number;
-  cost_usd: number;
+  cost_usd: number | null;
   budget_usd: number;
 }
 export interface RunSummary {
@@ -684,6 +689,7 @@ export interface ExperimentPreflight {
   adjudications?: AdjudicationDeclaration[];
 }
 export interface StudyDetail extends ComparisonReport {
+  estimate: ExecutionEstimate;
   preflight: ExperimentPreflight;
   id: string;
   design: Design;
@@ -696,6 +702,12 @@ export interface StudyDetail extends ComparisonReport {
   usage: Usage;
 }
 export interface Environment {
+  example?: {
+    agents: number;
+    runs: number;
+    max_requests: number;
+    upper_usd: number | null;
+  } | null;
   source: SavedEnvironment;
   key: EnvironmentId;
   name: string;
@@ -710,8 +722,8 @@ export interface Catalog {
   environment_schema: Record<string, unknown>;
   models: {
     id: ModelId;
-    input_per_million: number;
-    output_per_million: number;
+    input_per_million: number | null;
+    output_per_million: number | null;
   }[];
   environments: Environment[];
   templates: { id: string; design: Design }[];
@@ -877,7 +889,7 @@ export interface RequestSummary {
   created: string;
   input_tokens: number;
   output_tokens: number;
-  cost_usd: number;
+  cost_usd: number | null;
 }
 export interface RequestEvidence {
   id: string;
@@ -893,6 +905,8 @@ export interface RequestEvidence {
   status: string;
 }
 export interface RunDetail {
+  estimate: ExecutionEstimate;
+  key_moments?: KeyMoment[];
   next_actor: string | null;
   execution_blocked: string | null;
   requests: RequestSummary[];
@@ -908,6 +922,27 @@ export interface RunDetail {
   measurements: Measurement[];
   metrics: Record<string, number | null>;
   relationships: Relationship[];
+}
+export interface KeyMoment {
+  turn: number;
+  title: string;
+  kind: string;
+}
+export interface RunRecording {
+  version: 1;
+  provenance: "scripted";
+  run: RunDetail;
+  evidence: Evidence[];
+  verification: { verified_turns: number };
+}
+export interface Starter {
+  estimate: { runs: number; max_requests: number; upper_usd: number | null };
+  id: string;
+  design: Design;
+  setting: "work" | "game";
+  estimated_seconds: number;
+  recording: string;
+  demo_policy: string;
 }
 export interface ParticipantOperation {
   number: number;
@@ -1067,6 +1102,7 @@ export interface ClaimSupport {
 export interface Analysis {
   chat_id?: string | null;
   usage?: Usage | null;
+  models: string[];
   id: string;
   purpose: string;
   question: string;
@@ -1115,14 +1151,43 @@ export interface Analysis {
   run_id: string | null;
 }
 
+export interface WorkspacePreferences {
+  planner_web_research?: boolean;
+  token_budget: number | null;
+  developer: boolean;
+  default_visibility: "public" | "unlisted";
+  planner_model: ModelId;
+  assistant_model: ModelId;
+  gallery_url?: string | null;
+}
+export interface ProviderConfiguration {
+  id: string;
+  kind: "openai" | "anthropic" | "openrouter" | "compatible";
+  base_url: string;
+  configured: boolean;
+}
+export interface ExecutionEstimate {
+  runs: number;
+  max_requests: number;
+  upper_usd: number | null;
+}
+
 export interface Settings {
+  provider_configurations: ProviderConfiguration[];
+  preferences: WorkspacePreferences;
+  committed_tokens: number;
+  data_location: string;
   planner_model: string;
   assistant_model: string;
+  assistant_estimates?: Record<
+    "general" | "design" | "analysis",
+    { max_requests: number; upper_usd: number | null }
+  >;
   providers: Record<string, boolean>;
   models: {
     id: ModelId;
-    input_per_million: number;
-    output_per_million: number;
+    input_per_million: number | null;
+    output_per_million: number | null;
   }[];
   budget_usd: number;
   charged_usd: number;

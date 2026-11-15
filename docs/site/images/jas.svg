@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" shape-rendering="crispEdges">
+<style>
+  .ink { fill: #171717; }
+  @media (prefers-color-scheme: dark) { .ink { fill: #f4f4f4; } }
+</style>
+<g>
+  <path fill="#4d8dff" d="M64 0h32v8h-32zM64 8h32v8h-32zM64 16h32v8h-32zM64 24h32v8h-32z"/>
+  <path fill="#ff5757" d="M32 32h32v8h-32zM32 40h32v8h-32zM32 48h32v8h-32zM32 56h32v8h-32z"/>
+  <path class="ink" d="M96 32h32v8h-32zM96 40h32v8h-32zM96 48h32v8h-32zM96 56h32v8h-32zM0 64h32v8h-32zM96 64h32v8h-32zM0 72h32v8h-32zM96 72h32v8h-32zM0 80h32v8h-32zM96 80h32v8h-32zM0 88h32v8h-32zM96 88h32v8h-32zM0 96h128v8h-128zM0 104h128v8h-128zM0 112h128v8h-128zM0 120h128v8h-128z"/>
+</g>
+</svg>

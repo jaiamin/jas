@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { DeleteExperiments } from "@/components/delete-experiments";
 import { Empty } from "@/components/feedback";
 import { ExperimentIcon } from "@/components/icons";
 import { ExperimentActions } from "@/components/record-actions";
@@ -101,11 +102,23 @@ export function StudyTable({
           <div className="ml-auto flex items-center gap-2">
             <RecordSelectionActions
               count={selected.length}
+              studyIds={selected}
               onClear={() => {
                 setSelected([]);
                 selectAllRef.current?.focus();
               }}
-            />
+            >
+              <DeleteExperiments
+                studies={
+                  studies?.filter((study) => selected.includes(study.id)) ?? []
+                }
+                onDeleted={(ids) =>
+                  setSelected((previous) =>
+                    previous.filter((id) => !ids.includes(id)),
+                  )
+                }
+              />
+            </RecordSelectionActions>
           </div>
         )}
       </div>
@@ -173,7 +186,7 @@ export function StudyTable({
                     <Link
                       className="min-w-0 truncate underline-offset-4 hover:underline"
                       title={study.title}
-                      to={`/studies/${study.id}`}
+                      to={`/experiments/${study.id}`}
                     >
                       {study.title}
                     </Link>

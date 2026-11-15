@@ -49,7 +49,7 @@ function RunTableFixture() {
 
 test("run selection survives filtering while comparison accepts only two to four runs", () => {
   render(<RunTableFixture />);
-  expect(screen.getByRole("button", { name: "Compare runs" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Compare" })).toBeDisabled();
   fireEvent.click(screen.getByLabelText(/^Select Condition 0, seed 0,/));
   fireEvent.change(screen.getByRole("textbox", { name: "Search runs" }), {
     target: { value: "Other" },
@@ -58,7 +58,7 @@ test("run selection survives filtering while comparison accepts only two to four
     screen.queryByRole("link", { name: "Condition 0" }),
   ).not.toBeInTheDocument();
   fireEvent.click(screen.getByLabelText(/^Select Condition 4, seed 4,/));
-  expect(screen.getByRole("link", { name: "Compare 2 runs" })).toHaveAttribute(
+  expect(screen.getByRole("link", { name: "Compare" })).toHaveAttribute(
     "href",
     "/compare?runs=run-0,run-4",
   );
@@ -68,9 +68,7 @@ test("run selection survives filtering while comparison accepts only two to four
   fireEvent.click(screen.getByLabelText(/^Select Condition 1, seed 1,/));
   fireEvent.click(screen.getByLabelText(/^Select Condition 2, seed 2,/));
   fireEvent.click(screen.getByLabelText(/^Select Condition 3, seed 3,/));
-  expect(
-    screen.getByRole("button", { name: "Compare up to 4 runs" }),
-  ).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Compare" })).toBeDisabled();
   expect(
     screen.getByRole("checkbox", { name: "Select all runs on this page" }),
   ).toBeChecked();
@@ -78,7 +76,7 @@ test("run selection survives filtering while comparison accepts only two to four
   expect(
     screen.getByRole("checkbox", { name: "Select all runs on this page" }),
   ).toHaveAttribute("aria-checked", "mixed");
-  expect(screen.getByRole("link", { name: "Compare 4 runs" })).toHaveAttribute(
+  expect(screen.getByRole("link", { name: "Compare" })).toHaveAttribute(
     "href",
     "/compare?runs=run-0,run-4,run-1,run-2",
   );
@@ -94,7 +92,7 @@ test("select all respects the current filter and preserves selections outside it
     name: "Select all runs on this page",
   });
   fireEvent.click(all);
-  expect(screen.getByRole("link", { name: "Compare 2 runs" })).toHaveAttribute(
+  expect(screen.getByRole("link", { name: "Compare" })).toHaveAttribute(
     "href",
     "/compare?runs=run-0,run-4",
   );

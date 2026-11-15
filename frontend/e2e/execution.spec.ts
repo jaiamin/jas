@@ -72,7 +72,7 @@ test("study control follows active runs, including pausing, and preserves old re
       return route.fulfill({ json: study });
     },
   );
-  await page.goto(`/studies/${study.id}`);
+  await page.goto(`/experiments/${study.id}`);
   await page
     .getByRole("button", { name: "Run experiment", exact: true })
     .click();
@@ -92,7 +92,7 @@ test("study control follows active runs, including pausing, and preserves old re
   study.revisions.unshift({ number: 2, created: study.created, sha256: "new" });
   await page.reload();
   await expect(
-    page.getByText("This is a preserved design revision.", { exact: false }),
+    page.getByText("This is a preserved design version.", { exact: false }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Run experiment" }),
@@ -113,14 +113,38 @@ test("switching study revisions preserves the selected tab and Agent context", a
   await request.post(`/api/studies/${study.id}/revisions`, {
     data: { design: { ...study.design, title: "Revision two" } },
   });
-  await page.goto(`/studies/${study.id}?tab=runs`);
-  await page.getByRole("combobox", { name: "Design revision" }).click();
-  await page.getByRole("option", { name: "Revision 1", exact: true }).click();
+  await page.goto(`/experiments/${study.id}?tab=runs`);
+  await page.getByRole("combobox", { name: "Design version" }).click();
+  await page.getByRole("option", { name: "Version 1", exact: true }).click();
   await expect(page).toHaveURL(/tab=runs/);
   await expect(
     page.getByRole("heading", { name: study.design.title, exact: true }),
   ).toBeVisible();
+  await page.getByRole("button", { name: "Assistant", exact: true }).click();
   await expect(
-    page.getByRole("link", { name: "Ask Agent", exact: true }),
-  ).toHaveAttribute("href", `/agent?context=study%3A${study.id}`);
+    page.getByRole("complementary", { name: "Assistant", exact: true }),
+  ).toContainText("v1");
+});
+
+test("execution errors open request inspection without changing the recorded cutoff", async ({
+  page,
+  request,
+}) => {
+  const { run } = await createStudy(request);
+  run.summary.error = "Provider unavailable";
+  run.summary.status = "failed";
+  await page.route(`**/api/runs/${run.summary.id}`, (route) =>
+    route.fulfill({ json: run }),
+  );
+  await page.goto(`/runs/${run.summary.id}?turn=0`);
+  await page
+    .getByRole("button", { name: "Inspect requests", exact: true })
+    .click();
+  await expect(
+    page.getByRole("dialog", { name: "Rules & evidence" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("tab", { name: "Record", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
+  await expect(page).toHaveURL(/turn=0/);
 });

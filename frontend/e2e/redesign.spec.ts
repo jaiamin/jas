@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { createStudy } from "./helpers.js";
+import { createStudy, selectEditorSection, setDeveloper } from "./helpers.js";
 
 for (const width of [390, 1440]) {
   for (const theme of ["light", "dark"]) {
@@ -9,6 +9,7 @@ for (const width of [390, 1440]) {
     }, testInfo) => {
       const errors: string[] = [];
       page.on("pageerror", (error) => errors.push(error.message));
+      await setDeveloper(request, true);
       const { study, run } = await createStudy(request);
       await page.route("**/api/studies", (route) =>
         route.fulfill({
@@ -39,7 +40,7 @@ for (const width of [390, 1440]) {
       await page.setViewportSize({ width, height: 900 });
       const routes = [
         ["home", "/"],
-        ["experiments", "/studies"],
+        ["experiments", "/experiments"],
         ["runs", "/runs"],
         ["settings", "/settings"],
         ["question", "/new?template=commons"],
@@ -48,9 +49,9 @@ for (const width of [390, 1440]) {
         ["execution", "/new?template=commons&step=execution"],
         ["specification", "/new?template=commons"],
         ["composition", "/new?template=composed&step=conditions"],
-        ["study", `/studies/${study.id}`],
-        ["study-runs", `/studies/${study.id}?tab=runs`],
-        ["protocol", `/studies/${study.id}?tab=design`],
+        ["study", `/experiments/${study.id}`],
+        ["study-runs", `/experiments/${study.id}?tab=runs`],
+        ["protocol", `/experiments/${study.id}?tab=design`],
         ["decisions", `/runs/${run.summary.id}`],
         ["world", `/runs/${run.summary.id}?tab=live`],
         ["interactions", `/runs/${run.summary.id}?tab=relationships`],
@@ -66,22 +67,35 @@ for (const width of [390, 1440]) {
       for (const [name, path] of routes) {
         await page.goto(path ?? "/");
         await expect(page.getByRole("main")).toHaveCount(1);
-        await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-        if (path?.startsWith("/new"))
+        if (path?.startsWith("/runs/") && path.includes("?tab=")) {
+          await expect(
+            page.getByRole("dialog", { name: "Rules & evidence" }),
+          ).toBeVisible();
+          await expect(page.locator("h1")).toBeAttached();
+        } else {
+          await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+        }
+        if (path?.startsWith("/new")) {
+          await page
+            .getByRole("tab", { name: "Advanced", exact: true })
+            .click();
           await expect(
             page.getByLabel("Experiment name", { exact: true }),
           ).toBeAttached();
+        }
         if (
           name === "agents" ||
           name === "execution" ||
           name === "specification"
         ) {
-          const tab = page.getByRole("tab", {
-            name:
-              name === "execution" ? "Run plan" : new RegExp(`^${name}`, "i"),
-          });
-          await tab.click();
-          await expect(tab).toHaveAttribute("aria-selected", "true");
+          await selectEditorSection(
+            page,
+            name === "execution"
+              ? "Run plan"
+              : name === "agents"
+                ? "Agents"
+                : "Specification",
+          );
         }
         await expect(
           page.getByRole("status", { name: "Loading", exact: true }),

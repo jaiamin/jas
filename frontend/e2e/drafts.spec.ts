@@ -76,7 +76,7 @@ for (const width of [390, 1440]) {
     await expect(
       page.getByRole("link", { name: "Keep this draft", exact: true }),
     ).toBeVisible();
-    await page.goto("/studies");
+    await page.goto("/experiments");
     await expect(page.getByRole("button", { name: /^Drafts/ })).toHaveCount(0);
     await expect(
       page.getByRole("link", { name: "Keep this draft", exact: true }),

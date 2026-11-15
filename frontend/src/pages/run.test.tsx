@@ -1,9 +1,14 @@
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
 import { expect, test, vi } from "vitest";
+import { AssistantWorkspaceProvider } from "@/components/agent/assistant-workspace";
 import { WorkspaceProvider } from "@/components/workspace-provider";
 import WorkspaceShell from "@/components/workspace-shell";
-import { exposureReport, runDetail } from "@/test/fixtures";
+import {
+  exposureReport,
+  runDetail,
+  settings as settingsFixture,
+} from "@/test/fixtures";
 import { deferredResponse, renderWithQueries } from "@/test/queries";
 import Run from "./run";
 
@@ -27,6 +32,8 @@ test("recording playback only advances saved evidence and stops on pause, manual
   let current = runDetail;
   const firstCheckpoint = deferredResponse();
   const fetch = vi.fn((path: string, _options?: RequestInit) => {
+    if (path === "/api/settings")
+      return Promise.resolve(Response.json(settingsFixture));
     if (path === "/api/runs") return Promise.resolve(Response.json([]));
     if (path === "/api/runs/run/turns/0") return firstCheckpoint.promise;
     if (path.includes("/turns/"))
@@ -43,8 +50,8 @@ test("recording playback only advances saved evidence and stops on pause, manual
   });
   vi.stubGlobal("fetch", fetch);
   const view = renderWithQueries(
-    <MemoryRouter initialEntries={["/runs/run?tab=relationships"]}>
-      <Link to="/runs/second?tab=relationships">Other run</Link>
+    <MemoryRouter initialEntries={["/runs/run"]}>
+      <Link to="/runs/second">Other run</Link>
       <Routes>
         <Route
           element={
@@ -132,25 +139,27 @@ test("an in-flight run control does not disable or report an error on another ru
   vi.stubGlobal(
     "fetch",
     vi.fn((path: string) =>
-      path === "/api/runs"
-        ? Promise.resolve(Response.json([]))
-        : path.endsWith("/control")
-          ? control.promise
-          : path.endsWith("/exposure")
-            ? Promise.resolve(Response.json(exposureReport))
-            : Promise.resolve(
-                Response.json({
-                  ...runDetail,
-                  summary: {
-                    ...runDetail.summary,
-                    id: path.endsWith("/second") ? "second" : "run",
-                  },
-                }),
-              ),
+      path === "/api/settings"
+        ? Promise.resolve(Response.json(settingsFixture))
+        : path === "/api/runs"
+          ? Promise.resolve(Response.json([]))
+          : path.endsWith("/control")
+            ? control.promise
+            : path.endsWith("/exposure")
+              ? Promise.resolve(Response.json(exposureReport))
+              : Promise.resolve(
+                  Response.json({
+                    ...runDetail,
+                    summary: {
+                      ...runDetail.summary,
+                      id: path.endsWith("/second") ? "second" : "run",
+                    },
+                  }),
+                ),
     ),
   );
   renderWithQueries(
-    <MemoryRouter initialEntries={["/runs/run?tab=settings"]}>
+    <MemoryRouter initialEntries={["/runs/run"]}>
       <Link to="/runs/second?tab=settings">Other run</Link>
       <Routes>
         <Route
@@ -166,10 +175,11 @@ test("an in-flight run control does not disable or report an error on another ru
     </MemoryRouter>,
   );
   fireEvent.click(await screen.findByRole("button", { name: "Run" }));
-  fireEvent.click(screen.getByRole("link", { name: "Other run" }));
+  await openOtherRecord();
   expect(
     await screen.findByText("second", { selector: "code" }),
   ).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Close" }));
   expect(screen.getByRole("button", { name: "Run" })).toBeEnabled();
   await act(async () => {
     control.resolve(
@@ -213,9 +223,11 @@ for (const late of [false, true]) {
     const view = renderWithQueries(
       <MemoryRouter initialEntries={["/runs/run?tab=settings"]}>
         <Link to="/runs/second?tab=settings">Other run</Link>
-        <Routes>
-          <Route path="/runs/:id" element={<Run />} />
-        </Routes>
+        <AssistantWorkspaceProvider>
+          <Routes>
+            <Route path="/runs/:id" element={<Run />} />
+          </Routes>
+        </AssistantWorkspaceProvider>
       </MemoryRouter>,
     );
     fireEvent.click(
@@ -235,7 +247,7 @@ for (const late of [false, true]) {
         summary: { ...runDetail.summary, id: "second" },
       }),
     );
-    fireEvent.click(screen.getByRole("link", { name: "Other run" }));
+    await openOtherRecord();
     expect(
       await screen.findByText("second", { selector: "code" }),
     ).toBeInTheDocument();
@@ -250,4 +262,18 @@ for (const late of [false, true]) {
       screen.getByRole("button", { name: "Verify exact replay" }),
     ).toBeEnabled();
   });
+}
+
+async function openOtherRecord() {
+  if (screen.queryByRole("dialog"))
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+  fireEvent.click(screen.getByRole("link", { name: "Other run" }));
+  await waitFor(() => {
+    expect(
+      screen.queryByRole("dialog") ||
+        screen.queryByRole("button", { name: "Rules & evidence" }),
+    ).not.toBeNull();
+  });
+  if (!screen.queryByRole("dialog"))
+    fireEvent.click(screen.getByRole("button", { name: "Rules & evidence" }));
 }

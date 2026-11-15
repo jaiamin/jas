@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { AgentIcon, Code2, Ellipsis, ExperimentIcon } from "@/components/icons";
+import { AgentIcon, Ellipsis, ExperimentIcon } from "@/components/icons";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -7,12 +7,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const editorSections = [
-  { value: "question", label: "Question" },
-  { value: "agents", label: "Agents" },
-  { value: "conditions", label: "Conditions" },
-  { value: "execution", label: "Run plan" },
+  { value: "general", label: "General" },
+  { value: "advanced", label: "Advanced" },
   { value: "review", label: "Review" },
-  { value: "json", label: "Specification" },
 ] as const;
 
 export function EditorHeading({
@@ -26,10 +23,7 @@ export function EditorHeading({
     <header className="flex flex-wrap items-center justify-between gap-4 pb-6">
       <div className="flex min-w-0 items-center gap-3">
         <Avatar className="size-9 rounded-lg after:border-0" aria-hidden="true">
-          <AvatarFallback
-            data-active="true"
-            className="rounded-lg bg-muted-foreground/15 [&>svg]:size-4.5"
-          >
+          <AvatarFallback className="rounded-lg bg-muted-foreground/15 [&>svg]:size-4.5">
             <ExperimentIcon />
           </AvatarFallback>
         </Avatar>
@@ -55,16 +49,15 @@ export function EditorNavigation({ disabled }: { disabled: boolean }) {
         <TabsList
           variant="line"
           aria-label="Experiment sections"
-          className="gap-2 p-0 group-data-horizontal/tabs:h-9"
+          className="gap-6 p-0 group-data-horizontal/tabs:h-9"
         >
           {editorSections.map((section) => (
             <TabsTrigger
               key={section.value}
               value={section.value}
               disabled={disabled}
-              className="h-9 border-0 px-2 group-data-horizontal/tabs:after:bottom-0"
+              className="h-9 border-0 px-0 group-data-horizontal/tabs:after:bottom-0"
             >
-              {section.value === "json" && <Code2 aria-hidden="true" />}
               {section.label}
             </TabsTrigger>
           ))}
@@ -82,12 +75,12 @@ export function EditorLoading({
   fromAgent?: boolean;
 }) {
   return (
-    <div className="mx-auto w-full max-w-5xl">
+    <div className="mx-auto w-full max-w-3xl">
       <EditorHeading revision={revision}>
-        {!revision && (
+        {fromAgent && (
           <Button type="button" variant="outline" size="sm" disabled>
             <AgentIcon data-icon="inline-start" />
-            {fromAgent ? "Back to Agent" : "Generate with Agent"}
+            Back to Assistant
           </Button>
         )}
         <Button
@@ -100,7 +93,7 @@ export function EditorLoading({
           <Ellipsis />
         </Button>
       </EditorHeading>
-      <Tabs value="question" className="gap-0">
+      <Tabs value="general" className="gap-0">
         <EditorNavigation disabled />
         <div
           className="mx-auto flex w-full max-w-3xl flex-col gap-6 py-7"

@@ -23,14 +23,12 @@ current application's full capabilities. Use the
 
 The frozen [core prompts](agent-live-development.json) and
 [variants](agent-live-variants.json) exercise general answers, protocol drafting,
-follow-ups, permissions and unsupported requests through public HTTP. The
-[evaluation report](../docs/research/AGENT_EXTENSIVE_EVALUATION.md) separates workflow
-completion from manual semantic assessment, actual spend and source attribution.
+follow-ups, permissions and unsupported requests through public HTTP. Workflow completion, semantic assessment, actual spend and source attribution
+must be evaluated separately.
 These public development cases are separate from the historical frozen benchmark
 and do not establish held-out competence.
 
-The [experiment/environment evaluation](../docs/research/EXPERIMENT_ENVIRONMENT_E2E.md)
-adds live Luna trials across the expanded catalog, Sol finite synthesis and
+The experiment/environment development cases add live participant trials across the expanded catalog, Sol finite synthesis and
 matched-run interpretation, plus browser/restoration checks. Its
 [case manifest](platform-live-development.json), [finite oracle](platform-finite-contract.json)
 and [results](platform-live-results.json) retain failed attempts and source limitations.
@@ -38,8 +36,7 @@ and [results](platform-live-results.json) retain failed attempts and source limi
 The [research-quality development declaration](research-quality-development.json)
 adds executable outcomes, two explicit matched value tasks, local-only controls,
 waiting-policy contrasts and interpretation checks. These are transparent development
-cases, not a held-out intelligence benchmark. Methods and source-specific results
-are recorded in the [implementation plan](../docs/research/RESEARCH_QUALITY_PLAN.md).
+cases, not a held-out intelligence benchmark. Historical implementation reports remain in Git history.
 Keep failed drafts/analyses and all ledger costs when retesting; never reset the
 aggregate spending allowance for a repaired source.
 

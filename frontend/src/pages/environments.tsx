@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { CustomEnvironments } from "@/components/environments/custom-environments";
 import { EnvironmentDetails } from "@/components/environments/environment-details";
@@ -17,7 +17,8 @@ import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useApi } from "@/lib/api";
-import type { Catalog } from "@/lib/types";
+import { environmentOptions, workSettings } from "@/lib/environments";
+import type { Catalog, Settings } from "@/lib/types";
 
 const skeletonIds = ["a", "b", "c", "d", "e", "f", "g", "h"];
 
@@ -27,23 +28,38 @@ export default function Environments() {
   const detailTrigger = useRef<HTMLAnchorElement | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const catalog = useApi<Catalog>("/catalog");
+  const settings = useApi<Settings>("/settings");
+  const developer = settings.data?.preferences?.developer === true;
   const requestedView = params.get("view");
   const view =
-    requestedView === "custom" || requestedView === "candidates"
+    requestedView === "custom" || (developer && requestedView === "candidates")
       ? requestedView
       : "built-in";
-  const environments = catalog.data?.environments ?? [];
+  const environments = environmentOptions(
+    catalog.data?.environments ?? [],
+    developer,
+  );
   const selected = environments.find(
     (env) => env.key === params.get("environment"),
   );
   const query = search.trim().toLowerCase();
-  const visibleEnvironments = environments
-    .filter((env) =>
-      `${env.name} ${env.description}`.toLowerCase().includes(query),
-    )
-    .toSorted(
-      (a, b) => Number(a.key === "composed") - Number(b.key === "composed"),
-    );
+  const visibleEnvironments = environments.filter((env) =>
+    `${env.name} ${env.description}`.toLowerCase().includes(query),
+  );
+  const groups = [
+    {
+      title: "Work settings",
+      items: visibleEnvironments.filter((env) =>
+        workSettings.includes(env.key),
+      ),
+    },
+    {
+      title: "Games & mechanics",
+      items: visibleEnvironments.filter(
+        (env) => !workSettings.includes(env.key),
+      ),
+    },
+  ];
   function closeDetails() {
     setParams(
       (previous) => {
@@ -60,7 +76,6 @@ export default function Environments() {
       <RecordListHeading
         title="Environments"
         icon={Layers2}
-        partialFill="layers"
         search={search}
         onSearchChange={setSearch}
         headingRef={heading}
@@ -92,13 +107,15 @@ export default function Environments() {
             <TabsTrigger value="custom" className="h-full px-2.5 py-0">
               Custom
             </TabsTrigger>
-            <TabsTrigger value="candidates" className="h-full px-2.5 py-0">
-              Candidates
-            </TabsTrigger>
+            {developer && (
+              <TabsTrigger value="candidates" className="h-full px-2.5 py-0">
+                Candidates
+              </TabsTrigger>
+            )}
           </TabsList>
           <Separator />
         </div>
-        <TabsContent value="built-in" className="min-w-0">
+        <TabsContent value="built-in" className="@container min-w-0">
           {catalog.error && (
             <ErrorState error={catalog.error} onRetry={catalog.refetch} />
           )}
@@ -107,34 +124,44 @@ export default function Environments() {
               role="status"
               aria-label="Loading environments"
               aria-busy="true"
-              className="flex flex-col"
+              className="grid grid-cols-1 gap-3 py-6 @2xl:grid-cols-2"
             >
               {skeletonIds.map((id) => (
-                <Fragment key={id}>
-                  <EnvironmentRowSkeleton />
-                  <Separator />
-                </Fragment>
+                <EnvironmentRowSkeleton key={id} />
               ))}
             </div>
           ) : catalog.data && visibleEnvironments.length > 0 ? (
-            <ItemGroup className="gap-0">
-              {visibleEnvironments.map((env) => {
-                const next = new URLSearchParams(params);
-                next.set("environment", env.key);
-                return (
-                  <Fragment key={env.key}>
-                    <EnvironmentRow
-                      environment={env}
-                      href={`/environments?${next}`}
-                      onExplore={(trigger) => {
-                        detailTrigger.current = trigger;
-                      }}
-                    />
-                    <Separator />
-                  </Fragment>
-                );
-              })}
-            </ItemGroup>
+            <div className="flex flex-col gap-8 py-6">
+              {groups
+                .filter((group) => group.items.length)
+                .map((group) => (
+                  <section
+                    key={group.title}
+                    aria-label={group.title}
+                    className="flex flex-col gap-3"
+                  >
+                    <h2 className="text-xs font-medium text-muted-foreground">
+                      {group.title}
+                    </h2>
+                    <ItemGroup className="grid grid-cols-1 gap-3 @2xl:grid-cols-2">
+                      {group.items.map((env) => {
+                        const next = new URLSearchParams(params);
+                        next.set("environment", env.key);
+                        return (
+                          <EnvironmentRow
+                            key={env.key}
+                            environment={env}
+                            href={`/environments?${next}`}
+                            onExplore={(trigger) => {
+                              detailTrigger.current = trigger;
+                            }}
+                          />
+                        );
+                      })}
+                    </ItemGroup>
+                  </section>
+                ))}
+            </div>
           ) : catalog.data ? (
             <Empty
               title={
@@ -156,13 +183,15 @@ export default function Environments() {
             </Alert>
           )}
         </TabsContent>
-        <TabsContent value="candidates" className="min-w-0">
-          <ExtensionCandidates
-            search={search}
-            selectedId={params.get("review")}
-          />
-        </TabsContent>
-        <TabsContent value="custom" className="min-w-0">
+        {developer && (
+          <TabsContent value="candidates" className="min-w-0">
+            <ExtensionCandidates
+              search={search}
+              selectedId={params.get("review")}
+            />
+          </TabsContent>
+        )}
+        <TabsContent value="custom" className="@container min-w-0">
           <CustomEnvironments
             search={search}
             environments={environments}
@@ -178,7 +207,7 @@ export default function Environments() {
       >
         {selected && (
           <SheetContent
-            className="gap-4 data-[side=right]:w-full data-[side=right]:sm:max-w-lg"
+            className="gap-0 data-[side=right]:w-full data-[side=right]:sm:max-w-lg"
             onCloseAutoFocus={(event) => {
               event.preventDefault();
               (detailTrigger.current?.isConnected

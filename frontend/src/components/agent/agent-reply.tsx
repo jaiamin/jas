@@ -2,7 +2,6 @@ import { memo } from "react";
 import { Link } from "react-router-dom";
 import { ReplyActivity } from "@/components/agent/agent-activity";
 import { AgentMarkdown } from "@/components/agent/agent-markdown";
-import { AgentTarget } from "@/components/agent/agent-target";
 import { ClaimEvidence } from "@/components/claim-evidence";
 import { ComparisonEvidence } from "@/components/comparison-evidence";
 import {
@@ -11,7 +10,8 @@ import {
   DisclosureTrigger,
 } from "@/components/disclosure";
 import { Alert } from "@/components/feedback";
-import { ArrowUpRight } from "@/components/icons";
+import { AgentIcon, ArrowUpRight } from "@/components/icons";
+import { ProtocolEstimate } from "@/components/protocol-estimate";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -29,10 +29,11 @@ import {
   MessageHeader,
 } from "@/components/ui/message";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { money } from "@/lib/format";
 import type { Analysis, AnalysisLensKey } from "@/lib/types";
 
 export const AgentReply = memo(function AgentReply({
@@ -80,9 +81,8 @@ export const AgentReply = memo(function AgentReply({
     <Message>
       <MessageContent>
         <MessageHeader className="min-h-6 items-start gap-2 px-0">
-          <AgentTarget
-            motion={pending ? "working" : "idle"}
-            className="size-5"
+          <AgentIcon
+            className="size-5 shrink-0 text-primary"
             aria-label="Assistant"
           />
           <ReplyActivity row={row} />
@@ -99,16 +99,21 @@ export const AgentReply = memo(function AgentReply({
           />
         )}
         {row.status === "failed" ? (
-          <Alert variant="error" title="Request stopped">
+          <Alert
+            variant="error"
+            title="Request stopped"
+            action={
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={disabled}
+                onClick={onRetry}
+              >
+                Try again
+              </Button>
+            }
+          >
             <p>{row.error}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={disabled}
-              onClick={onRetry}
-            >
-              Try again
-            </Button>
           </Alert>
         ) : (
           <>
@@ -157,6 +162,7 @@ export const AgentReply = memo(function AgentReply({
                         </dd>
                       </div>
                     </dl>
+                    <ProtocolEstimate design={design} />
                   </CardContent>
                   <CardFooter className="flex-col items-stretch gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
                     <Button asChild>
@@ -204,7 +210,7 @@ export const AgentReply = memo(function AgentReply({
               Object.entries(row.output.comparisons).map(([key, report]) => (
                 <Disclosure key={key}>
                   <DisclosureTrigger>
-                    Captured comparison · revision {report.comparison.revision}
+                    Captured comparison · version {report.comparison.revision}
                   </DisclosureTrigger>
                   <DisclosureContent>
                     <ComparisonEvidence report={report} />
@@ -223,29 +229,78 @@ export const AgentReply = memo(function AgentReply({
                 </DisclosureContent>
               </Disclosure>
             )}
-            <MessageFooter className="-mt-1 -ml-1 min-h-6 flex-wrap gap-2 px-0">
-              {complete && copyText && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <CodeBlockCopyButton
-                      value={copyText}
-                      title="Copy response"
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>Copy response</TooltipContent>
-                </Tooltip>
-              )}
-              {row.purpose === "analysis" &&
-                Object.keys(row.cutoffs).length > 0 && (
-                  <span>
-                    {Object.keys(row.cutoffs).length === 1
-                      ? `Evidence through turn ${Object.values(row.cutoffs)[0]}`
-                      : `${Object.keys(row.cutoffs).length} captured runs`}
-                  </span>
-                )}
-            </MessageFooter>
           </>
         )}
+        <MessageFooter className="-mt-1 -ml-1 min-h-6 flex-wrap gap-0.5 px-0">
+          {complete && copyText && (
+            <CodeBlockCopyButton value={copyText} aria-label="Copy response" />
+          )}
+          {!pending && !!row.usage?.requests && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  className="font-normal text-muted-foreground tabular-nums"
+                  aria-label="Reply usage"
+                >
+                  {row.usage.partial
+                    ? "Cost pending"
+                    : row.usage.cost_usd == null
+                      ? "Cost unknown"
+                      : row.usage.cost_usd > 0 && row.usage.cost_usd < 0.001
+                        ? "<$0.001"
+                        : `${row.usage.cost_usd > 0 ? "~" : ""}${money(row.usage.cost_usd, 3)}`}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                className="w-72 text-xs"
+                aria-label="Reply usage details"
+              >
+                <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2 [&_dd]:text-right [&_dd]:tabular-nums">
+                  {row.models.length > 0 && (
+                    <>
+                      <dt>{row.models.length > 1 ? "Models" : "Model"}</dt>
+                      <dd className="wrap-anywhere">{row.models.join(", ")}</dd>
+                    </>
+                  )}
+                  {row.usage.requests > 1 && (
+                    <>
+                      <dt>Calls</dt>
+                      <dd>{row.usage.requests.toLocaleString()}</dd>
+                    </>
+                  )}
+                  <dt>Input tokens</dt>
+                  <dd>{row.usage.input_tokens.toLocaleString()}</dd>
+                  <dt>Output tokens</dt>
+                  <dd>{row.usage.output_tokens.toLocaleString()}</dd>
+                  <dt>
+                    {row.usage.partial
+                      ? "Committed estimate"
+                      : "Estimated cost"}
+                  </dt>
+                  <dd>{money(row.usage.cost_usd, 6)}</dd>
+                </dl>
+                {(row.usage.partial || row.usage.cost_usd == null) && (
+                  <p className="text-muted-foreground">
+                    {row.usage.partial
+                      ? "Includes unsettled reservations."
+                      : "Price unavailable."}
+                  </p>
+                )}
+              </PopoverContent>
+            </Popover>
+          )}
+          {row.purpose === "analysis" &&
+            Object.keys(row.cutoffs).length > 0 && (
+              <span className="ml-1">
+                {Object.keys(row.cutoffs).length === 1
+                  ? `Evidence through turn ${Object.values(row.cutoffs)[0]}`
+                  : `${Object.keys(row.cutoffs).length} captured runs`}
+              </span>
+            )}
+        </MessageFooter>
       </MessageContent>
     </Message>
   );

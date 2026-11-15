@@ -1,0 +1,55 @@
+---
+title: Inspect runs and evidence
+description: Follow what happened and what each agent could observe.
+sidebarTitle: Runs and evidence
+keywords: [run viewer, matched trials, replay]
+icon: play
+---
+
+JAS records observations, actions and rule-enforced consequences. Use a run to
+inspect the sequence, then Results to compare it with the other trials.
+
+## Read a run
+
+Open a run from an experiment or the **Runs** page. The viewer separates each
+turn into its observation, proposed action and settled consequence.
+
+Use playback controls or a recorded key moment to move through the run. The
+researcher view can inspect global state; an agent perspective shows only that
+participant's authorized observations and addressed events.
+
+Researcher-visible information is not evidence that an agent received or used it.
+Recorded text is model or participant output, not verified reasoning or intent.
+
+## Compare matched trials
+
+The experiment's **Results** keeps conditions, seeds and repetitions explicit.
+Inspect failed, missing and undefined outcomes alongside completed work. A missing
+value is not zero.
+
+Use a same-seed matched view to compare the recorded trajectories. Keep the
+frozen protocol version and evidence cutoff attached to any interpretation.
+
+On **Runs**, select 2–4 records and choose **Compare**. The download icon saves
+one ZIP of their parent experiments' complete private evidence, once per experiment.
+Individual runs cannot be deleted.
+
+## Pause and resume
+
+Pausing lets in-flight work settle before the run stops. Server tasks continue
+if you close the browser or lose the connection.
+
+A server restart pauses unfinished work without starting another paid request.
+Reconnect to inspect its status; resuming is an explicit action.
+
+## Replay without model calls
+
+Replay applies recorded actions to the trusted environment rules and checks the
+resulting states. It does not ask a model to make those choices again.
+
+A verified replay means the recorded actions reproduce the recorded consequences
+under those rules. It does not verify model identity, research validity, private
+reasoning or future behavior. Recorded external judgments remain fixed inputs.
+
+The [CLI](/reference/cli#verify-a-record) can verify an exported evidence record.
+Review [publishing](/guides/publishing) before sharing participant-private evidence.

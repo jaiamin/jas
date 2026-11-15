@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { selectEditorSection } from "./helpers.js";
 
 for (const theme of ["light", "dark"]) {
   for (const [environment, title, control] of [
@@ -22,10 +23,13 @@ for (const theme of ["light", "dark"]) {
           ? { width: 390, height: 844 }
           : { width: 1440, height: 1000 },
       );
-      await page.goto(`/new?template=${environment}`);
-      await page.getByRole("tab", { name: /^Conditions/ }).click();
+      await page.goto(`/new?template=${environment}&mode=advanced`);
+      await selectEditorSection(page, /^Conditions/);
       await expect(
-        page.locator("[data-slot=accordion-trigger]:visible").first(),
+        page
+          .getByRole("region", { name: "Conditions", exact: true })
+          .locator("[data-slot=accordion-trigger]:visible")
+          .first(),
       ).toHaveAttribute("aria-expanded", "true");
       await expect(page.getByLabel(control).first()).toBeVisible();
       if (environment === "renewable_resource") {
@@ -38,7 +42,7 @@ for (const theme of ["light", "dark"]) {
       await page
         .getByRole("button", { name: "Create experiment", exact: true })
         .click();
-      await expect(page).toHaveURL(/\/studies\//);
+      await expect(page).toHaveURL(/\/experiments\//);
       const studyID = new URL(page.url()).pathname.split("/").at(-1);
       const study = await (await request.get(`/api/studies/${studyID}`)).json();
       expect(study.design.environment).toBe(environment);
@@ -52,19 +56,20 @@ for (const theme of ["light", "dark"]) {
           row.condition_key === study.design.conditions[0].key,
       );
       await page.goto(`/runs/${run.id}`);
+      await page
+        .getByRole("button", { name: "Rules & evidence", exact: true })
+        .click();
       await page.getByRole("tab", { name: "Environment", exact: true }).click();
       await expect(
         page.getByRole("heading", { name: title, exact: true }),
       ).toBeVisible();
       if (environment === "renewable_resource") {
-        await expect(page.getByRole("progressbar")).toHaveAttribute(
-          "aria-valuetext",
-          "9 of 60",
-        );
-        await expect(page.getByRole("progressbar")).toHaveAttribute(
-          "aria-valuenow",
-          "15",
-        );
+        await expect(
+          page.getByRole("progressbar", { name: "Available resource stock" }),
+        ).toHaveAttribute("aria-valuetext", "9 of 60");
+        await expect(
+          page.getByRole("progressbar", { name: "Available resource stock" }),
+        ).toHaveAttribute("aria-valuenow", "15");
       }
       expect(
         await page.evaluate(

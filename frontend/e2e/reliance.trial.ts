@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { selectEditorSection } from "./helpers.js";
 
 test("switching a solo draft binds four participants and preserves its investigator", async ({
   page,
@@ -14,7 +15,7 @@ test("switching a solo draft binds four participants and preserves its investiga
   await page
     .getByRole("button", { name: "Change environment", exact: true })
     .click();
-  await page.getByRole("tab", { name: "Agents", exact: true }).click();
+  await selectEditorSection(page, "Agents");
   await expect(
     page.getByRole("button", { name: "Add agent", exact: true }),
   ).toBeDisabled();
@@ -22,7 +23,7 @@ test("switching a solo draft binds four participants and preserves its investiga
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
-  await expect(page).toHaveURL(/\/studies\//);
+  await expect(page).toHaveURL(/\/experiments\//);
   const study = await (
     await request.get(`/api/studies/${page.url().split("/").at(-1)}`)
   ).json();
@@ -52,7 +53,7 @@ for (const variant of [
     );
     await page.setViewportSize({ width: variant.width, height: 900 });
     await page.goto("/new?template=reliance_commitments");
-    await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+    await selectEditorSection(page, "Conditions");
     await page.getByLabel("promise_1 deadline", { exact: true }).fill("4");
     await page
       .getByLabel("promise_1 fulfilled effect", { exact: true })
@@ -64,7 +65,7 @@ for (const variant of [
       .getByLabel("promise_3 unfulfilled effect", { exact: true })
       .press("Tab");
     await page.reload();
-    await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+    await selectEditorSection(page, "Conditions");
     await expect(
       page.getByLabel("promise_1 deadline", { exact: true }),
     ).toHaveValue("4");
@@ -83,7 +84,7 @@ for (const variant of [
     await page
       .getByRole("button", { name: "Create experiment", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/studies\//);
+    await expect(page).toHaveURL(/\/experiments\//);
     const sid = page.url().split("/").at(-1);
     const study = await (await request.get(`/api/studies/${sid}`)).json();
     expect(study.usage.requests).toBe(0);

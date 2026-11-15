@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { EnvironmentMark } from "@/components/environments/environment-mark";
 import { Alert, Empty } from "@/components/feedback";
@@ -15,6 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -32,7 +33,6 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api, useApi } from "@/lib/api";
 import { label } from "@/lib/format";
@@ -81,84 +81,92 @@ export function CustomEnvironments({
           role="status"
           aria-label="Loading custom environments"
           aria-busy="true"
-          className="flex flex-col"
+          className="grid grid-cols-1 gap-3 py-6 @2xl:grid-cols-2"
         >
           {["a", "b", "c"].map((id) => (
             <div
               key={id}
               aria-hidden="true"
-              className="flex items-center gap-3 px-3 py-4"
+              className="grid grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border p-4"
             >
-              <Skeleton className="size-10 shrink-0" />
-              <div className="flex flex-1 flex-col gap-2">
+              <Skeleton className="size-11 shrink-0 justify-self-center" />
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
                 <Skeleton className="h-4 w-48 max-w-full" />
-                <Skeleton className="h-4 w-36" />
+                <Skeleton className="h-4 w-36 max-w-full" />
               </div>
               <Skeleton className="size-6" />
             </div>
           ))}
         </div>
       ) : setups.data && visibleSetups.length > 0 ? (
-        <ItemGroup className="gap-0">
+        <ItemGroup className="grid grid-cols-1 gap-3 py-6 @2xl:grid-cols-2">
           {visibleSetups.map((item) => (
-            <Fragment key={item.id}>
-              <Item className="gap-3 rounded-none border-0 px-3 py-4">
-                <ItemMedia className="group-has-data-[slot=item-description]/item:self-center group-has-data-[slot=item-description]/item:translate-y-0">
-                  <EnvironmentMark environment={item.definition.environment} />
-                </ItemMedia>
-                <ItemContent className="min-w-0">
-                  <ItemTitle className="max-w-full">
-                    <Link
-                      className="truncate hover:underline"
-                      to={`/new?setup=${item.id}&step=conditions`}
+            <Item
+              key={item.id}
+              variant="outline"
+              className="grid grid-cols-[2.75rem_minmax(0,1fr)_auto] gap-3 p-4"
+            >
+              <ItemMedia className="group-has-data-[slot=item-description]/item:self-center group-has-data-[slot=item-description]/item:translate-y-0">
+                <EnvironmentMark
+                  environment={item.definition.environment}
+                  size={44}
+                />
+              </ItemMedia>
+              <ItemContent className="min-w-0">
+                <ItemTitle className="max-w-full">
+                  <Link
+                    className="truncate hover:underline"
+                    to={`/new?setup=${item.id}&step=conditions`}
+                  >
+                    {item.definition.name}
+                  </Link>
+                </ItemTitle>
+                <ItemDescription className="flex flex-wrap gap-1 line-clamp-none">
+                  <Badge variant="metadata" className="max-w-full">
+                    <span className="truncate">
+                      {environments.find(
+                        (env) => env.key === item.definition.environment,
+                      )?.name ?? label(item.definition.environment)}
+                    </span>
+                  </Badge>
+                  <Badge variant="metadata">Version {item.revision}</Badge>
+                </ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="text-muted-foreground"
+                      aria-label={`Actions for ${item.definition.name}`}
                     >
-                      {item.definition.name}
-                    </Link>
-                  </ItemTitle>
-                  <ItemDescription>
-                    {environments.find(
-                      (env) => env.key === item.definition.environment,
-                    )?.name ?? label(item.definition.environment)}{" "}
-                    · Revision {item.revision}
-                  </ItemDescription>
-                </ItemContent>
-                <ItemActions>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="icon-xs"
-                        className="text-muted-foreground"
-                        aria-label={`Actions for ${item.definition.name}`}
+                      <Ellipsis />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem asChild>
+                        <Link to={`/new?setup=${item.id}&step=conditions`}>
+                          <PenLine />
+                          Edit and reuse
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onSelect={() => {
+                          remove.reset();
+                          setPendingRemoval(item);
+                        }}
                       >
-                        <Ellipsis />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuGroup>
-                        <DropdownMenuItem asChild>
-                          <Link to={`/new?setup=${item.id}&step=conditions`}>
-                            <PenLine />
-                            Edit and reuse
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          variant="destructive"
-                          onSelect={() => {
-                            remove.reset();
-                            setPendingRemoval(item);
-                          }}
-                        >
-                          <Trash2 />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </ItemActions>
-              </Item>
-              <Separator />
-            </Fragment>
+                        <Trash2 />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </ItemActions>
+            </Item>
           ))}
         </ItemGroup>
       ) : setups.data ? (

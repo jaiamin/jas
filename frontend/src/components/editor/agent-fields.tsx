@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { Alert } from "@/components/feedback";
 import { Plus, Trash2 } from "@/components/icons";
-import { OptionSelect as Select } from "@/components/option-select";
+import { ModelPicker } from "@/components/model-picker";
 import {
   Accordion,
   AccordionContent,
@@ -13,7 +13,12 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { minimumParticipants, removeProfile } from "@/lib/design";
+import {
+  addProfile,
+  canRemoveProfile,
+  maximumParticipants,
+  removeProfile,
+} from "@/lib/design";
 import { modelLabel } from "@/lib/format";
 import type { Catalog, Design, ModelId, Profile } from "@/lib/types";
 
@@ -39,73 +44,6 @@ export function AgentFields({
   }
   return (
     <section className="flex min-w-0 flex-col gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="text-base font-medium">
-            Agents{" "}
-            <span className="text-muted-foreground">
-              {design.profiles.length}
-            </span>
-          </h2>
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={
-            design.profiles.length >=
-            (design.environment === "reliance_commitments"
-              ? 4
-              : design.environment === "distributed_coordination"
-                ? 3
-                : design.environment === "sealed_relay"
-                  ? 2
-                  : 12)
-          }
-          onClick={() => {
-            let n = design.profiles.length + 1;
-            while (design.profiles.some((p) => p.key === `agent-${n}`)) n++;
-            addedInput.current = `agent-agent-${n}-name`;
-            setOpen((open) => [...open, `agent-${n}`]);
-            const profiles: Profile[] = [
-              ...design.profiles,
-              {
-                key: `agent-${n}`,
-                name: `Agent ${n}`,
-                role: "Participant",
-                model: null,
-                goal: "Pursue your goals under the environment's rules.",
-              },
-            ];
-            onChange({
-              ...design,
-              profiles,
-              conditions: design.conditions.map((condition) => ({
-                ...condition,
-                parameters: {
-                  ...condition.parameters,
-                  workflow: condition.parameters.workflow
-                    ? {
-                        ...condition.parameters.workflow,
-                        turn_order: [
-                          ...condition.parameters.workflow.turn_order,
-                          `agent-${n}`,
-                        ],
-                        conflict_order: [
-                          ...condition.parameters.workflow.conflict_order,
-                          `agent-${n}`,
-                        ],
-                      }
-                    : null,
-                },
-              })),
-            });
-          }}
-        >
-          <Plus data-icon="inline-start" />
-          Add agent
-        </Button>
-      </div>
       <Accordion type="multiple" value={open} onValueChange={setOpen}>
         {design.profiles.map((p, i) => (
           <AccordionItem value={p.key} key={p.key}>
@@ -130,7 +68,7 @@ export function AgentFields({
             </AccordionTrigger>
             <AccordionContent>
               <div className="flex flex-col gap-4 pb-2 pt-2">
-                <FieldGroup className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
+                <FieldGroup className="grid min-w-0 grid-cols-1 gap-5">
                   <Field>
                     <FieldLabel htmlFor={`agent-${p.key}-name`}>
                       Name
@@ -163,26 +101,18 @@ export function AgentFields({
                     <FieldLabel htmlFor={`agent-${p.key}-model`}>
                       Model
                     </FieldLabel>
-                    <Select
+                    <ModelPicker
                       id={`agent-${p.key}-model`}
                       label={`Model for ${p.name}`}
                       value={p.model ?? "inherit"}
-                      onValueChange={(value) =>
+                      onChange={(value) =>
                         profile(i, {
                           model:
                             value === "inherit" ? null : (value as ModelId),
                         })
                       }
-                      options={[
-                        {
-                          value: "inherit",
-                          label: "Condition default",
-                        },
-                        ...catalog.models.map((m) => ({
-                          value: m.id,
-                          label: modelLabel(m.id),
-                        })),
-                      ]}
+                      models={catalog.models}
+                      inherit
                     />
                   </Field>
                   <Field className="col-span-full">
@@ -204,27 +134,7 @@ export function AgentFields({
                   className="self-start"
                   size="sm"
                   aria-label={`Remove ${p.name}`}
-                  disabled={
-                    design.profiles.length <=
-                      minimumParticipants(design.environment) ||
-                    ([
-                      "distributed_coordination",
-                      "reliance_commitments",
-                    ].includes(design.environment) &&
-                      design.conditions.some((condition) =>
-                        Object.hasOwn(
-                          condition.parameters.coordination?.information ?? {},
-                          p.key,
-                        ),
-                      )) ||
-                    design.conditions.some((condition) =>
-                      condition.parameters.workflow?.work_items.some(
-                        (work) =>
-                          work.workers.includes(p.key) ||
-                          work.handoff_to.includes(p.key),
-                      ),
-                    )
-                  }
+                  disabled={!canRemoveProfile(design, p.key)}
                   onClick={() => onChange(removeProfile(design, p.key))}
                 >
                   <Trash2 data-icon="inline-start" />
@@ -235,6 +145,25 @@ export function AgentFields({
           </AccordionItem>
         ))}
       </Accordion>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="self-start"
+        disabled={
+          design.profiles.length >= maximumParticipants(design.environment)
+        }
+        onClick={() => {
+          const next = addProfile(design);
+          const key = next.profiles.at(-1)?.key ?? "";
+          addedInput.current = `agent-${key}-name`;
+          setOpen((open) => [...open, key]);
+          onChange(next);
+        }}
+      >
+        <Plus data-icon="inline-start" />
+        Add agent
+      </Button>
       {design.environment === "trust_exchange" &&
         design.profiles.length % 2 !== 0 && (
           <Alert variant="error">

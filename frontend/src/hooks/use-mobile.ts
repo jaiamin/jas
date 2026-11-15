@@ -1,7 +1,6 @@
 import * as React from "react";
 
-export function useIsMobile() {
-  const breakpoint = 768;
+export function useIsMobile(breakpoint = 768) {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
     undefined,
   );
@@ -14,7 +13,7 @@ export function useIsMobile() {
     mql.addEventListener("change", onChange);
     setIsMobile(window.innerWidth < breakpoint);
     return () => mql.removeEventListener("change", onChange);
-  }, []);
+  }, [breakpoint]);
 
   return !!isMobile;
 }

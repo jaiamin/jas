@@ -17,6 +17,7 @@ services:
       JAS_BUDGET_USD: ${JAS_BUDGET_USD:-25}
       JAS_AUTH_USERNAME: ${JAS_AUTH_USERNAME:-}
       JAS_AUTH_PASSWORD: ${JAS_AUTH_PASSWORD:-}
+      JAS_REQUIRE_AUTH: ${JAS_REQUIRE_AUTH:-0}
     volumes:
       - jas-data:/app/data
     init: true

@@ -98,3 +98,34 @@ export async function selectText(page: Page, text: Locator) {
     await page.evaluate(() => document.getSelection()?.toString().length),
   ).toBeGreaterThan(0);
 }
+
+export async function setDeveloper(
+  request: APIRequestContext,
+  enabled: boolean,
+) {
+  const settings = await (await request.get("/api/settings")).json();
+  const saved = await request.put("/api/settings", {
+    data: {
+      preferences: { ...settings.preferences, developer: enabled },
+      budget_usd: settings.budget_usd,
+    },
+  });
+  expect(saved.ok()).toBe(true);
+}
+
+/** Open the requested editor section without collapsing an open section. */
+export async function selectEditorSection(
+  page: import("@playwright/test").Page,
+  name: string | RegExp,
+) {
+  if (name === "Question") {
+    await page.getByRole("tab", { name: "General", exact: true }).click();
+    return;
+  }
+  await page.getByRole("tab", { name: "Advanced", exact: true }).click();
+  const trigger = page
+    .locator('[data-slot="experiment-editor"]')
+    .getByRole("button", { name, exact: typeof name === "string" });
+  if ((await trigger.getAttribute("aria-expanded")) !== "true")
+    await trigger.click();
+}

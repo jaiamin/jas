@@ -1,11 +1,13 @@
 import { expect, test } from "@playwright/test";
+import { selectEditorSection } from "./helpers.js";
 
 for (const origin of ["library", "newly-saved"]) {
   test(`environment editing survives a world change and draft reload · ${origin}`, async ({
     page,
     request,
   }) => {
-    await page.goto("/new?template=trust_exchange");
+    await page.goto("/new?template=trust_exchange&mode=advanced");
+    await selectEditorSection(page, "Question");
     await page
       .getByLabel("Experiment name", { exact: true })
       .fill(`World change ${origin}`);
@@ -24,9 +26,11 @@ for (const origin of ["library", "newly-saved"]) {
     await expect(
       page.getByText("Custom environment saved.", { exact: false }),
     ).toBeVisible();
-    if (origin === "library") await page.goto(`/new?setup=${source.id}`);
+    if (origin === "library")
+      await page.goto(`/new?setup=${source.id}&mode=advanced`);
+    await selectEditorSection(page, "Question");
     await page
-      .getByLabel("Research question", { exact: true })
+      .getByRole("textbox", { name: "Question", exact: true })
       .fill(`Keep this question ${origin}`);
     await page
       .getByRole("combobox", { name: "Environment", exact: true })
@@ -43,7 +47,7 @@ for (const origin of ["library", "newly-saved"]) {
       page.getByRole("combobox", { name: "Environment", exact: true }),
     ).toHaveText("Shared commons");
     await expect(
-      page.getByLabel("Research question", { exact: true }),
+      page.getByRole("textbox", { name: "Question", exact: true }),
     ).toHaveValue(`Keep this question ${origin}`);
     await page
       .getByRole("button", { name: "Experiment options", exact: true })
@@ -87,10 +91,11 @@ for (const theme of ["light", "dark"]) {
     );
     const name = `Reusable stock ${theme}`;
     const originalQuestion = `Private original question ${theme}`;
-    await page.goto("/new?template=composed");
+    await page.goto("/new?template=composed&mode=advanced");
+    await selectEditorSection(page, "Question");
     await page.getByLabel("Experiment name", { exact: true }).fill(name);
     await page
-      .getByLabel("Research question", { exact: true })
+      .getByRole("textbox", { name: "Question", exact: true })
       .fill(originalQuestion);
     await page
       .getByRole("button", { name: "Experiment options", exact: true })
@@ -122,26 +127,42 @@ for (const theme of ["light", "dark"]) {
     await page
       .getByRole("button", { name: "Create experiment", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/studies\//);
+    await expect(page).toHaveURL(/\/experiments\//);
     const firstId = new URL(page.url()).pathname.split("/").at(-1);
     const first = await (await request.get(`/api/studies/${firstId}`)).json();
 
     await page.goto("/environments?view=custom");
+    const customRow = page.locator('[data-slot="item"]').filter({
+      has: page.getByRole("link", { name, exact: true }),
+    });
+    await expect(customRow.locator('[data-slot="badge"]')).toHaveText([
+      "Custom resource economy",
+      "Version 1",
+    ]);
+    const markBox = await customRow
+      .locator("svg[data-environment]")
+      .boundingBox();
+    expect(markBox?.width).toBe(44);
+    expect(markBox?.height).toBe(44);
+    await page.screenshot({
+      path: testInfo.outputPath(`custom-environments-${theme}.png`),
+      animations: "disabled",
+    });
     await page.getByRole("link", { name, exact: true }).click();
-    await page.getByRole("tab", { name: "Question", exact: true }).click();
+    await selectEditorSection(page, "Question");
     await expect(
-      page.getByLabel("Research question", { exact: true }),
+      page.getByRole("textbox", { name: "Question", exact: true }),
     ).not.toHaveValue(originalQuestion);
     const secondQuestion = `Different question for three participants ${theme}`;
     await page
-      .getByLabel("Research question", { exact: true })
+      .getByRole("textbox", { name: "Question", exact: true })
       .fill(secondQuestion);
     await page
       .getByLabel("Experiment name", { exact: true })
       .fill(`Second population ${theme}`);
-    await page.getByRole("tab", { name: "Agents", exact: true }).click();
+    await selectEditorSection(page, "Agents");
     await page.getByRole("button", { name: "Add agent", exact: true }).click();
-    await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+    await selectEditorSection(page, "Conditions");
     await page
       .getByRole("button", { name: "Configuration examples", exact: true })
       .click();
@@ -174,7 +195,7 @@ for (const theme of ["light", "dark"]) {
     await page
       .getByRole("button", { name: "Create experiment", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/studies\//);
+    await expect(page).toHaveURL(/\/experiments\//);
     const secondId = new URL(page.url()).pathname.split("/").at(-1);
     const second = await (await request.get(`/api/studies/${secondId}`)).json();
     expect(first.design.question).toBe(originalQuestion);
@@ -193,10 +214,11 @@ for (const theme of ["light", "dark"]) {
         .allocation_visibility,
     ).toBe("parties");
 
-    const draftURL = `/new?setup=${source.id}`;
+    const draftURL = `/new?setup=${source.id}&mode=advanced`;
     await page.goto(draftURL);
+    await selectEditorSection(page, "Question");
     await page
-      .getByLabel("Research question", { exact: true })
+      .getByRole("textbox", { name: "Question", exact: true })
       .fill(`Retained draft ${theme}`);
     await expect(page.getByText("Draft saved", { exact: true })).toBeVisible();
     await page.goto("/environments?view=custom");
@@ -208,7 +230,7 @@ for (const theme of ["light", "dark"]) {
     expect(updated.status()).toBe(200);
     await page.goto(draftURL);
     await expect(
-      page.getByLabel("Research question", { exact: true }),
+      page.getByRole("textbox", { name: "Question", exact: true }),
     ).toHaveValue(`Retained draft ${theme}`);
     await page
       .getByRole("button", { name: "Experiment options", exact: true })
@@ -232,7 +254,7 @@ for (const theme of ["light", "dark"]) {
     ).toBe(200);
     await page.reload();
     await expect(
-      page.getByLabel("Research question", { exact: true }),
+      page.getByRole("textbox", { name: "Question", exact: true }),
     ).toHaveValue(`Retained draft ${theme}`);
     await page.getByRole("tab", { name: "Review", exact: true }).click();
     await expect(

@@ -68,8 +68,8 @@ export function AdjudicationReview({
         .
       </p>
       <p>
-        ${price.input.toFixed(2)} / million input tokens · $
-        {price.output.toFixed(2)} / million output tokens · at most{" "}
+        {money(price.input)} / million input tokens · {money(price.output)} /
+        million output tokens · at most{" "}
         {declaration.max_requests_per_submission_attempt} separately billed
         judge request per submission attempt.
       </p>

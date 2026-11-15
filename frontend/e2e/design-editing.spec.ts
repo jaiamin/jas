@@ -1,5 +1,13 @@
 import { expect, test } from "@playwright/test";
-import { templateDesign } from "./helpers.js";
+import {
+  selectEditorSection,
+  setDeveloper,
+  templateDesign,
+} from "./helpers.js";
+
+test.beforeEach(async ({ request }) => {
+  await setDeveloper(request, true);
+});
 
 test("task prerequisite edits and deletion persist without stale dependent fields", async ({
   page,
@@ -12,12 +20,12 @@ test("task prerequisite edits and deletion persist without stale dependent field
     { key: "task-2", name: "Second", effort: 2, dependencies: [] },
     { key: "task-3", name: "Third", effort: 2, dependencies: ["task-1"] },
   ];
-  await page.goto("/new?template=coordination");
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await page.goto("/new?template=coordination&mode=advanced");
+  await selectEditorSection(page, "Specification");
   await page
     .getByLabel("Complete JSON specification")
     .fill(JSON.stringify(design));
-  await page.getByRole("tab", { name: /^Conditions/ }).click();
+  await selectEditorSection(page, /^Conditions/);
   const prerequisites = page.getByLabel("Prerequisites for task-3", {
     exact: true,
   });
@@ -57,16 +65,19 @@ test("cloned conditions keep independent nested resource schedules through savin
   design.conditions[0].parameters.resource_schedule = [
     { round: 2, endowment: 4 },
   ];
-  await page.goto("/new?template=commons");
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await page.goto("/new?template=commons&mode=advanced");
+  await selectEditorSection(page, "Specification");
   await page
     .getByLabel("Complete JSON specification")
     .fill(JSON.stringify(design));
-  await page.getByRole("tab", { name: /^Conditions/ }).click();
+  await selectEditorSection(page, /^Conditions/);
   await page
     .getByRole("button", { name: "Add condition", exact: true })
     .click();
-  const clone = page.locator("[data-slot=accordion-item]:visible").nth(1);
+  const clone = page
+    .getByRole("region", { name: "Conditions", exact: true })
+    .locator("[data-slot=accordion-item]:visible")
+    .nth(1);
   await expect(
     clone.locator("[data-slot=accordion-trigger]:visible"),
   ).toHaveAttribute("aria-expanded", "true");
@@ -116,7 +127,8 @@ test("cloned conditions keep independent nested resource schedules through savin
 test("editor select labels activate their associated controls", async ({
   page,
 }) => {
-  await page.goto("/new?template=composed");
+  await page.goto("/new?template=composed&mode=advanced");
+  await selectEditorSection(page, "Question");
   const environment = page.getByRole("combobox", {
     name: "Environment",
     exact: true,
@@ -125,7 +137,7 @@ test("editor select labels activate their associated controls", async ({
   await expect(page.getByRole("listbox")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(environment).toBeFocused();
-  await page.getByRole("tab", { name: /^Conditions/ }).click();
+  await selectEditorSection(page, /^Conditions/);
   const labels = page.locator('[data-slot="field-label"][for]:visible');
   await expect
     .poll(() =>

@@ -47,10 +47,10 @@ export function AgentComposer({
         <InputGroupTextarea
           ref={composer}
           className={cn(
-            "max-h-48 overflow-y-auto overscroll-contain px-3.5 text-[0.9375rem] leading-[1.4375rem] md:text-[0.9375rem]",
+            "max-h-48 overflow-y-auto overscroll-contain px-3.5 pt-3 text-[0.9375rem] leading-[1.4375rem] md:text-[0.9375rem]",
             compact ? "min-h-16" : "min-h-22",
           )}
-          aria-label="Message Agent"
+          aria-label="Message Assistant"
           placeholder={placeholder}
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
@@ -86,7 +86,7 @@ export function AgentComposer({
   );
   return (
     <form
-      aria-label="Agent composer"
+      aria-label="Assistant composer"
       className={className}
       onSubmit={(event) => {
         event.preventDefault();
@@ -98,7 +98,7 @@ export function AgentComposer({
           <CardContent className="px-0">{input}</CardContent>
           <CardFooter className="border-0 bg-transparent px-1 py-2 text-xs text-foreground/65">
             <p>
-              Shape an experiment with Agent, or{" "}
+              Shape an experiment with Assistant, or{" "}
               <Button
                 variant="link"
                 size="xs"
@@ -106,9 +106,7 @@ export function AgentComposer({
                 asChild
               >
                 <Link to="/new">
-                  <span className="underline underline-offset-2">
-                    start from scratch
-                  </span>
+                  <span className="underline">start from scratch</span>
                   <ArrowRight
                     data-icon="inline-end"
                     className="self-center"
@@ -129,28 +127,39 @@ export function AgentComposer({
         </Alert>
       )}
       {settings.error && (
-        <Alert variant="error">
-          Could not check provider availability.{" "}
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => settings.refetch()}
-          >
-            Retry
-          </Button>
+        <Alert
+          variant="error"
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => settings.refetch()}
+            >
+              Retry
+            </Button>
+          }
+        >
+          Provider availability couldn’t load.
         </Alert>
       )}
       {children}
       {draftUnavailable && (
-        <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-          This browser could not keep your message draft.
-        </p>
+        <Alert variant="error" title="Draft couldn’t be saved">
+          Keep a copy of your message before leaving.
+        </Alert>
       )}
       {unavailable && (
         <p className="mt-3 text-xs leading-relaxed text-muted-foreground [&_a]:underline [&_a]:underline-offset-4">
-          {provider === "openai" ? "OpenAI" : "Anthropic"} is required to send a
-          message. <Link to="/settings">Configure a provider</Link>.
+          {provider === "openai"
+            ? "OpenAI"
+            : provider === "anthropic"
+              ? "Anthropic"
+              : provider === "openrouter"
+                ? "OpenRouter"
+                : provider}{" "}
+          is required to send a message.{" "}
+          <Link to="/settings">Configure a provider</Link>.
         </p>
       )}
     </form>

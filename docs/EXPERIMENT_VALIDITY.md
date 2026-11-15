@@ -122,18 +122,16 @@ No single realism, morality or general-intelligence score is produced.
 The backend validity matrix covers the installed worlds, channel/memory/horizon
 combinations, independent payoff arithmetic, privacy, delayed interventions,
 placebos, provenance, exposure cutoffs and spending gates. Browser checks exercise
-preflight, edits, rejected protocols and saved review flows. Current observed
-results are in the [product review](research/FINAL_PRODUCT_REVIEW.md).
+preflight, edits, rejected protocols and saved review flows. Fresh verification
+must name its source and checks; historical results are not current measurements.
 
 Frozen benchmark declarations and historical failures remain separate from later
 development diagnostics. [Benchmark instructions](../benchmarks/README.md) describe
-case selection, attempt accounting and paid-run gates. The
-[compact historical report](research/RESEARCH_HARNESS_COMPACT_REPORT.md) preserves
-superseded development results without presenting them as current measurements.
+case selection, attempt accounting and paid-run gates. Superseded development
+reports remain in Git history.
 
-Live researcher/participant competence and judge
-accuracy remain open under the [accepted specification](RESEARCH_HARNESS_SPEC.md)
-and [T20](https://github.com/jaiamin/jas/issues/31). Freeze fresh cases and rubrics
+Live researcher/participant competence and judge accuracy remain open under
+[T20](https://github.com/jaiamin/jas/issues/31). Freeze fresh cases and rubrics
 before evaluation, retain every attempt and cost, and obtain the appropriate
 explicit spending authorization. Human predictive claims additionally require
 consented reference data, held-out participants and independent validation.

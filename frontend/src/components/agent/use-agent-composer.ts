@@ -1,4 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useIsMutating,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { api, useApi } from "@/lib/api";
 import type { AnalysisLensKey, Settings } from "@/lib/types";
@@ -8,6 +12,8 @@ type Submission = {
   context: string;
   lens?: AnalysisLensKey;
   source_analysis_id?: string;
+  revision?: number;
+  through_turn?: number;
 };
 type ChatCreated = { id: string; chat_id: string };
 
@@ -18,6 +24,8 @@ export function useAgentComposer({
   initialQuestion,
   busy = false,
   onSent,
+  scope,
+  onCreated,
 }: {
   context: string;
   chatId?: string | null;
@@ -25,6 +33,8 @@ export function useAgentComposer({
   initialQuestion?: string;
   busy?: boolean;
   onSent: (result: ChatCreated) => void;
+  scope?: { revision: number; through_turn?: number };
+  onCreated?: (result: ChatCreated) => void;
 }) {
   const [question, setQuestion] = useState<string>(() => {
     if (initialQuestion !== undefined) return initialQuestion;
@@ -54,13 +64,16 @@ export function useAgentComposer({
   const unavailable = settings.data?.providers[provider] === false;
   const client = useQueryClient();
   const submitting = useRef(false);
+  const pendingSends = useIsMutating({ mutationKey: ["agent-send", draftKey] });
   const send = useMutation({
+    mutationKey: ["agent-send", draftKey],
     mutationFn: (submission: Submission) =>
       api<ChatCreated>("/chats", { ...submission, chat_id: chatId }),
     onSettled: () => {
       submitting.current = false;
     },
     onSuccess: (result, submitted) => {
+      onCreated?.(result);
       setQuestion((current) => (current === submitted.question ? "" : current));
       try {
         if (sessionStorage.getItem(draftKey) === submitted.question)
@@ -80,6 +93,7 @@ export function useAgentComposer({
     if (
       question.trim() &&
       !busy &&
+      !pendingSends &&
       !send.isPending &&
       !submitting.current &&
       !unavailable &&
@@ -88,7 +102,7 @@ export function useAgentComposer({
       submitting.current = true;
       // Per-call callbacks stop with their observer when this composer unmounts.
       // Cache and draft settlement above still runs for the accepted request.
-      send.mutate({ question, context }, { onSuccess: onSent });
+      send.mutate({ question, context, ...scope }, { onSuccess: onSent });
     }
   }
   return {
@@ -104,7 +118,12 @@ export function useAgentComposer({
     unavailable,
     send,
     submit,
-    blocked: busy || send.isPending || !settings.data,
-    disabled: busy || send.isPending || !settings.data || !!unavailable,
+    blocked: busy || pendingSends > 0 || send.isPending || !settings.data,
+    disabled:
+      busy ||
+      pendingSends > 0 ||
+      send.isPending ||
+      !settings.data ||
+      !!unavailable,
   };
 }

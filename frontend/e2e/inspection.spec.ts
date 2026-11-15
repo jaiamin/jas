@@ -21,12 +21,15 @@ for (const { theme, width } of [
       theme,
     );
     await page.setViewportSize({ width, height: 844 });
-    await page.goto(`/runs/${id}?turn=20&tab=decisions`);
+    await page.goto(`/runs/${id}?turn=20`);
     const scrubber = page.getByRole("slider", { name: "Recorded turn" });
     await scrubber.focus();
     await scrubber.press("ArrowLeft");
     await expect(scrubber).toHaveAttribute("aria-valuenow", "19");
     await expect(page).toHaveURL(/turn=19/);
+    await page
+      .getByRole("button", { name: "Rules & evidence", exact: true })
+      .click();
     await expect(
       page.getByRole("button", { name: "20", exact: true }),
     ).toBeVisible();
@@ -51,7 +54,9 @@ for (const { theme, width } of [
       return;
     }
     await expect(evidence).toBeFocused();
-    expect((await evidence.boundingBox())?.y).toBeLessThan(200);
+    expect((await evidence.boundingBox())?.y).toBeLessThan(
+      (page.viewportSize()?.height ?? 844) / 3,
+    );
     await page.screenshot({
       path: testInfo.outputPath(`evidence-${theme}-${width}.png`),
       animations: "disabled",
@@ -62,7 +67,9 @@ for (const { theme, width } of [
       exact: true,
     });
     await expect(journal).toBeFocused();
-    expect((await journal.boundingBox())?.y).toBeLessThan(200);
+    expect((await journal.boundingBox())?.y).toBeLessThan(
+      (page.viewportSize()?.height ?? 844) / 3,
+    );
   });
 }
 
@@ -83,6 +90,9 @@ test("observation drafts stay with their recorded turn through polling and navig
     });
   });
   await page.goto(`/runs/${id}`);
+  await page
+    .getByRole("button", { name: "Rules & evidence", exact: true })
+    .click();
   await page.getByRole("button", { name: "Researcher observations" }).click();
   await expect(page).toHaveURL(/turn=20/);
   await page
@@ -124,6 +134,9 @@ test("unsaved observations survive run tabs and actor filters", async ({
 }) => {
   const { id, run } = await recordedRun(page, request);
   await page.goto(`/runs/${id}?turn=20`);
+  await page
+    .getByRole("button", { name: "Rules & evidence", exact: true })
+    .click();
   const observations = page.getByRole("button", {
     name: "Researcher observations",
   });
@@ -145,11 +158,14 @@ test("unsaved observations survive run tabs and actor filters", async ({
     .click();
   await observations.click();
   await expect(note).toHaveValue("Keep this unfinished interpretation");
-  await page.getByRole("button", { name: "Previous recorded turn" }).click();
+  await page.getByRole("button", { name: "19", exact: true }).click();
   await expect(page.getByLabel("Add an observation at turn 19")).toHaveValue(
     "",
   );
-  await page.getByRole("button", { name: "Next recorded turn" }).click();
+  await page.getByRole("combobox", { name: "Filter actor" }).click();
+  await page.getByRole("option", { name: "All agents", exact: true }).click();
+  await page.getByRole("button", { name: "20", exact: true }).click();
+  if (!(await note.isVisible())) await observations.click();
   await expect(note).toHaveValue("Keep this unfinished interpretation");
 });
 

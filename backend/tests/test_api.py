@@ -1,3 +1,8 @@
+import json
+from functools import partial
+from io import BytesIO
+from zipfile import ZipFile
+
 import pytest
 from agent_sim.api import create_app
 from fastapi.testclient import TestClient
@@ -92,6 +97,43 @@ def test_portable_export_reports_missing_study_before_download(client):
     response = client.get("/api/studies/missing/export?download=true")
     assert response.status_code == 404
     assert "content-disposition" not in response.headers
+
+
+def test_bulk_export_keeps_existing_private_contract_and_cleans_archive(
+    client, design, tmp_path, monkeypatch
+):
+    from agent_sim import exports
+
+    monkeypatch.setattr(
+        exports, "NamedTemporaryFile", partial(exports.NamedTemporaryFile, dir=tmp_path)
+    )
+    ids = [
+        client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+        for _ in range(2)
+    ]
+    before = client.get("/api/settings").json()["usage"]
+    response = client.post("/api/exports/studies", json={"ids": [*ids, ids[0]]})
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/zip"
+    assert response.headers["cache-control"] == "no-store"
+    with ZipFile(BytesIO(response.content)) as archive:
+        assert archive.namelist() == [f"jas-{sid}.json" for sid in ids]
+        for sid in ids:
+            assert (
+                json.loads(archive.read(f"jas-{sid}.json"))
+                == client.get(f"/api/studies/{sid}/export?download=true").json()
+            )
+    assert not list(tmp_path.glob("*.zip"))
+    missing = client.post("/api/exports/studies", json={"ids": [ids[0], "0" * 16]})
+    assert missing.status_code == 404
+    assert "content-disposition" not in missing.headers
+    assert not list(tmp_path.glob("*.zip"))
+    assert client.get("/api/settings").json()["usage"] == before
+
+
+@pytest.mark.parametrize("ids", [[], ["../private"], ["0" * 16] * 1001])
+def test_bulk_export_validates_selection(client, ids):
+    assert client.post("/api/exports/studies", json={"ids": ids}).status_code == 422
 
 
 @pytest.mark.parametrize(
@@ -209,8 +251,11 @@ def test_local_hosts_accept_same_origin_writes(client, design, host):
 
 def test_configured_host_keeps_origin_checks(tmp_path, monkeypatch, design):
     monkeypatch.setenv("JAS_ALLOWED_HOSTS", "localhost, lab.example")
+    monkeypatch.setenv("JAS_AUTH_USERNAME", "test-owner")
+    monkeypatch.setenv("JAS_AUTH_PASSWORD", "test-only-password")
     app = create_app(f"sqlite:///{tmp_path}/hosts.sqlite3")
     with TestClient(app, base_url="http://lab.example") as client:
+        client.auth = ("test-owner", "test-only-password")
         assert client.get("/api/health").status_code == 200
         assert (
             client.post(
@@ -671,3 +716,151 @@ def test_delete_experiment_respects_live_task_ownership_even_if_status_is_paused
     finally:
         client.portal.call(release)
     assert client.delete(f"/api/studies/{sid}").status_code == 200
+
+
+@pytest.mark.parametrize("call_status", ["complete", "unknown"])
+def test_delete_chat_preserves_accounting_and_other_records(client, design, call_status):
+    from agent_sim.db import Analysis, ProviderCall
+
+    sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    rid = client.get(f"/api/studies/{sid}").json()["runs"][0]["id"]
+    with client.app.state.db.session.begin() as session:
+        turns = [
+            Analysis(chat_id="remove", purpose="general", question="First", status="complete"),
+            Analysis(
+                chat_id="remove",
+                purpose="analysis",
+                question="Second",
+                status="failed",
+                study_id=sid,
+                run_id=rid,
+            ),
+            Analysis(chat_id="keep", purpose="general", question="Keep", status="complete"),
+        ]
+        session.add_all(turns)
+        session.flush()
+        ids = [turn.id for turn in turns]
+        call = ProviderCall(
+            analysis_id=ids[1],
+            study_id=sid,
+            run_id=rid,
+            purpose="analysis",
+            model="openai:gpt-6-luna",
+            status=call_status,
+            reserved=800,
+            charged=300,
+            input_tokens=42,
+            output_tokens=12,
+            reasoning_tokens=3,
+            request_payload={"input": "private"},
+            response_payload=[{"answer": "private"}],
+        )
+        session.add(call)
+        session.flush()
+        call_id = call.id
+    before = client.get("/api/settings").json()
+    assert client.delete("/api/chats/remove").json() == {"deleted": "remove"}
+    assert client.get("/api/chats/remove").status_code == 404
+    assert client.delete("/api/chats/remove").status_code == 404
+    assert [chat["id"] for chat in client.get("/api/chats").json()] == ["keep"]
+    assert client.get("/api/chats/keep").status_code == 200
+    assert client.get(f"/api/studies/{sid}/export").status_code == 200
+    after = client.get("/api/settings").json()
+    assert after["usage"] == before["usage"]
+    assert after["charged_usd"] == before["charged_usd"]
+    with client.app.state.db.session() as session:
+        assert all(session.get(Analysis, key) is None for key in ids[:2])
+        call = session.get_one(ProviderCall, call_id)
+        assert call.analysis_id is None and call.study_id == sid and call.run_id == rid
+        assert call.status == call_status and call.reserved == 800 and call.charged == 300
+        assert (call.input_tokens, call.output_tokens, call.reasoning_tokens) == (42, 12, 3)
+        assert call.request_payload is None and call.response_payload is None
+
+
+def test_delete_chat_rejects_pending_turns_calls_and_saved_proposals(client, design):
+    from agent_sim.db import Analysis, ProviderCall, Revision
+    from sqlalchemy import select
+
+    with client.app.state.db.session.begin() as session:
+        turn = Analysis(chat_id="protected", purpose="design", question="Plan", status="pending")
+        session.add(turn)
+        session.flush()
+        key = turn.id
+    response = client.delete("/api/chats/protected")
+    assert response.status_code == 422 and "chat to finish" in response.json()["detail"]
+    with client.app.state.db.session.begin() as session:
+        session.get_one(Analysis, key).status = "complete"
+        call = ProviderCall(
+            analysis_id=key, purpose="design", model="openai:gpt-6-luna", reserved=100, charged=0
+        )
+        session.add(call)
+        session.flush()
+        call_id = call.id
+    response = client.delete("/api/chats/protected")
+    assert response.status_code == 422 and "requests to settle" in response.json()["detail"]
+    sid = client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+    with client.app.state.db.session.begin() as session:
+        session.get_one(ProviderCall, call_id).status = "complete"
+        session.scalars(
+            select(Revision).where(Revision.study_id == sid)
+        ).one().source = f"plan:{key}"
+    response = client.delete("/api/chats/protected")
+    assert response.status_code == 422 and "saved experiment" in response.json()["detail"]
+    assert client.get("/api/chats/protected").status_code == 200
+    with client.app.state.db.session() as session:
+        assert session.get_one(ProviderCall, call_id).analysis_id == key
+        assert (
+            session.scalars(select(Revision).where(Revision.study_id == sid)).one().source
+            == f"plan:{key}"
+        )
+
+
+def test_delete_chat_respects_live_task_ownership(client):
+    import asyncio
+
+    from agent_sim.db import Analysis
+
+    with client.app.state.db.session.begin() as session:
+        turn = Analysis(chat_id="owned", purpose="general", question="Q", status="complete")
+        session.add(turn)
+        session.flush()
+        key = turn.id
+
+    async def own():
+        client.app.state.assistants.tasks[key] = asyncio.create_task(asyncio.Event().wait())
+
+    async def release():
+        task = client.app.state.assistants.tasks.pop(key)
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
+
+    client.portal.call(own)
+    try:
+        assert client.delete("/api/chats/owned").status_code == 422
+        assert client.get("/api/chats/owned").status_code == 200
+    finally:
+        client.portal.call(release)
+    assert client.delete("/api/chats/owned").status_code == 200
+
+
+def test_publishing_keychain_failure_has_a_setup_code_and_makes_no_remote_request(
+    client, monkeypatch
+):
+    from agent_sim.publishing import Publisher
+    from keyring.errors import NoKeyringError
+
+    def unavailable(*_args):
+        raise NoKeyringError("private keychain diagnostic")
+
+    def no_network(*_args, **_kwargs):
+        pytest.fail("A missing keychain must not contact the gallery")
+
+    monkeypatch.setattr("agent_sim.publishing.keyring.get_password", unavailable)
+    monkeypatch.setattr(Publisher, "request", no_network)
+    response = client.get("/api/publishing")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["identity"] is None
+    assert data["error_code"] == "keychain_unavailable"
+    assert data["error"] == "Enable a system keychain to save your publishing sign-in securely."
+    assert "private keychain diagnostic" not in response.text

@@ -1,0 +1,67 @@
+---
+title: CLI
+description: Check protocols, run bounded trials and verify records locally.
+keywords: [CLI, headless runs, verification]
+icon: terminal
+---
+
+These examples use a source checkout. A release wheel also exposes `jas` and
+`jaslab`; both start the same app.
+
+## Start the app
+
+```sh
+uv run jas --workspace ./data/workspace --port 8080
+```
+
+Global flags such as `--workspace` go before a subcommand. Stop the local server
+before using a command that accesses the same workspace database.
+
+## Check a protocol
+
+```sh
+uv run jas --workspace ./data/workspace check protocol.json
+```
+
+Checks validate the JAS protocol and show cost bounds without model calls.
+
+## Run within a limit
+
+```sh
+uv run jas --workspace ./data/workspace run protocol.json --max-usd 2 --output result.json
+```
+
+This explicitly starts paid model work, prints the estimate and applies the
+stated maximum alongside workspace and experiment limits. Add `--max-tokens`
+for unpriced models. A token ceiling does not guarantee a dollar cost.
+
+## Verify a record
+
+```sh
+uv run jas replay result.json
+```
+
+Replay makes no model calls. The command exits unsuccessfully if verification fails.
+
+## Publish and fork
+
+Replace the example gallery origin with your configured gallery.
+
+```sh
+uv run jas login --gallery https://gallery.example
+uv run jas publish result.json --reviewed --gallery https://gallery.example
+uv run jas --workspace ./data/workspace fork author/name/v3 --gallery https://gallery.example
+```
+
+Review the exact record before passing `--reviewed`; publishing scans it again.
+Forking downloads the pinned protocol and records its provenance without running it.
+
+## Built-in help
+
+```sh
+uv run jas --help
+uv run jas run --help
+```
+
+For source development, packaging and optional hosting, see the
+[repository guides](https://github.com/jaiamin/jas/tree/t3/ponytail-full-1/docs).

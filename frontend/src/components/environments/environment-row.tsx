@@ -10,6 +10,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
+import { environmentSummary } from "@/lib/environments";
 import type { Environment } from "@/lib/types";
 
 export function EnvironmentRow({
@@ -22,8 +23,15 @@ export function EnvironmentRow({
   onExplore: (trigger: HTMLAnchorElement) => void;
 }) {
   return (
-    <article aria-labelledby={`environment-${environment.key}`}>
-      <Item asChild className="gap-3 rounded-none border-0 px-3 py-4">
+    <article
+      className="min-w-0"
+      aria-labelledby={`environment-${environment.key}`}
+    >
+      <Item
+        asChild
+        variant="outline"
+        className="grid h-full grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 p-4"
+      >
         <Link
           to={href}
           aria-label={`Explore ${environment.name}`}
@@ -31,7 +39,7 @@ export function EnvironmentRow({
           onClick={(event) => onExplore(event.currentTarget)}
         >
           <ItemMedia className="group-has-data-[slot=item-description]/item:self-center group-has-data-[slot=item-description]/item:translate-y-0">
-            <EnvironmentMark environment={environment.key} />
+            <EnvironmentMark environment={environment.key} size={44} />
           </ItemMedia>
           <ItemContent className="min-w-0">
             <ItemTitle className="max-w-full line-clamp-none">
@@ -39,9 +47,9 @@ export function EnvironmentRow({
             </ItemTitle>
             <ItemDescription
               id={`environment-description-${environment.key}`}
-              className="line-clamp-none"
+              className="max-w-prose line-clamp-none"
             >
-              {environment.description}
+              {environmentSummary(environment)}
             </ItemDescription>
           </ItemContent>
           <ItemActions
@@ -58,9 +66,13 @@ export function EnvironmentRow({
 
 export function EnvironmentRowSkeleton() {
   return (
-    <Item aria-hidden="true" className="gap-3 rounded-none border-0 px-3 py-4">
-      <ItemMedia className="group-has-data-[slot=item-description]/item:self-center group-has-data-[slot=item-description]/item:translate-y-0">
-        <Skeleton className="size-10" />
+    <Item
+      aria-hidden="true"
+      variant="outline"
+      className="grid grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 p-4"
+    >
+      <ItemMedia className="justify-self-center group-has-data-[slot=item-description]/item:self-center group-has-data-[slot=item-description]/item:translate-y-0">
+        <Skeleton className="size-11" />
       </ItemMedia>
       <ItemContent className="min-w-0">
         <Skeleton className="h-[1.375em] w-44 max-w-full" />

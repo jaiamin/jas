@@ -28,9 +28,17 @@ export function roundSeries(measurements: Measurement[], key: string) {
 export function MetricChart({
   series,
   metricKey,
+  className,
 }: {
-  series: { id: string; name: string; measurements: Measurement[] }[];
+  series: {
+    id: string;
+    name: string;
+    measurements: Measurement[];
+    color?: string;
+    dash?: string;
+  }[];
   metricKey: string;
+  className?: string;
 }) {
   const rows = new Map<number, Record<string, number>>();
   series.forEach((s, index) => {
@@ -56,10 +64,13 @@ export function MetricChart({
       config={Object.fromEntries(
         series.map((s, index) => [
           `series${index}`,
-          { label: s.name, color: `var(--chart-${(index % 5) + 1})` },
+          {
+            label: s.name,
+            color: s.color ?? `var(--chart-${(index % 6) + 1})`,
+          },
         ]),
       )}
-      className="h-64 w-full"
+      className={className ?? "h-64 w-full"}
       role="img"
       aria-label={`${label(metricKey)} by round`}
     >
@@ -128,6 +139,7 @@ export function MetricChart({
             stroke={`var(--color-series${index})`}
             strokeWidth={2}
             strokeDasharray={
+              s.dash ??
               ["0", "7 4", "2 4", "8 3 2 3", "12 4", "6 3 2 3 2 3"][index % 6]
             }
             dot={data.length < 12 ? { r: 3, strokeWidth: 0 } : false}

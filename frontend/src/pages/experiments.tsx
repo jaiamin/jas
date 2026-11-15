@@ -20,10 +20,12 @@ export default function Experiments() {
         onSearchChange={filters.setSearch}
       />
       {error && (
-        <ErrorState
-          error={error}
-          onRetry={() => Promise.all([studies.refetch(), catalog.refetch()])}
-        />
+        <div className="px-4 sm:px-6 lg:px-8">
+          <ErrorState
+            error={error}
+            onRetry={() => Promise.all([studies.refetch(), catalog.refetch()])}
+          />
+        </div>
       )}
       {(!error || studies.data !== undefined) && (
         <StudyTable

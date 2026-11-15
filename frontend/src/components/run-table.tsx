@@ -96,6 +96,13 @@ export function RunTable({
           <div className="ml-auto flex flex-wrap items-center gap-2">
             <RecordSelectionActions
               count={selected.length}
+              studyIds={[
+                ...new Set(
+                  runs
+                    ?.filter((run) => selected.includes(run.id))
+                    .map((run) => run.study_id),
+                ),
+              ]}
               onClear={() => {
                 setSelected([]);
                 selectAllRef.current?.focus();
@@ -106,15 +113,12 @@ export function RunTable({
               size="sm"
               asChild={canCompare}
               disabled={!canCompare}
+              title="Select 2–4 runs"
             >
               {canCompare ? (
-                <Link to={`/compare?runs=${selected.join(",")}`}>
-                  Compare {selected.length} runs
-                </Link>
-              ) : selected.length > 4 ? (
-                "Compare up to 4 runs"
+                <Link to={`/compare?runs=${selected.join(",")}`}>Compare</Link>
               ) : (
-                "Compare runs"
+                "Compare"
               )}
             </Button>
           </div>
@@ -173,7 +177,7 @@ export function RunTable({
                 <TableCell className="relative min-w-48 max-w-96">
                   {selectable && (
                     <RecordSelectionCheckbox
-                      aria-label={`Select ${run.condition}, seed ${run.seed}, revision ${run.revision}, repetition ${run.repetition}, ${run.id.slice(0, 6)}`}
+                      aria-label={`Select ${run.condition}, seed ${run.seed}, version ${run.revision}, repetition ${run.repetition}, ${run.id.slice(0, 6)}`}
                       checked={selected.includes(run.id)}
                       onCheckedChange={(checked) =>
                         setSelected((previous) =>
@@ -195,7 +199,7 @@ export function RunTable({
                 <TableCell>
                   <FavoriteButton
                     id={run.id}
-                    name={`${run.condition}, seed ${run.seed}, revision ${run.revision}, repetition ${run.repetition}`}
+                    name={`${run.condition}, seed ${run.seed}, version ${run.revision}, repetition ${run.repetition}`}
                     favorites={favorites}
                   />
                 </TableCell>
@@ -203,7 +207,7 @@ export function RunTable({
                   <Link
                     className="block truncate underline-offset-4 hover:underline"
                     title={run.study_title}
-                    to={`/studies/${run.study_id}?revision=${run.revision}`}
+                    to={`/experiments/${run.study_id}?revision=${run.revision}`}
                   >
                     {run.study_title}
                   </Link>

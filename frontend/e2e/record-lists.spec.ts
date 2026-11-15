@@ -3,7 +3,7 @@ import type { Catalog } from "../src/lib/types.js";
 import { createStudy } from "./helpers.js";
 
 for (const [path, noun, size] of [
-  ["/studies", "experiments", 10],
+  ["/experiments", "experiments", 10],
   ["/runs", "runs", 15],
 ] as const) {
   for (const theme of ["light", "dark"]) {
@@ -24,7 +24,7 @@ for (const [path, noun, size] of [
         (item: { id: string }) => item.id === study.id,
       );
       const records = Array.from({ length: size + 1 }, (_, index) =>
-        path === "/studies"
+        path === "/experiments"
           ? { ...summary, id: `study-${index}`, title: `Record ${index + 1}` }
           : {
               ...study.runs[0],
@@ -36,10 +36,13 @@ for (const [path, noun, size] of [
       const ready = new Promise<void>((resolve) => {
         release = resolve;
       });
-      await page.route(`**/api${path}`, async (route) => {
-        await ready;
-        await route.fulfill({ json: records });
-      });
+      await page.route(
+        `**/api${path === "/experiments" ? "/studies" : path}`,
+        async (route) => {
+          await ready;
+          await route.fulfill({ json: records });
+        },
+      );
       await page.goto(path);
       const all = page.getByRole("checkbox", {
         name: `Select all ${noun} on this page`,
@@ -99,7 +102,7 @@ for (const [path, noun, size] of [
       ).toHaveCount(size);
       if (path === "/runs") {
         await expect(
-          page.getByRole("button", { name: "Compare up to 4 runs" }),
+          page.getByRole("button", { name: "Compare" }),
         ).toBeDisabled();
       }
       await rows.first().click();
@@ -110,7 +113,7 @@ for (const [path, noun, size] of [
         path: testInfo.outputPath(`select-all-${noun}-${theme}.png`),
       });
       await all.click();
-      const singular = path === "/studies" ? "experiment" : "run";
+      const singular = path === "/experiments" ? "experiment" : "run";
       await page.getByRole("button", { name: `Next ${singular} page` }).click();
       await expect(all).not.toBeChecked();
       await all.click();
@@ -180,7 +183,7 @@ for (const theme of ["light", "dark"]) {
         route.fulfill({ json: study.runs }),
       );
       for (const [path, title, noun] of [
-        ["/studies", "Experiments", "experiments"],
+        ["/experiments", "Experiments", "experiments"],
         ["/runs", "Runs", "runs"],
       ] as const) {
         await page.goto(path);
@@ -207,14 +210,7 @@ for (const theme of ["light", "dark"]) {
             return radius > 0 && radius < element.clientWidth / 2;
           }),
         ).toBe(true);
-        const filledIcon = icon.locator(
-          path === "/studies" ? "[data-liquid]" : "svg",
-        );
-        expect(
-          await filledIcon.evaluate(
-            (element) => getComputedStyle(element).fill,
-          ),
-        ).not.toBe("none");
+        await expect(icon.locator("svg")).toHaveCSS("fill", "none");
         const search = header.getByRole("textbox", { name: `Search ${noun}` });
         await expect(search).toBeVisible();
         expect(await search.getAttribute("placeholder")).toBeNull();
@@ -222,7 +218,7 @@ for (const theme of ["light", "dark"]) {
           name: "New experiment",
           exact: true,
         });
-        if (path === "/studies") {
+        if (path === "/experiments") {
           await expect(create).toHaveText("New");
           await expect(create).toHaveAttribute("href", "/new");
         } else {
@@ -265,7 +261,7 @@ for (const theme of ["light", "dark"]) {
             .evaluate((element) => getComputedStyle(element).backgroundColor),
         );
         for (const name of [
-          path === "/studies" ? "Environment" : "Experiment",
+          path === "/experiments" ? "Environment" : "Experiment",
           "Status",
         ]) {
           const filter = main.getByRole("group", {
@@ -302,7 +298,7 @@ for (const theme of ["light", "dark"]) {
           ).toEqual(["12px", "12px"]);
         }
         await expect(table.getByRole("columnheader")).toHaveText(
-          path === "/studies"
+          path === "/experiments"
             ? [
                 "Name",
                 "Favorite",
@@ -343,7 +339,7 @@ for (const theme of ["light", "dark"]) {
           .locator("svg")
           .evaluate((element) => element.getBoundingClientRect().x);
         expect(Math.abs(starX - favoriteTextX)).toBeLessThanOrEqual(1);
-        if (path === "/studies") {
+        if (path === "/experiments") {
           await expect(cells.nth(0)).toHaveText(study.design.title);
           await expect(cells.nth(2)).toHaveText(
             catalog.environments.find(
@@ -367,7 +363,7 @@ for (const theme of ["light", "dark"]) {
             "400",
           );
         }
-        const dateCell = cells.nth(path === "/studies" ? 6 : 9);
+        const dateCell = cells.nth(path === "/experiments" ? 6 : 9);
         expect(
           await dateCell.evaluate((cell) => getComputedStyle(cell).color),
         ).toBe(
@@ -408,7 +404,7 @@ for (const theme of ["light", "dark"]) {
         for (const cell of await table.locator("th, td").all()) {
           await expect(cell).toHaveCSS("text-align", /^(?:start|left)$/);
         }
-        if (path === "/studies") {
+        if (path === "/experiments") {
           await expect(
             main.getByText("An unfinished draft", { exact: true }),
           ).toHaveCount(0);
@@ -431,7 +427,7 @@ for (const theme of ["light", "dark"]) {
         const searchBounds = await search.boundingBox();
         const iconBounds = await icon.boundingBox();
         const createBounds =
-          path === "/studies" ? await create.boundingBox() : null;
+          path === "/experiments" ? await create.boundingBox() : null;
         expect(
           headingBounds &&
             iconBounds &&
@@ -448,7 +444,7 @@ for (const theme of ["light", "dark"]) {
               searchBounds &&
               searchBounds.x > headingBounds.x + headingBounds.width,
           ).toBe(true);
-          if (path === "/studies") {
+          if (path === "/experiments") {
             expect(
               createBounds &&
                 iconBounds &&
@@ -479,7 +475,7 @@ for (const theme of ["light", "dark"]) {
           .click();
         await expect(search).toHaveValue("");
         await expect(main.getByRole("row")).toHaveCount(
-          path === "/studies" ? 2 : study.runs.length + 1,
+          path === "/experiments" ? 2 : study.runs.length + 1,
         );
         if (path === "/runs") {
           await expect(
@@ -491,7 +487,7 @@ for (const theme of ["light", "dark"]) {
               .first(),
           ).toHaveAttribute(
             "href",
-            `/studies/${study.id}?revision=${study.runs[0]?.revision}`,
+            `/experiments/${study.id}?revision=${study.runs[0]?.revision}`,
           );
         }
       }
@@ -500,7 +496,7 @@ for (const theme of ["light", "dark"]) {
 }
 
 for (const [path, endpoint, title, noun] of [
-  ["/studies", "studies", "Experiments", "experiments"],
+  ["/experiments", "studies", "Experiments", "experiments"],
   ["/runs", "runs", "Runs", "runs"],
 ] as const) {
   for (const width of [390, 1280]) {
@@ -522,10 +518,11 @@ for (const [path, endpoint, title, noun] of [
       });
       await page.goto(path);
       const scope = page.getByRole("combobox", {
-        name: path === "/studies" ? "Filter environment" : "Filter experiment",
+        name:
+          path === "/experiments" ? "Filter environment" : "Filter experiment",
         exact: true,
       });
-      if (path === "/studies") await expect(scope).toBeEnabled();
+      if (path === "/experiments") await expect(scope).toBeEnabled();
       else await expect(scope).toBeDisabled();
       await expect(
         page.getByRole("status", { name: "Loading", exact: true }),
@@ -537,7 +534,7 @@ for (const [path, endpoint, title, noun] of [
       ).toBeVisible();
       await expect(
         header.getByRole("link", { name: "New experiment", exact: true }),
-      ).toHaveCount(path === "/studies" ? 1 : 0);
+      ).toHaveCount(path === "/experiments" ? 1 : 0);
       await expect(header.locator('[data-slot="skeleton"]')).toHaveCount(0);
       const table = page.getByRole("table");
       await expect(
@@ -545,7 +542,7 @@ for (const [path, endpoint, title, noun] of [
       ).toBeVisible();
       await expect(table.locator("thead [data-slot=skeleton]")).toHaveCount(0);
       await expect(table.locator("tbody [data-slot=skeleton]")).toHaveCount(
-        path === "/studies" ? 27 : 33,
+        path === "/experiments" ? 27 : 33,
       );
       await expect(table.locator("tbody")).toHaveAttribute("aria-busy", "true");
       await expect(table.locator("tbody")).toHaveAttribute(
@@ -566,7 +563,7 @@ for (const [path, endpoint, title, noun] of [
       await expect(
         page.getByRole("combobox", {
           name:
-            path === "/studies"
+            path === "/experiments"
               ? "Filter experiment status"
               : "Filter run status",
         }),
@@ -588,7 +585,9 @@ for (const [path, endpoint, title, noun] of [
       await expect(
         page.getByRole("combobox", {
           name:
-            path === "/studies" ? "Filter environment" : "Filter experiment",
+            path === "/experiments"
+              ? "Filter environment"
+              : "Filter experiment",
           exact: true,
         }),
       ).toBeEnabled();
@@ -631,7 +630,7 @@ for (const empty of [false, true]) {
           : { json: catalog },
       );
     });
-    await page.goto("/studies");
+    await page.goto("/experiments");
     const table = page.getByRole("table");
     const row = table.locator("tbody tr").first();
     const scope = page.getByRole("combobox", {
@@ -692,7 +691,7 @@ for (const empty of [false, true]) {
 }
 
 for (const [path, noun] of [
-  ["/studies", "experiments"],
+  ["/experiments", "experiments"],
   ["/runs", "runs"],
 ] as const) {
   test(`${noun} favorites persist, filter with search, and recover from a storage failure`, async ({
@@ -768,16 +767,21 @@ for (const [path, noun] of [
       releaseRefresh = resolve;
     });
     let refreshing = false;
-    await page.route(`**/api${path}`, async (route) => {
-      refreshing = true;
-      await refresh;
-      await route.fulfill({
-        json:
-          path === "/runs"
-            ? study.runs
-            : summaries.filter((item: { id: string }) => item.id === study.id),
-      });
-    });
+    await page.route(
+      `**/api${path === "/experiments" ? "/studies" : path}`,
+      async (route) => {
+        refreshing = true;
+        await refresh;
+        await route.fulfill({
+          json:
+            path === "/runs"
+              ? study.runs
+              : summaries.filter(
+                  (item: { id: string }) => item.id === study.id,
+                ),
+        });
+      },
+    );
     try {
       await expect.poll(() => refreshing).toBe(true);
       await expect(favorite()).toBeVisible();
@@ -792,7 +796,7 @@ for (const [path, noun] of [
 }
 
 for (const [path, noun, size] of [
-  ["/studies", "experiment", 10],
+  ["/experiments", "experiment", 10],
   ["/runs", "run", 15],
 ] as const) {
   for (const width of [390, 1600]) {
@@ -810,7 +814,7 @@ for (const [path, noun, size] of [
         (item: { id: string }) => item.id === study.id,
       );
       const records = Array.from({ length: size * 7 + 1 }, (_, index) =>
-        path === "/studies"
+        path === "/experiments"
           ? {
               ...summary,
               id: `study-${index}`,
@@ -822,8 +826,9 @@ for (const [path, noun, size] of [
               condition: `Condition ${index + 1}`,
             },
       );
-      await page.route(`**/api${path}`, (route) =>
-        route.fulfill({ json: records }),
+      await page.route(
+        `**/api${path === "/experiments" ? "/studies" : path}`,
+        (route) => route.fulfill({ json: records }),
       );
       await page.goto(path);
       const table = page.getByRole("table");
@@ -855,7 +860,7 @@ for (const [path, noun, size] of [
       await next.click();
       await expect(indicator).toHaveText("Page 2 of 8");
       await expect(table.locator("tbody tr").first()).toContainText(
-        path === "/studies"
+        path === "/experiments"
           ? `Experiment ${size + 1}`
           : `Condition ${size + 1}`,
       );
@@ -878,17 +883,19 @@ for (const [path, noun, size] of [
         animations: "disabled",
       });
       const search = page.getByRole("textbox", {
-        name: path === "/studies" ? "Search experiments" : "Search runs",
+        name: path === "/experiments" ? "Search experiments" : "Search runs",
       });
-      await search.fill(path === "/studies" ? "Experiment 1" : "Condition 1");
+      await search.fill(
+        path === "/experiments" ? "Experiment 1" : "Condition 1",
+      );
       await expect(table.locator("tbody tr").first()).toContainText(
-        path === "/studies" ? "Experiment 1" : "Condition 1",
+        path === "/experiments" ? "Experiment 1" : "Condition 1",
       );
       await expect(previous).toBeDisabled();
       await search.fill("");
       await expect(indicator).toHaveText("Page 1 of 8");
       await search.fill(
-        path === "/studies" ? "Experiment 71" : "Condition 106",
+        path === "/experiments" ? "Experiment 71" : "Condition 106",
       );
       await expect(pagination).toHaveCount(0);
     });
@@ -896,7 +903,7 @@ for (const [path, noun, size] of [
 }
 
 for (const [path, noun, scopeNoun, pageSize] of [
-  ["/studies", "experiments", "environment", 10],
+  ["/experiments", "experiments", "environment", 10],
   ["/runs", "runs", "experiment", 15],
 ] as const) {
   test(`${noun} scope filters search, combine with favorites and reset pagination`, async ({
@@ -913,7 +920,7 @@ for (const [path, noun, scopeNoun, pageSize] of [
       (item: { id: string }) => item.id === study.id,
     );
     const records = Array.from({ length: pageSize * 2 + 1 }, (_, index) =>
-      path === "/studies"
+      path === "/experiments"
         ? {
             ...summary,
             id: `scope-study-${index}`,
@@ -929,8 +936,9 @@ for (const [path, noun, scopeNoun, pageSize] of [
               index === 0 ? "Memory experiment" : "Resource experiment",
           },
     );
-    await page.route(`**/api${path}`, (route) =>
-      route.fulfill({ json: records }),
+    await page.route(
+      `**/api${path === "/experiments" ? "/studies" : path}`,
+      (route) => route.fulfill({ json: records }),
     );
     await page.goto(path);
     const scope = page.getByRole("combobox", {
@@ -960,6 +968,22 @@ for (const [path, noun, scopeNoun, pageSize] of [
       await status.evaluate(appearance),
     );
     await expect(scope).toHaveCSS("font-weight", "400");
+    await expect(status).toHaveCSS("text-align", "left");
+    await expect(status).toHaveCSS("padding-right", "10px");
+    const triggerBox = await status.boundingBox();
+    await status.click();
+    const menu = page.getByRole("listbox");
+    await expect(menu).toBeVisible();
+    await expect
+      .poll(async () => {
+        const menuBox = await menu.boundingBox();
+        return triggerBox && menuBox
+          ? Math.abs(triggerBox.x - menuBox.x)
+          : Number.POSITIVE_INFINITY;
+      })
+      .toBeLessThan(1);
+    await page.keyboard.press("Escape");
+    await expect(status).toBeFocused();
     const table = page.getByRole("table");
     await table
       .locator("tbody tr")
@@ -974,7 +998,7 @@ for (const [path, noun, scopeNoun, pageSize] of [
     await scope.click();
     const search = page.getByRole("combobox", { name: `Search ${scopeNoun}s` });
     const selectedLabel =
-      path === "/studies" ? second.name : "Memory experiment";
+      path === "/experiments" ? second.name : "Memory experiment";
     await search.fill(selectedLabel);
     await expect(
       page.getByRole("option", { name: selectedLabel, exact: true }),
@@ -984,7 +1008,7 @@ for (const [path, noun, scopeNoun, pageSize] of [
       .click();
     await expect(table.locator("tbody tr")).toHaveCount(1);
     await expect(table.locator("tbody tr")).toContainText(
-      path === "/studies" ? "Experiment 0" : "Condition 0",
+      path === "/experiments" ? "Experiment 0" : "Condition 0",
     );
     await expect(scope).toContainText(selectedLabel);
     const views = page.getByRole("tablist", { name: `View ${noun}` });
@@ -993,7 +1017,7 @@ for (const [path, noun, scopeNoun, pageSize] of [
     await scope.click();
     await page
       .getByRole("option", {
-        name: path === "/studies" ? first.name : "Resource experiment",
+        name: path === "/experiments" ? first.name : "Resource experiment",
         exact: true,
       })
       .click();
@@ -1017,7 +1041,7 @@ for (const [path, noun, scopeNoun, pageSize] of [
   });
 }
 
-for (const path of ["/studies", "/runs"] as const) {
+for (const path of ["/experiments", "/runs"] as const) {
   for (const touch of [false, true]) {
     test.describe(`${path} selection on ${touch ? "touch" : "pointer"}`, () => {
       test.use({
@@ -1045,7 +1069,7 @@ for (const path of ["/studies", "/runs"] as const) {
         const row = page.getByRole("table").locator("tbody tr").first();
         const checkbox = row.getByRole("checkbox");
         const selectAll = page.getByRole("checkbox", {
-          name: `Select all ${path === "/studies" ? "experiments" : "runs"} on this page`,
+          name: `Select all ${path === "/experiments" ? "experiments" : "runs"} on this page`,
         });
         await expect(selectAll).toHaveCSS("opacity", touch ? "1" : "0");
         const link = row.getByRole("link").first();
@@ -1060,7 +1084,10 @@ for (const path of ["/studies", "/runs"] as const) {
               Number.parseFloat(getComputedStyle(element).paddingLeft),
           );
         expect(box && name && box.x + box.width < name.x).toBe(true);
-        expect(name?.x).toBeCloseTo(title + (path === "/studies" ? 24 : 0), 0);
+        expect(name?.x).toBeCloseTo(
+          title + (path === "/experiments" ? 24 : 0),
+          0,
+        );
         if (!touch) {
           await row.hover();
           await expect(checkbox).toHaveCSS("opacity", "1");
@@ -1077,7 +1104,8 @@ for (const path of ["/studies", "/runs"] as const) {
         await expect(checkbox).toBeChecked();
         await page
           .getByRole("textbox", {
-            name: path === "/studies" ? "Search experiments" : "Search runs",
+            name:
+              path === "/experiments" ? "Search experiments" : "Search runs",
           })
           .focus();
         await page.mouse.move(0, 0);
@@ -1113,17 +1141,17 @@ for (const theme of ["light", "dark"] as const) {
         json: studies.filter((item: { id: string }) => item.id === study.id),
       });
     });
-    await page.goto("/studies");
+    await page.goto("/experiments");
     const row = page.getByRole("table").locator("tbody tr").first();
     const actions = row.getByRole("button", { name: /^Actions for/ });
-    await expect(actions).toHaveCSS("border-top-width", "1px");
+    await expect(actions).toHaveCSS("border-top-color", "rgba(0, 0, 0, 0)");
     await actions.click();
     await expect(
-      page.getByRole("menuitem", { name: "Edit as new revision" }),
+      page.getByRole("menuitem", { name: "New version" }),
     ).toHaveAttribute("href", `/new?study=${study.id}`);
     await expect(
       page.getByRole("menuitem", { name: "Open experiment", exact: true }),
-    ).toHaveAttribute("href", `/studies/${study.id}`);
+    ).toHaveAttribute("href", `/experiments/${study.id}`);
     await page.screenshot({
       path: testInfo.outputPath(`experiment-actions-${theme}.png`),
       animations: "disabled",
@@ -1139,6 +1167,7 @@ for (const theme of ["light", "dark"] as const) {
       .getByRole("menuitem", { name: "Duplicate", exact: true })
       .click();
     await expect(page).toHaveURL(new RegExp(`/new\\?copy=${study.id}$`));
+    await page.getByRole("tab", { name: "General", exact: true }).click();
     await expect(
       page.getByLabel("Experiment name", { exact: true }),
     ).toHaveValue(`${study.design.title.slice(0, 93)} (copy)`);
@@ -1149,7 +1178,7 @@ for (const theme of ["light", "dark"] as const) {
     await page
       .getByRole("button", { name: "Create experiment", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/studies\//);
+    await expect(page).toHaveURL(/\/experiments\//);
     await expect(
       page.getByRole("heading", { name: "Independent copy", exact: true }),
     ).toBeVisible();
@@ -1163,14 +1192,15 @@ for (const theme of ["light", "dark"] as const) {
         .title,
     ).toBe(study.design.title);
     await page.goto(`/new?study=${study.id}`);
+    await page.getByRole("tab", { name: "General", exact: true }).click();
     await page
       .getByLabel("Experiment name", { exact: true })
       .fill("Updated revision");
     await page.getByRole("tab", { name: "Review", exact: true }).click();
     await page
-      .getByRole("button", { name: "Save new revision", exact: true })
+      .getByRole("button", { name: "Save new version", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/studies\//);
+    await expect(page).toHaveURL(/\/experiments\//);
     await expect(
       page.getByRole("heading", { name: "Updated revision", exact: true }),
     ).toBeVisible();
@@ -1178,7 +1208,7 @@ for (const theme of ["light", "dark"] as const) {
       (await (await request.get(`/api/studies/${study.id}?revision=1`)).json())
         .design.title,
     ).toBe(study.design.title);
-    await page.goto("/studies");
+    await page.goto("/experiments");
     await actions.click();
     await page.getByRole("menuitem", { name: "Delete experiment…" }).click();
     const dialog = page.getByRole("alertdialog");
@@ -1253,7 +1283,10 @@ test("run action menu opens the exact revision and exports evidence without muta
   ).toHaveAttribute("href", `/runs/${run.id}`);
   await expect(
     page.getByRole("menuitem", { name: "Open experiment", exact: true }),
-  ).toHaveAttribute("href", `/studies/${study.id}?revision=${run.revision}`);
+  ).toHaveAttribute(
+    "href",
+    `/experiments/${study.id}?revision=${run.revision}`,
+  );
   await expect(page.getByRole("menuitem", { name: /Delete|Edit/ })).toHaveCount(
     0,
   );
@@ -1275,11 +1308,12 @@ for (const source of ["study", "copy"] as const) {
     const { study } = await createStudy(request);
     const path = `/new?${source}=${study.id}`;
     await page.goto(path);
+    await page.getByRole("tab", { name: "General", exact: true }).click();
     await page
       .getByLabel("Experiment name", { exact: true })
       .fill("Kept unfinished work");
     await expect(
-      page.getByRole("status", { name: "Saved in this browser" }),
+      page.getByRole("status", { name: "Draft status" }),
     ).toBeVisible();
     expect((await request.delete(`/api/studies/${study.id}`)).status()).toBe(
       200,
@@ -1295,11 +1329,11 @@ for (const source of ["study", "copy"] as const) {
     await page
       .getByRole("button", { name: "Create experiment", exact: true })
       .click();
-    await expect(page).toHaveURL(/\/studies\//);
+    await expect(page).toHaveURL(/\/experiments\//);
     await expect(
       page.getByRole("heading", { name: "Kept unfinished work", exact: true }),
     ).toBeVisible();
-    expect(new URL(page.url()).pathname).not.toBe(`/studies/${study.id}`);
+    expect(new URL(page.url()).pathname).not.toBe(`/experiments/${study.id}`);
     expect(
       await page.evaluate(
         (key) => localStorage.getItem(`jas:draft:${key}`),

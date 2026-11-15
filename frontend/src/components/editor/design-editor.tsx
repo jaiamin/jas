@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -11,22 +11,27 @@ import { ConditionFields } from "@/components/editor/condition-fields";
 import {
   EditorHeading,
   EditorNavigation,
-  editorSections,
 } from "@/components/editor/editor-layout";
 import { EnvironmentExamples } from "@/components/editor/environment-examples";
 import { ExecutionFields } from "@/components/editor/execution-fields";
 import { ExperimentReview } from "@/components/editor/experiment-review";
-import { QuestionFields } from "@/components/editor/question-fields";
+import { GeneralFields } from "@/components/editor/general-fields";
+import { ResearchFields } from "@/components/editor/question-fields";
 import { TaskFields } from "@/components/editor/task-fields";
 import { ExperimentCheck } from "@/components/experiment-check";
 import { Alert } from "@/components/feedback";
 import {
   AgentIcon,
-  ArrowLeft,
   ArrowRight,
   Ellipsis,
   LoaderCircle,
 } from "@/components/icons";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -52,12 +57,15 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { api, invalidateResources } from "@/lib/api";
-import { changeEnvironment } from "@/lib/design";
+import { api, invalidateResources, useApi } from "@/lib/api";
+import { changeEnvironment, parseSeeds } from "@/lib/design";
 import { type Draft, removeDraft, writeDraft } from "@/lib/drafts";
+import { environmentOptions } from "@/lib/environments";
+import { money } from "@/lib/format";
 import type {
   Analysis,
   Catalog,
@@ -66,6 +74,7 @@ import type {
   EnvironmentMechanics,
   ExperimentPreflight,
   SavedEnvironment,
+  Settings,
 } from "@/lib/types";
 
 export function DesignEditor({
@@ -81,6 +90,7 @@ export function DesignEditor({
   initialStep = "question",
   setupId,
   setupRevision,
+  initialMode = "quick",
 }: {
   initial: Design;
   catalog: Catalog;
@@ -94,12 +104,30 @@ export function DesignEditor({
   initialStep?: string;
   setupId?: string | null;
   setupRevision?: number;
+  initialMode?: "quick" | "visual";
 }) {
   const [design, setDesign] = useState<Design>(() => structuredClone(initial));
+  const [seedsText, setSeedsText] = useState(
+    draft?.seedsInput ?? initial.seeds.join(", "),
+  );
+  const seedsValid = parseSeeds(seedsText) !== null;
+  const seedsInput = {
+    value: seedsText,
+    onChange: (text: string) => {
+      setSeedsText(text);
+      const seeds = parseSeeds(text);
+      if (seeds) setDesign((value) => ({ ...value, seeds }));
+    },
+  };
   const [agentDraftId] = useState(() => crypto.randomUUID());
   const [json, setJson] = useState(draft?.json ?? "");
-  const [mode, setMode] = useState<"visual" | "json">(draft?.mode ?? "visual");
-  const [step, setStep] = useState(initialStep);
+  const [mode, setMode] = useState<Draft["mode"]>(draft?.mode ?? initialMode);
+  const [jsonDirty, setJsonDirty] = useState(
+    draft?.jsonDirty ?? draft?.mode === "json",
+  );
+  const [step, setStep] = useState(
+    initialStep === "question" ? "research" : initialStep,
+  );
   const [formVersion, setFormVersion] = useState(0);
   const [draftStatus, setDraftStatus] = useState(draft ? "Draft saved" : "");
   // The library editing target survives changes that clear scientific provenance.
@@ -117,32 +145,91 @@ export function DesignEditor({
           : undefined),
   );
   const lastSnapshot = useRef(
-    JSON.stringify({ design, json, mode, savedSetup }),
+    JSON.stringify({ design, json, mode, savedSetup, jsonDirty, seedsText }),
   );
   useEffect(() => {
-    const snapshot = JSON.stringify({ design, json, mode, savedSetup });
+    const snapshot = JSON.stringify({
+      design,
+      json,
+      mode,
+      savedSetup,
+      jsonDirty,
+      seedsText,
+    });
     if (snapshot === lastSnapshot.current) return;
     try {
-      writeDraft(draftPath, design, json, mode, savedSetup);
+      writeDraft(
+        draftPath,
+        design,
+        json,
+        mode,
+        savedSetup,
+        jsonDirty,
+        seedsText,
+      );
       lastSnapshot.current = snapshot;
       setDraftStatus("Draft saved");
     } catch {
       setDraftStatus("Draft could not be saved in this browser");
     }
-  }, [design, json, mode, draftPath, savedSetup]);
+  }, [design, json, mode, draftPath, savedSetup, jsonDirty, seedsText]);
   const [error, setError] = useState("");
   const [setupNotice, setSetupNotice] = useState("");
   const [pendingEnvironment, setPendingEnvironment] =
     useState<EnvironmentId | null>(null);
   const navigate = useNavigate();
   const client = useQueryClient();
+  const settings = useApi<Settings>("/settings");
+  const [estimateDesign, setEstimateDesign] = useState(design);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setEstimateDesign(design), 300);
+    return () => window.clearTimeout(timer);
+  }, [design]);
+  const estimate = useQuery({
+    queryKey: ["design-estimate", estimateDesign],
+    queryFn: () =>
+      api<{
+        runs: number;
+        max_requests: number;
+        upper_usd: number | null;
+        unpriced_models: string[];
+        assumptions: string;
+      }>("/design/estimate", { design: estimateDesign }),
+    enabled:
+      mode === "quick" &&
+      seedsValid &&
+      Boolean(design.title.trim() && design.question.trim()),
+    retry: false,
+  });
+  const estimateCurrent =
+    JSON.stringify(estimateDesign) === JSON.stringify(design);
+  const requiredModels = new Set(
+    design.conditions.flatMap((condition) =>
+      condition.harness.kind === "scripted"
+        ? []
+        : design.profiles.map(
+            (profile) =>
+              (
+                condition.profile_overrides.find(
+                  (value) => value.key === profile.key,
+                ) ?? profile
+              ).model ?? condition.model,
+          ),
+    ),
+  );
+  for (const condition of design.conditions) {
+    if (condition.adjudicator) requiredModels.add(condition.adjudicator.model);
+  }
+  const unavailableModels = [...requiredModels].filter(
+    (model) => settings.data && !settings.data.providers[model.split(":")[0]],
+  );
   const save = useMutation({
-    mutationFn: (specification: unknown) =>
+    mutationFn: ({ specification }: { specification: unknown; run: boolean }) =>
       api<{ id: string }>(
         studyId ? `/studies/${studyId}/revisions` : "/studies",
         { design: specification, plan_id: planId },
       ),
-    onSuccess: async (result) => {
+    onSuccess: async (result, submitted) => {
       await invalidateResources(client, [
         "/studies",
         `/studies/${result.id}`,
@@ -154,19 +241,35 @@ export function DesignEditor({
       } catch {
         notice = "Experiment saved. The browser draft could not be cleared.";
       }
-      navigate(`/studies/${result.id}`, { state: { notice } });
+      if (submitted.run) {
+        try {
+          await api(`/studies/${result.id}/control`, { action: "start" });
+        } catch {
+          notice =
+            "Experiment saved. Could not confirm execution status. Check the runs before taking another action.";
+        }
+      }
+      navigate(`/experiments/${result.id}`, { state: { notice } });
     },
   });
   // A saved revision owns its relay package even after library deletion. This
   // metadata keeps its controls available; the API still checks actual admission.
+  const availableCatalog = {
+    ...catalog,
+    environments: environmentOptions(
+      catalog.environments,
+      settings.data?.preferences?.developer === true,
+      design.environment,
+    ),
+  };
   const editorCatalog: Catalog =
     design.environment === "sealed_relay" &&
     design.environment_source &&
-    !catalog.environments.some((item) => item.key === "sealed_relay")
+    !availableCatalog.environments.some((item) => item.key === "sealed_relay")
       ? {
-          ...catalog,
+          ...availableCatalog,
           environments: [
-            ...catalog.environments,
+            ...availableCatalog.environments,
             {
               key: "sealed_relay",
               name: "Pinned admitted sealed relay",
@@ -184,14 +287,21 @@ export function DesignEditor({
             },
           ],
         }
-      : catalog;
+      : availableCatalog;
   const validate = useMutation({
-    mutationFn: (specification: unknown) =>
-      api<Design>("/design/validate", { design: specification }),
-    onSuccess: (validated) => {
+    mutationFn: ({
+      specification,
+    }: {
+      specification: unknown;
+      mode: "quick" | "visual";
+    }) => api<Design>("/design/validate", { design: specification }),
+    onSuccess: (validated, submitted) => {
       setDesign(validated);
+      setSeedsText(validated.seeds.join(", "));
       setFormVersion((version) => version + 1);
-      setMode("visual");
+      setMode(submitted.mode);
+      if (submitted.mode === "quick") setStep("research");
+      setJsonDirty(false);
       setError("");
     },
   });
@@ -240,6 +350,7 @@ export function DesignEditor({
       }),
     onSuccess: (applied) => {
       setDesign(applied);
+      setSeedsText(applied.seeds.join(", "));
       setFormVersion((version) => version + 1);
     },
   });
@@ -264,11 +375,14 @@ export function DesignEditor({
   function changeMode(value: string) {
     if (busy) return;
     if (value === "json") {
-      setJson(JSON.stringify(design, null, 2));
+      if (!jsonDirty) setJson(JSON.stringify(design, null, 2));
       setMode(value);
     } else {
       try {
-        validate.mutate(JSON.parse(json));
+        validate.mutate({
+          specification: JSON.parse(json),
+          mode: value === "quick" ? "quick" : "visual",
+        });
       } catch {
         setError(
           "The specification is not valid JSON. Fix it before switching views.",
@@ -276,51 +390,54 @@ export function DesignEditor({
       }
     }
   }
-  function submit() {
+  function submit(run = false) {
     if (busy || currentCheck?.status === "blocked") return;
+    if (mode !== "json" && (!design.title.trim() || !design.question.trim())) {
+      setError("Add an experiment name and question before saving.");
+      return;
+    }
+    if (mode !== "json" && !seedsValid) {
+      setError("Seeds must be nonnegative integers, separated by commas.");
+      return;
+    }
     setError("");
     if (mode === "json") {
       try {
         const specification: unknown = JSON.parse(json);
-        save.mutate(specification);
+        save.mutate({ specification, run });
       } catch {
         setError("Enter a valid JSON specification.");
       }
-    } else save.mutate(design);
+    } else if (!jsonDirty) save.mutate({ specification: design, run });
   }
-  const activeSection = mode === "json" ? "json" : step;
-  const sectionIndex = editorSections.findIndex(
-    (section) => section.value === step,
-  );
+  const activeSection =
+    mode === "quick"
+      ? "general"
+      : mode !== "json" && step === "review"
+        ? "review"
+        : "advanced";
+  const complete = Boolean(design.title.trim() && design.question.trim());
+  function selectSection(value: string) {
+    setStep(value);
+    if (value === "json") changeMode(value);
+    else if (mode === "json") changeMode("visual");
+  }
   return (
     <form
-      className="mx-auto w-full max-w-5xl"
+      className="mx-auto w-full max-w-3xl"
       data-slot="experiment-editor"
       noValidate
       onSubmit={(event) => {
         event.preventDefault();
-        if (step === "review" || mode === "json") submit();
+        if (step === "review" || mode === "json" || mode === "quick") submit();
       }}
     >
       <EditorHeading revision={!!studyId}>
-        {!studyId && (
+        {agentChatId && (
           <Button type="button" variant="outline" size="sm" asChild>
-            <Link
-              to={
-                agentChatId
-                  ? `/agent?chat=${agentChatId}`
-                  : `/agent?new=${agentDraftId}`
-              }
-              state={
-                agentChatId
-                  ? null
-                  : {
-                      question: `Help me design an experiment to investigate: ${design.question}`,
-                    }
-              }
-            >
+            <Link to={`/assistant?chat=${agentChatId}`}>
               <AgentIcon data-icon="inline-start" />
-              {agentChatId ? "Back to Agent" : "Generate with Agent"}
+              Back to Assistant
             </Link>
           </Button>
         )}
@@ -341,6 +458,20 @@ export function DesignEditor({
             className="w-max max-w-[calc(100vw-2rem)]"
           >
             <DropdownMenuGroup>
+              {!studyId && !agentChatId && (
+                <DropdownMenuItem asChild disabled={busy}>
+                  <Link
+                    to={`/assistant?new=${agentDraftId}`}
+                    state={{
+                      question: design.question
+                        ? `Help me design an experiment to investigate: ${design.question}`
+                        : "Help me design a new experiment.",
+                    }}
+                  >
+                    Design with Assistant
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 className="whitespace-nowrap"
                 disabled={busy}
@@ -379,96 +510,309 @@ export function DesignEditor({
       {reuse.error && <Alert variant="error">{reuse.error.message}</Alert>}
       <Tabs
         value={activeSection}
+        className="gap-0"
         onValueChange={(value) => {
-          if (value === "json") changeMode(value);
-          else {
-            setStep(value);
+          if (busy) return;
+          if (value === "general") {
+            if (mode === "json" && jsonDirty) changeMode("quick");
+            else setMode("quick");
+          } else {
+            if (value === "review") setStep("review");
+            else if (step === "review") setStep("research");
             if (mode === "json") changeMode("visual");
+            else setMode(jsonDirty ? "json" : "visual");
           }
         }}
-        className="gap-0"
       >
         <EditorNavigation disabled={busy} />
-        <div className="mx-auto w-full max-w-3xl py-7">
+        <TabsContent
+          value="general"
+          forceMount
+          hidden={activeSection !== "general"}
+          className="flex flex-col gap-6 py-6 data-[state=inactive]:hidden"
+        >
+          <FieldSet disabled={busy || jsonDirty} className="min-w-0">
+            <GeneralFields
+              key={`${design.environment}:${formVersion}`}
+              design={design}
+              catalog={editorCatalog}
+              onChange={setDesign}
+              onEnvironmentChange={setPendingEnvironment}
+              seedsInput={seedsInput}
+              disabled={busy || jsonDirty}
+              onEditAgents={() => {
+                setMode("visual");
+                setStep("agents");
+              }}
+            />
+            {estimate.data?.unpriced_models.length ? (
+              <Field>
+                <FieldLabel htmlFor="quick-token-cap">Token ceiling</FieldLabel>
+                <Input
+                  id="quick-token-cap"
+                  type="number"
+                  min={1}
+                  value={design.token_budget ?? ""}
+                  onChange={(event) =>
+                    setDesign({
+                      ...design,
+                      token_budget: event.target.value
+                        ? Number(event.target.value)
+                        : null,
+                    })
+                  }
+                />
+                <FieldDescription>
+                  Prices are unknown for{" "}
+                  {estimate.data.unpriced_models.join(", ")}. A token ceiling is
+                  required here or in Settings.
+                </FieldDescription>
+              </Field>
+            ) : null}
+          </FieldSet>
+          {activeSection === "general" && jsonDirty && (
+            <Alert title="Specification edits preserved">
+              Your JSON draft is saved in Advanced. Apply it there before saving
+              General.{" "}
+              <Button
+                type="button"
+                size="sm"
+                variant="link"
+                onClick={() => setMode("json")}
+              >
+                Review specification
+              </Button>
+            </Alert>
+          )}
+          {complete && seedsValid && (
+            <div
+              id="estimate-summary"
+              className="text-sm text-muted-foreground"
+              aria-live="polite"
+            >
+              {!estimateCurrent || estimate.isPending
+                ? "Updating estimate…"
+                : estimate.error
+                  ? "Resolve the protocol fields to estimate this experiment."
+                  : estimate.data && (
+                      <>
+                        <strong className="font-medium text-foreground">
+                          {estimate.data.runs} runs
+                        </strong>{" "}
+                        ·{" "}
+                        {estimate.data.upper_usd == null
+                          ? "dollar cost unknown"
+                          : `up to ${money(estimate.data.upper_usd)}`}
+                      </>
+                    )}
+            </div>
+          )}
+          {activeSection === "general" && currentCheck && (
+            <ExperimentCheck report={currentCheck} design={design} />
+          )}
+          {(error || save.error || check.error) && (
+            <Alert variant="error">
+              {error || save.error?.message || check.error?.message}
+            </Alert>
+          )}
+          <div className="flex flex-wrap items-center gap-2 border-t pt-4">
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={busy || !seedsValid || !complete || jsonDirty}
+              onClick={() => check.mutate(snapshot)}
+            >
+              {check.isPending ? "Checking…" : "Check experiment"}
+            </Button>
+            <div className="ml-auto flex gap-2">
+              <Button
+                type="submit"
+                variant="outline"
+                disabled={
+                  busy ||
+                  jsonDirty ||
+                  !seedsValid ||
+                  !complete ||
+                  currentCheck?.status === "blocked"
+                }
+              >
+                {studyId ? "Save version" : "Create"}
+              </Button>
+              <Button
+                type="button"
+                aria-describedby="estimate-summary"
+                disabled={
+                  busy ||
+                  jsonDirty ||
+                  !seedsValid ||
+                  !complete ||
+                  currentCheck?.status === "blocked" ||
+                  !estimateCurrent ||
+                  !estimate.data ||
+                  !!estimate.error ||
+                  (estimate.data.upper_usd == null &&
+                    !design.token_budget &&
+                    !settings.data?.preferences?.token_budget) ||
+                  !settings.data ||
+                  unavailableModels.length > 0
+                }
+                onClick={() => submit(true)}
+              >
+                {studyId ? "Save and run" : "Create and run"}
+              </Button>
+            </div>
+          </div>
+          {unavailableModels.length > 0 && (
+            <p className="text-xs text-muted-foreground">
+              Add provider keys in{" "}
+              <Link className="underline underline-offset-4" to="/settings">
+                Settings
+              </Link>{" "}
+              to run.
+            </p>
+          )}
+        </TabsContent>
+        <div className="py-6" hidden={mode === "quick"}>
           <FieldSet disabled={busy} className="min-w-0 gap-0">
             <TabsContent
-              value="question"
+              value="advanced"
               forceMount
+              hidden={activeSection !== "advanced"}
               className="data-[state=inactive]:hidden"
             >
-              <QuestionFields
-                design={design}
-                catalog={editorCatalog}
-                onChange={setDesign}
-                onEnvironmentChange={(value) => {
-                  // Finish the select's Enter activation before moving focus to
-                  // the dialog, where its default click would otherwise cancel.
-                  requestAnimationFrame(() => setPendingEnvironment(value));
-                }}
-                disabled={busy}
-              />
-            </TabsContent>
-            <TabsContent
-              value="agents"
-              forceMount
-              className="data-[state=inactive]:hidden"
-            >
-              <AgentFields
-                design={design}
-                catalog={catalog}
-                onChange={setDesign}
-              />
-            </TabsContent>
-            <TabsContent
-              value="conditions"
-              forceMount
-              className="data-[state=inactive]:hidden"
-            >
-              <div className="flex min-w-0 flex-col gap-8">
-                {design.environment_source && (
-                  <EnvironmentExamples
-                    key={design.environment_source.sha256}
-                    design={design}
-                    source={design.environment_source}
-                    disabled={busy}
-                    onApply={(example, bindings) =>
-                      reuse.mutate({ example, bindings })
-                    }
-                  />
+              <Accordion
+                type="single"
+                collapsible
+                value={mode === "json" ? "json" : step}
+                onValueChange={selectSection}
+              >
+                <AccordionItem value="research">
+                  <AccordionTrigger disabled={busy}>
+                    Research plan
+                  </AccordionTrigger>
+                  <AccordionContent
+                    forceMount
+                    hidden={(mode === "json" ? "json" : step) !== "research"}
+                    className="py-5"
+                  >
+                    <ResearchFields
+                      design={design}
+                      catalog={editorCatalog}
+                      onChange={setDesign}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="agents">
+                  <AccordionTrigger disabled={busy}>Agents</AccordionTrigger>
+                  <AccordionContent
+                    forceMount
+                    hidden={(mode === "json" ? "json" : step) !== "agents"}
+                    className="py-5"
+                  >
+                    <AgentFields
+                      design={design}
+                      catalog={catalog}
+                      onChange={setDesign}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="conditions">
+                  <AccordionTrigger disabled={busy}>
+                    Conditions
+                  </AccordionTrigger>
+                  <AccordionContent
+                    forceMount
+                    hidden={(mode === "json" ? "json" : step) !== "conditions"}
+                    className="py-5"
+                  >
+                    <div className="flex min-w-0 flex-col gap-8">
+                      {design.environment_source && (
+                        <EnvironmentExamples
+                          key={design.environment_source.sha256}
+                          design={design}
+                          source={design.environment_source}
+                          disabled={busy}
+                          onApply={(example, bindings) =>
+                            reuse.mutate({ example, bindings })
+                          }
+                        />
+                      )}
+                      <ConditionFields
+                        design={design}
+                        catalog={editorCatalog}
+                        onChange={setDesign}
+                      />
+                      <TaskFields
+                        key={formVersion}
+                        design={design}
+                        onChange={setDesign}
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="execution">
+                  <AccordionTrigger disabled={busy}>Run plan</AccordionTrigger>
+                  <AccordionContent
+                    forceMount
+                    hidden={(mode === "json" ? "json" : step) !== "execution"}
+                    className="py-5"
+                  >
+                    <ExecutionFields
+                      key={formVersion}
+                      design={design}
+                      catalog={editorCatalog}
+                      onChange={setDesign}
+                      seedsInput={seedsInput}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+                {(settings.data?.preferences?.developer === true ||
+                  jsonDirty) && (
+                  <AccordionItem value="json">
+                    <AccordionTrigger disabled={busy}>
+                      Specification
+                    </AccordionTrigger>
+                    <AccordionContent
+                      forceMount
+                      hidden={(mode === "json" ? "json" : step) !== "json"}
+                      className="py-5"
+                    >
+                      <FieldGroup>
+                        <Field>
+                          <FieldLabel htmlFor="specification">
+                            Complete JSON specification
+                          </FieldLabel>
+                          <Textarea
+                            id="specification"
+                            disabled={busy}
+                            className="min-h-96 font-mono text-xs leading-relaxed"
+                            spellCheck={false}
+                            value={json}
+                            onChange={(event) => {
+                              setJson(event.target.value);
+                              setJsonDirty(true);
+                            }}
+                          />
+                          <FieldDescription>
+                            Switching to a form section validates and applies
+                            your edits. Unsupported fields and mechanics are
+                            rejected.
+                          </FieldDescription>
+                        </Field>
+                      </FieldGroup>
+                    </AccordionContent>
+                  </AccordionItem>
                 )}
-                <ConditionFields
-                  design={design}
-                  catalog={editorCatalog}
-                  onChange={setDesign}
-                />
-                <TaskFields
-                  key={formVersion}
-                  design={design}
-                  onChange={setDesign}
-                />
-              </div>
+              </Accordion>
             </TabsContent>
-            <TabsContent
-              value="execution"
-              forceMount
-              className="data-[state=inactive]:hidden"
-            >
-              <ExecutionFields
-                key={formVersion}
-                design={design}
-                catalog={editorCatalog}
-                onChange={setDesign}
-              />
-            </TabsContent>
-            <TabsContent
-              value="review"
-              forceMount
-              className="data-[state=inactive]:hidden"
-            >
+            <TabsContent value="review">
               <ExperimentReview
                 design={design}
                 catalog={editorCatalog}
-                onEdit={setStep}
+                onEdit={(value) => {
+                  if (value === "question") setMode("quick");
+                  else setStep(value);
+                }}
               />
               {explanation && (
                 <Disclosure className="mt-6">
@@ -506,31 +850,6 @@ export function DesignEditor({
                 </Disclosure>
               )}
             </TabsContent>
-            <TabsContent
-              value="json"
-              forceMount
-              className="data-[state=inactive]:hidden"
-            >
-              <FieldGroup>
-                <Field>
-                  <FieldLabel htmlFor="specification">
-                    Complete JSON specification
-                  </FieldLabel>
-                  <Textarea
-                    id="specification"
-                    disabled={busy}
-                    className="min-h-96 font-mono text-xs leading-relaxed"
-                    spellCheck={false}
-                    value={json}
-                    onChange={(event) => setJson(event.target.value)}
-                  />
-                  <FieldDescription>
-                    Switching to a form section validates and applies your
-                    edits. Unsupported fields and mechanics are rejected.
-                  </FieldDescription>
-                </Field>
-              </FieldGroup>
-            </TabsContent>
             {(error || save.error || validate.error) && (
               <div className="mt-5">
                 <Alert variant="error">
@@ -543,12 +862,9 @@ export function DesignEditor({
                 <Alert variant="error">{check.error.message}</Alert>
               </div>
             )}
-            {check.data && !currentCheck && (
-              <p className="mt-5 text-sm text-muted-foreground" role="status">
-                Protocol changed. Check again for current findings.
-              </p>
+            {mode !== "quick" && currentCheck && (
+              <ExperimentCheck report={currentCheck} />
             )}
-            {currentCheck && <ExperimentCheck report={currentCheck} />}
           </FieldSet>
           <Separator className="my-6" />
           <footer className="flex flex-col gap-4">
@@ -556,23 +872,6 @@ export function DesignEditor({
               aria-label="Section navigation"
               className="flex flex-wrap items-center justify-between gap-3"
             >
-              <div>
-                {mode === "visual" && sectionIndex > 0 && step !== "review" && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    disabled={busy}
-                    onClick={() =>
-                      setStep(
-                        editorSections[sectionIndex - 1]?.value ?? "question",
-                      )
-                    }
-                  >
-                    <ArrowLeft data-icon="inline-start" />
-                    Back
-                  </Button>
-                )}
-              </div>
               <div className="flex items-center gap-2">
                 {step === "review" || mode === "json" ? (
                   <>
@@ -595,7 +894,11 @@ export function DesignEditor({
                     </Button>
                     <Button
                       type="submit"
-                      disabled={busy || currentCheck?.status === "blocked"}
+                      disabled={
+                        busy ||
+                        (mode !== "json" && (!complete || !seedsValid)) ||
+                        currentCheck?.status === "blocked"
+                      }
                     >
                       {save.isPending && (
                         <LoaderCircle
@@ -604,34 +907,38 @@ export function DesignEditor({
                           data-icon="inline-start"
                         />
                       )}
-                      {studyId ? "Save new revision" : "Create experiment"}
+                      {studyId ? "Save new version" : "Create experiment"}
                     </Button>
                   </>
                 ) : (
                   <Button
                     type="button"
                     disabled={busy}
-                    onClick={() =>
-                      setStep(
-                        editorSections[sectionIndex + 1]?.value ?? "review",
-                      )
-                    }
+                    onClick={() => setStep("review")}
                   >
-                    Continue
+                    Review experiment
                     <ArrowRight data-icon="inline-end" />
                   </Button>
                 )}
               </div>
             </nav>
-            <div className="flex min-h-4 flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-              <span role="status" title="Saved in this browser">
-                {draftStatus || "Changes save in this browser"}
-              </span>
-              <span>Nothing runs until you choose.</span>
-            </div>
           </footer>
         </div>
       </Tabs>
+      {check.data && !currentCheck && (
+        <p className="pb-4 text-sm text-muted-foreground" role="status">
+          Protocol changed. Check again for current findings.
+        </p>
+      )}
+      {draftStatus && (
+        <p
+          className="pb-4 text-xs text-muted-foreground"
+          role="status"
+          aria-label="Draft status"
+        >
+          {draftStatus}
+        </p>
+      )}
       <AlertDialog
         open={pendingEnvironment !== null}
         onOpenChange={(open) => {

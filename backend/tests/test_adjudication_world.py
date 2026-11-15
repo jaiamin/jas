@@ -47,7 +47,7 @@ def test_world_requires_the_recorded_ruling_and_rejects_denied_or_wrong_inputs_a
 
 @pytest.mark.parametrize(
     "change",
-    ["absent-model", "participant-as-judge", "mechanism-version", "config-version", "source-pin"],
+    ["absent-model", "invalid-model", "mechanism-version", "config-version", "source-pin"],
 )
 def test_undeclared_or_incompatible_adjudication_is_rejected_before_execution(tmp_path, change):
     value = protocol()
@@ -55,8 +55,8 @@ def test_undeclared_or_incompatible_adjudication_is_rejected_before_execution(tm
     scope = condition["parameters"]["artifacts"]["judgment"]
     if change == "absent-model":
         del condition["adjudicator"]
-    elif change == "participant-as-judge":
-        condition["adjudicator"]["model"] = "openai:gpt-6-luna"
+    elif change == "invalid-model":
+        condition["adjudicator"]["model"] = "unqualified-model"
     elif change == "mechanism-version":
         scope["version"] = "2.0.0"
     elif change == "config-version":
@@ -106,3 +106,14 @@ def test_review_distinguishes_judge_configuration_from_participant_assignment(tm
         assert report["comparisons"][0]["changed_adjudicator"] == ["openai_reasoning_effort"]
         assert len(report["adjudications"]) == 2
         assert client.get("/api/settings").json()["usage"]["requests"] == 0
+
+
+def test_judge_model_is_independently_declared_without_a_model_allowlist():
+    value = protocol()
+    value["conditions"][0]["adjudicator"]["model"] = "openai:gpt-6-luna"
+    design = Design.model_validate(value)
+    assert design.conditions[0].adjudicator is not None
+    assert design.conditions[0].adjudicator.model == design.conditions[0].model
+    value["conditions"][0]["adjudicator"]["model"] = "local:custom-judge"
+    judge = Design.model_validate(value).conditions[0].adjudicator
+    assert judge is not None and judge.model == "local:custom-judge"

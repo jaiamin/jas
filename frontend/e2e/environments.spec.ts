@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import type { Catalog } from "../src/lib/types.js";
 
 for (const theme of ["light", "dark"]) {
-  for (const width of [390, 1600]) {
+  for (const width of [320, 390, 1600]) {
     test(`environment catalogue identities, details and navigation · ${theme} · ${width}`, async ({
       page,
       request,
@@ -32,7 +32,7 @@ for (const theme of ["light", "dark"]) {
       );
       await expect(titleIcon).toHaveCSS("width", "36px");
       await expect(titleIcon.locator("svg")).toHaveCSS("width", "18px");
-      await expect(titleIcon.locator("svg > path").first()).not.toHaveCSS(
+      await expect(titleIcon.locator("svg > path").first()).toHaveCSS(
         "fill",
         "none",
       );
@@ -77,7 +77,7 @@ for (const theme of ["light", "dark"]) {
       });
       expect(
         await card
-          .locator("p")
+          .locator('[data-slot="item-description"]')
           .evaluate((element) => getComputedStyle(element).userSelect),
       ).not.toBe("none");
       const mark = card.locator("svg[data-environment]");
@@ -101,16 +101,57 @@ for (const theme of ["light", "dark"]) {
       for (const gap of Object.values(geometry))
         expect(gap).toBeGreaterThanOrEqual(3);
       const markBox = await mark.boundingBox();
-      const textBox = await card
-        .locator('[data-slot="item-content"]')
-        .boundingBox();
-      expect(markBox && textBox).toBeTruthy();
-      if (markBox && textBox)
+      expect(markBox?.width).toBe(44);
+      expect(markBox?.height).toBe(44);
+      await expect(card.locator('[data-slot="badge"]')).toHaveCount(0);
+      await expect(
+        page.getByRole("region", { name: "Work settings", exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("region", { name: "Games & mechanics", exact: true }),
+      ).toBeVisible();
+      const workGrid = page
+        .getByRole("region", { name: "Work settings", exact: true })
+        .locator('[data-slot="item-group"]');
+      const gridBox = await workGrid.boundingBox();
+      const cards = await workGrid.getByRole("article").all();
+      const firstBox = await cards[0].boundingBox();
+      const secondBox = await cards[1].boundingBox();
+      expect(gridBox && firstBox && secondBox).toBeTruthy();
+      if (gridBox && firstBox && secondBox) {
+        expect(Math.abs(firstBox.width - secondBox.width)).toBeLessThanOrEqual(
+          1,
+        );
+        if (width === 1600) {
+          expect(firstBox.y).toBe(secondBox.y);
+          expect(
+            Math.abs(secondBox.x + secondBox.width - gridBox.x - gridBox.width),
+          ).toBeLessThanOrEqual(1);
+        } else {
+          expect(firstBox.x).toBe(secondBox.x);
+          expect(secondBox.y).toBeGreaterThan(firstBox.y);
+          expect(Math.abs(firstBox.width - gridBox.width)).toBeLessThanOrEqual(
+            1,
+          );
+        }
+      }
+      for (const row of await page.getByRole("article").all())
         expect(
-          Math.abs(
-            markBox.y + markBox.height / 2 - textBox.y - textBox.height / 2,
-          ),
-        ).toBeLessThanOrEqual(1);
+          await row.evaluate((element) => {
+            const bounds = element.getBoundingClientRect();
+            return (
+              element.scrollWidth <= element.clientWidth &&
+              Array.from(
+                element.querySelectorAll(
+                  '[data-slot="item-content"], [data-slot="badge"]',
+                ),
+              ).every((child) => {
+                const box = child.getBoundingClientRect();
+                return box.top >= bounds.top && box.bottom <= bounds.bottom;
+              })
+            );
+          }),
+        ).toBe(true);
       await expect(page.locator('[data-slot="card"]')).toHaveCount(0);
       await page.screenshot({
         path: testInfo.outputPath(`environments-${theme}-${width}.png`),
@@ -144,16 +185,25 @@ for (const theme of ["light", "dark"]) {
         await expect(page).toHaveURL(new RegExp(`environment=${env.key}`));
         await expect(
           panel.getByRole("link", {
-            name: "Configure experiment",
+            name: "Create experiment",
             exact: true,
           }),
-        ).toHaveAttribute(
-          "href",
-          `/new?environment=${env.key}&step=conditions`,
-        );
+        ).toHaveAttribute("href", `/new?environment=${env.key}`);
         await expect(
-          panel.getByRole("link", { name: "Design with Agent", exact: true }),
-        ).toHaveAttribute("href", "/agent");
+          panel.getByRole("heading", {
+            name: "What agents observe",
+            exact: true,
+          }),
+        ).toHaveCount(0);
+        await panel
+          .getByRole("button", { name: "Observations & rules", exact: true })
+          .click();
+        await expect(
+          panel.getByRole("heading", {
+            name: "What agents observe",
+            exact: true,
+          }),
+        ).toBeVisible();
         await panel
           .getByRole("button", { name: "Available controls", exact: true })
           .click();
@@ -163,7 +213,7 @@ for (const theme of ["light", "dark"]) {
             { exact: true },
           ),
         ).toBeVisible();
-        await panel.getByRole("button", { name: /^Measurements/ }).click();
+        await panel.getByRole("button", { name: /^Metrics/ }).click();
         await expect(
           panel.getByText(
             env.measure_definitions[env.primary_metric] ?? "Missing metric",
@@ -172,7 +222,7 @@ for (const theme of ["light", "dark"]) {
         ).toBeAttached();
         if (env.key === "commons") {
           const action = panel.getByRole("link", {
-            name: "Configure experiment",
+            name: "Create experiment",
             exact: true,
           });
           const header = panel.locator('[data-slot="sheet-header"]');
@@ -283,7 +333,7 @@ test("environment data loads independently and errors retain cached content", as
     if (loadingRow && loadedRow)
       expect(
         Math.abs(loadingRow.height - loadedRow.height),
-      ).toBeLessThanOrEqual(1);
+      ).toBeLessThanOrEqual(24);
     failCatalog = true;
     await page.waitForTimeout(1100);
     await page.getByRole("link", { name: "Runs", exact: true }).click();

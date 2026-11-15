@@ -1,0 +1,62 @@
+---
+title: Run locally
+description: Start a workspace and explore your first experiment.
+sidebarTitle: Quickstart
+keywords: [installation, local workspace, examples]
+icon: download
+---
+
+Start JAS on your machine, then watch a recorded example before configuring a
+model. You do not need an account or provider key to explore the recordings.
+
+## Start with Docker
+
+Install and start [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+[Download JAS](https://github.com/jaiamin/jas/archive/refs/heads/t3/ponytail-full-1.zip),
+extract it, and open a terminal in the extracted folder. Run:
+
+```sh
+docker compose up --build
+```
+
+Open [localhost:8080](http://localhost:8080). The first start builds the app;
+you do not need Python, Node or an `.env` file. Keep the terminal running while
+you use JAS. Enter provider keys in **Settings** when you need them.
+
+## Explore without a key
+
+Open **Learn → Examples**, choose **Watch**, and step through a scripted recording.
+Each turn separates the observation, action and settled consequence. Watching,
+scrubbing and replay verification make no model calls.
+
+Choose **Use example** to open an editable starting protocol. You can also use an
+**Experiment idea** on Home to fill an Assistant draft without sending it.
+
+## Run your own comparison
+
+1. Add a provider or local endpoint in **Settings** and choose your models.
+2. Open an example or create an experiment. Review the question, conditions,
+   seeds, outcomes and limits.
+3. **Create** the experiment to inspect it, or explicitly choose **Create and run**.
+4. Open **Results** and a run to inspect the recorded evidence.
+
+[Provider configuration and costs](/guides/providers-and-costs) explains keys,
+prices and spending limits. [Experiments](/guides/experiments) explains the protocol.
+
+## Stop and return later
+
+```sh
+docker compose down
+```
+
+Run this from the same folder to stop JAS, or press **Ctrl+C** in its terminal.
+Start it again with `docker compose up --build`. Your workspace stays in Docker's
+`jas-data` volume. Avoid `down --volumes`, which deletes that data.
+
+Use **Settings → Data** to download a consistent backup without provider keys.
+Backups include private observations and conversations; keep them private.
+
+For optional port changes and other installation methods, see
+[installation](https://github.com/jaiamin/jas/blob/t3/ponytail-full-1/docs/INSTALLATION.md).
+Contributors can follow the separate
+[development guide](https://github.com/jaiamin/jas/blob/t3/ponytail-full-1/docs/DEVELOPMENT.md).

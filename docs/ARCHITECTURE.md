@@ -1,6 +1,6 @@
 # Architecture
 
-A single FastAPI process serves a built React app and a same-origin JSON API. Server-owned
+The local workspace is a FastAPI process serving a built React app and same-origin JSON API. Server-owned
 async tasks execute separate runs with bounded concurrency; decisions within one run
 remain ordered. Only explicit user actions create paid work. Restart pauses interrupted work.
 
@@ -55,7 +55,7 @@ is checked again at save and execution. Coupled fields count as one bundle; part
 remain allowed without a full-factorial claim.
 Proposal stages, research sources, reviews and provider traces remain Analysis data.
 Revisions record the originating proposal; exports retain that proposal and its requests.
-Optional web research is advertised only when the configured search model and remaining
+Optional web research is off by default and advertised only after opt-in, when the configured search model and remaining
 workspace headroom cover its conservative reservation; dispatch still reserves atomically.
 Unavailable search cannot be claimed as completed research. Synthetic studies may state
 their assumptions; requests requiring verified external facts need clarification. A material
@@ -88,14 +88,14 @@ not vary starting states, without claiming later randomness is identical. The ac
 local-value control and optional event-wait harness are explicit policies. Event waiting
 reuses a model-chosen wait for a bounded number of unchanged-input opportunities; it
 preserves every World turn, activation and replay receipt. It does not add a payoff cost.
-See the [implementation rationale](research/RESEARCH_QUALITY_PLAN.md).
+See [experiment validity](EXPERIMENT_VALIDITY.md) for interpretation rules.
 
-## Agent workspace
+## Assistant workspace
 
-`/agent` is a single conversation surface with a conversation toolbar and a contextual
-composer. Experiment/run Ask Agent links select their record on that page. The protocol
-editor offers Generate with Agent while keeping unfinished manual drafts.
-Ordinary proposals stay in chat until Review protocol opens the editor; Back to Agent
+`/assistant` is a single conversation surface with a conversation toolbar and a contextual
+composer. Experiment/run Ask about this opens a panel pinned to the displayed version and evidence cutoff. The protocol
+editor offers the Assistant while keeping unfinished manual drafts.
+Ordinary proposals stay in chat until Review protocol opens the editor; Back to Assistant
 returns to their conversation. Ordinary chat and saving a proposal never start a run.
 
 `POST /api/chats` accepts a question, context (`general`, `new`, `study:<id>`, or `run:<id>`),
@@ -105,6 +105,14 @@ and optional existing `chat_id`. The first accepted message creates the conversa
 heartbeat during quiet stages and completion closing the stream. Only the active turn is
 sent, avoiding repeated transmission of the conversation. Disconnecting never cancels or
 resubmits provider work; polling and reload restore the same persisted record.
+`DELETE /api/chats/{id}` removes all turns of a conversation only after confirmation
+in the UI. Run the transaction synchronously on the assistant event loop, locking
+turns before checking live ownership, pending turns/calls and saved revision
+proposal references. Reject those dependencies without partial deletion. Detach
+provider accounting from deleted turns and clear request/response payloads; retain
+all costs, tokens, unknown reservations and experiment/run accounting links. A
+request awaiting context capture must recheck that its existing chat still exists
+before creating a turn, so deletion cannot resurrect it or incur a provider call.
 
 Provider streaming uses the existing budget reservation, single-request limit, timeout and
 trace accounting. Partial prose is stored under `Analysis.output.partial`; it is pending
@@ -132,8 +140,8 @@ chooses an answer or a handoff to the existing validated Planner. The handoff pe
 the design purpose and scoping stage on the same Analysis, clears preliminary prose,
 and accounts for both steps under that request. SSE exposes the purpose transition.
 Unscoped follow-ups return to general intent selection; proposals never save or run
-automatically. All unscoped entry points, including Agent, use this shared server
-harness; the UI has no manual creation mode. Home has no scope selector; Agent
+automatically. All unscoped entry points, including Assistant, use this shared server
+harness. General/Advanced also support manual protocol creation. Home has no scope selector; Assistant
 defaults to no selected experiment and offers existing experiment/run evidence selection.
 Analysis history matches the chat,
 exact scope and purpose, and citations still require inspected turns within frozen cutoffs.
@@ -396,7 +404,7 @@ relay transitions and executable create/revise validation run off the API event
 loop. Candidate self-tests grant no authority.
 This sealed profile alone supplies no general generation or adjudication. Finite
 qualification makes no claim about arbitrary-program correctness or intelligence.
-See [the contract](EXTENSIONS.md) and [development history](research/RESEARCH_HARNESS_COMPACT_REPORT.md).
+See [the extension contract](EXTENSIONS.md).
 
 T17 adds the separate `reviewed-finite-v1` backend profile. Its prerequisite is an
 independently user-authored exhaustive external table, operation-role permissions,
@@ -502,8 +510,8 @@ migration or reset. Capture1/comparison1/tool2.0/direct1.0 remain current.
 ## Institutional workflow
 
 Delivered messages, handoffs and acceptance remain inspectable alongside work.
-The [product review](research/FINAL_PRODUCT_REVIEW.md) records current
-qualification and its limits.
+Qualification is checked in the current process; historical evaluations do not
+qualify a changed runtime.
 
 `institutional_workflow` extends the existing artifact World for6–12 participants.
 Typed work items bind one artifact to declared workers, material cost, duration,
@@ -800,8 +808,8 @@ Agent replies lead with a deterministic source-linked account, then expose claim
 status, calculation inputs, coverage/missingness and frozen-evidence download in
 stock disclosures. Reanalysis uses the existing TanStack mutation and preserves
 drafts/record identity. General explanation, planning and copied-probe workflows
-retain their existing response shapes. See the [compact history](research/RESEARCH_HARNESS_COMPACT_REPORT.md)
-for independent DEVELOPMENT examples, retained disagreements and operating limits.
+retain their existing response shapes. Scripted development examples establish
+mechanics, not live-model competence.
 
 The investigator receives cutoff-scoped opportunity counts, actual balances, decision usage
 and failure-aware matched effects. Conditions group by immutable revision even when their
@@ -946,3 +954,46 @@ analysis artifacts. Database16/export20/library10 includes institutional work an
 independently admitted finite packages. Incompatible persisted meanings reject explicitly.
 Exposure provenance alone does not alter controlled-world
 settlement, prompts or checkpoint replay. No migration or reset is performed.
+
+
+## MVP application boundaries
+
+The public interface uses experiments and immutable versions; internal database/API
+names remain Study/Revision. General and Advanced share one validated protocol and
+one browser draft. Advanced retains the full editor; raw JSON and extension
+candidates require Developer mode. Save never runs. Eight reusable examples include
+keyless scripted recordings under Learn → Examples (three work, five cooperation).
+Home's four illustrated ideas fill Assistant drafts without sending. Model setup, pricing, token
+caps and backup are local Settings responsibilities. Gallery owns public browsing,
+publishing identity and publication management; publishing stays contextual to a
+finished experiment. Anonymous browsing never reads the OS keychain.
+
+`providers.py` owns the owner-only local configuration and arbitrary model registry;
+`llm.py` owns adapters and atomic money/token reservation and settlement. Unknown
+prices remain unknown in old evidence, even after price edits. Provider/budget
+changes require idle work. Settings sections merge only supplied preference fields,
+so saving one section cannot reset unrelated model/budget preferences. Planner web
+research starts disabled. Free conservative estimates precede participant,
+Assistant and connection-test spending. Recorded usage follows each operation.
+
+Local and public pages compose the same run viewer, typed key moments and
+recorded-turn playback. Agent perspective filters authorized observations and
+addressed events; availability is separate from a confirmed request input.
+Matched comparison pairs one immutable version by seed and repetition, aligns
+committed turn numbers and reports starting-state differences separately from the
+first actor/action/message/consequence divergence. It excludes rationale and latency.
+
+The gallery is a separate ASGI application with no runner or LanguageModels instance.
+It has its own small SQLite identity/catalogue database and private immutable object
+store. Its GitHub session and narrow device publish tokens are distinct; tokens
+are hashed server-side and device secrets live only in the local OS keychain.
+Public reading is anonymous. A content/version-specific record is scanned and
+independently replayed before publication; the gallery validates chart aggregates
+against recordings rather than trusting publisher-supplied summaries.
+
+The public record contract and retained verifier policy are documented in
+[PUBLISHING.md](PUBLISHING.md), independently of the current private workspace
+schema. Run files load on demand. Page/file reads pass through the publication
+status gate so unpublish also removes downloads and social cards; underlying
+objects are never directly public. [Gallery operations](GALLERY_OPERATIONS.md)
+covers limits, moderation, caching and public-launch requirements.

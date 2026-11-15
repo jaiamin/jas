@@ -114,8 +114,8 @@ export function ComparisonEvidence({ report }: { report: ComparisonReport }) {
               provider request. It does not count requests or cost.
             </p>
             <p>
-              Revision {comparison.revision} · comparison v{comparison.version}{" "}
-              · design{" "}
+              Version {comparison.revision} · comparison v{comparison.version} ·
+              design{" "}
               <code className="break-all">{comparison.design_sha256}</code>
             </p>
           </div>

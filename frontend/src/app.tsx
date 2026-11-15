@@ -1,6 +1,7 @@
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { Link, Route, Routes } from "react-router-dom";
 import { Empty } from "@/components/feedback";
+import { Loading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { WorkspaceProvider } from "@/components/workspace-provider";
 import WorkspaceShell from "@/components/workspace-shell";
@@ -16,9 +17,52 @@ const Run = lazy(() => import("@/pages/run"));
 const Environments = lazy(() => import("@/pages/environments"));
 const Settings = lazy(() => import("@/pages/settings"));
 const Compare = lazy(() => import("@/pages/compare"));
+const Watch = lazy(() => import("@/pages/watch"));
+const Examples = lazy(() => import("@/pages/examples"));
+const Matched = lazy(() => import("@/pages/matched"));
+const Gallery = lazy(() => import("@/pages/gallery"));
+const GalleryShell = lazy(() =>
+  import("@/pages/gallery").then((module) => ({
+    default: module.GalleryShell,
+  })),
+);
+const PublicExperiment = lazy(() => import("@/pages/public-experiment"));
+const GalleryAccount = lazy(() => import("@/pages/gallery-account"));
+const GalleryTerms = lazy(() => import("@/pages/gallery-terms"));
 
 export default function App() {
   useInputModality();
+  if (
+    document
+      .querySelector('meta[name="jas-surface"]')
+      ?.getAttribute("content") === "gallery"
+  ) {
+    return (
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route element={<GalleryShell />}>
+            <Route index element={<Gallery publicSurface />} />
+            <Route path="gallery" element={<Gallery publicSurface />} />
+            <Route path="gallery/account" element={<GalleryAccount />} />
+            <Route path="login" element={<GalleryAccount loginOnly />} />
+            <Route path="terms" element={<GalleryTerms />} />
+            <Route
+              path="p/:author/:slug/:version"
+              element={<PublicExperiment />}
+            />
+            <Route
+              path="*"
+              element={
+                <Empty title="Page not found">
+                  <Link to="/gallery">Browse experiments</Link>
+                </Empty>
+              }
+            />
+          </Route>
+        </Routes>
+      </Suspense>
+    );
+  }
   return (
     <Routes>
       <Route
@@ -29,15 +73,19 @@ export default function App() {
         }
       >
         <Route index element={<Home />} />
-        <Route path="studies" element={<Experiments />} />
-        <Route path="agent" element={<AgentPage />} />
-        <Route path="studies/:id" element={<Study />} />
+        <Route path="experiments" element={<Experiments />} />
+        <Route path="assistant" element={<AgentPage />} />
+        <Route path="experiments/:id" element={<Study />} />
+        <Route path="experiments/:id/matched" element={<Matched />} />
         <Route path="new" element={<Editor />} />
         <Route path="runs" element={<Runs />} />
         <Route path="runs/:id" element={<Run />} />
         <Route path="environments" element={<Environments />} />
         <Route path="settings" element={<Settings />} />
         <Route path="compare" element={<Compare />} />
+        <Route path="watch/:id" element={<Watch />} />
+        <Route path="examples" element={<Examples />} />
+        <Route path="gallery" element={<Gallery />} />
         <Route
           path="*"
           element={
@@ -46,7 +94,7 @@ export default function App() {
               description="This address does not point to a workspace view."
             >
               <Button variant="outline" asChild>
-                <Link to="/studies">Back to experiments</Link>
+                <Link to="/experiments">Back to experiments</Link>
               </Button>
             </Empty>
           }

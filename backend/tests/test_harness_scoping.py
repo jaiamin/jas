@@ -229,6 +229,7 @@ def test_planning_research_availability_respects_workspace_budget(
 ):
     app = create_app(f"sqlite:///{tmp_path}/research-budget.sqlite3", budget_usd=budget)
     with TestClient(app, base_url="http://localhost") as client:
+        app.state.models.registry.configuration.preferences.planner_web_research = True
         design = artifact_design(client)
         seen = []
 

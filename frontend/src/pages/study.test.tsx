@@ -1,14 +1,20 @@
 import { act, fireEvent, screen } from "@testing-library/react";
 import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
 import { expect, test, vi } from "vitest";
+import { AssistantWorkspaceProvider } from "@/components/agent/assistant-workspace";
 import { WorkspaceProvider } from "@/components/workspace-provider";
 import WorkspaceShell from "@/components/workspace-shell";
 import type { StudyDetail } from "@/lib/types";
-import { design, runDetail } from "@/test/fixtures";
+import {
+  design,
+  runDetail,
+  settings as settingsFixture,
+} from "@/test/fixtures";
 import { deferredResponse, renderWithQueries } from "@/test/queries";
 import Study from "./study";
 
 const study: StudyDetail = {
+  estimate: { runs: 2, max_requests: 8, upper_usd: 0.5 },
   preflight: {
     status: "checked",
     issues: [],
@@ -53,12 +59,14 @@ function snapshot(statuses: string[]): StudyDetail {
   };
 }
 
-function renderStudy(path = "/studies/study") {
+function renderStudy(path = "/experiments/study") {
   return renderWithQueries(
     <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route path="/studies/:id" element={<Study />} />
-      </Routes>
+      <AssistantWorkspaceProvider>
+        <Routes>
+          <Route path="/experiments/:id" element={<Study />} />
+        </Routes>
+      </AssistantWorkspaceProvider>
     </MemoryRouter>,
   );
 }
@@ -76,30 +84,32 @@ test("an in-flight experiment control belongs to the experiment that submitted i
   vi.stubGlobal(
     "fetch",
     vi.fn((path: string) =>
-      path === "/api/runs"
-        ? Promise.resolve(Response.json([]))
-        : path.endsWith("/control")
-          ? control.promise
-          : Promise.resolve(
-              Response.json(
-                path.includes("/exposure")
-                  ? { runs: [] }
-                  : {
-                      ...snapshot(["ready"]),
-                      design: {
-                        ...design,
-                        title: path.endsWith("/second")
-                          ? "Second experiment"
-                          : design.title,
+      path === "/api/settings"
+        ? Promise.resolve(Response.json(settingsFixture))
+        : path === "/api/runs"
+          ? Promise.resolve(Response.json([]))
+          : path.endsWith("/control")
+            ? control.promise
+            : Promise.resolve(
+                Response.json(
+                  path.includes("/exposure")
+                    ? { runs: [] }
+                    : {
+                        ...snapshot(["ready"]),
+                        design: {
+                          ...design,
+                          title: path.endsWith("/second")
+                            ? "Second experiment"
+                            : design.title,
+                        },
                       },
-                    },
+                ),
               ),
-            ),
     ),
   );
   renderWithQueries(
-    <MemoryRouter initialEntries={["/studies/study"]}>
-      <Link to="/studies/second">Other experiment</Link>
+    <MemoryRouter initialEntries={["/experiments/study"]}>
+      <Link to="/experiments/second">Other experiment</Link>
       <Routes>
         <Route
           element={
@@ -108,7 +118,7 @@ test("an in-flight experiment control belongs to the experiment that submitted i
             </WorkspaceProvider>
           }
         >
-          <Route path="/studies/:id" element={<Study />} />
+          <Route path="/experiments/:id" element={<Study />} />
         </Route>
       </Routes>
     </MemoryRouter>,
@@ -262,19 +272,49 @@ test("planned sample and lack of independent support remain inspectable without 
     ),
   );
   renderStudy();
+  fireEvent.mouseDown(await screen.findByRole("tab", { name: "Results" }), {
+    button: 0,
+    ctrlKey: false,
+  });
   const details = await screen.findByRole("button", {
     name: "Comparison & evidence",
   });
   expect(details).toHaveAttribute("aria-expanded", "false");
-  expect(screen.getByText("No results yet")).toBeInTheDocument();
+  expect(screen.queryByText("Complete / planned")).not.toBeInTheDocument();
   expect(screen.queryByText("Complete / planned")).not.toBeInTheDocument();
   fireEvent.click(details);
   expect(await screen.findByText("Complete / planned")).toBeInTheDocument();
-  expect(screen.getByText("0 / 2")).toBeInTheDocument();
+  expect(screen.getByRole("cell", { name: "0 / 2" })).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Sample & uncertainty" }));
   expect(await screen.findByText("Provider failed")).toBeInTheDocument();
   expect(
     screen.getByText(/Independent support: not established/),
   ).toBeInTheDocument();
   expect(screen.getByText("Sampling is not declared")).toBeInTheDocument();
+});
+
+test("blocked experiments expose the reason before execution without opening details", async () => {
+  const blocked: StudyDetail = {
+    ...snapshot(["ready"]),
+    preflight: {
+      ...study.preflight,
+      status: "blocked",
+      issues: [
+        {
+          code: "inactive_intervention",
+          severity: "error",
+          message: "The comparison changes an inactive setting.",
+        },
+      ],
+    },
+  };
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(() => Promise.resolve(Response.json(blocked))),
+  );
+  renderStudy();
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "The comparison changes an inactive setting.",
+  );
+  expect(screen.getByRole("button", { name: "Run experiment" })).toBeDisabled();
 });

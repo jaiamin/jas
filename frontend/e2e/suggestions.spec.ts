@@ -23,13 +23,13 @@ test("four examples adapt to creation, saved treatments and a run without submit
     if (request.method() === "POST" && request.url().endsWith("/api/chats"))
       submitted++;
   });
-  await page.goto("/agent");
+  await page.goto("/assistant");
   const suggestions = page
     .getByRole("region", { name: "Suggested questions" })
     .getByRole("button");
   await expect(suggestions).toHaveCount(4);
   const context = page.getByRole("combobox", { name: "Message context" });
-  const draft = page.getByLabel("Message Agent", { exact: true });
+  const draft = page.getByLabel("Message Assistant", { exact: true });
   await expect(context).toContainText("Add context");
   await page
     .getByRole("button", {
@@ -87,7 +87,7 @@ test("four examples adapt to creation, saved treatments and a run without submit
   await context.click();
   await page
     .getByRole("option", {
-      name: new RegExp(`Rev ${run.revision} .*${run.id.slice(0, 6)}`),
+      name: new RegExp(`Version ${run.revision} .*${run.id.slice(0, 6)}`),
     })
     .click();
   await expect(page.getByRole("alert")).toContainText(
@@ -132,12 +132,12 @@ for (const width of [320, 1440]) {
       if (request.method() === "POST" && request.url().endsWith("/api/chats"))
         submissions++;
     });
-    await page.goto("/agent");
+    await page.goto("/assistant");
     const suggestions = page.getByRole("region", {
       name: "Suggested questions",
     });
-    const draft = page.getByLabel("Message Agent", { exact: true });
-    const composer = page.getByRole("form", { name: "Agent composer" });
+    const draft = page.getByLabel("Message Assistant", { exact: true });
+    const composer = page.getByRole("form", { name: "Assistant composer" });
     await expect(suggestions.getByRole("button")).toHaveText([
       "Design an experiment",
       "Review a setup",

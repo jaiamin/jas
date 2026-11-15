@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import type { EnvironmentId } from "@/lib/types";
 
 // Fixed 9×9 identities: pooled contributions, paired transfers, dependency steps,
@@ -178,10 +179,12 @@ const paths = Object.fromEntries(
 /** Decorative brand artwork, never a replacement for the environment's name. */
 export function EnvironmentMark({
   environment,
-  size = 40,
+  size = 44,
+  className,
 }: {
   environment: EnvironmentId;
   size?: number;
+  className?: string;
 }) {
   return (
     <svg
@@ -189,7 +192,7 @@ export function EnvironmentMark({
       viewBox="-3 -3 43 43"
       width={size}
       height={size}
-      className="shrink-0"
+      className={cn("shrink-0", className)}
       data-environment={environment}
     >
       <path d={paths[environment][0]} className="fill-muted-foreground/15" />

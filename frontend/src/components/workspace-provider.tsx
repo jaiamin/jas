@@ -1,4 +1,5 @@
 import { type ReactNode, useState } from "react";
+import { AssistantWorkspaceProvider } from "@/components/agent/assistant-workspace";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -27,7 +28,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
           }
         }}
       >
-        {children}
+        <AssistantWorkspaceProvider>{children}</AssistantWorkspaceProvider>
       </SidebarProvider>
     </TooltipProvider>
   );

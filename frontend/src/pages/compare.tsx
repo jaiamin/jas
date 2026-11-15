@@ -105,12 +105,12 @@ export default function Compare() {
                       <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
                         {r.summary.study_title}
                       </span>
-                      <Link to={`/runs/${r.summary.id}`}>
+                      <Link className="text-link" to={`/runs/${r.summary.id}`}>
                         {r.summary.condition}
                       </Link>
                       <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
-                        Rev {r.summary.revision} · seed {r.summary.seed} · rep{" "}
-                        {r.summary.repetition} · {r.summary.id.slice(0, 6)}
+                        Version {r.summary.revision} · seed {r.summary.seed} ·
+                        rep {r.summary.repetition} · {r.summary.id.slice(0, 6)}
                       </span>
                     </TableHead>
                   ))}
@@ -228,9 +228,9 @@ export default function Compare() {
               <DisclosureContent className="flex min-w-0 flex-col gap-3 pt-3">
                 <Link
                   className="text-link"
-                  to={`/studies/${r.summary.study_id}?revision=${r.summary.revision}`}
+                  to={`/experiments/${r.summary.study_id}?revision=${r.summary.revision}`}
                 >
-                  Experiment results · revision {r.summary.revision}
+                  Experiment results · version {r.summary.revision}
                 </Link>
                 <Json
                   value={{
@@ -269,7 +269,7 @@ export default function Compare() {
           <MetricChart
             series={runs.map((r) => ({
               id: r.summary.id,
-              name: `${r.summary.condition} · rev ${r.summary.revision} · seed ${r.summary.seed} · rep ${r.summary.repetition}`,
+              name: `${r.summary.condition} · version ${r.summary.revision} · seed ${r.summary.seed} · rep ${r.summary.repetition}`,
               measurements: r.measurements,
             }))}
             metricKey={metricKey}

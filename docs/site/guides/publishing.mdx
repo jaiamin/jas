@@ -1,0 +1,63 @@
+---
+title: Publish and fork
+description: Share a reviewed record while keeping your workspace local.
+sidebarTitle: Sharing
+keywords: [gallery, publication, fork]
+icon: globe
+---
+
+Publishing shares a finished evidence record through a separate gallery. Local
+experiments need no account; GitHub sign-in identifies the author when sharing.
+
+## Browse and sign in
+
+Open **Gallery** to browse public findings without an account. **My published**
+contains GitHub sign-in and your publication controls. Sharing uses a separate,
+model-free hosted service; your local workspace is never uploaded automatically.
+
+Approve the device code in your browser. JAS updates automatically and stores the
+publishing token in your operating system keychain. Linux requires a working
+keychain service; JAS does not fall back to a plaintext token.
+
+JAS uses the official gallery automatically when you open it. Browsing sends
+ordinary request metadata to the service, never your local experiments or keys.
+Local work does not depend on Gallery being available.
+
+## Review before publishing
+
+Open a finished experiment's **Publish** tab:
+
+1. Describe the finding, choose a featured run and select public or unlisted visibility.
+2. Review the exact public record. JAS scans it and checks recorded runs by replaying
+   the rules without model calls.
+3. Resolve scanner findings and inspect the evidence yourself.
+4. Explicitly acknowledge the material and publish. A changed record needs review again.
+
+The record includes the frozen protocol, observations, agent outputs, actions,
+consequences, checkpoints, metrics and costs. Assistant conversations, provider
+configuration and raw provider traces are excluded.
+
+Participant-private observations become readable to anyone with the published
+link. Review those observations as carefully as public messages. A scanner cannot
+replace your review, and immutable evidence cannot be silently edited to hide a leak.
+
+## Understand visibility and replay
+
+**Unlisted** is the default. It is absent from discovery but readable by anyone
+with the link. **Public** records can appear in Gallery. Each version is immutable.
+
+The replay badge checks whether recorded actions reproduce recorded consequences
+under trusted rules. It does not establish research validity or prove that a
+claimed model produced the uploaded actions.
+
+Find your records under **Gallery → My published**. Unpublishing stops the gallery
+from serving the record and its files; already downloaded copies cannot be recalled.
+
+## Fork a protocol
+
+A public record offers a pinned fork command and a full download. Forking creates
+a local experiment with source provenance. It neither calls a model nor installs
+executable environment code. Review the protocol and choose your own models and
+limits before explicitly running it.
+
+See the [CLI reference](/reference/cli) for headless publishing and forking.

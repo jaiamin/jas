@@ -1,4 +1,45 @@
 import { expect, test } from "@playwright/test";
+import { settings as settingsFixture } from "../src/test/fixtures.js";
+
+test("Assistant and Home omit spending captions while Home keeps its composer guidance", async ({
+  page,
+}) => {
+  const estimate = { max_requests: 12, upper_usd: 6.38 };
+  await page.route("**/api/settings", (route) =>
+    route.fulfill({
+      json: {
+        ...settingsFixture,
+        providers: { openai: true },
+        assistant_estimates: {
+          general: estimate,
+          design: estimate,
+          analysis: estimate,
+        },
+      },
+    }),
+  );
+  await page.goto("/assistant");
+  const composer = page.getByRole("form", { name: "Assistant composer" });
+  await page
+    .getByLabel("Message Assistant", { exact: true })
+    .fill("Compare conditions");
+  await expect(
+    composer.getByRole("button", { name: "Send message" }),
+  ).toBeEnabled();
+  await expect(composer.getByText(/Workspace budget applies/)).toHaveCount(0);
+  await page.goto("/");
+  await expect(
+    composer.getByText(/Shape an experiment with Assistant/),
+  ).toBeVisible();
+  await page
+    .getByLabel("Message Assistant", { exact: true })
+    .fill("Compare conditions");
+  await expect(
+    composer.getByText(
+      /Up to \d+ calls|Workspace budget applies|conservative bound/,
+    ),
+  ).toHaveCount(0);
+});
 
 for (const width of [320, 1440]) {
   test(`context selection keeps the composer anchored and clearable · ${width}`, async ({
@@ -11,12 +52,12 @@ for (const width of [320, 1440]) {
       data: { design: { ...catalog.templates[0].design, title } },
     });
     await page.setViewportSize({ width, height: 800 });
-    await page.goto("/agent");
+    await page.goto("/assistant");
     const context = page.getByRole("combobox", { name: "Message context" });
-    const input = page.getByLabel("Message Agent", { exact: true });
+    const input = page.getByLabel("Message Assistant", { exact: true });
     await input.fill("Keep this unsent question");
     const composer = page
-      .getByRole("form", { name: "Agent composer" })
+      .getByRole("form", { name: "Assistant composer" })
       .locator('[data-slot="input-group"]');
     await expect(
       page.getByRole("link", { name: "Configure a provider", exact: true }),
@@ -93,12 +134,12 @@ for (const width of [320, 1440]) {
   });
 }
 
-test("Agent welcome pauses offscreen and settles after one introduction", async ({
+test("Assistant welcome stays static on screen and after scrolling", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 400 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/agent");
+  await page.goto("/assistant");
   const heading = page.getByRole("heading", { name: "What can we explore?" });
   const playing = () =>
     heading.evaluate(
@@ -108,34 +149,38 @@ test("Agent welcome pauses offscreen and settles after one introduction", async 
           .filter((animation) => animation.playState === "running").length,
     );
   await expect(heading).toBeVisible();
-  await expect.poll(playing).toBeGreaterThan(0);
+  await expect.poll(playing).toBe(0);
   await page
     .getByRole("button", { name: "Learn the basics" })
     .scrollIntoViewIfNeeded();
   await expect(heading).not.toBeInViewport();
   await expect.poll(playing).toBe(0);
   await heading.scrollIntoViewIfNeeded();
-  await expect.poll(playing).toBeGreaterThan(0);
-  // It comes to rest without waiting for an action or replaying on visibility.
   await expect.poll(playing).toBe(0);
-  await expect(heading.locator("svg")).not.toHaveAttribute("data-agent-motion");
+  // The welcome stays still even when navigation uses motion.
+  await expect.poll(playing).toBe(0);
+  await expect(heading.locator(".lucide-target")).not.toHaveAttribute(
+    "data-agent-motion",
+  );
   await page
     .getByRole("button", { name: "Learn the basics" })
     .scrollIntoViewIfNeeded();
   await expect(heading).not.toBeInViewport();
   await heading.scrollIntoViewIfNeeded();
   expect(await playing()).toBe(0);
-  await expect(page.getByLabel("Message Agent", { exact: true })).toBeEnabled();
+  await expect(
+    page.getByLabel("Message Assistant", { exact: true }),
+  ).toBeEnabled();
 });
 
 test("Agent welcome stays static with reduced motion and does not replay a skipped entrance", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/agent");
+  await page.goto("/assistant");
   const target = page
     .getByRole("heading", { name: "What can we explore?" })
-    .locator("svg");
+    .locator(".lucide-target");
   await expect(target).toBeVisible();
   await expect(target).not.toHaveAttribute("data-agent-motion");
   expect(
@@ -152,19 +197,19 @@ test("Agent welcome stays static with reduced motion and does not replay a skipp
   ).toBe(0);
 });
 
-test("Agent centers a plain contextual composer without a history rail", async ({
+test("full-screen Agent centers its plain composer above suggestions without a history rail", async ({
   page,
   request,
 }) => {
-  await page.goto("/studies");
+  await page.goto("/experiments");
   const sidebar = page.locator('[data-slot="sidebar"]').first();
   await expect(
     sidebar.getByRole("link", { name: "New experiment", exact: true }),
   ).toHaveCount(0);
   await expect(
-    page.getByRole("link", { name: "Ask Agent", exact: true }),
+    page.getByRole("link", { name: "Ask Assistant", exact: true }),
   ).toHaveCount(0);
-  await page.getByRole("link", { name: "Agent", exact: true }).click();
+  await page.goto("/assistant");
   await expect(page).toHaveTitle("JAS");
   await expect(
     page.getByRole("button", { name: "New mechanics", exact: true }),
@@ -186,27 +231,27 @@ test("Agent centers a plain contextual composer without a history rail", async (
   await page.keyboard.press("Escape");
   await expect(page.getByRole("tab")).toHaveCount(0);
   await expect(
-    sidebar.getByRole("complementary", { name: "Chat history" }),
+    sidebar.getByRole("complementary", { name: /chat history/i }),
   ).toHaveCount(0);
   await expect(
-    page.locator("main").getByRole("complementary", { name: "Chat history" }),
+    page.locator("main").getByRole("complementary", { name: /chat history/i }),
   ).toHaveCount(0);
   await expect(
-    page.getByRole("button", { name: "Chat history", exact: true }),
+    page.getByRole("button", { name: /chat history/i }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "start from scratch" }),
   ).toHaveCount(0);
   await expect(
     page
-      .getByRole("form", { name: "Agent composer" })
+      .getByRole("form", { name: "Assistant composer" })
       .locator('[data-slot="card"]'),
   ).toHaveCount(0);
   const headingBox = await page
     .getByRole("heading", { name: "What can we explore?" })
     .boundingBox();
   const composerBox = await page
-    .getByRole("form", { name: "Agent composer" })
+    .getByRole("form", { name: "Assistant composer" })
     .boundingBox();
   const ideasBox = await page
     .getByRole("region", { name: "Suggested questions" })
@@ -218,11 +263,21 @@ test("Agent centers a plain contextual composer without a history rail", async (
       headingBox.y + headingBox.height < composerBox.y &&
       composerBox.y + composerBox.height < ideasBox.y,
   ).toBe(true);
+  const workspaceBox = await page
+    .getByRole("region", { name: "Assistant workspace" })
+    .boundingBox();
+  expect(
+    workspaceBox &&
+      composerBox &&
+      composerBox.y > workspaceBox.y + 32 &&
+      composerBox.y + composerBox.height <
+        workspaceBox.y + workspaceBox.height - 100,
+  ).toBe(true);
   await expect(
-    page.getByRole("button", { name: "Open Agent workspace" }),
+    page.getByRole("button", { name: "Open Assistant workspace" }),
   ).toHaveCount(0);
   const inputGroup = page
-    .getByRole("form", { name: "Agent composer" })
+    .getByRole("form", { name: "Assistant composer" })
     .locator('[data-slot="input-group"]');
   const restingStyle = await inputGroup.evaluate((element) => {
     const style = getComputedStyle(element);
@@ -234,7 +289,7 @@ test("Agent centers a plain contextual composer without a history rail", async (
       exact: true,
     })
     .click();
-  const draft = page.getByLabel("Message Agent", { exact: true });
+  const draft = page.getByLabel("Message Assistant", { exact: true });
   await expect(draft).toHaveValue(/Explain how JAS experiments work/);
   await expect(draft).toBeFocused();
   await draft.focus();
@@ -264,17 +319,17 @@ test("Agent centers a plain contextual composer without a history rail", async (
   const study = await (await request.get(`/api/studies/${id}`)).json();
   const run = study.runs[0];
   await page.goto(`/runs/${run.id}`);
-  await page.getByRole("link", { name: "Ask Agent", exact: true }).click();
+  await page.goto(`/assistant?context=run:${run.id}`);
   await expect(page).toHaveURL(
     (url) =>
-      url.pathname === "/agent" &&
+      url.pathname === "/assistant" &&
       url.searchParams.get("context") === `run:${run.id}`,
   );
   await expect(page.getByRole("dialog")).toHaveCount(0);
   const context = page.getByRole("combobox", { name: "Message context" });
   await expect(context).toContainText(run.id.slice(0, 6));
   const input = page.getByRole("textbox", {
-    name: "Message Agent",
+    name: "Message Assistant",
     exact: true,
   });
   await input.fill("Compare the recorded strategies");
@@ -301,6 +356,9 @@ test("Agent centers a plain contextual composer without a history rail", async (
   await expect(
     page.getByRole("button", { name: "New chat", exact: true }),
   ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Delete chat", exact: true }),
+  ).toHaveCount(0);
 });
 
 test("saved conversations resume after reload and new chats keep separate histories", async ({
@@ -309,6 +367,7 @@ test("saved conversations resume after reload and new chats keep separate histor
   await page.route("**/api/settings", (route) =>
     route.fulfill({
       json: {
+        ...settingsFixture,
         providers: { openai: true },
         planner_model: "openai:gpt-6.1-sol",
         assistant_model: "openai:gpt-6.1-sol",
@@ -359,11 +418,11 @@ test("saved conversations resume after reload and new chats keep separate histor
   await page.route("**/api/chats/saved-chat", (route) =>
     route.fulfill({ json: messages }),
   );
-  await page.goto("/agent");
+  await page.goto("/assistant");
   await expect(
     page.getByRole("combobox", { name: "Message context" }),
   ).toContainText("Add context");
-  const input = page.getByLabel("Message Agent", { exact: true });
+  const input = page.getByLabel("Message Assistant", { exact: true });
   await input.fill("What is a matched seed?");
   await input.press("Shift+Enter");
   await expect(input).toHaveValue("What is a matched seed?\n");
@@ -385,7 +444,9 @@ test("saved conversations resume after reload and new chats keep separate histor
     ),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "What is a matched seed?", exact: true }),
+    page
+      .getByRole("region", { name: "Assistant conversation" })
+      .getByText("What is a matched seed?", { exact: true }),
   ).toBeVisible();
   expect(submitted[1]).toEqual({
     question: "How do repetitions help?",
@@ -396,7 +457,7 @@ test("saved conversations resume after reload and new chats keep separate histor
   await expect(
     page.getByText("Each condition shares the same initial randomization."),
   ).toBeAttached();
-  await page.getByRole("button", { name: "Chat history", exact: true }).click();
+  await page.getByRole("button", { name: /chat history/i }).click();
   await expect(
     page
       .getByRole("navigation", { name: "Past chats" })
@@ -413,7 +474,7 @@ test("saved conversations resume after reload and new chats keep separate histor
       "Repetitions create independent trials under the same seed.",
     ),
   ).toHaveCount(0);
-  await page.getByRole("button", { name: "Chat history", exact: true }).click();
+  await page.getByRole("button", { name: /chat history/i }).click();
   await page
     .getByRole("navigation", { name: "Past chats" })
     .getByRole("link", { name: "What is a matched seed?" })
@@ -433,6 +494,7 @@ for (const theme of ["light", "dark"]) {
     await page.route("**/api/settings", (route) =>
       route.fulfill({
         json: {
+          ...settingsFixture,
           providers: { openai: true },
           planner_model: "openai:gpt-6.1-sol",
           assistant_model: "openai:gpt-6.1-sol",
@@ -502,8 +564,8 @@ for (const theme of ["light", "dark"]) {
         ? { width: 390, height: 844 }
         : { width: 1440, height: 900 },
     );
-    await page.goto(`/studies/${id}`);
-    await page.getByRole("link", { name: "Ask Agent", exact: true }).click();
+    await page.goto(`/experiments/${id}`);
+    await page.goto(`/assistant?context=study:${id}`);
     const context = page.getByRole("combobox", { name: "Message context" });
     await expect(context).toContainText(study.design.title);
     await context.click();
@@ -526,11 +588,11 @@ for (const theme of ["light", "dark"]) {
     ).toHaveCount(0);
     await page
       .getByRole("option", {
-        name: new RegExp(`Rev ${run.revision} .*${run.id.slice(0, 6)}`),
+        name: new RegExp(`Version ${run.revision} .*${run.id.slice(0, 6)}`),
       })
       .click();
     await page
-      .getByLabel("Message Agent", { exact: true })
+      .getByLabel("Message Assistant", { exact: true })
       .fill("What changed after the first round?");
     await page
       .getByRole("button", { name: "Send message", exact: true })
@@ -566,7 +628,7 @@ for (const theme of ["light", "dark"]) {
       .getByRole("button", { name: "Clear context", exact: true })
       .click();
     await page
-      .getByLabel("Message Agent", { exact: true })
+      .getByLabel("Message Assistant", { exact: true })
       .fill("An unsent follow-up");
     messages = [
       { ...messages[0], status: "failed", error: "Provider request timed out" },
@@ -580,18 +642,16 @@ for (const theme of ["light", "dark"]) {
     ).toBeVisible();
     expect(submitted.context).toBe(`run:${run.id}`);
     expect(submitted.question).toBe("What changed after the first round?");
-    await expect(page.getByLabel("Message Agent", { exact: true })).toHaveValue(
-      "An unsent follow-up",
-    );
+    await expect(
+      page.getByLabel("Message Assistant", { exact: true }),
+    ).toHaveValue("An unsent follow-up");
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
     if (theme === "dark") {
-      await page
-        .getByRole("button", { name: "Chat history", exact: true })
-        .click();
+      await page.getByRole("button", { name: /chat history/i }).click();
       await page
         .getByRole("dialog", { name: "Recent chats" })
         .getByRole("link", {
@@ -610,13 +670,14 @@ test("creation stays in chat and hands a reviewed protocol to the editor", async
   const catalog = await (await request.get("/api/catalog")).json();
   const design = {
     ...catalog.templates[0].design,
-    title: "Protocol from Agent conversation",
+    title: "Protocol from Assistant conversation",
   };
   let message: object | undefined;
   let submitted: object | undefined;
   await page.route("**/api/settings", (route) =>
     route.fulfill({
       json: {
+        ...settingsFixture,
         providers: { openai: true },
         planner_model: "openai:gpt-6.1-sol",
         assistant_model: "openai:gpt-6.1-sol",
@@ -663,9 +724,9 @@ test("creation stays in chat and hands a reviewed protocol to the editor", async
   await page.route("**/api/analyses/proposal-answer", (route) =>
     route.fulfill({ json: message }),
   );
-  await page.goto("/agent");
+  await page.goto("/assistant");
   await page
-    .getByLabel("Message Agent", { exact: true })
+    .getByLabel("Message Assistant", { exact: true })
     .fill("Study cooperation");
   await page.getByRole("button", { name: "Send message", exact: true }).click();
   await expect(page.getByRole("heading", { name: design.title })).toBeVisible();
@@ -674,18 +735,25 @@ test("creation stays in chat and hands a reviewed protocol to the editor", async
     context: "general",
     chat_id: null,
   });
-  await expect(page).toHaveURL(/agent\?chat=proposal-chat/);
+  await expect(page).toHaveURL(/assistant\?chat=proposal-chat/);
   await page
     .getByRole("link", { name: "Review protocol", exact: true })
     .click();
-  await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
-    design.title,
-  );
+  await expect(
+    page.getByRole("tab", { name: "Review", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
+  await expect(
+    page
+      .getByRole("tabpanel", { name: "Review", exact: true })
+      .getByText(design.question, { exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Create experiment", exact: true }),
   ).toBeEnabled();
-  await page.getByRole("link", { name: "Back to Agent", exact: true }).click();
-  await expect(page).toHaveURL(/agent\?chat=proposal-chat/);
+  await page
+    .getByRole("link", { name: "Back to Assistant", exact: true })
+    .click();
+  await expect(page).toHaveURL(/assistant\?chat=proposal-chat/);
   await expect(page.getByRole("heading", { name: design.title })).toBeVisible();
 });
 
@@ -696,6 +764,7 @@ test("submission errors keep the draft and missing providers disable sending", a
   await page.route("**/api/settings", (route) =>
     route.fulfill({
       json: {
+        ...settingsFixture,
         providers: { openai: available },
         planner_model: "openai:gpt-6.1-sol",
         assistant_model: "openai:gpt-6.1-sol",
@@ -707,8 +776,8 @@ test("submission errors keep the draft and missing providers disable sending", a
       ? route.fulfill({ status: 409, json: { detail: "Provider unavailable" } })
       : route.fulfill({ json: [] }),
   );
-  await page.goto("/agent");
-  const input = page.getByLabel("Message Agent", { exact: true });
+  await page.goto("/assistant");
+  const input = page.getByLabel("Message Assistant", { exact: true });
   await input.fill("Keep this question after an error");
   await page.getByRole("button", { name: "Send message", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("Provider unavailable");
@@ -740,21 +809,19 @@ for (const width of [320, 1440]) {
       }),
     );
     await page.setViewportSize({ width, height: 600 });
-    await page.goto("/agent");
+    await page.goto("/assistant");
     await expect(
       page.getByRole("heading", { name: "What can we explore?" }),
     ).toBeVisible();
     await expect(
-      page.getByLabel("Message Agent", { exact: true }),
+      page.getByLabel("Message Assistant", { exact: true }),
     ).toBeInViewport();
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
-    await page
-      .getByRole("button", { name: "Chat history", exact: true })
-      .click();
+    await page.getByRole("button", { name: /chat history/i }).click();
     const popup = page.getByRole("dialog", { name: "Recent chats" });
     const history = popup.locator('[data-slot="scroll-area-viewport"]');
     await expect(popup.getByRole("link")).toHaveCount(120);
@@ -789,7 +856,7 @@ for (const width of [320, 1440]) {
     await page.keyboard.press("Escape");
     await expect(popup).toHaveCount(0);
     await expect(
-      page.getByRole("button", { name: "Chat history", exact: true }),
+      page.getByRole("button", { name: /chat history/i }),
     ).toBeFocused();
   });
 }
@@ -807,12 +874,12 @@ test("history loads inside its popup while the new-chat composer stays editable"
     await ready;
     await route.fulfill({ json: [] });
   });
-  await page.goto("/agent");
-  const input = page.getByLabel("Message Agent", { exact: true });
+  await page.goto("/assistant");
+  const input = page.getByLabel("Message Assistant", { exact: true });
   await expect(input).toBeVisible();
   expect(historyRequests).toBe(0);
   const trigger = page.getByRole("button", {
-    name: "Chat history",
+    name: /chat history/i,
     exact: true,
   });
   await trigger.click();
@@ -848,11 +915,11 @@ test("base Agent renders immediately and only context options wait for the datab
       await route.fulfill({ json: [] });
     });
   }
-  await page.goto("/agent");
+  await page.goto("/assistant");
   await expect(
     page.getByRole("heading", { name: "What can we explore?" }),
   ).toBeVisible();
-  const input = page.getByLabel("Message Agent", { exact: true });
+  const input = page.getByLabel("Message Assistant", { exact: true });
   await expect(
     page
       .getByRole("region", { name: "Suggested questions" })
@@ -892,30 +959,32 @@ test("saved transcript loading keeps history and New available without showing a
     await ready;
     await route.fulfill({ json: [] });
   });
-  await page.goto("/agent?chat=loading-chat");
+  await page.goto("/assistant?chat=loading-chat");
   await expect(
     page.getByRole("status", { name: "Loading conversation" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Chat history", exact: true }),
+    page.getByRole("button", { name: /chat history/i }),
   ).toBeVisible();
-  await expect(page.getByRole("form", { name: "Agent composer" })).toHaveCount(
-    0,
-  );
+  await expect(
+    page.getByRole("form", { name: "Assistant composer" }),
+  ).toHaveCount(0);
   await page.getByRole("button", { name: "New chat", exact: true }).click();
   release();
   await expect(
     page.getByRole("heading", { name: "What can we explore?" }),
   ).toBeVisible();
-  await expect(page.getByLabel("Message Agent", { exact: true })).toBeEnabled();
+  await expect(
+    page.getByLabel("Message Assistant", { exact: true }),
+  ).toBeEnabled();
   await expect(
     page.getByRole("status", { name: "Loading conversation" }),
   ).toHaveCount(0);
-  await expect(page).toHaveURL(/\/agent\?new=/);
+  await expect(page).toHaveURL(/\/assistant\?new=/);
 });
 
 for (const width of [320, 1440]) {
-  test(`long conversation titles indicate truncation and keep the full question available · ${width}`, async ({
+  test(`Assistant keeps a quiet header and the full question in its transcript · ${width}`, async ({
     page,
   }) => {
     const question =
@@ -941,13 +1010,15 @@ for (const width of [320, 1440]) {
         ],
       }),
     );
-    await page.goto("/agent?chat=long-title");
-    const title = page.locator("main header h1");
-    await expect(title).toHaveText(
-      `${Array.from(question).slice(0, 79).join("").trimEnd()}…`,
-    );
-    await expect(title).toHaveAttribute("title", question);
-    await expect(title).toHaveCSS("text-overflow", "ellipsis");
+    await page.goto("/assistant?chat=long-title");
+    await expect(
+      page.getByRole("heading", { name: "Assistant", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page
+        .getByRole("region", { name: "Assistant conversation" })
+        .getByText(question, { exact: true }),
+    ).toBeVisible();
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth > innerWidth,
@@ -994,10 +1065,10 @@ test("last reply clears the composer and its copy hover stays inside the message
       ],
     }),
   );
-  const viewport = page.getByRole("region", { name: "Agent conversation" });
+  const viewport = page.getByRole("region", { name: "Assistant conversation" });
   let initialHeight = 0;
   try {
-    await page.goto("/agent?chat=long-response");
+    await page.goto("/assistant?chat=long-response");
     initialHeight = await viewport.evaluate((node) => node.clientHeight);
     await expect(
       viewport.getByText("Explain this experiment", { exact: true }),
@@ -1021,9 +1092,11 @@ test("last reply clears the composer and its copy hover stays inside the message
   await expect
     .poll(() => viewport.evaluate((node) => node.clientHeight))
     .toBeLessThan(initialHeight);
-  const copy = page.getByTitle("Copy response", { exact: true });
+  const copy = page.getByRole("button", { name: "Copy response", exact: true });
   await expect(copy).toBeInViewport();
+  await expect(copy).not.toHaveAttribute("title");
   await copy.hover();
+  await expect(page.getByRole("tooltip")).toHaveCount(0);
   const button = await copy.boundingBox();
   const item = await copy
     .locator('xpath=ancestor::*[@data-slot="message-scroller-item"]')
@@ -1033,7 +1106,7 @@ test("last reply clears the composer and its copy hover stays inside the message
     .locator('xpath=ancestor::*[@data-slot="message-footer"]')
     .boundingBox();
   const input = await page
-    .getByRole("form", { name: "Agent composer" })
+    .getByRole("form", { name: "Assistant composer" })
     .locator('[data-slot="input-group"]')
     .boundingBox();
   expect(
@@ -1049,7 +1122,7 @@ test("last reply clears the composer and its copy hover stays inside the message
     )
     .toBeGreaterThan(200);
   await page
-    .getByRole("textbox", { name: "Message Agent", exact: true })
+    .getByRole("textbox", { name: "Message Assistant", exact: true })
     .fill(
       Array.from({ length: 12 }, (_, index) => `Unsent line ${index + 1}`).join(
         "\n",

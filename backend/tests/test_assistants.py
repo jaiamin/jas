@@ -6,6 +6,56 @@ from agent_sim.assistants import Assistants, GeneralResponse, HistoryRequest, In
 from agent_sim.domain import Citation, Finding
 
 
+def test_reply_models_come_from_its_calls_after_defaults_change(runtime, monkeypatch):
+    from agent_sim.db import Analysis
+    from pydantic_ai.messages import ModelResponse, ToolCallPart
+    from pydantic_ai.models.function import FunctionModel
+    from pydantic_ai.usage import RequestUsage
+
+    db, llm, research, _ = runtime
+    with db.session.begin() as session:
+        row = Analysis(
+            purpose="general",
+            chat_id="receipt-chat",
+            question="What model answered?",
+            status="complete",
+            output={"answer": "Recorded answer"},
+            cutoffs={},
+        )
+        session.add(row)
+        session.flush()
+        key = row.id
+
+    async def respond(messages, info):
+        return ModelResponse(
+            parts=[ToolCallPart(info.output_tools[0].name, {"response": "Recorded answer"})],
+            usage=RequestUsage(input_tokens=100, output_tokens=30),
+        )
+
+    monkeypatch.setattr(llm, "model", lambda _: FunctionModel(function=respond))
+
+    async def exercise():
+        for model in ("openai:gpt-6.1-sol", "openai:gpt-6-luna", "openai:gpt-6-luna"):
+            await llm.generate(
+                str,
+                model=model,
+                prompt="Test receipt",
+                instructions="Answer briefly",
+                purpose="general",
+                analysis_id=key,
+            )
+        llm.registry.configuration.preferences.assistant_model = "anthropic:claude-haiku-4-5"
+        assistant = Assistants(db, research, llm)
+        expected = ["openai:gpt-6-luna", "openai:gpt-6.1-sol"]
+        assert assistant.get(key)["models"] == expected
+        chat = assistant.chat("receipt-chat")
+        assert len(chat) == 1 and chat[0]["models"] == expected
+        assert chat[0]["usage"]["requests"] == 3
+        await assistant.close()
+
+    asyncio.run(exercise())
+
+
 @pytest.mark.parametrize("invented_citation", [False, True])
 def test_general_agent_keeps_history_separate_and_rejects_unselected_evidence(
     runtime, design, monkeypatch, invented_citation
@@ -935,5 +985,43 @@ def test_public_activity_survives_completion_failure_and_reload(runtime, monkeyp
         restored = Assistants(db, research, llm)
         assert restored.get(result["id"])["output"]["activity"] == ["answering", "writing"]
         await restored.close()
+
+    asyncio.run(exercise())
+
+
+def test_deleting_chat_during_context_capture_does_not_recreate_it(runtime, design, monkeypatch):
+    import threading
+
+    from agent_sim.db import Analysis
+    from sqlalchemy.exc import NoResultFound
+
+    db, llm, research, _ = runtime
+    sid = research.save_design(design)
+    with db.session.begin() as session:
+        session.add(Analysis(chat_id="deleted", purpose="general", question="Q", status="complete"))
+
+    async def exercise():
+        assistant = Assistants(db, research, llm)
+        capturing = asyncio.Event()
+        release = threading.Event()
+        loop = asyncio.get_running_loop()
+
+        def capture(*args):
+            loop.call_soon_threadsafe(capturing.set)
+            assert release.wait(5)
+            return {}
+
+        monkeypatch.setattr(assistant, "_analysis_inputs", capture)
+        sending = asyncio.create_task(assistant.send("Review", f"study:{sid}", "deleted"))
+        try:
+            await asyncio.wait_for(capturing.wait(), 5)
+            assistant.delete_chat("deleted")
+        finally:
+            release.set()
+        with pytest.raises(NoResultFound, match="deleted"):
+            await sending
+        assert assistant.chats() == [] and assistant.tasks == {}
+        assert llm.usage()["requests"] == 0
+        await assistant.close()
 
     asyncio.run(exercise())

@@ -3,7 +3,11 @@ import { metric, money, relativeTime, runModelLabel } from "./format";
 
 test("cost estimates retain small charges while unavailable metrics stay absent", () => {
   expect(money(0.0012)).toBe("$0.0012");
+  expect(money(0.000001)).toBe("$0.000001");
+  expect(money(0.019956, 6)).toBe("$0.019956");
+  expect(money(0)).toBe("$0.00");
   expect(money(12.34)).toBe("$12.34");
+  expect(money(null)).toBe("Unknown");
   expect(metric("accuracy", null)).toBe("—");
   expect(metric("accuracy", 0)).toBe("0.0");
   expect(metric("contribution_rate", 0)).toContain("0");

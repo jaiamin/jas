@@ -1,7 +1,6 @@
 // App icons share one import boundary. Keep these stock exports aligned with
 // components.json when applying a preset; generated UI icons are owned by the CLI.
 
-import { FlaskConical as FlaskIcon } from "lucide-react";
 import type { ComponentType, SVGProps } from "react";
 
 export {
@@ -9,7 +8,10 @@ export {
   ArrowRight,
   ArrowUp,
   ArrowUpRight,
+  Blocks,
   BookOpen,
+  BookText,
+  Cable,
   Check,
   ChevronDown,
   ChevronLeft,
@@ -23,11 +25,13 @@ export {
   CircleX,
   Clock3,
   Code2,
+  Copy,
   Database,
   Download,
   Ellipsis,
   FileSearch,
   FlaskConical,
+  FlaskConical as ExperimentIcon,
   GitCompareArrows,
   Globe,
   History,
@@ -35,10 +39,14 @@ export {
   KeyRound,
   Layers2,
   LoaderCircle,
+  LockKeyhole,
+  Maximize,
+  Maximize2,
   MessageSquare,
   Monitor,
   Moon,
   NotebookPen,
+  PanelRightClose,
   Pause,
   PenLine,
   Play,
@@ -51,6 +59,7 @@ export {
   ShieldCheck,
   SkipForward,
   Sprout,
+  SquarePen,
   Star,
   Sun,
   Target,
@@ -60,20 +69,6 @@ export {
 } from "lucide-react";
 
 export type AppIcon = ComponentType<SVGProps<SVGSVGElement>>;
-
-// Requested partial fills stay at the icon boundary, using the preset's Lucide
-// silhouettes and semantic surface colors. Other app icons remain stock exports.
-export function ExperimentIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <FlaskIcon {...props} data-partial-fill="flask">
-      <path
-        data-liquid=""
-        d="M6.453 15h11.094l2.208 4.04A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96Z"
-        stroke="none"
-      />
-    </FlaskIcon>
-  );
-}
 
 // GitHub brand mark from Simple Icons (CC0); distinct from preset UI glyphs.
 export function Github(props: SVGProps<SVGSVGElement>) {

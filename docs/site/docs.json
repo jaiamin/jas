@@ -1,0 +1,79 @@
+{
+  "theme": "mint",
+  "name": "JAS",
+  "colors": {
+    "primary": "#2563eb",
+    "light": "#2563eb",
+    "dark": "#60a5fa"
+  },
+  "logo": {
+    "light": "/images/jas-light.svg",
+    "dark": "/images/jas-dark.svg"
+  },
+  "favicon": "/images/jas.svg",
+  "navbar": {
+    "links": [
+      {
+        "href": "https://github.com/jaiamin/jas",
+        "label": "GitHub"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/jaiamin/jas"
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view"
+    ],
+    "display": "header"
+  },
+  "description": "Controlled, replayable experiments on AI agents.",
+  "appearance": {
+    "default": "system",
+    "strict": false
+  },
+  "background": {
+    "color": {
+      "light": "#ffffff",
+      "dark": "#181818"
+    }
+  },
+  "fonts": {
+    "family": "Geist"
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "$schema": "https://mintlify.com/docs.json",
+  "navigation": {
+    "pages": [
+      {
+        "group": "Start",
+        "pages": [
+          "index",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "guides/experiments",
+          "guides/runs-and-evidence",
+          "guides/providers-and-costs",
+          "guides/publishing"
+        ]
+      },
+      {
+        "group": "Reference",
+        "pages": [
+          "reference/cli",
+          "integrations/jas-mcp"
+        ]
+      }
+    ]
+  }
+}

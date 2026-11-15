@@ -88,16 +88,25 @@ export function Loading() {
 export function ErrorState({
   error,
   onRetry,
+  title = "Unable to load",
 }: {
   error: Error;
-  onRetry: () => unknown;
+  onRetry?: () => unknown;
+  title?: string;
 }) {
   return (
-    <Alert variant="error" title="Could not load this view">
+    <Alert
+      variant="error"
+      title={title}
+      action={
+        onRetry && (
+          <Button variant="outline" size="sm" onClick={() => onRetry()}>
+            Retry
+          </Button>
+        )
+      }
+    >
       {error.message}
-      <Button variant="outline" size="sm" onClick={() => onRetry()}>
-        Retry
-      </Button>
     </Alert>
   );
 }

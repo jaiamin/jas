@@ -50,11 +50,15 @@ export function ResearchFindings({
         </p>
       </div>
       {query.error && (
-        <Alert variant="error">
+        <Alert
+          variant="error"
+          action={
+            <Button variant="outline" size="sm" onClick={() => query.refetch()}>
+              Retry findings
+            </Button>
+          }
+        >
           {query.error.message}{" "}
-          <Button variant="link" size="sm" onClick={() => query.refetch()}>
-            Retry findings
-          </Button>
         </Alert>
       )}
       {!report && !query.error && <Skeleton className="h-24 w-full" />}
@@ -69,7 +73,7 @@ export function ResearchFindings({
           {report.plan_status === "not_declared" && (
             <p className="text-sm text-muted-foreground">
               No executable analysis plan was declared. Registered metrics are
-              descriptive; prose outcomes remain uncomputed. Tune a new revision
+              descriptive; prose outcomes remain uncomputed. Tune a new version
               to declare them before new trials.
             </p>
           )}
@@ -233,7 +237,7 @@ export function ResearchFindings({
               )}
               <p className="text-muted-foreground">{report.interpretation}</p>
               <p className="break-all text-xs text-muted-foreground">
-                Revision {report.revision} · design {report.design_sha256} ·
+                Version {report.revision} · design {report.design_sha256} ·
                 analysis contract v{report.version}
               </p>
             </DisclosureContent>

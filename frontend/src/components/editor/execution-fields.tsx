@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import { parseSeeds } from "@/lib/design";
 import { label } from "@/lib/format";
 import type { Catalog, Design } from "@/lib/types";
 import { ScenarioFields } from "./scenario-fields";
@@ -25,10 +26,12 @@ export function ExecutionFields({
   design,
   catalog,
   onChange,
+  seedsInput,
 }: {
   design: Design;
   catalog: Catalog;
   onChange: (design: Design) => void;
+  seedsInput?: { value: string; onChange: (value: string) => void };
 }) {
   function update<K extends keyof Design>(key: K, value: Design[K]) {
     onChange({ ...design, [key]: value });
@@ -36,10 +39,12 @@ export function ExecutionFields({
   const environment = catalog.environments.find(
     (item) => item.key === design.environment,
   );
-  const invalidSeeds = design.seeds.length === 0;
+  const invalidSeeds = seedsInput
+    ? parseSeeds(seedsInput.value) === null
+    : design.seeds.length === 0;
   return (
     <FieldGroup>
-      <FieldGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <FieldGroup className="grid grid-cols-1 gap-5">
         <Field>
           <FieldLabel htmlFor="rounds">Rounds per run</FieldLabel>
           <Input
@@ -72,21 +77,14 @@ export function ExecutionFields({
         <FieldLabel htmlFor="seeds">Matched seeds</FieldLabel>
         <Input
           id="seeds"
-          defaultValue={design.seeds.join(", ")}
+          value={seedsInput?.value}
+          defaultValue={seedsInput ? undefined : design.seeds.join(", ")}
+          onChange={(event) => seedsInput?.onChange(event.target.value)}
           aria-invalid={invalidSeeds || undefined}
           aria-describedby={invalidSeeds ? "seeds-error" : "seeds-description"}
           onBlur={(event) => {
-            const parts = event.target.value
-              .split(",")
-              .map((value) =>
-                value.trim() === "" ? Number.NaN : Number(value.trim()),
-              );
-            update(
-              "seeds",
-              parts.some((value) => !Number.isInteger(value) || value < 0)
-                ? []
-                : parts,
-            );
+            if (seedsInput) return;
+            update("seeds", parseSeeds(event.target.value) ?? []);
           }}
         />
         {invalidSeeds ? (
@@ -105,7 +103,7 @@ export function ExecutionFields({
         <Input
           id="budget"
           type="number"
-          min={0.05}
+          min={0}
           max={25}
           step={0.5}
           value={design.budget_usd}
@@ -116,11 +114,34 @@ export function ExecutionFields({
           anything.
         </FieldDescription>
       </Field>
+      <Field>
+        <FieldLabel htmlFor="token-budget">
+          Token ceiling, optional for priced models
+        </FieldLabel>
+        <Input
+          id="token-budget"
+          type="number"
+          min={1}
+          step={1}
+          value={design.token_budget ?? ""}
+          onChange={(event) =>
+            update(
+              "token_budget",
+              event.target.value === "" ? null : Number(event.target.value),
+            )
+          }
+        />
+        <FieldDescription>
+          Input and output tokens across every version and run in this
+          experiment. Required for unpriced models unless a workspace token
+          ceiling is set. Unknown usage keeps its reserved token allowance.
+        </FieldDescription>
+      </Field>
       <Separator />
       <ScenarioFields design={design} onChange={onChange} />
       <FieldSet>
         <FieldLegend>Measurements</FieldLegend>
-        <FieldGroup className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <FieldGroup className="grid grid-cols-1 gap-3">
           {environment?.measures.map((key) => (
             <Field key={key} orientation="horizontal">
               <Checkbox
@@ -145,7 +166,7 @@ export function ExecutionFields({
         <DisclosureTrigger>Model settings and limitations</DisclosureTrigger>
         <DisclosureContent className="pt-4">
           <FieldGroup>
-            <FieldGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <FieldGroup className="grid grid-cols-1 gap-5">
               <Field>
                 <FieldLabel htmlFor="reasoning-effort">
                   OpenAI reasoning effort

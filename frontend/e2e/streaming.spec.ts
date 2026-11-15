@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { ExperimentPreflight } from "../src/lib/types.js";
+import { settings as settingsFixture } from "../src/test/fixtures.js";
 
 for (const theme of ["light", "dark"]) {
   test(`Agent streams formatted prose, keeps the composer anchored and recovers after disconnect · ${theme}`, async ({
@@ -37,6 +38,7 @@ for (const theme of ["light", "dark"]) {
     await page.route("**/api/settings", (route) =>
       route.fulfill({
         json: {
+          ...settingsFixture,
           providers: { openai: true },
           planner_model: "openai:gpt-6.1-sol",
           assistant_model: "openai:gpt-6.1-sol",
@@ -87,11 +89,11 @@ for (const theme of ["light", "dark"]) {
         body: `data: ${JSON.stringify(row)}\n\n`,
       });
     });
-    await page.goto("/agent");
+    await page.goto("/assistant");
     await expect(
-      page.getByLabel("Message Agent", { exact: true }),
+      page.getByLabel("Message Assistant", { exact: true }),
     ).toHaveAttribute("rows", "3");
-    const composer = page.getByRole("form", { name: "Agent composer" });
+    const composer = page.getByRole("form", { name: "Assistant composer" });
     const emptyBounds = await composer.boundingBox();
     const suggestions = await page
       .getByRole("region", { name: "Suggested questions" })
@@ -103,7 +105,7 @@ for (const theme of ["light", "dark"]) {
       (emptyBounds?.y ?? 0) + (emptyBounds?.height ?? 0),
     );
     await page
-      .getByLabel("Message Agent", { exact: true })
+      .getByLabel("Message Assistant", { exact: true })
       .fill("Explain matched seeds");
     await page
       .getByRole("button", { name: "Send message", exact: true })
@@ -113,10 +115,7 @@ for (const theme of ["light", "dark"]) {
     ).toHaveText("Thinking");
     await expect(page.locator("[data-slot=spinner]")).toHaveCount(0);
     const assistantTarget = page.getByLabel("Assistant", { exact: true });
-    await expect(assistantTarget).toHaveAttribute(
-      "data-agent-state",
-      "working",
-    );
+    await expect(assistantTarget).toBeVisible();
     const playing = () =>
       assistantTarget.evaluate(
         (element) =>
@@ -124,11 +123,12 @@ for (const theme of ["light", "dark"]) {
             .getAnimations({ subtree: true })
             .filter((animation) => animation.playState === "running").length,
       );
-    await expect.poll(playing).toBeGreaterThan(0);
-    await expect(assistantTarget.locator("[data-orbit]")).toHaveCount(2);
-    await expect(
-      assistantTarget.locator(":scope > circle:nth-child(3)"),
-    ).toHaveCSS("fill-opacity", "1");
+    expect(
+      await assistantTarget.evaluate(
+        (element) => element.getAnimations({ subtree: true }).length,
+      ),
+    ).toBe(0);
+    await expect(assistantTarget.locator("[data-orbit]")).toHaveCount(0);
     const target = await page
       .getByLabel("Assistant", { exact: true })
       .boundingBox();
@@ -146,7 +146,7 @@ for (const theme of ["light", "dark"]) {
         ),
     ).toBeLessThanOrEqual(1);
     const viewport = await page
-      .getByRole("region", { name: "Agent conversation", exact: true })
+      .getByRole("region", { name: "Assistant conversation", exact: true })
       .boundingBox();
     const firstQuestion = await page
       .locator('[data-slot="message"][data-align="end"]')
@@ -160,7 +160,10 @@ for (const theme of ["light", "dark"]) {
       .boundingBox();
     expect(
       viewport && inputSurface && viewport.y + viewport.height - inputSurface.y,
-    ).toBeCloseTo(12, 0);
+    ).toBeCloseTo(0, 0);
+    await expect(
+      page.getByRole("region", { name: "Assistant conversation", exact: true }),
+    ).toHaveCSS("mask-image", "none");
     releaseStream();
     await expect(
       page.getByRole("heading", { name: "Matched seeds", exact: true }),
@@ -182,7 +185,7 @@ for (const theme of ["light", "dark"]) {
       page.getByRole("button", { name: "Send message", exact: true }),
     ).toBeDisabled();
     await expect(
-      page.getByLabel("Message Agent", { exact: true }),
+      page.getByLabel("Message Assistant", { exact: true }),
     ).toHaveAttribute("rows", "2");
     const activeBounds = await composer.boundingBox();
     expect(activeBounds?.y).toBeGreaterThan(
@@ -195,11 +198,14 @@ for (const theme of ["light", "dark"]) {
       ),
     ).toBe(false);
     await expect(
-      page.getByRole("heading", { name: row.question, exact: true }),
+      page.getByRole("button", {
+        name: `${row.question} · Chat history`,
+        exact: true,
+      }),
     ).toBeVisible();
-    await expect(page.getByTitle("Copy response", { exact: true })).toHaveCount(
-      0,
-    );
+    await expect(
+      page.getByRole("button", { name: "Copy response", exact: true }),
+    ).toHaveCount(0);
     await page.screenshot({
       path: testInfo.outputPath(`streaming-${theme}.png`),
       animations: "disabled",
@@ -224,7 +230,7 @@ for (const theme of ["light", "dark"]) {
       exact: true,
     });
     await expect(activity).toBeVisible();
-    await expect(assistantTarget).toHaveAttribute("data-agent-state", "idle");
+    await expect(assistantTarget).toBeVisible();
     await expect(assistantTarget.locator("[data-agent-orbits]")).toHaveCount(0);
     await page.emulateMedia({ reducedMotion: "no-preference" });
     expect(await playing()).toBe(0);
@@ -242,7 +248,7 @@ for (const theme of ["light", "dark"]) {
     // sequential boundingBox calls can manufacture a gap during the animation.
     await expect(async () => {
       const geometry = await page
-        .getByTitle("Copy response", { exact: true })
+        .getByRole("button", { name: "Copy response", exact: true })
         .evaluate((button) => {
           const icon = button.querySelector("svg");
           const response = button
@@ -263,9 +269,11 @@ for (const theme of ["light", "dark"]) {
     await page
       .context()
       .grantPermissions(["clipboard-read", "clipboard-write"]);
-    await page.getByTitle("Copy response", { exact: true }).click();
+    await page
+      .getByRole("button", { name: "Copy response", exact: true })
+      .click();
     await expect(
-      page.getByTitle("Copy response", { exact: true }),
+      page.getByRole("button", { name: "Copy response", exact: true }),
     ).toHaveAttribute("data-copied", "true");
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
       row.output.answer,
@@ -312,6 +320,7 @@ for (const malformed of ["invalid-json", "invalid-output"]) {
     await page.route("**/api/settings", (route) =>
       route.fulfill({
         json: {
+          ...settingsFixture,
           providers: { openai: true },
           planner_model: "openai:gpt-6.1-sol",
           assistant_model: "openai:gpt-6.1-sol",
@@ -337,8 +346,10 @@ for (const malformed of ["invalid-json", "invalid-output"]) {
         body: `data: ${malformed === "invalid-json" ? "{" : JSON.stringify({ ...row, output: null })}\n\n`,
       });
     });
-    await page.goto("/agent");
-    await page.getByLabel("Message Agent", { exact: true }).fill(row.question);
+    await page.goto("/assistant");
+    await page
+      .getByLabel("Message Assistant", { exact: true })
+      .fill(row.question);
     await page
       .getByRole("button", { name: "Send message", exact: true })
       .click();
@@ -442,7 +453,7 @@ for (const theme of ["light", "dark"]) {
         body: `data: ${JSON.stringify(row)}\n\n`,
       });
     });
-    await page.goto("/agent?chat=planning-chat");
+    await page.goto("/assistant?chat=planning-chat");
     await expect(
       page.getByText(row.output.partial, { exact: true }),
     ).toBeVisible();
@@ -647,6 +658,7 @@ test("retrying a failed automatic proposal keeps the planner purpose", async ({
   await page.route("**/api/settings", (route) =>
     route.fulfill({
       json: {
+        ...settingsFixture,
         providers: { openai: true },
         planner_model: "openai:gpt-6.1-sol",
         assistant_model: "openai:gpt-6.1-sol",
@@ -683,7 +695,7 @@ test("retrying a failed automatic proposal keeps the planner purpose", async ({
       json: { detail: "Planner temporarily unavailable" },
     });
   });
-  await page.goto("/agent?chat=failed-plan-chat");
+  await page.goto("/assistant?chat=failed-plan-chat");
   await expect(
     page.getByRole("combobox", { name: "Message context" }),
   ).toContainText("Add context");
