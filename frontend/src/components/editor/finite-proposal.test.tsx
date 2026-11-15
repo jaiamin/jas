@@ -120,11 +120,6 @@ test("pending finite proposal exposes independent rules, private ACLs, harness a
     review.getByText("Spending ceiling").nextElementSibling,
   ).toHaveTextContent("$1.00");
   expect(
-    review.getByText(
-      /creating an experiment saves.*model calls begin only when you choose to run it/i,
-    ),
-  ).toBeInTheDocument();
-  expect(
     screen.getByRole("button", { name: "Create experiment" }),
   ).toBeEnabled();
   expect(

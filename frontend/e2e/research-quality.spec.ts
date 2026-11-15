@@ -12,7 +12,7 @@ test("analysis plan and actual value scenarios survive authoring, save and reloa
 }) => {
   await page.goto("/new?template=distributed_coordination&mode=advanced");
   await page
-    .getByRole("button", { name: "Hypothesis and analysis plan", exact: true })
+    .getByRole("button", { name: "Analysis plan", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Declare analysis plan", exact: true })

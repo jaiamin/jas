@@ -15,9 +15,9 @@ for (const width of [390, 1440]) {
     await expect(
       page.getByRole("tab", { name: "General", exact: true }),
     ).toHaveAttribute("aria-selected", "true");
-    await expect(
-      page.getByRole("combobox", { name: "What varies" }),
-    ).toHaveText("Material stock");
+    await expect(page.getByRole("combobox", { name: "Compare by" })).toHaveText(
+      "Material stock",
+    );
     await expect(
       page.getByLabel("Material units for Seven material units"),
     ).toHaveValue("7");
@@ -25,7 +25,7 @@ for (const width of [390, 1440]) {
       page.getByLabel("Material units for Nine material units"),
     ).toHaveValue("9");
     await expect(
-      page.getByRole("button", { name: "Save and run", exact: true }),
+      page.getByRole("button", { name: "Create and run", exact: true }),
     ).toBeDisabled();
     await page
       .getByRole("button", { name: "Seeds and repetitions", exact: true })
@@ -33,7 +33,7 @@ for (const width of [390, 1440]) {
     const seeds = page.getByLabel("Seeds", { exact: true });
     await seeds.fill("7, unfinished");
     await expect(
-      page.getByRole("button", { name: "Save", exact: true }),
+      page.getByRole("button", { name: "Create", exact: true }),
     ).toBeDisabled();
     await page.getByRole("tab", { name: "Advanced", exact: true }).click();
     await selectEditorSection(page, "Run plan");
@@ -46,14 +46,16 @@ for (const width of [390, 1440]) {
       "7, unfinished",
     );
     await page.getByRole("tab", { name: "General", exact: true }).click();
+    await expect(seeds).toBeVisible();
+    await expect(seeds).toHaveAttribute("aria-invalid", "true");
     await page
       .getByRole("button", { name: "Seeds and repetitions", exact: true })
       .click();
     await seeds.fill("7, 11");
     await expect(
-      page.getByRole("button", { name: "Save", exact: true }),
+      page.getByRole("button", { name: "Create", exact: true }),
     ).toBeEnabled();
-    await page.getByRole("button", { name: "Save", exact: true }).click();
+    await page.getByRole("button", { name: "Create", exact: true }).click();
     await expect(page).toHaveURL(/\/experiments\/[a-f0-9]+$/);
     const id = page.url().split("/").at(-1);
     const saved = await (await request.get(`/api/studies/${id}`)).json();
@@ -114,10 +116,10 @@ test("Save and run commits one explicit start and the displayed ceiling", async 
       starts++;
   });
   await page.goto(path);
-  const run = page.getByRole("button", { name: "Save and run", exact: true });
+  const run = page.getByRole("button", { name: "Create and run", exact: true });
   await expect(run).toBeEnabled();
-  await expect(page.locator("#estimate-summary")).toContainText(
-    "Spending ceiling: $0.50",
+  await expect(page.getByLabel("Max spend (USD)", { exact: true })).toHaveValue(
+    "0.5",
   );
   await run.click();
   await expect(page).toHaveURL(/\/experiments\/[a-f0-9]+$/);

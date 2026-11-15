@@ -49,14 +49,14 @@ export function EditorNavigation({ disabled }: { disabled: boolean }) {
         <TabsList
           variant="line"
           aria-label="Experiment sections"
-          className="gap-2 p-0 group-data-horizontal/tabs:h-9"
+          className="gap-6 p-0 group-data-horizontal/tabs:h-9"
         >
           {editorSections.map((section) => (
             <TabsTrigger
               key={section.value}
               value={section.value}
               disabled={disabled}
-              className="h-9 border-0 px-2 group-data-horizontal/tabs:after:bottom-0"
+              className="h-9 border-0 px-0 group-data-horizontal/tabs:after:bottom-0"
             >
               {section.label}
             </TabsTrigger>
@@ -77,10 +77,10 @@ export function EditorLoading({
   return (
     <div className="mx-auto w-full max-w-3xl">
       <EditorHeading revision={revision}>
-        {!revision && (
+        {fromAgent && (
           <Button type="button" variant="outline" size="sm" disabled>
             <AgentIcon data-icon="inline-start" />
-            {fromAgent ? "Back to Assistant" : "Generate with Assistant"}
+            Back to Assistant
           </Button>
         )}
         <Button

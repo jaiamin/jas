@@ -16,6 +16,7 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/new?template=commons&mode=advanced");
+  await selectEditorSection(page, "Question");
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Browser QA · scarcity");
@@ -33,7 +34,7 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   ).toBeVisible();
   const studyURL = page.url();
   await page.getByRole("link", { name: "Tune", exact: true }).click();
-  await page.getByRole("tab", { name: "Advanced", exact: true }).click();
+  await selectEditorSection(page, "Question");
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Browser QA · tuned");
@@ -255,6 +256,7 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   page,
 }) => {
   await page.goto("/new?template=commons&mode=advanced");
+  await selectEditorSection(page, "Question");
   await page.goto("/experiments");
   await expect(page.getByText(/^Drafts ·/)).toHaveCount(0);
   await page.goto("/new?template=commons&mode=advanced");
@@ -301,6 +303,7 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
     page.getByRole("region", { name: "Drafts", exact: true }),
   ).toHaveCount(0);
   await page.goto("/new?template=commons&mode=advanced");
+  await selectEditorSection(page, "Question");
   await page.getByLabel("Experiment name", { exact: true }).fill("");
   await expect(page.getByRole("status")).toContainText("Draft saved");
   await page.reload();

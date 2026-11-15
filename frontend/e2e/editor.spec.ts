@@ -18,9 +18,59 @@ for (const theme of ["light", "dark"]) {
       );
       await page.setViewportSize({ width, height: 900 });
       await page.goto("/new?template=commons&mode=advanced");
+      await selectEditorSection(page, "Question");
       await expect(
         page.getByLabel("Experiment name", { exact: true }),
       ).toBeVisible();
+      const environment = page.getByRole("combobox", {
+        name: "Environment",
+        exact: true,
+      });
+      const environmentBox = await environment.boundingBox();
+      const nameBox = await page
+        .getByLabel("Experiment name", { exact: true })
+        .boundingBox();
+      expect(environmentBox?.x).toBe(nameBox?.x);
+      expect(environmentBox?.width).toBe(nameBox?.width);
+      const valueBox = await environment
+        .locator('[data-slot="select-value"]')
+        .boundingBox();
+      await environment.click();
+      await expect(
+        page.getByRole("option").first(),
+      ).toHaveAccessibleDescription(/\S/);
+      await expect
+        .poll(async () => {
+          const menuBox = await page.getByRole("listbox").boundingBox();
+          return Math.abs((menuBox?.x ?? 0) - (environmentBox?.x ?? 0));
+        })
+        .toBeLessThanOrEqual(1);
+      await expect
+        .poll(async () => {
+          const menuText = await page
+            .getByRole("option")
+            .first()
+            .locator("span")
+            .last()
+            .boundingBox();
+          const menuBox = await page.getByRole("listbox").boundingBox();
+          return Math.abs(
+            (menuText?.x ?? 0) -
+              (menuBox?.x ?? 0) -
+              ((valueBox?.x ?? 0) - (environmentBox?.x ?? 0)),
+          );
+        })
+        .toBeLessThanOrEqual(1);
+      await expect(page.getByRole("option").first()).toHaveCSS(
+        "padding-left",
+        "8px",
+      );
+      await page.screenshot({
+        path: testInfo.outputPath(`environment-picker-${theme}-${width}.png`),
+        animations: "disabled",
+      });
+      await page.keyboard.press("Escape");
+      await expect(environment).toHaveText("Shared commons");
       await expect(
         page.getByRole("button", { name: "Create experiment", exact: true }),
       ).toHaveCount(0);
@@ -32,6 +82,10 @@ for (const theme of ["light", "dark"]) {
         exact: true,
       });
       await expect(saveSetup).toBeVisible();
+      await saveSetup.hover();
+      await expect(saveSetup).toHaveCSS("padding-left", "10px");
+      await expect(saveSetup).toHaveCSS("padding-right", "10px");
+      await expect(saveSetup).toHaveCSS("text-decoration-line", "none");
       expect(
         await saveSetup.evaluate(
           (element) =>
@@ -43,8 +97,34 @@ for (const theme of ["light", "dark"]) {
       const sections = page.getByRole("tablist", {
         name: "Experiment sections",
       });
+      const selectedColor = await page.evaluate(() => {
+        const probe = document.createElement("span");
+        probe.style.color = "var(--accent-foreground)";
+        document.body.append(probe);
+        const color = getComputedStyle(probe).color;
+        probe.remove();
+        return color;
+      });
       for (const name of ["General", "Advanced", "Review"]) {
         await sections.getByRole("tab", { name, exact: true }).click();
+        await sections.getByRole("tab", { name, exact: true }).hover();
+        await expect(
+          sections.getByRole("tab", { name, exact: true }),
+        ).toHaveCSS("color", selectedColor);
+        if (name === "Advanced") {
+          const research = page.getByRole("button", {
+            name: "Research plan",
+            exact: true,
+          });
+          await research.hover();
+          await expect(research).toHaveCSS("text-decoration-line", "none");
+          await expect(
+            page.getByRole("textbox", { name: "Experiment name", exact: true }),
+          ).toHaveCount(0);
+          await expect(
+            page.getByRole("combobox", { name: "Environment", exact: true }),
+          ).toHaveCount(0);
+        }
         await expect(
           page.getByRole("tabpanel", { name, exact: true }),
         ).toBeVisible();
@@ -64,6 +144,8 @@ for (const theme of ["light", "dark"]) {
               indicatorBottom: box.bottom - parseFloat(pseudo.bottom),
               lineBottom: line.getBoundingClientRect().bottom,
               height: box.height,
+              textColor: getComputedStyle(active).color,
+              indicatorColor: pseudo.backgroundColor,
               opacity: pseudo.opacity,
             };
           });
@@ -80,6 +162,7 @@ for (const theme of ["light", "dark"]) {
           )
           .toBe("1");
         expect(geometry.height).toBe(36);
+        expect(geometry.indicatorColor).toBe(geometry.textColor);
         expect(
           await page.evaluate(
             () => document.documentElement.scrollWidth <= innerWidth,
@@ -112,8 +195,13 @@ for (const theme of ["light", "dark"]) {
       await expect(page.getByRole("alert")).toContainText(
         "Seeds must be nonnegative integers",
       );
-      await seeds.fill("7, 11");
-      await seeds.blur();
+      await sections.getByRole("tab", { name: "General", exact: true }).click();
+      const generalSeeds = page.getByLabel("Seeds", { exact: true });
+      await expect(generalSeeds).toBeVisible();
+      await expect(generalSeeds).toHaveAttribute("aria-invalid", "true");
+      await generalSeeds.fill("7, 11");
+      await selectEditorSection(page, "Run plan");
+      await expect(seeds).toHaveValue("7, 11");
       await page.getByLabel("Repetitions per seed").fill("2");
       await sections.getByRole("tab", { name: "Review", exact: true }).click();
       const review = page.getByRole("region", { name: "Experiment review" });
@@ -137,6 +225,7 @@ test("editor preserves input DOM across sections and applies validated JSON to t
   page,
 }) => {
   await page.goto("/new?template=coordination&mode=advanced");
+  await selectEditorSection(page, "Question");
   await page.getByLabel("Experiment name").fill("Preserved experiment");
   await selectEditorSection(page, "Agents");
   await page.getByRole("button", { name: "Add agent", exact: true }).click();
@@ -158,8 +247,17 @@ test("editor preserves input DOM across sections and applies validated JSON to t
   const design = JSON.parse(await specification.inputValue());
   expect(design.profiles.at(-1).name).toBe("New researcher");
   expect(design.seeds).toEqual([3, 5]);
+  await specification.fill('{"unfinished":');
+  await page.getByRole("tab", { name: "General", exact: true }).click();
+  await expect(page.getByRole("alert")).toContainText(
+    "The specification is not valid JSON",
+  );
+  await expect(specification).toHaveValue('{"unfinished":');
   design.seeds = [13, 17];
   await specification.fill(JSON.stringify(design));
+  await page.getByRole("tab", { name: "General", exact: true }).click();
+  await page.getByRole("button", { name: "Seeds and repetitions" }).click();
+  await expect(page.getByLabel("Seeds", { exact: true })).toHaveValue("13, 17");
   await selectEditorSection(page, "Run plan");
   await expect(page.getByLabel("Matched seeds")).toHaveValue("13, 17");
   await page.getByRole("tab", { name: "Review", exact: true }).click();
@@ -200,6 +298,10 @@ for (const width of [390, 1440]) {
       nav.getByRole("tab", { name: "General", exact: true }),
     ).toBeDisabled();
     release();
+    await expect(
+      nav.getByRole("tab", { name: "General", exact: true }),
+    ).toBeEnabled();
+    await selectEditorSection(page, "Question");
     await expect(
       page.getByLabel("Experiment name", { exact: true }),
     ).toBeVisible();
@@ -275,11 +377,11 @@ for (const [theme, width] of [
   });
 }
 
-for (const width of [390, 1440]) {
+for (const width of [320, 1440]) {
   test(`blank creation preserves an unfinished draft and saves without running · ${width}`, async ({
     page,
     request,
-  }) => {
+  }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
     const starts: string[] = [];
     page.on("request", (request) => {
@@ -297,11 +399,18 @@ for (const width of [390, 1440]) {
     await expect(name).toHaveValue("");
     await expect(question).toHaveValue("");
     await expect(
-      page.getByLabel("Condition 1 name", { exact: true }),
+      page.getByLabel("Name for condition 1", { exact: true }),
     ).toHaveValue("Baseline");
     await expect(
-      page.getByRole("button", { name: "Save", exact: true }),
+      page.getByRole("button", { name: "Create", exact: true }),
     ).toBeDisabled();
+    await expect(page.getByText("Nothing runs until you choose.")).toHaveCount(
+      0,
+    );
+    await page.screenshot({
+      path: testInfo.outputPath(`blank-editor-${width}.png`),
+      animations: "disabled",
+    });
     await name.fill("A new comparison");
     await page.reload();
     await expect(name).toHaveValue("A new comparison");

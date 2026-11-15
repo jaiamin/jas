@@ -30,7 +30,17 @@ function stubNetwork(fetcher: typeof fetch) {
             preferences: { ...settings.preferences, developer: true },
           }),
         )
-      : fetcher(path, options),
+      : path === "/api/design/estimate"
+        ? Promise.resolve(
+            Response.json({
+              runs: 2,
+              max_requests: 20,
+              upper_usd: 0.1,
+              unpriced_models: [],
+              assumptions: "Fixture",
+            }),
+          )
+        : fetcher(path, options),
   );
 }
 beforeEach(() =>
@@ -38,6 +48,13 @@ beforeEach(() =>
 );
 
 async function selectSection(name: string) {
+  if (name === "Question") {
+    fireEvent.mouseDown(screen.getByRole("tab", { name: "General" }), {
+      button: 0,
+      ctrlKey: false,
+    });
+    return;
+  }
   fireEvent.mouseDown(screen.getByRole("tab", { name: "Advanced" }), {
     button: 0,
     ctrlKey: false,

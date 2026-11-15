@@ -113,11 +113,15 @@ export async function setDeveloper(
   expect(saved.ok()).toBe(true);
 }
 
-/** Open an advanced section without collapsing a section that is already open. */
+/** Open the requested editor section without collapsing an open section. */
 export async function selectEditorSection(
   page: import("@playwright/test").Page,
   name: string | RegExp,
 ) {
+  if (name === "Question") {
+    await page.getByRole("tab", { name: "General", exact: true }).click();
+    return;
+  }
   await page.getByRole("tab", { name: "Advanced", exact: true }).click();
   const trigger = page
     .locator('[data-slot="experiment-editor"]')

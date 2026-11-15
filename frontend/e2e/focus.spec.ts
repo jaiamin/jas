@@ -9,9 +9,11 @@ for (const theme of ["light", "dark"]) {
       theme,
     );
     await page.goto("/new?mode=advanced");
+    await page.getByRole("tab", { name: "General", exact: true }).click();
     await page.getByLabel("Experiment name", { exact: true }).click();
     await page.keyboard.press("Tab");
     await page.keyboard.type(" An edit");
+    await page.getByRole("tab", { name: "Advanced", exact: true }).click();
     const agents = page.getByRole("button", { name: "Agents", exact: true });
     await agents.click();
     await expect(page.locator("html")).toHaveAttribute(

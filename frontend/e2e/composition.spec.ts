@@ -50,17 +50,10 @@ for (const theme of ["light", "dark"]) {
     await selectEditorSection(page, "Question");
     const title = `Custom shortage ${theme}`;
     await page.getByLabel("Experiment name", { exact: true }).fill(title);
-    await page
-      .getByRole("button", {
-        name: "Hypothesis and analysis plan",
-        exact: true,
-      })
-      .click();
+    await selectEditorSection(page, "Research plan");
     const analysisPlan =
       "Compare allocations to others and unallocated stock across conditions.";
-    await page
-      .getByLabel("Hypothesis and analysis plan", { exact: true })
-      .fill(analysisPlan);
+    await page.getByLabel("Hypothesis", { exact: true }).fill(analysisPlan);
     await page
       .getByRole("button", { name: "Experiment options", exact: true })
       .click();

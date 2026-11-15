@@ -238,3 +238,49 @@ provider errors, citations, missing starters and public Gallery reading/footer
 links. Screenshots were inspected; logs/artifacts are in ignored `.tools/links-*`.
 Both test servers stopped. Existing 8080 is healthy and serves the updated build.
 No dependencies, backend/data changes, paid calls, uploads or deployment.
+
+## Completed: simpler experiment creation
+
+User requests a visual and workflow redesign of New experiment: consistent tabs,
+less repetition, fewer inset controls and concise copy. Keep Home artwork unchanged.
+
+Acceptance criteria:
+- [x] General has compact aligned fields and condition rows without nested boxes.
+- [x] Tabs use one matching selection color; dropdowns align with inputs and labels.
+- [x] Basic identity/question/environment appear once, in General. Advanced retains
+      research settings, agents, full condition mechanics and execution controls.
+- [x] Remove redundant reassurance/section headings; retain meaningful validation,
+      spending estimates, explicit Create/Create and run, and draft recovery.
+- [x] Verify affected creation/revision/JSON/draft flows, both themes and phone/desktop;
+      inspect screenshots and serve the production build on existing 8080.
+
+General now presents basics, Agents, Comparison and Runs in one reading column.
+Agents names the participants and explains their role; Compare by and unit labels
+clarify conditions. Advanced retains full scientific controls without repeating
+basic fields. Research plan replaces the ambiguous Question section there. Review
+links back to the correct editor section. New actions use Create/Create and run;
+existing experiments retain version-saving actions. Assistant design is available
+in Experiment options. Draft feedback appears once, only when meaningful.
+
+Environment options reuse the library's concise summaries and expose names and
+descriptions separately to assistive technology. The closed selector shows only
+the name. Shared menus have padded hover surfaces; accordions no longer underline.
+Selected tab text/indicator use the same accent, including on hover. Invalid seeds
+reveal their disclosure. Invalid JSON stays intact; switching to General validates
+and applies valid JSON. Submitted snapshots and draft recovery remain protected.
+
+Verification: all 162 frontend unit tests, lint, TypeScript/Vite build and diff
+checks passed. The earlier broad browser run passed 239/246; its seven stale
+navigation/status selectors were corrected. Final affected flows cover 96 unique
+cases across focused runs: controls/list/focus 36/36, creation flows 56/60 initially,
+then editor/environment reuse 17/17 after fixing option naming and measuring menu
+insets independently of Popper's fractional positioning. Those reruns include all
+four creation failures and a new invalid/valid JSON-to-General regression. No single
+clean full browser run was repeated. Screenshots were inspected in both themes,
+phone/desktop, including blank 320px creation and described environment options.
+
+Ignored logs/screenshots: `.tools/editor-steering-*`. Disposable test services
+stopped; the existing user service on 8080 is healthy and serves the production
+build. Home artwork, backend, dependencies and user data are unchanged. Public docs
+source was updated locally; no docs publication, deployment, uploads or paid calls.
+Hosted CI remains subject to the previously observed account billing gate.

@@ -5,18 +5,22 @@ import {
   DisclosureTrigger,
 } from "@/components/disclosure";
 import { QuestionFields } from "@/components/editor/question-fields";
-import { Plus, X } from "@/components/icons";
+import { Plus, Trash2 } from "@/components/icons";
 import { ModelPicker } from "@/components/model-picker";
 import { OptionSelect } from "@/components/option-select";
 import { Button } from "@/components/ui/button";
 import {
   Field,
+  FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldLegend,
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { parseSeeds } from "@/lib/design";
 import type { Catalog, Design, EnvironmentId, Treatment } from "@/lib/types";
 
 type Factor =
@@ -74,7 +78,7 @@ function factorValue(condition: Treatment, factor: Factor): number {
 }
 
 const factorLabels = {
-  incentive: "Endowment",
+  incentive: "Credits per round",
   accuracy: "Signal accuracy",
   regeneration: "Regeneration",
   materials: "Material units",
@@ -99,6 +103,8 @@ export function GeneralFields({
   onEditAgents: () => void;
 }) {
   const [factor, setFactor] = useState<Factor>(() => initialFactor(design));
+  const [showTrials, setShowTrials] = useState(false);
+  const invalidSeeds = parseSeeds(seedsInput.value) === null;
   const selectedFactor = design.conditions.length === 1 ? "model" : factor;
   function condition(index: number, value: Partial<Treatment>) {
     onChange({
@@ -109,47 +115,49 @@ export function GeneralFields({
     });
   }
   return (
-    <FieldGroup className="gap-6">
+    <FieldGroup className="gap-5">
       <QuestionFields
         design={design}
         catalog={catalog}
         onChange={onChange}
         onEnvironmentChange={onEnvironmentChange}
         disabled={disabled}
-        basicOnly
       />
-      <FieldSet className="gap-3">
-        <FieldLegend>Agents</FieldLegend>
-        <div className="flex items-center justify-between gap-4 text-sm">
-          <span className="text-muted-foreground">
-            {design.profiles.length} agents ·{" "}
-            {design.profiles.map((profile) => profile.name).join(", ")}
-          </span>
+      <FieldSet className="gap-2">
+        <FieldLegend className="flex w-full items-center justify-between gap-3">
+          Agents
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             size="sm"
+            aria-label="Edit agents"
             onClick={onEditAgents}
           >
             Edit agents
           </Button>
-        </div>
+        </FieldLegend>
+        <p className="text-sm">
+          {design.profiles.map((profile) => profile.name).join(", ")}
+        </p>
+        <FieldDescription>
+          Participants in each run, with their own roles and goals.
+        </FieldDescription>
       </FieldSet>
       <FieldSet className="gap-4">
-        <FieldLegend>Conditions</FieldLegend>
+        <FieldLegend>Comparison</FieldLegend>
         {design.conditions.length > 1 && (
           <Field>
-            <FieldLabel htmlFor="quick-factor">What varies</FieldLabel>
+            <FieldLabel htmlFor="quick-factor">Compare by</FieldLabel>
             <OptionSelect
               id="quick-factor"
-              label="What varies"
+              label="Compare by"
               value={factor}
               onValueChange={setFactor}
               options={[
                 { value: "model", label: "Model" },
                 { value: "memory", label: "Memory" },
                 { value: "communication", label: "Communication" },
-                { value: "incentive", label: "Incentive (endowment)" },
+                { value: "incentive", label: "Resources" },
                 ...(design.environment === "information"
                   ? [{ value: "accuracy" as const, label: "Signal accuracy" }]
                   : []),
@@ -171,166 +179,186 @@ export function GeneralFields({
             />
           </Field>
         )}
-        <div className="flex flex-col gap-3">
+        <FieldGroup className="gap-4">
           {design.conditions.map((value, index) => (
-            <div
+            <FieldGroup
               key={value.key}
-              className="flex min-w-0 flex-col gap-3 rounded-lg border p-4"
+              className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-end gap-2 @sm/field-group:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
             >
-              <div className="flex items-center justify-between gap-2">
+              <Field>
+                <FieldLabel htmlFor={`quick-${value.key}-name`}>
+                  Condition {index + 1}
+                </FieldLabel>
                 <Input
-                  aria-label={`Condition ${index + 1} name`}
-                  className="h-8"
+                  id={`quick-${value.key}-name`}
+                  aria-label={`Name for condition ${index + 1}`}
+                  maxLength={80}
                   value={value.name}
                   onChange={(event) =>
                     condition(index, { name: event.target.value })
                   }
                 />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label={`Remove ${value.name}`}
-                  disabled={design.conditions.length <= 1}
-                  onClick={() =>
-                    onChange({
-                      ...design,
-                      conditions: design.conditions.filter(
-                        (item) => item.key !== value.key,
-                      ),
-                    })
-                  }
-                >
-                  <X />
-                </Button>
-              </div>
-              {selectedFactor === "model" && (
-                <ModelPicker
-                  label={`Model for ${value.name}`}
-                  value={value.model}
-                  models={catalog.models}
-                  onChange={(model) => {
-                    if (model !== "inherit") condition(index, { model });
-                  }}
-                />
-              )}
-              {selectedFactor === "memory" && (
-                <OptionSelect
-                  label={`Memory for ${value.name}`}
-                  value={value.parameters.memory}
-                  onValueChange={(memory) =>
-                    condition(index, {
-                      parameters: { ...value.parameters, memory },
-                    })
-                  }
-                  options={[
-                    { value: "none", label: "No memory" },
-                    { value: "notes", label: "Private notes" },
-                    { value: "episodic", label: "Recorded experiences" },
-                  ]}
-                />
-              )}
-              {selectedFactor === "communication" && (
-                <OptionSelect
-                  label={`Messages for ${value.name}`}
-                  value={
-                    value.parameters.communication_channels.includes(
-                      "messages",
-                    ) && value.parameters.communication
-                      ? "on"
-                      : "off"
-                  }
-                  onValueChange={(enabled) =>
-                    condition(index, {
-                      parameters: {
-                        ...value.parameters,
-                        communication: true,
-                        communication_channels: [
-                          ...value.parameters.communication_channels.filter(
-                            (channel) => channel !== "messages",
-                          ),
-                          ...(enabled === "on" ? ["messages" as const] : []),
-                        ],
-                      },
-                    })
-                  }
-                  options={[
-                    { value: "on", label: "Messages enabled" },
-                    { value: "off", label: "Messages disabled" },
-                  ]}
-                />
-              )}
-              {selectedFactor !== "model" &&
-                selectedFactor !== "memory" &&
-                selectedFactor !== "communication" && (
-                  <Input
-                    type="number"
-                    aria-label={`${factorLabels[selectedFactor]} for ${value.name}`}
-                    min={selectedFactor === "incentive" ? 1 : 0}
-                    max={
-                      selectedFactor === "accuracy" ||
-                      selectedFactor === "regeneration" ||
-                      selectedFactor === "oversight"
-                        ? 1
-                        : undefined
-                    }
-                    step={
-                      selectedFactor === "accuracy" ||
-                      selectedFactor === "regeneration" ||
-                      selectedFactor === "oversight"
-                        ? 0.1
-                        : 1
-                    }
-                    value={factorValue(value, selectedFactor)}
-                    onChange={(event) => {
-                      const amount = Number(event.target.value);
-                      condition(index, {
-                        parameters: {
-                          ...value.parameters,
-                          ...(selectedFactor === "incentive"
-                            ? { endowment: amount }
-                            : {}),
-                          ...(selectedFactor === "accuracy"
-                            ? {
-                                information: {
-                                  ...value.parameters.information,
-                                  accuracy: amount,
-                                },
-                              }
-                            : {}),
-                          ...(selectedFactor === "regeneration"
-                            ? {
-                                resource: {
-                                  ...value.parameters.resource,
-                                  regeneration: amount,
-                                },
-                              }
-                            : {}),
-                          ...(selectedFactor === "materials" &&
-                          value.parameters.workflow
-                            ? {
-                                workflow: {
-                                  ...value.parameters.workflow,
-                                  resource_stock: amount,
-                                },
-                              }
-                            : {}),
-                          ...(selectedFactor === "oversight"
-                            ? {
-                                institution: {
-                                  ...value.parameters.institution,
-                                  oversight: amount,
-                                },
-                              }
-                            : {}),
-                        },
-                      });
+              </Field>
+              <Field className="col-start-1 row-start-2 @sm/field-group:col-start-2 @sm/field-group:row-start-1">
+                <FieldLabel htmlFor={`quick-${value.key}-value`}>
+                  {selectedFactor === "model"
+                    ? "Model"
+                    : selectedFactor === "memory"
+                      ? "Memory"
+                      : selectedFactor === "communication"
+                        ? "Communication"
+                        : factorLabels[selectedFactor]}
+                </FieldLabel>
+                {selectedFactor === "model" && (
+                  <ModelPicker
+                    id={`quick-${value.key}-value`}
+                    label={`Model for ${value.name}`}
+                    value={value.model}
+                    models={catalog.models}
+                    onChange={(model) => {
+                      if (model !== "inherit") condition(index, { model });
                     }}
                   />
                 )}
-            </div>
+                {selectedFactor === "memory" && (
+                  <OptionSelect
+                    id={`quick-${value.key}-value`}
+                    label={`Memory for ${value.name}`}
+                    value={value.parameters.memory}
+                    onValueChange={(memory) =>
+                      condition(index, {
+                        parameters: { ...value.parameters, memory },
+                      })
+                    }
+                    options={[
+                      { value: "none", label: "No memory" },
+                      { value: "notes", label: "Private notes" },
+                      { value: "episodic", label: "Recorded experiences" },
+                    ]}
+                  />
+                )}
+                {selectedFactor === "communication" && (
+                  <OptionSelect
+                    id={`quick-${value.key}-value`}
+                    label={`Messages for ${value.name}`}
+                    value={
+                      value.parameters.communication_channels.includes(
+                        "messages",
+                      ) && value.parameters.communication
+                        ? "on"
+                        : "off"
+                    }
+                    onValueChange={(enabled) =>
+                      condition(index, {
+                        parameters: {
+                          ...value.parameters,
+                          communication: true,
+                          communication_channels: [
+                            ...value.parameters.communication_channels.filter(
+                              (channel) => channel !== "messages",
+                            ),
+                            ...(enabled === "on" ? ["messages" as const] : []),
+                          ],
+                        },
+                      })
+                    }
+                    options={[
+                      { value: "on", label: "Messages enabled" },
+                      { value: "off", label: "Messages disabled" },
+                    ]}
+                  />
+                )}
+                {selectedFactor !== "model" &&
+                  selectedFactor !== "memory" &&
+                  selectedFactor !== "communication" && (
+                    <Input
+                      id={`quick-${value.key}-value`}
+                      type="number"
+                      aria-label={`${factorLabels[selectedFactor]} for ${value.name}`}
+                      min={selectedFactor === "incentive" ? 1 : 0}
+                      max={
+                        selectedFactor === "accuracy" ||
+                        selectedFactor === "regeneration" ||
+                        selectedFactor === "oversight"
+                          ? 1
+                          : undefined
+                      }
+                      step={
+                        selectedFactor === "accuracy" ||
+                        selectedFactor === "regeneration" ||
+                        selectedFactor === "oversight"
+                          ? 0.1
+                          : 1
+                      }
+                      value={factorValue(value, selectedFactor)}
+                      onChange={(event) => {
+                        const amount = Number(event.target.value);
+                        condition(index, {
+                          parameters: {
+                            ...value.parameters,
+                            ...(selectedFactor === "incentive"
+                              ? { endowment: amount }
+                              : {}),
+                            ...(selectedFactor === "accuracy"
+                              ? {
+                                  information: {
+                                    ...value.parameters.information,
+                                    accuracy: amount,
+                                  },
+                                }
+                              : {}),
+                            ...(selectedFactor === "regeneration"
+                              ? {
+                                  resource: {
+                                    ...value.parameters.resource,
+                                    regeneration: amount,
+                                  },
+                                }
+                              : {}),
+                            ...(selectedFactor === "materials" &&
+                            value.parameters.workflow
+                              ? {
+                                  workflow: {
+                                    ...value.parameters.workflow,
+                                    resource_stock: amount,
+                                  },
+                                }
+                              : {}),
+                            ...(selectedFactor === "oversight"
+                              ? {
+                                  institution: {
+                                    ...value.parameters.institution,
+                                    oversight: amount,
+                                  },
+                                }
+                              : {}),
+                          },
+                        });
+                      }}
+                    />
+                  )}
+              </Field>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="col-start-2 row-start-1 @sm/field-group:col-start-3"
+                aria-label={`Remove ${value.name}`}
+                disabled={design.conditions.length <= 1}
+                onClick={() =>
+                  onChange({
+                    ...design,
+                    conditions: design.conditions.filter(
+                      (item) => item.key !== value.key,
+                    ),
+                  })
+                }
+              >
+                <Trash2 />
+              </Button>
+            </FieldGroup>
           ))}
-        </div>
+        </FieldGroup>
         <Button
           type="button"
           variant="ghost"
@@ -354,48 +382,66 @@ export function GeneralFields({
             });
           }}
         >
-          <Plus />
+          <Plus data-icon="inline-start" />
           Add condition
         </Button>
       </FieldSet>
+      <Separator />
       <FieldSet className="gap-5">
-        <FieldLegend>Run plan</FieldLegend>
-        <Field>
-          <FieldLabel htmlFor="quick-rounds">Rounds</FieldLabel>
-          <Input
-            id="quick-rounds"
-            type="number"
-            min={1}
-            value={design.rounds}
-            onChange={(event) =>
-              onChange({ ...design, rounds: Number(event.target.value) })
-            }
-          />
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="quick-budget">Max spend (USD)</FieldLabel>
-          <Input
-            id="quick-budget"
-            type="number"
-            min={0}
-            step="any"
-            value={design.budget_usd}
-            onChange={(event) =>
-              onChange({ ...design, budget_usd: Number(event.target.value) })
-            }
-          />
-        </Field>
-        <Disclosure>
+        <FieldLegend>Runs</FieldLegend>
+        <FieldGroup className="grid grid-cols-2 gap-4">
+          <Field>
+            <FieldLabel htmlFor="quick-rounds">Rounds</FieldLabel>
+            <Input
+              id="quick-rounds"
+              type="number"
+              min={1}
+              value={design.rounds}
+              onChange={(event) =>
+                onChange({ ...design, rounds: Number(event.target.value) })
+              }
+            />
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="quick-budget">Max spend (USD)</FieldLabel>
+            <Input
+              id="quick-budget"
+              type="number"
+              min={0}
+              step="any"
+              value={design.budget_usd}
+              onChange={(event) =>
+                onChange({ ...design, budget_usd: Number(event.target.value) })
+              }
+            />
+          </Field>
+        </FieldGroup>
+        <Disclosure
+          open={invalidSeeds || showTrials}
+          onOpenChange={setShowTrials}
+        >
           <DisclosureTrigger>Seeds and repetitions</DisclosureTrigger>
           <DisclosureContent className="pt-4">
-            <FieldGroup>
-              <Field>
+            <FieldGroup className="grid grid-cols-2 gap-4">
+              <Field data-invalid={invalidSeeds || undefined}>
                 <FieldLabel htmlFor="quick-seeds">Seeds</FieldLabel>
                 <Input
                   id="quick-seeds"
+                  aria-invalid={invalidSeeds || undefined}
+                  aria-describedby={
+                    invalidSeeds ? "quick-seeds-error" : undefined
+                  }
                   value={seedsInput.value}
-                  onChange={(event) => seedsInput.onChange(event.target.value)}
+                  onChange={(event) => {
+                    setShowTrials(true);
+                    seedsInput.onChange(event.target.value);
+                  }}
                 />
+                {invalidSeeds && (
+                  <FieldError id="quick-seeds-error">
+                    Use nonnegative integers separated by commas.
+                  </FieldError>
+                )}
               </Field>
               <Field>
                 <FieldLabel htmlFor="quick-repeats">Repeats</FieldLabel>

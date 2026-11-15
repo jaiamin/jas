@@ -128,6 +128,7 @@ test("editor select labels activate their associated controls", async ({
   page,
 }) => {
   await page.goto("/new?template=composed&mode=advanced");
+  await selectEditorSection(page, "Question");
   const environment = page.getByRole("combobox", {
     name: "Environment",
     exact: true,

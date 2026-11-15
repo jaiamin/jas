@@ -44,34 +44,6 @@ export function AgentFields({
   }
   return (
     <section className="flex min-w-0 flex-col gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="text-base font-medium">
-            Agents{" "}
-            <span className="text-muted-foreground">
-              {design.profiles.length}
-            </span>
-          </h2>
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={
-            design.profiles.length >= maximumParticipants(design.environment)
-          }
-          onClick={() => {
-            const next = addProfile(design);
-            const key = next.profiles.at(-1)?.key ?? "";
-            addedInput.current = `agent-${key}-name`;
-            setOpen((open) => [...open, key]);
-            onChange(next);
-          }}
-        >
-          <Plus data-icon="inline-start" />
-          Add agent
-        </Button>
-      </div>
       <Accordion type="multiple" value={open} onValueChange={setOpen}>
         {design.profiles.map((p, i) => (
           <AccordionItem value={p.key} key={p.key}>
@@ -173,6 +145,25 @@ export function AgentFields({
           </AccordionItem>
         ))}
       </Accordion>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="self-start"
+        disabled={
+          design.profiles.length >= maximumParticipants(design.environment)
+        }
+        onClick={() => {
+          const next = addProfile(design);
+          const key = next.profiles.at(-1)?.key ?? "";
+          addedInput.current = `agent-${key}-name`;
+          setOpen((open) => [...open, key]);
+          onChange(next);
+        }}
+      >
+        <Plus data-icon="inline-start" />
+        Add agent
+      </Button>
       {design.environment === "trust_exchange" &&
         design.profiles.length % 2 !== 0 && (
           <Alert variant="error">

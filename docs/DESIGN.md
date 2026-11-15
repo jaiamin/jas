@@ -106,6 +106,10 @@ All underlines use a shared 4px offset and 1px thickness from `index.css`.
 Use `text-link` for inline prose, evidence references and footer links; record names
 and breadcrumbs may underline on hover. Navigation, cards and button actions retain
 their existing treatment. Keep trailing icons outside the underlined text.
+Accordion/disclosure controls and dropdown items do not underline on hover.
+Keep padding inside hover surfaces: disclosure buttons retain their standard
+horizontal inset; menu actions use 10px, and select options use 8px left padding
+with space reserved for the trailing selection mark.
 Shared cursor rules give enabled actions, links, labels and portalled menu/select
 items a pointer. Text entry keeps its text cursor; disabled controls are excluded.
 Option dropdowns open from the trigger's left edge. Their values are left-aligned
@@ -690,27 +694,45 @@ click and uses the same Environment, Decisions and Interactions views.
 Use the shared 36px outlined flask heading and a single 768px content column.
 The only top-level tabs are General, Advanced and Review. Stock line tabs share
 one baseline with their full-width Separator and remain sticky below the global
-header. Blank creation has empty name, question, hypothesis and scenario text,
+header. Align their text with the form's left edge, using 24px gaps. Selected text
+and its indicator share the accent foreground, including on hover; inactive tabs
+stay neutral. Blank creation has empty name, question, hypothesis and scenario text,
 one baseline condition, four agents, one seed, five rounds and a $1 ceiling.
 Examples, templates, copies, revisions and Assistant proposals retain their content.
 Incomplete name/question text survives draft reload; protocol structure is still
 validated and incomplete experiments cannot be saved or run.
 
-General presents name, question, environment, a compact agent summary with Edit,
-stacked condition controls and the run plan. Seeds/repetitions use one disclosure.
-Advanced expands one section at a time: Question (including optional analysis and
-scenario context), Agents, Conditions, Run plan and developer Specification.
+General owns name, question and environment. The question starts at one line and
+grows with its content. Omit redundant placeholders. Environment options show a
+name and one muted summary; selected triggers show only the name. Descriptions
+wrap within the trigger-width popup and are exposed to assistive technology.
+Agents has its own section with participant names, a short role/goal explanation
+and Edit agents. Comparison uses flat paired name/value fields, stacking on narrow
+content, with visible value labels and
+trailing removal actions. Compare by uses plain labels such as Resources; its
+numeric control names the unit (Credits per round). Runs keeps rounds and spending
+limit on one row; seeds/repetitions use one disclosure that opens for invalid
+seeds. Controls and dropdown menus align without nested card insets.
+Advanced expands one section at a time: Research plan (private hypothesis,
+optional analysis and shared scenario context), Agents, Conditions, Run plan and
+developer Specification. Basic identity fields do not repeat there. Agent and
+condition lists omit duplicate headings; their Add actions follow the list.
 Inputs stay mounted between sections; pending operations lock navigation and
 submitted fields. Agents and conditions keep their add/remove actions and focus
-behavior. Keep forms in one reading column. Show only supported environment controls;
-optional notes, overrides and model settings remain disclosed.
+behavior. General's fields remain mounted across tabs. Keep forms in one reading
+column. Show only supported environment controls; optional notes, overrides and
+model settings remain disclosed.
 
 Review consolidates the protocol with section-specific Edit links, mechanical
 checks and Create/Save. Advanced offers a direct Review action instead of a
 Back/Continue wizard. JSON edits must validate before they enter the visual form;
 never discard dirty JSON when switching views. Reusable environment saving stays
-in Experiment options. Assistant proposals open on Review. Saving never runs models.
-
+in Experiment options, alongside Design with Assistant. Only proposals retain a
+Back to Assistant heading action. Assistant proposals open on Review. Show one
+compact estimate line and a draft status only after saving a browser draft; omit
+repeated execution reassurance. Saving never runs models.
+New experiments use Create and Create and run; existing experiments retain version
+saving language. Create alone does not run models.
 
 Reusable environments save only mechanics/configuration examples. Choosing a library or
 built-in environment starts an independent neutral experiment; explicit experiment templates

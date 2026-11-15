@@ -139,11 +139,15 @@ test("visiting Agent preserves the editor's single recoverable draft", async ({
   page,
 }) => {
   await page.goto("/new?template=commons&mode=advanced");
+  await selectEditorSection(page, "Question");
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Preserved while asking AI");
   await page
-    .getByRole("link", { name: "Generate with Assistant", exact: true })
+    .getByRole("button", { name: "Experiment options", exact: true })
+    .click();
+  await page
+    .getByRole("menuitem", { name: "Design with Assistant", exact: true })
     .click();
   await expect(page).toHaveURL(/assistant\?new=/);
   await page.goBack();
@@ -196,6 +200,7 @@ test("a delayed save locks editing and a failed save keeps the draft editable", 
   page,
 }) => {
   await page.goto("/new?template=commons&mode=advanced");
+  await selectEditorSection(page, "Question");
   const name = page.getByLabel("Experiment name", { exact: true });
   await name.fill("Save recovery snapshot");
   let release: () => void = () => {};

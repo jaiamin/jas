@@ -141,7 +141,7 @@ test("unfinished name and question survive validated draft recovery without beco
   );
   expect(screen.getByLabelText("Question")).toHaveValue("");
   expect(screen.queryByText("Recover your draft")).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Create" })).toBeDisabled();
   expect(
     JSON.parse(localStorage.getItem("jas:draft:/new") ?? "null").design
       .question,

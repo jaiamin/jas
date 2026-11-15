@@ -48,7 +48,7 @@ for (const width of [390, 1280]) {
       expect(await page.evaluate(() => scrollY)).toBe(0);
       await expect.poll(async () => (await header.boundingBox())?.y).toBe(0);
       if (path.startsWith("/new")) {
-        const save = page.getByRole("button", { name: "Save", exact: true });
+        const save = page.getByRole("button", { name: "Create", exact: true });
         await save.scrollIntoViewIfNeeded();
         await expect(save).toBeInViewport({ ratio: 1 });
       }
@@ -217,6 +217,7 @@ test("Agent navigation preserves incomplete editor state and one recoverable dra
   page,
 }) => {
   await page.goto("/new?template=commons&mode=advanced");
+  await selectEditorSection(page, "Question");
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Keep this protocol");
@@ -226,7 +227,10 @@ test("Agent navigation preserves incomplete editor state and one recoverable dra
     page.getByRole("button", { name: "Ask Assistant", exact: true }),
   ).toHaveCount(0);
   await page
-    .getByRole("link", { name: "Generate with Assistant", exact: true })
+    .getByRole("button", { name: "Experiment options", exact: true })
+    .click();
+  await page
+    .getByRole("menuitem", { name: "Design with Assistant", exact: true })
     .click();
   await expect(
     page.getByRole("combobox", { name: "Message context" }),

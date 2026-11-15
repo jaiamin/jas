@@ -7,6 +7,7 @@ for (const origin of ["library", "newly-saved"]) {
     request,
   }) => {
     await page.goto("/new?template=trust_exchange&mode=advanced");
+    await selectEditorSection(page, "Question");
     await page
       .getByLabel("Experiment name", { exact: true })
       .fill(`World change ${origin}`);
@@ -27,6 +28,7 @@ for (const origin of ["library", "newly-saved"]) {
     ).toBeVisible();
     if (origin === "library")
       await page.goto(`/new?setup=${source.id}&mode=advanced`);
+    await selectEditorSection(page, "Question");
     await page
       .getByRole("textbox", { name: "Question", exact: true })
       .fill(`Keep this question ${origin}`);
@@ -90,6 +92,7 @@ for (const theme of ["light", "dark"]) {
     const name = `Reusable stock ${theme}`;
     const originalQuestion = `Private original question ${theme}`;
     await page.goto("/new?template=composed&mode=advanced");
+    await selectEditorSection(page, "Question");
     await page.getByLabel("Experiment name", { exact: true }).fill(name);
     await page
       .getByRole("textbox", { name: "Question", exact: true })
@@ -213,6 +216,7 @@ for (const theme of ["light", "dark"]) {
 
     const draftURL = `/new?setup=${source.id}&mode=advanced`;
     await page.goto(draftURL);
+    await selectEditorSection(page, "Question");
     await page
       .getByRole("textbox", { name: "Question", exact: true })
       .fill(`Retained draft ${theme}`);
