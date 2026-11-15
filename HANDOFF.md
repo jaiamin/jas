@@ -218,3 +218,8 @@ Follow-up: removed the Examples cards' demo labels at the user's request, and
 simplified their action-row markup. Recording provenance and protocol data remain
 unchanged. Lint/types/build and all six Learn browser checks passed in both themes
 at phone/desktop widths. Local 8080 serves the updated build; no deployment.
+
+Examples now has a full-width stock Separator beneath its heading, with 24px
+spacing above/below, matching the other workspace pages. Lint/types/build and six
+Learn browser checks passed (both themes, phone/desktop); screenshot inspected.
+The production bundle is served on 8080; no deployment or data changes.

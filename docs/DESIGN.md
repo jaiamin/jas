@@ -158,6 +158,7 @@ and editor. Skeletons match the compact cards. Watch and reuse stay keyless and
 never start a model run.
 Examples shares RecordListTitle with Environments: a 36px muted rounded icon tile,
 an 18px glyph and 20px/22px title with a 12px gap. Use Blocks and omit the subtitle.
+A stock full-width Separator sits below the heading with 24px spacing on each side.
 The compact brand link returns to Home. The footer contains a quiet usage line,
 a thin budget meter and one direct Settings link. There is no avatar, chooser,
 subtitle or appearance dropdown. Light/dark mode lives only in the top-right header.

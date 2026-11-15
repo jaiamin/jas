@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useApi } from "@/lib/api";
 import type { Starter } from "@/lib/types";
@@ -26,6 +27,7 @@ export default function Examples() {
   return (
     <>
       <RecordListTitle title="Examples" icon={Blocks} className="mb-6" />
+      <Separator className="mb-6" />
       {examples.error && (
         <ErrorState error={examples.error} onRetry={examples.refetch} />
       )}
