@@ -8,6 +8,7 @@ import {
   recordAssistantChat,
 } from "@/components/agent/assistant-workspace";
 import { useAgentChat } from "@/components/agent/use-agent-chat";
+import { Alert } from "@/components/feedback";
 import { Maximize, PanelRightClose, SquarePen } from "@/components/icons";
 import { ErrorState, Loading } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -207,10 +208,11 @@ function PanelConversation({
         </Button>
       </header>
       {storageError && (
-        <p role="status" className="px-4 pt-3 text-xs text-muted-foreground">
-          This browser could not remember the conversation. Open in Assistant to
-          keep its link.
-        </p>
+        <div className="px-4">
+          <Alert variant="error" title="Chat link couldn’t be saved">
+            Open the full Assistant to keep its link.
+          </Alert>
+        </div>
       )}
       <div className="min-h-0 flex-1">
         {chat.error ? (

@@ -799,3 +799,26 @@ def test_delete_chat_respects_live_task_ownership(client):
     finally:
         client.portal.call(release)
     assert client.delete("/api/chats/owned").status_code == 200
+
+
+def test_publishing_keychain_failure_has_a_setup_code_and_makes_no_remote_request(
+    client, monkeypatch
+):
+    from agent_sim.publishing import Publisher
+    from keyring.errors import NoKeyringError
+
+    def unavailable(*_args):
+        raise NoKeyringError("private keychain diagnostic")
+
+    def no_network(*_args, **_kwargs):
+        pytest.fail("A missing keychain must not contact the gallery")
+
+    monkeypatch.setattr("agent_sim.publishing.keyring.get_password", unavailable)
+    monkeypatch.setattr(Publisher, "request", no_network)
+    response = client.get("/api/publishing")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["identity"] is None
+    assert data["error_code"] == "keychain_unavailable"
+    assert data["error"] == "Enable a system keychain to save your publishing sign-in securely."
+    assert "private keychain diagnostic" not in response.text

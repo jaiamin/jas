@@ -1,15 +1,7 @@
-import {
-  Component,
-  Fragment,
-  Suspense,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Fragment, Suspense, useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { AssistantPanel } from "@/components/agent/assistant-panel";
 import { useWorkspaceAssistant } from "@/components/agent/assistant-workspace";
-import { Empty } from "@/components/feedback";
 import {
   AgentIcon,
   ArrowUpRight,
@@ -26,6 +18,7 @@ import {
   Settings,
   Sun,
 } from "@/components/icons";
+import { PageBoundary } from "@/components/page-boundary";
 import { Loading } from "@/components/shared";
 import { SidebarBudget } from "@/components/sidebar-budget";
 import { Button } from "@/components/ui/button";
@@ -51,28 +44,6 @@ import { useApi } from "@/lib/api";
 import { DOCS_URL, MCP_DOCS_URL } from "@/lib/docs";
 import type { RunSummary } from "@/lib/types";
 import { cn } from "@/lib/utils";
-
-class PageBoundary extends Component<
-  { children: React.ReactNode },
-  { error: Error | null }
-> {
-  state: { error: Error | null } = { error: null };
-  static getDerivedStateFromError(error: Error) {
-    return { error };
-  }
-  render() {
-    return this.state.error ? (
-      <Empty
-        title="This view could not load"
-        description="Reload to reconnect. Your runs continue on the server."
-      >
-        <Button onClick={() => location.reload()}>Reload workspace</Button>
-      </Empty>
-    ) : (
-      this.props.children
-    );
-  }
-}
 
 export default function WorkspaceShell() {
   const { openMobile, setOpenMobile, state, isMobile } = useSidebar();

@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { Alert } from "@/components/feedback";
 import { OptionSelect } from "@/components/option-select";
 import { Button } from "@/components/ui/button";
 import {
@@ -116,10 +117,17 @@ export function ProviderForm({
           <Button variant="outline" disabled={save.isPending}>
             {save.isPending ? "Saving…" : "Save provider"}
           </Button>
-          <p role="status" className="text-sm text-muted-foreground">
-            {save.error?.message ?? (save.isSuccess ? "Provider saved." : "")}
-          </p>
+          {save.isSuccess && !save.error && (
+            <p role="status" className="text-sm text-muted-foreground">
+              Provider saved.
+            </p>
+          )}
         </div>
+        {save.error && (
+          <Alert variant="error" title="Provider wasn’t saved">
+            {save.error.message}
+          </Alert>
+        )}
       </FieldGroup>
     </form>
   );

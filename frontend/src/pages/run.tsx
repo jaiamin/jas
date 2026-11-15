@@ -315,16 +315,21 @@ export default function Run() {
         <Alert title="Recorded rules">{run.execution_blocked}</Alert>
       )}
       {(summary.error || control.error) && (
-        <Alert variant="error" title="Execution stopped safely">
+        <Alert
+          variant="error"
+          title="Execution stopped safely"
+          action={
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setParams({ tab: "settings" })}
+            >
+              Inspect requests
+            </Button>
+          }
+        >
           {control.error?.message ?? summary.error} Saved through turn{" "}
           {summary.turn}.{" "}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setParams({ tab: "settings" })}
-          >
-            Inspect requests
-          </Button>
         </Alert>
       )}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">

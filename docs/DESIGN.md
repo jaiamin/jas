@@ -982,3 +982,18 @@ a click reveals calls/tokens and explains unknown or unsettled usage.
 The desktop run viewer gives each pane its own keyboard-accessible scroll area,
 capped at half the viewport height, so long consequences do not push playback
 far below the turn. Phones retain the ordinary single-column document flow.
+
+## Error feedback
+
+Use shared `Alert variant="error"` and `ErrorState` for page, inline, settings,
+Assistant, Gallery and dialog failures. The error surface uses the card/background
+and border tokens, 16px padding and a 672px maximum width, shrinking to its parent.
+Keep the title in normal foreground, the explanation muted, and only the 16px
+outline icon destructive. Align page errors to the content gutter in both themes.
+
+Keep copy short: a clear title, one useful sentence and relevant recovery actions.
+Pass buttons/links through `action`, below the explanation; do not embed them in
+prose. Preserve validation details and recorded errors. Field validation stays
+beside its control; recorded status badges remain compact. Never auto-retry a paid
+action. Setup requirements link to setup; retry is for recoverable requests.
+`PageBoundary` uses the same treatment and preserves navigation after a page fails.

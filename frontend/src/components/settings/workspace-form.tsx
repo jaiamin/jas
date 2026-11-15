@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { Alert } from "@/components/feedback";
 import { ModelPicker } from "@/components/model-picker";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -151,11 +152,17 @@ export function WorkspaceForm({ settings }: { settings: Settings }) {
           <Button disabled={save.isPending}>
             {save.isPending ? "Saving…" : "Save workspace settings"}
           </Button>
-          <p role="status" className="text-sm text-muted-foreground">
-            {save.error?.message ??
-              (save.isSuccess ? "Workspace settings saved." : "")}
-          </p>
+          {save.isSuccess && !save.error && (
+            <p role="status" className="text-sm text-muted-foreground">
+              Workspace settings saved.
+            </p>
+          )}
         </div>
+        {save.error && (
+          <Alert variant="error" title="Settings weren’t saved">
+            {save.error.message}
+          </Alert>
+        )}
       </FieldGroup>
     </form>
   );

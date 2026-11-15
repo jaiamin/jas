@@ -11,7 +11,7 @@ and historical diagnostic prose were removed. Current engineering contracts rema
 ## Workspace
 
 - Branch: t3/ponytail-full-1. Draft PR: https://github.com/jaiamin/jas/pull/41.
-- Local app is on 0.0.0.0:8080 (PID 360333), using data/workspace.
+- Local app is on 0.0.0.0:8080 (PID 369955), using data/workspace.
   Restarted only after confirming no active runs/calls/analyses; data preserved.
   No paid calls.
 - System /usr/bin/uv fails on the guest page size. Use .tools/bin/uv or .venv/bin tools.
@@ -75,11 +75,8 @@ Acceptance and progress:
   device requests passed; workspace APIs return 404. Private bucket references
   remain server-side. Live authenticated object writes are still unverified.
   App/CLI default to its HTTPS origin, with explicit self-host/dev overrides.
-- [ ] Old workspace/volume deletion is staged and reviewed, **not applied**.
-  The user explicitly requested discarding the hosted data. The platform refused
-  accept-deploy: destructive changes require dashboard two-factor verification,
-  unavailable to API/MCP. User must apply the pending project changes; do not
-  bypass this restriction. The new Gallery/storage are excluded.
+- [x] Owner applied the old workspace/volume deletion in the dashboard. Read-back
+  confirmed only Gallery, gallery-data and gallery-records remain; no staged changes.
 - [x] Real GitHub OAuth client/secret configured only on Gallery.
 - [ ] Complete user OAuth login and cross-machine publish/fork/keychain acceptance.
 
@@ -101,8 +98,44 @@ acceptance remain launch gates; never equate fixture tests with those checks.
 Hosted deployment: `7b7962d4-2317-412d-9325-b0649b65806a` (SUCCESS).
 Gallery origin is the DEFAULT_GALLERY_ORIGIN constant in publishing.py.
 Platform project `f7e199d8-bd8b-4628-8527-d0d99c20519b`, production environment
-`b90e8e72-dde9-4b2e-aa50-1243debe2801`; pending deletion patch
-`0fb45848-cbee-4f49-820a-27362f19591d` affects only the retired service/volume.
+`b90e8e72-dde9-4b2e-aa50-1243debe2801`. The retired workspace and volume are gone.
 Gallery source is pinned to the tested commit; documentation-only pushes do not deploy.
 GitHub Checks run 43753545823 failed to start because of account billing/spending
 limits; this is an external CI gate, not a test failure. Local checks passed.
+
+## Completed: consistent error UI
+
+User requests one minimal, clear error treatment across every page, including
+My published's missing-keychain state. Reuse shared Alert/ErrorState and stock UI
+primitives; preserve specific validation/provider messages and never auto-retry
+paid actions. Use neutral surfaces, clear text hierarchy, a restrained error icon
+and separate recovery actions that wrap on phones. No token-storage fallback.
+
+Acceptance:
+- [x] Shared layout reaches page, inline, settings, Gallery, Assistant and dialog errors.
+- [x] Keychain setup errors explain the requirement without a pointless Retry.
+- [x] Loading/empty/warning states and field validation retain their semantics.
+- [x] Meaningful regressions; lint/types/build and light/dark phone/desktop checks.
+
+Verification: 74 affected backend tests, 161 frontend tests, 24 workspace browser
+tests and three hosted Gallery browser tests passed. Frontend lint/build,
+Ruff/formatting and ty passed. Phone/desktop error screenshots were inspected in
+both themes, including long-message wrapping and keyboard recovery. Page crashes
+show safe reload guidance; transport/parsing errors retain their cause with readable
+copy. Paid actions are never automatically repeated. Failed sign-in uses its existing
+control to retry rather than offering an unrelated status refresh.
+The local backend was gracefully reloaded after confirming no active work; health
+and the typed missing-keychain response were checked on 8080. Data was preserved.
+No remote deployment or public documentation publication was performed for this UI.
+
+Infrastructure review confirmed the old hosted workspace and volume were deleted.
+Only Gallery, gallery-data and private gallery-records remain; no staged changes.
+
+Design intent: errors help the local experiment author recover without overwhelming
+the page. Use existing card/background/border tokens and Geist at 14px; medium
+foreground titles, muted descriptions and one outlined destructive icon. Border-only
+depth, 16px padding on the existing 4px spacing grid, 8px icon gap and 12px before
+recovery actions. Reuse the same layout for compact and page-level errors.
+
+Gallery examples: the user cancelled the six requested publications for now.
+Nothing was uploaded and no paid model experiments were run.

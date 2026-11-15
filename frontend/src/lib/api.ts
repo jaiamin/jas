@@ -2,8 +2,8 @@ import { type QueryClient, useQuery } from "@tanstack/react-query";
 
 export class ApiError extends Error {
   readonly status: number;
-  constructor(message: string, status: number) {
-    super(message);
+  constructor(message: string, status: number, options?: ErrorOptions) {
+    super(message, options);
     this.name = "ApiError";
     this.status = status;
   }
@@ -11,20 +11,32 @@ export class ApiError extends Error {
 
 /**
  * GET when body is omitted; otherwise POST JSON. Success responses must contain JSON.
- * HTTP failures reject with ApiError; transport, serialization and successful-response
- * parsing failures propagate their original errors.
+ * HTTP failures reject with ApiError. Transport and response parsing failures
+ * retain their cause with a readable message. Serialization
+ * failures propagate unchanged. No request is automatically repeated.
  */
 export async function api<T>(
   path: string,
   body?: unknown,
   method?: "POST" | "PUT" | "DELETE",
 ): Promise<T> {
-  const response = await fetch(`/api${path}`, {
+  const request = {
     headers:
       body === undefined ? undefined : { "Content-Type": "application/json" },
     method: method ?? (body === undefined ? "GET" : "POST"),
     body: body === undefined ? undefined : JSON.stringify(body),
-  });
+  };
+  let response: Response;
+  try {
+    response = await fetch(`/api${path}`, request);
+  } catch (cause) {
+    if (cause instanceof Error && cause.name === "AbortError") throw cause;
+    throw new ApiError(
+      "Couldn’t reach JAS. Check your connection and try again.",
+      0,
+      { cause },
+    );
+  }
   if (!response.ok) {
     const error: unknown = await response.json().catch(() => null);
     const detail =
@@ -55,14 +67,29 @@ export async function api<T>(
       if (messages.length)
         throw new ApiError(messages.join(". "), response.status);
     }
+    const fallback: Record<number, string> = {
+      401: "Sign in to continue.",
+      403: "You don’t have permission to do this.",
+      404: "This item is no longer available.",
+      429: "Too many requests. Wait a moment and try again.",
+    };
     throw new ApiError(
       typeof detail === "string"
         ? detail
-        : `Request failed (${response.status})`,
+        : (fallback[response.status] ??
+            "JAS couldn’t complete this request. Try again shortly."),
       response.status,
     );
   }
-  return response.json() as Promise<T>;
+  try {
+    return (await response.json()) as T;
+  } catch (cause) {
+    throw new ApiError(
+      "JAS returned an unreadable response. Try again.",
+      response.status,
+      { cause },
+    );
+  }
 }
 export function useApi<T>(
   path: string,

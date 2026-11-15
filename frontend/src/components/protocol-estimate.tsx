@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { ErrorState } from "@/components/shared";
 import { api } from "@/lib/api";
 import { money } from "@/lib/format";
 import type { Design, ExecutionEstimate } from "@/lib/types";
@@ -17,6 +18,14 @@ export function ProtocolEstimate({
     enabled: !value,
   });
   const data = value ?? estimate.data;
+  if (!data && estimate.error)
+    return (
+      <ErrorState
+        title="Estimate unavailable"
+        error={estimate.error}
+        onRetry={estimate.refetch}
+      />
+    );
   return (
     <p className="text-xs text-muted-foreground" aria-live="polite">
       {data ? (
@@ -29,8 +38,6 @@ export function ProtocolEstimate({
             Conservative bound · spending ceiling {money(design.budget_usd)}
           </span>
         </>
-      ) : estimate.error ? (
-        "Estimate unavailable. Check the protocol before running."
       ) : (
         "Estimating runs and cost…"
       )}

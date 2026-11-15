@@ -94,16 +94,20 @@ export function AgentHistory({
           <Separator />
         </PopoverHeader>
         {chats.error && (
-          <Alert variant="error">
+          <Alert
+            variant="error"
+            action={
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => chats.refetch()}
+              >
+                Retry
+              </Button>
+            }
+          >
             Could not {chats.data ? "refresh" : "load"} chats.
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => chats.refetch()}
-            >
-              Retry
-            </Button>
           </Alert>
         )}
         {!chats.data ? (

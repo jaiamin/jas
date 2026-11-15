@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { Alert } from "@/components/feedback";
 import { ModelPicker } from "@/components/model-picker";
 import { Button } from "@/components/ui/button";
 import {
@@ -138,10 +139,17 @@ export function ModelSettings({ settings }: { settings: Settings }) {
             <Button variant="outline" disabled={save.isPending}>
               Save model
             </Button>
-            <p role="status" className="text-sm text-muted-foreground">
-              {save.error?.message ?? (save.isSuccess ? "Model saved." : "")}
-            </p>
+            {save.isSuccess && !save.error && (
+              <p role="status" className="text-sm text-muted-foreground">
+                Model saved.
+              </p>
+            )}
           </div>
+          {save.error && (
+            <Alert variant="error" title="Model wasn’t saved">
+              {save.error.message}
+            </Alert>
+          )}
         </FieldGroup>
       </form>
       <div className="flex flex-col items-start gap-3">
@@ -176,12 +184,15 @@ export function ModelSettings({ settings }: { settings: Settings }) {
             </Button>
           </>
         )}
-        <p role="status" className="text-sm text-muted-foreground">
-          {test.error?.message ??
-            (test.data?.acknowledged
-              ? "Connection and structured response verified."
-              : "")}
-        </p>
+        {test.error ? (
+          <Alert variant="error" title="Connection test failed">
+            {test.error.message}
+          </Alert>
+        ) : test.data?.acknowledged ? (
+          <p role="status" className="text-sm text-muted-foreground">
+            Connection and structured response verified.
+          </p>
+        ) : null}
       </div>
     </FieldGroup>
   );

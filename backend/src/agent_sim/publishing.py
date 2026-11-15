@@ -23,6 +23,10 @@ class GalleryError(ValueError):
         self.status_code = status_code
 
 
+class KeychainUnavailable(ValueError):
+    pass
+
+
 def gallery_origin(value: str | None = None) -> str:
     configured = value or os.getenv("JAS_GALLERY_URL") or DEFAULT_GALLERY_ORIGIN
     origin = configured.rstrip("/")
@@ -52,17 +56,16 @@ class Publisher:
         try:
             return keyring.get_password(self.service, "publisher")
         except (KeyringError, RuntimeError) as error:
-            raise ValueError(
-                "OS keychain unavailable. Enable your desktop keychain before "
-                "signing in; tokens are never saved as plain text."
+            raise KeychainUnavailable(
+                "Enable a system keychain to save your publishing sign-in securely."
             ) from error
 
     def save_token(self, token: str) -> None:
         try:
             keyring.set_password(self.service, "publisher", token)
         except (KeyringError, RuntimeError) as error:
-            raise ValueError(
-                "OS keychain unavailable; sign-in was not saved. Enable the keychain and try again."
+            raise KeychainUnavailable(
+                "Sign-in wasn’t saved. Enable a system keychain and try again."
             ) from error
 
     def sign_out(self) -> None:

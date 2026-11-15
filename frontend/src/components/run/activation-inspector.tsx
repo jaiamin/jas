@@ -3,7 +3,7 @@ import {
   DisclosureContent,
   DisclosureTrigger,
 } from "@/components/disclosure";
-import { Empty } from "@/components/feedback";
+import { Alert, Empty } from "@/components/feedback";
 import { Json, Status } from "@/components/shared";
 import {
   Table,
@@ -43,9 +43,9 @@ export function ActivationInspector({
             {activation.stop_reason ?? "In progress"}
           </p>
           {activation.error && (
-            <p className="mt-1 break-words text-sm" role="status">
+            <Alert variant="error" title="Activation stopped">
               {activation.error}
-            </p>
+            </Alert>
           )}
           <Disclosure className="mt-2 min-w-0">
             <DisclosureTrigger>

@@ -93,4 +93,5 @@ export interface PublishingStatus {
   origin: string;
   identity: { handle: string; scope: string } | null;
   error: string | null;
+  error_code?: "keychain_unavailable" | null;
 }

@@ -17,7 +17,11 @@ export default function Runs() {
         search={filters.search}
         onSearchChange={filters.setSearch}
       />
-      {runs.error && <ErrorState error={runs.error} onRetry={runs.refetch} />}
+      {runs.error && (
+        <div className="px-4 sm:px-6 lg:px-8">
+          <ErrorState error={runs.error} onRetry={runs.refetch} />
+        </div>
+      )}
       {(!runs.error || runs.data !== undefined) && (
         <RunTable runs={runs.data} filters={filters} selectable />
       )}

@@ -204,3 +204,70 @@ test("device approval updates the same publishing view automatically", async () 
     "https://gallery.example/gallery/account",
   );
 });
+
+test("a failed sign-in recovers through the sign-in control", async () => {
+  let available = false;
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (url: string) => {
+      if (url === "/api/publishing/login")
+        return available
+          ? Response.json({
+              device_code: "dummy-device-authorization",
+              user_code: "ABCD1234",
+              verification_uri: "https://gallery.example/login",
+              interval: 5,
+            })
+          : Response.json({ detail: "Sign-in unavailable." }, { status: 503 });
+      return Response.json({
+        origin: "https://gallery.example",
+        identity: null,
+        error: null,
+      });
+    }),
+  );
+  renderGallery("/gallery?view=mine");
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Sign in with GitHub" }),
+  );
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "Sign-in unavailable.",
+  );
+  expect(
+    screen.queryByRole("button", { name: "Try again" }),
+  ).not.toBeInTheDocument();
+  available = true;
+  fireEvent.click(screen.getByRole("button", { name: "Sign in with GitHub" }));
+  expect(
+    await screen.findByRole("link", { name: "Continue in browser" }),
+  ).toBeInTheDocument();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+});
+
+test("a missing keychain offers setup rather than a retry or disabled sign-in", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () =>
+      Response.json({
+        origin: "https://gallery.example",
+        identity: null,
+        error:
+          "Enable a system keychain to save your publishing sign-in securely.",
+        error_code: "keychain_unavailable",
+      }),
+    ),
+  );
+  renderGallery("/gallery?view=mine");
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "Publishing needs a keychain",
+  );
+  expect(
+    screen.getByRole("link", { name: "Publishing setup" }),
+  ).toHaveAttribute("href", "https://jas.mintlify.site/guides/publishing");
+  expect(
+    screen.queryByRole("button", {
+      name: /Retry|Try again|Sign in with GitHub/,
+    }),
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole("tab", { name: "Browse" })).toBeEnabled();
+});

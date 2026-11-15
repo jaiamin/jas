@@ -4,7 +4,13 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Link, Navigate, Outlet, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  Navigate,
+  Outlet,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import { Alert, Empty } from "@/components/feedback";
 import {
   GalleryCards,
@@ -17,6 +23,7 @@ import {
 import { HomeWorld } from "@/components/home-world";
 import { Globe, Moon, Sun } from "@/components/icons";
 import { OptionSelect } from "@/components/option-select";
+import { PageBoundary } from "@/components/page-boundary";
 import { RecordListTitle } from "@/components/record-list-heading";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -26,6 +33,7 @@ import { label } from "@/lib/format";
 import type { PublicationCard } from "@/lib/publication";
 
 export function GalleryShell() {
+  const location = useLocation();
   const [dark, setDark] = useState(() =>
     document.documentElement.classList.contains("dark"),
   );
@@ -79,7 +87,9 @@ export function GalleryShell() {
         </div>
       </header>
       <main id="main" className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-        <Outlet />
+        <PageBoundary key={location.pathname}>
+          <Outlet />
+        </PageBoundary>
       </main>
       <footer className="mx-auto flex max-w-6xl flex-wrap gap-5 px-4 py-8 text-xs text-muted-foreground sm:px-6">
         <a href="https://github.com/jaiamin/jas">Get JAS</a>
@@ -94,14 +104,17 @@ export function GalleryShell() {
 
 function GalleryUnavailable({ retry }: { retry: () => unknown }) {
   return (
-    <Empty
+    <Alert
+      variant="error"
       title="Gallery is unavailable"
-      description="We couldn’t load public experiments. Your local workspace still works."
+      action={
+        <Button variant="outline" size="sm" onClick={retry}>
+          Try again
+        </Button>
+      }
     >
-      <Button variant="outline" onClick={retry}>
-        Try again
-      </Button>
-    </Empty>
+      Try again shortly. Your local workspace still works.
+    </Alert>
   );
 }
 
@@ -158,11 +171,16 @@ function GalleryResults({
   return (
     <div className="flex min-w-0 flex-col gap-6" aria-busy={query.isFetching}>
       {query.error && (
-        <Alert title="Couldn’t refresh the gallery">
+        <Alert
+          variant="error"
+          title="Couldn’t refresh the gallery"
+          action={
+            <Button variant="outline" size="sm" onClick={() => query.refetch()}>
+              Retry
+            </Button>
+          }
+        >
           Showing previously loaded records.
-          <Button variant="outline" size="sm" onClick={() => query.refetch()}>
-            Retry
-          </Button>
         </Alert>
       )}
       {!query.data.length ? (

@@ -99,16 +99,21 @@ export const AgentReply = memo(function AgentReply({
           />
         )}
         {row.status === "failed" ? (
-          <Alert variant="error" title="Request stopped">
+          <Alert
+            variant="error"
+            title="Request stopped"
+            action={
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={disabled}
+                onClick={onRetry}
+              >
+                Try again
+              </Button>
+            }
+          >
             <p>{row.error}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={disabled}
-              onClick={onRetry}
-            >
-              Try again
-            </Button>
           </Alert>
         ) : (
           <>

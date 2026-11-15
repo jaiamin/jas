@@ -129,23 +129,27 @@ export function AgentComposer({
         </Alert>
       )}
       {settings.error && (
-        <Alert variant="error">
-          Could not check provider availability.{" "}
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => settings.refetch()}
-          >
-            Retry
-          </Button>
+        <Alert
+          variant="error"
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => settings.refetch()}
+            >
+              Retry
+            </Button>
+          }
+        >
+          Provider availability couldn’t load.
         </Alert>
       )}
       {children}
       {draftUnavailable && (
-        <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-          This browser could not keep your message draft.
-        </p>
+        <Alert variant="error" title="Draft couldn’t be saved">
+          Keep a copy of your message before leaving.
+        </Alert>
       )}
       {unavailable && (
         <p className="mt-3 text-xs leading-relaxed text-muted-foreground [&_a]:underline [&_a]:underline-offset-4">

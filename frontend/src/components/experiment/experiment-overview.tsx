@@ -7,6 +7,7 @@ import {
 } from "@/components/disclosure";
 import { SeedChart } from "@/components/experiment/seed-chart";
 import { Empty } from "@/components/feedback";
+import { ErrorState } from "@/components/shared";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
@@ -62,7 +63,11 @@ export function ExperimentOverview({
           Calculating the declared outcome…
         </p>
       ) : findings.error ? (
-        <p role="alert">{findings.error.message}</p>
+        <ErrorState
+          title="Results couldn’t load"
+          error={findings.error}
+          onRetry={findings.refetch}
+        />
       ) : present.length ? (
         <div>
           <p className="max-w-prose text-lg font-medium leading-relaxed">

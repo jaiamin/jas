@@ -365,16 +365,20 @@ export function AgentConversation({
       }
     >
       {contextError && (
-        <Alert variant="error">
+        <Alert
+          variant="error"
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={retryContexts}
+            >
+              Retry
+            </Button>
+          }
+        >
           {contextError.message}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={retryContexts}
-          >
-            Retry
-          </Button>
         </Alert>
       )}
     </AgentComposer>

@@ -5,6 +5,7 @@ import { Github } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
+import { DOCS_URL } from "@/lib/docs";
 import type { PublishingStatus } from "@/lib/publication";
 
 export function usePublishingAccount() {
@@ -60,6 +61,26 @@ export function PublishingAccount() {
     },
   });
   const failure = status.error ?? login.error ?? approval.error ?? logout.error;
+  if (status.data?.error_code === "keychain_unavailable")
+    return (
+      <Alert
+        variant="error"
+        title="Publishing needs a keychain"
+        action={
+          <Button variant="outline" size="sm" asChild>
+            <a
+              href={`${DOCS_URL}/guides/publishing`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Publishing setup
+            </a>
+          </Button>
+        }
+      >
+        Enable a system keychain to sign in securely. Browsing still works.
+      </Alert>
+    );
   return (
     <div className="flex flex-col items-start gap-3">
       {status.isPending ? (
@@ -131,11 +152,22 @@ export function PublishingAccount() {
         </>
       )}
       {(failure || status.data?.error) && (
-        <Alert variant="error" title="Publishing unavailable">
+        <Alert
+          variant="error"
+          title="Publishing unavailable"
+          action={
+            (status.error || status.data?.error) && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => status.refetch()}
+              >
+                Try again
+              </Button>
+            )
+          }
+        >
           {failure?.message ?? status.data?.error}
-          <Button variant="outline" size="sm" onClick={() => status.refetch()}>
-            Try again
-          </Button>
         </Alert>
       )}
     </div>

@@ -58,16 +58,21 @@ export function ExposureInspection({ path }: { path: string }) {
         </div>
       )}
       {query.error && (
-        <Alert variant="error" title="Could not load exposure evidence">
+        <Alert
+          variant="error"
+          title="Could not load exposure evidence"
+          action={
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={query.isFetching}
+              onClick={() => void query.refetch()}
+            >
+              Retry exposure
+            </Button>
+          }
+        >
           {query.error.message}
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={query.isFetching}
-            onClick={() => void query.refetch()}
-          >
-            Retry exposure
-          </Button>
         </Alert>
       )}
       {query.data && !reports.length && (

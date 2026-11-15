@@ -14,7 +14,13 @@ from .public_records import (
     scan_record,
     verify_record,
 )
-from .publishing import GalleryError, PublicationReceipts, Publisher, download_fork
+from .publishing import (
+    GalleryError,
+    KeychainUnavailable,
+    PublicationReceipts,
+    Publisher,
+    download_fork,
+)
 
 router = APIRouter(prefix="/api")
 
@@ -64,14 +70,23 @@ def status(*, models: LanguageModelsDep):
     publisher = client(models)
     identity = None
     error = None
+    error_code = None
     try:
         if publisher.token():
             identity = publisher.request("GET", "/api/gallery-identity", authenticated=True)
+    except KeychainUnavailable as failure:
+        error = str(failure)
+        error_code = "keychain_unavailable"
     except GalleryError as failure:
         error = None if failure.status_code == 401 else str(failure)
     except ValueError as failure:
         error = str(failure)
-    return {"origin": publisher.origin, "identity": identity, "error": error}
+    return {
+        "origin": publisher.origin,
+        "identity": identity,
+        "error": error,
+        "error_code": error_code,
+    }
 
 
 @router.post("/publishing/login")

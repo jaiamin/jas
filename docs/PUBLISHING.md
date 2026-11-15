@@ -12,7 +12,8 @@ Gallery opens Browse anonymously. My published contains GitHub sign-in and your
 publication controls; general Settings contains no gallery connection form.
 Approve the device code in your browser; JAS checks approval automatically. Your publish token is stored by the operating system keychain, never browser
 storage or a protocol. Linux needs a working keychain service; JAS reports an
-unavailable keychain rather than saving a plaintext token.
+unavailable keychain rather than saving a plaintext token. Headless containers
+need a configured keychain/user session to publish; browsing is unaffected.
 
 Open a finished experiment's Publish tab:
 

@@ -50,11 +50,15 @@ export function ResearchFindings({
         </p>
       </div>
       {query.error && (
-        <Alert variant="error">
+        <Alert
+          variant="error"
+          action={
+            <Button variant="outline" size="sm" onClick={() => query.refetch()}>
+              Retry findings
+            </Button>
+          }
+        >
           {query.error.message}{" "}
-          <Button variant="link" size="sm" onClick={() => query.refetch()}>
-            Retry findings
-          </Button>
         </Alert>
       )}
       {!report && !query.error && <Skeleton className="h-24 w-full" />}
