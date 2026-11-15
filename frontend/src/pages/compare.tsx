@@ -105,7 +105,7 @@ export default function Compare() {
                       <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">
                         {r.summary.study_title}
                       </span>
-                      <Link to={`/runs/${r.summary.id}`}>
+                      <Link className="text-link" to={`/runs/${r.summary.id}`}>
                         {r.summary.condition}
                       </Link>
                       <span className="mt-1 block max-w-prose truncate text-xs font-normal text-muted-foreground">

@@ -20,6 +20,13 @@ for (const theme of ["light", "dark"]) {
         writes.push(req.url());
     });
     await page.goto("/gallery");
+    const footerLinks = page.locator("footer").getByRole("link");
+    await expect(footerLinks).toHaveCount(3);
+    for (const link of await footerLinks.all()) {
+      await expect(link).toHaveCSS("text-decoration-line", "underline");
+      await expect(link).toHaveCSS("text-underline-offset", "4px");
+      await expect(link).toHaveCSS("text-decoration-thickness", "1px");
+    }
     await expect(page.locator("html")).toHaveClass(
       theme === "dark" ? "dark" : "",
     );

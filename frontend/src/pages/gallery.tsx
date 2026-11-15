@@ -92,9 +92,16 @@ export function GalleryShell() {
         </PageBoundary>
       </main>
       <footer className="mx-auto flex max-w-6xl flex-wrap gap-5 px-4 py-8 text-xs text-muted-foreground sm:px-6">
-        <a href="https://github.com/jaiamin/jas">Get JAS</a>
-        <Link to="/terms">Terms & reporting</Link>
-        <a href="https://github.com/jaiamin/jas/discussions">
+        <a className="text-link" href="https://github.com/jaiamin/jas">
+          Get JAS
+        </a>
+        <Link className="text-link" to="/terms">
+          Terms & reporting
+        </Link>
+        <a
+          className="text-link"
+          href="https://github.com/jaiamin/jas/discussions"
+        >
           Discuss on GitHub
         </a>
       </footer>

@@ -117,6 +117,23 @@ for (const width of [390, 1440])
       await page.setViewportSize({ width, height: 900 });
       await page.goto("/");
       await page.evaluate(() => document.fonts.ready);
+      const manualLink = page.getByRole("link", { name: "start from scratch" });
+      await expect(manualLink.locator("span")).toHaveCSS(
+        "text-decoration-line",
+        "underline",
+      );
+      await expect(manualLink.locator("span")).toHaveCSS(
+        "text-underline-offset",
+        "4px",
+      );
+      await expect(manualLink.locator("span")).toHaveCSS(
+        "text-decoration-thickness",
+        "1px",
+      );
+      await expect(manualLink.locator("svg")).toHaveCSS(
+        "text-decoration-line",
+        "none",
+      );
       const hero = page.getByRole("region", {
         name: "What would you like to test?",
       });

@@ -106,9 +106,7 @@ export function AgentComposer({
                 asChild
               >
                 <Link to="/new">
-                  <span className="underline underline-offset-2">
-                    start from scratch
-                  </span>
+                  <span className="underline">start from scratch</span>
                   <ArrowRight
                     data-icon="inline-end"
                     className="self-center"

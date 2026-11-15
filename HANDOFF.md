@@ -223,3 +223,18 @@ Examples now has a full-width stock Separator beneath its heading, with 24px
 spacing above/below, matching the other workspace pages. Lint/types/build and six
 Learn browser checks passed (both themes, phone/desktop); screenshot inspected.
 The production bundle is served on 8080; no deployment or data changes.
+
+## Completed: consistent link underlines
+
+All underlines now share a 4px offset and 1px thickness in `index.css`, including
+Home guidance, prose in alerts/dialogs/accordions and hover-only links. The shared
+`text-link` utility now styles existing evidence references, comparison run names
+and public Gallery footer links. Navigation and button/card actions keep their
+current treatment; Home's trailing arrow stays outside the underline.
+
+Verification: lint, TypeScript/Vite build and 12 focused browser checks passed on
+disposable keyless ports 18163/18164. Checks cover both themes, phone/desktop Home,
+provider errors, citations, missing starters and public Gallery reading/footer
+links. Screenshots were inspected; logs/artifacts are in ignored `.tools/links-*`.
+Both test servers stopped. Existing 8080 is healthy and serves the updated build.
+No dependencies, backend/data changes, paid calls, uploads or deployment.

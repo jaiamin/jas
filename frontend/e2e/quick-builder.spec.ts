@@ -141,6 +141,12 @@ test("Save and run commits one explicit start and the displayed ceiling", async 
 test("unknown starters are explicit errors", async ({ page }) => {
   await page.goto("/new?starter=does-not-exist");
   await expect(page.getByRole("alert")).toContainText("Starter not found");
+  const examples = page
+    .getByRole("alert")
+    .getByRole("link", { name: "Examples", exact: true });
+  await expect(examples).toHaveCSS("text-decoration-line", "underline");
+  await expect(examples).toHaveCSS("text-underline-offset", "4px");
+  await expect(examples).toHaveCSS("text-decoration-thickness", "1px");
   await expect(
     page.getByRole("textbox", { name: "Question", exact: true }),
   ).toHaveCount(0);

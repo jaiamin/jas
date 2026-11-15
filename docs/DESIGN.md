@@ -102,6 +102,10 @@ Send and New experiment use the primary Button variant. Primary actions use a
 shared blue primary token with a light foreground in both themes; secondary surfaces, muted text,
 borders, focus and destructive states use their corresponding semantic tokens.
 Keep foreground/background pairs together when composing components. Link variants and inline link hover use the shared accent-foreground token so small blue text remains readable on both themes; filled primary buttons keep their primary foreground/background pair.
+All underlines use a shared 4px offset and 1px thickness from `index.css`.
+Use `text-link` for inline prose, evidence references and footer links; record names
+and breadcrumbs may underline on hover. Navigation, cards and button actions retain
+their existing treatment. Keep trailing icons outside the underlined text.
 Shared cursor rules give enabled actions, links, labels and portalled menu/select
 items a pointer. Text entry keeps its text cursor; disabled controls are excluded.
 Option dropdowns open from the trigger's left edge. Their values are left-aligned
@@ -468,7 +472,7 @@ shadow-lg. The inner input keeps its stock input border and background surface;
 the shadow belongs to the backing, not the inner field. A compact CardFooter
 reads “Shape an experiment with Agent, or start from scratch →”, with a slightly
 bold link opening /new. Keep prose and link in one inline sentence with a normal
-space after “or” and matching text baselines. Underline only the link text at a 2px offset,
+space after “or” and matching text baselines. Underline only the link text at the shared 4px offset,
 and place the centered arrow 2px after it with a 2.25px stroke. Supporting text
 uses foreground/65 for legibility. Navigation preserves the unsent message and never sends it.
 Use 14px side insets for text and visible context icons, a 12px top inset,

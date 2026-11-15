@@ -159,6 +159,8 @@
   }
   * {
     @apply border-border outline-ring/50;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
   }
   /* Radix/programmatic focus can retain the browser's native :focus-visible
      outline after a click, even when the preset focus utilities are gated. */
@@ -174,6 +176,10 @@
   body {
     @apply bg-background font-sans text-foreground antialiased;
   }
+}
+
+@utility text-link {
+  text-decoration-line: underline;
 }
 
 [hidden] {
