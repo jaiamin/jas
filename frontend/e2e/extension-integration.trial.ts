@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { type APIRequestContext, expect, test } from "@playwright/test";
 import type { Design, SavedEnvironment } from "../src/lib/types.js";
+import { selectEditorSection } from "./helpers.js";
 
 const source = readFileSync(
   new URL("../../backend/tests/fixtures/t16_sealed_relay.wat", import.meta.url),
@@ -109,7 +110,7 @@ for (const theme of ["light", "dark"]) {
     await expect(page.getByLabel("Experiment name")).toHaveValue(
       `Retained ${theme}`,
     );
-    await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+    await selectEditorSection(page, "Conditions");
     await expect(
       page.getByRole("combobox", { name: "Condition 1 model", exact: true }),
     ).toBeVisible();
@@ -122,11 +123,11 @@ for (const theme of ["light", "dark"]) {
         exact: true,
       }),
     ).toBeVisible();
-    await page.getByRole("tab", { name: "Run plan", exact: true }).click();
+    await selectEditorSection(page, "Run plan");
     await expect(
       page.getByRole("checkbox", { name: "Relay success", exact: true }),
     ).toBeVisible();
-    await page.getByRole("tab", { name: "Agents", exact: true }).click();
+    await selectEditorSection(page, "Agents");
     await expect(
       page.getByRole("button", { name: "Add agent", exact: true }),
     ).toBeDisabled();
@@ -255,7 +256,7 @@ test("an incompatible population stays intact with a visible relay selection err
   await expect(
     page.getByRole("combobox", { name: "Environment", exact: true }),
   ).toHaveText("Shared commons");
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await selectEditorSection(page, "Specification");
   const retained = JSON.parse(
     await page.getByLabel("Complete JSON specification").inputValue(),
   ) as Design;

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { selectEditorSection } from "./helpers.js";
 
 for (const theme of ["light", "dark"]) {
   test(`composed environment lifecycle preserves experiment evidence · ${theme}`, async ({
@@ -46,7 +47,7 @@ for (const theme of ["light", "dark"]) {
       .getByRole("button", { name: "Remove resource", exact: true })
       .click();
     await expect(resources).toHaveCount(1);
-    await page.getByRole("tab", { name: "Question", exact: true }).click();
+    await selectEditorSection(page, "Question");
     const title = `Custom shortage ${theme}`;
     await page.getByLabel("Experiment name", { exact: true }).fill(title);
     await page
@@ -99,7 +100,7 @@ for (const theme of ["light", "dark"]) {
       .locator("[data-slot=item-group]")
       .getByRole("link", { name: title, exact: true })
       .click();
-    await page.getByRole("tab", { name: "Question", exact: true }).click();
+    await selectEditorSection(page, "Question");
     await page
       .getByLabel("Experiment name", { exact: true })
       .fill(`${title} updated`);

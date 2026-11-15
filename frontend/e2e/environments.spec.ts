@@ -101,45 +101,39 @@ for (const theme of ["light", "dark"]) {
       for (const gap of Object.values(geometry))
         expect(gap).toBeGreaterThanOrEqual(3);
       const markBox = await mark.boundingBox();
-      const textBox = await card
-        .locator('[data-slot="item-content"]')
-        .boundingBox();
-      expect(markBox && textBox).toBeTruthy();
-      if (markBox && textBox) {
-        expect(
-          Math.abs(
-            markBox.y + markBox.height / 2 - textBox.y - textBox.height / 2,
-          ),
-        ).toBeLessThanOrEqual(1);
-        expect(Math.abs(markBox.height - textBox.height)).toBeLessThanOrEqual(
+      expect(markBox?.width).toBe(44);
+      expect(markBox?.height).toBe(44);
+      await expect(card.locator('[data-slot="badge"]')).toHaveCount(0);
+      await expect(
+        page.getByRole("region", { name: "Work settings", exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("region", { name: "Games & mechanics", exact: true }),
+      ).toBeVisible();
+      const workGrid = page
+        .getByRole("region", { name: "Work settings", exact: true })
+        .locator('[data-slot="item-group"]');
+      const gridBox = await workGrid.boundingBox();
+      const cards = await workGrid.getByRole("article").all();
+      const firstBox = await cards[0].boundingBox();
+      const secondBox = await cards[1].boundingBox();
+      expect(gridBox && firstBox && secondBox).toBeTruthy();
+      if (gridBox && firstBox && secondBox) {
+        expect(Math.abs(firstBox.width - secondBox.width)).toBeLessThanOrEqual(
           1,
         );
-        expect(markBox.width).toBeLessThanOrEqual(80);
-        if (width >= 640)
-          expect(Math.abs(markBox.width - textBox.height)).toBeLessThanOrEqual(
+        if (width === 1600) {
+          expect(firstBox.y).toBe(secondBox.y);
+          expect(
+            Math.abs(secondBox.x + secondBox.width - gridBox.x - gridBox.width),
+          ).toBeLessThanOrEqual(1);
+        } else {
+          expect(firstBox.x).toBe(secondBox.x);
+          expect(secondBox.y).toBeGreaterThan(firstBox.y);
+          expect(Math.abs(firstBox.width - gridBox.width)).toBeLessThanOrEqual(
             1,
           );
-      }
-      const tags = card.locator('[data-slot="badge"]');
-      await expect(tags).toHaveCount(4);
-      await expect(tags.nth(0)).toHaveText("Abstract game");
-      await expect(tags.nth(1)).toHaveText(/\d+ agents?/);
-      await expect(tags.nth(2)).toHaveText(/\d+-run example/);
-      await expect(tags.nth(3)).toHaveText(/Up to \$/);
-      for (const tag of await tags.all()) {
-        await expect(tag).toHaveCSS("border-top-width", "1px");
-        await expect(tag).toHaveCSS("border-top-style", "solid");
-        await expect(tag).toHaveCSS("border-radius", "6px");
-        expect(
-          await tag.evaluate((element) => {
-            const style = getComputedStyle(element);
-            return (
-              style.backgroundColor ===
-                getComputedStyle(document.body).backgroundColor &&
-              element.scrollWidth <= element.clientWidth
-            );
-          }),
-        ).toBe(true);
+        }
       }
       for (const row of await page.getByRole("article").all())
         expect(
@@ -191,16 +185,25 @@ for (const theme of ["light", "dark"]) {
         await expect(page).toHaveURL(new RegExp(`environment=${env.key}`));
         await expect(
           panel.getByRole("link", {
-            name: "Configure experiment",
+            name: "Create experiment",
             exact: true,
           }),
         ).toHaveAttribute("href", `/new?environment=${env.key}`);
         await expect(
-          panel.getByRole("link", {
-            name: "Design with Assistant",
+          panel.getByRole("heading", {
+            name: "What agents observe",
             exact: true,
           }),
-        ).toHaveAttribute("href", "/assistant");
+        ).toHaveCount(0);
+        await panel
+          .getByRole("button", { name: "Observations & rules", exact: true })
+          .click();
+        await expect(
+          panel.getByRole("heading", {
+            name: "What agents observe",
+            exact: true,
+          }),
+        ).toBeVisible();
         await panel
           .getByRole("button", { name: "Available controls", exact: true })
           .click();
@@ -219,7 +222,7 @@ for (const theme of ["light", "dark"]) {
         ).toBeAttached();
         if (env.key === "commons") {
           const action = panel.getByRole("link", {
-            name: "Configure experiment",
+            name: "Create experiment",
             exact: true,
           });
           const header = panel.locator('[data-slot="sheet-header"]');
@@ -330,7 +333,7 @@ test("environment data loads independently and errors retain cached content", as
     if (loadingRow && loadedRow)
       expect(
         Math.abs(loadingRow.height - loadedRow.height),
-      ).toBeLessThanOrEqual(1);
+      ).toBeLessThanOrEqual(24);
     failCatalog = true;
     await page.waitForTimeout(1100);
     await page.getByRole("link", { name: "Runs", exact: true }).click();

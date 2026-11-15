@@ -37,6 +37,16 @@ beforeEach(() =>
   stubNetwork(vi.fn().mockRejectedValue(new Error("Unexpected request"))),
 );
 
+async function selectSection(name: string) {
+  fireEvent.mouseDown(screen.getByRole("tab", { name: "Advanced" }), {
+    button: 0,
+    ctrlKey: false,
+  });
+  const trigger = await screen.findByRole("button", { name });
+  if (trigger.getAttribute("aria-expanded") !== "true")
+    fireEvent.click(trigger);
+}
+
 for (const mode of ["visual", "json"]) {
   for (const succeeds of [true, false]) {
     test(`${mode} saves lock the submitted snapshot and ${succeeds ? "clear its draft on success" : "retain its draft on failure"}`, async () => {
@@ -66,21 +76,12 @@ for (const mode of ["visual", "json"]) {
           </Routes>
         </MemoryRouter>,
       );
-      fireEvent.mouseDown(screen.getByRole("tab", { name: "Question" }), {
-        button: 0,
-        ctrlKey: false,
-      });
+      await selectSection("Question");
       fireEvent.change(screen.getByLabelText("Experiment name"), {
         target: { value: "Submitted snapshot" },
       });
       if (mode === "json") {
-        fireEvent.mouseDown(
-          await screen.findByRole("tab", { name: "Specification" }),
-          {
-            button: 0,
-            ctrlKey: false,
-          },
-        );
+        await selectSection("Specification");
       }
       if (mode === "visual")
         fireEvent.mouseDown(screen.getByRole("tab", { name: "Review" }), {
@@ -97,7 +98,7 @@ for (const mode of ["visual", "json"]) {
       for (const tab of screen.getAllByRole("tab")) expect(tab).toBeDisabled();
       if (mode === "visual") {
         expect(
-          screen.getByRole("combobox", { name: "Environment" }),
+          screen.getByRole("combobox", { name: "Environment", hidden: true }),
         ).toBeDisabled();
         expect(
           screen.getByRole("button", { name: "Check experiment" }),
@@ -130,11 +131,7 @@ for (const mode of ["visual", "json"]) {
         expect(field).toBeEnabled();
         expect(create).toBeEnabled();
         expect(localStorage.getItem("jas:draft:/new")).not.toBeNull();
-        if (mode === "visual")
-          fireEvent.mouseDown(screen.getByRole("tab", { name: "Question" }), {
-            button: 0,
-            ctrlKey: false,
-          });
+        if (mode === "visual") await selectSection("Question");
         fireEvent.change(field, {
           target: {
             value:
@@ -194,10 +191,7 @@ test("free mechanics checks block invalid saves and become stale after editing",
   expect(create).toBeDisabled();
   expect(fetcher).toHaveBeenCalledTimes(1);
   expect(fetcher.mock.calls[0][0]).toBe("/api/design/preflight");
-  fireEvent.mouseDown(screen.getByRole("tab", { name: "Question" }), {
-    button: 0,
-    ctrlKey: false,
-  });
+  await selectSection("Question");
   fireEvent.change(screen.getByLabelText("Experiment name"), {
     target: { value: "Edited protocol" },
   });
@@ -243,10 +237,7 @@ test("workflow edits retain typed costs and delays in review, failed saves and d
       />
     </MemoryRouter>,
   );
-  fireEvent.mouseDown(screen.getByRole("tab", { name: "Conditions" }), {
-    button: 0,
-    ctrlKey: false,
-  });
+  await selectSection("Conditions");
   fireEvent.change(screen.getByLabelText("Initial materials"), {
     target: { value: "9" },
   });
@@ -317,10 +308,7 @@ test("workflow population edits keep six to twelve identities and preserve bound
       />
     </MemoryRouter>,
   );
-  fireEvent.mouseDown(screen.getByRole("tab", { name: "Agents" }), {
-    button: 0,
-    ctrlKey: false,
-  });
+  await selectSection("Agents");
   const add = screen.getByRole("button", { name: "Add agent" });
   expect(screen.getByRole("button", { name: "Remove Alder" })).toBeDisabled();
   fireEvent.click(add);
@@ -393,10 +381,7 @@ test("workflow tool participants can select authorized artifact reads without un
       />
     </MemoryRouter>,
   );
-  fireEvent.mouseDown(screen.getByRole("tab", { name: "Conditions" }), {
-    button: 0,
-    ctrlKey: false,
-  });
+  await selectSection("Conditions");
   fireEvent.click(
     screen.getByRole("checkbox", { name: "Authorized artifacts" }),
   );

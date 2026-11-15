@@ -5,7 +5,7 @@ import {
   test,
 } from "@playwright/test";
 import type { Catalog, RunDetail, StudyDetail } from "../src/lib/types.js";
-import { templateDesign } from "./helpers.js";
+import { selectEditorSection, templateDesign } from "./helpers.js";
 
 async function createWorkflow(request: APIRequestContext, stale = false) {
   const catalog: Catalog = await (await request.get("/api/catalog")).json();
@@ -92,7 +92,7 @@ test("workflow editor retains mobile drafts, pending saves, errors and cancelled
   page.on("pageerror", (error) => errors.push(error.message));
   await appearance(page, "light", 390);
   await page.goto("/new?template=institutional_workflow");
-  await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+  await selectEditorSection(page, "Conditions");
   await page.getByLabel("Initial materials", { exact: true }).first().fill("9");
   await page
     .getByLabel("Prepare material cost", { exact: true })
@@ -103,7 +103,7 @@ test("workflow editor retains mobile drafts, pending saves, errors and cancelled
     .first()
     .fill("3");
   await page.reload();
-  await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+  await selectEditorSection(page, "Conditions");
   await expect(
     page.getByLabel("Initial materials", { exact: true }).first(),
   ).toHaveValue("9");
@@ -127,7 +127,7 @@ test("workflow editor retains mobile drafts, pending saves, errors and cancelled
     path: testInfo.outputPath("workflow-editor-light-mobile.png"),
     fullPage: true,
   });
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await selectEditorSection(page, "Question");
   await page
     .getByRole("combobox", { name: "Environment", exact: true })
     .click();
@@ -161,7 +161,11 @@ test("workflow editor retains mobile drafts, pending saves, errors and cancelled
   await save.click();
   await expect(save).toBeDisabled();
   await expect(
-    page.getByRole("tab", { name: "Conditions", exact: true }),
+    page.getByRole("button", {
+      name: "Conditions",
+      exact: true,
+      includeHidden: true,
+    }),
   ).toBeDisabled();
   release();
   await expect(page.getByRole("alert")).toContainText(

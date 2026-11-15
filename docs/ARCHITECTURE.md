@@ -141,7 +141,7 @@ the design purpose and scoping stage on the same Analysis, clears preliminary pr
 and accounts for both steps under that request. SSE exposes the purpose transition.
 Unscoped follow-ups return to general intent selection; proposals never save or run
 automatically. All unscoped entry points, including Assistant, use this shared server
-harness. Quick/Advanced also support manual protocol creation. Home has no scope selector; Assistant
+harness. General/Advanced also support manual protocol creation. Home has no scope selector; Assistant
 defaults to no selected experiment and offers existing experiment/run evidence selection.
 Analysis history matches the chat,
 exact scope and purpose, and citations still require inspected turns within frozen cutoffs.
@@ -959,7 +959,7 @@ settlement, prompts or checkpoint replay. No migration or reset is performed.
 ## MVP application boundaries
 
 The public interface uses experiments and immutable versions; internal database/API
-names remain Study/Revision. Quick and Advanced share one validated protocol and
+names remain Study/Revision. General and Advanced share one validated protocol and
 one browser draft. Advanced retains the full editor; raw JSON and extension
 candidates require Developer mode. Save never runs. Eight reusable examples include
 keyless scripted recordings under Learn → Examples (three work, five cooperation).

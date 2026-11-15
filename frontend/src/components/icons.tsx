@@ -25,6 +25,7 @@ export {
   CircleX,
   Clock3,
   Code2,
+  Copy,
   Database,
   Download,
   Ellipsis,

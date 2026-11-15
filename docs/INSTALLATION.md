@@ -36,7 +36,7 @@ Only one JAS process may own a workspace.
    Choose Use example to edit its protocol. Home's four Experiment ideas fill an
    Assistant draft without sending it.
 2. Add a provider key or local endpoint in Settings. Keys stay on your machine.
-3. Choose a starter or create an experiment in Quick. Review the free checks,
+3. Choose a starter or create an experiment in General. Review the free checks,
    run/call/cost bounds, seeds and spending caps.
 4. Save to inspect the frozen protocol, or explicitly choose Save and run.
 5. Open Results, a run or a same-seed matched comparison. Scrubbing and replay

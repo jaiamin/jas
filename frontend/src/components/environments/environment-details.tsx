@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { EnvironmentMark } from "@/components/environments/environment-mark";
-import { AgentIcon, ArrowRight, Play } from "@/components/icons";
+import { ArrowRight, Play } from "@/components/icons";
 import { ErrorState } from "@/components/shared";
 import {
   Accordion,
@@ -120,39 +120,59 @@ export function EnvironmentDetails({
   );
   return (
     <>
-      <SheetHeader className="gap-3 px-6 pt-6">
+      <SheetHeader className="gap-4 p-6">
         <div className="flex items-center gap-3 pr-8">
           <EnvironmentMark environment={env.key} />
-          <SheetTitle>{env.name}</SheetTitle>
+          <SheetTitle className="text-xl">{env.name}</SheetTitle>
         </div>
-        <SheetDescription>{env.description}</SheetDescription>
+        <SheetDescription className="text-pretty leading-relaxed">
+          {env.description}
+        </SheetDescription>
       </SheetHeader>
       <Separator />
-      <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-6 pb-6">
+      <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-6 py-6">
         {starters.error && (
           <ErrorState error={starters.error} onRetry={starters.refetch} />
         )}
-        {starter && (
-          <Button variant="outline" className="self-start" asChild>
-            <Link to={`/watch/${starter.id}`}>
-              <Play data-icon="inline-start" />
-              Watch a recorded run
-            </Link>
-          </Button>
+        {env.example && (
+          <section aria-label="Example setup" className="flex flex-col gap-3">
+            <h3 className="text-sm font-medium">Example setup</h3>
+            <dl className="flex gap-8 text-sm">
+              <div className="flex flex-col gap-1">
+                <dt className="text-muted-foreground">Agents</dt>
+                <dd className="font-medium tabular-nums">
+                  {env.example.agents}
+                </dd>
+              </div>
+              <div className="flex flex-col gap-1">
+                <dt className="text-muted-foreground">Runs</dt>
+                <dd className="font-medium tabular-nums">{env.example.runs}</dd>
+              </div>
+            </dl>
+          </section>
         )}
-        <section className="flex flex-col gap-2">
-          <h3 className="text-sm font-medium">What agents observe</h3>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            {mechanics[env.key].observes}
-          </p>
-        </section>
-        <section className="flex flex-col gap-2">
-          <h3 className="text-sm font-medium">What the environment enforces</h3>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            {mechanics[env.key].enforces}
-          </p>
-        </section>
         <Accordion type="multiple">
+          <AccordionItem value="rules">
+            <AccordionTrigger>Observations & rules</AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-col gap-5">
+                <section className="flex flex-col gap-2">
+                  <h3 className="text-sm font-medium">What agents observe</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {mechanics[env.key].observes}
+                  </p>
+                </section>
+                <section className="flex flex-col gap-2">
+                  <h3 className="text-sm font-medium">
+                    What the environment enforces
+                  </h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {mechanics[env.key].enforces}
+                  </p>
+                </section>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
           <AccordionItem value="controls">
             <AccordionTrigger>Available controls</AccordionTrigger>
             <AccordionContent>
@@ -198,24 +218,21 @@ export function EnvironmentDetails({
         </p>
       </div>
       <Separator />
-      <SheetFooter className="gap-2 px-6 pt-0 pb-6">
+      <SheetFooter className="gap-2 p-6 sm:flex-row">
         <Button asChild>
           <Link to={`/new?environment=${env.key}`}>
-            Configure experiment
+            Create experiment
             <ArrowRight data-icon="inline-end" />
           </Link>
         </Button>
-        <Button variant="outline" asChild>
-          <Link
-            to="/assistant"
-            state={{
-              question: `Help me design an experiment using ${env.name}. Explain which behavior it can identify, suggest an isolated comparison, and flag limitations before proposing a protocol.`,
-            }}
-          >
-            <AgentIcon data-icon="inline-start" />
-            Design with Assistant
-          </Link>
-        </Button>
+        {starter && (
+          <Button variant="outline" asChild>
+            <Link to={`/watch/${starter.id}`}>
+              <Play data-icon="inline-start" />
+              Watch example
+            </Link>
+          </Button>
+        )}
       </SheetFooter>
     </>
   );

@@ -47,6 +47,9 @@ for (const width of [390, 834, 1280, 1440]) {
               exact: true,
             })
             .click();
+          await page
+            .getByRole("button", { name: "Observations & rules", exact: true })
+            .click();
           await expect(
             page.getByRole("heading", { name: "What agents observe" }),
           ).toBeVisible();

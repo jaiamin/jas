@@ -1144,10 +1144,10 @@ for (const theme of ["light", "dark"] as const) {
     await page.goto("/experiments");
     const row = page.getByRole("table").locator("tbody tr").first();
     const actions = row.getByRole("button", { name: /^Actions for/ });
-    await expect(actions).toHaveCSS("border-top-width", "1px");
+    await expect(actions).toHaveCSS("border-top-color", "rgba(0, 0, 0, 0)");
     await actions.click();
     await expect(
-      page.getByRole("menuitem", { name: "Edit as new version" }),
+      page.getByRole("menuitem", { name: "New version" }),
     ).toHaveAttribute("href", `/new?study=${study.id}`);
     await expect(
       page.getByRole("menuitem", { name: "Open experiment", exact: true }),
@@ -1167,7 +1167,7 @@ for (const theme of ["light", "dark"] as const) {
       .getByRole("menuitem", { name: "Duplicate", exact: true })
       .click();
     await expect(page).toHaveURL(new RegExp(`/new\\?copy=${study.id}$`));
-    await page.getByRole("button", { name: "Advanced", exact: true }).click();
+    await page.getByRole("tab", { name: "Advanced", exact: true }).click();
     await expect(
       page.getByLabel("Experiment name", { exact: true }),
     ).toHaveValue(`${study.design.title.slice(0, 93)} (copy)`);
@@ -1192,7 +1192,7 @@ for (const theme of ["light", "dark"] as const) {
         .title,
     ).toBe(study.design.title);
     await page.goto(`/new?study=${study.id}`);
-    await page.getByRole("button", { name: "Advanced", exact: true }).click();
+    await page.getByRole("tab", { name: "Advanced", exact: true }).click();
     await page
       .getByLabel("Experiment name", { exact: true })
       .fill("Updated revision");
@@ -1308,7 +1308,7 @@ for (const source of ["study", "copy"] as const) {
     const { study } = await createStudy(request);
     const path = `/new?${source}=${study.id}`;
     await page.goto(path);
-    await page.getByRole("button", { name: "Advanced", exact: true }).click();
+    await page.getByRole("tab", { name: "Advanced", exact: true }).click();
     await page
       .getByLabel("Experiment name", { exact: true })
       .fill("Kept unfinished work");

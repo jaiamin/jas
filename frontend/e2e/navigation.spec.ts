@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { settings as settingsFixture } from "../src/test/fixtures.js";
-import { createStudy, setDeveloper } from "./helpers.js";
+import { createStudy, selectEditorSection, setDeveloper } from "./helpers.js";
 
 test.beforeEach(async ({ request }) => {
   await setDeveloper(request, true);
@@ -220,7 +220,7 @@ test("Agent navigation preserves incomplete editor state and one recoverable dra
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Keep this protocol");
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await selectEditorSection(page, "Specification");
   await page.getByLabel("Complete JSON specification").fill('{"unfinished":');
   await expect(
     page.getByRole("button", { name: "Ask Assistant", exact: true }),

@@ -112,3 +112,16 @@ export async function setDeveloper(
   });
   expect(saved.ok()).toBe(true);
 }
+
+/** Open an advanced section without collapsing a section that is already open. */
+export async function selectEditorSection(
+  page: import("@playwright/test").Page,
+  name: string | RegExp,
+) {
+  await page.getByRole("tab", { name: "Advanced", exact: true }).click();
+  const trigger = page
+    .locator('[data-slot="experiment-editor"]')
+    .getByRole("button", { name, exact: typeof name === "string" });
+  if ((await trigger.getAttribute("aria-expanded")) !== "true")
+    await trigger.click();
+}

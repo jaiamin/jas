@@ -1,5 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
+import { selectEditorSection } from "./helpers.js";
 
 const question =
   "Design an exploratory one-agent study of how a records assistant investigates conflicting authorized folios, revises a persistent report, and decides when to submit or stop. Keep unsuccessful and unverified work; do not invent a primary scalar endpoint.";
@@ -99,16 +100,16 @@ for (const [theme, width] of [
     await expect(
       page.getByText("Exploratory design", { exact: true }),
     ).toBeVisible();
-    await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+    await selectEditorSection(page, "Conditions");
     await page.getByLabel("Maximum artifact writes", { exact: true }).fill("3");
     await page.reload();
-    await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+    await selectEditorSection(page, "Conditions");
     await expect(
       page.getByLabel("Maximum artifact writes", { exact: true }),
     ).toHaveValue("3");
-    await page.getByRole("tab", { name: "Question", exact: true }).click();
+    await selectEditorSection(page, "Question");
     await expect(
-      page.getByLabel("Research question", { exact: true }),
+      page.getByRole("textbox", { name: "Question", exact: true }),
     ).toHaveValue(question);
     await page.getByRole("tab", { name: "Review", exact: true }).click();
     await page

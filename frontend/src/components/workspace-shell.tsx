@@ -221,6 +221,7 @@ export default function WorkspaceShell() {
                       <SidebarMenuItem key={item.to}>
                         <SidebarMenuButton
                           asChild
+                          className="data-[active=false]:hover:bg-muted data-[active=false]:hover:text-sidebar-foreground"
                           tooltip={
                             !isMobile && state === "collapsed"
                               ? item.label
@@ -284,6 +285,7 @@ export default function WorkspaceShell() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
+                  className="data-[active=false]:hover:bg-muted data-[active=false]:hover:text-sidebar-foreground"
                   isActive={location.pathname === "/settings"}
                   tooltip={
                     !isMobile && state === "collapsed" ? "Settings" : undefined

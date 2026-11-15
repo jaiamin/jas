@@ -139,3 +139,55 @@ recovery actions. Reuse the same layout for compact and page-level errors.
 
 Gallery examples: the user cancelled the six requested publications for now.
 Nothing was uploaded and no paid model experiments were run.
+
+## Completed: workspace interface simplification
+
+Scope: experiment/run row actions, Environments built-in/custom lists and details,
+and the new experiment editor. Preserve immutable versions, draft recovery,
+explicit execution, validation and every supported advanced control. No paid calls,
+remote deployment or Gallery uploads.
+
+Direction: quiet icon/text row actions grouped by purpose; compact environment
+identities, short descriptions and fewer redundant tags; a single editor column
+with General, Advanced and Review, progressively disclosed technical settings.
+Blank creation starts with empty name/question; sourced designs keep their content.
+Reuse shared semantic tokens and stock components without dependencies.
+
+Acceptance / next steps:
+- [x] Review current flows and implement focused menus, preserving confirmations.
+- [x] Simplify environment cards, custom library and details with all rules accessible.
+- [x] Simplify editor navigation/layout, blank-start behavior and incomplete drafts.
+- [x] Add meaningful regression coverage; run lint/unit/build and keyless browser flows.
+- [x] Inspect both themes at phone/desktop widths; update design notes and local 8080.
+
+Implemented: ghost row menus with outline icons and short action labels; desktop
+two-column environment cards (one column below 42rem of available content), short
+summaries and 44px brand artwork. Both groups fill the page width. Custom setups
+share that geometry; details disclose rules/controls/metrics with fixed actions.
+The editor uses a 768px reading column and General/Advanced/Review. General shows
+only core controls; Advanced discloses one complete section at a time. Blank
+creation keeps name/question empty, and unfinished drafts recover without weakening
+server validation. Internal draft mode names remain compatible with existing drafts.
+
+Navigation hover uses the neutral muted surface for unselected links, including
+Settings and collapsed navigation. Selected links retain blue, including on hover.
+Stock sidebar primitives stay unchanged; this styling is scoped to workspace links.
+
+Verification: 162 frontend unit tests, lint/types/build and diff checks passed.
+The full 244-test browser run passed 238 initially; six outdated selectors/fixtures
+were corrected and all six passed with --last-failed. Two new sidebar hover checks
+also passed in both themes, covering expanded/collapsed links and Settings.
+All 246 current default browser cases therefore passed across that run and focused
+reruns; no single clean full run was repeated after these test-only corrections.
+A stable example ID replaces one pre-existing array-index fixture assumption.
+Incomplete title/question drafts now recover directly in the form, so their old
+specification-error expectation was replaced with recovery/save assertions.
+
+Screenshots of the editor, environment grid/details, menus and sidebar hover were
+inspected on phone/desktop in both themes. Logs/screenshots remain in ignored
+`.tools/workspace-redesign-*`. User's local 8080 returns healthy and serves the latest
+production bundle; data is unchanged. Temporary visual preview and disposable test
+services were closed. No deployments, documentation publication, Gallery uploads or
+paid model calls were performed. Public documentation source was updated locally.
+Hosted CI remains subject to the existing account billing gate; backend was unchanged
+and its full suite was not rerun for this frontend task.

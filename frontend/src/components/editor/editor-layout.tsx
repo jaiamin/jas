@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { AgentIcon, Code2, Ellipsis, ExperimentIcon } from "@/components/icons";
+import { AgentIcon, Ellipsis, ExperimentIcon } from "@/components/icons";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -7,12 +7,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const editorSections = [
-  { value: "question", label: "Question" },
-  { value: "agents", label: "Agents" },
-  { value: "conditions", label: "Conditions" },
-  { value: "execution", label: "Run plan" },
+  { value: "general", label: "General" },
+  { value: "advanced", label: "Advanced" },
   { value: "review", label: "Review" },
-  { value: "json", label: "Specification" },
 ] as const;
 
 export function EditorHeading({
@@ -41,13 +38,7 @@ export function EditorHeading({
   );
 }
 
-export function EditorNavigation({
-  disabled,
-  showSpecification = true,
-}: {
-  disabled: boolean;
-  showSpecification?: boolean;
-}) {
+export function EditorNavigation({ disabled }: { disabled: boolean }) {
   return (
     <div
       data-slot="editor-section-navigation"
@@ -60,19 +51,16 @@ export function EditorNavigation({
           aria-label="Experiment sections"
           className="gap-2 p-0 group-data-horizontal/tabs:h-9"
         >
-          {editorSections
-            .filter((section) => section.value !== "json" || showSpecification)
-            .map((section) => (
-              <TabsTrigger
-                key={section.value}
-                value={section.value}
-                disabled={disabled}
-                className="h-9 border-0 px-2 group-data-horizontal/tabs:after:bottom-0"
-              >
-                {section.value === "json" && <Code2 aria-hidden="true" />}
-                {section.label}
-              </TabsTrigger>
-            ))}
+          {editorSections.map((section) => (
+            <TabsTrigger
+              key={section.value}
+              value={section.value}
+              disabled={disabled}
+              className="h-9 border-0 px-2 group-data-horizontal/tabs:after:bottom-0"
+            >
+              {section.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
       </div>
     </div>
@@ -87,7 +75,7 @@ export function EditorLoading({
   fromAgent?: boolean;
 }) {
   return (
-    <div className="mx-auto w-full max-w-5xl">
+    <div className="mx-auto w-full max-w-3xl">
       <EditorHeading revision={revision}>
         {!revision && (
           <Button type="button" variant="outline" size="sm" disabled>
@@ -105,19 +93,7 @@ export function EditorLoading({
           <Ellipsis />
         </Button>
       </EditorHeading>
-      <fieldset
-        className="mb-6 flex items-center gap-1"
-        aria-label="Builder mode"
-        disabled
-      >
-        <Button type="button" size="sm" variant="ghost">
-          Quick
-        </Button>
-        <Button type="button" size="sm" variant="secondary">
-          Advanced
-        </Button>
-      </fieldset>
-      <Tabs value="question" className="gap-0">
+      <Tabs value="general" className="gap-0">
         <EditorNavigation disabled />
         <div
           className="mx-auto flex w-full max-w-3xl flex-col gap-6 py-7"

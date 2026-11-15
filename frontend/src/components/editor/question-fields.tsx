@@ -21,12 +21,14 @@ export function QuestionFields({
   onChange,
   onEnvironmentChange,
   disabled,
+  basicOnly = false,
 }: {
   design: Design;
   catalog: Catalog;
   onChange: (design: Design) => void;
   onEnvironmentChange: (value: EnvironmentId) => void;
   disabled: boolean;
+  basicOnly?: boolean;
 }) {
   const environment = catalog.environments.find(
     (item) => item.key === design.environment,
@@ -42,14 +44,18 @@ export function QuestionFields({
           id="title"
           value={design.title}
           maxLength={100}
+          placeholder="Name your experiment"
+          required
           onChange={(event) => update("title", event.target.value)}
         />
       </Field>
       <Field>
-        <FieldLabel htmlFor="question">Research question</FieldLabel>
+        <FieldLabel htmlFor="question">Question</FieldLabel>
         <Textarea
           id="question"
           rows={3}
+          placeholder="What would you like to test?"
+          required
           value={design.question}
           maxLength={4000}
           onChange={(event) => update("question", event.target.value)}
@@ -63,7 +69,9 @@ export function QuestionFields({
           value={design.environment}
           disabled={disabled}
           onValueChange={(value) => {
-            if (value !== design.environment) onEnvironmentChange(value);
+            if (value === design.environment) return;
+            // Finish Enter activation before the dialog receives focus.
+            requestAnimationFrame(() => onEnvironmentChange(value));
           }}
           options={[
             ...catalog.environments,
@@ -80,53 +88,56 @@ export function QuestionFields({
             label: item.name,
           }))}
         />
-        <FieldDescription>{environment?.description}</FieldDescription>
       </Field>
-      <Disclosure>
-        <DisclosureTrigger>Hypothesis and analysis plan</DisclosureTrigger>
-        <DisclosureContent className="pt-4">
-          <Field>
-            <FieldLabel htmlFor="hypothesis">
-              Hypothesis and analysis plan
-            </FieldLabel>
-            <Textarea
-              id="hypothesis"
-              placeholder="Exploratory questions and evidence to retain, or a hypothesis and comparison plan"
-              rows={4}
-              maxLength={2000}
-              value={design.hypothesis}
-              onChange={(event) => update("hypothesis", event.target.value)}
+      {!basicOnly && (
+        <Disclosure>
+          <DisclosureTrigger>Hypothesis and analysis plan</DisclosureTrigger>
+          <DisclosureContent className="pt-4">
+            <Field>
+              <FieldLabel htmlFor="hypothesis">
+                Hypothesis and analysis plan
+              </FieldLabel>
+              <Textarea
+                id="hypothesis"
+                placeholder="Exploratory questions and evidence to retain, or a hypothesis and comparison plan"
+                rows={4}
+                maxLength={2000}
+                value={design.hypothesis}
+                onChange={(event) => update("hypothesis", event.target.value)}
+              />
+              <FieldDescription>
+                Exploration can describe trajectories without a primary scalar
+                outcome. For confirmation, define outcomes and comparisons
+                before trials. Agents do not receive this plan.
+              </FieldDescription>
+            </Field>
+            <AnalysisPlanFields
+              design={design}
+              metrics={environment?.measures ?? []}
+              onChange={onChange}
             />
-            <FieldDescription>
-              Exploration can describe trajectories without a primary scalar
-              outcome. For confirmation, define outcomes and comparisons before
-              trials. Agents do not receive this plan.
-            </FieldDescription>
-          </Field>
-          <AnalysisPlanFields
-            design={design}
-            metrics={environment?.measures ?? []}
-            onChange={onChange}
-          />
-        </DisclosureContent>
-      </Disclosure>
-      <Disclosure>
-        <DisclosureTrigger>Scenario context</DisclosureTrigger>
-        <DisclosureContent className="pt-4">
-          <Field>
-            <FieldLabel htmlFor="context">
-              Scenario context (optional)
-            </FieldLabel>
-            <Textarea
-              id="context"
-              rows={3}
-              placeholder="Describe the setting. The environment defines the rules."
-              value={design.context}
-              onChange={(event) => update("context", event.target.value)}
-            />
-          </Field>
-        </DisclosureContent>
-      </Disclosure>
+          </DisclosureContent>
+        </Disclosure>
+      )}
+      {!basicOnly && (
+        <Disclosure>
+          <DisclosureTrigger>Scenario context</DisclosureTrigger>
+          <DisclosureContent className="pt-4">
+            <Field>
+              <FieldLabel htmlFor="context">
+                Scenario context (optional)
+              </FieldLabel>
+              <Textarea
+                id="context"
+                rows={3}
+                placeholder="Describe the setting. The environment defines the rules."
+                value={design.context}
+                onChange={(event) => update("context", event.target.value)}
+              />
+            </Field>
+          </DisclosureContent>
+        </Disclosure>
+      )}
     </FieldGroup>
   );
 }

@@ -4,7 +4,7 @@ import type {
   ResearchFindings,
   StudyDetail,
 } from "../src/lib/types.js";
-import { templateDesign } from "./helpers.js";
+import { selectEditorSection, templateDesign } from "./helpers.js";
 
 test("analysis plan and actual value scenarios survive authoring, save and reload", async ({
   page,
@@ -22,7 +22,7 @@ test("analysis plan and actual value scenarios survive authoring, save and reloa
     .fill("Only these explicit value cases and declared agents.");
   await page.getByLabel("Outcome 1 identifier").fill("actual_decisions");
   await page.getByLabel("Outcome 1 identifier").blur();
-  await page.getByRole("tab", { name: "Run plan", exact: true }).click();
+  await selectEditorSection(page, "Run plan");
   await page.getByLabel("Matched seeds", { exact: true }).fill("17, 83");
   await page.getByLabel("Matched seeds", { exact: true }).blur();
   await page
@@ -32,7 +32,7 @@ test("analysis plan and actual value scenarios survive authoring, save and reloa
     .getByRole("button", { name: "Create rotated scenarios", exact: true })
     .click();
   await page.reload();
-  await page.getByRole("tab", { name: "Run plan", exact: true }).click();
+  await selectEditorSection(page, "Run plan");
   await page
     .getByRole("button", { name: "Matched value scenarios", exact: true })
     .click();

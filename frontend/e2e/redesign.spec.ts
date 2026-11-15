@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { createStudy, setDeveloper } from "./helpers.js";
+import { createStudy, selectEditorSection, setDeveloper } from "./helpers.js";
 
 for (const width of [390, 1440]) {
   for (const theme of ["light", "dark"]) {
@@ -77,7 +77,7 @@ for (const width of [390, 1440]) {
         }
         if (path?.startsWith("/new")) {
           await page
-            .getByRole("button", { name: "Advanced", exact: true })
+            .getByRole("tab", { name: "Advanced", exact: true })
             .click();
           await expect(
             page.getByLabel("Experiment name", { exact: true }),
@@ -88,12 +88,14 @@ for (const width of [390, 1440]) {
           name === "execution" ||
           name === "specification"
         ) {
-          const tab = page.getByRole("tab", {
-            name:
-              name === "execution" ? "Run plan" : new RegExp(`^${name}`, "i"),
-          });
-          await tab.click();
-          await expect(tab).toHaveAttribute("aria-selected", "true");
+          await selectEditorSection(
+            page,
+            name === "execution"
+              ? "Run plan"
+              : name === "agents"
+                ? "Agents"
+                : "Specification",
+          );
         }
         await expect(
           page.getByRole("status", { name: "Loading", exact: true }),

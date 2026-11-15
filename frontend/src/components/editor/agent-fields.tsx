@@ -96,7 +96,7 @@ export function AgentFields({
             </AccordionTrigger>
             <AccordionContent>
               <div className="flex flex-col gap-4 pb-2 pt-2">
-                <FieldGroup className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
+                <FieldGroup className="grid min-w-0 grid-cols-1 gap-5">
                   <Field>
                     <FieldLabel htmlFor={`agent-${p.key}-name`}>
                       Name

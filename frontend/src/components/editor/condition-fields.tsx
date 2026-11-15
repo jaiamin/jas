@@ -130,7 +130,7 @@ export function ConditionFields({
             </AccordionTrigger>
             <AccordionContent>
               <div className="flex min-w-0 flex-col gap-6 pb-2 pt-2">
-                <FieldGroup className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
+                <FieldGroup className="grid min-w-0 grid-cols-1 gap-5">
                   <Field>
                     <FieldLabel htmlFor={`condition-${c.key}-name`}>
                       Condition name

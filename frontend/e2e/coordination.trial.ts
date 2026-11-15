@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { selectEditorSection } from "./helpers.js";
 
 test("switching a solo draft creates three bound participants without losing the investigator", async ({
   page,
@@ -14,7 +15,7 @@ test("switching a solo draft creates three bound participants without losing the
   await page
     .getByRole("button", { name: "Change environment", exact: true })
     .click();
-  await page.getByRole("tab", { name: "Agents", exact: true }).click();
+  await selectEditorSection(page, "Agents");
   await expect(
     page.getByRole("button", { name: "Add agent", exact: true }),
   ).toBeDisabled();
@@ -80,13 +81,13 @@ test("coordination timing and topology edits survive reload and review", async (
   request,
 }, testInfo) => {
   await page.goto("/new?template=distributed_coordination");
-  await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+  await selectEditorSection(page, "Conditions");
   await expect(
     page.getByRole("combobox", { name: "Logical timing" }).first(),
   ).toContainText("Phased simultaneous");
   await page.getByLabel("Message delay in logical ticks").first().fill("3");
   await page.reload();
-  await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+  await selectEditorSection(page, "Conditions");
   await expect(
     page.getByLabel("Message delay in logical ticks").first(),
   ).toHaveValue("3");

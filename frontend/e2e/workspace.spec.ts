@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { setDeveloper, templateDesign } from "./helpers.js";
+import {
+  selectEditorSection,
+  setDeveloper,
+  templateDesign,
+} from "./helpers.js";
 
 test.beforeEach(async ({ request }) => {
   await setDeveloper(request, true);
@@ -15,7 +19,7 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Browser QA · scarcity");
-  await page.getByRole("tab", { name: "Run plan", exact: true }).click();
+  await selectEditorSection(page, "Run plan");
   await page.getByLabel("Rounds per run").fill("3");
   await page.getByLabel("Matched seeds").fill("7");
   await page.getByLabel("Matched seeds").blur();
@@ -29,7 +33,7 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   ).toBeVisible();
   const studyURL = page.url();
   await page.getByRole("link", { name: "Tune", exact: true }).click();
-  await page.getByRole("button", { name: "Advanced", exact: true }).click();
+  await page.getByRole("tab", { name: "Advanced", exact: true }).click();
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Browser QA · tuned");
@@ -84,12 +88,12 @@ test("invalid specifications cannot switch into visual mode or create a study", 
   page,
 }) => {
   await page.goto("/new?mode=advanced");
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await selectEditorSection(page, "Specification");
   await page.getByLabel("Complete JSON specification").fill('{"profiles":4}');
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await selectEditorSection(page, "Question");
   await expect(
-    page.getByRole("tab", { name: "Specification" }),
-  ).toHaveAttribute("aria-selected", "true");
+    page.getByRole("button", { name: "Specification", includeHidden: true }),
+  ).toHaveAttribute("aria-expanded", "true");
   await expect(page.getByRole("alert")).toBeVisible();
 });
 
@@ -136,28 +140,29 @@ test("removing agents removes condition overrides and environment changes need c
     { ...removed, goal: "Compare an alternative incentive" },
   ];
   await page.goto("/new?mode=advanced");
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await selectEditorSection(page, "Specification");
   await page
     .getByLabel("Complete JSON specification")
     .fill(JSON.stringify(design));
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
-  await page.getByRole("tab", { name: /^Agents/ }).click();
+  await selectEditorSection(page, "Question");
+  await selectEditorSection(page, /^Agents/);
   await expect(
     page
+      .getByRole("region", { name: "Agents", exact: true })
       .locator("[data-slot=accordion-trigger]:visible")
       .filter({ hasText: removed.name }),
   ).toHaveAttribute("aria-expanded", "true");
   await page
     .getByRole("button", { name: `Remove ${removed.name}`, exact: true })
     .click();
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await selectEditorSection(page, "Specification");
   const changed = JSON.parse(
     await page.getByLabel("Complete JSON specification").inputValue(),
   );
   expect(changed.profiles).toHaveLength(design.profiles.length - 1);
   expect(changed.conditions[0].profile_overrides).toEqual([]);
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await selectEditorSection(page, "Question");
+  await selectEditorSection(page, "Question");
   await page
     .getByRole("combobox", { name: "Environment", exact: true })
     .click();
@@ -261,7 +266,7 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
     "Recovered protocol",
   );
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await selectEditorSection(page, "Specification");
   await page.getByLabel("Complete JSON specification").fill('{"unfinished":');
   await page.reload();
   await expect(page.getByLabel("Complete JSON specification")).toHaveValue(
@@ -299,19 +304,23 @@ test("drafts survive reload, recover incomplete edits and clear after saving", a
   await page.getByLabel("Experiment name", { exact: true }).fill("");
   await expect(page.getByRole("status")).toContainText("Draft saved");
   await page.reload();
-  await page
-    .getByRole("button", { name: "Edit specification", exact: true })
-    .click();
-  const text = page.getByLabel("Complete JSON specification");
-  const design = JSON.parse(await text.inputValue());
-  expect(design.title).toBe("");
-  design.title = "Recovered incomplete draft";
-  await text.fill(JSON.stringify(design));
+  const name = page.getByLabel("Experiment name", { exact: true });
+  await expect(name).toHaveValue("");
+  await expect(
+    page.getByText("Recover your draft", { exact: true }),
+  ).toHaveCount(0);
+  await name.fill("Recovered incomplete draft");
+  await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page
     .getByRole("button", { name: "Create experiment", exact: true })
     .click();
   await expect(page).toHaveURL(/\/experiments\//);
-  await expect(page.getByRole("heading", { name: design.title })).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: "Recovered incomplete draft",
+      exact: true,
+    }),
+  ).toBeVisible();
   await page.goto("/");
   await expect(
     page.getByRole("region", { name: "Drafts", exact: true }),
@@ -325,19 +334,21 @@ test("environment mechanics lead to editable reusable setups", async ({
   await page
     .getByRole("link", { name: "Explore Team coordination", exact: true })
     .click();
+  await page
+    .getByRole("button", { name: "Observations & rules", exact: true })
+    .click();
   await expect(
     page.getByRole("heading", { name: "What agents observe" }),
   ).toBeVisible();
   await page
-    .getByRole("link", { name: "Configure experiment", exact: true })
+    .getByRole("link", { name: "Create experiment", exact: true })
     .click();
-  await page.getByRole("button", { name: "Advanced", exact: true }).click();
-  await page.getByRole("tab", { name: /^Conditions/ }).click();
-  await expect(page.getByRole("tab", { name: /^Conditions/ })).toHaveAttribute(
-    "aria-selected",
-    "true",
-  );
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await page.getByRole("tab", { name: "Advanced", exact: true }).click();
+  await selectEditorSection(page, /^Conditions/);
+  await expect(
+    page.getByRole("button", { name: /^Conditions/, includeHidden: true }),
+  ).toHaveAttribute("aria-expanded", "true");
+  await selectEditorSection(page, "Question");
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Supply-chain recovery");
@@ -354,8 +365,8 @@ test("environment mechanics lead to editable reusable setups", async ({
   await page
     .getByRole("link", { name: "Supply-chain recovery", exact: true })
     .click();
-  await page.getByRole("button", { name: "Advanced", exact: true }).click();
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await page.getByRole("tab", { name: "Advanced", exact: true }).click();
+  await selectEditorSection(page, "Question");
   await expect(page.getByLabel("Experiment name", { exact: true })).toHaveValue(
     "Supply-chain recovery experiment",
   );

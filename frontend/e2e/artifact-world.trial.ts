@@ -1,11 +1,12 @@
 import { expect, test } from "@playwright/test";
+import { selectEditorSection } from "./helpers.js";
 
 test("solo artifact configuration preserves its draft and immutable saved rules", async ({
   page,
   request,
 }, testInfo) => {
   await page.goto("/new?template=artifact_workspace");
-  await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+  await selectEditorSection(page, "Conditions");
   await expect(
     page.getByRole("group", { name: "Communication channels", exact: true }),
   ).toHaveCount(0);
@@ -15,7 +16,7 @@ test("solo artifact configuration preserves its draft and immutable saved rules"
   await page.getByLabel("Maximum artifact writes", { exact: true }).fill("2");
   await page.getByLabel("Measurement · reading", { exact: true }).fill("23");
   await page.reload();
-  await page.getByRole("tab", { name: "Conditions", exact: true }).click();
+  await selectEditorSection(page, "Conditions");
   await expect(
     page.getByLabel("Maximum artifact writes", { exact: true }),
   ).toHaveValue("2");

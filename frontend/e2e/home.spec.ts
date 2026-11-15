@@ -861,6 +861,9 @@ for (const width of [390, 1440])
         "Experiments",
         "Runs",
         "Environments",
+        /Docs/,
+        /JAS MCP/,
+        "Examples",
       ]);
       const typography = await nav.getByRole("link").evaluateAll((links) =>
         links.map((link) => {

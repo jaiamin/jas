@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { setDeveloper, templateDesign } from "./helpers.js";
+import {
+  selectEditorSection,
+  setDeveloper,
+  templateDesign,
+} from "./helpers.js";
 
 test.beforeEach(async ({ request }) => {
   await setDeveloper(request, true);
@@ -20,7 +24,7 @@ test("checks expose institution incentive limits without spending and invalidate
   await report.getByRole("button", { name: /Review \d+ findings/ }).click();
   await expect(report.getByText(/Work earns 2 personal credits/)).toBeVisible();
   await expect(report.getByText(/no finite resource stock/)).toBeVisible();
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await selectEditorSection(page, "Question");
   await page
     .getByLabel("Experiment name", { exact: true })
     .fill("Changed check snapshot");
@@ -40,7 +44,7 @@ test("JSON inactive treatments are blocked in the editor and at the real save en
   const design = templateDesign(catalog);
   design.conditions[1].parameters.institution.oversight = 0.123;
   await page.goto("/new?template=commons&mode=advanced");
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await selectEditorSection(page, "Specification");
   await page
     .getByLabel("Complete JSON specification")
     .fill(JSON.stringify(design));

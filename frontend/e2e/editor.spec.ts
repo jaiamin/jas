@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { setDeveloper } from "./helpers.js";
+import { selectEditorSection, setDeveloper } from "./helpers.js";
 
 test.beforeEach(async ({ request }) => {
   await setDeveloper(request, true);
@@ -43,14 +43,7 @@ for (const theme of ["light", "dark"]) {
       const sections = page.getByRole("tablist", {
         name: "Experiment sections",
       });
-      for (const name of [
-        "Question",
-        "Agents",
-        "Conditions",
-        "Run plan",
-        "Review",
-        "Specification",
-      ]) {
+      for (const name of ["General", "Advanced", "Review"]) {
         await sections.getByRole("tab", { name, exact: true }).click();
         await expect(
           page.getByRole("tabpanel", { name, exact: true }),
@@ -104,9 +97,7 @@ for (const theme of ["light", "dark"]) {
           animations: "disabled",
         });
       }
-      await sections
-        .getByRole("tab", { name: "Question", exact: true })
-        .click();
+      await selectEditorSection(page, "Question");
       await expect(
         page.getByLabel("Experiment name", { exact: true }),
       ).toHaveValue("Cooperation under scarcity");
@@ -147,29 +138,29 @@ test("editor preserves input DOM across sections and applies validated JSON to t
 }) => {
   await page.goto("/new?template=coordination&mode=advanced");
   await page.getByLabel("Experiment name").fill("Preserved experiment");
-  await page.getByRole("tab", { name: "Agents", exact: true }).click();
+  await selectEditorSection(page, "Agents");
   await page.getByRole("button", { name: "Add agent", exact: true }).click();
   const agent = page.getByLabel("Name", { exact: true }).last();
   await expect(agent).toBeVisible();
   await expect(agent).toBeFocused();
   await agent.fill("New researcher");
-  await page.getByRole("tab", { name: "Run plan", exact: true }).click();
+  await selectEditorSection(page, "Run plan");
   await page.getByLabel("Matched seeds").fill("3, 5");
   await page.getByLabel("Matched seeds").blur();
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await selectEditorSection(page, "Question");
   await expect(page.getByLabel("Experiment name")).toHaveValue(
     "Preserved experiment",
   );
-  await page.getByRole("tab", { name: "Agents", exact: true }).click();
+  await selectEditorSection(page, "Agents");
   await expect(agent).toHaveValue("New researcher");
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await selectEditorSection(page, "Specification");
   const specification = page.getByLabel("Complete JSON specification");
   const design = JSON.parse(await specification.inputValue());
   expect(design.profiles.at(-1).name).toBe("New researcher");
   expect(design.seeds).toEqual([3, 5]);
   design.seeds = [13, 17];
   await specification.fill(JSON.stringify(design));
-  await page.getByRole("tab", { name: "Run plan", exact: true }).click();
+  await selectEditorSection(page, "Run plan");
   await expect(page.getByLabel("Matched seeds")).toHaveValue("13, 17");
   await page.getByRole("tab", { name: "Review", exact: true }).click();
   await page
@@ -206,7 +197,7 @@ for (const width of [390, 1440]) {
       page.getByRole("status", { name: "Loading experiment", exact: true }),
     ).toBeVisible();
     await expect(
-      nav.getByRole("tab", { name: "Question", exact: true }),
+      nav.getByRole("tab", { name: "General", exact: true }),
     ).toBeDisabled();
     release();
     await expect(
@@ -240,7 +231,7 @@ for (const [theme, width] of [
       await page.goto(
         `/new?template=${template.id}&step=conditions&mode=advanced`,
       );
-      const panel = page.getByRole("tabpanel", {
+      const panel = page.getByRole("region", {
         name: "Conditions",
         exact: true,
       });
@@ -281,5 +272,87 @@ for (const [theme, width] of [
         animations: "disabled",
       });
     }
+  });
+}
+
+for (const width of [390, 1440]) {
+  test(`blank creation preserves an unfinished draft and saves without running · ${width}`, async ({
+    page,
+    request,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    const starts: string[] = [];
+    page.on("request", (request) => {
+      if (request.url().endsWith("/control")) starts.push(request.url());
+    });
+    await page.goto("/new");
+    await expect(
+      page.getByRole("tab", { name: "General", exact: true }),
+    ).toHaveAttribute("aria-selected", "true");
+    const name = page.getByLabel("Experiment name", { exact: true });
+    const question = page.getByRole("textbox", {
+      name: "Question",
+      exact: true,
+    });
+    await expect(name).toHaveValue("");
+    await expect(question).toHaveValue("");
+    await expect(
+      page.getByLabel("Condition 1 name", { exact: true }),
+    ).toHaveValue("Baseline");
+    await expect(
+      page.getByRole("button", { name: "Save", exact: true }),
+    ).toBeDisabled();
+    await name.fill("A new comparison");
+    await page.reload();
+    await expect(name).toHaveValue("A new comparison");
+    await expect(question).toHaveValue("");
+    await expect(
+      page.getByText("Recover your draft", { exact: true }),
+    ).toHaveCount(0);
+    await question.fill("How do agents use a shared pool?");
+    await page.getByRole("tab", { name: "Review", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Create experiment", exact: true })
+      .click();
+    await expect(page).toHaveURL(/\/experiments\/[a-f0-9]+$/);
+    const id = page.url().split("/").at(-1);
+    const saved = await (await request.get(`/api/studies/${id}`)).json();
+    expect(saved.design.title).toBe("A new comparison");
+    expect(saved.design.conditions).toHaveLength(1);
+    expect(saved.design.profiles).toHaveLength(4);
+    expect(
+      saved.runs.every((run: { status: string }) => run.status === "ready"),
+    ).toBe(true);
+    expect(starts).toEqual([]);
+    expect(
+      (await (await request.get("/api/settings")).json()).usage.requests,
+    ).toBe(0);
+  });
+}
+
+for (const mode of ["General", "Advanced"]) {
+  test(`keyboard environment changes require confirmation in ${mode}`, async ({
+    page,
+  }) => {
+    await page.goto("/new");
+    if (mode === "Advanced") await selectEditorSection(page, "Question");
+    const environment = page.getByRole("combobox", {
+      name: "Environment",
+      exact: true,
+    });
+    await expect(environment).toHaveText("Shared commons");
+    await environment.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("listbox")).toBeVisible();
+    await page.keyboard.press("Home");
+    await expect(page.getByRole("option").first()).toBeFocused();
+    await page.keyboard.press("Enter");
+    const confirmation = page.getByRole("alertdialog");
+    await expect(confirmation).toBeVisible();
+    await confirmation
+      .getByRole("button", { name: "Cancel", exact: true })
+      .click();
+    await expect(confirmation).toHaveCount(0);
+    await expect(environment).toHaveText("Shared commons");
   });
 }

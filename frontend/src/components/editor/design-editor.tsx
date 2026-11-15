@@ -11,23 +11,27 @@ import { ConditionFields } from "@/components/editor/condition-fields";
 import {
   EditorHeading,
   EditorNavigation,
-  editorSections,
 } from "@/components/editor/editor-layout";
 import { EnvironmentExamples } from "@/components/editor/environment-examples";
 import { ExecutionFields } from "@/components/editor/execution-fields";
 import { ExperimentReview } from "@/components/editor/experiment-review";
+import { GeneralFields } from "@/components/editor/general-fields";
 import { QuestionFields } from "@/components/editor/question-fields";
-import { QuickBuilder } from "@/components/editor/quick-builder";
 import { TaskFields } from "@/components/editor/task-fields";
 import { ExperimentCheck } from "@/components/experiment-check";
 import { Alert } from "@/components/feedback";
 import {
   AgentIcon,
-  ArrowLeft,
   ArrowRight,
   Ellipsis,
   LoaderCircle,
 } from "@/components/icons";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -189,7 +193,10 @@ export function DesignEditor({
         unpriced_models: string[];
         assumptions: string;
       }>("/design/estimate", { design: estimateDesign }),
-    enabled: mode === "quick" && seedsValid,
+    enabled:
+      mode === "quick" &&
+      seedsValid &&
+      Boolean(design.title.trim() && design.question.trim()),
     retry: false,
   });
   const estimateCurrent =
@@ -375,6 +382,10 @@ export function DesignEditor({
   }
   function submit(run = false) {
     if (busy || currentCheck?.status === "blocked") return;
+    if (mode !== "json" && (!design.title.trim() || !design.question.trim())) {
+      setError("Add an experiment name and question before saving.");
+      return;
+    }
     if (mode !== "json" && !seedsValid) {
       setError("Seeds must be nonnegative integers, separated by commas.");
       return;
@@ -389,13 +400,21 @@ export function DesignEditor({
       }
     } else if (!jsonDirty) save.mutate({ specification: design, run });
   }
-  const activeSection = mode === "json" ? "json" : step;
-  const sectionIndex = editorSections.findIndex(
-    (section) => section.value === step,
-  );
+  const activeSection =
+    mode === "quick"
+      ? "general"
+      : mode !== "json" && step === "review"
+        ? "review"
+        : "advanced";
+  const complete = Boolean(design.title.trim() && design.question.trim());
+  function selectSection(value: string) {
+    setStep(value);
+    if (value === "json") changeMode(value);
+    else if (mode === "json") changeMode("visual");
+  }
   return (
     <form
-      className="mx-auto w-full max-w-5xl"
+      className="mx-auto w-full max-w-3xl"
       data-slot="experiment-editor"
       noValidate
       onSubmit={(event) => {
@@ -416,7 +435,9 @@ export function DesignEditor({
                 agentChatId
                   ? null
                   : {
-                      question: `Help me design an experiment to investigate: ${design.question}`,
+                      question: design.question
+                        ? `Help me design an experiment to investigate: ${design.question}`
+                        : "Help me design a new experiment.",
                     }
               }
             >
@@ -478,276 +499,321 @@ export function DesignEditor({
         <Alert variant="error">{saveEnvironment.error.message}</Alert>
       )}
       {reuse.error && <Alert variant="error">{reuse.error.message}</Alert>}
-      <fieldset
-        className="mb-6 flex items-center gap-1"
-        aria-label="Builder mode"
+      <Tabs
+        value={activeSection}
+        className="gap-0"
+        onValueChange={(value) => {
+          if (busy) return;
+          if (value === "general") setMode("quick");
+          else {
+            if (value === "review") setStep("review");
+            else if (step === "review") setStep("question");
+            if (mode === "json") changeMode("visual");
+            else setMode(jsonDirty ? "json" : "visual");
+          }
+        }}
       >
-        <Button
-          type="button"
-          size="sm"
-          variant={mode === "quick" ? "secondary" : "ghost"}
-          aria-pressed={mode === "quick"}
-          disabled={busy}
-          onClick={() => setMode("quick")}
-        >
-          Quick
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant={mode !== "quick" ? "secondary" : "ghost"}
-          aria-pressed={mode !== "quick"}
-          disabled={busy}
-          onClick={() => setMode(jsonDirty ? "json" : "visual")}
-        >
-          Advanced
-        </Button>
-      </fieldset>
-      {mode === "quick" ? (
-        <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
-          <FieldSet disabled={busy || jsonDirty} className="min-w-0">
-            <QuickBuilder
-              key={design.environment}
-              design={design}
-              catalog={editorCatalog}
-              onChange={setDesign}
-              onEnvironmentChange={setPendingEnvironment}
-              seedsInput={seedsInput}
-              disabled={busy || jsonDirty}
-            />
-            {estimate.data?.unpriced_models.length ? (
-              <Field>
-                <FieldLabel htmlFor="quick-token-cap">Token ceiling</FieldLabel>
-                <Input
-                  id="quick-token-cap"
-                  type="number"
-                  min={1}
-                  value={design.token_budget ?? ""}
-                  onChange={(event) =>
-                    setDesign({
-                      ...design,
-                      token_budget: event.target.value
-                        ? Number(event.target.value)
-                        : null,
-                    })
-                  }
-                />
-                <FieldDescription>
-                  Prices are unknown for{" "}
-                  {estimate.data.unpriced_models.join(", ")}. A token ceiling is
-                  required here or in Settings.
-                </FieldDescription>
-              </Field>
-            ) : null}
-          </FieldSet>
-          {jsonDirty && (
-            <Alert title="Specification edits preserved">
-              Your JSON draft is saved in Advanced. Apply it there before saving
-              Quick.{" "}
-              <Button
-                type="button"
-                size="sm"
-                variant="link"
-                onClick={() => setMode("json")}
-              >
-                Review specification
-              </Button>
-            </Alert>
-          )}
-          <div
-            id="estimate-summary"
-            className="text-sm text-muted-foreground"
-            aria-live="polite"
-          >
-            {!seedsValid
-              ? "Seeds must be nonnegative integers, separated by commas."
-              : !estimateCurrent || estimate.isPending
-                ? "Updating estimate…"
-                : estimate.error
-                  ? "Resolve the protocol fields to estimate this experiment."
-                  : estimate.data && (
-                      <>
-                        <strong className="font-medium text-foreground">
-                          {estimate.data.runs} runs
-                        </strong>{" "}
-                        · up to {estimate.data.max_requests.toLocaleString()}{" "}
-                        calls ·{" "}
-                        {estimate.data.upper_usd == null
-                          ? "dollar cost unknown"
-                          : `up to ${money(estimate.data.upper_usd)}`}
-                        <span className="mt-1 block text-xs">
-                          Spending ceiling: {money(design.budget_usd)}.
-                          Conservative bound; runs may end earlier.
-                        </span>
-                      </>
-                    )}
-          </div>
-          {currentCheck && (
-            <ExperimentCheck report={currentCheck} design={design} />
-          )}
-          {(error || save.error || check.error) && (
-            <Alert variant="error">
-              {error || save.error?.message || check.error?.message}
-            </Alert>
-          )}
-          <div className="flex flex-wrap items-center gap-2 border-t pt-4">
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={busy || !seedsValid || jsonDirty}
-              onClick={() => check.mutate(snapshot)}
+        <EditorNavigation disabled={busy} />
+        {mode === "quick" ? (
+          <TabsContent value="general" className="flex flex-col gap-6 py-6">
+            <FieldSet disabled={busy || jsonDirty} className="min-w-0">
+              <GeneralFields
+                key={design.environment}
+                design={design}
+                catalog={editorCatalog}
+                onChange={setDesign}
+                onEnvironmentChange={setPendingEnvironment}
+                seedsInput={seedsInput}
+                disabled={busy || jsonDirty}
+                onEditAgents={() => {
+                  setMode("visual");
+                  setStep("agents");
+                }}
+              />
+              {estimate.data?.unpriced_models.length ? (
+                <Field>
+                  <FieldLabel htmlFor="quick-token-cap">
+                    Token ceiling
+                  </FieldLabel>
+                  <Input
+                    id="quick-token-cap"
+                    type="number"
+                    min={1}
+                    value={design.token_budget ?? ""}
+                    onChange={(event) =>
+                      setDesign({
+                        ...design,
+                        token_budget: event.target.value
+                          ? Number(event.target.value)
+                          : null,
+                      })
+                    }
+                  />
+                  <FieldDescription>
+                    Prices are unknown for{" "}
+                    {estimate.data.unpriced_models.join(", ")}. A token ceiling
+                    is required here or in Settings.
+                  </FieldDescription>
+                </Field>
+              ) : null}
+            </FieldSet>
+            {jsonDirty && (
+              <Alert title="Specification edits preserved">
+                Your JSON draft is saved in Advanced. Apply it there before
+                saving General.{" "}
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="link"
+                  onClick={() => setMode("json")}
+                >
+                  Review specification
+                </Button>
+              </Alert>
+            )}
+            <div
+              id="estimate-summary"
+              className="text-sm text-muted-foreground"
+              aria-live="polite"
             >
-              {check.isPending ? "Checking…" : "Check experiment"}
-            </Button>
-            <div className="ml-auto flex gap-2">
-              <Button
-                type="submit"
-                variant="outline"
-                disabled={
-                  busy ||
-                  jsonDirty ||
-                  !seedsValid ||
-                  currentCheck?.status === "blocked"
-                }
-              >
-                Save
-              </Button>
+              {!complete
+                ? "Add a name and question to finish your setup."
+                : !seedsValid
+                  ? "Seeds must be nonnegative integers, separated by commas."
+                  : !estimateCurrent || estimate.isPending
+                    ? "Updating estimate…"
+                    : estimate.error
+                      ? "Resolve the protocol fields to estimate this experiment."
+                      : estimate.data && (
+                          <>
+                            <strong className="font-medium text-foreground">
+                              {estimate.data.runs} runs
+                            </strong>{" "}
+                            ·{" "}
+                            {estimate.data.upper_usd == null
+                              ? "dollar cost unknown"
+                              : `up to ${money(estimate.data.upper_usd)}`}
+                            <span className="mt-1 block text-xs">
+                              Spending ceiling: {money(design.budget_usd)}.
+                            </span>
+                          </>
+                        )}
+            </div>
+            {currentCheck && (
+              <ExperimentCheck report={currentCheck} design={design} />
+            )}
+            {(error || save.error || check.error) && (
+              <Alert variant="error">
+                {error || save.error?.message || check.error?.message}
+              </Alert>
+            )}
+            <div className="flex flex-wrap items-center gap-2 border-t pt-4">
               <Button
                 type="button"
-                aria-describedby="estimate-summary"
-                disabled={
-                  busy ||
-                  jsonDirty ||
-                  !seedsValid ||
-                  currentCheck?.status === "blocked" ||
-                  !estimateCurrent ||
-                  !estimate.data ||
-                  !!estimate.error ||
-                  (estimate.data.upper_usd == null &&
-                    !design.token_budget &&
-                    !settings.data?.preferences?.token_budget) ||
-                  !settings.data ||
-                  unavailableModels.length > 0
-                }
-                onClick={() => submit(true)}
+                variant="ghost"
+                disabled={busy || !seedsValid || !complete || jsonDirty}
+                onClick={() => check.mutate(snapshot)}
               >
-                Save and run
+                {check.isPending ? "Checking…" : "Check experiment"}
               </Button>
+              <div className="ml-auto flex gap-2">
+                <Button
+                  type="submit"
+                  variant="outline"
+                  disabled={
+                    busy ||
+                    jsonDirty ||
+                    !seedsValid ||
+                    !complete ||
+                    currentCheck?.status === "blocked"
+                  }
+                >
+                  Save
+                </Button>
+                <Button
+                  type="button"
+                  aria-describedby="estimate-summary"
+                  disabled={
+                    busy ||
+                    jsonDirty ||
+                    !seedsValid ||
+                    !complete ||
+                    currentCheck?.status === "blocked" ||
+                    !estimateCurrent ||
+                    !estimate.data ||
+                    !!estimate.error ||
+                    (estimate.data.upper_usd == null &&
+                      !design.token_budget &&
+                      !settings.data?.preferences?.token_budget) ||
+                    !settings.data ||
+                    unavailableModels.length > 0
+                  }
+                  onClick={() => submit(true)}
+                >
+                  Save and run
+                </Button>
+              </div>
             </div>
-          </div>
-          {unavailableModels.length > 0 && (
-            <p className="text-sm text-muted-foreground">
-              Configure {unavailableModels.join(", ")} in{" "}
-              <Link className="underline underline-offset-4" to="/settings">
-                Settings
-              </Link>{" "}
-              to run. You can save first.
+            {unavailableModels.length > 0 && (
+              <p className="text-sm text-muted-foreground">
+                Configure {unavailableModels.join(", ")} in{" "}
+                <Link className="underline underline-offset-4" to="/settings">
+                  Settings
+                </Link>{" "}
+                to run. You can save first.
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground" role="status">
+              {draftStatus || "Changes save in this browser"} · Save never runs
+              agents.
             </p>
-          )}
-          <p className="text-xs text-muted-foreground" role="status">
-            {draftStatus || "Changes save in this browser"} · Save never runs
-            agents.
-          </p>
-        </div>
-      ) : (
-        <Tabs
-          value={activeSection}
-          onValueChange={(value) => {
-            if (value === "json") changeMode(value);
-            else {
-              setStep(value);
-              if (mode === "json") changeMode("visual");
-            }
-          }}
-          className="gap-0"
-        >
-          <EditorNavigation
-            disabled={busy}
-            showSpecification={
-              settings.data?.preferences?.developer === true || jsonDirty
-            }
-          />
-          <div className="mx-auto w-full max-w-3xl py-7">
+          </TabsContent>
+        ) : (
+          <div className="py-6">
             <FieldSet disabled={busy} className="min-w-0 gap-0">
               <TabsContent
-                value="question"
+                value="advanced"
                 forceMount
                 className="data-[state=inactive]:hidden"
               >
-                <QuestionFields
-                  design={design}
-                  catalog={editorCatalog}
-                  onChange={setDesign}
-                  onEnvironmentChange={(value) => {
-                    // Finish the select's Enter activation before moving focus to
-                    // the dialog, where its default click would otherwise cancel.
-                    requestAnimationFrame(() => setPendingEnvironment(value));
-                  }}
-                  disabled={busy}
-                />
-              </TabsContent>
-              <TabsContent
-                value="agents"
-                forceMount
-                className="data-[state=inactive]:hidden"
-              >
-                <AgentFields
-                  design={design}
-                  catalog={catalog}
-                  onChange={setDesign}
-                />
-              </TabsContent>
-              <TabsContent
-                value="conditions"
-                forceMount
-                className="data-[state=inactive]:hidden"
-              >
-                <div className="flex min-w-0 flex-col gap-8">
-                  {design.environment_source && (
-                    <EnvironmentExamples
-                      key={design.environment_source.sha256}
-                      design={design}
-                      source={design.environment_source}
-                      disabled={busy}
-                      onApply={(example, bindings) =>
-                        reuse.mutate({ example, bindings })
+                <Accordion
+                  type="single"
+                  collapsible
+                  value={mode === "json" ? "json" : step}
+                  onValueChange={selectSection}
+                >
+                  <AccordionItem value="question">
+                    <AccordionTrigger disabled={busy}>
+                      Question
+                    </AccordionTrigger>
+                    <AccordionContent
+                      forceMount
+                      hidden={(mode === "json" ? "json" : step) !== "question"}
+                      className="py-5"
+                    >
+                      <QuestionFields
+                        design={design}
+                        catalog={editorCatalog}
+                        onChange={setDesign}
+                        onEnvironmentChange={setPendingEnvironment}
+                        disabled={busy}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="agents">
+                    <AccordionTrigger disabled={busy}>Agents</AccordionTrigger>
+                    <AccordionContent
+                      forceMount
+                      hidden={(mode === "json" ? "json" : step) !== "agents"}
+                      className="py-5"
+                    >
+                      <AgentFields
+                        design={design}
+                        catalog={catalog}
+                        onChange={setDesign}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="conditions">
+                    <AccordionTrigger disabled={busy}>
+                      Conditions
+                    </AccordionTrigger>
+                    <AccordionContent
+                      forceMount
+                      hidden={
+                        (mode === "json" ? "json" : step) !== "conditions"
                       }
-                    />
+                      className="py-5"
+                    >
+                      <div className="flex min-w-0 flex-col gap-8">
+                        {design.environment_source && (
+                          <EnvironmentExamples
+                            key={design.environment_source.sha256}
+                            design={design}
+                            source={design.environment_source}
+                            disabled={busy}
+                            onApply={(example, bindings) =>
+                              reuse.mutate({ example, bindings })
+                            }
+                          />
+                        )}
+                        <ConditionFields
+                          design={design}
+                          catalog={editorCatalog}
+                          onChange={setDesign}
+                        />
+                        <TaskFields
+                          key={formVersion}
+                          design={design}
+                          onChange={setDesign}
+                        />
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="execution">
+                    <AccordionTrigger disabled={busy}>
+                      Run plan
+                    </AccordionTrigger>
+                    <AccordionContent
+                      forceMount
+                      hidden={(mode === "json" ? "json" : step) !== "execution"}
+                      className="py-5"
+                    >
+                      <ExecutionFields
+                        key={formVersion}
+                        design={design}
+                        catalog={editorCatalog}
+                        onChange={setDesign}
+                        seedsInput={seedsInput}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                  {(settings.data?.preferences?.developer === true ||
+                    jsonDirty) && (
+                    <AccordionItem value="json">
+                      <AccordionTrigger disabled={busy}>
+                        Specification
+                      </AccordionTrigger>
+                      <AccordionContent
+                        forceMount
+                        hidden={(mode === "json" ? "json" : step) !== "json"}
+                        className="py-5"
+                      >
+                        <FieldGroup>
+                          <Field>
+                            <FieldLabel htmlFor="specification">
+                              Complete JSON specification
+                            </FieldLabel>
+                            <Textarea
+                              id="specification"
+                              disabled={busy}
+                              className="min-h-96 font-mono text-xs leading-relaxed"
+                              spellCheck={false}
+                              value={json}
+                              onChange={(event) => {
+                                setJson(event.target.value);
+                                setJsonDirty(true);
+                              }}
+                            />
+                            <FieldDescription>
+                              Switching to a form section validates and applies
+                              your edits. Unsupported fields and mechanics are
+                              rejected.
+                            </FieldDescription>
+                          </Field>
+                        </FieldGroup>
+                      </AccordionContent>
+                    </AccordionItem>
                   )}
-                  <ConditionFields
-                    design={design}
-                    catalog={editorCatalog}
-                    onChange={setDesign}
-                  />
-                  <TaskFields
-                    key={formVersion}
-                    design={design}
-                    onChange={setDesign}
-                  />
-                </div>
+                </Accordion>
               </TabsContent>
-              <TabsContent
-                value="execution"
-                forceMount
-                className="data-[state=inactive]:hidden"
-              >
-                <ExecutionFields
-                  key={formVersion}
-                  design={design}
-                  catalog={editorCatalog}
-                  onChange={setDesign}
-                  seedsInput={seedsInput}
-                />
-              </TabsContent>
-              <TabsContent
-                value="review"
-                forceMount
-                className="data-[state=inactive]:hidden"
-              >
+              <TabsContent value="review">
                 <ExperimentReview
                   design={design}
                   catalog={editorCatalog}
-                  onEdit={setStep}
+                  onEdit={(value) => {
+                    setStep(value);
+                  }}
                 />
                 {explanation && (
                   <Disclosure className="mt-6">
@@ -785,34 +851,6 @@ export function DesignEditor({
                   </Disclosure>
                 )}
               </TabsContent>
-              <TabsContent
-                value="json"
-                forceMount
-                className="data-[state=inactive]:hidden"
-              >
-                <FieldGroup>
-                  <Field>
-                    <FieldLabel htmlFor="specification">
-                      Complete JSON specification
-                    </FieldLabel>
-                    <Textarea
-                      id="specification"
-                      disabled={busy}
-                      className="min-h-96 font-mono text-xs leading-relaxed"
-                      spellCheck={false}
-                      value={json}
-                      onChange={(event) => {
-                        setJson(event.target.value);
-                        setJsonDirty(true);
-                      }}
-                    />
-                    <FieldDescription>
-                      Switching to a form section validates and applies your
-                      edits. Unsupported fields and mechanics are rejected.
-                    </FieldDescription>
-                  </Field>
-                </FieldGroup>
-              </TabsContent>
               {(error || save.error || validate.error) && (
                 <div className="mt-5">
                   <Alert variant="error">
@@ -838,26 +876,6 @@ export function DesignEditor({
                 aria-label="Section navigation"
                 className="flex flex-wrap items-center justify-between gap-3"
               >
-                <div>
-                  {mode === "visual" &&
-                    sectionIndex > 0 &&
-                    step !== "review" && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        disabled={busy}
-                        onClick={() =>
-                          setStep(
-                            editorSections[sectionIndex - 1]?.value ??
-                              "question",
-                          )
-                        }
-                      >
-                        <ArrowLeft data-icon="inline-start" />
-                        Back
-                      </Button>
-                    )}
-                </div>
                 <div className="flex items-center gap-2">
                   {step === "review" || mode === "json" ? (
                     <>
@@ -880,7 +898,11 @@ export function DesignEditor({
                       </Button>
                       <Button
                         type="submit"
-                        disabled={busy || currentCheck?.status === "blocked"}
+                        disabled={
+                          busy ||
+                          (mode !== "json" && (!complete || !seedsValid)) ||
+                          currentCheck?.status === "blocked"
+                        }
                       >
                         {save.isPending && (
                           <LoaderCircle
@@ -896,13 +918,9 @@ export function DesignEditor({
                     <Button
                       type="button"
                       disabled={busy}
-                      onClick={() =>
-                        setStep(
-                          editorSections[sectionIndex + 1]?.value ?? "review",
-                        )
-                      }
+                      onClick={() => setStep("review")}
                     >
-                      Continue
+                      Review experiment
                       <ArrowRight data-icon="inline-end" />
                     </Button>
                   )}
@@ -916,8 +934,8 @@ export function DesignEditor({
               </div>
             </footer>
           </div>
-        </Tabs>
-      )}
+        )}
+      </Tabs>
       <AlertDialog
         open={pendingEnvironment !== null}
         onOpenChange={(open) => {

@@ -44,7 +44,7 @@ export function ExecutionFields({
     : design.seeds.length === 0;
   return (
     <FieldGroup>
-      <FieldGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <FieldGroup className="grid grid-cols-1 gap-5">
         <Field>
           <FieldLabel htmlFor="rounds">Rounds per run</FieldLabel>
           <Input
@@ -141,7 +141,7 @@ export function ExecutionFields({
       <ScenarioFields design={design} onChange={onChange} />
       <FieldSet>
         <FieldLegend>Measurements</FieldLegend>
-        <FieldGroup className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <FieldGroup className="grid grid-cols-1 gap-3">
           {environment?.measures.map((key) => (
             <Field key={key} orientation="horizontal">
               <Checkbox
@@ -166,7 +166,7 @@ export function ExecutionFields({
         <DisclosureTrigger>Model settings and limitations</DisclosureTrigger>
         <DisclosureContent className="pt-4">
           <FieldGroup>
-            <FieldGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <FieldGroup className="grid grid-cols-1 gap-5">
               <Field>
                 <FieldLabel htmlFor="reasoning-effort">
                   OpenAI reasoning effort

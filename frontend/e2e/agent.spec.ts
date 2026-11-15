@@ -739,11 +739,16 @@ test("creation stays in chat and hands a reviewed protocol to the editor", async
   await page
     .getByRole("link", { name: "Review protocol", exact: true })
     .click();
-  await expect(page.getByLabel("Question", { exact: true })).toHaveValue(
-    design.question,
-  );
   await expect(
-    page.getByRole("button", { name: "Save", exact: true }),
+    page.getByRole("tab", { name: "Review", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
+  await expect(
+    page
+      .getByRole("tabpanel", { name: "Review", exact: true })
+      .getByText(design.question, { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Create experiment", exact: true }),
   ).toBeEnabled();
   await page
     .getByRole("link", { name: "Back to Assistant", exact: true })

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { selectEditorSection } from "./helpers.js";
 
 for (const theme of ["light", "dark"]) {
   for (const [environment, title, control] of [
@@ -23,9 +24,12 @@ for (const theme of ["light", "dark"]) {
           : { width: 1440, height: 1000 },
       );
       await page.goto(`/new?template=${environment}&mode=advanced`);
-      await page.getByRole("tab", { name: /^Conditions/ }).click();
+      await selectEditorSection(page, /^Conditions/);
       await expect(
-        page.locator("[data-slot=accordion-trigger]:visible").first(),
+        page
+          .getByRole("region", { name: "Conditions", exact: true })
+          .locator("[data-slot=accordion-trigger]:visible")
+          .first(),
       ).toHaveAttribute("aria-expanded", "true");
       await expect(page.getByLabel(control).first()).toBeVisible();
       if (environment === "renewable_resource") {

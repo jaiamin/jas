@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { selectEditorSection } from "./helpers.js";
 
 for (const width of [390, 1440]) {
-  test(`Quick preserves invalid seeds and the full protocol across modes · ${width}`, async ({
+  test(`General preserves invalid seeds and the full protocol across modes · ${width}`, async ({
     page,
     request,
   }) => {
@@ -12,8 +13,8 @@ for (const width of [390, 1440]) {
     });
     await page.goto("/new?starter=workflow-materials");
     await expect(
-      page.getByRole("button", { name: "Quick", exact: true }),
-    ).toHaveAttribute("aria-pressed", "true");
+      page.getByRole("tab", { name: "General", exact: true }),
+    ).toHaveAttribute("aria-selected", "true");
     await expect(
       page.getByRole("combobox", { name: "What varies" }),
     ).toHaveText("Material stock");
@@ -26,13 +27,16 @@ for (const width of [390, 1440]) {
     await expect(
       page.getByRole("button", { name: "Save and run", exact: true }),
     ).toBeDisabled();
+    await page
+      .getByRole("button", { name: "Seeds and repetitions", exact: true })
+      .click();
     const seeds = page.getByLabel("Seeds", { exact: true });
     await seeds.fill("7, unfinished");
     await expect(
       page.getByRole("button", { name: "Save", exact: true }),
     ).toBeDisabled();
-    await page.getByRole("button", { name: "Advanced", exact: true }).click();
-    await page.getByRole("tab", { name: "Run plan", exact: true }).click();
+    await page.getByRole("tab", { name: "Advanced", exact: true }).click();
+    await selectEditorSection(page, "Run plan");
     await expect(page.getByLabel("Matched seeds", { exact: true })).toHaveValue(
       "7, unfinished",
     );
@@ -41,7 +45,10 @@ for (const width of [390, 1440]) {
     await expect(page.getByLabel("Matched seeds", { exact: true })).toHaveValue(
       "7, unfinished",
     );
-    await page.getByRole("button", { name: "Quick", exact: true }).click();
+    await page.getByRole("tab", { name: "General", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Seeds and repetitions", exact: true })
+      .click();
     await seeds.fill("7, 11");
     await expect(
       page.getByRole("button", { name: "Save", exact: true }),
@@ -134,5 +141,7 @@ test("Save and run commits one explicit start and the displayed ceiling", async 
 test("unknown starters are explicit errors", async ({ page }) => {
   await page.goto("/new?starter=does-not-exist");
   await expect(page.getByRole("alert")).toContainText("Starter not found");
-  await expect(page.getByLabel("Question", { exact: true })).toHaveCount(0);
+  await expect(
+    page.getByRole("textbox", { name: "Question", exact: true }),
+  ).toHaveCount(0);
 });

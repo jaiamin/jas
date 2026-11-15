@@ -116,7 +116,9 @@ test("closing a pending Assistant panel retains its chat and frozen cutoff", asy
   request,
 }) => {
   const starters = await (await request.get("/api/starters")).json();
-  const design = starters[2].design;
+  const design = starters.find(
+    (starter: { id: string }) => starter.id === "commons-messages",
+  ).design;
   design.seeds = [7];
   design.rounds = 1;
   for (const condition of design.conditions)
@@ -128,9 +130,9 @@ test("closing a pending Assistant panel retains its chat and frozen cutoff", asy
       max_tool_operations: 0,
       tools: [],
     };
-  const { id } = await (
-    await request.post("/api/studies", { data: { design } })
-  ).json();
+  const created = await request.post("/api/studies", { data: { design } });
+  expect(created.ok()).toBe(true);
+  const { id } = await created.json();
   const study = await (await request.get(`/api/studies/${id}`)).json();
   const runId = study.runs[0].id;
   await request.post(`/api/runs/${runId}/control`, {

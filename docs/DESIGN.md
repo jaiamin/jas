@@ -188,6 +188,10 @@ highlight identify the active page. Page-heading icons also remain outlined with
 conversation rows are text-only. Do not invent accounts or organizations.
 Navigation becomes a Sheet on mobile.
 
+Unselected navigation links hover with the neutral muted surface and sidebar text
+color; only the selected link keeps the blue accent surface, including on hover.
+This applies to expanded/collapsed navigation and Settings.
+
 The global controls and desktop brand headers share `--workspace-header-height` (52px),
 with one continuous bottom divider. The global bar stays at the viewport top
 inside a viewport-height shell, outside every page scroller. The document never
@@ -614,8 +618,9 @@ a muted count joined to an outline clear icon button with a Clear selection tool
 and accessible name. Clearing returns focus to the header checkbox. Keep Compare
 beside it on Runs. Selection is
 independent of comparison: Compare accepts two through four runs and is disabled
-with an explicit limit above four selections. A final Actions column uses bordered stock ellipsis buttons and
-DropdownMenu. Experiments offers Open, Edit as new revision, Duplicate, Export evidence,
+with an explicit limit above four selections. A final Actions column uses quiet 28px ghost ellipsis buttons and
+DropdownMenu with consistently sized outline icons and short labels. Experiments offers
+Open experiment, New version, Duplicate, Export evidence,
 and confirmed Delete. Copy drafts use a separate source identity and save a new experiment;
 editing preserves immutable revisions. Runs offers Inspect, Open exact parent revision, and
 Export experiment evidence, with no per-trial edit/delete that would break the matched matrix.
@@ -678,30 +683,30 @@ click and uses the same Environment, Decisions and Interactions views.
 
 ### Experiment editor
 
-Use the compact page-heading geometry shared by record lists: a 36px muted,
-rounded-square flask surface and the same title scale. The editor is at most
-1024px wide, with a centered 768px form column. Question, Agents, Conditions,
-Run plan and Review are revisitable sections, rather than a progress indicator
-claiming earlier steps are valid. Specification exposes the full JSON contract
-for advanced editing. Stock line Tabs scroll horizontally on narrow screens;
-their selected underline and full-width Separator share one baseline. Preserve
-these layout adjustments when regenerating Tabs from a preset.
+Use the shared 36px outlined flask heading and a single 768px content column.
+The only top-level tabs are General, Advanced and Review. Stock line tabs share
+one baseline with their full-width Separator and remain sticky below the global
+header. Blank creation has empty name, question, hypothesis and scenario text,
+one baseline condition, four agents, one seed, five rounds and a $1 ceiling.
+Examples, templates, copies, revisions and Assistant proposals retain their content.
+Incomplete name/question text survives draft reload; protocol structure is still
+validated and incomplete experiments cannot be saved or run.
 
-Question covers the name, research question and environment, with hypothesis and
-scenario context disclosed separately. Agents and conditions use compact stock
-Accordions; adding an item opens it and focuses its name. Communication appears
-before its dependent channel controls. Show private signals only for environments
-that implement them. Optional condition notes, profile overrides, model settings
-and limitations stay behind disclosures. Run plan keeps seeds, repetitions,
-rounds, spending ceiling and measurements visible. Task and resource fields
-stack on phones instead of squeezing several unlabeled columns together.
+General presents name, question, environment, a compact agent summary with Edit,
+stacked condition controls and the run plan. Seeds/repetitions use one disclosure.
+Advanced expands one section at a time: Question (including optional analysis and
+scenario context), Agents, Conditions, Run plan and developer Specification.
+Inputs stay mounted between sections; pending operations lock navigation and
+submitted fields. Agents and conditions keep their add/remove actions and focus
+behavior. Keep forms in one reading column. Show only supported environment controls;
+optional notes, overrides and model settings remain disclosed.
 
-Each form section offers Back/Continue. Review consolidates the question,
-participants, condition models and run plan with section-specific Edit actions,
-mechanical checking and one primary Create/Save action. Specification retains
-Check/Create for direct contract editing. Saving a reusable environment is a
-single-line item in Experiment options, rather than a competing primary action.
-Agent proposals open on Review. Saving never launches paid model work.
+Review consolidates the protocol with section-specific Edit links, mechanical
+checks and Create/Save. Advanced offers a direct Review action instead of a
+Back/Continue wizard. JSON edits must validate before they enter the visual form;
+never discard dirty JSON when switching views. Reusable environment saving stays
+in Experiment options. Assistant proposals open on Review. Saving never runs models.
+
 
 Reusable environments save only mechanics/configuration examples. Choosing a library or
 built-in environment starts an independent neutral experiment; explicit experiment templates
@@ -838,7 +843,7 @@ Keyboard order follows the row from brand to close. Main navigation menus use
 
 ## Environments catalogue
 
-Environments uses one quiet list for choosing world rules. Use the shared
+Environments uses a quiet responsive grid for choosing world rules. Use the shared
 RecordListHeading with the Layers2 page icon on the same muted rounded-square
 surface as Experiments and Runs: 36px surface, 18px glyph, 12px icon/title gap,
 20px mobile / 22px desktop title. Environment grid artwork in the list stays bare.
@@ -846,25 +851,17 @@ Preserve a blank accessible search field and the neutral bordered Built-in / Cus
 tabs. Omit New here: its experiment-editor destination is misleading for a catalogue.
 Experiments keeps its New action; environment-specific configuration remains available
 in each detail panel, including the composed-resource builder.
-A separator beneath the tabs continues directly into the list; do not add cards,
-repeat Details footers or leave an extra gap before the first row.
-
-Built-ins compose stock Item/ItemGroup and Separators. Each row is a native React
-Router link to `?environment=<key>`, with a decorative mark, medium 14px name,
-regular muted description and a small trailing chevron. Use 12px horizontal row
-insets, 16px vertical padding and 12px between the icon column and text. Reserve
-64px for artwork on phones and 80px from 640px upward. Scale marks against the
-whole text block, capping their visible width to that column and centering them
-when descriptions wrap. The fixed column prevents artwork/text sizing feedback
-and keeps neighboring rows from overlapping. Keep text fully visible and
-selectable; rows have square corners and a subtle stock hover surface.
-Metadata uses the shared Badge metadata variant: 20px height, 12px regular muted
-text, 1px border, background surface (white in light mode), 6px radius and 4px gaps.
-Keep setting type, agent count, example run count and cost in separate tags;
-wrap tags on phones. Unknown costs remain explicit. This does not start paid work.
-Keep the resource-composition builder last so existing mechanics lead the scan.
-Custom uses matching row spacing and mark alignment, with linked reusable setup
-names, matching environment/revision tags and its existing bordered actions menu.
+A separator anchors the tabs. The built-in list groups Work settings and
+Games & mechanics, with 24px above the grid and 32px between groups. Cards compose
+stock outlined Item/ItemGroup without metadata badges. Each native
+Router link has a fixed 44px decorative mark, medium 14px name, one short muted
+description and a trailing chevron. Use 16px insets and 12px icon/text gaps;
+keep text selectable, unclipped and fully readable on phones. Use equal-width
+columns and 12px gaps, switching from one to two columns when the available
+content width reaches 42rem. The full description remains in the detail panel and
+search matches the full catalog description.
+Custom follows the same compact mark/card geometry, keeping environment/version
+metadata tags and a ghost actions trigger. Edit/reuse and confirmed deletion remain.
 
 `EnvironmentMark` is authored brand SVG with no backing square, Avatar, border,
 shadow or rounded clipping. Its fixed 9×9 patterns represent pooling, reciprocal
@@ -874,13 +871,13 @@ Only three paths use semantic muted foreground and primary fills. No runtime
 randomness, animation, generated assets or requests. Colors follow presets;
 functional preset icons remain separate at the shared icon boundary.
 
-Details retain the URL-addressable stock Sheet: full width on phones, at most
-32rem on desktop. Place the bare mark beside the title in a compact header, then
-the description. Keep title and footer actions fixed while the body scrolls.
-Preserve original observations, enforced mechanics, control/measurement accordions
-and rule version. Show the composition explanation only for that environment.
-Configure experiment opens a neutral experiment from its mechanics; Design with Agent passes the existing
-environment-specific request and uses the shared Target icon.
+Details use the URL-addressable stock Sheet, full width on phones and at most
+32rem on desktop. A compact title/mark and full description lead, with example
+agent/run counts in a small definition list. Observations & rules, Available
+controls and Metrics are expandable sections; preserve all original rule and
+measurement definitions and the rule version. Header/footer stay fixed while
+the body scrolls. The footer has one Create experiment action and Watch example
+when a recording exists. The global Assistant remains available outside the panel.
 
 Native links support opening details in another tab as well as normal navigation.
 Back closes the Sheet; Escape/Close removes only the environment parameter and
@@ -965,7 +962,7 @@ Home keeps the composer and pixel sky with the user-approved four original
 illustrated Experiment ideas, using communication, memory, oversight and resources
 artwork. Each fills and focuses a draft without sending. The Get started strip and
 its onboarding-only state are removed. Recordings remain accessible through Learn → Examples.
-Quick and Advanced share a protocol and browser draft. Show conservative cost bounds
+General and Advanced share a protocol and browser draft. Show conservative cost bounds
 until empirical estimates exist. Save never runs; Save and run is explicit.
 The experiment has Overview, Results, Runs, Design and Publish. Keep one numerical
 headline and one chart in Overview, with at most three limit chips. Full evidence,

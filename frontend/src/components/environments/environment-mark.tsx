@@ -179,7 +179,7 @@ const paths = Object.fromEntries(
 /** Decorative brand artwork, never a replacement for the environment's name. */
 export function EnvironmentMark({
   environment,
-  size = 40,
+  size = 44,
   className,
 }: {
   environment: EnvironmentId;

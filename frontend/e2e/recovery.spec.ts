@@ -1,5 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { setDeveloper, templateDesign } from "./helpers.js";
+import {
+  selectEditorSection,
+  setDeveloper,
+  templateDesign,
+} from "./helpers.js";
 
 test.beforeEach(async ({ request }) => {
   await setDeveloper(request, true);
@@ -157,7 +161,7 @@ test("pending validation locks the submitted specification until its response", 
   page,
 }) => {
   await page.goto("/new?template=commons&mode=advanced");
-  await page.getByRole("tab", { name: "Specification", exact: true }).click();
+  await selectEditorSection(page, "Specification");
   const text = page.getByLabel("Complete JSON specification");
   const design = JSON.parse(await text.inputValue());
   design.title = "Validated snapshot";
@@ -170,10 +174,14 @@ test("pending validation locks the submitted specification until its response", 
     await pending;
     await route.fulfill({ json: design });
   });
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await selectEditorSection(page, "Question");
   await expect(text).toBeDisabled();
   await expect(
-    page.getByRole("tab", { name: "Run plan", exact: true }),
+    page.getByRole("button", {
+      name: "Run plan",
+      exact: true,
+      includeHidden: true,
+    }),
   ).toBeDisabled();
   await expect(
     page.getByRole("button", { name: "Create experiment", exact: true }),
@@ -217,7 +225,11 @@ test("a delayed save locks editing and a failed save keeps the draft editable", 
     }),
   ).toBeDisabled();
   await expect(
-    page.getByRole("tab", { name: "Specification", exact: true }),
+    page.getByRole("button", {
+      name: "Specification",
+      exact: true,
+      includeHidden: true,
+    }),
   ).toBeDisabled();
   await expect(
     page.getByRole("button", { name: "Check experiment", exact: true }),
@@ -228,7 +240,7 @@ test("a delayed save locks editing and a failed save keeps the draft editable", 
   );
   await expect(name).toBeEnabled();
   await expect(name).toHaveValue("Save recovery snapshot");
-  await page.getByRole("tab", { name: "Question", exact: true }).click();
+  await selectEditorSection(page, "Question");
   await name.fill("Recovered after failed save");
   await page.reload();
   await expect(name).toHaveValue("Recovered after failed save");
