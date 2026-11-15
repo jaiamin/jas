@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from pydantic import Field
 from sqlalchemy import select, text
+from starlette.background import BackgroundTask
 
 from .db import Annotation, ProviderCall
 from .dependencies import (
@@ -19,7 +20,7 @@ from .dependencies import (
 )
 from .domain import Design, EnvironmentMechanics, SavedEnvironment, Strict
 from .environment_library import builtin_environment, definition_from_design, use_environment
-from .exports import export_study
+from .exports import export_studies, export_study
 from .extensions import (
     ExtensionAdmission,
     ExtensionCandidate,
@@ -436,6 +437,24 @@ def matched_runs(
     research: ResearchDep,
 ) -> dict:
     return research.matched(study_id, revision, left, right, seed, repetition)
+
+
+class ExportStudies(Strict):
+    ids: list[Annotated[str, Field(pattern=r"^[a-f0-9]{16}$")]] = Field(
+        min_length=1, max_length=1000
+    )
+
+
+@router.post("/api/exports/studies")
+async def download_studies(body: ExportStudies, *, research: ResearchDep) -> FileResponse:
+    archive = await asyncio.to_thread(export_studies, research, body.ids)
+    return FileResponse(
+        archive,
+        media_type="application/zip",
+        filename="jas-experiments.zip",
+        headers={"Cache-Control": "no-store"},
+        background=BackgroundTask(archive.unlink, missing_ok=True),
+    )
 
 
 @router.get("/api/studies/{study_id}/export")

@@ -96,6 +96,13 @@ export function RunTable({
           <div className="ml-auto flex flex-wrap items-center gap-2">
             <RecordSelectionActions
               count={selected.length}
+              studyIds={[
+                ...new Set(
+                  runs
+                    ?.filter((run) => selected.includes(run.id))
+                    .map((run) => run.study_id),
+                ),
+              ]}
               onClear={() => {
                 setSelected([]);
                 selectAllRef.current?.focus();
@@ -106,15 +113,12 @@ export function RunTable({
               size="sm"
               asChild={canCompare}
               disabled={!canCompare}
+              title="Select 2–4 runs"
             >
               {canCompare ? (
-                <Link to={`/compare?runs=${selected.join(",")}`}>
-                  Compare {selected.length} runs
-                </Link>
-              ) : selected.length > 4 ? (
-                "Compare up to 4 runs"
+                <Link to={`/compare?runs=${selected.join(",")}`}>Compare</Link>
               ) : (
-                "Compare runs"
+                "Compare"
               )}
             </Button>
           </div>

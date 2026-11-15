@@ -1,3 +1,8 @@
+import json
+from functools import partial
+from io import BytesIO
+from zipfile import ZipFile
+
 import pytest
 from agent_sim.api import create_app
 from fastapi.testclient import TestClient
@@ -92,6 +97,43 @@ def test_portable_export_reports_missing_study_before_download(client):
     response = client.get("/api/studies/missing/export?download=true")
     assert response.status_code == 404
     assert "content-disposition" not in response.headers
+
+
+def test_bulk_export_keeps_existing_private_contract_and_cleans_archive(
+    client, design, tmp_path, monkeypatch
+):
+    from agent_sim import exports
+
+    monkeypatch.setattr(
+        exports, "NamedTemporaryFile", partial(exports.NamedTemporaryFile, dir=tmp_path)
+    )
+    ids = [
+        client.post("/api/studies", json={"design": design.model_dump()}).json()["id"]
+        for _ in range(2)
+    ]
+    before = client.get("/api/settings").json()["usage"]
+    response = client.post("/api/exports/studies", json={"ids": [*ids, ids[0]]})
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/zip"
+    assert response.headers["cache-control"] == "no-store"
+    with ZipFile(BytesIO(response.content)) as archive:
+        assert archive.namelist() == [f"jas-{sid}.json" for sid in ids]
+        for sid in ids:
+            assert (
+                json.loads(archive.read(f"jas-{sid}.json"))
+                == client.get(f"/api/studies/{sid}/export?download=true").json()
+            )
+    assert not list(tmp_path.glob("*.zip"))
+    missing = client.post("/api/exports/studies", json={"ids": [ids[0], "0" * 16]})
+    assert missing.status_code == 404
+    assert "content-disposition" not in missing.headers
+    assert not list(tmp_path.glob("*.zip"))
+    assert client.get("/api/settings").json()["usage"] == before
+
+
+@pytest.mark.parametrize("ids", [[], ["../private"], ["0" * 16] * 1001])
+def test_bulk_export_validates_selection(client, ids):
+    assert client.post("/api/exports/studies", json={"ids": ids}).status_code == 422
 
 
 @pytest.mark.parametrize(

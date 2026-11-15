@@ -329,3 +329,32 @@ hosted CI remains subject to the previously observed account billing gate.
 Disposable keyless test services stopped. Existing user service on 8080 is healthy
 and serves the updated build. No backend, dependency, user-data, paid-call, upload,
 deployment or public-docs publication changes.
+
+## Completed: bulk record actions and concise Compare
+
+Selection groups now place outline download/delete/clear icons beside the count.
+Experiments support confirmed deletion; active selections disable Delete, backend
+ownership/accounting safeguards remain authoritative, and partial failures retain
+only unsuccessful items for retry. Runs have no delete action. Compare keeps its
+2–4-run limit with the label Compare and a Select 2–4 runs hint.
+
+Downloads use one ZIP of existing private experiment exports, deduplicated by parent
+experiment for run selections; no new partial evidence format. The bounded POST
+endpoint validates IDs and removes temporary archives after delivery or generation
+failure. Binary downloads share standard API error handling and support explicit
+retry. Docs describe full-parent scope; public docs source edits are not published.
+
+Verification: 163 frontend unit tests, 60 API tests, Ruff/format, ty, frontend lint,
+TypeScript/Vite build and diff checks passed. Browser checks cover 44 unique cases:
+39 existing record-list/workspace cases passed in the initial run; four new bulk
+cases initially used an inaccessible background locator while a modal was open.
+Corrected the locator to inspect the intentionally hidden selection DOM, then all
+five final bulk cases passed, including active-selection protection. Screenshots
+inspected in both themes at 390px/1440px. Static design detector reported no findings
+(regex-only coverage). Ignored logs/screenshots: `.tools/bulk-*`. No full backend or
+full browser suite rerun; hosted CI remains subject to the prior account billing gate.
+
+Disposable test services stopped. After checking no active runs/pending chats,
+restarted the existing local app to load the new endpoint: PID 431673, 0.0.0.0:8080,
+same `data/workspace`, healthy with current frontend. No user data deletion, paid
+calls, dependencies, deployment, uploads or public-docs publication.

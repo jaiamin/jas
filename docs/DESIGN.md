@@ -622,11 +622,15 @@ the current filtered page, preserving selections on other pages and outside the 
 The header checkbox follows the same hover/focus/touch behavior and stays visible for
 full or partial page selections; disable it while loading or when no rows match.
 Both lists show a compact 28px stock ButtonGroup only while rows are selected:
-a muted count joined to an outline clear icon button with a Clear selection tooltip
-and accessible name. Clearing returns focus to the header checkbox. Keep Compare
-beside it on Runs. Selection is
+a muted count joined to outline Download, Delete (experiments only) and Clear icon
+buttons, each with a tooltip and accessible name. Downloads bundle the existing
+private experiment evidence as one ZIP; selected runs include each parent experiment
+once. Confirm experiment deletion, disable it for active selections and retain failed
+items for retry after partial success. Clearing returns focus to the header checkbox.
+Keep Compare beside it on Runs, with the concise label **Compare** and a Select 2–4
+runs hint. Selection is
 independent of comparison: Compare accepts two through four runs and is disabled
-with an explicit limit above four selections. A final Actions column uses quiet 28px ghost ellipsis buttons and
+outside that range. A final Actions column uses quiet 28px ghost ellipsis buttons and
 DropdownMenu with consistently sized outline icons and short labels. Experiments offers
 Open experiment, New version, Duplicate, Export evidence,
 and confirmed Delete. Copy drafts use a separate source identity and save a new experiment;

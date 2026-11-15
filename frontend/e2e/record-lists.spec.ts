@@ -102,7 +102,7 @@ for (const [path, noun, size] of [
       ).toHaveCount(size);
       if (path === "/runs") {
         await expect(
-          page.getByRole("button", { name: "Compare up to 4 runs" }),
+          page.getByRole("button", { name: "Compare" }),
         ).toBeDisabled();
       }
       await rows.first().click();

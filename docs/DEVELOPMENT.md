@@ -131,6 +131,11 @@ agent-private observations; they are evidence bundles, not workspace imports or
 safe public publication payloads. The Assistant's Download frozen evidence uses
 `GET /api/analyses/{id}?download=true` and preserves captured cutoffs.
 
+`POST /api/exports/studies` accepts `{ "ids": [...] }` (1–1,000 experiment IDs)
+and downloads one ZIP of the same private exports, deduplicating IDs. Each file
+retains its own snapshot; the archive is removed after delivery or generation failure.
+Bulk download on Runs includes each selected run's whole parent experiment once.
+
 ## Code map
 
 - `backend/src/agent_sim/`: domain, execution, accounting, persistence and API.

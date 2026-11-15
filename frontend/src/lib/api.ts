@@ -10,16 +10,16 @@ export class ApiError extends Error {
 }
 
 /**
- * GET when body is omitted; otherwise POST JSON. Success responses must contain JSON.
+ * GET when body is omitted; otherwise POST JSON.
  * HTTP failures reject with ApiError. Transport and response parsing failures
  * retain their cause with a readable message. Serialization
  * failures propagate unchanged. No request is automatically repeated.
  */
-export async function api<T>(
+export async function apiResponse(
   path: string,
   body?: unknown,
   method?: "POST" | "PUT" | "DELETE",
-): Promise<T> {
+): Promise<Response> {
   const request = {
     headers:
       body === undefined ? undefined : { "Content-Type": "application/json" },
@@ -81,6 +81,16 @@ export async function api<T>(
       response.status,
     );
   }
+  return response;
+}
+
+/** JSON API requests share transport and HTTP errors with binary downloads. */
+export async function api<T>(
+  path: string,
+  body?: unknown,
+  method?: "POST" | "PUT" | "DELETE",
+): Promise<T> {
+  const response = await apiResponse(path, body, method);
   try {
     return (await response.json()) as T;
   } catch (cause) {

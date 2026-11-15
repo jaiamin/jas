@@ -46,7 +46,7 @@ test("an unavailable run list retries without losing comparison selection on ref
   fireEvent.click(
     screen.getByRole("checkbox", { name: /^Select Baseline,.*second$/ }),
   );
-  expect(screen.getByRole("link", { name: "Compare 2 runs" })).toHaveAttribute(
+  expect(screen.getByRole("link", { name: "Compare" })).toHaveAttribute(
     "href",
     "/compare?runs=run,second",
   );
@@ -59,9 +59,7 @@ test("an unavailable run list retries without losing comparison selection on ref
     screen.getByRole("checkbox", { name: /^Select Baseline,.*run$/ }),
   ).toBe(first);
   expect(first).toBeChecked();
-  expect(
-    screen.getByRole("link", { name: "Compare 2 runs" }),
-  ).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Compare" })).toBeInTheDocument();
   failing = false;
   await act(() => client.refetchQueries({ queryKey: ["/runs"] }));
   await waitFor(() =>

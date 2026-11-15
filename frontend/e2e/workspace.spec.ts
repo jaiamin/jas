@@ -59,7 +59,7 @@ test("manual creation, revision, comparison and missing-key recovery", async ({
   const boxes = page.getByRole("table").locator("tbody").getByRole("checkbox");
   await boxes.nth(0).check();
   await boxes.nth(1).check();
-  await page.getByRole("link", { name: "Compare 2 runs" }).click();
+  await page.getByRole("link", { name: "Compare" }).click();
   await expect(
     page.getByRole("heading", { name: "Compare runs", exact: true }),
   ).toBeVisible();

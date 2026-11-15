@@ -1,4 +1,8 @@
+import json
 from collections import defaultdict
+from pathlib import Path
+from tempfile import NamedTemporaryFile
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from sqlalchemy import select
 
@@ -13,6 +17,21 @@ from .db import (
 )
 from .research import Research, event_dict
 from .shared_json import portable_json
+
+
+def export_studies(research: Research, study_ids: list[str]) -> Path:
+    """Bundle the existing private exports, taking one snapshot per experiment."""
+    with NamedTemporaryFile(suffix=".zip", delete=False) as file:
+        archive = Path(file.name)
+    try:
+        with ZipFile(archive, "w", compression=ZIP_DEFLATED) as output:
+            for study_id in dict.fromkeys(study_ids):
+                payload = export_study(research, study_id, download=True)
+                output.writestr(f"jas-{study_id}.json", json.dumps(payload))
+        return archive
+    except BaseException:
+        archive.unlink(missing_ok=True)
+        raise
 
 
 def export_study(research: Research, study_id: str, *, download: bool = False) -> dict[str, object]:
