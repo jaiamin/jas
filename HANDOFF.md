@@ -11,8 +11,9 @@ and historical diagnostic prose were removed. Current engineering contracts rema
 ## Workspace
 
 - Branch: t3/ponytail-full-1. Draft PR: https://github.com/jaiamin/jas/pull/41.
-- Keep the existing local app on 0.0.0.0:8080 (PID 271687), using data/workspace.
-  Preserve its data and process. No local restart or paid calls.
+- Local app is on 0.0.0.0:8080 (PID 360333), using data/workspace.
+  Restarted only after confirming no active runs/calls/analyses; data preserved.
+  No paid calls.
 - System /usr/bin/uv fails on the guest page size. Use .tools/bin/uv or .venv/bin tools.
 - Public docs currently use Mintlify artifact storage and main. The authenticated
   Admin MCP now works. No Git-source, site or authentication reconfiguration is needed.
@@ -69,11 +70,18 @@ Acceptance and progress:
 - [x] Provider-neutral user docs and deployment guide; no project MCP configuration.
 - [x] Final lint/types/build, 38 backend, 156 frontend and 48 browser tests; both
   production image smokes passed. No paid calls.
-- [ ] Verify official Gallery deployment and private bucket; app/CLI use its real
-  HTTPS origin by default, retaining explicit self-host/development overrides.
-- [ ] Retire the old private hosted workspace, preserving its detached data volume.
-  Only Gallery should run remotely. Never reuse workspace credentials/storage.
-- [ ] Configure real GitHub OAuth and verify cross-machine publish/fork/keychain.
+- [x] Official Gallery deployment reports SUCCESS at source revision 27027447.
+  Live health, anonymous catalog/filters, public UI/terms, PKCE GitHub redirect and
+  device requests passed; workspace APIs return 404. Private bucket references
+  remain server-side. Live authenticated object writes are still unverified.
+  App/CLI default to its HTTPS origin, with explicit self-host/dev overrides.
+- [ ] Old workspace/volume deletion is staged and reviewed, **not applied**.
+  The user explicitly requested discarding the hosted data. The platform refused
+  accept-deploy: destructive changes require dashboard two-factor verification,
+  unavailable to API/MCP. User must apply the pending project changes; do not
+  bypass this restriction. The new Gallery/storage are excluded.
+- [x] Real GitHub OAuth client/secret configured only on Gallery.
+- [ ] Complete user OAuth login and cross-machine publish/fork/keychain acceptance.
 
 Infrastructure is managed through authenticated MCP using the normal credential
 store; never copy tokens into this repository. The ignored `.tools` client can
@@ -89,3 +97,12 @@ Public documentation source changes are not yet published. Preserve the existing
 Mintlify deployment until an explicit documentation publication is performed.
 Registry release, genuine seed corpus, live identity/keychain checks and outside-user
 acceptance remain launch gates; never equate fixture tests with those checks.
+
+Hosted deployment: `7b7962d4-2317-412d-9325-b0649b65806a` (SUCCESS).
+Gallery origin is the DEFAULT_GALLERY_ORIGIN constant in publishing.py.
+Platform project `f7e199d8-bd8b-4628-8527-d0d99c20519b`, production environment
+`b90e8e72-dde9-4b2e-aa50-1243debe2801`; pending deletion patch
+`0fb45848-cbee-4f49-820a-27362f19591d` affects only the retired service/volume.
+Gallery source is pinned to the tested commit; documentation-only pushes do not deploy.
+GitHub Checks run 43753545823 failed to start because of account billing/spending
+limits; this is an external CI gate, not a test failure. Local checks passed.
