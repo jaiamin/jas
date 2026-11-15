@@ -1,32 +1,33 @@
-# JAS
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme-dark.png" />
+  <img src="docs/assets/readme-light.png" alt="JAS, with its pixel logo and cloud background" width="1200" />
+</picture>
 
-![A scripted run replayed in JAS](docs/assets/replay.gif)
+Controlled, replayable experiments on AI agents. Compare matched conditions,
+inspect what each agent saw, and share evidence others can replay and fork.
 
-Controlled, replayable experiments on AI agents. Compare conditions with the same
-seeds, inspect what each agent saw, and share a record others can replay and fork.
+[Documentation](https://jas.mintlify.site) · [Quickstart](https://jas.mintlify.site/quickstart) ·
+[Replay](docs/assets/replay.gif) · [Development](docs/DEVELOPMENT.md) · [MIT License](LICENSE)
 
-Start a local workspace with a release wheel:
+## Run locally
+
+MVP preview on `t3/ponytail-full-1`. Requires Python 3.13+,
+[uv](https://docs.astral.sh/uv/), Node.js 24+ and pnpm 12.
 
 ```sh
-uvx --from ./jaslab-0.2.0-py3-none-any.whl jaslab
+git clone --branch t3/ponytail-full-1 --single-branch https://github.com/jaiamin/jas.git
+cd jas
+uv sync --frozen
+pnpm --dir frontend install --frozen-lockfile
+pnpm --dir frontend build
+uv run jas --workspace ./data/workspace
 ```
 
-Python 3.13+ and [uv](https://docs.astral.sh/uv/) are required. The wheel includes
-the interface and opens your browser at [localhost:8080](http://localhost:8080).
-Registry publishing is pending; the intended release command is `uvx jaslab`.
-To build a wheel or run from source, see [development](docs/DEVELOPMENT.md).
-[Docker](docs/INSTALLATION.md#docker) is also supported.
+Open [localhost:8080](http://localhost:8080). Explore eight scripted examples
+without a key or account, then bring your own models and spending limits.
+Saving never starts a run. [Wheels and Docker](docs/INSTALLATION.md) are supported;
+package-registry publication is pending.
 
-Watch the recorded starters without a key. Add your own provider in Settings to
-run models: OpenAI, Anthropic, OpenRouter, or an OpenAI-compatible/local endpoint.
-Local use needs no account. Saving a protocol never runs it; paid actions show an
-estimate and respect workspace and experiment limits.
-
-[Publishing](docs/PUBLISHING.md) sends only reviewed experiment evidence to a
-separate gallery. Provider keys and Assistant conversations stay local. Replay
-checks recorded consequences with zero model calls; it does not establish that a
-model would make the same choices again or that findings generalize to people.
-
-[Docs](https://jas.mintlify.site) · [Install](docs/INSTALLATION.md) · [Guides](docs/README.md) ·
-[Development](docs/DEVELOPMENT.md) · [Architecture](docs/ARCHITECTURE.md) ·
-[MIT License](LICENSE)
+Publishing sends reviewed evidence to a separate gallery, excluding provider keys
+and Assistant chats. Replay checks consequences without model calls; findings do
+not establish human validity.

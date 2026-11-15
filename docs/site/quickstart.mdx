@@ -1,15 +1,25 @@
 ---
 title: Run locally
 description: Start a workspace and explore your first experiment.
+sidebarTitle: Quickstart
+keywords: [installation, local workspace, examples]
+icon: download
 ---
 
+Start JAS on your machine, then watch a recorded example before configuring a
+model. You do not need an account or provider key to explore the recordings.
+
 ## Install from source
+
+The redesigned MVP is a preview on the
+[`t3/ponytail-full-1` branch](https://github.com/jaiamin/jas/tree/t3/ponytail-full-1).
+Package-registry publication is pending.
 
 Install Python 3.13+, [uv](https://docs.astral.sh/uv/getting-started/installation/),
 Node.js 24+ and pnpm 12, then run:
 
 ```sh
-git clone https://github.com/jaiamin/jas.git
+git clone --branch t3/ponytail-full-1 --single-branch https://github.com/jaiamin/jas.git
 cd jas
 uv sync --frozen
 pnpm --dir frontend install --frozen-lockfile
@@ -21,9 +31,9 @@ JAS opens [localhost:8080](http://localhost:8080). Keep this terminal running wh
 you use the app. The explicit workspace keeps data in `data/workspace`; stopping
 the server preserves it. Run only one JAS process per workspace.
 
-Package-registry publication is pending. If you have a built release wheel, start
-it with `uvx --from ./jaslab-0.2.0-py3-none-any.whl jaslab`. The wheel includes the
-interface; it does not need the frontend build steps above.
+If you have a built release wheel, start it with
+`uvx --from ./jaslab-0.2.0-py3-none-any.whl jaslab`. The wheel includes the interface
+and does not need a frontend build.
 
 ## Explore without a key
 
@@ -55,4 +65,4 @@ Use **Settings → Data** to download a consistent backup without provider keys.
 Backups include private observations and conversations; keep them private.
 
 For Docker, source development and optional private hosting, see the
-[repository guides](https://github.com/jaiamin/jas/tree/main/docs).
+[repository guides](https://github.com/jaiamin/jas/tree/t3/ponytail-full-1/docs).

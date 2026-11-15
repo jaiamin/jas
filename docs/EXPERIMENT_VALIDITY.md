@@ -130,9 +130,8 @@ development diagnostics. [Benchmark instructions](../benchmarks/README.md) descr
 case selection, attempt accounting and paid-run gates. Superseded development
 reports remain in Git history.
 
-Live researcher/participant competence and judge
-accuracy remain open under the [accepted specification](RESEARCH_HARNESS_SPEC.md)
-and [T20](https://github.com/jaiamin/jas/issues/31). Freeze fresh cases and rubrics
+Live researcher/participant competence and judge accuracy remain open under
+[T20](https://github.com/jaiamin/jas/issues/31). Freeze fresh cases and rubrics
 before evaluation, retain every attempt and cost, and obtain the appropriate
 explicit spending authorization. Human predictive claims additionally require
 consented reference data, held-out participants and independent validation.

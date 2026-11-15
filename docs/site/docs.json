@@ -1,21 +1,63 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "JAS",
-  "description": "Controlled, replayable experiments on AI agents.",
   "colors": {
     "primary": "#2563eb",
     "light": "#2563eb",
     "dark": "#60a5fa"
   },
-  "background": {
-    "color": { "light": "#ffffff", "dark": "#181818" }
+  "logo": {
+    "light": "/images/jas-light.svg",
+    "dark": "/images/jas-dark.svg"
   },
-  "fonts": { "family": "Geist" },
   "favicon": "/images/jas.svg",
+  "navbar": {
+    "links": [
+      {
+        "href": "https://github.com/jaiamin/jas",
+        "label": "GitHub"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/jaiamin/jas"
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view"
+    ],
+    "display": "header"
+  },
+  "description": "Controlled, replayable experiments on AI agents.",
+  "appearance": {
+    "default": "system",
+    "strict": false
+  },
+  "background": {
+    "color": {
+      "light": "#ffffff",
+      "dark": "#181818"
+    }
+  },
+  "fonts": {
+    "family": "Geist"
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "$schema": "https://mintlify.com/docs.json",
   "navigation": {
-    "groups": [
-      { "group": "Start", "pages": ["index", "quickstart"] },
+    "pages": [
+      {
+        "group": "Start",
+        "pages": [
+          "index",
+          "quickstart"
+        ]
+      },
       {
         "group": "Guides",
         "pages": [
@@ -25,12 +67,13 @@
           "guides/publishing"
         ]
       },
-      { "group": "Reference", "pages": ["reference/cli", "integrations/jas-mcp"] }
+      {
+        "group": "Reference",
+        "pages": [
+          "reference/cli",
+          "integrations/jas-mcp"
+        ]
+      }
     ]
-  },
-  "navbar": {
-    "links": [{ "label": "GitHub", "href": "https://github.com/jaiamin/jas" }]
-  },
-  "contextual": { "options": ["copy", "view"] },
-  "footer": { "socials": { "github": "https://github.com/jaiamin/jas" } }
+  }
 }

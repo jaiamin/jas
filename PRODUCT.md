@@ -12,7 +12,7 @@ agent decisions and consequences, and use evidence to plan the next experiment.
 
 ## Capabilities and constraints
 Python-enforced environments, private observations, retained memory, matched runs,
-immutable protocol revisions, spending reservations and exact replay. Agent proposes
+immutable protocol revisions, spending reservations and exact replay. The Assistant proposes
 reviewed protocols and interprets selected evidence with citations. Saving never runs.
 Synthetic observations do not establish human validity, intent or model weight updates.
 Installed environment mechanics are code-backed; parameters are editable in protocols.
@@ -29,15 +29,17 @@ and menus, distinct muted surfaces and readable secondary text. Light mode uses
 white surfaces. Primary actions use theme blue; selection uses a
 subtle blue accent with a weaker hover state. Avoid redundant descriptive subtitles. Home starts with the shared
 Agent composer for questions or experiment design and four experiment ideas. Keep
-Home/Agent together above Workspace navigation; surface unfinished work and active
-runs conditionally, with full experiment/run lists in their existing destinations.
+Home and Gallery above Workspace navigation, with Docs, JAS MCP and Examples under
+Learn. The Assistant opens from the header, outside the left navigation. Surface
+unfinished work and active runs conditionally.
 Home uses continuous pixel art: a muted blue sky and slowly moving ivory clouds. Pixels touch with no grid gutters or masks;
 the palette adapts to light/dark mode. Reduced motion keeps the scene still and
 hidden/offscreen animation stops. The gray rule stays behind the composer at
 three-fifths of its height. Preserve the composer position and everything below.
-Agent starts
-with a centered heading and plain composer, suggestions below, and a recent-chat
-popup beside New at the upper right. Keep history loading local to that popup.
+The focused Assistant starts with a centered welcome and composer. Its optional
+440px side pane aligns beside the global header, uses a bottom composer and remembers
+chat identity without reopening automatically. Only individual experiment/run pages
+automatically supply clearable context. History and chat actions stay in its toolbar.
 
 ## Working assumptions
 The initial audience is a single researcher using a local workspace. Shared accounts,

@@ -7,6 +7,7 @@ store; it must never share the runner's volume, provider keys or configuration.
 
 ## Before public launch
 
+- Publish and verify the release package; test installation from a clean machine.
 - Set an HTTPS origin and GitHub OAuth application callback at
   `https://YOUR-GALLERY/auth/github/callback`. Public reading stays anonymous.
 - Configure a private S3-compatible bucket and narrowly scoped bucket credentials.

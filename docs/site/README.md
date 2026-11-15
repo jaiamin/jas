@@ -1,9 +1,12 @@
 # Public JAS documentation
 
-Mintlify source for https://jas.mintlify.site. Keep product guides concise and
-based on implemented behavior. Engineering contracts remain in the parent docs/.
+Source for https://jas.mintlify.site. Keep eight concise user-facing pages in
+Start, Guides and Reference. Engineering contracts live in the parent docs/.
+Use current app behavior and the product brief in `.mintlify/product-brief.md`.
 
-From this directory, preview and validate with the maintained Mintlify CLI:
+## Preview and check
+
+From this directory:
 
 ```sh
 pnpm dlx mint@4.3.34 dev --port 18160
@@ -11,11 +14,25 @@ pnpm dlx mint@4.3.34 validate
 pnpm dlx mint@4.3.34 broken-links
 ```
 
-The public site currently uses Mintlify artifact storage. Updating this directory
-does not automatically publish it. Upload these files through an authenticated
-Mintlify editing session, or configure a Git source pointing at `docs/site`.
-Preserve the current site until the replacement has been validated and reviewed.
+The MVP is currently on `t3/ponytail-full-1`. Remove the quickstart/README branch
+pin after an approved merge; do not claim that package-registry release is complete.
 
-The app's Docs link targets the public root. JAS MCP targets
-`/integrations/jas-mcp`; keep that path stable. `/mcp` is Mintlify's own endpoint,
-not the planned JAS workspace server. Never add keys or OAuth credentials here.
+## Publish
+
+The existing `jas` site uses Mintlify artifact storage, not Git synchronization.
+Local changes do not publish. Through the authenticated Admin MCP:
+
+1. Read the target branch and existing content. Apply pages/navigation and upload
+   their assets, keeping `docs.json` and this checkout consistent.
+2. Inspect `status` and `diff`. Fix validation/navigation errors before publishing.
+3. When publication is authorized, call `publish`; check `deployment_status` using
+   its commit until `live` is true. Verify live routes, links, themes and phone layout.
+
+Publish only the eight MDX pages, `docs.json` and referenced images. README and
+`.mintlify/product-brief.md` are contributor context. Keep the existing site, Git
+source and auth settings unless separately authorized. Never store credentials here.
+
+The app links to `/` and `/integrations/jas-mcp`; keep those paths stable.
+JAS MCP is Coming soon. Mintlify's `/mcp` searches documentation, not a local workspace.
+Header SVGs outline the bundled Bricolage wordmark; body text uses Geist. README
+banners reuse the app's pixel-cloud renderer and original logo in both themes.

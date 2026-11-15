@@ -961,8 +961,7 @@ that agent's authorized recorded observations and addressed events.
 Home keeps the composer and pixel sky with the user-approved four original
 illustrated Experiment ideas, using communication, memory, oversight and resources
 artwork. Each fills and focuses a draft without sending. The Get started strip and
-its onboarding-only state are removed. This supersedes the earlier three-card
-starter/watch layout; recordings remain accessible through their own routes.
+its onboarding-only state are removed. Recordings remain accessible through Learn → Examples.
 Quick and Advanced share a protocol and browser draft. Show conservative cost bounds
 until empirical estimates exist. Save never runs; Save and run is explicit.
 The experiment has Overview, Results, Runs, Design and Publish. Keep one numerical
