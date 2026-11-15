@@ -26,7 +26,7 @@ existing data and port 8080. No app deployment, paid model calls or v0.2 feature
       remaining external dependency in HANDOFF.md.
 - [ ] Publish the validated source to the existing Mintlify site and verify the
       public JAS MCP page. This requires authenticated site-editing access.
-- [x] Refine the Assistant pane: 18px welcome heading, 22px Target and 24px space
+- [x] Refine the Assistant pane: 18px welcome heading without an icon and 40px
       below suggestions. Keep focused chat styling and composer spacing intact.
 
 ## Findings and decisions

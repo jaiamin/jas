@@ -109,16 +109,11 @@ for (const width of [390, 1440])
           pane.getByRole("button", { name, exact: true }),
         ).toHaveCount(0);
       await expect(pane.locator("header").getByRole("link")).toHaveCount(1);
-      await expect(
-        pane
-          .getByRole("heading", { name: "What can we explore?" })
-          .locator("svg.lucide-target"),
-      ).toBeVisible();
       const welcome = pane.getByRole("heading", {
         name: "What can we explore?",
       });
       await expect(welcome).toHaveCSS("font-size", "18px");
-      await expect(welcome.locator("svg")).toHaveCSS("width", "22px");
+      await expect(welcome.locator("svg")).toHaveCount(0);
       for (const suggestion of await pane
         .getByRole("region", { name: "Suggested questions" })
         .getByRole("button")
@@ -161,7 +156,7 @@ for (const width of [390, 1440])
             textarea.getBoundingClientRect().x +
             Number.parseFloat(getComputedStyle(textarea).paddingLeft),
           suggestion: suggestion.getBoundingClientRect().x,
-          welcome: element.querySelector("h2 svg")?.getBoundingClientRect().x,
+          welcome: element.querySelector("h2 span")?.getBoundingClientRect().x,
           controls: [...(header?.querySelectorAll("button, a") ?? [])].map(
             (control) => {
               const box = control.getBoundingClientRect();
@@ -204,7 +199,7 @@ for (const width of [390, 1440])
         .boundingBox();
       expect(
         (composer?.y ?? 0) - (suggestions?.y ?? 0) - (suggestions?.height ?? 0),
-      ).toBe(24);
+      ).toBe(40);
       await page.screenshot({
         path: testInfo.outputPath(`assistant-${theme}-${width}.png`),
       });

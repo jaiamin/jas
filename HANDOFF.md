@@ -233,3 +233,23 @@ were inspected, including JAS MCP. Backend tests were not repeated because no
 backend code changed. The user app on 0.0.0.0:8080 remains healthy and serves the
 rebuilt assets. Preserve its process and data/workspace. No paid calls, workspace
 data deletion, app deployment or Railway changes.
+
+Examples reference refinement: replaced the separated list with grouped stock
+Cards under Work & evidence and Cooperation & decisions. Short titles/questions
+and Watch/Use actions lead each card; a lower inset, clipped protocol preview
+uses actual conditions, participant counts, seeds, rounds and stable condition
+colors. No invented results, image assets or additional fetches. Container queries
+give one/ two/three columns and respond to the Assistant reducing content width.
+Loading placeholders match the grid; cached-data/error/retry/empty behavior stays.
+The top Docs control is text-only; sidebar external-link arrows remain. Compact
+Assistant welcome has no icon, retains its 18px heading/alignment and now has
+40px below suggestions. Focused welcome and message/header icons are unchanged.
+
+Verification: frontend lint/build, all 151 unit tests and all 21 affected browser
+cases pass. The final six Learn rechecks additionally verify three-to-two-column
+reflow beside the open Assistant and back, in both themes. Screenshots inspected
+for desktop/phone Examples and Assistant. Watching/reusing stays keyless; no paid
+calls were sent. Backend checks were not repeated for these frontend-only changes.
+The existing 8080 app serves rebuilt assets and health is 200. No deployment,
+Railway change or user-data deletion. The earlier Mintlify publication blocker
+remains; this refinement does not change the public site.

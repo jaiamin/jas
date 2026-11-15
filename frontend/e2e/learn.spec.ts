@@ -22,7 +22,7 @@ for (const width of [320, 1440])
       await expect(docs).toHaveAttribute("href", "https://jas.mintlify.site");
       await expect(docs).toHaveAttribute("target", "_blank");
       await expect(docs).toHaveAttribute("rel", "noreferrer");
-      await expect(docs.locator("svg.lucide-arrow-up-right")).toBeVisible();
+      await expect(docs.locator("svg")).toHaveCount(0);
       const controls = await header.locator("a, button").evaluateAll((items) =>
         items.map((item) => {
           const box = item.getBoundingClientRect();
@@ -64,6 +64,24 @@ for (const width of [320, 1440])
       expect(examples).toHaveLength(6);
       await expect(page.getByRole("article")).toHaveCount(6);
       await expect(
+        page
+          .getByRole("region", { name: "Work & evidence", exact: true })
+          .getByRole("article"),
+      ).toHaveCount(2);
+      await expect(
+        page
+          .getByRole("region", { name: "Cooperation & decisions", exact: true })
+          .getByRole("article"),
+      ).toHaveCount(4);
+      const columns = await page
+        .locator('[data-slot="example-grid"]')
+        .first()
+        .evaluate(
+          (element) =>
+            getComputedStyle(element).gridTemplateColumns.split(" ").length,
+        );
+      expect(columns).toBe(width === 320 ? 1 : 3);
+      await expect(
         page.getByRole("heading", { name: "Examples", exact: true }),
       ).toBeVisible();
       expect(
@@ -90,6 +108,9 @@ for (const width of [320, 1440])
             exact: true,
           }),
         ).toHaveAttribute("href", `/new?starter=${example.id}`);
+        await expect(
+          row.locator('[data-slot="example-preview"]'),
+        ).toContainText(example.design.conditions[0].name);
         expect(
           await row.evaluate(
             (element) => element.scrollWidth <= element.clientWidth,
@@ -99,6 +120,23 @@ for (const width of [320, 1440])
       await page.screenshot({
         path: testInfo.outputPath(`examples-${theme}-${width}.png`),
       });
+      if (width === 1440) {
+        const grid = page.locator('[data-slot="example-grid"]').first();
+        const columnCount = () =>
+          grid.evaluate(
+            (element) =>
+              getComputedStyle(element).gridTemplateColumns.split(" ").length,
+          );
+        await header
+          .getByRole("button", { name: "Assistant", exact: true })
+          .click();
+        await expect.poll(columnCount).toBe(2);
+        await page
+          .getByRole("complementary", { name: "Assistant", exact: true })
+          .getByRole("button", { name: "Close Assistant", exact: true })
+          .click();
+        await expect.poll(columnCount).toBe(3);
+      }
       await page
         .getByRole("link", {
           name: `Watch ${examples[0].design.title}`,

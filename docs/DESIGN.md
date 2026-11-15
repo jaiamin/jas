@@ -141,9 +141,16 @@ The stock Sidebar starts with Home and Gallery above Workspace
 there is one publishing destination and no Community navigation group.
 Learn follows Workspace with Docs, JAS MCP and Examples. External documentation
 links use ArrowUpRight and open a new tab; collapsed navigation shows only the
-leading icon with its existing tooltip. Examples lists the six bundled scripted
-recordings in separated rows with Watch and Use example actions, without filters
-or additional cards. Both actions are keyless and never start a model run.
+leading icon with its existing tooltip. Examples groups the six scripted recordings
+under Work & evidence and Cooperation & decisions, following the supplied card-grid
+reference. Use stock Cards with short titles/questions, Watch and Use example,
+and an inset protocol preview cropped at the lower/right edges. Preview conditions,
+participant counts, seeds and rounds come from each actual starter, with stable
+condition colors; never invent results. Use one, two or three columns according to
+available content width, including beside an open Assistant. Keep 24px card content
+insets, 16px grid gaps and 48px between groups, without filters or extra controls.
+Preview content is decorative and cannot capture focus or pointer events. Watch
+and reuse stay keyless and never start a model run.
 The compact brand link returns to Home. The footer contains a quiet usage line,
 a thin budget meter and one direct Settings link. There is no avatar, chooser,
 subtitle or appearance dropdown. Light/dark mode lives only in the top-right header.
@@ -181,7 +188,7 @@ gutters and 16px scroll-target padding. Path navigation resets the page scroller
 The editor’s section tabs stick directly below the global header. Agent retains
 its existing independent scrollers. The global bar has no title or breadcrumb;
 an outlined Docs link precedes Assistant, the theme toggle and GitHub at right.
-Docs opens the public Mintlify site in a new tab with ArrowUpRight, matching the
+Docs opens the public Mintlify site in a new tab without an icon, matching the
 Assistant button's height, text size and symmetric padding. It stays available on
 Home and the focused Assistant page.
 The Assistant button uses equal 10px horizontal padding and shares the controls’
@@ -237,11 +244,11 @@ composers; provider and draft errors remain visible. Home retains its short
 composer guidance and manual-editor link. Usage and explicit run confirmations
 retain budget details and spending safeguards.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
-background surface. The new-chat heading uses the primary Assistant Target before
-“What can we explore?”, 22px in the pane and 30px/34px in the focused view, with
-a 6px gap. The icon is static; the pane welcome icon shares the suggestions’
-leading edge and composer text inset. The compact heading is 18px. Keep 24px below
-the pane's suggestions before the composer, without adding outer composer padding.
+background surface. The focused new-chat heading uses the static primary Assistant
+Target before “What can we explore?”, 30px/34px with a 6px gap. The pane has an
+18px welcome heading without an icon; its text shares the suggestions' leading
+edge and composer text inset. Keep 40px below the pane's suggestions before the
+composer, without adding outer composer padding.
 Reply Targets also stay static in working and completed states. Activity uses
 recorded text and a stock loading indicator. Sidebar transitions, explicit run
 playback and the Home sky respect reduced motion. History stays available in every

@@ -345,12 +345,11 @@ export default function WorkspaceShell() {
               <Button
                 variant="outline"
                 size="default"
-                className="mr-1 h-7 gap-1 px-2.5 text-[0.8rem] has-data-[icon=inline-end]:pr-2.5"
+                className="mr-1 h-7 px-2.5 text-[0.8rem]"
                 asChild
               >
                 <a href={DOCS_URL} target="_blank" rel="noreferrer">
                   Docs
-                  <ArrowUpRight data-icon="inline-end" aria-hidden="true" />
                   <span className="sr-only">(opens in a new tab)</span>
                 </a>
               </Button>
