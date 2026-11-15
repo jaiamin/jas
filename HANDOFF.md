@@ -196,7 +196,7 @@ and its full suite was not rerun for this frontend task.
 
 Approved direction: keep three work/five cooperation examples and the current
 heading, use two equal desktop columns and one on phones/narrow content, with a
-small environment mark, title, question, Watch/Use example and Scripted demo label.
+small environment mark, title, question and Watch/Use example actions.
 Remove decorative protocol tables and parameter metadata. Preserve loading/error/
 empty states, real recording/editor destinations and keyless behavior.
 
@@ -213,3 +213,8 @@ original editable protocol without saving/running. Loading/retry/empty states pa
 Logs/screenshots are in ignored `.tools/examples-compact-*`. The test server stopped;
 local 8080 is healthy and serves the new build. No dependencies/backend/data changes,
 paid calls, uploads, deployments or public documentation publication were performed.
+
+Follow-up: removed the Examples cards' demo labels at the user's request, and
+simplified their action-row markup. Recording provenance and protocol data remain
+unchanged. Lint/types/build and all six Learn browser checks passed in both themes
+at phone/desktop widths. Local 8080 serves the updated build; no deployment.

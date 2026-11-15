@@ -137,9 +137,6 @@ for (const width of [320, 1440])
             exact: true,
           }),
         ).toHaveAttribute("href", `/new?starter=${example.id}`);
-        await expect(
-          row.getByText("Scripted demo", { exact: true }),
-        ).toBeVisible();
         await expect(row.locator('[data-slot="card-description"]')).toHaveText(
           example.design.question,
         );

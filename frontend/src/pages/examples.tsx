@@ -89,32 +89,27 @@ export default function Examples() {
                               {example.design.question}
                             </CardDescription>
                           </CardHeader>
-                          <CardContent className="mt-auto flex flex-wrap items-center justify-between gap-3">
-                            <div className="flex items-center gap-1">
-                              <Button variant="outline" size="sm" asChild>
-                                <Link
-                                  to={`/watch/${example.id}`}
-                                  aria-label={`Watch ${example.design.title}`}
-                                >
-                                  <Play
-                                    data-icon="inline-start"
-                                    aria-hidden="true"
-                                  />
-                                  Watch
-                                </Link>
-                              </Button>
-                              <Button variant="ghost" size="sm" asChild>
-                                <Link
-                                  to={`/new?starter=${example.id}`}
-                                  aria-label={`Use ${example.design.title}`}
-                                >
-                                  Use example
-                                </Link>
-                              </Button>
-                            </div>
-                            <span className="text-xs text-muted-foreground">
-                              Scripted demo
-                            </span>
+                          <CardContent className="mt-auto flex flex-wrap items-center gap-1">
+                            <Button variant="outline" size="sm" asChild>
+                              <Link
+                                to={`/watch/${example.id}`}
+                                aria-label={`Watch ${example.design.title}`}
+                              >
+                                <Play
+                                  data-icon="inline-start"
+                                  aria-hidden="true"
+                                />
+                                Watch
+                              </Link>
+                            </Button>
+                            <Button variant="ghost" size="sm" asChild>
+                              <Link
+                                to={`/new?starter=${example.id}`}
+                                aria-label={`Use ${example.design.title}`}
+                              >
+                                Use example
+                              </Link>
+                            </Button>
                           </CardContent>
                         </Card>
                       </article>

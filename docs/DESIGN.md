@@ -152,9 +152,8 @@ three under Work & evidence and five under Cooperation & decisions. Match the
 Environments grid: two equal columns at 42rem of available content, one below,
 12px grid gaps and 32px between groups. Use stock Cards with 16px insets, a 44px
 bare environment mark, the protocol title and its short question. Keep Watch as
-an outline button and Use example as a quieter ghost action, with a small muted
-Scripted demo label. Omit inset protocol previews, parameter lists, search and
-filters. Detailed conditions, seeds, rounds and participants remain in the recording
+an outline button and Use example as a quieter ghost action. Omit per-card demo
+labels, inset protocol previews, parameter lists, search and filters. Detailed conditions, seeds, rounds and participants remain in the recording
 and editor. Skeletons match the compact cards. Watch and reuse stay keyless and
 never start a model run.
 Examples shares RecordListTitle with Environments: a 36px muted rounded icon tile,
