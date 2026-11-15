@@ -23,6 +23,7 @@ from .execution import Engine
 from .llm import LanguageModels, ProviderFailure
 from .paths import static_directory
 from .providers import ModelRegistry
+from .publishing import GalleryError
 from .publishing_routes import router as publishing_router
 from .research import Research
 from .routes import router, web_router
@@ -64,6 +65,11 @@ class SameOriginMiddleware:
 
 async def invalid(_request: Request, error: Exception) -> JSONResponse:
     return JSONResponse({"detail": str(error)}, status_code=422)
+
+
+async def gallery_error(_request: Request, error: Exception) -> JSONResponse:
+    assert isinstance(error, GalleryError)
+    return JSONResponse({"detail": str(error)}, status_code=error.status_code)
 
 
 async def missing(_request: Request, _error: Exception) -> JSONResponse:
@@ -155,6 +161,7 @@ def create_app(
     )
     app.add_exception_handler(EnvironmentConflict, provider_error)
     app.add_exception_handler(ValueError, invalid)
+    app.add_exception_handler(GalleryError, gallery_error)
     app.add_exception_handler(NoResultFound, missing)
     app.add_exception_handler(ProviderFailure, provider_error)
     app.include_router(router)

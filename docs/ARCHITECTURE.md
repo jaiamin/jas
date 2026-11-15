@@ -964,13 +964,15 @@ one browser draft. Advanced retains the full editor; raw JSON and extension
 candidates require Developer mode. Save never runs. Eight reusable examples include
 keyless scripted recordings under Learn → Examples (three work, five cooperation).
 Home's four illustrated ideas fill Assistant drafts without sending. Model setup, pricing, token
-caps, publishing identity and backup are local Settings responsibilities.
+caps and backup are local Settings responsibilities. Gallery owns public browsing,
+publishing identity and publication management; publishing stays contextual to a
+finished experiment. Anonymous browsing never reads the OS keychain.
 
 `providers.py` owns the owner-only local configuration and arbitrary model registry;
 `llm.py` owns adapters and atomic money/token reservation and settlement. Unknown
 prices remain unknown in old evidence, even after price edits. Provider/budget
 changes require idle work. Settings sections merge only supplied preference fields,
-so saving gallery options cannot reset model/budget preferences. Planner web
+so saving one section cannot reset unrelated model/budget preferences. Planner web
 research starts disabled. Free conservative estimates precede participant,
 Assistant and connection-test spending. Recorded usage follows each operation.
 

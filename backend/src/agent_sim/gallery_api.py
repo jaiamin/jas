@@ -67,7 +67,17 @@ def create_gallery_app(
     app.add_middleware(SameOriginMiddleware)
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=[parsed.hostname, "localhost", "127.0.0.1", "[::1]"],
+        allowed_hosts=[
+            parsed.hostname,
+            "localhost",
+            "127.0.0.1",
+            "[::1]",
+            *(
+                host.strip()
+                for host in os.getenv("JAS_ALLOWED_HOSTS", "").split(",")
+                if host.strip()
+            ),
+        ],
         www_redirect=False,
     )
     app.add_exception_handler(ValueError, invalid)
@@ -127,6 +137,10 @@ def create_gallery_app(
         world: str = "", model: str = "", tag: str = "", sort: str = "newest", offset: int = 0
     ):
         return gallery.listing(world=world, model=model, tag=tag, sort=sort, offset=max(0, offset))
+
+    @app.get("/api/gallery/filters")
+    def filters():
+        return gallery.filters()
 
     @app.get("/api/gallery/mine")
     def mine(request: Request):

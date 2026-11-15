@@ -73,7 +73,7 @@ test("publishing scans the exact finished evidence, invalidates review after edi
   await expect(page.getByText(/Replay verified 2 of 2 runs/)).toBeVisible();
   await acknowledgement.check();
   await expect(
-    page.getByRole("link", { name: "Sign in with GitHub in Settings" }),
+    page.getByRole("button", { name: "Sign in with GitHub" }),
   ).toBeVisible();
   await page
     .getByLabel("One-sentence finding")

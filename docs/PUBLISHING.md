@@ -2,14 +2,15 @@
 
 The local workspace runs experiments. A separate gallery hosts reviewed records,
 public reading and GitHub publishing identities. It receives no provider keys and
-makes no model calls. A hosted gallery must be configured before sharing works;
-this redesign does not deploy one or claim public-launch readiness.
+makes no model calls. App and CLI use the official gallery by default; self-hosters
+can override `JAS_GALLERY_URL` or CLI `--gallery`. Browsing sends ordinary request
+metadata to the service, never local experiments or provider keys.
 
 ## Publish from the app
 
-In Settings → Publishing, enter the gallery origin, choose your default visibility
-and sign in with GitHub. Approve the code in your browser, then check approval in
-JAS. Your publish token is stored by the operating system keychain, never browser
+Gallery opens Browse anonymously. My published contains GitHub sign-in and your
+publication controls; general Settings contains no gallery connection form.
+Approve the device code in your browser; JAS checks approval automatically. Your publish token is stored by the operating system keychain, never browser
 storage or a protocol. Linux needs a working keychain service; JAS reports an
 unavailable keychain rather than saving a plaintext token.
 
@@ -55,9 +56,9 @@ Use `--workspace` before the subcommand to select the same workspace explicitly.
 jas check protocol.json
 jas run protocol.json --max-usd 2 --output result.json
 jas replay result.json
-jas login --gallery https://gallery.example
-jas publish result.json --reviewed --gallery https://gallery.example
-jas fork author/name --gallery https://gallery.example
+jas login
+jas publish result.json --reviewed
+jas fork author/name
 ```
 
 `check` is free. `run` prints the estimate before execution and requires the stated

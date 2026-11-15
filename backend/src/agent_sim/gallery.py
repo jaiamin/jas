@@ -262,6 +262,18 @@ class Gallery:
             cards.sort(key=lambda card: card["fork_count"], reverse=True)
         return cards[offset : offset + 60]
 
+    def filters(self) -> dict[str, list[str]]:
+        with self.connect() as db:
+            rows = db.execute(
+                "SELECT card FROM publications WHERE status='published' AND visibility='public'"
+            ).fetchall()
+        cards = [json.loads(row["card"]) for row in rows]
+        return {
+            "worlds": sorted({card["world"] for card in cards}),
+            "models": sorted({model for card in cards for model in card["models"]}),
+            "tags": sorted({tag for card in cards for tag in card["tags"]}),
+        }
+
     def manifest(self, row: dict) -> dict:
         result = json.loads(gzip.decompress(self.objects.get(f"{row['prefix']}/index.json.gz")))
         result["publication"] = self.card(row)

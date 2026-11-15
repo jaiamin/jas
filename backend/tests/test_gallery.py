@@ -221,3 +221,38 @@ def test_fork_on_a_separate_machine_preserves_protocol_lineage_without_spending(
         research.environments.close()
         research.extensions.close()
         db.close()
+
+
+def test_gallery_filters_include_only_active_public_records(gallery, publication):
+    client, _, token = gallery
+    record = copy.deepcopy(publication[0])
+    record["description"]["tags"] = ["private-only"]
+    headers = {"Authorization": f"Bearer {token}"}
+    assert client.post("/api/gallery", json=record, headers=headers).status_code == 200
+    assert client.get("/api/gallery/filters").json() == {"worlds": [], "models": [], "tags": []}
+    record["description"]["visibility"] = "public"
+    record["description"]["tags"] = ["communication"]
+    card = client.post("/api/gallery", json=record, headers=headers).json()
+    filters = client.get("/api/gallery/filters").json()
+    assert filters == {
+        "worlds": [card["world"]],
+        "models": sorted(card["models"]),
+        "tags": ["communication"],
+    }
+    client.delete(
+        f"/api/gallery/researcher/{card['slug']}?version={card['version']}", headers=headers
+    )
+    assert client.get("/api/gallery/filters").json() == {"worlds": [], "models": [], "tags": []}
+
+
+def test_gallery_only_accepts_explicitly_configured_probe_hosts(tmp_path, monkeypatch):
+    monkeypatch.setenv("JAS_ALLOWED_HOSTS", " probe.example, ")
+    with TestClient(create_gallery_app(tmp_path)) as client:
+        assert client.get("/api/health", headers={"Host": "probe.example"}).json() == {
+            "status": "ok",
+            "surface": "gallery",
+        }
+        assert client.get("/api/health", headers={"Host": "unexpected.example"}).status_code == 400
+    monkeypatch.delenv("JAS_ALLOWED_HOSTS")
+    with TestClient(create_gallery_app(tmp_path)) as client:
+        assert client.get("/api/health", headers={"Host": "probe.example"}).status_code == 400

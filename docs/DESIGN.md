@@ -138,7 +138,12 @@ belong to the preset and its stylesheet, except the dedicated brand wordmark.
 Selected sidebar text retains the same size and weight as unselected text.
 The stock Sidebar starts with Home and Gallery above Workspace
 (Experiments, Runs, Environments). Gallery contains Browse and My published tabs;
-there is one publishing destination and no Community navigation group.
+there is one publishing destination and no Community navigation group. Gallery
+shares the Environments heading/tabs, compact world/model/tag filters and restrained
+finding-first cards. My published owns sign-in, device management and card-level
+unpublish confirmation. There is no connection wizard or global Publish action;
+sharing starts on the finished experiment. Unavailable/empty/signed-out states are
+distinct, with no raw connection diagnostic in the main layout.
 Learn follows Workspace with Docs (BookText), JAS MCP (Cable) and Examples (Blocks).
 Keep these three navigation glyphs distinct and outlined. External documentation
 links use ArrowUpRight and open a new tab; collapsed navigation shows only the
@@ -179,7 +184,7 @@ Token counts and budget calculations stay unchanged.
 The expanded navigation is 240px wide; the collapsed rail is 52px wide.
 Navigation glyphs are 15px; header controls use 16px glyphs in 28px targets.
 Every sidebar icon stays outlined when selected. The text color and background
-highlight identify the active page. Partial fills outside the sidebar stay at the icon boundary;
+highlight identify the active page. Page-heading icons also remain outlined within their muted icon backgrounds;
 conversation rows are text-only. Do not invent accounts or organizations.
 Navigation becomes a Sheet on mobile.
 
@@ -539,7 +544,7 @@ EmptyDescription text rather than a title. Full record lists remain on their
 dedicated destinations.
 
 Experiments and Runs share one list heading: a muted rounded-square icon beside
-the title (filled Play or flask liquid, matching navigation), using a borderless 36px
+the title (outlined stock Lucide glyphs, matching navigation), using a borderless 36px
 background (`muted-foreground/15`) and an 18px glyph, with search at the right
 (stacked below on mobile). Search fields have no placeholder text and retain their
 accessible labels. Only Experiments includes a primary New action; start runs from
@@ -768,7 +773,7 @@ those compositions, semantic theme tokens live
 in `src/index.css`, and app glyphs pass through `src/components/icons.tsx`.
 
 The deliberate visual exceptions are the JAS logo/wordmark, Home environment artwork and
-sky, retained CC0 3dicons artwork, partial selected navigation glyphs,
+sky, retained CC0 3dicons artwork,
 white/graphite surfaces, blue selection, and composer sizing, backing and focus
 appearance. They are not all controlled by a preset. A preset changes the shared
 foundation; review these documented exceptions and the icon boundary rather than
@@ -789,8 +794,7 @@ pnpm dlx shadcn@latest apply --preset <code>
    `components.json` `iconLibrary`, updating dependencies as needed. The CLI updates
    generated UI imports; it does **not** migrate these semantic app reexports
    automatically. The official `shadcn migrate icons` handles concrete icon imports,
-   not this reexport mapping. Keep stock glyphs and the explicitly requested partial house/layers/settings/flask fills
-   together at this boundary; update these small compositions with a new library.
+   not this reexport mapping. Keep stock outline glyphs at this boundary.
    The GitHub brand mark is a CC0 Simple Icons asset, distinct from preset UI glyphs.
    Avoid a runtime icon resolver.
 3. Preserve nonvisual fixes if regeneration overwrites them: Progress bounds and
@@ -803,7 +807,7 @@ pnpm dlx shadcn@latest apply --preset <code>
    distinct line patterns.
    Retain 4px tab gaps and 3px sidebar-item gaps, the continuous header
    divider, white/graphite surface tokens, CardFooter card surface, subtle blue
-   selection with weaker hover, filled selected sidebar icons, blue primary
+   selection with weaker hover, outline sidebar and heading icons, blue primary
    actions, and dedicated wordmark font
    unless superseded. The wordmark retains the foreground color.
 4. Keep app behavior outside regeneratable helpers: domain formatters live in
@@ -822,7 +826,7 @@ pnpm dlx shadcn@latest apply --preset <code>
 - **Do** verify readable text, visible focus and non-color status/series cues in both themes.
 - **Do** keep loading, error, empty and retry states explicit without discarding drafts.
 - **Don't** add custom stylesheets, visual variants or copied component implementations.
-  Keep the explicit Home decoration, partial icon fills, surface, selection, spacing and wordmark exceptions above
+  Keep the explicit Home decoration, surface, selection, spacing and wordmark exceptions above
   when applying a preset.
 - **Don't** treat snapshot values as constraints on the next preset.
 - **Don't** display fabricated activity, private reasoning or unsupported empirical outcomes.
@@ -893,9 +897,8 @@ for related content, optional linked rows and aligned separators;
 scale and the relationship between internal text spacing and inter-item spacing.
 These guide composition; stock shadcn primitives and JAS tokens remain authoritative.
 
-The Environments heading marks the shared Layers2 glyph with `data-partial-fill="layers"`,
-reusing the sidebar selection rule to fill only its top layer. Keep the lower
-layer as an outline.
+Environments, Gallery, Examples and the experiment editor use the same outlined
+page-heading icon treatment. No full or partial heading-icon fills.
 
 Candidates extends the same Environments tabs without restyling installed rules.
 Show current containment status, an explicit keyless check, a locally retained
@@ -972,8 +975,8 @@ with failed, missing and undefined cells inspectable; repetitions remain explici
 
 Settings uses separated sections, clear headings and stock form controls rather
 than a stack of bordered cards. Provider credentials remain inside their relevant
-provider disclosure; searchable model selection is retained. Publishing visibility
-uses two direct radio choices. Assistant message footers show a quiet cost receipt;
+provider disclosure; searchable model selection is retained. Gallery account
+controls live in My published; visibility is chosen during publication review. Assistant message footers show a quiet cost receipt;
 a click reveals calls/tokens and explains unknown or unsettled usage.
 
 The desktop run viewer gives each pane its own keyboard-accessible scroll area,

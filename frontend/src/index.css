@@ -188,15 +188,6 @@
   image-rendering: pixelated;
 }
 
-/* Requested partial fills preserve the stock Lucide icon outlines. */
-[data-partial-fill="flask"] > [data-liquid] {
-  fill: none;
-}
-[data-active="true"] > [data-partial-fill="layers"] > path:first-child,
-[data-active="true"] > [data-partial-fill="flask"] > [data-liquid] {
-  fill: currentColor;
-}
-
 /* One shared cursor rule, including portalled shadcn menu/select items. */
 :is(
   button,

@@ -32,7 +32,7 @@ for (const theme of ["light", "dark"]) {
       );
       await expect(titleIcon).toHaveCSS("width", "36px");
       await expect(titleIcon.locator("svg")).toHaveCSS("width", "18px");
-      await expect(titleIcon.locator("svg > path").first()).not.toHaveCSS(
+      await expect(titleIcon.locator("svg > path").first()).toHaveCSS(
         "fill",
         "none",
       );

@@ -1,3 +1,4 @@
+import { Navigate, useLocation } from "react-router-dom";
 import {
   Disclosure,
   DisclosureContent,
@@ -5,7 +6,6 @@ import {
 } from "@/components/disclosure";
 import { ModelSettings } from "@/components/settings/model-settings";
 import { ProviderForm } from "@/components/settings/provider-form";
-import { PublishingSettings } from "@/components/settings/publishing-settings";
 import { WorkspaceForm } from "@/components/settings/workspace-form";
 import { ErrorState, Loading, PageHeading } from "@/components/shared";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +16,10 @@ import { money } from "@/lib/format";
 import type { Settings } from "@/lib/types";
 
 export default function SettingsPage() {
+  const location = useLocation();
   const settings = useApi<Settings>("/settings");
+  if (location.hash === "#publishing")
+    return <Navigate to="/gallery?view=mine" replace />;
   if (settings.error)
     return <ErrorState error={settings.error} onRetry={settings.refetch} />;
   if (!settings.data) return <Loading />;
@@ -95,14 +98,6 @@ export default function SettingsPage() {
               </p>
             </div>
             <WorkspaceForm settings={s} />
-          </div>
-        </section>
-        <section id="publishing" className="scroll-mt-6">
-          <header className="mb-5 space-y-1">
-            <h2 className="text-base font-semibold">Publishing</h2>
-          </header>
-          <div>
-            <PublishingSettings settings={s} />
           </div>
         </section>
         <section>

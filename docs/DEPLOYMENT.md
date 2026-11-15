@@ -1,115 +1,50 @@
-# Hosting JAS
+# Hosting the gallery
 
-JAS runs locally without hosted infrastructure. Public sharing uses a separate
-model-free gallery; never expose a runner database to implement public replay.
-Private remote hosting remains optional for an owner's own workspace.
+JAS runs locally. Public sharing uses an independent, model-free gallery;
+users do not deploy a server or configure a connection to browse it.
+This page is for maintainers and self-hosters.
 
-## Public gallery
-
-Build the explicit gallery image, leaving the default workspace target unchanged:
+## Service and storage
 
 ```sh
-docker build --target gallery -t jas-gallery .
+docker build --build-arg JAS_IMAGE_TARGET=gallery -t jas-gallery .
 ```
 
-Configure a separate service with `/app/data` persistent storage, one process and
-health path `/api/health` on port 8080. Set `JAS_GALLERY_ORIGIN` to its HTTPS origin,
-`JAS_GALLERY_DATA=/app/data`, GitHub OAuth client ID/secret, and the
-`JAS_GALLERY_S3_*` private bucket settings from [.env.example](../.env.example).
-Register the OAuth callback at `https://YOUR-GALLERY/auth/github/callback`.
-The image includes the optional object-storage dependency. Public origins refuse
-the local filesystem object store; localhost may use it for disposable testing.
+Use one process/replica, a persistent volume at `/app/data`, port 8080 and health
+path `/api/health`. Configure these service-only variables in a secret manager:
 
-Do not copy `.env`, provider keys, workspace credentials or the existing runner's
-volume into this service. Reading is anonymous; publishing uses GitHub and scoped,
-revocable device tokens. Keep objects private behind the publication-status gate.
-The current small catalogue uses SQLite, so one gallery replica owns its volume.
-No PostgreSQL or hosted execution service is required by the MVP.
+- `JAS_GALLERY_ORIGIN`: the public HTTPS origin.
+- `JAS_GALLERY_DATA=/app/data`.
+- `JAS_GITHUB_CLIENT_ID` and `JAS_GITHUB_CLIENT_SECRET`: a GitHub OAuth app with
+  callback `<origin>/auth/github/callback`; request public identity only.
+- `JAS_GALLERY_S3_*`: private S3-compatible storage; see [.env.example](../.env.example).
+  Choose `virtual` or `path` addressing if the storage endpoint requires it.
+- `JAS_ALLOWED_HOSTS`: optional explicit additional hostnames for health probes.
 
-Railway may host this service and its private bucket; use a separate gallery
-service/volume and select this built image/target explicitly. Review service,
-storage, egress and domain costs before provisioning. The initial $10/month target
-is not a measured bill or a resource authorization. Preserve any existing private
-service and its data until the owner has deliberately backed up and retired it.
-This redesign performs no Railway redeploy or resource deletion.
+Never attach a workspace volume, copy provider keys or expose the underlying
+bucket. All record reads pass through the publication-status gate. SQLite has
+one writer; keep database and object-store backups together. Public origins refuse
+filesystem object storage. No hosted experiment runner or PostgreSQL is needed.
 
-See [gallery operations](GALLERY_OPERATIONS.md) for moderation, reporting,
-takedown, caching and public-launch gates. A local gallery smoke is not a live
-GitHub OAuth or hosted object-storage test.
+The image normally runs as UID/GID 10001. If a host mounts a new volume as root,
+start the entrypoint as root: it prepares only `/app/data`, clears supplementary
+groups and drops privileges before starting the app. It never recursively rewrites
+files, repairs old ownership or resets a database.
 
-## Optional private workspace on Railway
-
-
-Connect the repository's `main` branch with the repository root as the service root.
-The root Dockerfile builds the frontend and Python app. In service Settings, set
-health-check path `/api/health`, one replica, and a 120-second draining allowance.
-Leave custom build and start commands empty, and keep Serverless/sleep disabled:
-runs must survive browser disconnects. Do not add workers or replicas against the
-same SQLite file. Railway owns these service settings; the repository needs no
-platform SDK or deprecated `railway.json`/`railway.toml` configuration.
-
-1. Attach a volume at **`/app/data`**. Keep this volume across redeployments.
-2. Add the following service variables. Enter passwords and provider keys in Railway's
-   Variables tab, never in Git or chat:
-
-   | Variable | Value |
-   | --- | --- |
-   | `JAS_DATABASE_URL` | `sqlite:////app/data/jas.sqlite3` |
-   | `RAILWAY_RUN_UID` | `0` |
-   | `JAS_AUTH_USERNAME` | Your chosen login name |
-   | `JAS_AUTH_PASSWORD` | A strong unique password |
-   | `JAS_ALLOWED_HOSTS` | `localhost,127.0.0.1,[::1],YOUR-DOMAIN.up.railway.app,healthcheck.railway.app` |
-   | `OPENAI_API_KEY` | Your provider key, for Assistant drafting and OpenAI participants |
-   | `ANTHROPIC_API_KEY` | Optional, for Anthropic models |
-
-3. Generate a domain under Settings → Networking, with target port **8080**. Use
-   HTTPS. `PORT` and `JAS_PORT` overrides are unnecessary; the image listens on 8080.
-4. Deploy. Confirm deployment status **SUCCESS**, then open `/api/health` for
-   `{"status":"ok","version":"0.2.0"}`. Opening the app should request your login.
-   Confirm Settings shows the intended provider availability and spending ceiling
-   before explicitly starting paid work.
-
-Railway mounts volumes as root. `RAILWAY_RUN_UID=0` lets the container entrypoint
-give **only the `/app/data` directory** to UID/GID 10001, clear supplementary groups,
-and drop privileges before starting JAS. The server never runs as root. The
-entrypoint does not recursively change ownership, follow a symlink mount, modify
-existing files or reset a database. An existing database owned by another user
-requires a deliberate operator repair, not automatic rewriting.
-
-HTTP Basic authentication protects UI, assets, API, event streams, exports and model
-actions. Only GET/HEAD `/api/health` bypasses authentication. Both auth settings must
-be supplied together. Non-loopback or explicitly protected hosted workspaces refuse to start without them.
-Browsers remember Basic credentials; close the browser session or clear that site's
-credentials when finished on a shared computer. This is a single shared login, not
-accounts, roles or a public signup system.
-
-Provider defaults and concurrency remain in [.env.example](../.env.example). The
-Assistant defaults to GPT-6.1 Sol; participant models are pinned by each experiment.
-`JAS_BUDGET_USD` initializes a fresh workspace's ledger ceiling; inspect Settings
-and recorded usage when operating an existing workspace. No deployment test needs
-live model requests. Keep production and development volumes, credentials and
-budgets separate. Back up the volume through Railway before maintenance; exports
-are evidence documents, not a substitute for a database backup.
-
-## Local development and deployment checks
-
-Native development uses the [existing setup](DEVELOPMENT.md). Leave both auth
-variables empty for localhost use. `docker compose up --build` runs the identical
-image as UID/GID 10001, with its own named volume. Both auth variables can be set
-locally to exercise hosted access. Never start two processes on the same database.
-
-Before changing container startup or access control:
+## Verification and maintenance
 
 ```sh
-docker build -t jas-deployment-check .
-python3 .github/scripts/deployment_smoke.py jas-deployment-check
+python3 .github/scripts/gallery_smoke.py jas-gallery
+docker build -t jas-workspace-check .
+python3 .github/scripts/deployment_smoke.py jas-workspace-check
 ```
 
-The smoke test creates and removes its own keyless container and root-owned volume.
-It checks authentication, actual non-root execution, production World containment,
-saved studies and restart persistence. CI also runs the default non-root Compose
-smoke. Neither test targets a user database or spends API credits.
+These checks create disposable keyless containers and never target user data.
+The workspace image remains available for local Docker use; see
+[installation](INSTALLATION.md). Exposing a private workspace requires explicit
+allowed hosts, HTTPS and owner authentication.
 
-Official references: [volumes](https://docs.railway.com/volumes),
-[health checks](https://docs.railway.com/deployments/healthchecks), and
-[configuration](https://docs.railway.com/config-as-code/reference).
+Before declaring a release live, verify deployment success, health, anonymous
+browsing, real GitHub/device approval, private object writes/reads, unpublish and
+cross-machine fork/replay. Automated fixtures do not prove live integrations.
+See [gallery operations](GALLERY_OPERATIONS.md) for moderation and launch gates.

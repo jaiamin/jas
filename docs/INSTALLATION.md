@@ -1,6 +1,6 @@
 # Run JAS locally
 
-JAS is a single-user workspace. You do not need Railway, a gallery account or
+JAS is a single-user local workspace. You do not need a gallery account or
 provider credentials to watch recorded starters, edit protocols or replay evidence.
 
 ## Release wheel

@@ -14,9 +14,18 @@ from .domain import Design
 from .public_records import MAX_PUBLIC_BYTES, encode_record, validate_record
 from .research import Research
 
+DEFAULT_GALLERY_ORIGIN = "https://gallery-production-b7633fcd.up.railway.app"
+
+
+class GalleryError(ValueError):
+    def __init__(self, message: str, status_code: int = 503):
+        super().__init__(message)
+        self.status_code = status_code
+
 
 def gallery_origin(value: str | None = None) -> str:
-    origin = (value or os.getenv("JAS_GALLERY_URL", "http://127.0.0.1:8081")).rstrip("/")
+    configured = value or os.getenv("JAS_GALLERY_URL") or DEFAULT_GALLERY_ORIGIN
+    origin = configured.rstrip("/")
     parsed = urlparse(origin)
     if (
         not parsed.hostname
@@ -72,10 +81,12 @@ class Publisher:
         if authenticated:
             token = self.token()
             if not token:
-                raise ValueError("Sign in with GitHub in Settings before publishing")
+                raise GalleryError("Sign in with GitHub in Gallery to publish.", 401)
             headers["Authorization"] = f"Bearer {token}"
         try:
-            with httpx.Client(timeout=60, follow_redirects=False) as client:
+            with httpx.Client(
+                timeout=httpx.Timeout(60, connect=5), follow_redirects=False
+            ) as client:
                 with client.stream(
                     method,
                     self.origin + path,
@@ -87,13 +98,25 @@ class Publisher:
                         raw.extend(chunk)
                         if len(raw) > MAX_PUBLIC_BYTES:
                             raise ValueError("Gallery response exceeds 25 MB")
+                    if response.status_code in {401, 403}:
+                        raise GalleryError("Sign in with GitHub again to manage publications.", 401)
+                    if response.status_code >= 500 or 300 <= response.status_code < 400:
+                        raise GalleryError(
+                            "The gallery is temporarily unavailable. Try again shortly."
+                        )
                     data = json.loads(raw)
                     if response.status_code >= 400:
-                        raise ValueError(str(data.get("detail", "Gallery request failed")))
+                        detail = data.get("detail") if isinstance(data, dict) else None
+                        raise GalleryError(
+                            detail
+                            if isinstance(detail, str)
+                            else "The gallery could not complete this request.",
+                            response.status_code,
+                        )
                     return data
         except (httpx.HTTPError, json.JSONDecodeError) as error:
-            raise ValueError(
-                "Could not connect to the gallery. Check the gallery URL and try again."
+            raise GalleryError(
+                "The gallery is temporarily unavailable. Your local experiments still work."
             ) from error
 
 

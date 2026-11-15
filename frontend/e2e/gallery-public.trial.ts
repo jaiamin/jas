@@ -79,3 +79,21 @@ for (const theme of ["light", "dark"]) {
     expect((await request.get("/api/settings")).status()).toBe(404);
   });
 }
+
+test("anonymous Gallery account page never requests protected device tokens", async ({
+  page,
+}) => {
+  const protectedReads: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("/api/gallery-account/tokens"))
+      protectedReads.push(request.url());
+  });
+  await page.goto("/gallery/account");
+  await expect(
+    page.getByRole("heading", { name: "Sign in to publish", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Continue with GitHub", exact: true }),
+  ).toBeVisible();
+  expect(protectedReads).toEqual([]);
+});

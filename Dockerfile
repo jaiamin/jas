@@ -1,3 +1,4 @@
+ARG JAS_IMAGE_TARGET=workspace
 FROM node:24-bookworm-slim AS frontend
 WORKDIR /build
 RUN npm install --global pnpm@12.18.0
@@ -34,3 +35,5 @@ USER 10001:10001
 CMD ["jas", "--host", "0.0.0.0", "--no-browser", "gallery", "--port", "8080", "--data", "/app/data"]
 
 FROM runtime AS workspace
+
+FROM ${JAS_IMAGE_TARGET} AS app

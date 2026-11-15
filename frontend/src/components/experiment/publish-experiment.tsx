@@ -7,6 +7,7 @@ import {
   DisclosureTrigger,
 } from "@/components/disclosure";
 import { Alert } from "@/components/feedback";
+import { PublishingAccount } from "@/components/gallery/publishing-account";
 import { OptionSelect } from "@/components/option-select";
 import { Json } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -370,14 +371,7 @@ export function PublishExperiment({ study }: { study: StudyDetail }) {
               Read terms
             </a>
           </p>
-          {!status.data?.identity && (
-            <p className="text-sm">
-              <Link to="/settings#publishing" className="underline">
-                Sign in with GitHub in Settings
-              </Link>{" "}
-              to publish. Watching, running and forking need no account.
-            </p>
-          )}
+          {!status.data?.identity && <PublishingAccount />}
           <Button
             disabled={
               blocked ||

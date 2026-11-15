@@ -12,7 +12,7 @@ and historical diagnostic prose were removed. Current engineering contracts rema
 
 - Branch: t3/ponytail-full-1. Draft PR: https://github.com/jaiamin/jas/pull/41.
 - Keep the existing local app on 0.0.0.0:8080 (PID 271687), using data/workspace.
-  Preserve its data and process. No app redeploy, Railway changes or paid calls.
+  Preserve its data and process. No local restart or paid calls.
 - System /usr/bin/uv fails on the guest page size. Use .tools/bin/uv or .venv/bin tools.
 - Public docs currently use Mintlify artifact storage and main. The authenticated
   Admin MCP now works. No Git-source, site or authentication reconfiguration is needed.
@@ -52,8 +52,40 @@ Registry publication, live OAuth/S3/keychain integration, cross-machine publish/
 provider terms, genuine launch publications and outside-user acceptance remain open.
 Hosted CI previously could not start because of account billing limits.
 
-## Next work
+## Active work: Gallery redesign
 
-Resolve the external launch gates when separately authorized. Remove preview-branch
-installation pins after an approved merge/release. Future docs edits still require
-explicit Admin MCP publication; local source changes alone do not update the site.
+Scope: PDF MVP pages 10–13, with later approved navigation. Anonymous Browse;
+My published owns GitHub identity and publication controls. Publish stays on a
+finished experiment's Publish tab; no global publish picker or Settings connection
+form. All page-heading/sidebar icons remain outlines.
+
+Acceptance and progress:
+
+- [x] Minimal cards, catalog-derived filters, featured deduplication, pagination,
+  honest loading/empty/stale/error states and confirmed inline unpublish.
+- [x] Anonymous browsing never touches keychain; scoped device approval stays inline;
+  origin isolation, expired-token handling and safe network errors have regressions.
+- [x] Hosted account/detail flow and copied fork commands retain source origin.
+- [x] Provider-neutral user docs and deployment guide; no project MCP configuration.
+- [x] Final lint/types/build, 38 backend, 156 frontend and 48 browser tests; both
+  production image smokes passed. No paid calls.
+- [ ] Verify official Gallery deployment and private bucket; app/CLI use its real
+  HTTPS origin by default, retaining explicit self-host/development overrides.
+- [ ] Retire the old private hosted workspace, preserving its detached data volume.
+  Only Gallery should run remotely. Never reuse workspace credentials/storage.
+- [ ] Configure real GitHub OAuth and verify cross-machine publish/fork/keychain.
+
+Infrastructure is managed through authenticated MCP using the normal credential
+store; never copy tokens into this repository. The ignored `.tools` client can
+call platform tools without starting a model turn. No cloud agents are required.
+The Gallery service has separate SQLite volume/private bucket and one replica;
+provider keys remain exclusively in the local workspace.
+
+Detailed final logs/screenshots are in ignored `.tools/gallery-final-*` and
+frontend test outputs. GitHub OAuth credentials were configured directly on the
+Gallery service through secure input; never copied into the repository.
+
+Public documentation source changes are not yet published. Preserve the existing
+Mintlify deployment until an explicit documentation publication is performed.
+Registry release, genuine seed corpus, live identity/keychain checks and outside-user
+acceptance remain launch gates; never equate fixture tests with those checks.

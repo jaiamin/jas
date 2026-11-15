@@ -9,15 +9,19 @@ icon: globe
 Publishing shares a finished evidence record through a separate gallery. Local
 experiments need no account; GitHub sign-in identifies the author when sharing.
 
-## Configure a gallery
+## Browse and sign in
 
-The workspace runs locally. Publishing uses a separate gallery service; it must
-be configured before sharing is available.
+Open **Gallery** to browse public findings without an account. **My published**
+contains GitHub sign-in and your publication controls. Sharing uses a separate,
+model-free hosted service; your local workspace is never uploaded automatically.
 
-In **Settings → Publishing**, enter the gallery origin and sign in with GitHub.
-Approve the device code in your browser, then check approval in JAS. The publishing
-token stays in your operating system keychain. Linux requires a working keychain
-service; JAS does not fall back to a plaintext token.
+Approve the device code in your browser. JAS updates automatically and stores the
+publishing token in your operating system keychain. Linux requires a working
+keychain service; JAS does not fall back to a plaintext token.
+
+JAS uses the official gallery automatically when you open it. Browsing sends
+ordinary request metadata to the service, never your local experiments or keys.
+Local work does not depend on Gallery being available.
 
 ## Review before publishing
 

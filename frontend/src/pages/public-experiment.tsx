@@ -69,7 +69,7 @@ export default function PublicExperimentPage() {
   const limits = [
     ...new Set([description.notes, ...experiment.limits].filter(Boolean)),
   ];
-  const command = `jas fork ${publication.author}/${publication.slug}/v${publication.version}`;
+  const command = `jas fork ${publication.author}/${publication.slug}/v${publication.version} --gallery ${new URL(publication.url).origin}`;
   return (
     <article className="flex min-w-0 flex-col gap-9">
       <header className="max-w-3xl space-y-4">

@@ -398,6 +398,18 @@ test("Gallery combines browsing and publishing without a Community group", async
   await page.route("**/api/community/mine", (route) =>
     route.fulfill({ json: [] }),
   );
+  await page.route("**/api/community/filters", (route) =>
+    route.fulfill({ json: { worlds: ["commons"], models: [], tags: [] } }),
+  );
+  await page.route("**/api/publishing", (route) =>
+    route.fulfill({
+      json: {
+        origin: "https://gallery.example",
+        identity: { handle: "researcher", scope: "publish" },
+        error: null,
+      },
+    }),
+  );
   await page.goto("/gallery?world=commons");
   const nav = page.getByRole("navigation", { name: "Main navigation" });
   await expect(nav.getByRole("link")).toHaveText([
@@ -417,9 +429,9 @@ test("Gallery combines browsing and publishing without a Community group", async
     page.getByText("No publications yet", { exact: true }),
   ).toBeVisible();
   await page.getByRole("tab", { name: "Browse", exact: true }).click();
-  await expect(page.getByLabel("World", { exact: true })).toHaveValue(
-    "commons",
-  );
+  await expect(
+    page.getByRole("combobox", { name: "Filter world" }),
+  ).toContainText("Commons");
 });
 
 test("usage text does not reflow during sidebar expansion", async ({

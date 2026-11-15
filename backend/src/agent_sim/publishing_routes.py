@@ -14,7 +14,7 @@ from .public_records import (
     scan_record,
     verify_record,
 )
-from .publishing import PublicationReceipts, Publisher, download_fork
+from .publishing import GalleryError, PublicationReceipts, Publisher, download_fork
 
 router = APIRouter(prefix="/api")
 
@@ -67,6 +67,8 @@ def status(*, models: LanguageModelsDep):
     try:
         if publisher.token():
             identity = publisher.request("GET", "/api/gallery-identity", authenticated=True)
+    except GalleryError as failure:
+        error = None if failure.status_code == 401 else str(failure)
     except ValueError as failure:
         error = str(failure)
     return {"origin": publisher.origin, "identity": identity, "error": error}
@@ -153,6 +155,11 @@ def community(
         "/api/gallery?"
         + urlencode({"world": world, "model": model, "tag": tag, "sort": sort, "offset": offset}),
     )
+
+
+@router.get("/community/filters")
+def gallery_filters(*, models: LanguageModelsDep):
+    return client(models).request("GET", "/api/gallery/filters")
 
 
 @router.get("/community/mine")

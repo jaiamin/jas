@@ -34,6 +34,7 @@ class S3Objects:
     def __init__(self) -> None:
         try:
             import boto3
+            from botocore.config import Config
         except ImportError as error:
             raise ValueError("Install jaslab[gallery] for S3 object storage") from error
         self.bucket = os.environ["JAS_GALLERY_S3_BUCKET"]
@@ -43,6 +44,9 @@ class S3Objects:
             aws_access_key_id=os.environ["JAS_GALLERY_S3_ACCESS_KEY_ID"],
             aws_secret_access_key=os.environ["JAS_GALLERY_S3_SECRET_ACCESS_KEY"],
             region_name=os.getenv("JAS_GALLERY_S3_REGION", "auto"),
+            config=Config(
+                s3={"addressing_style": os.getenv("JAS_GALLERY_S3_ADDRESSING_STYLE", "auto")}
+            ),
         )
 
     def put(self, key: str, value: bytes, content_type: str) -> None:

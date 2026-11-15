@@ -1,4 +1,4 @@
-"""Check Railway-style root-owned storage, protected access and restart persistence."""
+"""Check root-owned container storage, protected access and restart persistence."""
 
 import json
 import subprocess

@@ -21,9 +21,8 @@ store; it must never share the runner's volume, provider keys or configuration.
 - Verify hosted CI actually starts and passes. Previously observed GitHub billing
   limits need an account-owner fix; local success is not hosted CI success.
 
-No gallery deployment, paid resources or genuine launch corpus is created by the
-local implementation checks. The initial $10/month target requires a concrete
-cost review for the chosen service, storage, egress and domain before provisioning.
+Local checks do not establish a live deployment or genuine launch corpus. Track
+service, storage and egress costs against the initial $10/month operating target.
 
 ## Limits and terms
 

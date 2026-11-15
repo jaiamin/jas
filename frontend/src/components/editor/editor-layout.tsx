@@ -26,10 +26,7 @@ export function EditorHeading({
     <header className="flex flex-wrap items-center justify-between gap-4 pb-6">
       <div className="flex min-w-0 items-center gap-3">
         <Avatar className="size-9 rounded-lg after:border-0" aria-hidden="true">
-          <AvatarFallback
-            data-active="true"
-            className="rounded-lg bg-muted-foreground/15 [&>svg]:size-4.5"
-          >
+          <AvatarFallback className="rounded-lg bg-muted-foreground/15 [&>svg]:size-4.5">
             <ExperimentIcon />
           </AvatarFallback>
         </Avatar>

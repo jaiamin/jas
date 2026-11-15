@@ -210,14 +210,7 @@ for (const theme of ["light", "dark"]) {
             return radius > 0 && radius < element.clientWidth / 2;
           }),
         ).toBe(true);
-        const filledIcon = icon.locator(
-          path === "/experiments" ? "[data-liquid]" : "svg",
-        );
-        expect(
-          await filledIcon.evaluate(
-            (element) => getComputedStyle(element).fill,
-          ),
-        ).not.toBe("none");
+        await expect(icon.locator("svg")).toHaveCSS("fill", "none");
         const search = header.getByRole("textbox", { name: `Search ${noun}` });
         await expect(search).toBeVisible();
         expect(await search.getAttribute("placeholder")).toBeNull();
