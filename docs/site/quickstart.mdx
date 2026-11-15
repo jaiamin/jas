@@ -1,0 +1,58 @@
+---
+title: Run locally
+description: Start a workspace and explore your first experiment.
+---
+
+## Install from source
+
+Install Python 3.13+, [uv](https://docs.astral.sh/uv/getting-started/installation/),
+Node.js 24+ and pnpm 12, then run:
+
+```sh
+git clone https://github.com/jaiamin/jas.git
+cd jas
+uv sync --frozen
+pnpm --dir frontend install --frozen-lockfile
+pnpm --dir frontend build
+uv run jas --workspace ./data/workspace
+```
+
+JAS opens [localhost:8080](http://localhost:8080). Keep this terminal running while
+you use the app. The explicit workspace keeps data in `data/workspace`; stopping
+the server preserves it. Run only one JAS process per workspace.
+
+Package-registry publication is pending. If you have a built release wheel, start
+it with `uvx --from ./jaslab-0.2.0-py3-none-any.whl jaslab`. The wheel includes the
+interface; it does not need the frontend build steps above.
+
+## Explore without a key
+
+Open **Learn → Examples**, choose **Watch**, and step through a scripted recording.
+Each turn separates the observation, action and settled consequence. Watching,
+scrubbing and replay verification make no model calls.
+
+Choose **Use example** to open an editable starting protocol. You can also use an
+**Experiment idea** on Home to fill an Assistant draft without sending it.
+
+## Run your own comparison
+
+1. Add a provider or local endpoint in **Settings** and choose your models.
+2. Open an example or create an experiment. Review the question, conditions,
+   seeds, outcomes and limits.
+3. **Save** the protocol to inspect it, or explicitly choose **Save and run**.
+4. Open **Results** and a run to inspect the recorded evidence.
+
+[Provider configuration and costs](/guides/providers-and-costs) explains keys,
+prices and spending limits. [Experiments](/guides/experiments) explains the protocol.
+
+## Change the port or back up data
+
+```sh
+uv run jas --workspace ./data/workspace --port 8088 --no-browser
+```
+
+Use **Settings → Data** to download a consistent backup without provider keys.
+Backups include private observations and conversations; keep them private.
+
+For Docker, source development and optional private hosting, see the
+[repository guides](https://github.com/jaiamin/jas/tree/main/docs).

@@ -203,8 +203,8 @@ export default function Editor() {
     return (
       <Alert variant="error" title="Starter not found">
         Choose a starter from{" "}
-        <Link className="underline" to="/">
-          Home
+        <Link className="underline" to="/examples">
+          Examples
         </Link>
         .
       </Alert>

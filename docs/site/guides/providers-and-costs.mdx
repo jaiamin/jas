@@ -1,0 +1,47 @@
+---
+title: Providers and costs
+description: Bring your own models and keep spending explicit.
+---
+
+## Connect a provider
+
+Open **Settings → Providers**. JAS supports OpenAI, Anthropic, OpenRouter and
+OpenAI-compatible or local endpoints. Add the relevant key or endpoint, then
+choose models in **Settings → Models** and for your experiment's agents.
+
+Assistant and protocol-planning models are selected in Settings. JAS does not
+silently switch providers, replace models or retry paid requests.
+
+Keys stay in the local workspace's owner-only settings file. The settings API,
+backups and public records exclude them. Do not share the workspace settings file.
+
+## Set limits before execution
+
+Workspace and experiment limits both apply. JAS atomically reserves a call's
+budget before sending it and settles recorded usage afterward.
+
+Known prices are editable. An unpriced model requires a token ceiling before
+execution; a token ceiling does not guarantee a dollar cost. Set zero only for
+a known free model.
+
+Provider connection tests can call a model. Review their estimate and explicitly
+start a test. Opening Settings, watching a recording and saving a protocol are free.
+
+## Read Usage and message receipts
+
+The expanded sidebar shows committed usage, including reservations. Unknown usage
+keeps its reservation until it can be settled; it is not treated as a free call.
+
+Assistant message footers show a compact cost estimate. Open the amount to inspect
+the recorded model, requests, tokens and accounting details. Tiny positive costs
+display as `<$0.001`; the popup retains finer precision.
+
+For bundled prices, recorded SDK costs account for cache pricing when available.
+Custom prices remain authoritative. These are recorded estimates, not a guarantee
+of the provider's invoice; provider billing can differ.
+
+## Keep local use separate from publishing
+
+Running models uses your own configured provider. The separate public gallery
+receives reviewed evidence and makes no model calls. A gallery sign-in is not
+required to use the local workspace.

@@ -114,6 +114,11 @@ for (const width of [390, 1440])
           .getByRole("heading", { name: "What can we explore?" })
           .locator("svg.lucide-target"),
       ).toBeVisible();
+      const welcome = pane.getByRole("heading", {
+        name: "What can we explore?",
+      });
+      await expect(welcome).toHaveCSS("font-size", "18px");
+      await expect(welcome.locator("svg")).toHaveCSS("width", "22px");
       for (const suggestion of await pane
         .getByRole("region", { name: "Suggested questions" })
         .getByRole("button")
@@ -194,6 +199,12 @@ for (const width of [390, 1440])
         .getByRole("form", { name: "Assistant composer" })
         .boundingBox();
       expect((composer?.y ?? 0) + (composer?.height ?? 0)).toBe(900);
+      const suggestions = await pane
+        .getByRole("region", { name: "Suggested questions" })
+        .boundingBox();
+      expect(
+        (composer?.y ?? 0) - (suggestions?.y ?? 0) - (suggestions?.height ?? 0),
+      ).toBe(24);
       await page.screenshot({
         path: testInfo.outputPath(`assistant-${theme}-${width}.png`),
       });
@@ -400,6 +411,9 @@ test("Gallery combines browsing and publishing without a Community group", async
     "Experiments",
     "Runs",
     "Environments",
+    "Docs(opens in a new tab)",
+    "JAS MCP(opens in a new tab)",
+    "Examples",
   ]);
   await expect(nav.getByText("Community", { exact: true })).toHaveCount(0);
   await page.getByRole("tab", { name: "My published" }).click();

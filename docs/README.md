@@ -1,5 +1,8 @@
 # JAS guides
 
+[Public documentation](https://jas.mintlify.site) covers using JAS. Its maintainable
+[Mintlify source](site/README.md) lives here; engineering contracts follow below.
+
 | Guide | Use it for |
 | --- | --- |
 | [Install](INSTALLATION.md) | Local wheel/Docker startup, first experiment and data |

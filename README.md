@@ -27,6 +27,6 @@ separate gallery. Provider keys and Assistant conversations stay local. Replay
 checks recorded consequences with zero model calls; it does not establish that a
 model would make the same choices again or that findings generalize to people.
 
-[Install](docs/INSTALLATION.md) · [Guides](docs/README.md) ·
+[Docs](https://jas.mintlify.site) · [Install](docs/INSTALLATION.md) · [Guides](docs/README.md) ·
 [Development](docs/DEVELOPMENT.md) · [Architecture](docs/ARCHITECTURE.md) ·
 [MIT License](LICENSE)

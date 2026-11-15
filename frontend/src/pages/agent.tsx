@@ -483,7 +483,7 @@ export function AgentConversation({
           </MessageScroller>
         </MessageScrollerProvider>
       ) : embedded ? (
-        <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-4 pb-3 pt-8">
+        <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-4 pb-6 pt-8">
           <div className="mx-auto mt-auto flex w-full max-w-3xl shrink-0 flex-col gap-5">
             <AgentWelcomeHeading compact />
             {suggestions}

@@ -18,6 +18,7 @@ const Environments = lazy(() => import("@/pages/environments"));
 const Settings = lazy(() => import("@/pages/settings"));
 const Compare = lazy(() => import("@/pages/compare"));
 const Watch = lazy(() => import("@/pages/watch"));
+const Examples = lazy(() => import("@/pages/examples"));
 const Matched = lazy(() => import("@/pages/matched"));
 const Gallery = lazy(() => import("@/pages/gallery"));
 const GalleryShell = lazy(() =>
@@ -83,6 +84,7 @@ export default function App() {
         <Route path="settings" element={<Settings />} />
         <Route path="compare" element={<Compare />} />
         <Route path="watch/:id" element={<Watch />} />
+        <Route path="examples" element={<Examples />} />
         <Route path="gallery" element={<Gallery />} />
         <Route
           path="*"

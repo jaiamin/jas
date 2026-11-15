@@ -406,7 +406,7 @@ test("compact header, footer Settings and collapsed brand overlay stay navigable
     "16px",
   );
   await expect(expand).toHaveCSS("opacity", "0");
-  await expect(separators).toHaveCount(1);
+  await expect(separators).toHaveCount(2);
   await expect(separators.first()).toBeVisible();
   expect((await separators.first().boundingBox())?.y).toBe(
     sectionLineBefore?.y,
@@ -500,7 +500,7 @@ for (const theme of ["light", "dark"]) {
       page.locator('[data-slot="sidebar-header"]').first(),
     ).toHaveCSS("border-bottom-width", "0px");
     await expect(page.locator('[data-slot="sidebar-separator"]')).toHaveCount(
-      1,
+      2,
     );
     await expect(budget).toHaveCSS("border-width", "1px");
     const selectedItem = await page

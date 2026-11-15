@@ -196,3 +196,40 @@ Earlier affected browser runs also verified toolbar alignment, Usage edges and
 15 repeated draft handoffs. Backend checks were not repeated: no backend code
 changed. The existing 8080 app serves the rebuilt assets; preserve its process
 and data/workspace. No provider calls, user-data deletion or deployment.
+
+Documentation/Learn and compact Assistant follow-up: the global header now has
+an outlined Docs link immediately before Assistant, also available on Home and
+the focused chat page. Learn contains Docs, JAS MCP and Examples. External links
+open new tabs with ArrowUpRight; collapsed tooltips and mobile closing are retained.
+Examples lists the existing six scripted recordings in quiet separated rows with
+Watch and Use example actions. The shared viewer returns to Examples; missing
+starter recovery points there. Home's four illustrated ideas remain intact.
+The right pane's welcome heading is now 18px with a 22px Target and 24px below
+suggestions. Focused chat sizing and outer composer spacing are unchanged.
+
+Prepared eight concise Mintlify pages under docs/site, with Geist, JAS colors and
+favicon, local installation, experiment/evidence/provider/publishing guides, CLI
+reference and an explicit JAS MCP Coming soon page. JAS has no workspace MCP
+implementation. docs/INSTALLATION.md now describes Learn → Examples accurately.
+The configured public site is https://jas.mintlify.site; its existing content is
+still Mintlify's starter. The requested Mintlify MCP registration and OAuth login
+succeeded, but this running session exposes no Mintlify tools and gateway search
+finds none. Direct initialization returned Cloudflare 403 and was not retried.
+The web editor and maintained CLI lack their separate site-editing sign-in.
+No new site, hosting source or deployment was provisioned. Public publication is
+still blocked: upload docs/site through authenticated editing access or configure
+it as the existing site's Git source. The configured /integrations/jas-mcp public
+link will require that publication before the new page is available. Do not claim
+that local docs edits updated the public site. See docs/DOCUMENTATION_PLAN.md.
+
+Verification: frontend lint/build, all 151 unit tests and all 39 affected browser
+cases pass in the final run. Checks cover 320px/390px/desktop layouts, both themes,
+header alignment, Learn links, collapsed navigation, Examples loading/error/retry/
+empty states, viewer/editor reuse without paid calls, exact Assistant sizes and
+suggestion spacing, chat handoffs/history/deletion and existing navigation/usage.
+Rendered Examples and Assistant screenshots were inspected. Mintlify 4.3.34
+validation and broken-link checks pass; local desktop/light and phone/dark pages
+were inspected, including JAS MCP. Backend tests were not repeated because no
+backend code changed. The user app on 0.0.0.0:8080 remains healthy and serves the
+rebuilt assets. Preserve its process and data/workspace. No paid calls, workspace
+data deletion, app deployment or Railway changes.

@@ -34,6 +34,7 @@ export {
   House,
   KeyRound,
   Layers2,
+  LayoutTemplate,
   LoaderCircle,
   LockKeyhole,
   Maximize,

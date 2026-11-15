@@ -1,0 +1,55 @@
+---
+title: Design an experiment
+description: Turn a question into a controlled, reviewable protocol.
+---
+
+## Choose the comparison
+
+Start with a question that names the behavior, the change you want to test and
+the outcome you will inspect. For example: does allowing messages change the
+share contributed to a shared pool?
+
+Use **Learn → Examples** for a reusable protocol, **Environments** to inspect
+installed rules, or **New** in Experiments to begin in the editor.
+
+## Define the protocol
+
+**Quick** and **Advanced** edit the same protocol. Choose:
+
+- **Environment:** the rules that determine observations, legal actions and
+  consequences. A narrative supplies context; it does not replace those rules.
+- **Agents:** participants, roles, models and memory settings.
+- **Conditions:** the configurations being compared. Isolate the intended change.
+- **Trials:** seeds, repetitions and horizon. Match seeds across conditions.
+- **Outcomes and limits:** the headline measure, analysis plan and spending caps.
+
+Review free checks and the estimated bounds before saving. Unknown prices remain
+unknown and require a token ceiling before execution.
+
+## Save, then run
+
+**Save** freezes a protocol revision. A later edit creates another revision;
+existing run evidence keeps its original protocol.
+
+Saving does not start models. **Save and run**, or the experiment's run action,
+explicitly authorizes execution within the configured limits.
+
+## Work with the Assistant
+
+Home starts a conversation from a question. The **Assistant** button in the global
+header opens a side panel on other workspace pages; its four-corner control opens
+the focused view.
+
+On an individual experiment or run, the panel selects that record as context.
+You can clear it or use **Add context** to choose another record. List pages do
+not automatically select an experiment or run.
+
+The Assistant can propose a protocol or analyze recorded evidence. Proposals are
+pending until validated and reviewed. Sending a message can call your configured
+model; opening the panel or choosing a suggestion does not.
+
+## Interpret the comparison carefully
+
+Models propose actions; environment rules settle them. Check participant-visible
+information, missing or failed work, matched seeds and outcome definitions before
+interpreting a difference. A synthetic comparison does not establish human behavior.

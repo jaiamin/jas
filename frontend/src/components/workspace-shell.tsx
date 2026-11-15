@@ -12,11 +12,15 @@ import { useWorkspaceAssistant } from "@/components/agent/assistant-workspace";
 import { Empty } from "@/components/feedback";
 import {
   AgentIcon,
+  ArrowUpRight,
+  BookOpen,
+  Code2,
   FlaskConical,
   Github,
   Globe,
   House,
   Layers2,
+  LayoutTemplate,
   Moon,
   Play,
   Settings,
@@ -44,6 +48,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useApi } from "@/lib/api";
+import { DOCS_URL, MCP_DOCS_URL } from "@/lib/docs";
 import type { RunSummary } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -135,6 +140,11 @@ export default function WorkspaceShell() {
       icon: Layers2,
     },
   ];
+  const learnLinks = [
+    { to: DOCS_URL, label: "Docs", icon: BookOpen },
+    { to: MCP_DOCS_URL, label: "JAS MCP", icon: Code2 },
+    { to: "/examples", label: "Examples", icon: LayoutTemplate },
+  ];
   function changeTheme() {
     const next = !dark;
     setDark(next);
@@ -225,6 +235,7 @@ export default function WorkspaceShell() {
             {[
               { label: null, items: primaryLinks },
               { label: "Workspace", items: links },
+              { label: "Learn", items: learnLinks },
             ].map((group, index) => (
               <Fragment key={group.label ?? "primary"}>
                 {index > 0 && (
@@ -251,17 +262,38 @@ export default function WorkspaceShell() {
                             (item.to === "/experiments" &&
                               location.pathname === "/new") ||
                             (item.to === "/runs" &&
-                              location.pathname === "/compare")
+                              location.pathname === "/compare") ||
+                            (item.to === "/examples" &&
+                              location.pathname.startsWith("/watch/"))
                           }
                         >
-                          <NavLink
-                            to={item.to}
-                            end={item.to === "/"}
-                            onClick={() => setOpenMobile(false)}
-                          >
-                            <item.icon aria-hidden="true" />
-                            <span>{item.label}</span>
-                          </NavLink>
+                          {item.to.startsWith("https://") ? (
+                            <a
+                              href={item.to}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={() => setOpenMobile(false)}
+                            >
+                              <item.icon aria-hidden="true" />
+                              <span>{item.label}</span>
+                              <ArrowUpRight
+                                aria-hidden="true"
+                                className="ml-auto text-muted-foreground group-data-[collapsible=icon]:hidden"
+                              />
+                              <span className="sr-only">
+                                (opens in a new tab)
+                              </span>
+                            </a>
+                          ) : (
+                            <NavLink
+                              to={item.to}
+                              end={item.to === "/"}
+                              onClick={() => setOpenMobile(false)}
+                            >
+                              <item.icon aria-hidden="true" />
+                              <span>{item.label}</span>
+                            </NavLink>
+                          )}
                         </SidebarMenuButton>
                         {item.to === "/runs" && active.length > 0 && (
                           <SidebarMenuBadge>{active.length}</SidebarMenuBadge>
@@ -310,6 +342,18 @@ export default function WorkspaceShell() {
               <SidebarTrigger ref={menuTrigger} aria-label="Open menu" />
             )}
             <div className="ml-auto flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="default"
+                className="mr-1 h-7 gap-1 px-2.5 text-[0.8rem] has-data-[icon=inline-end]:pr-2.5"
+                asChild
+              >
+                <a href={DOCS_URL} target="_blank" rel="noreferrer">
+                  Docs
+                  <ArrowUpRight data-icon="inline-end" aria-hidden="true" />
+                  <span className="sr-only">(opens in a new tab)</span>
+                </a>
+              </Button>
               {!isHome && !isAgent && (
                 <Button
                   ref={assistantTrigger}

@@ -31,9 +31,9 @@ Only one JAS process may own a workspace.
 
 ## First experiment
 
-1. Watch one of the three starters on Home. Find all six bundled recordings from
-   their environment's details in Environments; each recording can open its reusable
-   starter protocol.
+1. Open Learn → Examples to watch one of six scripted recordings without a key.
+   Choose Use example to edit its protocol. Home's four Experiment ideas fill an
+   Assistant draft without sending it.
 2. Add a provider key or local endpoint in Settings. Keys stay on your machine.
 3. Choose a starter or create an experiment in Quick. Review the free checks,
    run/call/cost bounds, seeds and spending caps.

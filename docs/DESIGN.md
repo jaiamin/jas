@@ -139,10 +139,15 @@ Selected sidebar text retains the same size and weight as unselected text.
 The stock Sidebar starts with Home and Gallery above Workspace
 (Experiments, Runs, Environments). Gallery contains Browse and My published tabs;
 there is one publishing destination and no Community navigation group.
+Learn follows Workspace with Docs, JAS MCP and Examples. External documentation
+links use ArrowUpRight and open a new tab; collapsed navigation shows only the
+leading icon with its existing tooltip. Examples lists the six bundled scripted
+recordings in separated rows with Watch and Use example actions, without filters
+or additional cards. Both actions are keyless and never start a model run.
 The compact brand link returns to Home. The footer contains a quiet usage line,
 a thin budget meter and one direct Settings link. There is no avatar, chooser,
 subtitle or appearance dropdown. Light/dark mode lives only in the top-right header.
-A stock SidebarSeparator separates primary navigation from Workspace. Omit
+Stock SidebarSeparators separate primary navigation, Workspace and Learn. Omit
 dividers below the JAS brand row and above usage. Align the usage link's outer edges
 with the selected navigation item's background, using 8px sidebar insets. Its
 rounded border and soft muted surface contain 12px top, 10px side and 14px bottom padding,
@@ -175,7 +180,10 @@ scrolls; page content owns vertical scrolling with contained overscroll, stable 
 gutters and 16px scroll-target padding. Path navigation resets the page scroller.
 The editor’s section tabs stick directly below the global header. Agent retains
 its existing independent scrollers. The global bar has no title or breadcrumb;
-an outlined Assistant button precedes the theme toggle and GitHub brand link at right.
+an outlined Docs link precedes Assistant, the theme toggle and GitHub at right.
+Docs opens the public Mintlify site in a new tab with ArrowUpRight, matching the
+Assistant button's height, text size and symmetric padding. It stays available on
+Home and the focused Assistant page.
 The Assistant button uses equal 10px horizontal padding and shares the controls’
 vertical center and 28px height. Hide it on Home and the focused Assistant page. These glyphs use the stock 16px size;
 the outer icon edge matches the navigation glyphs’ 16px edge inset. Settings uses
@@ -230,9 +238,11 @@ composer guidance and manual-editor link. Usage and explicit run confirmations
 retain budget details and spending safeguards.
 Agent uses a faint muted canvas (`bg-muted/50`) with a plain composer on its
 background surface. The new-chat heading uses the primary Assistant Target before
-“What can we explore?”, 24px in the pane and 30px/34px in the focused view, with
+“What can we explore?”, 22px in the pane and 30px/34px in the focused view, with
 a 6px gap. The icon is static; the pane welcome icon shares the suggestions’
-leading edge and composer text inset. Reply Targets also stay static in working and completed states. Activity uses
+leading edge and composer text inset. The compact heading is 18px. Keep 24px below
+the pane's suggestions before the composer, without adding outer composer padding.
+Reply Targets also stay static in working and completed states. Activity uses
 recorded text and a stock loading indicator. Sidebar transitions, explicit run
 playback and the Home sky respect reduced motion. History stays available in every
 chat. The 28px ghost New chat and Delete chat controls appear only for saved chats.

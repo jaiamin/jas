@@ -32,8 +32,8 @@ export default function Watch() {
         aria-label="Breadcrumb"
         className="mb-4 flex flex-wrap gap-2 text-xs text-muted-foreground"
       >
-        <Link to="/" className="hover:underline">
-          Home
+        <Link to="/examples" className="hover:underline">
+          Examples
         </Link>
         <span>/</span>
         <span>Recorded starter</span>
