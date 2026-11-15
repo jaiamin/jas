@@ -11,22 +11,20 @@ inspect what each agent saw, and share evidence others can replay and fork.
 
 ## Run locally
 
-MVP preview on `t3/ponytail-full-1`. Requires Python 3.13+,
-[uv](https://docs.astral.sh/uv/), Node.js 24+ and pnpm 12.
+Install and start [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+[Download JAS](https://github.com/jaiamin/jas/archive/refs/heads/t3/ponytail-full-1.zip),
+extract it, and open a terminal in that folder:
 
 ```sh
-git clone --branch t3/ponytail-full-1 --single-branch https://github.com/jaiamin/jas.git
-cd jas
-uv sync --frozen
-pnpm --dir frontend install --frozen-lockfile
-pnpm --dir frontend build
-uv run jas --workspace ./data/workspace
+docker compose up --build
 ```
 
-Open [localhost:8080](http://localhost:8080). Explore eight scripted examples
-without a key or account, then bring your own models and spending limits.
-Saving never starts a run. [Wheels and Docker](docs/INSTALLATION.md) are supported;
-package-registry publication is pending.
+Open [localhost:8080](http://localhost:8080). Docker builds and runs the app;
+no Python, Node or `.env` setup needed. Your workspace persists when you stop it.
+Explore eight examples without a key or account, then add models and spending
+limits in Settings. Saving never starts a run.
+
+[Setup and backups](docs/INSTALLATION.md) · [Contributing](docs/DEVELOPMENT.md)
 
 Publishing sends reviewed evidence to a separate gallery, excluding provider keys
 and Assistant chats. Replay checks consequences without model calls; findings do

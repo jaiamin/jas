@@ -1,73 +1,59 @@
 # Run JAS locally
 
-JAS is a single-user local workspace. You do not need a gallery account or
-provider credentials to watch recorded starters, edit protocols or replay evidence.
+## Start with Docker
 
-## Release wheel
+Install and start [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+(or Docker Engine with the Compose plugin).
+[Download JAS](https://github.com/jaiamin/jas/archive/refs/heads/t3/ponytail-full-1.zip),
+extract it, and open a terminal in the extracted folder:
 
-Install Python 3.13+ and [uv](https://docs.astral.sh/uv/getting-started/installation/).
-From the directory containing the release wheel:
+```sh
+docker compose up --build
+```
+
+Open [localhost:8080](http://localhost:8080). Docker builds and runs the app; no
+Python, Node or `.env` setup is needed. The first build can take a few minutes.
+Provider keys are optional for recorded examples and can be entered in Settings.
+
+Press **Ctrl+C** to stop, or run `docker compose down` from the same folder.
+Start again with `docker compose up --build`. Your experiments, runs and settings
+persist in Docker's `jas-data` volume. Do not use `down --volumes` unless you
+intend to erase that workspace. Keep using the same extracted folder.
+
+To change the port, add `JAS_PORT=8088` to an optional `.env` file before starting,
+then open http://localhost:8088. No other configuration is required.
+
+## First experiment
+
+1. Open **Learn → Examples** to watch one of eight recordings without a key or
+   account. Choose **Use example** to edit its protocol.
+2. Add a provider key or local endpoint and choose models in **Settings**.
+3. Create an experiment and review conditions, seeds, outcomes and spending limits.
+4. Choose **Create** to inspect it, or explicitly choose **Create and run**.
+5. Open **Results** and a run to inspect the evidence. Playback and replay
+   verification do not call models.
+
+## Back up your workspace
+
+**Settings → Data** downloads a consistent backup without provider keys. It includes
+private observations and conversations; keep it private. Stop JAS before restoring
+into a separate workspace, and preserve existing files first.
+
+Local use needs no login. Keep the workspace on your machine; the public gallery
+is a separate service. [Hosting](DEPLOYMENT.md) is for maintainers and self-hosters.
+
+## Other installation methods
+
+Contributors should use [Development](DEVELOPMENT.md) for source setup and checks.
+
+If you already have a built release wheel, install Python 3.13+ and
+[uv](https://docs.astral.sh/uv/getting-started/installation/), then run:
 
 ```sh
 uvx --from ./jaslab-0.2.0-py3-none-any.whl jaslab
 ```
 
-The bundled interface opens at http://localhost:8080. Once a package release is
-published, `uvx jaslab` is the intended one-command installation. Package registry
-publication has not been completed by this redesign.
-
-Set a separate workspace or port when needed:
-
-```sh
-uvx --from ./jaslab-0.2.0-py3-none-any.whl jas --workspace ./my-workspace --port 8088
-```
-
-By default JAS uses your platform's app-data directory: `$XDG_DATA_HOME/jas`
-(or `~/.local/share/jas`) on Linux, `~/Library/Application Support/jas` on macOS,
-and `%LOCALAPPDATA%/jas` on Windows. `--workspace` overrides `JAS_WORKSPACE`.
-An existing checkout `data/jas.sqlite3` is preserved and opened in place.
-`JAS_DATABASE_URL` is an explicit override when `--workspace` is omitted.
-Only one JAS process may own a workspace.
-
-## First experiment
-
-1. Open Learn → Examples to watch one of eight scripted recordings without a key:
-   three work examples and five cooperation examples.
-   Choose Use example to edit its protocol. Home's four Experiment ideas fill an
-   Assistant draft without sending it.
-2. Add a provider key or local endpoint in Settings. Keys stay on your machine.
-3. Choose a starter or create an experiment in General. Review the free checks,
-   run/call/cost bounds, seeds and spending caps.
-4. Save to inspect the frozen protocol, or explicitly choose Save and run.
-5. Open Results, a run or a same-seed matched comparison. Scrubbing and replay
-   verification do not call a model.
-
-Prices are editable estimates used for reservation/accounting, not your provider's
-invoice. An unknown price stays unknown; supply a token ceiling before execution.
-A token ceiling does not guarantee a dollar cost. Assistant replies show their
-recorded cost, with request/token details on demand.
-
-## Docker
-
-```sh
-cp .env.example .env
-docker compose up --build
-```
-
-Open http://localhost:8080. Keys can be entered in Settings; they are optional for
-recorded examples. SQLite and local configuration persist in the `jas-data` volume.
-`docker compose down` stops the app and preserves data. Do not add `--volumes`
-unless you deliberately intend to erase that workspace.
-
-The default image is the private workspace. The separate `gallery` build target
-serves public records and cannot run experiments. See [hosting](DEPLOYMENT.md).
-
-## Data and access
-
-Settings → Data downloads a consistent all-data ZIP, excluding provider keys.
-It contains private observations and conversations; keep backups private. Stop
-JAS before restoring to a separate directory, and preserve existing files first.
-
-Localhost needs no login. LAN/private hosting requires explicit allowed hosts and
-owner authentication. Keep the host/origin checks enabled. Do not expose your
-local workspace as a public gallery.
+The wheel includes the interface and opens http://localhost:8080. Package-registry
+publication is pending. Its default workspace is your platform's app-data directory;
+`--workspace ./my-workspace` selects another directory and `--port 8088` changes
+the port. Run only one JAS process per workspace.

@@ -358,3 +358,18 @@ Disposable test services stopped. After checking no active runs/pending chats,
 restarted the existing local app to load the new endpoint: PID 431673, 0.0.0.0:8080,
 same `data/workspace`, healthy with current frontend. No user data deletion, paid
 calls, dependencies, deployment, uploads or public-docs publication.
+
+## Completed: Docker-first setup instructions
+
+README, installation and Mintlify quickstart now lead with downloading/extracting
+the current MVP and running `docker compose up --build`. Removed contributor
+Python/Node/pnpm setup and the unnecessary `.env` copy from the ordinary user path.
+Provider setup stays in Settings; stop/restart and named-volume persistence are
+explained briefly. Optional wheels and source development live in separate guides.
+No prebuilt image/package publication is claimed.
+
+Verified Compose configuration with no env file, current official Compose build
+and volume semantics, Mintlify validation/build, broken links and diff whitespace.
+Documentation only: no new container build/runtime tests, service changes or data
+changes. Existing 8080 stays running. Mintlify source was updated locally; its live
+site was not published.
