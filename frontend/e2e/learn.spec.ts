@@ -95,7 +95,7 @@ for (const width of [320, 1440])
           (element) =>
             getComputedStyle(element).gridTemplateColumns.split(" ").length,
         );
-      expect(columns).toBe(width === 320 ? 1 : 3);
+      expect(columns).toBe(width === 320 ? 1 : 2);
       await expect(
         page.getByRole("heading", { name: "Examples", exact: true }),
       ).toBeVisible();
@@ -138,8 +138,14 @@ for (const width of [320, 1440])
           }),
         ).toHaveAttribute("href", `/new?starter=${example.id}`);
         await expect(
-          row.locator('[data-slot="example-preview"]'),
-        ).toContainText(example.design.conditions[0].name);
+          row.getByText("Scripted demo", { exact: true }),
+        ).toBeVisible();
+        await expect(row.locator('[data-slot="card-description"]')).toHaveText(
+          example.design.question,
+        );
+        const artwork = row.locator("svg[data-environment]");
+        await expect(artwork).toHaveCSS("width", "44px");
+        await expect(artwork).toHaveCSS("height", "44px");
         expect(
           await row.evaluate(
             (element) => element.scrollWidth <= element.clientWidth,
@@ -160,11 +166,14 @@ for (const width of [320, 1440])
           .getByRole("button", { name: "Assistant", exact: true })
           .click();
         await expect.poll(columnCount).toBe(2);
+        await page.setViewportSize({ width: 1280, height: 900 });
+        await expect.poll(columnCount).toBe(1);
+        await page.setViewportSize({ width: 1440, height: 900 });
         await page
           .getByRole("complementary", { name: "Assistant", exact: true })
           .getByRole("button", { name: "Close Assistant", exact: true })
           .click();
-        await expect.poll(columnCount).toBe(3);
+        await expect.poll(columnCount).toBe(2);
       }
       await page
         .getByRole("link", {

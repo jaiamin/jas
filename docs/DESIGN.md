@@ -148,15 +148,15 @@ Learn follows Workspace with Docs (BookText), JAS MCP (Cable) and Examples (Bloc
 Keep these three navigation glyphs distinct and outlined. External documentation
 links use ArrowUpRight and open a new tab; collapsed navigation shows only the
 leading icon with its existing tooltip. Examples groups eight scripted recordings:
-three under Work & evidence and five under Cooperation & decisions, following the supplied card-grid
-reference. Use stock Cards with short titles/questions, Watch and Use example,
-and an inset protocol preview cropped at the lower/right edges. Preview conditions,
-participant counts, seeds and rounds come from each actual starter, with stable
-condition colors; never invent results. Use one, two or three columns according to
-available content width, including beside an open Assistant. Keep 24px card content
-insets, 16px grid gaps and 48px between groups, without filters or extra controls.
-Preview content is decorative and cannot capture focus or pointer events. Watch
-and reuse stay keyless and never start a model run.
+three under Work & evidence and five under Cooperation & decisions. Match the
+Environments grid: two equal columns at 42rem of available content, one below,
+12px grid gaps and 32px between groups. Use stock Cards with 16px insets, a 44px
+bare environment mark, the protocol title and its short question. Keep Watch as
+an outline button and Use example as a quieter ghost action, with a small muted
+Scripted demo label. Omit inset protocol previews, parameter lists, search and
+filters. Detailed conditions, seeds, rounds and participants remain in the recording
+and editor. Skeletons match the compact cards. Watch and reuse stay keyless and
+never start a model run.
 Examples shares RecordListTitle with Environments: a 36px muted rounded icon tile,
 an 18px glyph and 20px/22px title with a 12px gap. Use Blocks and omit the subtitle.
 The compact brand link returns to Home. The footer contains a quiet usage line,

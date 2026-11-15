@@ -191,3 +191,25 @@ services were closed. No deployments, documentation publication, Gallery uploads
 paid model calls were performed. Public documentation source was updated locally.
 Hosted CI remains subject to the existing account billing gate; backend was unchanged
 and its full suite was not rerun for this frontend task.
+
+## Completed: compact Examples
+
+Approved direction: keep three work/five cooperation examples and the current
+heading, use two equal desktop columns and one on phones/narrow content, with a
+small environment mark, title, question, Watch/Use example and Scripted demo label.
+Remove decorative protocol tables and parameter metadata. Preserve loading/error/
+empty states, real recording/editor destinations and keyless behavior.
+
+- [x] Simplify cards with existing primitives; update design notes and layout assertions.
+- [x] Run affected browser flows in both themes/phone/desktop, including Assistant width.
+- [x] Inspect screenshots; finish lint/type/build checks and serve the build on 8080.
+No backend changes, paid calls, uploads or deployment are authorized by this UI task.
+
+Verification: lint, TypeScript/Vite build and all 10 affected Learn/recording browser
+checks passed using disposable keyless port 18160. Both themes were inspected at
+320px/1440px; the grid also switches to one column beside the Assistant at 1280px.
+All eight recordings still open without provider setup, and Use example opens its
+original editable protocol without saving/running. Loading/retry/empty states pass.
+Logs/screenshots are in ignored `.tools/examples-compact-*`. The test server stopped;
+local 8080 is healthy and serves the new build. No dependencies/backend/data changes,
+paid calls, uploads, deployments or public documentation publication were performed.
