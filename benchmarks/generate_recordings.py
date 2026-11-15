@@ -1,4 +1,4 @@
-"""Regenerate the six keyless UI recordings through the real engine. No provider calls."""
+"""Regenerate keyless UI recordings through the real engine. No provider calls."""
 
 import argparse
 import asyncio

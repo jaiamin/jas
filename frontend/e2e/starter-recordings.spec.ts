@@ -90,9 +90,9 @@ test("each bundled recording opens without provider configuration", async ({
 }) => {
   const starters = await (await request.get("/api/starters")).json();
   for (const starter of starters) {
-    await page.goto(`/environments?environment=${starter.design.environment}`);
+    await page.goto("/examples");
     await page
-      .getByRole("link", { name: "Watch a recorded run", exact: true })
+      .getByRole("link", { name: `Watch ${starter.design.title}`, exact: true })
       .click();
     await expect(page).toHaveURL(new RegExp(`/watch/${starter.id}$`));
     await page

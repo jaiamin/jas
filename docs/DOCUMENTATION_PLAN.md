@@ -12,7 +12,7 @@ existing data and port 8080. No app deployment, paid model calls or v0.2 feature
 - [x] Add Learn below Workspace: Docs, JAS MCP and Examples. Docs and JAS MCP
       open the specific public documentation pages in new tabs and show a trailing
       ArrowUpRight. Preserve collapsed tooltips, mobile navigation and focus.
-- [x] Examples lists the six existing scripted recordings with Watch and Use
+- [x] Examples lists eight scripted recordings (three work, five cooperation) with Watch and Use
       actions; opening or reusing an example never starts a run. Preserve Home's
       four illustrated Experiment ideas.
 - [x] Prepare JAS branding and a restrained Mintlify layout, with short installation,
@@ -43,7 +43,8 @@ existing data and port 8080. No app deployment, paid model calls or v0.2 feature
   credentials, or bypass the blocked endpoint.
 - Examples describes both watching a recorded demonstration and reusing its
   starting protocol more clearly than Templates. Keep one destination and no
-  extra filters for six entries.
+  extra filters for eight entries. Examples uses the shared Environments title
+  treatment without a subtitle; BookText, Cable and Blocks distinguish Learn icons.
 
 ## Next steps
 

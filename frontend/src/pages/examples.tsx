@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { EnvironmentMark } from "@/components/environments/environment-mark";
 import { Empty } from "@/components/feedback";
-import { Play } from "@/components/icons";
-import { ErrorState, PageHeading } from "@/components/shared";
+import { Blocks, Play } from "@/components/icons";
+import { RecordListTitle } from "@/components/record-list-heading";
+import { ErrorState } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,10 +27,7 @@ export default function Examples() {
   const examples = useApi<Starter[]>("/starters");
   return (
     <>
-      <PageHeading
-        title="Examples"
-        description="Watch a scripted demonstration, then reuse its protocol. Recordings use no keys or model calls and aren’t evidence of model behavior."
-      />
+      <RecordListTitle title="Examples" icon={Blocks} className="mb-8" />
       {examples.error && (
         <ErrorState error={examples.error} onRetry={examples.refetch} />
       )}

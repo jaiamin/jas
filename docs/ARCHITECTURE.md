@@ -961,8 +961,9 @@ settlement, prompts or checkpoint replay. No migration or reset is performed.
 The public interface uses experiments and immutable versions; internal database/API
 names remain Study/Revision. Quick and Advanced share one validated protocol and
 one browser draft. Advanced retains the full editor; raw JSON and extension
-candidates require Developer mode. Save never runs. Six reusable starters include
-keyless scripted recordings; Home shows only three. Model setup, pricing, token
+candidates require Developer mode. Save never runs. Eight reusable examples include
+keyless scripted recordings under Learn → Examples (three work, five cooperation).
+Home's four illustrated ideas fill Assistant drafts without sending. Model setup, pricing, token
 caps, publishing identity and backup are local Settings responsibilities.
 
 `providers.py` owns the owner-only local configuration and arbitrary model registry;

@@ -139,10 +139,11 @@ Selected sidebar text retains the same size and weight as unselected text.
 The stock Sidebar starts with Home and Gallery above Workspace
 (Experiments, Runs, Environments). Gallery contains Browse and My published tabs;
 there is one publishing destination and no Community navigation group.
-Learn follows Workspace with Docs, JAS MCP and Examples. External documentation
+Learn follows Workspace with Docs (BookText), JAS MCP (Cable) and Examples (Blocks).
+Keep these three navigation glyphs distinct and outlined. External documentation
 links use ArrowUpRight and open a new tab; collapsed navigation shows only the
-leading icon with its existing tooltip. Examples groups the six scripted recordings
-under Work & evidence and Cooperation & decisions, following the supplied card-grid
+leading icon with its existing tooltip. Examples groups eight scripted recordings:
+three under Work & evidence and five under Cooperation & decisions, following the supplied card-grid
 reference. Use stock Cards with short titles/questions, Watch and Use example,
 and an inset protocol preview cropped at the lower/right edges. Preview conditions,
 participant counts, seeds and rounds come from each actual starter, with stable
@@ -151,6 +152,8 @@ available content width, including beside an open Assistant. Keep 24px card cont
 insets, 16px grid gaps and 48px between groups, without filters or extra controls.
 Preview content is decorative and cannot capture focus or pointer events. Watch
 and reuse stay keyless and never start a model run.
+Examples shares RecordListTitle with Environments: a 36px muted rounded icon tile,
+an 18px glyph and 20px/22px title with a 12px gap. Use Blocks and omit the subtitle.
 The compact brand link returns to Home. The footer contains a quiet usage line,
 a thin budget meter and one direct Settings link. There is no avatar, chooser,
 subtitle or appearance dropdown. Light/dark mode lives only in the top-right header.

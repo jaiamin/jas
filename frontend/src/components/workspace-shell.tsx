@@ -13,14 +13,14 @@ import { Empty } from "@/components/feedback";
 import {
   AgentIcon,
   ArrowUpRight,
-  BookOpen,
-  Code2,
+  Blocks,
+  BookText,
+  Cable,
   FlaskConical,
   Github,
   Globe,
   House,
   Layers2,
-  LayoutTemplate,
   Moon,
   Play,
   Settings,
@@ -141,9 +141,9 @@ export default function WorkspaceShell() {
     },
   ];
   const learnLinks = [
-    { to: DOCS_URL, label: "Docs", icon: BookOpen },
-    { to: MCP_DOCS_URL, label: "JAS MCP", icon: Code2 },
-    { to: "/examples", label: "Examples", icon: LayoutTemplate },
+    { to: DOCS_URL, label: "Docs", icon: BookText },
+    { to: MCP_DOCS_URL, label: "JAS MCP", icon: Cable },
+    { to: "/examples", label: "Examples", icon: Blocks },
   ];
   function changeTheme() {
     const next = !dark;

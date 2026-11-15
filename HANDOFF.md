@@ -253,3 +253,33 @@ calls were sent. Backend checks were not repeated for these frontend-only change
 The existing 8080 app serves rebuilt assets and health is 200. No deployment,
 Railway change or user-data deletion. The earlier Mintlify publication blocker
 remains; this refinement does not change the public site.
+
+Learn/library follow-up: Docs now uses BookText, JAS MCP uses Cable and Examples
+uses Blocks, all stock outlined navigation glyphs. Top Docs stays text-only.
+Extracted RecordListTitle from the existing list heading so Examples shares the
+Environments title exactly (36px muted tile, 18px glyph, 20px/22px heading), with
+no subtitle and no extra search control. Existing list/search behavior is retained.
+
+Examples now has exactly three work protocols and five cooperation protocols.
+Added workflow-timing (one versus four preparation rounds with resources and other
+rules matched) and shared-evidence (distributed versus shared access in independent
+group choices). Both reuse installed templates and existing scripted policies;
+no new engine rules, harnesses or schema versions. Generated the recordings with
+a temporary zero-budget database and verified replay. The original six protocols
+and recording files are unchanged; index.json includes all eight. Public examples
+remain demonstrations rather than evidence of model behavior. Updated installation,
+architecture, design and acceptance docs to match the library and heading.
+
+Verification: Ruff/format, ty, frontend lint/build, 30 affected backend tests,
+all 151 frontend unit tests and 31 affected browser tests pass. Four final starter
+tests recheck shipped index consistency, all eight bundled replays and isolated
+duration changes. Browser checks cover Learn icons, 3/5 counts, exact title/tile
+sizes, no subtitle, responsive grids including the Assistant width, existing
+Environments/list navigation and opening all eight recordings without a provider.
+Desktop/light and phone/dark screenshots were inspected. System /usr/bin/uv fails
+on this guest's page size; the existing project .tools/bin/uv ran the checks.
+After confirming no active runs or pending chats, refreshed only the local 8080
+process in data/workspace. Health is 200; API reports eight examples, three work
+and five cooperation. Preserve PID 271687 and this workspace. No paid calls,
+user-data reset, Railway changes or deployment. Mintlify publication remains
+blocked as recorded above.

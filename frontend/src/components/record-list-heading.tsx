@@ -33,9 +33,46 @@ export function RecordSearch({
   );
 }
 
-export function RecordListHeading({
+export function RecordListTitle({
   title,
   icon: Icon,
+  partialFill,
+  headingRef,
+  className,
+}: {
+  title: string;
+  icon: AppIcon;
+  partialFill?: "layers";
+  headingRef?: Ref<HTMLHeadingElement>;
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex min-w-0 items-center gap-3", className)}>
+      <Avatar
+        className="size-9 rounded-lg after:rounded-lg after:border-0"
+        aria-hidden="true"
+      >
+        <AvatarFallback
+          data-active="true"
+          className="rounded-lg bg-muted-foreground/15 [&>svg]:size-4.5 [&>svg:not([data-partial-fill])]:fill-current"
+        >
+          <Icon data-partial-fill={partialFill} />
+        </AvatarFallback>
+      </Avatar>
+      <h1
+        ref={headingRef}
+        tabIndex={headingRef ? -1 : undefined}
+        className="text-xl font-semibold tracking-tight outline-none sm:text-[1.375rem]"
+      >
+        {title}
+      </h1>
+    </div>
+  );
+}
+
+export function RecordListHeading({
+  title,
+  icon,
   partialFill,
   search,
   onSearchChange,
@@ -58,26 +95,12 @@ export function RecordListHeading({
         className,
       )}
     >
-      <div className="flex min-w-0 items-center gap-3">
-        <Avatar
-          className="size-9 rounded-lg after:rounded-lg after:border-0"
-          aria-hidden="true"
-        >
-          <AvatarFallback
-            data-active="true"
-            className="rounded-lg bg-muted-foreground/15 [&>svg]:size-4.5 [&>svg:not([data-partial-fill])]:fill-current"
-          >
-            <Icon data-partial-fill={partialFill} />
-          </AvatarFallback>
-        </Avatar>
-        <h1
-          ref={headingRef}
-          tabIndex={headingRef ? -1 : undefined}
-          className="text-xl font-semibold tracking-tight outline-none sm:text-[1.375rem]"
-        >
-          {title}
-        </h1>
-      </div>
+      <RecordListTitle
+        title={title}
+        icon={icon}
+        partialFill={partialFill}
+        headingRef={headingRef}
+      />
       <div className="flex min-w-0 items-center gap-2">
         <div className="min-w-0 flex-1 sm:w-64 sm:flex-none">
           <RecordSearch

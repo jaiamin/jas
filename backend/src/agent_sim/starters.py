@@ -1,9 +1,10 @@
-"""Six small starting protocols. Recordings are declared scripted demonstrations."""
+"""Eight reusable protocols. Recordings are declared scripted demonstrations."""
 
 from .domain import Design
 from .templates import (
     artifact_template,
     commons_template,
+    distributed_template,
     information_template,
     renewable_resource_template,
     trust_exchange_template,
@@ -15,10 +16,12 @@ def starters() -> list[dict]:
     entries = [
         ("workflow-materials", workflow_template, "workflow_ordered_v1", "work", 180),
         ("evidence-report", artifact_template, "artifact_copy_v1", "work", 45),
+        ("workflow-timing", workflow_template, "workflow_ordered_v1", "work", 180),
         ("commons-messages", commons_template, "commons_half_v1", "game", 90),
         ("trust-memory", trust_exchange_template, "trust_half_v1", "game", 90),
         ("private-evidence", information_template, "private_signal_v1", "game", 90),
         ("resource-renewal", renewable_resource_template, "resource_half_v1", "game", 90),
+        ("shared-evidence", distributed_template, "local_value_v1", "game", 60),
     ]
     result = []
     for key, factory, policy, setting, seconds in entries:
@@ -29,6 +32,25 @@ def starters() -> list[dict]:
         design.openai_reasoning_effort = "low"
         if setting != "work":
             design.profiles = design.profiles[:4]
+        if key == "workflow-timing":
+            design.title = "Preparation time and handoffs"
+            design.question = "Does longer preparation delay dependent work and accepted handoffs?"
+            for condition, duration in zip(design.conditions, (1, 4), strict=True):
+                condition.key = "short" if duration == 1 else "long"
+                condition.name = (
+                    "One-round preparation" if duration == 1 else "Four-round preparation"
+                )
+                workflow = condition.parameters.workflow
+                assert workflow is not None
+                workflow.resource_stock = 9
+                workflow.work_items = [
+                    item.model_copy(update={"duration": duration})
+                    if item.key == "prepare"
+                    else item
+                    for item in workflow.work_items
+                ]
+        if key == "shared-evidence":
+            design.title = "Shared evidence and group choices"
         if key == "commons-messages":
             design.title = "Do messages change contributions?"
             design.question = (

@@ -31,7 +31,8 @@ Only one JAS process may own a workspace.
 
 ## First experiment
 
-1. Open Learn → Examples to watch one of six scripted recordings without a key.
+1. Open Learn → Examples to watch one of eight scripted recordings without a key:
+   three work examples and five cooperation examples.
    Choose Use example to edit its protocol. Home's four Experiment ideas fill an
    Assistant draft without sending it.
 2. Add a provider key or local endpoint in Settings. Keys stay on your machine.

@@ -45,6 +45,21 @@ for (const width of [320, 1440])
       const sidebar = page.locator('[data-slot="sidebar-content"]:visible');
       await expect(sidebar.getByText("Learn", { exact: true })).toBeVisible();
       const learn = sidebar.locator('[data-slot="sidebar-group"]').last();
+      await expect(
+        learn
+          .getByRole("link", { name: /^Docs/ })
+          .locator("svg.lucide-book-text"),
+      ).toBeVisible();
+      await expect(
+        learn
+          .getByRole("link", { name: /^JAS MCP/ })
+          .locator("svg.lucide-cable"),
+      ).toBeVisible();
+      await expect(
+        learn
+          .getByRole("link", { name: "Examples", exact: true })
+          .locator("svg.lucide-blocks"),
+      ).toBeVisible();
       await expect(learn.getByRole("link")).toHaveText([
         "Docs(opens in a new tab)",
         "JAS MCP(opens in a new tab)",
@@ -61,18 +76,18 @@ for (const width of [320, 1440])
       await expect(page).toHaveURL(/\/examples$/);
       await expect(page.getByRole("dialog")).toHaveCount(0);
       const examples = await (await request.get("/api/starters")).json();
-      expect(examples).toHaveLength(6);
-      await expect(page.getByRole("article")).toHaveCount(6);
+      expect(examples).toHaveLength(8);
+      await expect(page.getByRole("article")).toHaveCount(8);
       await expect(
         page
           .getByRole("region", { name: "Work & evidence", exact: true })
           .getByRole("article"),
-      ).toHaveCount(2);
+      ).toHaveCount(3);
       await expect(
         page
           .getByRole("region", { name: "Cooperation & decisions", exact: true })
           .getByRole("article"),
-      ).toHaveCount(4);
+      ).toHaveCount(5);
       const columns = await page
         .locator('[data-slot="example-grid"]')
         .first()
@@ -84,6 +99,20 @@ for (const width of [320, 1440])
       await expect(
         page.getByRole("heading", { name: "Examples", exact: true }),
       ).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: "Examples", exact: true }),
+      ).toHaveCSS("font-size", width < 640 ? "20px" : "22px");
+      const titleIcon = page.locator('[data-slot="avatar"]');
+      await expect(titleIcon).toHaveCSS("width", "36px");
+      await expect(titleIcon.locator("svg.lucide-blocks")).toHaveCSS(
+        "width",
+        "18px",
+      );
+      await expect(
+        page.getByText(
+          /Watch a scripted demonstration, then reuse its protocol/,
+        ),
+      ).toHaveCount(0);
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth,
