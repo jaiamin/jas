@@ -9,9 +9,10 @@ import { LockKeyhole } from "@/components/icons";
 import { Json } from "@/components/shared";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { label, metric } from "@/lib/format";
+import { label, metric, modelLabel } from "@/lib/format";
 import { agentIdentity, conditionIdentity } from "@/lib/identity";
 import type { Event, Evidence, RunDetail } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 function Privacy({ value }: { value: string }) {
   return (
@@ -137,25 +138,52 @@ export function RunViewer({
   );
   return (
     <div
-      className={`grid min-w-0 items-start gap-6 ${compact ? "" : "xl:grid-cols-[minmax(10rem,0.8fr)_minmax(0,2fr)_minmax(12rem,1fr)]"}`}
+      className="@container/run-viewer flex min-w-0 flex-col gap-6"
       data-slot="run-viewer"
     >
       <aside
         aria-label="Agents"
-        className={`flex min-w-0 flex-col gap-3 ${compact ? "" : "xl:max-h-[50dvh] xl:overflow-y-auto xl:overscroll-contain"}`}
+        className="flex min-w-0 flex-col gap-3 border-y py-4"
       >
-        <h2 className="text-sm font-medium">Agents</h2>
-        <Button
-          variant={agentView ? "ghost" : "secondary"}
-          size="sm"
-          className="justify-start"
-          onClick={() => onPerspective("researcher")}
-        >
-          Researcher view
-        </Button>
-        <div
-          className={`grid grid-cols-2 gap-1 sm:grid-cols-3 ${compact ? "" : "xl:grid-cols-1"}`}
-        >
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <h2 className="text-sm font-medium">Perspective</h2>
+          <Disclosure>
+            <DisclosureTrigger>Agent details</DisclosureTrigger>
+            <DisclosureContent className="pt-3">
+              <dl className="flex flex-col gap-3 text-xs">
+                {run.design.profiles
+                  .filter(
+                    (profile) => !agentView || profile.key === perspective,
+                  )
+                  .map((profile) => (
+                    <div
+                      key={profile.key}
+                      className="flex flex-wrap justify-between gap-x-6 gap-y-1"
+                    >
+                      <dt className="font-medium">{profile.name}</dt>
+                      <dd className="text-muted-foreground wrap-anywhere">
+                        {run.harness.kind === "scripted"
+                          ? "Scripted demo"
+                          : modelLabel(
+                              profile.model ?? condition?.model ?? "",
+                            )}{" "}
+                        · {label(run.parameters.memory)} memory
+                      </dd>
+                    </div>
+                  ))}
+              </dl>
+            </DisclosureContent>
+          </Disclosure>
+        </div>
+        <div className="flex flex-wrap items-center gap-1">
+          <Button
+            variant={agentView ? "ghost" : "secondary"}
+            size="sm"
+            aria-pressed={!agentView}
+            onClick={() => onPerspective("researcher")}
+          >
+            Researcher view
+          </Button>
           {run.design.profiles.map((profile) => {
             const identity = agentIdentity(profile.key);
             const holdings = agentView
@@ -167,33 +195,24 @@ export function RunViewer({
               <Button
                 key={profile.key}
                 variant={perspective === profile.key ? "secondary" : "ghost"}
-                className="h-auto min-w-0 items-start justify-start gap-2 px-2 py-3 text-left"
+                size="sm"
+                className="max-w-full min-w-0 justify-start gap-2"
                 aria-pressed={perspective === profile.key}
                 onClick={() => onPerspective(profile.key)}
               >
                 <span
                   aria-hidden="true"
-                  className="mt-0.5 text-base"
+                  className="shrink-0"
                   style={{ color: identity.color }}
                 >
                   {identity.glyph}
                 </span>
-                <span className="flex min-w-0 flex-col gap-1">
-                  <span className="truncate font-medium">{profile.name}</span>
-                  <span className="break-all whitespace-normal text-xs font-normal text-muted-foreground">
-                    {run.harness.kind === "scripted"
-                      ? "Scripted demo"
-                      : (profile.model ?? condition?.model)}
+                <span className="truncate">{profile.name}</span>
+                {holdings != null && (
+                  <span className="text-xs font-normal tabular-nums text-muted-foreground">
+                    {String(holdings)} credits
                   </span>
-                  <span className="text-xs font-normal text-muted-foreground">
-                    {label(run.parameters.memory)} memory
-                  </span>
-                  {holdings != null && (
-                    <span className="text-xs tabular-nums">
-                      {String(holdings)} credits
-                    </span>
-                  )}
-                </span>
+                )}
               </Button>
             );
           })}
@@ -205,168 +224,192 @@ export function RunViewer({
           </p>
         )}
       </aside>
-      <section
-        aria-label="Turn story"
-        className={`flex min-w-0 flex-col gap-6 ${compact ? "" : "xl:max-h-[50dvh] xl:overflow-y-auto xl:overscroll-contain xl:border-x xl:px-6"}`}
-      >
-        {!visible ? (
-          <Empty
-            title={
-              agentView
-                ? "No observation for this agent yet"
-                : "Loading recorded turn"
-            }
-            description={
-              agentView
-                ? "Step forward to its first activation."
-                : "The saved evidence will appear here."
-            }
-          />
-        ) : visible.number === 0 ? (
-          <Empty
-            title="Before the first turn"
-            description="Play the recording or step forward to see the first observation and action."
-          />
-        ) : (
-          <>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-sm font-medium">
-                {actor?.name ?? visible.actor} · Turn {visible.number}
-              </h2>
-              <Privacy value="private" />
-            </div>
-            {visible.number !== turn && (
-              <p className="text-xs text-muted-foreground">
-                Last observation for this agent, at turn {visible.number}.
-                Current playback: turn {turn}.
-              </p>
-            )}
-            <section className="flex flex-col gap-3">
-              <h3 className="text-sm font-medium">1. Observation</h3>
-              <p className="text-xs text-muted-foreground">
-                {run.harness.kind === "scripted"
-                  ? "Input to the declared scripted policy. No model inference."
-                  : "Available to this agent at activation. Input receipts in the evidence drawer show what reached each model request."}
-              </p>
-              {observation && <Observation observation={observation} />}
-            </section>
-            <section className="flex flex-col gap-3 border-t pt-4">
-              <h3 className="text-sm font-medium">2. Action</h3>
-              {decision?.action && (
-                <>
-                  <p className="text-base font-medium">
-                    {label(decision.action.kind)}
-                    {"amount" in decision.action &&
-                      ` · ${decision.action.amount}`}
-                    {"target" in decision.action &&
-                      decision.action.target &&
-                      ` → ${decision.action.target}`}
-                  </p>
-                  <Disclosure>
-                    <DisclosureTrigger>Action fields</DisclosureTrigger>
-                    <DisclosureContent>
-                      <Json value={decision.action} />
-                    </DisclosureContent>
-                  </Disclosure>
-                </>
-              )}
-            </section>
-            <section className="flex flex-col gap-3 border-t pt-4">
-              <h3 className="text-sm font-medium">3. Messages</h3>
-              <EventList
-                events={events.filter(message)}
-                empty="No messages on this turn."
-              />
-            </section>
-            <section className="flex flex-col gap-3 border-t pt-4">
-              <h3 className="text-sm font-medium">4. Consequence</h3>
-              <EventList
-                events={events.filter((event) => !message(event))}
-                empty="No consequence settled on this turn."
-              />
-            </section>
-          </>
+      <div
+        className={cn(
+          "grid min-w-0 items-start gap-8",
+          !compact &&
+            "@3xl/run-viewer:grid-cols-[minmax(0,2fr)_minmax(14rem,1fr)]",
         )}
-      </section>
-      <aside
-        aria-label={agentView ? "Agent-visible world" : "World and metrics"}
-        className={`flex min-w-0 flex-col gap-4 ${compact ? "" : "xl:max-h-[50dvh] xl:overflow-y-auto xl:overscroll-contain"}`}
       >
-        <h2 className="text-sm font-medium">
-          {agentView ? "Agent-visible world" : "World"}
-        </h2>
-        {agentView ? (
-          <p className="text-sm text-muted-foreground">
-            The observation is the record of what was available. Global metrics
-            and private world state belong to researcher view.
-          </p>
-        ) : (
-          <>
-            <dl className="grid gap-2 text-sm">
-              {state &&
-                Object.entries(state)
-                  .filter(
-                    ([key, value]) =>
-                      [
-                        "round",
-                        "stock",
-                        "resource_stock",
-                        "resource_spent",
-                        "writes_remaining",
-                        "logical_time",
-                        "done",
-                      ].includes(key) &&
-                      ["number", "boolean"].includes(typeof value),
-                  )
-                  .map(([key, value]) => (
+        <section
+          aria-label="Turn story"
+          className="flex min-w-0 flex-col gap-6"
+        >
+          {!visible ? (
+            <Empty
+              title={
+                agentView
+                  ? "No observation for this agent yet"
+                  : "Loading recorded turn"
+              }
+              description={
+                agentView
+                  ? "Step forward to its first activation."
+                  : "The saved evidence will appear here."
+              }
+            />
+          ) : visible.number === 0 ? (
+            <Empty
+              title="Before the first turn"
+              description={
+                run.summary.turn
+                  ? "Play the recording or step forward to see the first observation and action."
+                  : "Run or Step to record the first agent decision."
+              }
+            />
+          ) : (
+            <>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h2 className="text-sm font-medium">
+                  {actor?.name ?? visible.actor} · Turn {visible.number}
+                </h2>
+                <Privacy value="private" />
+              </div>
+              {visible.number !== turn && (
+                <p className="text-xs text-muted-foreground">
+                  Last observation for this agent, at turn {visible.number}.
+                  Current playback: turn {turn}.
+                </p>
+              )}
+              <section className="flex flex-col gap-3">
+                <h3 className="text-sm font-medium">Observation</h3>
+                <p className="text-xs text-muted-foreground">
+                  {run.harness.kind === "scripted"
+                    ? "Input to the declared scripted policy. No model inference."
+                    : "Available to this agent at activation. Input receipts in the evidence drawer show what reached each model request."}
+                </p>
+                {observation && <Observation observation={observation} />}
+              </section>
+              <section className="flex flex-col gap-3 border-t pt-4">
+                <h3 className="text-sm font-medium">Action</h3>
+                {decision?.action && (
+                  <>
+                    <p className="text-base font-medium">
+                      {label(decision.action.kind)}
+                      {"amount" in decision.action &&
+                        ` · ${decision.action.amount}`}
+                      {"target" in decision.action &&
+                        decision.action.target &&
+                        ` → ${decision.action.target}`}
+                    </p>
+                    <Disclosure>
+                      <DisclosureTrigger>Action fields</DisclosureTrigger>
+                      <DisclosureContent>
+                        <Json value={decision.action} />
+                      </DisclosureContent>
+                    </Disclosure>
+                  </>
+                )}
+              </section>
+              <section className="flex flex-col gap-3 border-t pt-4">
+                <h3 className="text-sm font-medium">Messages</h3>
+                <EventList
+                  events={events.filter(message)}
+                  empty="No messages on this turn."
+                />
+              </section>
+              <section className="flex flex-col gap-3 border-t pt-4">
+                <h3 className="text-sm font-medium">Consequence</h3>
+                <EventList
+                  events={events.filter((event) => !message(event))}
+                  empty="No consequence settled on this turn."
+                />
+              </section>
+            </>
+          )}
+        </section>
+        <aside
+          aria-label={agentView ? "Agent-visible world" : "World and metrics"}
+          className={cn(
+            "flex min-w-0 flex-col gap-4 border-t pt-6",
+            !compact &&
+              "@3xl/run-viewer:border-t-0 @3xl/run-viewer:border-l @3xl/run-viewer:pt-0 @3xl/run-viewer:pl-6",
+          )}
+        >
+          <h2 className="text-sm font-medium">
+            {agentView ? "Agent-visible world" : "World"}
+          </h2>
+          {agentView ? (
+            <p className="text-sm text-muted-foreground">
+              The observation is the record of what was available. Global
+              metrics and private world state belong to researcher view.
+            </p>
+          ) : (
+            <>
+              <dl className="grid gap-2 text-sm">
+                {state &&
+                  Object.entries(state)
+                    .filter(
+                      ([key, value]) =>
+                        [
+                          "round",
+                          "stock",
+                          "resource_stock",
+                          "resource_spent",
+                          "writes_remaining",
+                          "logical_time",
+                          "done",
+                        ].includes(key) &&
+                        ["number", "boolean"].includes(typeof value),
+                    )
+                    .map(([key, value]) => (
+                      <div key={key} className="flex justify-between gap-3">
+                        <dt className="text-muted-foreground">{label(key)}</dt>
+                        <dd className="tabular-nums">
+                          {typeof value === "boolean"
+                            ? value
+                              ? "Yes"
+                              : "No"
+                            : String(value)}
+                        </dd>
+                      </div>
+                    ))}
+              </dl>
+              <div className="border-t pt-4">
+                <h3 className="mb-3 text-sm font-medium">Metrics</h3>
+                <dl className="grid gap-3 text-sm">
+                  {metrics.map((key) => (
                     <div key={key} className="flex justify-between gap-3">
                       <dt className="text-muted-foreground">{label(key)}</dt>
                       <dd className="tabular-nums">
-                        {typeof value === "boolean"
-                          ? value
-                            ? "Yes"
-                            : "No"
-                          : String(value)}
+                        {metric(
+                          key,
+                          roundSeries(measurements, key).at(-1)?.value,
+                        )}
                       </dd>
                     </div>
                   ))}
-            </dl>
-            <div className="border-t pt-4">
-              <h3 className="mb-3 text-sm font-medium">Metrics</h3>
-              <dl className="grid gap-3 text-sm">
-                {metrics.map((key) => (
-                  <div key={key} className="flex justify-between gap-3">
-                    <dt className="text-muted-foreground">{label(key)}</dt>
-                    <dd className="tabular-nums">
-                      {metric(
-                        key,
-                        roundSeries(measurements, key).at(-1)?.value,
-                      )}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-            {metrics[0] && (
-              <MetricChart
-                series={[
-                  {
-                    id: run.summary.id,
-                    name: run.summary.condition,
-                    measurements,
-                    ...conditionIdentity(run.design, run.summary.condition_key),
-                  },
-                ]}
-                metricKey={metrics[0]}
-                className="h-40"
-              />
-            )}
-            <p className="text-xs text-muted-foreground">
-              Latest recorded round values through turn {turn}.
-            </p>
-          </>
-        )}
-      </aside>
+                </dl>
+              </div>
+              {metrics[0] &&
+                measurements.some(
+                  (measurement) =>
+                    measurement.key === metrics[0] &&
+                    measurement.value !== null,
+                ) && (
+                  <MetricChart
+                    series={[
+                      {
+                        id: run.summary.id,
+                        name: run.summary.condition,
+                        measurements,
+                        ...conditionIdentity(
+                          run.design,
+                          run.summary.condition_key,
+                        ),
+                      },
+                    ]}
+                    metricKey={metrics[0]}
+                    className="h-40"
+                  />
+                )}
+              <p className="text-xs text-muted-foreground">
+                Latest recorded round values through turn {turn}.
+              </p>
+            </>
+          )}
+        </aside>
+      </div>
     </div>
   );
 }

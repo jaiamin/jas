@@ -15,8 +15,9 @@ export function RunGrid({ study }: { study: StudyDetail }) {
   return (
     <section
       aria-label="Run status grid"
-      className="overflow-hidden rounded-lg border"
+      className="flex min-w-0 flex-col gap-4"
     >
+      <h2 className="text-sm font-medium">Runs by seed</h2>
       <Table>
         <TableHeader>
           <TableRow>

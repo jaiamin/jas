@@ -8,7 +8,6 @@ import {
 import { SeedChart } from "@/components/experiment/seed-chart";
 import { Empty } from "@/components/feedback";
 import { ErrorState } from "@/components/shared";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import { label, metric } from "@/lib/format";
@@ -56,7 +55,7 @@ export function ExperimentOverview({
   return (
     <section
       aria-label="Experiment overview"
-      className="flex min-w-0 flex-col gap-5"
+      className="flex min-w-0 flex-col gap-6"
     >
       {declared && findings.isPending ? (
         <p role="status" className="text-sm text-muted-foreground">
@@ -70,7 +69,7 @@ export function ExperimentOverview({
         />
       ) : present.length ? (
         <div>
-          <p className="max-w-prose text-lg font-medium leading-relaxed">
+          <h2 className="max-w-prose text-base font-medium leading-relaxed">
             {present.slice(0, 2).map((row, index) => (
               <span key={row.condition_key}>
                 {index ? " and " : ""}
@@ -78,12 +77,12 @@ export function ExperimentOverview({
               </span>
             ))}{" "}
             on {label(primary ?? "").toLowerCase()}.
-          </p>
+          </h2>
           <p className="mt-1 text-xs text-muted-foreground">
             {declared ? "First declared outcome" : "Descriptive metric"} ·{" "}
             {rows.reduce((total, row) => total + row.runs, 0)} eligible /{" "}
             {rows.reduce((total, row) => total + row.planned, 0)} planned runs.
-            Full conditions and missingness in Results.
+            Missing and ineligible runs remain available in Results.
           </p>
         </div>
       ) : (
@@ -102,34 +101,31 @@ export function ExperimentOverview({
           )}
         </Empty>
       )}
-      {primary && (
+      {primary && present.length > 0 && (
         <SeedChart design={study.design} cells={cells} metricKey={primary} />
       )}
       {limits.length > 0 && (
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-wrap gap-2">
-            {limits.slice(0, 3).map((limit) => (
-              <Badge
-                key={limit}
-                variant="outline"
-                className="max-w-full whitespace-normal text-left font-normal"
-              >
-                {limit.split(/(?<=[.!?])\s+/)[0].slice(0, 140)}
-                {limit.split(/(?<=[.!?])\s+/)[0].length > 140 ? "…" : ""}
-              </Badge>
-            ))}
-          </div>
-          <Disclosure>
-            <DisclosureTrigger>All limits</DisclosureTrigger>
-            <DisclosureContent>
-              <ul className="flex max-w-prose flex-col gap-3 pt-3 text-sm text-muted-foreground">
-                {limits.map((limit) => (
-                  <li key={limit}>{limit}</li>
-                ))}
-              </ul>
-            </DisclosureContent>
-          </Disclosure>
-        </div>
+        <section
+          aria-label="Interpretation limits"
+          className="flex flex-col gap-3 border-t pt-6"
+        >
+          <h2 className="text-sm font-medium">Interpretation</h2>
+          <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
+            {limits[0]}
+          </p>
+          {limits.length > 1 && (
+            <Disclosure>
+              <DisclosureTrigger>All limits</DisclosureTrigger>
+              <DisclosureContent>
+                <ul className="flex max-w-prose flex-col gap-3 pt-3 text-sm text-muted-foreground">
+                  {limits.slice(1).map((limit) => (
+                    <li key={limit}>{limit}</li>
+                  ))}
+                </ul>
+              </DisclosureContent>
+            </Disclosure>
+          )}
+        </section>
       )}
     </section>
   );

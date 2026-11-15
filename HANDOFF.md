@@ -284,3 +284,48 @@ stopped; the existing user service on 8080 is healthy and serves the production
 build. Home artwork, backend, dependencies and user data are unchanged. Public docs
 source was updated locally; no docs publication, deployment, uploads or paid calls.
 Hosted CI remains subject to the previously observed account billing gate.
+
+## Completed: experiment and run detail layouts
+
+User requests minimalist, organized experiment/run pages consistent with the
+current editor and workspace. Keep the existing design system and capabilities.
+
+Acceptance criteria:
+- [x] Compact shared detail headings, clear metadata and consistent section tabs.
+- [x] Experiment outcomes, run status, protocol and publishing remain easy to find;
+      remove duplicate empty/estimate text and long caveats styled as pills.
+- [x] Run playback sits before the turn evidence; replace the three independently
+      scrolling columns with compact perspectives and a focused story/world layout.
+- [x] Preserve execution controls, cutoff/privacy behavior, immutable versions,
+      exact replay, annotations, exports and publication review.
+- [x] Inspect both themes at phone/desktop and beside Assistant; verify relevant
+      unit/browser flows, lint/types/build and serve on existing 8080. No deployment.
+
+Use only disposable keyless browser data. Do not touch user data or make paid calls.
+
+Shared compact headings and labelled facts replace scattered metadata. Experiment
+tabs use accent line indicators; outcomes and run grids use open tables. Design
+presents conditions, run settings, research notes and agent goals in one column,
+with configuration, version history and immutable JSON disclosed. Blocking checks
+remain visible; unknown usage stays explicit. The mobile version selector keeps
+its full label.
+
+Run playback comes before evidence. Compact perspectives replace the tall agent
+rail; model/memory details are disclosed. Story and world use two columns when
+space allows, stacking beside Assistant and on phones, with one page scroll.
+Shared example/public playback follows the same reading order. Rules & evidence
+retains inspection, receipts, annotations and replay verification. Inspect requests
+now opens Record while preserving the selected turn.
+
+Verification: all 163 frontend unit tests, lint, TypeScript/Vite build and diff
+checks passed. Focused browser runs cover 41 unique affected cases: execution,
+inspection, matched results, workspace, publication, detail layouts, examples and
+public Gallery playback/privacy. Final detail checks were repeated after visual
+polish. Screenshots inspected in both themes at 390px/1440px and beside Assistant.
+The design detector returned no findings. Logs/artifacts: ignored
+`.tools/detail-layout-*`. No clean full browser suite or backend suite was rerun;
+hosted CI remains subject to the previously observed account billing gate.
+
+Disposable keyless test services stopped. Existing user service on 8080 is healthy
+and serves the updated build. No backend, dependency, user-data, paid-call, upload,
+deployment or public-docs publication changes.

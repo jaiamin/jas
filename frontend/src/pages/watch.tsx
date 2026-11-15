@@ -55,6 +55,15 @@ export default function Watch() {
         scripted policy. It is not evidence of model behavior.
       </Alert>
       <div className="mt-6 flex flex-col gap-6">
+        <PlaybackControls
+          key={id}
+          turn={turn}
+          maxTurn={run.summary.turn}
+          moments={run.key_moments}
+          onTurn={(number) => {
+            setParams({ turn: String(number) }, { replace: true });
+          }}
+        />
         <RunViewer
           run={run}
           turn={turn}
@@ -64,15 +73,6 @@ export default function Watch() {
             (item) => item.number <= turn && item.actor === perspective,
           )}
           onPerspective={setPerspective}
-        />
-        <PlaybackControls
-          key={id}
-          turn={turn}
-          maxTurn={run.summary.turn}
-          moments={run.key_moments}
-          onTurn={(number) => {
-            setParams({ turn: String(number) }, { replace: true });
-          }}
         />
       </div>
     </>

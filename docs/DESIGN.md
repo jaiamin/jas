@@ -679,6 +679,34 @@ protocol proposals appear in a Card for review before saving or running. Preserv
 draft identity, pending output, evidence scope and recoverable errors when
 changing presentation. Saving a protocol never executes it.
 
+### Experiment and run details
+
+Use compact outlined record icons and the workspace's 22px title, with a short
+parent breadcrumb. Questions and model/seed metadata sit below the title; actions
+move below that group on narrow content. A small definition list labels status,
+progress and usage. Keep tabular numbers, explicit unresolved usage and version
+selection. Avoid metric cards and repeated record identifiers.
+
+Experiment sections use the same accent line tabs and full-width baseline as the
+editor: Overview, Results, Runs, Design and Publish. Keep the detail column at
+1024px maximum. Overview shows one outcome summary and chart, or one empty state;
+interpretation limits use readable prose with further detail disclosed. Blocking
+checks remain visible before execution. Results and run grids use open tables.
+Design presents conditions, run plan, research notes and agents; configurations,
+version history and the immutable JSON remain disclosed. Publication keeps its
+existing review and privacy boundaries.
+
+Runs use a 1152px maximum column. Place recording controls before evidence, then
+a compact wrapping perspective row and a two-column turn-story/world layout.
+Switch to one column below 768px of viewer width, including beside the Assistant.
+Use the page's scroll rather than independent fixed-height columns. Models and
+memory live in Agent details; balances remain with the perspective buttons. Agent
+view must retain its private observation/event/world filtering. Shared example,
+matched and public viewers use the same reading order and privacy rules.
+Rules & evidence stays beside the recording state and opens the existing drawer;
+its sections use line tabs too. Keep replay verification available below the
+viewer. Inspect requests opens Record and preserves the selected turn.
+
 ### Run recordings
 
 Keep one stock **Play recording / Pause recording** button beside the saved-turn

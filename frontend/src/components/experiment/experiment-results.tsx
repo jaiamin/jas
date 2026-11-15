@@ -34,9 +34,10 @@ export function ExperimentResults({ study }: { study: StudyDetail }) {
   return (
     <section
       aria-label="Condition results"
-      className="flex min-w-0 flex-col gap-5"
+      className="flex min-w-0 flex-col gap-4"
     >
-      <div className="overflow-hidden rounded-lg border">
+      <h2 className="text-sm font-medium">Outcomes by condition</h2>
+      <div className="min-w-0">
         <Table>
           <TableHeader>
             <TableRow>
@@ -130,7 +131,7 @@ export function ExperimentResults({ study }: { study: StudyDetail }) {
           </TableBody>
         </Table>
       </div>
-      <p className="text-xs text-muted-foreground">
+      <p className="max-w-prose text-xs leading-relaxed text-muted-foreground">
         One dot per eligible seed; repetitions are averaged within seed. Only
         complete, defined outcomes contribute to means. Planned cells remain
         inspectable. No population confidence interval is identified.
@@ -138,8 +139,9 @@ export function ExperimentResults({ study }: { study: StudyDetail }) {
       {study.design.conditions.length > 1 && (
         <section
           aria-label="Matched seeds"
-          className="overflow-hidden rounded-lg border"
+          className="mt-4 flex min-w-0 flex-col gap-4"
         >
+          <h2 className="text-sm font-medium">Matched runs</h2>
           <Table>
             <TableHeader>
               <TableRow>

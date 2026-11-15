@@ -1,23 +1,28 @@
 import { expect, test } from "@playwright/test";
 
-test("long recorded consequences keep desktop playback within reach", async ({
+test("long recorded consequences follow the playback controls without clipping", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/watch/commons-messages?turn=4");
   const story = page.getByRole("region", { name: "Turn story" });
-  await expect(story).toContainText("4. Consequence");
+  await expect(
+    story.getByRole("heading", { name: "Consequence", exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Play recording", exact: true }),
   ).toBeInViewport();
   await expect(
     page.getByRole("slider", { name: "Recorded turn", exact: true }),
   ).toBeInViewport();
-  await story.getByRole("button", { name: "Full observation" }).focus();
-  await page.keyboard.press("End");
-  await expect
-    .poll(() => story.evaluate((element) => element.scrollTop))
-    .toBeGreaterThan(0);
+  const playback = await page
+    .getByRole("region", { name: "Recorded playback" })
+    .boundingBox();
+  const content = await story.boundingBox();
+  expect(playback && content && playback.y + playback.height <= content.y).toBe(
+    true,
+  );
+  await expect(story).toHaveCSS("overflow-y", "visible");
 });
 
 for (const width of [390, 1440]) {
@@ -54,9 +59,7 @@ for (const width of [390, 1440]) {
     await expect(
       page.getByRole("slider", { name: "Recorded turn", exact: true }),
     ).toHaveAttribute("aria-valuenow", "2");
-    await page
-      .getByRole("button", { name: /Investigator.*Scripted demo/ })
-      .click();
+    await page.getByRole("button", { name: /^Investigator/ }).click();
     await expect(
       page.getByRole("complementary", { name: "Agent-visible world" }),
     ).toContainText(
@@ -100,10 +103,10 @@ test("each bundled recording opens without provider configuration", async ({
       .click();
     await expect(
       page.getByRole("region", { name: "Turn story" }),
-    ).toContainText("1. Observation");
+    ).toContainText("Observation");
     await expect(
       page.getByRole("region", { name: "Turn story" }),
-    ).toContainText("4. Consequence");
+    ).toContainText("Consequence");
     await expect(
       page.getByRole("button", { name: "Play recording", exact: true }),
     ).toBeEnabled();

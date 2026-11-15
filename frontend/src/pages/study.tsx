@@ -20,32 +20,29 @@ import { VersionDiff } from "@/components/experiment/version-diff";
 import { ExperimentCheck } from "@/components/experiment-check";
 import { ExposureInspection } from "@/components/exposure-inspection";
 import { Alert } from "@/components/feedback";
-import { Download, Pause, Play, Settings2 } from "@/components/icons";
+import {
+  Download,
+  ExperimentIcon,
+  Pause,
+  Play,
+  Settings2,
+} from "@/components/icons";
 import { OptionSelect as Select } from "@/components/option-select";
-import { ProtocolEstimate } from "@/components/protocol-estimate";
+import {
+  RecordDetailHeading,
+  RecordFacts,
+  RecordSectionTabs,
+} from "@/components/record-detail";
 import { RecordSearch } from "@/components/record-list-heading";
 import { ResearchFindings } from "@/components/research-findings";
 import { RunTable } from "@/components/run-table";
-import {
-  ErrorState,
-  Json,
-  Loading,
-  PageHeading,
-  Status,
-} from "@/components/shared";
+import { ErrorState, Json, Loading, Status } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useRecordFilters } from "@/hooks/use-record-filters";
 import { api, invalidateResources, useApi } from "@/lib/api";
-import { label, money } from "@/lib/format";
+import { label, modelLabel, money } from "@/lib/format";
 import type { StudyDetail } from "@/lib/types";
 
 export default function Study() {
@@ -95,6 +92,9 @@ export default function Study() {
       (value) => value === params.get("tab"),
     ) ?? "overview";
   const isOld = study.revision !== study.revisions[0]?.number;
+  const showCheck =
+    study.preflight.status === "blocked" ||
+    !!study.preflight.adjudications?.length;
   function experimentStatus() {
     if (active) return "running";
     if (complete) return "complete";
@@ -103,9 +103,18 @@ export default function Study() {
     return "ready";
   }
   return (
-    <>
-      <PageHeading
+    <div
+      className="mx-auto flex w-full max-w-5xl min-w-0 flex-col gap-6"
+      data-slot="experiment-detail"
+    >
+      <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
+        <Link to="/experiments" className="text-link">
+          Experiments
+        </Link>
+      </nav>
+      <RecordDetailHeading
         title={study.design.title}
+        icon={ExperimentIcon}
         description={study.design.question}
       >
         <Button variant="outline" size="sm" asChild>
@@ -116,7 +125,7 @@ export default function Study() {
         </Button>
         <Button
           variant="ghost"
-          size="icon"
+          size="icon-sm"
           aria-label="Export experiment"
           asChild
         >
@@ -126,6 +135,7 @@ export default function Study() {
         </Button>
         {!complete && !isOld && (
           <Button
+            size="sm"
             disabled={
               control.isPending ||
               (!active && study.preflight.status === "blocked")
@@ -140,39 +150,48 @@ export default function Study() {
             {active ? "Pause experiment" : "Run experiment"}
           </Button>
         )}
-      </PageHeading>
-      <div className="mb-6 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-        <Status value={experimentStatus()} />
-        <span>{label(study.design.environment)}</span>
-        <span>
-          {study.runs.filter((r) => r.status === "complete").length} /{" "}
-          {study.runs.length} runs complete
-        </span>
-        <span>
-          {money(study.usage.cost_usd)} / {money(study.design.budget_usd)}
-        </span>
-        <Select
-          label="Design version"
-          value={String(study.revision)}
-          onValueChange={(v) => {
-            setParams((previous) => {
-              const next = new URLSearchParams(previous);
-              next.set("revision", v);
-              next.set("tab", tab);
-              return next;
-            });
-          }}
-          options={study.revisions.map((r) => ({
-            value: String(r.number),
-            label: `Version ${r.number}`,
-          }))}
-        />
-      </div>
-      {!complete && !isOld && !active && (
-        <div className="mb-5">
-          <ProtocolEstimate design={study.design} value={study.estimate} />
-        </div>
-      )}
+      </RecordDetailHeading>
+      <RecordFacts
+        items={[
+          { label: "Status", value: <Status value={experimentStatus()} /> },
+          { label: "Environment", value: label(study.design.environment) },
+          {
+            label: "Runs complete",
+            value: `${study.runs.filter((run) => run.status === "complete").length} / ${study.runs.length}`,
+          },
+          {
+            label: "Usage / limit",
+            value: (
+              <>
+                {money(study.usage.cost_usd)} / {money(study.design.budget_usd)}
+                {study.usage.partial && " · unresolved"}
+              </>
+            ),
+          },
+          {
+            label: "Version",
+            value: (
+              <Select
+                label="Design version"
+                className="min-w-max"
+                value={String(study.revision)}
+                onValueChange={(v) => {
+                  setParams((previous) => {
+                    const next = new URLSearchParams(previous);
+                    next.set("revision", v);
+                    next.set("tab", tab);
+                    return next;
+                  });
+                }}
+                options={study.revisions.map((r) => ({
+                  value: String(r.number),
+                  label: `Version ${r.number}`,
+                }))}
+              />
+            ),
+          },
+        ]}
+      />
       {control.error && <Alert variant="error">{control.error.message}</Alert>}
       {location.state?.notice && <Alert>{location.state.notice}</Alert>}
       {isOld && (
@@ -182,29 +201,33 @@ export default function Study() {
         </Alert>
       )}
       <Tabs
+        className="gap-0"
         value={tab}
         onValueChange={(v) =>
           setParams({ ...Object.fromEntries(params), tab: v })
         }
       >
-        <TabsList className="mb-4 max-w-full justify-start overflow-x-auto">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="results">Results</TabsTrigger>
-          <TabsTrigger value="runs">Runs</TabsTrigger>
-          <TabsTrigger value="design">Design</TabsTrigger>
-          <TabsTrigger value="publish">Publish</TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview">
-          {!!study.preflight.adjudications?.length && (
+        <RecordSectionTabs
+          label="Experiment sections"
+          sections={[
+            { value: "overview", label: "Overview" },
+            { value: "results", label: "Results" },
+            { value: "runs", label: "Runs" },
+            { value: "design", label: "Design" },
+            { value: "publish", label: "Publish" },
+          ]}
+        />
+        <TabsContent value="overview" className="pt-6">
+          {showCheck && (
             <ExperimentCheck report={study.preflight} design={study.design} />
           )}
           <ExperimentOverview study={study} activeRun={activeRun} />
-          <Disclosure className="mt-6 min-w-0">
+          <Disclosure className="mt-8 min-w-0 border-t pt-4">
             <DisclosureTrigger>
               Checks &amp; detailed findings
             </DisclosureTrigger>
             <DisclosureContent className="flex min-w-0 flex-col gap-6 pt-4">
-              {!study.preflight.adjudications?.length && (
+              {!showCheck && (
                 <ExperimentCheck
                   report={study.preflight}
                   design={study.design}
@@ -220,9 +243,9 @@ export default function Study() {
             </DisclosureContent>
           </Disclosure>
         </TabsContent>
-        <TabsContent value="results">
+        <TabsContent value="results" className="pt-6">
           <ExperimentResults study={study} />
-          <Disclosure className="mt-6 min-w-0">
+          <Disclosure className="mt-8 min-w-0 border-t pt-4">
             <DisclosureTrigger>Comparison &amp; evidence</DisclosureTrigger>
             <DisclosureContent className="flex min-w-0 flex-col gap-6 pt-3">
               <ComparisonEvidence report={study} />
@@ -232,7 +255,7 @@ export default function Study() {
             </DisclosureContent>
           </Disclosure>
         </TabsContent>
-        <TabsContent value="runs">
+        <TabsContent value="runs" className="pt-6">
           {study.comparison.cells.length <= 120 ? (
             <>
               <RunGrid study={study} />
@@ -263,60 +286,143 @@ export default function Study() {
             </>
           )}
         </TabsContent>
-        <TabsContent value="design">
-          <div className="mb-8">
-            <VersionDiff key={study.revision} study={study} />
-          </div>
-          <div className="grid min-w-0 items-start gap-8 xl:grid-cols-2">
-            <section>
-              <h2 className="text-base font-semibold">Population</h2>
-              <div className="min-w-0 overflow-hidden rounded-lg border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Agent</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Private goal</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {study.design.profiles.map((p) => (
-                      <TableRow key={p.key}>
-                        <TableCell>{p.name}</TableCell>
-                        <TableCell>{p.role}</TableCell>
-                        <TableCell className="min-w-48 max-w-prose whitespace-normal">
-                          {p.goal}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+        <TabsContent value="design" className="flex flex-col gap-6 pt-6">
+          <section className="flex min-w-0 flex-col gap-4">
+            <h2 className="text-sm font-medium">Conditions</h2>
+            <div className="divide-y">
+              {study.design.conditions.map((condition) => (
+                <div
+                  key={condition.key}
+                  className="flex min-w-0 flex-col gap-2 py-4 first:pt-0 last:pb-0"
+                >
+                  <p className="text-sm font-medium wrap-anywhere">
+                    {condition.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground wrap-anywhere">
+                    {condition.harness.kind === "scripted"
+                      ? "Non-model control"
+                      : modelLabel(condition.model)}{" "}
+                    · {label(condition.parameters.memory)} memory
+                  </p>
+                  <Disclosure>
+                    <DisclosureTrigger
+                      aria-label={`Configuration for ${condition.name}`}
+                    >
+                      Configuration
+                    </DisclosureTrigger>
+                    <DisclosureContent>
+                      <Json value={condition} />
+                    </DisclosureContent>
+                  </Disclosure>
+                </div>
+              ))}
+            </div>
+          </section>
+          <Separator />
+          <section className="flex min-w-0 flex-col gap-4">
+            <h2 className="text-sm font-medium">Run plan</h2>
+            <RecordFacts
+              items={[
+                { label: "Rounds per run", value: study.design.rounds },
+                {
+                  label: "Seeds",
+                  value: (
+                    <span className="wrap-anywhere">
+                      {study.design.seeds.join(", ")}
+                    </span>
+                  ),
+                },
+                {
+                  label: "Repetitions per seed",
+                  value: study.design.repetitions,
+                },
+              ]}
+            />
+            <p className="max-w-prose text-xs leading-relaxed text-muted-foreground">
+              Measurements:{" "}
+              {study.design.measures.map(label).join(", ") || "None selected"}.
+            </p>
+          </section>
+          <Separator />
+          {(study.design.hypothesis || study.design.context) && (
+            <section className="flex flex-col gap-3">
+              <h2 className="text-sm font-medium">Research plan</h2>
+              {study.design.hypothesis && (
+                <div className="max-w-prose text-sm">
+                  <p className="mb-1 text-xs text-muted-foreground">
+                    Private hypothesis
+                  </p>
+                  <p className="whitespace-pre-wrap wrap-anywhere">
+                    {study.design.hypothesis}
+                  </p>
+                </div>
+              )}
+              {study.design.context && (
+                <div className="max-w-prose text-sm">
+                  <p className="mb-1 text-xs text-muted-foreground">
+                    Shared context
+                  </p>
+                  <p className="whitespace-pre-wrap wrap-anywhere">
+                    {study.design.context}
+                  </p>
+                </div>
+              )}
             </section>
-            <section>
-              <h2 className="text-base font-semibold">
-                Immutable specification
-              </h2>
+          )}
+          <section className="flex min-w-0 flex-col gap-4">
+            <h2 className="text-sm font-medium">Agents</h2>
+            <div className="divide-y">
+              {study.design.profiles.map((profile) => (
+                <div
+                  key={profile.key}
+                  className="grid min-w-0 gap-2 py-4 first:pt-0 last:pb-0 sm:grid-cols-[minmax(0,1fr)_minmax(0,3fr)] sm:gap-6"
+                >
+                  <div className="min-w-0 text-sm">
+                    <p className="font-medium wrap-anywhere">{profile.name}</p>
+                    <p className="mt-1 text-xs text-muted-foreground wrap-anywhere">
+                      {profile.role}
+                    </p>
+                  </div>
+                  <p className="max-w-prose text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap wrap-anywhere">
+                    {profile.goal}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+          <Separator />
+          <Disclosure>
+            <DisclosureTrigger>Version history</DisclosureTrigger>
+            <DisclosureContent className="pt-4">
+              <VersionDiff key={study.revision} study={study} />
+            </DisclosureContent>
+          </Disclosure>
+          <Disclosure>
+            <DisclosureTrigger>Immutable specification</DisclosureTrigger>
+            <DisclosureContent className="pt-4">
               {study.plan_id && (
-                <Link to={`/new?plan=${study.plan_id}`}>
+                <Link
+                  className="text-link text-sm"
+                  to={`/new?plan=${study.plan_id}`}
+                >
                   View protocol proposal
                 </Link>
               )}
-              <p className="text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 Version {study.revision} · SHA-256{" "}
                 <code>{study.sha256.slice(0, 16)}</code>
               </p>
               <Json value={study.design} />
-            </section>
-          </div>
+            </DisclosureContent>
+          </Disclosure>
         </TabsContent>
-        <TabsContent value="publish">
+        <TabsContent value="publish" className="pt-6">
           <PublishExperiment
             key={`${study.id}:${study.revision}`}
             study={study}
           />
         </TabsContent>
       </Tabs>
-    </>
+    </div>
   );
 }

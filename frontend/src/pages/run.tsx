@@ -7,12 +7,16 @@ import { MetricChart } from "@/components/charts";
 import { Alert, Empty } from "@/components/feedback";
 import { Download, Pause, Play, Radio, SkipForward } from "@/components/icons";
 import { OptionSelect as Select } from "@/components/option-select";
-import { ProtocolEstimate } from "@/components/protocol-estimate";
+import {
+  RecordDetailHeading,
+  RecordFacts,
+  RecordSectionTabs,
+} from "@/components/record-detail";
 import { DecisionBrowser } from "@/components/run/decision-browser";
 import { PlaybackControls } from "@/components/run/playback-controls";
 import { ReplayVerification, RunRecord } from "@/components/run/run-record";
 import { RunViewer } from "@/components/run/run-viewer";
-import { ErrorState, Loading, PageHeading, Status } from "@/components/shared";
+import { ErrorState, Loading, Status } from "@/components/shared";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +28,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   InteractionTable,
   RelationshipTable,
@@ -163,194 +167,215 @@ export default function Run() {
     setParams(next, { replace: true });
   }
   return (
-    <>
-      <nav
-        aria-label="Breadcrumb"
-        className="mb-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground"
-      >
-        <Link to="/experiments" className="hover:underline">
-          Experiments
-        </Link>
-        <span>/</span>
-        <Link
-          to={`/experiments/${summary.study_id}?revision=${summary.revision}`}
-          className="hover:underline"
+    <div
+      className="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-6"
+      data-slot="run-detail"
+    >
+      <Sheet open={inspectorOpen} onOpenChange={setInspectorOpen}>
+        <nav
+          aria-label="Breadcrumb"
+          className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground"
         >
-          {summary.study_title}
-        </Link>
-        <span>/</span>
-        <span>{summary.condition}</span>
-        <span>/</span>
-        <span>
-          Seed {summary.seed} · Repetition {summary.repetition}
-        </span>
-      </nav>
-      <PageHeading
-        title={summary.condition}
-        description={`${runModelLabel(summary)} · Version ${summary.revision} · Seed ${summary.seed} · Repetition ${summary.repetition}`}
-      >
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Export experiment evidence"
-          asChild
-        >
-          <a href={`/api/studies/${summary.study_id}/export?download=true`}>
-            <Download />
-          </a>
-        </Button>
-        {summary.status !== "complete" && (
-          <>
-            <Button
-              variant="outline"
-              disabled={
-                active ||
-                control.isPending ||
-                !!run.execution_blocked ||
-                adjudicationBlocked
-              }
-              onClick={() => control.mutate("step")}
-            >
-              <SkipForward data-icon="inline-start" />
-              Step
-            </Button>
-            <Button
-              disabled={
-                control.isPending ||
-                summary.status === "pausing" ||
-                (!active && (!!run.execution_blocked || adjudicationBlocked))
-              }
-              onClick={() => {
-                control.mutate(active ? "pause" : "start");
-                if (!active) live();
-              }}
-            >
-              {active ? (
-                <Pause data-icon="inline-start" />
-              ) : (
-                <Play data-icon="inline-start" />
-              )}
-              {summary.status === "pausing"
-                ? "Finishing turn…"
-                : active
-                  ? "Pause"
-                  : "Run"}
-            </Button>
-          </>
-        )}
-      </PageHeading>
-      {needsDeclaration &&
-        (declarationMatches && declaration ? (
-          <div className="mb-6">
-            <AdjudicationReview declaration={declaration} design={run.design} />
-          </div>
-        ) : (
-          <Alert title="Review adjudication before execution">
-            {review.isPending
-              ? "Loading the pinned adjudicator declaration and prices…"
-              : review.error
-                ? "The pinned adjudicator declaration could not be loaded."
-                : "The pinned version is blocked or has no matching explicit adjudicator declaration. Run and Step remain unavailable."}
-            <Link
-              to={`/experiments/${summary.study_id}?revision=${summary.revision}`}
-              className="ml-1 underline underline-offset-4"
-            >
-              Review experiment
-            </Link>
-          </Alert>
-        ))}
-      <section
-        aria-label="Run progress"
-        className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground"
-      >
-        <Button variant="link" size="sm" className="h-auto p-0" asChild>
-          <Link to={`/experiments/${summary.study_id}`}>
+          <Link to="/experiments" className="text-link shrink-0">
+            Experiments
+          </Link>
+          <span aria-hidden="true">/</span>
+          <Link
+            to={`/experiments/${summary.study_id}?revision=${summary.revision}`}
+            className="text-link truncate"
+          >
             {summary.study_title}
           </Link>
-        </Button>
-        <Status value={summary.status} />
-        <span>
-          Round{" "}
-          <strong>
-            {summary.round} / {summary.total_rounds}
-          </strong>
-        </span>
-        <span>
-          Turns{" "}
-          <strong>
-            {summary.turn} / {summary.total_turns}
-          </strong>
-        </span>
-        <span>
-          Requests <strong>{summary.usage.requests}</strong>
-        </span>
-        <span>
-          Cost{" "}
-          <strong>
-            {money(summary.usage.cost_usd)}
-            {summary.usage.partial && "*"}
-          </strong>
-        </span>
-        {active && run.next_actor && (
-          <Badge variant="secondary">
-            <Spinner />
-            {run.design.profiles.find((p) => p.key === run.next_actor)?.name} is
-            deciding
-          </Badge>
-        )}
-      </section>
-      {summary.status !== "complete" && !active && (
-        <div className="mb-5">
-          <ProtocolEstimate design={run.design} value={run.estimate} />
-        </div>
-      )}
-      {summary.completion && summary.status === "complete" && (
-        <p className="mb-6 max-w-prose text-sm text-muted-foreground">
-          Finished after {summary.turn} turns ·{" "}
-          {label(summary.completion.reason)} · maximum {summary.total_turns}{" "}
-          turns. {summary.completion.interpretation}
-        </p>
-      )}
-      {run.execution_blocked && (
-        <Alert title="Recorded rules">{run.execution_blocked}</Alert>
-      )}
-      {(summary.error || control.error) && (
-        <Alert
-          variant="error"
-          title="Execution stopped safely"
-          action={
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setParams({ tab: "settings" })}
-            >
-              Inspect requests
-            </Button>
-          }
+        </nav>
+        <RecordDetailHeading
+          title={summary.condition}
+          icon={Play}
+          description={`${runModelLabel(summary)} · Version ${summary.revision} · Seed ${summary.seed} · Repetition ${summary.repetition}`}
         >
-          {control.error?.message ?? summary.error} Saved through turn{" "}
-          {summary.turn}.{" "}
-        </Alert>
-      )}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
-        <span>{pinned ? `Viewing turn ${turn}` : `Latest · turn ${turn}`}</span>
-        {pinned && (
-          <Button variant="outline" size="sm" onClick={live}>
-            <Radio data-icon="inline-start" />
-            {active ? `Live · ${maxTurn}` : "Latest"}
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Export experiment evidence"
+            asChild
+          >
+            <a href={`/api/studies/${summary.study_id}/export?download=true`}>
+              <Download />
+            </a>
           </Button>
+          {summary.status !== "complete" && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={
+                  active ||
+                  control.isPending ||
+                  !!run.execution_blocked ||
+                  adjudicationBlocked
+                }
+                onClick={() => control.mutate("step")}
+              >
+                <SkipForward data-icon="inline-start" />
+                Step
+              </Button>
+              <Button
+                size="sm"
+                disabled={
+                  control.isPending ||
+                  summary.status === "pausing" ||
+                  (!active && (!!run.execution_blocked || adjudicationBlocked))
+                }
+                onClick={() => {
+                  control.mutate(active ? "pause" : "start");
+                  if (!active) live();
+                }}
+              >
+                {active ? (
+                  <Pause data-icon="inline-start" />
+                ) : (
+                  <Play data-icon="inline-start" />
+                )}
+                {summary.status === "pausing"
+                  ? "Finishing turn…"
+                  : active
+                    ? "Pause"
+                    : "Run"}
+              </Button>
+            </>
+          )}
+        </RecordDetailHeading>
+        {needsDeclaration &&
+          (declarationMatches && declaration ? (
+            <div>
+              <AdjudicationReview
+                declaration={declaration}
+                design={run.design}
+              />
+            </div>
+          ) : (
+            <Alert title="Review adjudication before execution">
+              {review.isPending
+                ? "Loading the pinned adjudicator declaration and prices…"
+                : review.error
+                  ? "The pinned adjudicator declaration could not be loaded."
+                  : "The pinned version is blocked or has no matching explicit adjudicator declaration. Run and Step remain unavailable."}
+              <Link
+                to={`/experiments/${summary.study_id}?revision=${summary.revision}`}
+                className="ml-1 underline underline-offset-4"
+              >
+                Review experiment
+              </Link>
+            </Alert>
+          ))}
+        <section aria-label="Run progress" className="flex flex-col gap-4">
+          <RecordFacts
+            items={[
+              { label: "Status", value: <Status value={summary.status} /> },
+              {
+                label: "Round",
+                value: `${summary.round} / ${summary.total_rounds}`,
+              },
+              {
+                label: "Turns",
+                value: `${summary.turn} / ${summary.total_turns}`,
+              },
+              {
+                label: "Requests",
+                value: summary.usage.requests.toLocaleString(),
+              },
+              {
+                label: "Cost",
+                value: (
+                  <>
+                    {money(summary.usage.cost_usd)}
+                    {summary.usage.partial && " · unresolved"}
+                  </>
+                ),
+              },
+            ]}
+          />
+          {active && run.next_actor && (
+            <Badge variant="secondary" className="self-start">
+              <Spinner />
+              {run.design.profiles.find((p) => p.key === run.next_actor)?.name}{" "}
+              is deciding
+            </Badge>
+          )}
+        </section>
+        {summary.completion && summary.status === "complete" && (
+          <p className="max-w-prose text-xs leading-relaxed text-muted-foreground">
+            Finished after {summary.turn} turns ·{" "}
+            {label(summary.completion.reason)} · maximum {summary.total_turns}{" "}
+            turns. {summary.completion.interpretation}
+          </p>
         )}
-      </div>
-      {evidence.error && (
-        <ErrorState error={evidence.error} onRetry={evidence.refetch} />
-      )}
-      {perspectiveEvidence.error && (
-        <ErrorState
-          error={perspectiveEvidence.error}
-          onRetry={perspectiveEvidence.refetch}
-        />
-      )}
-      <div className="flex min-w-0 flex-col gap-6">
+        {run.execution_blocked && (
+          <Alert title="Recorded rules">{run.execution_blocked}</Alert>
+        )}
+        {(summary.error || control.error) && (
+          <Alert
+            variant="error"
+            title="Execution stopped safely"
+            action={
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setInspectorOpen(true);
+                  setParams(
+                    { ...Object.fromEntries(params), tab: "settings" },
+                    { replace: true },
+                  );
+                }}
+              >
+                Inspect requests
+              </Button>
+            }
+          >
+            {control.error?.message ?? summary.error} Saved through turn{" "}
+            {summary.turn}.{" "}
+          </Alert>
+        )}
+        <section
+          aria-label="Run recording"
+          className="flex min-w-0 flex-col gap-3"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+            <span>
+              {pinned ? `Viewing turn ${turn}` : `Latest · turn ${turn}`}
+            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              {pinned && (
+                <Button variant="outline" size="sm" onClick={live}>
+                  <Radio data-icon="inline-start" />
+                  {active ? `Live · ${maxTurn}` : "Latest"}
+                </Button>
+              )}
+              <SheetTrigger asChild>
+                <Button variant="outline" size="sm">
+                  Rules &amp; evidence
+                </Button>
+              </SheetTrigger>
+            </div>
+          </div>
+          <PlaybackControls
+            key={id}
+            turn={turn}
+            maxTurn={maxTurn}
+            ready={evidence.data?.number === turn && !evidence.error}
+            moments={run.key_moments}
+            onTurn={selectTurn}
+          />
+        </section>
+        {evidence.error && (
+          <ErrorState error={evidence.error} onRetry={evidence.refetch} />
+        )}
+        {perspectiveEvidence.error && (
+          <ErrorState
+            error={perspectiveEvidence.error}
+            onRetry={perspectiveEvidence.refetch}
+          />
+        )}
         <RunViewer
           run={run}
           turn={turn}
@@ -359,24 +384,9 @@ export default function Run() {
           perspectiveEvidence={perspectiveEvidence.data}
           onPerspective={setPerspective}
         />
-        <PlaybackControls
-          key={id}
-          turn={turn}
-          maxTurn={maxTurn}
-          ready={evidence.data?.number === turn && !evidence.error}
-          moments={run.key_moments}
-          onTurn={selectTurn}
-        />
-      </div>
-      <div className="mt-5 flex flex-wrap items-start gap-3">
-        <ReplayVerification key={id} runId={id ?? ""} />
-      </div>
-      <Sheet open={inspectorOpen} onOpenChange={setInspectorOpen}>
-        <SheetTrigger asChild>
-          <Button variant="outline" size="sm" className="mt-5">
-            Rules & evidence
-          </Button>
-        </SheetTrigger>
+        <div className="flex flex-wrap items-start gap-3 border-t pt-4">
+          <ReplayVerification key={id} runId={id ?? ""} />
+        </div>
         <SheetContent className="data-[side=right]:w-full data-[side=right]:sm:max-w-5xl">
           <SheetHeader>
             <SheetTitle>Rules & evidence</SheetTitle>
@@ -387,6 +397,7 @@ export default function Run() {
           </SheetHeader>
           <div className="min-h-0 min-w-0 overflow-y-auto px-4 pb-6 sm:px-6">
             <Tabs
+              className="gap-6"
               value={tab}
               onValueChange={(v) =>
                 setParams(
@@ -395,12 +406,15 @@ export default function Run() {
                 )
               }
             >
-              <TabsList className="mb-4 max-w-full justify-start overflow-x-auto">
-                <TabsTrigger value="live">Environment</TabsTrigger>
-                <TabsTrigger value="decisions">Decisions</TabsTrigger>
-                <TabsTrigger value="relationships">Interactions</TabsTrigger>
-                <TabsTrigger value="settings">Record</TabsTrigger>
-              </TabsList>
+              <RecordSectionTabs
+                label="Evidence sections"
+                sections={[
+                  { value: "live", label: "Environment" },
+                  { value: "decisions", label: "Decisions" },
+                  { value: "relationships", label: "Interactions" },
+                  { value: "settings", label: "Record" },
+                ]}
+              />
               <TabsContent value="live">
                 {pinned && evidence.error ? (
                   <ErrorState
@@ -546,6 +560,6 @@ export default function Run() {
           </div>
         </SheetContent>
       </Sheet>
-    </>
+    </div>
   );
 }

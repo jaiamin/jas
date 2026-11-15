@@ -161,16 +161,6 @@ export default function PublicExperimentPage() {
           <Loading />
         ) : (
           <>
-            <RunViewer
-              run={run}
-              turn={turn}
-              evidence={recording.data.evidence[turn]}
-              perspective={perspective}
-              perspectiveEvidence={recording.data.evidence.findLast(
-                (item) => item.number <= turn && item.actor === perspective,
-              )}
-              onPerspective={setPerspective}
-            />
             <PlaybackControls
               key={run.summary.id}
               turn={turn}
@@ -182,6 +172,16 @@ export default function PublicExperimentPage() {
                   { replace: true },
                 )
               }
+            />
+            <RunViewer
+              run={run}
+              turn={turn}
+              evidence={recording.data.evidence[turn]}
+              perspective={perspective}
+              perspectiveEvidence={recording.data.evidence.findLast(
+                (item) => item.number <= turn && item.actor === perspective,
+              )}
+              onPerspective={setPerspective}
             />
             <Disclosure>
               <DisclosureTrigger>Full recorded evidence</DisclosureTrigger>

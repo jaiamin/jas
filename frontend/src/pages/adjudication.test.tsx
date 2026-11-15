@@ -3,7 +3,7 @@
  * Literal response fixtures test display, not live judgment accuracy or World rules.
  * The approved real public-HTTP backend tests independently establish consequences.
  */
-import { fireEvent, screen, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { expect, test, vi } from "vitest";
 import { WorkspaceProvider } from "@/components/workspace-provider";
@@ -429,9 +429,11 @@ test("the actual shell declares judge scope and prices before Run and separates 
     fetcher.mock.calls.filter(([, options]) => options?.method === "POST"),
   ).toHaveLength(0);
   fireEvent.click(screen.getByRole("button", { name: "Run experiment" }));
-  expect(
-    await screen.findByText(/1\s*\/\s*1 runs complete/),
-  ).toBeInTheDocument();
+  await waitFor(() =>
+    expect(
+      screen.getByText("Runs complete").nextElementSibling,
+    ).toHaveTextContent("1 / 1"),
+  );
   // Radix tabs activate on primary mousedown; click alone omits that browser event.
   fireEvent.mouseDown(screen.getByRole("tab", { name: "Runs" }), {
     button: 0,

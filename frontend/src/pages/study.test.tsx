@@ -284,11 +284,37 @@ test("planned sample and lack of independent support remain inspectable without 
   expect(screen.queryByText("Complete / planned")).not.toBeInTheDocument();
   fireEvent.click(details);
   expect(await screen.findByText("Complete / planned")).toBeInTheDocument();
-  expect(screen.getByText("0 / 2")).toBeInTheDocument();
+  expect(screen.getByRole("cell", { name: "0 / 2" })).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Sample & uncertainty" }));
   expect(await screen.findByText("Provider failed")).toBeInTheDocument();
   expect(
     screen.getByText(/Independent support: not established/),
   ).toBeInTheDocument();
   expect(screen.getByText("Sampling is not declared")).toBeInTheDocument();
+});
+
+test("blocked experiments expose the reason before execution without opening details", async () => {
+  const blocked: StudyDetail = {
+    ...snapshot(["ready"]),
+    preflight: {
+      ...study.preflight,
+      status: "blocked",
+      issues: [
+        {
+          code: "inactive_intervention",
+          severity: "error",
+          message: "The comparison changes an inactive setting.",
+        },
+      ],
+    },
+  };
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(() => Promise.resolve(Response.json(blocked))),
+  );
+  renderStudy();
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "The comparison changes an inactive setting.",
+  );
+  expect(screen.getByRole("button", { name: "Run experiment" })).toBeDisabled();
 });

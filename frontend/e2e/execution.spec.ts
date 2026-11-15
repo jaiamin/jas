@@ -125,3 +125,26 @@ test("switching study revisions preserves the selected tab and Agent context", a
     page.getByRole("complementary", { name: "Assistant", exact: true }),
   ).toContainText("v1");
 });
+
+test("execution errors open request inspection without changing the recorded cutoff", async ({
+  page,
+  request,
+}) => {
+  const { run } = await createStudy(request);
+  run.summary.error = "Provider unavailable";
+  run.summary.status = "failed";
+  await page.route(`**/api/runs/${run.summary.id}`, (route) =>
+    route.fulfill({ json: run }),
+  );
+  await page.goto(`/runs/${run.summary.id}?turn=0`);
+  await page
+    .getByRole("button", { name: "Inspect requests", exact: true })
+    .click();
+  await expect(
+    page.getByRole("dialog", { name: "Rules & evidence" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("tab", { name: "Record", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
+  await expect(page).toHaveURL(/turn=0/);
+});
