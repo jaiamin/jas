@@ -406,3 +406,21 @@ Existing user app remains healthy on 0.0.0.0:8080, serving the updated productio
 frontend without a backend restart. Disposable browser-test servers shut down;
 local docs preview and owned review tabs closed after checks. No paid calls,
 user-data changes, deployment, merge or public-docs publication.
+
+## Completed: playful Allo wordmark refinement
+
+The app wordmark now uses a shared JasWordmark component and a 1.3 KB Allo
+Playful JAS subset (800 weight, optical size 22, roundness 100, single-story a).
+Letters have fixed −3°/+2°/−2° tilts; original tracking, sizes and line heights
+remain, with no added gaps or vertical offsets. Sidebar logo and surrounding
+layout are untouched. Gallery branding shares the component and keeps its own
+original 24px size/32px line height. README/docs SVG artwork remains unchanged.
+Font attribution documents the derived, renamed subset under the existing OFL.
+
+Verification: frontend lint and TypeScript/Vite build passed after the final
+line-height adjustment. Six focused navigation browser cases passed, including
+brand alignment, collapse, phone layouts and both themes. Inspected the final
+wordmark in light/dark and confirmed font loading, 22px line height, −0.88px
+tracking and no letter translation. No new tests for this static visual change;
+full suites and hosted CI were not rerun. The existing user app remains running
+on 0.0.0.0:8080; no backend restart, data changes, paid calls or deployment.
