@@ -71,9 +71,9 @@ Nova, Radix, neutral and Lucide, with Allo interface typography, the user-reques
 surfaces, blue actions/selection and wordmark below. Preserve the supplied
 [`logo.svg`](../frontend/public/logo.svg). The top-left lowercase `jas` wordmark
 uses a locally hosted Allo Playful JAS subset at 22px/800, roundness 100 and a
-single-story `a`, without a subtitle. Tiny fixed letter tilts (−3°, +2°, −2°)
-retain the original tracking, line height and baseline, with no added gaps or
-vertical offsets. All other interface text uses the shared Allo font token.
+single-story `a`, without a subtitle or letter rotation. Keep the original
+tracking, line height and baseline, with no added gaps or vertical offsets.
+All other interface text uses the shared Allo font token.
 The compact brand link covers only the logo and wordmark, aligns with navigation
 icons, and has no hover fill, underline or movement on activation.
 The 20px logo stays vertically centered and uncropped, retaining its horizontal

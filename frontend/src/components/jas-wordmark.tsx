@@ -9,9 +9,7 @@ export function JasWordmark({ className }: { className?: string }) {
         className,
       )}
     >
-      <span className="inline-block -rotate-3">j</span>
-      <span className="inline-block rotate-2">a</span>
-      <span className="inline-block -rotate-2">s</span>
+      jas
     </span>
   );
 }

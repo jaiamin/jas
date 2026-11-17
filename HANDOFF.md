@@ -424,3 +424,11 @@ wordmark in light/dark and confirmed font loading, 22px line height, −0.88px
 tracking and no letter translation. No new tests for this static visual change;
 full suites and hosted CI were not rerun. The existing user app remains running
 on 0.0.0.0:8080; no backend restart, data changes, paid calls or deployment.
+
+## Follow-up: upright wordmark
+
+Removed letter rotations at the user's request. The shared wordmark now renders
+normal `jas` text in the same Allo Playful face, with unchanged size, tracking and
+line-height settings. Updated design/font notes. Frontend lint and production
+build passed; browser checks were not rerun for this static reversal. Preview
+continues on 8080 with the rebuilt assets.

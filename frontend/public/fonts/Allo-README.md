@@ -13,8 +13,8 @@ These interface fonts are unmodified upstream assets.
 
 `allo-playful-jas-800-1.0.1.woff2` is a derived `jas` subset of Allo Variable,
 renamed Allo Playful JAS: weight 800, optical size 22 and roundness 100. It retains
-kerning and the single-story `a` alternate (`ss01`). The wordmark uses tiny fixed
-letter rotations without extra gaps or vertical offsets. The same OFL applies.
+kerning and the single-story `a` alternate (`ss01`). The wordmark uses upright
+letters without extra gaps or vertical offsets. The same OFL applies.
 
 `frontend/src/index.css` owns the interface family through `--font-sans`.
 Remove `"Allo",` from that token to preview Geist again; the existing import is
