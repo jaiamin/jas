@@ -35,7 +35,8 @@ authorized. Never store credentials here.
 
 The app links to `/` and `/integrations/jas-mcp`; keep those paths stable.
 JAS MCP is Coming soon. Mintlify's `/mcp` searches documentation, not a local workspace.
-Header SVGs outline the bundled Bricolage wordmark; interface text uses the locally
+Header SVGs outline the app's upright Allo Playful JAS wordmark, with the same
+pixel icon, proportions and tracking. Interface text uses the locally
 hosted Allo Friendly variable font. Its source and OFL license live in `fonts/`;
 `docs.json` selects the family and source. README banners reuse the app's
-pixel-cloud renderer and original logo in both themes.
+pixel-cloud renderer and the same brand in both themes, at a compact 6:1 ratio.

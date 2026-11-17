@@ -432,3 +432,17 @@ normal `jas` text in the same Allo Playful face, with unchanged size, tracking a
 line-height settings. Updated design/font notes. Frontend lint and production
 build passed; browser checks were not rerun for this static reversal. Preview
 continues on 8080 with the rebuilt assets.
+
+## Completed: matching README and docs branding
+
+README theme-aware cloud banners are now 2400×400 instead of 2400×600, with a
+smaller centered brand and explicit 1200×200 display dimensions. Both banners
+and docs header SVGs use the app's upright Allo Playful JAS face, single-story a,
+800 weight, matching icon/text proportions, 8px base gap and −0.04em tracking.
+Docs text is outlined to avoid font-loading differences; the favicon remains
+byte-identical to the original app pixel icon. No app layout changes.
+
+Inspected both generated banners, checked PNG dimensions/transparency, SVG XML
+and source glyph paths, and validated the Mintlify source. The app build/lint
+passed after removing rotations. Preview stays on 8080. No live docs publication
+or deployment; branding remains in the draft font-preview PR for review.
