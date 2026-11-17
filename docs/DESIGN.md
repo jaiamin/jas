@@ -32,21 +32,21 @@ colors:
   chart-6: "#56b4e9"
 typography:
   headline:
-    fontFamily: '"Geist Variable", sans-serif'
+    fontFamily: '"Allo", "Geist Variable", sans-serif'
     fontSize: "1.5rem"
     fontWeight: 600
     lineHeight: 1.333333
   title:
-    fontFamily: '"Geist Variable", sans-serif'
+    fontFamily: '"Allo", "Geist Variable", sans-serif'
     fontSize: "1rem"
     fontWeight: 500
     lineHeight: 1.375
   body:
-    fontFamily: '"Geist Variable", sans-serif'
+    fontFamily: '"Allo", "Geist Variable", sans-serif'
     fontSize: "0.875rem"
     lineHeight: 1.428571
   label:
-    fontFamily: '"Geist Variable", sans-serif'
+    fontFamily: '"Allo", "Geist Variable", sans-serif'
     fontSize: "0.75rem"
     lineHeight: 1.333333
 rounded:
@@ -67,11 +67,11 @@ spacing:
 ## Overview
 
 JAS composes stock shadcn components and preset styling. The foundation uses
-Nova, Radix, neutral, Geist and Lucide, with the user-requested surfaces,
-blue actions/selection and wordmark below. Preserve the supplied
+Nova, Radix, neutral and Lucide, with Allo interface typography, the user-requested
+surfaces, blue actions/selection and wordmark below. Preserve the supplied
 [`logo.svg`](../frontend/public/logo.svg). The top-left lowercase `jas` wordmark
 alone uses the original locally hosted Bricolage Grotesque subset at 22px/800,
-without a subtitle. All other interface text follows the preset font.
+without a subtitle. All other interface text uses the shared Allo font token.
 The compact brand link covers only the logo and wordmark, aligns with navigation
 icons, and has no hover fill, underline or movement on activation.
 The 20px logo stays vertically centered and uncropped, retaining its horizontal
@@ -135,11 +135,16 @@ Agent identities use their separate deterministic palette and glyphs.
 
 ## Typography
 
-Geist Variable supplies interface text and headings. The shared type ramp uses
-small metadata, regular interface text, medium card titles and semibold page
-headings. Page headings can grow to 30px on wider screens. Code and identifiers
-use the default monospace utility; measurements use tabular figures. Font changes
-belong to the preset and its stylesheet, except the dedicated brand wordmark.
+Allo supplies interface text and headings, including the Assistant and Gallery.
+The shared type ramp uses small metadata, regular interface text, medium card
+titles and semibold page headings. Page headings can grow to 30px on wider screens.
+Code and identifiers use the default monospace utility; measurements use tabular
+figures. The single `--font-sans` token in `frontend/src/index.css` selects the
+interface family; headings inherit it. Removing `"Allo",` returns the preview to Geist.
+Allo 1.0.1 is self-hosted under the SIL OFL with its license, using the Friendly
+variable font (roundness 50), automatic optical sizing and real regular/bold
+obliques. Geist remains the fallback; the dedicated brand wordmark is unchanged.
+Mintlify mirrors Allo through its `docs.json` font source and local font asset.
 
 ## Layout
 

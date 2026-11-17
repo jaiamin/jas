@@ -4,6 +4,30 @@
 @import "@fontsource-variable/geist";
 
 @font-face {
+  font-family: "Allo";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/allo-variable-friendly-1.0.1.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Allo";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/allo-oblique-1.0.1.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Allo";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/allo-bold-oblique-1.0.1.woff2") format("woff2");
+}
+
+@font-face {
   font-family: "Bricolage Grotesque";
   font-style: normal;
   font-weight: 800;
@@ -24,7 +48,7 @@
 );
 
 @theme inline {
-  --font-sans: "Geist Variable", sans-serif;
+  --font-sans: "Allo", "Geist Variable", sans-serif;
   --font-brand: "Bricolage Grotesque", sans-serif;
   --font-heading: var(--font-sans);
   --color-background: var(--background);

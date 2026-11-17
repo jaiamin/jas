@@ -373,3 +373,36 @@ and volume semantics, Mintlify validation/build, broken links and diff whitespac
 Documentation only: no new container build/runtime tests, service changes or data
 changes. Existing 8080 stays running. Mintlify source was updated locally; its live
 site was not published.
+
+## Completed: Allo typography preview (new PR)
+
+Started `feat/allo-font-preview` from the latest `origin/main` at b8df1af7;
+PR 41 is merged. Re-fetched before committing; main remained unchanged.
+
+Shared `--font-sans` now selects self-hosted Allo 1.0.1, covering interface text,
+headings, controls, Assistant and Gallery. The Friendly variable font keeps
+roundness 50, weights 100–900 and automatic optical sizing. Regular/bold oblique
+faces load on demand; the normal face is preloaded with swap rendering. Unmodified
+upstream assets include OFL copyright/license and source attribution. Geist stays
+as fallback and makes rollback one token edit. JAS wordmark and monospace evidence
+retain their deliberate roles. No font-setting UI or dependency changes.
+
+Mintlify source mirrors Allo with the same local variable WOFF2 and license;
+publication instructions now include fonts. The live docs site was not published.
+Verified local docs rendering uses Allo for body/headings and variable weight
+metrics match the app at 400/500/600/700. Both previews load fonts locally.
+
+Verification: frontend lint and TypeScript/Vite build, Mintlify validation/build
+and broken-links, diff checks and 14 existing focused browser cases passed:
+experiment/run details (4), Learn/settings/examples (6), record lists (4), both
+themes and phone/desktop. Inspected Home and docs in the shared browser, checked
+font loading and no overflow at 390px, and inspected dark run/Assistant and 320px
+Examples captures. All three app font faces load successfully. The type detector
+reported no findings (static scan only). Artifacts are ignored `.tools/allo-*`.
+No new tests for this reversible font-only change; full unit/backend/browser suites
+and hosted CI were not rerun.
+
+Existing user app remains healthy on 0.0.0.0:8080, serving the updated production
+frontend without a backend restart. Disposable browser-test servers shut down;
+local docs preview and owned review tabs closed after checks. No paid calls,
+user-data changes, deployment, merge or public-docs publication.

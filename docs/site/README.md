@@ -28,11 +28,14 @@ Local changes do not publish. Through the authenticated Admin MCP:
 3. When publication is authorized, call `publish`; check `deployment_status` using
    its commit until `live` is true. Verify live routes, links, themes and phone layout.
 
-Publish only the eight MDX pages, `docs.json` and referenced images. README and
-`.mintlify/product-brief.md` are contributor context. Keep the existing site, Git
-source and auth settings unless separately authorized. Never store credentials here.
+Publish only the eight MDX pages, `docs.json`, referenced images and fonts
+(including their license). README and `.mintlify/product-brief.md` are contributor
+context. Keep the existing site, Git source and auth settings unless separately
+authorized. Never store credentials here.
 
 The app links to `/` and `/integrations/jas-mcp`; keep those paths stable.
 JAS MCP is Coming soon. Mintlify's `/mcp` searches documentation, not a local workspace.
-Header SVGs outline the bundled Bricolage wordmark; body text uses Geist. README
-banners reuse the app's pixel-cloud renderer and original logo in both themes.
+Header SVGs outline the bundled Bricolage wordmark; interface text uses the locally
+hosted Allo Friendly variable font. Its source and OFL license live in `fonts/`;
+`docs.json` selects the family and source. README banners reuse the app's
+pixel-cloud renderer and original logo in both themes.
