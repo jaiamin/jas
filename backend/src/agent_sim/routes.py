@@ -469,8 +469,9 @@ async def download_study(
 
 
 @router.get("/api/runs")
-async def runs(study_id: str | None = None, *, research: ResearchDep) -> list[RunSummary]:
-    return research.runs(study_id)
+def runs(study_id: str | None = None, *, research: ResearchDep) -> list[RunSummary]:
+    with research.db.read_snapshot():
+        return research.runs(study_id)
 
 
 @router.get("/api/runs/{run_id}", response_model=dict[str, Any])

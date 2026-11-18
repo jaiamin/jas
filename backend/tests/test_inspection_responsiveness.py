@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 @pytest.mark.parametrize(
     ("path", "method"),
     [
+        ("/api/runs?study_id={study_id}", "runs"),
         ("/api/runs/{run_id}", "run"),
         ("/api/runs/{run_id}/turns/0", "evidence"),
         ("/api/runs/{run_id}/exposure", "exposure"),
