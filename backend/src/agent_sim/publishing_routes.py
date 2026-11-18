@@ -91,21 +91,13 @@ def status(*, models: LanguageModelsDep):
 
 @router.post("/publishing/login")
 def login(*, models: LanguageModelsDep):
-    publisher = client(models)
-    # Fail before creating a device request when secure local token storage is unavailable.
-    publisher.token()
-    return publisher.request("POST", "/auth/device", body={})
+    return client(models).begin_login()
 
 
 @router.post("/publishing/login/poll")
 def poll(body: PollLogin, *, models: LanguageModelsDep):
-    publisher = client(models)
-    result = publisher.request("POST", "/auth/device/token", body=body.model_dump())
-    assert isinstance(result, dict)
-    if result.get("access_token"):
-        publisher.save_token(result["access_token"])
-        return {"status": "signed_in"}
-    return {"status": "pending"}
+    signed_in = client(models).poll_login(body.device_code)
+    return {"status": "signed_in" if signed_in else "pending"}
 
 
 @router.post("/publishing/sign-out")
@@ -140,8 +132,7 @@ def publish(
         raise HTTPException(422, "Resolve all publication scan findings first")
     if hashlib.sha256(encode_record(record)).hexdigest() != body.sha256:
         raise ValueError("The public record changed. Review it again before publishing")
-    card = client(models).request("POST", "/api/gallery", body=record, authenticated=True)
-    assert isinstance(card, dict)
+    card = client(models).request_object("POST", "/api/gallery", body=record, authenticated=True)
     PublicationReceipts(research.db.engine.url.database).save(
         study_id, f"publication:{body.revision}", card
     )

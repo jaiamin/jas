@@ -107,21 +107,16 @@ def execute(args, database_url: str) -> None:
         return
     if args.command == "login":
         publisher = Publisher(args.gallery)
-        publisher.token()
-        result = publisher.request("POST", "/auth/device", body={})
-        assert isinstance(result, dict)
-        emit({key: result[key] for key in ("user_code", "verification_uri", "expires_in")})
+        result = publisher.begin_login()
+        emit(
+            result.model_dump(mode="json", include={"user_code", "verification_uri", "expires_in"})
+        )
         if not args.no_browser:
-            webbrowser.open(result["verification_uri"])
-        deadline = time.monotonic() + result["expires_in"]
+            webbrowser.open(str(result.verification_uri))
+        deadline = time.monotonic() + result.expires_in
         while time.monotonic() < deadline:
-            time.sleep(result["interval"])
-            token = publisher.request(
-                "POST", "/auth/device/token", body={"device_code": result["device_code"]}
-            )
-            assert isinstance(token, dict)
-            if token.get("access_token"):
-                publisher.save_token(token["access_token"])
+            time.sleep(result.interval)
+            if publisher.poll_login(result.device_code):
                 emit({"signed_in": True, "gallery": publisher.origin})
                 return
         raise ValueError("Sign-in expired; run jas login again")
