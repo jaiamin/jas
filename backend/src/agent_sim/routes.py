@@ -159,7 +159,7 @@ async def extension_reviews(*, extensions: ExtensionsDep) -> list[ExtensionRevie
 
 @router.get("/api/extensions/reviews/{key}")
 async def extension_review(key: str, *, extensions: ExtensionsDep) -> ExtensionReview:
-    return await asyncio.to_thread(extensions.get, key)
+    return await asyncio.to_thread(extensions.review, key)
 
 
 class AdmitExtension(Strict):

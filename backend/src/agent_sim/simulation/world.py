@@ -18,9 +18,6 @@ class World[StateT: Checkpoint](ABC):
     @abstractmethod
     def observe(self, agent: str) -> Observation: ...
 
-    @abstractmethod
-    def apply(self, agent: str, action: Action) -> tuple[list[Event], list[Measure]]: ...
-
     def __init__(
         self,
         design: Design,
@@ -233,9 +230,8 @@ class World[StateT: Checkpoint](ABC):
         )
 
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
-        if not isinstance(decision.action, Action):
-            raise ValueError("Expected a controlled-world action")
-        return self.apply(actor, decision.action)
+        """Implement settlement when using the base step sequence."""
+        raise NotImplementedError
 
     def step(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
         if actor != self.actor() or self.actor() is None:
@@ -296,3 +292,13 @@ class World[StateT: Checkpoint](ABC):
         self, actor: str, decision: Decision, receipt: dict
     ) -> tuple[list[Event], list[Measure]]:
         raise ValueError("Adjudication is unavailable")
+
+
+class ActionWorld[StateT: Checkpoint](World[StateT]):
+    @abstractmethod
+    def apply(self, agent: str, action: Action) -> tuple[list[Event], list[Measure]]: ...
+
+    def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
+        if not isinstance(decision.action, Action):
+            raise ValueError("Expected a controlled-world action")
+        return self.apply(actor, decision.action)

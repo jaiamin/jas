@@ -8,7 +8,6 @@ from typing import Any, Literal
 from pydantic import create_model
 
 from ..domain import (
-    Action,
     Decision,
     Event,
     ExecutablePackage,
@@ -190,9 +189,6 @@ class ReviewedFinite(World[FiniteCheckpoint]):
             action=(action_type, ...),
             forecast=(Literal[None], None),
         )
-
-    def apply(self, agent: str, action: Action) -> tuple[list[Event], list[Measure]]:
-        raise ValueError("Finite World requires a typed finite operation")
 
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
         if not isinstance(decision.action, FiniteAction) or self.runner is None:

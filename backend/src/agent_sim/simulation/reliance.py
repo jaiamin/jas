@@ -198,9 +198,10 @@ class RelianceCommitments(DistributedCoordination):
         else:
             row = s["commitments"][o.key]
             row["relied_at"] = s["logical_time"]
-            grants = s["read_grants"].setdefault(o.artifact, [])
-            if o.promisor not in grants:
-                grants.append(o.promisor)
+            read_grants_by_artifact = s["read_grants"]
+            readers = read_grants_by_artifact.setdefault(o.artifact, [])
+            if o.promisor not in readers:
+                readers.append(o.promisor)
             kind = "commitment_relied"
         return Event(
             kind=kind,

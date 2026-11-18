@@ -87,19 +87,12 @@ class InstitutionalWorkflow(ArtifactWorkspace):
             else next((a for a in s["phase_actors"] if a not in s["pending_actions"]), None)
         )
 
-    def read(self, actor: str, request: ReadArtifact) -> dict:
-        if (
-            self.state["done"]
-            or actor not in self.checkpoint["phase_actors"]
-            or actor in self.checkpoint["withdrawn"]
-        ):
-            raise ValueError("Artifact operation is unavailable")
-        self.accessible(actor, request.artifact)
-        versions = self.state["artifacts"][request.artifact]["versions"]
-        number = request.version or len(versions)
-        if number > len(versions):
-            raise ValueError("Artifact operation is unavailable")
-        return self.project_version(actor, {"artifact": request.artifact, **versions[number - 1]})
+    def _read_available(self, actor: str) -> bool:
+        return (
+            not self.state["done"]
+            and actor in self.checkpoint["phase_actors"]
+            and actor not in self.checkpoint["withdrawn"]
+        )
 
     def observe(self, agent: str) -> Observation:
         observation = super().observe(agent)
@@ -438,8 +431,9 @@ class InstitutionalWorkflow(ArtifactWorkspace):
                         "accepted_at": None,
                     }
                     s["work"][item.key].update(status="handed_off", handoff=handoff)
-                    if item.artifact not in s["read_grants"][action.recipient]:
-                        s["read_grants"][action.recipient].append(item.artifact)
+                    read_grants_by_actor = s["read_grants"]
+                    if item.artifact not in read_grants_by_actor[action.recipient]:
+                        read_grants_by_actor[action.recipient].append(item.artifact)
                     row.update(handoff=copy.deepcopy(handoff), artifact=item.artifact)
                 elif isinstance(action, AcceptHandoff):
                     work = s["work"][action.work]

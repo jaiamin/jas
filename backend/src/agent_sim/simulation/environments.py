@@ -18,10 +18,10 @@ from .distributed import DistributedCoordination
 from .mechanisms import Bargaining, Information, Institution, RenewableResource
 from .reliance import RelianceCommitments
 from .workflow import InstitutionalWorkflow
-from .world import World
+from .world import ActionWorld, World
 
 
-class Commons(World[CommonsCheckpoint]):
+class Commons(ActionWorld[CommonsCheckpoint]):
     decision_rules = DecisionRules(allow_forecast=True, promise_limit="action")
 
     def initial_state(self) -> CommonsCheckpoint:
@@ -160,7 +160,7 @@ class Commons(World[CommonsCheckpoint]):
         return events, measures
 
 
-class TrustExchange(World[TrustCheckpoint]):
+class TrustExchange(ActionWorld[TrustCheckpoint]):
     def schema_rules(self, observation: Observation) -> DecisionRules:
         return DecisionRules(
             allow_forecast=observation["role"] == "sender", promise_limit="unbounded"
@@ -316,7 +316,7 @@ class TrustExchange(World[TrustCheckpoint]):
         return events, [measure]
 
 
-class Coordination(World[CoordinationCheckpoint]):
+class Coordination(ActionWorld[CoordinationCheckpoint]):
     decision_rules = DecisionRules(allow_forecast=True)
 
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:

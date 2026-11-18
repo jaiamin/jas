@@ -7,7 +7,7 @@ from typing import Any, Literal
 
 from pydantic import create_model
 
-from ..domain import Action, Decision, Event, ExtensionPackage, Measure, RelayAction, RelayRules
+from ..domain import Decision, Event, ExtensionPackage, Measure, RelayAction, RelayRules
 from ..extension_profile import OPERATIONS, expected, validate_package
 from .checkpoints import Checkpoint, Observation
 from .world import World
@@ -139,9 +139,6 @@ class SealedRelay(World[RelayCheckpoint]):
             action=(action_type, ...),
             forecast=(Literal[None], None),
         )
-
-    def apply(self, agent: str, action: Action) -> tuple[list[Event], list[Measure]]:
-        raise ValueError("Sealed relay requires a typed relay operation")
 
     def _apply_decision(self, actor: str, decision: Decision) -> tuple[list[Event], list[Measure]]:
         action = decision.action

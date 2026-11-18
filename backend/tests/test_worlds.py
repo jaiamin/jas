@@ -7,6 +7,7 @@ from agent_sim.simulation.environments import (
     World,
     create_world,
 )
+from agent_sim.simulation.world import ActionWorld
 from agent_sim.templates import templates
 
 
@@ -49,6 +50,7 @@ def test_direct_communication_stays_out_of_public_history(environment, memory):
     world = create_world(
         design, design.conditions[0].parameters.model_copy(update={"memory": memory}), 7
     )
+    assert isinstance(world, ActionWorld)
     first, recipient, outsider = world.order()[:3]
     chosen = action("contribute" if environment == "commons" else "send")
     chosen.target, chosen.message, chosen.report = recipient, "Private delivery check", 0

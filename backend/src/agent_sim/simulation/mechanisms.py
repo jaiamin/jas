@@ -15,14 +15,14 @@ from .checkpoints import (
     Sanction,
 )
 from .decisions import DecisionRules
-from .world import World
+from .world import ActionWorld
 
 
 def legal(kind: str, maximum: int = 0, targets: list[str] | None = None) -> LegalAction:
     return {"kind": kind, "amount_min": 0, "amount_max": maximum, "targets": targets or [""]}
 
 
-class Mechanism[StateT: Checkpoint](World[StateT]):
+class Mechanism[StateT: Checkpoint](ActionWorld[StateT]):
     def validate(self, agent: str, action: Action) -> None:
         if agent != self.actor():
             raise ValueError("Expected the current actor")

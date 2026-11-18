@@ -207,7 +207,7 @@ class Extensions:
 
     def check_finite_artifact(self, key: str, review_id: str) -> FiniteArtifactCheck:
         with self.lock:
-            contract, review = self.contract(key), self.get(review_id)
+            contract, review = self.contract(key), self.review(review_id)
             inputs, oracle = (
                 contract_inputs(contract.specification),
                 contract_outputs(contract.specification),
@@ -297,7 +297,7 @@ class Extensions:
                     raise ValueError(
                         "Matching passed external check and actual frozen contract required"
                     )
-                review = self.get(check.review_id)
+                review = self.review(check.review_id)
                 if review.candidate_sha256 != check.candidate_sha256:
                     raise ValueError("Checked candidate identity differs")
                 # Re-execute at admission. Earlier examples or a copied claimed proof do not admit.
@@ -405,7 +405,7 @@ class Extensions:
                 reverse=True,
             )
 
-    def get(self, key: str) -> ExtensionReview:
+    def review(self, key: str) -> ExtensionReview:
         if not re.fullmatch(r"[a-f0-9]{16}", key):
             raise NoResultFound()
         try:
@@ -419,7 +419,7 @@ class Extensions:
     def reviews(self) -> list[ExtensionReview]:
         with self.lock:
             return sorted(
-                (self.get(path.stem) for path in self.root.glob("*.json")),
+                (self.review(path.stem) for path in self.root.glob("*.json")),
                 key=lambda record: record.created,
                 reverse=True,
             )
@@ -538,7 +538,7 @@ class Extensions:
 
     def admit(self, key: str, profile: str) -> ExtensionAdmission:
         with self.lock:
-            review = self.get(key)
+            review = self.review(key)
             record = ExtensionAdmission(
                 id=uid(), created=now(), review_id=key, profile=profile, checks=[]
             )

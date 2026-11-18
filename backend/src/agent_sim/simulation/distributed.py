@@ -71,15 +71,8 @@ class DistributedCoordination(ArtifactWorkspace):
     def can_check(self, actor: str) -> bool:
         return False
 
-    def read(self, actor: str, request: ReadArtifact) -> dict:
-        if self.state["done"] or actor not in self.checkpoint["phase_actors"]:
-            raise ValueError("Artifact operation is unavailable")
-        self.accessible(actor, request.artifact)
-        versions = self.state["artifacts"][request.artifact]["versions"]
-        number = request.version or len(versions)
-        if number > len(versions):
-            raise ValueError("Artifact operation is unavailable")
-        return self.project_version(actor, {"artifact": request.artifact, **versions[number - 1]})
+    def _read_available(self, actor: str) -> bool:
+        return not self.state["done"] and actor in self.checkpoint["phase_actors"]
 
     def observe(self, agent: str) -> Observation:
         observation = super().observe(agent)

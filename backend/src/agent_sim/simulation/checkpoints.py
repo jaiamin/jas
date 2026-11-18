@@ -86,7 +86,7 @@ class DistributedCheckpoint(ArtifactCheckpoint):
 class RelianceCheckpoint(DistributedCheckpoint):
     commitments: dict[str, dict[str, Any]]
     choice_times: dict[str, int]
-    read_grants: dict[str, list[str]]
+    read_grants: dict[str, list[str]]  # Artifact key to authorized actor keys.
     reliance_effects: dict[str, int]
     commitment_history: list[dict[str, Any]]
     withdrawn: list[str]
@@ -102,7 +102,7 @@ class WorkflowCheckpoint(ArtifactCheckpoint):
     resource_spent: int
     work: dict[str, dict[str, Any]]
     work_history: list[dict[str, Any]]
-    read_grants: dict[str, list[str]]
+    read_grants: dict[str, list[str]]  # Actor key to newly readable artifact keys.
     pending_deliveries: list[dict[str, Any]]
     inboxes: dict[str, list[dict[str, Any]]]
     outboxes: dict[str, list[dict[str, Any]]]
