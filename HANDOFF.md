@@ -1,5 +1,27 @@
 # JAS handoff
 
+## Active work: Codebase quality
+
+- [x] Install Desloppify and its Codex skill, verify the local state is ignored,
+  and exclude disposable tooling and build directories.
+- [x] Establish separate Python and TypeScript baselines with clean scan scopes.
+- [ ] Follow the execution queue and verify coherent batches. Initial mechanical
+  work resolved 31 assertion findings. Independent reviews use the frozen
+  original source snapshot and the tool's blind packets.
+- [ ] Run the affected repository checks and record scan-verified score changes.
+
+The initial root scan auto-selected Python and some detectors traversed installed
+dependencies despite the exclusion configuration. Use the tool's per-language
+scan paths for comparable scores. Keep maintained UI primitives, tests, and replay
+fixtures in scope. Scorecards and review evidence stay under `.desloppify/`.
+
+Completed changes cover Gallery response validation, keyless Gallery startup,
+runtime and evidence guards, and responsive inspection endpoints. Ruff, ty,
+targeted backend suites, and frontend lint, 163 unit tests and the build passed.
+The initial full backend run was stopped after 624 passes to free temporary
+fixture space. The backend security detector's remaining process and seeded
+randomness reports were examined in the local queue.
+
 ## Completed documentation
 
 Public MVP docs are live at https://jas.mintlify.site, published through the Admin
@@ -96,7 +118,7 @@ Registry release, genuine seed corpus, live identity/keychain checks and outside
 acceptance remain launch gates; never equate fixture tests with those checks.
 
 Hosted deployment: `7b7962d4-2317-412d-9325-b0649b65806a` (SUCCESS).
-Gallery origin is the DEFAULT_GALLERY_ORIGIN constant in publishing.py.
+Gallery origin is the DEFAULT_GALLERY_ORIGIN constant in config.py.
 Platform project `f7e199d8-bd8b-4628-8527-d0d99c20519b`, production environment
 `b90e8e72-dde9-4b2e-aa50-1243debe2801`. The retired workspace and volume are gone.
 Gallery source is pinned to the tested commit; documentation-only pushes do not deploy.
