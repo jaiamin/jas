@@ -145,7 +145,8 @@ def qualify_world(package: FiniteExtensionPackage, runner) -> None:
         for actor in bindings.values():
             first = parameters.model_copy(deep=True, update={"memory": memory})
             second = parameters.model_copy(deep=True, update={"memory": memory})
-            assert first.finite is not None and second.finite is not None
+            if first.finite is None or second.finite is None:
+                raise ValueError("Independent finite World check requires finite rules")
             first.finite.private = {
                 other: {"docket": "independent-37"} for other in bindings.values() if other != actor
             }

@@ -80,7 +80,8 @@ def run(payload: dict) -> dict:
                         store.set_fuel(100000)
                         instance = wasmtime.Instance(store, module, [])
                         step = instance.exports(store)["step"]
-                        assert isinstance(step, wasmtime.Func)
+                        if not isinstance(step, wasmtime.Func):
+                            return {"code": "contract"}
                         outputs.append(step(store, state))
             except wasmtime.Trap as error:
                 code = {

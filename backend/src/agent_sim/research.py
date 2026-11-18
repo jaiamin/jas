@@ -104,6 +104,14 @@ class Research:
     def world(self, design: Design, parameters, seed: int, state: dict | None = None):
         return create_world(design, parameters, seed, state, runner=self.extensions.transition)
 
+    def check_environment_runtime(self, design: Design) -> None:
+        if design.environment in {"sealed_relay", "reviewed_finite"}:
+            source = design.environment_source
+            package = source.definition.extension if source else None
+            if package is None:
+                raise ValueError("Independent extension admission is required")
+            self.extensions.check_runtime(package)
+
     def review_design(self, design: Design, plan_id: str | None = None) -> dict:
         """Authorize an untrusted draft before any executable preflight witness."""
         self.validate_design(design)
@@ -471,7 +479,8 @@ class Research:
         for rid, kind, count in event_counts:
             events[rid][kind] = count
         for rid, status, charged, unpriced in calls:
-            assert rid is not None
+            if rid is None:
+                raise RuntimeError("Run usage query returned an unassociated provider call")
             usage[rid]["requests"] += 1
             usage[rid]["charged"] += charged
             usage[rid]["partial"] |= status in {"pending", "unknown"}
@@ -696,12 +705,10 @@ class Research:
                 select(Measurement).where(Measurement.run_id == run_id).order_by(Measurement.id)
             ).all()
         blocked = None
-        if design.environment in {"sealed_relay", "reviewed_finite"}:
-            assert design.environment_source and design.environment_source.definition.extension
-            try:
-                self.extensions.check_runtime(design.environment_source.definition.extension)
-            except ValueError as error:
-                blocked = str(error)
+        try:
+            self.check_environment_runtime(design)
+        except ValueError as error:
+            blocked = str(error)
         result: dict = {
             "estimate": self.models.estimate(
                 design.model_copy(
@@ -1107,13 +1114,15 @@ class Research:
                 effort["scripted_attempts"] += 1
                 effort["scripted_decisions"] += op.status == "complete"
         for call, unpriced in calls:
-            assert call.activation_id is not None
-            effort = result[allowed[call.activation_id].run_id]
+            if call.activation_id is None:
+                raise RuntimeError("Participant usage query returned an unassociated provider call")
+            run_id = allowed[call.activation_id].run_id
+            effort = result[run_id]
             usage = effort["usage"]
             usage["requests"] += 1
             usage["input_tokens"] += call.input_tokens
             usage["output_tokens"] += call.output_tokens
-            charges[allowed[call.activation_id].run_id] += call.charged
+            charges[run_id] += call.charged
             usage["partial"] |= call.status in {"pending", "unknown"}
             if unpriced:
                 usage["cost_usd"] = None

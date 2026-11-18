@@ -1125,12 +1125,14 @@ class Planner:
                             "Required constructs are not implemented: " + " ".join(problems)
                         )
                     validated_environment = design.environment
-                    assert design.environment_source is not None
+                    source = design.environment_source
+                    if source is None:
+                        raise ValueError("Validated design is missing its environment source")
                     probed_design_hash = digest(design.model_dump())
                     context["source_validation"] = {
                         "builtin_source_pinned": candidate.design is not None
                         and candidate.design.environment_source is None,
-                        "sha256": design.environment_source.sha256,
+                        "sha256": source.sha256,
                     }
                     # Probe the exact validated population/configuration, not a template proxy.
                     for condition in design.conditions:

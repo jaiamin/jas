@@ -1330,8 +1330,10 @@ class Assistants:
                     "support": assess(answer, lens),
                     "source_analysis_id": (current.output or {}).get("source_analysis_id"),
                 }
-            assert isinstance(result, (Investigation, EvidenceInvestigation))
-            if not result.requests:
+            if (
+                not isinstance(result, (Investigation, EvidenceInvestigation))
+                or not result.requests
+            ):
                 raise ValueError("Assistant returned neither evidence requests nor an answer")
             for request in result.requests:
                 if isinstance(request, IndexRequest):

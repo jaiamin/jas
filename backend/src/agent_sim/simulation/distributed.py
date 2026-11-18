@@ -149,7 +149,8 @@ class DistributedCoordination(ArtifactWorkspace):
             "PermittedAlternative", __base__=ChooseAlternative, alternative=(Choice, ...)
         )
         annotation = base.model_fields["action"].annotation
-        assert annotation is not None
+        if annotation is None:
+            raise TypeError("Coordination decision schema requires an action type")
         variants: list[type] = [cast(type, annotation), WaitCoordination]
         if can_choose:
             variants.insert(1, choose)

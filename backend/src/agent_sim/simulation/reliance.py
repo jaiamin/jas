@@ -216,7 +216,8 @@ class RelianceCommitments(DistributedCoordination):
         time = s["logical_time"] - 1
         for event in events:
             if event.kind == "alternative_chosen":
-                assert event.actor is not None
+                if event.actor is None:
+                    raise ValueError("A recorded choice must identify its actor")
                 s["choice_times"][event.actor] = time
         settled = []
         for o in self.commitments.opportunities:

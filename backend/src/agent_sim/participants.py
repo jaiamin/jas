@@ -673,9 +673,13 @@ class ToolUsing:
                 activation.append(kind, request, None)
                 return Decision.model_validate(request["decision"])
             capability = OPERATION_CAPABILITY.get(kind)
-            policy = getattr(harness.capabilities, capability) if capability else None
+            policy = (
+                CAPABILITY_POLICIES.get(getattr(harness.capabilities, capability))
+                if capability
+                else None
+            )
             if request["decision"] is not None or (
-                policy == "disabled" if capability else kind not in activation.harness.tools
+                policy is None if capability else kind not in activation.harness.tools
             ):
                 activation.append(
                     kind, request, "Operation is not authorized by this harness.", "rejected"
@@ -686,10 +690,9 @@ class ToolUsing:
                 raise EffortLimit("tool_limit")
             if activation.world.actor() != activation.actor:
                 raise ValueError("Participant is not the current world actor")
-            if capability:
-                assert policy is not None
+            if policy is not None:
                 try:
-                    value = CAPABILITY_POLICIES[policy].execute(
+                    value = policy.execute(
                         context,
                         request,
                         len(history) + 1,

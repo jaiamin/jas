@@ -41,7 +41,8 @@ def starters() -> list[dict]:
                     "One-round preparation" if duration == 1 else "Four-round preparation"
                 )
                 workflow = condition.parameters.workflow
-                assert workflow is not None
+                if workflow is None:
+                    raise RuntimeError("Workflow timing starter requires workflow rules")
                 workflow.resource_stock = 9
                 workflow.work_items = [
                     item.model_copy(update={"duration": duration})

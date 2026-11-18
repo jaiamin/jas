@@ -7,7 +7,7 @@ from typing import Any, Literal
 
 from pydantic import create_model
 
-from ..domain import Action, Decision, Event, ExtensionPackage, Measure, RelayAction
+from ..domain import Action, Decision, Event, ExtensionPackage, Measure, RelayAction, RelayRules
 from ..extension_profile import OPERATIONS, expected, validate_package
 from .checkpoints import Checkpoint, Observation
 from .world import World
@@ -63,10 +63,15 @@ class SealedRelay(World[RelayCheckpoint]):
     def new_round(self) -> None:
         self.state["position"] = 0
 
-    def order(self) -> list[str]:
+    @property
+    def rules(self) -> RelayRules:
         rules = self.parameters.relay
         if rules is None:
             raise ValueError("Explicit relay permissions are required")
+        return rules
+
+    def order(self) -> list[str]:
+        rules = self.rules
         return [rules.submitter, rules.reviewer]
 
     def encoded(self, actor: str, operation: str) -> int:
@@ -91,8 +96,7 @@ class SealedRelay(World[RelayCheckpoint]):
             "permission": "submitter" if agent == self.order()[0] else "reviewer",
             "outcome": copy.deepcopy(self.state["outcome"]),
         }
-        rules = self.parameters.relay
-        assert rules is not None
+        rules = self.rules
         if agent == rules.reviewer:
             relay["docket"] = rules.docket
         return {

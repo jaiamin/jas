@@ -14,6 +14,7 @@ from ..domain import (
     ExecutablePackage,
     FiniteAction,
     FiniteExtensionPackage,
+    FiniteRules,
     Measure,
 )
 from ..finite_profile import expected, validate_package
@@ -109,9 +110,16 @@ class ReviewedFinite(World[FiniteCheckpoint]):
     def new_round(self) -> None:
         self.state["position"] = 0
 
+    @property
+    def rules(self) -> FiniteRules:
+        rules = self.parameters.finite
+        if rules is None:
+            raise ValueError("Explicit finite role bindings are required")
+        return rules
+
     def order(self) -> list[str]:
-        assert self.parameters.finite is not None
-        return [self.parameters.finite.bindings[role] for role in self.contract.roles]
+        bindings = self.rules.bindings
+        return [bindings[role] for role in self.contract.roles]
 
     def encoded(self, actor: str, operation: str) -> int:
         return (
@@ -132,7 +140,7 @@ class ReviewedFinite(World[FiniteCheckpoint]):
     def observe(self, agent: str) -> Observation:
         if agent not in self.ids:
             raise ValueError("Finite operation is unavailable")
-        assert self.parameters.finite is not None
+        rules = self.rules
         memory = self.parameters.memory
         state = self.contract.states[self.state["finite_state"]]
         return {
@@ -157,7 +165,7 @@ class ReviewedFinite(World[FiniteCheckpoint]):
             "your_note": self.state["notes"][agent] if memory in {"episodic", "notes"} else "",
             "communication": False,
             "communication_channels": [],
-            "private_information": copy.deepcopy(self.parameters.finite.private.get(agent, {})),
+            "private_information": copy.deepcopy(rules.private.get(agent, {})),
             "legal_actions": [{"kind": op} for op in self.operations(agent)],
             "finite": {
                 "state": state.key,
