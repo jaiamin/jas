@@ -1,6 +1,5 @@
 """Headless workflows over the same domain, checks, ledger and engine as the app."""
 
-import argparse
 import asyncio
 import json
 import math
@@ -17,40 +16,6 @@ from .llm import LanguageModels
 from .public_records import decode_record, verify_record, verify_run
 from .publishing import Publisher, download_fork
 from .research import Research
-
-
-def add_commands(parser: argparse.ArgumentParser) -> None:
-    commands = parser.add_subparsers(dest="command")
-    check = commands.add_parser("check", help="Free protocol lint and cost bounds")
-    check.add_argument("protocol", type=Path)
-    run = commands.add_parser("run", help="Estimate, then explicitly run a bounded protocol")
-    run.add_argument("protocol", type=Path)
-    run.add_argument("--max-usd", type=float, required=True)
-    run.add_argument("--max-tokens", type=int)
-    run.add_argument("--output", type=Path, help="Write the finished public-ready evidence record")
-    replay = commands.add_parser("replay", help="Verify a record with zero model calls")
-    replay.add_argument("record", type=Path)
-    login = commands.add_parser("login", help="GitHub device login; token stays in the OS keychain")
-    login.add_argument("--gallery")
-    publish = commands.add_parser(
-        "publish", help="Scan and publish an explicitly reviewed public record"
-    )
-    publish.add_argument("record", type=Path)
-    publish.add_argument(
-        "--reviewed",
-        action="store_true",
-        help="Confirm you reviewed every included agent-private observation and output",
-    )
-    publish.add_argument("--gallery")
-    fork = commands.add_parser(
-        "fork", help="Import an exact public protocol without running or installing code"
-    )
-    fork.add_argument("target")
-    fork.add_argument("--gallery")
-    gallery = commands.add_parser("gallery", help="Serve the separate, model-free gallery")
-    gallery.add_argument("--data", type=Path, default=Path("data/gallery"))
-    gallery.add_argument("--origin")
-    gallery.add_argument("--port", type=int, default=8081)
 
 
 def emit(value: object) -> None:

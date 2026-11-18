@@ -1,3 +1,6 @@
+import subprocess
+import sys
+
 import pytest
 from agent_sim import cli
 from fastapi.testclient import TestClient
@@ -62,6 +65,37 @@ def test_browser_opens_only_after_this_server_starts(monkeypatch):
     server.started, server.should_exit = False, True
     cli.open_when_ready(server, "http://localhost:8080")
     assert opened == []
+
+
+def test_gallery_cli_starts_without_importing_workspace_services(tmp_path, monkeypatch):
+    monkeypatch.delenv("JAS_GALLERY_S3_BUCKET", raising=False)
+    subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            """
+import sys
+
+from agent_sim import cli
+from fastapi.testclient import TestClient
+
+def inspect_app(app, **kwargs):
+    client = TestClient(app, base_url="http://localhost")
+    assert client.get("/api/health").json()["surface"] == "gallery"
+    assert client.get("/api/settings").status_code == 404
+    workspace_modules = {"api", "assistants", "commands", "execution", "llm", "research"}
+    imported = {name for name in workspace_modules if f"agent_sim.{name}" in sys.modules}
+    assert not imported, imported
+
+cli.uvicorn.run = inspect_app
+sys.argv = ["jas", "gallery", "--data", sys.argv[1]]
+cli.main()
+""",
+            str(tmp_path / "gallery"),
+        ],
+        cwd=tmp_path,
+        check=True,
+    )
 
 
 def test_explicit_workspace_overrides_inherited_database(monkeypatch, tmp_path):
