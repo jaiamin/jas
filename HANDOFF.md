@@ -5,22 +5,34 @@
 - [x] Install Desloppify and its Codex skill, verify the local state is ignored,
   and exclude disposable tooling and build directories.
 - [x] Establish separate Python and TypeScript baselines with clean scan scopes.
-- [ ] Follow the execution queue and verify coherent batches. Initial mechanical
-  work resolved 31 assertion findings. Independent reviews use the frozen
-  original source snapshot and the tool's blind packets.
-- [ ] Run the affected repository checks and record scan-verified score changes.
+- [x] Resolve and verify coherent batches, including 31 mechanical assertion
+  findings. Complete 20 independent blind assessments per language and
+  follow-up assessments for selected changed dimensions.
+- [x] Run repository checks and record the final scoped rescans.
+- [ ] Continue triage and the execution queues toward the 85 strict target.
 
 The initial root scan auto-selected Python and some detectors traversed installed
 dependencies despite the exclusion configuration. Use the tool's per-language
 scan paths for comparable scores. Keep maintained UI primitives, tests, and replay
 fixtures in scope. Scorecards and review evidence stay under `.desloppify/`.
 
-Completed changes cover Gallery response validation, keyless Gallery startup,
-runtime and evidence guards, and responsive inspection endpoints. Ruff, ty,
-targeted backend suites, and frontend lint, 163 unit tests and the build passed.
-The initial full backend run was stopped after 624 passes to free temporary
-fixture space. The backend security detector's remaining process and seeded
-randomness reports were examined in the local queue.
+The backend scan ended at 81.1 strict and 84.2 objective, up from 83.4
+objective. The backend plan displays 81.2 strict after false-positive triage.
+The frontend scan went from 82.7 to 83.0 strict and from 84.8 to 84.9
+objective. The strict baselines are from reviews of the original code.
+
+All 2,016 backend tests, Ruff, formatting, ty, 164 frontend unit tests, frontend
+lint and the build passed. Forty-one workspace browser cases passed across the
+main run and a retry of the case that hit a screenshot disk error. Four
+hosted Gallery browser cases passed. The installed wheel booted both surfaces
+from a disposable directory and served bundled assets. The final backend suite
+used `PYTHONDONTWRITEBYTECODE=1` and `-o tmp_path_retention_policy=failed` to
+keep fixture disk usage bounded.
+
+Activate `.tools/desloppify/bin/activate` and run `desloppify --lang python next`
+at the repository root or `desloppify --lang typescript next` from `frontend/`.
+The backend observe report has been recorded and awaits full verification.
+Frontend triage starts at strategize. Draft PR is https://github.com/jaiamin/jas/pull/43.
 
 ## Completed documentation
 
