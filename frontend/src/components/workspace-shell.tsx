@@ -18,6 +18,7 @@ import {
   Settings,
   Sun,
 } from "@/components/icons";
+import { JasWordmark } from "@/components/jas-wordmark";
 import { PageBoundary } from "@/components/page-boundary";
 import { Loading } from "@/components/shared";
 import { SidebarBudget } from "@/components/sidebar-budget";
@@ -159,9 +160,7 @@ export default function WorkspaceShell() {
                     className="size-5 shrink-0 object-contain"
                     alt=""
                   />
-                  <span className="font-brand text-[22px] font-extrabold leading-none tracking-[-0.04em] group-data-[collapsible=icon]:hidden">
-                    jas
-                  </span>
+                  <JasWordmark className="text-[22px] leading-none group-data-[collapsible=icon]:hidden" />
                 </Link>
               </Button>
               {isMobile ? (

@@ -43,7 +43,9 @@
     }
   },
   "fonts": {
-    "family": "Geist"
+    "family": "Allo",
+    "source": "/fonts/allo-variable-friendly-1.0.1.woff2",
+    "format": "woff2"
   },
   "icons": {
     "library": "lucide"

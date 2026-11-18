@@ -1,6 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme-dark.png" />
-  <img src="docs/assets/readme-light.png" alt="JAS, with its pixel logo and cloud background" width="1200" />
+  <img src="docs/assets/readme-light.png" alt="JAS, with its pixel logo and cloud background" width="1200" height="200" />
 </picture>
 <br><br>
 

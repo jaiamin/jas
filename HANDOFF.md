@@ -373,3 +373,91 @@ and volume semantics, Mintlify validation/build, broken links and diff whitespac
 Documentation only: no new container build/runtime tests, service changes or data
 changes. Existing 8080 stays running. Mintlify source was updated locally; its live
 site was not published.
+
+## Completed: Allo typography preview (new PR)
+
+Started `feat/allo-font-preview` from the latest `origin/main` at b8df1af7;
+PR 41 is merged. Re-fetched before committing; main remained unchanged.
+
+Shared `--font-sans` now selects self-hosted Allo 1.0.1, covering interface text,
+headings, controls, Assistant and Gallery. The Friendly variable font keeps
+roundness 50, weights 100–900 and automatic optical sizing. Regular/bold oblique
+faces load on demand; the normal face is preloaded with swap rendering. Unmodified
+upstream assets include OFL copyright/license and source attribution. Geist stays
+as fallback and makes rollback one token edit. JAS wordmark and monospace evidence
+retain their deliberate roles. No font-setting UI or dependency changes.
+
+Mintlify source mirrors Allo with the same local variable WOFF2 and license;
+publication instructions now include fonts. The live docs site was not published.
+Verified local docs rendering uses Allo for body/headings and variable weight
+metrics match the app at 400/500/600/700. Both previews load fonts locally.
+
+Verification: frontend lint and TypeScript/Vite build, Mintlify validation/build
+and broken-links, diff checks and 14 existing focused browser cases passed:
+experiment/run details (4), Learn/settings/examples (6), record lists (4), both
+themes and phone/desktop. Inspected Home and docs in the shared browser, checked
+font loading and no overflow at 390px, and inspected dark run/Assistant and 320px
+Examples captures. All three app font faces load successfully. The type detector
+reported no findings (static scan only). Artifacts are ignored `.tools/allo-*`.
+No new tests for this reversible font-only change; full unit/backend/browser suites
+and hosted CI were not rerun.
+
+Existing user app remains healthy on 0.0.0.0:8080, serving the updated production
+frontend without a backend restart. Disposable browser-test servers shut down;
+local docs preview and owned review tabs closed after checks. No paid calls,
+user-data changes, deployment, merge or public-docs publication.
+
+## Completed: playful Allo wordmark refinement
+
+The app wordmark now uses a shared JasWordmark component and a 1.3 KB Allo
+Playful JAS subset (800 weight, optical size 22, roundness 100, single-story a).
+Letters have fixed −3°/+2°/−2° tilts; original tracking, sizes and line heights
+remain, with no added gaps or vertical offsets. Sidebar logo and surrounding
+layout are untouched. Gallery branding shares the component and keeps its own
+original 24px size/32px line height. README/docs SVG artwork remains unchanged.
+Font attribution documents the derived, renamed subset under the existing OFL.
+
+Verification: frontend lint and TypeScript/Vite build passed after the final
+line-height adjustment. Six focused navigation browser cases passed, including
+brand alignment, collapse, phone layouts and both themes. Inspected the final
+wordmark in light/dark and confirmed font loading, 22px line height, −0.88px
+tracking and no letter translation. No new tests for this static visual change;
+full suites and hosted CI were not rerun. The existing user app remains running
+on 0.0.0.0:8080; no backend restart, data changes, paid calls or deployment.
+
+## Follow-up: upright wordmark
+
+Removed letter rotations at the user's request. The shared wordmark now renders
+normal `jas` text in the same Allo Playful face, with unchanged size, tracking and
+line-height settings. Updated design/font notes. Frontend lint and production
+build passed; browser checks were not rerun for this static reversal. Preview
+continues on 8080 with the rebuilt assets.
+
+## Completed: matching README and docs branding
+
+README theme-aware cloud banners are now 2400×400 instead of 2400×600, with a
+smaller centered brand and explicit 1200×200 display dimensions. Both banners
+and docs header SVGs use the app's upright Allo Playful JAS face, single-story a,
+800 weight, matching icon/text proportions, 8px base gap and −0.04em tracking.
+Docs text is outlined to avoid font-loading differences; the favicon remains
+byte-identical to the original app pixel icon. No app layout changes.
+
+Inspected both generated banners, checked PNG dimensions/transparency, SVG XML
+and source glyph paths, and validated the Mintlify source. The app build/lint
+passed after removing rotations. Preview stays on 8080. No live docs publication
+or deployment; branding remains in the draft font-preview PR for review.
+
+## PR 42 CI repair (in progress)
+
+Hosted run 44154823973 passed frontend/workflows but failed backend type checking
+because the Gallery extra was not installed, and the deployment smoke failed
+renaming an image-layer directory on OverlayFS (EXDEV). Backend CI and contributor
+setup now install the existing Gallery extra. The disposable smoke recreates its
+empty directory instead of renaming it, retaining symlink/ownership rejection,
+privilege dropping, auth, runtime and restart-persistence assertions.
+
+Local checks passed: Ruff, touched-script formatting, Actionlint (including shell
+checks), Gallery storage regression, full ty check with frozen dependencies and
+fresh workspace/gallery image builds and production smokes. Full backend tests
+are still running in `.tools/pr42-backend-tests.log`; hosted CI must pass at the
+new head before completion. No app/UI change, paid calls, user data or deployment.

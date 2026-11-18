@@ -22,6 +22,7 @@ import {
 } from "@/components/gallery/publishing-account";
 import { HomeWorld } from "@/components/home-world";
 import { Globe, Moon, Sun } from "@/components/icons";
+import { JasWordmark } from "@/components/jas-wordmark";
 import { OptionSelect } from "@/components/option-select";
 import { PageBoundary } from "@/components/page-boundary";
 import { RecordListTitle } from "@/components/record-list-heading";
@@ -56,9 +57,7 @@ export function GalleryShell() {
             className="flex items-center gap-2"
           >
             <img src="/logo.svg" className="size-6" alt="" />
-            <span className="font-brand text-2xl font-extrabold tracking-[-0.04em]">
-              jas
-            </span>
+            <JasWordmark className="text-2xl" />
           </Link>
           <nav
             aria-label="Gallery navigation"
