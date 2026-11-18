@@ -144,7 +144,14 @@ function Publication({
             >
               Copy link
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setConfirm(true)}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                remove.reset();
+                setConfirm(true);
+              }}
+            >
               Unpublish
             </Button>
           </div>

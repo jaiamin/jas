@@ -322,7 +322,7 @@ export function DesignEditor({
       );
       return { record, validated };
     },
-    onSuccess: ({ record, validated }) => {
+    onSuccess: async ({ record, validated }) => {
       setSavedSetup({ id: record.id, revision: record.revision });
       const pinned = { ...validated, environment_source: record };
       setDesign(pinned);
@@ -330,6 +330,10 @@ export function DesignEditor({
       setSetupNotice(
         "Custom environment saved. Reuse, edit or delete it from Environments.",
       );
+      await invalidateResources(client, [
+        "/environments",
+        `/environments/${record.id}`,
+      ]);
     },
   });
   const reuse = useMutation({

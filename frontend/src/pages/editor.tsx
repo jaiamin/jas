@@ -91,6 +91,7 @@ export default function Editor() {
   );
   const setup = useQuery({
     queryKey: ["setup", setupId, environmentId],
+    gcTime: 0,
     enabled:
       !!(setupId || environmentId) &&
       !!catalog.data &&

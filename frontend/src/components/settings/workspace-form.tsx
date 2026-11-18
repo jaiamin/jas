@@ -40,7 +40,7 @@ export function WorkspaceForm({ settings }: { settings: Settings }) {
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        save.mutate();
+        if (!save.isPending) save.mutate();
       }}
     >
       <FieldGroup>
@@ -56,6 +56,7 @@ export function WorkspaceForm({ settings }: { settings: Settings }) {
               max={10000}
               step="any"
               required
+              disabled={save.isPending}
               value={budget}
               onChange={(event) => setBudget(Number(event.target.value))}
             />
@@ -69,6 +70,7 @@ export function WorkspaceForm({ settings }: { settings: Settings }) {
               type="number"
               min={Math.max(1, settings.committed_tokens)}
               step={1}
+              disabled={save.isPending}
               value={preferences.token_budget ?? ""}
               onChange={(event) =>
                 setPreferences({
@@ -97,6 +99,7 @@ export function WorkspaceForm({ settings }: { settings: Settings }) {
               label="Protocol designer model"
               value={preferences.planner_model}
               models={settings.models}
+              disabled={save.isPending}
               onChange={(value) =>
                 setPreferences({
                   ...preferences,
@@ -112,6 +115,7 @@ export function WorkspaceForm({ settings }: { settings: Settings }) {
               label="Assistant model"
               value={preferences.assistant_model}
               models={settings.models}
+              disabled={save.isPending}
               onChange={(value) =>
                 setPreferences({
                   ...preferences,
@@ -125,6 +129,7 @@ export function WorkspaceForm({ settings }: { settings: Settings }) {
           <Checkbox
             id="planner-web-research"
             checked={preferences.planner_web_research ?? false}
+            disabled={save.isPending}
             onCheckedChange={(value) =>
               setPreferences({
                 ...preferences,
@@ -140,6 +145,7 @@ export function WorkspaceForm({ settings }: { settings: Settings }) {
           <Checkbox
             id="developer-mode"
             checked={preferences.developer}
+            disabled={save.isPending}
             onCheckedChange={(value) =>
               setPreferences({ ...preferences, developer: value === true })
             }
