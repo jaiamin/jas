@@ -33,7 +33,7 @@ from .matched import changes, first_divergence, world_state
 from .metrics import aggregate_metrics
 from .participant_context import OPERATION_CAPABILITY
 from .participants import activation_record, operation_record
-from .research_quality import completion, findings_report, scientific_review
+from .research_quality import OutcomeUsage, completion, findings_report, scientific_review
 from .simulation.environments import create_world, get_environment
 from .simulation.moments import key_moments
 from .validity import Requirement, factorial_issues, preflight, require_valid, requirement_issues
@@ -473,7 +473,7 @@ class Research:
                 )
             ).all()
         events = {rid: Counter() for rid in ids}
-        usage = {
+        usage: dict[str, OutcomeUsage] = {
             rid: {"requests": 0, "charged": 0, "partial": False, "unpriced": False} for rid in ids
         }
         for rid, kind, count in event_counts:

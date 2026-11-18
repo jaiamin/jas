@@ -16,6 +16,7 @@ from uuid import uuid4
 
 import pytest
 from agent_sim.api import create_app
+from agent_sim.domain import AnalysisPlan
 from conftest import analysis_prompt
 from fastapi.testclient import TestClient
 from pydantic_ai.messages import ModelResponse, ToolCallPart
@@ -213,6 +214,37 @@ def source(exported):
         "activations": exported["activations"],
         "participant_requests": [r for r in exported["requests"] if r["analysis_id"] is None],
     }
+
+
+def test_captured_planned_cost_is_unavailable_for_settled_unpriced_calls(claim_client, design):
+    client, _, _ = claim_client
+    design.conditions[0].model = "openai:unpriced-test"
+    design.token_budget = 100_000
+    design.analysis_plan = AnalysisPlan.model_validate(
+        {"outcomes": [{"key": "charge", "calculation": "cost_usd"}]}
+    )
+    _, rid = save(client, design)
+    summary = run(client, rid)
+    assert summary["status"] == "complete"
+    assert summary["usage"]["requests"] > 0
+    assert summary["usage"]["cost_usd"] is None
+
+    final = finish(
+        client,
+        client.post(
+            "/api/chats",
+            json={"question": "Review the settled experiment cost.", "context": f"run:{rid}"},
+        ),
+    )
+    assert final["status"] == "complete", final
+    cost = next(
+        item
+        for item in final["output"]["lens"]["calculations"]
+        if item["id"] == f"run:{rid}:planned:charge"
+    )
+    assert cost["value"] is None
+    assert cost["inputs"]["usage"]["partial"] is False
+    assert cost["inputs"]["usage"]["unpriced"] is True
 
 
 def test_inspected_citation_cannot_validate_invented_total(claim_client, design):
